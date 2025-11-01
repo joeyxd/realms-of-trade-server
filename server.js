@@ -17,17 +17,32 @@ app.use(express.json());
 
 // Environment configuration
 const PORT = process.env.PORT || 3001;
-const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*';
+// Allow both production and development domains
+const ALLOWED_ORIGINS = [
+  'https://tg47t4fjntwk.space.minimax.io',
+  'https://v57k4pdcwt38.space.minimax.io',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 console.log(`Starting Realms of Trade Server in ${NODE_ENV} mode...`);
-console.log(`Allowed Origins: ${ALLOWED_ORIGINS}`);
+console.log(`Allowed Origins: ${ALLOWED_ORIGINS.join(', ')}`);
 
 // Create HTTP server and Socket.io instance
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ALLOWED_ORIGINS,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (ALLOWED_ORIGINS.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: false
   },
