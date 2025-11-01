@@ -21,6 +21,9 @@ const PORT = process.env.PORT || 3001;
 const ALLOWED_ORIGINS = [
   'https://tg47t4fjntwk.space.minimax.io',
   'https://v57k4pdcwt38.space.minimax.io',
+  'https://aofopcssvyj9.space.minimax.io',
+  'https://9h3ls664dw6r.space.minimax.io',
+  'https://h598zvb1ixs5.space.minimax.io',
   'http://localhost:3000',
   'http://localhost:5173'
 ];
