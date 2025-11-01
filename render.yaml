@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: realms-of-trade-server
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://dme5bmf8ne1b.space.minimax.io
+    healthCheckPath: /health

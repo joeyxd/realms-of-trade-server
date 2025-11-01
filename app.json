@@ -1,0 +1,21 @@
+{
+  "name": "Realms of Trade Server",
+  "description": "Real-time Socket.io server for Realms of Trade MMORPG",
+  "repository": "https://github.com/YOUR-USERNAME/realms-of-trade-server",
+  "keywords": ["socket.io", "game", "mmorpg", "multiplayer"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "Allowed CORS origins",
+      "value": "https://dme5bmf8ne1b.space.minimax.io"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
