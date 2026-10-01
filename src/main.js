@@ -57,6 +57,9 @@ async function boot() {
   const transportP = createTransport({ seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug });
   const canvas = $('#game');
   const world = new GameScene(canvas, map);
+  // ?tod=night|dusk|day|cycle and ?phase=0..1 for screenshots; otherwise the saved setting.
+  world.lighting.setTimeOfDay(params.get('tod') || settings.timeOfDay, 0);
+  if (params.get('phase')) world.lighting.setPhase(+params.get('phase'));
   const input = new Input(canvas);
   const worldUI = new WorldUI($('#world-ui'), world.camera);
   const ambience = new Ambience();
@@ -113,6 +116,7 @@ async function boot() {
       if (['master', 'sfx', 'music', 'ambience', 'muted'].includes(key)) { audio.set(settings); hud.setMuted(settings.muted); }
       if (key === 'quality') quality.setMode(settings.quality);
       if (key === 'uiScale') applyUiScale();
+      if (key === 'timeOfDay') world.lighting.setTimeOfDay(settings.timeOfDay, 2.5);
     },
     onResume: () => closePause(),
     onNewGame: () => { resetSave(); location.reload(); },
@@ -184,6 +188,7 @@ async function boot() {
     if (v) world.after.dash(v, accent, tuning.dash.afterimages, tuning.dash.afterimageLife);
     const mat = map.materialAt(d.x, d.z);
     world.effects.dashBurst(d.x, map.groundAt(d.x, d.z), d.z, d.dx, d.dz, mat, ps.wade);
+    world.lights.flash(d.x, map.groundAt(d.x, d.z) + 1.1, d.z, accent, 5.5, 2.6, 0.32);
     sfx.dash(ps.wade);
     world.rig.punchIn(0.35);
     if (st.tut === 'dash') advanceTutorial();
@@ -227,7 +232,7 @@ async function boot() {
     const Z = ZONES[z];
     if (prev !== null || st.mode === 'playing') hud.showZone(Z.name, Z.sub, z === 'caldera', reduced());
     ambience.setZone(z);
-    world.lighting.setPreset(z === 'caldera' ? 'golden' : 'day', 2);
+    world.lighting.setZone(z === 'caldera', 2);
     music.setMood(z === 'caldera' ? 'caldera' : 'island');
     if (z === 'caldera') sfx.calderaZone(); else sfx.zone();
     if (z === 'aldea' && st.tut === 'village') advanceTutorial();
@@ -468,6 +473,12 @@ async function boot() {
   window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
+    // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.
+    window.__mn.tod = (mode, phase, seconds = 0) => {
+      world.lighting.setTimeOfDay(mode, seconds);
+      if (phase !== undefined) world.lighting.setPhase(phase);
+      return { tod: world.lighting.tod, phase: world.lighting.phase, lights: world.lights.picked.filter((s) => s.w > 0).map((s) => s.kind) };
+    };
     // Freeze-frame FX check for screenshots at low frame rates.
     window.__mn.fxTest = () => {
       const v = views.get(client.youServer);

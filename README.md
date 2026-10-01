@@ -28,8 +28,9 @@ node tools/shot.mjs shots/m --scenario=title --w=390 --h=844 --quality=medium
 ```
 
 Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (overlay F3), `?worker=0`
-(servidor en el hilo principal), `?debug` (teletransporte `__mn.teleport(x, z)`, `__mn.fxTest()` y la ficha de
-personajes `__mn.sheet({ yaw, run, pitch, dist, list })`).
+(servidor en el hilo principal), `?tod=day|dusk|night|cycle` y `?phase=0..1` (hora del día), `?debug`
+(teletransporte `__mn.teleport(x, z)`, `__mn.fxTest()`, la ficha de personajes `__mn.sheet({ yaw, run, pitch, dist,
+list })` y la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)`).
 
 ## Controles
 
@@ -52,7 +53,7 @@ desbloquean por nivel (3/5/7).
 |---|---|---|
 | M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
-| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente (luces locales, noche, grading, bloom, brasas) → plan en `DESIGN.md` §15 | en curso |
+| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading); siguen bloom + brasas, lluvia, modo tinta → `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | siguiente |
 | M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
@@ -63,7 +64,13 @@ desbloquean por nivel (3/5/7).
   grietas de lava, pilares, braseros y portón).
 - **Render toon**: una sola función de bandas de luz (`mnBand`) compartida por personajes, props, terreno y agua;
   contornos por post-proceso (profundidad + normales, grosor constante, sin artefactos diagonales); sombras del sol
-  que siguen al jugador encajadas a texel; sombras de nubes; hora dorada al entrar en La Caldera (transición de 2 s).
+  que siguen al jugador encajadas a texel; sombras de nubes.
+- **Ambiente v2, paso 1**: luces locales en el mismo estilo de bandas (faroles, braseros, fogata, lava, ventanas de
+  las chozas, ojos de los centinelas, luz del jugador de noche y destello del dash), con parpadeo y sin saltos al
+  cambiar cuáles están activas; se reflejan en el agua. Presets **día, atardecer, noche** (luna, estrellas, agua
+  oscura con camino de brillos) y **noche volcánica** en La Caldera; ciclo día/noche de 16 min o una hora fija
+  («Hora del día» en Pausa). Grading por preset: contraste en curva S, tonos partidos (sombras índigo, luces ámbar)
+  y viñeta.
 - **Agua v2**: refracción en pantalla del fondo (con sus contornos), absorción por canal a lo largo del rayo
   (arena → turquesa → azul profundo), cáusticas onduladas sobre el fondo, espuma de contacto alrededor de rocas,
   postes, casco, carga flotante y piernas, encaje de espuma en la orilla, ondas de espuma al vadear, destellos de sol

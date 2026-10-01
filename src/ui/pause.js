@@ -30,6 +30,9 @@ export class PauseMenu {
         <div class="row"><label for="set-quality">Calidad gráfica</label><select id="set-quality">
           ${['auto', 'low', 'medium', 'high'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta' }[q]}</option>`).join('')}
         </select></div>
+        <div class="row"><label for="set-tod">Hora del día</label><select id="set-tod">
+          ${['cycle', 'day', 'dusk', 'night'].map((q) => `<option value="${q}" ${s.timeOfDay === q ? 'selected' : ''}>${{ cycle: 'Ciclo día y noche', day: 'Día', dusk: 'Atardecer', night: 'Noche' }[q]}</option>`).join('')}
+        </select></div>
         ${range('set-shake', 'Sacudida de cámara', s.shake)}
         ${check('set-reduced', 'Reducir movimiento', s.reducedMotion)}
         ${check('set-rotate', 'Rotar cámara con Z / X', s.camRotate)}
@@ -73,6 +76,7 @@ export class PauseMenu {
     bind('set-master', 'master'); bind('set-sfx', 'sfx'); bind('set-music', 'music'); bind('set-amb', 'ambience');
     bind('set-muted', 'muted', (el) => el.checked);
     bind('set-quality', 'quality', (el) => el.value);
+    bind('set-tod', 'timeOfDay', (el) => el.value);
     bind('set-shake', 'shake');
     bind('set-reduced', 'reducedMotion', (el) => el.checked);
     bind('set-rotate', 'camRotate', (el) => el.checked);

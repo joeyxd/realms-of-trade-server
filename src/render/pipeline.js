@@ -4,9 +4,9 @@
 //   3 outline composite                       → rtPost
 //   4 half-res copy of rtPost                 → rtRefract   (what the water refracts)
 //   5 water (refraction, absorption, foam)    → rtPost      (manual depth test vs rtNormal)
-//   6 grading + AA / downsample               → screen
+//   6 grading (contrast, split tone) + AA     → screen
 //   7 FX layer with soft depth                → screen
-// Low: opaque → screen, cheap alpha water (heightmap depth) → screen, FX → screen.
+// Low: opaque → screen, cheap alpha water (heightmap depth) → screen, FX → screen (no grading pass).
 // Layers: 0 world (outlined) · 1 FX · 2 world without outline (sky, blobs, flowers) · 3 water.
 import * as THREE from 'three';
 import { tuning } from '../data/tuning.js';
@@ -99,14 +99,15 @@ void main() {
 }
 `;
 
-// Final: grading (saturation, vignette, danger, capped screen flash, slow-mo chroma) and
+// Final: grading (S-curve contrast, split toning, saturation, vignette, danger, capped screen flash,
+// slow-mo chroma) and
 // FXAA (medium) or bilinear downsample of the supersampled buffer (high), + output color space.
 const FINAL_FRAG = /* glsl */ `
 uniform sampler2D tInput;
 uniform vec2 uTexel;
 uniform float uFxaa;
-uniform float uVignette, uSat, uChroma, uDanger, uFlash;
-uniform vec3 uFlashColor;
+uniform float uVignette, uSat, uChroma, uDanger, uFlash, uContrast, uSplit;
+uniform vec3 uFlashColor, uSplitShadow, uSplitHigh;
 varying vec2 vUv;
 vec3 fxaa(vec2 uv) {
   vec3 rgbNW = texture2D(tInput, uv + vec2(-1.0, -1.0) * uTexel).rgb;
@@ -134,7 +135,17 @@ void main() {
     col.r = texture2D(tInput, vUv + dir).r;
     col.b = texture2D(tInput, vUv - dir).b;
   }
-  float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  // Grade in a perceptual (≈ gamma 2) space: S-curve contrast, then shadows toward one hue and
+  // highlights toward another (luma-neutral tints), then saturation.
+  vec3 lw = vec3(0.2126, 0.7152, 0.0722);
+  vec3 p = sqrt(max(col, 0.0));
+  p = mix(p, p * p * (3.0 - 2.0 * p), uContrast);
+  float pl = dot(p, lw);
+  p += (uSplitShadow - dot(uSplitShadow, lw)) * (1.0 - smoothstep(0.05, 0.55, pl)) * uSplit;
+  p += (uSplitHigh - dot(uSplitHigh, lw)) * smoothstep(0.45, 0.95, pl) * uSplit;
+  col = max(p, 0.0);
+  col *= col;
+  float l = dot(col, lw);
   col = mix(vec3(l), col, uSat);
   float r = length((vUv - 0.5) * vec2(1.25, 1.0));
   col *= 1.0 - uVignette * smoothstep(0.42, 0.95, r);
@@ -169,7 +180,10 @@ export class Pipeline {
     this.castersDirty = true;
     this.frame = 0;
     this.water = null; // { setMode(ssr) } provided by the scene
-    this.grading = { vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1) };
+    this.grading = {
+      vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),
+      contrast: 0, split: 0, splitShadow: new THREE.Color(0x5a4aa0), splitHigh: new THREE.Color(0xffd9a0),
+    };
 
     this.rtMain = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: true });
     this.rtMain.texture.colorSpace = THREE.SRGBColorSpace;
@@ -198,6 +212,7 @@ export class Pipeline {
         tInput: { value: this.rtPost.texture }, uTexel: { value: new THREE.Vector2() }, uFxaa: { value: 1 },
         uVignette: { value: 0.22 }, uSat: { value: 1.07 }, uChroma: { value: 0 }, uDanger: { value: 0 },
         uFlash: { value: 0 }, uFlashColor: { value: new THREE.Color(1, 1, 1) },
+        uContrast: { value: 0 }, uSplit: { value: 0 }, uSplitShadow: { value: new THREE.Color() }, uSplitHigh: { value: new THREE.Color() },
       },
       vertexShader: FS_QUAD_VERT, fragmentShader: FINAL_FRAG, depthTest: false, depthWrite: false,
     });
@@ -317,6 +332,8 @@ export class Pipeline {
     const fu = this.final.uniforms, g = this.grading;
     fu.uVignette.value = g.vignette; fu.uSat.value = g.sat; fu.uChroma.value = g.chroma;
     fu.uDanger.value = g.danger; fu.uFlash.value = g.flash; fu.uFlashColor.value.copy(g.flashColor);
+    fu.uContrast.value = g.contrast; fu.uSplit.value = g.split;
+    fu.uSplitShadow.value.copy(g.splitShadow); fu.uSplitHigh.value.copy(g.splitHigh);
     r.setRenderTarget(null);
     r.render(this.finalQuad.scene, this.quadCam);
 

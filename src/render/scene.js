@@ -4,7 +4,7 @@ import { Pipeline, LAYER } from './pipeline.js';
 import { Lighting } from './lighting.js';
 import { createSky } from './sky.js';
 import { createTerrain, createHeightTexture, createSeabed } from './terrain.js';
-import { createWater } from './water.js';
+import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
@@ -12,6 +12,7 @@ import { CharacterView, SENTINEL, characterMaterial } from './characters.js';
 import { Effects } from './vfx/effects.js';
 import { Afterimages } from './vfx/afterimage.js';
 import { Ambient } from './ambient.js';
+import { LocalLights } from './lights.js';
 import { U } from './toon.js';
 import { tuning } from '../data/tuning.js';
 
@@ -65,6 +66,9 @@ export class GameScene {
     this.focus = new THREE.Vector3();
     this.tmpV = new THREE.Vector3();
     this.lighting.lavaU = this.terrain.material.userData.lavaU || null;
+    this.lights = new LocalLights(map);
+    this.windowBase = new THREE.Color(0x3b2418);
+    this.windowLit = new THREE.Color(0xffb04a);
   }
 
   applyQuality(cfg) {
@@ -72,6 +76,7 @@ export class GameScene {
     this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa });
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles);
+    this.lights.max = cfg.lights;
     this.water.material.uniforms.uWaves.value = cfg.waves;
     U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
     this.onResize();
@@ -136,6 +141,8 @@ export class GameScene {
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
     U.mnOccOn.value = ctx.playing ? 1 : 0;
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus);
+    this.applyPreset(this.lighting.cur);
+    this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);
     this.sky.position.copy(this.camera.position);
     this.effects.update(dt, ctx.focus);
     this.after.update(dt);
@@ -162,6 +169,23 @@ export class GameScene {
       const flag = ship.userData.flag;
       if (flag) flag.rotation.x = Math.sin(this.time * 3.1) * 0.12;
     }
+  }
+
+  // The preset's non-light parts: local-light knobs, water light, hut windows, grading.
+  applyPreset(p) {
+    const k = this.lights.knobs;
+    k.fire = p.fire; k.lava = p.lavaLight; k.night = p.windows; k.eyes = 0.4 + 0.6 * p.fire; k.player = p.player;
+    WATER_LIGHT.uWaterLight.value.copy(p.water);
+    WATER_LIGHT.uSparkle.value = p.sparkle;
+    WATER_LIGHT.uFoamLight.value = p.foam;
+    const wm = this.props.windowMat;
+    if (wm) {
+      wm.userData.mesh.visible = p.windows > 0.02;
+      wm.color.copy(this.windowBase).lerp(this.windowLit, Math.min(1, p.windows * 1.2));
+    }
+    const g = this.pipeline.grading;
+    g.contrast = p.contrast; g.sat = p.sat; g.vignette = p.vignette; g.split = p.split;
+    g.splitShadow.copy(p.splitShadow); g.splitHigh.copy(p.splitHigh);
   }
 
   render() {

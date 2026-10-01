@@ -4,6 +4,8 @@
 import * as THREE from 'three';
 import { getNoiseTexture } from './noiseTex.js';
 
+export const MAX_LIGHTS = 12;
+
 export const U = {
   mnNoiseTex: { value: getNoiseTexture() },
   mnTerrainCaustics: { value: 0 },
@@ -16,7 +18,12 @@ export const U = {
   mnWind: { value: new THREE.Vector2(0.9, 0.45) },
   mnRimColor: { value: new THREE.Color(0x9fd8ff) },
   mnRimStr: { value: 0.55 },
+  mnCharFill: { value: new THREE.Color(0, 0, 0) }, // camera-side fill on characters (dark presets)
   mnShadowTint: { value: new THREE.Color(0x6a5a9a) },
+  // Local lights (filled by lights.js): xyz + radius, linear rgb * intensity + wrap, active count.
+  mnLightPos: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, -999, 0, 1)) },
+  mnLightCol: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, 0, 0, 0)) },
+  mnLightCount: { value: 0 },
 };
 
 export const GLSL_COMMON = /* glsl */ `
@@ -78,6 +85,49 @@ float mnBand(float x) {
   b = mix(b, 0.88, smoothstep(0.30 - w, 0.30 + w, x));
   b = mix(b, 1.00, smoothstep(0.64 - w, 0.64 + w, x));
   return b;
+}
+`;
+
+// Local lights (lanterns, braziers, lava, windows, flashes), evaluated by every lit shader in the
+// same banded style as the sun. wn = world-space normal.
+export const GLSL_LIGHTS = /* glsl */ `
+#define MN_MAX_LIGHTS ${MAX_LIGHTS}
+uniform vec4 mnLightPos[MN_MAX_LIGHTS];
+uniform vec4 mnLightCol[MN_MAX_LIGHTS];
+uniform int mnLightCount;
+// Three soft bands (faint rim, warm pool, hot core) mixed with a smooth ramp: painted pools, not rings.
+float mnLightFall(float x) {
+  float s = x * x * (3.0 - 2.0 * x);
+  float b = 0.2 * smoothstep(0.0, 0.08, s) + 0.32 * smoothstep(0.3, 0.38, s) + 0.48 * smoothstep(0.68, 0.76, s);
+  return mix(b, s, 0.35);
+}
+vec3 mnLocalLight(vec3 wp, vec3 wn) {
+  vec3 sum = vec3(0.0);
+  for (int i = 0; i < MN_MAX_LIGHTS; i++) {
+    if (i >= mnLightCount) break;
+    vec4 lp = mnLightPos[i];
+    vec3 d = lp.xyz - wp;
+    float dist = length(d);
+    float x = clamp(1.0 - dist / lp.w, 0.0, 1.0);
+    float ndl = dot(wn, d / max(dist, 1e-3));
+    float back = mix(0.12, 0.55, mnLightCol[i].w);
+    sum += mnLightCol[i].rgb * mnLightFall(x) * (back + (1.0 - back) * smoothstep(-0.2, 0.6, ndl));
+  }
+  return sum;
+}
+// Water: glints where each light reflects in the waves + a faint glow on the surface below it.
+vec3 mnLocalWater(vec3 wp, vec3 n, vec3 V) {
+  vec3 sum = vec3(0.0);
+  for (int i = 0; i < MN_MAX_LIGHTS; i++) {
+    if (i >= mnLightCount) break;
+    vec4 lp = mnLightPos[i];
+    vec3 d = lp.xyz - wp;
+    float dist = length(d);
+    float x = clamp(1.0 - dist / (lp.w * 1.6), 0.0, 1.0);
+    float spec = pow(max(dot(n, normalize(d / max(dist, 1e-3) + V)), 0.0), 48.0);
+    sum += mnLightCol[i].rgb * (x * x * 0.08 + spec * x * 0.9);
+  }
+  return sum;
 }
 `;
 
@@ -182,12 +232,15 @@ function lightsBegin() {
 }
 
 const FRAG_RIM = /* glsl */ `
+reflectedLight.directDiffuse += mnLocalLight( vMnWorld, inverseTransformDirection( normal, viewMatrix ) ) * BRDF_Lambert( material.diffuseColor );
 #ifdef MN_RIM
 {
   vec3 mnV = normalize( vViewPosition );
   float fr = 1.0 - saturate( dot( normal, mnV ) );
   float rimB = smoothstep( 0.58, 0.72, fr );
   reflectedLight.directDiffuse += mnRimColor * mnRimStr * rimB * diffuseColor.rgb;
+  // Fill from the camera side so characters stay readable at night and in the Caldera.
+  reflectedLight.directDiffuse += mnCharFill * BRDF_Lambert( material.diffuseColor ) * ( 0.35 + 0.65 * smoothstep( -0.1, 0.8, dot( normal, mnV ) ) );
 }
 #endif
 `;
@@ -214,7 +267,7 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + VERT_SWAY + (opts.vertBody || ''))
       .replace('#include <project_vertex>', '#include <project_vertex>\n' + VERT_WORLD);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\n' + (opts.fragPars || ''))
+      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + GLSL_LIGHTS + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\nuniform vec3 mnCharFill;\n' + (opts.fragPars || ''))
       .replace('#include <gradientmap_pars_fragment>', BAND_PARS)
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
       .replace('#include <color_fragment>', '#include <color_fragment>\n' + (opts.albedo || ''))

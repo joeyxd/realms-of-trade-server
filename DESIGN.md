@@ -56,7 +56,7 @@ Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isomé
 | Aldea Coralina | `aldea` | < 30 u del centro de la aldea | fogata, aves, marimba | día |
 | Sendero del Humo | `camino` | < 9 u de la polilínea del sendero | viento, aves de selva | día |
 | Selva Esmeralda | `selva` | resto de tierra firme | viento, insectos | día |
-| La Caldera | `caldera` | < 27 u del centro de la arena | crepitar de lava, rumor | **hora dorada** (transición 2 s) |
+| La Caldera | `caldera` | < 27 u del centro de la arena | crepitar de lava, rumor | **noche volcánica** (transición 2 s) |
 | Mar | `mar` | agua > 0.65 u (no caminable) | — | — |
 
 ## 3. Cámara (MOBA semi-bloqueada)
@@ -357,7 +357,7 @@ Baja: sin contornos, render directo + FX con test de profundidad normal.
 - Sombras de nubes: ruido animado inyectado en todos los materiales (multiplica solo la luz del sol).
 - Sol direccional con sombras en frustum ortográfico ±30 u centrado 7 u por delante del jugador (la cámara inclinada
   ve más lejos), encajado a texel → sin parpadeo,
-  hemisférica cálida, rim light fría desde atrás. Preset «hora dorada» en La Caldera (tween 2 s).
+  hemisférica cálida, rim light fría desde atrás. De noche el mismo sol es la luna. Presets y luces locales: §15.
 
 **Personajes v2 (adultos, low-poly facetado)** — `charkit.js` · `charlooks.js` · `characters.js`
 
@@ -421,13 +421,13 @@ src/core/                  loop · input · events · rng · math · settings
 src/net/                   protocol · transport · localServer · worker · wsTransport (stub)
 src/client/                gameClient (predicción, reconciliación, interpolación)
 src/sim/                   world · ecs · worldgen · noise · collision · systems/{movement,bots}
-src/render/                scene · pipeline · camera · lighting · toon · noiseTex · sky · terrain · water ·
+src/render/                scene · pipeline · camera · lighting · lights · toon · noiseTex · sky · terrain · water ·
                            vegetation · props · charkit · charlooks · characters · ambient · quality ·
                            vfx/{effects,particles,afterimage}
 src/ui/                    title · hud · banners · prompts · pause · stats · touch · toasts
 src/audio/                 engine · sfx · music · ambience
 src/data/                  meta · tuning (· items · skills · enemies · boss · loot_tables · quests · ship_modules)
-tests/                     tests de la sim y de la geometría de personajes en Node (`npm test`)
+tests/                     tests de la sim, de la geometría de personajes y de las luces locales en Node (`npm test`)
 tools/shot.mjs             capturas automáticas con Playwright
 legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ```
@@ -435,9 +435,10 @@ legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ## 15. Dirección de arte v2: plan de cambios por referencias
 
 Proceso: el autor manda referencias por área; para cada una se apunta qué tiene que no tengamos y qué cambia. Hecho:
-**agua v2** (refracción, absorción, espuma, cáusticas) y **personajes v2** (adultos low-poly, arriba en §11).
+**agua v2** (refracción, absorción, espuma, cáusticas), **personajes v2** (adultos low-poly, arriba en §11) y el
+**paso 1 del ambiente** (abajo).
 
-**Ambiente (siguiente).** Dos referencias de ARPG isométrico oscuro: (A) campo de batalla de noche bajo la lluvia, luz
+**Ambiente.** Dos referencias de ARPG isométrico oscuro: (A) campo de batalla de noche bajo la lluvia, luz
 de luna fría y un fuego cálido; (B) mazmorra violeta con braseros, chispas y contornos de tinta. Lo que tienen y
 nosotros no:
 
@@ -456,6 +457,20 @@ nosotros no:
 Orden propuesto: 1) luces locales + presets noche / noche volcánica + grading, 2) bloom + brasas/chispas, 3) lluvia
 y suelo mojado, 4) modo tinta. La playa y la aldea pueden seguir de día con más contraste; la noche y La Caldera
 llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200 draw calls, < 300 k triángulos.
+
+**Paso 1 hecho: luces locales, presets y grading** — `lights.js` · `lighting.js` · `toon.js` · `pipeline.js`
+
+| Parte | Cómo |
+|---|---|
+| Luces locales | Sin luces de three.js (cambiar su número recompila todo): dos arrays de uniforms (`mnLightPos` xyz + radio, `mnLightCol` rgb·intensidad + *wrap*) y un contador. Toda superficie toon (terreno, props, vegetación, personajes) suma `mnLocalLight()` tras la luz del sol: caída en 3 bandas suaves mezcladas con una rampa (charcos pintados, no anillos) × cara hacia la luz con un mínimo por *wrap*. El agua refleja cada luz (destello en las olas + brillo suave) y la espuma se tiñe. Sin sombras. |
+| Fuentes | faroles (6 del camino + 2 nuevos sobre postes del muelle), braseros y fuegos del portón, fogata, lava (puntos a ≥ 9 u sobre el río y el cráter), luz baja del suelo agrietado de la arena, ventanas de las chozas (solo al atardecer y de noche: paneles cálidos + luz), ojos de los centinelas, **luz del jugador** (radio tipo Diablo, solo de noche) y **destellos** cortos (el dash con el color del aspecto; en M2 golpes y parries). |
+| Selección | Hasta 12 en alta, 8 en media, 4 en baja. Las fijas tienen sus huecos y la del jugador y los destellos usan 1–2 reservados, así nunca echan a una fija de golpe. Se ordenan por distancia al foco menos medio radio; cada elegida se apaga a medida que la primera excluida se le acerca (6 u de margen), así que el cambio de conjunto ocurre con peso 0: **sin saltos** (test). Parpadeo: 3 senos por luz, los fuegos también tiemblan en altura. |
+| Presets | `day`, `golden` (atardecer), `night` (luna fría azulada, hemisférica oscura, estrellas, niebla azul marino) y `volcanic` (sol rojo apagado tras el humo, sin disco, niebla rojiza cercana, grietas más vivas). Cada preset lleva también los mandos de las luces locales (fuego, lava, ventanas, jugador), la luz del agua (dispersión, espuma, destellos), un *fill* desde la cámara para que los personajes se lean en la oscuridad y el grading. |
+| Capas | **base** = hora del día: fija (Día / Atardecer / Noche) o **ciclo** de 16 min (día ~7,5 min → atardecer → noche ~4,8 min → amanecer); **zona** = noche volcánica encima al entrar en La Caldera (2 s). Cambiar la hora mezcla desde lo que hay en pantalla (2,5 s). Ajuste «Hora del día» en Pausa (por defecto el ciclo, que arranca de mañana). |
+| Grading | En el pase final (media/alta): curva S de contraste y tonos partidos en espacio perceptual (sombras → violeta/índigo, luces → ámbar, tintes de luma neutra), saturación y viñeta por preset. En baja no hay pase final: solo cambian luces y colores. |
+| Agua de noche | La dispersión turquesa y la espuma se escalan con la luz del preset; el brillo sólido del sol se apaga más rápido que los destellos, así que la luna deja un camino de brillos y no manchas. |
+| Coste | 0 draw calls nuevos salvo 1 malla de ventanas (solo de noche); un bucle de ≤ 12 iteraciones por píxel en los shaders toon y en el agua. |
+| Depuración | `?tod=day|dusk|night|cycle` y `?phase=0..1`; con `?debug`, `__mn.tod('night')` o `__mn.tod('cycle', 0.75)` (medianoche). |
 
 ## 16. Milestones y checklist de cada entrega
 

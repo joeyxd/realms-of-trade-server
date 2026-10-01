@@ -65,7 +65,7 @@ page.on('requestfailed', (r) => logs.push(`[requestfailed] ${r.url()} ${r.failur
 const shot = async (name) => { await page.screenshot({ path: path.join(outDir, name + '.png') }); console.log('shot', name); };
 const wait = (ms) => page.waitForTimeout(ms);
 const t0 = Date.now();
-await page.goto(`http://localhost:${port}/?q=${quality}&debug&perf&maxdt=${opt.maxdt || 0.5}`, { waitUntil: "load" });
+await page.goto(`http://localhost:${port}/?q=${quality}&tod=day&debug&perf&maxdt=${opt.maxdt || 0.5}`, { waitUntil: "load" });
 try {
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play').disabled, null, { timeout: +(opt.timeout || 120000) });
 } catch (e) {
@@ -117,7 +117,7 @@ if (scenario !== 'title') {
   await tp('06-path', L.path[3].x, L.path[3].z);
   await tp('07-caldera', L.arena.x + 6, L.arena.z + 6);
   await wait(2500);
-  await shot('08-caldera-golden');
+  await shot('08-caldera-volcanic');
   await page.mouse.move(width * 0.5, height * 0.5);
   await page.mouse.wheel(0, 300);
   await wait(5000);
@@ -132,6 +132,11 @@ if (scenario !== 'title') {
   });
   await tp('10-wade', W.wade.x, W.wade.z, async () => { await page.keyboard.down('KeyA'); await wait(2500); await page.keyboard.up('KeyA'); await wait(400); });
   await tp('11-dock', W.dock.x, W.dock.z);
+  // Night: lanterns, hut windows, the campfire and the moonlit sea.
+  await page.evaluate(() => window.__mn.tod('night'));
+  await wait(1500);
+  await shot('12-dock-night');
+  await tp('13-village-night', L.village.x + 2, L.village.z + 1);
   const perf = await page.evaluate(() => document.querySelector('#perf').textContent);
   console.log(perf);
 }

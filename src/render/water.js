@@ -11,7 +11,7 @@
 //
 // All noise comes from two tileable textures (see noiseTex.js): ~10 fetches per pixel.
 import * as THREE from 'three';
-import { GLSL_COMMON, GLSL_BAND, U } from './toon.js';
+import { GLSL_COMMON, GLSL_BAND, GLSL_LIGHTS, U } from './toon.js';
 import { GLSL_SKY, SKY } from './sky.js';
 import { WATERU } from './pipeline.js';
 import { getWaveTexture } from './noiseTex.js';
@@ -22,6 +22,13 @@ export const WATER_LOOK = {
   scatterDeep: new THREE.Color(0x0b3f8f),
   foam: new THREE.Color(0xfffbf0),
   caustic: new THREE.Color(0xfff3cf),
+};
+
+// Set by the lighting preset every frame (night dims the in-scattered color and the foam).
+export const WATER_LIGHT = {
+  uWaterLight: { value: new THREE.Color(1, 1, 1) },
+  uSparkle: { value: 1 },
+  uFoamLight: { value: 1 },
 };
 
 const VERT = /* glsl */ `
@@ -54,7 +61,11 @@ const FRAG = /* glsl */ `
 ${GLSL_COMMON}
 ${GLSL_BAND}
 ${GLSL_SKY}
+${GLSL_LIGHTS}
 uniform sampler2D tWave;
+uniform vec3 uWaterLight;
+uniform float uSparkle;
+uniform float uFoamLight;
 uniform vec3 uAbsorb, uScatterShallow, uScatterDeep, uFoam, uCaustic;
 uniform float uWaves, uRefract;
 #ifdef MN_WATER_SSR
@@ -120,13 +131,13 @@ void main() {
     float c1 = texture2D(mnNoiseTex, cuv + vec2(t * 0.013, t * 0.009)).g;
     float c2 = texture2D(mnNoiseTex, cuv * 1.29 - vec2(t * 0.011, -t * 0.014) + 0.41).g;
     float caust = smoothstep(0.72, 0.95, 1.0 - min(c1, c2));
-    under += uCaustic * caust * 0.26 * (1.0 - smoothstep(0.2, 2.6, depth)) * smoothstep(0.05, 0.3, depth) * (0.3 + 0.7 * vis);
+    under += uCaustic * uWaterLight * caust * 0.26 * (1.0 - smoothstep(0.2, 2.6, depth)) * smoothstep(0.05, 0.3, depth) * (0.3 + 0.7 * vis);
   }
 #endif
 
   // Beer–Lambert absorption along the path + in-scattered water color.
   vec3 T = exp(-path * uAbsorb);
-  vec3 scatter = mix(uScatterShallow, uScatterDeep, smoothstep(1.5, 11.0, path));
+  vec3 scatter = mix(uScatterShallow, uScatterDeep, smoothstep(1.5, 11.0, path)) * uWaterLight;
   vec3 col = under * T + scatter * (1.0 - T);
 
   // Surface light: shared toon bands (subtle on water) and a soft light web.
@@ -136,7 +147,7 @@ void main() {
   float h1 = texture2D(tWave, xz * 0.035 + mnWind * t * 0.010).b;
   float h2 = texture2D(tWave, xz * 0.083 + vec2(-mnWind.y, mnWind.x) * t * 0.018 + 0.37).b;
   float glow = smoothstep(0.6, 0.7, h1 * 0.55 + h2 * 0.45);
-  col += vec3(0.8, 1.0, 1.0) * glow * 0.07 * (0.35 + 0.65 * vis) * smoothstep(0.15, 1.0, depth);
+  col += vec3(0.8, 1.0, 1.0) * uWaterLight * glow * 0.07 * (0.35 + 0.65 * vis) * smoothstep(0.15, 1.0, depth);
 
   // Sky reflection (fresnel).
   float fr = 0.02 + 0.98 * pow(1.0 - max(dot(n, V), 0.0), 5.0);
@@ -148,7 +159,10 @@ void main() {
   vec4 cell = texture2D(mnNoiseTex, xz * 0.42 + slope * 0.1);
   float twinkle = 0.5 + 0.5 * sin(t * 5.0 + cell.a * 40.0);
   float spark = step(cell.r, 0.1 * clamp(spec * 2.5, 0.0, 1.0)) * step(0.6, twinkle);
-  col += sunColor * (step(0.55, spec) * 0.45 + spark * 1.1) * (1.0 - far);
+  // Solid glint patches fade faster than the twinkles (the moon gives a glitter path, not blobs).
+  col += sunColor * uSparkle * (step(0.55, spec) * 0.45 * uSparkle + spark * 1.1) * (1.0 - far);
+  // Lanterns, fires and lava reflected in the waves.
+  col += mnLocalWater(vWorld, n, V);
 
   // ---- Foam --------------------------------------------------------------------------------------
   float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
@@ -167,7 +181,7 @@ void main() {
   float wv = sin(depth * 5.5 - t * 1.25 + nz * 7.0);
   float lines = smoothstep(0.93, 0.985, wv) * (1.0 - smoothstep(0.6, 1.7, depth)) * step(0.22, depth) * smoothstep(0.42, 0.62, nz2);
   float foam = clamp(max(contact, max(laceFoam * 0.9, lines * 0.85)), 0.0, 1.0);
-  col = mix(col, uFoam * mix(0.8, 1.02, vis), foam);
+  col = mix(col, uFoam * (mix(0.8, 1.02, vis) * uWaterLight * uFoamLight + mnLocalLight(vWorld, vec3(0.0, 1.0, 0.0)) * 0.3), foam);
 
 #ifdef MN_WATER_SSR
   gl_FragColor = vec4(col, 1.0);
@@ -184,6 +198,8 @@ function makeMaterial(map, heightTex, ssr) {
   Object.assign(uniforms, SKY, {
     mnTime: U.mnTime, mnWind: U.mnWind, mnCloud: U.mnCloud, mnNoiseTex: U.mnNoiseTex,
     mnPlayer: U.mnPlayer, mnOccR: U.mnOccR, mnOccOn: U.mnOccOn, mnNearFade: U.mnNearFade,
+    mnLightPos: U.mnLightPos, mnLightCol: U.mnLightCol, mnLightCount: U.mnLightCount,
+    ...WATER_LIGHT,
     tWave: { value: getWaveTexture() },
     uAbsorb: { value: WATER_LOOK.absorb },
     uScatterShallow: { value: WATER_LOOK.scatterShallow },

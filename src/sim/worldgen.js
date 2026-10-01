@@ -273,6 +273,12 @@ export function generateWorld(seed) {
       addProp('dockPost', bx - dockDir.z * s * 1.75, bz + dockDir.x * s * 1.75, { r: 0.28, y: dock.deckY, rot: 0 });
     }
   }
+  // Two lanterns on top of pier posts, arms over the deck (no rng: the rest of the island stays put).
+  for (const [i, s] of [[3, 1], [1, -1]]) {
+    const t = (i + 0.5) / 4;
+    const bx = lerp(dockBase.x, dockEnd.x, t), bz = lerp(dockBase.z, dockEnd.z, t);
+    addProp('lantern', bx - dockDir.z * s * 1.75, bz + dockDir.x * s * 1.75, { r: 0, y: dock.deckY + 0.62, rot: Math.atan2(s * dockDir.x, s * dockDir.z), v: 0 });
+  }
   { const p = P(L.ship); addProp('ship', p.x, p.z, { y: 0, rot: Math.atan2(dockDir.x, dockDir.z) + Math.PI / 2, r: 0 }); }
   { const p = P(L.sign); addProp('sign', p.x, p.z, { r: 0.35, rot: Math.PI * 0.75 }); }
   // Caldera dressing: braziers and basalt pillars around the rim (skipping the gate gap).

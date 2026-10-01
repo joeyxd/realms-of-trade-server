@@ -106,7 +106,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
           vec4 v = texture2D(mnNoiseTex, wp.xz * 0.0375);
           vec3 tile = mix(srgb(vec3(0.30, 0.25, 0.33)), srgb(vec3(0.38, 0.32, 0.40)), v.a);
           tile *= 0.9 + 0.15 * smoothstep(0.0, 0.6, v.r);
-          float seam = smoothstep(0.1, 0.04, v.g);
+          float seam = smoothstep(0.075, 0.035, v.g);
           float crackMask = smoothstep(0.42, 0.62, texture2D(mnNoiseTex, wp.xz * 0.0139 + 0.2).b);
           mnTerrainCrack = seam * crackMask * vMask.z;
           col = mix(col, mix(tile, srgb(vec3(0.16, 0.11, 0.17)), seam), vMask.z);
@@ -133,7 +133,9 @@ export function createTerrain(map, { segments = 250 } = {}) {
         float lavaW = smoothstep(0.35, 0.85, vMask.w);
         float crust = smoothstep(0.55, 0.7, texture2D(mnNoiseTex, vMnWorld.xz * 0.1125 - vec2(mnTime * 0.02, 0.0)).b);
         totalEmissiveRadiance += lavaHot * lavaW * (1.0 - crust * 0.75) * pulse * 2.2 * mnLavaPulse;
-        totalEmissiveRadiance += vec3(1.0, 0.42, 0.08) * mnTerrainCrack * pulse * 1.8 * mnLavaPulse;
+        // Cracks: mostly dim embers, with hot runs drifting slowly along them.
+        float hot = smoothstep(0.35, 0.8, texture2D(mnNoiseTex, vMnWorld.xz * 0.045 + vec2(mnTime * 0.008, -mnTime * 0.006)).b);
+        totalEmissiveRadiance += mix(vec3(0.6, 0.1, 0.03), vec3(1.0, 0.45, 0.1), hot) * mnTerrainCrack * pulse * (0.75 + 1.05 * hot) * mnLavaPulse;
       }
     `,
     uniforms: { mnLavaPulse: { value: 1 } },

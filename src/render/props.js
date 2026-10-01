@@ -1,5 +1,5 @@
 // Village, dock, ship and Caldera dressing: one merged vertex-colored geometry per prop kind,
-// instanced per kind. Glowing bits (lantern glass, coals) use an unlit material.
+// instanced per kind. Glowing bits (lantern glass, coals, hut windows at night) use unlit materials.
 import * as THREE from 'three';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
 import { toon, normalMatFor } from './toon.js';
@@ -194,7 +194,7 @@ export function createProps(map) {
   // Static props are baked into one merged mesh per world chunk (few draw calls, culls per chunk).
   const CH = 72;
   const buckets = new Map();
-  const glowParts = [], coalParts = [];
+  const glowParts = [], coalParts = [], windowParts = [];
   const lanternGlass = new THREE.BoxGeometry(0.26, 0.3, 0.26);
   const coalDisc = new THREE.CylinderGeometry(0.5, 0.5, 0.08, 10);
   const strip = (g) => { for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k); return g.index ? g.toNonIndexed() : g; };
@@ -207,6 +207,11 @@ export function createProps(map) {
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(kits[kind].clone().applyMatrix4(m4));
       if (kind === 'lantern') glowParts.push(strip(lanternGlass.clone().applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(0.42, 1.78, 0)))));
+      if (kind === 'hut') {
+        windowParts.push(strip(new THREE.BoxGeometry(0.54, 0.4, 0.04).applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(1.15, 2.45, 1.83)))));
+        windowParts.push(strip(new THREE.BoxGeometry(0.04, 0.4, 0.54).applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(1.83, 2.45, 0)))));
+        windowParts.push(strip(new THREE.BoxGeometry(0.1, 1.2, 0.04).applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(0.36, 1.92, 1.83)))));
+      }
       if (kind === 'brazier') coalParts.push(strip(coalDisc.clone().applyMatrix4(new THREE.Matrix4().makeTranslation(p.x, p.y + 1.12, p.z))));
     }
   }
@@ -221,6 +226,16 @@ export function createProps(map) {
   const coalMat = new THREE.MeshBasicMaterial({ color: 0xff7a1a });
   if (glowParts.length) group.add(new THREE.Mesh(mergeGeometries(glowParts), glowMat));
   if (coalParts.length) group.add(new THREE.Mesh(mergeGeometries(coalParts), coalMat));
+  // Hut windows and the door crack: lit from inside at dusk and night (color set by the preset).
+  const windowMat = new THREE.MeshBasicMaterial({ color: 0xffb04a });
+  if (windowParts.length) {
+    const win = new THREE.Mesh(mergeGeometries(windowParts), windowMat);
+    win.layers.set(LAYER.NO_OUTLINE);
+    win.visible = false;
+    win.name = 'hutWindows';
+    windowMat.userData.mesh = win;
+    group.add(win);
+  }
 
   // Dock deck planks.
   const d = map.dock;
@@ -312,5 +327,5 @@ export function createProps(map) {
     floaters.push(holder);
   }
 
-  return { group, ship, gate, floaters };
+  return { group, ship, gate, floaters, windowMat };
 }
