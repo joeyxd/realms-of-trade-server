@@ -141,6 +141,19 @@ if (scenario !== 'title') {
   });
   await tp('14-practice', C.ring.x + 1, C.ring.z - 0.5);
   await tp('15-archers', C.archer.x, C.archer.z, async () => { await page.keyboard.press('KeyJ'); await wait(300); });
+  // M2.5 La Prueba de Fuego: step on the runes (wave 1), skip to wave 3, then Hellfire in both phases.
+  const dev = (o) => page.evaluate((o2) => window.__mn.client.send({ t: 'cmd', type: 'dev', ...o2 }), o);
+  const encSt = () => page.evaluate(() => JSON.stringify(window.__mn.client.enc && window.__mn.client.enc[0]));
+  await tp('16-trial-wave1', L.arena.x + 1, L.arena.z + 1, async () => { await wait(2500); });
+  await dev({ op: 'enc', sub: 'wave' }); await wait(5500);
+  await dev({ op: 'enc', sub: 'wave' }); await wait(800); await dev({ op: 'enc', sub: 'wave' }); await wait(5500);
+  await shot('17-trial-wave3');
+  await dev({ op: 'enc', sub: 'boss' }); await wait(6500);
+  await shot('18-hellfire-1');
+  await dev({ op: 'enc', sub: 'phase2' }); await wait(5000);
+  await shot('19-hellfire-2');
+  console.log('trial', await encSt());
+  await dev({ op: 'enc', sub: 'reset' });
   // Night: lanterns, hut windows, the campfire and the moonlit sea.
   await page.evaluate(() => window.__mn.tod('night'));
   await wait(1500);

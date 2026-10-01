@@ -168,12 +168,22 @@ pathfinding. Reacción: flash blanco 80 ms + knockback 0.6 u. Muerte: se desarma
 | Arquero esqueleto pirata | 40 | 3.2 | 9–12 | ráfaga de 3 flechas parreables apuntadas, 0.12 s entre flechas, 10 u/s | 450 ms (brillo del arco + pose) | 2.2 s | 25 |
 | Centinela (M2) | 140 (def 2) | 2.3 | 4.5–8 | cerca: tajo AoE r=2.6 delante, 18 · medio: abanico de 3 púas imparables 10 u/s · cada ~9 s: orbe pesado 4.5 u/s | 0.8 / 0.6 / 0.8 s | 2.2–3 s | 60 |
 | Grumete ahogado (M2.5) | 24 | 4.6 | persigue | mordisco AoE r=1.05 delante, 9; llegan en manadas, knockback × 1.6 | 420 ms | 1.1 s | 8 |
-| Diablillo de fuego | 28 | 5.5 | orbita a 6 | espiral de 8 orbes parreables en 0.8 s, 7 u/s | 400 ms | 2.8 s | 20 |
-| Chamán de coral | 60 | 2.4 | 8–10 | anillo de 12 orbes alternando parreable/imparable, 6 u/s | 600 ms | 3.5 s | 40 |
+| Diablillo de fuego (M2.5) | 28 | 5.5 | orbita 5–7 | espiral de 10 orbes parreables (36° cada uno, círculo completo en 0.8 s), 7 u/s | 400 ms | 2.8 s | 20 |
+| Chamán de coral (M2.5) | 60 | 2.4 | 8–10 | anillo de 14 orbes alternando parreable/imparable, 6 u/s | 600 ms | 3.5 s | 40 |
 | Cangrejo mortero | 80 | 2.0 | 7–11 | 3 AoE r=2.2 alrededor del jugador, telegraph 1.1 s | 500 ms | 3.0 s | 50 |
 
 Los centinelas duermen junto al portón de La Caldera y despiertan (1.3 s) cuando te acercas. El diablillo, el chamán
 y el grumete llegan con la Prueba de Fuego (M2.5, `PLAN-M2.5.md`); el cangrejo sigue en M3.
+
+**La Prueba de Fuego (M2.5):** pisar el círculo de runas del centro de La Caldera inicia 3 oleadas (5 grumetes +
+2 arqueros · 4 diablillos + 4 grumetes + 2 arqueros, refuerzo de 5 grumetes · 3 chamanes + 3 diablillos + 6 grumetes,
+refuerzo de 2 arqueros + 2 diablillos + 4 grumetes) y después HELLFIRE. Aparecen levantándose del suelo en un anillo
+de r=14 (nunca delante del portón). Entre oleadas, 4 s de respiro y se limpian las balas hostiles. Si no queda ningún
+participante vivo dentro durante 6 s, la prueba se reinicia; si ya habías llegado al jefe, el siguiente intento
+empieza en el jefe. Tras ganar, 40 s de espera para repetir. Datos: `src/data/encounters.js`.
+**Rebote:** un reflejo que impacta salta al enemigo más cercano (≤ 7 u, daño × 0.75): 1 vez (normal / RIPOSTE),
+2 (PERFECTO). Varios reflejos sobre el mismo enemigo en 0.6 s hacen × (1 − 0.2·n), mínimo × 0.15.
+**ESQUIVA:** atravesar con el dash una bala parreable o pesada que te habría dado: +1 XP, +3 RIPOSTE.
 
 **Zona de práctica (M2):** en la playa, junto al punto de inicio: un muñeco de paja (combo de 3, se cura entre
 rachas) y un cañón que dispara bolas lentas parreables a quien pisa su anillo de cuerda (r=4.2). Sin palmeras,
@@ -192,6 +202,13 @@ Cangrejo: **blindado por delante** (120°): daño × 0.2 de frente; × 1 por fla
 | 5 | (a) 2 cangrejos + 2 chamanes · (b) a los 10 s: 3 diablillos + 2 arqueros |
 
 ## 8. Jefe «HELLFIRE» (HP 2400)
+
+> **Versión M2.5 (implementada, 2 fases, HP 2600, DEF 8):** fase 1 (100–55 %) ciclo `fan5, spiral2 (3 brazos, 36),
+> fan5, rings2 (2 × 16 alternos)` + orbe pesado cada 12 s; ENRAGE al 55 % (2 s invulnerable, se limpian las balas
+> hostiles, invoca 3 grumetes); fase 2 ciclo `flower (6 brazos, 84 orbes), wall (9 púas imparables), rings3 (3 × 18),
+> summon (máx 6 esbirros), fan7, spiral2` + orbe pesado cada 10 s, con **escudo** (daño × 0.2 salvo reflejos);
+> reflejar el orbe pesado lo rompe 4 s (× 1.5) y lo aturde 1.5 s. Si te pegas a él: `slam` r=4.6 cada 3 s.
+> Muerte: slow-mo 0.3× 1.2 s, 1500 XP. Lo de abajo (láser, meteoros, lava, carriles) sigue siendo el plan de M3.
 
 Cada cambio de fase: 2.0 s invulnerable, se **limpian todos los proyectiles hostiles** (fairness), banner,
 stinger musical, luz más roja, nueva pose.
@@ -522,7 +539,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M0 | Este documento | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando + arquitectura de red local | ✅ (ver README) |
 | M2 | Proyectiles + parry/reflect/dash + 2 enemigos + feel + F4 → **test de diversión** | ✅ |
-| M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | en curso |
+| M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | ✅ |
 | M3 | Oleadas + enemigos restantes + jefe 3 fases | |
 | M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |

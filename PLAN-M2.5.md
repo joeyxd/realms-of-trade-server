@@ -172,14 +172,14 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
 - [x] **P5 · Jefe** — `systems/boss.js` (fases, ciclo, `spin`, escudo, invocación, slam, orbe pesado que
   rompe), clear hostil sin tocar shots. Tests: al 55 % cambio de fase + invulnerable 2 s + clear hostil;
   escudo × 0.35 salvo reflejos; muerte → victoria + XP.
-- [ ] **P6 · UI/feel** — barra de jefe, banners, contador, sonidos, cámara, burbuja, luz, muro de fuego.
-- [ ] **P7 · Verificación** — F4 (botones prueba), escenas `16-wave2`, `17-boss1`, `18-boss2` en
+- [x] **P6 · UI/feel** — barra de jefe, banners, contador, sonidos, cámara, burbuja, luz, muro de fuego.
+- [x] **P7 · Verificación** — F4 (botones prueba), escenas `16-wave2`, `17-boss1`, `18-boss2` en
   `tools/shot.mjs`; bot de parry (ver `scratchpad/c2.js` de la sesión anterior: pulsa K cuando
   `client.hazards` tiene una bala a < 0.35 s) jugando oleadas; checklist §16 (legibilidad parreable/pesado/
   imparable con 150 balas, nada tapa al personaje, FPS con Q=low/high). Test de rendimiento: fase 2 + 6
   grumetes + 200 balas → `world.step` medio < 2 ms en node. Test cliente/servidor (estilo
   `clientAndServer()` de `tests/combat.test.mjs`) 1200 ticks en la arena: error de predicción 0.
-- [ ] **P8 · Cierre** — DESIGN (§7 tabla, §8 «versión M2.5 de 2 fases», §16 M2.5 ✅), README, meta
+- [x] **P8 · Cierre** — DESIGN (§7 tabla, §8 «versión M2.5 de 2 fases», §16 M2.5 ✅), README, meta
   `0.2.5-m2.5`, rebuild + republicar artefacto (misma URL), push, informe final en español.
 
 ## 4b. Estado real (lo hecho, para quien continúe)
@@ -192,8 +192,11 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
   `phase {id, phase, shield, dur}`, `shield {id, st: broken|up|off}`, `dodge`, `bounce` (del cliente),
   `clear {hostile: 1}`, `kill {boss: 1}`, `damage {shielded}`. Snapshot: `enc: [[id, st, wave, waves, left,
   boss, bossPhase, shield 0/1/2, inv]]` → `client.enc`.
-- F4 → servidor: `{op: 'enc', sub: 'start'|'wave'|'boss'|'phase2'|'win'|'reset'}` (falta el botón en el panel).
-- ACT nuevo: `ENRAGE: 14` (falta pose en `characters.js`: usar la familia 'spread').
+- F4 → servidor: `{op: 'enc', sub: 'start'|'wave'|'boss'|'phase2'|'win'|'reset'}` (botones en el panel).
+- ACT nuevo: `ENRAGE: 14` (la pose la pone feedback 'phase' con la familia 'spread').
+- Balance tras el bot de `scratchpad/bot25.mjs` (parry casi perfecto): HP jefe 2600, DEF 8, escudo × 0.2, slam
+  r 4.6 / 3 s, `chainRiposte` 0.15 → prueba ~100 s, jefe ~50 s, ~2 barras de vida recibidas.
+- Pendiente menor: muro de fuego visual en la puerta (no hecho; hay aviso al salir). Ver el jefe en móvil.
 
 ## 5. Riesgos y cómo evitarlos
 - **Divergencia de patrones** (cliente ve balas distintas): todo parámetro en el evento; test P1.

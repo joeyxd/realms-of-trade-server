@@ -58,7 +58,7 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
 | v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz); siguen lluvia, modo tinta → `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | ✅ |
-| M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | en curso |
+| M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | ✅ |
 | M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
 ### Qué incluye M1
@@ -122,6 +122,22 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
 - **Zona de práctica** en la playa (muñeco + cañón con anillo de cuerda) y **panel F4** con sliders de tuning en
   vivo (cliente y servidor local a la vez), spawns, curar, riposte lleno, nivel ±, modo dios e hitboxes.
 - 34 tests en Node (`npm test`).
+
+### Qué incluye M2.5 — «La Prueba de Fuego»
+
+- **Bullet hell en La Caldera**: pisa el círculo de runas del centro y llegan 3 oleadas (con refuerzos) de
+  **grumetes ahogados** (esbirros melee que te persiguen en manada y muerden), **diablillos de fuego** (espirales
+  de 10 orbes) y **chamanes de coral** (anillos que alternan ámbar parreable y violeta imparable), más arqueros.
+  Hasta ~100 balas a la vez. Banner por oleada, contador de enemigos, cámara algo más abierta durante la prueba.
+- **HELLFIRE**, Señor de La Caldera: jefe de 2 fases con barra propia. Abanicos apuntados, espirales de 3 y 6
+  brazos (la «flor»), anillos alternos, muro de púas imparables (dashea a través), orbe pesado, golpe de área si
+  te pegas a él e invocación de esbirros. Al 55 %: ENRAGE (invulnerable, limpia las balas) y **escudo** que solo
+  atraviesan tus reflejos; refleja su orbe pesado con un PERFECTO para romperlo.
+- **Rebote**: los reflejos que impactan saltan al siguiente enemigo (2 veces con PERFECTO). **ESQUIVA**: atravesar
+  balas con el dash da XP y RIPOSTE.
+- Reinicio si todos caen o salen, con checkpoint en el jefe; botones de la prueba en F4 (iniciar, oleada,
+  jefe, fase 2, ganar, reiniciar).
+- 44 tests en Node; una partida simulada con bot la supera en ~100 s (el jefe, ~50 s) recibiendo ~2 barras de vida.
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.
