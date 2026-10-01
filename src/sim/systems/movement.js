@@ -61,6 +61,9 @@ export function stepMover(world, e, cmd, dt) {
   const P = tuning.player, D = tuning.dash, W = tuning.world;
 
   let mx = cmd.mx || 0, mz = cmd.mz || 0;
+  // Down or staggered: no steering, no dash (presses are still buffered).
+  const locked = ecs.dead[e] > 0 || ecs.stagger[e] > 0;
+  if (locked) { mx = 0; mz = 0; }
   let len = Math.hypot(mx, mz);
   if (len > 1) { mx /= len; mz /= len; len = 1; }
   ecs.moveMag[e] = len;
@@ -78,7 +81,7 @@ export function stepMover(world, e, cmd, dt) {
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
 
   // Start a buffered dash.
-  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1) {
+  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked) {
     let dx, dz;
     if (len > 0.1) { dx = mx / len; dz = mz / len; }
     else { dx = Math.sin(ecs.facing[e]); dz = Math.cos(ecs.facing[e]); }
@@ -121,6 +124,7 @@ export function stepMover(world, e, cmd, dt) {
     ecs.wade[e] = depth > 0 ? depth : 0;
     let mul = 1;
     if (depth > W.wadeStart) mul = 1 - W.wadeSlow * Math.min(1, depth / W.wadeMax);
+    mul *= ecs.moveMul[e]; // swings and parries slow you down
     const tx = mx * ecs.speed[e] * mul, tz = mz * ecs.speed[e] * mul;
     const rate = (len > 0.05 ? P.accel : P.decel) * dt;
     let ddx = tx - ecs.vx[e], ddz = tz - ecs.vz[e];
@@ -134,6 +138,13 @@ export function stepMover(world, e, cmd, dt) {
       const sp = Math.hypot(ecs.vx[e], ecs.vz[e]) * dt;
       if (sp > 1e-6 && moved < sp * 0.5) { ecs.vx[e] *= moved / sp; ecs.vz[e] *= moved / sp; }
     }
-    if (len > 0.05) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(mx, mz), P.turnLambda, dt);
+    if (len > 0.05 && ecs.faceLock[e] <= 0) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(mx, mz), P.turnLambda, dt);
+  }
+  // Knockback (hits, blocked heavy orbs): its own velocity, decaying fast.
+  if (ecs.kbx[e] !== 0 || ecs.kbz[e] !== 0) {
+    moveWithCollision(world, e, ecs.kbx[e] * dt, ecs.kbz[e] * dt);
+    const k = Math.exp(-10 * dt);
+    ecs.kbx[e] *= k; ecs.kbz[e] *= k;
+    if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) { ecs.kbx[e] = 0; ecs.kbz[e] = 0; }
   }
 }

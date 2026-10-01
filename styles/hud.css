@@ -182,3 +182,61 @@ body.touch .actionbar { display: none; }
   .actionbar { gap: 5px; padding: 6px 8px 8px; }
   body.touch .actionbar { display: none; }
 }
+
+/* ---- Combat (M2) ------------------------------------------------------------------------------- */
+.bar.en .fill { background: linear-gradient(180deg, #c8fbff, var(--accent) 55%, #0f8fa6); transition: width 0.15s ease; }
+.bar.en.full { animation: rpfull 0.9s ease-in-out infinite; }
+@keyframes rpfull { 0%, 100% { box-shadow: 0 2px 0 var(--ink), 0 0 0 rgba(59, 240, 255, 0); } 50% { box-shadow: 0 2px 0 var(--ink), 0 0 14px rgba(59, 240, 255, 0.9); } }
+.bar.hp.low .fill { animation: hplow 0.8s ease-in-out infinite; }
+@keyframes hplow { 50% { filter: brightness(1.45); } }
+.bar.hp.hurt { animation: hurtshake 0.25s ease; }
+@keyframes hurtshake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.slot .combo { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; }
+.slot .combo i { width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg); background: #2a2040; border: 1.5px solid var(--ink); }
+.slot .combo i.on { background: var(--brass-l); box-shadow: 0 0 6px var(--brass); }
+.r-slot { overflow: hidden; }
+.r-slot .rfill { position: absolute; left: 0; right: 0; bottom: 0; height: 0%; background: linear-gradient(0deg, rgba(59, 240, 255, 0.55), rgba(59, 240, 255, 0.15)); transition: height 0.2s ease; }
+.r-slot svg { position: relative; }
+.r-slot.ready { animation: rready 0.8s ease-in-out infinite; }
+@keyframes rready { 50% { box-shadow: inset 0 0 0 2px var(--accent), 0 0 18px var(--accent); } }
+#chain {
+  position: absolute; left: 50%; bottom: calc(96px + var(--safe-b)); transform: translateX(-50%);
+  font-family: var(--font-display); font-size: 30px; line-height: 1; display: flex; gap: 6px; align-items: baseline;
+}
+#chain .x { font-size: 15px; letter-spacing: 0.08em; color: var(--brass-l); }
+#chain b { font-weight: 400; color: #9ff6ff; }
+#chain[data-n="5"] b { color: #fff36a; }
+#fallen {
+  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 6px;
+  background: radial-gradient(ellipse at center, rgba(40, 0, 10, 0.25), rgba(20, 0, 8, 0.6));
+}
+#fallen .ftitle { font-family: var(--font-display); font-size: clamp(36px, 7vw, 64px); color: #ffb3b3; letter-spacing: 0.04em; }
+#fallen .fsub { font-weight: 900; font-size: 16px; color: var(--parch); text-shadow: 0 2px 0 var(--ink); }
+
+.nameplate.enemy .np-name { color: #ffb0a8; }
+.nameplate.enemy .np-name .lv { color: #ff8a80; }
+.nameplate.enemy .np-hp i { background: linear-gradient(180deg, #ff8a95, var(--hp)); }
+.nameplate.practice .np-name { color: var(--parch); font-size: 12px; }
+
+/* Floating numbers and callouts */
+.fnum {
+  position: absolute; left: 0; top: 0; white-space: nowrap; pointer-events: none; will-change: transform, opacity;
+  font-family: var(--font-display); font-size: 20px; line-height: 1; color: #fff;
+  text-shadow: 0 2px 0 var(--ink), 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 -2px 0 var(--ink), 2px 2px 0 var(--ink), -2px 2px 0 var(--ink);
+  animation: fpop 0.25s cubic-bezier(.2, 1.6, .4, 1);
+}
+@keyframes fpop { from { scale: 1.8; } to { scale: 1; } }
+.fnum.crit { font-size: 28px; color: #ffe14d; }
+.fnum.hurt { color: #ff5a64; font-size: 22px; }
+.fnum.xp { color: #d9a8ff; font-size: 15px; }
+.fnum.heal { color: var(--good); }
+.fnum.immune { color: #c8c2b8; font-size: 16px; }
+.fnum.perfect { font-size: 34px; color: #fff36a; letter-spacing: 0.03em; }
+.fnum.parry { font-size: 22px; color: #9ff6ff; }
+.fnum.graze { font-size: 17px; color: #9ff6ff; letter-spacing: 0.08em; }
+.fnum.ghost { font-size: 20px; color: #cf9bff; letter-spacing: 0.06em; }
+.fnum.level { font-size: 30px; color: var(--brass-l); }
+.fnum.info { font-size: 15px; color: var(--parch); }
+#touch .t-atk { right: calc(124px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 70px; height: 70px; font-size: 14px; background: radial-gradient(circle at 40% 30%, #fff1b0, var(--brass) 55%, var(--brass-d)); }
+#touch .t-parry { right: calc(36px + var(--safe-r)); bottom: calc(205px + var(--safe-b)); width: 70px; height: 70px; font-size: 12px; }
+#touch .t-r { right: calc(210px + var(--safe-r)); bottom: calc(80px + var(--safe-b)); width: 52px; height: 52px; font-size: 15px; background: radial-gradient(circle at 40% 30%, #c8fbff, #6ad8ff 55%, #2a7fa6); }

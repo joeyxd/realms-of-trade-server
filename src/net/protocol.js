@@ -1,12 +1,12 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 1;
+export const PROTOCOL_VERSION = 2;
 
 export const MSG = {
   // client -> server
   HELLO: 'hello',     // {v, name, skin}
-  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs}]}
-  CMD: 'cmd',         // {type: 'interact' | 'chat' | 'equip' | ...}
+  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt}]}
+  CMD: 'cmd',         // {type: 'pause' | 'interact' | 'chat' | 'equip' | 'dev' ...}
   PING: 'ping',       // {t}
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
@@ -14,7 +14,7 @@ export const MSG = {
   SNAPSHOT: 'snap',   // {tick, ack, ents: [ENT...], you: [MOVER_FIELDS...]}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
-  EVENT: 'event',     // {ev: {type, ...}}  damage, death, loot, levelup, pattern, reflect, phase, wave, timescale
+  EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)
   PONG: 'pong',       // {t, tick}
   // reserved: naval + trade slice (no gameplay yet)
   SHIP_SPAWN: 'ship_spawn',
@@ -27,13 +27,17 @@ export const MSG = {
 };
 
 // Snapshot entity tuple layout.
-export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11 };
+export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16 };
 
 export function encodeEntity(ecs, e) {
-  return [e, ecs.kind[e], ecs.x[e], ecs.y[e], ecs.z[e], ecs.facing[e], ecs.vx[e], ecs.vz[e], ecs.state[e], ecs.moveMag[e], ecs.wade[e], ecs.dashCount[e]];
+  return [
+    e, ecs.kind[e], ecs.x[e], ecs.y[e], ecs.z[e], ecs.facing[e], ecs.vx[e], ecs.vz[e], ecs.state[e], ecs.moveMag[e], ecs.wade[e], ecs.dashCount[e],
+    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], Math.round(ecs.actT[e] * 1000) / 1000, ecs.level[e],
+  ];
 }
 
 // Input commands: axes quantized to 1/127 so client prediction uses exactly what the server sees.
+// pt = the projectile tick the client was showing when it made the command (lag compensation).
 export const quantAxis = (v) => Math.round(Math.max(-1, Math.min(1, v)) * 127) / 127;
 
 export function sanitizeCmd(c) {
@@ -47,5 +51,6 @@ export function sanitizeCmd(c) {
     az: n(c.az),
     btn: n(c.btn) & 0xff,
     prs: n(c.prs) & 0xff,
+    pt: n(c.pt) >>> 0,
   };
 }

@@ -64,7 +64,12 @@ export class LocalLights {
       else if (p.kind === 'gatePost') add('brazier', p.x, p.y + 5.2, p.z, { r: 10 });
       else if (p.kind === 'campfire') add('campfire', p.x, p.y + 0.8, p.z);
       else if (p.kind === 'hut') add('window', ...at(0.7, 2.2, 2.6));
-      else if (p.kind === 'sentinel') add('eyes', ...at(0, 1.6, 0.45));
+    }
+    // Sentinel eyes: start at the spawn points; the scene moves them with the enemies (follow()).
+    for (const sp of map.enemySpawns || []) {
+      if (sp.kind !== 'sentinel') continue;
+      add('eyes', sp.x + Math.sin(sp.facing) * 0.45, map.groundAt(sp.x, sp.z) + 1.6, sp.z + Math.cos(sp.facing) * 0.45);
+      this.sources[this.sources.length - 1].follow = true;
     }
     // Lava: a light a little above each lava point.
     for (const q of lavaPoints(map)) add('lava', q.x, q.y + 1.4, q.z);

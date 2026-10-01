@@ -61,34 +61,70 @@ export const tuning = {
     occluderRadius: 1.8,
   },
 
-  // ---- M2+ (documented now, used later) --------------------------------------------------------
+  // ---- Combat (M2) ------------------------------------------------------------------------------
+  stats: {
+    // Per level: HP 100 + 12·(Lv−1), ATK 10 + 2·(Lv−1), DEF 2 + (Lv−1). XP to go from Lv n to n+1.
+    hp: [100, 12], atk: [10, 2], def: [2, 1], crit: 0.05, critMult: 1.75, defK: 40,
+    xp: [100, 180, 280, 400, 550, 720, 920, 1150, 1400],
+    maxLevel: 10,
+  },
+  combat: {
+    hurtIframes: 0.35, // after taking damage, projectiles pass through you
+    regenDelay: 4, // s without damage before HP comes back (M2 stand-in for potions)
+    regenRate: 0.1, // fraction of max HP per second
+    respawnTime: 3,
+    respawnIframes: 2,
+    hitKnock: 4, // u/s of knockback when hit (decays at 10/s → 0.4 u)
+    rewind: 20, // max ticks the server rewinds to a command's projectile tick (lag compensation)
+    lead: 2, // max ticks a command may be ahead of the server
+    interpTicks: 6, // remote entities are drawn this far behind (INTERP_DELAY): melee rewinds enemies by it
+  },
+  // 3-hit combo (LMB). windup → active (hits + destroys parryables) → recover. A buffered press at the end
+  // of the active frames chains the next stage; within comboGap after a stage ends it also continues.
+  melee: {
+    stages: [
+      { windup: 0.06, active: 0.12, recover: 0.16, arc: 150, range: 2.1, mult: 1.0, lunge: 0.55, move: 0.3 },
+      { windup: 0.06, active: 0.12, recover: 0.18, arc: 150, range: 2.1, mult: 1.15, lunge: 0.55, move: 0.3 },
+      { windup: 0.1, active: 0.14, recover: 0.3, arc: 360, range: 2.5, mult: 1.6, lunge: 0, move: 0.15 },
+    ],
+    comboGap: 0.3,
+    knock: 6, // enemy knockback u/s (decays at 10/s → 0.6 u, DESIGN §7)
+    heavyStagger: 0.35, // 3rd hit / reflected heavy / riposte: interrupts an enemy's wind-up
+  },
   projectiles: {
     cap: 1500,
     armTime: 0.15,
     maxSpeed: 14,
     graze: 0.35,
-    parryable: { radius: 0.28, damage: 8 },
-    heavy: { radius: 0.65, speed: 4.5, damage: 22 },
-    unstoppable: { radius: 0.22, length: 0.9, damage: 14, stagger: 0.3 },
+    parryable: { radius: 0.28, damage: 8, life: 3.2 },
+    heavy: { radius: 0.65, speed: 4.5, damage: 22, life: 5 },
+    unstoppable: { radius: 0.22, length: 0.9, damage: 14, stagger: 0.3, life: 2.4 },
     aoe: { damage: 18 },
     laser: { width: 0.9, telegraph: 0.6, damage: 10, tick: 0.2 },
+    shotCap: 256,
   },
   parry: {
-    destroyWindow: 0.12,
+    destroyWindow: 0.12, // = the active frames of a swing
     window: 0.18,
     perfect: 0.08,
     coyote: 0.06,
     arc: 110,
     radius: 1.6,
     whiffRecovery: 0.35,
-    reflect: { dmgMult: 2, speedMult: 1.4, homing: 4, cone: 60, life: 2.5 },
+    blockKnock: 7, // heavy orb blocked by a normal parry: half damage + push
+    reflect: { dmgMult: 2, atkMult: 0.8, speedMult: 1.4, homing: 4, cone: 60, life: 2.5 },
     chainGap: 1.2,
     chainMax: 5,
-    riposte: { perfect: 18, normal: 10, destroy: 4, graze: 4, ghost: 8, radius: 6 },
+    chainDmg: 0.1, // reflected damage × (1 + 0.1·(chain − 1))
+    chainRiposte: 0.25, // riposte gain × (1 + 0.25·(chain − 1))
+    riposte: { perfect: 18, normal: 10, destroy: 4, graze: 4, ghost: 8, max: 100, radius: 6, dmgMult: 3, knock: 14 },
+    xp: { perfect: 5, graze: 2, ghost: 3 },
   },
   feel: {
+    hitstopMelee: 0.045,
     hitstopDestroy: 0.07,
     hitstopReflect: 0.11,
+    hitstopRiposte: 0.14,
     perfectSlowmo: 0.35,
     perfectSlowmoTime: 0.25,
     flashMax: 0.8,

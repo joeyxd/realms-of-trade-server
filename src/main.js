@@ -9,7 +9,10 @@ import { Input } from './core/input.js';
 import { Loop } from './core/loop.js';
 import { bus } from './core/events.js';
 import { generateWorld, ZONES } from './sim/worldgen.js';
-import { KIND } from './sim/ecs.js';
+import { KIND, ACT } from './sim/ecs.js';
+import { xpToNext } from './sim/systems/combat.js';
+import { PTYPE } from './sim/projectiles.js';
+import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
 import { createTransport } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
@@ -21,6 +24,9 @@ import { Hud } from './ui/hud.js';
 import { WorldUI } from './ui/worldui.js';
 import { PauseMenu } from './ui/pause.js';
 import { TouchControls } from './ui/touch.js';
+import { Feedback } from './ui/feedback.js';
+import { DevPanel } from './ui/devpanel.js';
+import { DebugDraw } from './render/debugdraw.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
 import { Ambience } from './audio/ambience.js';
@@ -82,7 +88,10 @@ async function boot() {
     perf: params.has('perf'),
     fps: 60,
   };
-  const ps = { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashT: -1, dashes: 0, charges: 1, maxCharges: 1, recharge: 0, iframes: 0 };
+  const ps = {
+    x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashT: -1, dashes: 0, charges: 1, maxCharges: 1, recharge: 0, iframes: 0,
+    hp: 100, maxHp: 100, dead: 0, deadT: 0, act: 0, actT: 0, atkStage: 0, atkT: 0, parryT: -1, parryLock: 0, riposte: 0, chain: 0, chainT: 99, level: 1, xp: 0,
+  };
   const focus = new THREE.Vector3(map.landmarks.spawn.x, 1, map.landmarks.spawn.z);
   const aim = new THREE.Vector3();
   const anchors = new Map();
@@ -121,9 +130,11 @@ async function boot() {
     onResume: () => closePause(),
     onNewGame: () => { resetSave(); location.reload(); },
   });
+  const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
     st.paused = true;
+    setServerPause(true);
     input.enabled = false;
     input.keys.clear();
     pause.show(tab);
@@ -132,6 +143,7 @@ async function boot() {
   function closePause() {
     pause.hide();
     st.paused = false;
+    setServerPause(false);
     input.enabled = st.mode === 'playing';
     audio.muffle(false);
     canvas.focus({ preventScroll: true });
@@ -141,6 +153,9 @@ async function boot() {
     else if (st.mode === 'playing') openPause('settings');
   });
   input.onHotkey('F3', () => { st.perf = !st.perf; $('#perf').hidden = !st.perf; });
+  input.onHotkey('F4', () => { if (devPanel) devPanel.toggle(); });
+  // Leaving the tab pauses the game (and the local world).
+  document.addEventListener('visibilitychange', () => { if (document.hidden && st.mode === 'playing' && !pause.open) openPause('settings'); });
   input.onHotkey('KeyZ', () => { if (settings.camRotate && st.mode === 'playing' && !st.paused) world.rig.rotate(-1); });
   input.onHotkey('KeyX', () => { if (settings.camRotate && st.mode === 'playing' && !st.paused) world.rig.rotate(1); });
   $('#perf').hidden = !st.perf;
@@ -159,14 +174,24 @@ async function boot() {
 
   // ---- Net / entities --------------------------------------------------------------------------
   const transport = await transportP;
-  const client = new GameClient(transport, map, bus);
+  var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
+
   const views = world.views;
+  const devPanel = new DevPanel($('#devpanel'), { client, world, hud });
+  const debugDraw = new DebugDraw(world.scene);
+  let loop = null;
+  const feedback = new Feedback({ world, client, hud, worldUI, loop: { addHitstop: (h) => loop && loop.addHitstop(h), slowmo: (a, b) => loop && loop.slowmo(a, b), get timeScale() { return loop ? loop.timeScale : 1; }, get alpha() { return loop ? loop.alpha : 0; } }, settings, map, ps, onTutorial: (k, d) => safe('tutorial', () => onTutorial(k, d)) });
+  bus.on('combat', (ev) => safe('feedback', () => {
+    feedback.handle(ev);
+    if (ev.type === 'respawn' && ev.me) st.snapCam = true;
+  }));
 
   bus.on('entity:spawn', (rec) => safe('spawn', () => {
     const isNpc = rec.kind === KIND.NPC;
-    const view = world.addCharacter(rec.id, rec.skin, { sword: !isNpc });
+    const view = world.addCharacter(rec.id, rec.skin, { sword: !isNpc, enemy: rec.enemy || undefined });
     view.lastDashes = 0;
-    if (!rec.isYou) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: rec.title, kind: isNpc ? 'npc' : 'player' });
+    const practice = rec.def && rec.def.practice;
+    if (!rec.isYou) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : 'enemy') : 'player' });
     rec.view = view;
     if (rec.ready) view.update(0, rec.r);
   }));
@@ -200,10 +225,14 @@ async function boot() {
   const TRACK = [
     { id: 'move', text: isTouch ? 'Muévete con el joystick' : 'Muévete con WASD o las flechas' },
     { id: 'dash', text: isTouch ? 'Toca DASH para esquivar' : 'Haz un dash con ESPACIO' },
+    { id: 'attack', text: isTouch ? 'Golpea al muñeco: combo de 3 (ATK)' : 'Golpea al muñeco: combo de 3 golpes (clic izquierdo)' },
+    { id: 'parry', text: isTouch ? 'Entra en el aro y devuelve un cañonazo (PARRY)' : 'Entra en el aro y devuelve un cañonazo (clic derecho)' },
     { id: 'village', text: 'Sigue los faroles hasta la Aldea Coralina' },
     { id: 'captain', text: 'Habla con la Capitana Brea' },
-    { id: 'caldera', text: 'Sigue el humo hasta La Caldera' },
+    { id: 'path', text: 'Limpia el Sendero del Humo (0/3 arqueros)' },
+    { id: 'caldera', text: 'Vence a los centinelas de La Caldera (0/2)' },
   ];
+  const kills = { archer: 0, sentinel: 0 };
   const ORDER = TRACK.map((t) => t.id);
   hud.setTracker(TRACK);
   function advanceTutorial() {
@@ -213,15 +242,32 @@ async function boot() {
     const msgs = {
       move: '<b>¡Bien!</b> Ahora prueba el dash.',
       dash: '<b>¡Esquiva!</b> Durante el dash eres invulnerable. Se recarga en 0,9 s.',
+      attack: '<b>¡Combo!</b> Los golpes también <b>rompen</b> los proyectiles ámbar que toquen.',
+      parry: '<b>¡Devuelto!</b> En los primeros 80 ms del parry es <b>PERFECTO</b>: tiempo lento y el doble de riposte.',
       village: '<b>Aldea Coralina.</b> Busca a la Capitana Brea junto al muelle.',
-      captain: '<b>Rumbo al volcán.</b> El Sendero del Humo empieza en la aldea.',
-      caldera: '<b>La Caldera.</b> Los braseros arden. Algo enorme duerme bajo la roca.',
+      captain: '<b>Rumbo al volcán.</b> Cuidado: hay arqueros esqueleto en el Sendero del Humo.',
+      path: '<b>Sendero despejado.</b> Al final del humo, La Caldera.',
+      caldera: '<b>¡Centinelas derrotados!</b> La Caldera despierta… (las oleadas y el jefe llegan en la próxima versión)',
     };
     hud.toast(msgs[st.tut], 4200);
     sfx.marimba([659.25, 783.99, 1046.5], 0.07, 0.12);
     st.tut = ORDER[i + 1] || 'done';
     // You can reach places out of order: skip what's already done.
     if (st.tut === 'village' && st.zone === 'aldea') setTimeout(advanceTutorial, 400);
+    if (st.tut === 'path' && kills.archer >= 3) setTimeout(advanceTutorial, 400);
+    if (st.tut === 'caldera' && kills.sentinel >= 2) setTimeout(advanceTutorial, 400);
+  }
+  function onTutorial(kind, d) {
+    if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
+    else if (kind === 'parry' && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
+    else if (kind === 'target') hud.toast('<b>¡Blanco!</b> Tu reflejo vuelve al que dispara, con el doble de daño.', 3600);
+    else if (kind === 'kill' && d && (d.enemy === 'archer' || d.enemy === 'sentinel')) {
+      kills[d.enemy]++;
+      hud.setTrackerText('path', `Limpia el Sendero del Humo (${Math.min(3, kills.archer)}/3 arqueros)`);
+      hud.setTrackerText('caldera', `Vence a los centinelas de La Caldera (${Math.min(2, kills.sentinel)}/2)`);
+      if (st.tut === 'path' && kills.archer >= 3) advanceTutorial();
+      if (st.tut === 'caldera' && kills.sentinel >= 2) advanceTutorial();
+    } else if (kind === 'respawn') hud.toast('<b>Vuelves al último lugar seguro.</b> La vida se recupera sola si nadie te golpea durante 4 s.', 4200);
   }
 
   // ---- Zones -------------------------------------------------------------------------------------
@@ -236,7 +282,6 @@ async function boot() {
     music.setMood(z === 'caldera' ? 'caldera' : 'island');
     if (z === 'caldera') sfx.calderaZone(); else sfx.zone();
     if (z === 'aldea' && st.tut === 'village') advanceTutorial();
-    if (z === 'caldera') completeUpTo('caldera');
   }
   // Reaching a later goal first quietly ticks the earlier ones.
   function completeUpTo(id) {
@@ -312,19 +357,68 @@ async function boot() {
     focus.copy(c);
   }
 
+  // Touch / keyboard-only aim: the nearest enemy within 9 u, else the way you are moving or facing.
+  function autoAim(mv) {
+    let best = null, bd = 9;
+    for (const rec of client.entities.values()) {
+      if (!rec.enemy || !rec.ready || rec.dying || rec.enemy === 'cannon') continue;
+      const d = Math.hypot(rec.r.x - ps.x, rec.r.z - ps.z);
+      if (d < bd) { bd = d; best = rec; }
+    }
+    if (best) aim.set(best.r.x, ps.y, best.r.z);
+    else if (Math.hypot(mv.x, mv.z) > 0.2) aim.set(ps.x + mv.x * 3, ps.y, ps.z + mv.z * 3);
+    else aim.set(ps.x + Math.sin(ps.f) * 3, ps.y, ps.z + Math.cos(ps.f) * 3);
+  }
+  // Reflected shots leave a cyan trail.
+  let trailFrame = 0;
+  const shotTrail = (s, x, y, z) => {
+    const S = client.shots;
+    if ((trailFrame + s) & 1) return;
+    const heavy = S.heavy[s];
+    world.effects.streaks.spawn(x, y, z, -S.vx[s] * 0.12, 0, -S.vz[s] * 0.12, { life: 0.3, width: heavy ? 0.42 : 0.17, stretch: 0.6, color: [0.75, 1, 1], color1: [0.1, 0.6, 1], gravity: 0, drag: 2 });
+  };
+  // F4 → hitboxes: hurtboxes (green / red), graze band, parry and swing sectors, projectile radii.
+  const PCOL = [0xffb02e, 0xff5a1f, 0x9b4dff];
+  function drawHitboxes(tick) {
+    const D = debugDraw, y = ps.y + 0.12;
+    D.begin();
+    D.circle(ps.x, y, ps.z, tuning.player.hurtRadius, 0x7be07b, 16);
+    D.circle(ps.x, y, ps.z, tuning.player.hurtRadius + tuning.projectiles.parryable.radius + tuning.projectiles.graze, 0x2a8f9a, 28);
+    D.sector(ps.x, y + 0.04, ps.z, tuning.parry.radius, ps.f, tuning.parry.arc, ps.act === ACT.PARRY ? 0xffffff : 0x3b7fa0);
+    if (ps.atkStage) { const st2 = tuning.melee.stages[ps.atkStage - 1]; D.sector(ps.x, y + 0.08, ps.z, st2.range, ps.f, st2.arc, 0xffc23d); }
+    for (const rec of client.entities.values()) {
+      if (!rec.enemy || !rec.ready || rec.dying) continue;
+      D.circle(rec.r.x, rec.r.y + 0.12, rec.r.z, rec.def.hurt, 0xff5a64, 16);
+      if (rec.def.aggro) D.circle(rec.r.x, rec.r.y + 0.12, rec.r.z, rec.def.aggro, 0x5a2a3a, 40);
+    }
+    const H = client.hazards;
+    for (let s = 0; s < H.cap; s++) {
+      if (!H.live(s, Math.floor(tick))) continue;
+      const x = H.px(s, tick), z = H.pz(s, tick), hy = H.py(s, tick);
+      D.circle(x, hy, z, H.r[s], H.armed(s, tick) ? PCOL[H.type[s]] : 0xffffff, 12);
+    }
+    for (const a of H.aoes) if (!a.cancel && tick < a.tAct + 10) D.circle(a.x, map.groundAt(a.x, a.z) + 0.15, a.z, a.r, 0xff3b30, 40);
+    D.end(true);
+  }
+
   // ---- Loop --------------------------------------------------------------------------------------
-  const loop = new Loop({
+  loop = new Loop({
     fixed: () => safe('fixed', () => {
-      if (st.mode !== 'playing' || !client.joined) return;
+      if (st.mode !== 'playing' || !client.joined || st.paused) return;
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
-      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held, prs: st.paused ? 0 : prs });
+      // Touch / keyboard-only: aim at the nearest enemy in front, else where you are going.
+      if (input.lastDevice !== 'mouse') autoAim(move);
+      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held, prs });
     }),
     frame: (realDt, simDt, alpha) => {
-      safe('net', () => { transport.flush(); client.update(realDt); });
+      loop.paused = st.paused;
+      trailFrame++;
+      safe('net', () => { transport.flush(); client.update(simDt, realDt); });
       const playing = st.mode === 'playing' && client.joined;
       if (playing) safe('local', () => client.localState(alpha, ps));
+      const viewTick = client.viewTick(alpha);
 
       // Characters.
       safe('chars', () => {
@@ -338,9 +432,16 @@ async function boot() {
             view.root.visible = true;
             s = ps;
           } else {
-            if (!rec.ready) { view.root.visible = false; continue; }
+            if (!rec.ready || view.dead) { view.root.visible = false; continue; }
             view.root.visible = true;
             s = rec.r;
+            if (rec.enemy) worldUI.setPlate(rec.id, { hp: s.hp, maxHp: s.maxHp, level: s.lvl });
+            // Remote players' swings: a slash when their action turns into a new stage.
+            if (!rec.enemy && s.act >= ACT.SWING1 && s.act <= ACT.SWING3 && s.act !== view.lastAct) {
+              const st2 = tuning.melee.stages[s.act - ACT.SWING1];
+              world.combatFx.slash(view, s.act - ACT.SWING1 + 1, SKINS[rec.skin]?.accent ?? 0x3bf0ff, st2.active, Math.max(0, st2.windup - s.actT));
+            }
+            view.lastAct = s.act;
             if (s.dashes !== view.lastDashes) {
               if (view.lastDashes) {
                 world.after.dash(view, SKINS[rec.skin]?.accent ?? 0x3bf0ff, [0, 0.07, 0.14], 0.22);
@@ -349,7 +450,7 @@ async function boot() {
               view.lastDashes = s.dashes;
             }
           }
-          view.update(realDt, s);
+          view.update(simDt, s);
           // Wading leaves a trail of foam ripples (anyone: you, bots, NPCs).
           if ((s.wade || 0) > 0.08) {
             view.rippleT = (view.rippleT || 0) - realDt;
@@ -382,6 +483,13 @@ async function boot() {
         else if (nearShip) act = '<span class="kbd">F</span> ZARPAR · próximamente';
         else if (st.tut === 'move') act = isTouch ? 'Usa el joystick para moverte' : '<span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> para moverte';
         else if (st.tut === 'dash') act = isTouch ? 'Toca <b>DASH</b> para esquivar' : '<span class="kbd">ESPACIO</span> para hacer dash';
+        else if (st.tut === 'attack') {
+          const d = Math.hypot(ps.x - map.practice.dummy.x, ps.z - map.practice.dummy.z);
+          act = d < 7 ? (isTouch ? 'Toca <b>ATK</b> tres veces seguidas' : '<span class="kbd">LMB</span> <span class="kbd">LMB</span> <span class="kbd">LMB</span> combo de 3') : 'El muñeco de práctica está junto a la orilla';
+        } else if (st.tut === 'parry') {
+          const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
+          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>PARRY</b> justo antes del impacto' : '<span class="kbd">RMB</span> justo antes de que la bala te toque') : 'Entra en el aro de cuerda, frente al cañón';
+        }
         anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         if (input.consumeInteract()) {
@@ -407,6 +515,12 @@ async function boot() {
         const zw = input.consumeWheel();
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
+        hud.setStats({
+          hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
+          parryLock: ps.parryLock, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
+        });
+        hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
+        world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.PARRY, false);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
       });
 
@@ -416,6 +530,7 @@ async function boot() {
         if (st.sheet) sheetFrame(realDt);
         else if (playing) {
           focus.set(ps.x, ps.y, ps.z);
+          if (st.snapCam) { world.rig.snapTo(focus); st.snapCam = false; }
           world.rig.update(realDt, focus, input.lastDevice === 'mouse' ? aim : null, loop.timeScale);
         } else {
           // Title: slow orbit around the island.
@@ -434,7 +549,10 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail } });
+        feedback.update(realDt, viewTick);
+        if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
+        else debugDraw.end(false);
       });
       safe('audio', () => ambience.update());
       safe('worldui', () => {
@@ -451,7 +569,8 @@ async function boot() {
           `draw calls ${info.render.calls}  tris ${(info.render.triangles / 1000).toFixed(1)}k\n` +
           `entidades ${client.entities.size}  red ${transport.kind}  snaps ${transport.stats.snaps}\n` +
           `pred err ${client.stats.predErr.toFixed(4)}  cmds pendientes ${client.stats.pending}\n` +
-          `pos ${ps.x.toFixed(1)}, ${ps.z.toFixed(1)}  zona ${st.zone || '-'}`;
+          `pos ${ps.x.toFixed(1)}, ${ps.z.toFixed(1)}  zona ${st.zone || '-'}\n` +
+          `proyectiles ${client.hazards.count}  reflejos ${client.shots.count}  pt ${client.ptCur} (${client.stats.ptLag >= 0 ? '+' : ''}${client.stats.ptLag})`;
       });
     },
   });

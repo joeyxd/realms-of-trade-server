@@ -115,6 +115,11 @@ export const LOOKS = [
     bone: 0xe6dcc6, slate: 0x3c566a, slateD: 0x26394a, gold: 0xd09a3c, ice: 0xa6e8f4, gemC: 0x5ff0ff, socket: 0x131118,
     weapon: 'greatsword',
   },
+  {
+    name: 'Arquero', body: 'male', accent: 0x8dffb0, swatch: [0xd8cdb4, 0x7a2428], enemy: true, archer: true,
+    bone: 0xd8cdb4, cloth: 0x7a2428, clothD: 0x4a171c, leather: 0x5a3a26, leatherD: 0x3a2418, metal: 0xa08c62, gemC: 0x8dffb0, socket: 0x131118,
+    wood: 0x6a4428, weapon: 'bow',
+  },
 ];
 
 // ---- Shared pieces --------------------------------------------------------------------------------
@@ -732,6 +737,111 @@ function skeleton(k, R, L, J) {
   weapon(k, R, L);
 }
 
+// ---- Skeleton archer (male body, cursed pirate) -----------------------------------------------------------
+function skeletonArcher(k, R, L, J) {
+  const bone = L.bone, boneD = shade(L.bone, 0.82);
+  const at = J.head, hw = B.head, S = 0.8;
+  // skull, a little smaller than the sentinel's, with a red bandana and green ghost-fire eyes
+  const sk = [[0.0, 0.07, 0.068, 0.055], [0.06, 0.095, 0.092, 0.045], [0.13, 0.13, 0.126, 0.02], [0.24, 0.15, 0.155, 0.0], [0.34, 0.135, 0.145, -0.012], [0.41, 0.068, 0.078, -0.012]];
+  k.add(loft(ringsOf(sk, S), 8, { phase: Math.PI / 8 }), { color: bone, w: hw, at, jitter: 0.05 });
+  const front = (y) => { const yy = y / S; const r = sk.find((q, i) => sk[i + 1] && sk[i + 1][0] >= yy) || sk[sk.length - 2]; return (r[3] + r[2] * Math.cos(Math.PI / 8)) * S; };
+  for (const sd of [1, -1]) {
+    k.add(xf(box(0.058, 0.052, 0.034), { pos: [sd * 0.046, 0.176, front(0.176) - 0.008] }), { color: L.socket, w: hw, at, jitter: 0 });
+    k.add(xf(box(0.02, 0.02, 0.012), { pos: [sd * 0.045, 0.172, front(0.176) + 0.01] }), { color: L.gemC, glow: 1, w: hw, at, jitter: 0 });
+  }
+  k.add(wedge([0, 0.142, front(0.136) - 0.008], [-0.018, 0.108, front(0.104) - 0.003], [0.018, 0.108, front(0.104) - 0.003], [0, 0.112, front(0.104) + 0.006]), { color: L.socket, w: hw, at });
+  k.add(xf(box(0.096, 0.026, 0.016), { pos: [0, 0.068, front(0.064) - 0.006] }), { color: L.socket, w: hw, at, jitter: 0 });
+  for (let i = 0; i < 5; i++) k.add(xf(box(0.014, 0.022, 0.01), { pos: [-0.034 + i * 0.017, 0.069, front(0.064) + 0.003] }), { color: bone, w: hw, at });
+  k.add(loft([{ y: 0.2, rx: 0.128, rz: 0.134, z: -0.004 }, { y: 0.27, rx: 0.13, rz: 0.136, z: -0.008 }, { y: 0.31, rx: 0.1, rz: 0.11, z: -0.012 }, { y: 0.335, rx: 0.04, rz: 0.05, z: -0.014 }], 8, { phase: Math.PI / 8 }), { color: L.cloth, w: hw, at, jitter: 0.08 });
+  for (const [dx, len, tilt] of [[0.03, 0.2, 0.25], [-0.03, 0.17, -0.2]]) {
+    k.add(xf(tbox(0, -len, 0, 0, 0.03, 0.008, 0.012, 0.006), { rot: [0.35, 0, tilt], pos: [dx, 0.26, -0.12] }), { color: L.clothD, w: toward(B.head, B.chest, () => 0.4), at });
+  }
+  // neck, ribcage, spine, clavicles
+  for (let i = 0; i < 2; i++) k.add(xf(box(0.045, 0.032, 0.045), { pos: [0, R.neck - 0.06 + i * 0.04, -0.015] }), { color: boneD, w: seam(B.head, B.chest, R.neck - 0.02, 0.04) });
+  const tw = torsoW(R);
+  [0.13, 0.15, 0.158, 0.15, 0.125].forEach((rx, i) => {
+    const y = R.waist + 0.12 + i * 0.07;
+    k.add(loft([{ y: y - 0.016, rx, rz: rx * 0.72, dy: (t) => -0.03 * (1 + Math.cos(t)) / 2 }, { y: y + 0.016, rx: rx * 0.99, rz: rx * 0.71, dy: (t) => -0.03 * (1 + Math.cos(t)) / 2 }], 10, {
+      capTop: false, capBot: false, skip: (x, yy, z) => z > 0 && Math.abs(Math.atan2(x, z)) < 0.42,
+    }), { color: bone, lining: boneD, w: tw });
+  });
+  k.add(tbox(0, R.waist + 0.12, R.shY - 0.02, 0.11, 0.018, 0.01, 0.022, 0.01), { color: bone, w: tw });
+  for (let i = 0; i < 5; i++) k.add(xf(box(0.045, 0.04, 0.045), { pos: [0, R.hip + 0.05 + i * 0.07, -0.03] }), { color: boneD, w: tw });
+  for (const sd of [1, -1]) k.add(xf(box(0.17, 0.028, 0.03), { rot: [0, 0, -sd * 0.14], pos: [sd * 0.1, R.shY + 0.03, 0.035] }), { color: bone, w: B.chest });
+  // tattered vest (open front, ragged hem) and a sash across the chest
+  k.add(loft([{ y: R.waist + 0.05, rx: 0.17, rz: 0.12 }, { y: R.chest, rx: 0.18, rz: 0.125 }, { y: R.shY - 0.04, rx: 0.17, rz: 0.11 }, { y: R.shY + 0.02, rx: 0.11, rz: 0.08 }], 10, {
+    capTop: false, capBot: false,
+    skip: (x, y, z) => (z > 0 && Math.abs(Math.atan2(x, z)) < 0.85) || (y < R.waist + 0.12 && Math.sin(x * 61 + z * 37) > 0.35),
+  }), { color: L.cloth, lining: L.clothD, w: tw, jitter: 0.1, grad: [R.waist, R.shY, 0.7] });
+  {
+    const pts = [], outs = [];
+    for (let i = 0; i <= 8; i++) {
+      const t = i / 8, a = -2.2 + t * 4.4;
+      const y = lerpN(R.shY - 0.02, R.waist + 0.08, t);
+      pts.push([Math.sin(a) * 0.17, y, Math.cos(a) * 0.125]);
+      outs.push([Math.sin(a), 0, Math.cos(a)]);
+    }
+    k.add(ribbon(pts, outs, 0.045, 0.012), { color: L.leather, w: tw });
+  }
+  // pelvis, belt with a buckle, ragged loin flaps
+  k.add(loft([{ y: R.hip - 0.02, rx: 0.08, rz: 0.055 }, { y: R.hip + 0.05, rx: 0.13, rz: 0.08 }, { y: R.waist - 0.01, rx: 0.11, rz: 0.07 }], 8, { phase: Math.PI / 8 }), { color: bone, w: B.hips });
+  k.add(loft([{ y: R.hip + 0.04, rx: 0.15, rz: 0.11 }, { y: R.hip + 0.085, rx: 0.15, rz: 0.11 }], 10, { capTop: false, capBot: false }), { color: L.leatherD, w: B.hips, lining: 0x14161a });
+  k.add(xf(box(0.05, 0.045, 0.02), { pos: [0, R.hip + 0.062, 0.112] }), { color: L.metal, w: B.hips });
+  const flapW = (bone2) => (x, y) => { const t = sstep(R.hip + 0.06, R.hip - 0.25, y); return [[B.hips, 1 - t], [bone2, t]]; };
+  for (const [z, b2, len, x0] of [[0.1, B.clothF, 0.34, 0.03], [-0.1, B.clothB, 0.4, -0.02]]) {
+    k.add(tbox(x0, R.hip + 0.06 - len, R.hip + 0.06, z, 0.075, 0.01, 0.09, 0.01), { color: L.clothD, w: flapW(b2), grad: [R.hip - len, R.hip, 0.7] });
+    k.add(xf(spike(0.075, 0.01, 0.06, 4), { rot: [Math.PI, 0, 0], pos: [x0, R.hip + 0.06 - len, z] }), { color: L.clothD, w: flapW(b2) });
+  }
+  // quiver across the back with a few fletchings
+  {
+    const qw = B.chest;
+    k.add(xf(loft([{ y: -0.26, rx: 0.05, rz: 0.045 }, { y: 0.24, rx: 0.058, rz: 0.05 }], 8, { capTop: false }), { rot: [0.12, 0, 0.42], pos: [0.02, R.chest + 0.05, -0.17] }), { color: L.leather, w: qw, lining: L.leatherD });
+    for (let i = 0; i < 4; i++) {
+      const g = tbox(0, 0, 0.13, 0, 0.012, 0.004, 0.005, 0.002);
+      xf(g, { rot: [0.12 + i * 0.05, 0, 0.42 - i * 0.06], pos: [-0.07 + i * 0.02, R.chest + 0.27, -0.2 + i * 0.008] });
+      k.add(g, { color: i % 2 ? 0xe8e0d0 : 0x9a2a2a, w: qw });
+    }
+  }
+  // arms: thin bones, bracer on the bow arm
+  for (const sd of [1, -1]) {
+    const x = sd * R.shX, aw = armW(R, sd), fw = side(sd, B.foreL, B.foreR);
+    k.add(loft([{ y: R.elbow, rx: 0.03, rz: 0.03, x }, { y: R.shY - 0.03, rx: 0.036, rz: 0.036, x }], 6), { color: bone, w: aw });
+    k.add(loft([{ y: R.wrist + 0.02, rx: 0.024, rz: 0.024, x }, { y: R.elbow, rx: 0.028, rz: 0.028, x }], 6), { color: bone, w: aw });
+    k.add(xf(ico(0.04, 0), { pos: [x, R.elbow, 0] }), { color: boneD, w: aw });
+    k.add(xf(ico(0.05, 0), { pos: [x, R.shY, 0] }), { color: boneD, w: aw });
+    if (sd > 0) k.add(loft([{ y: R.wrist + 0.03, rx: 0.045, rz: 0.048, x }, { y: R.elbow - 0.05, rx: 0.05, rz: 0.05, x }], 8, { capTop: false, capBot: false }), { color: L.leather, w: fw, lining: L.leatherD });
+    const hy = R.wrist;
+    k.add(tbox(x, hy - 0.09, hy - 0.005, 0.0, 0.022, 0.045, 0.026, 0.042), { color: bone, w: fw });
+    for (let i = 0; i < 3; i++) k.add(tbox(x, hy - 0.16, hy - 0.085, -0.028 + i * 0.028, 0.011, 0.01, 0.013, 0.011, { dz: 0.012 }), { color: boneD, w: fw });
+  }
+  // legs and short boots
+  for (const sd of [1, -1]) {
+    const x = sd * R.legX, lw = legW(R, sd), shw = side(sd, B.shinL, B.shinR);
+    k.add(loft([{ y: R.knee + 0.03, rx: 0.032, rz: 0.032, x }, { y: R.hip, rx: 0.04, rz: 0.04, x }], 6), { color: bone, w: lw });
+    k.add(loft([{ y: 0.22, rx: 0.028, rz: 0.028, x }, { y: R.knee - 0.02, rx: 0.032, rz: 0.032, x }], 6), { color: bone, w: lw });
+    k.add(xf(ico(0.042, 0), { pos: [x, R.knee, 0.0] }), { color: boneD, w: lw });
+    k.add(loft([{ y: 0.0, rx: 0.06, rz: 0.075, x, z: 0.015 }, { y: 0.08, rx: 0.055, rz: 0.066, x }, { y: 0.24, rx: 0.06, rz: 0.064, x }, { y: 0.27, rx: 0.07, rz: 0.072, x }], 8, { phase: Math.PI / 8, capTop: false }), { color: L.leatherD, w: shw, lining: 0x14100c, grad: [0, 0.27, 0.75] });
+    k.add(tbox(x, 0, 0.07, 0.07, 0.055, 0.075, 0.05, 0.06, { dz: -0.02 }), { color: L.leatherD, w: shw });
+  }
+  // bow in the left hand: limbs fore-aft in the bind pose (vertical once the arm aims), string behind
+  {
+    const fw = B.foreL, x = R.shX + 0.004, y = R.wrist - 0.06;
+    const limb = [];
+    const N = 7;
+    for (let i = 0; i <= N; i++) {
+      const t = i / N, zz = (t * 2 - 1) * 0.6;
+      const bend = 0.13 * (1 - Math.cos((t * 2 - 1) * Math.PI * 0.5) ** 0.6) + 0.04 * Math.abs(t * 2 - 1) ** 3;
+      limb.push([x, y + bend, zz]);
+    }
+    const outs = limb.map(() => [1, 0, 0]);
+    k.add(ribbon(limb, outs, 0.03, 0.03), { color: L.wood, w: fw, jitter: 0.08 });
+    k.add(xf(box(0.04, 0.05, 0.1), { pos: [x, y + 0.005, 0] }), { color: L.leather, w: fw });
+    k.add(ribbon([[x, limb[0][1], limb[0][2]], [x, limb[0][1], 0], [x, limb[N][1], limb[N][2]]], [[1, 0, 0], [1, 0, 0], [1, 0, 0]], 0.006, 0.006), { color: 0xe8e0c8, w: fw, jitter: 0 });
+    for (const t of [0, N]) k.add(xf(spike(0.012, 0.012, 0.05, 4), { rot: [t ? Math.PI / 2 : -Math.PI / 2, 0, 0], pos: [x, limb[t][1], limb[t][2]] }), { color: L.metal, w: fw });
+  }
+}
+const lerpN = (a, b, t) => a + (b - a) * t;
+
 // ---- Assembly ------------------------------------------------------------------------------------------
 const cache = new Map();
 export function buildLook(idx, armed) {
@@ -743,6 +853,7 @@ export function buildLook(idx, armed) {
   const J = joints(R);
   const k = new Builder();
   if (L.body === 'brute') skeleton(k, R, L, J);
+  else if (L.archer) skeletonArcher(k, R, L, J);
   else {
     legs(k, R, L);
     pelvisAndTorso(k, R, L);

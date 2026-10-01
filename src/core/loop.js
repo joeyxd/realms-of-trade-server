@@ -9,6 +9,8 @@ export class Loop {
     this.acc = 0;
     this.timeScale = 1;
     this.hitstop = 0; // seconds of frozen sim remaining
+    this.slowT = 0; this.slowScale = 1; // slow-mo (real seconds left, scale)
+    this.paused = false; // no fixed steps, simDt = 0 (the pause menu; the server waits too)
     this.last = 0;
     this.running = false;
     this.alpha = 0;
@@ -17,6 +19,10 @@ export class Loop {
     this.rawDt = 0;
     this._tick = (t) => this.tick(t);
   }
+  // Instance time (hitstop + slow-mo), applied by the client the same way the local server does.
+  addHitstop(s) { this.hitstop = Math.max(this.hitstop, s); }
+  slowmo(scale, dur) { this.slowScale = scale; this.slowT = Math.max(this.slowT, dur); this.timeScale = scale; }
+
   start() {
     if (this.running) return;
     this.running = true;
@@ -31,8 +37,9 @@ export class Loop {
     this.rawDt = realDt;
     if (realDt > this.maxFrameDt) realDt = this.maxFrameDt;
     if (realDt < 0) realDt = 0;
-    let simDt = realDt * this.timeScale;
-    if (this.hitstop > 0) {
+    if (this.slowT > 0) { this.slowT = Math.max(0, this.slowT - realDt); this.timeScale = this.slowT > 0 ? this.slowScale : 1; }
+    let simDt = this.paused ? 0 : realDt * this.timeScale;
+    if (this.hitstop > 0 && !this.paused) {
       const h = Math.min(this.hitstop, realDt);
       this.hitstop -= h;
       simDt = Math.max(0, simDt - h * this.timeScale);

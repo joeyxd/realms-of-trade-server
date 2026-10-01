@@ -1,5 +1,6 @@
-// World-anchored DOM: nameplates (scale with distance, hide when they would cover the player),
-// tutorial prompts and NPC speech bubbles. Pooled elements, transforms only.
+// World-anchored DOM: nameplates (scale with distance, hide when they would cover the player; enemies
+// show their HP), tutorial prompts, NPC speech bubbles, floating damage numbers and combat callouts
+// (¡PERFECTO!, ROCE, FANTASMA, chain). Pooled elements, transforms only.
 import * as THREE from 'three';
 import { clamp } from '../core/math.js';
 
@@ -14,6 +15,41 @@ export class WorldUI {
     this.bubbles = new Map();
     this.w = innerWidth; this.h = innerHeight;
     this.playerRect = { x: 0, y: 0, w: 0, h: 0 };
+    this.floats = [];
+    this.floatCursor = 0;
+    for (let i = 0; i < 36; i++) {
+      const el = document.createElement('div');
+      el.className = 'fnum';
+      el.hidden = true;
+      root.appendChild(el);
+      this.floats.push({ el, pos: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, t: 0, life: 0, active: false, dx: 0, rise: 0 });
+    }
+  }
+
+  // Floating text at a world position. cls: dmg | crit | hurt | xp | heal | immune | callout | perfect | graze | ghost | chain
+  float(x, y, z, html, cls = 'dmg', { life = 0.9, rise = 46, spread = 18 } = {}) {
+    const f = this.floats[this.floatCursor];
+    this.floatCursor = (this.floatCursor + 1) % this.floats.length;
+    f.el.className = 'fnum ' + cls;
+    f.el.innerHTML = html;
+    f.el.hidden = false;
+    f.el.style.opacity = '1';
+    f.pos.set(x, y, z);
+    f.t = 0; f.life = life; f.active = true; f.rise = rise;
+    f.dx = (Math.random() - 0.5) * spread;
+    // restart the pop animation
+    f.el.style.animation = 'none'; void f.el.offsetWidth; f.el.style.animation = '';
+    return f;
+  }
+
+  setPlate(id, { hp, maxHp, level } = {}) {
+    const p = this.plates.get(id);
+    if (!p) return;
+    if (hp !== undefined && p.hpEl) {
+      const fr = maxHp > 0 ? Math.max(0, Math.min(1, hp / maxHp)) : 1;
+      if (fr !== p.fr) { p.hpEl.style.width = (fr * 100).toFixed(1) + '%'; p.fr = fr; }
+    }
+    if (level !== undefined && p.lvEl && level !== p.level) { p.lvEl.textContent = 'Nv ' + level; p.level = level; }
   }
 
   resize(w, h) { this.w = w; this.h = h; }
@@ -28,10 +64,11 @@ export class WorldUI {
 
   addNameplate(id, { name, level, title, kind }) {
     const el = document.createElement('div');
-    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : '');
-    el.innerHTML = `${title ? `<div class="np-title">«${title}»</div>` : ''}<div class="np-name"><span class="lv">${kind === 'npc' ? '' : 'Nv ' + level}</span>${name}</div>${kind === 'npc' ? '' : '<div class="np-hp"><i style="width:100%"></i></div>'}`;
+    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'practice' ? ' practice' : '');
+    const lv = kind === 'npc' || kind === 'practice' ? '' : 'Nv ' + level;
+    el.innerHTML = `${title ? `<div class="np-title">«${title}»</div>` : ''}<div class="np-name"><span class="lv">${lv}</span>${name}</div>${kind === 'npc' || kind === 'practice' ? '' : '<div class="np-hp"><i style="width:100%"></i></div>'}`;
     this.root.appendChild(el);
-    this.plates.set(id, { el, anchor: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, shown: true });
+    this.plates.set(id, { el, anchor: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, shown: true, hpEl: el.querySelector('.np-hp i'), lvEl: el.querySelector('.lv'), fr: 1, level, kind, range: kind === 'enemy' ? 30 : 42 });
   }
 
   removeNameplate(id) {
@@ -90,9 +127,10 @@ export class WorldUI {
       this.project(a.pos, plate.p);
       const s = clamp(21 / Math.max(a.dist, 1), 0.55, 1.1);
       const covers = plate.p.x > pr.x && plate.p.x < pr.x + pr.w && plate.p.y > pr.y && plate.p.y < pr.y + pr.h + 30;
-      const show = plate.p.vis && a.dist < 42 && !covers && !a.hide && !talking;
+      const R = plate.range;
+      const show = plate.p.vis && a.dist < R && !covers && !a.hide && !talking;
       if (show !== plate.shown) { plate.el.hidden = !show; plate.shown = show; }
-      if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((42 - a.dist) / 8, 0, 1)); }
+      if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1)); }
     }
     for (const [id, b] of this.bubbles) {
       const a = anchors.get(id);
@@ -100,6 +138,19 @@ export class WorldUI {
       this.project(a.pos, b.p);
       b.el.hidden = !b.p.vis;
       if (b.p.vis) this.place(b.el, b.p, clamp(21 / Math.max(a.dist, 1), 0.7, 1.05), 34);
+    }
+    const dt = this.lastNow ? Math.min(0.1, (now - this.lastNow) / 1000) : 0;
+    this.lastNow = now;
+    for (const f of this.floats) {
+      if (!f.active) continue;
+      f.t += dt;
+      const k = f.t / f.life;
+      if (k >= 1) { f.active = false; f.el.hidden = true; continue; }
+      this.project(f.pos, f.p);
+      if (!f.p.vis) { f.el.style.opacity = '0'; continue; }
+      const up = f.rise * (1 - (1 - k) * (1 - k));
+      f.el.style.transform = `translate3d(${f.p.x + f.dx * k}px, ${f.p.y - up}px, 0) translate(-50%, -100%)`;
+      f.el.style.opacity = String(k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3);
     }
     for (const [id, pm] of this.prompts) {
       if (pm.el.hidden) continue;

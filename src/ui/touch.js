@@ -1,11 +1,16 @@
-// Mobile controls: floating joystick on the left half, DASH and ACTION buttons on the right.
+// Mobile controls: floating joystick on the left half; ATK, PARRY, DASH, R and ACTION buttons on the right.
+import { BTN } from '../sim/systems/movement.js';
+
 export class TouchControls {
   constructor(root, input) {
     this.root = root;
     this.input = input;
     root.innerHTML = `<div class="joy-zone"></div><div class="joy"><i></i></div>
       <button class="tbtn t-dash" aria-label="Dash"><span class="sweep"></span><span class="lbl">DASH</span><span class="pips"></span></button>
-      <button class="tbtn t-act" aria-label="Interactuar">F</button>`;
+      <button class="tbtn t-act" aria-label="Interactuar">F</button>
+      <button class="tbtn t-atk" aria-label="Atacar">ATK</button>
+      <button class="tbtn t-parry" aria-label="Parry">PARRY</button>
+      <button class="tbtn t-r" aria-label="Riposte">R</button>`;
     const zone = root.querySelector('.joy-zone'), joy = root.querySelector('.joy'), knob = joy.querySelector('i');
     let pid = null, ox = 0, oy = 0;
     const R = 52;
@@ -41,6 +46,9 @@ export class TouchControls {
     zone.addEventListener('pointercancel', end);
     root.querySelector('.t-dash').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressDash(); });
     root.querySelector('.t-act').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); });
+    root.querySelector('.t-atk').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.ATTACK); });
+    root.querySelector('.t-parry').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.PARRY); });
+    root.querySelector('.t-r').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.R); });
   }
   setDash(charges, max, recharge01) {
     if (!this.dashBtn) {

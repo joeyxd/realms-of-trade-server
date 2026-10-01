@@ -303,12 +303,30 @@ export function generateWorld(seed) {
     addProp('gatePost', g2.x, g2.z, { r: 0.8, rot: 0, h: 4.2 });
     const g = P([L.arena[0] - L.arenaR - 1.6, 0]);
     addProp('gate', g.x, g.z, { r: 0, rot: Math.atan2(g2.x - g1.x, g2.z - g1.z) });
-    // Two bone sentinels sleep just inside the gate, facing whoever comes in (enemies from M2).
-    for (const sv of [-4.4, 4.4]) {
-      const p = P([L.arena[0] - L.arenaR + 3.6, sv]), q = P([L.arena[0] - L.arenaR + 2.6, sv * 1.15]);
-      addProp('sentinel', p.x, p.z, { r: 0.65, rot: Math.atan2(q.x - p.x, q.z - p.z), v: 0 });
-    }
   }
+  // Enemies (server-spawned entities, M2): two bone sentinels sleep just inside the gate facing whoever
+  // comes in; three skeleton archers keep watch beside the Sendero del Humo.
+  const enemySpawns = [];
+  for (const sv of [-4.4, 4.4]) {
+    const p = P([L.arena[0] - L.arenaR + 3.6, sv]), q = P([L.arena[0] - L.arenaR + 2.6, sv * 1.15]);
+    enemySpawns.push({ kind: 'sentinel', x: p.x, z: p.z, facing: Math.atan2(q.x - p.x, q.z - p.z) });
+  }
+  for (const [u, v] of [[-60, 8], [-42, -8], [-26, 6]]) {
+    const p = P([u, v]), q = P([u - 6, v * 0.3]);
+    enemySpawns.push({ kind: 'archer', x: p.x, z: p.z, facing: Math.atan2(q.x - p.x, q.z - p.z) });
+  }
+  // Tutorial practice ground on the beach, up and left of the spawn (open sand, no palms in front of the
+  // camera): a straw dummy, and a cannon up the slope that fires slow parryable balls at whoever stands
+  // in its rope ring.
+  const practice = (() => {
+    const dummy = P([-134, 4]), ring = P([-137, -3]), cannon = P([-129, -6]);
+    return {
+      dummy: { ...dummy, facing: Math.atan2(spawn.x - dummy.x, spawn.z - dummy.z) },
+      ring: { ...ring, r: 4.2 },
+      cannon: { ...cannon, facing: Math.atan2(ring.x - cannon.x, ring.z - cannon.z) },
+    };
+  })();
+  colliders.push({ x: practice.dummy.x, z: practice.dummy.z, r: 0.35 }, { x: practice.cannon.x, z: practice.cannon.z, r: 0.75 });
 
   // Scattered vegetation and rocks (rejection sampling, deterministic).
   const palms = new Set(['palm']);
@@ -452,8 +470,24 @@ export function generateWorld(seed) {
     [-86, -2], [-104, 14], [-136, 6], [-90, 10],
   ].map(P);
 
+  // Respawn checkpoints: the last one you reached (by zone) is where you wake up after falling.
+  const checkpoints = {
+    spawn: { x: spawn.x, z: spawn.z },
+    aldea: { ...V(2, 3) },
+    camino: { ...path[3] },
+    puerta: { ...path[path.length - 2] },
+  };
+  function checkpointAt(x, z) {
+    const zn = zoneAt(x, z);
+    if (zn === 'aldea') return 'aldea';
+    if (zn === 'camino') return pathInfo(x, z).t > 0.45 ? 'camino' : 'aldea';
+    if (zn === 'caldera') return 'puerta';
+    return null;
+  }
+
   return {
     seed, size, half, res, N, heights,
+    enemySpawns, practice, checkpoints, checkpointAt,
     heightAt, groundAt, onDock, masks, materialAt, zoneAt, pathInfo,
     props, colliders, queryColliders, npcs, botWaypoints, dock,
     landmarks: { spawn, village, arena, arenaR: L.arenaR, volcano, dockBase, dockEnd, path, ship: P(L.ship) },

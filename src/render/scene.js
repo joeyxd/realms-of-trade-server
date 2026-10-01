@@ -8,8 +8,13 @@ import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
-import { CharacterView, SENTINEL, characterMaterial } from './characters.js';
+import { CharacterView, SENTINEL, ARCHER } from './characters.js';
+import { DummyView, CannonView } from './practice.js';
 import { Effects } from './vfx/effects.js';
+import { ProjectileView } from './vfx/projectiles.js';
+import { Decals } from './vfx/decals.js';
+import { CombatFx } from './vfx/combatfx.js';
+import { Debris } from './vfx/debris.js';
 import { Afterimages } from './vfx/afterimage.js';
 import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
@@ -49,16 +54,14 @@ export class GameScene {
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
-    // Dormant bone sentinels at the Caldera gate (render-only until enemies arrive in M2).
-    this.sentinels = map.props.filter((p) => p.kind === 'sentinel').map((p) => {
-      const v = new CharacterView(SENTINEL, { pose: 'dormant' });
-      v.state = { x: p.x, y: p.y, z: p.z, f: p.rot, vx: 0, vz: 0, st: 0, wade: 0 };
-      v.update(0, v.state);
-      this.scene.add(v.root);
-      return v;
-    });
-    this.sentinelGlow = characterMaterial('sentinel').userData.glow;
     this.effects = new Effects(this.scene, map);
+    this.projectiles = new ProjectileView(this.scene, map);
+    this.decals = new Decals(this.scene, map);
+    this.combatFx = new CombatFx(this.scene);
+    this.debris = new Debris(this.scene, map);
+    this.debris.onChange = () => this.pipeline.markDirty();
+    const ring = map.practice.ring;
+    this.practiceRing = this.decals.ring(ring.x, ring.z, ring.r);
     this.after = new Afterimages(this.scene);
     this.ambient = new Ambient(this.scene, map);
     this.views = new Map();
@@ -90,8 +93,16 @@ export class GameScene {
     this.effects.setViewport(this.pipeline.fxHeight, this.camera.fov);
   }
 
-  addCharacter(id, skin, opts) {
-    const view = new CharacterView(skin, opts);
+  // rec.enemy picks the enemy view (skeleton archer, dormant sentinel, practice dummy / cannon).
+  addCharacter(id, skin, opts = {}) {
+    const kind = opts.enemy;
+    let view;
+    if (kind === 'dummy') view = new DummyView();
+    else if (kind === 'cannon') view = new CannonView();
+    else if (kind === 'archer') view = new CharacterView(ARCHER, { sword: true });
+    else if (kind === 'sentinel') view = new CharacterView(SENTINEL, { sword: true, pose: 'dormant' });
+    else view = new CharacterView(skin, opts);
+    view.enemy = kind || null;
     this.scene.add(view.root);
     this.views.set(id, view);
     this.pipeline.markDirty();
@@ -161,14 +172,32 @@ export class GameScene {
     this.applyPreset(this.lighting.cur);
     this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);
     this.sky.position.copy(this.camera.position);
+    // Combat-timed pieces follow instance time (they freeze in the hitstop with the characters).
+    const sim = ctx.simDt ?? dt;
     this.effects.update(dt, ctx.focus);
-    this.after.update(dt);
+    this.after.update(sim);
     this.ambient.update(dt, ctx.focus, this.camera.position);
-    for (const v of this.sentinels) {
-      v.root.visible = Math.hypot(v.state.x - ctx.focus.x, v.state.z - ctx.focus.z) < 90;
-      if (v.root.visible) v.update(dt, v.state);
+    // Sentinels: slow crystal pulse while asleep, bright while awake; their eye lights follow them.
+    const eyes = this.lights.sources.filter((q) => q.follow);
+    let ei = 0;
+    for (const v of this.views.values()) {
+      if (v.enemy !== 'sentinel') continue;
+      const awake = v.dorm < 0.5;
+      const base = awake ? 0.75 + 0.25 * Math.sin(this.time * 3) : 0.3 + 0.3 * (0.5 + 0.5 * Math.sin(this.time * 1.1));
+      v.glow.value = Math.max(base, v.attack ? 1.3 : 0);
+      const L = eyes[ei++];
+      if (L) {
+        const f = v.root.rotation.y, p = v.root.position;
+        L.x = p.x + Math.sin(f) * 0.45; L.y = p.y + 2.0 - 0.35 * v.dorm; L.z = p.z + Math.cos(f) * 0.45;
+        L.i = awake ? 2.2 : 1.4;
+      }
     }
-    this.sentinelGlow.value = 0.3 + 0.3 * (0.5 + 0.5 * Math.sin(this.time * 1.1));
+    if (ctx.combat) {
+      this.projectiles.update(dt, ctx.combat.hazards, ctx.combat.shots, ctx.combat.tick, ctx.combat.onShot);
+      this.decals.update(dt, ctx.combat.tick);
+    }
+    this.combatFx.update(sim);
+    this.debris.update(sim);
     // Floating cargo and the rowboat bob and drift a little.
     for (const f of this.props.floaters || []) {
       const ph = f.userData.phase, tt = this.time;

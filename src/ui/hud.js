@@ -1,5 +1,6 @@
-// MMO HUD: portrait + bars, action bar (dash charges with radial recharge), zone banner,
-// objective tracker and toasts. Plain DOM over the canvas; GSAP for the choreography.
+// MMO HUD: portrait + bars (HP with a damage trail, RIPOSTE meter, XP), action bar (attack, parry with its
+// whiff lock, dash charges with radial recharge, riposte fill), chain counter, zone banner, objective
+// tracker, toasts and the "fallen" screen. Plain DOM over the canvas; GSAP for the choreography.
 import { gsap } from 'gsap';
 import { SKINS } from '../render/characters.js';
 
@@ -46,7 +47,7 @@ export class Hud {
         <div class="bars">
           <div class="pname outlined">Grumete</div>
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
-          <div class="bar en thin"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">50 / 50</div></div>
+          <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
         </div>
       </div>
@@ -57,14 +58,16 @@ export class Hud {
       <div id="zone-banner"><div class="zname outlined"></div><div class="zsub"></div><div class="zline"></div></div>
       <div id="toasts"></div>
       <div class="tracker frame-dark"><h3>Primeros pasos</h3><ul></ul></div>
+      <div id="chain" class="outlined" hidden><span class="x">CADENA</span><b>x2</b></div>
       <div class="actionbar frame">
-        ${this.slot('lmb', 'LMB', ICONS.sword, 'Pronto')}
-        ${this.slot('rmb', 'RMB', ICONS.shield, 'Pronto')}
+        <div class="slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span>${ICONS.sword}<div class="combo"><i></i><i></i><i></i></div></div>
+        <div class="slot rmb-slot" data-slot="rmb" title="Parry: refleja proyectiles ámbar; justo a tiempo, ¡PERFECTO!"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
-        ${this.slot('q', 'Q', ICONS.spin, 'Nv 3')}
-        ${this.slot('e', 'E', ICONS.wave, 'Nv 5')}
-        ${this.slot('r', 'R', ICONS.storm, 'Nv 7')}
-      </div>`;
+        ${this.slot('q', 'Q', ICONS.spin, 'Pronto')}
+        ${this.slot('e', 'E', ICONS.wave, 'Pronto')}
+        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div>${ICONS.storm}</div>
+      </div>
+      <div id="fallen" hidden><div class="ftitle outlined">HAS CAÍDO</div><div class="fsub">Reapareces en <b>3</b>…</div></div>`;
     this.portrait = root.querySelector('.portrait canvas');
     this.lvl = root.querySelector('.lvl-badge');
     this.pname = root.querySelector('.pname');
@@ -80,6 +83,89 @@ export class Hud {
     this.lastCharges = -1;
     this.lastMax = -1;
     this.bannerTl = null;
+    this.hpBar = root.querySelector('.bar.hp');
+    this.hpFill = this.hpBar.querySelector('.fill'); this.hpGhost = this.hpBar.querySelector('.ghost'); this.hpNum = this.hpBar.querySelector('.num');
+    this.rpBar = root.querySelector('.bar.en');
+    this.rpFill = this.rpBar.querySelector('.fill'); this.rpNum = this.rpBar.querySelector('.num');
+    this.xpFill = root.querySelector('.bar.xp .fill'); this.xpNum = root.querySelector('.bar.xp .num');
+    this.rmbSweep = root.querySelector('.rmb-slot .sweep');
+    this.rSlot = root.querySelector('.r-slot'); this.rFill = this.rSlot.querySelector('.rfill');
+    this.comboPips = root.querySelectorAll('[data-slot="lmb"] .combo i');
+    this.chainEl = root.querySelector('#chain');
+    this.fallen = root.querySelector('#fallen');
+    this.last = {};
+  }
+
+  // Per-frame stats (only touches the DOM when a value changes).
+  setStats({ hp, maxHp, riposte, xp, xpNext, level, parryLock, combo, dead, deadT }) {
+    const L = this.last;
+    const h = Math.ceil(hp);
+    if (h !== L.hp || maxHp !== L.maxHp) {
+      const fr = Math.max(0, Math.min(1, h / maxHp));
+      this.hpFill.style.width = (fr * 100).toFixed(1) + '%';
+      this.hpGhost.style.width = (fr * 100).toFixed(1) + '%';
+      this.hpNum.textContent = `${h} / ${maxHp}`;
+      this.hpBar.classList.toggle('low', fr < 0.3);
+      if (L.hp !== undefined && h < L.hp) { this.hpBar.classList.remove('hurt'); void this.hpBar.offsetWidth; this.hpBar.classList.add('hurt'); }
+      L.hp = h; L.maxHp = maxHp;
+    }
+    const rp = Math.floor(riposte);
+    if (rp !== L.rp) {
+      this.rpFill.style.width = rp + '%';
+      this.rpNum.textContent = rp >= 100 ? 'RIPOSTE LISTO · R' : `RIPOSTE ${rp} %`;
+      this.rpBar.classList.toggle('full', rp >= 100);
+      this.rSlot.classList.toggle('ready', rp >= 100);
+      this.rFill.style.height = rp + '%';
+      L.rp = rp;
+    }
+    const x = Math.floor(xp);
+    if (x !== L.xp || xpNext !== L.xpNext) {
+      this.xpFill.style.width = Math.min(100, (x / xpNext) * 100).toFixed(1) + '%';
+      this.xpNum.textContent = `${x} / ${xpNext} XP`;
+      L.xp = x; L.xpNext = xpNext;
+    }
+    if (level !== L.level) {
+      if (L.level !== undefined) gsap.fromTo(this.lvl, { scale: 1.8 }, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+      this.lvl.textContent = String(level);
+      L.level = level;
+    }
+    const lock = parryLock > 0 ? Math.round((1 - parryLock / 0.35) * 360) : 360;
+    if (lock !== L.lock) {
+      this.rmbSweep.style.background = lock >= 360 ? '' : `conic-gradient(transparent 0deg ${lock}deg, rgba(10,6,24,0.62) ${lock}deg 360deg)`;
+      L.lock = lock;
+    }
+    if (combo !== L.combo) {
+      this.comboPips.forEach((p, i) => p.classList.toggle('on', i < combo));
+      L.combo = combo;
+    }
+    const secs = dead ? Math.max(1, Math.ceil(deadT)) : 0;
+    if (secs !== L.dead) {
+      this.fallen.hidden = !secs;
+      if (secs) this.fallen.querySelector('b').textContent = String(secs);
+      if (secs && !L.dead) gsap.fromTo(this.fallen, { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' });
+      L.dead = secs;
+    }
+  }
+
+  // Chain counter: pops on each chained parry, fades when the chain breaks.
+  setChain(n, alive) {
+    if (n !== this.last.chain) {
+      if (n >= 2) {
+        this.chainEl.hidden = false;
+        this.chainEl.querySelector('b').textContent = 'x' + n;
+        this.chainEl.dataset.n = String(n);
+        gsap.fromTo(this.chainEl, { scale: 1.5 }, { scale: 1, duration: 0.35, ease: 'back.out(3)' });
+      }
+      this.last.chain = n;
+    }
+    const show = n >= 2 && alive;
+    if (!show && !this.chainEl.hidden) this.chainEl.hidden = true;
+  }
+
+  pulse(slot) {
+    const el = this.root.querySelector(`[data-slot="${slot}"]`);
+    if (!el) return;
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
   }
 
   slot(id, key, icon, lock) {
@@ -153,6 +239,11 @@ export class Hud {
 
   setTracker(items) {
     this.trackerUl.innerHTML = items.map((it) => `<li class="${it.done ? 'done' : ''}" data-id="${it.id}"><span class="chk"></span><span class="txt">${it.text}</span></li>`).join('');
+  }
+
+  setTrackerText(id, text) {
+    const li = this.trackerUl.querySelector(`[data-id="${id}"] .txt`);
+    if (li && li.textContent !== text) li.textContent = text;
   }
 
   completeTracker(id) {

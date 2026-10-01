@@ -1,6 +1,11 @@
 // Authoritative server that runs the shared sim. Lives in a Web Worker (or in-process as a fallback);
 // a future Node server wraps the same class behind WebSockets.
-import { DT, SNAPSHOT_EVERY } from '../data/tuning.js';
+// Instance time: this server is one instance (like an MMO dungeon), so hitstop and slow-mo are
+// decided here and slow the whole world down; clients apply the same 'time' events to their loop.
+// An open-world server would set instanceTime: false and leave hitstop cosmetic on the client.
+import { DT, SNAPSHOT_EVERY, tuning } from '../data/tuning.js';
+import { ENEMIES } from '../data/enemies.js';
+import { applyLevel } from '../sim/systems/combat.js';
 import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
@@ -11,9 +16,12 @@ const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, now = () => performance.now() }) {
     this.debug = debug;
-    this.world = new World(seed);
+    this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
+    this.instanceTime = instanceTime;
+    this.freeze = 0; this.slowT = 0; this.slowScale = 1;
+    this.world = new World(seed, { server: true });
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
@@ -29,12 +37,13 @@ export class LocalServer {
         x: wp.x + rng.range(-1, 1), z: wp.z + rng.range(-1, 1), bot: true, facing: rng.range(0, 6.28),
       });
     }
+    if (enemies) this.world.populate();
     this.world.events.length = 0;
   }
 
   // Connected clients spectate (see bots, NPCs) until they say hello and get a player entity.
   connect(clientId) {
-    this.clients.set(clientId, { entity: 0, queue: [], ack: 0 });
+    this.clients.set(clientId, { entity: 0, queue: [], ack: 0, paused: false });
     const ecs = this.world.ecs;
     for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e]) this.send(clientId, { t: MSG.SPAWN, e: this.world.describe(e) });
   }
@@ -68,12 +77,14 @@ export class LocalServer {
         break;
       }
       case MSG.CMD: {
+        if (msg.type === 'pause') { c.paused = !!msg.on; break; }
         // Local-only debug teleport (used by tools/shot.mjs). A real server never implements this.
         if (this.debug && msg.type === 'debug_teleport' && c.entity && Number.isFinite(msg.x) && Number.isFinite(msg.z)) {
           const ecs = this.world.ecs;
           ecs.x[c.entity] = msg.x; ecs.z[c.entity] = msg.z; ecs.y[c.entity] = this.world.map.groundAt(msg.x, msg.z);
           ecs.vx[c.entity] = 0; ecs.vz[c.entity] = 0;
         }
+        if (this.dev && msg.type === 'dev' && c.entity) this.devCommand(c, msg);
         break;
       }
       case MSG.PING:
@@ -81,6 +92,26 @@ export class LocalServer {
         break;
       default:
         break;
+    }
+  }
+
+  // F4 panel (local server only).
+  devCommand(c, msg) {
+    const w = this.world, ecs = w.ecs, e = c.entity;
+    const f = (v, d = 0) => (Number.isFinite(v) ? v : d);
+    switch (msg.op) {
+      case 'tune': setPath(msg.root === 'enemies' ? ENEMIES : tuning, msg.path, msg.value); break;
+      case 'spawn': {
+        const a = f(msg.ang, ecs.facing[e]), d = f(msg.dist, 8);
+        w.debugSpawn(String(msg.kind), ecs.x[e] + Math.sin(a) * d, ecs.z[e] + Math.cos(a) * d, a + Math.PI);
+        break;
+      }
+      case 'clear': w.debugClear(); break;
+      case 'god': ecs.god[e] = msg.on ? 1 : 0; break;
+      case 'heal': ecs.hp[e] = ecs.maxHp[e]; break;
+      case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
+      case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; break;
+      default: break;
     }
   }
 
@@ -96,6 +127,12 @@ export class LocalServer {
     let dt = (t - this.last) / 1000;
     this.last = t;
     if (dt > 0.25) dt = 0.25; // tab stall: don't spiral
+    // Everyone in the instance paused (single player: the pause menu): the world waits.
+    let anyone = false, allPaused = true;
+    for (const c of this.clients.values()) if (c.entity) { anyone = true; if (!c.paused) allPaused = false; }
+    if (anyone && allPaused) return;
+    if (this.freeze > 0) { const h = Math.min(this.freeze, dt); this.freeze -= h; dt -= h; }
+    if (this.slowT > 0) { const h = Math.min(this.slowT, dt); this.slowT -= h; dt += h * (this.slowScale - 1); }
     this.acc += dt;
     while (this.acc >= DT) {
       this.acc -= DT;
@@ -126,7 +163,13 @@ export class LocalServer {
     for (const ev of w.events) {
       if (ev.type === 'spawn') this.broadcast({ t: MSG.SPAWN, e: w.describe(ev.id) });
       else if (ev.type === 'despawn') this.broadcast({ t: MSG.DESPAWN, id: ev.id });
-      else this.broadcast({ t: MSG.EVENT, ev });
+      else {
+        if (ev.type === 'time' && this.instanceTime) {
+          this.freeze = Math.max(this.freeze, ev.hitstop || 0);
+          if (ev.scale < 1 && ev.dur > 0) { this.slowScale = ev.scale; this.slowT = Math.max(this.slowT, ev.dur); }
+        }
+        this.broadcast({ t: MSG.EVENT, ev });
+      }
     }
     w.events.length = 0;
   }
@@ -143,9 +186,21 @@ export class LocalServer {
       ents.push(encodeEntity(ecs, e));
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.moverState(c.entity) : null });
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null });
     }
   }
+}
+
+// 'a.b.c' → obj.a.b.c = value (numbers and booleans only; arrays by index).
+export function setPath(obj, path, value) {
+  if (typeof path !== 'string' || !(typeof value === 'number' || typeof value === 'boolean')) return false;
+  const keys = path.split('.');
+  let o = obj;
+  for (let i = 0; i < keys.length - 1; i++) { o = o?.[keys[i]]; if (o === null || typeof o !== 'object') return false; }
+  const k = keys[keys.length - 1];
+  if (!(k in o) || typeof o[k] !== typeof value) return false;
+  o[k] = value;
+  return true;
 }
 
 export { KIND };

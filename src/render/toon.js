@@ -279,7 +279,8 @@ function definesFor(opts) {
 }
 
 // Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, uniforms, fragPars, albedo, emissive,
-// glowMask (GLSL expression for the bloom mask, default: bright emissive), key}
+// post (GLSL on the final color, before the glow mask), glowMask (GLSL expression for the bloom mask, default:
+// bright emissive), key}
 export function patchToon(mat, opts = {}) {
   mat.defines = { ...(mat.defines || {}), ...definesFor(opts) };
   const extra = opts.uniforms || {};
@@ -298,7 +299,7 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || '') + '\n#ifdef MN_GLOW\ntotalEmissiveRadiance += diffuseColor.rgb * vMnGlow * mnGlowAmt;\n#endif')
       .replace('#include <lights_fragment_begin>', 'float mnSunCloud = mnCloudShadow(vMnWorld.xz);\n' + lightsBegin())
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM)
-      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + glowOut(opts.glowMask || 'smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b))'));
+      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + (opts.post || '') + glowOut(opts.glowMask || 'smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b))'));
   };
   mat.customProgramCacheKey = () => 'mn-toon-' + (opts.key || '') + JSON.stringify(definesFor(opts));
   return mat;

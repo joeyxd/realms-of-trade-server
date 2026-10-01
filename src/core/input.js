@@ -6,7 +6,8 @@ const MOVE_KEYS = {
   KeyW: [0, 1], ArrowUp: [0, 1], KeyS: [0, -1], ArrowDown: [0, -1],
   KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0],
 };
-const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R };
+// J / K: attack and parry without a mouse (they aim at the nearest enemy).
+const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R, KeyJ: BTN.ATTACK, KeyK: BTN.PARRY };
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 
 export class Input {
@@ -67,6 +68,7 @@ export class Input {
   }
 
   pressDash() { if (this.enabled) this.pressed |= BTN.DASH; }
+  press(bit) { if (this.enabled) { this.pressed |= bit; this.lastDevice = 'touch'; } }
   pressInteract() { if (this.enabled) { this.pressed |= BTN.INTERACT; this.interactEdge = true; } }
 
   consumeInteract() {
