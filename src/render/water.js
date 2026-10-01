@@ -29,6 +29,7 @@ export const WATER_LIGHT = {
   uWaterLight: { value: new THREE.Color(1, 1, 1) },
   uSparkle: { value: 1 },
   uFoamLight: { value: 1 },
+  uGlints: { value: 0.2 }, // how much the sparkles bloom
 };
 
 const VERT = /* glsl */ `
@@ -66,6 +67,7 @@ uniform sampler2D tWave;
 uniform vec3 uWaterLight;
 uniform float uSparkle;
 uniform float uFoamLight;
+uniform float uGlints;
 uniform vec3 uAbsorb, uScatterShallow, uScatterDeep, uFoam, uCaustic;
 uniform float uWaves, uRefract;
 #ifdef MN_WATER_SSR
@@ -162,7 +164,10 @@ void main() {
   // Solid glint patches fade faster than the twinkles (the moon gives a glitter path, not blobs).
   col += sunColor * uSparkle * (step(0.55, spec) * 0.45 * uSparkle + spark * 1.1) * (1.0 - far);
   // Lanterns, fires and lava reflected in the waves.
-  col += mnLocalWater(vWorld, n, V);
+  vec3 lw = mnLocalWater(vWorld, n, V);
+  col += lw;
+  // Glow mask: light glints and the twinkling sparkles bloom (more at night, see uGlints).
+  float glowW = clamp(max(lw.r, max(lw.g, lw.b)) * 0.7 + spark * (1.0 - far) * uGlints, 0.0, 1.0);
 
   // ---- Foam --------------------------------------------------------------------------------------
   float nz = texture2D(mnNoiseTex, xz * 0.05 + vec2(t * 0.012, t * 0.009)).b;
@@ -184,13 +189,16 @@ void main() {
   col = mix(col, uFoam * (mix(0.8, 1.02, vis) * uWaterLight * uFoamLight + mnLocalLight(vWorld, vec3(0.0, 1.0, 0.0)) * 0.3), foam);
 
 #ifdef MN_WATER_SSR
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(col, 1.0 - glowW * (1.0 - foam));
 #else
   float a = clamp(1.0 - dot(T, vec3(0.333)), 0.22, 0.97);
   gl_FragColor = vec4(col, max(a, foam));
 #endif
   #include <colorspace_fragment>
   #include <fog_fragment>
+#if defined(MN_WATER_SSR) && defined(USE_FOG)
+  gl_FragColor.a = 1.0 - (1.0 - gl_FragColor.a) * (1.0 - fogFactor);
+#endif
 }`;
 
 function makeMaterial(map, heightTex, ssr) {

@@ -4,10 +4,16 @@
 //   3 outline composite                       → rtPost
 //   4 half-res copy of rtPost                 → rtRefract   (what the water refracts)
 //   5 water (refraction, absorption, foam)    → rtPost      (manual depth test vs rtNormal)
-//   6 grading (contrast, split tone) + AA     → screen
-//   7 FX layer with soft depth                → screen
-// Low: opaque → screen, cheap alpha water (heightmap depth) → screen, FX → screen (no grading pass).
+//   6 FX layer with soft depth                → rtPost
+//   7 bloom: extract glow (½) → down ¼ ⅛ 1/16 → up back to ½ (additive)
+//   8 bloom + grading (contrast, split tone) + AA + dither → screen
+// Low: opaque → screen, cheap alpha water (heightmap depth) → screen, FX → screen (no grading, no bloom).
 // Layers: 0 world (outlined) · 1 FX · 2 world without outline (sky, blobs, flowers) · 3 water.
+//
+// Glow mask: the alpha channel of rtMain / rtPost holds 1 - glow. Opaque materials write 1 (no glow)
+// by default; emissive toon surfaces (lava, cracks, gems), lantern glass, coals, lit windows, the
+// moon and stars, light glints on the water, additive particles and dash afterimages lower it.
+// Alpha-blended FX (smoke, dust) raise it back, so smoke in front of a fire hides its glow.
 import * as THREE from 'three';
 import { tuning } from '../data/tuning.js';
 
@@ -20,6 +26,7 @@ export const FXU = {
   uNear: { value: 0.5 },
   uFar: { value: 1200 },
   uUseDepth: { value: 0 },
+  uFxLight: { value: new THREE.Color(1, 1, 1) }, // ambient light on lit FX (smoke, dust, foam rings)
 };
 
 // Shared uniforms for the water pass.
@@ -38,6 +45,7 @@ uniform vec2 uRes;
 uniform float uNear;
 uniform float uFar;
 uniform float uUseDepth;
+uniform vec3 uFxLight;
 // Returns 0..1 visibility against the opaque scene (soft over 'soft' world units).
 float fxDepthFade(float soft) {
   if (uUseDepth < 0.5) return 1.0;
@@ -65,7 +73,8 @@ varying vec2 vUv;
 float linD(vec2 uv) { return -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar); }
 vec3 nrm(vec2 uv) { return texture2D(tNormal, uv).rgb * 2.0 - 1.0; }
 void main() {
-  vec3 col = texture2D(tColor, vUv).rgb;
+  vec4 src = texture2D(tColor, vUv);
+  vec3 col = src.rgb;
   float rawC = texture2D(tDepth, vUv).r;
   float dc = linD(vUv);
   vec3 nc = nrm(vUv);
@@ -84,8 +93,9 @@ void main() {
   float ne = smoothstep(uNormalThr, uNormalThr * 1.6, ng) * hasGeo;
   float edge = max(de, ne * 0.8);
   edge *= 1.0 - smoothstep(uFadeNear, uFadeFar, dmin);
-  col = mix(col, uOutline, clamp(edge, 0.0, 1.0));
-  gl_FragColor = vec4(col, 1.0);
+  edge = clamp(edge, 0.0, 1.0);
+  col = mix(col, uOutline, edge);
+  gl_FragColor = vec4(col, mix(src.a, 1.0, edge)); // ink never glows
   #include <colorspace_fragment>
 }
 `;
@@ -99,15 +109,53 @@ void main() {
 }
 `;
 
-// Final: grading (S-curve contrast, split toning, saturation, vignette, danger, capped screen flash,
+// Bloom. Extract: glow-masked color, 4 bilinear taps (a box over the source footprint, no flicker).
+const BLOOM_EXTRACT = /* glsl */ `
+uniform sampler2D tInput;
+uniform vec2 uOff;
+varying vec2 vUv;
+vec3 tap(vec2 uv) { vec4 c = texture2D(tInput, uv); return c.rgb * (1.0 - c.a); }
+void main() {
+  vec3 s = tap(vUv + vec2(-uOff.x, -uOff.y)) + tap(vUv + vec2(uOff.x, -uOff.y)) + tap(vUv + vec2(-uOff.x, uOff.y)) + tap(vUv + uOff);
+  gl_FragColor = vec4(s * 0.25, 1.0);
+}
+`;
+// Dual-filter (Kawase) down and up; the up pass is added onto the next bigger level.
+const BLOOM_DOWN = /* glsl */ `
+uniform sampler2D tInput;
+uniform vec2 uTexel;
+varying vec2 vUv;
+void main() {
+  vec3 s = texture2D(tInput, vUv).rgb * 4.0;
+  s += texture2D(tInput, vUv - uTexel).rgb + texture2D(tInput, vUv + uTexel).rgb;
+  s += texture2D(tInput, vUv + vec2(uTexel.x, -uTexel.y)).rgb + texture2D(tInput, vUv - vec2(uTexel.x, -uTexel.y)).rgb;
+  gl_FragColor = vec4(s * 0.125, 1.0);
+}
+`;
+const BLOOM_UP = /* glsl */ `
+uniform sampler2D tInput;
+uniform vec2 uTexel;
+uniform float uWeight;
+varying vec2 vUv;
+vec3 t(vec2 o) { return texture2D(tInput, vUv + o * uTexel).rgb; }
+void main() {
+  vec3 s = t(vec2(-2.0, 0.0)) + t(vec2(2.0, 0.0)) + t(vec2(0.0, -2.0)) + t(vec2(0.0, 2.0));
+  s += (t(vec2(-1.0, 1.0)) + t(vec2(1.0, 1.0)) + t(vec2(1.0, -1.0)) + t(vec2(-1.0, -1.0))) * 2.0;
+  gl_FragColor = vec4(s * (uWeight / 12.0), 1.0);
+}
+`;
+
+// Final: bloom, grading (S-curve contrast, split toning, saturation, vignette, danger, capped screen flash,
 // slow-mo chroma) and
 // FXAA (medium) or bilinear downsample of the supersampled buffer (high), + output color space.
 const FINAL_FRAG = /* glsl */ `
 uniform sampler2D tInput;
 uniform vec2 uTexel;
 uniform float uFxaa;
-uniform float uVignette, uSat, uChroma, uDanger, uFlash, uContrast, uSplit;
+uniform float uVignette, uSat, uChroma, uDanger, uFlash, uContrast, uSplit, uBloom;
 uniform vec3 uFlashColor, uSplitShadow, uSplitHigh;
+uniform sampler2D tBloom;
+uniform int uView;
 varying vec2 vUv;
 vec3 fxaa(vec2 uv) {
   vec3 rgbNW = texture2D(tInput, uv + vec2(-1.0, -1.0) * uTexel).rgb;
@@ -135,6 +183,10 @@ void main() {
     col.r = texture2D(tInput, vUv + dir).r;
     col.b = texture2D(tInput, vUv - dir).b;
   }
+  vec3 bloom = texture2D(tBloom, vUv).rgb * uBloom * 0.2; // levels summed: a uniform glowing area gains ~uBloom×
+  if (uView == 1) { gl_FragColor = vec4(bloom, 1.0); return; }
+  if (uView == 2) { gl_FragColor = vec4(vec3(1.0 - texture2D(tInput, vUv).a), 1.0); return; }
+  col += bloom;
   // Grade in a perceptual (≈ gamma 2) space: S-curve contrast, then shadows toward one hue and
   // highlights toward another (luma-neutral tints), then saturation.
   vec3 lw = vec3(0.2126, 0.7152, 0.0722);
@@ -153,6 +205,8 @@ void main() {
   col = 1.0 - (1.0 - col) * (1.0 - min(uFlash, 0.8) * uFlashColor);
   gl_FragColor = vec4(col, 1.0);
   #include <colorspace_fragment>
+  // Dither to 8 bits (interleaved gradient noise): no banding in dark skies and glow halos.
+  gl_FragColor.rgb += (fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))) - 0.5) / 255.0;
 }
 `;
 
@@ -182,8 +236,10 @@ export class Pipeline {
     this.water = null; // { setMode(ssr) } provided by the scene
     this.grading = {
       vignette: 0.22, sat: 1.07, chroma: 0, danger: 0, flash: 0, flashColor: new THREE.Color(1, 1, 1),
-      contrast: 0, split: 0, splitShadow: new THREE.Color(0x5a4aa0), splitHigh: new THREE.Color(0xffd9a0),
+      contrast: 0, split: 0, splitShadow: new THREE.Color(0x5a4aa0), splitHigh: new THREE.Color(0xffd9a0), bloom: 0,
     };
+    this.view = 0; // debug: 1 = bloom only, 2 = glow mask
+    this.fxHeight = 1; // pixel height of the target FX draw into (point sprite scale)
 
     this.rtMain = new THREE.WebGLRenderTarget(1, 1, { depthBuffer: true });
     this.rtMain.texture.colorSpace = THREE.SRGBColorSpace;
@@ -213,9 +269,22 @@ export class Pipeline {
         uVignette: { value: 0.22 }, uSat: { value: 1.07 }, uChroma: { value: 0 }, uDanger: { value: 0 },
         uFlash: { value: 0 }, uFlashColor: { value: new THREE.Color(1, 1, 1) },
         uContrast: { value: 0 }, uSplit: { value: 0 }, uSplitShadow: { value: new THREE.Color() }, uSplitHigh: { value: new THREE.Color() },
+        tBloom: { value: null }, uBloom: { value: 0 }, uView: { value: 0 },
       },
       vertexShader: FS_QUAD_VERT, fragmentShader: FINAL_FRAG, depthTest: false, depthWrite: false,
     });
+    // Bloom chain: ½, ¼, ⅛, 1/16 of the screen. Half float when the GPU can render to it (no banding).
+    const ext = renderer.extensions;
+    const half = renderer.capabilities.isWebGL2 && (ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float'));
+    this.bloomRT = Array.from({ length: 4 }, () => new THREE.WebGLRenderTarget(1, 1, { depthBuffer: false, type: half ? THREE.HalfFloatType : THREE.UnsignedByteType }));
+    const bm = (frag, uniforms, extra = {}) => new THREE.ShaderMaterial({ uniforms, vertexShader: FS_QUAD_VERT, fragmentShader: frag, depthTest: false, depthWrite: false, ...extra });
+    this.bloomExtract = bm(BLOOM_EXTRACT, { tInput: { value: this.rtPost.texture }, uOff: { value: new THREE.Vector2() } });
+    this.bloomDown = bm(BLOOM_DOWN, { tInput: { value: null }, uTexel: { value: new THREE.Vector2() } });
+    this.bloomUp = bm(BLOOM_UP, { tInput: { value: null }, uTexel: { value: new THREE.Vector2() }, uWeight: { value: 1 } },
+      { blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendEquation: THREE.AddEquation });
+    this.bloomQuad = fsQuad(this.bloomExtract);
+    this.bloomWeights = [1, 1.25, 1.5]; // how much each wider level adds onto the next (wide haze > tight core)
+    this.final.uniforms.tBloom.value = this.bloomRT[0].texture;
     this.compQuad = fsQuad(this.composite);
     this.copyQuad = fsQuad(this.copy);
     this.finalQuad = fsQuad(this.final);
@@ -248,7 +317,11 @@ export class Pipeline {
     this.composite.uniforms.uThick.value = Math.max(1, Math.round((sh / 1080) * 2.2 * 10) / 10);
     this.final.uniforms.uTexel.value.set(1 / sw, 1 / sh);
     this.final.uniforms.uFxaa.value = this.q.fxaa && this.q.ss <= 1 ? 1 : 0;
-    FXU.uRes.value.set(bw, bh);
+    let bx = bw, by = bh;
+    for (const rt of this.bloomRT) { bx = Math.max(1, Math.ceil(bx / 2)); by = Math.max(1, Math.ceil(by / 2)); rt.setSize(bx, by); }
+    this.bloomExtract.uniforms.uOff.value.set(0.5 / this.bloomRT[0].width, 0.5 / this.bloomRT[0].height);
+    // FX draw into rtPost (supersampled) on medium/high, straight to the screen on low.
+    if (this.q.outlines) { FXU.uRes.value.set(sw, sh); this.fxHeight = sh; } else { FXU.uRes.value.set(bw, bh); this.fxHeight = bh; }
     WATERU.uSceneRes.value.set(sw, sh);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
@@ -328,22 +401,51 @@ export class Pipeline {
     r.render(scene, cam);
     r.autoClear = true;
 
-    // 6) Grading + AA to the screen.
-    const fu = this.final.uniforms, g = this.grading;
+    // 6) FX with soft depth against the scene (rtPost has no depth buffer; FX test depth in the shader).
+    FXU.uUseDepth.value = 1;
+    r.autoClear = false;
+    cam.layers.set(LAYER.FX);
+    r.render(scene, cam);
+    r.autoClear = true;
+
+    // 7) Bloom.
+    const g = this.grading;
+    const bloomOn = g.bloom > 0.005 || this.view === 1;
+    if (bloomOn) this.renderBloom();
+
+    // 8) Bloom + grading + AA to the screen.
+    const fu = this.final.uniforms;
     fu.uVignette.value = g.vignette; fu.uSat.value = g.sat; fu.uChroma.value = g.chroma;
     fu.uDanger.value = g.danger; fu.uFlash.value = g.flash; fu.uFlashColor.value.copy(g.flashColor);
     fu.uContrast.value = g.contrast; fu.uSplit.value = g.split;
     fu.uSplitShadow.value.copy(g.splitShadow); fu.uSplitHigh.value.copy(g.splitHigh);
+    fu.uBloom.value = bloomOn ? Math.max(g.bloom, this.view === 1 ? 1 : 0) : 0;
+    fu.uView.value = this.view;
     r.setRenderTarget(null);
     r.render(this.finalQuad.scene, this.quadCam);
-
-    // 7) FX on top with soft depth against the scene.
-    FXU.uUseDepth.value = 1;
-    r.autoClear = false;
-    r.clearDepth();
-    cam.layers.set(LAYER.FX);
-    r.render(scene, cam);
-    r.autoClear = true;
     worldLayers();
+  }
+
+  renderBloom() {
+    const r = this.renderer, q = this.bloomQuad, rt = this.bloomRT;
+    const pass = (mat, target) => { q.mesh.material = mat; r.setRenderTarget(target); r.render(q.scene, this.quadCam); };
+    r.autoClear = true;
+    pass(this.bloomExtract, rt[0]);
+    const du = this.bloomDown.uniforms;
+    for (let i = 1; i < rt.length; i++) {
+      du.tInput.value = rt[i - 1].texture;
+      du.uTexel.value.set(1 / rt[i - 1].width, 1 / rt[i - 1].height);
+      pass(this.bloomDown, rt[i]);
+    }
+    // Up: each level adds a tent-filtered copy of the smaller one (tight core + wide falloff).
+    r.autoClear = false;
+    const uu = this.bloomUp.uniforms;
+    for (let i = rt.length - 1; i > 0; i--) {
+      uu.tInput.value = rt[i].texture;
+      uu.uTexel.value.set(0.5 / rt[i].width, 0.5 / rt[i].height);
+      uu.uWeight.value = this.bloomWeights[i - 1];
+      pass(this.bloomUp, rt[i - 1]);
+    }
+    r.autoClear = true;
   }
 }

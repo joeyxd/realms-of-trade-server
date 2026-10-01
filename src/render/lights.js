@@ -20,6 +20,24 @@ const KINDS = {
   arena: { color: 0xff5a24, i: 1.5, r: 20, flicker: 0.06, speed: 0.5, wrap: 0.85, knob: 'lava' },
 };
 
+// Points on the lava river and crater: greedy picks on a 3 u grid, at least 9 u apart (also used
+// by the lava bubbles in effects.js).
+const lavaCache = new WeakMap();
+export function lavaPoints(map) {
+  if (lavaCache.has(map)) return lavaCache.get(map);
+  const picks = [];
+  const half = map.size / 2;
+  for (let z = -half; z < half; z += 3) {
+    for (let x = -half; x < half; x += 3) {
+      if (map.masks(x, z).lava < 0.75) continue;
+      if (picks.some((q) => (q.x - x) ** 2 + (q.z - z) ** 2 < 81)) continue;
+      picks.push({ x, y: map.heightAt(x, z), z });
+    }
+  }
+  lavaCache.set(map, picks);
+  return picks;
+}
+
 export class LocalLights {
   constructor(map) {
     this.sources = [];
@@ -48,17 +66,8 @@ export class LocalLights {
       else if (p.kind === 'hut') add('window', ...at(0.7, 2.2, 2.6));
       else if (p.kind === 'sentinel') add('eyes', ...at(0, 1.6, 0.45));
     }
-    // Lava: greedy picks on a grid, at least 9 u apart, sitting a little above the flow.
-    const picks = [];
-    const half = map.size / 2;
-    for (let z = -half; z < half; z += 3) {
-      for (let x = -half; x < half; x += 3) {
-        if (map.masks(x, z).lava < 0.75) continue;
-        if (picks.some((q) => (q.x - x) ** 2 + (q.z - z) ** 2 < 81)) continue;
-        picks.push({ x, z });
-      }
-    }
-    for (const q of picks) add('lava', q.x, map.heightAt(q.x, q.z) + 1.4, q.z);
+    // Lava: a light a little above each lava point.
+    for (const q of lavaPoints(map)) add('lava', q.x, q.y + 1.4, q.z);
     const A = map.landmarks.arena;
     add('arena', A.x, map.groundAt(A.x, A.z) + 1.2, A.z, { r: map.landmarks.arenaR + 6 });
   }

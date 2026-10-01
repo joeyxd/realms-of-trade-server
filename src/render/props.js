@@ -2,7 +2,7 @@
 // instanced per kind. Glowing bits (lantern glass, coals, hut windows at night) use unlit materials.
 import * as THREE from 'three';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
-import { toon, normalMatFor } from './toon.js';
+import { toon, normalMatFor, glowBasic } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
@@ -179,7 +179,7 @@ export function createProps(map) {
   group.name = 'props';
   const mat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'prop' });
   const nm = normalMatFor({ occluder: true });
-  const glowMat = new THREE.MeshBasicMaterial({ color: 0xffd36a });
+  const glowMat = glowBasic({ color: 0xffd36a }, 1);
   const kits = {
     hut: hutGeo(), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(), lantern: lanternGeo(),
     dockPost: postGeo(), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: signGeo(),
@@ -223,11 +223,11 @@ export function createProps(map) {
     mesh.name = 'propsChunk';
     group.add(mesh);
   }
-  const coalMat = new THREE.MeshBasicMaterial({ color: 0xff7a1a });
+  const coalMat = glowBasic({ color: 0xff7a1a }, 0.85);
   if (glowParts.length) group.add(new THREE.Mesh(mergeGeometries(glowParts), glowMat));
   if (coalParts.length) group.add(new THREE.Mesh(mergeGeometries(coalParts), coalMat));
   // Hut windows and the door crack: lit from inside at dusk and night (color set by the preset).
-  const windowMat = new THREE.MeshBasicMaterial({ color: 0xffb04a });
+  const windowMat = glowBasic({ color: 0xffb04a }, 0);
   if (windowParts.length) {
     const win = new THREE.Mesh(mergeGeometries(windowParts), windowMat);
     win.layers.set(LAYER.NO_OUTLINE);
@@ -327,5 +327,5 @@ export function createProps(map) {
     floaters.push(holder);
   }
 
-  return { group, ship, gate, floaters, windowMat };
+  return { group, ship, gate, floaters, windowMat, glassMat: glowMat };
 }

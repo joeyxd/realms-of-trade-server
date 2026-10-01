@@ -207,8 +207,9 @@ export class PortraitStudio {
     this.cam.position.set(0.36 * big, hy + 0.12 * big, 1.0 * big);
     this.cam.lookAt(0, hy + 0.09 * big, 0);
     const r = this.r, prevClear = r.getClearColor(new THREE.Color()), prevAlpha = r.getClearAlpha(), prevAuto = r.autoClear;
-    const cloud = U.mnCloud.value;
-    U.mnCloud.value = 0;
+    // Studio light only: no cloud shadows, local lights or night fill; alpha is coverage, not glow.
+    const cloud = U.mnCloud.value, nLights = U.mnLightCount.value, fill = U.mnCharFill.value.clone();
+    U.mnCloud.value = 0; U.mnLightCount.value = 0; U.mnGlowOut.value = 0; U.mnCharFill.value.setRGB(0, 0, 0);
     r.autoClear = true;
     r.setRenderTarget(this.rt);
     r.setClearColor(0x000000, 0);
@@ -218,7 +219,7 @@ export class PortraitStudio {
     r.setRenderTarget(null);
     r.setClearColor(prevClear, prevAlpha);
     r.autoClear = prevAuto;
-    U.mnCloud.value = cloud;
+    U.mnCloud.value = cloud; U.mnLightCount.value = nLights; U.mnGlowOut.value = 1; U.mnCharFill.value.copy(fill);
     this.scene.remove(v.root);
     const c = document.createElement('canvas');
     c.width = c.height = this.size;

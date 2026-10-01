@@ -319,11 +319,12 @@ Pipeline (calidad media/alta):
    superficies rasantes, 2 px), costuras por normales (1 px); color `#1A1033`; se desvanecen con la distancia → `rtPost`.
 4. **Copia a media resolución** de `rtPost` → `rtRefract` (lo que el agua refracta, ya con contornos).
 5. **Agua** (capa AGUA) dibujada sobre `rtPost` con test de profundidad manual contra `rtNormal` (ver «Agua»).
-6. **Gradación + AA**: saturación, viñeta, peligro, flash ≤ 0.8, aberración en slow-mo; alta → downsample bilineal
-   del 1.5×; media → FXAA.
-7. **Capa FX** (partículas, ondas, proyectiles, afterimages) **después** de todo, con oclusión manual contra la
+6. **Capa FX** (partículas, chispas, ondas, proyectiles, afterimages) sobre `rtPost`, con oclusión manual contra la
    profundidad de `rtNormal` (partículas suaves). Nunca reciben contorno.
-8. **DOM**: HUD, nameplates, números flotantes.
+7. **Bloom** a partir de la máscara de brillo (alfa de `rtPost`): ½ → ¼ → ⅛ → 1/16 de pantalla y vuelta (§15).
+8. **Bloom + gradación + AA**: contraste, tonos partidos, saturación, viñeta, peligro, flash ≤ 0.8, aberración en
+   slow-mo, dither a 8 bits; alta → downsample bilineal del 1.5×; media → FXAA.
+9. **DOM**: HUD, nameplates, números flotantes.
 
 **Agua (v2)** — `src/render/water.js`, mismo look en las dos variantes:
 
@@ -342,7 +343,7 @@ Todo el ruido sale de dos texturas enlosables generadas al arrancar (`noiseTex.j
 pendientes de ola): ~10 lecturas por píxel en lugar de ruido procedural. Las mismas texturas alimentan las sombras de
 nubes y el detalle del terreno. Un plano de fondo marino oscuro a −7.56 u cierra el océano bajo las celdas profundas.
 
-Baja: sin contornos, render directo + FX con test de profundidad normal.
+Baja: sin contornos, render directo + FX con test de profundidad normal (sin bloom ni gradación).
 
 - Personajes: una geometría fusionada por aspecto (`SkinnedMesh`): 1 draw call por pasada y por personaje; las
   afterimages reutilizan la geometría con un esqueleto congelado (se re-enlazan si cambia el tipo de cuerpo).
@@ -387,6 +388,8 @@ personaje de frente/perfil/espalda, o con la cámara de juego con `pitch: 48`).
 | Contornos | no | sí + FXAA | sí |
 | Sombras | 1024, PCF | 2048, PCF | 2048, PCF (bordes suavizados por `mnBand`) |
 | Partículas | 50 % | 100 % | 100 % |
+| Luces locales | 4 | 8 | 12 |
+| Bloom y gradación | no | sí | sí |
 | Agua | sin olas en normal | completa | completa |
 
 AUTO: mide FPS cada 3 s y baja un nivel si cae de 45. F3 = overlay (fps, ms, draw calls, triángulos, entidades,
@@ -423,11 +426,12 @@ src/client/                gameClient (predicción, reconciliación, interpolaci
 src/sim/                   world · ecs · worldgen · noise · collision · systems/{movement,bots}
 src/render/                scene · pipeline · camera · lighting · lights · toon · noiseTex · sky · terrain · water ·
                            vegetation · props · charkit · charlooks · characters · ambient · quality ·
-                           vfx/{effects,particles,afterimage}
+                           vfx/{effects,particles,streaks,afterimage}
 src/ui/                    title · hud · banners · prompts · pause · stats · touch · toasts
 src/audio/                 engine · sfx · music · ambience
 src/data/                  meta · tuning (· items · skills · enemies · boss · loot_tables · quests · ship_modules)
-tests/                     tests de la sim, de la geometría de personajes y de las luces locales en Node (`npm test`)
+tests/                     tests de la sim, de la geometría de personajes, de las luces locales y de los presets y
+                           partículas en Node (`npm test`)
 tools/shot.mjs             capturas automáticas con Playwright
 legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ```
@@ -435,8 +439,8 @@ legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ## 15. Dirección de arte v2: plan de cambios por referencias
 
 Proceso: el autor manda referencias por área; para cada una se apunta qué tiene que no tengamos y qué cambia. Hecho:
-**agua v2** (refracción, absorción, espuma, cáusticas), **personajes v2** (adultos low-poly, arriba en §11) y el
-**paso 1 del ambiente** (abajo).
+**agua v2** (refracción, absorción, espuma, cáusticas), **personajes v2** (adultos low-poly, arriba en §11) y los
+**pasos 1 y 2 del ambiente** (abajo).
 
 **Ambiente.** Dos referencias de ARPG isométrico oscuro: (A) campo de batalla de noche bajo la lluvia, luz
 de luna fría y un fuego cálido; (B) mazmorra violeta con braseros, chispas y contornos de tinta. Lo que tienen y
@@ -447,8 +451,8 @@ nosotros no:
 | Charcos de luz local cálida (braseros, fogata, faroles, lava) que tiñen suelo, props y personajes | solo sol + hemisférica; braseros sin luz | **luces locales**: hasta 8 luces puntuales cercanas (4 en baja) evaluadas en la misma función de bandas (`mnBand`), caída por bandas y parpadeo; sin sombras | ~1 bucle corto por píxel |
 | Sombras frías azul-violeta, luces cálidas, mucho contraste | sombras teñidas suaves, día brillante | **grading**: tonos partidos (sombras → violeta, luces → ámbar), curva de contraste y viñeta por preset | 0 draw calls (pase final) |
 | Noche / atardecer con luz de luna | «día» y «hora dorada» | presets **noche** (luna fría, niebla oscura) y **noche volcánica** para La Caldera (cielo tapado por humo, la lava y los braseros iluminan); opcional ciclo día/noche | — |
-| Resplandor (bloom) en fuego, lava, gemas, hechizos | no | bloom a media resolución con umbral (emisivos y `aGlow`) | +3 pasadas a media res. |
-| Chispas y brasas en el aire con estela, ceniza | brasas simples en La Caldera | partículas estiradas por velocidad, ceniza, humo con luz de los braseros | 1 draw instanciado |
+| Resplandor (bloom) en fuego, lava, gemas, hechizos | ✅ paso 2 | bloom por máscara de brillo (emisivos, `aGlow`, partículas) | +7 pasadas pequeñas |
+| Chispas y brasas en el aire con estela, ceniza | ✅ paso 2 | chispas estiradas por velocidad, ceniza, humo con luz de los braseros | 1 draw instanciado |
 | Lluvia, suelo mojado y charcos | no | opcional: lluvia instanciada + ondas en el agua, terreno más oscuro con brillo especular y charcos por textura de ruido | 1–2 draws |
 | Contorno de tinta y tramado en sombras (B) | contorno uniforme | opcional «cómic»: tramado en pantalla dentro de las bandas oscuras y grosor de contorno variable | 1 lectura de textura |
 | Muros en primer plano oscurecidos (corte) | se disuelven con tramado | oscurecer a silueta el primer plano, además del tramado | — |
@@ -471,6 +475,20 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | Agua de noche | La dispersión turquesa y la espuma se escalan con la luz del preset; el brillo sólido del sol se apaga más rápido que los destellos, así que la luna deja un camino de brillos y no manchas. |
 | Coste | 0 draw calls nuevos salvo 1 malla de ventanas (solo de noche); un bucle de ≤ 12 iteraciones por píxel en los shaders toon y en el agua. |
 | Depuración | `?tod=day|dusk|night|cycle` y `?phase=0..1`; con `?debug`, `__mn.tod('night')` o `__mn.tod('cycle', 0.75)` (medianoche). |
+
+**Paso 2 hecho: bloom, chispas, ceniza y humo con luz** — `pipeline.js` · `toon.js` · `vfx/streaks.js` · `vfx/particles.js` · `vfx/effects.js`
+
+| Parte | Cómo |
+|---|---|
+| Máscara de brillo | Sin umbral sobre la imagen (la arena al sol no debe brillar): el alfa de `rtMain`/`rtPost` guarda 1 − brillo. Lo opaco escribe 1; bajan el alfa los emisivos toon fuertes (lava, vetas calientes de las grietas, gemas `aGlow`, ojos de centinela), el cristal de los faroles (según el mando de fuego), las brasas de los braseros, las ventanas encendidas, la luna y las estrellas, los destellos de las luces locales y de la luna en el agua, las partículas aditivas, las chispas y las afterimages del dash. El humo y el polvo (mezcla normal) lo vuelven a subir: el humo delante de un fuego le tapa el resplandor. Los contornos nunca brillan; la niebla lo apaga. El terreno usa su propia máscara: brillo suave sobre el río de lava (es grande), pleno en las vetas calientes. |
+| Cadena | Extracción a ½ de pantalla (4 lecturas bilineales: sin parpadeo), bajada ¼ → ⅛ → 1/16 y subida sumando cada nivel al siguiente (filtro dual de Kawase, pesos 1,5 / 1,25 / 1: halo ancho y núcleo apretado). Half float cuando la GPU lo permite. Se suma en el pase final antes de la gradación, × la fuerza del preset (día 0,35, atardecer 0,55, noche 0,9, noche volcánica 1). |
+| FX en luz lineal | La capa FX se dibuja ahora en `rtPost` (antes que el bloom y la gradación), así que mezcla en luz lineal: los fuegos llevan más intensidad (más de noche que de día, para no quemarse a blanco sobre la arena al sol). |
+| Chispas y brasas | `StreakPool`: un draw instanciado de cápsulas orientadas a cámara y estiradas por la velocidad (estela que se curva al deambular), cabeza caliente y cola que se enfría de amarillo a rojo. Chispas que saltan de fogata, braseros y fuegos del portón; brasas que suben del suelo de La Caldera con vaivén; **burbujas de lava** que revientan cada 0,5–1,9 s en el río (chispas + destello + voluta caliente). `effects.sparks()` queda para golpes y parries de M2. |
+| Ceniza | Copos que caen alrededor del jugador cerca de La Caldera, girando y volteándose (el ancho «respira»), claros y oscuros; iluminados como el humo. |
+| Humo con luz | Las partículas alfa se iluminan: luz ambiente del preset (`fxLight`: blanca de día, azul oscura de noche, rojiza en La Caldera) + las luces locales alrededor (sin cara: el humo sobre un brasero queda cálido por debajo) + su propio calor, que se apaga al subir (`heat`). El humo de los fuegos pasa de bolas grises a volutas suaves comidas por ruido; la columna del volcán brilla abajo de noche. El polvo y las ondas de espuma de noche ya no salen claros. |
+| Coste | +7 pasadas a ½–1/16 de pantalla y 1 draw de chispas (≤ 700 instancias); el pase final lee una textura más. En la aldea de noche en alta: ~124 draw calls. Baja: sin bloom; las chispas siguen. |
+| Depuración | con `?debug`, `__mn.view('bloom')` (solo el bloom), `__mn.view('glow')` (la máscara) y `__mn.view()`. |
+| Precompilado | El precalentado de shaders compila cada pasada como se dibuja (destino lineal, capa FX sin las luces de la escena): el primer dash ya no compila nada. |
 
 ## 16. Milestones y checklist de cada entrega
 

@@ -479,6 +479,8 @@ async function boot() {
       if (phase !== undefined) world.lighting.setPhase(phase);
       return { tod: world.lighting.tod, phase: world.lighting.phase, lights: world.lights.picked.filter((s) => s.w > 0).map((s) => s.kind) };
     };
+    // Bloom debug views: __mn.view('bloom') (bloom only), __mn.view('glow') (glow mask), __mn.view() (normal).
+    window.__mn.view = (v) => { world.pipeline.view = { bloom: 1, glow: 2 }[v] || 0; return world.pipeline.view; };
     // Freeze-frame FX check for screenshots at low frame rates.
     window.__mn.fxTest = () => {
       const v = views.get(client.youServer);

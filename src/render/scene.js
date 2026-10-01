@@ -1,6 +1,6 @@
 // Builds the whole 3D world and owns per-frame render updates. Reads client state only.
 import * as THREE from 'three';
-import { Pipeline, LAYER } from './pipeline.js';
+import { Pipeline, LAYER, FXU } from './pipeline.js';
 import { Lighting } from './lighting.js';
 import { createSky } from './sky.js';
 import { createTerrain, createHeightTexture, createSeabed } from './terrain.js';
@@ -69,13 +69,15 @@ export class GameScene {
     this.lights = new LocalLights(map);
     this.windowBase = new THREE.Color(0x3b2418);
     this.windowLit = new THREE.Color(0xffb04a);
+    this.glassDay = new THREE.Color(0xa88a58);
+    this.glassLit = new THREE.Color(0xffd36a);
   }
 
   applyQuality(cfg) {
     this.qcfg = cfg;
     this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa });
     this.lighting.setShadowSize(cfg.shadow);
-    this.effects.setQuality(cfg.particles);
+    this.effects.setQuality(cfg.particles, cfg.outlines);
     this.lights.max = cfg.lights;
     this.water.material.uniforms.uWaves.value = cfg.waves;
     U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
@@ -85,8 +87,7 @@ export class GameScene {
   onResize() {
     const w = innerWidth, h = innerHeight;
     this.pipeline.resize(w, h);
-    const pr = this.renderer.getPixelRatio();
-    this.effects.setViewport(h * pr, this.camera.fov);
+    this.effects.setViewport(this.pipeline.fxHeight, this.camera.fov);
   }
 
   addCharacter(id, skin, opts) {
@@ -111,12 +112,28 @@ export class GameScene {
     const anyView = this.views.values().next().value;
     if (anyView) { this.after.capture(anyView, 0x3bf0ff, 0.01); temp.push(this.after.ghosts[0].mesh); }
     for (const r of this.effects.rings.slice(0, 1)) { r.m.visible = true; temp.push(r.m); }
-    const cam = this.camera;
-    cam.layers.enableAll();
+    const cam = this.camera, r = this.renderer;
+    // Compile each pass the way it draws: into a render target (linear) on medium/high, the screen
+    // (sRGB) on low; the world with the scene lights, the FX layer without them (the FX pass's
+    // camera layers exclude the lights, which changes the program).
+    const fx = this.scene.children.filter((o) => o.layers.mask === 1 << LAYER.FX);
+    const fxScene = new THREE.Scene();
+    for (const o of fx) fxScene.add(o);
+    const prev = r.getRenderTarget();
+    r.setRenderTarget(this.qcfg && this.qcfg.outlines ? this.pipeline.rtPost : null);
+    const compile = (scene, target) => (r.compileAsync ? r.compileAsync(scene, cam, target) : Promise.resolve(r.compile(scene, cam, target)));
     try {
-      if (this.renderer.compileAsync) await this.renderer.compileAsync(this.scene, cam);
-      else this.renderer.compile(this.scene, cam);
+      // Programs are created synchronously inside each call; only the wait is async.
+      cam.layers.set(LAYER.WORLD); cam.layers.enable(LAYER.NO_OUTLINE); cam.layers.enable(LAYER.WATER);
+      const world = compile(this.scene);
+      cam.layers.set(LAYER.FX);
+      const fxDone = compile(fxScene, this.scene);
+      for (const o of fx) this.scene.add(o);
+      r.setRenderTarget(prev);
+      await Promise.all([world, fxDone]);
     } finally {
+      for (const o of fx) if (o.parent !== this.scene) this.scene.add(o);
+      r.setRenderTarget(prev);
       cam.layers.set(LAYER.WORLD); cam.layers.enable(LAYER.NO_OUTLINE);
       for (const m of temp) m.visible = false;
     }
@@ -178,14 +195,26 @@ export class GameScene {
     WATER_LIGHT.uWaterLight.value.copy(p.water);
     WATER_LIGHT.uSparkle.value = p.sparkle;
     WATER_LIGHT.uFoamLight.value = p.foam;
+    WATER_LIGHT.uGlints.value = p.glints;
     const wm = this.props.windowMat;
     if (wm) {
       wm.userData.mesh.visible = p.windows > 0.02;
       wm.color.copy(this.windowBase).lerp(this.windowLit, Math.min(1, p.windows * 1.2));
+      wm.userData.glow.value = Math.min(1, p.windows);
     }
+    // Lantern glass: dull amber by day, lit at dusk and night.
+    const gm = this.props.glassMat;
+    if (gm) {
+      const lit = Math.min(1, p.fire * 1.5);
+      gm.color.copy(this.glassDay).lerp(this.glassLit, lit);
+      gm.userData.glow.value = p.fire;
+    }
+    FXU.uFxLight.value.copy(p.fxLight);
+    this.effects.setNight((p.fire - 0.3) / 0.7);
     const g = this.pipeline.grading;
     g.contrast = p.contrast; g.sat = p.sat; g.vignette = p.vignette; g.split = p.split;
     g.splitShadow.copy(p.splitShadow); g.splitHigh.copy(p.splitHigh);
+    g.bloom = this.qcfg && this.qcfg.bloom ? p.bloom * this.qcfg.bloom : 0;
   }
 
   render() {

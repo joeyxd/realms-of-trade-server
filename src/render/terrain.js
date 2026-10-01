@@ -47,6 +47,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
 
   const opts = {
     key: 'terrain',
+    glowMask: 'mnGlowSrc',
     vertPars: 'attribute vec4 aMask;\nvarying vec4 vMask;\nvarying vec3 vTN;\n',
     vertBody: 'vMask = aMask; vTN = normal;\n',
     fragPars: /* glsl */ `
@@ -55,6 +56,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
       uniform float mnLavaPulse;
       uniform float mnTerrainCaustics;
       float mnTerrainCrack;
+      float mnGlowSrc = 0.0;
       vec3 srgb(vec3 c) { return pow(c, vec3(2.2)); }
       // Low-quality path only (medium/high draw caustics in the water pass).
       float caustic(vec2 p, float t) {
@@ -107,7 +109,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
           vec3 tile = mix(srgb(vec3(0.30, 0.25, 0.33)), srgb(vec3(0.38, 0.32, 0.40)), v.a);
           tile *= 0.9 + 0.15 * smoothstep(0.0, 0.6, v.r);
           float seam = smoothstep(0.075, 0.035, v.g);
-          float crackMask = smoothstep(0.42, 0.62, texture2D(mnNoiseTex, wp.xz * 0.0139 + 0.2).b);
+          float crackMask = smoothstep(0.5, 0.66, texture2D(mnNoiseTex, wp.xz * 0.0139 + 0.2).b);
           mnTerrainCrack = seam * crackMask * vMask.z;
           col = mix(col, mix(tile, srgb(vec3(0.16, 0.11, 0.17)), seam), vMask.z);
           col = mix(col, srgb(vec3(0.25, 0.07, 0.03)), mnTerrainCrack);
@@ -129,13 +131,16 @@ export function createTerrain(map, { segments = 250 } = {}) {
       {
         float pulse = 0.82 + 0.18 * sin(mnTime * 2.2 + vMnWorld.x * 0.3 + vMnWorld.z * 0.2);
         float lavaFlow = texture2D(mnNoiseTex, vMnWorld.xz * 0.0625 + vec2(mnTime * 0.031, mnTime * 0.015)).b;
-        vec3 lavaHot = mix(vec3(1.0, 0.32, 0.04), vec3(1.0, 0.78, 0.25), lavaFlow);
+        // Kept orange-red so the 8-bit buffer does not clip it to flat yellow under bloom.
+        vec3 lavaHot = mix(vec3(0.9, 0.2, 0.03), vec3(1.0, 0.52, 0.13), lavaFlow);
         float lavaW = smoothstep(0.35, 0.85, vMask.w);
         float crust = smoothstep(0.55, 0.7, texture2D(mnNoiseTex, vMnWorld.xz * 0.1125 - vec2(mnTime * 0.02, 0.0)).b);
-        totalEmissiveRadiance += lavaHot * lavaW * (1.0 - crust * 0.75) * pulse * 2.2 * mnLavaPulse;
+        totalEmissiveRadiance += lavaHot * lavaW * (1.0 - crust * 0.8) * pulse * 1.35 * mnLavaPulse;
         // Cracks: mostly dim embers, with hot runs drifting slowly along them.
-        float hot = smoothstep(0.35, 0.8, texture2D(mnNoiseTex, vMnWorld.xz * 0.045 + vec2(mnTime * 0.008, -mnTime * 0.006)).b);
-        totalEmissiveRadiance += mix(vec3(0.6, 0.1, 0.03), vec3(1.0, 0.45, 0.1), hot) * mnTerrainCrack * pulse * (0.75 + 1.05 * hot) * mnLavaPulse;
+        float hot = smoothstep(0.55, 0.85, texture2D(mnNoiseTex, vMnWorld.xz * 0.045 + vec2(mnTime * 0.008, -mnTime * 0.006)).b);
+        totalEmissiveRadiance += mix(vec3(0.34, 0.05, 0.02), vec3(1.0, 0.45, 0.1), hot) * mnTerrainCrack * pulse * (0.45 + 1.35 * hot) * mnLavaPulse;
+        // Bloom: a soft glow over the lava flow (it is big), full glow on the hot crack runs.
+        mnGlowSrc = lavaW * (1.0 - crust * 0.6) * 0.3 + mnTerrainCrack * hot;
       }
     `,
     uniforms: { mnLavaPulse: { value: 1 } },

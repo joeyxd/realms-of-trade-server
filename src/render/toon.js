@@ -20,6 +20,7 @@ export const U = {
   mnRimStr: { value: 0.55 },
   mnCharFill: { value: new THREE.Color(0, 0, 0) }, // camera-side fill on characters (dark presets)
   mnShadowTint: { value: new THREE.Color(0x6a5a9a) },
+  mnGlowOut: { value: 1 }, // 0 while rendering portraits (their alpha is coverage, not the glow mask)
   // Local lights (filled by lights.js): xyz + radius, linear rgb * intensity + wrap, active count.
   mnLightPos: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, -999, 0, 1)) },
   mnLightCol: { value: Array.from({ length: MAX_LIGHTS }, () => new THREE.Vector4(0, 0, 0, 0)) },
@@ -115,6 +116,16 @@ vec3 mnLocalLight(vec3 wp, vec3 wn) {
   }
   return sum;
 }
+// Light arriving at a point from every direction (smoke, dust, ash: lit from below by braziers).
+vec3 mnLocalOmni(vec3 wp) {
+  vec3 sum = vec3(0.0);
+  for (int i = 0; i < MN_MAX_LIGHTS; i++) {
+    if (i >= mnLightCount) break;
+    vec4 lp = mnLightPos[i];
+    sum += mnLightCol[i].rgb * mnLightFall(clamp(1.0 - distance(lp.xyz, wp) / lp.w, 0.0, 1.0));
+  }
+  return sum;
+}
 // Water: glints where each light reflects in the waves + a faint glow on the surface below it.
 vec3 mnLocalWater(vec3 wp, vec3 n, vec3 V) {
   vec3 sum = vec3(0.0);
@@ -128,6 +139,18 @@ vec3 mnLocalWater(vec3 wp, vec3 n, vec3 V) {
     sum += mnLightCol[i].rgb * (x * x * 0.08 + spec * x * 0.9);
   }
   return sum;
+}
+`;
+
+// Glow mask out (see pipeline.js): alpha = 1 - glow, faded by fog. Appended after dithering_fragment.
+// Toon surfaces glow only where the emissive is bright (hot lava, gems), not on dim embers.
+export const glowOut = (expr) => /* glsl */ `
+{
+  float mnG = clamp(${expr}, 0.0, 1.0) * mnGlowOut;
+  #ifdef USE_FOG
+  mnG *= 1.0 - fogFactor;
+  #endif
+  gl_FragColor.a = 1.0 - mnG;
 }
 `;
 
@@ -255,7 +278,8 @@ function definesFor(opts) {
   return d;
 }
 
-// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, uniforms, fragPars, albedo, emissive, key}
+// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, uniforms, fragPars, albedo, emissive,
+// glowMask (GLSL expression for the bloom mask, default: bright emissive), key}
 export function patchToon(mat, opts = {}) {
   mat.defines = { ...(mat.defines || {}), ...definesFor(opts) };
   const extra = opts.uniforms || {};
@@ -267,15 +291,32 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + VERT_SWAY + (opts.vertBody || ''))
       .replace('#include <project_vertex>', '#include <project_vertex>\n' + VERT_WORLD);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + GLSL_LIGHTS + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\nuniform vec3 mnCharFill;\n' + (opts.fragPars || ''))
+      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + GLSL_LIGHTS + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\nuniform vec3 mnCharFill;\nuniform float mnGlowOut;\n' + (opts.fragPars || ''))
       .replace('#include <gradientmap_pars_fragment>', BAND_PARS)
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
       .replace('#include <color_fragment>', '#include <color_fragment>\n' + (opts.albedo || ''))
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || '') + '\n#ifdef MN_GLOW\ntotalEmissiveRadiance += diffuseColor.rgb * vMnGlow * mnGlowAmt;\n#endif')
       .replace('#include <lights_fragment_begin>', 'float mnSunCloud = mnCloudShadow(vMnWorld.xz);\n' + lightsBegin())
-      .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM);
+      .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM)
+      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + glowOut(opts.glowMask || 'smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b))'));
   };
   mat.customProgramCacheKey = () => 'mn-toon-' + (opts.key || '') + JSON.stringify(definesFor(opts));
+  return mat;
+}
+
+// Unlit glowing surface (lantern glass, coals, lit windows). userData.glow scales its bloom.
+export function glowBasic(params, glow = 1) {
+  const mat = new THREE.MeshBasicMaterial(params);
+  const g = { value: glow };
+  mat.onBeforeCompile = (sh) => {
+    sh.uniforms.mnGlowAmt = g;
+    sh.uniforms.mnGlowOut = U.mnGlowOut;
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float mnGlowAmt;\nuniform float mnGlowOut;')
+      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + glowOut('mnGlowAmt'));
+  };
+  mat.customProgramCacheKey = () => 'mn-glow-basic';
+  mat.userData.glow = g;
   return mat;
 }
 

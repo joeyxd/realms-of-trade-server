@@ -2,8 +2,8 @@
 // lighting presets. Two layers are blended every frame:
 //   base  = time of day: a fixed preset (day / dusk / night) or the day–night cycle
 //   zone  = La Caldera's "volcanic night" on top (smoke hides the sky; lava and braziers light it)
-// A preset also carries the local-light knobs, the water's light and the final grading, which
-// GameScene copies to their owners.
+// A preset also carries the local-light knobs, the water's light, the bloom strength, the ambient
+// light on smoke and dust (fxLight) and the final grading, which GameScene copies to their owners.
 import * as THREE from 'three';
 import { SKY } from './sky.js';
 import { U } from './toon.js';
@@ -21,6 +21,7 @@ const PRESETS = {
     fire: 0.3, lavaLight: 0.6, windows: 0, player: 0,
     water: C(0xffffff), sparkle: 1, foam: 1,
     contrast: 0.1, sat: 1.04, vignette: 0.22, splitShadow: C(0x5a4aa0), splitHigh: C(0xffd9a0), split: 0.05,
+    bloom: 0.35, glints: 0.15, fxLight: CL(1, 1, 1),
   },
   golden: {
     sun: C(0xffb36a), sunI: 2.3, el: 30, az: 44,
@@ -31,6 +32,7 @@ const PRESETS = {
     fire: 0.55, lavaLight: 0.9, windows: 0.45, player: 0.1,
     water: C(0xffe2d0), sparkle: 1.1, foam: 1,
     contrast: 0.14, sat: 1.03, vignette: 0.28, splitShadow: C(0x5a3c9a), splitHigh: C(0xffb070), split: 0.08,
+    bloom: 0.55, glints: 0.25, fxLight: CL(1, 0.8, 0.66),
   },
   night: {
     sun: C(0x9fb2ff), sunI: 0.9, el: 58, az: -18,
@@ -41,6 +43,7 @@ const PRESETS = {
     fire: 1, lavaLight: 1, windows: 1, player: 0.3,
     water: C(0x3a4c78), sparkle: 0.4, foam: 0.62,
     contrast: 0.22, sat: 0.92, vignette: 0.4, splitShadow: C(0x3438b0), splitHigh: C(0xffb060), split: 0.16,
+    bloom: 0.9, glints: 0.6, fxLight: CL(0.24, 0.28, 0.45),
   },
   volcanic: {
     sun: C(0xff8c5a), sunI: 0.85, el: 40, az: 60,
@@ -51,6 +54,7 @@ const PRESETS = {
     fire: 1, lavaLight: 1.2, windows: 0, player: 0.5,
     water: C(0x6a3a30), sparkle: 0.2, foam: 0.6,
     contrast: 0.24, sat: 1.05, vignette: 0.42, splitShadow: C(0x4a2a90), splitHigh: C(0xff9040), split: 0.18,
+    bloom: 1.0, glints: 0.3, fxLight: CL(0.42, 0.27, 0.24),
   },
 };
 PRESETS.dusk = PRESETS.golden;

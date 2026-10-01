@@ -12,7 +12,7 @@ son los CDN de Three.js y GSAP, y Google Fonts.
 
 ```bash
 npx serve .          # o: npm start  → http://localhost:5173
-npm test             # tests de la simulación en Node (determinismo, dash, colisiones, predicción)
+npm test             # tests en Node (simulación, geometría de personajes, luces locales, partículas)
 npm install          # opcional: trae three como devDependency para el test de geometría de personajes
 ```
 
@@ -30,7 +30,7 @@ node tools/shot.mjs shots/m --scenario=title --w=390 --h=844 --quality=medium
 Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (overlay F3), `?worker=0`
 (servidor en el hilo principal), `?tod=day|dusk|night|cycle` y `?phase=0..1` (hora del día), `?debug`
 (teletransporte `__mn.teleport(x, z)`, `__mn.fxTest()`, la ficha de personajes `__mn.sheet({ yaw, run, pitch, dist,
-list })` y la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)`).
+list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas del bloom `__mn.view('bloom' | 'glow')`).
 
 ## Controles
 
@@ -53,7 +53,7 @@ desbloquean por nivel (3/5/7).
 |---|---|---|
 | M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
-| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading); siguen bloom + brasas, lluvia, modo tinta → `DESIGN.md` §15 | en curso |
+| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz); siguen lluvia, modo tinta → `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | siguiente |
 | M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
@@ -71,6 +71,10 @@ desbloquean por nivel (3/5/7).
   oscura con camino de brillos) y **noche volcánica** en La Caldera; ciclo día/noche de 16 min o una hora fija
   («Hora del día» en Pausa). Grading por preset: contraste en curva S, tonos partidos (sombras índigo, luces ámbar)
   y viñeta.
+- **Ambiente v2, paso 2**: bloom por máscara de brillo (lava, vetas de las grietas, gemas, faroles, ventanas, luna y
+  estrellas, destellos en el agua, fuego, chispas y afterimages; la arena al sol no brilla), más fuerte de noche y en
+  La Caldera. Chispas y brasas con estela que se enfrían al subir, burbujas de lava que revientan, ceniza que cae
+  cerca de La Caldera, y humo en volutas iluminado por el preset y por los braseros.
 - **Agua v2**: refracción en pantalla del fondo (con sus contornos), absorción por canal a lo largo del rayo
   (arena → turquesa → azul profundo), cáusticas onduladas sobre el fondo, espuma de contacto alrededor de rocas,
   postes, casco, carga flotante y piernas, encaje de espuma en la orilla, ondas de espuma al vadear, destellos de sol
@@ -85,7 +89,7 @@ desbloquean por nivel (3/5/7).
 - **Cámara MOBA**: seguimiento amortiguado, look-ahead al cursor (máx. 20 %), 3 zooms, shake por trauma, punch,
   modo naval reservado. La vegetación y los props que tapan al jugador o están pegados a la cámara se disuelven.
 - **Mundo vivo**: 5 bots con nombre que pasean por la aldea (la UI no los distingue de jugadores), la Capitana Brea
-  y Tía Perla con diálogos, cangrejos que huyen, gaviotas, mariposas, humo de fogata y del volcán, brasas.
+  y Tía Perla con diálogos, cangrejos que huyen, gaviotas, mariposas, humo de fogata y del volcán, chispas, brasas y ceniza.
 - **UI**: título animado (JUGAR solo se activa tras compilar los shaders), HUD con retrato, barras, barra de acción
   con cargas de dash y recarga radial, banner de zona, objetivos del tutorial, avisos flotantes, nameplates que
   escalan con la distancia y se ocultan si tapan al jugador, pausa con ajustes, overlay F3, controles táctiles.
@@ -94,8 +98,8 @@ desbloquean por nivel (3/5/7).
   menor con dron en La Caldera.
 - **Calidad** baja/media/alta + AUTO (baja un nivel si cae de 45 fps).
 
-Medido en la vista de juego (sumando todas las pasadas): 90–115 draw calls y 220–300 k triángulos en alta, ~70 draw
-calls y 150–180 k triángulos en baja.
+Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
+alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.
 
 ## Arquitectura
 

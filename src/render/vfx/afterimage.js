@@ -1,5 +1,5 @@
 // Dash afterimages: pooled ghost copies of a character's pose (same geometry, frozen matrices),
-// additive fresnel tint in the accent color, fading over ~0.25 s. FX layer (never outlined).
+// fresnel tint in the accent color that blooms, fading over ~0.25 s. FX layer (never outlined).
 import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { BONES } from '../charkit.js';
@@ -42,7 +42,11 @@ export class Afterimages {
       const mat = new THREE.ShaderMaterial({
         uniforms: { ...FXU, uColor: { value: new THREE.Color(0x3bf0ff) }, uAlpha: { value: 0 } },
         vertexShader: VERT, fragmentShader: FRAG,
-        transparent: true, depthWrite: false, blending: THREE.NormalBlending,
+        transparent: true, depthWrite: false,
+        // Normal blend for color; the glow mask drops by the ghost's alpha so ghosts bloom.
+        blending: THREE.CustomBlending,
+        blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneMinusSrcAlphaFactor, blendEquation: THREE.AddEquation,
+        blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor, blendEquationAlpha: THREE.AddEquation,
       });
       // Frozen bones: never in the scene graph, matrixWorld copied at capture time.
       const bones = Array.from({ length: BONES.length }, () => { const b = new THREE.Bone(); b.matrixAutoUpdate = false; b.matrixWorldAutoUpdate = false; return b; });
