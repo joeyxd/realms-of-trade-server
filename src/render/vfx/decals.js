@@ -17,7 +17,7 @@ void main() {
 
 const FRAG = /* glsl */ `
 ${GLSL_FX_DEPTH}
-uniform float uKind;    // 0 = AoE telegraph, 1 = practice ring
+uniform float uKind;    // 0 = AoE telegraph, 1 = practice ring, 2 = rune circle (La Prueba de Fuego)
 uniform float uFill;    // 0..1 wind-up progress
 uniform float uBurst;   // 0..1 after the burst (−1 before)
 uniform float uTime;
@@ -44,6 +44,16 @@ void main() {
       col = mix(vec3(1.0, 0.92, 0.75), uColor, uBurst);
       a = (1.0 - smoothstep(1.0, 1.0 + w, r)) * k * k * 0.9;
     }
+  } else if (uKind > 1.5) {
+    // Rune circle: an emissive ember band with rune ticks; pulses while the trial can be started.
+    float band = smoothstep(0.84 - w, 0.86, r) * (1.0 - smoothstep(1.0, 1.0 + w, r));
+    float runes = step(0.62, fract(ang * 24.0)) * step(0.9, r) * step(r, 0.96);
+    float inner = smoothstep(0.3, 0.32, r) * (1.0 - smoothstep(0.34, 0.36, r));
+    float spokes = step(0.97, fract(ang * 6.0 + 0.5)) * step(0.34, r) * step(r, 0.84);
+    float pulse = 0.55 + 0.45 * sin(uTime * 3.0);
+    col = mix(uColor, vec3(1.0, 0.9, 0.6), runes);
+    a = max(band * (1.0 - runes * 0.6), max(runes, max(inner, spokes) * 0.7)) * mix(0.35, 0.75 + 0.25 * pulse, uActive);
+    col *= mix(0.8, 1.5, uActive * pulse);
   } else {
     // Rope ring: braided band (alternating strands) with a soft pulse when it is in use.
     float band = smoothstep(0.88 - w, 0.9, r) * (1.0 - smoothstep(1.0, 1.0 + w, r));

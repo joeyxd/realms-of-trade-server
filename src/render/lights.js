@@ -18,6 +18,8 @@ const KINDS = {
   eyes: { color: 0x5ad8ff, i: 1.4, r: 3.2, flicker: 0, speed: 0, wrap: 0.6, knob: 'eyes' },
   // Soft up-light from the glowing cracks of the Caldera floor.
   arena: { color: 0xff5a24, i: 1.5, r: 20, flicker: 0.06, speed: 0.5, wrap: 0.85, knob: 'lava' },
+  // Hellfire's body glow (M2.5): moved with the boss by the scene, dark when there is no boss.
+  boss: { color: 0xff7a2a, i: 0, r: 10, flicker: 0.18, speed: 2.2, wrap: 0.5, knob: 'fire' },
 };
 
 // Points on the lava river and crater: greedy picks on a 3 u grid, at least 9 u apart (also used
@@ -75,6 +77,8 @@ export class LocalLights {
     for (const q of lavaPoints(map)) add('lava', q.x, q.y + 1.4, q.z);
     const A = map.landmarks.arena;
     add('arena', A.x, map.groundAt(A.x, A.z) + 1.2, A.z, { r: map.landmarks.arenaR + 6 });
+    add('boss', A.x, map.groundAt(A.x, A.z) + 2.5, A.z);
+    this.bossLight = this.sources[this.sources.length - 1];
   }
 
   // Short-lived light (dash, hits). Fades with (1 - t)^2.

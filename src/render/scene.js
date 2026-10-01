@@ -21,6 +21,34 @@ import { LocalLights } from './lights.js';
 import { U } from './toon.js';
 import { tuning } from '../data/tuning.js';
 
+// Boss shield: an additive fresnel ellipsoid with drifting hex cells (no depth write, no outline).
+function makeShieldBubble() {
+  const m = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendEquation: THREE.AddEquation,
+    blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor, blendEquationAlpha: THREE.AddEquation,
+    uniforms: { ...FXU, uTime: { value: 0 }, uColor: { value: new THREE.Color(0xb48cff) } },
+    vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      void main() { vec4 wp = modelMatrix * vec4(position, 1.0); vP = position; vN = normalize(mat3(modelMatrix) * normal); vV = normalize(cameraPosition - wp.xyz); gl_Position = projectionMatrix * viewMatrix * wp; }`,
+    fragmentShader: `uniform float uTime; uniform vec3 uColor; varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      void main() {
+        float f = pow(1.0 - abs(dot(normalize(vN), vV)), 2.2);
+        vec2 q = vec2(atan(vP.x, vP.z) * 3.0, vP.y * 5.0 + uTime * 0.6);
+        vec2 g = abs(fract(q + vec2(0.5 * floor(q.y), 0.0)) - 0.5);
+        float hex = smoothstep(0.42, 0.48, max(g.x, g.y));
+        float a = clamp(f * 0.9 + hex * 0.18 * (0.4 + f), 0.0, 1.0) * (0.75 + 0.25 * sin(uTime * 5.0));
+        gl_FragColor = vec4(uColor * a * 1.4, a);
+        #include <colorspace_fragment>
+      }`,
+  });
+  const g = new THREE.SphereGeometry(1, 28, 18);
+  const mesh = new THREE.Mesh(g, m);
+  mesh.scale.set(1.9, 2.5, 1.9);
+  mesh.layers.set(LAYER.FX);
+  mesh.frustumCulled = false;
+  mesh.renderOrder = 24;
+  return mesh;
+}
+
 export class GameScene {
   constructor(canvas, map) {
     this.map = map;
@@ -62,6 +90,13 @@ export class GameScene {
     this.debris.onChange = () => this.pipeline.markDirty();
     const ring = map.practice.ring;
     this.practiceRing = this.decals.ring(ring.x, ring.z, ring.r);
+    // La Prueba de Fuego: rune circle at the arena centre (stepping in starts it) and the boss shield.
+    const A = map.landmarks.arena;
+    this.runes = this.decals.ring(A.x, A.z, 3.2, 0xff8a3a);
+    this.runes.mat.uniforms.uKind.value = 2;
+    this.shieldBubble = makeShieldBubble();
+    this.shieldBubble.visible = false;
+    this.scene.add(this.shieldBubble);
     this.after = new Afterimages(this.scene);
     this.ambient = new Ambient(this.scene, map);
     this.views = new Map();
@@ -91,6 +126,22 @@ export class GameScene {
     const w = innerWidth, h = innerHeight;
     this.pipeline.resize(w, h);
     this.effects.setViewport(this.pipeline.fxHeight, this.camera.fov);
+  }
+
+  // Encounter visuals, per frame: runes available (0..1), the boss view's id, shield 0/1/2, invulnerable.
+  setEncounterFx({ runes = 1, bossId = 0, shield = 0, inv = 0 } = {}) {
+    this.runes.mat.uniforms.uActive.value = runes;
+    const v = bossId ? this.views.get(bossId) : null;
+    const L = this.lights.bossLight;
+    if (!v || v.dead || !v.root.visible) { this.shieldBubble.visible = false; if (L) L.i = 0; return; }
+    const p = v.root.position;
+    if (L) { L.x = p.x; L.y = p.y + 2.6; L.z = p.z; L.i = inv ? 4.5 : 3.0; }
+    v.glow.value = (inv ? 1.6 : 1.0) + (v.attack ? 0.5 : 0) + 0.15 * Math.sin(this.time * 4);
+    const b = this.shieldBubble;
+    b.visible = shield === 1 || inv;
+    b.position.set(p.x, p.y + 1.9, p.z);
+    b.material.uniforms.uTime.value = this.time;
+    b.material.uniforms.uColor.value.set(inv ? 0xffb26b : 0xb48cff);
   }
 
   // rec.enemy picks the enemy view (skeleton archer, dormant sentinel, practice dummy / cannon).
@@ -126,7 +177,7 @@ export class GameScene {
     // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
-    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard]) { m.visible = true; temp.push(m); }
+    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble]) { m.visible = true; temp.push(m); }
     const probe = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), characterMaterial('base'));
     probe.castShadow = true;
     this.scene.add(probe);

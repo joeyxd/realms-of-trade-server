@@ -94,7 +94,7 @@ export class CameraRig {
     this.look.z = damp(this.look.z, this.lookWant.z, T.lookAheadLambda, dt);
     this.yaw = damp(this.yaw, this.yawTarget, 9, dt);
     this.pitch = damp(this.pitch, this.pitchTarget, 6, dt);
-    this.dist = damp(this.dist, this.distTarget, 7, dt);
+    this.dist = damp(this.dist, this.distTarget * (this.mode === 'iso' ? this.fightZoom || 1 : 1), this.fightZoom > 1 ? 2.5 : 7, dt);
     this.punch = damp(this.punch, 0, T.punchLambda, dt);
     const dolly = 1 - T.slowmoDolly * clamp(1 - timeScale, 0, 1) - this.punch * 0.08;
     const d = this.dist * dolly;

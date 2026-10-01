@@ -55,6 +55,12 @@ export class Hud {
         <button class="icon-btn interactive" id="hud-mute" aria-label="Silenciar">${ICONS.sound}</button>
         <button class="icon-btn interactive" id="hud-settings" aria-label="Ajustes">${ICONS.gear}</button>
       </div>
+      <div id="boss-bar" hidden>
+        <div class="bname outlined"><span class="n"></span><span class="t"></span></div>
+        <div class="bbar"><div class="ghost"></div><div class="fill"></div><i class="mark"></i><div class="num"></div></div>
+        <div class="bstate"></div>
+      </div>
+      <div id="enc-info" class="outlined" hidden></div>
       <div id="zone-banner"><div class="zname outlined"></div><div class="zsub"></div><div class="zline"></div></div>
       <div id="toasts"></div>
       <div class="tracker frame-dark"><h3>Primeros pasos</h3><ul></ul></div>
@@ -94,6 +100,48 @@ export class Hud {
     this.chainEl = root.querySelector('#chain');
     this.fallen = root.querySelector('#fallen');
     this.last = {};
+    this.bossEl = root.querySelector('#boss-bar');
+    this.bossFill = this.bossEl.querySelector('.fill'); this.bossGhost = this.bossEl.querySelector('.ghost');
+    this.bossNum = this.bossEl.querySelector('.num'); this.bossState = this.bossEl.querySelector('.bstate');
+    this.encEl = root.querySelector('#enc-info');
+    this.lastBoss = '';
+    this.lastEnc = null;
+  }
+
+  // Boss bar (top centre): {name, title, hp, maxHp, phase (0-based), phases, mark (hp fraction of the next
+  // phase), shield (0 off · 1 up · 2 broken), inv} or null to hide.
+  setBoss(b) {
+    const key = b ? [b.name, Math.ceil(b.hp), b.maxHp, b.phase, b.shield, b.inv].join('|') : '';
+    if (key === this.lastBoss) return;
+    const was = !!this.lastBoss;
+    this.lastBoss = key;
+    this.bossEl.hidden = !b;
+    this.root.classList.toggle('boss-on', !!b);
+    if (!b) return;
+    if (!was) {
+      this.bossEl.querySelector('.n').textContent = b.name;
+      this.bossEl.querySelector('.t').textContent = b.title || '';
+      gsap.fromTo(this.bossEl, { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'back.out(1.6)' });
+    }
+    const fr = Math.max(0, Math.min(1, b.hp / b.maxHp));
+    this.bossFill.style.width = (fr * 100).toFixed(2) + '%';
+    this.bossGhost.style.width = (fr * 100).toFixed(2) + '%';
+    this.bossNum.textContent = `${Math.ceil(Math.max(0, b.hp))} / ${b.maxHp}`;
+    const mark = this.bossEl.querySelector('.mark');
+    mark.hidden = !(b.mark > 0);
+    if (b.mark > 0) mark.style.left = (b.mark * 100).toFixed(1) + '%';
+    this.bossEl.classList.toggle('shield', b.shield === 1);
+    this.bossEl.classList.toggle('broken', b.shield === 2);
+    this.bossEl.classList.toggle('inv', !!b.inv);
+    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>' : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : '');
+  }
+
+  // Encounter line under the boss bar / top centre ("OLEADA 2/3 · Enemigos 9"), or null.
+  setEnc(html) {
+    if (html === this.lastEnc) return;
+    this.lastEnc = html;
+    this.encEl.hidden = !html;
+    if (html) this.encEl.innerHTML = html;
   }
 
   // Per-frame stats (only touches the DOM when a value changes).
