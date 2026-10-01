@@ -36,7 +36,7 @@ Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (ove
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
 | Hablar / interactuar | F | botón F |
-| Zoom (3 niveles) | rueda | — |
+| Zoom (3 niveles: 17 / 23 / 30 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
 | Pausa y ajustes | ESC | botón ⚙ |
 | Rendimiento | F3 | — |
@@ -61,8 +61,10 @@ desbloquean por nivel (3/5/7).
 - **Render toon**: una sola función de bandas de luz (`mnBand`) compartida por personajes, props, terreno y agua;
   contornos por post-proceso (profundidad + normales, grosor constante, sin artefactos diagonales); sombras del sol
   que siguen al jugador encajadas a texel; sombras de nubes; hora dorada al entrar en La Caldera (transición de 2 s).
-- **Agua**: profundidad desde el heightmap (turquesa → azul), espuma en la orilla, destellos de sol cuantizados,
-  fresnel al cielo, cáusticas en la arena mojada.
+- **Agua v2**: refracción en pantalla del fondo (con sus contornos), absorción por canal a lo largo del rayo
+  (arena → turquesa → azul profundo), cáusticas onduladas sobre el fondo, espuma de contacto alrededor de rocas,
+  postes, casco, carga flotante y piernas, encaje de espuma en la orilla, ondas de espuma al vadear, destellos de sol
+  que titilan, algas y piedras bajo el agua. Variante barata para calidad baja. Detalle en `DESIGN.md` §11.
 - **Personaje chibi** con 5 aspectos: un solo mesh con huesos rígidos (1 draw call por pasada), animación procedural
   (respiración, carrera con inclinación, estiramiento en el dash, squash & stretch con muelles amortiguados) y
   afterimages del dash.

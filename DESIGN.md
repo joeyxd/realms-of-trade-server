@@ -63,8 +63,8 @@ Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isomé
 
 | Parámetro | Valor |
 |---|---|
-| Tipo | `PerspectiveCamera`, FOV 35°, pitch 57°, yaw 45° fijo |
-| Zoom (rueda) | 3 distancias: 16 / **23** (defecto) / 31 u → personaje ≈ 7–8 % del alto de pantalla en 23 u |
+| Tipo | `PerspectiveCamera`, FOV 35°, pitch 48° (más perspectiva: se ven caras y horizonte cercano), yaw 45° fijo |
+| Zoom (rueda) | 3 distancias: 17 / **23** (defecto) / 30 u → personaje ≈ 7 % del alto de pantalla en 23 u |
 | Seguimiento | `damp(pos, objetivo, λ=9, dt)` |
 | Look-ahead | hacia el cursor, `0.3 × (cursor − jugador)` limitado al 20 % de la altura visible, λ=4 |
 | Rotación opcional | pasos de 90° con **Z / X** (tween 0.35 s). *Q/E quedan para habilidades.* Desactivada por defecto en Ajustes. |
@@ -311,17 +311,36 @@ u8 facing·(256/2π), u8 estado`. ~11 bytes/entidad → 50 jugadores a 20 Hz ≈
 
 Pipeline (calidad media/alta):
 
-1. **Pasada principal** (capas MUNDO + SIN_CONTORNO: terreno, agua, cielo, personajes, props) → `rtMain`
-   (en alta a 1.5× = supersampling).
-2. **Pasada de normales + profundidad** (solo capa MUNDO, materiales normales pareados que repiten el mismo
-   desplazamiento de vértices — viento de palmeras, dithering de oclusión) → `rtNormal` + `DepthTexture`.
-3. **Composición**: detección de bordes — silueta por profundidad (umbral suelto, modulado por N·V para evitar
-   artefactos diagonales en superficies rasantes, 2 px), costuras por normales (1 px); color `#1A1033`; se desvanece
-   con la distancia/niebla. + gradación de color + viñeta.
-4. **AA**: alta → downsample bilineal del 1.5×; media → FXAA.
-5. **Capa FX** (partículas, proyectiles, afterimages) **después** de los contornos, con oclusión manual contra la
+1. **Normales + profundidad opaca** (capa MUNDO, materiales normales pareados que repiten el mismo desplazamiento
+   de vértices — viento de palmeras/algas, dithering de oclusión) → `rtNormal` + `DepthTexture`.
+2. **Color opaco** (capas MUNDO + SIN_CONTORNO: terreno, fondo marino, cielo, personajes, props) → `rtMain`
+   (en alta a 1.5× = supersampling). El mapa de sombras se actualiza una sola vez, aquí.
+3. **Contornos**: silueta por profundidad (umbral suelto, modulado por N·V para evitar artefactos diagonales en
+   superficies rasantes, 2 px), costuras por normales (1 px); color `#1A1033`; se desvanecen con la distancia → `rtPost`.
+4. **Copia a media resolución** de `rtPost` → `rtRefract` (lo que el agua refracta, ya con contornos).
+5. **Agua** (capa AGUA) dibujada sobre `rtPost` con test de profundidad manual contra `rtNormal` (ver «Agua»).
+6. **Gradación + AA**: saturación, viñeta, peligro, flash ≤ 0.8, aberración en slow-mo; alta → downsample bilineal
+   del 1.5×; media → FXAA.
+7. **Capa FX** (partículas, ondas, proyectiles, afterimages) **después** de todo, con oclusión manual contra la
    profundidad de `rtNormal` (partículas suaves). Nunca reciben contorno.
-6. **DOM**: HUD, nameplates, números flotantes.
+8. **DOM**: HUD, nameplates, números flotantes.
+
+**Agua (v2)** — `src/render/water.js`, mismo look en las dos variantes:
+
+| Elemento | Media/alta (refracción) | Baja |
+|---|---|---|
+| Profundidad | reconstruye el fondo bajo cada píxel desde la profundidad opaca (rocas, postes, casco, piernas) | heightmap del terreno |
+| Color | Beer–Lambert por canal a lo largo del rayo (`absorb = 0.46, 0.20, 0.15` por u): arena → turquesa → azul profundo | igual, con alfa |
+| Refracción | desplaza la imagen opaca con la pendiente de las olas; nunca trae lo que está sobre el agua | — |
+| Cáusticas | dos redes de celdas deformadas por las olas sobre el fondo, se apagan con la profundidad y en sombra | en el shader del terreno |
+| Superficie | bandas `mnBand`, manchas de luz onduladas, fresnel al cielo, destellos de sol en celdas que titilan | igual |
+| Espuma | contacto con todo lo que atraviesa la superficie + encaje con huecos en la orilla + líneas de ola | contacto con la costa |
+| Interacción | ondas de espuma al vadear (cualquier personaje) y al hacer dash; salpicaduras toon | igual |
+| LOD | normales y destellos se calman a > 45–220 u (sin moiré en el horizonte) | igual |
+
+Todo el ruido sale de dos texturas enlosables generadas al arrancar (`noiseTex.js`: celdas F1/F2−F1, fbm e id de celda;
+pendientes de ola): ~10 lecturas por píxel en lugar de ruido procedural. Las mismas texturas alimentan las sombras de
+nubes y el detalle del terreno. Un plano de fondo marino oscuro a −7.56 u cierra el océano bajo las celdas profundas.
 
 Baja: sin contornos, render directo + FX con test de profundidad normal.
 
@@ -331,10 +350,12 @@ Baja: sin contornos, render directo + FX con test de profundidad normal.
 - Toon: `MeshToonMaterial` parcheado con **bandas suaves propias** (`mnBand`, 4 bandas con antialias por `fwidth`).
   El **terreno** es un `MeshToonMaterial` con splat por altura/pendiente/máscaras (arena, arena mojada, hierba,
   roca, basalto, sendero, grietas de lava emisivas) y el **agua** un `ShaderMaterial` que usa la **misma** función
-  `mnBand`, sombras del sol, profundidad desde el heightmap (espuma de orilla, color turquesa→azul, transparencia en
-  lo bajo), destellos de sol cuantizados y fresnel al color del cielo.
+  `mnBand` y las sombras del sol.
+- Fondo marino: algas que se mecen y piedras claras en las orillas; carga flotante y un bote que se mecen junto al
+  muelle (la espuma de contacto los rodea sola).
 - Sombras de nubes: ruido animado inyectado en todos los materiales (multiplica solo la luz del sol).
-- Sol direccional con sombras en frustum ortográfico ±26 u que sigue al jugador (encajado a texel → sin parpadeo),
+- Sol direccional con sombras en frustum ortográfico ±30 u centrado 7 u por delante del jugador (la cámara inclinada
+  ve más lejos), encajado a texel → sin parpadeo,
   hemisférica cálida, rim light fría desde atrás. Preset «hora dorada» en La Caldera (tween 2 s).
 
 **Calidad**

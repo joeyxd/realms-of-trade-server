@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { part, merge, ico, sphere, cyl, lumpy } from './geo.js';
 import { toon, normalMatFor } from './toon.js';
+import { LAYER } from './pipeline.js';
 
 const CHUNK = 48;
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
@@ -109,6 +110,53 @@ function rockGeometry(variant) {
   return merge([part(g, 0, { pos: [0, 0.3, 0], scale: [1.15, 0.75, 1], paint })]);
 }
 
+// Seaweed: a tuft of curved, tapered ribbons; aFlex grows with height so tips sway most.
+function seaweedGeometry() {
+  const blades = 5, rows = 6;
+  const pos = [], col = [], flex = [], idx = [];
+  const base = new THREE.Color(0x1f6b45), tip = new THREE.Color(0x6fd08a);
+  let v0 = 0;
+  for (let b = 0; b < blades; b++) {
+    const a = (b / blades) * Math.PI * 2 + b * 0.7;
+    const r0 = 0.06 + (b % 2) * 0.05;
+    const H = 0.75 + (b % 3) * 0.18;
+    const bend = 0.18 + (b % 2) * 0.12;
+    const dir = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
+    const side = new THREE.Vector3(-dir.z, 0, dir.x);
+    for (let r = 0; r <= rows; r++) {
+      const t = r / rows;
+      const w = 0.07 * (1 - t * 0.85);
+      const c = new THREE.Vector3().copy(dir).multiplyScalar(r0 + bend * t * t);
+      c.y = t * H;
+      const k = new THREE.Color().copy(base).lerp(tip, t);
+      for (const sgn of [-1, 1]) {
+        pos.push(c.x + side.x * w * sgn, c.y, c.z + side.z * w * sgn);
+        col.push(k.r, k.g, k.b);
+        flex.push(Math.pow(t, 1.5) * 0.9);
+      }
+    }
+    for (let r = 0; r < rows; r++) {
+      const a0 = v0 + r * 2;
+      idx.push(a0, a0 + 2, a0 + 1, a0 + 1, a0 + 2, a0 + 3);
+    }
+    v0 += (rows + 1) * 2;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  g.setAttribute('aFlex', new THREE.Float32BufferAttribute(flex, 1));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return g;
+}
+
+function pebbleGeometry() {
+  return merge([
+    part(lumpy(ico(0.14, 0), 0.2, 5), 0xffffff, { scale: [1.2, 0.45, 1], pos: [0, 0.03, 0] }),
+    part(lumpy(ico(0.09, 0), 0.2, 7), 0xffffff, { scale: [1.1, 0.5, 1], pos: [0.2, 0.02, 0.1] }),
+  ]);
+}
+
 function flowerGeometry(color) {
   const list = [];
   for (let i = 0; i < 5; i++) {
@@ -144,7 +192,7 @@ function chunked(name, props, geo, mat, nm, place, colorOf, opts = {}) {
     mesh.castShadow = opts.castShadow !== false;
     mesh.receiveShadow = true;
     if (nm) mesh.userData.nm = nm;
-    if (opts.noOutline) mesh.userData.noOutline = true;
+    if (opts.noOutline) mesh.layers.set(LAYER.NO_OUTLINE);
     group.add(mesh);
   }
   return group;
@@ -207,6 +255,24 @@ export function createVegetation(map) {
       m.compose(v.set(p.x, p.y - 0.02, p.z), q, sc.setScalar(p.scale * 1.4));
     }, null, { castShadow: false, noOutline: true }));
   });
+
+  // Underwater: seaweed (slow sway) and pale pebbles.
+  const weedSway = { value: 0.1 };
+  const weedOpts = { sway: true, swayUniform: weedSway, key: 'seaweed' };
+  const weedMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, weedOpts);
+  const weedNm = normalMatFor(weedOpts, THREE.DoubleSide);
+  const weeds = map.props.filter((p) => p.kind === 'seaweed');
+  group.add(chunked('seaweed', weeds, seaweedGeometry(), weedMat, weedNm, (p, m) => {
+    q.setFromAxisAngle(up, p.rot);
+    m.compose(v.set(p.x, p.y - 0.05, p.z), q, sc.setScalar(p.scale));
+  }, null, { castShadow: false }));
+  const pebbleMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'pebble' });
+  const pebbles = map.props.filter((p) => p.kind === 'pebble');
+  const pebbleColors = [0xf4f1ea, 0xc9d8e6, 0xe8d3b0, 0xf2b8a8, 0x9fb4c6].map((c) => new THREE.Color(c));
+  group.add(chunked('pebbles', pebbles, pebbleGeometry(), pebbleMat, null, (p, m) => {
+    q.setFromAxisAngle(up, p.rot);
+    m.compose(v.set(p.x, p.y - 0.02, p.z), q, sc.setScalar(p.scale));
+  }, (p) => pebbleColors[Math.floor(p.v * pebbleColors.length)], { castShadow: false }));
 
   return { group, swayU };
 }

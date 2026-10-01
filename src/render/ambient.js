@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { part, merge, sphere, bbox as box, cyl } from './geo.js';
 import { toon } from './toon.js';
+import { LAYER } from './pipeline.js';
 import { mulberry32 } from '../core/rng.js';
 
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), v = new THREE.Vector3(), s = new THREE.Vector3();
@@ -62,10 +63,10 @@ export class Ambient {
     // Gulls circling coastal points.
     this.gulls = [];
     const L = map.landmarks;
-    const centers = [L.spawn, L.dockEnd, { x: L.village.x + 30, z: L.village.z + 40 }];
+    const centers = [L.dockEnd, L.ship, { x: L.spawn.x + 16, z: L.spawn.z + 16 }];
     for (let i = 0; i < 11; i++) {
       const c = centers[i % centers.length];
-      this.gulls.push({ cx: c.x + rng.range(-12, 12), cz: c.z + rng.range(-12, 12), r: rng.range(10, 22), a: rng.range(0, 6.28), w: rng.range(0.2, 0.32) * (rng() < 0.5 ? 1 : -1), h: rng.range(5.5, 8.5), flap: rng.range(0, 6), glide: 0 });
+      this.gulls.push({ cx: c.x + rng.range(-10, 10), cz: c.z + rng.range(-10, 10), r: rng.range(9, 18), a: rng.range(0, 6.28), w: rng.range(0.2, 0.32) * (rng() < 0.5 ? 1 : -1), h: rng.range(3.4, 5.2), flap: rng.range(0, 6), glide: 0 });
     }
     this.gullBody = new THREE.InstancedMesh(gullBodyGeo(), mat, this.gulls.length);
     this.gullWing = new THREE.InstancedMesh(gullWingGeo(), mat, this.gulls.length * 2);
@@ -79,7 +80,7 @@ export class Ambient {
     }
     const flyMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
     this.flyWing = new THREE.InstancedMesh(wingGeo(), flyMat, Math.max(1, this.flies.length * 2));
-    this.flyWing.userData.noOutline = true;
+    this.flyWing.layers.set(LAYER.NO_OUTLINE);
     this.flyWing.frustumCulled = false;
     const palette = [0xffa63d, 0x5ad1ff, 0xffe14d, 0xff6fb5];
     const col = new THREE.Color();
@@ -132,12 +133,12 @@ export class Ambient {
       const bank = -Math.sign(g.w) * 0.35;
       e.set(0, heading, bank);
       q.setFromEuler(e);
-      m4.compose(v.set(x, y, z), q, s.set(1, 1, 1));
+      m4.compose(v.set(x, y, z), q, s.set(0.7, 0.7, 0.7));
       this.gullBody.setMatrixAt(i, m4);
       for (const side of [1, -1]) {
         e.set(0, heading, bank + side * wingA, 'YXZ');
         q.setFromEuler(e);
-        m4.compose(v.set(x, y + 0.05, z), q, s.set(side, 1, 1));
+        m4.compose(v.set(x, y + 0.035, z), q, s.set(side * 0.7, 0.7, 0.7));
         this.gullWing.setMatrixAt(i * 2 + (side > 0 ? 0 : 1), m4);
       }
     }

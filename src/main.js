@@ -90,6 +90,7 @@ async function boot() {
     return a;
   };
   const tmpV = new THREE.Vector3();
+  const shadowFocus = new THREE.Vector3();
   const ray = new THREE.Raycaster();
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const ndc = new THREE.Vector2();
@@ -327,6 +328,15 @@ async function boot() {
             }
           }
           view.update(realDt, s);
+          // Wading leaves a trail of foam ripples (anyone: you, bots, NPCs).
+          if ((s.wade || 0) > 0.08) {
+            view.rippleT = (view.rippleT || 0) - realDt;
+            if (view.rippleT <= 0) {
+              const moving = Math.hypot(s.vx, s.vz) > 1;
+              world.effects.ripple(s.x, 0.02, s.z, moving ? 1.05 : 0.8, moving ? 0.95 : 1.5);
+              view.rippleT = moving ? 0.17 : 1.1;
+            }
+          }
           const dist = Math.hypot(s.x - focus.x, s.z - focus.z);
           anchor(rec.id, s.x, s.y + (rec.kind === KIND.NPC && SKINS[rec.skin]?.hat ? 2.3 : 2.0), s.z, dist);
         }
@@ -396,7 +406,12 @@ async function boot() {
         }
       });
 
-      safe('world', () => world.update(realDt, { focus, playing, shadowFocus: playing ? null : focus }));
+      safe('world', () => {
+        // Shadows cover what the tilted camera sees: centered a bit ahead of the player.
+        if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
+        else shadowFocus.copy(focus);
+        world.update(realDt, { focus, playing, shadowFocus });
+      });
       safe('audio', () => ambience.update());
       safe('worldui', () => {
         if (playing) worldUI.project(tmpV.set(ps.x, ps.y + 1, ps.z), screenP);

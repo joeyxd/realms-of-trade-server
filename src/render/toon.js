@@ -2,8 +2,11 @@
 // patches, terrain and the custom water shader) so the whole world reads as one piece.
 // Also: cloud shadows, wind sway, occluder dithering, and paired normal-pass materials for outlines.
 import * as THREE from 'three';
+import { getNoiseTexture } from './noiseTex.js';
 
 export const U = {
+  mnNoiseTex: { value: getNoiseTexture() },
+  mnTerrainCaustics: { value: 0 },
   mnTime: { value: 0 },
   mnPlayer: { value: new THREE.Vector3(0, -1000, 0) },
   mnOccR: { value: 1.8 },
@@ -31,11 +34,6 @@ float mnNoise(vec2 p) {
   return mix(mix(mnHash(i), mnHash(i + vec2(1.0, 0.0)), u.x), mix(mnHash(i + vec2(0.0, 1.0)), mnHash(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 float mnFbm(vec2 p) { float s = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { s += a * mnNoise(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }
-float mnCloudShadow(vec2 xz) {
-  vec2 q = xz * 0.016 + mnWind * mnTime * 0.011;
-  float c = mnFbm(q);
-  return 1.0 - mnCloud * smoothstep(0.5, 0.6, c);
-}
 float mnBayer(vec2 fc) {
   ivec2 p = ivec2(mod(fc, 4.0));
   const float m[16] = float[16](0., 8., 2., 10., 12., 4., 14., 6., 3., 11., 1., 9., 15., 7., 13., 5.);
@@ -63,8 +61,15 @@ vec2 mnVoronoi(vec2 x) {
 }
 `;
 
-// Fragment-only (uses derivatives).
+// Fragment-only (derivatives + the shared noise texture).
 export const GLSL_BAND = /* glsl */ `
+uniform sampler2D mnNoiseTex;
+// R = cellular F1, G = cellular edge (F2-F1), B = fbm, A = cell id. 8x8 cells per tile.
+vec4 mnTex(vec2 uv) { return texture2D(mnNoiseTex, uv); }
+float mnCloudShadow(vec2 xz) {
+  float c = texture2D(mnNoiseTex, xz * 0.0024 + mnWind * mnTime * 0.0016).b;
+  return 1.0 - mnCloud * smoothstep(0.5, 0.6, c);
+}
 // The one light-band function. x = N·L in [-1, 1]. Antialiased band edges.
 float mnBand(float x) {
   float w = max(fwidth(x), 0.0008) * 1.1;

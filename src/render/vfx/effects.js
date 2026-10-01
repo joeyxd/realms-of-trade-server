@@ -3,20 +3,33 @@
 import * as THREE from 'three';
 import { ParticlePool } from './particles.js';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
+import { U } from '../toon.js';
 
 const RING_VERT = /* glsl */ `
 varying vec2 vUv;
 void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+// Foam ripple: an expanding ring whose thickness is broken up by the shared cell noise, plus a
+// faint inner echo; reads like the foamy wakes of stylized water.
 const RING_FRAG = /* glsl */ `
 ${GLSL_FX_DEPTH}
 uniform float uT;
+uniform float uSeed;
 uniform vec3 uColor;
+uniform sampler2D mnNoiseTex;
 varying vec2 vUv;
 void main() {
-  float d = length(vUv - 0.5) * 2.0;
-  float r = mix(0.25, 1.0, uT);
-  float a = smoothstep(0.09, 0.0, abs(d - r)) * (1.0 - uT) * 0.85;
-  if (a < 0.01) discard;
+  vec2 p = vUv - 0.5;
+  float d = length(p) * 2.0;
+  float ang = atan(p.y, p.x);
+  vec4 nz = texture2D(mnNoiseTex, vec2(ang * 0.32 + uSeed, d * 0.35 + uSeed * 0.7));
+  float r = mix(0.22, 1.0, 1.0 - pow(1.0 - uT, 2.2));
+  float w = mix(0.14, 0.05, uT) * (0.65 + 0.7 * nz.b);
+  float ring = smoothstep(w, w * 0.45, abs(d - r + (nz.r - 0.5) * 0.06));
+  float echo = smoothstep(w * 0.7, w * 0.25, abs(d - r * 0.72)) * 0.55 * step(0.45, nz.b);
+  float a = max(ring, echo) * (1.0 - uT * uT) * 0.95;
+  a *= smoothstep(0.08, 0.2, nz.g + 0.12);
+  a *= fxDepthFade(0.15);
+  if (a < 0.02) discard;
   gl_FragColor = vec4(uColor, a);
   #include <colorspace_fragment>
 }`;
@@ -34,9 +47,9 @@ export class Effects {
     this.rings = [];
     const ringGeo = new THREE.PlaneGeometry(1, 1);
     ringGeo.rotateX(-Math.PI / 2);
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 40; i++) {
       const mat = new THREE.ShaderMaterial({
-        uniforms: { ...FXU, uT: { value: 0 }, uColor: { value: new THREE.Color(0xffffff) } },
+        uniforms: { ...FXU, uT: { value: 0 }, uSeed: { value: Math.random() }, uColor: { value: new THREE.Color(0xfffbf0) }, mnNoiseTex: U.mnNoiseTex },
         vertexShader: RING_VERT, fragmentShader: RING_FRAG, transparent: true, depthWrite: false,
       });
       const m = new THREE.Mesh(ringGeo, mat);
@@ -108,6 +121,7 @@ export class Effects {
     r.m.position.set(x, y, z);
     r.m.scale.setScalar(size);
     r.size = size;
+    r.m.material.uniforms.uSeed.value = Math.random();
     r.t = 0; r.life = life; r.active = true; r.m.visible = true;
   }
 
@@ -160,7 +174,7 @@ export class Effects {
       r.t += dt / r.life;
       if (r.t >= 1) { r.active = false; r.m.visible = false; continue; }
       r.m.material.uniforms.uT.value = r.t;
-      r.m.scale.setScalar(r.size * (0.6 + r.t * 1.4));
+      r.m.scale.setScalar(r.size * 2.0);
     }
     this.alpha.update(dt);
     this.add.update(dt);

@@ -375,6 +375,37 @@ export function generateWorld(seed) {
     addProp('flower', x, z, { r: 0, scale: rng.range(0.7, 1.2) });
   }
 
+  // Underwater dressing (cosmetic, no colliders): seaweed and pebbles in the shallows so the
+  // refraction has something to show. Seaweed stays well below the surface (no foam rings).
+  const weedSet = new Set(['seaweed']);
+  for (let n = 0; n < 40000; n++) {
+    const x = rng.range(-185, 185), z = rng.range(-185, 185);
+    const h = heightAt(x, z);
+    if (h > -0.75 || h < -3.2) continue;
+    if (dockDist(x, z) < 2.5) continue;
+    if (rng() > (fbm2(x * 0.05, z * 0.05, 2) > 0 ? 0.55 : 0.08)) continue;
+    if (!farFromOthers(x, z, 1.3, weedSet)) continue;
+    const maxH = (-h - 0.4) / 1.1;
+    addProp('seaweed', x, z, { r: 0, y: h, scale: Math.min(rng.range(0.6, 1.25), maxH) });
+  }
+  for (let n = 0; n < 30000; n++) {
+    const x = rng.range(-185, 185), z = rng.range(-185, 185);
+    const h = heightAt(x, z);
+    if (h > 0.25 || h < -2.4) continue;
+    if (rng() > 0.3) continue;
+    if (!farFromOthers(x, z, 0.8, null)) continue;
+    addProp('pebble', x, z, { r: 0, y: h, scale: rng.range(0.6, 1.6) });
+  }
+  // Floating cargo and a rowboat tied to the dock (they bob; the water foams around them).
+  {
+    const off = (along, across) => ({ x: dockBase.x + dockDir.x * along - dockDir.z * across, z: dockBase.z + dockDir.z * along + dockDir.x * across });
+    const floats = [['barrel', 14, 3.6], ['crate', 19, -3.8], ['barrel', 25, -4.4], ['crate', 30, 4.2], ['rowboat', 12, 3.4]];
+    for (const [kind, along, across] of floats) {
+      const p = off(along, across);
+      addProp('float', p.x, p.z, { r: 0, y: 0, v: rng(), h: kind === 'rowboat' ? 1 : kind === 'crate' ? 2 : 3, rot: kind === 'rowboat' ? Math.atan2(dockDir.x, dockDir.z) + 0.12 : rng() * 6.28 });
+    }
+  }
+
   // Static collider spatial hash.
   const CELL = 4;
   const grid = new Map();

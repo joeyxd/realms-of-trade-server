@@ -22,7 +22,7 @@ const PRESETS = {
 };
 
 export class Lighting {
-  constructor(scene, { shadowSize = 2048, shadowHalf = 26 } = {}) {
+  constructor(scene, { shadowSize = 2048, shadowHalf = 30 } = {}) {
     this.scene = scene;
     this.sun = new THREE.DirectionalLight(0xffffff, 2.4);
     this.sun.castShadow = true;

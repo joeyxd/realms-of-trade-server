@@ -122,6 +122,16 @@ if (scenario !== 'title') {
   await page.mouse.wheel(0, 300);
   await wait(5000);
   await shot('09-zoom-far');
+  await page.mouse.wheel(0, -300);
+  // Water: wade in the shallows next to the spawn, then the dock with the floating cargo.
+  const W = await page.evaluate(() => {
+    const m = window.__mn, L = m.map.landmarks;
+    let x = L.spawn.x, z = L.spawn.z;
+    for (let i = 0; i < 400 && m.map.heightAt(x, z) > -0.38; i++) { x += 0.15; z += 0.15; }
+    return { wade: { x, z }, dock: { x: L.dockBase.x + 4, z: L.dockBase.z + 1 } };
+  });
+  await tp('10-wade', W.wade.x, W.wade.z, async () => { await page.keyboard.down('KeyA'); await wait(2500); await page.keyboard.up('KeyA'); await wait(400); });
+  await tp('11-dock', W.dock.x, W.dock.z);
   const perf = await page.evaluate(() => document.querySelector('#perf').textContent);
   console.log(perf);
 }

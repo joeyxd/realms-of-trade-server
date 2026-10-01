@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Pipeline, LAYER } from './pipeline.js';
 import { Lighting } from './lighting.js';
 import { createSky } from './sky.js';
-import { createTerrain, createHeightTexture } from './terrain.js';
+import { createTerrain, createHeightTexture, createSeabed } from './terrain.js';
 import { createWater } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
@@ -36,9 +36,11 @@ export class GameScene {
     this.scene.add(this.sky);
     this.terrain = createTerrain(map);
     this.scene.add(this.terrain);
+    this.scene.add(createSeabed(map));
     this.water = createWater(map, createHeightTexture(map));
-    this.water.layers.set(LAYER.NO_OUTLINE);
+    this.water.layers.set(LAYER.WATER);
     this.scene.add(this.water);
+    this.pipeline.water = { setMode: (ssr) => this.water.userData.setMode(ssr) };
     const veg = createVegetation(map);
     this.vegetation = veg.group;
     this.swayU = veg.swayU;
@@ -62,6 +64,7 @@ export class GameScene {
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles);
     this.water.material.uniforms.uWaves.value = cfg.waves;
+    U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
     this.onResize();
   }
 
@@ -107,7 +110,7 @@ export class GameScene {
 
   setTitleShadows(on) {
     const cam = this.lighting.sun.shadow.camera;
-    const h = on ? 120 : 26;
+    const h = on ? 120 : 30;
     this.lighting.shadowHalf = h;
     cam.left = -h; cam.right = h; cam.top = h; cam.bottom = -h;
     cam.far = on ? 400 : 220;
@@ -125,6 +128,14 @@ export class GameScene {
     this.effects.update(dt, ctx.focus);
     this.after.update(dt);
     this.ambient.update(dt, ctx.focus, this.camera.position);
+    // Floating cargo and the rowboat bob and drift a little.
+    for (const f of this.props.floaters || []) {
+      const ph = f.userData.phase, tt = this.time;
+      f.position.y = (f.userData.boat ? 0.02 : -0.05) + Math.sin(tt * 1.3 + ph) * 0.06;
+      f.rotation.x = Math.sin(tt * 1.1 + ph) * 0.05;
+      f.rotation.z = Math.sin(tt * 0.9 + ph * 1.7) * 0.07;
+      f.rotation.y = f.userData.baseRot + Math.sin(tt * 0.25 + ph) * (f.userData.boat ? 0.06 : 0.3);
+    }
     // Ship bobbing + flag flutter.
     const ship = this.props.ship;
     if (ship) {

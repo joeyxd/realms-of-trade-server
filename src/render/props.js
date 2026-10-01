@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
 import { toon, normalMatFor } from './toon.js';
+import { LAYER } from './pipeline.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
@@ -103,6 +104,18 @@ function rockRingGeo() {
   }
   for (let i = 0; i < 3; i++) L.push(part(cyl(0.09, 0.09, 1.1, 6), 0x6b4423, { pos: [0, 0.2, 0], rot: [Math.PI / 2, (i / 3) * Math.PI, 0.3] }));
   return merge(L);
+}
+
+function rowboatGeo() {
+  const hullPaint = (x, y) => (y > 0.07 ? 0xe8c98a : y > -0.14 ? 0x9a5a2e : 0x6b3d22);
+  const hull = new THREE.SphereGeometry(1, 14, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+  return merge([
+    part(hull, 0, { scale: [0.72, 0.42, 1.65], pos: [0, 0.12, 0], paint: hullPaint }),
+    part(bbox(1.05, 0.06, 2.6), WOOD_D, { pos: [0, -0.06, 0] }),
+    part(bbox(1.3, 0.08, 0.26), WOOD_D, { pos: [0, 0.1, 0.45] }),
+    part(bbox(1.25, 0.08, 0.24), WOOD_D, { pos: [0, 0.1, -0.55] }),
+    part(cyl(0.035, 0.035, 2.0, 5), WOOD_D, { pos: [0.48, 0.2, 0.2], rot: [1.45, 0, 0.2] }),
+  ]);
 }
 
 function shipGeo() {
@@ -239,7 +252,7 @@ export function createProps(map) {
     const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.1), new THREE.MeshBasicMaterial({ map: flagTexture(), side: THREE.DoubleSide }));
     flag.position.set(0, 11.0, 1.4);
     flag.rotation.y = Math.PI / 2;
-    flag.userData.noOutline = true;
+    flag.layers.set(LAYER.NO_OUTLINE);
     for (const o of [hull, sail]) { o.castShadow = true; o.receiveShadow = true; }
     ship.add(hull, sail, flag);
     ship.position.set(shipProp.x, -0.35, shipProp.z);
@@ -277,5 +290,27 @@ export function createProps(map) {
     group.add(gate);
   }
 
-  return { group, ship, gate };
+  // Floating cargo + rowboat (bobbed in GameScene.update). Water foams around them on its own.
+  const floaters = [];
+  const floatKits = { 1: rowboatGeo(), 2: crateGeo(), 3: barrelGeo() };
+  for (const p of map.props.filter((q) => q.kind === 'float')) {
+    const geo = floatKits[p.h];
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.nm = nm;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    const holder = new THREE.Group();
+    holder.position.set(p.x, 0, p.z);
+    holder.rotation.y = p.rot;
+    if (p.h === 3) { mesh.rotation.z = Math.PI / 2; mesh.position.set(0.5, 0.05, 0); mesh.scale.setScalar(0.9); }
+    else if (p.h === 2) { mesh.position.y = -0.55; mesh.scale.setScalar(0.85); }
+    holder.add(mesh);
+    holder.userData.phase = p.v * 6.28;
+    holder.userData.baseRot = p.rot;
+    holder.userData.boat = p.h === 1;
+    group.add(holder);
+    floaters.push(holder);
+  }
+
+  return { group, ship, gate, floaters };
 }
