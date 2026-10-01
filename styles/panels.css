@@ -1,0 +1,27 @@
+#pause {
+  position: fixed; inset: 0; z-index: 30;
+  display: grid; place-items: center;
+  padding: calc(16px + var(--safe-t)) 16px calc(16px + var(--safe-b));
+  background: rgba(8, 6, 20, 0.55);
+  backdrop-filter: blur(3px);
+}
+.panel { width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 18px 20px 20px; display: grid; gap: 14px; }
+.panel h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 30px; letter-spacing: 0.04em; text-align: center; }
+.panel .tabs { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.panel .tab {
+  font-family: var(--font-display); font-size: 15px; letter-spacing: 0.04em; color: var(--parch);
+  background: rgba(20, 10, 30, 0.45); border: 2px solid var(--ink); border-radius: 10px; padding: 5px 12px; cursor: pointer;
+}
+.panel .tab[aria-selected='true'] { background: linear-gradient(180deg, var(--brass-l), var(--brass)); color: var(--ink); }
+.panel .section { display: grid; gap: 10px; padding: 12px 14px; background: rgba(20, 10, 30, 0.42); border-radius: 10px; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 12px; align-items: center; font-weight: 800; }
+.row label { color: var(--text); text-shadow: 0 1px 0 var(--ink); }
+.row input[type='range'] { width: 100%; accent-color: var(--brass); }
+.row select {
+  font: inherit; font-weight: 800; color: var(--ink); background: var(--parch); border: 2px solid var(--ink); border-radius: 8px; padding: 4px 8px;
+}
+.row input[type='checkbox'] { width: 22px; height: 22px; accent-color: var(--brass); justify-self: start; }
+.panel .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.controls-list { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 7px 14px; align-items: center; font-weight: 700; }
+.controls-list .soon { color: var(--text-dim); font-weight: 700; font-size: 0.9em; }
+.confirm { display: grid; gap: 10px; justify-items: center; text-align: center; font-weight: 800; }

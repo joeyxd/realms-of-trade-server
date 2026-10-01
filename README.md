@@ -1,381 +1,108 @@
-# Realms of Trade - Multiplayer Server
+# MAREA NEGRA
 
-Real-time Socket.io server for Realms of Trade MMORPG. Supports 25-50 concurrent players with low-latency combat and movement synchronization.
+Action-RPG isométrico para navegador (Three.js 0.160), con arquitectura preparada para MMO.
+**Rebanada vertical 1:** isla tropical + arena volcánica «La Caldera».
+Todo es procedural: geometría, texturas (canvas), shaders y audio sintetizado. Las únicas dependencias externas
+son los CDN de Three.js y GSAP, y Google Fonts.
 
-## Features
+- Diseño completo (números, jefe, progresión, protocolo): [`DESIGN.md`](DESIGN.md)
+- Revisión del intento anterior (servidor Socket.io 2D): [`legacy/REVIEW.md`](legacy/REVIEW.md)
 
-- Real-time multiplayer using Socket.io
-- Server-authoritative game state (anti-cheat)
-- Combat system with projectiles and hit detection
-- Player movement and position synchronization
-- Rate limiting and input validation
-- Character stats and equipment support
-- Support for 25-50 concurrent players
-- Production-ready with environment configuration
-
-## Tech Stack
-
-- Node.js 18+
-- Socket.io 4.8.1
-- Express.js 5.1.0
-- CORS support
-
-## Project Structure
-
-```
-realms-of-trade-server/
-├── server.js              # Main server file
-├── package.json           # Dependencies
-├── config/
-│   └── constants.js       # Game constants and configuration
-├── routes/
-│   ├── players.js         # Player management
-│   └── combat.js          # Combat and projectile system
-├── utils/
-│   └── validation.js      # Input validation
-├── middleware/
-│   └── rate-limit.js      # Rate limiting (anti-cheat)
-├── .env.example           # Environment template
-├── .gitignore            # Git ignore rules
-└── README.md             # This file
-```
-
-## Quick Start
-
-### Local Development
-
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Set environment variables**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-3. **Start server**:
-   ```bash
-   npm start
-   ```
-
-Server will run on `http://localhost:3001` by default.
-
-### Test Server
-
-Check if server is running:
-```bash
-curl http://localhost:3001/health
-```
-
-Response:
-```json
-{
-  "status": "ok",
-  "service": "realms-of-trade-server",
-  "players": 0,
-  "projectiles": 0,
-  "uptime": 123.45,
-  "timestamp": 1730464799000
-}
-```
-
-## Deployment to Render
-
-### Prerequisites
-
-- GitHub account
-- Render account (https://render.com)
-
-### Deployment Steps
-
-1. **Push to GitHub**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin https://github.com/yourusername/realms-of-trade-server.git
-   git push -u origin main
-   ```
-
-2. **Deploy on Render**:
-   - Go to https://dashboard.render.com
-   - Click "New" → "Web Service"
-   - Connect your GitHub repository
-   - Configure:
-     - **Name**: realms-of-trade-server
-     - **Environment**: Node
-     - **Build Command**: `npm install`
-     - **Start Command**: `npm start`
-     - **Instance Type**: Free (for testing) or Starter ($7/mo for production)
-
-3. **Set Environment Variables** (in Render dashboard):
-   - `NODE_ENV` = `production`
-   - `ALLOWED_ORIGINS` = `https://your-frontend-domain.com`
-   - `PORT` is automatically set by Render
-
-4. **Deploy**:
-   - Click "Create Web Service"
-   - Wait for deployment (2-3 minutes)
-   - Note your service URL (e.g., `https://realms-of-trade-server.onrender.com`)
-
-### Verify Deployment
+## Cómo ejecutarlo
 
 ```bash
-curl https://your-render-url.onrender.com/health
+npx serve .          # o: npm start  → http://localhost:5173
+npm test             # tests de la simulación en Node (determinismo, dash, colisiones, predicción)
 ```
 
-## Configuration
+Basta con cualquier servidor estático; no hace falta bundler. El juego también se puede publicar como Artifact
+multi-archivo: `node tools/build-artifact.mjs dist/index.html` genera la página (con los estilos incrustados) y
+lista los módulos `src/**` que hay que publicar junto a ella.
 
-### Environment Variables
-
-Create a `.env` file based on `.env.example`:
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| PORT | Server port | 3001 | No (Render sets automatically) |
-| NODE_ENV | Environment (development/production) | development | No |
-| ALLOWED_ORIGINS | Comma-separated list of allowed frontend URLs | * | Yes for production |
-
-### Game Constants
-
-Edit `config/constants.js` to customize:
-
-- World dimensions
-- Player stats
-- Weapon configurations
-- Class configurations
-- Network update rates
-- Performance limits
-
-## API Endpoints
-
-### HTTP Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Server information |
-| `/health` | GET | Health check |
-
-### Socket.io Events
-
-#### Client → Server
-
-| Event | Data | Description |
-|-------|------|-------------|
-| `player:join` | `{ characterName, x, y, maxHp, attack, defense, speed, class, weapon }` | Player joins game |
-| `player:move` | `{ x, y, rotation }` | Player movement update |
-| `player:shoot` | `{ x, y, rotation }` | Player shoots projectile |
-| `player:hit` | `{ targetId, projectileId }` | Projectile hits player |
-
-#### Server → Client
-
-| Event | Data | Description |
-|-------|------|-------------|
-| `game:init` | `{ playerId, players[], projectiles[] }` | Initial game state |
-| `player:joined` | `Player` | New player joined |
-| `player:left` | `playerId` | Player disconnected |
-| `player:moved` | `{ id, x, y, rotation }` | Player position update |
-| `projectile:created` | `{ playerId, projectiles[] }` | New projectiles created |
-| `projectiles:update` | `Projectile[]` | Projectile positions |
-| `player:damaged` | `{ targetId, damage, currentHp, projectileId }` | Player took damage |
-| `player:died` | `{ playerId, killerId }` | Player died |
-| `player:respawned` | `Player` | Player respawned |
-
-## Frontend Integration
-
-### React Example
-
-```javascript
-import io from 'socket.io-client';
-
-// Connect to server
-const socket = io('https://your-render-url.onrender.com');
-
-// Listen for connection
-socket.on('connect', () => {
-  console.log('Connected to game server');
-  
-  // Join game
-  socket.emit('player:join', {
-    characterName: 'Player1',
-    x: 100,
-    y: 100,
-    maxHp: 100,
-    attack: 10,
-    defense: 5,
-    speed: 5,
-    class: 'warrior',
-    weapon: 'starter_pistol'
-  });
-});
-
-// Listen for game state
-socket.on('game:init', (data) => {
-  console.log('Game initialized', data);
-});
-
-// Send movement
-socket.emit('player:move', {
-  x: 150,
-  y: 200,
-  rotation: 1.5
-});
-
-// Shoot projectile
-socket.emit('player:shoot', {
-  x: 150,
-  y: 200,
-  rotation: 1.5
-});
-```
-
-## Performance
-
-### Capacity
-
-- Recommended: 25-30 concurrent players (Free tier)
-- Maximum: 50 concurrent players (Paid tier with higher resources)
-
-### Network
-
-- Position updates: 50ms interval
-- Projectile updates: 50ms interval
-- Tick rate: 20 TPS
-- Typical latency: <100ms
-
-### Optimization
-
-- Client-side prediction recommended
-- Rate limiting prevents spam
-- Delta compression for network efficiency
-- Memory-efficient projectile cleanup
-
-## Security
-
-### Implemented
-
-- Server-authoritative game state
-- Input validation on all events
-- Rate limiting on actions
-- Position bounds checking
-- Cooldown enforcement
-- CORS configuration
-
-### Production Recommendations
-
-1. Set `ALLOWED_ORIGINS` to your specific frontend domain
-2. Enable HTTPS (automatic on Render)
-3. Monitor server logs for suspicious activity
-4. Set up error tracking (e.g., Sentry)
-5. Implement authentication if needed
-
-## Monitoring
-
-### Health Check
+Herramienta de capturas (Playwright, Chromium headless):
 
 ```bash
-# Check server status
-curl https://your-server.onrender.com/health
+node tools/shot.mjs shots/ --quality=high          # título, playa, dash, aldea, capitana, sendero, Caldera
+node tools/shot.mjs shots/m --scenario=title --w=390 --h=844 --quality=medium
 ```
 
-### Logs
+Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (overlay F3), `?worker=0`
+(servidor en el hilo principal), `?debug` (teletransporte `__mn.teleport(x, z)` y `__mn.fxTest()`).
 
-On Render:
-- Go to your service dashboard
-- Click "Logs" tab
-- View real-time logs
+## Controles
 
-### Metrics
+| Acción | Teclado / ratón | Táctil |
+|---|---|---|
+| Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
+| Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
+| Hablar / interactuar | F | botón F |
+| Zoom (3 niveles) | rueda | — |
+| Rotar cámara 90° (activar en Ajustes) | Z / X | — |
+| Pausa y ajustes | ESC | botón ⚙ |
+| Rendimiento | F3 | — |
 
-Monitor:
-- Connected players count
-- Active projectiles
-- Server uptime
-- Memory usage
-- CPU usage
+Atacar (LMB), parry (RMB) y las habilidades Q/E/R aparecen bloqueadas en la barra de acción: llegan en M2 y se
+desbloquean por nivel (3/5/7).
 
-## Troubleshooting
+## Estado de los milestones
 
-### Common Issues
+| | Contenido | Estado |
+|---|---|---|
+| M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
+| M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
+| M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | siguiente |
+| M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
-**Players can't connect**
-- Verify server is running: Check `/health` endpoint
-- Check CORS settings in environment variables
-- Verify frontend is using correct server URL
+### Qué incluye M1
 
-**High latency**
-- Check server resources (upgrade instance type)
-- Monitor network usage
-- Reduce update intervals in `config/constants.js`
+- **Isla de 400×400 u** generada con semilla: playa, Aldea Coralina (6 chozas, fogata, puesto, faroles, muelle con
+  barco anclado), Sendero del Humo con baldosas, selva, volcán con río de lava y La Caldera (suelo de basalto con
+  grietas de lava, pilares, braseros y portón).
+- **Render toon**: una sola función de bandas de luz (`mnBand`) compartida por personajes, props, terreno y agua;
+  contornos por post-proceso (profundidad + normales, grosor constante, sin artefactos diagonales); sombras del sol
+  que siguen al jugador encajadas a texel; sombras de nubes; hora dorada al entrar en La Caldera (transición de 2 s).
+- **Agua**: profundidad desde el heightmap (turquesa → azul), espuma en la orilla, destellos de sol cuantizados,
+  fresnel al cielo, cáusticas en la arena mojada.
+- **Personaje chibi** con 5 aspectos: un solo mesh con huesos rígidos (1 draw call por pasada), animación procedural
+  (respiración, carrera con inclinación, estiramiento en el dash, squash & stretch con muelles amortiguados) y
+  afterimages del dash.
+- **Cámara MOBA**: seguimiento amortiguado, look-ahead al cursor (máx. 20 %), 3 zooms, shake por trauma, punch,
+  modo naval reservado. La vegetación y los props que tapan al jugador o están pegados a la cámara se disuelven.
+- **Mundo vivo**: 5 bots con nombre que pasean por la aldea (la UI no los distingue de jugadores), la Capitana Brea
+  y Tía Perla con diálogos, cangrejos que huyen, gaviotas, mariposas, humo de fogata y del volcán, brasas.
+- **UI**: título animado (JUGAR solo se activa tras compilar los shaders), HUD con retrato, barras, barra de acción
+  con cargas de dash y recarga radial, banner de zona, objetivos del tutorial, avisos flotantes, nameplates que
+  escalan con la distancia y se ocultan si tapan al jugador, pausa con ajustes, overlay F3, controles táctiles.
+- **Audio sintetizado**: pasos por material (arena, hierba, roca, tierra, madera, agua), whoosh del dash, olas,
+  viento, aves FM, insectos y lava mezclados por zona, música generativa (marimba + pad + bajo) que cambia a modo
+  menor con dron en La Caldera.
+- **Calidad** baja/media/alta + AUTO (baja un nivel si cae de 45 fps).
 
-**Server crashes**
-- Check logs for errors
-- Verify Node.js version (18+)
-- Ensure dependencies are installed
+Medido en la vista de juego (sumando todas las pasadas): ~100 draw calls y ~300 k triángulos en alta, ~50 draw
+calls y ~145 k triángulos en baja.
 
-**Players out of sync**
-- Implement client-side prediction
-- Check network latency
-- Verify event handlers are working
+## Arquitectura
 
-## Development
-
-### Running Tests
-
-```bash
-npm test
+```
+src/sim/      simulación pura y determinista (sin THREE ni DOM): worldgen, ECS sobre typed arrays, movimiento, bots
+src/net/      protocolo, LocalServer (servidor autoritativo), worker, transportes (Worker / en proceso / WebSocket stub)
+src/client/   predicción del jugador local + reconciliación, interpolación del resto (buffer de 100 ms)
+src/render/   escena, pipeline de contornos, toon, terreno, agua, cielo, vegetación, props, personajes, VFX
+src/ui/       título, HUD, prompts/nameplates, pausa, táctil
+src/audio/    motor Web Audio, SFX, ambiente, música
+src/data/     meta (nombre del juego), tuning (todos los números), ship_modules (gancho naval)
 ```
 
-### Local Development with Hot Reload
-
-```bash
-# Install nodemon
-npm install -g nodemon
-
-# Run with auto-restart
-nodemon server.js
-```
-
-### Debugging
-
-Enable debug logs:
-```bash
-NODE_ENV=development npm start
-```
-
-## Scaling
-
-### Horizontal Scaling
-
-For 100+ players:
-1. Deploy multiple server instances
-2. Use load balancer
-3. Implement sticky sessions
-4. Consider Redis for shared state
-
-### Vertical Scaling
-
-Upgrade Render instance:
-- Starter: $7/mo (512MB RAM)
-- Standard: $25/mo (2GB RAM)
-- Pro: $85/mo (4GB RAM)
-
-## License
-
-MIT
-
-## Support
-
-For issues or questions:
-- Check logs in Render dashboard
-- Verify environment variables
-- Test health endpoint
-- Review Socket.io connection events
-
-## Credits
-
-Built for Realms of Trade MMORPG
-Socket.io for real-time multiplayer
-Express.js for HTTP server
+- **Qué está simulado hoy:** el servidor corre en un Web Worker (`LocalServer` a 60 Hz, snapshots a 20 Hz). El
+  cliente solo envía inputs y predice su propio movimiento con el mismo código; el test
+  `client prediction matches the authoritative server exactly` comprueba error de predicción 0. Los bots son
+  entidades `player` del servidor que generan los mismos comandos que un humano.
+- **Plan para el servidor real:** un proceso Node que importe `src/net/localServer.js` (es puro) y lo ponga detrás
+  de WebSockets: cada conexión llama a `connect/receive/disconnect` y `send` escribe al socket. En el cliente,
+  cambiar `createTransport` por `new WsTransport(url)` (misma interfaz). Pasos: validar ritmo de inputs por
+  cliente (ya se limita la cola a 30 comandos y 1–4 por tick), autenticación en `hello`, instancias por arena,
+  persistencia del personaje y protocolo binario (formato en `DESIGN.md` §10). El servidor Socket.io de `legacy/`
+  sirve de plantilla para el despliegue en Render.
+- **Ganchos navales:** muelle con barco anclado e interacción «ZARPAR · próximamente», `src/data/ship_modules.js`,
+  componente `VEHICLE` reservado en el ECS, `camera.setMode('naval')` y mensajes `ship_*`, `board`, `dock`,
+  `trade_*` reservados en `protocol.js`.
