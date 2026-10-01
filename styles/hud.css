@@ -262,3 +262,4 @@ body.touch .actionbar { display: none; }
 #enc-info { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); font-weight: 900; font-size: 15px; letter-spacing: 0.08em; color: #ffd27a; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
 .boss-on #enc-info { top: calc(84px + var(--safe-t)); font-size: 13px; }
 .boss-on #zone-banner { top: calc(108px + var(--safe-t)); }
+.nameplate.minor .np-hp { width: 44px; height: 5px; }

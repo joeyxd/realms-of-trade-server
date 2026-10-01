@@ -121,7 +121,7 @@ export const tuning = {
     chainGap: 1.2,
     chainMax: 5,
     chainDmg: 0.1, // reflected damage × (1 + 0.1·(chain − 1))
-    chainRiposte: 0.25, // riposte gain × (1 + 0.25·(chain − 1))
+    chainRiposte: 0.15, // riposte gain × (1 + 0.15·(chain − 1))
     riposte: { perfect: 18, normal: 10, destroy: 4, graze: 4, ghost: 8, dodge: 3, max: 100, radius: 6, dmgMult: 3, knock: 14 },
     xp: { perfect: 5, graze: 2, ghost: 3, dodge: 1 },
   },

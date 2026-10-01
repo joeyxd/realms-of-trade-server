@@ -191,7 +191,9 @@ async function boot() {
     const view = world.addCharacter(rec.id, rec.skin, { sword: !isNpc, enemy: rec.enemy || undefined });
     view.lastDashes = 0;
     const practice = rec.def && rec.def.practice;
-    if (!rec.isYou) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : 'enemy') : 'player' });
+    // Swarm enemies get a bare HP bar; the boss has the boss bar instead of a plate.
+    const minor = rec.def && rec.def.minor, boss = rec.def && rec.def.boss;
+    if (!rec.isYou && !boss) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice || minor ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : minor ? 'minor' : 'enemy') : 'player' });
     rec.view = view;
     if (rec.ready) view.update(0, rec.r);
   }));
@@ -304,39 +306,39 @@ async function boot() {
     ],
   };
   // La Prueba de Fuego (PLAN-M2.5.md): boss bar, wave line, fight zoom, runes and the boss shield.
-function encounterUi() {
-  const E = client.enc && client.enc[0];
-  const A = map.landmarks.arena;
-  const inside = Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 5;
-  const [, stE, wave, waves, left, bossId, phase, shield, inv] = E || [];
-  const active = !!E && stE !== 'idle' && inside;
-  let boss = null;
-  const rec = bossId ? client.entities.get(bossId) : null;
-  if (active && rec && rec.ready && !rec.dying) {
-    const def = rec.def || {};
-    boss = { name: def.name || 'HELLFIRE', title: def.title || '', hp: rec.r.hp, maxHp: rec.r.maxHp, phase, phases: def.phases ? def.phases.length : 1, mark: def.phases && phase === 0 ? def.phases[0].until : 0, shield, inv };
+  function encounterUi() {
+    const E = client.enc && client.enc[0];
+    const A = map.landmarks.arena;
+    const inside = Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 5;
+    const [, stE, wave, waves, left, bossId, phase, shield, inv] = E || [];
+    const active = !!E && stE !== 'idle' && inside;
+    let boss = null;
+    const rec = bossId ? client.entities.get(bossId) : null;
+    if (active && rec && rec.ready && !rec.dying) {
+      const def = rec.def || {};
+      boss = { name: def.name || 'HELLFIRE', title: def.title || '', hp: rec.r.hp, maxHp: rec.r.maxHp, phase, phases: def.phases ? def.phases.length : 1, mark: def.phases && phase === 0 ? def.phases[0].until : 0, shield, inv };
+    }
+    hud.setBoss(boss);
+    let line = null;
+    if (active) {
+      if (stE === 'intro') line = 'La Prueba de Fuego';
+      else if (stE === 'wave') line = `OLEADA ${wave + 1}/${waves} · Enemigos <b>${left}</b>`;
+      else if (stE === 'rest') line = `Respira… · se acerca la OLEADA ${wave + 2}/${waves}`;
+      else if (stE === 'boss' && left > 1) line = `Esbirros <b>${left - 1}</b>`;
+      else if (stE === 'victory') line = '¡Victoria!';
+    }
+    hud.setEnc(line);
+    world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
+    world.setEncounterFx({ runes: !E || stE === 'idle' ? 1 : 0, bossId: active ? bossId : 0, shield, inv });
+    // One warning when walking out mid-trial.
+    if (E && stE !== 'idle' && stE !== 'victory' && !inside && Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 12 && !st.encWarned) {
+      st.encWarned = true;
+      hud.toast('<b>Si sales de La Caldera</b>, la Prueba de Fuego se reinicia.', 3600);
+    }
+    if (!E || stE === 'idle') st.encWarned = false;
   }
-  hud.setBoss(boss);
-  let line = null;
-  if (active) {
-    if (stE === 'intro') line = 'La Prueba de Fuego';
-    else if (stE === 'wave') line = `OLEADA ${wave + 1}/${waves} · Enemigos <b>${left}</b>`;
-    else if (stE === 'rest') line = `Respira… · se acerca la OLEADA ${wave + 2}/${waves}`;
-    else if (stE === 'boss' && left > 1) line = `Esbirros <b>${left - 1}</b>`;
-    else if (stE === 'victory') line = '¡Victoria!';
-  }
-  hud.setEnc(line);
-  world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
-  world.setEncounterFx({ runes: !E || stE === 'idle' ? 1 : 0, bossId: active ? bossId : 0, shield, inv });
-  // One warning when walking out mid-trial.
-  if (E && stE !== 'idle' && stE !== 'victory' && !inside && Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 12 && !st.encWarned) {
-    st.encWarned = true;
-    hud.toast('<b>Si sales de La Caldera</b>, la Prueba de Fuego se reinicia.', 3600);
-  }
-  if (!E || stE === 'idle') st.encWarned = false;
-}
 
-function nearestNpc() {
+  function nearestNpc() {
     let best = null, bd = 3.2;
     for (const rec of client.entities.values()) {
       if (rec.kind !== KIND.NPC || !rec.ready) continue;

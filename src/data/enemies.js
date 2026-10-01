@@ -30,7 +30,7 @@ export const ENEMIES = {
   // Melee minion: runs straight at you in packs and bites a small circle in front. Light: combos push it far.
   grunt: {
     name: 'Grumete ahogado', look: 'grunt', title: 'Esbirro', level: 2,
-    hp: 24, def: 0, speed: 4.6, radius: 0.36, hurt: 0.42, height: 1.6, chaser: true, light: 1.6,
+    hp: 24, def: 0, speed: 4.6, radius: 0.36, hurt: 0.42, height: 1.6, chaser: true, light: 1.6, minor: true,
     range: [0, 1.0], aggro: 16, leash: 26, xp: 8, respawn: 30,
     attacks: [
       { id: 'bite', kind: 'aoe', r: 1.05, reach: 0.85, dmg: 9, windup: 0.42, cd: 1.1, minD: 0, maxD: 1.7, recover: 0.35 },
@@ -39,7 +39,7 @@ export const ENEMIES = {
   // Orbits at mid range and fires a full-circle spiral of 10 parryable orbs.
   imp: {
     name: 'Diablillo de fuego', look: 'imp', title: 'Chispa de La Caldera', level: 3,
-    hp: 28, def: 0, speed: 5.5, radius: 0.34, hurt: 0.4, height: 1.45, hover: true,
+    hp: 28, def: 0, speed: 5.5, radius: 0.34, hurt: 0.4, height: 1.45, hover: true, minor: true,
     range: [5, 7], aggro: 15, leash: 26, xp: 20, respawn: 40,
     attacks: [
       { id: 'spiral', kind: 'pattern', pat: 'spiral', type: 'parry', n: 10, gap: 0.08, spread: 36, speed: 7, dmg: 7, windup: 0.4, cd: 2.8, minD: 0, maxD: 13, muzzle: [0, 1.0, 0.3], recover: 0.3 },
@@ -60,9 +60,9 @@ export const ENEMIES = {
   // the heavy orb (PERFECT) breaks it (ROTO: damage × brokenMult) and staggers him.
   hellfire: {
     name: 'HELLFIRE', look: 'hellfire', title: 'Señor de La Caldera', level: 6, boss: true,
-    hp: 1600, def: 4, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
+    hp: 2600, def: 8, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
     range: [6, 11], aggro: 40, leash: 60, xp: 1500, respawn: 0,
-    shield: 0.35, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4, spin: 23,
+    shield: 0.2, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4.5, spin: 23,
     phases: [
       { until: 0.55, cycle: ['fan5', 'spiral2', 'fan5', 'rings2'], gap: 0.75, heavyEvery: 12 },
       { until: 0, cycle: ['flower', 'wall', 'rings3', 'summon', 'fan7', 'spiral2'], gap: 0.45, heavyEvery: 10, shield: true, summon: 3 },
@@ -77,7 +77,7 @@ export const ENEMIES = {
       { id: 'rings3', kind: 'pattern', pat: 'rings', type: 'parry', alt: true, n: 18, waves: 3, gap: 0.45, spread: 11.25, speed: 6.5, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
       { id: 'summon', kind: 'summon', minion: 'grunt', n: 3, r: 3.5, max: 6, windup: 0.6, recover: 0.5 },
       { id: 'fan7', kind: 'pattern', pat: 'fan', type: 'parry', n: 7, spread: 9, speed: 10, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.6, 1.3] },
-      { id: 'slam', kind: 'aoe', r: 4.2, reach: 0, dmg: 20, windup: 0.9, recover: 0.6, cd: 4 },
+      { id: 'slam', kind: 'aoe', r: 4.6, reach: 0, dmg: 22, windup: 0.85, recover: 0.6, cd: 3 },
     ],
   },
   // Tutorial: a beach cannon that lobs slow parryable balls at whoever stands in its practice ring.

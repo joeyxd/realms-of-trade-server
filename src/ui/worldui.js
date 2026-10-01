@@ -81,11 +81,13 @@ export class WorldUI {
 
   addNameplate(id, { name, level, title, kind }) {
     const el = document.createElement('div');
-    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'practice' ? ' practice' : '');
+    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'minor' ? ' enemy minor' : kind === 'practice' ? ' practice' : '');
     const lv = kind === 'npc' || kind === 'practice' ? '' : 'Nv ' + level;
-    el.innerHTML = `${title ? `<div class="np-title">«${title}»</div>` : ''}<div class="np-name"><span class="lv">${lv}</span>${name}</div>${kind === 'npc' || kind === 'practice' ? '' : '<div class="np-hp"><i style="width:100%"></i></div>'}`;
+    // Minor (swarm) enemies: just the HP bar, so a pack of ten stays readable.
+    const nameRow = kind === 'minor' ? '<span class="lv" hidden></span>' : `<div class="np-name"><span class="lv">${lv}</span>${name}</div>`;
+    el.innerHTML = `${title ? `<div class="np-title">«${title}»</div>` : ''}${nameRow}${kind === 'npc' || kind === 'practice' ? '' : '<div class="np-hp"><i style="width:100%"></i></div>'}`;
     this.root.appendChild(el);
-    this.plates.set(id, { el, anchor: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, shown: true, hpEl: el.querySelector('.np-hp i'), lvEl: el.querySelector('.lv'), fr: 1, level, kind, range: kind === 'enemy' ? 30 : 42 });
+    this.plates.set(id, { el, anchor: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, shown: true, hpEl: el.querySelector('.np-hp i'), lvEl: el.querySelector('.lv'), fr: 1, level, kind, range: kind === 'enemy' || kind === 'minor' ? 30 : 42 });
   }
 
   removeNameplate(id) {

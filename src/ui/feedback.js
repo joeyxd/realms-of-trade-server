@@ -306,6 +306,45 @@ export class Feedback {
         for (const [id, a] of this.aoes) if (a.src === ev.src && !a.done) { W.decals.cancel(id); a.done = true; }
         { const v = this.viewOf(ev.src); if (v) v.attack = null; }
         break;
+      case 'enc': {
+        // La Prueba de Fuego: banners and sounds for every step (the HUD line comes from snapshots).
+        const A = this.client.map ? this.client.map.landmarks.arena : null;
+        const near = !A || Math.hypot(ps.x - A.x, ps.z - A.z) < 40;
+        if (!near) break;
+        const H = this.hud, red = !!this.settings.reducedMotion;
+        if (ev.wipe) { H.toast('<b>La Caldera te ha vencido.</b> Pisa las runas del centro para volver a intentarlo.', 5200); break; }
+        if (ev.late) { H.toast('<b>¡Refuerzos!</b>', 1800); sfx.wake(0.7); break; }
+        if (ev.st === 'intro') { H.showZone('LA PRUEBA DE FUEGO', 'Sobrevive a tres oleadas… y a lo que venga después', true, red); sfx.gong(); this.shake(0.3); }
+        else if (ev.st === 'wave' && this.lastWave !== ev.wave) { H.showZone(`OLEADA ${ev.wave + 1}/${ev.waves}`, ev.wave === 0 ? 'Refleja sus balas contra la manada' : ev.wave === 1 ? 'Diablillos: espirales de fuego' : 'Chamanes: anillos ámbar y violeta', true, red); sfx.gong(0.8); }
+        else if (ev.st === 'rest') H.toast('<b>Oleada superada.</b> Respira: la siguiente llega en unos segundos.', 3200);
+        else if (ev.st === 'bossIntro' && ev.boss) { H.showZone('HELLFIRE', 'Señor de La Caldera', true, red); sfx.roar(); this.shake(0.6); }
+        else if (ev.st === 'victory') { H.showZone('¡VICTORIA!', 'Has superado La Prueba de Fuego', true, red); sfx.fanfare(); }
+        this.lastWave = ev.st === 'wave' || ev.st === 'rest' ? ev.wave : -1;
+        break;
+      }
+      case 'phase': {
+        const v = this.viewOf(ev.id);
+        if (v) v.attack = { id: 'rings2', t: 0, windup: Math.max(0.4, (ev.dur || 2) - 0.4), fire: 0.4 };
+        sfx.roar(1.2);
+        this.shake(0.8);
+        W.lights.flash(ev.x, this.y(ev.x, ev.z) + 3, ev.z, 0xff3b1f, 14, 6, 1.6);
+        W.combatFx.ring(ev.x, this.y(ev.x, ev.z) + 0.1, ev.z, 9, 0xff7a2a, 0.9, 0.1, 1.0);
+        this.sparks(ev.x, this.y(ev.x, ev.z) + 2, ev.z, 40, [1, 0.6, 0.2], [0.9, 0.16, 0.04], { up: 6, spread: 6 });
+        this.hud.showZone(`FASE ${ev.phase}`, ev.shield ? 'Su escudo solo cede ante tus reflejos' : '¡Hellfire se enfurece!', true, !!this.settings.reducedMotion);
+        if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas, y refleja el <b>orbe pesado</b> con un PERFECTO para romperlo.', 6500);
+        break;
+      }
+      case 'shield': {
+        if (ev.st !== 'broken') break;
+        const rec = this.client.entities.get(ev.id);
+        const x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
+        sfx.shieldBreak();
+        this.shake(0.45);
+        this.sparks(x, this.y(x, z) + 2, z, 30, CYAN, CYAN1, { up: 4, spread: 5 });
+        W.combatFx.ring(x, this.y(x, z) + 0.1, z, 5, 0x3bf0ff, 0.6, 0.12, 0.7);
+        this.float(x, z, 4.4, '¡ESCUDO ROTO!', 'perfect', { life: 1.4, rise: 40 });
+        break;
+      }
       case 'rise': {
         // Encounter spawn: a burst at its feet while it stands up (fire for imps, bone dust for the rest).
         const y = this.y(ev.x, ev.z), imp = ev.kind === 'imp', boss = ev.kind === 'hellfire';

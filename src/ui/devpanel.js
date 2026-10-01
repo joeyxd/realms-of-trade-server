@@ -54,6 +54,14 @@ export class DevPanel {
         <button data-op="spawn" data-kind="shaman">+ Chamán</button>
       </div>
       <div class="dv-row dv-btns">
+        <button data-op="enc" data-sub="start">Prueba: iniciar</button>
+        <button data-op="enc" data-sub="wave">Oleada ✓</button>
+        <button data-op="enc" data-sub="boss">Jefe</button>
+        <button data-op="enc" data-sub="phase2">Fase 2</button>
+        <button data-op="enc" data-sub="win">Ganar</button>
+        <button data-op="enc" data-sub="reset">Reiniciar</button>
+      </div>
+      <div class="dv-row dv-btns">
         <button data-op="heal">Curar</button>
         <button data-op="riposte">Riposte lleno</button>
         <button data-op="lvdown">Nv −</button>
@@ -94,6 +102,7 @@ export class DevPanel {
     switch (d.op) {
       case 'spawn': { const n = +d.n || 1; for (let i = 0; i < n; i++) this.send('spawn', { kind: d.kind, dist: d.kind === 'sentinel' ? 9 : 8, ang: ps.facing[e] + (i - (n - 1) / 2) * 0.45 }); break; }
       case 'clear': this.send('clear'); break;
+      case 'enc': this.send('enc', { sub: d.sub }); break;
       case 'heal': this.send('heal'); break;
       case 'riposte': this.send('riposte'); break;
       case 'lvup': this.send('level', { level: (ps.level[e] || 1) + 1 }); break;

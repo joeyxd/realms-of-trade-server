@@ -249,6 +249,32 @@ export const sfx = {
     bell(d, t + 0.3, 1318.5, 0.06 * vol, 0.8);
     bell(d, t + 0.5, 1975.5, 0.04 * vol, 0.6);
   },
+  // La Prueba de Fuego: wave gong, boss roar (phase change), shield break, victory fanfare.
+  gong(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    bell(d, t, 110, 0.22 * vol, 3.2, [1, 1.48, 2.03, 2.74, 3.8]);
+    tone(d, t, { f0: 55, f1: 52, dur: 2.2, g: 0.18 * vol, a: 0.01 });
+  },
+  roar(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { type: 'sawtooth', f0: 70, f1: 38, dur: 1.6, g: 0.22 * vol, a: 0.15 });
+    sweep(d, t, { type: 'bandpass', f0: 300, f1: 120, q: 1.2, dur: 1.4, g: 0.25 * vol, a: 0.1 });
+    noiseBurst(d, t + 0.05, { type: 'lowpass', f: 600, q: 0.7, dur: 1.2, g: 0.2 * vol });
+  },
+  shieldBreak(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'highpass', f: 2500, q: 0.8, dur: 0.35, g: 0.25 * vol });
+    for (let i = 0; i < 4; i++) bell(d, t + i * 0.04, 1760 * (1 + i * 0.27), 0.06 * vol, 0.5);
+  },
+  fanfare(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => bell(d, t + i * 0.13, f, 0.09 * vol, 1.4));
+    tone(d, t, { f0: 130.8, f1: 130.8, dur: 1.6, g: 0.1 * vol, a: 0.05 });
+  },
   shotHit(vol = 1) {
     if (!audio.ready) return;
     tone(audio.sfx, audio.now, { f0: 600, f1: 300, dur: 0.08, g: 0.1 * vol });
