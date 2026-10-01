@@ -54,6 +54,15 @@ float fxDepthFade(float soft) {
   float fragZ = -perspectiveDepthToViewZ(gl_FragCoord.z, uNear, uFar);
   return clamp((sceneZ - fragZ) / soft, 0.0, 1.0);
 }
+// Ground decals: lying on the terrain, they stay visible over it and hide only behind things more than
+// 'bias' world units in front of them.
+float fxDepthFadeBias(float soft, float bias) {
+  if (uUseDepth < 0.5) return 1.0;
+  float sd = texture2D(uDepth, gl_FragCoord.xy / uRes).r;
+  float sceneZ = -perspectiveDepthToViewZ(sd, uNear, uFar);
+  float fragZ = -perspectiveDepthToViewZ(gl_FragCoord.z, uNear, uFar);
+  return clamp((sceneZ - fragZ + bias) / soft, 0.0, 1.0);
+}
 `;
 
 const FS_QUAD_VERT = /* glsl */ `

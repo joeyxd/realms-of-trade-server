@@ -238,7 +238,8 @@ test('melee hits enemies where the attacker saw them (interp delay rewind)', () 
   assert.ok(hit && hit.dmg >= 10, 'hit at the rewound position');
 });
 
-test('client prediction with projectiles, parries and the combo matches the server exactly', () => {
+// A GameClient wired to a LocalServer in-process (messages cloned like the worker would).
+function clientAndServer() {
   const toClient = [];
   const server = new LocalServer({ seed: GAME.seed, bots: 0, send: (_id, m) => toClient.push(JSON.parse(JSON.stringify(m))) });
   const snaps = [], msgs = [];
@@ -263,12 +264,18 @@ test('client prediction with projectiles, parries and the combo matches the serv
   deliver();
   for (let i = 0; i < 6; i++) { server.step(); deliver(); }
   assert.ok(client.joined);
-  // Stand next to an archer and fight: parry now and then, swing now and then.
+  // Stand near an archer.
   const sp = map.enemySpawns.find((s) => s.kind === 'archer');
   const se = server.clients.get(1).entity;
   const ecs = server.world.ecs;
   ecs.x[se] = sp.x - 8; ecs.z[se] = sp.z; ecs.y[se] = map.groundAt(sp.x - 8, sp.z);
   for (let i = 0; i < 6; i++) { server.step(); deliver(); }
+  return { server, client, deliver, shown, sp, se, ecs };
+}
+
+test('client prediction with projectiles, parries and the combo matches the server exactly', () => {
+  const { server, client, deliver, shown, sp, se, ecs } = clientAndServer();
+  // Fight: parry now and then, swing now and then.
   let maxErr = 0;
   for (let i = 0; i < 900; i++) {
     client.update(DT);
@@ -286,4 +293,24 @@ test('client prediction with projectiles, parries and the combo matches the serv
   assert.ok(parries.length > 0, 'some parries happened');
   assert.ok(shown.some((ev) => ev.type === 'hurt' || ev.type === 'graze'), 'and some arrows got through');
   assert.ok(parries.every((ev) => ev.predicted), 'every parry was shown from prediction (none late from the server)');
+});
+
+test('a client running at half the server rate keeps its projectile clock, pool and prediction', () => {
+  const { server, client, deliver, sp, se, ecs } = clientAndServer();
+  let maxErr = 0, maxLag = 0;
+  for (let i = 0; i < 1200; i++) {
+    // The device only manages one command for every two server ticks.
+    client.update(DT);
+    client.tickInput({ mx: 0, mz: 0, ax: sp.x, az: sp.z, btn: 0, prs: i % 19 === 0 ? BTN.PARRY : 0 });
+    server.step(); server.step();
+    deliver();
+    maxErr = Math.max(maxErr, client.stats.predErr);
+    if (i > 300) maxLag = Math.max(maxLag, Math.abs(client.stats.ptLag));
+  }
+  for (let i = 0; i < 6; i++) { server.step(); deliver(); }
+  assert.equal(maxErr, 0, 'zero prediction error');
+  assert.ok(maxLag <= 6, `projectile tick stays close to the server clock (lag ${maxLag})`);
+  const live = server.world.hazards.count;
+  assert.ok(client.hazards.count <= live + 8, `client pool is swept (${client.hazards.count} vs server ${live})`);
+  for (const k of ['hp', 'riposte', 'xp']) assert.equal(client.pred.ecs[k][client.youLocal], ecs[k][se], k);
 });

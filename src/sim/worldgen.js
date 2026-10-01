@@ -327,6 +327,10 @@ export function generateWorld(seed) {
     };
   })();
   colliders.push({ x: practice.dummy.x, z: practice.dummy.z, r: 0.35 }, { x: practice.cannon.x, z: practice.cannon.z, r: 0.75 });
+  // Keep the practice ground clear of palms, bushes and rocks (checked after the random draws so the
+  // rest of the island keeps its exact layout).
+  const nearPractice = (x, z) => Math.hypot(x - practice.ring.x, z - practice.ring.z) < practice.ring.r + 5
+    || Math.hypot(x - practice.dummy.x, z - practice.dummy.z) < 6 || Math.hypot(x - practice.cannon.x, z - practice.cannon.z) < 5;
 
   // Scattered vegetation and rocks (rejection sampling, deterministic).
   const palms = new Set(['palm']);
@@ -353,7 +357,9 @@ export function generateWorld(seed) {
     if (excl(x, z, 4.6, 15)) continue;
     if (rng() > p) continue;
     if (!farFromOthers(x, z, 3.4, palms)) continue;
-    addProp('palm', x, z, { r: 0.38, scale: rng.range(0.85, 1.15), h: rng.range(3.9, 5.6) });
+    const scale = rng.range(0.85, 1.15), ph = rng.range(3.9, 5.6);
+    if (nearPractice(x, z)) continue;
+    addProp('palm', x, z, { r: 0.38, scale, h: ph });
   }
   // A few hand-placed palms framing the village and the spawn.
   for (const [du, dv] of [[-18, 4], [16, -3], [6, -20], [-6, 20], [19, 15]]) {
@@ -374,7 +380,9 @@ export function generateWorld(seed) {
     if (excl(x, z, 3.4, 14)) continue;
     if (rng() > p) continue;
     if (!farFromOthers(x, z, 1.9, bushSet)) continue;
-    addProp('bush', x, z, { r: 0.55, scale: rng.range(0.7, 1.35) });
+    const scale = rng.range(0.7, 1.35);
+    if (nearPractice(x, z)) continue;
+    addProp('bush', x, z, { r: 0.55, scale });
   }
   const rockSet = new Set(['rock']);
   for (let n = 0; n < 1400; n++) {
@@ -388,6 +396,7 @@ export function generateWorld(seed) {
     if (rng() > p) continue;
     if (!farFromOthers(x, z, 3.0, rockSet)) continue;
     const s = rng.range(0.6, 1.9) * (1 + m.volcanic * 0.5);
+    if (nearPractice(x, z)) continue;
     addProp('rock', x, z, { r: 0.55 * s, scale: s, y: h - 0.15 * s });
   }
   for (let n = 0; n < 9000; n++) {

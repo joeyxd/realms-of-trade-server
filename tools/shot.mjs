@@ -81,6 +81,8 @@ if (scenario !== 'title') {
   await page.click('#btn-play', { force: true });
   await page.waitForFunction(() => window.__mn.st.mode === 'playing', null, { timeout: 60000 });
   await page.waitForFunction(() => !window.__mn.world.rig.blend, null, { timeout: 90000 });
+  // Enemies fight back since M2: god mode keeps the tour from ending at a checkpoint.
+  await page.evaluate(() => window.__mn.client.send({ t: 'cmd', type: 'dev', op: 'god', on: true }));
   await wait(3000);
   await shot('02-spawn');
   await page.mouse.move(width * 0.5, height * 0.45);
@@ -132,6 +134,13 @@ if (scenario !== 'title') {
   });
   await tp('10-wade', W.wade.x, W.wade.z, async () => { await page.keyboard.down('KeyA'); await wait(2500); await page.keyboard.up('KeyA'); await wait(400); });
   await tp('11-dock', W.dock.x, W.dock.z);
+  // Combat (M2): the practice ring under cannon fire, and the archers on the Sendero del Humo.
+  const C = await page.evaluate(() => {
+    const m = window.__mn, a = m.map.enemySpawns.find((e) => e.kind === 'archer');
+    return { ring: m.map.practice.ring, archer: { x: a.x + 6, z: a.z + 3 } };
+  });
+  await tp('14-practice', C.ring.x + 1, C.ring.z - 0.5);
+  await tp('15-archers', C.archer.x, C.archer.z, async () => { await page.keyboard.press('KeyJ'); await wait(300); });
   // Night: lanterns, hut windows, the campfire and the moonlit sea.
   await page.evaluate(() => window.__mn.tod('night'));
   await wait(1500);

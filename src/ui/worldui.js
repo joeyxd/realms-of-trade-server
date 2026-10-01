@@ -22,7 +22,7 @@ export class WorldUI {
       el.className = 'fnum';
       el.hidden = true;
       root.appendChild(el);
-      this.floats.push({ el, pos: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, t: 0, life: 0, active: false, dx: 0, rise: 0 });
+      this.floats.push({ el, pos: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, t: 0, life: 0, active: false, dx: 0, rise: 0, lift: 0, w: 0, h: 0, sx: undefined, sy: undefined });
     }
   }
 
@@ -39,6 +39,23 @@ export class WorldUI {
     f.dx = (Math.random() - 0.5) * spread;
     // restart the pop animation
     f.el.style.animation = 'none'; void f.el.offsetWidth; f.el.style.animation = '';
+    // Stack above recent floats it would cover on screen (a perfect parry, its chain, the XP and the
+    // damage numbers can all pop at once around the same spot).
+    f.w = f.el.offsetWidth; f.h = f.el.offsetHeight; f.lift = 0;
+    this.project(f.pos, f.p);
+    for (let pass = 0; pass < 6 && f.p.vis; pass++) {
+      let moved = false;
+      for (const o of this.floats) {
+        if (o === f || !o.active || o.t > 0.6 || o.sy === undefined) continue;
+        const fy = f.p.y - f.lift;
+        if (Math.abs(o.sx - f.p.x) < (o.w + f.w) * 0.5 - 4 && fy > o.sy - o.h + 2 && fy - f.h < o.sy - 2) {
+          f.lift += fy - (o.sy - o.h) + 2;
+          moved = true;
+        }
+      }
+      if (!moved) break;
+    }
+    f.sx = f.p.x; f.sy = f.p.y - f.lift;
     return f;
   }
 
@@ -149,7 +166,8 @@ export class WorldUI {
       this.project(f.pos, f.p);
       if (!f.p.vis) { f.el.style.opacity = '0'; continue; }
       const up = f.rise * (1 - (1 - k) * (1 - k));
-      f.el.style.transform = `translate3d(${f.p.x + f.dx * k}px, ${f.p.y - up}px, 0) translate(-50%, -100%)`;
+      f.sx = f.p.x + f.dx * k; f.sy = f.p.y - up - f.lift;
+      f.el.style.transform = `translate3d(${f.sx}px, ${f.sy}px, 0) translate(-50%, -100%)`;
       f.el.style.opacity = String(k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3);
     }
     for (const [id, pm] of this.prompts) {

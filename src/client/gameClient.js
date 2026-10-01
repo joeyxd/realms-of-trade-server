@@ -37,7 +37,7 @@ export class GameClient {
     this.awaitingFirst = false;
     this.stats = { predErr: 0, corrections: 0, pending: 0, snapAge: 0, ptLag: 0 };
     this.lastSnapClock = 0;
-    this.ptPrev = 0; this.ptCur = 0;
+    this.ptPrev = 0; this.ptCur = 0; this.lastSweep = 0;
     this.predicted = new Set(); // "type:pid:seq" of feedback already shown from prediction
     this.sidOf = new Map(); // server shot id → local shot id
     this.nextLocalSid = 1 << 24;
@@ -182,8 +182,11 @@ export class GameClient {
   onSnapshot(s) {
     const st = s.tick * DT;
     const off = st - this.clock;
+    // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one
+    // is the best clock sample; a slow device whose clock lags real time keeps up), late ones only
+    // pull the estimate back slowly (network jitter).
     if (this.serverOffset === null || Math.abs(off - this.serverOffset) > 0.25) this.serverOffset = off;
-    else this.serverOffset += (off - this.serverOffset) * 0.08;
+    else this.serverOffset += (off - this.serverOffset) * (off > this.serverOffset ? 0.6 : 0.05);
     this.lastSnapClock = this.clock;
 
     for (const e of s.ents) {
@@ -272,8 +275,10 @@ export class GameClient {
     const target = Math.max(1, Math.round(this.serverTick()));
     let pt = this.ptCur + 1;
     const err = target - pt;
+    // Behind (a slow device runs fewer commands than server ticks): catch up by up to 3 extra ticks a
+    // command, which still moves the fastest projectile less than its hit radius per step.
     if (!this.ptCur || Math.abs(err) > 12) pt = target;
-    else if (err >= 2) pt += 1;
+    else if (err >= 2) pt += Math.min(3, err >> 1);
     else if (err <= -2) pt -= 1;
     this.stats.ptLag = target - pt;
     const cmd = {
@@ -346,7 +351,8 @@ export class GameClient {
     }
     if (simDt > 0) this.stepShots(simDt);
     // Hostile projectiles the client no longer needs.
-    if (this.ptCur && (this.ptCur & 31) === 0) this.pred.hazards.sweep(this.ptCur);
+    // (Every 32 ticks of pt, which can step by more than one per command.)
+    if (this.ptCur && Math.abs(this.ptCur - this.lastSweep) >= 32) { this.pred.hazards.sweep(this.ptCur); this.lastSweep = this.ptCur; }
   }
 
   // Visual shots: the same homing as the server, toward the enemies as drawn here.

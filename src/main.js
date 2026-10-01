@@ -359,6 +359,19 @@ async function boot() {
 
   // Touch / keyboard-only aim: the nearest enemy within 9 u, else the way you are moving or facing.
   function autoAim(mv) {
+    // First the most imminent projectile on a collision course (keyboard / touch parry faces it).
+    const H = client.hazards, pt = (client.ptCur || 0) + 1, reach = tuning.player.hurtRadius + tuning.projectiles.graze + 0.5;
+    let threat = -1, tBest = 0.7;
+    for (let s = 0; s < H.cap; s++) {
+      if (!H.live(s, pt)) continue;
+      const rx = ps.x - H.px(s, pt), rz = ps.z - H.pz(s, pt), v2 = H.vx[s] * H.vx[s] + H.vz[s] * H.vz[s];
+      if (v2 < 1e-6) continue;
+      const tca = (rx * H.vx[s] + rz * H.vz[s]) / v2;
+      if (tca < 0 || tca > tBest) continue;
+      if (Math.hypot(rx - H.vx[s] * tca, rz - H.vz[s] * tca) > reach + H.r[s]) continue;
+      threat = s; tBest = tca;
+    }
+    if (threat >= 0) { aim.set(H.px(threat, pt), ps.y, H.pz(threat, pt)); return; }
     let best = null, bd = 9;
     for (const rec of client.entities.values()) {
       if (!rec.enemy || !rec.ready || rec.dying || rec.enemy === 'cannon') continue;

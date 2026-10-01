@@ -54,8 +54,9 @@ void main() {
     float glowIn = (1.0 - smoothstep(0.0, 0.9, r)) * 0.0 + uActive * (0.12 + 0.06 * sin(uTime * 4.0)) * (1.0 - smoothstep(0.86, 0.9, r));
     a = max(band * 0.95, max(clamp(ink, 0.0, 1.0) * 0.7, glowIn));
     col = mix(col, vec3(1.0, 0.86, 0.5), glowIn * (1.0 - band));
+    col *= uFxLight; // a real rope: lit like the sand it lies on (telegraphs above stay emissive)
   }
-  a *= fxDepthFade(0.12);
+  a *= fxDepthFadeBias(0.15, 0.3);
   if (a < 0.01) discard;
   gl_FragColor = vec4(col, a);
   #include <colorspace_fragment>
@@ -73,7 +74,7 @@ function polarGeometry() {
   const idx = [];
   for (let i = 0; i < radii.length - 1; i++) for (let j = 0; j < SEGS; j++) {
     const a = i * (SEGS + 1) + j, b = a + 1, c = a + SEGS + 1, d = c + 1;
-    idx.push(a, c, b, b, c, d);
+    idx.push(a, b, c, b, d, c); // counter-clockwise seen from above (front faces up)
   }
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
   g.setAttribute('aPolar', new THREE.BufferAttribute(polar, 2));

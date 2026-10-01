@@ -8,7 +8,7 @@ import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
-import { CharacterView, SENTINEL, ARCHER } from './characters.js';
+import { CharacterView, SENTINEL, ARCHER, characterMaterial } from './characters.js';
 import { DummyView, CannonView } from './practice.js';
 import { Effects } from './vfx/effects.js';
 import { ProjectileView } from './vfx/projectiles.js';
@@ -123,6 +123,13 @@ export class GameScene {
     const anyView = this.views.values().next().value;
     if (anyView) { this.after.capture(anyView, 0x3bf0ff, 0.01); temp.push(this.after.ghosts[0].mesh); }
     for (const r of this.effects.rings.slice(0, 1)) { r.m.visible = true; temp.push(r.m); }
+    // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
+    // instance yet either. Compile them now so the first slash or kill does not hitch.
+    const cf = this.combatFx;
+    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard]) { m.visible = true; temp.push(m); }
+    const probe = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), characterMaterial('base'));
+    probe.castShadow = true;
+    this.scene.add(probe);
     const cam = this.camera, r = this.renderer;
     // Compile each pass the way it draws: into a render target (linear) on medium/high, the screen
     // (sRGB) on low; the world with the scene lights, the FX layer without them (the FX pass's
@@ -147,6 +154,8 @@ export class GameScene {
       r.setRenderTarget(prev);
       cam.layers.set(LAYER.WORLD); cam.layers.enable(LAYER.NO_OUTLINE);
       for (const m of temp) m.visible = false;
+      this.scene.remove(probe);
+      probe.geometry.dispose();
     }
   }
 

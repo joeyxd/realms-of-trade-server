@@ -134,7 +134,7 @@ ${GLSL_FX_DEPTH}
 varying vec2 vUv;
 void main() {
   float d = length(vUv);
-  float a = (1.0 - smoothstep(0.35, 1.0, d)) * 0.34 * fxDepthFade(0.25);
+  float a = (1.0 - smoothstep(0.35, 1.0, d)) * 0.34 * fxDepthFadeBias(0.15, 0.25);
   if (a < 0.01) discard;
   gl_FragColor = vec4(0.06, 0.03, 0.12, a);
 }`;

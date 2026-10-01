@@ -74,7 +74,7 @@ void main() {
   float r = mix(0.15, 1.0, 1.0 - pow(1.0 - uT, 2.4));
   float w = uWidth * mix(1.0, 0.45, uT);
   float ring = 1.0 - smoothstep(0.0, w, abs(d - r));
-  float a = ring * (1.0 - uT) * uAlpha * fxDepthFade(0.2);
+  float a = ring * (1.0 - uT) * uAlpha * fxDepthFadeBias(0.2, 0.3);
   if (a < 0.01) discard;
   gl_FragColor = vec4(mix(uColor, vec3(1.0), ring * ring * 0.5) * a, a);
   #include <colorspace_fragment>

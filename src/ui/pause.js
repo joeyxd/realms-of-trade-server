@@ -48,8 +48,11 @@ export class PauseMenu {
         <span><span class="kbd">Z</span> <span class="kbd">X</span></span><span>Rotar cámara 90° (actívalo en Ajustes)</span>
         <span class="kbd">ESC</span><span>Pausa</span>
         <span class="kbd">F3</span><span>Rendimiento</span>
-        <span><span class="kbd">LMB</span> <span class="kbd">RMB</span></span><span class="soon">Atacar y parrear: los enseña la Capitana Brea (próximo capítulo)</span>
-        <span><span class="kbd">Q</span> <span class="kbd">E</span> <span class="kbd">R</span></span><span class="soon">Habilidades: se desbloquean en Nv 3, 5 y 7</span>
+        <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>Atacar: combo de 3 golpes. Rompe las balas ámbar</span>
+        <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>Parry: devuelve lo que te disparan. Justo antes del impacto: ¡PERFECTO!</span>
+        <span class="kbd">R</span><span>Riposte: con la barra llena, una onda que limpia todo a tu alrededor</span>
+        <span class="kbd">F4</span><span>Panel de pruebas: ajustes de combate, enemigos, hitboxes</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span class="soon">Habilidades: se desbloquean en Nv 3 y 5</span>
       </div>`;
     this.root.innerHTML = `
       <div class="panel frame interactive" role="dialog" aria-modal="true" aria-labelledby="pause-title">
