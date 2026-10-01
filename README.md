@@ -41,11 +41,14 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Hablar / interactuar | F | botón F |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
+| Atacar (combo de 3; rompe las bolas ámbar) | LMB / J | botón ATK |
+| Parry / reflejar (¡PERFECTO! justo antes del impacto) | RMB / K | botón PARRY |
+| RIPOSTE (onda que refleja todo; con el medidor lleno) | R | botón R |
 | Pausa y ajustes | ESC | botón ⚙ |
 | Rendimiento | F3 | — |
+| Panel de pruebas (tuning en vivo, spawns, modo dios, hitboxes) | F4 | — |
 
-Atacar (LMB), parry (RMB) y las habilidades Q/E/R aparecen bloqueadas en la barra de acción: llegan en M2 y se
-desbloquean por nivel (3/5/7).
+Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean por nivel (3/5) en M4.
 
 ## Estado de los milestones
 
@@ -54,7 +57,8 @@ desbloquean por nivel (3/5/7).
 | M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
 | v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz); siguen lluvia, modo tinta → `DESIGN.md` §15 | en curso |
-| M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | siguiente |
+| M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | ✅ |
+| M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | en curso |
 | M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
 ### Qué incluye M1
@@ -97,6 +101,27 @@ desbloquean por nivel (3/5/7).
   viento, aves FM, insectos y lava mezclados por zona, música generativa (marimba + pad + bajo) que cambia a modo
   menor con dron en La Caldera.
 - **Calidad** baja/media/alta + AUTO (baja un nivel si cae de 45 fps).
+
+### Qué incluye M2
+
+- **Proyectiles analíticos** (parreable ámbar, pesado naranja, imparable violeta con ✕) con 150 ms de armado, sombra
+  en el suelo y recorte contra pilares, rocas y acantilados. El servidor envía un evento de patrón y cada cliente lo
+  expande con los mismos ids; nada se sincroniza bala a bala.
+- **Combate**: combo de 3 golpes (el tercero aturde y cancela ataques), destruir bolas con el golpe, **parry** de
+  110° (PERFECTO en los primeros 80 ms, cadena x1→x5 con «clang» que sube de tono), reflejo con homing que ignora
+  armadura, bloqueo del pesado, castigo al parrear un imparable, **ROCE** (+XP, +RIPOSTE), **FANTASMA** al dashear a
+  través de un imparable y **RIPOSTE** (onda r=6 que refleja todo).
+- **Enemigos**: 3 arqueros esqueleto junto al Sendero del Humo y 2 centinelas dormidos en el portón de La Caldera
+  (tajo AoE con círculo que se llena, abanico de púas, orbe pesado). Steering sin pathfinding, wind-ups
+  telegrafiados, respawn, debris de huesos al morir.
+- **Red**: compensación de lag por `pt` (el servidor evalúa cada comando en el tick que veía el jugador), predicción
+  del combate con reconciliación y deduplicación, tiempo de instancia (hitstop y slow-mo del PERFECTO en servidor y
+  cliente). Test con un cliente a la mitad del ritmo del servidor: error de predicción 0.
+- **Feel**: hitstop por tipo de golpe, slow-mo, onda de 3 capas, destellos, temblor, números de daño que se apilan,
+  toasts de tutorial, nameplates con barra de vida, sonidos sintetizados por evento.
+- **Zona de práctica** en la playa (muñeco + cañón con anillo de cuerda) y **panel F4** con sliders de tuning en
+  vivo (cliente y servidor local a la vez), spawns, curar, riposte lleno, nivel ±, modo dios e hitboxes.
+- 34 tests en Node (`npm test`).
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.

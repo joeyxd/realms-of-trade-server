@@ -3,7 +3,7 @@ export const GAME = {
   title: 'MAREA NEGRA',
   subtitle: 'Isla de la Caldera',
   slice: 'Rebanada vertical 1',
-  version: '0.1.0-m1',
+  version: '0.2.0-m2',
   seed: 0x5eaf00d,
   saveKey: 'mareanegra.v1',
 };

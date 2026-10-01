@@ -150,7 +150,7 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
 
 ## 4. Pasos (cada uno: implementar → `npm test` → commit → push)
 
-- [ ] **P0 · Cierre M2 (docs)** — DESIGN §7 fila Centinela (diablillo pasa a M2.5), §10 compensación de lag
+- [x] **P0 · Cierre M2 (docs)** — DESIGN §7 fila Centinela (diablillo pasa a M2.5), §10 compensación de lag
   (pt, catch-up, filtro asimétrico de reloj, tiempo de instancia), zona de práctica, §16 M2 ✅ + fila M2.5,
   §14 añadir `data/enemies.js`, `data/encounters.js`, `systems/boss.js`, `systems/encounter.js`;
   README (controles J/K/LMB/RMB/R/F4, contenido M2); `src/data/meta.js` → `0.2.0-m2`.

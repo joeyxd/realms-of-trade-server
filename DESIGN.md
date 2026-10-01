@@ -166,9 +166,18 @@ pathfinding. Reacción: flash blanco 80 ms + knockback 0.6 u. Muerte: se desarma
 | Enemigo | HP | Vel. | Rango | Ataque | Wind-up | CD | XP |
 |---|---|---|---|---|---|---|---|
 | Arquero esqueleto pirata | 40 | 3.2 | 9–12 | ráfaga de 3 flechas parreables apuntadas, 0.12 s entre flechas, 10 u/s | 450 ms (brillo del arco + pose) | 2.2 s | 25 |
+| Centinela (M2) | 140 (def 2) | 2.3 | 4.5–8 | cerca: tajo AoE r=2.6 delante, 18 · medio: abanico de 3 púas imparables 10 u/s · cada ~9 s: orbe pesado 4.5 u/s | 0.8 / 0.6 / 0.8 s | 2.2–3 s | 60 |
+| Grumete ahogado (M2.5) | 24 | 4.6 | persigue | mordisco AoE r=1.05 delante, 9; llegan en manadas, knockback × 1.6 | 420 ms | 1.1 s | 8 |
 | Diablillo de fuego | 28 | 5.5 | orbita a 6 | espiral de 8 orbes parreables en 0.8 s, 7 u/s | 400 ms | 2.8 s | 20 |
 | Chamán de coral | 60 | 2.4 | 8–10 | anillo de 12 orbes alternando parreable/imparable, 6 u/s | 600 ms | 3.5 s | 40 |
 | Cangrejo mortero | 80 | 2.0 | 7–11 | 3 AoE r=2.2 alrededor del jugador, telegraph 1.1 s | 500 ms | 3.0 s | 50 |
+
+Los centinelas duermen junto al portón de La Caldera y despiertan (1.3 s) cuando te acercas. El diablillo, el chamán
+y el grumete llegan con la Prueba de Fuego (M2.5, `PLAN-M2.5.md`); el cangrejo sigue en M3.
+
+**Zona de práctica (M2):** en la playa, junto al punto de inicio: un muñeco de paja (combo de 3, se cura entre
+rachas) y un cañón que dispara bolas lentas parreables a quien pisa su anillo de cuerda (r=4.2). Sin palmeras,
+arbustos ni rocas delante de la cámara.
 
 Cangrejo: **blindado por delante** (120°): daño × 0.2 de frente; × 1 por flanco/espalda; reflejos ignoran blindaje.
 
@@ -293,6 +302,15 @@ Marinero de agua dulce (hablar con el capitán).
   grupo, como una mazmorra de MMO), decididas por el servidor y replicadas. En el mundo abierto compartido el hitstop
   es solo cosmético en el cliente (≤ 110 ms, la sim no se detiene).
 - **Bots** viven en el servidor como entidades `player` con nombre; la UI no distingue bots de humanos.
+- **Compensación de lag (M2):** cada comando lleva `pt`, el tick de proyectiles que el jugador estaba viendo. El
+  servidor lo limita a `[tick − 20, tick + 2]` y evalúa parries, destrucciones, golpes y roces en ese tick (los
+  proyectiles son analíticos: no hace falta historial); el melee usa el historial de posiciones de los enemigos
+  `interpTicks` antes de `pt`. El cliente avanza `pt` +1 por comando con recuperación (hasta +3 si va ≥ 2 ticks
+  atrás, −1 si va ≥ 2 adelante, salto si el error pasa de 12). La estimación del reloj del servidor usa un filtro
+  asimétrico (adopta al 60 % las muestras donde el servidor va adelantado y al 5 % las tardías; salta si cambia
+  > 0.25 s), para que un cliente lento no se quede cerca del límite de rebobinado.
+- **Tiempo de instancia (M2):** hitstop y slow-mo se aplican en el servidor (la sim de la instancia se detiene o se
+  ralentiza) y en el cliente con el mismo evento `time {hitstop, scale, dur}`.
 
 ### Protocolo (JSON hoy, binario después) — `src/net/protocol.js`
 
@@ -434,7 +452,9 @@ src/render/                scene · pipeline · camera · lighting · lights · 
                            vfx/{effects,particles,streaks,afterimage}
 src/ui/                    title · hud · banners · prompts · pause · stats · touch · toasts
 src/audio/                 engine · sfx · music · ambience
-src/data/                  meta · tuning (· items · skills · enemies · boss · loot_tables · quests · ship_modules)
+src/data/                  meta · tuning · enemies · encounters (M2.5) (· items · skills · loot_tables · quests) · ship_modules
+src/sim/systems/           movement · bots · combat · enemies · boss (M2.5) · encounter (M2.5)
+src/sim/projectiles.js     proyectiles analíticos, patrones, disparos reflejados
 tests/                     tests de la sim, de la geometría de personajes, de las luces locales y de los presets y
                            partículas en Node (`npm test`)
 tools/shot.mjs             capturas automáticas con Playwright
@@ -501,7 +521,8 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 |---|---|---|
 | M0 | Este documento | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando + arquitectura de red local | ✅ (ver README) |
-| M2 | Proyectiles + parry/reflect/dash + 2 enemigos + feel + F4 → **test de diversión** | |
+| M2 | Proyectiles + parry/reflect/dash + 2 enemigos + feel + F4 → **test de diversión** | ✅ |
+| M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | en curso |
 | M3 | Oleadas + enemigos restantes + jefe 3 fases | |
 | M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
