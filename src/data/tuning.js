@@ -114,7 +114,10 @@ export const tuning = {
     blockKnock: 7, // heavy orb blocked by a normal parry: half damage + push
     reflect: { dmgMult: 2, atkMult: 0.8, speedMult: 1.4, homing: 4, cone: 60, life: 2.5,
       // A reflected shot that hits jumps to the nearest other enemy (M2.5): bounces by how it was sent back.
-      bounce: { normal: 1, perfect: 2, wave: 1, range: 7, dmgMult: 0.75, life: 1.4 } },
+      bounce: { normal: 1, perfect: 2, wave: 1, range: 7, dmgMult: 0.75, life: 1.4 },
+      // Many reflected shots on one enemy within `window` s: each next one × (1 − step·n), at least floor
+      // (a point-blank parry of a 15-bullet flower is a jackpot, not an instant kill).
+      stack: { window: 0.6, step: 0.2, floor: 0.15 } },
     chainGap: 1.2,
     chainMax: 5,
     chainDmg: 0.1, // reflected damage × (1 + 0.1·(chain − 1))

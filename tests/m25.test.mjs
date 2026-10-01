@@ -151,3 +151,187 @@ test('dashing through a parryable bullet is an ESQUIVA (once, no damage); unstop
   assert.equal(hurt, 0);
   assert.equal(w.ecs.riposte[e], tuning.parry.riposte.dodge + tuning.parry.riposte.ghost);
 });
+
+// ---- Encounter + boss ------------------------------------------------------------------------------
+import { createEncounter, encounterDev } from '../src/sim/systems/encounter.js';
+import { ENCOUNTERS } from '../src/data/encounters.js';
+
+function trial() {
+  const t = arena(A.x, A.z); // standing on the rune circle
+  t.w.ecs.god[t.e] = 1;
+  t.enc = createEncounter('caldera', map);
+  t.w.encounters.push(t.enc);
+  t.run = (sec, o) => { const evs = []; for (let i = 0; i < Math.round(sec / DT); i++) evs.push(...t.step(o)); return evs; };
+  t.killAll = () => { for (const e of [...t.enc.alive]) if (t.w.ecs.alive[e]) t.w.killEnemy(e, t.e); };
+  return t;
+}
+
+test('La Prueba de Fuego: entering starts the waves, clearing them brings Hellfire, killing him wins', () => {
+  const { w, e, enc, run, killAll } = trial();
+  const D = ENCOUNTERS.caldera, ecs = w.ecs;
+  run(0.1);
+  assert.equal(enc.st, 'intro');
+  run(D.intro + 0.1);
+  assert.equal(enc.st, 'wave');
+  assert.equal(enc.alive.size, 7, 'wave 1: 5 grunts + 2 archers');
+  for (const q of enc.alive) {
+    assert.ok(Math.hypot(ecs.x[q] - enc.cx, ecs.z[q] - enc.cz) > 9, 'spawned on the rim, away from the player');
+    assert.equal(ecs.brain[q].state, 'wake', 'rising');
+  }
+  for (let wave = 0; wave < D.waves.length; wave++) {
+    assert.equal(enc.wave, wave);
+    killAll();
+    run(0.1);
+    if (D.waves[wave].late) { assert.ok(enc.alive.size > 0, 'late reinforcements'); killAll(); run(0.1); }
+    if (wave + 1 < D.waves.length) { assert.equal(enc.st, 'rest'); run(D.rest + 0.1); assert.equal(enc.st, 'wave'); }
+  }
+  assert.equal(enc.st, 'bossIntro');
+  const boss = enc.bossE;
+  assert.ok(boss && ecs.alive[boss]);
+  run(D.boss.intro + 0.1);
+  assert.equal(enc.st, 'boss');
+  const xp0 = ecs.xp[e] + ecs.level[e] * 1e6;
+  w.killEnemy(boss, e);
+  const evs = run(0.1);
+  assert.equal(enc.st, 'victory');
+  assert.ok(evs.some((ev) => ev.type === 'enc' && ev.st === 'victory'));
+  assert.ok(ecs.xp[e] + ecs.level[e] * 1e6 > xp0, 'boss XP');
+  run(3.1);
+  assert.equal(enc.st, 'idle');
+  run(1);
+  assert.equal(enc.st, 'idle', 'cooldown before it can start again');
+});
+
+test('a wipe resets the trial, and once the boss was reached the next try starts at the boss', () => {
+  const { w, e, enc, run } = trial();
+  const ecs = w.ecs;
+  run(ENCOUNTERS.caldera.intro + 0.2);
+  assert.equal(enc.st, 'wave');
+  const spawned = [...enc.alive];
+  ecs.x[e] = enc.cx + 40; ecs.z[e] = enc.cz; // ran away
+  run(ENCOUNTERS.caldera.wipeGrace + 0.2);
+  assert.equal(enc.st, 'idle');
+  assert.ok(spawned.every((q) => !ecs.alive[q]), 'its enemies are gone');
+  assert.equal(enc.reached, '');
+  encounterDev(w, enc, 'boss');
+  run(0.1);
+  assert.ok(enc.bossE);
+  run(ENCOUNTERS.caldera.wipeGrace + 0.2);
+  assert.equal(enc.st, 'idle');
+  assert.equal(enc.reached, 'boss');
+  ecs.x[e] = enc.cx; ecs.z[e] = enc.cz;
+  run(3.2); // reset cooldown, then step on the runes
+  assert.equal(enc.st, 'bossIntro');
+});
+
+test('Hellfire: omnidirectional cycle, slam when hugged, ENRAGE at 55 % (invulnerable, bullets cleared, minions), shield vs reflects', () => {
+  const { w, e, enc, run } = trial();
+  const ecs = w.ecs, H = ENEMIES.hellfire;
+  encounterDev(w, enc, 'boss');
+  run(ENCOUNTERS.caldera.boss.intro + 0.1);
+  const boss = enc.bossE, b = ecs.brain[boss];
+  // Keep the player 8 u away: he cycles his phase-1 attacks.
+  ecs.x[e] = ecs.x[boss] + 8; ecs.z[e] = ecs.z[boss];
+  const seen = new Set();
+  let maxLive = 0;
+  for (let i = 0; i < 20 / DT; i++) {
+    ecs.x[e] = ecs.x[boss] + 8; ecs.z[e] = ecs.z[boss];
+    const evs = run(DT);
+    for (const ev of evs) if (ev.type === 'pattern' && ev.src === boss) seen.add(ev.atk);
+    maxLive = Math.max(maxLive, w.hazards.count);
+  }
+  for (const id of ['fan5', 'spiral2', 'rings2', 'orb']) assert.ok(seen.has(id), `phase 1 uses ${id}`);
+  assert.ok(maxLive > 40, `bullet hell: ${maxLive} projectiles at once`);
+  // Hug him: slam.
+  let slam = false;
+  for (let i = 0; i < 6 / DT && !slam; i++) {
+    ecs.x[e] = ecs.x[boss] + 2.5; ecs.z[e] = ecs.z[boss];
+    for (const ev of run(DT)) if (ev.type === 'windup' && ev.id === boss && ev.atk === 'slam') slam = true;
+  }
+  assert.ok(slam, 'slams when hugged');
+  // Phase change.
+  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * (H.phases[0].until - 0.01));
+  const evs = run(DT * 2);
+  assert.ok(evs.some((ev) => ev.type === 'phase' && ev.phase === 2));
+  assert.ok(evs.some((ev) => ev.type === 'clear' && ev.hostile));
+  assert.ok(b.inv > 0 && b.shieldOn);
+  const hp0 = ecs.hp[boss];
+  damageEnemy(w, boss, 100, { by: e, kind: 'melee', x: ecs.x[e], z: ecs.z[e] });
+  assert.equal(ecs.hp[boss], hp0, 'invulnerable during ENRAGE');
+  run(H.enrage + 0.1);
+  let minions = 0;
+  for (const q of enc.alive) if (ecs.brain[q]?.minion === boss) minions++;
+  assert.equal(minions, H.phases[1].summon, 'summons grunts');
+  w.rng = () => 0.99; // no crits for the comparisons
+  const h1 = ecs.hp[boss];
+  damageEnemy(w, boss, 100, { by: e, kind: 'melee', x: ecs.x[e], z: ecs.z[e] });
+  const melee = h1 - ecs.hp[boss];
+  const h2 = ecs.hp[boss];
+  b.shotN = 0;
+  damageEnemy(w, boss, 100, { by: e, kind: 'shot', x: ecs.x[e], z: ecs.z[e], pierce: true });
+  const shot = h2 - ecs.hp[boss];
+  assert.ok(shot > melee * 2.5, `reflects ignore the shield (${shot} vs ${melee})`);
+  damageEnemy(w, boss, 100, { by: e, kind: 'shot', heavy: true, x: ecs.x[e], z: ecs.z[e], pierce: true });
+  assert.ok(b.broken > 0 && ecs.stagger[boss] > 0, 'a reflected heavy orb breaks the shield and staggers him');
+});
+
+import { LocalServer } from '../src/net/localServer.js';
+import { GameClient } from '../src/client/gameClient.js';
+import { MSG } from '../src/net/protocol.js';
+
+test('client prediction stays exact in the middle of Hellfire phase 2 (parries, dashes, bounces)', () => {
+  const toClient = [];
+  const server = new LocalServer({ seed: GAME.seed, bots: 0, send: (_id, m) => toClient.push(JSON.parse(JSON.stringify(m))) });
+  const snaps = [], msgs = [];
+  const transport = {
+    onSnapshot: (cb) => snaps.push(cb), onMessage: (cb) => msgs.push(cb), start() {},
+    sendInput: (_s, cmd) => server.receive(1, { t: MSG.INPUTS, cmds: [cmd] }),
+    send: (m) => server.receive(1, m),
+  };
+  const shown = [];
+  const client = new GameClient(transport, map, { emit: (type, ev) => { if (type === 'combat') shown.push(ev); } });
+  client.start();
+  const deliver = () => { while (toClient.length) { const m = toClient.shift(); if (m.t === MSG.SNAPSHOT) snaps.forEach((cb) => cb(m)); else msgs.forEach((cb) => cb(m)); } };
+  server.connect(1); deliver();
+  client.join('Test', 1); deliver();
+  for (let i = 0; i < 6; i++) { server.step(); deliver(); }
+  const se = server.clients.get(1).entity, ecs = server.world.ecs, enc = server.world.encounters[0];
+  ecs.x[se] = enc.cx + 3; ecs.z[se] = enc.cz; ecs.y[se] = map.groundAt(ecs.x[se], ecs.z[se]);
+  const dev = (o) => client.send({ t: MSG.CMD, type: 'dev', ...o });
+  dev({ op: 'god', on: true }); dev({ op: 'level', level: 6 }); dev({ op: 'enc', sub: 'boss' });
+  for (let i = 0; i < 200; i++) { client.update(DT); client.tickInput({ mx: 0, mz: 0, ax: enc.cx, az: enc.cz, btn: 0, prs: 0 }); server.step(); deliver(); }
+  dev({ op: 'enc', sub: 'phase2' });
+  let maxErr = 0;
+  for (let i = 0; i < 1500; i++) {
+    client.update(DT);
+    const prs = (i % 13 === 0 ? BTN.PARRY : 0) | (i % 97 === 50 ? BTN.DASH : 0) | (i % 37 === 0 ? BTN.ATTACK : 0);
+    const mx = Math.sin(i * 0.05), mz = Math.cos(i * 0.05); // small circles near the centre
+    client.tickInput({ mx, mz, ax: ecs.x[enc.bossE] || enc.cx, az: ecs.z[enc.bossE] || enc.cz, btn: 0, prs });
+    server.step();
+    deliver();
+    maxErr = Math.max(maxErr, client.stats.predErr);
+  }
+  for (let i = 0; i < 6; i++) { server.step(); deliver(); }
+  assert.equal(maxErr, 0, 'zero prediction error');
+  const ce = client.youLocal, pe = client.pred.ecs;
+  for (const k of ['x', 'z', 'hp', 'riposte', 'chain', 'xp']) assert.equal(pe[k][ce], ecs[k][se], k);
+  assert.ok(client.enc && ['boss', 'victory'].includes(client.enc[0][1]), `the HUD state arrives in snapshots (${client.enc && client.enc[0][1]})`);
+  assert.ok(shown.some((ev) => ev.type === 'parry'), 'parried');
+  assert.ok(shown.some((ev) => ev.type === 'phase'), 'saw the phase change');
+  assert.ok(client.hazards.count <= server.world.hazards.count + 8, 'client pool in step with the server');
+});
+
+test('reflected shots stack with diminishing damage on the same enemy', () => {
+  const { w, e } = arena();
+  const t = w.spawnEnemy('sentinel', A.x, A.z);
+  w.ecs.hp[t] = w.ecs.maxHp[t] = 5000;
+  w.rng = () => 0.99;
+  const hits = [];
+  for (let i = 0; i < 6; i++) { const h = w.ecs.hp[t]; damageEnemy(w, t, 40, { by: e, kind: 'shot', x: A.x + 2, z: A.z, pierce: true }); hits.push(h - w.ecs.hp[t]); }
+  assert.ok(hits[0] > hits[1] && hits[1] > hits[2], hits.join(','));
+  assert.ok(hits[5] >= Math.floor(40 * tuning.parry.reflect.stack.floor));
+  for (let i = 0; i < 40; i++) w.stepWorld();
+  const h = w.ecs.hp[t];
+  damageEnemy(w, t, 40, { by: e, kind: 'shot', x: A.x + 2, z: A.z, pierce: true });
+  assert.equal(h - w.ecs.hp[t], hits[0], 'full damage again after the window');
+});

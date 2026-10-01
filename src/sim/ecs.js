@@ -19,7 +19,7 @@ export const STATE = { MOVE: 0, DASH: 1 };
 // What an entity is doing, for animation (snapshots carry it with the time spent in it).
 export const ACT = {
   IDLE: 0, SWING1: 1, SWING2: 2, SWING3: 3, PARRY: 4, STAGGER: 5, DEAD: 6, DORMANT: 7, WAKE: 8,
-  WINDUP: 9, FIRE: 10, RECOVER: 11, HIT: 12, RIPOSTE: 13,
+  WINDUP: 9, FIRE: 10, RECOVER: 11, HIT: 12, RIPOSTE: 13, ENRAGE: 14,
 };
 
 export class ECS {

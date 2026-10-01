@@ -123,7 +123,10 @@ export class GameClient {
         if (!H.slot.has(ev.pid0)) emitPattern(H, ev, this.map);
         break;
       case 'cancel': H.cancelPending(ev.src, ev.tick); break;
-      case 'clear': H.clear(Math.round(this.ptCur)); for (let s = 0; s < this.shots.cap; s++) if (this.shots.id[s]) this.shots.free(s); break;
+      case 'clear':
+        H.clear(Math.round(this.ptCur));
+        if (!ev.hostile) for (let s = 0; s < this.shots.cap; s++) if (this.shots.id[s]) this.shots.free(s);
+        break;
       case 'aoe':
         if (!H.aoes.some((a) => a.id === ev.id)) H.addAoe({ id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg });
         break;
@@ -214,6 +217,7 @@ export class GameClient {
       if (!rec.ready) { Object.assign(rec.r, sample); rec.ready = true; }
     }
 
+    if (s.enc) this.enc = s.enc;
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
   }
 

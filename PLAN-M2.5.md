@@ -129,6 +129,9 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
 - **ESQUIVA** (dash): atravesar con i-frames de dash un proyectil parreable/pesado que te habría dado →
   +1 XP, +3 % RIPOSTE, float «ESQUIVA» (una vez por proyectil, marca `'d'`). En `contacts()` de combat.js
   junto a la lógica de `ghost` (que sigue siendo para imparables: +8 %).
+- **Apilado de reflejos** (`tuning.parry.reflect.stack`): varios disparos reflejados sobre el mismo enemigo en
+  0.6 s hacen × (1 − 0.2·n), mínimo × 0.15. Sin esto, parrear la flor del jefe a quemarropa reflejaba 15 balas
+  y le quitaba ~670 HP de un golpe (lo encontró el test de predicción de la fase 2).
 - Cámara: durante la prueba (`enc.st !== 'idle'` y jugador dentro) `distTarget × 1.18` para ver la arena.
 
 ## 3. Cliente / render / UI
@@ -163,10 +166,10 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
   jugador quieto y no a uno que dashea fuera al final del wind-up.
 - [x] **P3 · Rebote + ESQUIVA** — tuning, `stepShots`, evento `shotBounce`, cliente, feedback. Tests: un
   reflejo PERFECTO mata a uno y rebota al segundo; dashear a través de una bala parreable da `dodge` 1 vez.
-- [ ] **P4 · Encuentro** — datos, sistema, ganchos en `world` (spawn/kill/reset/snapshot), runas, eventos,
+- [x] **P4 · Encuentro** — datos, sistema, ganchos en `world` (spawn/kill/reset/snapshot), runas, eventos,
   ops dev `enc` (start / wave n / boss / phase2 / reset). Tests: entrar inicia oleada 1; matar todo avanza;
   tras oleada 3 aparece el jefe; wipe reinicia y recuerda `reached: 'boss'`; victoria → cooldown → idle.
-- [ ] **P5 · Jefe** — `systems/boss.js` (fases, ciclo, `spin`, escudo, invocación, slam, orbe pesado que
+- [x] **P5 · Jefe** — `systems/boss.js` (fases, ciclo, `spin`, escudo, invocación, slam, orbe pesado que
   rompe), clear hostil sin tocar shots. Tests: al 55 % cambio de fase + invulnerable 2 s + clear hostil;
   escudo × 0.35 salvo reflejos; muerte → victoria + XP.
 - [ ] **P6 · UI/feel** — barra de jefe, banners, contador, sonidos, cámara, burbuja, luz, muro de fuego.
@@ -178,6 +181,19 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
   `clientAndServer()` de `tests/combat.test.mjs`) 1200 ticks en la arena: error de predicción 0.
 - [ ] **P8 · Cierre** — DESIGN (§7 tabla, §8 «versión M2.5 de 2 fases», §16 M2.5 ✅), README, meta
   `0.2.5-m2.5`, rebuild + republicar artefacto (misma URL), push, informe final en español.
+
+## 4b. Estado real (lo hecho, para quien continúe)
+- Sim lista y testeada (`tests/m25.test.mjs`, 10 tests): patrones, grumete/diablillo/chamán, rebote, ESQUIVA,
+  encuentro (oleadas, late, wipe, checkpoint de jefe, victoria, cooldown), HELLFIRE (ciclo, slam, ENRAGE,
+  escudo, ROTO), predicción exacta en fase 2, apilado de reflejos.
+- Densidad medida (jugador quieto en el centro): ~96 balas vivas en la oleada 3, ~84 en la fase 2;
+  `world.step` ≈ 0.2 ms. Script: `scratchpad/perf25.mjs` (no está en el repo; es trivial de rehacer).
+- Eventos nuevos para el cliente: `enc {st, wave, waves, left, boss, late, wipe}`, `rise {id, kind, x, z, dur}`,
+  `phase {id, phase, shield, dur}`, `shield {id, st: broken|up|off}`, `dodge`, `bounce` (del cliente),
+  `clear {hostile: 1}`, `kill {boss: 1}`, `damage {shielded}`. Snapshot: `enc: [[id, st, wave, waves, left,
+  boss, bossPhase, shield 0/1/2, inv]]` → `client.enc`.
+- F4 → servidor: `{op: 'enc', sub: 'start'|'wave'|'boss'|'phase2'|'win'|'reset'}` (falta el botón en el panel).
+- ACT nuevo: `ENRAGE: 14` (falta pose en `characters.js`: usar la familia 'spread').
 
 ## 5. Riesgos y cómo evitarlos
 - **Divergencia de patrones** (cliente ve balas distintas): todo parámetro en el evento; test P1.

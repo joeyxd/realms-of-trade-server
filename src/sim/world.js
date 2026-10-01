@@ -11,6 +11,7 @@ import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE } from './projectiles.js';
+import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 
 const D2R = Math.PI / 180;
 
@@ -29,6 +30,7 @@ export class World {
     this.nextSid = 1;
     this.nextAoe = 1;
     this.spawners = [];
+    this.encounters = []; // server: scripted fights (populate)
     this.feelQ = new Map(); // e → {seq, hitstop, slowmo} merged per command
     this.tmp = { x: 0, z: 0, y: 0 };
   }
@@ -95,6 +97,8 @@ export class World {
     this.events.push({ type: 'spawn', id: e });
     // Encounter spawns stand up out of the ground first (bones assemble / a burst of fire).
     if (extra.riseT) this.emit({ type: 'rise', id: e, kind, x, z, dur: extra.riseT, tick: this.tick });
+    // A boss's minions join its encounter's roster.
+    if (extra.minion && extra.enc) { const enc = this.encounters.find((q) => q.id === extra.enc); if (enc) enc.alive.add(e); }
     return e;
   }
 
@@ -106,6 +110,7 @@ export class World {
     this.spawners.push({ kind: 'dummy', x: P.dummy.x, z: P.dummy.z, facing: P.dummy.facing, entity: 0, timer: 0 });
     this.spawners.push({ kind: 'cannon', x: P.cannon.x, z: P.cannon.z, facing: P.cannon.facing, entity: 0, timer: 0, extra: { ringX: P.ring.x, ringZ: P.ring.z } });
     for (const sp of this.spawners) sp.entity = this.spawnEnemy(sp.kind, sp.x, sp.z, sp.facing, sp.extra);
+    this.encounters.push(createEncounter('caldera', m));
   }
 
   despawn(e) {
@@ -152,6 +157,13 @@ export class World {
     this.nextPid += patternCount(ev);
     emitPattern(this.hazards, ev, this.map);
     this.emit(ev);
+  }
+
+  // Remove every hostile projectile and pending ground circle (phase change, end of a wave). The
+  // players' reflected shots keep flying.
+  clearHostile() {
+    this.hazards.clear(this.tick);
+    this.emit({ type: 'clear', tick: this.tick, hostile: 1 });
   }
 
   cancelEmitter(e) {
@@ -281,18 +293,22 @@ export class World {
     ecs.cpX[e] = cp.x; ecs.cpZ[e] = cp.z;
   }
 
-  killEnemy(e, by) {
+  killEnemy(e, by, o = {}) {
     const ecs = this.ecs, def = defOf(ecs, e);
     ecs.dead[e] = 1;
+    encounterKilled(this, e);
     this.hazards.cancelPending(e, this.tick);
     for (const a of this.hazards.aoes) if (a.owner === e && a.tAct > this.tick) a.cancel = true;
     // XP to every player nearby (the killer and whoever helped).
-    for (let p = 1; p < ecs.cap; p++) {
+    const xp = o.noXp ? 0 : def.xp;
+    for (let p = 1; p < ecs.cap && xp; p++) {
       if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
-      if (p !== by && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > 25) continue;
-      gainXp(this, p, def.xp);
+      if (p !== by && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;
+      gainXp(this, p, xp);
     }
-    this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp: def.xp, tick: this.tick });
+    this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp, tick: this.tick, boss: def.boss ? 1 : 0 });
+    // A boss dies in slow motion for everyone in the instance (DESIGN §8).
+    if (def.boss) this.emit({ type: 'time', e: 0, seq: 0, hitstop: 0.15, scale: 0.3, dur: 1.2 });
     const sp = this.spawners.find((q) => q.entity === e);
     if (sp) { sp.entity = 0; sp.timer = def.respawn || 30; }
     this.despawn(e);
@@ -309,6 +325,7 @@ export class World {
     }
     if (this.isServer) {
       this.stepShots(DT);
+      for (const enc of this.encounters) stepEncounter(this, enc, DT);
       for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && (ecs.mask[e] & C.ENEMY)) recordHistory(this, e);
       for (const sp of this.spawners) {
         if (sp.entity) continue;

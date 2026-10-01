@@ -7,6 +7,7 @@ import { tuning, DT } from '../../data/tuning.js';
 import { ACT, C } from '../ecs.js';
 import { moveWithCollision } from './movement.js';
 import { patternSpan } from '../projectiles.js';
+import { bossBrain, stepBoss, summonMinions } from './boss.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
 
 export const defOf = (ecs, e) => ENEMIES[ENEMY_KINDS[ecs.enemy[e]]];
@@ -20,6 +21,7 @@ export function makeEnemyBrain(def, x, z, facing, rng, extra = {}) {
     atk: -1, gcd: rng.range(0.4, 1.2), every: def.attacks.map((a) => (a.every ? rng.range(2, a.every * 0.6) : 0)),
     orbit: rng() < 0.5 ? 1 : -1, orbitT: rng.range(1.5, 3.5), sinceHit: 99, hitBy: new Map(),
     hx: new Float64Array(HIST), hz: new Float64Array(HIST), histTick: -1,
+    ...(def.boss ? bossBrain(def) : null),
     ...extra,
   };
 }
@@ -40,7 +42,7 @@ export function historyAt(world, e, tick, out) {
   return out;
 }
 
-function pickTarget(world, e, def, b) {
+export function pickTarget(world, e, def, b) {
   const ecs = world.ecs;
   let best = 0, bd = Infinity;
   const ax = def.fixed && b.ringX !== undefined ? b.ringX : ecs.x[e];
@@ -59,9 +61,9 @@ function pickTarget(world, e, def, b) {
   return best;
 }
 
-function setAct(ecs, e, a) { if (ecs.act[e] !== a) { ecs.act[e] = a; ecs.actT[e] = 0; } }
+export function setAct(ecs, e, a) { if (ecs.act[e] !== a) { ecs.act[e] = a; ecs.actT[e] = 0; } }
 
-function steer(world, e, def, vx, vz, dt) {
+export function steer(world, e, def, vx, vz, dt) {
   const ecs = world.ecs;
   // Keep a little space between enemies.
   for (let o = 1; o < ecs.cap; o++) {
@@ -130,6 +132,7 @@ export function stepEnemy(world, e, dt) {
     if (ecs.stagger[e] <= 0) { b.state = 'chase'; b.t = 0; }
     return;
   }
+  if (def.boss) { stepBoss(world, e, def, b, dt); return; }
 
   // Target bookkeeping.
   if (b.state !== 'return' && b.state !== 'windup' && b.state !== 'fire') {
@@ -226,7 +229,7 @@ function wake(world, e, target) {
   world.emit({ type: 'wake', id: e, tick: world.tick });
 }
 
-function startWindup(world, e, def, b, i, tx, tz) {
+export function startWindup(world, e, def, b, i, tx, tz) {
   const ecs = world.ecs, a = def.attacks[i];
   b.state = 'windup'; b.t = 0; b.atk = i;
   ecs.vx[e] *= 0.3; ecs.vz[e] *= 0.3;
@@ -243,25 +246,26 @@ function startWindup(world, e, def, b, i, tx, tz) {
   world.emit({ type: 'windup', id: e, atk: a.id, tick: world.tick, dur: a.windup, ang: ecs.facing[e] });
 }
 
-function fire(world, e, def, b, a) {
+export function fire(world, e, def, b, a) {
   const ecs = world.ecs;
   b.state = 'fire'; b.t = 0;
   if (a.every) b.every[b.atk] = a.every;
   if (a.kind === 'aoe') { b.fireDur = a.recover; return; }
+  if (a.kind === 'summon') { summonMinions(world, e, a, b); b.fireDur = a.recover; return; }
   const f = ecs.facing[e], fx = Math.sin(f), fz = Math.cos(f);
   const m = a.muzzle || [0, 1.2, 0.5];
   const mx = ecs.x[e] + fx * m[2] + fz * m[0], my = ecs.y[e] + m[1], mz = ecs.z[e] + fz * m[2] - fx * m[0];
   // Aim the height too: shots from a ledge dip toward the target's chest.
   let slope = 0;
   const t = b.target;
-  if (t && ecs.alive[t]) {
+  if (t && ecs.alive[t] && !a.omni) {
     const hd = Math.hypot(ecs.x[t] - mx, ecs.z[t] - mz);
     if (hd > 1) slope = Math.max(-0.35, Math.min(0.35, (ecs.y[t] + 1.1 - my) / hd));
   }
   const ev = {
     type: 'pattern', pid0: world.nextPid, tick: world.tick, src: e, atk: a.id, pat: a.pat, ptype: a.type,
     n: a.n || 1, gap: a.gap || 0, spread: a.spread || 0, speed: a.speed, dmg: a.dmg,
-    x: mx, y: my, z: mz, ang: f, slope,
+    x: mx, y: my, z: mz, ang: a.omni ? f + (b.spin || 0) : f, slope,
   };
   if (a.arms) ev.arms = a.arms;
   if (a.waves) ev.waves = a.waves;
@@ -281,6 +285,30 @@ export function damageEnemy(world, e, raw, o) {
     world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
     return 0;
   }
+  if (o.kind === 'shot') {
+    const K = tuning.parry.reflect.stack;
+    if (world.tick - (b.shotTick ?? -1e9) > K.window / DT) b.shotN = 0;
+    raw *= Math.max(K.floor, 1 - K.step * (b.shotN || 0));
+    b.shotN = (b.shotN || 0) + 1; b.shotTick = world.tick;
+  }
+  let shielded = 0;
+  if (def.boss) {
+    // Invulnerable while rising and during ENRAGE; the phase-2 shield stops 65 % of everything but
+    // reflected shots; a reflected heavy orb breaks it (ROTO) and staggers him.
+    if (b.inv > 0 || b.state === 'wake') {
+      world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
+      return 0;
+    }
+    if (o.kind === 'shot' && o.heavy) {
+      b.broken = def.brokenTime;
+      ecs.stagger[e] = def.breakStagger;
+      if (b.state === 'windup' || b.state === 'fire') world.cancelEmitter(e);
+      b.state = 'chase'; b.gcd = 0.4;
+      world.emit({ type: 'shield', id: e, st: 'broken', by: o.by, x: ecs.x[e], z: ecs.z[e] });
+    }
+    if (b.broken > 0) raw *= def.brokenMult;
+    else if (b.shieldOn && o.kind !== 'shot') { raw *= def.shield; shielded = 1; }
+  }
   const crit = world.rng() < tuning.stats.crit;
   const raw2 = raw * (crit ? tuning.stats.critMult : 1);
   const dmg = Math.max(1, Math.round(raw2 * (1 - (o.pierce ? 0 : ecs.def[e]) / ((o.pierce ? 0 : ecs.def[e]) + tuning.stats.defK))));
@@ -289,7 +317,7 @@ export function damageEnemy(world, e, raw, o) {
     const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
     const k = (o.knock ?? M.knock) * (def.light || 1);
     if (kl > 1e-6) { ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
-    if (o.heavy) {
+    if (o.heavy && !def.boss) {
       ecs.stagger[e] = M.heavyStagger;
       if (b.state === 'windup' || b.state === 'fire') {
         world.cancelEmitter(e);
@@ -297,7 +325,7 @@ export function damageEnemy(world, e, raw, o) {
       }
     }
   }
-  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0 });
+  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0, shielded });
   if (def.regen && ecs.hp[e] < 1) ecs.hp[e] = 1;
   if (ecs.hp[e] <= 0) world.killEnemy(e, o.by);
   return dmg;

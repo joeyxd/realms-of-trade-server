@@ -36,22 +36,48 @@ export const ENEMIES = {
       { id: 'bite', kind: 'aoe', r: 1.05, reach: 0.85, dmg: 9, windup: 0.42, cd: 1.1, minD: 0, maxD: 1.7, recover: 0.35 },
     ],
   },
-  // Orbits at mid range and fires a full-circle spiral of 8 parryable orbs.
+  // Orbits at mid range and fires a full-circle spiral of 10 parryable orbs.
   imp: {
     name: 'Diablillo de fuego', look: 'imp', title: 'Chispa de La Caldera', level: 3,
     hp: 28, def: 0, speed: 5.5, radius: 0.34, hurt: 0.4, height: 1.45, hover: true,
     range: [5, 7], aggro: 15, leash: 26, xp: 20, respawn: 40,
     attacks: [
-      { id: 'spiral', kind: 'pattern', pat: 'spiral', type: 'parry', n: 8, gap: 0.1, spread: 45, speed: 7, dmg: 7, windup: 0.4, cd: 2.8, minD: 0, maxD: 13, muzzle: [0, 1.0, 0.3], recover: 0.3 },
+      { id: 'spiral', kind: 'pattern', pat: 'spiral', type: 'parry', n: 10, gap: 0.08, spread: 36, speed: 7, dmg: 7, windup: 0.4, cd: 2.8, minD: 0, maxD: 13, muzzle: [0, 1.0, 0.3], recover: 0.3 },
     ],
   },
-  // Keeps its distance and casts rings of 12 that alternate parryable / unstoppable (dash or weave).
+  // Keeps its distance and casts rings of 14 that alternate parryable / unstoppable (dash or weave).
   shaman: {
     name: 'Chamán de coral', look: 'shaman', title: 'Voz del arrecife', level: 4,
     hp: 60, def: 1, speed: 2.4, radius: 0.42, hurt: 0.46, height: 1.9,
     range: [8, 10], aggro: 15, leash: 26, xp: 40, respawn: 50,
     attacks: [
-      { id: 'ring', kind: 'pattern', pat: 'ring', type: 'parry', alt: true, n: 12, speed: 6, dmg: 9, windup: 0.6, cd: 3.5, minD: 0, maxD: 14, muzzle: [0, 1.2, 0.4], recover: 0.4 },
+      { id: 'ring', kind: 'pattern', pat: 'ring', type: 'parry', alt: true, n: 14, speed: 6, dmg: 9, windup: 0.6, cd: 3.5, minD: 0, maxD: 14, muzzle: [0, 1.2, 0.4], recover: 0.4 },
+    ],
+  },
+  // The boss of La Prueba de Fuego (DESIGN §8, M2.5 version in 2 phases; phase 3 comes with M3).
+  // Fixed attack cycle per phase (sim/systems/boss.js); `spin` turns the omnidirectional patterns a bit
+  // more each time so no two flowers are the same. Reflected shots ignore the phase-2 shield; reflecting
+  // the heavy orb (PERFECT) breaks it (ROTO: damage × brokenMult) and staggers him.
+  hellfire: {
+    name: 'HELLFIRE', look: 'hellfire', title: 'Señor de La Caldera', level: 6, boss: true,
+    hp: 1600, def: 4, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
+    range: [6, 11], aggro: 40, leash: 60, xp: 1500, respawn: 0,
+    shield: 0.35, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4, spin: 23,
+    phases: [
+      { until: 0.55, cycle: ['fan5', 'spiral2', 'fan5', 'rings2'], gap: 0.75, heavyEvery: 12 },
+      { until: 0, cycle: ['flower', 'wall', 'rings3', 'summon', 'fan7', 'spiral2'], gap: 0.45, heavyEvery: 10, shield: true, summon: 3 },
+    ],
+    attacks: [
+      { id: 'fan5', kind: 'pattern', pat: 'fan', type: 'parry', n: 5, spread: 8, speed: 9, dmg: 10, windup: 0.5, recover: 0.45, muzzle: [0, 1.6, 1.3] },
+      { id: 'spiral2', kind: 'pattern', pat: 'spiral', type: 'parry', arms: 3, n: 36, gap: 0.15, spread: 12, speed: 6.5, dmg: 8, windup: 0.4, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
+      { id: 'rings2', kind: 'pattern', pat: 'rings', type: 'parry', alt: true, n: 16, waves: 2, gap: 0.5, spread: 11.25, speed: 6, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
+      { id: 'orb', kind: 'pattern', pat: 'single', type: 'heavy', speed: 4.5, dmg: 24, windup: 0.8, recover: 0.5, muzzle: [0, 1.6, 1.5] },
+      { id: 'flower', kind: 'pattern', pat: 'spiral', type: 'parry', arms: 6, n: 84, gap: 0.13, spread: 6.5, speed: 5.5, dmg: 8, windup: 0.5, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
+      { id: 'wall', kind: 'pattern', pat: 'fan', type: 'unstop', n: 9, spread: 10, speed: 8, dmg: 14, windup: 0.55, recover: 0.4, muzzle: [0, 1.2, 1.3] },
+      { id: 'rings3', kind: 'pattern', pat: 'rings', type: 'parry', alt: true, n: 18, waves: 3, gap: 0.45, spread: 11.25, speed: 6.5, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
+      { id: 'summon', kind: 'summon', minion: 'grunt', n: 3, r: 3.5, max: 6, windup: 0.6, recover: 0.5 },
+      { id: 'fan7', kind: 'pattern', pat: 'fan', type: 'parry', n: 7, spread: 9, speed: 10, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.6, 1.3] },
+      { id: 'slam', kind: 'aoe', r: 4.2, reach: 0, dmg: 20, windup: 0.9, recover: 0.6, cd: 4 },
     ],
   },
   // Tutorial: a beach cannon that lobs slow parryable balls at whoever stands in its practice ring.

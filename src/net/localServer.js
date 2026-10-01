@@ -9,6 +9,7 @@ import { applyLevel } from '../sim/systems/combat.js';
 import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
+import { encounterState, encounterDev } from '../sim/systems/encounter.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd } from './protocol.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
@@ -107,6 +108,7 @@ export class LocalServer {
         break;
       }
       case 'clear': w.debugClear(); break;
+      case 'enc': { const q = w.encounters[0]; if (q) encounterDev(w, q, String(msg.sub)); break; }
       case 'god': ecs.god[e] = msg.on ? 1 : 0; break;
       case 'heal': ecs.hp[e] = ecs.maxHp[e]; break;
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
@@ -180,13 +182,13 @@ export class LocalServer {
 
   broadcastSnapshot() {
     const w = this.world, ecs = w.ecs;
-    const ents = [];
+    const ents = [], enc = w.encounters.map((q) => encounterState(w, q));
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e] || !(ecs.mask[e] & C.POS)) continue;
       ents.push(encodeEntity(ecs, e));
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null });
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc });
     }
   }
 }
