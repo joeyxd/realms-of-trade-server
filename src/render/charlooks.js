@@ -120,6 +120,27 @@ export const LOOKS = [
     bone: 0xd8cdb4, cloth: 0x7a2428, clothD: 0x4a171c, leather: 0x5a3a26, leatherD: 0x3a2418, metal: 0xa08c62, gemC: 0x8dffb0, socket: 0x131118,
     wood: 0x6a4428, weapon: 'bow',
   },
+  // ---- M2.5 «La Prueba de Fuego»: palette swaps of the two skeleton builders ----
+  {
+    name: 'Grumete ahogado', body: 'male', accent: 0x6affd8, swatch: [0xb4b8a0, 0x2f5a4a], enemy: true, skel: 'light', scale: 0.84,
+    bone: 0xb4b8a0, cloth: 0x2f5a4a, clothD: 0x1d3a30, leather: 0x4a3a2a, leatherD: 0x2e241a, metal: 0x8a8a7a, gemC: 0x6affd8, socket: 0x101614,
+    weapon: 'cutlass',
+  },
+  {
+    name: 'Diablillo de fuego', body: 'male', accent: 0xffa030, swatch: [0x6a2a20, 0xff7a2a], enemy: true, skel: 'light', scale: 0.72, hover: true,
+    bone: 0x6a2e24, cloth: 0x9a3014, clothD: 0x4a140a, leather: 0x3a1a12, leatherD: 0x24100a, metal: 0xd07a30, gemC: 0xffb040, socket: 0x120806,
+    horns: 0x24120e, hornK: 1.7, weapon: null,
+  },
+  {
+    name: 'Chamán de coral', body: 'male', accent: 0x5ff0e0, swatch: [0xe8d8c8, 0xd8604a], enemy: true, skel: 'light', scale: 1.02,
+    bone: 0xe8dcc8, cloth: 0xd8604a, clothD: 0x7a2a2a, leather: 0x2a6a6a, leatherD: 0x1a4446, metal: 0x5fd0c0, gemC: 0x5ff0e0, socket: 0x101418,
+    horns: 0xf08a70, weapon: 'staff',
+  },
+  {
+    name: 'HELLFIRE', body: 'brute', accent: 0xff7a2a, swatch: [0x5a4a42, 0xd8642a], enemy: true, boss: true, scale: 1.75,
+    bone: 0x5e4c44, slate: 0x2a1814, slateD: 0x160c0a, gold: 0xd8642a, ice: 0xff8a3a, gemC: 0xffb040, socket: 0x0d0606,
+    horns: 0x1a0e0c, weapon: 'greatsword',
+  },
 ];
 
 // ---- Shared pieces --------------------------------------------------------------------------------
@@ -630,6 +651,10 @@ function weapon(k, R, L) {
     if (!saber) put(xf(tbox(0, -0.13, 0.0, 0.045, 0.006, 0.006), {}), { color: 0x3a3532 });
     put(loft([{ y: -0.13, rx: 0.015, rz: 0.015 }, { y: 0, rx: 0.016, rz: 0.016 }], 6), { color: 0x3a2418, jitter: 0.08 });
     put(xf(ico(0.02, 0), { pos: [0, -0.14, 0] }), { color: L.metal });
+  } else if (L.weapon === 'staff') {
+    put(loft([{ y: -0.5, rx: 0.016, rz: 0.016 }, { y: 0.55, rx: 0.019, rz: 0.019 }], 6), { color: 0x4a3426, jitter: 0.1 });
+    for (const [dy, a] of [[0.6, 0.5], [0.62, -0.6], [0.58, 2.2]]) put(xf(spike(0.03, 0.02, 0.16, 4), { rot: [0, a, 0.5], pos: [0, dy, 0] }), { color: L.horns || L.cloth });
+    put(xf(ico(0.06, 0), { pos: [0, 0.66, 0] }), { color: L.gemC, glow: 1, jitter: 0 });
   } else if (L.weapon === 'greatsword') {
     put(xf(blade([[0.0, 0.05], [0.55, 0.055], [0.8, 0.045], [0.96, 0.002]], 0.036), { rot: [0, Math.PI / 2, 0] }), { color: 0xe9e1cc, jitter: 0.07 });
     put(xf(box(0.06, 0.045, 0.24), {}), { color: L.slateD });
@@ -637,10 +662,11 @@ function weapon(k, R, L) {
     put(loft([{ y: -0.22, rx: 0.022, rz: 0.022 }, { y: 0, rx: 0.024, rz: 0.024 }], 6), { color: 0x3a2a22 });
     put(xf(ico(0.034, 0), { pos: [0, -0.24, 0] }), { color: L.gold });
   }
-  const shift = L.weapon === 'greatsword' ? 0.1 : 0.065;
+  const shift = L.weapon === 'greatsword' ? 0.1 : L.weapon === 'staff' ? 0.15 : 0.065;
   for (const [g, o] of parts) {
     g.translate(0, shift, 0);
-    g.rotateX(Math.PI / 2 + (L.weapon === 'greatsword' ? 0.85 : 1.0));
+    // A staff stands upright beside the body (gem above the shoulder); blades point forward and down.
+    g.rotateX(L.weapon === 'staff' ? 0.12 : Math.PI / 2 + (L.weapon === 'greatsword' ? 0.85 : 1.0));
     g.translate(x, y, z);
     k.add(g, { ...o, w });
   }
@@ -661,6 +687,7 @@ function skeleton(k, R, L, J) {
   k.add(wedge([0, 0.178, front(0.17) - 0.01], [-0.022, 0.135, front(0.13) - 0.004], [0.022, 0.135, front(0.13) - 0.004], [0, 0.14, front(0.13) + 0.008]), { color: L.socket, w: hw, at });
   k.add(xf(box(0.12, 0.034, 0.02), { pos: [0, 0.085, front(0.08) - 0.008] }), { color: L.socket, w: hw, at, jitter: 0 });
   for (let i = 0; i < 5; i++) k.add(xf(box(0.017, 0.026, 0.012), { pos: [-0.042 + i * 0.021, 0.086, front(0.08) + 0.004] }), { color: bone, w: hw, at });
+  if (L.horns) horns(k, L, hw, at, 1);
   // neck vertebrae, ribcage, spine, clavicles
   for (let i = 0; i < 2; i++) k.add(xf(box(0.06, 0.04, 0.06), { pos: [0, R.neck - 0.07 + i * 0.05, -0.02] }), { color: boneD, w: seam(B.head, B.chest, R.neck - 0.02, 0.04) });
   const tw = torsoW(R);
@@ -752,6 +779,7 @@ function skeletonArcher(k, R, L, J) {
   k.add(wedge([0, 0.142, front(0.136) - 0.008], [-0.018, 0.108, front(0.104) - 0.003], [0.018, 0.108, front(0.104) - 0.003], [0, 0.112, front(0.104) + 0.006]), { color: L.socket, w: hw, at });
   k.add(xf(box(0.096, 0.026, 0.016), { pos: [0, 0.068, front(0.064) - 0.006] }), { color: L.socket, w: hw, at, jitter: 0 });
   for (let i = 0; i < 5; i++) k.add(xf(box(0.014, 0.022, 0.01), { pos: [-0.034 + i * 0.017, 0.069, front(0.064) + 0.003] }), { color: bone, w: hw, at });
+  if (L.horns) horns(k, L, hw, at, S);
   k.add(loft([{ y: 0.2, rx: 0.128, rz: 0.134, z: -0.004 }, { y: 0.27, rx: 0.13, rz: 0.136, z: -0.008 }, { y: 0.31, rx: 0.1, rz: 0.11, z: -0.012 }, { y: 0.335, rx: 0.04, rz: 0.05, z: -0.014 }], 8, { phase: Math.PI / 8 }), { color: L.cloth, w: hw, at, jitter: 0.08 });
   for (const [dx, len, tilt] of [[0.03, 0.2, 0.25], [-0.03, 0.17, -0.2]]) {
     k.add(xf(tbox(0, -len, 0, 0, 0.03, 0.008, 0.012, 0.006), { rot: [0.35, 0, tilt], pos: [dx, 0.26, -0.12] }), { color: L.clothD, w: toward(B.head, B.chest, () => 0.4), at });
@@ -793,7 +821,7 @@ function skeletonArcher(k, R, L, J) {
     k.add(xf(spike(0.075, 0.01, 0.06, 4), { rot: [Math.PI, 0, 0], pos: [x0, R.hip + 0.06 - len, z] }), { color: L.clothD, w: flapW(b2) });
   }
   // quiver across the back with a few fletchings
-  {
+  if (L.weapon === 'bow') {
     const qw = B.chest;
     k.add(xf(loft([{ y: -0.26, rx: 0.05, rz: 0.045 }, { y: 0.24, rx: 0.058, rz: 0.05 }], 8, { capTop: false }), { rot: [0.12, 0, 0.42], pos: [0.02, R.chest + 0.05, -0.17] }), { color: L.leather, w: qw, lining: L.leatherD });
     for (let i = 0; i < 4; i++) {
@@ -823,6 +851,7 @@ function skeletonArcher(k, R, L, J) {
     k.add(loft([{ y: 0.0, rx: 0.06, rz: 0.075, x, z: 0.015 }, { y: 0.08, rx: 0.055, rz: 0.066, x }, { y: 0.24, rx: 0.06, rz: 0.064, x }, { y: 0.27, rx: 0.07, rz: 0.072, x }], 8, { phase: Math.PI / 8, capTop: false }), { color: L.leatherD, w: shw, lining: 0x14100c, grad: [0, 0.27, 0.75] });
     k.add(tbox(x, 0, 0.07, 0.07, 0.055, 0.075, 0.05, 0.06, { dz: -0.02 }), { color: L.leatherD, w: shw });
   }
+  if (L.weapon !== 'bow') { weapon(k, R, L); return; }
   // bow in the left hand: limbs fore-aft in the bind pose (vertical once the arm aims), string behind
   {
     const fw = B.foreL, x = R.shX + 0.004, y = R.wrist - 0.06;
@@ -842,6 +871,23 @@ function skeletonArcher(k, R, L, J) {
 }
 const lerpN = (a, b, t) => a + (b - a) * t;
 
+// Two curved horns from the top of the skull (imp, shaman's coral crest, Hellfire). S = skull scale.
+function horns(k, L, hw, at, S) {
+  for (const sd of [1, -1]) {
+    let prev = null;
+    for (let i = 0; i < 3; i++) {
+      const hk = L.hornK || 1, t = i / 3, len = 0.09 * S * hk * (1 - t * 0.25), r = 0.032 * S * hk * (1 - t * 0.55);
+      const g = spike(r, r, len, 4);
+      g.rotateZ(-sd * (0.55 - i * 0.35));
+      g.rotateX(-0.25 - i * 0.2);
+      const base = prev || [sd * 0.085 * S, 0.33 * S, -0.01 * S];
+      g.translate(base[0], base[1], base[2]);
+      k.add(g, { color: L.horns, w: hw, at, jitter: 0.05 });
+      prev = [base[0] + sd * Math.sin(0.55 - i * 0.35) * len * 0.8, base[1] + Math.cos(0.55 - i * 0.35) * len * 0.8, base[2] - Math.sin(0.25 + i * 0.2) * len * 0.7];
+    }
+  }
+}
+
 // ---- Assembly ------------------------------------------------------------------------------------------
 const cache = new Map();
 export function buildLook(idx, armed) {
@@ -853,7 +899,7 @@ export function buildLook(idx, armed) {
   const J = joints(R);
   const k = new Builder();
   if (L.body === 'brute') skeleton(k, R, L, J);
-  else if (L.archer) skeletonArcher(k, R, L, J);
+  else if (L.archer || L.skel === 'light') skeletonArcher(k, R, L, J);
   else {
     legs(k, R, L);
     pelvisAndTorso(k, R, L);

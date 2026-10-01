@@ -5,7 +5,7 @@
 //   aoe      ground circle that fills during the wind-up and bursts at its end
 export const ENEMIES = {
   archer: {
-    name: 'Arquero esqueleto', look: 'archer', title: 'Pirata maldito',
+    name: 'Arquero esqueleto', look: 'archer', title: 'Pirata maldito', level: 2,
     hp: 40, def: 0, speed: 3.2, radius: 0.42, hurt: 0.45, height: 1.9,
     range: [9, 12], aggro: 15, leash: 26, xp: 25, respawn: 40,
     attacks: [
@@ -14,7 +14,7 @@ export const ENEMIES = {
     ],
   },
   sentinel: {
-    name: 'Centinela', look: 'sentinel', title: 'Guardián de La Caldera',
+    name: 'Centinela', look: 'sentinel', title: 'Guardián de La Caldera', level: 4,
     hp: 140, def: 2, speed: 2.3, radius: 0.62, hurt: 0.7, height: 2.25,
     range: [4.5, 8], aggro: 9, leash: 24, xp: 60, respawn: 60, dormant: true, wake: 1.3,
     attacks: [
@@ -24,6 +24,34 @@ export const ENEMIES = {
       { id: 'spikes', kind: 'pattern', pat: 'fan', type: 'unstop', n: 3, spread: 22, speed: 10, dmg: 14, windup: 0.6, cd: 2.6, minD: 3, maxD: 13, muzzle: [0, 1.1, 0.7], recover: 0.45 },
       // Every ~9 s: a slow heavy orb (only a PERFECT parry sends it back).
       { id: 'orb', kind: 'pattern', pat: 'single', type: 'heavy', speed: 4.5, dmg: 22, windup: 0.8, cd: 3, minD: 4, maxD: 14, every: 9, muzzle: [0, 1.2, 0.8], recover: 0.5 },
+    ],
+  },
+  // ---- M2.5 «La Prueba de Fuego» (PLAN-M2.5.md) ----
+  // Melee minion: runs straight at you in packs and bites a small circle in front. Light: combos push it far.
+  grunt: {
+    name: 'Grumete ahogado', look: 'grunt', title: 'Esbirro', level: 2,
+    hp: 24, def: 0, speed: 4.6, radius: 0.36, hurt: 0.42, height: 1.6, chaser: true, light: 1.6,
+    range: [0, 1.0], aggro: 16, leash: 26, xp: 8, respawn: 30,
+    attacks: [
+      { id: 'bite', kind: 'aoe', r: 1.05, reach: 0.85, dmg: 9, windup: 0.42, cd: 1.1, minD: 0, maxD: 1.7, recover: 0.35 },
+    ],
+  },
+  // Orbits at mid range and fires a full-circle spiral of 8 parryable orbs.
+  imp: {
+    name: 'Diablillo de fuego', look: 'imp', title: 'Chispa de La Caldera', level: 3,
+    hp: 28, def: 0, speed: 5.5, radius: 0.34, hurt: 0.4, height: 1.45, hover: true,
+    range: [5, 7], aggro: 15, leash: 26, xp: 20, respawn: 40,
+    attacks: [
+      { id: 'spiral', kind: 'pattern', pat: 'spiral', type: 'parry', n: 8, gap: 0.1, spread: 45, speed: 7, dmg: 7, windup: 0.4, cd: 2.8, minD: 0, maxD: 13, muzzle: [0, 1.0, 0.3], recover: 0.3 },
+    ],
+  },
+  // Keeps its distance and casts rings of 12 that alternate parryable / unstoppable (dash or weave).
+  shaman: {
+    name: 'Chamán de coral', look: 'shaman', title: 'Voz del arrecife', level: 4,
+    hp: 60, def: 1, speed: 2.4, radius: 0.42, hurt: 0.46, height: 1.9,
+    range: [8, 10], aggro: 15, leash: 26, xp: 40, respawn: 50,
+    attacks: [
+      { id: 'ring', kind: 'pattern', pat: 'ring', type: 'parry', alt: true, n: 12, speed: 6, dmg: 9, windup: 0.6, cd: 3.5, minD: 0, maxD: 14, muzzle: [0, 1.2, 0.4], recover: 0.4 },
     ],
   },
   // Tutorial: a beach cannon that lobs slow parryable balls at whoever stands in its practice ring.

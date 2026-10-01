@@ -17,6 +17,14 @@ import { ACT } from '../sim/ecs.js';
 export const SKINS = LOOKS;
 export const SENTINEL = LOOKS.findIndex((l) => l.enemy && l.body === 'brute');
 export const ARCHER = LOOKS.findIndex((l) => l.archer);
+// Enemy kind → look index (sim kinds in data/enemies.js).
+export const ENEMY_LOOK = Object.fromEntries([['archer', ARCHER], ['sentinel', SENTINEL],
+  ...[['grunt', 'Grumete ahogado'], ['imp', 'Diablillo de fuego'], ['shaman', 'Chamán de coral'], ['hellfire', 'HELLFIRE']].map(([k, n]) => [k, LOOKS.findIndex((l) => l.name === n)])]);
+// Attack id → pose family (enemy attack timelines).
+const POSE = {
+  bite: 'cleave', slam: 'cleave', wall: 'spikes', heavy: 'orb', fan5: 'orb', fan7: 'orb',
+  spiral: 'raise', spiral2: 'raise', flower: 'raise', summon: 'raise', ring: 'raise', rings2: 'spread', rings3: 'spread',
+};
 const TAU = Math.PI * 2;
 const sm = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
 
@@ -66,6 +74,9 @@ export class CharacterView {
     this.mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, built.height * 0.5, 0.1), built.height * 0.8);
     this.root.add(this.mesh);
     this.meshes = [this.mesh];
+    // Scaled looks (small imps, the big boss): the whole skinned mesh, bones included.
+    this.scale = L.scale || 1;
+    if (this.scale !== 1) { this.mesh.scale.setScalar(this.scale); this.height *= this.scale; }
 
     if (!blobGeo) {
       blobGeo = new THREE.PlaneGeometry(1.1, 1.1);
@@ -76,7 +87,7 @@ export class CharacterView {
     this.blob.layers.set(LAYER.NO_OUTLINE);
     this.blob.position.y = 0.03;
     this.blob.renderOrder = 2;
-    this.blobSize = L.body === 'brute' ? 1.45 : L.heavy ? 1.12 : 1;
+    this.blobSize = (L.body === 'brute' ? 1.45 : L.heavy ? 1.12 : 1) * (L.scale || 1);
     this.root.add(this.blob);
 
     // Animation state.
@@ -116,6 +127,7 @@ export class CharacterView {
   update(dt, s) {
     dt = Math.min(dt, 0.1);
     this.t += dt;
+    if (this.look.hover) this.mesh.position.y = 0.32 + Math.sin(this.t * 2.6 + this.seed) * 0.08;
     this.root.position.set(s.x, s.y, s.z);
     if (this.lastF === null) this.lastF = s.f;
     const turnRate = angleDelta(this.lastF, s.f) / Math.max(dt, 1e-4);
@@ -269,23 +281,33 @@ export class CharacterView {
       else {
         const p = clamp(tt / a.windup, 0, 1), q = clamp(f / Math.max(0.08, a.fire * 0.5), 0, 1);
         w = Math.max(w, ew);
-        if (a.id === 'volley') {
+        const pz = POSE[a.id] || a.id;
+        if (pz === 'volley') {
           // Bow arm forward, string hand pulled back to the cheek; snaps open on release.
           T.cy = -0.45; T.hy = 0;
           set('armL', -1.55, 0.05); set('foreL', 0.0);
           if (f < 0) { set('armR', -1.45, 0.3 + 0.25 * p); set('foreR', -1.2 - 1.0 * p); }
           else { set('armR', -1.3, -0.25 - 0.25 * q); set('foreR', -1.1 + 0.6 * q); }
-        } else if (a.id === 'cleave') {
+        } else if (pz === 'cleave') {
           if (f < 0) { T.cx = -0.25 * p; T.sx = -0.1 * p; set('armR', -2.6 * p - 0.3, -0.15); set('armL', -2.4 * p - 0.3, 0.2); set('foreR', -0.4); set('foreL', -0.4); }
           else { T.cx = 0.45 * q; T.sx = 0.22 * q; T.hy = -0.12 * q; set('armR', -2.9 + 2.1 * q, -0.15); set('armL', -2.7 + 1.9 * q, 0.2); set('foreR', -0.3); set('foreL', -0.3); }
-        } else if (a.id === 'spikes') {
+        } else if (pz === 'spikes') {
           if (f < 0) { T.cy = -0.6 * p; set('armR', -0.6, -1.0 * p - 0.2); set('foreR', -0.3); set('armL', -0.4, 0.4); }
           else { T.cy = -0.6 + 1.2 * q; set('armR', -1.3, -1.2 + 1.8 * q); set('foreR', -0.15); set('armL', -0.4, 0.4); }
-        } else if (a.id === 'orb') {
+        } else if (pz === 'orb') {
           T.cx = -0.15 * p;
           if (f < 0) { set('armR', -1.8 * p, -0.2); set('armL', -1.8 * p, 0.2); set('foreR', -0.5); set('foreL', -0.5); }
           else { T.cx = 0.15; set('armR', -1.55, -0.1); set('armL', -1.55, 0.1); set('foreR', -0.05); set('foreL', -0.05); }
-        } else if (a.id === 'ball') {
+        } else if (pz === 'raise') {
+          // Both arms up (casting): the spiral / ring / summon leaves from above the head.
+          T.cx = -0.12 * p; T.hy = 0.02 * p;
+          if (f < 0) { set('armR', -2.7 * p, -0.25); set('armL', -2.7 * p, 0.25); set('foreR', -0.3); set('foreL', -0.3); }
+          else { T.cx = 0.1; set('armR', -2.9, -0.6 - 0.5 * q); set('armL', -2.9, 0.6 + 0.5 * q); set('foreR', -0.1); set('foreL', -0.1); }
+        } else if (pz === 'spread') {
+          // Arms flung wide: the rings burst outward.
+          if (f < 0) { T.cx = -0.2 * p; set('armR', -0.6, -0.2 - 0.4 * p); set('armL', -0.6, 0.2 + 0.4 * p); set('foreR', -1.2 * p); set('foreL', -1.2 * p); }
+          else { T.cx = 0.12; T.hy = -0.06 * q; set('armR', -0.2, -1.45); set('armL', -0.2, 1.45); set('foreR', -0.1); set('foreL', -0.1); }
+        } else if (pz === 'ball') {
           // the cannon has its own view; nothing to pose
         }
       }

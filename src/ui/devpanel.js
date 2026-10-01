@@ -49,6 +49,11 @@ export class DevPanel {
         <button data-op="clear">Limpiar</button>
       </div>
       <div class="dv-row dv-btns">
+        <button data-op="spawn" data-kind="grunt" data-n="4">+ 4 Grumetes</button>
+        <button data-op="spawn" data-kind="imp">+ Diablillo</button>
+        <button data-op="spawn" data-kind="shaman">+ Chamán</button>
+      </div>
+      <div class="dv-row dv-btns">
         <button data-op="heal">Curar</button>
         <button data-op="riposte">Riposte lleno</button>
         <button data-op="lvdown">Nv −</button>
@@ -87,7 +92,7 @@ export class DevPanel {
   button(d) {
     const ps = this.client.pred.ecs, e = this.client.youLocal;
     switch (d.op) {
-      case 'spawn': this.send('spawn', { kind: d.kind, dist: d.kind === 'sentinel' ? 9 : 8 }); break;
+      case 'spawn': { const n = +d.n || 1; for (let i = 0; i < n; i++) this.send('spawn', { kind: d.kind, dist: d.kind === 'sentinel' ? 9 : 8, ang: ps.facing[e] + (i - (n - 1) / 2) * 0.45 }); break; }
       case 'clear': this.send('clear'); break;
       case 'heal': this.send('heal'); break;
       case 'riposte': this.send('riposte'); break;

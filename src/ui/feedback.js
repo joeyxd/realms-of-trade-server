@@ -96,7 +96,8 @@ export class Feedback {
           v.dead = true;
         }
         const y = (rec ? rec.r.y : this.y(x, z));
-        this.sparks(x, y + 1, z, 16, BONE, BONE1, { up: 3, spread: 4 });
+        if (rec && rec.enemy === 'imp') this.sparks(x, y + 1, z, 22, [1, 0.62, 0.2], [0.9, 0.18, 0.04], { up: 4, spread: 4 });
+        else this.sparks(x, y + 1, z, 16, BONE, BONE1, { up: 3, spread: 4 });
         W.combatFx.ring(x, y + 0.08, z, 2.2, 0xfff1c8, 0.4, 0.12, 0.6);
         sfx.bones(this.vol(x, z));
         if (ev.xp && Math.hypot(x - ps.x, z - ps.z) < 25) this.float(x, z, 1.4, `+${ev.xp} XP`, 'xp', { life: 1.3, rise: 60 });
@@ -287,6 +288,18 @@ export class Feedback {
         for (const [id, a] of this.aoes) if (a.src === ev.src && !a.done) { W.decals.cancel(id); a.done = true; }
         { const v = this.viewOf(ev.src); if (v) v.attack = null; }
         break;
+      case 'rise': {
+        // Encounter spawn: a burst at its feet while it stands up (fire for imps, bone dust for the rest).
+        const y = this.y(ev.x, ev.z), imp = ev.kind === 'imp', boss = ev.kind === 'hellfire';
+        const c0 = imp || boss ? [1, 0.6, 0.2] : BONE, c1 = imp || boss ? [0.9, 0.16, 0.04] : BONE1;
+        this.sparks(ev.x, y + 0.3, ev.z, boss ? 40 : 12, c0, c1, { up: boss ? 5 : 2.5, spread: boss ? 5 : 2 });
+        W.combatFx.ring(ev.x, y + 0.08, ev.z, boss ? 5 : 1.6, imp || boss ? 0xff7a2a : 0xfff1c8, 0.5, 0.15, 0.7);
+        if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 22) sfx.wake(this.vol(ev.x, ev.z) * 0.6);
+        if (ev.kind === 'grunt') this.teach('grunt', '<b>Grumetes ahogados:</b> te persiguen en manada y muerden. Golpéalos (salen volando) o dashea fuera del círculo.', 4800);
+        if (imp) this.teach('imp', '<b>Diablillos:</b> disparan espirales. Refleja sus orbes contra la manada.', 4800);
+        if (ev.kind === 'shaman') this.teach('shaman', '<b>Chamán de coral:</b> anillos de ámbar y violeta. Parrea los ámbar, dashea los violeta.', 4800);
+        break;
+      }
       case 'wake': {
         const rec = this.client.entities.get(ev.id);
         if (!rec) break;
@@ -303,7 +316,7 @@ export class Feedback {
   material(rec) {
     if (!rec) return 'flesh';
     if (rec.enemy === 'dummy') return 'straw';
-    if (rec.enemy === 'archer' || rec.enemy === 'sentinel') return 'bone';
+    if (rec.enemy && rec.enemy !== 'cannon' && rec.enemy !== 'imp') return 'bone';
     return 'flesh';
   }
 

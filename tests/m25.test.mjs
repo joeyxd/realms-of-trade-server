@@ -5,11 +5,31 @@ import assert from 'node:assert/strict';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { World } from '../src/sim/world.js';
 import { Hazards, emitPattern, patternCount, patternSpan, PTYPE } from '../src/sim/projectiles.js';
-import { DT } from '../src/data/tuning.js';
+import { tuning, DT } from '../src/data/tuning.js';
+import { BTN } from '../src/sim/systems/movement.js';
+import { ENEMIES } from '../src/data/enemies.js';
+import { damageEnemy } from '../src/sim/systems/enemies.js';
 import { GAME } from '../src/data/meta.js';
 
 const map = generateWorld(GAME.seed);
 const A = map.landmarks.arena;
+
+// A server world with one player in the arena (no map enemies), stepped one command per tick.
+function arena(x = A.x + 6, z = A.z + 6) {
+  const w = new World(GAME.seed, { map, server: true });
+  const e = w.spawnPlayer({ x, z, facing: Math.PI / 2 });
+  w.events.length = 0;
+  let seq = 0;
+  const step = (o = {}) => {
+    const cmd = { seq: ++seq, mx: 0, mz: 0, ax: w.ecs.x[e] + 5, az: w.ecs.z[e], prs: 0, pt: w.tick, ...o };
+    w.applyCommand(e, cmd);
+    w.stepWorld();
+    const evs = w.events.slice();
+    w.events.length = 0;
+    return evs;
+  };
+  return { w, e, step };
+}
 
 test('multi-arm spirals and staggered rings expand identically on server and client', () => {
   const pats = [
@@ -42,4 +62,46 @@ test('multi-arm spirals and staggered rings expand identically on server and cli
   assert.equal(patternSpan({ pat: 'spiral', arms: 4, n: 48, gap: 0.05 }).toFixed(2), '0.55');
   assert.equal(patternSpan({ pat: 'rings', n: 16, waves: 3, gap: 0.45 }).toFixed(2), '0.90');
   assert.equal(patternCount({ pat: 'rings', n: 16, waves: 3 }), 48);
+});
+
+test('a drowned grunt chases, bites a player who stands still and misses one who dashes out', () => {
+  for (const dodge of [false, true]) {
+    const { w, e, step } = arena();
+    const g = w.spawnEnemy('grunt', w.ecs.x[e] + 6, w.ecs.z[e], -Math.PI / 2);
+    let wind = null, hurt = 0;
+    for (let i = 0; i < 240 && !wind; i++) for (const ev of step()) if (ev.type === 'windup' && ev.id === g) wind = ev;
+    assert.ok(wind, 'it closes in and winds up the bite');
+    assert.equal(wind.atk, 'bite');
+    assert.ok(Math.hypot(w.ecs.x[g] - w.ecs.x[e], w.ecs.z[g] - w.ecs.z[e]) < 1.8, 'from melee range');
+    const bite = ENEMIES.grunt.attacks[0], ticks = Math.round(bite.windup / DT);
+    for (let i = 0; i < ticks + 30; i++) {
+      // Dash straight away from it 0.15 s before the bite lands.
+      const o = dodge && i === ticks - 9 ? { prs: BTN.DASH, mx: -1, mz: 0 } : dodge && i > ticks - 9 ? { mx: -1, mz: 0 } : {};
+      for (const ev of step(o)) if (ev.type === 'hurt' && ev.e === e && ev.kind !== 'contact') hurt += ev.dmg;
+    }
+    if (dodge) assert.equal(hurt, 0, 'dashed out of the circle');
+    else assert.ok(hurt >= 1, 'bitten');
+  }
+});
+
+test('light enemies fly further from the same hit; encounter spawns rise before they act', () => {
+  const { w, e } = arena();
+  const a = w.spawnEnemy('grunt', w.ecs.x[e] + 3, w.ecs.z[e]), b = w.spawnEnemy('archer', w.ecs.x[e] - 3, w.ecs.z[e]);
+  for (const t of [a, b]) w.ecs.hp[t] = 999;
+  const kb = (t) => { w.ecs.kbx[t] = w.ecs.kbz[t] = 0; return t; };
+  {
+    damageEnemy(w, kb(a), 5, { by: e, kind: 'melee', x: w.ecs.x[e], z: w.ecs.z[e] });
+    damageEnemy(w, kb(b), 5, { by: e, kind: 'melee', x: w.ecs.x[e], z: w.ecs.z[e] });
+    assert.ok(Math.abs(w.ecs.kbx[a]) > Math.abs(w.ecs.kbx[b]) * 1.5);
+    w.events.length = 0;
+    const r = w.spawnEnemy('imp', A.x, A.z, 0, { riseT: 0.8, aggro: 40, leash: 60 });
+    assert.ok(w.events.some((ev) => ev.type === 'rise' && ev.id === r));
+    const br = w.ecs.brain[r];
+    assert.equal(br.state, 'wake');
+    for (let i = 0; i < 30; i++) w.stepWorld();
+    assert.equal(br.state, 'wake', 'still standing up');
+    for (let i = 0; i < 30; i++) w.stepWorld();
+    assert.notEqual(br.state, 'wake');
+    assert.equal(br.target, e, 'the encounter aggro reaches across the arena');
+  }
 });

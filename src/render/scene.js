@@ -8,7 +8,7 @@ import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
-import { CharacterView, SENTINEL, ARCHER, characterMaterial } from './characters.js';
+import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
 import { DummyView, CannonView } from './practice.js';
 import { Effects } from './vfx/effects.js';
 import { ProjectileView } from './vfx/projectiles.js';
@@ -99,8 +99,8 @@ export class GameScene {
     let view;
     if (kind === 'dummy') view = new DummyView();
     else if (kind === 'cannon') view = new CannonView();
-    else if (kind === 'archer') view = new CharacterView(ARCHER, { sword: true });
     else if (kind === 'sentinel') view = new CharacterView(SENTINEL, { sword: true, pose: 'dormant' });
+    else if (ENEMY_LOOK[kind] >= 0) view = new CharacterView(ENEMY_LOOK[kind], { sword: true });
     else view = new CharacterView(skin, opts);
     view.enemy = kind || null;
     this.scene.add(view.root);

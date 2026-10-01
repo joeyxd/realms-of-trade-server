@@ -16,7 +16,7 @@ const HIST = 32;
 export function makeEnemyBrain(def, x, z, facing, rng, extra = {}) {
   return {
     homeX: x, homeZ: z, homeF: facing,
-    target: 0, state: def.dormant ? 'dormant' : 'idle', t: 0,
+    target: 0, state: extra.riseT ? 'wake' : def.dormant ? 'dormant' : 'idle', t: 0,
     atk: -1, gcd: rng.range(0.4, 1.2), every: def.attacks.map((a) => (a.every ? rng.range(2, a.every * 0.6) : 0)),
     orbit: rng() < 0.5 ? 1 : -1, orbitT: rng.range(1.5, 3.5), sinceHit: 99, hitBy: new Map(),
     hx: new Float64Array(HIST), hz: new Float64Array(HIST), histTick: -1,
@@ -45,14 +45,15 @@ function pickTarget(world, e, def, b) {
   let best = 0, bd = Infinity;
   const ax = def.fixed && b.ringX !== undefined ? b.ringX : ecs.x[e];
   const az = def.fixed && b.ringZ !== undefined ? b.ringZ : ecs.z[e];
-  const reach = def.fixed ? def.ring : def.aggro;
+  const reach = def.fixed ? def.ring : b.aggro || def.aggro;
+  const leash = b.leash || def.leash;
   if (!reach) return 0;
   for (let p = 1; p < ecs.cap; p++) {
     if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT) || ecs.dead[p] > 0) continue;
     const d = Math.hypot(ecs.x[p] - ax, ecs.z[p] - az);
     const keep = p === b.target ? reach * 1.35 : reach; // hysteresis: a target is kept a bit longer
     if (d > keep) continue;
-    if (!def.fixed && Math.hypot(ecs.x[p] - b.homeX, ecs.z[p] - b.homeZ) > def.leash) continue;
+    if (!def.fixed && Math.hypot(ecs.x[p] - b.homeX, ecs.z[p] - b.homeZ) > leash) continue;
     if (d < bd) { bd = d; best = p; }
   }
   return best;
@@ -119,7 +120,7 @@ export function stepEnemy(world, e, dt) {
   }
   if (b.state === 'wake') {
     setAct(ecs, e, ACT.WAKE);
-    if (b.t >= def.wake) { b.state = 'chase'; b.t = 0; }
+    if (b.t >= (b.riseT || def.wake || 0)) { b.state = 'chase'; b.t = 0; }
     return;
   }
   if (ecs.stagger[e] > 0) {
@@ -170,7 +171,7 @@ export function stepEnemy(world, e, dt) {
       }
       // Re-engage if someone walks back in while it is still near home.
       const t = pickTarget(world, e, def, b);
-      if (t && hd < def.leash * 0.6) { b.target = t; b.state = 'chase'; b.t = 0; }
+      if (t && hd < (b.leash || def.leash) * 0.6) { b.target = t; b.state = 'chase'; b.t = 0; }
       break;
     }
     case 'chase': {
@@ -182,7 +183,10 @@ export function stepEnemy(world, e, dt) {
         let mx = 0, mz = 0;
         b.orbitT -= dt;
         if (b.orbitT <= 0) { b.orbit = -b.orbit; b.orbitT = world.rng.range(1.8, 3.6); }
-        if (d > hi) { mx = ux; mz = uz; }
+        if (def.chaser) {
+          // Straight at the target with a slight curl (packs fan out instead of queueing), stop at reach.
+          if (d > hi) { mx = ux - uz * b.orbit * 0.25; mz = uz + ux * b.orbit * 0.25; }
+        } else if (d > hi) { mx = ux; mz = uz; }
         else if (d < lo * 0.8) { mx = -ux; mz = -uz; }
         else { mx = -uz * b.orbit * 0.6; mz = ux * b.orbit * 0.6; }
         steer(world, e, def, mx * def.speed, mz * def.speed, dt);
@@ -283,7 +287,7 @@ export function damageEnemy(world, e, raw, o) {
   ecs.hp[e] -= dmg;
   if (!def.fixed) {
     const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
-    const k = o.knock ?? M.knock;
+    const k = (o.knock ?? M.knock) * (def.light || 1);
     if (kl > 1e-6) { ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
     if (o.heavy) {
       ecs.stagger[e] = M.heavyStagger;

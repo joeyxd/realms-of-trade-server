@@ -87,12 +87,14 @@ export class World {
     ecs.team[e] = TEAM.ENEMIES;
     ecs.hp[e] = ecs.maxHp[e] = def.hp;
     ecs.def[e] = def.def;
-    ecs.level[e] = kind === 'sentinel' ? 4 : kind === 'archer' ? 2 : 1;
+    ecs.level[e] = def.level || 1;
     ecs.names[e] = def.name;
     ecs.titles[e] = def.title || '';
     ecs.brain[e] = makeEnemyBrain(def, x, z, facing, this.rng, extra);
-    ecs.act[e] = def.dormant ? ACT.DORMANT : ACT.IDLE;
+    ecs.act[e] = extra.riseT ? ACT.WAKE : def.dormant ? ACT.DORMANT : ACT.IDLE;
     this.events.push({ type: 'spawn', id: e });
+    // Encounter spawns stand up out of the ground first (bones assemble / a burst of fire).
+    if (extra.riseT) this.emit({ type: 'rise', id: e, kind, x, z, dur: extra.riseT, tick: this.tick });
     return e;
   }
 

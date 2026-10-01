@@ -158,7 +158,7 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
   `ang + brazo·2π/arms + paso·spread`, t0 por paso); nuevo `rings` (n por anillo × `waves`, `gap`, desfase
   `spread` por anillo, `alt` alterna por índice dentro del anillo); `patternCount` (rings = n·waves).
   `fire()` copia `arms/waves/alt` al evento; `fireDur` correcto. Test: servidor y cliente expanden igual.
-- [ ] **P2 · Enemigos grunt/imp/shaman** — datos, `chaser`/`light` en `stepEnemy`/`damageEnemy`, looks,
+- [x] **P2 · Enemigos grunt/imp/shaman** — datos, `chaser`/`light` en `stepEnemy`/`damageEnemy`, looks,
   vistas, debris, botones F4 (+ Grumete, + Diablillo, + Chamán). Test: el mordisco del grumete daña a un
   jugador quieto y no a uno que dashea fuera al final del wind-up.
 - [ ] **P3 · Rebote + ESQUIVA** — tuning, `stepShots`, evento `shotBounce`, cliente, feedback. Tests: un
