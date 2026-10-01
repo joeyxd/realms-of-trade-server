@@ -297,6 +297,11 @@ export function generateWorld(seed) {
     addProp('gatePost', g2.x, g2.z, { r: 0.8, rot: 0, h: 4.2 });
     const g = P([L.arena[0] - L.arenaR - 1.6, 0]);
     addProp('gate', g.x, g.z, { r: 0, rot: Math.atan2(g2.x - g1.x, g2.z - g1.z) });
+    // Two bone sentinels sleep just inside the gate, facing whoever comes in (enemies from M2).
+    for (const sv of [-4.4, 4.4]) {
+      const p = P([L.arena[0] - L.arenaR + 3.6, sv]), q = P([L.arena[0] - L.arenaR + 2.6, sv * 1.15]);
+      addProp('sentinel', p.x, p.z, { r: 0.65, rot: Math.atan2(q.x - p.x, q.z - p.z), v: 0 });
+    }
   }
 
   // Scattered vegetation and rocks (rejection sampling, deterministic).

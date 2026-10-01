@@ -26,7 +26,7 @@ export class TitleScreen {
           <button id="btn-play" class="btn interactive" disabled><span class="loading">PREPARANDO LA ISLA…</span></button>
           <div class="skin-picker frame-dark interactive" role="group" aria-label="Aspecto">
             <span class="label outlined">Aspecto</span>
-            ${SKINS.slice(0, 5).map((s, i) => `<button class="skin-dot" data-skin="${i}" aria-label="${s.name}" aria-pressed="false" style="background:linear-gradient(180deg, ${hex(s.vest)} 55%, ${hex(s.band)} 55%)"></button>`).join('')}
+            ${SKINS.slice(0, 5).map((s, i) => `<button class="skin-dot" data-skin="${i}" aria-label="${s.name}" aria-pressed="false" style="background:linear-gradient(180deg, ${hex(s.swatch[0])} 55%, ${hex(s.swatch[1])} 55%)"></button>`).join('')}
             <span class="skin-name"></span>
           </div>
           <div class="title-row">
@@ -47,6 +47,16 @@ export class TitleScreen {
     });
     root.querySelectorAll('button').forEach((b) => b.addEventListener('pointerenter', () => sfx.hover()));
     this.selectSkin(settings.skin || 0);
+  }
+
+  // Replace the color swatches with portraits of the real models. render(i) → canvas.
+  setPortraits(render) {
+    this.root.querySelectorAll('.skin-dot').forEach((b) => {
+      const c = render(+b.dataset.skin);
+      if (!c) return;
+      b.style.background = `url(${c.toDataURL()}) center / cover, radial-gradient(circle at 40% 35%, #3d6f86, #122838)`;
+      b.classList.add('has-portrait');
+    });
   }
 
   selectSkin(i) {

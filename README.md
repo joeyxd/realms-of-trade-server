@@ -13,6 +13,7 @@ son los CDN de Three.js y GSAP, y Google Fonts.
 ```bash
 npx serve .          # o: npm start  → http://localhost:5173
 npm test             # tests de la simulación en Node (determinismo, dash, colisiones, predicción)
+npm install          # opcional: trae three como devDependency para el test de geometría de personajes
 ```
 
 Basta con cualquier servidor estático; no hace falta bundler. El juego también se puede publicar como Artifact
@@ -27,7 +28,8 @@ node tools/shot.mjs shots/m --scenario=title --w=390 --h=844 --quality=medium
 ```
 
 Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (overlay F3), `?worker=0`
-(servidor en el hilo principal), `?debug` (teletransporte `__mn.teleport(x, z)` y `__mn.fxTest()`).
+(servidor en el hilo principal), `?debug` (teletransporte `__mn.teleport(x, z)`, `__mn.fxTest()` y la ficha de
+personajes `__mn.sheet({ yaw, run, pitch, dist, list })`).
 
 ## Controles
 
@@ -36,7 +38,7 @@ Parámetros de URL para desarrollo: `?q=low|medium|high` (calidad), `?perf` (ove
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
 | Hablar / interactuar | F | botón F |
-| Zoom (3 niveles: 17 / 23 / 30 u, cámara a 48°) | rueda | — |
+| Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
 | Pausa y ajustes | ESC | botón ⚙ |
 | Rendimiento | F3 | — |
@@ -50,6 +52,7 @@ desbloquean por nivel (3/5/7).
 |---|---|---|
 | M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
+| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente (luces locales, noche, grading, bloom, brasas) → plan en `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | siguiente |
 | M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
@@ -65,9 +68,13 @@ desbloquean por nivel (3/5/7).
   (arena → turquesa → azul profundo), cáusticas onduladas sobre el fondo, espuma de contacto alrededor de rocas,
   postes, casco, carga flotante y piernas, encaje de espuma en la orilla, ondas de espuma al vadear, destellos de sol
   que titilan, algas y piedras bajo el agua. Variante barata para calidad baja. Detalle en `DESIGN.md` §11.
-- **Personaje chibi** con 5 aspectos: un solo mesh con huesos rígidos (1 draw call por pasada), animación procedural
-  (respiración, carrera con inclinación, estiramiento en el dash, squash & stretch con muelles amortiguados) y
-  afterimages del dash.
+- **Personajes adultos low-poly** (v2, según referencias): ~6,5 cabezas, facetados, ropa por capas (capucha y
+  capa, abrigo abierto, chaleco, corsé, cinturones con hebilla, bandolera, bolsas, brazaletes, botas con vuelta,
+  hombreras). 5 aspectos de jugador (Corsario, Exploradora elfa, Bucanero, Tormenta, Brasa), la Capitana Brea, Tía
+  Perla y el **Centinela** esqueleto (dos duermen en la entrada de La Caldera; despiertan en M2). Esqueleto de 15
+  huesos con rodillas, codos y paneles de tela; animación procedural (respiración, cambio de peso, carrera con
+  rodillas/codos y contrarrotación, dash, faldones con muelles) y afterimages del dash. Retratos del HUD y del
+  selector de aspecto renderizados con el modelo real. 1,7–2,5 k triángulos y 1 draw call por pasada cada uno.
 - **Cámara MOBA**: seguimiento amortiguado, look-ahead al cursor (máx. 20 %), 3 zooms, shake por trauma, punch,
   modo naval reservado. La vegetación y los props que tapan al jugador o están pegados a la cámara se disuelven.
 - **Mundo vivo**: 5 bots con nombre que pasean por la aldea (la UI no los distingue de jugadores), la Capitana Brea
@@ -80,8 +87,8 @@ desbloquean por nivel (3/5/7).
   menor con dron en La Caldera.
 - **Calidad** baja/media/alta + AUTO (baja un nivel si cae de 45 fps).
 
-Medido en la vista de juego (sumando todas las pasadas): ~100 draw calls y ~300 k triángulos en alta, ~50 draw
-calls y ~145 k triángulos en baja.
+Medido en la vista de juego (sumando todas las pasadas): 90–115 draw calls y 220–300 k triángulos en alta, ~70 draw
+calls y 150–180 k triángulos en baja.
 
 ## Arquitectura
 

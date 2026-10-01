@@ -1,190 +1,61 @@
-// Chibi characters (~2.3 heads) built from primitives in a joint hierarchy
-// (root → body → hips → legs / torso → head / arms) with procedural animation:
-// idle breathing, run cycle with lean, dash stretch, turn roll, squash & stretch springs.
+// Characters: adult, faceted low-poly looks (charlooks.js) on a 15-bone rig with knees, elbows and
+// cloth panels. One SkinnedMesh per character (1 draw call per pass). Procedural animation:
+// idle breathing and weight shift, run cycle with knee/elbow bend and hip/shoulder counter-rotation,
+// dash lean and tuck, turn roll, subtle squash, spring-driven secondary motion on coats and flaps.
 import * as THREE from 'three';
-import { part, merge, rbox as box, bbox, sphere, capsule, cyl, cone, torus, blobTexture } from './geo.js';
-import { toon } from './toon.js';
+import { blobTexture } from './geo.js';
+import { toon, U } from './toon.js';
 import { LAYER } from './pipeline.js';
-import { damp, dampAngle, angleDelta, clamp, spring } from '../core/math.js';
+import { BONES, makeBones } from './charkit.js';
+import { LOOKS, buildLook } from './charlooks.js';
+import { damp, angleDelta, clamp, spring } from '../core/math.js';
 
-export const SKINS = [
-  { name: 'Marea', skin: 0xf3c9a0, hair: 0x3a2318, shirt: 0xfaf3e3, vest: 0x17b3a6, sash: 0xe8463c, pants: 0x2d3c6b, boots: 0x5b3a24, band: 0xe8463c, accent: 0x3bf0ff },
-  { name: 'Coral', skin: 0xb9805a, hair: 0x1d1414, shirt: 0xfff6e0, vest: 0xff6f61, sash: 0xffc23d, pants: 0x3b2f4f, boots: 0x3a2618, band: 0xffc23d, accent: 0xffd166 },
-  { name: 'Tormenta', skin: 0xe8b48e, hair: 0xeae4d6, shirt: 0xe9f1ff, vest: 0x7b5cff, sash: 0x2ad1c9, pants: 0x262640, boots: 0x2b2238, band: 0x2ad1c9, accent: 0xb36bff },
-  { name: 'Sol', skin: 0x8a5a3c, hair: 0x2a1a10, shirt: 0xfffbea, vest: 0xffb02e, sash: 0x2e7dd6, pants: 0x5a3b2a, boots: 0x2e2018, band: 0x2e7dd6, accent: 0xffe14d },
-  { name: 'Brea', skin: 0xf6d2b5, hair: 0xc4482e, shirt: 0xf0ece4, vest: 0x2b2b3a, sash: 0xd23b6b, pants: 0x1f1f2a, boots: 0x4a2f22, band: 0xf5f5f5, accent: 0xff5fa2 },
-  { name: 'Capitana', skin: 0xd9a27a, hair: 0x6b3d2a, shirt: 0xfff4e0, vest: 0x9a2230, sash: 0xffc23d, pants: 0x2a2440, boots: 0x231a14, band: 0x1f1a2e, accent: 0xffc23d, hat: true, coat: true },
-  { name: 'Vendedora', skin: 0x9c6b4b, hair: 0x241612, shirt: 0xfde7c4, vest: 0x3fa34d, sash: 0xff8c42, pants: 0x7a4f9a, boots: 0x5b3a24, band: 0xff8c42, accent: 0x7be0a1, scarf: true, apron: true },
-];
+export const SKINS = LOOKS;
+export const SENTINEL = LOOKS.findIndex((l) => l.enemy);
+const TAU = Math.PI * 2;
 
-const DARK = 0x1a1033;
-const HIP_Y = 0.43;
-
-const cache = new Map();
-function buildParts(skinIdx) {
-  if (cache.has(skinIdx)) return cache.get(skinIdx);
-  const S = SKINS[skinIdx] || SKINS[0];
-  // Head (pivot at the neck).
-  const head = [
-    part(sphere(0.33, 20, 14), S.skin, { pos: [0, 0.3, 0], scale: [1, 0.95, 0.97] }),
-    part(sphere(0.07, 6, 4), S.skin, { pos: [0.32, 0.27, 0], scale: [0.6, 1, 1] }),
-    part(sphere(0.07, 6, 4), S.skin, { pos: [-0.32, 0.27, 0], scale: [0.6, 1, 1] }),
-    part(sphere(0.035, 6, 4), 0xe6a57f, { pos: [0, 0.235, 0.325] }),
-    // eyes + highlights
-    part(capsule(0.043, 0.05, 3, 8), DARK, { pos: [0.118, 0.29, 0.29], rot: [-0.18, 0, 0] }),
-    part(capsule(0.043, 0.05, 3, 8), DARK, { pos: [-0.118, 0.29, 0.29], rot: [-0.18, 0, 0] }),
-    part(sphere(0.017, 4, 3), 0xffffff, { pos: [0.106, 0.315, 0.335] }),
-    part(sphere(0.017, 4, 3), 0xffffff, { pos: [-0.13, 0.315, 0.335] }),
-    // brows (a bit of attitude)
-    part(bbox(0.1, 0.028, 0.03), S.hair, { pos: [0.12, 0.39, 0.29], rot: [-0.2, 0, -0.18] }),
-    part(bbox(0.1, 0.028, 0.03), S.hair, { pos: [-0.12, 0.39, 0.29], rot: [-0.2, 0, 0.18] }),
-    // smile + cheeks
-    part(torus(0.045, 0.013, 4, 8, Math.PI), DARK, { pos: [0, 0.175, 0.31], rot: [0.25, 0, Math.PI] }),
-    part(sphere(0.05, 6, 4), 0xff8f8f, { pos: [0.2, 0.2, 0.245], scale: [1, 0.6, 0.35], rot: [0, 0.7, 0] }),
-    part(sphere(0.05, 6, 4), 0xff8f8f, { pos: [-0.2, 0.2, 0.245], scale: [1, 0.6, 0.35], rot: [0, -0.7, 0] }),
-    // hair mass (back/top); players wear a bandana cap on top so the color reads from above
-    part(sphere(0.345, 16, 12), 0, { pos: [0, 0.34, -0.05], scale: [1.0, 0.95, 0.95], paint: (x, y, z) => (!S.hat && !S.scarf && y > 0.43 + Math.max(0, z) * 0.25 ? S.band : S.hair) }),
-    // earring
-    part(torus(0.03, 0.008, 4, 8), 0xffc23d, { pos: [0.33, 0.2, 0.02], rot: [0, Math.PI / 2, 0] }),
-  ];
-  if (S.hat) {
-    head.push(
-      part(cyl(0.46, 0.46, 0.05, 20), 0x1f1a2e, { pos: [0, 0.55, -0.02], scale: [1, 1, 0.82] }),
-      part(cyl(0.25, 0.3, 0.24, 18), 0x1f1a2e, { pos: [0, 0.68, -0.02] }),
-      part(torus(0.29, 0.02, 6, 24), 0xffc23d, { pos: [0, 0.58, -0.02], rot: [Math.PI / 2, 0, 0] }),
-      part(cone(0.07, 0.16, 6), 0xf4f1ea, { pos: [0.18, 0.72, 0.12], rot: [0.3, 0, -0.6] }),
-    );
-  } else if (S.scarf) {
-    head.push(
-      part(sphere(0.36, 22, 14, 0, Math.PI * 2), S.band, { pos: [0, 0.36, -0.02], scale: [1, 0.85, 1] }),
-      part(sphere(0.08, 10, 8), S.band, { pos: [0, 0.62, -0.08] }),
-    );
-  } else {
-    head.push(
-      // bandana band + knot tails
-      part(torus(0.315, 0.055, 6, 20), S.band, { pos: [0, 0.4, 0], rot: [Math.PI / 2 - 0.12, 0, 0] }),
-      part(sphere(0.07, 6, 4), S.band, { pos: [0, 0.42, -0.33] }),
-      part(cone(0.06, 0.2, 6), S.band, { pos: [0.06, 0.32, -0.38], rot: [-2.6, 0, 0.35] }),
-      part(cone(0.06, 0.2, 6), S.band, { pos: [-0.06, 0.32, -0.38], rot: [-2.6, 0, -0.35] }),
-      // hair tuft poking out front
-      part(cone(0.07, 0.16, 6), S.hair, { pos: [0.06, 0.5, 0.2], rot: [0.9, 0, -0.3] }),
-    );
+const mats = new Map();
+// 'base' for people, 'sentinel' for the dormant skeletons (slow glow pulse driven by the scene).
+export function characterMaterial(kind = 'base') {
+  let m = mats.get(kind);
+  if (!m) {
+    const glow = { value: kind === 'sentinel' ? 0.5 : 1 };
+    // Stronger rim than the props so slim adult silhouettes separate from the ground.
+    m = toon({ color: 0xffffff, vertexColors: true }, { rim: true, glow: true, softBand: true, key: 'char', uniforms: { mnGlowAmt: glow, mnRimStr: { value: 0.85 } } });
+    m.flatShading = true;
+    m.userData.glow = glow;
+    mats.set(kind, m);
   }
-
-  // Torso (pivot at the waist).
-  const isShirt = (x, y, z) => z > 0.05 && Math.abs(x) < 0.04 + Math.max(0, y - 0.18) * 0.45 && y > 0.16;
-  const torsoPaint = (x, y, z) => (y < 0.05 ? S.pants : y < 0.14 ? S.sash : isShirt(x, y, z) ? S.shirt : S.vest);
-  const torso = [
-    part(capsule(0.2, 0.16, 4, 14), 0, { pos: [0, 0.27, 0], scale: [1.08, 1, 0.84], paint: torsoPaint }),
-    part(sphere(0.1, 8, 6), S.vest, { pos: [0.235, 0.41, 0] }),
-    part(sphere(0.1, 8, 6), S.vest, { pos: [-0.235, 0.41, 0] }),
-    part(box(0.09, 0.07, 0.04, 0.015), 0xffc23d, { pos: [0, 0.09, 0.18] }),
-    part(box(0.06, 0.16, 0.05, 0.02), S.sash, { pos: [-0.17, 0.0, 0.1], rot: [0.1, 0, 0.25] }),
-  ];
-  if (S.coat) {
-    torso.push(part(cyl(0.235, 0.31, 0.34, 18), S.vest, { pos: [0, -0.1, -0.01] }));
-    torso.push(part(box(0.04, 0.3, 0.02, 0.01), 0xffc23d, { pos: [0.09, 0.27, 0.18] }));
-  }
-  if (S.apron) torso.push(part(box(0.26, 0.34, 0.03, 0.01), 0xf4efe4, { pos: [0, 0.04, 0.17] }));
-
-  const pelvis = [part(box(0.34, 0.16, 0.24, 0.06), S.pants, { pos: [0, 0, 0] })];
-
-  const legPaint = (x, y) => (y < -0.25 ? S.boots : S.pants);
-  const leg = [
-    part(capsule(0.085, 0.2, 3, 10), 0, { pos: [0, -0.18, 0], paint: legPaint }),
-    part(box(0.15, 0.12, 0.25, 0.05), S.boots, { pos: [0, -0.37, 0.035] }),
-    part(cyl(0.1, 0.1, 0.06, 10), 0x8a6040, { pos: [0, -0.27, 0] }),
-  ];
-
-  const armPaint = (x, y) => (y > -0.16 ? S.shirt : S.skin);
-  const arm = [
-    part(capsule(0.07, 0.15, 3, 10), 0, { pos: [0, -0.12, 0], paint: armPaint }),
-    part(sphere(0.082, 8, 6), S.skin, { pos: [0, -0.29, 0.01] }),
-  ];
-  // Cutlass in the right hand (blade forward/down).
-  const blade = new THREE.Shape();
-  blade.moveTo(0, 0); blade.quadraticCurveTo(0.06, 0.3, 0.02, 0.62); blade.lineTo(0.0, 0.66); blade.quadraticCurveTo(-0.03, 0.32, -0.035, 0.0); blade.closePath();
-  const bladeGeo = new THREE.ExtrudeGeometry(blade, { depth: 0.018, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1, curveSegments: 10 });
-  const sword = [
-    part(bladeGeo, 0xe3ebf5, { pos: [0, 0, 0] }),
-    part(cyl(0.022, 0.022, 0.14, 8), 0x5b3a24, { pos: [0, -0.08, 0.009] }),
-    part(torus(0.06, 0.012, 6, 12, Math.PI), 0xffc23d, { pos: [-0.01, -0.04, 0.009], rot: [0, 0, Math.PI / 2] }),
-    part(box(0.12, 0.025, 0.04, 0.01), 0xffc23d, { pos: [0, 0, 0.009] }),
-    part(sphere(0.026, 8, 6), 0xffc23d, { pos: [0, -0.16, 0.009] }),
-  ];
-  // Orient: hold point at the hand, blade pointing forward and slightly down.
-  const swordGeo = merge(sword);
-  swordGeo.rotateX(Math.PI / 2 + 0.35);
-  swordGeo.translate(0, -0.3, 0.05);
-  const armR = merge([...arm.map((g) => g.clone()), swordGeo]);
-
-  const res = {
-    head: merge(head), torso: merge(torso), pelvis: merge(pelvis), leg: merge(leg),
-    armL: merge(arm), armR, armRBare: merge(arm.map((g) => g.clone())),
-  };
-  cache.set(skinIdx, res);
-  return res;
-}
-
-const skinnedCache = new Map();
-function skinnedGeometry(skinIdx, sword, bones, P) {
-  const key = skinIdx + (sword ? 's' : '');
-  if (skinnedCache.has(key)) return skinnedCache.get(key);
-  bones[0].updateMatrixWorld(true); // rest pose, root at the origin
-  const pieces = [[P.pelvis, 1], [P.leg, 2], [P.leg, 3], [P.torso, 4], [P.head, 5], [P.armL, 6], [sword ? P.armR : P.armRBare, 7]];
-  const list = pieces.map(([g, bi]) => {
-    const c = g.clone().applyMatrix4(bones[bi].matrixWorld);
-    const n = c.attributes.position.count;
-    const idx = new Uint16Array(n * 4), w = new Float32Array(n * 4);
-    for (let i = 0; i < n; i++) { idx[i * 4] = bi; w[i * 4] = 1; }
-    c.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(idx, 4));
-    c.setAttribute('skinWeight', new THREE.Float32BufferAttribute(w, 4));
-    return c;
-  });
-  const geo = merge(list);
-  skinnedCache.set(key, geo);
-  return geo;
-}
-
-let sharedMat = null;
-export function characterMaterial() {
-  if (!sharedMat) sharedMat = toon({ color: 0xffffff, vertexColors: true }, { rim: true, key: 'char' });
-  return sharedMat;
+  return m;
 }
 
 let blobGeo = null, blobMat = null;
 
 export class CharacterView {
-  constructor(skinIdx = 0, { sword = true } = {}) {
-    const P = buildParts(skinIdx);
-    // Rigid skinning: one merged geometry, one bone per joint -> 1 draw call per pass per character.
+  constructor(skinIdx = 0, { sword = true, pose = null } = {}) {
+    const L = LOOKS[skinIdx] || LOOKS[0];
+    this.look = L;
     this.skin = skinIdx;
+    this.armed = sword && !!L.weapon;
+    const built = buildLook(skinIdx, this.armed);
+    this.height = built.height;
+    this.rigKey = built.key;
+    this.pose = pose;
     this.root = new THREE.Group();
-    const B = () => new THREE.Bone();
-    this.body = B();
-    this.hips = B(); this.hips.position.y = HIP_Y;
-    this.legL = B(); this.legL.position.set(0.11, -0.02, 0);
-    this.legR = B(); this.legR.position.set(-0.11, -0.02, 0);
-    this.torso = B(); this.torso.position.y = 0.05;
-    this.head = B(); this.head.position.y = 0.47;
-    this.armL = B(); this.armL.position.set(0.27, 0.4, 0);
-    this.armR = B(); this.armR.position.set(-0.27, 0.4, 0);
-    this.body.add(this.hips);
-    this.hips.add(this.legL, this.legR, this.torso);
-    this.torso.add(this.head, this.armL, this.armR);
-    this.bones = [this.body, this.hips, this.legL, this.legR, this.torso, this.head, this.armL, this.armR];
-    const geo = skinnedGeometry(skinIdx, sword, this.bones, P);
-    this.mesh = new THREE.SkinnedMesh(geo, characterMaterial());
+    this.bones = makeBones(built.J);
+    BONES.forEach((n, i) => { this[n] = this.bones[i]; });
+    this.restHipsY = this.hips.position.y;
+    this.mesh = new THREE.SkinnedMesh(built.geo, characterMaterial(L.enemy ? 'sentinel' : 'base'));
     this.mesh.add(this.body);
     this.mesh.bind(new THREE.Skeleton(this.bones));
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
-    this.mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0.8, 0), 1.7);
+    this.mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, built.height * 0.5, 0.1), built.height * 0.8);
     this.root.add(this.mesh);
     this.meshes = [this.mesh];
 
     if (!blobGeo) {
-      blobGeo = new THREE.PlaneGeometry(1.25, 1.25);
+      blobGeo = new THREE.PlaneGeometry(1.1, 1.1);
       blobGeo.rotateX(-Math.PI / 2);
       blobMat = new THREE.MeshBasicMaterial({ map: blobTexture(), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     }
@@ -192,10 +63,13 @@ export class CharacterView {
     this.blob.layers.set(LAYER.NO_OUTLINE);
     this.blob.position.y = 0.03;
     this.blob.renderOrder = 2;
+    this.blobSize = L.body === 'brute' ? 1.45 : L.heavy ? 1.12 : 1;
     this.root.add(this.blob);
 
     // Animation state.
-    this.t = Math.random() * 10;
+    this.seed = Math.random() * 10;
+    this.t = this.seed;
+    this.stride = 2.5 * (built.height / 1.88);
     this.phase = 0;
     this.run = 0;
     this.dash = 0;
@@ -204,16 +78,17 @@ export class CharacterView {
     this.lastF = null;
     this.sy = { x: 1, v: 0 };
     this.sz = { x: 1, v: 0 };
-    this.lastStep = 0;
+    this.cf = { x: 0, v: 0 };
+    this.cb = { x: 0, v: 0 };
     this.onStep = null;
     this.wasDash = false;
-    this.facing = 0;
   }
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
 
-  // s: {x, y, z, f, vx, vz, st (1 = dash), mag, wade}
+  // s: {x, y, z, f, vx, vz, st (1 = dash), wade}
   update(dt, s) {
+    dt = Math.min(dt, 0.1);
     this.t += dt;
     this.root.position.set(s.x, s.y, s.z);
     if (this.lastF === null) this.lastF = s.f;
@@ -223,53 +98,136 @@ export class CharacterView {
 
     const speed = Math.hypot(s.vx, s.vz);
     const dashing = s.st === 1;
-    this.run = damp(this.run, dashing ? 0.4 : clamp(speed / 6.5, 0, 1), 12, dt);
-    this.dash = damp(this.dash, dashing ? 1 : 0, dashing ? 30 : 10, dt);
-    if (dashing && !this.wasDash) { this.sz.v += 6; this.sy.v -= 4; }
-    if (!dashing && this.wasDash) { this.sz.v -= 5; this.sy.v -= 3.5; }
+    this.run = damp(this.run, dashing ? 0.25 : clamp(speed / 6.5, 0, 1), 10, dt);
+    this.dash = damp(this.dash, dashing ? 1 : 0, dashing ? 26 : 8, dt);
+    if (dashing && !this.wasDash) { this.sz.v += 2.2; this.sy.v -= 1.6; }
+    if (!dashing && this.wasDash) this.sy.v -= 1.4;
     this.wasDash = dashing;
 
-    // Stride: one cycle per ~1.3 u travelled.
-    const prevPhase = this.phase;
-    this.phase += dt * (speed / 1.3) * Math.PI * 2 * (dashing ? 0.25 : 1);
-    if (this.run > 0.35 && Math.floor(prevPhase / Math.PI) !== Math.floor(this.phase / Math.PI)) {
-      if (this.onStep) this.onStep(Math.floor(this.phase / Math.PI) & 1);
+    // Stride: one cycle per `stride` u; a footstep when either foot plants (thigh most forward).
+    const prev = this.phase;
+    this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1);
+    const H = Math.PI;
+    if (this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
+      if (this.onStep) this.onStep(Math.floor((this.phase - H / 2) / H) & 1);
     }
-    const sw = Math.sin(this.phase) * this.run;
-    const breathe = Math.sin(this.t * 2.4) * (1 - this.run) * (1 - this.dash);
+    const r = this.run, d = this.dash, nd = 1 - d, ph = this.phase, sn = Math.sin(ph);
+    const idle = (1 - r) * nd;
+    const br = Math.sin(this.t * 1.8) * idle;
+    const sway = Math.sin(this.t * 0.55 + this.seed) * idle;
+    const dorm = this.pose === 'dormant' ? 1 : 0;
+    const k = (cur, target, l = 22) => damp(cur, target, l, dt);
 
-    // Squash & stretch springs (settle with overshoot, never keep wobbling).
-    spring(this.sy, dashing ? 0.86 : 1, 320, 17, dt);
-    spring(this.sz, dashing ? 1.32 : 1, 320, 17, dt);
-    const sx = 1 / Math.sqrt(Math.max(0.3, this.sy.x * this.sz.x));
-    this.body.scale.set(sx, this.sy.x + breathe * 0.012, this.sz.x);
-
-    this.lean = damp(this.lean, 0.2 * this.run + 0.5 * this.dash, 10, dt);
-    this.roll = damp(this.roll, clamp(-turnRate * 0.035, -0.3, 0.3) * this.run, 8, dt);
+    // Subtle squash & stretch (adult proportions: a hint, not a cartoon).
+    spring(this.sy, dashing ? 0.95 : 1, 240, 19, dt);
+    spring(this.sz, dashing ? 1.05 : 1, 240, 19, dt);
+    const sx = 1 / Math.sqrt(Math.max(0.5, this.sy.x * this.sz.x));
+    this.body.scale.set(sx, this.sy.x, this.sz.x);
+    this.lean = damp(this.lean, 0.09 * r + 0.3 * d, 8, dt);
+    this.roll = damp(this.roll, clamp(-turnRate * 0.025, -0.2, 0.2) * r, 7, dt);
     this.body.rotation.set(this.lean, 0, this.roll);
 
-    const bob = Math.abs(Math.sin(this.phase)) * 0.055 * this.run;
-    this.hips.position.y = HIP_Y + bob - 0.025 * this.run - 0.05 * this.dash;
-    this.hips.rotation.y = sw * 0.12;
-    this.torso.rotation.set(0.04 * this.run, -sw * 0.22, 0);
-    this.head.rotation.set(-this.lean * 0.55 + breathe * 0.02, sw * 0.08, -this.roll * 0.4);
+    // Pelvis: two bobs per stride, crouch in the dash, weight shift when idle.
+    this.hips.position.y = this.restHipsY - 0.025 * r + 0.04 * r * Math.abs(sn) - 0.07 * d - 0.01 * idle * (0.5 + 0.5 * sway) - 0.04 * dorm;
+    this.hips.position.x = 0.012 * sway;
+    this.hips.rotation.set(0, -0.16 * r * sn, -0.035 * sway);
+    this.spine.rotation.set(0.05 * r + 0.14 * d + 0.14 * dorm, 0.08 * r * sn, 0.02 * sway);
+    this.chest.rotation.set(-0.02 * br + 0.04 * r + 0.08 * dorm, 0.13 * r * sn, 0.015 * sway);
+    this.head.rotation.set(
+      -(this.lean + 0.05 * r + 0.14 * d) * 0.75 + 0.015 * br + 0.45 * dorm,
+      -0.1 * r * sn + 0.06 * sway * (1 - dorm),
+      -this.roll * 0.45 - 0.02 * sway,
+    );
 
-    const legSwing = sw * 0.85;
-    this.legL.rotation.x = damp(this.legL.rotation.x, legSwing * (1 - this.dash) + 0.75 * this.dash, 22, dt);
-    this.legR.rotation.x = damp(this.legR.rotation.x, -legSwing * (1 - this.dash) - 0.9 * this.dash, 22, dt);
-    this.legL.position.y = -0.02 + Math.max(0, Math.cos(this.phase)) * 0.05 * this.run;
-    this.legR.position.y = -0.02 + Math.max(0, -Math.cos(this.phase)) * 0.05 * this.run;
+    // Legs: forward swing is negative x; knees bend most just after toe-off.
+    const A = 0.72 * r;
+    const knee = (p) => r * (0.12 + Math.pow(Math.max(0, Math.cos(p + 0.35)), 1.4));
+    this.thighL.rotation.x = k(this.thighL.rotation.x, -A * sn * nd - 0.85 * d - 0.04 * dorm);
+    this.thighR.rotation.x = k(this.thighR.rotation.x, A * sn * nd + 0.55 * d + 0.02 * dorm);
+    this.shinL.rotation.x = k(this.shinL.rotation.x, (knee(ph) + 0.05 + 0.04 * Math.max(0, sway)) * nd + 0.4 * d + 0.12 * dorm);
+    this.shinR.rotation.x = k(this.shinR.rotation.x, (knee(ph + Math.PI) + 0.05 + 0.04 * Math.max(0, -sway)) * nd + 1.05 * d + 0.08 * dorm);
+    this.thighL.rotation.z = 0.03;
+    this.thighR.rotation.z = -0.03;
 
-    const armSwing = sw * 0.95;
-    const idleArm = 0.1 + breathe * 0.03;
-    this.armL.rotation.x = damp(this.armL.rotation.x, -armSwing * (1 - this.dash) - 1.15 * this.dash, 20, dt);
-    this.armR.rotation.x = damp(this.armR.rotation.x, armSwing * (1 - this.dash) - 1.0 * this.dash, 20, dt);
-    this.armL.rotation.z = damp(this.armL.rotation.z, idleArm + 0.12 * this.run + 0.35 * this.dash, 14, dt);
-    this.armR.rotation.z = damp(this.armR.rotation.z, -idleArm - 0.12 * this.run - 0.35 * this.dash, 14, dt);
+    // Arms: opposite to the legs, elbows bend with speed; the weapon arm swings less.
+    const out = this.look.body === 'brute' ? 0.17 : this.look.body === 'female' ? 0.09 : 0.08;
+    const armA = 0.6 * r, wa = this.armed ? 0.55 : 1;
+    this.armL.rotation.x = k(this.armL.rotation.x, armA * sn * nd + 0.9 * d - 0.12 * dorm, 18);
+    this.armR.rotation.x = k(this.armR.rotation.x, -armA * sn * wa * nd + 0.75 * d - 0.16 * dorm, 18);
+    this.armL.rotation.z = k(this.armL.rotation.z, out + 0.05 * r + 0.3 * d + 0.012 * br, 14);
+    this.armR.rotation.z = k(this.armR.rotation.z, -(out + 0.05 * r + 0.3 * d + 0.012 * br), 14);
+    this.foreL.rotation.x = k(this.foreL.rotation.x, -(0.12 + 0.75 * r + 0.25 * r * Math.max(0, -sn)) * nd - 0.15 * d - 0.2 * dorm, 18);
+    const fr = this.armed ? 0.24 + 0.5 * r : 0.12 + 0.8 * r;
+    this.foreR.rotation.x = k(this.foreR.rotation.x, -(fr + 0.2 * r * Math.max(0, sn)) * nd - 0.2 * d - 0.15 * dorm, 18);
 
-    // Blob shadow sits on the ground plane (counter the body lean/scale), fades in water.
-    this.blob.material.opacity = 1;
-    this.blob.scale.setScalar(1 + this.dash * 0.25);
+    // Cloth panels: the front rides the leading thigh, the back trails with speed (springs).
+    const fT = clamp(Math.min(this.thighL.rotation.x, this.thighR.rotation.x) * 0.75 - 0.05 * r - 0.12 * d, -1, 0.15);
+    const bT = clamp(Math.max(this.thighL.rotation.x, this.thighR.rotation.x) * 0.4 + 0.2 * r + 0.55 * d + 0.03 * Math.sin(this.t * 7) * r, -0.2, 1.1);
+    spring(this.cf, fT, 120, 12, dt);
+    spring(this.cb, bT, 90, 9, dt);
+    this.clothF.rotation.x = this.cf.x;
+    this.clothB.rotation.x = this.cb.x;
+
+    this.blob.scale.setScalar(this.blobSize * (1 + this.dash * 0.2));
     this.blob.visible = (s.wade || 0) < 0.4;
+  }
+}
+
+// Renders a head-and-shoulders portrait of any look with the real model (HUD, skin picker).
+export class PortraitStudio {
+  constructor(renderer, size = 256) {
+    this.r = renderer;
+    this.size = size;
+    this.scene = new THREE.Scene();
+    this.cam = new THREE.PerspectiveCamera(24, 1, 0.05, 30);
+    const key = new THREE.DirectionalLight(0xfff0dc, 2.3);
+    key.position.set(1.4, 2.4, 2.2);
+    this.scene.add(key, new THREE.HemisphereLight(0xc9e4ff, 0x6a4a3a, 1.05));
+    this.rt = new THREE.WebGLRenderTarget(size, size, { depthBuffer: true });
+    this.rt.texture.colorSpace = THREE.SRGBColorSpace;
+    this.buf = new Uint8Array(size * size * 4);
+    this.views = new Map();
+  }
+
+  // Returns a canvas (size × size, transparent background). Cached per look (one readback each).
+  render(skinIdx) {
+    if (!this.done) this.done = new Map();
+    if (this.done.has(skinIdx)) return this.done.get(skinIdx);
+    let v = this.views.get(skinIdx);
+    if (!v) {
+      v = new CharacterView(skinIdx, { sword: false });
+      v.blob.visible = false;
+      v.update(0, { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, wade: 1 });
+      this.views.set(skinIdx, v);
+    }
+    this.scene.add(v.root);
+    v.root.updateMatrixWorld(true);
+    const hy = v.head.getWorldPosition(new THREE.Vector3()).y;
+    const big = v.look.body === 'brute' ? 1.45 : 1;
+    this.cam.position.set(0.36 * big, hy + 0.12 * big, 1.0 * big);
+    this.cam.lookAt(0, hy + 0.09 * big, 0);
+    const r = this.r, prevClear = r.getClearColor(new THREE.Color()), prevAlpha = r.getClearAlpha(), prevAuto = r.autoClear;
+    const cloud = U.mnCloud.value;
+    U.mnCloud.value = 0;
+    r.autoClear = true;
+    r.setRenderTarget(this.rt);
+    r.setClearColor(0x000000, 0);
+    r.clear();
+    r.render(this.scene, this.cam);
+    r.readRenderTargetPixels(this.rt, 0, 0, this.size, this.size, this.buf);
+    r.setRenderTarget(null);
+    r.setClearColor(prevClear, prevAlpha);
+    r.autoClear = prevAuto;
+    U.mnCloud.value = cloud;
+    this.scene.remove(v.root);
+    const c = document.createElement('canvas');
+    c.width = c.height = this.size;
+    const ctx = c.getContext('2d');
+    const img = ctx.createImageData(this.size, this.size);
+    const row = this.size * 4;
+    for (let y = 0; y < this.size; y++) img.data.set(this.buf.subarray((this.size - 1 - y) * row, (this.size - y) * row), y * row);
+    ctx.putImageData(img, 0, 0);
+    this.done.set(skinIdx, c);
+    return c;
   }
 }

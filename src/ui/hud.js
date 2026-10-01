@@ -16,36 +16,25 @@ const ICONS = {
   mute: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
 };
 
-export function drawPortrait(canvas, skinIdx) {
+// Portrait: the real 3D model rendered by PortraitStudio when available, else a flat silhouette.
+export function drawPortrait(canvas, skinIdx, image) {
   const S = SKINS[skinIdx] || SKINS[0];
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
   const g = ctx.createRadialGradient(w * 0.4, h * 0.35, 4, w / 2, h / 2, w * 0.7);
-  g.addColorStop(0, '#5fc8e6'); g.addColorStop(1, '#14406b');
+  g.addColorStop(0, '#3d6f86'); g.addColorStop(1, '#122838');
   ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-  const cx = w / 2, cy = h * 0.6, r = w * 0.36;
-  ctx.lineWidth = w * 0.035; ctx.strokeStyle = '#1a1033';
-  // shoulders / vest
-  ctx.fillStyle = hex(S.vest);
-  ctx.beginPath(); ctx.ellipse(cx, h * 1.05, w * 0.42, h * 0.28, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // head
-  ctx.fillStyle = hex(S.skin);
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-  // hair / bandana cap
-  ctx.fillStyle = hex(S.hat ? 0x1f1a2e : S.band);
-  ctx.beginPath(); ctx.arc(cx, cy - r * 0.15, r * 1.02, Math.PI * 1.05, Math.PI * 1.95); ctx.closePath(); ctx.fill(); ctx.stroke();
-  // eyes
-  ctx.fillStyle = '#1a1033';
-  for (const s of [-1, 1]) {
-    ctx.beginPath(); ctx.ellipse(cx + s * r * 0.36, cy + r * 0.05, r * 0.12, r * 0.17, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx + s * r * 0.36 - r * 0.04, cy - r * 0.03, r * 0.05, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#1a1033';
+  if (image) {
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(image, 0, 0, w, h);
+    return;
   }
-  // smile + cheeks
-  ctx.lineWidth = w * 0.03;
-  ctx.beginPath(); ctx.arc(cx, cy + r * 0.32, r * 0.18, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
-  ctx.fillStyle = 'rgba(255,120,120,0.55)';
-  for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(cx + s * r * 0.62, cy + r * 0.3, r * 0.14, r * 0.08, 0, 0, Math.PI * 2); ctx.fill(); }
+  ctx.lineWidth = w * 0.035; ctx.strokeStyle = '#1a1033';
+  ctx.fillStyle = hex(S.swatch[1]);
+  ctx.beginPath(); ctx.ellipse(w / 2, h * 1.05, w * 0.42, h * 0.3, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = hex(S.swatch[0]);
+  ctx.beginPath(); ctx.ellipse(w / 2, h * 0.5, w * 0.24, h * 0.3, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
 }
 
 export class Hud {
@@ -107,10 +96,10 @@ export class Hud {
 
   setMuted(m) { this.muteBtn.innerHTML = m ? ICONS.mute : ICONS.sound; this.muteBtn.setAttribute('aria-label', m ? 'Activar sonido' : 'Silenciar'); }
 
-  setPlayer({ name, level, skin }) {
+  setPlayer({ name, level, skin, portrait }) {
     this.pname.textContent = name;
     this.lvl.textContent = String(level);
-    drawPortrait(this.portrait, skin);
+    drawPortrait(this.portrait, skin, portrait);
   }
 
   setDash(charges, max, recharge01) {

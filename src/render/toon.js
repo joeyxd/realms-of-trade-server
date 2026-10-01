@@ -83,6 +83,10 @@ float mnBand(float x) {
 
 const VERT_PARS = /* glsl */ `
 varying vec3 vMnWorld;
+#ifdef MN_GLOW
+attribute float aGlow;
+varying float vMnGlow;
+#endif
 #ifdef MN_SWAY
 attribute float aFlex;
 uniform float mnSwayAmt;
@@ -90,6 +94,9 @@ uniform float mnSwayAmt;
 `;
 
 const VERT_SWAY = /* glsl */ `
+#ifdef MN_GLOW
+vMnGlow = aGlow;
+#endif
 #ifdef MN_SWAY
 {
   vec3 o = vec3(0.0);
@@ -120,6 +127,10 @@ const VERT_WORLD = /* glsl */ `
 
 const FRAG_PARS = /* glsl */ `
 varying vec3 vMnWorld;
+#ifdef MN_GLOW
+varying float vMnGlow;
+uniform float mnGlowAmt;
+#endif
 `;
 
 const FRAG_OCCLUDE = /* glsl */ `
@@ -148,7 +159,12 @@ float mnVis = 1.0;
 vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
   float ndl = dot( normal, lightDirection );
   ndl = mix( -1.0, ndl, mnVis );
+  #ifdef MN_SOFT_BAND
+  // Faceted characters: half band, half smooth ramp, so every facet keeps its own tone.
+  return vec3( mix( mnBand( ndl ), 0.42 + 0.58 * smoothstep( -0.45, 0.95, ndl ), 0.5 ) );
+  #else
   return vec3( mnBand( ndl ) );
+  #endif
 }
 `;
 
@@ -181,10 +197,12 @@ function definesFor(opts) {
   if (opts.sway) d.MN_SWAY = '';
   if (opts.occluder) d.MN_OCCLUDER = '';
   if (opts.rim) d.MN_RIM = '';
+  if (opts.glow) d.MN_GLOW = '';
+  if (opts.softBand) d.MN_SOFT_BAND = '';
   return d;
 }
 
-// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, uniforms, fragPars, albedo, emissive, key}
+// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, uniforms, fragPars, albedo, emissive, key}
 export function patchToon(mat, opts = {}) {
   mat.defines = { ...(mat.defines || {}), ...definesFor(opts) };
   const extra = opts.uniforms || {};
@@ -200,7 +218,7 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <gradientmap_pars_fragment>', BAND_PARS)
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
       .replace('#include <color_fragment>', '#include <color_fragment>\n' + (opts.albedo || ''))
-      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || ''))
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || '') + '\n#ifdef MN_GLOW\ntotalEmissiveRadiance += diffuseColor.rgb * vMnGlow * mnGlowAmt;\n#endif')
       .replace('#include <lights_fragment_begin>', 'float mnSunCloud = mnCloudShadow(vMnWorld.xz);\n' + lightsBegin())
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM);
   };

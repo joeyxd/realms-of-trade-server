@@ -45,7 +45,7 @@ export const tuning = {
     fov: 35,
     pitch: 48,
     yaw: 45,
-    zoomLevels: [17, 23, 30],
+    zoomLevels: [15, 20, 27],
     zoomDefault: 1,
     followLambda: 9,
     lookAhead: 0.3,

@@ -2,6 +2,7 @@
 // additive fresnel tint in the accent color, fading over ~0.25 s. FX layer (never outlined).
 import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
+import { BONES } from '../charkit.js';
 
 const VERT = /* glsl */ `
 #include <common>
@@ -44,14 +45,14 @@ export class Afterimages {
         transparent: true, depthWrite: false, blending: THREE.NormalBlending,
       });
       // Frozen bones: never in the scene graph, matrixWorld copied at capture time.
-      const bones = Array.from({ length: 8 }, () => { const b = new THREE.Bone(); b.matrixAutoUpdate = false; b.matrixWorldAutoUpdate = false; return b; });
+      const bones = Array.from({ length: BONES.length }, () => { const b = new THREE.Bone(); b.matrixAutoUpdate = false; b.matrixWorldAutoUpdate = false; return b; });
       const mesh = new THREE.SkinnedMesh(new THREE.BufferGeometry(), mat);
       mesh.bindMode = 'detached';
       mesh.layers.set(LAYER.FX);
       mesh.visible = false;
       mesh.frustumCulled = false;
       scene.add(mesh);
-      this.ghosts.push({ mat, mesh, bones, t: 0, life: 0, active: false, bound: false });
+      this.ghosts.push({ mat, mesh, bones, t: 0, life: 0, active: false, rig: null });
     }
     this.cursor = 0;
     this.pending = [];
@@ -63,12 +64,14 @@ export class Afterimages {
     this.cursor = (this.cursor + 1) % this.ghosts.length;
     view.root.updateMatrixWorld(true);
     const src = view.mesh.skeleton;
-    if (!g.bound) {
-      g.mesh.bind(new THREE.Skeleton(g.bones, src.boneInverses.map((m) => m.clone())), new THREE.Matrix4());
-      g.bound = true;
+    // Bodies differ in bind pose (male / female / brute): rebind when the source rig changes.
+    if (g.rig !== view.rigKey) {
+      if (g.mesh.skeleton) g.mesh.skeleton.dispose();
+      g.mesh.bind(new THREE.Skeleton(g.bones.slice(0, src.bones.length), src.boneInverses.map((m) => m.clone())), new THREE.Matrix4());
+      g.rig = view.rigKey;
     }
     g.mesh.geometry = view.mesh.geometry;
-    for (let k = 0; k < g.bones.length; k++) g.bones[k].matrixWorld.copy(src.bones[k].matrixWorld);
+    for (let k = 0; k < src.bones.length; k++) g.bones[k].matrixWorld.copy(src.bones[k].matrixWorld);
     g.mesh.visible = true;
     g.mat.uniforms.uColor.value.set(color);
     g.alpha = alpha;

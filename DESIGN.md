@@ -64,7 +64,7 @@ Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isomé
 | Parámetro | Valor |
 |---|---|
 | Tipo | `PerspectiveCamera`, FOV 35°, pitch 48° (más perspectiva: se ven caras y horizonte cercano), yaw 45° fijo |
-| Zoom (rueda) | 3 distancias: 17 / **23** (defecto) / 30 u → personaje ≈ 7 % del alto de pantalla en 23 u |
+| Zoom (rueda) | 3 distancias: 15 / **20** (defecto) / 27 u → personaje adulto (~1.9 u) ≈ 13 % del alto de pantalla en 20 u |
 | Seguimiento | `damp(pos, objetivo, λ=9, dt)` |
 | Look-ahead | hacia el cursor, `0.3 × (cursor − jugador)` limitado al 20 % de la altura visible, λ=4 |
 | Rotación opcional | pasos de 90° con **Z / X** (tween 0.35 s). *Q/E quedan para habilidades.* Desactivada por defecto en Ajustes. |
@@ -344,8 +344,9 @@ nubes y el detalle del terreno. Un plano de fondo marino oscuro a −7.56 u cier
 
 Baja: sin contornos, render directo + FX con test de profundidad normal.
 
-- Personajes: una geometría fusionada por aspecto con **huesos rígidos** (`SkinnedMesh`, un hueso por articulación):
-  1 draw call por pasada y por personaje; las afterimages reutilizan la geometría con un esqueleto congelado.
+- Personajes: una geometría fusionada por aspecto (`SkinnedMesh`): 1 draw call por pasada y por personaje; las
+  afterimages reutilizan la geometría con un esqueleto congelado (se re-enlazan si cambia el tipo de cuerpo).
+  Detalle en «Personajes v2» más abajo.
 - Props estáticos fusionados por celdas de 72 u y vegetación instanciada por celdas de 48 u (culling por celda).
 - Toon: `MeshToonMaterial` parcheado con **bandas suaves propias** (`mnBand`, 4 bandas con antialias por `fwidth`).
   El **terreno** es un `MeshToonMaterial` con splat por altura/pendiente/máscaras (arena, arena mojada, hierba,
@@ -357,6 +358,25 @@ Baja: sin contornos, render directo + FX con test de profundidad normal.
 - Sol direccional con sombras en frustum ortográfico ±30 u centrado 7 u por delante del jugador (la cámara inclinada
   ve más lejos), encajado a texel → sin parpadeo,
   hemisférica cálida, rim light fría desde atrás. Preset «hora dorada» en La Caldera (tween 2 s).
+
+**Personajes v2 (adultos, low-poly facetado)** — `charkit.js` · `charlooks.js` · `characters.js`
+
+Referencias: pícaro encapuchado, exploradora elfa y guerrero esqueleto en low-poly. Se pasó de chibi (2,3 cabezas) a
+proporciones adultas: ~6,5 cabezas (cabeza y manos algo grandes para leerse desde la cámara isométrica), 1,8–1,9 u.
+
+| | |
+|---|---|
+| Modelado | piezas «lofteadas» (anillos de 6–14 lados) en pose de bind: torso, extremidades, capas, capucha, botas con vuelta, cinturones con hebilla, bandolera que se ciñe al torso, bolsas, brazaletes, hombreras. Aberturas limpias (capucha, abrigo abierto) quitando quads enteros; capas con forro interior más oscuro |
+| Color | por cara (facetas nítidas), con variación tonal ±5 % por faceta y degradado vertical (bajos de abrigo más oscuros) |
+| Sombreado | color con normales de derivadas (`flatShading`) + banda suave (mitad `mnBand`, mitad rampa) → cada faceta su tono; las normales de la geometría siguen suaves, así que el contorno solo marca siluetas. Rim más fuerte que en props. Atributo `aGlow` para gemas, ojos y filos |
+| Esqueleto | 15 huesos: cuerpo, cadera, muslos, espinillas, columna, pecho, cabeza, brazos, antebrazos y dos huesos de tela (delante/detrás). Pesos suaves en rodillas, codos, cintura y paneles de abrigo (los faldones delanteros siguen al muslo, el trasero se queda atrás con muelles) |
+| Animación | respiración y cambio de peso en reposo; carrera con rodillas y codos, contrarrotación cadera/hombros, dos rebotes por zancada; dash con inclinación y piernas recogidas; squash muy leve; pose «dormida» para enemigos |
+| Aspectos | jugador: Corsario, Exploradora (elfa), Bucanero, Tormenta, Brasa · NPC: Capitana Brea, Tía Perla · enemigo: Centinela (esqueleto con cristales de hielo y gran espada; dos duermen a la entrada de La Caldera, despiertan en M2 junto al arquero esqueleto) |
+| Coste | 1,7–2,5 k triángulos por personaje, 1 draw call por pasada |
+| UI | retratos con el modelo real (`PortraitStudio`, un render por aspecto y caché) en el HUD y en el selector de aspecto |
+
+Depuración: `?debug` y `__mn.sheet({ yaw, run, pitch, dist, list })` alinea todos los aspectos en la playa (ficha de
+personaje de frente/perfil/espalda, o con la cámara de juego con `pitch: 48`).
 
 **Calidad**
 
@@ -401,17 +421,43 @@ src/core/                  loop · input · events · rng · math · settings
 src/net/                   protocol · transport · localServer · worker · wsTransport (stub)
 src/client/                gameClient (predicción, reconciliación, interpolación)
 src/sim/                   world · ecs · worldgen · noise · collision · systems/{movement,bots}
-src/render/                scene · pipeline · outlinePass · camera · lighting · toon · sky · terrain · water ·
-                           vegetation · village · caldera · characters · ambient · quality · vfx/{dust,afterimage,fire}
+src/render/                scene · pipeline · camera · lighting · toon · noiseTex · sky · terrain · water ·
+                           vegetation · props · charkit · charlooks · characters · ambient · quality ·
+                           vfx/{effects,particles,afterimage}
 src/ui/                    title · hud · banners · prompts · pause · stats · touch · toasts
 src/audio/                 engine · sfx · music · ambience
 src/data/                  meta · tuning (· items · skills · enemies · boss · loot_tables · quests · ship_modules)
-tests/                     tests de la sim en Node (`npm test`)
+tests/                     tests de la sim y de la geometría de personajes en Node (`npm test`)
 tools/shot.mjs             capturas automáticas con Playwright
 legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ```
 
-## 15. Milestones y checklist de cada entrega
+## 15. Dirección de arte v2: plan de cambios por referencias
+
+Proceso: el autor manda referencias por área; para cada una se apunta qué tiene que no tengamos y qué cambia. Hecho:
+**agua v2** (refracción, absorción, espuma, cáusticas) y **personajes v2** (adultos low-poly, arriba en §11).
+
+**Ambiente (siguiente).** Dos referencias de ARPG isométrico oscuro: (A) campo de batalla de noche bajo la lluvia, luz
+de luna fría y un fuego cálido; (B) mazmorra violeta con braseros, chispas y contornos de tinta. Lo que tienen y
+nosotros no:
+
+| Rasgo de la referencia | Hoy | Cambio previsto | Coste |
+|---|---|---|---|
+| Charcos de luz local cálida (braseros, fogata, faroles, lava) que tiñen suelo, props y personajes | solo sol + hemisférica; braseros sin luz | **luces locales**: hasta 8 luces puntuales cercanas (4 en baja) evaluadas en la misma función de bandas (`mnBand`), caída por bandas y parpadeo; sin sombras | ~1 bucle corto por píxel |
+| Sombras frías azul-violeta, luces cálidas, mucho contraste | sombras teñidas suaves, día brillante | **grading**: tonos partidos (sombras → violeta, luces → ámbar), curva de contraste y viñeta por preset | 0 draw calls (pase final) |
+| Noche / atardecer con luz de luna | «día» y «hora dorada» | presets **noche** (luna fría, niebla oscura) y **noche volcánica** para La Caldera (cielo tapado por humo, la lava y los braseros iluminan); opcional ciclo día/noche | — |
+| Resplandor (bloom) en fuego, lava, gemas, hechizos | no | bloom a media resolución con umbral (emisivos y `aGlow`) | +3 pasadas a media res. |
+| Chispas y brasas en el aire con estela, ceniza | brasas simples en La Caldera | partículas estiradas por velocidad, ceniza, humo con luz de los braseros | 1 draw instanciado |
+| Lluvia, suelo mojado y charcos | no | opcional: lluvia instanciada + ondas en el agua, terreno más oscuro con brillo especular y charcos por textura de ruido | 1–2 draws |
+| Contorno de tinta y tramado en sombras (B) | contorno uniforme | opcional «cómic»: tramado en pantalla dentro de las bandas oscuras y grosor de contorno variable | 1 lectura de textura |
+| Muros en primer plano oscurecidos (corte) | se disuelven con tramado | oscurecer a silueta el primer plano, además del tramado | — |
+| Decals de sangre y quemaduras | no | decals en pool (llegan con el combate de M2) | instanciado |
+
+Orden propuesto: 1) luces locales + presets noche / noche volcánica + grading, 2) bloom + brasas/chispas, 3) lluvia
+y suelo mojado, 4) modo tinta. La playa y la aldea pueden seguir de día con más contraste; la noche y La Caldera
+llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200 draw calls, < 300 k triángulos.
+
+## 16. Milestones y checklist de cada entrega
 
 | M | Contenido | Estado |
 |---|---|---|

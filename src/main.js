@@ -14,7 +14,7 @@ import { BTN } from './sim/systems/movement.js';
 import { createTransport } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { GameScene } from './render/scene.js';
-import { SKINS } from './render/characters.js';
+import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
 import { TitleScreen } from './ui/title.js';
 import { Hud } from './ui/hud.js';
@@ -64,6 +64,8 @@ async function boot() {
   const reduced = () => settings.reducedMotion;
 
   const quality = new Quality((cfg) => world.applyQuality(cfg), settings.quality, isTouch);
+  const studio = safe('portrait', () => new PortraitStudio(world.renderer));
+  const portrait = (i) => (studio ? safe('portrait', () => studio.render(i)) : null);
   addEventListener('resize', () => safe('resize', () => { world.onResize(); worldUI.resize(innerWidth, innerHeight); }));
 
   // ---- State -----------------------------------------------------------------------------------
@@ -277,7 +279,7 @@ async function boot() {
     st.mode = 'playing';
     world.setTitleShadows(false);
     const rec = client.entities.get(client.youServer);
-    hud.setPlayer({ name: settings.name, level: rec ? rec.level : 1, skin: settings.skin });
+    hud.setPlayer({ name: settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
     client.localState(1, ps);
     focus.set(ps.x, ps.y, ps.z);
     world.rig.snapTo(focus);
@@ -289,6 +291,21 @@ async function boot() {
       canvas.focus({ preventScroll: true });
     }, reduced() ? 300 : 1500);
   });
+
+  function sheetFrame(dt) {
+    const sh = st.sheet, n = sh.views.length, c = sh.center;
+    sh.views.forEach((v, i) => {
+      const x = c.x + (i - (n - 1) / 2) * sh.gap, z = c.z;
+      const sp = sh.run ? 6.5 : 0;
+      v.update(dt, { x, y: map.groundAt(x, z), z, f: sh.yaw, vx: Math.sin(sh.yaw) * sp, vz: Math.cos(sh.yaw) * sp, st: 0, wade: 0 });
+    });
+    const p = (sh.pitch * Math.PI) / 180, cam = world.camera;
+    const ty = c.y + (sh.pitch > 30 ? 0.6 : 1.0);
+    cam.position.set(c.x, ty + Math.sin(p) * sh.dist, c.z + Math.cos(p) * sh.dist);
+    cam.lookAt(c.x, ty, c.z);
+    cam.updateMatrixWorld();
+    focus.copy(c);
+  }
 
   // ---- Loop --------------------------------------------------------------------------------------
   const loop = new Loop({
@@ -338,7 +355,7 @@ async function boot() {
             }
           }
           const dist = Math.hypot(s.x - focus.x, s.z - focus.z);
-          anchor(rec.id, s.x, s.y + (rec.kind === KIND.NPC && SKINS[rec.skin]?.hat ? 2.3 : 2.0), s.z, dist);
+          anchor(rec.id, s.x, s.y + view.height + 0.22, s.z, dist);
         }
       });
 
@@ -391,7 +408,8 @@ async function boot() {
       // Camera.
       safe('camera', () => {
         world.rig.shakeScale = settings.shake * (settings.reducedMotion ? 0.3 : 1);
-        if (playing) {
+        if (st.sheet) sheetFrame(realDt);
+        else if (playing) {
           focus.set(ps.x, ps.y, ps.z);
           world.rig.update(realDt, focus, input.lastDevice === 'mouse' ? aim : null, loop.timeScale);
         } else {
@@ -408,7 +426,8 @@ async function boot() {
 
       safe('world', () => {
         // Shadows cover what the tilted camera sees: centered a bit ahead of the player.
-        if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
+        if (st.sheet) shadowFocus.copy(st.sheet.center);
+        else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
         world.update(realDt, { focus, playing, shadowFocus });
       });
@@ -441,6 +460,7 @@ async function boot() {
   loop.start();
   await new Promise((r) => setTimeout(r, 60));
   await world.prewarm().catch((e) => console.warn('prewarm', e));
+  safe('portraits', () => title.setPortraits(portrait));
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
@@ -460,6 +480,21 @@ async function boot() {
       v.root.position.set(ps.x, ps.y, ps.z);
       for (let i = 0; i < 6; i++) world.effects.alpha.spawn(ps.x - dx * (0.5 + i * 0.5), ps.y + 0.15, ps.z - dz * (0.5 + i * 0.5), 0, 0, 0, { life: 30, size: 0.45 + i * 0.05, color: [0.97, 0.9, 0.72], alpha: 0.8, drag: 10 });
       world.effects.ripple(ps.x + 2, Math.max(ps.y, 0) + 0.03, ps.z + 1, 2.2, 30);
+    };
+    // Character sheet: every look in a row on the beach. yaw turns them, run plays the cycle in place,
+    // pitch/dist frame the camera (8°/6.5 = sheet, 48°/17 = gameplay view).
+    window.__mn.sheet = (o = {}) => {
+      if (!st.sheet) {
+        const c = map.toWorld(-136, -12);
+        const center = new THREE.Vector3(c.x, 0, c.z);
+        center.y = map.groundAt(center.x, center.z);
+        const ids = o.list || SKINS.map((_, i) => i);
+        const views2 = ids.map((i) => { const v = new CharacterView(i, { sword: !SKINS[i].npc }); world.scene.add(v.root); return v; });
+        world.pipeline.markDirty();
+        st.sheet = { center, views: views2, yaw: 0, run: false, pitch: 8, dist: 8, gap: 1.05 };
+        world.nearFade(false);
+      }
+      Object.assign(st.sheet, o);
     };
   }
 }

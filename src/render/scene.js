@@ -8,7 +8,7 @@ import { createWater } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
-import { CharacterView } from './characters.js';
+import { CharacterView, SENTINEL, characterMaterial } from './characters.js';
 import { Effects } from './vfx/effects.js';
 import { Afterimages } from './vfx/afterimage.js';
 import { Ambient } from './ambient.js';
@@ -48,6 +48,15 @@ export class GameScene {
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
+    // Dormant bone sentinels at the Caldera gate (render-only until enemies arrive in M2).
+    this.sentinels = map.props.filter((p) => p.kind === 'sentinel').map((p) => {
+      const v = new CharacterView(SENTINEL, { pose: 'dormant' });
+      v.state = { x: p.x, y: p.y, z: p.z, f: p.rot, vx: 0, vz: 0, st: 0, wade: 0 };
+      v.update(0, v.state);
+      this.scene.add(v.root);
+      return v;
+    });
+    this.sentinelGlow = characterMaterial('sentinel').userData.glow;
     this.effects = new Effects(this.scene, map);
     this.after = new Afterimages(this.scene);
     this.ambient = new Ambient(this.scene, map);
@@ -108,6 +117,9 @@ export class GameScene {
     }
   }
 
+  // Debug close-up cameras: stop dissolving whatever is near the lens.
+  nearFade(on) { U.mnNearFade.value = on ? 13 : 0; }
+
   setTitleShadows(on) {
     const cam = this.lighting.sun.shadow.camera;
     const h = on ? 120 : 30;
@@ -128,6 +140,11 @@ export class GameScene {
     this.effects.update(dt, ctx.focus);
     this.after.update(dt);
     this.ambient.update(dt, ctx.focus, this.camera.position);
+    for (const v of this.sentinels) {
+      v.root.visible = Math.hypot(v.state.x - ctx.focus.x, v.state.z - ctx.focus.z) < 90;
+      if (v.root.visible) v.update(dt, v.state);
+    }
+    this.sentinelGlow.value = 0.3 + 0.3 * (0.5 + 0.5 * Math.sin(this.time * 1.1));
     // Floating cargo and the rowboat bob and drift a little.
     for (const f of this.props.floaters || []) {
       const ph = f.userData.phase, tt = this.time;
