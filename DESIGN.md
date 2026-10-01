@@ -7,6 +7,11 @@
 Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isométrico para navegador
 (Three.js 0.160), arquitectura MMO-ready, todo procedural (geometría, texturas, shaders, audio).
 
+**Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
+VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
+NPCs, pasados por `patchToon` para que compartan bandas de luz, contornos, luces locales y bloom; traen su propio
+esqueleto y animaciones (no el rig de 15 huesos). A vigilar: licencias, peso de descarga y triángulos (presupuesto §11).
+
 ---
 
 ## 1. Loop principal
