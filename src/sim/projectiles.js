@@ -205,7 +205,9 @@ export class Shots {
     this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vz = F(); this.speed = F();
     this.life = F(); this.dmg = F(); this.r = F();
     this.heavy = new Uint8Array(cap);
-    this.pid = new Int32Array(cap); // the hostile projectile it came from
+    this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce)
+    this.bounce = new Uint8Array(cap); // server: jumps left after a hit
+    this.lastHit = new Int32Array(cap); // server: the enemy it bounced off (not chosen again right away)
     this.pred = new Uint32Array(cap); // client: seq of the command that predicted it (0 = from the server)
     this.slot = new Map();
     this.cursor = 0;
@@ -225,6 +227,7 @@ export class Shots {
     this.speed[s] = o.speed; this.vx[s] = o.dx * o.speed; this.vz[s] = o.dz * o.speed;
     this.life[s] = o.life; this.dmg[s] = o.dmg; this.r[s] = o.r; this.heavy[s] = o.heavy ? 1 : 0;
     this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0;
+    this.bounce[s] = o.bounce || 0; this.lastHit[s] = o.lastHit || 0;
     this.slot.set(id, s);
     this.count++;
     return s;

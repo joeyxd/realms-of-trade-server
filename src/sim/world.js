@@ -163,7 +163,9 @@ export class World {
     const sid = this.nextSid++;
     this.shots.spawn(sid, { ...o, owner, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
-      this.emit({ type: 'shot', sid, pid: o.pid, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq });
+      const ev = { type: 'shot', sid, pid: o.pid, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq };
+      if (o.from) { ev.from = o.from; ev.target = o.target; }
+      this.emit(ev);
     }
     return sid;
   }
@@ -205,17 +207,38 @@ export class World {
       }
       if (!end) {
         for (let e = 1; e < ecs.cap; e++) {
-          if (!ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0) continue;
+          if (!ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0 || e === S.lastHit[s]) continue;
           const rr = ecs.hurtR[e] + S.r[s];
           if ((ecs.x[e] - x) ** 2 + (ecs.z[e] - z) ** 2 < rr * rr) { hit = e; end = true; break; }
         }
       }
       if (!end) continue;
-      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s];
+      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s];
+      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s] };
       S.free(s);
       this.emit({ type: 'shotEnd', sid, x, z, hit });
-      if (hit) damageEnemy(this, hit, dmg, { by: owner, kind: 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: true });
+      if (hit) {
+        damageEnemy(this, hit, dmg, { by: owner, kind: 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: true });
+        if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
+      }
     }
+  }
+
+  // A reflected shot that hit jumps to the nearest other enemy in range (straight at it, soft homing).
+  bounceShot(from, owner, hit, x, z, dmg, bounce, o) {
+    const ecs = this.ecs, B = tuning.parry.reflect.bounce;
+    let best = 0, bd = B.range;
+    for (let e = 1; e < ecs.cap; e++) {
+      if (e === hit || !ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0) continue;
+      const d = Math.hypot(ecs.x[e] - x, ecs.z[e] - z);
+      if (d < bd) { bd = d; best = e; }
+    }
+    if (!best) return 0;
+    const dx = (ecs.x[best] - x) / Math.max(bd, 1e-6), dz = (ecs.z[best] - z) / Math.max(bd, 1e-6);
+    return this.spawnShot(owner, {
+      pid: 0, type: o.type, x, y: o.y, z, dx, dz, speed: o.speed, dmg: Math.max(1, Math.round(dmg * B.dmgMult)), life: B.life, r: o.r,
+      heavy: false, seq: 0, bounce: bounce - 1, lastHit: hit, target: best, from,
+    });
   }
 
   // ---- Server-only combat hooks (called from systems/combat.js) ----------------------------------

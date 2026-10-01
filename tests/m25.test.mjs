@@ -105,3 +105,49 @@ test('light enemies fly further from the same hit; encounter spawns rise before 
     assert.equal(br.target, e, 'the encounter aggro reaches across the arena');
   }
 });
+
+// A projectile flying at the player along -x, starting `dist` u in front of them.
+function incoming(w, e, type = PTYPE.PARRY, dist = 6, speed = 10, dmg = 8) {
+  const id = w.nextPid++;
+  w.hazards.spawn(id, type, 0, w.ecs.x[e] + dist, w.ecs.y[e] + 1.1, w.ecs.z[e], -speed, 0, w.tick, dmg, map);
+  return id;
+}
+
+test('a PERFECT reflect kills one enemy and bounces on to the next', () => {
+  const { w, e, step } = arena();
+  const a = w.spawnEnemy('grunt', w.ecs.x[e] + 7, w.ecs.z[e]), b = w.spawnEnemy('archer', w.ecs.x[e] + 9, w.ecs.z[e] + 4);
+  for (const t of [a, b]) { w.ecs.brain[t].state = 'dormant'; w.ecs.brain[t].aggro = 0.01; } // stand still
+  w.ecs.hp[b] = 500; w.ecs.maxHp[b] = 500; w.ecs.hp[a] = 10;
+  const id = incoming(w, e, PTYPE.PARRY, 6, 8);
+  const H = w.hazards, s = H.slot.get(id);
+  let wait = 0;
+  while (H.px(s, w.tick + wait) - w.ecs.x[e] > tuning.parry.radius + 0.2) wait++;
+  for (let i = 0; i < wait - 1; i++) step();
+  let parry = null, bounce = null, hitB = 0;
+  for (let i = 0; i < 180; i++) {
+    for (const ev of step(i === 0 ? { prs: BTN.PARRY } : {})) {
+      if (ev.type === 'parry') parry = ev;
+      if (ev.type === 'shot' && ev.from) bounce = ev;
+      if (ev.type === 'damage' && ev.id === b && ev.kind === 'shot') hitB += ev.dmg;
+    }
+  }
+  assert.ok(parry && parry.perfect, 'perfect parry');
+  assert.ok(!w.ecs.alive[a] || w.ecs.dead[a], 'the grunt died to the reflect');
+  assert.ok(bounce, 'the shot bounced');
+  assert.equal(bounce.target, b);
+  assert.ok(hitB > 0, 'and hit the second enemy');
+});
+
+test('dashing through a parryable bullet is an ESQUIVA (once, no damage); unstoppables stay FANTASMA', () => {
+  const { w, e, step } = arena();
+  const p = incoming(w, e, PTYPE.PARRY, 4, 10), u = incoming(w, e, PTYPE.UNSTOP, 4.6, 10);
+  const got = [];
+  let hurt = 0;
+  for (let i = 0; i < 40; i++) {
+    const evs = step(i === 8 ? { prs: BTN.DASH, mx: 1, mz: 0 } : {});
+    for (const ev of evs) { if (ev.type === 'dodge' || ev.type === 'ghost') got.push(ev.type + ':' + ev.pid); if (ev.type === 'hurt') hurt += ev.dmg; }
+  }
+  assert.deepEqual(got.sort(), [`dodge:${p}`, `ghost:${u}`]);
+  assert.equal(hurt, 0);
+  assert.equal(w.ecs.riposte[e], tuning.parry.riposte.dodge + tuning.parry.riposte.ghost);
+});

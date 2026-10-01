@@ -161,7 +161,7 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
 - [x] **P2 · Enemigos grunt/imp/shaman** — datos, `chaser`/`light` en `stepEnemy`/`damageEnemy`, looks,
   vistas, debris, botones F4 (+ Grumete, + Diablillo, + Chamán). Test: el mordisco del grumete daña a un
   jugador quieto y no a uno que dashea fuera al final del wind-up.
-- [ ] **P3 · Rebote + ESQUIVA** — tuning, `stepShots`, evento `shotBounce`, cliente, feedback. Tests: un
+- [x] **P3 · Rebote + ESQUIVA** — tuning, `stepShots`, evento `shotBounce`, cliente, feedback. Tests: un
   reflejo PERFECTO mata a uno y rebota al segundo; dashear a través de una bala parreable da `dodge` 1 vez.
 - [ ] **P4 · Encuentro** — datos, sistema, ganchos en `world` (spawn/kill/reset/snapshot), runas, eventos,
   ops dev `enc` (start / wave n / boss / phase2 / reset). Tests: entrar inicia oleada 1; matar todo avanza;

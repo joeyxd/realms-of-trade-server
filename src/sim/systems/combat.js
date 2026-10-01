@@ -120,6 +120,7 @@ function reflect(world, e, s, pt, seq, o) {
   world.spawnShot(e, {
     pid: H.id[s], type: H.type[s], x: o.fromX ?? x, y: o.fromX !== undefined ? ecs.y[e] + 1.1 : H.py(s, pt), z: o.fromZ ?? z, dx, dz,
     speed: Math.max(4, H.speed[s]) * R.speedMult, dmg, life: R.life, r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq,
+    bounce: o.kind === KILL.WAVE ? R.bounce.wave : o.perfect ? R.bounce.perfect : R.bounce.normal,
   });
   return { x, z };
 }
@@ -151,7 +152,7 @@ function parryProjectiles(world, e, pt, seq) {
     }
     countParry(world, e, perfect, seq);
     const heavy = H.type[s] === PTYPE.HEAVY;
-    reflect(world, e, s, pt, seq, {});
+    reflect(world, e, s, pt, seq, { perfect });
     world.emit({ type: 'parry', pid: H.id[s], e, seq, x, z, perfect: perfect ? 1 : 0, chain: ecs.chain[e], heavy: heavy ? 1 : 0 });
     world.feel(e, seq, F.hitstopReflect, perfect ? F.perfectSlowmo : 0);
   }
@@ -213,7 +214,14 @@ function contacts(world, e, prev, pt, seq) {
           addRiposte(ecs, e, P.riposte.ghost);
           gainXp(world, e, P.xp.ghost, seq);
           world.emit({ type: 'ghost', pid: H.id[s], e, seq, x: bx, z: bz });
-        } else if (!H.hasMark(s, e, 'p')) H.mark(s, e, 'p', seq);
+        } else if (type !== PTYPE.UNSTOP && !H.hasMark(s, e, 'd')) {
+          // ESQUIVA: dashed through a bullet that would have hit (bullet hell: the dash is a weapon too).
+          H.mark(s, e, 'd', seq);
+          H.mark(s, e, 'p', seq);
+          addRiposte(ecs, e, P.riposte.dodge);
+          gainXp(world, e, P.xp.dodge, seq);
+          world.emit({ type: 'dodge', pid: H.id[s], e, seq, x: bx, z: bz });
+        }
         continue;
       }
       if (ecs.hurtInv[e] > 0) { if (!H.hasMark(s, e, 'p')) H.mark(s, e, 'p', seq); continue; } // passes through: not a graze

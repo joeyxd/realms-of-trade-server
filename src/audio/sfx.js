@@ -191,6 +191,16 @@ export const sfx = {
     sweep(audio.sfx, t, { f0: 400, f1: 3000, q: 2, dur: 0.25, g: 0.14, a: 0.2 });
     bell(audio.sfx, t + 0.08, 1568, 0.07, 0.5);
   },
+  dodge() {
+    if (!audio.ready) return;
+    sweep(audio.sfx, audio.now, { type: 'highpass', f0: 4500, f1: 1800, q: 0.8, dur: 0.12, g: 0.07 });
+  },
+  bounce(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now;
+    tone(audio.sfx, t, { type: 'triangle', f0: 1320, f1: 2640, dur: 0.07, g: 0.07 * vol });
+    bell(audio.sfx, t + 0.02, 2093, 0.04 * vol, 0.25);
+  },
   whiff() {
     if (!audio.ready) return;
     sweep(audio.sfx, audio.now, { f0: 900, f1: 500, q: 0.8, dur: 0.12, g: 0.06 });

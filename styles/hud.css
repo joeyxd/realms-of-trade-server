@@ -235,6 +235,8 @@ body.touch .actionbar { display: none; }
 .fnum.parry { font-size: 22px; color: #9ff6ff; }
 .fnum.graze { font-size: 17px; color: #9ff6ff; letter-spacing: 0.08em; }
 .fnum.ghost { font-size: 20px; color: #cf9bff; letter-spacing: 0.06em; }
+.fnum.dodge { font-size: 16px; color: #d9fbff; letter-spacing: 0.08em; }
+.fnum.bounce { font-size: 15px; color: #3bf0ff; letter-spacing: 0.06em; }
 .fnum.level { font-size: 30px; color: var(--brass-l); }
 .fnum.info { font-size: 15px; color: var(--parch); }
 #touch .t-atk { right: calc(124px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 70px; height: 70px; font-size: 14px; background: radial-gradient(circle at 40% 30%, #fff1b0, var(--brass) 55%, var(--brass-d)); }

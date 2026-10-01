@@ -44,7 +44,8 @@ export class GameClient {
     this.replaying = false;
     this.ackSeq = 0;
     this.meleeSeen = new Map(); // enemy id → swing key (client-side melee feedback, once per swing)
-    this.ending = new Map(); // shot slot → {x, z, hit, t, queue} (server said it ended; finishing the flight)
+    this.ending = new Map(); // shot slot → {sid, x, z, hit, t, queue} (server said it ended; finishing the flight)
+    this.endedEarly = new Set(); // bounce sids that ended before their deferred flight began
     this.tmp = { x: 0, y: 0, z: 0 };
     // Visual shots are spawned by prediction and by server events; during a replay they are reused.
     this.pred.spawnShot = (owner, o) => this.spawnLocalShot(owner, o);
@@ -135,6 +136,13 @@ export class GameClient {
         break;
       }
       case 'shot': {
+        // A bounce: it leaves from where the previous shot lands, once that flight is drawn to the end.
+        if (ev.from) {
+          for (const end of this.ending.values()) if (end.sid === ev.from) { end.queue.push({ spawnShot: ev }); return; }
+          const l = this.spawnLocalShot(ev.owner, { ...ev, type: ev.ptype, server: true });
+          if (l) this.sidOf.set(ev.sid, l);
+          break;
+        }
         // The server's shot for a reflect: adopt the predicted one (same source projectile) or create it.
         let local = 0;
         const S = this.shots;
@@ -149,7 +157,8 @@ export class GameClient {
         const local = this.sidOf.get(ev.sid);
         this.sidOf.delete(ev.sid);
         const s = local !== undefined ? this.shots.slot.get(local) : undefined;
-        if (s !== undefined) { this.ending.set(s, { x: ev.x, z: ev.z, hit: ev.hit, t: 0, queue: [] }); return; }
+        if (s !== undefined) { this.ending.set(s, { sid: ev.sid, x: ev.x, z: ev.z, hit: ev.hit, t: 0, queue: [] }); return; }
+        for (const en of this.ending.values()) if (en.queue.some((q) => q.spawnShot && q.spawnShot.sid === ev.sid)) this.endedEarly.add(ev.sid);
         this.bus.emit('combat', { type: 'shotImpact', x: ev.x, z: ev.z, hit: ev.hit });
         return;
       }
@@ -387,8 +396,16 @@ export class GameClient {
         if (d <= step + 0.35 || end.t > 0.22) {
           S.free(s);
           this.ending.delete(s);
-          this.bus.emit('combat', { type: 'shotImpact', x: d < 3 ? ex : S.x[s], z: d < 3 ? ez : S.z[s], hit: end.hit });
-          for (const q of end.queue) this.bus.emit('combat', q);
+          const ix = d < 3 ? ex : S.x[s], iz = d < 3 ? ez : S.z[s];
+          this.bus.emit('combat', { type: 'shotImpact', x: ix, z: iz, hit: end.hit });
+          for (const q of end.queue) {
+            if (!q.spawnShot) { this.bus.emit('combat', q); continue; }
+            const b = q.spawnShot;
+            if (this.endedEarly.delete(b.sid)) continue;
+            const l = this.spawnLocalShot(b.owner, { ...b, x: ix, z: iz, type: b.ptype, server: true });
+            if (l) this.sidOf.set(b.sid, l);
+            this.bus.emit('combat', { type: 'bounce', x: ix, z: iz, owner: b.owner });
+          }
           continue;
         }
         S.vx[s] = (dx / d) * S.speed[s]; S.vz[s] = (dz / d) * S.speed[s];

@@ -32,8 +32,8 @@ export class Feedback {
   y(x, z) { return this.map.groundAt(x, z); }
   teach(key, html, ms = 5200) { if (this.taught.has(key)) return; this.taught.add(key); this.hud.toast(html, ms); }
 
-  float(x, z, h, html, cls, o) { this.worldUI.float(x, this.y(x, z) + h, z, html, cls, o); }
-  overMe(html, cls, o) { this.worldUI.float(this.ps.x, this.ps.y + 2.15, this.ps.z, html, cls, { rise: 34, spread: 6, life: 1, ...o }); }
+  float(x, z, h, html, cls, o) { return this.worldUI.float(x, this.y(x, z) + h, z, html, cls, o); }
+  overMe(html, cls, o) { return this.worldUI.float(this.ps.x, this.ps.y + 2.15, this.ps.z, html, cls, { rise: 34, spread: 6, life: 1, ...o }); }
 
   sparks(x, y, z, n, c0, c1, o = {}) { this.world.effects.sparks(x, y, z, n, { color: c0, color1: c1, up: 2, spread: 3.2, gravity: 7, life: 0.35, ...o }); }
 
@@ -197,6 +197,24 @@ export class Feedback {
         this.overMe('ROCE', 'graze', { life: 0.7, spread: 30 });
         this.sparks(ev.x, ps.y + 1.1, ev.z, 4, CYAN, CYAN1, { up: 1 });
         break;
+      case 'dodge': {
+        if (!me) break;
+        // A dash through a curtain can pass many bullets: one float, counting them.
+        const now = performance.now();
+        if (this.dodgeT && now - this.dodgeT < 350) { this.dodgeN++; if (this.dodgeF && this.dodgeF.active && this.dodgeF.el.classList.contains('dodge')) this.dodgeF.el.textContent = `ESQUIVA x${this.dodgeN}`; }
+        else { this.dodgeN = 1; sfx.dodge(); this.dodgeF = this.overMe('ESQUIVA', 'dodge', { life: 0.8, spread: 24 }); }
+        this.dodgeT = now;
+        this.sparks(ev.x, ps.y + 1.1, ev.z, 3, CYAN, CYAN1, { up: 0.8 });
+        this.teach('dodge', '<b>¡ESQUIVA!</b> El dash te hace invulnerable: atraviesa las cortinas de balas (+RIPOSTE).', 4200);
+        break;
+      }
+      case 'bounce': {
+        if (Math.hypot(ev.x - ps.x, ev.z - ps.z) > 24) break;
+        sfx.bounce(this.vol(ev.x, ev.z));
+        this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 8, CYAN, CYAN1, { up: 1.5, spread: 2 });
+        if (ev.owner === this.client.youServer) this.float(ev.x, ev.z, 2.2, 'REBOTE', 'bounce', { life: 0.7, rise: 30 });
+        break;
+      }
       case 'ghost': {
         if (!me) break;
         sfx.ghost();
