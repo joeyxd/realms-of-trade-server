@@ -144,25 +144,53 @@ export class Hazards {
 }
 
 // ---- Patterns -------------------------------------------------------------------------------------
-// ev: {pid0, tick, src, pat, ptype, n, gap, spread, speed, dmg, x, y, z, ang, slope}. Projectile k gets id pid0 + k.
-// Angles follow the facing convention (0 = +z, atan2(dx, dz)).
-export function patternCount(ev) { return ev.pat === 'single' ? 1 : ev.n | 0; }
+// ev: {pid0, tick, src, pat, ptype, n, gap, spread, speed, dmg, x, y, z, ang, slope, arms, waves, alt}.
+// Projectile k gets id pid0 + k. Angles follow the facing convention (0 = +z, atan2(dx, dz)).
+//   burst   n aimed shots, gap s apart
+//   fan     n shots at once, spread deg apart, centred on ang
+//   spiral  n shots over time on `arms` arms (default 1): arm k % arms, step ⌊k / arms⌋ turns spread deg
+//           and waits gap s
+//   ring    n shots around a full circle (alt: every other one unstoppable)
+//   rings   `waves` rings of n, gap s apart, each turned spread deg from the last (alt as ring)
+export function patternCount(ev) {
+  if (ev.pat === 'single') return 1;
+  if (ev.pat === 'rings') return (ev.n | 0) * Math.max(1, ev.waves | 0);
+  return ev.n | 0;
+}
 
 export function emitPattern(store, ev, map) {
   const n = patternCount(ev);
   const type = PTYPE_OF[ev.ptype] ?? PTYPE.PARRY;
-  const D2R = Math.PI / 180;
+  const D2R = Math.PI / 180, TAU = Math.PI * 2;
+  const arms = Math.max(1, ev.arms | 0), per = ev.n | 0;
   for (let k = 0; k < n; k++) {
-    let ang = ev.ang, t0 = ev.tick;
+    let ang = ev.ang, t0 = ev.tick, j = k;
     if (ev.pat === 'burst') t0 = ev.tick + Math.round((k * ev.gap) / DT);
     else if (ev.pat === 'fan') ang = ev.ang + (k - (n - 1) / 2) * ev.spread * D2R;
-    else if (ev.pat === 'spiral') { ang = ev.ang + k * ev.spread * D2R; t0 = ev.tick + Math.round((k * ev.gap) / DT); }
-    else if (ev.pat === 'ring') ang = ev.ang + (k / n) * Math.PI * 2;
+    else if (ev.pat === 'spiral') {
+      const step = Math.floor(k / arms);
+      ang = ev.ang + ((k % arms) / arms) * TAU + step * ev.spread * D2R;
+      t0 = ev.tick + Math.round((step * ev.gap) / DT);
+    } else if (ev.pat === 'ring') ang = ev.ang + (k / n) * TAU;
+    else if (ev.pat === 'rings') {
+      const w = Math.floor(k / per);
+      j = k % per;
+      ang = ev.ang + (j / per) * TAU + w * ev.spread * D2R;
+      t0 = ev.tick + Math.round((w * ev.gap) / DT);
+    }
     const speed = Math.min(ev.speed, tuning.projectiles.maxSpeed);
-    const t = ev.pat === 'ring' && ev.alt ? (k % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
+    const t = (ev.pat === 'ring' || ev.pat === 'rings') && ev.alt ? (j % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
     store.spawn(ev.pid0 + k, t, ev.src, ev.x, ev.y, ev.z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0);
   }
   return n;
+}
+
+// Seconds from the first projectile of a pattern to the last one.
+export function patternSpan(ev) {
+  if (ev.pat === 'burst') return Math.max(0, (ev.n | 0) - 1) * (ev.gap || 0);
+  if (ev.pat === 'spiral') return Math.floor(Math.max(0, (ev.n | 0) - 1) / Math.max(1, ev.arms | 0)) * (ev.gap || 0);
+  if (ev.pat === 'rings') return Math.max(0, (ev.waves | 0) - 1) * (ev.gap || 0);
+  return 0;
 }
 
 // ---- Shots (reflected, player-owned) -----------------------------------------------------------------

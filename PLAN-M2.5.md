@@ -154,7 +154,7 @@ Máquina de estados (servidor, en `world.encounters[id]`): `idle → intro(1.5 s
   (pt, catch-up, filtro asimétrico de reloj, tiempo de instancia), zona de práctica, §16 M2 ✅ + fila M2.5,
   §14 añadir `data/enemies.js`, `data/encounters.js`, `systems/boss.js`, `systems/encounter.js`;
   README (controles J/K/LMB/RMB/R/F4, contenido M2); `src/data/meta.js` → `0.2.0-m2`.
-- [ ] **P1 · Patrones** — `emitPattern`: `spiral` con `arms` (k → brazo k % arms, paso ⌊k/arms⌋; ángulo
+- [x] **P1 · Patrones** — `emitPattern`: `spiral` con `arms` (k → brazo k % arms, paso ⌊k/arms⌋; ángulo
   `ang + brazo·2π/arms + paso·spread`, t0 por paso); nuevo `rings` (n por anillo × `waves`, `gap`, desfase
   `spread` por anillo, `alt` alterna por índice dentro del anillo); `patternCount` (rings = n·waves).
   `fire()` copia `arms/waves/alt` al evento; `fireDur` correcto. Test: servidor y cliente expanden igual.

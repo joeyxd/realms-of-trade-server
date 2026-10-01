@@ -6,6 +6,7 @@ import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { tuning, DT } from '../../data/tuning.js';
 import { ACT, C } from '../ecs.js';
 import { moveWithCollision } from './movement.js';
+import { patternSpan } from '../projectiles.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
 
 export const defOf = (ecs, e) => ENEMIES[ENEMY_KINDS[ecs.enemy[e]]];
@@ -258,8 +259,11 @@ function fire(world, e, def, b, a) {
     n: a.n || 1, gap: a.gap || 0, spread: a.spread || 0, speed: a.speed, dmg: a.dmg,
     x: mx, y: my, z: mz, ang: f, slope,
   };
+  if (a.arms) ev.arms = a.arms;
+  if (a.waves) ev.waves = a.waves;
+  if (a.alt) ev.alt = 1;
   world.firePattern(ev);
-  b.fireDur = (ev.n - 1) * (a.pat === 'burst' || a.pat === 'spiral' ? a.gap : 0) + a.recover;
+  b.fireDur = patternSpan(ev) + a.recover;
 }
 
 // Damage from players (melee, reflected shots, the riposte wave). Returns the damage dealt.

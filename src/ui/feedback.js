@@ -7,6 +7,7 @@ import { ENEMIES } from '../data/enemies.js';
 import { sfx } from '../audio/sfx.js';
 import { audio } from '../audio/engine.js';
 import { SKINS } from '../render/characters.js';
+import { patternSpan } from '../sim/projectiles.js';
 
 const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
@@ -256,7 +257,7 @@ export class Feedback {
         const atk = rec.def?.attacks.find((a) => a.id === ev.atk);
         // Attack timeline in projectile ticks: the projectiles leave exactly when the pose fires.
         const t = Math.max(0, (this.client.viewTick(this.loop.alpha) - ev.tick) * DT);
-        const fire = atk ? (atk.n > 1 && atk.gap ? (atk.n - 1) * atk.gap : 0) + (atk.recover || 0.3) : 0.4;
+        const fire = atk ? (atk.kind === 'pattern' ? patternSpan(atk) : 0) + (atk.recover || 0.3) : 0.4;
         v.attack = { id: ev.atk, t, windup: ev.dur, fire };
         const x = rec.r.x, z = rec.r.z;
         sfx.windup(ev.atk, this.vol(x, z));
