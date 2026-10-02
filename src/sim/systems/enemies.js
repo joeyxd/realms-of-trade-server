@@ -336,6 +336,7 @@ export function damageEnemy(world, e, raw, o) {
     }
     if (b.broken > 0) raw *= BR ? BR.mult : def.brokenMult;
     else if (b.shieldOn && o.kind !== 'shot') { raw *= def.shield; shielded = 1; }
+    else if (def.phases[b.phase].guard && o.kind !== 'shot') raw *= def.phases[b.phase].guard;
   }
   const crit = world.rng() < tuning.stats.crit;
   const raw2 = raw * (crit ? tuning.stats.critMult : 1);

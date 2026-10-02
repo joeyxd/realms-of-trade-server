@@ -18,8 +18,9 @@ function walkStep(map, x0, z0, x1, z1) {
   const g0 = map.groundAt(x0, z0);
   const d = Math.hypot(x1 - x0, z1 - z0);
   if (d < 1e-9) return true;
-  const dh = Math.abs(g1 - g0);
-  if (deck0 || deck1) return dh < 0.6;
+  const dh = g1 - g0;
+  if (deck0 || deck1) return Math.abs(dh) < 0.6;
+  // Steep ground stops you going up; going down you just drop (a knockback onto a ledge is no trap).
   return dh / d <= W.maxSlope;
 }
 

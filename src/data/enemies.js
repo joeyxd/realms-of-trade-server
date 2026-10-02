@@ -71,7 +71,8 @@ export const ENEMIES = {
   // Fixed attack cycle per phase (sim/systems/boss.js); `spin` turns the omnidirectional patterns a bit
   // more each time so no two flowers are the same. Reflected shots ignore the phase-2 shield; reflecting
   // the heavy orb (PERFECT) breaks it (ROTO: damage × mult for `time` s) and staggers him; in phase 3 it
-  // stuns him longer and doubles the damage. Phase 3 also lights the lava ring that eats the arena.
+  // stuns him longer. Phase 3 also lights the lava ring that eats the arena, and his flames take the edge
+  // off every blow that is not a reflected shot (guard).
   //   charge   a lined-up rush (the beam is his own body; he moves along it)
   //   laser    `beams` lasers from him, evenly spread, turning omega °/s for dur s
   //   lanes    n bands of fire sliding across the arena, perpendicular to a random direction
@@ -79,14 +80,14 @@ export const ENEMIES = {
   //   rows     (pattern) a curtain from the far side of the arena toward you, with one hole per row
   hellfire: {
     name: 'HELLFIRE', look: 'hellfire', title: 'Señor de La Caldera', level: 7, boss: true,
-    hp: 3600, def: 8, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
+    hp: 3200, def: 8, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
     range: [6, 11], aggro: 40, leash: 60, xp: 1500, respawn: 0,
     shield: 0.2, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4.5, spin: 23,
     lava: { r0: 19, rMin: 11, rate: 0.12, R: 21, dmg: 6, every: 0.5 },
     phases: [
-      { until: 0.7, cycle: ['fan5', 'spiral2', 'charge', 'fan5', 'rings2'], gap: 0.75, heavyEvery: 12 },
-      { until: 0.35, cycle: ['flower', 'laser2', 'rings3', 'summon', 'wall', 'fan7', 'laser2', 'spiral2'], gap: 0.5, heavyEvery: 10, shield: true, summon: 3 },
-      { until: 0, cycle: ['meteors', 'curtain', 'lanes', 'flower', 'meteors', 'spiral3', 'lanes', 'rings3'], gap: 0.45, heavyEvery: 14, lava: true, summon: 4, broken: { time: 3, mult: 2, stagger: 3 } },
+      { until: 0.75, cycle: ['fan5', 'spiral2', 'charge', 'fan5', 'rings2'], gap: 0.75, heavyEvery: 12 },
+      { until: 0.45, cycle: ['flower', 'laser2', 'rings3', 'summon', 'wall', 'fan7', 'laser2', 'spiral2'], gap: 0.5, heavyEvery: 10, shield: true, summon: 3 },
+      { until: 0, cycle: ['meteors', 'curtain', 'lanes', 'flower', 'meteors', 'spiral3', 'lanes', 'rings3'], gap: 0.45, heavyEvery: 14, lava: true, summon: 4, guard: 0.5, broken: { time: 2.5, mult: 1.4, stagger: 2.5 } },
     ],
     attacks: [
       { id: 'fan5', kind: 'pattern', pat: 'fan', type: 'parry', n: 5, spread: 8, speed: 9, dmg: 10, windup: 0.5, recover: 0.45, muzzle: [0, 1.6, 1.3] },
@@ -100,7 +101,7 @@ export const ENEMIES = {
       { id: 'rings3', kind: 'pattern', pat: 'rings', type: 'parry', alt: true, n: 18, waves: 3, gap: 0.45, spread: 11.25, speed: 6.5, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },
       { id: 'summon', kind: 'summon', minion: ['grunt', 'grunt', 'imp', 'grunt'], n: 3, r: 3.5, max: 6, windup: 0.6, recover: 0.5 },
       { id: 'fan7', kind: 'pattern', pat: 'fan', type: 'parry', n: 7, spread: 9, speed: 10, dmg: 10, windup: 0.45, recover: 0.4, muzzle: [0, 1.6, 1.3] },
-      { id: 'meteors', kind: 'meteors', n: 8, r: 1.8, tele: 0.9, stagger: 0.15, aimEvery: 3, dmg: 18, windup: 0.5, recover: 0.6 },
+      { id: 'meteors', kind: 'meteors', n: 8, r: 1.8, tele: 0.9, stagger: 0.15, aimEvery: 3, dmg: 15, windup: 0.5, recover: 0.6 },
       { id: 'lanes', kind: 'lanes', n: 3, w: 3, len: 44, spacing: 9.5, speed: 5, dur: 3, dmg: 10, every: 0.25, windup: 0.6, recover: 0.4 },
       { id: 'curtain', kind: 'pattern', pat: 'rows', type: 'parry', n: 30, waves: 4, gap: 0.9, sp: 1.15, hw: 3, life: 8, speed: 5.5, dmg: 8, from: 16, windup: 0.5, recover: 0.4 },
       { id: 'spiral3', kind: 'pattern', pat: 'spiral', type: 'parry', arms: 4, n: 48, gap: 0.12, spread: 10, speed: 6, dmg: 8, windup: 0.4, recover: 0.4, muzzle: [0, 1.2, 0], omni: true },

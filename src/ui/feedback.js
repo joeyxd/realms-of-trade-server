@@ -358,7 +358,7 @@ export class Feedback {
         if (ev.last) this.hud.showZone('¡HELLFIRE DESATADO!', 'La lava devora La Caldera: no te alejes del centro', true, !!this.settings.reducedMotion);
         else this.hud.showZone(`FASE ${ev.phase}`, ev.shield ? 'Su escudo solo cede ante tus reflejos' : '¡Hellfire se enfurece!', true, !!this.settings.reducedMotion);
         if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas, y refleja el <b>orbe pesado</b> con un PERFECTO para romperlo.', 6500);
-        if (ev.last) { this.shake(1.1); this.teach('bossLast', '<b>Última fase:</b> meteoros, carriles de fuego y cortinas de balas. Refleja su <b>orbe pesado</b> con un PERFECTO: queda aturdido 3 s y recibe el doble.', 7000); }
+        if (ev.last) { this.shake(1.1); this.teach('bossLast', '<b>Última fase:</b> meteoros, carriles de fuego y cortinas de balas. Sus llamas frenan tus golpes: <b>refleja</b> la cortina contra él, y su <b>orbe pesado</b> con un PERFECTO para aturdirlo.', 7000); }
         break;
       }
       case 'beam': {
@@ -390,7 +390,7 @@ export class Feedback {
         this.sparks(x, this.y(x, z) + 2, z, 30, CYAN, CYAN1, { up: 4, spread: 5 });
         W.combatFx.ring(x, this.y(x, z) + 0.1, z, 5, 0x3bf0ff, 0.6, 0.12, 0.7);
         const ph = this.client.enc && this.client.enc[0] ? this.client.enc[0][6] : 0;
-        this.float(x, z, 4.4, ph >= 2 ? '¡ATURDIDO! ×2' : '¡ESCUDO ROTO!', 'perfect', { life: 1.4, rise: 40 });
+        this.float(x, z, 4.4, ph >= 2 ? '¡ATURDIDO!' : '¡ESCUDO ROTO!', 'perfect', { life: 1.4, rise: 40 });
         break;
       }
       case 'rise': {

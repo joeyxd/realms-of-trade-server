@@ -135,7 +135,7 @@ export class Hud {
     this.bossEl.classList.toggle('shield', b.shield === 1);
     this.bossEl.classList.toggle('broken', b.shield === 2);
     this.bossEl.classList.toggle('inv', !!b.inv);
-    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? (b.phase >= 2 ? ' · <b class="br">¡ATURDIDO! ×2</b>' : ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>') : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : '');
+    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? (b.phase >= 2 ? ' · <b class="br">¡ATURDIDO! ×1,4</b>' : ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>') : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : b.phase >= 2 ? ' · <b class="br">EN LLAMAS: los reflejos duelen más</b>' : '');
   }
 
   // Encounter line under the boss bar / top centre ("OLEADA 2/3 · Enemigos 9"), or null.

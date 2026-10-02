@@ -171,7 +171,7 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
 - [x] **P5** Render: `CrabView`, `hazardfx.js` (beams + lava), caída de meteoros/morteros, decals 32, look
   fase 3, prewarm.
 - [x] **P6** UI/feel/audio: banners, marcas en la barra, consejos, sonidos, float BLINDADO, F4.
-- [ ] **P7** Balance con el bot (`scratchpad/bot25.mjs` → oleadas 4–5 + 3 fases) y densidad/perf (≤ 0.5 ms/step).
+- [x] **P7** Balance con el bot (`tools/playtest.mjs`: `LV=6 SKILL=0.9 node tools/playtest.mjs`) y densidad/perf (≤ 0.5 ms/step).
 - [ ] **P8** Verificación (tests, capturas 20-trial-wave5, 21-hellfire-laser, 22-hellfire-3), docs (DESIGN §7
   §8 §16, README), versión `0.3.0-m3`, artefacto republicado.
 

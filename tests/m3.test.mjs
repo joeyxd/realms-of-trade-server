@@ -204,17 +204,19 @@ function bossFight(p) {
   return t;
 }
 
-test('Hellfire has 3 phases: thresholds at 70 % and 35 %, phase 3 lights the lava, his death puts it out', () => {
+test('Hellfire has 3 phases: thresholds at 75 % and 45 %, phase 3 lights the lava, his death puts it out', () => {
   const t = bossFight(0), { w, enc, boss, b } = t, ecs = w.ecs;
   assert.equal(b.phase, 0);
-  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * 0.71);
+  const [U1, U2] = ENEMIES.hellfire.phases.map((q) => q.until);
+  assert.deepEqual([U1, U2], [0.75, 0.45]);
+  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * (U1 + 0.01));
   t.hold(9, 0.1);
-  assert.equal(b.phase, 0, 'still phase 1 at 71 %');
-  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * 0.69);
+  assert.equal(b.phase, 0, 'still phase 1 just above the first threshold');
+  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * (U1 - 0.01));
   let evs = t.hold(9, 0.1);
   assert.ok(evs.some((ev) => ev.type === 'phase' && ev.phase === 2) && b.shieldOn);
   t.hold(9, ENEMIES.hellfire.enrage + 0.2);
-  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * 0.34);
+  ecs.hp[boss] = Math.floor(ecs.maxHp[boss] * (U2 - 0.01));
   evs = t.hold(9, 0.2);
   const ph = evs.find((ev) => ev.type === 'phase' && ev.phase === 3);
   assert.ok(ph && ph.last === 1 && !b.shieldOn, 'phase 3, no shield');
@@ -222,10 +224,19 @@ test('Hellfire has 3 phases: thresholds at 70 % and 35 %, phase 3 lights the lav
   assert.ok(lv && lv.r0 === 19 && lv.rMin === 11, 'the lava ring appears');
   assert.ok(w.hazards.lava);
   assert.ok(lavaAt(w.hazards.lava, w.tick + 70 / DT) === 11, 'and shrinks to 11 u in about a minute');
-  // Phase 3 stun: a reflected heavy orb stuns him 3 s, damage × 2.
+  // Phase 3: his flames guard against melee (× 0.6), not reflects; a reflected heavy orb stuns him 2.5 s.
   t.hold(9, ENEMIES.hellfire.enrage + 0.2);
+  const crit = tuning.stats.crit; tuning.stats.crit = 0;
+  let h = ecs.hp[boss];
+  damageEnemy(w, boss, 100, { by: t.e, kind: 'melee', x: ecs.x[t.e], z: ecs.z[t.e] });
+  const melee = h - ecs.hp[boss];
+  h = ecs.hp[boss]; b.shotN = 0;
+  damageEnemy(w, boss, 100, { by: t.e, kind: 'shot', x: ecs.x[t.e], z: ecs.z[t.e] });
+  const shot = h - ecs.hp[boss];
+  tuning.stats.crit = crit;
+  assert.ok(melee < shot * 0.7, `guarded melee (× 0.5) ${melee} vs shot ${shot}`);
   damageEnemy(w, boss, 100, { by: t.e, kind: 'shot', heavy: true, x: ecs.x[t.e], z: ecs.z[t.e], pierce: true });
-  assert.ok(Math.abs(ecs.stagger[boss] - 3) < 0.05 && b.broken > 0);
+  assert.ok(Math.abs(ecs.stagger[boss] - 2.5) < 0.05 && b.broken > 0);
   w.killEnemy(boss, t.e);
   evs = t.hold(0, 0.1);
   assert.equal(enc.st, 'victory');
@@ -333,4 +344,23 @@ test('client prediction stays exact in Hellfire phase 3 (lava, lanes, meteors, c
   for (const k of ['x', 'z', 'riposte', 'chain', 'xp']) assert.equal(pe[k][ce], ecs[k][se], k);
   assert.ok(client.pred.hazards.lava, 'the client has the lava ring');
   assert.ok(beamSeen > 0, 'and saw beams');
+});
+
+test('a player knocked onto the steep arena rim can always walk back down (no ledge traps in the lava)', () => {
+  const { w, e, step } = arena();
+  const ecs = w.ecs;
+  // A spot on the rim where every way back in is steeper than maxSlope going up.
+  let px = 0, pz = 0, found = false;
+  for (let a = 0; a < Math.PI * 2 && !found; a += 0.05) {
+    for (const r of [19.6, 20, 20.4, 20.8]) {
+      const x = A.x + Math.sin(a) * r, z = A.z + Math.cos(a) * r, k = 0.7;
+      const ix = A.x + Math.sin(a) * (r - k), iz = A.z + Math.cos(a) * (r - k);
+      if ((map.groundAt(x, z) - map.groundAt(ix, iz)) / k > tuning.world.maxSlope * 1.5) { px = x; pz = z; found = true; break; }
+    }
+  }
+  assert.ok(found, 'the rim has a steep drop');
+  ecs.x[e] = px; ecs.z[e] = pz; ecs.y[e] = map.groundAt(px, pz);
+  const dx = A.x - px, dz = A.z - pz, d = Math.hypot(dx, dz);
+  for (let i = 0; i < 90; i++) step({ mx: dx / d, mz: dz / d });
+  assert.ok(Math.hypot(ecs.x[e] - A.x, ecs.z[e] - A.z) < d - 4, 'walked back into the arena');
 });
