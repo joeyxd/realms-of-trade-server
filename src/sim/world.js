@@ -166,6 +166,37 @@ export class World {
     this.emit({ type: 'clear', tick: this.tick, hostile: 1 });
   }
 
+  // Ground circle / beam / lava, created here so the event carries everything the client rebuilds.
+  addAoe(o) {
+    const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: o.dmg, keep: o.keep ? 1 : 0 };
+    this.hazards.addAoe(a);
+    const ev = { type: 'aoe', id: a.id, src: a.owner, x: a.x, z: a.z, r: a.r, tick: a.t0, tAct: a.tAct, dmg: a.dmg };
+    if (a.keep) ev.keep = 1;
+    if (o.fall) { ev.fall = o.fall; ev.fx = o.fx; ev.fz = o.fz; ev.fy = o.fy; }
+    this.emit(ev);
+    return a;
+  }
+  addBeam(o) {
+    const b = {
+      id: this.nextAoe++, owner: o.owner || 0, kind: o.kind, x0: o.x0, z0: o.z0, ang0: o.ang0, omega: o.omega || 0,
+      vx: o.vx || 0, vz: o.vz || 0, off: o.off || 0, len: o.len, w: o.w, t0: o.t0 ?? this.tick, tAct: o.tAct, tEnd: o.tEnd,
+      dmg: o.dmg, every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0,
+    };
+    this.hazards.addBeam(b);
+    const ev = { type: 'beam', src: b.owner, tick: b.t0 };
+    for (const k of BEAM_FIELDS) ev[k] = b[k];
+    this.emit(ev);
+    return b;
+  }
+  setLava(o) {
+    if (!o) { this.hazards.setLava(null); this.emit({ type: 'lava', off: 1 }); return null; }
+    const L = this.hazards.setLava({ id: this.nextAoe++, ...o });
+    const ev = { type: 'lava' };
+    for (const k of LAVA_FIELDS) ev[k] = L[k];
+    this.emit(ev);
+    return L;
+  }
+
   cancelEmitter(e) {
     this.hazards.cancelPending(e, this.tick);
     this.emit({ type: 'cancel', src: e, tick: this.tick });
@@ -298,7 +329,6 @@ export class World {
     ecs.dead[e] = 1;
     encounterKilled(this, e);
     this.hazards.cancelPending(e, this.tick);
-    for (const a of this.hazards.aoes) if (a.owner === e && a.tAct > this.tick) a.cancel = true;
     // XP to every player nearby (the killer and whoever helped).
     const xp = o.noXp ? 0 : def.xp;
     for (let p = 1; p < ecs.cap && xp; p++) {
@@ -391,3 +421,5 @@ export class World {
 }
 
 export { PTYPE };
+export const BEAM_FIELDS = ['id', 'kind', 'x0', 'z0', 'ang0', 'omega', 'vx', 'vz', 'off', 'len', 'w', 'tAct', 'tEnd', 'dmg', 'every', 'knock', 'keep'];
+export const LAVA_FIELDS = ['id', 'cx', 'cz', 'r0', 'rMin', 'rate', 't0', 'R', 'dmg', 'every'];

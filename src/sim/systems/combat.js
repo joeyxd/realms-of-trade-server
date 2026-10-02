@@ -14,7 +14,7 @@
 //   Graze: a projectile passing within 0.35 u of your hurtbox without touching = ROCE.
 import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
-import { PTYPE, KILL, NEVER } from '../projectiles.js';
+import { PTYPE, KILL, NEVER, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { ACT } from '../ecs.js';
 
 const D2R = Math.PI / 180;
@@ -75,7 +75,7 @@ export function hurtPlayer(world, e, raw, o) {
   if (ecs.dead[e] > 0) return 0;
   const dmg = ecs.god[e] > 0 ? 0 : mitigate(raw, ecs.def[e]);
   if (dmg > 0) { ecs.hp[e] -= dmg; ecs.regenT[e] = 0; }
-  ecs.hurtInv[e] = C.hurtIframes;
+  if (!o.noInv) ecs.hurtInv[e] = C.hurtIframes;
   const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
   if (kl > 1e-6) { const k = o.knock ?? C.hitKnock; ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
   world.emit({ type: 'hurt', e, dmg, raw, kind: o.kind, src: o.src || 0, seq: o.seq, x: o.x, z: o.z, practice: raw <= 0 ? 1 : 0 });
@@ -265,7 +265,45 @@ function contacts(world, e, prev, pt, seq) {
     hurtPlayer(world, e, a.dmg, { x: a.x, z: a.z, kind: 'aoe', src: a.id, seq, knock: 6 });
     if (ecs.dead[e] > 0) return;
   }
+  // Beams (lasers, fire lanes, the boss charge): damage every `every` ticks while you stand in them;
+  // dashing through one is a FANTASMA (once per beam).
+  for (const b of H.beams) {
+    if (b.cancel || pt < b.tAct || prev >= b.tEnd) continue;
+    beamSeg(b, Math.min(pt, b.tEnd - 1), SEG);
+    const d = segDist(px, pz, SEG.ax, SEG.az, SEG.bx, SEG.bz, SEG);
+    if (d >= b.w * 0.5 + hr * 0.5) continue;
+    if (ecs.iframes[e] > 0) {
+      if (!b.ghosts.some((g) => g.e === e)) {
+        b.ghosts.push({ e, seq });
+        addRiposte(ecs, e, P.riposte.ghost);
+        gainXp(world, e, P.xp.ghost, seq);
+        world.emit({ type: 'ghost', beam: b.id, e, seq, x: px, z: pz });
+      }
+      continue;
+    }
+    if (ecs.hurtInv[e] > 0) continue;
+    let last = -1e9;
+    for (const h of b.hits) if (h.e === e && h.tick > last) last = h.tick;
+    if (pt - last < b.every) continue;
+    b.hits.push({ e, seq, tick: pt });
+    hurtPlayer(world, e, b.dmg, { x: SEG.cx, z: SEG.cz, kind: 'beam', src: b.id, seq, knock: b.knock ?? 4 });
+    if (ecs.dead[e] > 0) return;
+  }
+  // Lava: burns outside the safe radius on every `every`-th tick (the ground: no dash, no iframes).
+  const L = H.lava;
+  if (L && pt >= L.t0) {
+    const t = pt - ((pt - L.t0) % L.every);
+    if (t > prev && !L.hits.some((h) => h.e === e && h.tick === t)) {
+      const dx = px - L.cx, dz = pz - L.cz, d = Math.hypot(dx, dz);
+      if (d > lavaR(L, t) && d < L.R + 1) {
+        L.hits.push({ e, seq, tick: t });
+        hurtPlayer(world, e, L.dmg, { x: px + dx / d, z: pz + dz / d, kind: 'lava', src: L.id, seq, knock: 3, noInv: true });
+        if (ecs.dead[e] > 0) return;
+      }
+    }
+  }
 }
+const SEG = { ax: 0, az: 0, bx: 0, bz: 0, cx: 0, cz: 0, ox: 0, oz: 0, ang: 0 };
 
 function riposteWave(world, e, pt, seq) {
   const ecs = world.ecs, H = world.hazards, RP = tuning.parry.riposte;

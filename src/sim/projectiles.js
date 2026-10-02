@@ -61,12 +61,15 @@ export class Hazards {
     this.freeList = [];
     for (let i = cap - 1; i >= 0; i--) this.freeList.push(i);
     this.count = 0;
-    this.aoes = []; // {id, owner, x, z, r, t0, tAct, dmg, hits: [{e, seq}]}
+    this.aoes = []; // {id, owner, x, z, r, t0, tAct, dmg, keep, hits: [{e, seq}]}
+    this.beams = []; // lasers, fire lanes, the boss charge (see beamSeg)
+    this.lava = null; // the shrinking lava ring of the boss's last phase (see lavaR)
     this.dropped = 0;
   }
 
   // Returns the slot or -1 when the pool is full (oldest projectiles are not evicted: patterns are fair).
-  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0) {
+  // life: seconds, overrides the type's (curtains that must cross the whole arena).
+  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0) {
     const s = this.freeList.pop();
     if (s === undefined) { this.dropped++; return -1; }
     const cfg = typeCfg(type);
@@ -74,9 +77,10 @@ export class Hazards {
     this.id[s] = id; this.type[s] = type; this.owner[s] = owner;
     this.x0[s] = x; this.z0[s] = z; this.y[s] = y; this.vx[s] = vx; this.vy[s] = slope * speed; this.vz[s] = vz; this.speed[s] = speed;
     this.r[s] = cfg.radius; this.len[s] = lengthOf(type); this.dmg[s] = dmg;
-    let lifeT = Math.round(cfg.life / DT);
+    const L = life || cfg.life;
+    let lifeT = Math.round(L / DT);
     if (map && speed > 1e-6) {
-      const maxD = speed * cfg.life;
+      const maxD = speed * L;
       const d = clipDistance(map, x, y, z, vx / speed, vz / speed, cfg.radius, maxD, slope);
       if (d < maxD) lifeT = Math.max(1, Math.round(d / speed / DT));
     }
@@ -117,18 +121,22 @@ export class Hazards {
   }
   mark(s, e, k, seq) { (this.marks[s] || (this.marks[s] = [])).push({ e, k, seq }); }
 
-  // Remove the projectiles an emitter had not fired yet (it died or was staggered mid-burst).
+  // Remove the projectiles an emitter had not fired yet (it died or was staggered mid-burst), its
+  // pending ground circles (not the `keep` ones: mortar shells and meteors already in the air) and its
+  // beams (a staggered boss stops lasering).
   cancelPending(owner, tick) {
     for (let s = 0; s < this.cap; s++) {
       if (this.id[s] !== 0 && this.owner[s] === owner && this.t0[s] > tick && this.dead[s] === NEVER) this.remove(s, tick, KILL.CANCEL);
     }
-    for (const a of this.aoes) if (a.owner === owner && a.tAct > tick && !a.cancel) a.cancel = true;
+    for (const a of this.aoes) if (a.owner === owner && a.tAct > tick && !a.cancel && !a.keep) a.cancel = true;
+    for (const b of this.beams) if (b.owner === owner && b.tEnd > tick && !b.cancel && !b.keep) { b.cancel = true; b.cancelT = tick; }
   }
 
-  // Clear everything hostile (boss phase change in M3, debug).
+  // Clear everything hostile (boss phase change, end of a wave, debug). The lava is terrain: it stays.
   clear(tick) {
     for (let s = 0; s < this.cap; s++) if (this.id[s] !== 0 && this.dead[s] === NEVER) this.remove(s, tick, KILL.CANCEL);
     for (const a of this.aoes) a.cancel = true;
+    for (const b of this.beams) if (!b.cancel && b.tEnd > tick) { b.cancel = true; b.cancelT = tick; }
   }
 
   // Free slots well after they ended (kept a moment for rewinding and death effects).
@@ -138,10 +146,49 @@ export class Hazards {
       if ((this.dead[s] !== NEVER && tick - this.dead[s] > 40) || tick - this.tEnd[s] > 40) this.free(s);
     }
     for (let i = this.aoes.length - 1; i >= 0; i--) if (tick - this.aoes[i].tAct > 40) this.aoes.splice(i, 1);
+    for (let i = this.beams.length - 1; i >= 0; i--) {
+      const b = this.beams[i];
+      if (tick - b.tEnd > 40 || (b.cancel && tick - b.cancelT > 40)) this.beams.splice(i, 1);
+    }
+    if (this.lava) this.lava.hits = this.lava.hits.filter((h) => tick - h.tick < 120);
   }
 
   addAoe(a) { a.hits = []; this.aoes.push(a); return a; }
+  addBeam(b) { b.hits = []; b.ghosts = []; this.beams.push(b); return b; }
+  setLava(L) { this.lava = L ? { ...L, hits: [] } : null; return this.lava; }
 }
+
+// ---- Beams ------------------------------------------------------------------------------------------
+// {x0, z0, ang0, omega, vx, vz, off, len, w, t0, tAct, tEnd}: from tAct the origin slides at (vx, vz) u/s
+// and the beam turns omega rad/s; it covers the segment from origin + dir·off to origin + dir·(off + len).
+//   laser   origin on the boss, turning (two of them, opposite, for laser2)
+//   lane    a long band of fire sliding sideways across the arena
+//   charge  the boss's own body during a charge (the server moves him along the same formula)
+// t0 → tAct is the telegraph (no damage). Positions at tick t (clamped to the active window).
+export function beamSeg(b, t, out) {
+  const tt = Math.max(b.tAct, Math.min(b.tEnd, t));
+  const tau = (tt - b.tAct) * DT;
+  const ox = b.x0 + b.vx * tau, oz = b.z0 + b.vz * tau, a = b.ang0 + b.omega * tau;
+  const dx = Math.sin(a), dz = Math.cos(a);
+  out.ax = ox + dx * b.off; out.az = oz + dz * b.off;
+  out.bx = ox + dx * (b.off + b.len); out.bz = oz + dz * (b.off + b.len);
+  out.ox = ox; out.oz = oz; out.ang = a;
+  return out;
+}
+
+// Distance from (px, pz) to the segment (ax, az)–(bx, bz); out.cx/cz = closest point.
+export function segDist(px, pz, ax, az, bx, bz, out) {
+  const abx = bx - ax, abz = bz - az, l2 = abx * abx + abz * abz;
+  let t = l2 > 0 ? ((px - ax) * abx + (pz - az) * abz) / l2 : 0;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  out.cx = ax + abx * t; out.cz = az + abz * t;
+  return Math.hypot(px - out.cx, pz - out.cz);
+}
+
+// ---- Lava -------------------------------------------------------------------------------------------
+// {cx, cz, r0, rMin, rate, t0, R, dmg, every}: the safe radius shrinks from r0 to rMin at `rate` u/s;
+// between it and R + 1 the ground burns (dmg every `every` ticks, counted from t0).
+export function lavaR(L, t) { return Math.max(L.rMin, L.r0 - L.rate * Math.max(0, t - L.t0) * DT); }
 
 // ---- Patterns -------------------------------------------------------------------------------------
 // ev: {pid0, tick, src, pat, ptype, n, gap, spread, speed, dmg, x, y, z, ang, slope, arms, waves, alt}.
@@ -152,9 +199,11 @@ export class Hazards {
 //           and waits gap s
 //   ring    n shots around a full circle (alt: every other one unstoppable)
 //   rings   `waves` rings of n, gap s apart, each turned spread deg from the last (alt as ring)
+//   rows    a curtain: `waves` rows of n side by side (sp u apart, across ang), gap s apart; row w leaves
+//           a hole of hw shots from index holes[w] (the ids are used anyway). life: s (optional)
 export function patternCount(ev) {
   if (ev.pat === 'single') return 1;
-  if (ev.pat === 'rings') return (ev.n | 0) * Math.max(1, ev.waves | 0);
+  if (ev.pat === 'rings' || ev.pat === 'rows') return (ev.n | 0) * Math.max(1, ev.waves | 0);
   return ev.n | 0;
 }
 
@@ -178,9 +227,19 @@ export function emitPattern(store, ev, map) {
       ang = ev.ang + (j / per) * TAU + w * ev.spread * D2R;
       t0 = ev.tick + Math.round((w * ev.gap) / DT);
     }
+    let x = ev.x, z = ev.z;
+    if (ev.pat === 'rows') {
+      const w = Math.floor(k / per);
+      j = k % per;
+      const h = ev.holes ? ev.holes[w] : -1;
+      if (h !== undefined && h >= 0 && j >= h && j < h + (ev.hw | 0)) continue;
+      const o = (j - (per - 1) / 2) * ev.sp;
+      x += Math.cos(ang) * o; z -= Math.sin(ang) * o;
+      t0 = ev.tick + Math.round((w * ev.gap) / DT);
+    }
     const speed = Math.min(ev.speed, tuning.projectiles.maxSpeed);
     const t = (ev.pat === 'ring' || ev.pat === 'rings') && ev.alt ? (j % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
-    store.spawn(ev.pid0 + k, t, ev.src, ev.x, ev.y, ev.z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0);
+    store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0, ev.life || 0);
   }
   return n;
 }
@@ -189,7 +248,7 @@ export function emitPattern(store, ev, map) {
 export function patternSpan(ev) {
   if (ev.pat === 'burst') return Math.max(0, (ev.n | 0) - 1) * (ev.gap || 0);
   if (ev.pat === 'spiral') return Math.floor(Math.max(0, (ev.n | 0) - 1) / Math.max(1, ev.arms | 0)) * (ev.gap || 0);
-  if (ev.pat === 'rings') return Math.max(0, (ev.waves | 0) - 1) * (ev.gap || 0);
+  if (ev.pat === 'rings' || ev.pat === 'rows') return Math.max(0, (ev.waves | 0) - 1) * (ev.gap || 0);
   return 0;
 }
 

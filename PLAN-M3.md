@@ -158,7 +158,7 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
 ## 3. Pasos
 
 - [x] **P0** Este plan (commit + push).
-- [ ] **P1** Primitivas sim: patrón `rows` (+holes/life), AoE `keep`, `H.beams` (+contacts, eventos, cliente,
+- [x] **P1** Primitivas sim: patrón `rows` (+holes/life), AoE `keep`, `H.beams` (+contacts, eventos, cliente,
   reconciliación), `H.lava` (+contacts, eventos, cliente). Tests nuevos en `tests/m3.test.mjs`
   (rows con huecos y vida, beam laser gira y daña cada `every`, dash a través no daña y da FANTASMA, lava
   encoge y daña fuera, keep sobrevive a la muerte del dueño, predicción cliente = servidor con beams).

@@ -8,7 +8,7 @@
 // Prediction runs the same combat code on the projectiles the client knows; kills it predicts are
 // tagged with the command's seq and are undone and replayed on reconciliation like movement.
 import { DT, INTERP_DELAY, tuning } from '../data/tuning.js';
-import { World } from '../sim/world.js';
+import { World, BEAM_FIELDS, LAVA_FIELDS } from '../sim/world.js';
 import { C, ACT } from '../sim/ecs.js';
 import { MSG, ENT, quantAxis } from '../net/protocol.js';
 import { emitPattern, NEVER, KILL } from '../sim/projectiles.js';
@@ -128,7 +128,18 @@ export class GameClient {
         if (!ev.hostile) for (let s = 0; s < this.shots.cap; s++) if (this.shots.id[s]) this.shots.free(s);
         break;
       case 'aoe':
-        if (!H.aoes.some((a) => a.id === ev.id)) H.addAoe({ id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg });
+        if (!H.aoes.some((a) => a.id === ev.id)) H.addAoe({ id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0 });
+        break;
+      case 'beam':
+        if (!H.beams.some((b) => b.id === ev.id)) {
+          const b = { owner: ev.src, t0: ev.tick };
+          for (const k of BEAM_FIELDS) b[k] = ev[k];
+          H.addBeam(b);
+        }
+        break;
+      case 'lava':
+        if (ev.off) H.setLava(null);
+        else if (!H.lava || H.lava.id !== ev.id) { const L = {}; for (const k of LAVA_FIELDS) L[k] = ev[k]; H.setLava(L); }
         break;
       case 'parry': case 'destroy': case 'phit': case 'block': {
         const s = H.slot.get(ev.pid);
@@ -269,6 +280,9 @@ export class GameClient {
       if (m) { for (let k = m.length - 1; k >= 0; k--) if (m[k].e === me && m[k].seq > ack) m.splice(k, 1); }
     }
     for (const a of H.aoes) for (let k = a.hits.length - 1; k >= 0; k--) if (a.hits[k].e === me && a.hits[k].seq > ack) a.hits.splice(k, 1);
+    const undo = (list) => { for (let k = list.length - 1; k >= 0; k--) if (list[k].e === me && list[k].seq > ack) list.splice(k, 1); };
+    for (const b of H.beams) { undo(b.hits); undo(b.ghosts); }
+    if (H.lava) undo(H.lava.hits);
     const S = this.shots;
     this.keepShots = new Set();
     this.replaying = true;

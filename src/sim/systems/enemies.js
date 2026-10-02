@@ -237,11 +237,8 @@ export function startWindup(world, e, def, b, i, tx, tz) {
     // Commit to the facing now: the circle is drawn in front and bursts at the end of the wind-up.
     ecs.facing[e] = Math.atan2(tx - ecs.x[e], tz - ecs.z[e]);
     const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
-    const id = world.nextAoe++;
     const ax = ecs.x[e] + fx * a.reach, az = ecs.z[e] + fz * a.reach;
-    const tAct = world.tick + Math.round(a.windup / DT);
-    world.hazards.addAoe({ id, owner: e, x: ax, z: az, r: a.r, t0: world.tick, tAct, dmg: a.dmg });
-    world.emit({ type: 'aoe', id, src: e, x: ax, z: az, r: a.r, tick: world.tick, tAct, dmg: a.dmg });
+    world.addAoe({ owner: e, x: ax, z: az, r: a.r, tAct: world.tick + Math.round(a.windup / DT), dmg: a.dmg });
   }
   world.emit({ type: 'windup', id: e, atk: a.id, tick: world.tick, dur: a.windup, ang: ecs.facing[e] });
 }
