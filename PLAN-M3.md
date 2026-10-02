@@ -162,7 +162,7 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
   reconciliación), `H.lava` (+contacts, eventos, cliente). Tests nuevos en `tests/m3.test.mjs`
   (rows con huecos y vida, beam laser gira y daña cada `every`, dash a través no daña y da FANTASMA, lava
   encoge y daña fuera, keep sobrevive a la muerte del dueño, predicción cliente = servidor con beams).
-- [ ] **P2** Cangrejo: datos, `turn`, `kind 'mortar'`, blindaje frontal en `damageEnemy`. Tests (mortero
+- [x] **P2** Cangrejo: datos, `turn`, `kind 'mortar'`, blindaje frontal en `damageEnemy`. Tests (mortero
   3 círculos y sobrevive a la muerte, blindaje frente vs espalda vs reflejo).
 - [ ] **P3** Oleadas 4–5 + banners + música. Actualizar test de flujo del encuentro (5 oleadas).
 - [ ] **P4** HELLFIRE 3 fases: datos, `charge`, `laser2`, `meteors`, `lanes`, `curtain`, `spiral3`, lava al

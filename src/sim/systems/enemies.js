@@ -61,6 +61,12 @@ export function pickTarget(world, e, def, b) {
   return best;
 }
 
+// Turn toward ang: damped, or at most def.turn rad/s for slow turners (the crab: flank it).
+export function face(ecs, e, def, ang, k, dt) {
+  if (def.turn && !def.fixed) ecs.facing[e] += Math.max(-def.turn * dt, Math.min(def.turn * dt, angleDelta(ecs.facing[e], ang)));
+  else ecs.facing[e] = dampAngle(ecs.facing[e], ang, k, dt);
+}
+
 export function setAct(ecs, e, a) { if (ecs.act[e] !== a) { ecs.act[e] = a; ecs.actT[e] = 0; } }
 
 export function steer(world, e, def, vx, vz, dt) {
@@ -193,7 +199,7 @@ export function stepEnemy(world, e, dt) {
         else if (d < lo * 0.8) { mx = -ux; mz = -uz; }
         else { mx = -uz * b.orbit * 0.6; mz = ux * b.orbit * 0.6; }
         steer(world, e, def, mx * def.speed, mz * def.speed, dt);
-        ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(dx, dz), 9, dt);
+        face(ecs, e, def, Math.atan2(dx, dz), 9, dt);
       }
       if (b.gcd <= 0) {
         const i = chooseAttack(def, b, d);
@@ -206,7 +212,7 @@ export function stepEnemy(world, e, dt) {
       const a = def.attacks[b.atk];
       steer(world, e, def, 0, 0, dt);
       // Tracks the target for the first 60 % of the wind-up, then commits (fair to dodge).
-      if (a.kind !== 'aoe' && tgt && b.t < a.windup * 0.6 && !def.fixed) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(dx, dz), 10, dt);
+      if (a.kind !== 'aoe' && tgt && (b.t < a.windup * 0.6 || def.turn) && !def.fixed) face(ecs, e, def, Math.atan2(dx, dz), 10, dt);
       if (b.t >= a.windup) fire(world, e, def, b, a);
       break;
     }
@@ -249,6 +255,7 @@ export function fire(world, e, def, b, a) {
   if (a.every) b.every[b.atk] = a.every;
   if (a.kind === 'aoe') { b.fireDur = a.recover; return; }
   if (a.kind === 'summon') { summonMinions(world, e, a, b); b.fireDur = a.recover; return; }
+  if (a.kind === 'mortar') { mortar(world, e, a, b); b.fireDur = a.recover; return; }
   const f = ecs.facing[e], fx = Math.sin(f), fz = Math.cos(f);
   const m = a.muzzle || [0, 1.2, 0.5];
   const mx = ecs.x[e] + fx * m[2] + fz * m[0], my = ecs.y[e] + m[1], mz = ecs.z[e] + fz * m[2] - fx * m[0];
@@ -271,6 +278,22 @@ export function fire(world, e, def, b, a) {
   b.fireDur = patternSpan(ev) + a.recover;
 }
 
+// Mortar: one shell on the target, the others beside it (across the line of fire), a little apart in time.
+function mortar(world, e, a, b) {
+  const ecs = world.ecs, t = b.target;
+  if (!t || !ecs.alive[t]) return;
+  const tx = ecs.x[t], tz = ecs.z[t];
+  const ang = Math.atan2(tx - ecs.x[e], tz - ecs.z[e]), px = Math.cos(ang), pz = -Math.sin(ang);
+  const f = ecs.facing[e], m = a.muzzle;
+  const fx = ecs.x[e] + Math.sin(f) * m[2], fz = ecs.z[e] + Math.cos(f) * m[2], fy = ecs.y[e] + m[1];
+  for (let i = 0; i < a.n; i++) {
+    const side = i === 0 ? 0 : (i % 2 ? 1 : -1) * a.side * Math.ceil(i / 2);
+    const j = world.rng.range(-0.5, 0.5);
+    const x = tx + px * side + Math.sin(ang) * j, z = tz + pz * side + Math.cos(ang) * j;
+    world.addAoe({ owner: e, x, z, r: a.r, tAct: world.tick + Math.round((a.flight + i * a.stagger) / DT), dmg: a.dmg, keep: 1, fall: 'mortar', fx, fz, fy });
+  }
+}
+
 // Damage from players (melee, reflected shots, the riposte wave). Returns the damage dealt.
 export function damageEnemy(world, e, raw, o) {
   const ecs = world.ecs, def = defOf(ecs, e), b = ecs.brain[e], M = tuning.melee;
@@ -288,7 +311,12 @@ export function damageEnemy(world, e, raw, o) {
     raw *= Math.max(K.floor, 1 - K.step * (b.shotN || 0));
     b.shotN = (b.shotN || 0) + 1; b.shotTick = world.tick;
   }
-  let shielded = 0;
+  let shielded = 0, armor = 0;
+  if (def.armor && o.kind !== 'shot') {
+    // Armoured front: hits from inside the arc in front of it barely scratch it (reflects ignore it).
+    const from = Math.atan2(o.x - ecs.x[e], o.z - ecs.z[e]);
+    if (Math.abs(angleDelta(ecs.facing[e], from)) < (def.armor.arc / 2) * Math.PI / 180) { raw *= def.armor.mult; armor = 1; }
+  }
   if (def.boss) {
     // Invulnerable while rising and during ENRAGE; the phase-2 shield stops 65 % of everything but
     // reflected shots; a reflected heavy orb breaks it (ROTO) and staggers him.
@@ -312,9 +340,9 @@ export function damageEnemy(world, e, raw, o) {
   ecs.hp[e] -= dmg;
   if (!def.fixed) {
     const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
-    const k = (o.knock ?? M.knock) * (def.light || 1);
+    const k = (o.knock ?? M.knock) * (def.light || 1) * (armor ? 0.3 : 1);
     if (kl > 1e-6) { ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
-    if (o.heavy && !def.boss) {
+    if (o.heavy && !def.boss && !armor) {
       ecs.stagger[e] = M.heavyStagger;
       if (b.state === 'windup' || b.state === 'fire') {
         world.cancelEmitter(e);
@@ -322,7 +350,7 @@ export function damageEnemy(world, e, raw, o) {
       }
     }
   }
-  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0, shielded });
+  world.emit({ type: 'damage', id: e, dmg, by: o.by, kind: o.kind, crit: crit ? 1 : 0, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], heavy: o.heavy ? 1 : 0, shielded, armor });
   if (def.regen && ecs.hp[e] < 1) ecs.hp[e] = 1;
   if (ecs.hp[e] <= 0) world.killEnemy(e, o.by);
   return dmg;

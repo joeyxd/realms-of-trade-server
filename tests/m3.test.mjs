@@ -7,6 +7,7 @@ import { Hazards, emitPattern, patternCount, patternSpan, lavaR } from '../src/s
 import { tuning, DT } from '../src/data/tuning.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { GAME } from '../src/data/meta.js';
+import { damageEnemy } from '../src/sim/systems/enemies.js';
 
 const map = generateWorld(GAME.seed);
 const A = map.landmarks.arena;
@@ -121,4 +122,50 @@ test('keep circles (mortar shells, meteors) still land when their owner dies; no
   const k2 = w.addAoe({ owner: 0, x: px, z: pz, r: 2.2, tAct: w.tick + 30, dmg: 12, keep: 1 });
   w.clearHostile();
   assert.equal(k2.cancel, true);
+});
+
+test('mortar crab: three shells around the target that land after the flight, even if the crab dies', () => {
+  const { w, e, step } = arena(A.x + 4, A.z);
+  const ecs = w.ecs;
+  const c = w.debugSpawn('crab', A.x + 13, A.z, -Math.PI / 2);
+  let evs = [], aoes = [];
+  for (let i = 0; i < 400 && !aoes.length; i++) { evs = step(); aoes = evs.filter((ev) => ev.type === 'aoe'); }
+  assert.equal(aoes.length, 3, 'three shells');
+  for (const a of aoes) {
+    assert.equal(a.keep, 1); assert.equal(a.fall, 'mortar');
+    assert.ok(Math.abs((a.tAct - a.tick) * DT - 1.1) < 0.25, 'about 1.1 s of flight');
+    assert.ok(Math.hypot(a.x - ecs.x[e], a.z - ecs.z[e]) < 5.5, 'around the target');
+  }
+  assert.ok(aoes.some((a) => Math.hypot(a.x - ecs.x[e], a.z - ecs.z[e]) < 0.8), 'one right on the target');
+  w.killEnemy(c, e);
+  let hit = 0;
+  for (let i = 0; i < 90; i++) hit += hurts(step(), 'aoe').length;
+  assert.equal(hit, 1, 'the shell on you lands after its thrower died');
+});
+
+test('mortar crab armour: × 0.2 from the front, full damage from behind, reflected shots ignore it', () => {
+  const { w, e } = arena();
+  const ecs = w.ecs;
+  const c = w.debugSpawn('crab', A.x, A.z, 0); // facing +z
+  const hit = (x, z, kind) => {
+    ecs.hp[c] = ecs.maxHp[c];
+    w.events.length = 0;
+    const dmg = damageEnemy(w, c, 40, { by: e, kind, x, z });
+    return { dmg, armor: w.events.find((ev) => ev.type === 'damage').armor };
+  };
+  const crit = tuning.stats.crit;
+  tuning.stats.crit = 0;
+  const front = hit(A.x, A.z + 2, 'melee'), back = hit(A.x, A.z - 2, 'melee'), side = hit(A.x + 2, A.z + 0.3, 'melee'), shot = hit(A.x, A.z + 2, 'shot');
+  tuning.stats.crit = crit;
+  assert.equal(front.armor, 1);
+  assert.equal(back.armor, 0);
+  assert.equal(side.armor, 0, 'the flank (90°) is outside the 120° plate');
+  assert.equal(shot.armor, 0);
+  assert.ok(front.dmg * 3 < back.dmg, `front ${front.dmg} vs back ${back.dmg}`);
+  assert.ok(shot.dmg >= back.dmg * 0.9, 'reflects go through');
+  // Slow to turn: after 0.3 s it has turned at most 2.4 · 0.3 rad toward a player behind it.
+  ecs.x[e] = A.x; ecs.z[e] = A.z - 8;
+  const f0 = ecs.facing[c];
+  for (let i = 0; i < 18; i++) { w.applyCommand(e, { seq: 1000 + i, mx: 0, mz: 0, ax: 0, az: 0, prs: 0, pt: w.tick }); w.stepWorld(); }
+  assert.ok(Math.abs(ecs.facing[c] - f0) <= 2.4 * 0.3 + 0.05, 'turns slowly');
 });

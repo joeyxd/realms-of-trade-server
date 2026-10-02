@@ -3,6 +3,7 @@
 // Distances in u, times in s, speeds in u/s. Attack kinds:
 //   pattern  projectiles (burst / fan / single / spiral / ring), see sim/projectiles.js
 //   aoe      ground circle that fills during the wind-up and bursts at its end
+//   mortar   n shells lobbed at the target (keep circles: they land even if the thrower dies)
 export const ENEMIES = {
   archer: {
     name: 'Arquero esqueleto', look: 'archer', title: 'Pirata maldito', level: 2,
@@ -52,6 +53,18 @@ export const ENEMIES = {
     range: [8, 10], aggro: 15, leash: 26, xp: 40, respawn: 50,
     attacks: [
       { id: 'ring', kind: 'pattern', pat: 'ring', type: 'parry', alt: true, n: 14, speed: 6, dmg: 9, windup: 0.6, cd: 3.5, minD: 0, maxD: 14, muzzle: [0, 1.2, 0.4], recover: 0.4 },
+    ],
+  },
+  // ---- M3 (PLAN-M3.md) ----
+  // Armoured in front (120°: melee × 0.2, reflected shots ignore it) and slow to turn: flank it with a
+  // dash. Lobs 3 mortar shells (one on you, two beside you) that land 1.1 s later, even if it dies.
+  crab: {
+    name: 'Cangrejo mortero', look: 'crab', title: 'Artillero del arrecife', level: 4,
+    hp: 80, def: 3, speed: 2.0, radius: 0.72, hurt: 0.78, height: 1.35, turn: 2.4, light: 0.5,
+    armor: { arc: 120, mult: 0.2 },
+    range: [7, 11], aggro: 15, leash: 26, xp: 50, respawn: 50,
+    attacks: [
+      { id: 'mortar', kind: 'mortar', n: 3, r: 2.2, side: 2.6, flight: 1.1, stagger: 0.08, dmg: 12, windup: 0.5, cd: 3.0, minD: 0, maxD: 15, muzzle: [0, 1.25, -0.35], recover: 0.4 },
     ],
   },
   // The boss of La Prueba de Fuego (DESIGN §8, M2.5 version in 2 phases; phase 3 comes with M3).
