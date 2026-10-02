@@ -7,7 +7,7 @@ import { tuning, DT } from '../../data/tuning.js';
 import { ACT, C } from '../ecs.js';
 import { moveWithCollision } from './movement.js';
 import { patternSpan } from '../projectiles.js';
-import { bossBrain, stepBoss, summonMinions } from './boss.js';
+import { bossBrain, stepBoss, summonMinions, bossFire } from './boss.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
 
 export const defOf = (ecs, e) => ENEMIES[ENEMY_KINDS[ecs.enemy[e]]];
@@ -256,6 +256,7 @@ export function fire(world, e, def, b, a) {
   if (a.kind === 'aoe') { b.fireDur = a.recover; return; }
   if (a.kind === 'summon') { summonMinions(world, e, a, b); b.fireDur = a.recover; return; }
   if (a.kind === 'mortar') { mortar(world, e, a, b); b.fireDur = a.recover; return; }
+  if (def.boss && bossFire(world, e, def, b, a)) return;
   const f = ecs.facing[e], fx = Math.sin(f), fz = Math.cos(f);
   const m = a.muzzle || [0, 1.2, 0.5];
   const mx = ecs.x[e] + fx * m[2] + fz * m[0], my = ecs.y[e] + m[1], mz = ecs.z[e] + fz * m[2] - fx * m[0];
@@ -324,14 +325,16 @@ export function damageEnemy(world, e, raw, o) {
       world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
       return 0;
     }
+    const BR = def.phases[b.phase].broken;
     if (o.kind === 'shot' && o.heavy) {
-      b.broken = def.brokenTime;
-      ecs.stagger[e] = def.breakStagger;
+      b.broken = BR ? BR.time : def.brokenTime;
+      ecs.stagger[e] = BR ? BR.stagger : def.breakStagger;
+      b.charge = null; b.lasers = null;
       if (b.state === 'windup' || b.state === 'fire') world.cancelEmitter(e);
       b.state = 'chase'; b.gcd = 0.4;
       world.emit({ type: 'shield', id: e, st: 'broken', by: o.by, x: ecs.x[e], z: ecs.z[e] });
     }
-    if (b.broken > 0) raw *= def.brokenMult;
+    if (b.broken > 0) raw *= BR ? BR.mult : def.brokenMult;
     else if (b.shieldOn && o.kind !== 'shot') { raw *= def.shield; shielded = 1; }
   }
   const crit = world.rng() < tuning.stats.crit;

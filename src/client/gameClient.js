@@ -228,7 +228,13 @@ export class GameClient {
       if (!rec.ready) { Object.assign(rec.r, sample); rec.ready = true; }
     }
 
-    if (s.enc) this.enc = s.enc;
+    if (s.enc) {
+      this.enc = s.enc;
+      // The lava ring for late joiners (or a lost event): rebuild it from the snapshot.
+      const L = s.enc[0] && s.enc[0][9], H = this.pred.hazards;
+      if (L && (!H.lava || H.lava.id !== L[0])) { const o = {}; LAVA_FIELDS.forEach((k, i) => { o[k] = L[i]; }); H.setLava(o); }
+      else if (s.enc[0] && !L && H.lava) H.setLava(null);
+    }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
   }
 

@@ -165,7 +165,7 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
 - [x] **P2** Cangrejo: datos, `turn`, `kind 'mortar'`, blindaje frontal en `damageEnemy`. Tests (mortero
   3 círculos y sobrevive a la muerte, blindaje frente vs espalda vs reflejo).
 - [x] **P3** Oleadas 4–5 + banners + música. Actualizar test de flujo del encuentro (5 oleadas).
-- [ ] **P4** HELLFIRE 3 fases: datos, `charge`, `laser2`, `meteors`, `lanes`, `curtain`, `spiral3`, lava al
+- [x] **P4** HELLFIRE 3 fases: datos, `charge`, `laser2`, `meteors`, `lanes`, `curtain`, `spiral3`, lava al
   entrar en fase 3, `broken` por fase, `encounterDev` op `phase3`. Tests (umbrales 70/35, embestida mueve y
   daña, láser, lanes, lava se apaga al morir, ciclo fase 3).
 - [ ] **P5** Render: `CrabView`, `hazardfx.js` (beams + lava), caída de meteoros/morteros, decals 32, look

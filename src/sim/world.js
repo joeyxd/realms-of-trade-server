@@ -180,7 +180,7 @@ export class World {
     const b = {
       id: this.nextAoe++, owner: o.owner || 0, kind: o.kind, x0: o.x0, z0: o.z0, ang0: o.ang0, omega: o.omega || 0,
       vx: o.vx || 0, vz: o.vz || 0, off: o.off || 0, len: o.len, w: o.w, t0: o.t0 ?? this.tick, tAct: o.tAct, tEnd: o.tEnd,
-      dmg: o.dmg, every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0,
+      dmg: o.dmg, every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0, tele: o.tele || 0, travel: o.travel || 0,
     };
     this.hazards.addBeam(b);
     const ev = { type: 'beam', src: b.owner, tick: b.t0 };
@@ -421,5 +421,5 @@ export class World {
 }
 
 export { PTYPE };
-export const BEAM_FIELDS = ['id', 'kind', 'x0', 'z0', 'ang0', 'omega', 'vx', 'vz', 'off', 'len', 'w', 'tAct', 'tEnd', 'dmg', 'every', 'knock', 'keep'];
+export const BEAM_FIELDS = ['id', 'kind', 'x0', 'z0', 'ang0', 'omega', 'vx', 'vz', 'off', 'len', 'w', 'tAct', 'tEnd', 'dmg', 'every', 'knock', 'keep', 'tele', 'travel'];
 export const LAVA_FIELDS = ['id', 'cx', 'cz', 'r0', 'rMin', 'rate', 't0', 'R', 'dmg', 'every'];
