@@ -109,9 +109,10 @@ export class Music {
       o.connect(g).connect(this.bus); o.start(t); o.stop(t + 0.25);
     } else {
       const s = audio.noiseSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
-      f.type = 'highpass'; f.frequency.value = kind === 'shaker' ? 6000 : 3000;
-      audio.env(g.gain, t, 0.002, kind === 'shaker' ? 0.025 : 0.05, 0.04);
-      s.connect(f).connect(g).connect(this.bus); s.start(t); s.stop(t + 0.08);
+      const snare = kind === 'snare';
+      f.type = snare ? 'bandpass' : 'highpass'; f.frequency.value = kind === 'shaker' ? 6000 : snare ? 1800 : 3000;
+      audio.env(g.gain, t, 0.002, kind === 'shaker' ? 0.025 : snare ? 0.09 : 0.05, snare ? 0.12 : 0.04);
+      s.connect(f).connect(g).connect(this.bus); s.start(t); s.stop(t + (snare ? 0.2 : 0.08));
     }
   }
 
@@ -130,5 +131,16 @@ export class Music {
     if (this.mood === 'caldera' && inBar % 4 === 0) this.perc(t, inBar === 0 ? 'kick' : 'shaker');
     else if (inBar % 4 === 2) this.perc(t, 'shaker');
     if (this.level >= 1 && (inBar === 0 || inBar === 6 || inBar === 8)) this.perc(t, 'kick');
+    // Combat layers (La Prueba de Fuego): 2 = snare backbeat + driving 8th bass, 3 = 16th hats + a
+    // second kick and an octave bass stab (the boss).
+    if (this.level >= 2) {
+      if (inBar === 4 || inBar === 12) this.perc(t, 'snare');
+      if (inBar % 2 === 1) this.bass(t, chord[0] + (inBar % 4 === 3 ? 12 : 0), sixteenth * 0.9);
+    }
+    if (this.level >= 3) {
+      if (inBar % 2 === 1) this.perc(t, 'shaker');
+      if (inBar === 14 || inBar === 11) this.perc(t, 'kick');
+      if (inBar === 0 && bar % 2 === 1) this.bass(t, chord[1] + 12, sixteenth * 2);
+    }
   }
 }

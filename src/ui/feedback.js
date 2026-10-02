@@ -314,8 +314,8 @@ export class Feedback {
         const H = this.hud, red = !!this.settings.reducedMotion;
         if (ev.wipe) { H.toast('<b>La Caldera te ha vencido.</b> Pisa las runas del centro para volver a intentarlo.', 5200); break; }
         if (ev.late) { H.toast('<b>¡Refuerzos!</b>', 1800); sfx.wake(0.7); break; }
-        if (ev.st === 'intro') { H.showZone('LA PRUEBA DE FUEGO', 'Sobrevive a tres oleadas… y a lo que venga después', true, red); sfx.gong(); this.shake(0.3); }
-        else if (ev.st === 'wave' && this.lastWave !== ev.wave) { H.showZone(`OLEADA ${ev.wave + 1}/${ev.waves}`, ev.wave === 0 ? 'Refleja sus balas contra la manada' : ev.wave === 1 ? 'Diablillos: espirales de fuego' : 'Chamanes: anillos ámbar y violeta', true, red); sfx.gong(0.8); }
+        if (ev.st === 'intro') { H.showZone('LA PRUEBA DE FUEGO', `Sobrevive a ${ev.waves} oleadas… y a lo que venga después`, true, red); sfx.gong(); this.shake(0.3); }
+        else if (ev.st === 'wave' && this.lastWave !== ev.wave) { H.showZone(`OLEADA ${ev.wave + 1}/${ev.waves}`, WAVE_SUB[ev.wave] || '', true, red); sfx.gong(0.8); }
         else if (ev.st === 'rest') H.toast('<b>Oleada superada.</b> Respira: la siguiente llega en unos segundos.', 3200);
         else if (ev.st === 'bossIntro' && ev.boss) { H.showZone('HELLFIRE', 'Señor de La Caldera', true, red); sfx.roar(); this.shake(0.6); }
         else if (ev.st === 'victory') { H.showZone('¡VICTORIA!', 'Has superado La Prueba de Fuego', true, red); sfx.fanfare(); }
@@ -414,3 +414,6 @@ export class Feedback {
 }
 
 export { ENEMIES };
+
+const WAVE_SUB = ['Refleja sus balas contra la manada', 'Diablillos: espirales de fuego', 'Chamanes: anillos ámbar y violeta',
+  'Cangrejos: flanquéalos o devuélveles las balas', 'Todo a la vez'];

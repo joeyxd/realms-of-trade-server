@@ -329,6 +329,8 @@ async function boot() {
     }
     hud.setEnc(line);
     world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
+    // Music climbs a layer every two waves and tops out at the boss.
+    music.setLevel(!active || stE === 'victory' || stE === 'idle' ? 0 : stE === 'boss' || stE === 'bossIntro' ? 3 : 1 + Math.min(2, Math.max(0, wave) >> 1));
     world.setEncounterFx({ runes: !E || stE === 'idle' ? 1 : 0, bossId: active ? bossId : 0, shield, inv });
     // One warning when walking out mid-trial.
     if (E && stE !== 'idle' && stE !== 'victory' && !inside && Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 12 && !st.encWarned) {

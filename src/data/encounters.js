@@ -1,4 +1,4 @@
-// Encounters (PLAN-M2.5.md §2.3): scripted fights on the server. Pure data, edited live by F4 like tuning.
+// Encounters (PLAN-M2.5.md §2.3, PLAN-M3.md §2.3): scripted fights on the server. Pure data, edited live by F4 like tuning.
 //   startR    stepping inside this circle at the centre of the arena starts it
 //   radius    players inside are participants; none alive inside for wipeGrace s → reset
 //   waves     groups of [kind, count]; `late` reinforcements come `after` s in (or when the rest is dead)
@@ -11,6 +11,9 @@ export const ENCOUNTERS = {
       { groups: [['grunt', 5], ['archer', 2]] },
       { groups: [['imp', 4], ['grunt', 4], ['archer', 2]], late: { after: 8, groups: [['grunt', 5]] } },
       { groups: [['shaman', 3], ['imp', 3], ['grunt', 6]], late: { after: 10, groups: [['archer', 2], ['imp', 2], ['grunt', 4]] } },
+      // M3: the mortar crabs (flank them, or send their own bullets back).
+      { groups: [['crab', 2], ['archer', 2], ['imp', 3], ['grunt', 6]], late: { after: 8, groups: [['crab', 1], ['grunt', 5]] } },
+      { groups: [['crab', 3], ['shaman', 2], ['grunt', 6]], late: { after: 10, groups: [['imp', 3], ['archer', 2], ['grunt', 5]] } },
     ],
     boss: { kind: 'hellfire', at: [7, 0], intro: 2.5, riseT: 2.0 },
   },
