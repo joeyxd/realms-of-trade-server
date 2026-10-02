@@ -52,12 +52,14 @@ export class DevPanel {
         <button data-op="spawn" data-kind="grunt" data-n="4">+ 4 Grumetes</button>
         <button data-op="spawn" data-kind="imp">+ Diablillo</button>
         <button data-op="spawn" data-kind="shaman">+ Chamán</button>
+        <button data-op="spawn" data-kind="crab">+ Cangrejo</button>
       </div>
       <div class="dv-row dv-btns">
         <button data-op="enc" data-sub="start">Prueba: iniciar</button>
         <button data-op="enc" data-sub="wave">Oleada ✓</button>
         <button data-op="enc" data-sub="boss">Jefe</button>
         <button data-op="enc" data-sub="phase2">Fase 2</button>
+        <button data-op="enc" data-sub="phase3">Fase 3</button>
         <button data-op="enc" data-sub="win">Ganar</button>
         <button data-op="enc" data-sub="reset">Reiniciar</button>
       </div>

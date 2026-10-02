@@ -108,8 +108,8 @@ export class Hud {
     this.lastEnc = null;
   }
 
-  // Boss bar (top centre): {name, title, hp, maxHp, phase (0-based), phases, mark (hp fraction of the next
-  // phase), shield (0 off · 1 up · 2 broken), inv} or null to hide.
+  // Boss bar (top centre): {name, title, hp, maxHp, phase (0-based), phases, marks (hp fractions of the
+  // phases still to come), shield (0 off · 1 up · 2 broken), inv} or null to hide.
   setBoss(b) {
     const key = b ? [b.name, Math.ceil(b.hp), b.maxHp, b.phase, b.shield, b.inv].join('|') : '';
     if (key === this.lastBoss) return;
@@ -127,13 +127,15 @@ export class Hud {
     this.bossFill.style.width = (fr * 100).toFixed(2) + '%';
     this.bossGhost.style.width = (fr * 100).toFixed(2) + '%';
     this.bossNum.textContent = `${Math.ceil(Math.max(0, b.hp))} / ${b.maxHp}`;
-    const mark = this.bossEl.querySelector('.mark');
-    mark.hidden = !(b.mark > 0);
-    if (b.mark > 0) mark.style.left = (b.mark * 100).toFixed(1) + '%';
+    // One notch per phase still to come (hp fractions).
+    const marks = b.marks || (b.mark > 0 ? [b.mark] : []);
+    let els = this.bossEl.querySelectorAll('.mark');
+    while (els.length < marks.length) { els[0].after(els[0].cloneNode()); els = this.bossEl.querySelectorAll('.mark'); }
+    els.forEach((m, i) => { m.hidden = i >= marks.length; if (i < marks.length) m.style.left = (marks[i] * 100).toFixed(1) + '%'; });
     this.bossEl.classList.toggle('shield', b.shield === 1);
     this.bossEl.classList.toggle('broken', b.shield === 2);
     this.bossEl.classList.toggle('inv', !!b.inv);
-    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>' : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : '');
+    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? (b.phase >= 2 ? ' · <b class="br">¡ATURDIDO! ×2</b>' : ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>') : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : '');
   }
 
   // Encounter line under the boss bar / top centre ("OLEADA 2/3 · Enemigos 9"), or null.

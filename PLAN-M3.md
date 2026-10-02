@@ -168,9 +168,9 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
 - [x] **P4** HELLFIRE 3 fases: datos, `charge`, `laser2`, `meteors`, `lanes`, `curtain`, `spiral3`, lava al
   entrar en fase 3, `broken` por fase, `encounterDev` op `phase3`. Tests (umbrales 70/35, embestida mueve y
   daña, láser, lanes, lava se apaga al morir, ciclo fase 3).
-- [ ] **P5** Render: `CrabView`, `hazardfx.js` (beams + lava), caída de meteoros/morteros, decals 32, look
+- [x] **P5** Render: `CrabView`, `hazardfx.js` (beams + lava), caída de meteoros/morteros, decals 32, look
   fase 3, prewarm.
-- [ ] **P6** UI/feel/audio: banners, marcas en la barra, consejos, sonidos, float BLINDADO, F4.
+- [x] **P6** UI/feel/audio: banners, marcas en la barra, consejos, sonidos, float BLINDADO, F4.
 - [ ] **P7** Balance con el bot (`scratchpad/bot25.mjs` → oleadas 4–5 + 3 fases) y densidad/perf (≤ 0.5 ms/step).
 - [ ] **P8** Verificación (tests, capturas 20-trial-wave5, 21-hellfire-laser, 22-hellfire-3), docs (DESIGN §7
   §8 §16, README), versión `0.3.0-m3`, artefacto republicado.

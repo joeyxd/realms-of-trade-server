@@ -52,7 +52,9 @@ body {
   -webkit-user-select: none;
   overscroll-behavior: none;
 }
-canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+/* Opaque backing: three.js always asks for an alpha drawing buffer, and FX blends that lower the alpha (the glow
+   mask on medium/high) would let the page show through on low, where they draw straight to the canvas. */
+canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; background: #000; }
 #ui { position: fixed; inset: 0; pointer-events: none; font-size: calc(15px * var(--ui-scale)); }
 #ui .interactive, #ui button, #ui input, #ui select, #ui label { pointer-events: auto; }
 [hidden] { display: none !important; }

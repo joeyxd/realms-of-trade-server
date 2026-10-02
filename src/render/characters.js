@@ -24,6 +24,7 @@ export const ENEMY_LOOK = Object.fromEntries([['archer', ARCHER], ['sentinel', S
 const POSE = {
   bite: 'cleave', slam: 'cleave', wall: 'spikes', heavy: 'orb', fan5: 'orb', fan7: 'orb',
   spiral: 'raise', spiral2: 'raise', flower: 'raise', summon: 'raise', ring: 'raise', rings2: 'spread', rings3: 'spread',
+  charge: 'cleave', laser2: 'spread', meteors: 'raise', lanes: 'spread', curtain: 'orb', spiral3: 'raise',
 };
 const TAU = Math.PI * 2;
 const sm = (t) => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };

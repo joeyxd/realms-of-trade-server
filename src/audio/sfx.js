@@ -221,6 +221,8 @@ export const sfx = {
     else if (atk === 'spikes') { bell(d, t, 1975, 0.05 * vol, 0.5); sweep(d, t, { f0: 2000, f1: 5000, q: 8, dur: 0.55, g: 0.05 * vol, a: 0.4 }); }
     else if (atk === 'orb') { tone(d, t, { type: 'sawtooth', f0: 70, f1: 150, dur: 0.8, g: 0.09 * vol, a: 0.6 }); tone(d, t, { f0: 140, f1: 300, dur: 0.8, g: 0.06 * vol, a: 0.6 }); }
     else if (atk === 'ball') for (let i = 0; i < 6; i++) noiseBurst(d, t + i * 0.1 + Math.random() * 0.04, { type: 'highpass', f: 3000, q: 0.7, dur: 0.02, g: 0.06 * vol });
+    else if (atk === 'charge') { tone(d, t, { type: 'sawtooth', f0: 45, f1: 110, dur: 0.7, g: 0.16 * vol, a: 0.4 }); sweep(d, t, { type: 'lowpass', f0: 300, f1: 2400, dur: 0.7, g: 0.12 * vol, a: 0.5 }); }
+    else if (atk === 'mortar') for (let i = 0; i < 3; i++) noiseBurst(d, t + i * 0.12, { type: 'bandpass', f: 900, q: 3, dur: 0.03, g: 0.08 * vol });
   },
   fire(atk, vol = 1) {
     if (!audio.ready || vol < 0.03) return;
@@ -274,6 +276,45 @@ export const sfx = {
     const t = audio.now, d = audio.sfx;
     [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => bell(d, t + i * 0.13, f, 0.09 * vol, 1.4));
     tone(d, t, { f0: 130.8, f1: 130.8, dur: 1.6, g: 0.1 * vol, a: 0.05 });
+  },
+  // M3: mortar thump, meteor whistle, laser hum, fire lane roar, armour clunk, lava rising.
+  mortar(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { f0: 110, f1: 45, dur: 0.22, g: 0.35 * vol });
+    noiseBurst(d, t, { type: 'lowpass', f: 700, q: 0.8, dur: 0.18, g: 0.25 * vol });
+    sweep(d, t + 0.05, { type: 'bandpass', f0: 600, f1: 1400, q: 6, dur: 0.6, g: 0.05 * vol });
+  },
+  meteor(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { type: 'bandpass', f0: 2600, f1: 500, q: 5, dur: 0.85, g: 0.08 * vol, a: 0.2 });
+  },
+  laser(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { type: 'sawtooth', f0: 180, f1: 190, dur: 3.8, g: 0.06 * vol, a: 0.15 });
+    tone(d, t, { type: 'square', f0: 361, f1: 377, dur: 3.8, g: 0.025 * vol, a: 0.15 });
+    sweep(d, t, { type: 'bandpass', f0: 3000, f1: 1200, q: 3, dur: 0.4, g: 0.12 * vol });
+  },
+  lane(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'lowpass', f: 900, q: 0.6, dur: 2.8, g: 0.16 * vol, a: 0.25 });
+    tone(d, t, { type: 'sawtooth', f0: 55, f1: 48, dur: 2.6, g: 0.08 * vol, a: 0.2 });
+  },
+  armor(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    bell(d, t, 620, 0.08 * vol, 0.25, [1, 2.4, 3.1]);
+    noiseBurst(d, t, { type: 'bandpass', f: 3500, q: 3, dur: 0.05, g: 0.12 * vol });
+  },
+  lava(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'lowpass', f: 300, q: 0.7, dur: 2.5, g: 0.3 * vol, a: 0.8 });
+    tone(d, t, { f0: 40, f1: 32, dur: 2.5, g: 0.2 * vol, a: 0.8 });
+    for (let i = 0; i < 6; i++) tone(d, t + 0.4 + Math.random() * 1.8, { f0: 160 + Math.random() * 120, f1: 60, dur: 0.12, g: 0.06 * vol });
   },
   shotHit(vol = 1) {
     if (!audio.ready) return;

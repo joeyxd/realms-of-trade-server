@@ -10,9 +10,11 @@ import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
 import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
 import { DummyView, CannonView } from './practice.js';
+import { CrabView } from './crab.js';
 import { Effects } from './vfx/effects.js';
 import { ProjectileView } from './vfx/projectiles.js';
 import { Decals } from './vfx/decals.js';
+import { BeamFx, LavaRing } from './vfx/hazardfx.js';
 import { CombatFx } from './vfx/combatfx.js';
 import { Debris } from './vfx/debris.js';
 import { Afterimages } from './vfx/afterimage.js';
@@ -84,7 +86,9 @@ export class GameScene {
     this.scene.add(props.group);
     this.effects = new Effects(this.scene, map);
     this.projectiles = new ProjectileView(this.scene, map);
-    this.decals = new Decals(this.scene, map);
+    this.decals = new Decals(this.scene, map, 32);
+    this.beamFx = new BeamFx(this.scene, map);
+    this.lavaRing = new LavaRing(this.scene, map);
     this.combatFx = new CombatFx(this.scene);
     this.debris = new Debris(this.scene, map);
     this.debris.onChange = () => this.pipeline.markDirty();
@@ -129,16 +133,23 @@ export class GameScene {
   }
 
   // Encounter visuals, per frame: runes available (0..1), the boss view's id, shield 0/1/2, invulnerable.
-  setEncounterFx({ runes = 1, bossId = 0, shield = 0, inv = 0 } = {}) {
+  setEncounterFx({ runes = 1, bossId = 0, shield = 0, inv = 0, phase = 0 } = {}) {
     this.runes.mat.uniforms.uActive.value = runes;
     const v = bossId ? this.views.get(bossId) : null;
     const L = this.lights.bossLight;
     if (!v || v.dead || !v.root.visible) { this.shieldBubble.visible = false; if (L) L.i = 0; return; }
     const p = v.root.position;
-    if (L) { L.x = p.x; L.y = p.y + 2.6; L.z = p.z; L.i = inv ? 4.5 : 3.0; }
-    v.glow.value = (inv ? 1.6 : 1.0) + (v.attack ? 0.5 : 0) + 0.15 * Math.sin(this.time * 4);
+    const last = phase >= 2;
+    if (L) { L.x = p.x; L.y = p.y + 2.6; L.z = p.z; L.i = inv ? 4.5 : last ? 4.2 : 3.0; L.r = last ? 13 : 10; }
+    v.glow.value = (inv ? 1.6 : last ? 1.45 : 1.0) + (v.attack ? 0.5 : 0) + (last ? 0.3 : 0.15) * Math.sin(this.time * (last ? 7 : 4));
+    // Last phase: he burns. Flames lick off his shoulders and back, embers rise around him.
+    if (last && this.effects && Math.random() < 0.7) {
+      const a = Math.random() * Math.PI * 2, rr = 0.5 + Math.random() * 0.7;
+      this.effects.add.spawn(p.x + Math.cos(a) * rr, p.y + 2.2 + Math.random() * 1.6, p.z + Math.sin(a) * rr, (Math.random() - 0.5) * 0.4, 1.8 + Math.random() * 1.5, (Math.random() - 0.5) * 0.4,
+        { life: 0.5 + Math.random() * 0.3, size: 0.9, size1: 0.15, color: Math.random() < 0.5 ? [1, 0.36, 0.05] : [1, 0.65, 0.15], alpha: 0.85, gravity: -0.8, drag: 1.2, shape: 1 });
+    }
     const b = this.shieldBubble;
-    b.visible = shield === 1 || inv;
+    b.visible = shield === 1 || !!inv; // boolean: three.js only skips visible === false
     b.position.set(p.x, p.y + 1.9, p.z);
     b.material.uniforms.uTime.value = this.time;
     b.material.uniforms.uColor.value.set(inv ? 0xffb26b : 0xb48cff);
@@ -150,6 +161,7 @@ export class GameScene {
     let view;
     if (kind === 'dummy') view = new DummyView();
     else if (kind === 'cannon') view = new CannonView();
+    else if (kind === 'crab') view = new CrabView();
     else if (kind === 'sentinel') view = new CharacterView(SENTINEL, { sword: true, pose: 'dormant' });
     else if (ENEMY_LOOK[kind] >= 0) view = new CharacterView(ENEMY_LOOK[kind], { sword: true });
     else view = new CharacterView(skin, opts);
@@ -177,7 +189,7 @@ export class GameScene {
     // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
-    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble]) { m.visible = true; temp.push(m); }
+    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh]) { m.visible = true; temp.push(m); }
     const probe = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), characterMaterial('base'));
     probe.castShadow = true;
     this.scene.add(probe);
@@ -255,6 +267,8 @@ export class GameScene {
     if (ctx.combat) {
       this.projectiles.update(dt, ctx.combat.hazards, ctx.combat.shots, ctx.combat.tick, ctx.combat.onShot);
       this.decals.update(dt, ctx.combat.tick);
+      this.beamFx.update(dt, ctx.combat.hazards, ctx.combat.tick);
+      this.lavaRing.update(dt, ctx.combat.hazards, ctx.combat.tick);
     }
     this.combatFx.update(sim);
     this.debris.update(sim);

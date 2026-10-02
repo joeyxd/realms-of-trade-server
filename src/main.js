@@ -316,7 +316,7 @@ async function boot() {
     const rec = bossId ? client.entities.get(bossId) : null;
     if (active && rec && rec.ready && !rec.dying) {
       const def = rec.def || {};
-      boss = { name: def.name || 'HELLFIRE', title: def.title || '', hp: rec.r.hp, maxHp: rec.r.maxHp, phase, phases: def.phases ? def.phases.length : 1, mark: def.phases && phase === 0 ? def.phases[0].until : 0, shield, inv };
+      boss = { name: def.name || 'HELLFIRE', title: def.title || '', hp: rec.r.hp, maxHp: rec.r.maxHp, phase, phases: def.phases ? def.phases.length : 1, marks: def.phases ? def.phases.slice(phase, -1).map((q) => q.until) : [], shield, inv };
     }
     hud.setBoss(boss);
     let line = null;
@@ -331,7 +331,7 @@ async function boot() {
     world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
     // Music climbs a layer every two waves and tops out at the boss.
     music.setLevel(!active || stE === 'victory' || stE === 'idle' ? 0 : stE === 'boss' || stE === 'bossIntro' ? 3 : 1 + Math.min(2, Math.max(0, wave) >> 1));
-    world.setEncounterFx({ runes: !E || stE === 'idle' ? 1 : 0, bossId: active ? bossId : 0, shield, inv });
+    world.setEncounterFx({ runes: !E || stE === 'idle' ? 1 : 0, bossId: active ? bossId : 0, shield, inv, phase });
     // One warning when walking out mid-trial.
     if (E && stE !== 'idle' && stE !== 'victory' && !inside && Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 12 && !st.encWarned) {
       st.encWarned = true;
