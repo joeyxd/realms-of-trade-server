@@ -59,7 +59,8 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
 | v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz); siguen lluvia, modo tinta → `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | ✅ |
 | M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | ✅ |
-| M3–M6 | Oleadas y jefe, progresión/loot, momentos Highlight, rendimiento y móvil final | — |
+| M3 | 5 oleadas, Cangrejo mortero, HELLFIRE en 3 fases (embestida, láser doble, meteoros, carriles de fuego, cortina, lava) → `PLAN-M3.md` | ✅ |
+| M4–M6 | Progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
 ### Qué incluye M1
 
@@ -138,6 +139,26 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
 - Reinicio si todos caen o salen, con checkpoint en el jefe; botones de la prueba en F4 (iniciar, oleada,
   jefe, fase 2, ganar, reiniciar).
 - 44 tests en Node; una partida simulada con bot la supera en ~100 s (el jefe, ~50 s) recibiendo ~2 barras de vida.
+
+### Qué incluye M3 — la prueba completa
+
+- **5 oleadas**: las dos nuevas traen al **Cangrejo mortero**, blindado por delante (de frente tus golpes hacen
+  × 0,2: rodéalo con un dash o devuélvele las balas, que atraviesan la placa). Gira despacio y lanza 3 morteros
+  alrededor de ti que caen 1,1 s después… aunque él ya haya muerto.
+- **HELLFIRE en 3 fases** (3200 HP, umbrales 75 % y 45 %):
+  - Fase 1: abanicos, espirales y anillos + **Embestida** (un rectángulo rojo marca la línea; luego carga).
+  - Fase 2, con escudo: la flor, muro de púas, invocaciones y el **láser doble rotatorio** (crúzalo con dash:
+    FANTASMA).
+  - Fase 3, «¡HELLFIRE DESATADO!»: **meteoros** que caen del cielo (uno de cada tres sobre ti), **carriles de
+    fuego** que barren la arena, **cortinas de balas** con un hueco por fila y **lava** que se come la arena del
+    borde hacia dentro (de 19 a 11 u). Sus llamas frenan tus golpes (× 0,5): refleja la cortina contra él, y su
+    orbe pesado con un PERFECTO lo aturde 2,5 s.
+- Música por capas que sube con las oleadas, barra del jefe con dos marcas, consejos la primera vez que ves cada
+  peligro, botones nuevos en F4 (+ Cangrejo, Fase 3).
+- `tools/playtest.mjs`: un bot sin cabeza juega la prueba entera (`LV=6 SKILL=0.9 node tools/playtest.mjs`).
+  Casi perfecto: ~170 s en total (jefe ~70 s), ~2,5 barras de daño recibido; con `SKILL=0.7`: ~260 s.
+  La sim tarda ~0,16 ms por paso con ~115 balas vivas.
+- 55 tests en Node.
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.

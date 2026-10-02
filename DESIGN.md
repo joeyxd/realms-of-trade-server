@@ -170,10 +170,10 @@ pathfinding. Reacción: flash blanco 80 ms + knockback 0.6 u. Muerte: se desarma
 | Grumete ahogado (M2.5) | 24 | 4.6 | persigue | mordisco AoE r=1.05 delante, 9; llegan en manadas, knockback × 1.6 | 420 ms | 1.1 s | 8 |
 | Diablillo de fuego (M2.5) | 28 | 5.5 | orbita 5–7 | espiral de 10 orbes parreables (36° cada uno, círculo completo en 0.8 s), 7 u/s | 400 ms | 2.8 s | 20 |
 | Chamán de coral (M2.5) | 60 | 2.4 | 8–10 | anillo de 14 orbes alternando parreable/imparable, 6 u/s | 600 ms | 3.5 s | 40 |
-| Cangrejo mortero | 80 | 2.0 | 7–11 | 3 AoE r=2.2 alrededor del jugador, telegraph 1.1 s | 500 ms | 3.0 s | 50 |
+| Cangrejo mortero (M3) | 80 (def 3) | 2.0 | 7–11 | 3 morteros r=2.2 (uno en el jugador, dos a 2.6 u), vuelan 1.1 s y caen aunque muera; gira a 2.4 rad/s | 500 ms | 3.0 s | 50 |
 
 Los centinelas duermen junto al portón de La Caldera y despiertan (1.3 s) cuando te acercas. El diablillo, el chamán
-y el grumete llegan con la Prueba de Fuego (M2.5, `PLAN-M2.5.md`); el cangrejo sigue en M3.
+y el grumete llegan con la Prueba de Fuego (M2.5, `PLAN-M2.5.md`); el cangrejo, con sus oleadas 4 y 5 (M3, `PLAN-M3.md`).
 
 **La Prueba de Fuego (M2.5):** pisar el círculo de runas del centro de La Caldera inicia 3 oleadas (5 grumetes +
 2 arqueros · 4 diablillos + 4 grumetes + 2 arqueros, refuerzo de 5 grumetes · 3 chamanes + 3 diablillos + 6 grumetes,
@@ -191,24 +191,33 @@ arbustos ni rocas delante de la cámara.
 
 Cangrejo: **blindado por delante** (120°): daño × 0.2 de frente; × 1 por flanco/espalda; reflejos ignoran blindaje.
 
-**Oleadas** (gong + banner «OLEADA n/5», 6 s de respiro, la música sube una capa):
+**Oleadas** (implementadas en M3; gong + banner «OLEADA n/5», 4 s de respiro, la música sube una capa cada dos):
 
-| Oleada | Composición |
-|---|---|
-| 1 | 3 arqueros |
-| 2 | 2 arqueros + 3 diablillos |
-| 3 | 2 chamanes + 2 diablillos + 1 arquero |
-| 4 | 2 cangrejos + 2 arqueros + 2 diablillos |
-| 5 | (a) 2 cangrejos + 2 chamanes · (b) a los 10 s: 3 diablillos + 2 arqueros |
+| Oleada | Composición | Refuerzo |
+|---|---|---|
+| 1 | 5 grumetes + 2 arqueros | — |
+| 2 | 4 diablillos + 4 grumetes + 2 arqueros | a los 8 s: 5 grumetes |
+| 3 | 3 chamanes + 3 diablillos + 6 grumetes | a los 10 s: 2 arqueros + 2 diablillos + 4 grumetes |
+| 4 | 2 cangrejos + 2 arqueros + 3 diablillos + 6 grumetes | a los 8 s: 1 cangrejo + 5 grumetes |
+| 5 | 3 cangrejos + 2 chamanes + 6 grumetes | a los 10 s: 3 diablillos + 2 arqueros + 5 grumetes |
 
-## 8. Jefe «HELLFIRE» (HP 2400)
+## 8. Jefe «HELLFIRE» (HP 3200 desde M3)
 
 > **Versión M2.5 (implementada, 2 fases, HP 2600, DEF 8):** fase 1 (100–55 %) ciclo `fan5, spiral2 (3 brazos, 36),
 > fan5, rings2 (2 × 16 alternos)` + orbe pesado cada 12 s; ENRAGE al 55 % (2 s invulnerable, se limpian las balas
 > hostiles, invoca 3 grumetes); fase 2 ciclo `flower (6 brazos, 84 orbes), wall (9 púas imparables), rings3 (3 × 18),
 > summon (máx 6 esbirros), fan7, spiral2` + orbe pesado cada 10 s, con **escudo** (daño × 0.2 salvo reflejos);
 > reflejar el orbe pesado lo rompe 4 s (× 1.5) y lo aturde 1.5 s. Si te pegas a él: `slam` r=4.6 cada 3 s.
-> Muerte: slow-mo 0.3× 1.2 s, 1500 XP. Lo de abajo (láser, meteoros, lava, carriles) sigue siendo el plan de M3.
+> Muerte: slow-mo 0.3× 1.2 s, 1500 XP.
+>
+> **Versión M3 (implementada, 3 fases, HP 3200, DEF 8; `PLAN-M3.md`, datos en `src/data/enemies.js`):**
+> fase 1 (100–75 %) `fan5, spiral2, charge, fan5, rings2` (la **Embestida**: rectángulo de telegraph 0.7 s, 18 u/s,
+> 20 daño); fase 2 (75–45 %) con escudo: `flower, laser2, rings3, summon, wall, fan7, laser2, spiral2` (**láser doble**
+> ±50 °/s, 4 s, sentido alterno; invoca grumetes y diablillos); fase 3 (45–0 %): `meteors (8, r=1.8, 1 de 3 al
+> jugador), curtain (4 filas de 30 con hueco), lanes (3 carriles de 3 u a 5 u/s), flower, meteors, spiral3 (4 brazos),
+> lanes, rings3` + **lava** 19 → 11 u a 0.12 u/s (6 daño / 0.5 s) + **llamas** (lo que no sea reflejo × 0.5) + orbe
+> pesado cada 14 s que, reflejado, lo aturde 2.5 s (× 1.4). Láseres y carriles se cruzan con dash (FANTASMA).
+> La tabla de abajo es el diseño original; los valores reales son los de arriba.
 
 Cada cambio de fase: 2.0 s invulnerable, se **limpian todos los proyectiles hostiles** (fairness), banner,
 stinger musical, luz más roja, nueva pose.
@@ -465,8 +474,8 @@ src/net/                   protocol · transport · localServer · worker · wsT
 src/client/                gameClient (predicción, reconciliación, interpolación)
 src/sim/                   world · ecs · worldgen · noise · collision · systems/{movement,bots}
 src/render/                scene · pipeline · camera · lighting · lights · toon · noiseTex · sky · terrain · water ·
-                           vegetation · props · charkit · charlooks · characters · ambient · quality ·
-                           vfx/{effects,particles,streaks,afterimage}
+                           vegetation · props · charkit · charlooks · characters · ambient · quality · practice ·
+                           crab (M3) · vfx/{effects,particles,streaks,afterimage,decals,projectiles,hazardfx (M3)}
 src/ui/                    title · hud · banners · prompts · pause · stats · touch · toasts
 src/audio/                 engine · sfx · music · ambience
 src/data/                  meta · tuning · enemies · encounters (M2.5) (· items · skills · loot_tables · quests) · ship_modules
@@ -475,6 +484,7 @@ src/sim/projectiles.js     proyectiles analíticos, patrones, disparos reflejado
 tests/                     tests de la sim, de la geometría de personajes, de las luces locales y de los presets y
                            partículas en Node (`npm test`)
 tools/shot.mjs             capturas automáticas con Playwright
+tools/playtest.mjs         bot sin cabeza que juega La Prueba de Fuego entera (balance, M3)
 legacy/                    intento v0 (servidor Socket.io 2D) + REVIEW.md
 ```
 
@@ -540,7 +550,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando + arquitectura de red local | ✅ (ver README) |
 | M2 | Proyectiles + parry/reflect/dash + 2 enemigos + feel + F4 → **test de diversión** | ✅ |
 | M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | ✅ |
-| M3 | Oleadas + enemigos restantes + jefe 3 fases | |
+| M3 | Oleadas + enemigos restantes + jefe 3 fases: 5 oleadas, Cangrejo mortero, HELLFIRE con embestida, láser doble, meteoros, carriles, cortina y lava (`PLAN-M3.md`) | ✅ |
 | M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |

@@ -172,8 +172,25 @@ Muerte: igual que M2.5 (slow-mo, 1500 XP, minions se desmoronan) + se apaga la l
   fase 3, prewarm.
 - [x] **P6** UI/feel/audio: banners, marcas en la barra, consejos, sonidos, float BLINDADO, F4.
 - [x] **P7** Balance con el bot (`tools/playtest.mjs`: `LV=6 SKILL=0.9 node tools/playtest.mjs`) y densidad/perf (≤ 0.5 ms/step).
-- [ ] **P8** Verificación (tests, capturas 20-trial-wave5, 21-hellfire-laser, 22-hellfire-3), docs (DESIGN §7
+- [x] **P8** Verificación (tests, capturas 20-trial-wave5, 21-hellfire-laser, 22-hellfire-3), docs (DESIGN §7
   §8 §16, README), versión `0.3.0-m3`, artefacto republicado.
+
+## 4b. Estado real (lo que quedó, difiere del §2 donde se indica)
+- HELLFIRE: **HP 3200**, umbrales **75 % / 45 %** (no 70/35: la fase 3 es la más vistosa y duraba poco).
+  Fase 3: `guard: 0.5` (todo lo que no sea reflejo × 0.5), aturdido por orbe reflejado 2.5 s × 1.4. Meteoros 15 daño.
+- Eventos nuevos: `beam {id, src, kind, x0, z0, ang0, omega, vx, vz, off, len, w, tick, tAct, tEnd, dmg, every,
+  knock, keep, tele, travel}` (`BEAM_FIELDS` en `world.js`), `lava {id, cx, cz, r0, rMin, rate, t0, R, dmg, every}` /
+  `lava {off}` (`LAVA_FIELDS`), `aoe` con `keep`, `fall` ('mortar'|'meteor'), `fx/fy/fz`; `damage.armor`;
+  `phase.last`; `ghost.beam`. Snapshot `enc[9]` = lava (valores de `LAVA_FIELDS`) o 0.
+- `hurtPlayer(..., {noInv})`: la lava no da iframes. Movimiento: bajar por pendientes fuertes siempre se permite
+  (arreglo de una trampa en el borde de la arena; test en `m3.test.mjs`).
+- Render: `src/render/crab.js` (CrabView), `src/render/vfx/hazardfx.js` (BeamFx + LavaRing), caída de
+  meteoros/morteros en `feedback.updateFallers`. Dos bugs viejos arreglados: `visible = 0` no oculta en three.js
+  (burbuja del escudo), y en calidad baja los FX que bajan el alfa dejaban ver el fondo de la página (canvas con
+  fondo negro en `styles/vars.css`).
+- Balance (`tools/playtest.mjs`): LV6/0.9 ≈ 170 s total (jefe ≈ 70 s), 2.5 barras de daño; LV5/0.7 ≈ 260 s;
+  ≈ 0.16 ms/step, ≈ 115 balas vivas máx.
+- Pendiente menor: muro de fuego visual en el portón, prueba en móvil real, dificultad adaptativa (§8 DESIGN).
 
 ## 4. Riesgos y notas
 - Beams en `contacts()`: el swept test usa la posición al tick `pt` (los beams van lentos: 50 °/s a 22 u
