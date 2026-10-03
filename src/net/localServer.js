@@ -15,7 +15,7 @@ import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
 import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
-import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial } from '../sim/systems/quests.js';
+import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
@@ -159,6 +159,7 @@ export class LocalServer {
       case 'buy': buy(w, e, String(msg.what)); break;
       case 'sell': sell(w, e, uid); break;
       case 'tut': setTutorial(w, e, msg.i | 0); break;
+      case 'tier': setTier(w, e, msg.tier | 0); break;
       default: break;
     }
   }
@@ -207,6 +208,7 @@ export class LocalServer {
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
       case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; w.profileDirty.add(e); break;
       case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
+      case 'tier': { const p = w.profiles.get(e); if (p) { p.flags.tier = p.flags.tierSel = Math.max(1, Math.min(3, f(msg.tier, 1) | 0)); w.profileDirty.add(e); } break; }
       case 'gold': { const p = w.profiles.get(e); if (p) { p.gold = Math.max(0, p.gold + (f(msg.n) | 0)); w.profileDirty.add(e); } break; }
       case 'potions': ecs.potions[e] = Math.max(0, Math.min(5, f(msg.n, 5) | 0)); break;
       case 'item': giveItem(w, e, rollItem(w.lootRng, { lvl: f(msg.lvl, ecs.level[e]), rarity: msg.rarity === undefined ? undefined : Math.max(0, Math.min(4, f(msg.rarity) | 0)), slot: typeof msg.slot === 'string' ? msg.slot : undefined })); break;

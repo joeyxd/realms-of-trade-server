@@ -188,7 +188,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
 - [x] **P4 Misiones y vendedora**: datos, sistema, `talk` / `quest` / `buy` / `sell` / `tut`, objetos de misión,
   recompensas. Tests `tests/quests.test.mjs` (cadena entera con eventos, distancia, cooperativo, repetible,
   compras sin oro).
-- [ ] **P5 Mareas**: niveles del encuentro, multiplicador de daño enemigo, bonus de loot / XP / oro, desbloqueo,
+- [x] **P5 Mareas**: niveles del encuentro, multiplicador de daño enemigo, bonus de loot / XP / oro, desbloqueo,
   elección en las runas, estado 11. Tests en `tests/quests.test.mjs` o `tests/tiers.test.mjs`.
 - [ ] **P6 Cliente I**: HUD (oro, poción, maestría, candados, avisos de desbloqueo), loot en el suelo (malla, haz,
   nombre, arco, recogida), sonidos, seguimiento de misiones, guardado local, aviso de partida rechazada.
@@ -242,3 +242,10 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   Hablar y aceptar exigen ≤ 3.5 u del PNJ; comprar / vender ≤ 4.5 u de Perla. Eventos privados `quest {id, st:
   start | progress | ready | done, n, of, reward}`, `talk {npc, ent, offer, ready, shop}`, `bought {what, fail?}`.
   `cmd`: `talk {npc: entidad}`, `quest {op: accept | turnin, id}`, `buy {what}`, `sell {uid}`, `tut {i}`. 125 tests.
+- **P5:** `ENCOUNTERS.caldera.tiers` + `tierR` (6 u). `pickTier` al empezar cada intento (la `tierSel` más baja
+  de los que están dentro; 1 sin perfiles) → `enc.tier` / `enc.tierDef`; vida × `tier.hp` (con la cooperativa),
+  `spawnEnemy` con `extra.enc` copia `brain.tier` (oleadas y esbirros). `world.dmgMul(e)` multiplica en un solo
+  sitio: `firePattern`, `addAoe`, `addBeam`, `setLava` (el jefe ahora pasa `owner`). XP × `tier.xp` en
+  `killEnemy`; nivel / rareza / oro del loot ya lo leían `lootOnKill` y `bossChests`. La victoria abre la
+  siguiente (`flags.tier`, evento privado `tier {open, sel}`). `cmd tier {tier}` a ≤ 6 u de las runas; F4 `tier`.
+  `encounterState()[11]` y el evento `enc` llevan `tier`. 129 tests.

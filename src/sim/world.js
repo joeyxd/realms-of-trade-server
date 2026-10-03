@@ -105,6 +105,8 @@ export class World {
     ecs.names[e] = def.name;
     ecs.titles[e] = def.title || '';
     ecs.brain[e] = makeEnemyBrain(def, x, z, facing, this.rng, extra);
+    // The Marea of its encounter (M4): damage, XP and loot follow it.
+    if (extra.enc) { const q = this.encounters.find((o) => o.id === extra.enc); if (q && q.tierDef) ecs.brain[e].tier = q.tierDef; }
     ecs.act[e] = extra.riseT ? ACT.WAKE : def.dormant ? ACT.DORMANT : ACT.IDLE;
     this.events.push({ type: 'spawn', id: e });
     // Encounter spawns stand up out of the ground first (bones assemble / a burst of fire).
@@ -165,7 +167,11 @@ export class World {
   flushAllFeel() { for (const e of [...this.feelQ.keys()]) this.flushFeel(e); }
 
   // ---- Projectiles ------------------------------------------------------------------------------------
+  // How hard enemy e hits (its Marea, M4): every hostile pattern, circle, beam and the lava go through here.
+  dmgMul(e) { const b = e ? this.ecs.brain[e] : null; return b && b.tier ? b.tier.dmg : 1; }
+
   firePattern(ev) {
+    if (ev.src && this.dmgMul(ev.src) !== 1) ev.dmg = Math.round(ev.dmg * this.dmgMul(ev.src));
     this.nextPid += patternCount(ev);
     emitPattern(this.hazards, ev, this.map);
     this.emit(ev);
@@ -180,7 +186,7 @@ export class World {
 
   // Ground circle / beam / lava, created here so the event carries everything the client rebuilds.
   addAoe(o) {
-    const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: o.dmg, keep: o.keep ? 1 : 0 };
+    const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: Math.round(o.dmg * this.dmgMul(o.owner)), keep: o.keep ? 1 : 0 };
     // Where the blow comes from (a melee bite / cleave / slam): the guard checks it against its arc.
     if (o.sx !== undefined) { a.sx = o.sx; a.sz = o.sz; }
     this.hazards.addAoe(a);
@@ -195,7 +201,7 @@ export class World {
     const b = {
       id: this.nextAoe++, owner: o.owner || 0, kind: o.kind, x0: o.x0, z0: o.z0, ang0: o.ang0, omega: o.omega || 0,
       vx: o.vx || 0, vz: o.vz || 0, off: o.off || 0, len: o.len, w: o.w, t0: o.t0 ?? this.tick, tAct: o.tAct, tEnd: o.tEnd,
-      dmg: o.dmg, every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0, tele: o.tele || 0, travel: o.travel || 0,
+      dmg: Math.round(o.dmg * this.dmgMul(o.owner)), every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0, tele: o.tele || 0, travel: o.travel || 0,
     };
     this.hazards.addBeam(b);
     const ev = { type: 'beam', src: b.owner, tick: b.t0 };
@@ -205,7 +211,7 @@ export class World {
   }
   setLava(o) {
     if (!o) { this.hazards.setLava(null); this.emit({ type: 'lava', off: 1 }); return null; }
-    const L = this.hazards.setLava({ id: this.nextAoe++, ...o });
+    const L = this.hazards.setLava({ id: this.nextAoe++, ...o, dmg: Math.round(o.dmg * this.dmgMul(o.owner)) });
     const ev = { type: 'lava' };
     for (const k of LAVA_FIELDS) ev[k] = L[k];
     this.emit(ev);
@@ -436,7 +442,8 @@ export class World {
     encounterKilled(this, e);
     this.hazards.cancelPending(e, this.tick);
     // XP to every player nearby (the killer and whoever helped); each of them rolls their own loot (M4).
-    const xp = o.noXp ? 0 : def.xp, got = [];
+    const tierXp = ecs.brain[e] && ecs.brain[e].tier ? ecs.brain[e].tier.xp : 1;
+    const xp = o.noXp ? 0 : Math.round(def.xp * tierXp), got = [];
     for (let p = 1; p < ecs.cap && xp; p++) {
       if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
       if (p !== by && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;

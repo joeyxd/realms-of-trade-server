@@ -57,7 +57,7 @@ export function stepBoss(world, e, def, b, dt) {
     if (NP.lava && def.lava) {
       // The arena starts to burn from the rim inward once the roar is over.
       const c = arenaOf(world, e, b), L = def.lava;
-      world.setLava({ cx: c.x, cz: c.z, r0: L.r0, rMin: L.rMin, rate: L.rate, t0: world.tick + Math.round(def.enrage / DT), R: L.R, dmg: L.dmg, every: Math.round(L.every / DT) });
+      world.setLava({ owner: e, cx: c.x, cz: c.z, r0: L.r0, rMin: L.rMin, rate: L.rate, t0: world.tick + Math.round(def.enrage / DT), R: L.R, dmg: L.dmg, every: Math.round(L.every / DT) });
     }
     return;
   }

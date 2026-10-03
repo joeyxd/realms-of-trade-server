@@ -44,7 +44,18 @@ const participants = (world, enc, r) => {
 };
 
 function emit(world, enc, extra = {}) {
-  world.emit({ type: 'enc', id: enc.id, st: enc.st, wave: enc.wave, waves: enc.def.waves.length, left: enc.alive.size, tick: world.tick, n: enc.n || 1, ...extra });
+  world.emit({ type: 'enc', id: enc.id, st: enc.st, wave: enc.wave, waves: enc.def.waves.length, left: enc.alive.size, tick: world.tick, n: enc.n || 1, tier: enc.tier || 1, ...extra });
+}
+
+// The Marea of a new attempt: the lowest one picked by the pirates who start it (1 without profiles).
+function pickTier(world, enc) {
+  const T = enc.def.tiers || [{ hp: 1, dmg: 1, ilvl: 0, rar: 0, xp: 1, gold: 1 }];
+  let t = T.length;
+  const crew = participants(world, enc, enc.def.radius);
+  for (const p of crew) { const pr = world.profiles && world.profiles.get(p); t = Math.min(t, pr ? pr.flags.tierSel || 1 : 1); }
+  if (!crew.length) t = 1;
+  enc.tier = Math.max(1, Math.min(T.length, t));
+  enc.tierDef = T[enc.tier - 1];
 }
 
 // Co-op: the pirates in the arena when a wave (or the boss) arrives set how tough it is.
@@ -60,7 +71,7 @@ function spawnGroups(world, enc, groups) {
       // A little scatter so a group from one point does not stack.
       const j = (enc.cursor * 2.399) % (Math.PI * 2), r = (i % 3) * 0.9;
       const x = p.x + Math.sin(j) * r, z = p.z + Math.cos(j) * r;
-      const e = world.spawnEnemy(kind, x, z, Math.atan2(enc.cx - x, enc.cz - z), { riseT: enc.def.riseT, aggro: 40, leash: 60, enc: enc.id, hpMul: coopMul(enc.def.coopHp, enc.n) });
+      const e = world.spawnEnemy(kind, x, z, Math.atan2(enc.cx - x, enc.cz - z), { riseT: enc.def.riseT, aggro: 40, leash: 60, enc: enc.id, hpMul: coopMul(enc.def.coopHp, enc.n) * (enc.tierDef ? enc.tierDef.hp : 1) });
       enc.alive.add(e);
     }
   }
@@ -91,6 +102,7 @@ export function stepEncounter(world, enc, dt) {
     if (enc.cool > 0) return;
     if (!participants(world, enc, D.startR).length) return;
     enc.out = 0;
+    pickTier(world, enc);
     go(world, enc, enc.reached === 'boss' ? 'bossIntro' : 'intro');
     return;
   }
@@ -126,7 +138,7 @@ export function stepEncounter(world, enc, dt) {
       if (!enc.bossE) {
         enc.reached = 'boss';
         const B = D.boss, b = enc.boss;
-        enc.bossMul = coopMul(D.coopBossHp, crew(world, enc));
+        enc.bossMul = coopMul(D.coopBossHp, crew(world, enc)) * (enc.tierDef ? enc.tierDef.hp : 1);
         enc.bossE = world.spawnEnemy(B.kind, b.x, b.z, Math.atan2(enc.cx - b.x, enc.cz - b.z), { riseT: B.riseT, aggro: 40, leash: 60, enc: enc.id, boss: 1, hpMul: enc.bossMul });
         emit(world, enc, { boss: enc.bossE });
       }
@@ -153,7 +165,20 @@ function crewIn(world, enc) {
 }
 
 function victory(world, enc) {
-  if (world.profiles) { const crew = crewIn(world, enc); bossChests(world, enc, crew); questWin(world, enc, crew); }
+  if (world.profiles) {
+    const crew = crewIn(world, enc);
+    bossChests(world, enc, crew);
+    questWin(world, enc, crew);
+    // The next Marea opens for everyone who won this one.
+    const T = enc.def.tiers || [];
+    for (const pl of crew) {
+      const p = world.profiles.get(pl);
+      if (!p || !(enc.tier >= p.flags.tier) || p.flags.tier >= T.length) continue;
+      p.flags.tier = Math.min(T.length, (enc.tier || 1) + 1);
+      world.emit({ type: 'tier', to: pl, e: pl, open: p.flags.tier, sel: p.flags.tierSel });
+      world.profileDirty.add(pl);
+    }
+  }
   enc.reached = '';
   enc.bossE = 0;
   // The minions crumble with their master (no XP: the boss paid for everything).
@@ -166,7 +191,7 @@ function victory(world, enc) {
 
 export function reset(world, enc) {
   sweepOut(world, enc);
-  enc.wave = -1; enc.cool = 3; enc.out = 0; enc.left = -1; enc.bossMul = 0;
+  enc.wave = -1; enc.cool = 3; enc.out = 0; enc.left = -1; enc.bossMul = 0; enc.tier = 0; enc.tierDef = null;
   go(world, enc, 'idle', { wipe: 1 });
 }
 
@@ -182,21 +207,22 @@ export function encounterKilled(world, e) {
 
 // Compact state for snapshots (late joiners, the HUD):
 // [id, st, wave, waves, left, boss, bossPhase (0-based), shield (0 off · 1 up · 2 broken), invulnerable,
-//  lava (0, or its LAVA_FIELDS values: late joiners rebuild it), crew (pirates the fight is scaled for; 0 idle)].
+//  lava (0, or its LAVA_FIELDS values: late joiners rebuild it), crew (pirates the fight is scaled for; 0 idle),
+//  Marea (1-based; 0 idle)].
 export function encounterState(world, enc) {
   const b = enc.bossE && world.ecs.alive[enc.bossE] ? world.ecs.brain[enc.bossE] : null;
   const L = world.hazards.lava;
   return [enc.id, enc.st, enc.wave, enc.def.waves.length, enc.alive.size, b ? enc.bossE : 0,
     b ? b.phase : 0, b ? (b.broken > 0 ? 2 : b.shieldOn ? 1 : 0) : 0, b && (b.inv > 0 || b.state === 'wake') ? 1 : 0,
-    L ? LAVA_FIELDS.map((k) => L[k]) : 0, enc.st === 'idle' ? 0 : enc.n || 1];
+    L ? LAVA_FIELDS.map((k) => L[k]) : 0, enc.st === 'idle' ? 0 : enc.n || 1, enc.st === 'idle' ? 0 : enc.tier || 1];
 }
 
 // F4: start | wave (finish the current one) | boss | phase2 | phase3 | win | reset.
 export function encounterDev(world, enc, op) {
   switch (op) {
-    case 'start': if (enc.st === 'idle') { enc.cool = 0; go(world, enc, 'intro'); } break;
+    case 'start': if (enc.st === 'idle') { enc.cool = 0; pickTier(world, enc); go(world, enc, 'intro'); } break;
     case 'wave': if (enc.st === 'wave') { for (const e of [...enc.alive]) if (world.ecs.alive[e]) world.killEnemy(e, 0, { noXp: true }); enc.late = true; } break;
-    case 'boss': sweepOut(world, enc); enc.wave = enc.def.waves.length - 1; go(world, enc, 'bossIntro'); break;
+    case 'boss': sweepOut(world, enc); enc.wave = enc.def.waves.length - 1; if (!enc.tierDef) pickTier(world, enc); go(world, enc, 'bossIntro'); break;
     case 'phase2': case 'phase3':
       if (enc.bossE) { const ecs = world.ecs; ecs.hp[enc.bossE] = Math.floor(ecs.maxHp[enc.bossE] * (ENEMIES.hellfire.phases[op === 'phase2' ? 0 : 1].until - 0.01)); }
       break;

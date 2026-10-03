@@ -176,3 +176,16 @@ export function setTutorial(world, e, i) {
   const v = Math.max(0, Math.min(20, i | 0));
   if (v > p.flags.tut) { p.flags.tut = v; markProfile(world, e); }
 }
+
+// ---- Mareas -----------------------------------------------------------------------------------------------
+// At the runes of La Caldera: pick the Marea you want (up to the highest you have opened).
+export function setTier(world, e, t) {
+  const p = profileOf(world, e), ecs = world.ecs, enc = world.encounters && world.encounters[0];
+  if (!p || !enc) return false;
+  if (Math.hypot(ecs.x[e] - enc.cx, ecs.z[e] - enc.cz) > (enc.def.tierR || 6)) return false;
+  const v = Math.max(1, Math.min(p.flags.tier, t | 0));
+  p.flags.tierSel = v;
+  world.emit({ type: 'tier', to: e, e, open: p.flags.tier, sel: v });
+  markProfile(world, e);
+  return true;
+}
