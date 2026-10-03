@@ -111,7 +111,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 - [x] **P0** Este plan.
 - [x] **P1** El escenario girado (2.1) + test del mapeo.
 - [x] **P2** Botones táctiles v2 y HUD horizontal (2.2).
-- [ ] **P3** Contornos de tinta (2.3).
+- [x] **P3** Contornos de tinta (2.3).
 - [ ] **P4** Sombras de cómic (2.4).
 - [ ] **P5** Superficies pintadas (2.5).
 - [ ] **P6** Etalonaje, rendimiento, capturas, docs, versión, artefacto, informe (2.6).
@@ -138,3 +138,10 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
   para que «Grande» no suba la acción hasta los botones de arriba. HUD con escenario ≤ 480 de alto: seguidor en
   una línea bajo el retrato, toasts debajo (máx. 3). Extra: vibración corta (dash, guardia, poción, acción; más
   fuerte al lanzar Q / E / R) con «Vibración (móvil)» en Ajustes. 149 tests.
+- **P3**: la pasada de normales escribe el peso en alfa (`MN_LINE_W`, tras el `OPAQUE` de r160: última línea de
+  `main`). `characterMaterial()` lleva su par de normales de peso 1 en `material.userData.nm` (el pipeline usa el
+  del mesh, si no el del material, si no el del mundo, 0.5); botín y escombros, aunque usan ese material, van a 0.5.
+  Composición: siluetas del mundo a 1.5×, creases a 0.5×; la línea gruesa de los personajes va **por fuera**
+  (un píxel que no es personaje con uno a 2.5× en 8 tomas es tinta) y por dentro solo un contorno fino a 0.8×
+  (a dos caras se comía brazos y piernas). +4 lecturas por píxel. Tinta 0x120a24, desvanecido 90 / 210.
+  Pendiente menor: hojas muy finas alineadas a un eje pueden mostrar una línea paralela tenue.

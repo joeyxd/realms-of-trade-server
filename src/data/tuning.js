@@ -156,7 +156,7 @@ export const tuning = {
 
   // ---- Visual-only tuning ---------------------------------------------------------------------
   visual: {
-    outlineColor: 0x1a1033,
+    outlineColor: 0x120a24, // ink
     errorSmoothLambda: 15,
   },
 };

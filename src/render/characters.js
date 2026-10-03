@@ -6,7 +6,7 @@
 // the riposte, and the enemies' telegraphed attacks (bow draw, overhead cleave, spikes, orb).
 import * as THREE from 'three';
 import { blobTexture } from './geo.js';
-import { toon, U } from './toon.js';
+import { toon, U, charNormalMat } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { BONES, makeBones } from './charkit.js';
 import { LOOKS, buildLook } from './charlooks.js';
@@ -47,6 +47,7 @@ export function characterMaterial(kind = 'base') {
   m.flatShading = true;
   m.userData.glow = glow;
   m.userData.flash = flash;
+  m.userData.nm = charNormalMat(); // line weight 1 in the normal pass: characters are inked heavier than the world
   return m;
 }
 

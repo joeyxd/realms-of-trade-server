@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { part, merge, cyl, sphere, rbox, torus, lumpy, cone } from './geo.js';
 import { characterMaterial } from './characters.js';
+import { worldNormalMat } from './toon.js';
 import { LAYER, FXU, GLSL_FX_DEPTH } from './pipeline.js';
 import { SHAPE } from './vfx/particles.js';
 import { RARITIES, BASES } from '../data/items.js';
@@ -148,6 +149,7 @@ export class LootLayer {
     Object.assign(this, { scene, map, effects, lights });
     this.drops = new Map(); // id → view
     this.material = characterMaterial('base');
+    this.material.userData.nm = worldNormalMat(); // small pickups: world line weight, not the heavy character ink
     this.material.userData.glow.value = 1.4;
     this.time = 0;
     this.tmp = new THREE.Vector3();

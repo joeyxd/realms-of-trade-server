@@ -16,6 +16,7 @@
 // Alpha-blended FX (smoke, dust) raise it back, so smoke in front of a fire hides its glow.
 import * as THREE from 'three';
 import { tuning } from '../data/tuning.js';
+import { worldNormalMat } from './toon.js';
 
 export const LAYER = { WORLD: 0, FX: 1, NO_OUTLINE: 2, WATER: 3 };
 
@@ -70,8 +71,16 @@ varying vec2 vUv;
 void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
 `;
 
+// Ink. tNormal.rgb = view normal, .a = line weight (world 0.5, characters 1; 0 where nothing was drawn).
+// World: depth silhouettes (radius 1.5x, both sides) and normal creases (0.5x, thin), faded with distance.
+// Characters (weight > 0.75) are inked heavier but on the OUTSIDE: any non-character pixel with a character
+// within 2.5x (axis taps) is ink, so the heavy line grows around the figure and its colors stay (a two-sided
+// line of that width swallows limbs). Inside: only a thin contour. Character against character keeps the
+// depth edge. Never faded. 12 + 4 texture reads per pixel, no extra pass.
 const COMPOSITE_FRAG = /* glsl */ `
 #include <packing>
+// Line widths in uThick units: world silhouette (both sides), character silhouette (inside / outside), crease.
+const float W_SIL = 1.5, W_CHAR_IN = 0.8, W_CHAR_OUT = 2.5, W_CREASE = 0.5;
 uniform sampler2D tColor;
 uniform sampler2D tNormal;
 uniform sampler2D tDepth;
@@ -79,16 +88,19 @@ uniform vec2 uTexel;
 uniform float uNear, uFar, uThick, uDepthThr, uNormalThr, uFadeNear, uFadeFar;
 uniform vec3 uOutline;
 varying vec2 vUv;
-float linD(vec2 uv) { return -perspectiveDepthToViewZ(texture2D(tDepth, uv).r, uNear, uFar); }
-vec3 nrm(vec2 uv) { return texture2D(tNormal, uv).rgb * 2.0 - 1.0; }
+float linD(float raw) { return -perspectiveDepthToViewZ(raw, uNear, uFar); }
+float linD(vec2 uv) { return linD(texture2D(tDepth, uv).r); }
 void main() {
   vec4 src = texture2D(tColor, vUv);
   vec3 col = src.rgb;
   float rawC = texture2D(tDepth, vUv).r;
-  float dc = linD(vUv);
-  vec3 nc = nrm(vUv);
+  float dc = linD(rawC);
+  vec4 tc = texture2D(tNormal, vUv);
+  vec3 nc = tc.rgb * 2.0 - 1.0;
   float hasGeo = step(rawC, 0.999999);
-  vec2 o = uTexel * uThick;
+  float cw = step(0.75, tc.a); // this pixel belongs to a character
+  // Silhouettes: depth jumps. Wide around the world, thin inside a character (its heavy line is drawn outside).
+  vec2 o = uTexel * uThick * mix(W_SIL, W_CHAR_IN, cw);
   float d1 = linD(vUv + o), d2 = linD(vUv - o);
   float d3 = linD(vUv + vec2(-o.x, o.y)), d4 = linD(vUv + vec2(o.x, -o.y));
   float dmin = min(min(min(d1, d2), min(d3, d4)), dc);
@@ -96,13 +108,21 @@ void main() {
   float ndv = hasGeo > 0.5 ? clamp(abs(nc.z), 0.0, 1.0) : 1.0;
   float thr = uDepthThr * dmin * (1.0 + 5.0 * (1.0 - ndv));
   float de = smoothstep(thr, thr * 1.7, g);
-  vec2 o1 = uTexel * max(1.0, uThick * 0.5);
-  vec3 n1 = nrm(vUv + o1), n2 = nrm(vUv - o1), n3 = nrm(vUv + vec2(-o1.x, o1.y)), n4 = nrm(vUv + vec2(o1.x, -o1.y));
-  float ng = length(n1 - n2) + length(n3 - n4);
+  // Creases: normal jumps, thin.
+  vec2 o1 = uTexel * max(1.0, uThick * W_CREASE);
+  vec4 t1 = texture2D(tNormal, vUv + o1), t2 = texture2D(tNormal, vUv - o1);
+  vec4 t3 = texture2D(tNormal, vUv + vec2(-o1.x, o1.y)), t4 = texture2D(tNormal, vUv + vec2(o1.x, -o1.y));
+  float ng = (length(t1.rgb - t2.rgb) + length(t3.rgb - t4.rgb)) * 2.0; // packed *0.5 + 0.5: back to normal scale
   float ne = smoothstep(uNormalThr, uNormalThr * 1.6, ng) * hasGeo;
-  float edge = max(de, ne * 0.8);
-  edge *= 1.0 - smoothstep(uFadeNear, uFadeFar, dmin);
-  edge = clamp(edge, 0.0, 1.0);
+  // Characters: weight alpha. Outside = a character within the wide footprint; inside = thin contour.
+  vec2 oc = uTexel * max(2.0, floor(uThick * W_CHAR_OUT + 0.5)); // whole texels: crisp taps, no bilinear mixing
+  float w5 = texture2D(tNormal, vUv + vec2(oc.x, 0.0)).a, w6 = texture2D(tNormal, vUv - vec2(oc.x, 0.0)).a;
+  float w7 = texture2D(tNormal, vUv + vec2(0.0, oc.y)).a, w8 = texture2D(tNormal, vUv - vec2(0.0, oc.y)).a;
+  float wHi = max(max(max(t1.a, t2.a), max(t3.a, t4.a)), max(max(w5, w6), max(w7, w8)));
+  float wLo = min(min(t1.a, t2.a), min(t3.a, t4.a));
+  float charEdge = max((1.0 - cw) * smoothstep(0.7, 0.8, wHi), cw * (1.0 - smoothstep(0.7, 0.8, wLo)));
+  float world = max(de, ne * 0.8) * (1.0 - smoothstep(uFadeNear, uFadeFar, dmin));
+  float edge = clamp(max(world, charEdge), 0.0, 1.0);
   col = mix(col, uOutline, edge);
   gl_FragColor = vec4(col, mix(src.a, 1.0, edge)); // ink never glows
   #include <colorspace_fragment>
@@ -238,7 +258,7 @@ export class Pipeline {
     this.quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     this.q = { pixelRatio: 1, ss: 1, outlines: true, fxaa: true };
     this.size = new THREE.Vector2(1, 1);
-    this.defaultNormal = new THREE.MeshNormalMaterial();
+    this.defaultNormal = worldNormalMat(); // line weight 0.5
     this.casters = [];
     this.castersDirty = true;
     this.frame = 0;
@@ -264,7 +284,7 @@ export class Pipeline {
         tColor: { value: this.rtMain.texture }, tNormal: { value: this.rtNormal.texture }, tDepth: { value: this.rtNormal.depthTexture },
         uTexel: { value: new THREE.Vector2() }, uNear: { value: camera.near }, uFar: { value: camera.far },
         uThick: { value: 2 }, uDepthThr: { value: 0.022 }, uNormalThr: { value: 0.55 },
-        uFadeNear: { value: 70 }, uFadeFar: { value: 170 }, uOutline: { value: new THREE.Color(tuning.visual.outlineColor) },
+        uFadeNear: { value: 90 }, uFadeFar: { value: 210 }, uOutline: { value: new THREE.Color(tuning.visual.outlineColor) },
       },
       vertexShader: FS_QUAD_VERT, fragmentShader: COMPOSITE_FRAG, depthTest: false, depthWrite: false,
     });
@@ -376,8 +396,9 @@ export class Pipeline {
     const list = this.casters;
     for (let i = 0; i < list.length; i++) {
       const m = list[i];
-      m.userData._m = m.material;
-      m.material = m.userData.nm || this.defaultNormal;
+      const mat = m.material;
+      m.userData._m = mat;
+      m.material = m.userData.nm || (mat.userData && mat.userData.nm) || this.defaultNormal; // mesh pair, else its material's (characters)
     }
     r.autoClear = true;
     cam.layers.set(LAYER.WORLD);

@@ -333,9 +333,12 @@ export function toon(params = {}, opts = {}) {
 }
 
 // Normal-pass material that repeats the same vertex motion and occluder discard as its toon twin.
+// Its alpha is the ink line weight (opts.lineW: world 0.5, characters 1): the composite reads it to ink
+// characters heavier. meshnormal's `#ifdef OPAQUE` forces a = 1, so the weight is written last in main().
 export function normalMatFor(opts = {}, side = THREE.FrontSide) {
   const mat = new THREE.MeshNormalMaterial({ side });
-  mat.defines = definesFor(opts);
+  const lineW = (opts.lineW ?? 0.5).toFixed(3);
+  mat.defines = { ...definesFor(opts), MN_LINE_W: lineW };
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, U);
     if (opts.sway) sh.uniforms.mnSwayAmt = opts.swayUniform || { value: 0.18 };
@@ -345,11 +348,21 @@ export function normalMatFor(opts = {}, side = THREE.FrontSide) {
       .replace('#include <project_vertex>', '#include <project_vertex>\n' + VERT_WORLD);
     sh.fragmentShader = sh.fragmentShader
       .replace('void main() {', GLSL_COMMON + FRAG_PARS + 'void main() {')
-      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE);
+      .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
+      .replace(/\}\s*$/, '\tgl_FragColor.a = MN_LINE_W;\n}');
   };
-  mat.customProgramCacheKey = () => 'mn-normal-' + JSON.stringify(definesFor(opts)) + side;
+  mat.customProgramCacheKey = () => 'mn-normal-' + JSON.stringify(definesFor(opts)) + side + lineW;
   return mat;
 }
+
+// Shared normal-pass materials without sway or occlusion: world weight 0.5 (the pipeline's default, small
+// pickups, debris) and characters 1. The character one is attached to the toon material (userData.nm, see
+// characterMaterial) so the skinned views, crab, dummy and cannon all pick it up.
+let WORLD_NM = null;
+export function worldNormalMat() { return WORLD_NM || (WORLD_NM = normalMatFor({})); }
+// Characters, skinned or not: line weight 1.
+let CHAR_NM = null;
+export function charNormalMat() { return CHAR_NM || (CHAR_NM = normalMatFor({ lineW: 1 })); }
 
 // Convenience: toon + paired normal material assigned to the mesh.
 export function toonMesh(geo, params, opts = {}, MeshClass = THREE.Mesh, count) {

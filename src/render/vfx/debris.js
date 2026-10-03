@@ -2,6 +2,7 @@
 // triangle's main bone; when an enemy dies, every piece starts from its bone's current pose and flies
 // off with a spin, bounces on the ground, then sinks away. Pieces reuse the dead character's material.
 import * as THREE from 'three';
+import { worldNormalMat } from '../toon.js';
 
 const cache = new Map(); // look key → [{geo, center: Vector3, bone}]
 
@@ -61,6 +62,7 @@ export class Debris {
     const base = view.root.position;
     for (const pc of pieces) {
       const mesh = new THREE.Mesh(pc.geo, view.material);
+      mesh.userData.nm = worldNormalMat(); // small chunks: world line weight, not a heavy character outline
       mesh.castShadow = true;
       m4.multiplyMatrices(sk.bones[pc.bone].matrixWorld, sk.boneInverses[pc.bone]);
       tmpV.copy(pc.center).applyMatrix4(m4);
