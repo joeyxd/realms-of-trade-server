@@ -328,10 +328,10 @@ test('client prediction stays exact in Hellfire phase 3 (lava, lanes, meteors, c
   let maxErr = 0, lavaHurt = 0, beamSeen = 0;
   for (let i = 0; i < 1500; i++) {
     client.update(DT);
-    const prs = (i % 13 === 0 ? BTN.PARRY : 0) | (i % 97 === 50 ? BTN.DASH : 0) | (i % 37 === 0 ? BTN.ATTACK : 0);
+    const prs = (i % 13 === 0 ? BTN.ATTACK : 0) | (i % 97 === 50 ? BTN.DASH : 0) | (i % 37 === 0 ? BTN.GUARD : 0);
     // Wide circles: in and out of the lava ring.
     const mx = Math.sin(i * 0.02), mz = Math.cos(i * 0.02);
-    client.tickInput({ mx, mz, ax: ecs.x[enc.bossE] || enc.cx, az: ecs.z[enc.bossE] || enc.cz, btn: 0, prs });
+    client.tickInput({ mx, mz, ax: ecs.x[enc.bossE] || enc.cx, az: ecs.z[enc.bossE] || enc.cz, btn: (i % 70 < 25 ? BTN.GUARD : 0) | (i % 300 < 150 ? BTN.AIM : 0), prs });
     server.step();
     for (const ev of server.world.events || []) { if (ev.type === 'hurt' && ev.kind === 'lava') lavaHurt++; }
     beamSeen = Math.max(beamSeen, client.pred.hazards.beams.length);

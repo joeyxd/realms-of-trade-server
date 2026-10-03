@@ -66,3 +66,40 @@ test('client prediction stays exact with aimed facing, strafing and backpedallin
   assert.equal(maxErr, 0, 'zero prediction error');
   for (const k of ['x', 'z', 'facing', 'hp']) assert.equal(client.pred.ecs[k][client.youLocal], ecs[k][se], k);
 });
+
+test('client prediction stays exact through perfect guards (catches) and releases; the server shots are adopted', () => {
+  const { server, client, deliver, shown, sp, se, ecs } = clientAndServer();
+  let maxErr = 0, holding = 0, catches = 0, releases = 0;
+  for (let i = 0; i < 1500; i++) {
+    client.update(DT);
+    // Raise the guard when an arrow is ~90 ms away (perfect), keep it up a moment, then swing to release.
+    const H = client.hazards, pe = client.pred.ecs, me = client.youLocal, pt = client.ptCur + 1;
+    let soon = false;
+    for (let s = 0; s < H.cap; s++) {
+      if (!H.live(s, pt)) continue;
+      const rx = pe.x[me] - H.px(s, pt), rz = pe.z[me] - H.pz(s, pt), v2 = H.vx[s] ** 2 + H.vz[s] ** 2;
+      const tca = (rx * H.vx[s] + rz * H.vz[s]) / v2;
+      if (tca > 0 && tca < 0.09 && Math.hypot(rx - H.vx[s] * tca, rz - H.vz[s] * tca) < 0.7) soon = true;
+    }
+    if (soon && !holding) holding = 20;
+    const btn = holding > 0 ? BTN.GUARD : 0;
+    if (holding > 0) holding--;
+    const prs = !holding && pe.catchN[me] > 0 ? BTN.ATTACK : 0;
+    client.tickInput({ mx: 0, mz: 0, ax: sp.x, az: sp.z, btn, prs });
+    server.step();
+    deliver();
+    maxErr = Math.max(maxErr, client.stats.predErr);
+  }
+  for (let i = 0; i < 6; i++) { server.step(); deliver(); }
+  for (const ev of shown) { if (ev.type === 'guard' && ev.st === 'perfect') catches++; if (ev.type === 'release') releases++; }
+  assert.equal(maxErr, 0, 'zero prediction error');
+  assert.ok(catches >= 2, `caught some arrows (${catches})`);
+  assert.ok(releases >= 1, `released them (${releases})`);
+  assert.ok(shown.filter((ev) => ev.type === 'release').every((ev) => ev.predicted), 'releases shown from prediction');
+  for (const k of ['hp', 'riposte', 'catchN', 'guardSt', 'xp']) assert.equal(client.pred.ecs[k][client.youLocal], ecs[k][se], k);
+  // Every server shot found its predicted copy: no duplicates on the client.
+  let cl = 0, sv = 0;
+  for (let s = 0; s < client.shots.cap; s++) if (client.shots.id[s] && !client.ending.has(s)) cl++;
+  for (let s = 0; s < server.world.shots.cap; s++) if (server.world.shots.id[s]) sv++;
+  assert.ok(cl <= sv + 1, `client shots ${cl} vs server ${sv}`);
+});

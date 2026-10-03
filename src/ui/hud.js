@@ -67,7 +67,7 @@ export class Hud {
       <div id="chain" class="outlined" hidden><span class="x">CADENA</span><b>x2</b></div>
       <div class="actionbar frame">
         <div class="slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span>${ICONS.sword}<div class="combo"><i></i><i></i><i></i></div></div>
-        <div class="slot rmb-slot" data-slot="rmb" title="Parry: refleja proyectiles ámbar; justo a tiempo, ¡PERFECTO!"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div></div>
+        <div class="slot rmb-slot" data-slot="rmb" title="Guardia (mantener): bloquea de frente. Súbela justo a tiempo para ATRAPAR la bala; el siguiente golpe la devuelve"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.spin, 'Pronto')}
         ${this.slot('e', 'E', ICONS.wave, 'Pronto')}
@@ -94,7 +94,9 @@ export class Hud {
     this.rpBar = root.querySelector('.bar.en');
     this.rpFill = this.rpBar.querySelector('.fill'); this.rpNum = this.rpBar.querySelector('.num');
     this.xpFill = root.querySelector('.bar.xp .fill'); this.xpNum = root.querySelector('.bar.xp .num');
-    this.rmbSweep = root.querySelector('.rmb-slot .sweep');
+    this.rmbSlot = root.querySelector('.rmb-slot');
+    this.rmbSweep = this.rmbSlot.querySelector('.sweep');
+    this.catchPips = this.rmbSlot.querySelectorAll('.catch i');
     this.rSlot = root.querySelector('.r-slot'); this.rFill = this.rSlot.querySelector('.rfill');
     this.comboPips = root.querySelectorAll('[data-slot="lmb"] .combo i');
     this.chainEl = root.querySelector('#chain');
@@ -147,7 +149,8 @@ export class Hud {
   }
 
   // Per-frame stats (only touches the DOM when a value changes).
-  setStats({ hp, maxHp, riposte, xp, xpNext, level, parryLock, combo, dead, deadT }) {
+  // guard: stamina 0..1; catchN / catchHv: bullets caught by a perfect guard (heavy ones first).
+  setStats({ hp, maxHp, riposte, xp, xpNext, level, guard = 1, catchN = 0, catchHv = 0, combo, dead, deadT }) {
     const L = this.last;
     const h = Math.ceil(hp);
     if (h !== L.hp || maxHp !== L.maxHp) {
@@ -179,10 +182,19 @@ export class Hud {
       this.lvl.textContent = String(level);
       L.level = level;
     }
-    const lock = parryLock > 0 ? Math.round((1 - parryLock / 0.35) * 360) : 360;
-    if (lock !== L.lock) {
-      this.rmbSweep.style.background = lock >= 360 ? '' : `conic-gradient(transparent 0deg ${lock}deg, rgba(10,6,24,0.62) ${lock}deg 360deg)`;
-      L.lock = lock;
+    // Guard stamina drains the RMB slot from the top; low stamina turns it red.
+    const gs = Math.round(Math.max(0, Math.min(1, guard)) * 40) / 40;
+    if (gs !== L.gs) {
+      const pc = (1 - gs) * 100;
+      this.rmbSweep.style.background = gs >= 1 ? '' : `linear-gradient(rgba(10,6,24,0.66) ${pc}%, transparent ${pc}%)`;
+      this.rmbSlot.classList.toggle('low', gs < 0.34);
+      L.gs = gs;
+    }
+    const ck = catchN * 10 + catchHv;
+    if (ck !== L.ck) {
+      this.catchPips.forEach((p, i) => { p.classList.toggle('on', i < catchN); p.classList.toggle('heavy', i < catchHv); });
+      this.rmbSlot.classList.toggle('caught', catchN > 0);
+      L.ck = ck;
     }
     if (combo !== L.combo) {
       this.comboPips.forEach((p, i) => p.classList.toggle('on', i < combo));

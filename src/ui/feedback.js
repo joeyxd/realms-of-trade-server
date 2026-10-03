@@ -118,38 +118,93 @@ export class Feedback {
         if (ev.by === this.client.youServer) { this.shake(0.25); this.onTutorial('kill', rec); }
         break;
       }
-      case 'parryUp': if (me) sfx.whiff(); break;
       case 'parry': {
-        const y = ps.y + 1.1;
+        // A sword reflect: EXCELENTE (tier 3) / BUENO (2) / POBRE (1).
+        const y = ps.y + 1.1, tier = ev.tier || (ev.perfect ? 3 : 2);
         if (me) {
           const v = this.me();
-          W.combatFx.setGuard(v, true, true);
-          this.hud.pulse('rmb');
-          if (ev.perfect) {
+          this.hud.pulse('lmb');
+          if (tier === 3) {
             sfx.parry(true, ev.chain);
             W.combatFx.shockwave(ps.x, ps.y, ps.z, this.accent);
-            this.overMe('¡PERFECTO!', 'perfect', { life: 1.1 });
+            this.overMe('¡EXCELENTE!', 'perfect', { life: 1.1 });
             this.screen(0.5);
             this.shake(0.35);
             W.rig.punchIn(0.6);
             if (v) v.flash(this.accent, 0.8);
             W.lights.flash(ps.x, ps.y + 1.3, ps.z, this.accent, 7, 4.5, 0.4);
             this.sparks(ev.x, y, ev.z, 18, CYAN, CYAN1, { up: 3, spread: 4.5 });
-            if (ev.heavy) this.teach('heavyBack', '<b>¡Orbe devuelto!</b> Un parry PERFECTO es lo único que devuelve los orbes pesados.');
-          } else {
+            if (ev.heavy) this.teach('heavyBack', '<b>¡Orbe devuelto!</b> Solo un golpe EXCELENTE (o atraparlo con la guardia) devuelve los orbes pesados.');
+          } else if (tier === 2) {
             sfx.parry(false, ev.chain);
             W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 1.8, this.accent, 0.3, 0.14, 0.8);
             this.sparks(ev.x, y, ev.z, 10, CYAN, CYAN1);
             W.lights.flash(ps.x, ps.y + 1.3, ps.z, this.accent, 5, 2.5, 0.25);
             this.shake(0.15);
-            if (ev.coyote) this.overMe('¡JUSTO!', 'parry', { life: 0.8 });
+            this.overMe(ev.coyote ? '¡JUSTO!' : 'BUENO', 'parry', { life: 0.8 });
+          } else {
+            sfx.parry(false, 1, true);
+            this.sparks(ev.x, y, ev.z, 6, CYAN, CYAN1, { up: 1.2 });
+            this.overMe(ev.coyote ? '¡JUSTO!' : 'POBRE', 'graze', { life: 0.7, spread: 20 });
+            this.teach('poor', '<b>Reflejo POBRE:</b> golpeaste la bala demasiado pronto. Espera a que esté casi encima: <b>EXCELENTE</b> sale recta a tu cursor y hace el triple.', 5200);
           }
-          if (ev.chain >= 2) this.overMe(`x${ev.chain}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
+          if (ev.chain >= 2 && tier >= 2) this.overMe(`x${ev.chain}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
           this.onTutorial('parry', ev);
         } else {
           sfx.parry(false, 1);
           this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 8, CYAN, CYAN1);
         }
+        break;
+      }
+      case 'guard': {
+        if (!me) {
+          if (ev.st === 'block' || ev.st === 'perfect') { sfx.block(this.vol(ev.x, ev.z) * 0.6); this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 6, CYAN, CYAN1); }
+          break;
+        }
+        const v = this.me(), y = ps.y + 1.1;
+        if (ev.st === 'up') { sfx.whiff(); break; }
+        if (ev.st === 'perfect') {
+          sfx.guardPerfect(ev.n || 0);
+          W.combatFx.setGuard(v, true, true);
+          W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 2.6, 0xffc46a, 0.35, 0.12, 0.9);
+          W.combatFx.ring(ps.x, ps.y + 0.12, ps.z, 1.6, 0xffffff, 0.25, 0.06, 1);
+          this.overMe(ev.pid ? '¡ATRAPADA!' : '¡GUARDIA PERFECTA!', 'perfect', { life: 1 });
+          if (ev.pid && ev.n > 1) this.overMe(`x${ev.n}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
+          this.sparks(ev.x, y, ev.z, 14, AMBER, AMBER1, { up: 2.5, spread: 3 });
+          W.lights.flash(ps.x, ps.y + 1.3, ps.z, 0xffc46a, 6, 3.5, 0.3);
+          this.shake(0.25);
+          if (v) v.flash(0xffe2a0, 0.6);
+          this.hud.pulse('rmb');
+          if (ev.pid) this.teach('catch', '<b>¡Bala atrapada!</b> Tu siguiente golpe (<span class="kbd">LMB</span>) la devuelve a tu cursor. Atrapa hasta 3.', 5200);
+          this.onTutorial('guard', ev);
+        } else if (ev.st === 'block') {
+          sfx.block();
+          W.combatFx.setGuard(v, true, true);
+          this.sparks(ev.x, y, ev.z, ev.heavy ? 12 : 6, [0.8, 0.95, 1], CYAN1, { up: 1.8 });
+          this.shake(ev.heavy ? 0.3 : 0.1);
+          if (ev.coyote) this.overMe('¡JUSTO!', 'info', { life: 0.7 });
+          this.teach('block', '<b>Guardia:</b> frena casi todo el daño de frente pero gasta aguante. Súbela <b>justo antes</b> del impacto para ATRAPAR la bala.', 5200);
+        } else if (ev.st === 'break') {
+          sfx.guardBreak();
+          this.overMe('¡GUARDIA ROTA!', 'hurt', { life: 1.1 });
+          this.shake(0.45);
+          this.screen(0.25, [1, 0.45, 0.2]);
+          this.teach('guardBreak', '<b>Guardia rota:</b> te quedaste sin aguante. Suéltala para que se recupere, o esquiva con un dash.', 5200);
+        }
+        break;
+      }
+      case 'release': {
+        if (!me) break;
+        sfx.release(ev.n, !!ev.heavy);
+        this.overMe(ev.n > 1 ? `¡x${ev.n} DEVUELTAS!` : '¡DEVUELTA!', 'perfect', { life: 0.9 });
+        W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 1.4, this.accent, 0.25, 0.16, 0.9);
+        break;
+      }
+      case 'stun': {
+        const rec = this.client.entities.get(ev.id), v = this.viewOf(ev.id);
+        const x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
+        if (v) { v.attack = null; v.hit && v.hit(1.2); }
+        this.float(x, z, (v ? v.height : 1.8) + 0.3, '¡ATURDIDO!', 'immune', { life: 0.9 });
         break;
       }
       case 'destroy': {
@@ -164,15 +219,7 @@ export class Feedback {
         sfx.clunk();
         this.sparks(ev.x, ps.y + 1.1, ev.z, 5, [0.8, 0.8, 0.8], [0.4, 0.4, 0.45], { up: 1.5 });
         this.float(ev.x, ev.z, 1.6, '✘', 'immune', { life: 0.6 });
-        this.teach('clunk', '<b>Orbe pesado:</b> la espada no lo rompe. Esquívalo, o devuélvelo con un parry PERFECTO.');
-        break;
-      case 'block':
-        if (!me) break;
-        sfx.block();
-        this.sparks(ev.x, ps.y + 1.1, ev.z, 12, [1, 0.6, 0.3], [0.9, 0.2, 0.05], { up: 2.5 });
-        this.overMe('BLOQUEO', 'info', { life: 0.8 });
-        this.shake(0.3);
-        this.teach('block', '<b>Bloqueo:</b> un parry normal solo frena el orbe pesado (mitad de daño). Hace falta PERFECTO.');
+        this.teach('clunk', '<b>Orbe pesado:</b> la espada no lo rompe. Golpéalo cuando esté encima (EXCELENTE), atrápalo con la guardia justo a tiempo, o esquívalo.');
         break;
       case 'phit':
         if (me) this.sparks(ev.x, ps.y + 1.1, ev.z, 5, AMBER, AMBER1, { up: 1.5 });
@@ -188,10 +235,11 @@ export class Feedback {
           this.overMe('¡Te dio!', 'info', { life: 0.9 });
           sfx.hurt(false);
           if (v) { v.flash(0xffffff, 0.7); v.hit(0.6); }
-          this.teach('practiceHit', '<b>¡Casi!</b> Pulsa <span class="kbd">RMB</span> un instante antes de que la bala te toque.');
+          this.teach('practiceHit', '<b>¡Casi!</b> Golpea con <span class="kbd">LMB</span> justo antes de que la bala te toque.');
           break;
         }
         if (ev.dmg <= 0) break;
+        if (ev.kind === 'block') { this.overMe(`-${ev.dmg}`, 'graze', { life: 0.6, spread: 24 }); break; }
         sfx.hurt(ev.kind === 'aoe' || ev.dmg >= 18);
         this.overMe(`-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
         if (v) { v.flash(0xff4d5e, 1); v.hit(1); }
@@ -200,7 +248,7 @@ export class Feedback {
         if (ev.kind === 'punish') {
           sfx.punish();
           this.overMe('¡IMPARABLE!', 'ghost', { life: 1 });
-          this.teach('punish', '<b>Púas violetas (✕):</b> no se pueden parrear. Atraviésalas con un dash: <b>FANTASMA</b>.');
+          this.teach('punish', '<b>Púas violetas (✕):</b> atraviesan la guardia y la espada. Atraviésalas con un dash: <b>FANTASMA</b>.');
         }
         if (ev.kind === 'aoe') this.teach('aoe', '<b>Círculos rojos:</b> estallan cuando se llenan. Sal de ellos o haz un dash a tiempo.');
         break;
@@ -296,7 +344,7 @@ export class Feedback {
         sfx.windup(ev.atk, this.vol(x, z));
         const c = ev.atk === 'volley' ? 0x8dffb0 : ev.atk === 'orb' ? 0xff5a1f : ev.atk === 'spikes' ? 0x9b4dff : ev.atk === 'ball' ? 0xffc46a : 0xff3b30;
         W.lights.flash(x, rec.r.y + 1.6, z, c, ev.atk === 'orb' ? 6 : 4, ev.atk === 'orb' ? 3.5 : 2, ev.dur + 0.15);
-        if (ev.atk === 'orb') this.teach('orbWarn', '<b>¡Orbe pesado!</b> Grande y lento: no lo rompes con la espada. Esquívalo o PERFECTO.');
+        if (ev.atk === 'orb') this.teach('orbWarn', '<b>¡Orbe pesado!</b> Grande y lento: solo un golpe EXCELENTE o una guardia perfecta lo devuelven. Si no, esquívalo.');
         if (ev.atk === 'spikes') this.teach('spikeWarn', '<b>Púas violetas (✕):</b> imparables. Dash a través de ellas.');
         break;
       }
@@ -357,8 +405,8 @@ export class Feedback {
         this.sparks(ev.x, this.y(ev.x, ev.z) + 2, ev.z, 40, [1, 0.6, 0.2], [0.9, 0.16, 0.04], { up: 6, spread: 6 });
         if (ev.last) this.hud.showZone('¡HELLFIRE DESATADO!', 'La lava devora La Caldera: no te alejes del centro', true, !!this.settings.reducedMotion);
         else this.hud.showZone(`FASE ${ev.phase}`, ev.shield ? 'Su escudo solo cede ante tus reflejos' : '¡Hellfire se enfurece!', true, !!this.settings.reducedMotion);
-        if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas, y refleja el <b>orbe pesado</b> con un PERFECTO para romperlo.', 6500);
-        if (ev.last) { this.shake(1.1); this.teach('bossLast', '<b>Última fase:</b> meteoros, carriles de fuego y cortinas de balas. Sus llamas frenan tus golpes: <b>refleja</b> la cortina contra él, y su <b>orbe pesado</b> con un PERFECTO para aturdirlo.', 7000); }
+        if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas con la espada, y devuélvele el <b>orbe pesado</b> (golpe EXCELENTE o atrapándolo con la guardia) para romperlo.', 6500);
+        if (ev.last) { this.shake(1.1); this.teach('bossLast', '<b>Última fase:</b> meteoros, carriles de fuego y cortinas de balas. Sus llamas frenan tus golpes: <b>refleja</b> la cortina contra él, y devuélvele su <b>orbe pesado</b> (EXCELENTE o guardia perfecta) para aturdirlo.', 7000); }
         break;
       }
       case 'beam': {

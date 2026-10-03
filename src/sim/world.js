@@ -2,7 +2,7 @@
 // The same class runs the server (isServer: enemies, shots, hits on enemies) and the client's
 // prediction of its own player (movement + combat against the projectiles the client knows about).
 import { tuning, DT } from '../data/tuning.js';
-import { ENEMIES, enemyIndex } from '../data/enemies.js';
+import { ENEMIES, ENEMY_KINDS as ENEMY_KINDS_LIST, enemyIndex } from '../data/enemies.js';
 import { mulberry32 } from '../core/rng.js';
 import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
 import { generateWorld } from './worldgen.js';
@@ -32,6 +32,7 @@ export class World {
     this.spawners = [];
     this.encounters = []; // server: scripted fights (populate)
     this.feelQ = new Map(); // e → {seq, hitstop, slowmo} merged per command
+    this.shockSeq = new Map(); // e → seq of its last perfect-guard shock
     this.tmp = { x: 0, z: 0, y: 0 };
   }
 
@@ -54,6 +55,7 @@ export class World {
     applyLevel(this, e, level);
     ecs.hp[e] = ecs.maxHp[e];
     ecs.dashCharges[e] = ecs.dashMax[e];
+    ecs.guardSt[e] = tuning.guard.stamina;
     const cp = this.map.checkpoints.spawn;
     ecs.cpX[e] = cp.x; ecs.cpZ[e] = cp.z;
     ecs.skin[e] = skin;
@@ -169,9 +171,12 @@ export class World {
   // Ground circle / beam / lava, created here so the event carries everything the client rebuilds.
   addAoe(o) {
     const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: o.dmg, keep: o.keep ? 1 : 0 };
+    // Where the blow comes from (a melee bite / cleave / slam): the guard checks it against its arc.
+    if (o.sx !== undefined) { a.sx = o.sx; a.sz = o.sz; }
     this.hazards.addAoe(a);
     const ev = { type: 'aoe', id: a.id, src: a.owner, x: a.x, z: a.z, r: a.r, tick: a.t0, tAct: a.tAct, dmg: a.dmg };
     if (a.keep) ev.keep = 1;
+    if (a.sx !== undefined) { ev.sx = a.sx; ev.sz = a.sz; }
     if (o.fall) { ev.fall = o.fall; ev.fx = o.fx; ev.fz = o.fz; ev.fy = o.fy; }
     this.emit(ev);
     return a;
@@ -206,7 +211,7 @@ export class World {
     const sid = this.nextSid++;
     this.shots.spawn(sid, { ...o, owner, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
-      const ev = { type: 'shot', sid, pid: o.pid, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq };
+      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: this.shots.homing[this.shots.slot.get(sid)], cone: this.shots.cone[this.shots.slot.get(sid)] };
       if (o.from) { ev.from = o.from; ev.target = o.target; }
       this.emit(ev);
     }
@@ -313,6 +318,26 @@ export class World {
       if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
       if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > RP.radius + ecs.hurtR[o]) continue;
       damageEnemy(this, o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true });
+    }
+  }
+
+  // A perfect guard: enemies close by that are winding up or striking are stunned (bosses shrug it off).
+  // Once per command.
+  guardShock(e, seq) {
+    const ecs = this.ecs, G = tuning.guard;
+    if (this.shockSeq.get(e) === seq) return;
+    this.shockSeq.set(e, seq);
+    for (let o = 1; o < ecs.cap; o++) {
+      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      const b = ecs.brain[o], def = ENEMIES[ENEMY_KINDS_LIST[ecs.enemy[o]]];
+      if (!b || def.boss || def.fixed || (b.state !== 'windup' && b.state !== 'fire')) continue;
+      const dx = ecs.x[o] - ecs.x[e], dz = ecs.z[o] - ecs.z[e], d = Math.hypot(dx, dz);
+      if (d > G.shockR + ecs.hurtR[o]) continue;
+      ecs.stagger[o] = Math.max(ecs.stagger[o], G.shockStagger);
+      this.cancelEmitter(o);
+      b.state = 'chase'; b.t = 0; b.gcd = 0.8;
+      if (d > 1e-6) { ecs.kbx[o] += (dx / d) * 5; ecs.kbz[o] += (dz / d) * 5; }
+      this.emit({ type: 'stun', id: o, by: e, seq, x: ecs.x[o], z: ecs.z[o] });
     }
   }
 

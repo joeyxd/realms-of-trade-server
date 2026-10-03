@@ -70,3 +70,19 @@ export function clientAndServer(place) {
   for (let i = 0; i < 6; i++) { server.step(); deliver(); }
   return { server, client, deliver, shown, sp, se, ecs };
 }
+
+// Commands to wait before pressing LMB so that the first active frame of stage 1 (⌊windup / DT⌋ commands after the
+// press) meets projectile `id` (coming straight at you) with the given tier (3 EXCELENTE · 2 BUENO ·
+// 1 POBRE · 0 destroyed). -1 if never.
+export function waitForTier(w, e, id, tier, { timeToContact, reflectTier, stage = 1, tuning }) {
+  const H = w.hazards, s = H.slot.get(id), st = tuning.melee.stages[stage - 1];
+  const lead = Math.floor(st.windup * 60 + 1e-9); // the press command counts the first tick
+  for (let d = 0; d < 400; d++) {
+    const t = w.tick + d + lead;
+    if (!H.live(s, t)) return -1;
+    const dist = Math.hypot(H.px(s, t) - w.ecs.x[e], H.pz(s, t) - w.ecs.z[e]);
+    if (dist > st.range + H.r[s]) continue;
+    if (reflectTier(timeToContact(w, e, s, t)) === tier) return d;
+  }
+  return -1;
+}

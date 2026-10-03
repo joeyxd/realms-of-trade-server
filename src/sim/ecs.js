@@ -17,8 +17,9 @@ export const KIND = { NONE: 0, PLAYER: 1, NPC: 2, ENEMY: 3, SHIP: 4 };
 export const TEAM = { NEUTRAL: 0, PLAYERS: 1, ENEMIES: 2 };
 export const STATE = { MOVE: 0, DASH: 1 };
 // What an entity is doing, for animation (snapshots carry it with the time spent in it).
+// GUARD (M3.5) took the parry's slot: RMB raises the guard (PARRY kept as an alias for old tools).
 export const ACT = {
-  IDLE: 0, SWING1: 1, SWING2: 2, SWING3: 3, PARRY: 4, STAGGER: 5, DEAD: 6, DORMANT: 7, WAKE: 8,
+  IDLE: 0, SWING1: 1, SWING2: 2, SWING3: 3, GUARD: 4, PARRY: 4, STAGGER: 5, DEAD: 6, DORMANT: 7, WAKE: 8,
   WINDUP: 9, FIRE: 10, RECOVER: 11, HIT: 12, RIPOSTE: 13, ENRAGE: 14,
 };
 
@@ -48,7 +49,10 @@ export class ECS {
     this.act = new Uint8Array(cap); this.actT = f();
     // PLAYER combat (predicted by the client: see PLAYER_FIELDS)
     this.atkStage = f(); this.atkT = f(); this.atkBuf = f(); this.lastStage = f(); this.comboT = f(); this.swingId = f();
-    this.parryT = f(); this.parryLock = f(); this.parryBuf = f(); this.parryHits = f();
+    // Guard (RMB held): time up (−1 down), perfect window armed, re-arm timer, stamina, time since the
+    // last block; caught bullets (count, heavy ones, max damage, age).
+    this.guardT = f(); this.guardP = f(); this.guardRe = f(); this.guardSt = f(); this.guardRegT = f();
+    this.catchN = f(); this.catchHv = f(); this.catchDmg = f(); this.catchT = f();
     this.chain = f(); this.chainT = f(); this.riposte = f(); this.rBuf = f();
     this.pend0 = f(); this.pend0T = f(); this.pend0D = f(); this.pend1 = f(); this.pend1T = f(); this.pend1D = f();
     this.lastPt = f(); this.xp = f(); this.cpX = f(); this.cpZ = f(); this.god = f();
@@ -86,7 +90,8 @@ export class ECS {
     this.act[id] = 0; this.actT[id] = 0;
     this.atkStage[id] = this.atkT[id] = this.atkBuf[id] = this.lastStage[id] = this.swingId[id] = 0;
     this.comboT[id] = 99;
-    this.parryT[id] = -1; this.parryLock[id] = this.parryBuf[id] = this.parryHits[id] = 0;
+    this.guardT[id] = -1; this.guardP[id] = this.guardRe[id] = this.guardRegT[id] = 0; this.guardSt[id] = 60;
+    this.catchN[id] = this.catchHv[id] = this.catchDmg[id] = this.catchT[id] = 0;
     this.chain[id] = 0; this.chainT[id] = 99; this.riposte[id] = this.rBuf[id] = 0;
     this.pend0[id] = this.pend0T[id] = this.pend0D[id] = this.pend1[id] = this.pend1T[id] = this.pend1D[id] = 0;
     this.lastPt[id] = 0; this.xp[id] = 0; this.cpX[id] = this.cpZ[id] = 0; this.god[id] = 0;
@@ -119,7 +124,8 @@ export const MOVER_FIELDS = [
 export const PLAYER_FIELDS = [
   ...MOVER_FIELDS,
   'hp', 'maxHp', 'atk', 'def', 'stagger', 'hurtInv', 'regenT', 'dead', 'deadT', 'act', 'actT',
-  'atkStage', 'atkT', 'atkBuf', 'lastStage', 'comboT', 'swingId', 'parryT', 'parryLock', 'parryBuf', 'parryHits',
+  'atkStage', 'atkT', 'atkBuf', 'lastStage', 'comboT', 'swingId',
+  'guardT', 'guardP', 'guardRe', 'guardSt', 'guardRegT', 'catchN', 'catchHv', 'catchDmg', 'catchT',
   'chain', 'chainT', 'riposte', 'rBuf', 'pend0', 'pend0T', 'pend0D', 'pend1', 'pend1T', 'pend1D',
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',
 ];

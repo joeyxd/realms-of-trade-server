@@ -1,6 +1,7 @@
-// Headless playtest of La Prueba de Fuego (balance, PLAN-M3.md P7): a scripted player (god mode, but
-// every hit is counted) parries, dashes through spikes and beams, steps out of circles, keeps off the
-// lava and fights whatever is nearest. Usage: LV=5 SKILL=0.8 node tools/playtest.mjs
+// Headless playtest of La Prueba de Fuego (balance, PLAN-M3.md P7, M3.5): a scripted player (god mode, but
+// every hit is counted) reflects bullets with timed sword swings, catches heavy orbs with a perfect guard
+// and throws them back, dashes through spikes and beams, steps out of circles, keeps off the lava and
+// fights whatever is nearest. SKILL also blurs its timing. Usage: LV=5 SKILL=0.8 node tools/playtest.mjs
 import { generateWorld } from '../src/sim/worldgen.js';
 import { World } from '../src/sim/world.js';
 import { GAME } from '../src/data/meta.js';
@@ -17,12 +18,13 @@ ecs.god[e] = 1;
 let seq = 0, rnd = 12345;
 const rand = () => ((rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
 const bossDmg = {};
-const stats = { dmg: 0, hits: 0, parry: 0, perfect: 0, dodge: 0, ghost: 0, graze: 0, bounce: 0, kills: 0, shotKills: 0, riposte: 0 };
+const stats = { dmg: 0, hits: 0, parry: 0, perfect: 0, good: 0, poor: 0, destroy: 0, block: 0, catch: 0, release: 0, broken: 0, dodge: 0, ghost: 0, graze: 0, bounce: 0, kills: 0, shotKills: 0, riposte: 0 };
+let guardHold = 0;
 const t0wave = {}; const log = []; const byKind = {};
 const decided = new Set();
 function policy() {
   const px = ecs.x[e], pz = ecs.z[e], pt = w.tick;
-  let prs = 0, mx = 0, mz = 0, ax = px + 1, az = pz;
+  let prs = 0, btn = 0, mx = 0, mz = 0, ax = px + 1, az = pz;
   // most imminent threat
   let best = -1, tb = 0.5;
   for (let s = 0; s < H.cap; s++) {
@@ -33,14 +35,27 @@ function policy() {
     if (Math.hypot(rx - H.vx[s] * tca, rz - H.vz[s] * tca) > 0.36 + H.r[s] + 0.1) continue;
     best = s; tb = tca;
   }
+  // Swing when the bullet is this close (time to closest approach): ~EXCELENTE for a sharp player,
+  // earlier (BUENO / POBRE / destroyed) the sloppier it gets.
+  const swingAt = 0.17 + (1 - SKILL) * rand() * 0.18;
   if (best >= 0 && !decided.has(H.id[best])) {
-    decided.add(H.id[best]);
     const ok = rand() < SKILL;
-    if (H.type[best] === PTYPE.UNSTOP || (H.type[best] === PTYPE.HEAVY)) {
+    if (H.type[best] === PTYPE.UNSTOP) {
+      decided.add(H.id[best]);
       if (ok && ecs.dashCharges[e] >= 1) { prs |= 1; const vx = H.vx[best], vz = H.vz[best], l = Math.hypot(vx, vz); mx = -vz / l; mz = vx / l; }
-    } else if (ok && tb < 0.2) { prs |= 4; ax = H.px(best, pt); az = H.pz(best, pt); }
-    else if (ok) decided.delete(H.id[best]);
+    } else if (H.type[best] === PTYPE.HEAVY) {
+      // Heavy orbs: catch them with a perfect guard (then the next swing throws them back), or dash.
+      if (tb < 0.1) {
+        decided.add(H.id[best]);
+        if (ok) { guardHold = 14; ax = H.px(best, pt); az = H.pz(best, pt); }
+        else if (ecs.dashCharges[e] >= 1) { prs |= 1; const vx = H.vx[best], vz = H.vz[best], l = Math.hypot(vx, vz); mx = -vz / l; mz = vx / l; }
+      }
+    } else if (tb < swingAt) {
+      decided.add(H.id[best]);
+      if (ok || rand() < 0.5) { prs |= 2; ax = H.px(best, pt); az = H.pz(best, pt); }
+    }
   }
+  if (guardHold > 0) { guardHold--; btn |= 4; prs &= ~2; }
   // M3 hazards: a beam about to sweep over you → dash through it; a circle about to burst → step out.
   const SG = {};
   if (!(prs & 1)) for (const b of H.beams) {
@@ -65,13 +80,15 @@ function policy() {
   // melee nearest grunt, otherwise drift toward the centre / around the boss
   let ne = 0, nd = 99;
   for (let o = 1; o < ecs.cap; o++) if (ecs.alive[o] && (ecs.mask[o] & C.ENEMY) && !ecs.dead[o] && ecs.brain[o]?.enc) { const d = Math.hypot(ecs.x[o] - px, ecs.z[o] - pz); if (d < nd) { nd = d; ne = o; } }
-  if (!(prs & 5) && !inAoe) {
+  // Caught bullets: throw them at the nearest enemy.
+  if (!btn && ecs.catchN[e] > 0 && ne) { prs |= 2; ax = ecs.x[ne]; az = ecs.z[ne]; }
+  if (!(prs & 3) && !btn && !inAoe) {
     if (ne && nd < 2) { ax = ecs.x[ne]; az = ecs.z[ne]; if (w.tick % 8 === 0) prs |= 2; }
     else if (ne && nd < 9) { const dx = ecs.x[ne] - px, dz = ecs.z[ne] - pz; mx = dx / nd; mz = dz / nd; ax = ecs.x[ne]; az = ecs.z[ne]; }
     else { const dx = enc.cx - px, dz = enc.cz - pz, d = Math.hypot(dx, dz); if (d > 4) { mx = dx / d; mz = dz / d; } }
   }
   if (ecs.riposte[e] >= 100 && best >= 0) prs |= 32;
-  return { seq: ++seq, mx, mz, ax, az, prs, pt };
+  return { seq: ++seq, mx, mz, ax, az, btn, prs, pt };
 }
 let boss = 0, end = 0;
 const perf = { sum: 0, n: 0, max: 0, live: 0 };
@@ -88,7 +105,10 @@ for (let i = 0; i < 60 * 600 && !end; i++) {
       const who = src.owner && ecs.alive[src.owner] ? ['', 'ar', 'se', 'gr', 'im', 'sh', 'cr', 'HF'][ecs.enemy[src.owner] + 1] || '?' : src.keep ? 'shell' : '';
       const k = `${enc.st === 'boss' ? 'B' : 'W'}:${ev.kind}${who ? '/' + who : ''}`;
       byKind[k] = (byKind[k] || 0) + ev.raw; }
-    else if (ev.type === 'parry' && ev.e === e) { stats.parry++; if (ev.perfect) stats.perfect++; }
+    else if (ev.type === 'parry' && ev.e === e) { stats.parry++; if (ev.tier === 3) stats.perfect++; else if (ev.tier === 2) stats.good++; else stats.poor++; }
+    else if (ev.type === 'destroy' && ev.e === e) stats.destroy++;
+    else if (ev.type === 'guard' && ev.e === e) { if (ev.st === 'block') stats.block++; else if (ev.st === 'perfect') stats.catch++; else if (ev.st === 'break') stats.broken++; }
+    else if (ev.type === 'release') stats.release++;
     else if (ev.type === 'dodge') stats.dodge++; else if (ev.type === 'ghost') stats.ghost++; else if (ev.type === 'graze') stats.graze++;
     else if (ev.type === 'riposte') stats.riposte++;
     else if (ev.type === 'shot' && ev.from) stats.bounce++;

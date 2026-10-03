@@ -105,35 +105,50 @@ export const tuning = {
     laser: { width: 0.9, telegraph: 0.6, damage: 10, tick: 0.2 },
     shotCap: 256,
   },
+  // Reflect economy, shared by the sword's timed reflects (sword), the guard's caught bullets (guard) and
+  // the riposte wave. Since M3.5 RMB is the guard: there is no parry window any more.
   parry: {
-    destroyWindow: 0.12, // = the active frames of a swing
-    window: 0.18,
-    perfect: 0.08,
-    coyote: 0.06,
-    arc: 110,
-    radius: 1.6,
-    whiffRecovery: 0.35,
-    blockKnock: 7, // heavy orb blocked by a normal parry: half damage + push
-    reflect: { dmgMult: 2, atkMult: 0.8, speedMult: 1.4, homing: 4, cone: 60, life: 2.5,
-      // A reflected shot that hits jumps to the nearest other enemy (M2.5): bounces by how it was sent back.
-      bounce: { normal: 1, perfect: 2, wave: 1, range: 7, dmgMult: 0.75, life: 1.4 },
+    coyote: 0.06, // a parryable that touches you deals its damage this much later: LMB → POBRE reflect, RMB → block
+    reflect: { atkMult: 0.8, life: 2.5, maxSpeed: 22,
+      // The riposte wave reflects radially at BUENO strength (no spread).
+      wave: { dmg: 2, speed: 1.4, minSpeed: 4, spread: 0, homing: 4, cone: 60, bounce: 1 },
+      // A reflected shot that hits jumps to the nearest other enemy (M2.5): `bounce` jumps by tier.
+      bounce: { range: 7, dmgMult: 0.75, life: 1.4 },
       // Many reflected shots on one enemy within `window` s: each next one × (1 − step·n), at least floor
-      // (a point-blank parry of a 15-bullet flower is a jackpot, not an instant kill).
+      // (a point-blank reflect of a 15-bullet flower is a jackpot, not an instant kill).
       stack: { window: 0.6, step: 0.2, floor: 0.15 } },
     chainGap: 1.2,
     chainMax: 5,
     chainDmg: 0.1, // reflected damage × (1 + 0.1·(chain − 1))
     chainRiposte: 0.15, // riposte gain × (1 + 0.15·(chain − 1))
-    riposte: { perfect: 18, normal: 10, destroy: 4, graze: 4, ghost: 8, dodge: 3, max: 100, radius: 6, dmgMult: 3, knock: 14 },
+    riposte: { destroy: 4, graze: 4, ghost: 8, dodge: 3, max: 100, radius: 6, dmgMult: 3, knock: 14 },
     xp: { perfect: 5, graze: 2, ghost: 3, dodge: 1 },
+  },
+  // The sword's timed reflect (M3.5): a swing's active frames hit every hostile bullet in the arc; the tier
+  // comes from how soon that bullet would have touched you (tc, seconds; slack u added to the touch radius).
+  // R = max(bullet damage, 0.8·ATK). Spread is a deterministic hash of (projectile id, command seq).
+  sword: {
+    slack: 0.15,
+    excellent: { tc: 0.07, dmg: 3, speed: 1.9, minSpeed: 9, spread: 0, homing: 1.5, cone: 24, bounce: 2, riposte: 18, hitstop: 0.11, slowmo: 0.35 },
+    good: { tc: 0.15, dmg: 2, speed: 1.4, minSpeed: 4, spread: 10, homing: 4, cone: 60, bounce: 1, riposte: 10, hitstop: 0.08, slowmo: 0 },
+    poor: { tc: 0.26, dmg: 1, speed: 1.0, minSpeed: 4, spread: 35, homing: 0, cone: 0, bounce: 0, riposte: 5, hitstop: 0.05, slowmo: 0 },
+  },
+  // RMB held: frontal guard (M3.5). Blocks bullets and melee circles in the arc for a fraction of their
+  // damage and stamina; raised just before a hit (perfect) it CATCHES the bullet (max catchMax, they fade
+  // after catchLife s) and the next basic attack throws them all back (release). Unstoppables pierce it.
+  guard: {
+    arc: 130, perfect: 0.13, rearm: 0.45, move: 0.45,
+    blockMult: 0.25, heavyMult: 0.4, knock: 2, heavyKnock: 7,
+    stamina: 60, cost: 1, heavyCost: 1.5, regen: 30, regenDelay: 0.7, minRaise: 10, breakStagger: 0.9,
+    catchMax: 3, catchLife: 6, shockR: 3, shockStagger: 0.7,
+    riposte: 12, blockRiposte: 2, xp: 3, hitstop: 0.09, slowmo: 0.5,
+    release: { spread: 7, dmg: 2, heavyDmg: 3, speed: 12, heavySpeed: 8, homing: 2, cone: 30, bounce: 1 },
   },
   feel: {
     hitstopMelee: 0.045,
     hitstopDestroy: 0.07,
-    hitstopReflect: 0.11,
     hitstopRiposte: 0.14,
-    perfectSlowmo: 0.35,
-    perfectSlowmoTime: 0.25,
+    perfectSlowmoTime: 0.25, // how long a slow-mo (EXCELENTE, perfect guard) lasts
     flashMax: 0.8,
   },
 

@@ -4,11 +4,15 @@
 // same result. Hits on enemies are the one server-only part (world.isServer): the client gets
 // them back as events.
 //
-//   LMB  3-hit combo: windup → active (hits enemies, destroys parryable projectiles) → recover.
-//   RMB  parry window (180 ms, first 80 ms PERFECT): reflects parryables, a PERFECT also reflects heavy
-//        orbs (a normal parry blocks them: half damage + push). Unstoppable spikes punish a raised parry.
-//        Coyote: a parryable that touches you deals its damage 60 ms later; RMB in that gap converts it
-//        into a normal parry. Whiff (nothing parried): 0.35 s before the next parry.
+//   LMB  3-hit combo: windup → active → recover. The active frames hit every hostile bullet in the arc:
+//        how soon it would have touched you (tc) sets the tier of the reflect (M3.5): EXCELENTE (≤ 70 ms,
+//        straight at the cursor, × 3, the only one that sends heavy orbs back), BUENO (≤ 150 ms, ± 10°),
+//        POBRE (≤ 260 ms, ± 35°, × 1); anything farther is destroyed. Unstoppable spikes ignore the blade.
+//   RMB  guard, held: blocks bullets and melee circles in front for a fraction of their damage and some
+//        stamina (0 = GUARDIA ROTA, stunned). Raised just before a hit (PERFECT, 130 ms) it catches the
+//        bullet (¡ATRAPADA!): the next swing throws every caught bullet back. Unstoppables pierce it.
+//        Coyote: a parryable that touches you deals its damage 60 ms later; LMB in that gap is a POBRE
+//        reflect, RMB a block.
 //   R    riposte wave when the meter is full: reflects every projectile within 6 u.
 //   Dash i-frames: projectiles pass through; dashing through an unstoppable spike = FANTASMA.
 //   Graze: a projectile passing within 0.35 u of your hurtbox without touching = ROCE.
@@ -16,8 +20,11 @@ import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { PTYPE, KILL, NEVER, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { ACT } from '../ecs.js';
+import { hash01 } from '../../core/rng.js';
 
 const D2R = Math.PI / 180;
+const TIERS = [null, 'poor', 'good', 'excellent'];
+const tierCfg = (tier) => tuning.sword[TIERS[tier]];
 
 export function statsFor(level) {
   const S = tuning.stats, l = Math.max(1, level) - 1;
@@ -88,7 +95,7 @@ function killPlayer(world, e, seq) {
   ecs.hp[e] = 0;
   ecs.dead[e] = 1;
   ecs.deadT[e] = tuning.combat.respawnTime;
-  ecs.atkStage[e] = 0; ecs.parryT[e] = -1; ecs.chain[e] = 0;
+  ecs.atkStage[e] = 0; ecs.guardT[e] = -1; ecs.chain[e] = 0;
   ecs.pend0[e] = ecs.pend1[e] = 0;
   ecs.dashT[e] = -1; ecs.state[e] = 0;
   world.emit({ type: 'death', id: e, seq, x: ecs.x[e], z: ecs.z[e] });
@@ -105,79 +112,153 @@ function respawnPlayer(world, e, seq) {
   world.emit({ type: 'respawn', id: e, seq, x: ecs.x[e], z: ecs.z[e] });
 }
 
-// A hostile projectile becomes a player-owned shot (parry, perfect, coyote conversion, riposte wave).
-function reflect(world, e, s, pt, seq, o) {
+// Seconds until projectile s (at tick pt) would touch e's hurtbox (grown by the sword's slack); Infinity
+// when it is not coming at you or ends before it gets there.
+export function timeToContact(world, e, s, pt) {
+  const ecs = world.ecs, H = world.hazards;
+  const px = H.px(s, pt) - ecs.x[e], pz = H.pz(s, pt) - ecs.z[e];
+  const R = ecs.hurtR[e] + H.r[s] + tuning.sword.slack + H.len[s] * 0.5;
+  const c = px * px + pz * pz - R * R;
+  if (c <= 0) return 0;
+  const vx = H.vx[s], vz = H.vz[s], a = vx * vx + vz * vz, b = px * vx + pz * vz;
+  if (a < 1e-9 || b >= 0) return Infinity;
+  const disc = b * b - a * c;
+  if (disc < 0) return Infinity;
+  const t = (-b - Math.sqrt(disc)) / a;
+  return pt + t / DT >= H.tEnd[s] ? Infinity : t;
+}
+
+export function reflectTier(tc) {
+  const S = tuning.sword;
+  return tc <= S.excellent.tc ? 3 : tc <= S.good.tc ? 2 : tc <= S.poor.tc ? 1 : 0;
+}
+
+// A hostile projectile becomes a player-owned shot. T: the tier's numbers (tuning.sword.*, the wave's).
+// o: {radial (spin finisher, riposte wave: away from you), kind (KILL.*), fromX/fromZ (coyote: from you)}.
+function reflect(world, e, s, pt, seq, T, o = {}) {
   const ecs = world.ecs, H = world.hazards, R = tuning.parry.reflect, P = tuning.parry;
-  const x = H.px(s, pt), z = H.pz(s, pt);
+  const x = H.px(s, pt), z = H.pz(s, pt), pid = H.id[s];
   H.remove(s, pt, o.kind || KILL.REFLECT, e, seq);
-  const chain = ecs.chain[e];
-  let dx = Math.sin(ecs.facing[e]), dz = Math.cos(ecs.facing[e]);
+  let a = ecs.facing[e];
   if (o.radial) {
-    const rx = x - ecs.x[e], rz = z - ecs.z[e], rl = Math.hypot(rx, rz);
-    if (rl > 0.3) { dx = rx / rl; dz = rz / rl; }
+    const rx = x - ecs.x[e], rz = z - ecs.z[e];
+    if (Math.hypot(rx, rz) > 0.3) a = Math.atan2(rx, rz);
   }
-  const dmg = R.dmgMult * Math.max(H.dmg[s], R.atkMult * ecs.atk[e]) * chainMul(P.chainDmg, chain);
+  if (T.spread) a += (hash01(pid, seq) * 2 - 1) * T.spread * D2R;
+  const dmg = T.dmg * Math.max(H.dmg[s], R.atkMult * ecs.atk[e]) * chainMul(P.chainDmg, ecs.chain[e]);
+  const from = o.fromX !== undefined;
   world.spawnShot(e, {
-    pid: H.id[s], type: H.type[s], x: o.fromX ?? x, y: o.fromX !== undefined ? ecs.y[e] + 1.1 : H.py(s, pt), z: o.fromZ ?? z, dx, dz,
-    speed: Math.max(4, H.speed[s]) * R.speedMult, dmg, life: R.life, r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq,
-    bounce: o.kind === KILL.WAVE ? R.bounce.wave : o.perfect ? R.bounce.perfect : R.bounce.normal,
+    key: pid, pid, type: H.type[s], x: from ? o.fromX : x, y: from ? ecs.y[e] + 1.1 : H.py(s, pt), z: from ? o.fromZ : z,
+    dx: Math.sin(a), dz: Math.cos(a), speed: Math.min(R.maxSpeed, Math.max(T.minSpeed, H.speed[s]) * T.speed), dmg, life: R.life,
+    r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq, bounce: T.bounce, homing: T.homing, cone: T.cone,
   });
   return { x, z };
 }
 
-function countParry(world, e, perfect, seq) {
-  const ecs = world.ecs, P = tuning.parry;
-  ecs.chain[e] = ecs.chainT[e] <= P.chainGap ? Math.min(P.chainMax, ecs.chain[e] + 1) : 1;
-  ecs.chainT[e] = 0;
-  ecs.parryHits[e] += 1;
-  addRiposte(ecs, e, (perfect ? P.riposte.perfect : P.riposte.normal) * chainMul(P.chainRiposte, ecs.chain[e]));
-  if (perfect) gainXp(world, e, P.xp.perfect, seq);
+// A sword reflect of tier 1–3: chain, meter, XP, the event and the hitstop.
+function swordReflect(world, e, s, pt, seq, tier, o = {}) {
+  const ecs = world.ecs, P = tuning.parry, T = tierCfg(tier);
+  const heavy = world.hazards.type[s] === PTYPE.HEAVY, pid = world.hazards.id[s];
+  if (tier >= 2) { ecs.chain[e] = ecs.chainT[e] <= P.chainGap ? Math.min(P.chainMax, ecs.chain[e] + 1) : 1; ecs.chainT[e] = 0; }
+  addRiposte(ecs, e, T.riposte * (tier >= 2 ? chainMul(P.chainRiposte, ecs.chain[e]) : 1));
+  if (tier === 3) gainXp(world, e, P.xp.perfect, seq);
+  const at = reflect(world, e, s, pt, seq, T, o);
+  const ev = { type: 'parry', pid, e, seq, x: at.x, z: at.z, tier, perfect: tier === 3 ? 1 : 0, chain: ecs.chain[e], heavy: heavy ? 1 : 0 };
+  if (o.coyote) ev.coyote = 1;
+  world.emit(ev);
+  world.feel(e, seq, T.hitstop, T.slowmo);
 }
 
-function parryProjectiles(world, e, pt, seq) {
-  const ecs = world.ecs, H = world.hazards, P = tuning.parry, F = tuning.feel;
-  const perfect = ecs.parryT[e] < P.perfect;
-  for (let s = 0; s < H.cap; s++) {
-    if (!H.live(s, pt) || H.type[s] === PTYPE.UNSTOP) continue;
-    const x = H.px(s, pt), z = H.pz(s, pt);
-    if (!inSector(ecs, e, x, z, P.radius + H.r[s], P.arc)) continue;
-    if (H.type[s] === PTYPE.HEAVY && !perfect) {
-      // Normal parry on a heavy orb: block (half damage + push), it does not come back.
-      H.remove(s, pt, KILL.BLOCK, e, seq);
-      ecs.parryHits[e] += 1;
-      world.emit({ type: 'block', pid: H.id[s], e, seq, x, z });
-      hurtPlayer(world, e, H.dmg[s] * 0.5, { x, z, kind: 'block', src: H.id[s], seq, knock: P.blockKnock });
-      world.feel(e, seq, F.hitstopDestroy, 0);
-      continue;
-    }
-    countParry(world, e, perfect, seq);
-    const heavy = H.type[s] === PTYPE.HEAVY;
-    reflect(world, e, s, pt, seq, { perfect });
-    world.emit({ type: 'parry', pid: H.id[s], e, seq, x, z, perfect: perfect ? 1 : 0, chain: ecs.chain[e], heavy: heavy ? 1 : 0 });
-    world.feel(e, seq, F.hitstopReflect, perfect ? F.perfectSlowmo : 0);
+// The next basic attack after a perfect guard: every caught bullet goes back at the cursor in a fan.
+function releaseCaught(world, e, seq) {
+  const ecs = world.ecs, RL = tuning.guard.release, R = tuning.parry.reflect;
+  const n = ecs.catchN[e], hv = ecs.catchHv[e];
+  const base = Math.max(ecs.catchDmg[e], R.atkMult * ecs.atk[e]);
+  for (let k = 0; k < n; k++) {
+    const heavy = k < hv;
+    const a = ecs.facing[e] + (k - (n - 1) / 2) * RL.spread * D2R, dx = Math.sin(a), dz = Math.cos(a);
+    world.spawnShot(e, {
+      key: -(seq * 8 + k + 1), pid: 0, type: heavy ? PTYPE.HEAVY : PTYPE.PARRY, x: ecs.x[e] + dx * 0.6, y: ecs.y[e] + 1.1, z: ecs.z[e] + dz * 0.6,
+      dx, dz, speed: heavy ? RL.heavySpeed : RL.speed, dmg: base * (heavy ? RL.heavyDmg : RL.dmg), life: R.life,
+      r: heavy ? 0.58 : 0.25, heavy, seq, bounce: RL.bounce, homing: RL.homing, cone: RL.cone,
+    });
   }
+  ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
+  world.emit({ type: 'release', e, seq, n, heavy: hv, x: ecs.x[e], z: ecs.z[e] });
+}
+
+// ---- Guard --------------------------------------------------------------------------------------------
+const guardUp = (ecs, e) => ecs.guardT[e] >= 0;
+const guardPerfect = (ecs, e) => ecs.guardT[e] >= 0 && ecs.guardP[e] > 0 && ecs.guardT[e] < tuning.guard.perfect;
+// (x, z) inside the guard's frontal arc (right on top of you counts as in front).
+function inGuardArc(ecs, e, x, z) {
+  const dx = x - ecs.x[e], dz = z - ecs.z[e], d = Math.hypot(dx, dz);
+  if (d < 0.3) return true;
+  return (dx * Math.sin(ecs.facing[e]) + dz * Math.cos(ecs.facing[e])) / d >= Math.cos((tuning.guard.arc / 2) * D2R);
+}
+
+function breakGuard(world, e, seq) {
+  const ecs = world.ecs, G = tuning.guard;
+  ecs.guardSt[e] = 0; ecs.guardT[e] = -1;
+  ecs.stagger[e] = Math.max(ecs.stagger[e], G.breakStagger);
+  ecs.atkStage[e] = 0;
+  world.emit({ type: 'guard', st: 'break', e, seq, x: ecs.x[e], z: ecs.z[e] });
+}
+
+// A blow the guard took (raw damage from (x, z)). Perfect: nothing gets through, the bullet (pid, type)
+// is caught, nearby attackers are stunned. Otherwise a fraction gets through and it costs stamina.
+function guardTake(world, e, raw, x, z, seq, o) {
+  const ecs = world.ecs, G = tuning.guard;
+  if (guardPerfect(ecs, e)) {
+    if (o.pid && ecs.catchN[e] < G.catchMax) {
+      ecs.catchN[e] += 1;
+      if (o.heavy) ecs.catchHv[e] += 1;
+      ecs.catchDmg[e] = Math.max(ecs.catchDmg[e], raw);
+      ecs.catchT[e] = 0;
+    }
+    addRiposte(ecs, e, G.riposte);
+    gainXp(world, e, G.xp, seq);
+    world.emit({ type: 'guard', st: 'perfect', e, seq, pid: o.pid || 0, aoe: o.aoe || 0, x, z, heavy: o.heavy ? 1 : 0, n: ecs.catchN[e] });
+    world.feel(e, seq, G.hitstop, G.slowmo);
+    if (world.isServer) world.guardShock(e, seq);
+    return;
+  }
+  ecs.guardSt[e] -= raw * (o.heavy ? G.heavyCost : G.cost);
+  ecs.guardRegT[e] = 0;
+  addRiposte(ecs, e, G.blockRiposte);
+  world.emit({ type: 'guard', st: 'block', e, seq, pid: o.pid || 0, aoe: o.aoe || 0, x, z, heavy: o.heavy ? 1 : 0 });
+  hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x, z, kind: 'block', src: o.pid || o.aoe || 0, seq, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true });
+  if (ecs.dead[e] <= 0 && ecs.guardSt[e] <= 0) breakGuard(world, e, seq);
 }
 
 function swingStage(world, e, stage, cmd) {
   const ecs = world.ecs, st = tuning.melee.stages[stage - 1];
   ecs.atkStage[e] = stage; ecs.atkT[e] = 0; ecs.atkBuf[e] = 0; ecs.swingId[e] += 1;
+  ecs.guardT[e] = -1;
   faceAim(ecs, e, cmd);
   ecs.faceLock[e] = st.windup + st.active + 0.05;
   world.emit({ type: 'swing', e, stage, seq: cmd.seq >>> 0 });
+  if (ecs.catchN[e] > 0) releaseCaught(world, e, cmd.seq >>> 0);
 }
 
-// Active frames of a swing: destroy parryables in the arc, clunk on heavy orbs, hit enemies (server).
-function swingActive(world, e, st, pt, seq) {
+// Active frames of a swing: reflect (by timing) or destroy the bullets in the arc, clunk on heavy orbs
+// that came too early, hit enemies (server).
+function swingActive(world, e, st, stage, pt, seq) {
   const ecs = world.ecs, H = world.hazards, P = tuning.parry, F = tuning.feel;
   const tag = 'c' + ecs.swingId[e];
   for (let s = 0; s < H.cap; s++) {
     if (!H.live(s, pt) || H.type[s] === PTYPE.UNSTOP) continue;
     const x = H.px(s, pt), z = H.pz(s, pt);
     if (!inSector(ecs, e, x, z, st.range + H.r[s], st.arc)) continue;
+    const tier = reflectTier(timeToContact(world, e, s, pt));
     if (H.type[s] === PTYPE.HEAVY) {
-      if (!H.hasMark(s, e, tag)) { H.mark(s, e, tag, seq); world.emit({ type: 'clunk', pid: H.id[s], e, seq, x, z }); }
+      // Too early is a clunk, and that swing is spent on it (it cannot turn EXCELENTE a few frames later).
+      if (H.hasMark(s, e, tag)) continue;
+      if (tier === 3) swordReflect(world, e, s, pt, seq, 3, { radial: stage === 3 });
+      else { H.mark(s, e, tag, seq); world.emit({ type: 'clunk', pid: H.id[s], e, seq, x, z }); }
       continue;
     }
+    if (tier > 0) { swordReflect(world, e, s, pt, seq, tier, { radial: stage === 3 }); continue; }
     H.remove(s, pt, KILL.DESTROY, e, seq);
     addRiposte(ecs, e, P.riposte.destroy);
     world.emit({ type: 'destroy', pid: H.id[s], e, seq, x, z });
@@ -226,6 +307,14 @@ function contacts(world, e, prev, pt, seq) {
       }
       if (ecs.hurtInv[e] > 0) { if (!H.hasMark(s, e, 'p')) H.mark(s, e, 'p', seq); continue; } // passes through: not a graze
       const hx = H.px(s, pt), hz = H.pz(s, pt);
+      if (type !== PTYPE.UNSTOP && guardUp(ecs, e) && inGuardArc(ecs, e, hx, hz)) {
+        // The guard takes it (a block, or a catch when it was just raised).
+        const pid = H.id[s], raw = H.dmg[s];
+        H.remove(s, pt, KILL.BLOCK, e, seq);
+        guardTake(world, e, raw, hx, hz, seq, { pid, heavy: type === PTYPE.HEAVY });
+        if (ecs.dead[e] > 0) return;
+        continue;
+      }
       H.remove(s, pt, KILL.HIT, e, seq);
       world.emit({ type: 'phit', pid: H.id[s], e, seq, x: hx, z: hz });
       if (type === PTYPE.PARRY && (!ecs.pend0[e] || !ecs.pend1[e])) {
@@ -234,11 +323,12 @@ function contacts(world, e, prev, pt, seq) {
         else { ecs.pend1[e] = H.id[s]; ecs.pend1T[e] = P.coyote; ecs.pend1D[e] = H.dmg[s]; }
         continue;
       }
-      const punish = type === PTYPE.UNSTOP && ecs.parryT[e] >= 0;
+      // Unstoppables pierce a raised guard and stun you.
+      const punish = type === PTYPE.UNSTOP && guardUp(ecs, e);
       hurtPlayer(world, e, H.dmg[s], { x: hx, z: hz, kind: punish ? 'punish' : 'proj', src: H.id[s], seq });
       if (punish && ecs.dead[e] <= 0) {
         ecs.stagger[e] = PR.unstoppable.stagger;
-        ecs.parryT[e] = -1; ecs.atkStage[e] = 0;
+        ecs.guardT[e] = -1; ecs.atkStage[e] = 0;
       }
       if (ecs.dead[e] > 0) return;
     } else if (d < touch + PR.graze && !H.hasMark(s, e, 'g') && !H.hasMark(s, e, 'h') && !H.hasMark(s, e, 'p')) {
@@ -262,6 +352,13 @@ function contacts(world, e, prev, pt, seq) {
     if (d > a.r + hr * 0.5) continue;
     a.hits.push({ e, seq });
     if (ecs.iframes[e] > 0 || ecs.hurtInv[e] > 0) continue;
+    // Melee circles (a bite, a cleave, a slam) can be guarded if the blow comes from in front; shells and
+    // meteors falling from the sky cannot.
+    if (!a.keep && guardUp(ecs, e) && inGuardArc(ecs, e, a.sx ?? a.x, a.sz ?? a.z)) {
+      guardTake(world, e, a.dmg, a.sx ?? a.x, a.sz ?? a.z, seq, { aoe: a.id });
+      if (ecs.dead[e] > 0) return;
+      continue;
+    }
     hurtPlayer(world, e, a.dmg, { x: a.x, z: a.z, kind: 'aoe', src: a.id, seq, knock: 6 });
     if (ecs.dead[e] > 0) return;
   }
@@ -313,7 +410,7 @@ function riposteWave(world, e, pt, seq) {
     if (!H.live(s, pt)) continue;
     const x = H.px(s, pt), z = H.pz(s, pt);
     if (Math.hypot(x - ecs.x[e], z - ecs.z[e]) > RP.radius + H.r[s]) continue;
-    reflect(world, e, s, pt, seq, { radial: true, kind: KILL.WAVE });
+    reflect(world, e, s, pt, seq, tuning.parry.reflect.wave, { radial: true, kind: KILL.WAVE });
     n++;
   }
   world.emit({ type: 'riposte', e, seq, x: ecs.x[e], z: ecs.z[e], n });
@@ -322,7 +419,7 @@ function riposteWave(world, e, pt, seq) {
 }
 
 export function stepPlayerCombat(world, e, cmd, dt) {
-  const ecs = world.ecs, T = tuning, P = T.parry, M = T.melee, Cb = T.combat;
+  const ecs = world.ecs, T = tuning, P = T.parry, M = T.melee, Cb = T.combat, G = T.guard;
   const seq = cmd.seq >>> 0;
   const pt = world.cmdTick(e, cmd);
   let prev = ecs.lastPt[e];
@@ -331,12 +428,13 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
-  dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('parryBuf'); dec('rBuf'); dec('parryLock');
-  ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt;
+  dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
+  ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;
+    ecs.guardT[e] = -1;
     ecs.deadT[e] -= dt;
     if (ecs.deadT[e] <= 0) respawnPlayer(world, e, seq);
     setAct(ecs, e, ecs.dead[e] > 0 ? ACT.DEAD : ACT.IDLE);
@@ -344,57 +442,66 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   }
   dec('stagger');
   if (ecs.regenT[e] > Cb.regenDelay && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = Math.min(ecs.maxHp[e], ecs.hp[e] + ecs.maxHp[e] * Cb.regenRate * dt);
+  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < G.stamina) ecs.guardSt[e] = Math.min(G.stamina, ecs.guardSt[e] + G.regen * dt);
+  if (ecs.catchN[e] > 0 && ecs.catchT[e] > G.catchLife) {
+    ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
+    world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });
+  }
   if (world.isServer && world.checkpoint) world.checkpoint(e);
 
-  const parryPress = (cmd.prs & BTN.PARRY) !== 0;
-  if (cmd.prs & BTN.ATTACK) ecs.atkBuf[e] = T.player.inputBuffer;
-  if (parryPress) ecs.parryBuf[e] = T.player.inputBuffer;
+  const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
+  const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;
+  if (atkPress) ecs.atkBuf[e] = T.player.inputBuffer;
   if (cmd.prs & BTN.R) ecs.rBuf[e] = T.player.inputBuffer;
 
   const dashing = ecs.dashT[e] >= 0;
   if (dashing) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = 0; ecs.atkStage[e] = 0; }
-    if (ecs.parryT[e] >= 0) ecs.parryT[e] = -1; // a dash out of a parry is not a whiff
+    ecs.guardT[e] = -1;
   }
   const canAct = !dashing && ecs.stagger[e] <= 0;
 
-  // Coyote: RMB right after a parryable touched you turns its pending damage into a normal parry.
-  if (parryPress && canAct) {
+  // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
+  // where you stand) and RMB into a block.
+  if ((atkPress || guardPress) && canAct) {
     for (const k of [0, 1]) {
       const id = k ? ecs.pend1[e] : ecs.pend0[e];
       if (!id) continue;
       const s = world.hazards.slot.get(id);
+      const dmg = k ? ecs.pend1D[e] : ecs.pend0D[e];
       if (k) ecs.pend1[e] = 0; else ecs.pend0[e] = 0;
       if (s === undefined) continue;
-      countParry(world, e, false, seq);
-      faceAim(ecs, e, cmd);
       const H = world.hazards;
-      H.dead[s] = NEVER; // re-open it so reflect() sees a live projectile at the hit point
-      const at = reflect(world, e, s, Math.min(pt, H.dead[s]), seq, { fromX: ecs.x[e], fromZ: ecs.z[e] });
-      world.emit({ type: 'parry', pid: id, e, seq, x: at.x, z: at.z, perfect: 0, chain: ecs.chain[e], heavy: 0, coyote: 1 });
-      world.feel(e, seq, T.feel.hitstopReflect, 0);
+      faceAim(ecs, e, cmd);
+      if (atkPress) {
+        H.dead[s] = NEVER; // re-open it so reflect() sees a live projectile at the hit point
+        swordReflect(world, e, s, Math.min(pt, H.dead[s]), seq, 1, { fromX: ecs.x[e], fromZ: ecs.z[e], coyote: true });
+      } else {
+        const hx = H.px(s, H.dead[s]), hz = H.pz(s, H.dead[s]);
+        ecs.guardSt[e] -= dmg * G.cost; ecs.guardRegT[e] = 0;
+        world.emit({ type: 'guard', st: 'block', e, seq, pid: id, x: hx, z: hz, heavy: 0, coyote: 1 });
+        hurtPlayer(world, e, dmg * G.blockMult, { x: hx, z: hz, kind: 'block', src: id, seq, knock: G.knock, noInv: true });
+      }
     }
   }
 
-  // Parry window.
-  if (canAct && ecs.parryBuf[e] > 0 && ecs.parryLock[e] <= 0 && ecs.parryT[e] < 0) {
-    ecs.parryT[e] = 0; ecs.parryHits[e] = 0; ecs.parryBuf[e] = 0;
-    ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0;
-    faceAim(ecs, e, cmd);
-    ecs.faceLock[e] = P.window + 0.08;
-    world.emit({ type: 'parryUp', e, seq });
-  }
-  if (ecs.parryT[e] >= 0) {
-    parryProjectiles(world, e, pt, seq);
-    ecs.parryT[e] += dt;
-    if (ecs.parryT[e] >= P.window - 1e-9) {
-      if (!ecs.parryHits[e]) { ecs.parryLock[e] = P.whiffRecovery; world.emit({ type: 'whiff', e, seq }); }
-      ecs.parryT[e] = -1;
-    }
-  }
+  // Guard: up while RMB is held and nothing else is going on (a swing in its recovery is cut short; an
+  // attack press wins over the guard). A new raise is only PERFECT-capable once the re-arm has run out.
+  const st0 = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1] : null;
+  const swingBusy = st0 && ecs.atkT[e] < st0.windup + st0.active;
+  if (guardHeld && canAct && !swingBusy && !(ecs.atkBuf[e] > 0) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max)) {
+    if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = ecs.atkStage[e]; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
+    if (ecs.guardT[e] < 0 && ecs.guardSt[e] >= G.minRaise) {
+      ecs.guardT[e] = 0;
+      ecs.guardP[e] = ecs.guardRe[e] <= 0 ? 1 : 0;
+      ecs.guardRe[e] = G.rearm;
+      faceAim(ecs, e, cmd);
+      world.emit({ type: 'guard', st: 'up', e, seq, x: ecs.x[e], z: ecs.z[e] });
+    } else if (ecs.guardT[e] >= 0 && !(cmd.btn & BTN.AIM)) faceAim(ecs, e, cmd); // auto-aim keeps facing the threat
+  } else if (ecs.guardT[e] >= 0) ecs.guardT[e] = -1;
 
   // Melee combo.
-  if (canAct && ecs.parryT[e] < 0 && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
+  if (canAct && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
     const ls = ecs.lastStage[e];
     swingStage(world, e, ecs.comboT[e] <= M.comboGap && ls > 0 && ls < 3 ? ls + 1 : 1, cmd);
   }
@@ -409,7 +516,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
         const step = (st.lunge / st.active) * (Math.min(t1, a1) - Math.max(t0, a0));
         moveWithCollision(world, e, Math.sin(ecs.facing[e]) * step, Math.cos(ecs.facing[e]) * step);
       }
-      swingActive(world, e, st, pt, seq);
+      swingActive(world, e, st, stage, pt, seq);
     }
     if (t1 >= a1 && ecs.atkBuf[e] > 0 && stage < 3 && canAct) swingStage(world, e, stage + 1, cmd);
     else if (t1 >= a1 + st.recover) { ecs.lastStage[e] = stage; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
@@ -418,7 +525,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   // Riposte release.
   if (canAct && ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max) {
     ecs.rBuf[e] = 0;
-    ecs.atkStage[e] = 0; ecs.parryT[e] = -1;
+    ecs.atkStage[e] = 0; ecs.guardT[e] = -1;
     riposteWave(world, e, pt, seq);
     ecs.act[e] = ACT.RIPOSTE; ecs.actT[e] = 0;
   }
@@ -440,13 +547,14 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     const hz = s !== undefined ? H.pz(s, H.dead[s] === NEVER ? pt : H.dead[s]) : ecs.z[e];
     hurtPlayer(world, e, dmg, { x: hx, z: hz, kind: 'proj', src: id, seq });
   }
+  if (ecs.guardT[e] >= 0) ecs.guardT[e] += dt;
 
   // Movement multiplier and the action shown to others.
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
-  ecs.moveMul[e] = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.parryT[e] >= 0 ? 0.35 : ecs.stagger[e] > 0 ? 0 : 1;
+  ecs.moveMul[e] = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move : ecs.stagger[e] > 0 ? 0 : 1;
   let a = ACT.IDLE;
   if (ecs.stagger[e] > 0) a = ACT.STAGGER;
-  else if (ecs.parryT[e] >= 0) a = ACT.PARRY;
+  else if (ecs.guardT[e] >= 0) a = ACT.GUARD;
   else if (ecs.atkStage[e] > 0) a = ACT.SWING1 + ecs.atkStage[e] - 1;
   else if (ecs.act[e] === ACT.RIPOSTE && ecs.actT[e] < 0.45) a = ACT.RIPOSTE;
   setAct(ecs, e, a);

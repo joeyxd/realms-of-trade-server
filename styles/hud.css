@@ -194,6 +194,12 @@ body.touch .actionbar { display: none; }
 .slot .combo { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; }
 .slot .combo i { width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg); background: #2a2040; border: 1.5px solid var(--ink); }
 .slot .combo i.on { background: var(--brass-l); box-shadow: 0 0 6px var(--brass); }
+.slot .catch { position: absolute; top: 4px; right: 4px; display: flex; flex-direction: column; gap: 3px; }
+.slot .catch i { width: 7px; height: 7px; border-radius: 50%; background: #2a2040; border: 1.5px solid var(--ink); opacity: 0.45; }
+.slot .catch i.on { background: #ffc46a; box-shadow: 0 0 6px #ffb02e; opacity: 1; }
+.slot .catch i.heavy { background: #ff5a1f; box-shadow: 0 0 7px #ff5a1f; }
+.rmb-slot.low svg { filter: drop-shadow(0 0 4px #ff3b30) saturate(0.6); }
+.rmb-slot.caught { box-shadow: 0 0 0 2px #ffc46a, 0 0 14px rgba(255, 176, 46, 0.7); }
 .r-slot { overflow: hidden; }
 .r-slot .rfill { position: absolute; left: 0; right: 0; bottom: 0; height: 0%; background: linear-gradient(0deg, rgba(59, 240, 255, 0.55), rgba(59, 240, 255, 0.15)); transition: height 0.2s ease; }
 .r-slot svg { position: relative; }

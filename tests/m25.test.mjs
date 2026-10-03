@@ -10,6 +10,8 @@ import { BTN } from '../src/sim/systems/movement.js';
 import { ENEMIES } from '../src/data/enemies.js';
 import { damageEnemy } from '../src/sim/systems/enemies.js';
 import { GAME } from '../src/data/meta.js';
+import { timeToContact, reflectTier } from '../src/sim/systems/combat.js';
+import { waitForTier } from './helpers.mjs';
 
 const map = generateWorld(GAME.seed);
 const A = map.landmarks.arena;
@@ -113,25 +115,23 @@ function incoming(w, e, type = PTYPE.PARRY, dist = 6, speed = 10, dmg = 8) {
   return id;
 }
 
-test('a PERFECT reflect kills one enemy and bounces on to the next', () => {
+test('an EXCELENTE reflect kills one enemy and bounces on to the next', () => {
   const { w, e, step } = arena();
   const a = w.spawnEnemy('grunt', w.ecs.x[e] + 7, w.ecs.z[e]), b = w.spawnEnemy('archer', w.ecs.x[e] + 9, w.ecs.z[e] + 4);
   for (const t of [a, b]) { w.ecs.brain[t].state = 'dormant'; w.ecs.brain[t].aggro = 0.01; } // stand still
   w.ecs.hp[b] = 500; w.ecs.maxHp[b] = 500; w.ecs.hp[a] = 10;
   const id = incoming(w, e, PTYPE.PARRY, 6, 8);
-  const H = w.hazards, s = H.slot.get(id);
-  let wait = 0;
-  while (H.px(s, w.tick + wait) - w.ecs.x[e] > tuning.parry.radius + 0.2) wait++;
-  for (let i = 0; i < wait - 1; i++) step();
+  const wait = waitForTier(w, e, id, 3, { timeToContact, reflectTier, tuning });
+  for (let i = 0; i < wait; i++) step();
   let parry = null, bounce = null, hitB = 0;
   for (let i = 0; i < 180; i++) {
-    for (const ev of step(i === 0 ? { prs: BTN.PARRY } : {})) {
+    for (const ev of step(i === 0 ? { prs: BTN.ATTACK } : {})) {
       if (ev.type === 'parry') parry = ev;
       if (ev.type === 'shot' && ev.from) bounce = ev;
       if (ev.type === 'damage' && ev.id === b && ev.kind === 'shot') hitB += ev.dmg;
     }
   }
-  assert.ok(parry && parry.perfect, 'perfect parry');
+  assert.ok(parry && parry.tier === 3, 'EXCELENTE');
   assert.ok(!w.ecs.alive[a] || w.ecs.dead[a], 'the grunt died to the reflect');
   assert.ok(bounce, 'the shot bounced');
   assert.equal(bounce.target, b);
@@ -304,9 +304,9 @@ test('client prediction stays exact in the middle of Hellfire phase 2 (parries, 
   let maxErr = 0;
   for (let i = 0; i < 1500; i++) {
     client.update(DT);
-    const prs = (i % 13 === 0 ? BTN.PARRY : 0) | (i % 97 === 50 ? BTN.DASH : 0) | (i % 37 === 0 ? BTN.ATTACK : 0);
+    const prs = (i % 13 === 0 ? BTN.ATTACK : 0) | (i % 97 === 50 ? BTN.DASH : 0) | (i % 37 === 0 ? BTN.GUARD : 0);
     const mx = Math.sin(i * 0.05), mz = Math.cos(i * 0.05); // small circles near the centre
-    client.tickInput({ mx, mz, ax: ecs.x[enc.bossE] || enc.cx, az: ecs.z[enc.bossE] || enc.cz, btn: 0, prs });
+    client.tickInput({ mx, mz, ax: ecs.x[enc.bossE] || enc.cx, az: ecs.z[enc.bossE] || enc.cz, btn: (i % 70 < 25 ? BTN.GUARD : 0) | (i % 300 < 150 ? BTN.AIM : 0), prs });
     server.step();
     deliver();
     maxErr = Math.max(maxErr, client.stats.predErr);

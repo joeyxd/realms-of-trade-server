@@ -163,7 +163,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   `castK` (0 nada · 1 Q · 2 E · 3 R) · `castT` · `castX` · `castZ` (dirección o punto) · `qBuf` · `eBuf` · `shotCd` · `shotN` ·
   onda: `waveT0` (tick `pt` de salida, 0 = no hay) · `waveX` · `waveZ` · `waveDx` · `waveDz` · `waveEnd` (ticks) · `waveId` · `waveN` ·
   lluvia: `rainT0` · `rainX` · `rainZ` · `rainId` · estocada: `lungeT` · `lungeDx` · `lungeDz` · `lungeCov`.
-- `ACT` nuevos: `GUARD 15, LUNGE 16, THROW 17, SHOOT 18, BLAST 19, CAST 20` (animación de los demás).
+- `ACT` nuevos: `GUARD 4` (el hueco del parry), `LUNGE 15, THROW 16, SHOOT 17, BLAST 18, CAST 19` (animación de los demás).
 - Comando: `cmd.w` = arma pedida + 1 (0 = sin cambio). `sanitizeCmd` lo acepta (`& 0x0f`). La sim cambia de arma
   solo **a ≤ 2.4 u de un armero** (`map.racks`, determinista): predicho y validado igual. Evento `equip {e, weapon, seq}`.
 - `HELLO {…, weapon}` (arma inicial, la última que usaste: `settings.weapon`), `describe()` y la snapshot
@@ -210,7 +210,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
 - [x] **P1** Apuntar: `BTN.AIM`, frente al cursor en `movement.js` (+ `backMul`), mando (Gamepad API), K mantenida,
   piernas/torso separados en `characters.js`. Tests: el frente sigue al apuntado y no al movimiento con `AIM`,
   vuelve a seguir al movimiento sin `AIM`, el retroceso es más lento; la predicción sigue exacta.
-- [ ] **P2** Espada V2 + guardia: niveles por `tc` en `swingActive`, coyote con LMB (POBRE) y RMB (bloqueo), borrar
+- [x] **P2** Espada V2 + guardia: niveles por `tc` en `swingActive`, coyote con LMB (POBRE) y RMB (bloqueo), borrar
   el parry de RMB, guardia completa (bloqueo, aguante, rotura, perfecta, rearme, imparables, círculos), atrapar y
   devolver con el siguiente golpe, aturdir a los de cerca (servidor). Mínimo de feedback/HUD/tutorial para que se
   pueda jugar. Reescribir los tests de parry (`combat.test.mjs`, `m25`, `m3`) y la política del bot
@@ -241,6 +241,12 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   teclado sigue apuntando con el cursor); el ratón se escucha en toda la ventana (sobre el HUD también). El mando
   se lee cada frame (`input.pollPad()`, Start abre la pausa). `__mn.sheet({ run: true, move: π/2 })` muestra la
   marcha lateral / hacia atrás en la hoja de personajes. Tests en `tests/m35.test.mjs` (+ `tests/helpers.mjs`).
+- P2: `ACT.GUARD = 4` reutiliza el número del parry (`ACT.PARRY` queda como alias); `BTN.GUARD = 4` (= `PARRY`).
+  `tuning.sword` (niveles), `tuning.guard`, `tuning.parry` queda para la economía del reflejo (cadena, RIPOSTE,
+  rebotes, `reflect.wave` = la onda R). Un orbe pesado golpeado antes de tiempo hace «clunk» y ese golpe ya no lo
+  puede reflejar. Los círculos llevan `sx, sz` (de dónde viene el golpe) para el arco de la guardia. `Shots` ya
+  tiene `key/homing/cone` (adelantado de P3) y el cliente adopta por `key`. Evento `stun {id}` (guardia perfecta).
+  Tutorial: paso nuevo «guard» tras «parry». Bot: golpes a tiempo + atrapar orbes pesados (LV6/0.9 ≈ 205 s).
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

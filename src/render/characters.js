@@ -279,7 +279,7 @@ export class CharacterView {
     if (act !== ACT.DEAD) this.downW = damp(this.downW, 0, 8, dt);
 
     // Parry guard: blade up across the body, fading out after the window.
-    this.parryW = damp(this.parryW, act === ACT.PARRY ? 1 : 0, act === ACT.PARRY ? 40 : 9, dt);
+    this.parryW = damp(this.parryW, act === ACT.GUARD ? 1 : 0, act === ACT.GUARD ? 40 : 9, dt);
     const pw = this.parryW * (1 - w);
     if (pw > 0.01) {
       w = Math.max(w, pw);

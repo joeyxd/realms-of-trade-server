@@ -16,7 +16,7 @@ import { ENEMIES, ENEMY_KINDS } from '../data/enemies.js';
 import { lerp, wrapAngle } from '../core/math.js';
 
 const BUF_MAX = 40;
-const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, block: KILL.BLOCK };
+const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, guard: KILL.BLOCK };
 
 export class GameClient {
   constructor(transport, map, bus) {
@@ -128,7 +128,11 @@ export class GameClient {
         if (!ev.hostile) for (let s = 0; s < this.shots.cap; s++) if (this.shots.id[s]) this.shots.free(s);
         break;
       case 'aoe':
-        if (!H.aoes.some((a) => a.id === ev.id)) H.addAoe({ id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0 });
+        if (!H.aoes.some((a) => a.id === ev.id)) {
+          const a = { id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0 };
+          if (ev.sx !== undefined) { a.sx = ev.sx; a.sz = ev.sz; }
+          H.addAoe(a);
+        }
         break;
       case 'beam':
         if (!H.beams.some((b) => b.id === ev.id)) {
@@ -141,8 +145,8 @@ export class GameClient {
         if (ev.off) H.setLava(null);
         else if (!H.lava || H.lava.id !== ev.id) { const L = {}; for (const k of LAVA_FIELDS) L[k] = ev[k]; H.setLava(L); }
         break;
-      case 'parry': case 'destroy': case 'phit': case 'block': {
-        const s = H.slot.get(ev.pid);
+      case 'parry': case 'destroy': case 'phit': case 'guard': {
+        const s = ev.pid ? H.slot.get(ev.pid) : undefined;
         if (s !== undefined) {
           if (mine && H.killBy[s] === this.youLocal && H.killSeq[s] === ev.seq) H.confirmed[s] = 1;
           else { H.remove(s, Math.round(this.ptCur), KILL_EVENTS[ev.type], mine ? this.youLocal : ev.e, ev.seq); H.confirmed[s] = 1; }
@@ -157,10 +161,11 @@ export class GameClient {
           if (l) this.sidOf.set(ev.sid, l);
           break;
         }
-        // The server's shot for a reflect: adopt the predicted one (same source projectile) or create it.
+        // The server's copy of a shot this client predicted (a reflect: same source projectile; a released
+        // catch: same command): adopt it, or create it.
         let local = 0;
         const S = this.shots;
-        if (mine) for (let s = 0; s < S.cap; s++) if (S.id[s] && S.pid[s] === ev.pid && S.pred[s]) { local = S.id[s]; S.pred[s] = 0; break; }
+        if (mine && ev.key) for (let s = 0; s < S.cap; s++) if (S.id[s] && S.key[s] === ev.key && S.pred[s]) { local = S.id[s]; S.pred[s] = 0; break; }
         if (!local) local = this.spawnLocalShot(ev.owner, { ...ev, type: ev.ptype, server: true });
         if (local) this.sidOf.set(ev.sid, local);
         break;
@@ -195,7 +200,7 @@ export class GameClient {
     const S = this.shots;
     if (this.replaying) {
       // Replaying a predicted reflect: the shot already exists.
-      for (let s = 0; s < S.cap; s++) if (S.id[s] && S.pid[s] === o.pid) { this.keepShots.add(s); return S.id[s]; }
+      for (let s = 0; s < S.cap; s++) if (S.id[s] && o.key && S.key[s] === o.key) { this.keepShots.add(s); return S.id[s]; }
     }
     const id = this.nextLocalSid++;
     S.spawn(id, { ...o, owner: owner === this.youLocal ? this.youServer : owner, pred: o.server ? 0 : o.seq || 0 });
@@ -482,7 +487,8 @@ export class GameClient {
     out.iframes = ecs.iframes[e];
     out.hp = ecs.hp[e]; out.maxHp = ecs.maxHp[e]; out.dead = ecs.dead[e]; out.deadT = ecs.deadT[e];
     out.act = ecs.act[e]; out.actT = ecs.actT[e] + alpha * DT;
-    out.atkStage = ecs.atkStage[e]; out.atkT = ecs.atkT[e]; out.parryT = ecs.parryT[e]; out.parryLock = ecs.parryLock[e];
+    out.atkStage = ecs.atkStage[e]; out.atkT = ecs.atkT[e];
+    out.guardT = ecs.guardT[e]; out.guardSt = ecs.guardSt[e]; out.catchN = ecs.catchN[e]; out.catchHv = ecs.catchHv[e]; out.catchT = ecs.catchT[e];
     out.riposte = ecs.riposte[e]; out.chain = ecs.chain[e]; out.chainT = ecs.chainT[e];
     out.level = ecs.level[e]; out.xp = ecs.xp[e]; out.hurtInv = ecs.hurtInv[e]; out.stagger = ecs.stagger[e];
     out.god = ecs.god[e];

@@ -264,7 +264,11 @@ export class Shots {
     this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vz = F(); this.speed = F();
     this.life = F(); this.dmg = F(); this.r = F();
     this.heavy = new Uint8Array(cap);
-    this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce)
+    this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce, a released catch)
+    // Prediction key: the client adopts the server's copy of a shot it predicted by this (reflects: the
+    // projectile id; shots made by a command: −(seq·8 + k + 1); bounces: 0, never predicted).
+    this.key = F();
+    this.homing = F(); this.cone = F(); // soft homing (rad/s) toward enemies in a cone ahead (deg); 0 = straight
     this.bounce = new Uint8Array(cap); // server: jumps left after a hit
     this.lastHit = new Int32Array(cap); // server: the enemy it bounced off (not chosen again right away)
     this.pred = new Uint32Array(cap); // client: seq of the command that predicted it (0 = from the server)
@@ -285,7 +289,8 @@ export class Shots {
     this.x[s] = o.x; this.y[s] = o.y; this.z[s] = o.z;
     this.speed[s] = o.speed; this.vx[s] = o.dx * o.speed; this.vz[s] = o.dz * o.speed;
     this.life[s] = o.life; this.dmg[s] = o.dmg; this.r[s] = o.r; this.heavy[s] = o.heavy ? 1 : 0;
-    this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0;
+    this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0; this.key[s] = o.key || 0;
+    this.homing[s] = o.homing ?? tuning.parry.reflect.wave.homing; this.cone[s] = o.cone ?? tuning.parry.reflect.wave.cone;
     this.bounce[s] = o.bounce || 0; this.lastHit[s] = o.lastHit || 0;
     this.slot.set(id, s);
     this.count++;
@@ -301,12 +306,11 @@ export class Shots {
   // One step: soft homing toward the target (re-acquired in a cone ahead when lost), then move.
   // findTarget(x, z, dirX, dirZ, coneCos) → id or 0; targetPos(id, out) → bool.
   step(s, dt, findTarget, targetPos, tmp) {
-    const R = tuning.parry.reflect;
-    let tx = this.target[s];
+    let tx = this.homing[s] > 0 ? this.target[s] : 0;
     const sp = this.speed[s];
     const dx = this.vx[s] / sp, dz = this.vz[s] / sp;
-    if (!tx || !targetPos(tx, tmp)) {
-      tx = findTarget(this.x[s], this.z[s], dx, dz, Math.cos((R.cone / 2) * Math.PI / 180));
+    if (this.homing[s] > 0 && (!tx || !targetPos(tx, tmp))) {
+      tx = findTarget(this.x[s], this.z[s], dx, dz, Math.cos((this.cone[s] / 2) * Math.PI / 180));
       this.target[s] = tx;
       if (tx && !targetPos(tx, tmp)) tx = 0;
     }
@@ -316,7 +320,7 @@ export class Shots {
       const cur = Math.atan2(dx, dz);
       let d = want - cur;
       d = Math.atan2(Math.sin(d), Math.cos(d));
-      const maxTurn = R.homing * dt;
+      const maxTurn = this.homing[s] * dt;
       const a = cur + Math.max(-maxTurn, Math.min(maxTurn, d));
       this.vx[s] = Math.sin(a) * sp; this.vz[s] = Math.cos(a) * sp;
     }

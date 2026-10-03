@@ -244,7 +244,7 @@ export function startWindup(world, e, def, b, i, tx, tz) {
     ecs.facing[e] = Math.atan2(tx - ecs.x[e], tz - ecs.z[e]);
     const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
     const ax = ecs.x[e] + fx * a.reach, az = ecs.z[e] + fz * a.reach;
-    world.addAoe({ owner: e, x: ax, z: az, r: a.r, tAct: world.tick + Math.round(a.windup / DT), dmg: a.dmg });
+    world.addAoe({ owner: e, x: ax, z: az, r: a.r, tAct: world.tick + Math.round(a.windup / DT), dmg: a.dmg, sx: ecs.x[e], sz: ecs.z[e] });
   }
   world.emit({ type: 'windup', id: e, atk: a.id, tick: world.tick, dur: a.windup, ang: ecs.facing[e] });
 }

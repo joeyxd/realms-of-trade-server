@@ -146,10 +146,16 @@ export const sfx = {
     tone(d, t, { type: 'square', f0: 150, f1: 95, dur: 0.09, g: 0.07 });
     noiseBurst(d, t, { type: 'lowpass', f: 700, q: 1, dur: 0.06, g: 0.16 });
   },
-  // Normal parry: whoosh + ping. PERFECT: a clang that climbs a semitone per chained parry.
-  parry(perfect, chain = 1) {
+  // Sword reflect: BUENO = whoosh + ping; EXCELENTE = a clang that climbs a semitone per chained reflect;
+  // POBRE = a dull, short tick.
+  parry(perfect, chain = 1, poor = false) {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;
+    if (poor) {
+      sweep(d, t, { f0: 600, f1: 1800, q: 1.2, dur: 0.12, g: 0.12 });
+      tone(d, t, { type: 'triangle', f0: 660, f1: 520, dur: 0.07, g: 0.07 });
+      return;
+    }
     sweep(d, t, { f0: 700, f1: 3800, q: 1.4, dur: 0.18, g: 0.22 });
     const f = 880 * Math.pow(2, (Math.min(5, chain) - 1) / 12);
     if (perfect) {
@@ -161,11 +167,34 @@ export const sfx = {
       tone(d, t, { type: 'triangle', f0: f * 0.67, dur: 0.1, g: 0.06 });
     }
   },
-  block() {
+  block(vol = 1) {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;
-    tone(d, t, { f0: 110, f1: 60, dur: 0.16, g: 0.36 });
-    bell(d, t, 520, 0.08, 0.3, [1, 2.3, 4.1]);
+    tone(d, t, { f0: 110, f1: 60, dur: 0.16, g: 0.36 * vol });
+    bell(d, t, 520, 0.08 * vol, 0.3, [1, 2.3, 4.1]);
+  },
+  // Perfect guard: a bright clang and a "tink" per bullet caught (higher with each one held).
+  guardPerfect(n = 0) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    bell(d, t, 740, 0.16, 0.7);
+    tone(d, t, { f0: 85, f1: 50, dur: 0.18, g: 0.26 });
+    if (n) bell(d, t + 0.06, 1568 * Math.pow(2, (n - 1) / 12 * 3), 0.07, 0.35, [1, 2.4]);
+  },
+  guardBreak() {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'bandpass', f: 1600, q: 0.8, dur: 0.25, g: 0.26 });
+    tone(d, t, { type: 'sawtooth', f0: 220, f1: 70, dur: 0.3, g: 0.12 });
+    bell(d, t + 0.02, 330, 0.08, 0.4, [1, 1.9, 3.3]);
+  },
+  // Caught bullets thrown back: a rising whoosh, heavier with a heavy orb.
+  release(n = 1, heavy = false) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { f0: 500, f1: 4200, q: 1.2, dur: 0.22, g: 0.18 + 0.04 * n });
+    if (heavy) tone(d, t, { f0: 120, f1: 220, dur: 0.2, g: 0.25 });
+    for (let i = 0; i < Math.min(3, n); i++) tone(d, t + i * 0.04, { type: 'triangle', f0: 1046.5 * Math.pow(2, i * 4 / 12), dur: 0.12, g: 0.05 });
   },
   punish() {
     if (!audio.ready) return;

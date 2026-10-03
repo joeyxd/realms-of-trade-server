@@ -90,7 +90,7 @@ async function boot() {
   };
   const ps = {
     x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashT: -1, dashes: 0, charges: 1, maxCharges: 1, recharge: 0, iframes: 0,
-    hp: 100, maxHp: 100, dead: 0, deadT: 0, act: 0, actT: 0, atkStage: 0, atkT: 0, parryT: -1, parryLock: 0, riposte: 0, chain: 0, chainT: 99, level: 1, xp: 0,
+    hp: 100, maxHp: 100, dead: 0, deadT: 0, act: 0, actT: 0, atkStage: 0, atkT: 0, guardT: -1, guardSt: 60, catchN: 0, catchHv: 0, catchT: 0, riposte: 0, chain: 0, chainT: 99, level: 1, xp: 0,
   };
   const focus = new THREE.Vector3(map.landmarks.spawn.x, 1, map.landmarks.spawn.z);
   const aim = new THREE.Vector3();
@@ -231,7 +231,8 @@ async function boot() {
     { id: 'move', text: isTouch ? 'Muévete con el joystick' : 'Muévete con WASD o las flechas' },
     { id: 'dash', text: isTouch ? 'Toca DASH para esquivar' : 'Haz un dash con ESPACIO' },
     { id: 'attack', text: isTouch ? 'Golpea al muñeco: combo de 3 (ATK)' : 'Golpea al muñeco: combo de 3 golpes (clic izquierdo)' },
-    { id: 'parry', text: isTouch ? 'Entra en el aro y devuelve un cañonazo (PARRY)' : 'Entra en el aro y devuelve un cañonazo (clic derecho)' },
+    { id: 'parry', text: isTouch ? 'Entra en el aro y devuelve un cañonazo con la espada (ATK a tiempo)' : 'Entra en el aro y devuelve un cañonazo con la espada (clic izquierdo a tiempo)' },
+    { id: 'guard', text: isTouch ? 'Atrapa un cañonazo con la GUARDIA justo a tiempo' : 'Atrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo' },
     { id: 'village', text: 'Sigue los faroles hasta la Aldea Coralina' },
     { id: 'captain', text: 'Habla con la Capitana Brea' },
     { id: 'path', text: 'Limpia el Sendero del Humo (0/3 arqueros)' },
@@ -248,7 +249,8 @@ async function boot() {
       move: '<b>¡Bien!</b> Ahora prueba el dash.',
       dash: '<b>¡Esquiva!</b> Durante el dash eres invulnerable. Se recarga en 0,9 s.',
       attack: '<b>¡Combo!</b> Los golpes también <b>rompen</b> los proyectiles ámbar que toquen.',
-      parry: '<b>¡Devuelto!</b> En los primeros 80 ms del parry es <b>PERFECTO</b>: tiempo lento y el doble de riposte.',
+      parry: '<b>¡Devuelto!</b> Cuanto más tarde golpeas la bala, mejor: <b>EXCELENTE</b> sale recta a tu cursor y hace el triple de daño.',
+      guard: '<b>¡Atrapada!</b> Tu siguiente golpe devuelve las balas atrapadas. Mantener la guardia frena casi todo el daño de frente, pero gasta aguante.',
       village: '<b>Aldea Coralina.</b> Busca a la Capitana Brea junto al muelle.',
       captain: '<b>Rumbo al volcán.</b> Cuidado: hay arqueros esqueleto en el Sendero del Humo.',
       path: '<b>Sendero despejado.</b> Al final del humo, La Caldera.',
@@ -264,7 +266,8 @@ async function boot() {
   }
   function onTutorial(kind, d) {
     if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
-    else if (kind === 'parry' && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
+    else if (kind === 'parry' && d && d.tier >= 2 && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
+    else if (kind === 'guard' && d && d.pid && st.tut === 'guard') advanceTutorial();
     else if (kind === 'target') hud.toast('<b>¡Blanco!</b> Tu reflejo vuelve al que dispara, con el doble de daño.', 3600);
     else if (kind === 'kill' && d && (d.enemy === 'archer' || d.enemy === 'sentinel')) {
       kills[d.enemy]++;
@@ -437,7 +440,7 @@ async function boot() {
     D.begin();
     D.circle(ps.x, y, ps.z, tuning.player.hurtRadius, 0x7be07b, 16);
     D.circle(ps.x, y, ps.z, tuning.player.hurtRadius + tuning.projectiles.parryable.radius + tuning.projectiles.graze, 0x2a8f9a, 28);
-    D.sector(ps.x, y + 0.04, ps.z, tuning.parry.radius, ps.f, tuning.parry.arc, ps.act === ACT.PARRY ? 0xffffff : 0x3b7fa0);
+    D.sector(ps.x, y + 0.04, ps.z, 1.4, ps.f, tuning.guard.arc, ps.act === ACT.GUARD ? 0xffffff : 0x3b7fa0);
     if (ps.atkStage) { const st2 = tuning.melee.stages[ps.atkStage - 1]; D.sector(ps.x, y + 0.08, ps.z, st2.range, ps.f, st2.arc, 0xffc23d); }
     for (const rec of client.entities.values()) {
       if (!rec.enemy || !rec.ready || rec.dying) continue;
@@ -550,7 +553,10 @@ async function boot() {
           act = d < 7 ? (isTouch ? 'Toca <b>ATK</b> tres veces seguidas' : '<span class="kbd">LMB</span> <span class="kbd">LMB</span> <span class="kbd">LMB</span> combo de 3') : 'El muñeco de práctica está junto a la orilla';
         } else if (st.tut === 'parry') {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
-          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>PARRY</b> justo antes del impacto' : '<span class="kbd">RMB</span> justo antes de que la bala te toque') : 'Entra en el aro de cuerda, frente al cañón';
+          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>ATK</b> justo antes del impacto' : '<span class="kbd">LMB</span> justo antes de que la bala te toque') : 'Entra en el aro de cuerda, frente al cañón';
+        } else if (st.tut === 'guard') {
+          const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
+          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>GUARDIA</b> justo antes del impacto' : 'Sube la guardia (<span class="kbd">RMB</span>) justo antes del impacto') : 'Vuelve al aro de cuerda';
         }
         anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
@@ -579,11 +585,11 @@ async function boot() {
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
         hud.setStats({
           hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
-          parryLock: ps.parryLock, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
+          guard: ps.guardSt / tuning.guard.stamina, catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
         });
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
         encounterUi();
-        world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.PARRY, false);
+        world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
       });
 
