@@ -9,6 +9,7 @@ export const MAX_LIGHTS = 12;
 export const U = {
   mnNoiseTex: { value: getNoiseTexture() },
   mnTerrainCaustics: { value: 0 },
+  mnInk: { value: 1 },
   mnTime: { value: 0 },
   mnPlayer: { value: new THREE.Vector3(0, -1000, 0) },
   mnOccR: { value: 1.8 },
@@ -74,6 +75,7 @@ vec2 mnVoronoi(vec2 x) {
 // Fragment-only (derivatives + the shared noise texture).
 export const GLSL_BAND = /* glsl */ `
 uniform sampler2D mnNoiseTex;
+uniform float mnInk; // 1 medium / high, 0 low: comic hatching and painted detail off
 // R = cellular F1, G = cellular edge (F2-F1), B = fbm, A = cell id. 8x8 cells per tile.
 vec4 mnTex(vec2 uv) { return texture2D(mnNoiseTex, uv); }
 float mnCloudShadow(vec2 xz) {
@@ -342,11 +344,8 @@ float mnHatchLine( float c, float w, float fw ) {
 const comicPost = (mask) => /* glsl */ `
 #ifdef MN_COMIC
 {
-  float mnM = ${mask};
-  // Glowing surfaces (lava, embers, gems, lit windows) stay clean; grass is busy already (painted strokes): 40 % less.
-  mnM *= 1.0 - smoothstep( 0.15, 0.6, max( max( totalEmissiveRadiance.r, totalEmissiveRadiance.g ), totalEmissiveRadiance.b ) );
-  mnM *= 1.0 - 0.4 * smoothstep( 0.04, 0.2, diffuseColor.g - max( diffuseColor.r, diffuseColor.b ) );
-  mnM *= 1.0 - smoothstep( 45.0, 80.0, length( vViewPosition ) );
+  // Derivatives first (uniform control flow); the work below only runs where there is something to ink, so the
+  // lit majority of the screen pays a few ops. mnInk = 0 (low tier) skips it all.
   float mnDark = 1.0 - mnSunLit;                                // shade + cast shadow: the first direction
   float mnDark2 = 1.0 - smoothstep( -0.6, -0.04, mnSunNdl );    // the surface's own back side: the crossing set
   vec3 mnWn = abs( inverseTransformDirection( normal, viewMatrix ) );
@@ -356,20 +355,31 @@ const comicPost = (mask) => /* glsl */ `
   vec3 mnQ = vMnRest;
   vec2 mnP = mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? mnQ.zy : mnQ.xy );
   vec2 mnU = ( mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? vec2( mnP.x + mnP.y, mnP.x - mnP.y ) : vec2( mnP.x - mnP.y, mnP.x + mnP.y ) ) * 0.7071 ) / MN_HATCH_PERIOD;
-  // One noise read, shifted per line: wobble (+-0.06 u) from B, pen lifts from A (cell id: ~20 % of cells blank).
-  float mnK = floor( mnU.x + 0.5 );
-  vec4 mnN = texture2D( mnNoiseTex, mnP * 0.2 + vec2( mnK * 0.37, mnK * 0.61 ) + mnAx * 0.29 );
-  float mnWob = ( mnN.b - 0.5 ) * 0.24 / MN_HATCH_PERIOD;
   float mnF1 = fwidth( mnU.x ) * 1.2, mnF2 = fwidth( mnU.y ) * 1.2;
+  vec2 mnGx = dFdx( mnP * 0.2 ), mnGy = dFdy( mnP * 0.2 );
+  float mnSdW = max( fwidth( mnSunShadow ), 1e-4 );
   float mnPx = 1.0 - smoothstep( 0.125, 0.2, max( mnF1, mnF2 ) ); // fades out under ~5 px per period
-  float mnH = max(
-    mnHatchLine( mnU.x + mnWob, 0.3 * smoothstep( 0.25, 1.0, mnDark ), mnF1 ) * ( 1.0 - smoothstep( 0.78, 0.86, mnN.a ) ),
-    mnHatchLine( mnU.y - mnWob, 0.22 * smoothstep( 0.8, 1.0, mnDark2 ), mnF2 ) * ( 1.0 - smoothstep( 0.7, 0.78, mnN.r ) ) ) * mnPx;
-  gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * 0.42, mnH * 0.7 * mnM );
-  // Cast-shadow edge: ink where the shadow factor crosses 0.5, only on surfaces that face the sun.
-  float mnSd = abs( mnSunShadow - 0.5 ) / max( fwidth( mnSunShadow ), 1e-4 );
-  float mnEdge = ( 1.0 - smoothstep( 0.8, 2.0, mnSd ) ) * smoothstep( 0.02, 0.22, mnSunNdl );
-  gl_FragColor.rgb = mix( gl_FragColor.rgb, vec3( 0.07, 0.04, 0.14 ), mnEdge * 0.65 * mnM );
+  float mnSd = abs( mnSunShadow - 0.5 ) / mnSdW;
+  float mnM = mnInk * ( 1.0 - smoothstep( 45.0, 80.0, length( vViewPosition ) ) );
+  if ( mnM > 0.01 && ( mnDark > 0.25 || mnSd < 2.0 ) ) {
+    mnM *= ${mask};
+    // Glowing surfaces (lava, embers, gems, lit windows) stay clean; grass is busy already (painted strokes): 40 % less.
+    mnM *= 1.0 - smoothstep( 0.15, 0.6, max( max( totalEmissiveRadiance.r, totalEmissiveRadiance.g ), totalEmissiveRadiance.b ) );
+    mnM *= 1.0 - 0.4 * smoothstep( 0.04, 0.2, diffuseColor.g - max( diffuseColor.r, diffuseColor.b ) );
+    if ( mnDark > 0.25 && mnPx > 0.0 ) {
+      // One noise read, shifted per line: wobble (+-0.06 u) from B, pen lifts from A (cell id: ~20 % of cells blank).
+      float mnK = floor( mnU.x + 0.5 );
+      vec4 mnN = textureGrad( mnNoiseTex, mnP * 0.2 + vec2( mnK * 0.37, mnK * 0.61 ) + mnAx * 0.29, mnGx, mnGy );
+      float mnWob = ( mnN.b - 0.5 ) * 0.24 / MN_HATCH_PERIOD;
+      float mnH = max(
+        mnHatchLine( mnU.x + mnWob, 0.3 * smoothstep( 0.25, 1.0, mnDark ), mnF1 ) * ( 1.0 - smoothstep( 0.78, 0.86, mnN.a ) ),
+        mnHatchLine( mnU.y - mnWob, 0.22 * smoothstep( 0.8, 1.0, mnDark2 ), mnF2 ) * ( 1.0 - smoothstep( 0.7, 0.78, mnN.r ) ) ) * mnPx;
+      gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * 0.42, mnH * 0.7 * mnM );
+    }
+    // Cast-shadow edge: ink where the shadow factor crosses 0.5, only on surfaces that face the sun.
+    float mnEdge = ( 1.0 - smoothstep( 0.8, 2.0, mnSd ) ) * smoothstep( 0.02, 0.22, mnSunNdl );
+    gl_FragColor.rgb = mix( gl_FragColor.rgb, vec3( 0.07, 0.04, 0.14 ), mnEdge * 0.65 * mnM );
+  }
 }
 #endif
 `;

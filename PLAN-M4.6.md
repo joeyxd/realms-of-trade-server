@@ -114,7 +114,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 - [x] **P3** Contornos de tinta (2.3).
 - [x] **P4** Sombras de cómic (2.4).
 - [x] **P5** Superficies pintadas (2.5).
-- [ ] **P6** Etalonaje, rendimiento, capturas, docs, versión, artefacto, informe (2.6).
+- [x] **P6** Etalonaje, rendimiento, capturas, docs, versión, artefacto, informe (2.6).
 
 ## 4. Notas de ejecución
 
@@ -163,3 +163,9 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
   brilla, se apaga bajo ~5 px por periodo y de 45 a 80 u. Línea de tinta en el borde de la sombra proyectada.
   Terreno sin trama en lava, grietas y bajo el agua; fondo marino, flores, algas, guijarros y bichos sin trama.
   Personajes: rampa al 25 %, rim 1.1. Coste: una lectura de ruido y ~60 operaciones.
+- **P6**: etalonaje (día contraste 0.16 / sat 1.12 / viñeta 0.28; dorado 0.19 / 1.1 / 0.33; noche 0.25 / 0.98 /
+  0.44; volcánico 0.28 / 1.12 / 0.46). FPS en swiftshader a 960×540 (solo comparativo; pueblo / Caldera):
+  antes medium 1.43 / 2.08, low 2.81 / 2.51. Primera medida tras P3–P5: medium 1.03 / 1.51 (−28 %), low 2.21 /
+  2.57. Arreglo: `mnInk` (uniforme, 0 en `low`) apaga trama y detalle pintado en `low`; la trama solo trabaja
+  donde hay algo que entintar (sombra o borde de sombra; derivadas antes de la rama y `textureGrad`). Final:
+  medium 1.30 / 1.92 (−9 % / −8 %), low 2.60 / 2.56 (como antes). Docs, versión 0.4.6-m4.6, artefacto.

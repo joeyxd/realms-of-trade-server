@@ -5,11 +5,11 @@ export function tierConfig(name) {
   const dpr = window.devicePixelRatio || 1;
   switch (name) {
     case 'low':
-      return { name, pixelRatio: Math.min(dpr, 1), ss: 1, outlines: false, fxaa: false, shadow: 1024, particles: 0.5, waves: 0, occluders: true, lights: 4, bloom: 0 };
+      return { name, pixelRatio: Math.min(dpr, 1), ss: 1, outlines: false, fxaa: false, shadow: 1024, particles: 0.5, waves: 0, occluders: true, lights: 4, bloom: 0, ink: 0 };
     case 'medium':
-      return { name, pixelRatio: Math.min(dpr, 1.5), ss: 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 8, bloom: 1 };
+      return { name, pixelRatio: Math.min(dpr, 1.5), ss: 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 8, bloom: 1, ink: 1 };
     default:
-      return { name: 'high', pixelRatio: Math.min(dpr, 2), ss: dpr <= 1.25 ? 1.5 : 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 12, bloom: 1 };
+      return { name: 'high', pixelRatio: Math.min(dpr, 2), ss: dpr <= 1.25 ? 1.5 : 1, outlines: true, fxaa: true, shadow: 2048, particles: 1, waves: 1, occluders: true, lights: 12, bloom: 1, ink: 1 };
   }
 }
 

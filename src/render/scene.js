@@ -132,6 +132,7 @@ export class GameScene {
     this.lights.max = cfg.lights;
     this.water.material.uniforms.uWaves.value = cfg.waves;
     U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
+    U.mnInk.value = cfg.ink ?? 1; // comic hatching + painted detail (off on low)
     this.onResize();
   }
 
