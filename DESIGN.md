@@ -650,6 +650,15 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | Depuración | con `?debug`, `__mn.view('bloom')` (solo el bloom), `__mn.view('glow')` (la máscara) y `__mn.view()`. |
 | Precompilado | El precalentado de shaders compila cada pasada como se dibuja (destino lineal, capa FX sin las luces de la escena): el primer dash ya no compila nada. |
 
+**Tinta (M4.6).** Referencia: Hades / Borderlands. Lo que tienen: contorno grueso de tinta en las figuras y
+más fino en el decorado, sombras duras y saturadas (violeta, azul) en vez de grises, trama de pluma en lo oscuro
+y superficies con detalle pintado a mano. Hecho: el peso de línea va en el alfa de la pasada de normales (mundo
+0.5, personajes 1) y la composición dibuja la línea gruesa de los personajes por fuera de la figura; `mnBand` a
+tres tonos con la sombra teñida por `splitShadow` del preset (sombra real, no nubes); trama en espacio de mundo
+(`MN_COMIC`, `opts.comic`, `opts.hatchMask`) y línea en el borde de la sombra proyectada; detalle procedural en
+terreno, props y vegetación (`src/render/inkGlsl.js`). Regla: solo lecturas de `mnNoiseTex` y ALU, nada de
+texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
+
 ## 16. Milestones y checklist de cada entrega
 
 | M | Contenido | Estado |
@@ -663,6 +672,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, relleno de comandos, tiempo de instancia y arena cooperativos, medición con latencia (`PLAN-M3.6.md`) | ✅ |
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, vendedora, Mareas, partidas firmadas, HUD y paneles (`PLAN-M4.md`) | ✅ |
 | M4.5 | «Sin ley»: detalles de M4 (aviso del cofre, oclusión del cofre, cofres de Marea) + la Cala Calavera: fuego amigo, botín completo y público, mobs que se pelean, Desalmados (`PLAN-M4.5.md`) | ✅ |
+| M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |
 

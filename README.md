@@ -64,7 +64,7 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
 | Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R |
-| Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón F |
+| Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón de acción (aparece con su verbo: Hablar, Abrir, Cambiar, Marea, Zarpar) |
 | Poción de ron-coco (cura el 40 %, 2 s de espera, máx. 5) | 1 · cruceta ↑ | botón de poción |
 | Personaje: Equipo / Atributos / Misiones | I o B / C / L · Select | botón Bolsa |
 | Mapa de la isla | M | botón Mapa |
@@ -87,7 +87,7 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 |---|---|---|
 | M0 | `DESIGN.md`: loop, controles, proyectiles, jefe por fases, tablas de XP/stats/loot, archivos, protocolo | ✅ |
 | M1 | Isla + agua + luz + cámara + personaje caminando y dasheando, con la arquitectura de red completa | ✅ |
-| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz); siguen lluvia, modo tinta → `DESIGN.md` §15 | en curso |
+| v2 | Dirección de arte por referencias: agua ✅, personajes ✅, ambiente paso 1 ✅ (luces locales, noche, noche volcánica, grading), paso 2 ✅ (bloom, chispas y brasas con estela, ceniza, humo con luz), tinta ✅ (M4.6); sigue la lluvia → `DESIGN.md` §15 | en curso |
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | ✅ |
 | M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | ✅ |
 | M3 | 5 oleadas, Cangrejo mortero, HELLFIRE en 3 fases (embestida, láser doble, meteoros, carriles de fuego, cortina, lava) → `PLAN-M3.md` | ✅ |
@@ -95,6 +95,7 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer`, cooperativo medido con latencia → `PLAN-M3.6.md` | ✅ |
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, Tía Perla, Mareas, partidas guardadas y firmadas, HUD y paneles completos → `PLAN-M4.md` | ✅ |
 | M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
+| M4.6 | «Tinta»: el móvil siempre en horizontal (el juego se dibuja girado si el teléfono está de pie), botones táctiles de cristal por colores en arco, y el pase de cómic: contornos de tinta con peso, sombras duras teñidas con trama, superficies pintadas → `PLAN-M4.6.md` | ✅ |
 | M5–M6 | Momentos Highlight, rendimiento y móvil final | siguiente |
 
 ### Qué incluye M1
@@ -346,6 +347,32 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.
+
+### Qué incluye M4.6 — «Tinta»
+
+- **Siempre en horizontal:** en un teléfono de pie (o con el giro bloqueado) el juego entero se dibuja girado 90°
+  para jugar con el teléfono de lado; al tocar «Jugar» se pide pantalla completa y bloqueo horizontal donde el
+  navegador lo deja (Android), y entonces se des-gira solo. Todo mide el «escenario» (`src/ui/stage.js`), no la
+  ventana: lienzo, cámara, interfaz, ratón, joystick y apuntado de Q / E / R. «Forzar horizontal (móvil)» en Ajustes.
+- **Botones nuevos:** cristal translúcido con un color por función (ataque rojo-naranja, guardia azul, dash
+  turquesa, habilidades violeta, R dorado, poción rosa, acción ámbar), iconos de línea con contorno de tinta y
+  tamaños por importancia en un arco alrededor de ATK: DASH a la izquierda, GUARDIA encima, Q / E / R en arco, la
+  poción aparte y el botón de acción, que solo sale cuando hay algo que hacer. Pulsado, destello al acabar un
+  enfriamiento, R que late cuando está listo, candado en lo bloqueado, aro de reposo del joystick. «Tamaño de los
+  botones» (pequeño / mediano / grande) y «Vibración (móvil)» en Ajustes. En horizontal bajo, el seguidor de
+  misiones se pliega a una línea y los avisos no tapan el arco.
+- **Contornos de tinta con peso:** siluetas del mundo más gruesas, pliegues finos y los personajes, enemigos y PNJ
+  con una línea gruesa por fuera de la figura (se leen de un vistazo y conservan sus colores). Tinta más oscura.
+- **Sombras de cómic:** tres tonos duros y la sombra teñida con el color de cada hora (violeta de día, azul de
+  noche); **trama de tinta** a mano en lo que no toca el sol (más ancha cuanto más oscuro, cruzada en lo más
+  oscuro, más suave sobre la hierba, nunca en lo que brilla, la lava o el agua) y una línea de tinta donde empieza
+  una sombra proyectada. Las nubes solo oscurecen.
+- **Superficies pintadas:** ondas y punteado en la arena, pinceladas en la hierba con borde, losas entintadas,
+  grietas en la roca y en las rocas, estratos del volcán, baldosas de la Caldera con junta de tinta, grietas de
+  lava perfiladas y una **greca** alrededor del suelo de la arena; vetas en la madera y sillares en la piedra de
+  los props, anillos en las palmeras, arbustos a dos tonos.
+- **Etalonaje** más contrastado y saturado en las cuatro horas. Todo es procedural con la textura de ruido que ya
+  había: ni texturas nuevas ni pasadas nuevas. Rendimiento: ver `PLAN-M4.6.md` §4.
 
 ## Arquitectura
 

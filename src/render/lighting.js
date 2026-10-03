@@ -20,7 +20,7 @@ const PRESETS = {
     rim: C(0xa8dcff), fill: CL(0, 0, 0), lava: 1.0, cloud: 0.32,
     fire: 0.3, lavaLight: 0.6, windows: 0, player: 0,
     water: C(0xffffff), sparkle: 1, foam: 1,
-    contrast: 0.1, sat: 1.04, vignette: 0.22, splitShadow: C(0x5a4aa0), splitHigh: C(0xffd9a0), split: 0.05,
+    contrast: 0.16, sat: 1.12, vignette: 0.28, splitShadow: C(0x5a4aa0), splitHigh: C(0xffd9a0), split: 0.05,
     bloom: 0.35, glints: 0.15, fxLight: CL(1, 1, 1),
   },
   golden: {
@@ -31,7 +31,7 @@ const PRESETS = {
     rim: C(0xff9ad1), fill: CL(0.12, 0.1, 0.08), lava: 1.35, cloud: 0.18,
     fire: 0.55, lavaLight: 0.9, windows: 0.45, player: 0.1,
     water: C(0xffe2d0), sparkle: 1.1, foam: 1,
-    contrast: 0.14, sat: 1.03, vignette: 0.28, splitShadow: C(0x5a3c9a), splitHigh: C(0xffb070), split: 0.08,
+    contrast: 0.19, sat: 1.1, vignette: 0.33, splitShadow: C(0x5a3c9a), splitHigh: C(0xffb070), split: 0.08,
     bloom: 0.55, glints: 0.25, fxLight: CL(1, 0.8, 0.66),
   },
   night: {
@@ -42,7 +42,7 @@ const PRESETS = {
     rim: C(0x86a2ff), fill: CL(0.5, 0.52, 0.72), lava: 1.25, cloud: 0.12,
     fire: 1, lavaLight: 1, windows: 1, player: 0.3,
     water: C(0x3a4c78), sparkle: 0.4, foam: 0.62,
-    contrast: 0.22, sat: 0.92, vignette: 0.4, splitShadow: C(0x3438b0), splitHigh: C(0xffb060), split: 0.16,
+    contrast: 0.25, sat: 0.98, vignette: 0.44, splitShadow: C(0x3438b0), splitHigh: C(0xffb060), split: 0.16,
     bloom: 0.9, glints: 0.6, fxLight: CL(0.24, 0.28, 0.45),
   },
   volcanic: {
@@ -53,7 +53,7 @@ const PRESETS = {
     rim: C(0xff7a4a), fill: CL(0.75, 0.48, 0.38), lava: 1.55, cloud: 0.42,
     fire: 1, lavaLight: 1.2, windows: 0, player: 0.5,
     water: C(0x6a3a30), sparkle: 0.2, foam: 0.6,
-    contrast: 0.24, sat: 1.05, vignette: 0.42, splitShadow: C(0x4a2a90), splitHigh: C(0xff9040), split: 0.18,
+    contrast: 0.28, sat: 1.12, vignette: 0.46, splitShadow: C(0x4a2a90), splitHigh: C(0xff9040), split: 0.18,
     bloom: 1.0, glints: 0.3, fxLight: CL(0.42, 0.27, 0.24),
   },
 };
