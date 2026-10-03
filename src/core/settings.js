@@ -6,7 +6,7 @@ const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduce
 
 export const defaults = {
   master: 0.8, sfx: 0.9, music: 0.55, ambience: 0.8, muted: false,
-  quality: 'auto', shake: 1, reducedMotion: reduced, uiScale: 1, highContrast: false, landscape: true,
+  quality: 'auto', shake: 1, reducedMotion: reduced, uiScale: 1, highContrast: false, landscape: true, touchSize: 1, haptics: true,
   skin: 0, name: '', camRotate: false, timeOfDay: 'cycle', weapon: 'sable',
 };
 

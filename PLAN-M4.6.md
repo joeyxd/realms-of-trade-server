@@ -110,7 +110,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 
 - [x] **P0** Este plan.
 - [x] **P1** El escenario girado (2.1) + test del mapeo.
-- [ ] **P2** Botones táctiles v2 y HUD horizontal (2.2).
+- [x] **P2** Botones táctiles v2 y HUD horizontal (2.2).
 - [ ] **P3** Contornos de tinta (2.3).
 - [ ] **P4** Sombras de cómic (2.4).
 - [ ] **P5** Superficies pintadas (2.5).
@@ -130,3 +130,11 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
   Al «Jugar» en táctil: pantalla completa + bloqueo horizontal (si el navegador deja, el escenario se des-gira
   solo). Comprobado en 390×844 (girado: lienzo 844×390, un deslizamiento físico hacia arriba mueve a la
   izquierda del escenario) y 844×390. 149 tests.
+- **P2**: `touch.js` reescrito sobre el joystick y el arrastre de P1: 17 iconos SVG de línea (trazo blanco sobre
+  trazo de tinta), kits por arma (sable ATK / ESTOC / HOJA / TORM; pistolas FUEGO / DESC / HUMO / LLUVIA), cristal
+  con `--c` por función, `.on` al pulsar, `.ready-flash` al acabar un enfriamiento, R con pulso dorado, candado
+  en lo bloqueado, botón de acción contextual con su verbo (Hablar, Abrir, Marea, Cambiar, Zarpar) y la «F» fuera
+  del aviso en táctil. `--tb` = ajuste × auto (`stage.h / 420`, entre 0.78 y 1.15), con tope `(stage.h − 72) / 310`
+  para que «Grande» no suba la acción hasta los botones de arriba. HUD con escenario ≤ 480 de alto: seguidor en
+  una línea bajo el retrato, toasts debajo (máx. 3). Extra: vibración corta (dash, guardia, poción, acción; más
+  fuerte al lanzar Q / E / R) con «Vibración (móvil)» en Ajustes. 149 tests.

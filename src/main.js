@@ -171,6 +171,7 @@ async function boot() {
   input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
+  touch.setScale(settings.touchSize); touch.setHaptics(settings.haptics !== false);
   const pause = new PauseMenu($('#pause'), settings, {
     onChange: (key) => {
       saveSettings();
@@ -178,6 +179,8 @@ async function boot() {
       if (key === 'quality') quality.setMode(settings.quality);
       if (key === 'uiScale') applyUiScale();
       if (key === 'landscape') stage.update();
+      if (key === 'touchSize') touch.setScale(settings.touchSize);
+      if (key === 'haptics') touch.setHaptics(settings.haptics);
       if (key === 'timeOfDay') world.lighting.setTimeOfDay(settings.timeOfDay, 2.5);
     },
     onResume: () => closePause(),
@@ -798,6 +801,12 @@ async function boot() {
         // A chest's prompt sits under the chest (it would cover it under your feet).
         const cv = chest ? world.loot.get(chest) : null;
         if (cv) anchor('you', cv.x, cv.y - 0.1, cv.z, 0); else anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
+        // On touch the action button carries the verb (and the key hint is noise): strip it from the prompt.
+        if (isTouch) {
+          touch.setAction(npc ? { verb: 'Hablar', icon: 'talk' } : chest ? { verb: 'Abrir', icon: 'chest' } : runes ? { verb: 'Marea', icon: 'rune' }
+            : rack ? { verb: 'Cambiar', icon: 'swap' } : nearShip ? { verb: 'Zarpar', icon: 'ship' } : null);
+          if (act) act = act.replace('<span class="kbd">F</span> ', '');
+        }
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         if (input.consumeInteract()) {
           if (npc) {

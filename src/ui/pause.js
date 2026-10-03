@@ -39,6 +39,10 @@ export class PauseMenu {
         ${range('set-ui', 'Tamaño de la interfaz', s.uiScale, 0.8, 1.3, 0.05)}
         ${check('set-contrast', 'Alto contraste (proyectiles con patrón)', s.highContrast)}
         ${check('set-landscape', 'Forzar horizontal (móvil)', s.landscape !== false)}
+        <div class="row"><label for="set-touchsize">Tamaño de los botones</label><select id="set-touchsize">
+          ${[[0.85, 'Pequeño'], [1, 'Mediano'], [1.18, 'Grande']].map(([v, n]) => `<option value="${v}" ${+s.touchSize === v ? 'selected' : ''}>${n}</option>`).join('')}
+        </select></div>
+        ${check('set-haptics', 'Vibración (móvil)', s.haptics !== false)}
       </div>`;
     const controlsHtml = `
       <div class="section controls-list">
@@ -88,6 +92,8 @@ export class PauseMenu {
     bind('set-ui', 'uiScale');
     bind('set-contrast', 'highContrast', (el) => el.checked);
     bind('set-landscape', 'landscape', (el) => el.checked);
+    bind('set-touchsize', 'touchSize');
+    bind('set-haptics', 'haptics', (el) => el.checked);
   }
 
   confirmNew() {

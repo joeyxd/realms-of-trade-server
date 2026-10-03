@@ -204,27 +204,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Touch controls */
-#touch { position: fixed; inset: 0; pointer-events: none; }
-#touch .joy-zone { position: absolute; left: 0; top: 30%; bottom: 0; width: 50%; pointer-events: auto; }
-#touch .joy { position: absolute; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; background: rgba(20, 12, 40, 0.35); border: 3px solid rgba(255, 240, 200, 0.5); display: none; }
-#touch .joy i { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff6e2, var(--brass)); border: 3px solid var(--ink); }
-#touch .tbtn {
-  position: absolute; pointer-events: auto; border-radius: 50%;
-  display: grid; place-items: center;
-  font-family: var(--font-display); color: var(--ink); font-size: 15px;
-  background: radial-gradient(circle at 40% 30%, #a6f6ff, var(--accent) 50%, #0f8fa6);
-  border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink);
-}
-#touch .tbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
-#touch .t-dash { right: calc(26px + var(--safe-r)); bottom: calc(110px + var(--safe-b)); width: 84px; height: 84px; }
-#touch .t-dash { overflow: hidden; }
-#touch .t-dash .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
-#touch .t-dash .lbl { position: relative; }
-#touch .t-dash .pips { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 4px; }
-#touch .t-dash .pips i { width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 1.5px solid var(--ink); }
-#touch .t-dash .pips i.empty { background: #2a2040; }
-#touch .t-act { right: calc(118px + var(--safe-r)); bottom: calc(70px + var(--safe-b)); width: 62px; height: 62px; background: radial-gradient(circle at 40% 30%, #fff1b0, var(--brass) 55%, var(--brass-d)); }
 
 body.touch .actionbar { display: none; }
 @container stage (max-width: 720px) {
@@ -298,19 +277,6 @@ body.touch .actionbar { display: none; }
 .fnum.bounce { font-size: 15px; color: #3bf0ff; letter-spacing: 0.06em; }
 .fnum.level { font-size: 30px; color: var(--brass-l); }
 .fnum.info { font-size: 15px; color: var(--parch); }
-#touch .t-atk { right: calc(124px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 70px; height: 70px; font-size: 14px; background: radial-gradient(circle at 40% 30%, #fff1b0, var(--brass) 55%, var(--brass-d)); }
-#touch .t-parry { right: calc(36px + var(--safe-r)); bottom: calc(205px + var(--safe-b)); width: 70px; height: 70px; font-size: 12px; }
-#touch .t-skill { overflow: hidden; font-size: 12px; background: radial-gradient(circle at 40% 30%, #c8fbff, #6ad8ff 55%, #2a7fa6); }
-#touch .t-skill .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
-#touch .t-skill .lbl, #touch .t-atk .lbl { position: relative; }
-#touch .t-q { right: calc(212px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 58px; height: 58px; }
-#touch .t-e { right: calc(150px + var(--safe-r)); bottom: calc(232px + var(--safe-b)); width: 58px; height: 58px; }
-#touch .t-r { right: calc(210px + var(--safe-r)); bottom: calc(80px + var(--safe-b)); width: 52px; height: 52px; font-size: 15px; }
-#touch .t-r.ready { animation: rready 0.8s ease-in-out infinite; }
-#touch .aimline { position: absolute; height: 6px; margin-top: -3px; transform-origin: 0 50%; display: none; pointer-events: none;
-  background: linear-gradient(90deg, rgba(59, 240, 255, 0.15), rgba(59, 240, 255, 0.9)); border-radius: 3px; box-shadow: 0 0 10px rgba(59, 240, 255, 0.6); }
-#touch .aimline i { position: absolute; right: -8px; top: -5px; border: 8px solid transparent; border-left: 12px solid rgba(160, 250, 255, 0.95); border-right: 0; }
-#touch .aimline.cancel { background: rgba(255, 80, 70, 0.6); box-shadow: none; }
 
 /* ---- M2.5: boss bar + encounter line ---- */
 #boss-bar { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); width: min(560px, calc(100cqw - 32px)); display: grid; gap: 4px; justify-items: center; pointer-events: none; }
@@ -394,8 +360,146 @@ body.touch .actionbar { display: none; }
 .tracker li.ready .chk { background: #ffcf4a; border-color: var(--ink); box-shadow: 0 0 8px #ffcf4a; }
 .tracker li .txt small { color: var(--text-dim); font-weight: 800; }
 @container stage (max-width: 760px) { .actionbar .mast { width: 120px; } }
-#touch .t-pot { right: calc(206px + var(--safe-r)); bottom: calc(26px + var(--safe-b)); width: 54px; height: 54px; overflow: hidden; font-size: 20px; }
-#touch .t-pot .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
-#touch .t-pot .cnt { position: absolute; right: 6px; bottom: 4px; font: 400 14px var(--font-display); color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); }
-#touch .t-pot.empty { filter: grayscale(1) brightness(0.7); }
-#touch .t-skill.locked { filter: grayscale(1) brightness(0.55); }
+
+/* ---- Touch controls v2 (M4.6): tinted glass, one colour per function --------------------------------------- */
+/* --tb (set by touch.js) = the user's button size x an automatic factor; every size and offset scales with it. */
+#touch { position: fixed; inset: 0; pointer-events: none; --tb: 1; }
+#touch .joy-zone { position: absolute; left: 0; top: 30%; bottom: 0; width: 50%; pointer-events: auto; }
+/* Where the stick usually appears: a faint ring (gone while it is live). */
+#touch .joy-rest {
+  position: absolute; left: calc(34px + var(--safe-l)); bottom: calc(34px + var(--safe-b));
+  width: calc(104px * var(--tb)); height: calc(104px * var(--tb)); border-radius: 50%;
+  border: 2px dashed rgb(255 255 255 / 0.2); transition: opacity 0.15s; pointer-events: none;
+}
+#touch .joy-rest::after { content: ''; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: rgb(255 255 255 / 0.24); }
+#touch.stick .joy-rest { opacity: 0; }
+#touch .joy {
+  position: absolute; display: none; border-radius: 50%; pointer-events: none;
+  width: calc(104px * var(--tb)); height: calc(104px * var(--tb)); margin: calc(-52px * var(--tb)) 0 0 calc(-52px * var(--tb));
+  background: radial-gradient(circle, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.15) 100%);
+  border: 2px solid rgb(255 255 255 / 0.38);
+  box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.18), 0 4px 12px rgb(0 0 0 / 0.25);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+}
+#touch .joy i {
+  position: absolute; left: 50%; top: 50%; width: calc(46px * var(--tb)); height: calc(46px * var(--tb)); margin: calc(-23px * var(--tb)) 0 0 calc(-23px * var(--tb));
+  border-radius: 50%; background: radial-gradient(circle at 40% 32%, #fff, #e4dff2 80%);
+  border: 2.5px solid rgb(18 10 36 / 0.7); box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
+}
+
+/* The arc is centred on ATK (a zero-size box at its centre); each button sets its colour, size and offset. */
+#touch .t-cluster {
+  position: absolute; width: 0; height: 0; pointer-events: none;
+  right: calc(18px + var(--safe-r) + 46px * var(--tb)); bottom: calc(18px + var(--safe-b) + 46px * var(--tb));
+}
+#touch .tbtn {
+  --c: 255 255 255; --d: 60; --x: 0; --y: 0;
+  position: absolute; left: calc(var(--x) * var(--tb) * 1px); top: calc(var(--y) * var(--tb) * 1px);
+  width: calc(var(--d) * var(--tb) * 1px); height: calc(var(--d) * var(--tb) * 1px);
+  margin: 0; padding: 0 0 calc(2px * var(--tb)); border-radius: 50%; pointer-events: auto; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(1px * var(--tb));
+  font-family: var(--font-display); font-size: calc(10.5px * var(--tb)); line-height: 1; letter-spacing: 0.02em; color: #fff;
+  background: radial-gradient(circle at 50% 32%, rgb(var(--c) / 0.36), rgb(var(--c) / 0.16) 72%);
+  border: calc(2.5px * var(--tb)) solid rgb(var(--c) / 0.85);
+  box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.22), 0 4px 12px rgb(0 0 0 / 0.25);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  transform: translate(-50%, -50%); transition: transform 60ms, background 60ms;
+  touch-action: none; -webkit-tap-highlight-color: transparent;
+}
+#touch .tbtn > * { pointer-events: none; }
+#touch .tbtn.on { background: radial-gradient(circle at 50% 32%, rgb(var(--c) / 0.58), rgb(var(--c) / 0.26) 72%); transform: translate(-50%, -50%) scale(0.92); }
+#touch .t-atk { --c: 255 98 64; --d: 92; }
+#touch .t-dash { --c: 40 224 204; --d: 70; --x: -104; --y: 8; padding-bottom: calc(9px * var(--tb)); }
+#touch .t-parry { --c: 84 156 255; --d: 62; --x: -6; --y: -104; }
+#touch .t-q { --c: 176 112 255; --d: 58; --x: -172; --y: -34; }
+#touch .t-e { --c: 176 112 255; --d: 58; --x: -124; --y: -124; }
+#touch .t-r { --c: 255 204 64; --d: 54; --x: -34; --y: -172; }
+#touch .t-pot { --c: 255 84 128; --d: 48; --x: -262; --y: 14; padding: 0; }
+#touch .t-act { --c: 255 172 40; --d: 64; --x: -118; --y: -232; }
+#touch .t-parry .lbl, #touch .t-r .lbl { font-size: calc(9.5px * var(--tb)); }
+
+/* Icon (~56 % of the button, white line over an ink under-stroke) and the short label under it. */
+#touch .tbtn .ico { position: relative; width: 56%; aspect-ratio: 1; display: block; flex: none; }
+#touch .t-pot .ico { width: 58%; }
+#touch .tbtn svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+#touch .tbtn svg .u { stroke: #120a24; stroke-width: 4.2; }
+#touch .tbtn svg .f { stroke: #fff; stroke-width: 2.2; }
+#touch .tbtn .lbl {
+  position: relative; display: block; min-height: 1em; white-space: nowrap; text-transform: uppercase;
+  text-shadow: 1px 0 #120a24, -1px 0 #120a24, 0 1px #120a24, 0 -1px #120a24, 1px 1px #120a24, -1px 1px #120a24, 1px -1px #120a24, -1px -1px #120a24;
+}
+#touch .tbtn .lbl svg { width: auto; height: 1.15em; margin: 0 auto; }
+/* Cooldown sweep (conic gradient set by touch.js) sits under the icon. */
+#touch .tbtn .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+/* Dash charges: small dots along the bottom of the circle. */
+#touch .t-dash .pips { position: absolute; left: 0; right: 0; bottom: calc(5px * var(--tb)); display: flex; justify-content: center; gap: calc(4px * var(--tb)); }
+#touch .t-dash .pips i { width: calc(6px * var(--tb)); height: calc(6px * var(--tb)); border-radius: 50%; background: #28e0cc; border: 1.5px solid #120a24; }
+#touch .t-dash .pips i.empty { background: rgb(18 10 36 / 0.75); }
+/* Potion: count badge top-right. */
+#touch .t-pot .cnt {
+  position: absolute; right: calc(-4px * var(--tb)); top: calc(-4px * var(--tb)); min-width: calc(19px * var(--tb)); height: calc(19px * var(--tb)); padding: 0 calc(4px * var(--tb));
+  display: grid; place-items: center; border-radius: 999px; font: 400 calc(12px * var(--tb)) / 1 var(--font-display); color: #fff;
+  background: rgb(255 84 128); border: 2px solid #120a24; text-shadow: 0 1px 0 #120a24;
+}
+#touch .t-pot.empty { opacity: 0.6; filter: grayscale(0.7); }
+#touch .t-pot.empty .cnt { background: #5a4a66; }
+/* Locked (mastery): grey, with the padlock instead of the label. */
+#touch .tbtn.locked { filter: grayscale(1); opacity: 0.45; }
+/* Cooldown over: one bright ring pulse. R with the RIPOSTE full: a slow gold glow. */
+#touch .tbtn.ready-flash::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid rgb(var(--c)); pointer-events: none; animation: tflash 350ms ease-out forwards; }
+@keyframes tflash { from { opacity: 1; transform: scale(0.96); } to { opacity: 0; transform: scale(1.3); } }
+#touch .t-r.ready { animation: tready 1.5s ease-in-out infinite; }
+@keyframes tready {
+  0%, 100% { box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.22), 0 0 6px 1px rgb(255 204 64 / 0.35); }
+  50% { box-shadow: 0 0 0 1.5px rgb(18 10 36 / 0.55), inset 0 2px 0 rgb(255 255 255 / 0.22), 0 0 20px 7px rgb(255 204 64 / 0.85); }
+}
+/* The action button pops in when there is something to do. */
+#touch .t-act.pop { animation: tpop 180ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes tpop { from { opacity: 0; transform: translate(-50%, -50%) scale(0.6); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+#touch .aimline { position: absolute; height: 6px; margin-top: -3px; transform-origin: 0 50%; display: none; pointer-events: none;
+  background: linear-gradient(90deg, rgba(59, 240, 255, 0.15), rgba(59, 240, 255, 0.9)); border-radius: 3px; box-shadow: 0 0 10px rgba(59, 240, 255, 0.6); }
+#touch .aimline i { position: absolute; right: -8px; top: -5px; border: 8px solid transparent; border-left: 12px solid rgba(160, 250, 255, 0.95); border-right: 0; }
+#touch .aimline.cancel { background: rgba(255, 80, 70, 0.6); box-shadow: none; }
+
+/* ---- Landscape HUD (M4.6): a short stage (a phone on its side) gets a compact HUD that leaves the bottom-right
+   arc (~320 x 340 px) and the joystick corner free ---------------------------------------------------------- */
+@container stage (max-height: 480px) {
+  .hud-player { top: calc(8px + var(--safe-t)); left: calc(10px + var(--safe-l)); gap: 8px; }
+  .portrait { width: 58px; height: 58px; border-width: 3px; }
+  .lvl-badge { min-width: 24px; height: 24px; padding: 0 5px; font-size: 13px; border-radius: 12px; right: -5px; bottom: -3px; }
+  .bars { gap: 3px; min-width: 0; }
+  .pname { font-size: 15px; }
+  .bar { width: 160px; height: 13px; }
+  .bar.thin { width: 140px; height: 11px; }
+  .bar .num { font-size: 10px; } .bar.thin .num { font-size: 8.5px; }
+  .gold-row { font-size: 13px; }
+  .gold-row .coin svg { width: 14px; height: 14px; }
+  .party { top: calc(8px + var(--safe-t) + 88px * var(--ui-scale)); }
+  .party .pm { padding: 3px 8px 3px 4px; }
+  /* The left column (portrait, crew, tracker, toasts) is the only one the arc and the stick leave free:
+     toasts are narrower, three at most, and sit under the folded tracker. */
+  #toasts { top: calc(8px + var(--safe-t) + (92px + var(--party-n, 0) * 36px + var(--trk, 0px)) * var(--ui-scale)); left: calc(10px + var(--safe-l)); width: min(250px, 34cqw); gap: 5px; }
+  .toast { padding: 5px 9px; font-size: 12.5px; }
+  #toasts .toast:nth-child(n + 4) { display: none; }
+  /* Banner and boss line sit higher and smaller at the top centre. */
+  #zone-banner { top: calc(8px + var(--safe-t)); }
+  #zone-banner .zname { font-size: clamp(22px, 3.6cqw, 32px); }
+  #zone-banner .zsub { font-size: 12px; }
+  #boss-bar { top: calc(8px + var(--safe-t)); }
+  #enc-info { top: calc(8px + var(--safe-t)); font-size: 13px; }
+  .boss-on #enc-info { top: calc(66px + var(--safe-t)); }
+  .boss-on #zone-banner { top: calc(86px + var(--safe-t)); }
+  /* The tracker folds to one line (title + the current objective, with an ellipsis) under the crew. */
+  .tracker { left: calc(10px + var(--safe-l)); right: auto; top: calc(8px + var(--safe-t) + (88px + var(--party-n, 0) * 36px) * var(--ui-scale)); transform-origin: top left; width: min(250px, 34cqw); padding: 4px 10px 5px; align-items: baseline; gap: 8px; }
+  .tracker h3 { flex: none; margin: 0; font-size: 13px; }
+  .tracker ul { flex: 1; min-width: 0; gap: 0; }
+  .tracker li { display: none; font-size: 12.5px; line-height: 1.2; grid-template-columns: 14px minmax(0, 1fr); gap: 5px; align-items: center; }
+  .tracker li .chk { width: 13px; height: 13px; margin-top: 0; }
+  .tracker li:not(.done) { display: grid; }
+  .tracker li:not(.done) ~ li:not(.done) { display: none; }
+  .tracker ul:not(:has(li:not(.done))) li:last-child { display: grid; }
+  .tracker li .txt { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+/* (narrower than 720 px the tracker stays hidden, as before) */
+@container stage (max-height: 480px) and (min-width: 721px) { .tracker { display: flex; } #hud { --trk: 36px; } }
