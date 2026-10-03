@@ -17,7 +17,8 @@ export class TouchControls {
       <button class="tbtn t-parry" aria-label="Guardia (mantener)">GUARDIA</button>
       <button class="tbtn t-skill t-q" aria-label="Habilidad Q"><span class="sweep"></span><span class="lbl">Q</span></button>
       <button class="tbtn t-skill t-e" aria-label="Habilidad E"><span class="sweep"></span><span class="lbl">E</span></button>
-      <button class="tbtn t-skill t-r" aria-label="Riposte"><span class="sweep"></span><span class="lbl">R</span></button>`;
+      <button class="tbtn t-skill t-r" aria-label="Riposte"><span class="sweep"></span><span class="lbl">R</span></button>
+      <button class="tbtn t-pot" aria-label="Poción"><span class="sweep"></span><span class="lbl">🧪</span><b class="cnt">0</b></button>`;
     const zone = root.querySelector('.joy-zone'), joy = root.querySelector('.joy'), knob = joy.querySelector('i');
     let pid = null, ox = 0, oy = 0;
     const R = 52;
@@ -53,6 +54,7 @@ export class TouchControls {
     zone.addEventListener('pointercancel', end);
     root.querySelector('.t-dash').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressDash(); });
     root.querySelector('.t-act').addEventListener('pointerdown', (e) => { e.preventDefault(); input.pressInteract(); });
+    root.querySelector('.t-pot').addEventListener('pointerdown', (e) => { e.preventDefault(); input.press(BTN.POTION); });
     // Held buttons: a press now, the held bit while the finger stays down.
     const hold = (sel, bit) => {
       const b = root.querySelector(sel);
@@ -138,6 +140,22 @@ export class TouchControls {
     }
     const deg = charges < max ? Math.round(recharge01 * 360) : 360;
     this.sweep.style.background = deg >= 360 ? '' : `conic-gradient(transparent 0deg ${deg}deg, rgba(10,6,24,0.55) ${deg}deg 360deg)`;
+  }
+
+  // Potions (M4): how many, and the cooldown 0..1.
+  setPotions(n, cd01 = 0) {
+    const key = n + ':' + Math.round(cd01 * 20);
+    if (key === this.potKey) return;
+    this.potKey = key;
+    const b = this.root.querySelector('.t-pot');
+    b.querySelector('.cnt').textContent = String(n);
+    b.classList.toggle('empty', n <= 0);
+    const deg = Math.round((1 - cd01) * 360);
+    b.querySelector('.sweep').style.background = cd01 > 0 ? `conic-gradient(transparent 0deg ${deg}deg, rgba(10,6,24,0.6) ${deg}deg 360deg)` : '';
+  }
+  // Locked skills (mastery): {q, e, r} → greyed out.
+  setLocks(need) {
+    for (const k of ['q', 'e', 'r']) this.root.querySelector('.t-' + k).classList.toggle('locked', !!need[k]);
   }
 
   show() { this.root.hidden = false; }

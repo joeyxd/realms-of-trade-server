@@ -13,7 +13,7 @@ import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
-import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery } from '../sim/systems/inventory.js';
+import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
@@ -210,6 +210,13 @@ export class LocalServer {
       case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
       case 'tier': { const p = w.profiles.get(e); if (p) { p.flags.tier = p.flags.tierSel = Math.max(1, Math.min(3, f(msg.tier, 1) | 0)); w.profileDirty.add(e); } break; }
       case 'gold': { const p = w.profiles.get(e); if (p) { p.gold = Math.max(0, p.gold + (f(msg.n) | 0)); w.profileDirty.add(e); } break; }
+      case 'drop': {
+        const kind = ['item', 'gold', 'potion', 'quest', 'chest'].includes(msg.kind) ? msg.kind : 'item';
+        const r = msg.rarity === undefined ? undefined : Math.max(0, Math.min(4, f(msg.rarity) | 0));
+        const item = kind === 'item' || kind === 'chest' ? rollItem(w.lootRng, { lvl: f(msg.lvl, ecs.level[e]), rarity: r, slot: typeof msg.slot === 'string' ? msg.slot : undefined, uid: w.profiles.get(e).uid++ }) : undefined;
+        spawnDrop(w, e, kind, kind === 'gold' ? { n: Math.max(1, f(msg.n, 25) | 0) } : kind === 'quest' ? { q: 'coral' } : item ? { item } : {});
+        break;
+      }
       case 'potions': ecs.potions[e] = Math.max(0, Math.min(5, f(msg.n, 5) | 0)); break;
       case 'item': giveItem(w, e, rollItem(w.lootRng, { lvl: f(msg.lvl, ecs.level[e]), rarity: msg.rarity === undefined ? undefined : Math.max(0, Math.min(4, f(msg.rarity) | 0)), slot: typeof msg.slot === 'string' ? msg.slot : undefined })); break;
       default: break;

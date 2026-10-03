@@ -20,6 +20,11 @@ const ICONS = {
   blast: '<svg viewBox="0 0 32 32"><path d="M4 16l10-3v6z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M16 16l12-9M16 16h13M16 16l12 9M16 16l11-4M16 16l11 4" stroke="#ffc23d" stroke-width="2.2" stroke-linecap="round"/></svg>',
   blink: '<svg viewBox="0 0 32 32"><circle cx="10" cy="19" r="6" fill="#b8bcc8" stroke="#1a1033" stroke-width="2"/><circle cx="16" cy="14" r="5" fill="#d8dce6" stroke="#1a1033" stroke-width="2"/><path d="M19 22h10M24 17l5 5-5 5" fill="none" stroke="#3bf0ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   rain: '<svg viewBox="0 0 32 32"><ellipse cx="16" cy="26" rx="12" ry="4" fill="none" stroke="#3bf0ff" stroke-width="2.4"/><path d="M8 4v8M14 2v10M20 5v8M26 3v8M11 14v5M18 15v6M24 14v5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  potion: '<svg viewBox="0 0 32 32"><path d="M12 4h8v3l-1 1v4c4 1.5 7 5 7 9.5C26 26 21.5 29 16 29S6 26 6 21.5C6 17 9 13.5 13 12V8l-1-1z" fill="#cfeee8" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 20c2 1.5 4.5 2 7.5 2s5.5-.5 7.5-2c.3 4.5-3.5 6.5-7.5 6.5S8.2 24.5 8.5 20z" fill="#e2482c"/><rect x="11.5" y="2.5" width="9" height="3.5" rx="1" fill="#8a5a2e" stroke="#1a1033" stroke-width="1.6"/></svg>',
+  lock: '<svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" fill="#c9a44c" stroke="#1a1033" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#1a1033" stroke-width="2.4"/><circle cx="12" cy="15.5" r="1.8" fill="#1a1033"/></svg>',
+  coin: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#ffcf4a" stroke="#1a1033" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="#c8962a" stroke-width="1.8"/><path d="M12 8.5v7" stroke="#c8962a" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  bag: '<svg viewBox="0 0 24 24"><path d="M7 8c0-3 2.2-5 5-5s5 2 5 5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 8h16l-1.5 12.5a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5z" fill="currentColor"/></svg>',
+  map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="currentColor"/><path d="M9 4v14M15 6v14" stroke="#1a1033" stroke-width="1.4" opacity="0.5"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 5.1l1.6 1.2-2 3.5-1.9-.7a7.6 7.6 0 0 1-1.8 1l-.3 2h-4l-.3-2a7.6 7.6 0 0 1-1.8-1l-1.9.7-2-3.5 1.6-1.2a7.7 7.7 0 0 1 0-2.1L2 10.3l2-3.5 1.9.7a7.6 7.6 0 0 1 1.8-1L8 4.5h4l.3 2a7.6 7.6 0 0 1 1.8 1l1.9-.7 2 3.5-1.6 1.2a7.7 7.7 0 0 1 0 2.1z" fill="currentColor"/></svg>',
   sound: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
   mute: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -47,7 +52,7 @@ export function drawPortrait(canvas, skinIdx, image) {
 }
 
 export class Hud {
-  constructor(root, { onSettings, onMute }) {
+  constructor(root, { onSettings, onMute, onBag, onMap }) {
     this.root = root;
     root.innerHTML = `
       <div class="hud-player">
@@ -57,10 +62,13 @@ export class Hud {
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
           <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
+          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span></div>
         </div>
       </div>
       <div class="hud-top-right">
         <div class="net-chip" hidden><i></i><span class="ms"></span><span class="pl"></span></div>
+        <button class="icon-btn interactive" id="hud-bag" aria-label="Bolsa y personaje (I)" title="Bolsa y personaje (I)">${ICONS.bag}<span class="dot" hidden></span></button>
+        <button class="icon-btn interactive" id="hud-map" aria-label="Mapa (M)" title="Mapa (M)">${ICONS.map}</button>
         <button class="icon-btn interactive" id="hud-mute" aria-label="Silenciar">${ICONS.sound}</button>
         <button class="icon-btn interactive" id="hud-settings" aria-label="Ajustes">${ICONS.gear}</button>
       </div>
@@ -76,12 +84,14 @@ export class Hud {
       <div id="chain" class="outlined" hidden><span class="x">CADENA</span><b>x2</b></div>
       <div class="actionbar frame">
         <div class="wname"></div>
+        <div class="mast" title=""><div class="mfill"></div><span class="mtxt"></span></div>
         <div class="slot lmb-slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
         <div class="slot rmb-slot" data-slot="rmb" title="Guardia (mantener): bloquea de frente. Súbela justo a tiempo para ATRAPAR la bala; el siguiente golpe la devuelve"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.lunge)}
         ${this.slot('e', 'E', ICONS.crescent)}
-        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span></div>
+        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>
+        <div class="slot pot-slot" data-slot="pot" title="Poción de ron-coco: cura el 40 % de tu vida"><span class="kbd key">1</span><span class="ico">${ICONS.potion}</span><div class="sweep"></div><b class="cnt">0</b></div>
       </div>
       <div id="fallen" hidden><div class="ftitle outlined">HAS CAÍDO</div><div class="fsub">Reapareces en <b>3</b>…</div></div>`;
     this.portrait = root.querySelector('.portrait canvas');
@@ -95,6 +105,11 @@ export class Hud {
     this.banner = root.querySelector('#zone-banner');
     this.muteBtn = root.querySelector('#hud-mute');
     root.querySelector('#hud-settings').addEventListener('click', onSettings);
+    if (onBag) root.querySelector('#hud-bag').addEventListener('click', onBag);
+    if (onMap) root.querySelector('#hud-map').addEventListener('click', onMap);
+    this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip');
+    this.potSlot = root.querySelector('.pot-slot');
+    this.mastEl = root.querySelector('.actionbar .mast');
     this.muteBtn.addEventListener('click', onMute);
     this.lastCharges = -1;
     this.lastMax = -1;
@@ -244,7 +259,76 @@ export class Hud {
   }
 
   slot(id, key, icon) {
-    return `<div class="slot skill-slot" data-slot="${id}"><span class="kbd key">${key}</span><span class="ico">${icon}</span><div class="sweep"></div><span class="cd"></span></div>`;
+    return `<div class="slot skill-slot" data-slot="${id}"><span class="kbd key">${key}</span><span class="ico">${icon}</span><div class="sweep"></div><span class="cd"></span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>`;
+  }
+
+  // ---- M4: gold, potions, mastery, locks, quests ---------------------------------------------------------
+  setGold(n, tierName = '') {
+    if (n !== this.last.gold) {
+      if (this.last.gold !== undefined && n > this.last.gold) gsap.fromTo(this.goldEl, { scale: 1.35 }, { scale: 1, duration: 0.4, ease: 'back.out(3)' });
+      this.goldEl.textContent = String(n);
+      this.last.gold = n;
+    }
+    if (tierName !== this.last.tierName) { this.tierChip.hidden = !tierName; this.tierChip.textContent = tierName; this.last.tierName = tierName; }
+  }
+
+  // Potions you carry, and the cooldown left (s) out of max.
+  setPotions(n, cd = 0, max = 2) {
+    const f = max > 0 ? Math.max(0, Math.min(1, cd / max)) : 0;
+    const key = n + ':' + Math.round(f * 40);
+    if (key === this.last.pot) return;
+    this.last.pot = key;
+    this.potSlot.querySelector('.cnt').textContent = String(n);
+    this.potSlot.classList.toggle('empty', n <= 0);
+    const deg = Math.round((1 - f) * 360);
+    this.potSlot.querySelector('.sweep').style.background = f > 0 ? `conic-gradient(transparent 0deg ${deg}deg, rgba(10,6,24,0.66) ${deg}deg 360deg)` : '';
+  }
+
+  // Locked Q / E / R (the weapon's mastery has not opened them): {q: level needed | 0, e, r}, and the kit name.
+  setLocks(need, kitName = '') {
+    const key = `${need.q}|${need.e}|${need.r}|${kitName}`;
+    if (key === this.last.locks) return;
+    this.last.locks = key;
+    for (const [el, k] of [[this.qSlot, 'q'], [this.eSlot, 'e'], [this.rSlot, 'r']]) {
+      const lk = el.querySelector('.lock'), n = need[k];
+      el.classList.toggle('locked', !!n);
+      lk.hidden = !n;
+      if (n) { lk.querySelector('em').textContent = 'M' + n; lk.title = `Se desbloquea con Maestría ${n} de ${kitName}`; }
+    }
+  }
+
+  // The weapon's mastery: level, progress to the next (0..1), at the top.
+  setMastery(level, frac, top, title = '') {
+    const key = level + ':' + Math.round(frac * 50);
+    if (key === this.last.mast) return;
+    const up = this.last.mastLevel !== undefined && level > this.last.mastLevel;
+    this.last.mast = key; this.last.mastLevel = level;
+    this.mastEl.hidden = !level;
+    if (!level) return;
+    this.mastEl.querySelector('.mfill').style.width = (top ? 100 : frac * 100).toFixed(1) + '%';
+    this.mastEl.querySelector('.mtxt').textContent = top ? `Maestría ${level} · máxima` : `Maestría ${level}`;
+    this.mastEl.title = title;
+    if (up) gsap.fromTo(this.mastEl, { scale: 1.2 }, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
+  }
+
+  denySlot(slot) {
+    const el = slot === 'pot' ? this.potSlot : this.root.querySelector(`[data-slot="${slot}"]`);
+    if (!el) return;
+    el.classList.remove('denied'); void el.offsetWidth; el.classList.add('denied');
+  }
+
+  // A dot on the bag button: something new in it.
+  setBagDot(on) { const d = this.root.querySelector('#hud-bag .dot'); if (d && d.hidden === !!on) d.hidden = !on; }
+
+  // The tracker shows the beach tutorial first, then your quests: [{id, text, done, ready}].
+  setQuests(title, items) {
+    const key = title + '|' + items.map((it) => `${it.id}:${it.text}:${it.done ? 1 : 0}:${it.ready ? 1 : 0}`).join('|');
+    if (key === this.last.quests) return;
+    const was = this.last.quests;
+    this.last.quests = key;
+    this.root.querySelector('.tracker h3').textContent = title;
+    this.trackerUl.innerHTML = items.map((it) => `<li class="${it.done ? 'done' : ''}${it.ready ? ' ready' : ''}" data-id="${esc(it.id)}"><span class="chk"></span><span class="txt">${it.text}</span></li>`).join('');
+    if (was && was.split('|')[0] !== title) gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
   }
 
   // The weapon decides LMB and Q / E / R: icons, tooltips and the name over the bar.

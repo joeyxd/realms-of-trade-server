@@ -190,7 +190,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   compras sin oro).
 - [x] **P5 Mareas**: niveles del encuentro, multiplicador de daño enemigo, bonus de loot / XP / oro, desbloqueo,
   elección en las runas, estado 11. Tests en `tests/quests.test.mjs` o `tests/tiers.test.mjs`.
-- [ ] **P6 Cliente I**: HUD (oro, poción, maestría, candados, avisos de desbloqueo), loot en el suelo (malla, haz,
+- [x] **P6 Cliente I**: HUD (oro, poción, maestría, candados, avisos de desbloqueo), loot en el suelo (malla, haz,
   nombre, arco, recogida), sonidos, seguimiento de misiones, guardado local, aviso de partida rechazada.
 - [ ] **P7 Cliente II**: panel de Personaje (Equipo / Atributos / Misiones), fichas y comparación, diálogo,
   vendedora, mapa, atajos, táctil y mando. Capturas.
@@ -249,3 +249,15 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   `killEnemy`; nivel / rareza / oro del loot ya lo leían `lootOnKill` y `bossChests`. La victoria abre la
   siguiente (`flags.tier`, evento privado `tier {open, sel}`). `cmd tier {tier}` a ≤ 6 u de las runas; F4 `tier`.
   `encounterState()[11]` y el evento `enc` llevan `tier`. 129 tests.
+- **P6:** `src/render/loot.js` (`LootLayer`: modelos toon por tipo y hueco, arco desde el cadáver, haz aditivo en
+  la capa FX por rareza, disco en el suelo, chispas en épicos / legendarios, luz al caer; recogida = vuela hacia
+  ti) en `scene.loot`, precalentado en `prewarm`. `src/ui/rewards.js` (`Rewards`): los eventos privados → botín en el
+  suelo, etiquetas (`worldUI.addLabel`, apiladas para que un montón se lea), avisos, números (`+12 oro`), sonidos
+  nuevos de `sfx` (`lootDrop`, `coins`, `pickup`, `potion`, `locked`, `questStart` / `questDone`, `mastery`,
+  `chest`, `buy`). HUD: oro (+ la Marea en combate), hueco de poción `1`, candados con «M2 / M3», barra de maestría,
+  botones Bolsa / Mapa (P7), seguimiento «Primeros pasos» → «Misiones» (`hud.setQuests`). El tutorial de la playa
+  se queda en 5 pasos y guarda su progreso (`cmd tut`); al volver se salta. F junto a tu cofre lo abre; en las runas
+  cambia la Marea; F con un PNJ manda `talk` (el diálogo llega en P7). Táctil: botón de poción y candados. F4 /
+  herramientas: `dev drop {kind, rarity}`. Verificado en el navegador contra el servidor real (capturas en el
+  scratchpad): HUD, haces y etiquetas, recogida, maestría, misión «Tierra firme» al entrar en la aldea, la partida
+  firmada sobrevive a recargar. 129 tests.

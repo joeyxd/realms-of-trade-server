@@ -185,7 +185,7 @@ export function setTier(world, e, t) {
   if (Math.hypot(ecs.x[e] - enc.cx, ecs.z[e] - enc.cz) > (enc.def.tierR || 6)) return false;
   const v = Math.max(1, Math.min(p.flags.tier, t | 0));
   p.flags.tierSel = v;
-  world.emit({ type: 'tier', to: e, e, open: p.flags.tier, sel: v });
+  world.emit({ type: 'tier', to: e, e, open: p.flags.tier, sel: v, why: 'pick' });
   markProfile(world, e);
   return true;
 }

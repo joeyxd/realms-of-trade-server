@@ -329,3 +329,55 @@ body.touch .actionbar { display: none; }
   text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink);
 }
 .slot .key { z-index: 2; }
+
+/* ---- Loot and progress (M4) ------------------------------------------------------------------------ */
+.gold-row { display: flex; align-items: center; gap: 5px; font-family: var(--font-display); font-size: 15px; color: #ffe08a; line-height: 1; margin-top: 1px; }
+.gold-row .coin svg { width: 16px; height: 16px; display: block; }
+.gold-row .gold-n { font-weight: 400; display: inline-block; font-variant-numeric: tabular-nums; }
+.gold-row .tier-chip {
+  margin-left: 6px; padding: 2px 7px 3px; border-radius: 999px; font-size: 11px; letter-spacing: 0.04em; color: #ffd1a0;
+  background: rgba(120, 30, 10, 0.75); border: 1.5px solid var(--ink); box-shadow: 0 0 8px rgba(255, 90, 30, 0.45);
+}
+.hud-top-right .icon-btn { position: relative; }
+.hud-top-right .icon-btn .dot { position: absolute; right: 3px; top: 3px; width: 9px; height: 9px; border-radius: 50%; background: #ffcf4a; border: 2px solid var(--ink); }
+/* The weapon's mastery: a thin bar under its name */
+.actionbar .mast {
+  position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 22px;
+  width: 150px; height: 9px; border-radius: 5px; background: rgba(20, 10, 30, 0.75); border: 1.5px solid var(--ink); overflow: hidden; pointer-events: auto;
+}
+.actionbar .mast .mfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(180deg, #ffe7a3, #c9a44c); transition: width 0.3s ease; }
+.actionbar .mast .mtxt { position: absolute; inset: -1px 0 0; display: grid; place-items: center; font: 900 7.5px var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); }
+.actionbar .wname { margin-bottom: 34px; }
+/* Locked skills: a padlock and the mastery that opens them */
+.slot .lock { right: auto; bottom: auto; inset: 0; display: grid; place-items: center; background: rgba(10, 6, 24, 0.55); border: 0; border-radius: 10px; padding: 0; z-index: 1; }
+.slot .lock[hidden] { display: none; }
+.slot .lock svg { width: 22px; height: 22px; opacity: 1; }
+.slot .lock em { position: absolute; bottom: 3px; left: 0; right: 0; text-align: center; font-style: normal; font-family: var(--font-display); font-size: 11px; color: var(--brass-l); text-shadow: 0 1px 0 var(--ink); }
+.slot.locked .ico svg, .slot.locked .rfill { opacity: 0.25; }
+/* Potions */
+.pot-slot .cnt {
+  position: absolute; right: 4px; bottom: 2px; z-index: 2; font-family: var(--font-display); font-weight: 400; font-size: 16px; color: #fff;
+  text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink);
+}
+.pot-slot.empty .ico svg { opacity: 0.3; filter: grayscale(1); }
+.pot-slot.empty .cnt { color: #ff8a80; }
+/* Loot labels on the ground, in their rarity's colour */
+.loot-label {
+  position: absolute; left: 0; top: 0; transform-origin: 50% 100%; white-space: nowrap; will-change: transform; pointer-events: none;
+  padding: 2px 8px 3px; border-radius: 7px; font-weight: 900; font-size: 12.5px; color: var(--rc, #fff);
+  background: rgba(12, 8, 26, 0.72); border: 1.5px solid color-mix(in srgb, var(--rc, #fff) 55%, #1a1033);
+  text-shadow: 0 1px 0 var(--ink); box-shadow: 0 2px 0 var(--ink);
+}
+.loot-label.gold, .loot-label.potion, .loot-label.quest { font-size: 11px; padding: 1px 6px 2px; background: rgba(12, 8, 26, 0.55); }
+.loot-label.chest { font-family: var(--font-display); font-weight: 400; font-size: 15px; letter-spacing: 0.03em; }
+.fnum.gold { color: #ffd24a; font-size: 16px; }
+.toast .rz { text-shadow: 0 1px 0 var(--ink); }
+.toast .legend { color: #ffc23d; letter-spacing: 0.06em; }
+.tracker li.ready .chk { background: #ffcf4a; border-color: var(--ink); box-shadow: 0 0 8px #ffcf4a; }
+.tracker li .txt small { color: var(--text-dim); font-weight: 800; }
+@media (max-width: 760px) { .actionbar .mast { width: 120px; } }
+#touch .t-pot { right: calc(206px + var(--safe-r)); bottom: calc(26px + var(--safe-b)); width: 54px; height: 54px; overflow: hidden; font-size: 20px; }
+#touch .t-pot .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+#touch .t-pot .cnt { position: absolute; right: 6px; bottom: 4px; font: 400 14px var(--font-display); color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); }
+#touch .t-pot.empty { filter: grayscale(1) brightness(0.7); }
+#touch .t-skill.locked { filter: grayscale(1) brightness(0.55); }

@@ -387,3 +387,18 @@ export function givePotions(world, e, n) {
   announce(world, e, list, ecs.x[e], ecs.z[e]);
   dirty(world, e);
 }
+
+// F4 / tools: put a drop for e on the ground near it (screenshots, tests).
+export function spawnDrop(world, e, kind, extra = {}) {
+  const ecs = world.ecs, x = ecs.x[e] + Math.sin(ecs.facing[e]) * 2.5, z = ecs.z[e] + Math.cos(ecs.facing[e]) * 2.5;
+  if (kind === 'chest') {
+    const d = { id: world.nextDrop++, to: e, kind: 'chest', x, z, t: world.tick + Math.round(DROPS.life / DT), contents: [{ kind: 'gold', n: 50 }, { kind: 'item', item: extra.item }], rarity: extra.item ? extra.item.r : 2 };
+    world.drops.set(d.id, d);
+    world.emit({ type: 'loot', to: e, e, fx: x, fz: z, drops: [{ id: d.id, kind: 'chest', x, z, r: d.rarity }] });
+    return d;
+  }
+  const list = [];
+  const d = addDrop(world, e, kind, x, z, extra, list);
+  announce(world, e, list, ecs.x[e], ecs.z[e]);
+  return d;
+}

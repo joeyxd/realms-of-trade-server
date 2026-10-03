@@ -415,4 +415,56 @@ export const sfx = {
     const t = audio.now;
     for (let i = 0; i < 4; i++) tone(audio.sfx, t + i * 0.07, { type: 'triangle', f0: 380 + Math.random() * 220, dur: 0.05, g: 0.06 });
   },
+
+  // ---- Loot and progress (M4) -------------------------------------------------------------------------
+  // Something dropped for you: a thud, and a chime that climbs with the rarity (legendary: a little fanfare).
+  lootDrop(r = 0, vol = 1) {
+    if (!audio.ready || vol <= 0) return;
+    const t = audio.now;
+    noiseBurst(audio.sfx, t, { type: 'lowpass', f: 600, q: 0.8, dur: 0.08, g: 0.18 * vol });
+    if (r <= 0) return;
+    const base = [0, 523.25, 659.25, 783.99, 1046.5][r];
+    bell(audio.sfx, t + 0.05, base, 0.08 * vol * (0.8 + r * 0.15), 0.6 + r * 0.25);
+    if (r >= 3) this.marimba(r >= 4 ? [783.99, 987.77, 1174.66, 1567.98] : [659.25, 830.61, 987.77], 0.07, 0.12 * vol);
+  },
+  coins(n = 1, vol = 1) {
+    if (!audio.ready || vol <= 0) return;
+    const t = audio.now, k = Math.min(5, 1 + Math.floor(n / 5));
+    for (let i = 0; i < k; i++) bell(audio.sfx, t + i * 0.045 + Math.random() * 0.02, 1900 + Math.random() * 700, 0.05 * vol, 0.18, [1, 2.4, 3.9]);
+  },
+  pickup(r = 0) {
+    if (!audio.ready) return;
+    const t = audio.now;
+    sweep(audio.sfx, t, { type: 'bandpass', f0: 500, f1: 2200, q: 1.4, dur: 0.16, g: 0.12 });
+    tone(audio.sfx, t + 0.06, { type: 'triangle', f0: 660 + r * 110, f1: 990 + r * 160, dur: 0.14, g: 0.08 });
+  },
+  potion() {
+    if (!audio.ready) return;
+    const t = audio.now;
+    for (let i = 0; i < 3; i++) tone(audio.sfx, t + i * 0.09, { f0: 300 + i * 40, f1: 180, dur: 0.08, g: 0.12 });
+    this.marimba([587.33, 739.99, 880], 0.06, 0.1);
+  },
+  locked() {
+    if (!audio.ready) return;
+    const t = audio.now;
+    tone(audio.sfx, t, { type: 'square', f0: 180, f1: 140, dur: 0.1, g: 0.05 });
+    tone(audio.sfx, t + 0.08, { type: 'square', f0: 140, f1: 110, dur: 0.12, g: 0.05 });
+  },
+  questStart() { this.marimba([440, 587.33, 739.99], 0.08, 0.12); },
+  questDone() { this.marimba([523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5], 0.075, 0.18); },
+  mastery() {
+    if (!audio.ready) return;
+    const t = audio.now;
+    bell(audio.sfx, t, 392, 0.12, 1.2);
+    this.marimba([587.33, 783.99, 987.77, 1174.66], 0.09, 0.16);
+  },
+  chest(r = 2) {
+    if (!audio.ready) return;
+    const t = audio.now;
+    sweep(audio.sfx, t, { type: 'bandpass', f0: 180, f1: 90, q: 4, dur: 0.35, g: 0.18 }); // the lid creaks
+    noiseBurst(audio.sfx, t + 0.3, { type: 'lowpass', f: 900, q: 0.7, dur: 0.25, g: 0.3 });
+    this.lootDrop(r);
+    this.coins(20);
+  },
+  buy() { this.coins(8); this.marimba([659.25, 880], 0.06, 0.1); },
 };

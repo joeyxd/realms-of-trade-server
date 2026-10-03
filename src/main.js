@@ -29,6 +29,11 @@ import { TouchControls } from './ui/touch.js';
 import { Feedback } from './ui/feedback.js';
 import { DevPanel } from './ui/devpanel.js';
 import { DebugDraw } from './render/debugdraw.js';
+import { Rewards } from './ui/rewards.js';
+import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
+import { ENCOUNTERS } from './data/encounters.js';
+import { MASTERY } from './data/weapons.js';
+import { CONSUMABLES } from './data/items.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
 import { Ambience } from './audio/ambience.js';
@@ -91,7 +96,7 @@ async function boot() {
     paused: false,
     zone: null, zoneCandidate: null, zoneTimer: 0,
     tut: 'move', moved: 0, last: null,
-    talkIdx: { captain: 0, vendor: 0 },
+    talkIdx: {},
     titleAngle: 0.6,
     perf: params.has('perf'),
     fps: 60,
@@ -238,6 +243,8 @@ async function boot() {
   const debugDraw = new DebugDraw(world.scene);
   let loop = null;
   const feedback = new Feedback({ world, client, hud, worldUI, loop: { addHitstop: (h) => loop && loop.addHitstop(h), slowmo: (a, b) => loop && loop.slowmo(a, b), get timeScale() { return loop ? loop.timeScale : 1; }, get alpha() { return loop ? loop.alpha : 0; } }, settings, map, ps, onTutorial: (k, d) => safe('tutorial', () => onTutorial(k, d)) });
+  const rewards = new Rewards({ world, hud, worldUI, ps, map, settings });
+  bus.on('combat', (ev) => safe('rewards', () => rewards.handle(ev)));
   bus.on('combat', (ev) => safe('feedback', () => {
     feedback.handle(ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
@@ -301,56 +308,66 @@ async function boot() {
   client.start();
 
   // ---- Tutorial ----------------------------------------------------------------------------------
+  // The beach tutorial (client-side; how far you got is kept in your save, M4). After it, the tracker shows your
+  // quests (the server's): the village, Brea, the archers, the sentinels and HELLFIRE are quests now.
   const TRACK = [
     { id: 'move', text: isTouch ? 'Muévete con el joystick' : 'Muévete con WASD o las flechas' },
     { id: 'dash', text: isTouch ? 'Toca DASH para esquivar' : 'Haz un dash con ESPACIO' },
     { id: 'attack', text: isTouch ? 'Golpea al muñeco: combo de 3 (ATK)' : 'Golpea al muñeco: combo de 3 golpes (clic izquierdo)' },
     { id: 'parry', text: isTouch ? 'Entra en el aro y devuelve un cañonazo con la espada (ATK a tiempo)' : 'Entra en el aro y devuelve un cañonazo con la espada (clic izquierdo a tiempo)' },
     { id: 'guard', text: isTouch ? 'Atrapa un cañonazo con la GUARDIA justo a tiempo' : 'Atrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo' },
-    { id: 'village', text: 'Sigue los faroles hasta la Aldea Coralina' },
-    { id: 'captain', text: 'Habla con la Capitana Brea' },
-    { id: 'path', text: 'Limpia el Sendero del Humo (0/3 arqueros)' },
-    { id: 'caldera', text: 'Vence a los centinelas de La Caldera (0/2)' },
   ];
-  const kills = { archer: 0, sentinel: 0 };
   const ORDER = TRACK.map((t) => t.id);
-  hud.setTracker(TRACK);
+  function refreshTracker() {
+    if (st.tut !== 'done') {
+      const i = Math.max(0, ORDER.indexOf(st.tut));
+      hud.setQuests('Primeros pasos', TRACK.map((t, k) => ({ ...t, done: k < i })));
+      return;
+    }
+    const p = client.profile, items = [];
+    if (p) {
+      for (const id of QUEST_IDS) {
+        const q = p.quests[id], Q = QUESTS[id];
+        if (!q || (q[0] !== QST.ACTIVE && q[0] !== QST.READY)) continue;
+        const n = goalCount(Q), who = Q.turnin === 'vendor' ? 'Tía Perla' : 'la Capitana Brea';
+        const prog = n > 1 ? ` <small>${Math.min(n, q[1])}/${n}</small>` : '';
+        items.push({ id, text: q[0] === QST.READY ? `${Q.name} · vuelve con ${who}` : `${Q.name}${prog}`, ready: q[0] === QST.READY });
+      }
+    }
+    hud.setQuests('Misiones', items.length ? items.slice(0, 4) : [{ id: 'none', text: 'Habla con la gente de la aldea', done: false }]);
+  }
   function advanceTutorial() {
     const i = ORDER.indexOf(st.tut);
     if (i < 0) return;
-    hud.completeTracker(st.tut);
     const msgs = {
       move: '<b>¡Bien!</b> Ahora prueba el dash.',
       dash: '<b>¡Esquiva!</b> Durante el dash eres invulnerable. Se recarga en 0,9 s.',
       attack: '<b>¡Combo!</b> Los golpes también <b>rompen</b> los proyectiles ámbar que toquen.',
       parry: '<b>¡Devuelto!</b> Cuanto más tarde golpeas la bala, mejor: <b>EXCELENTE</b> sale recta a tu cursor y hace el triple de daño.',
-      guard: '<b>¡Atrapada!</b> Tu siguiente golpe devuelve las balas atrapadas. Mantener la guardia frena casi todo el daño de frente, pero gasta aguante.',
-      village: '<b>Aldea Coralina.</b> Busca a la Capitana Brea junto al muelle.',
-      captain: '<b>Rumbo al volcán.</b> Cuidado: hay arqueros esqueleto en el Sendero del Humo.',
-      path: '<b>Sendero despejado.</b> Al final del humo, La Caldera.',
-      caldera: '<b>¡Centinelas derrotados!</b> La Caldera despierta… (las oleadas y el jefe llegan en la próxima versión)',
+      guard: '<b>¡Atrapada!</b> Tu siguiente golpe devuelve las balas atrapadas. Ahora sigue los faroles hasta la <b>Aldea Coralina</b>.',
     };
     hud.toast(msgs[st.tut], 4200);
     sfx.marimba([659.25, 783.99, 1046.5], 0.07, 0.12);
     st.tut = ORDER[i + 1] || 'done';
-    // You can reach places out of order: skip what's already done.
-    if (st.tut === 'village' && st.zone === 'aldea') setTimeout(advanceTutorial, 400);
-    if (st.tut === 'path' && kills.archer >= 3) setTimeout(advanceTutorial, 400);
-    if (st.tut === 'caldera' && kills.sentinel >= 2) setTimeout(advanceTutorial, 400);
+    client.send({ t: 'cmd', type: 'tut', i: i + 1 });
+    refreshTracker();
   }
   function onTutorial(kind, d) {
     if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
     else if (kind === 'parry' && d && d.tier >= 2 && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
     else if (kind === 'guard' && d && d.pid && st.tut === 'guard') advanceTutorial();
     else if (kind === 'target') hud.toast('<b>¡Blanco!</b> Tu reflejo vuelve al que dispara, con el doble de daño.', 3600);
-    else if (kind === 'kill' && d && (d.enemy === 'archer' || d.enemy === 'sentinel')) {
-      kills[d.enemy]++;
-      hud.setTrackerText('path', `Limpia el Sendero del Humo (${Math.min(3, kills.archer)}/3 arqueros)`);
-      hud.setTrackerText('caldera', `Vence a los centinelas de La Caldera (${Math.min(2, kills.sentinel)}/2)`);
-      if (st.tut === 'path' && kills.archer >= 3) advanceTutorial();
-      if (st.tut === 'caldera' && kills.sentinel >= 2) advanceTutorial();
-    } else if (kind === 'respawn') hud.toast('<b>Vuelves al último lugar seguro.</b> La vida se recupera sola si nadie te golpea durante 4 s.', 4200);
+    else if (kind === 'respawn') hud.toast('<b>Vuelves al último lugar seguro.</b> La vida vuelve sola si nadie te golpea un rato; una poción (<span class="kbd">1</span>) cura al momento.', 4600);
   }
+  // Your profile (M4): gold, the tracker, and on the first one, how far the tutorial went.
+  bus.on('profile', (p) => safe('profile', () => {
+    if (!st.profileSeen) {
+      st.profileSeen = true;
+      const k = p.flags ? p.flags.tut | 0 : 0;
+      st.tut = k >= ORDER.length ? 'done' : ORDER[k];
+    }
+    refreshTracker();
+  }));
 
   // ---- Zones -------------------------------------------------------------------------------------
   function enterZone(z) {
@@ -363,28 +380,16 @@ async function boot() {
     world.lighting.setZone(z === 'caldera', 2);
     music.setMood(z === 'caldera' ? 'caldera' : 'island');
     if (z === 'caldera') sfx.calderaZone(); else sfx.zone();
-    if (z === 'aldea' && st.tut === 'village') advanceTutorial();
   }
   // Reaching a later goal first quietly ticks the earlier ones.
   function completeUpTo(id) {
     const target = ORDER.indexOf(id);
-    while (st.tut !== 'done' && ORDER.indexOf(st.tut) < target) { hud.completeTracker(st.tut); st.tut = ORDER[ORDER.indexOf(st.tut) + 1]; }
+    while (st.tut !== 'done' && ORDER.indexOf(st.tut) < target) st.tut = ORDER[ORDER.indexOf(st.tut) + 1];
     if (st.tut === id) advanceTutorial();
   }
 
   // ---- NPC talk ----------------------------------------------------------------------------------
-  const LINES = {
-    'Capitana Brea': [
-      '¡Un náufrago más! Te doy la bienvenida a la Aldea Coralina. Aquí nadie pregunta de dónde vienes.',
-      '¿Ves el humo del volcán? Allí está La Caldera. Quien la cruza sale con un cofre… o no sale.',
-      'Antes de ir, practica el dash. Esquivar a tiempo te salva más que cualquier espada.',
-      'Mi barco zarpará cuando el mar se calme. Mientras tanto, la isla es tuya.',
-    ],
-    'Tía Perla': [
-      '¡Cocos, ron y vendas! Vuelve cuando tengas oro, corazón.',
-      'Dicen que en La Caldera hasta los cangrejos escupen fuego. Yo no me acercaría.',
-    ],
-  };
+  const npcKey = (rec) => Object.keys(NPC_TALK).find((k) => NPC_TALK[k].name === rec.name) || '';
   // La Prueba de Fuego (PLAN-M2.5.md): boss bar, wave line, fight zoom, runes and the boss shield.
   function encounterUi() {
     const E = client.enc && client.enc[0];
@@ -406,11 +411,13 @@ async function boot() {
       else if (stE === 'rest') line = `Respira… · se acerca la OLEADA ${wave + 2}/${waves}`;
       else if (stE === 'boss' && left > 1) line = `Esbirros <b>${left - 1}</b>`;
       else if (stE === 'victory') line = '¡Victoria!';
-      // Co-op: the fight is scaled for the crew that started it.
-      const crew = E[10] || 0;
+      // Co-op: the fight is scaled for the crew that started it. M4: and its Marea.
+      const crew = E[10] || 0, tier = E[11] || 0;
       if (line && crew > 1) line += ` · Tripulación <b>${crew}</b>`;
+      if (line && tier > 1) line = `<b class="tier">${ENCOUNTERS.caldera.tiers[tier - 1].name}</b> · ` + line;
     }
     hud.setEnc(line);
+    st.encTier = active ? E[11] || 0 : 0;
     world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
     // Music climbs a layer every two waves and tops out at the boss.
     music.setLevel(!active || stE === 'victory' || stE === 'idle' ? 0 : stE === 'boss' || stE === 'bossIntro' ? 3 : 1 + Math.min(2, Math.max(0, wave) >> 1));
@@ -468,6 +475,7 @@ async function boot() {
     world.setTitleShadows(false);
     const rec = client.entities.get(client.youServer);
     hud.setPlayer({ name: rec ? rec.name : settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
+    refreshTracker();
     client.localState(1, ps);
     focus.set(ps.x, ps.y, ps.z);
     world.rig.snapTo(focus);
@@ -618,6 +626,7 @@ async function boot() {
       // Characters.
       safe('chars', () => {
         anchors.clear();
+        rewards.anchors(anchor);
         for (const rec of client.entities.values()) {
           const view = rec.view;
           if (!view) continue;
@@ -675,10 +684,17 @@ async function boot() {
         // One action prompt floats under the player's feet: interaction first, then the tutorial.
         const npc = nearestNpc();
         const nearShip = Math.hypot(ps.x - shipPos.x, ps.z - shipPos.z) < 4;
-        const rack = !npc && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
+        const chest = !npc && !ps.dead ? rewards.chestNear() : null;
+        // The runes of La Caldera, before a trial: pick your Marea (once you have opened more than one).
+        const prof = client.profile, AR = map.landmarks.arena, E0 = client.enc && client.enc[0], TIERS = ENCOUNTERS.caldera.tiers;
+        const runes = !npc && !chest && prof && prof.flags.tier > 1 && (!E0 || E0[1] === 'idle') && Math.hypot(ps.x - AR.x, ps.z - AR.z) < ENCOUNTERS.caldera.tierR;
+        const tierSel = prof ? prof.flags.tierSel || 1 : 1, tierNext = prof ? (tierSel % prof.flags.tier) + 1 : 1;
+        const rack = !npc && !chest && !runes && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
         const other = (ps.weapon + 1) % WEAPON_KINDS.length;
         let act = null;
         if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
+        else if (chest) act = '<span class="kbd">F</span> Abrir el cofre';
+        else if (runes) act = `<b>${TIERS[tierSel - 1].name}</b> · <span class="kbd">F</span> cambiar a ${TIERS[tierNext - 1].name}`;
         else if (rack) {
           act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
           if (!st.rackTaught) { st.rackTaught = true; hud.toast('<b>Armero:</b> aquí cambias de arma. Cada arma trae su LMB, Q, E y R. <span class="kbd">F</span> para probar las pistolas.', 5200); }
@@ -700,12 +716,15 @@ async function boot() {
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         if (input.consumeInteract()) {
           if (npc) {
-            const lines = LINES[npc.name] || ['…'];
-            const key = npc.name;
-            const i = (st.talkIdx[key] = ((st.talkIdx[key] ?? -1) + 1) % lines.length);
+            const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
+            const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
             worldUI.bubble(npc.id, `<b>${npc.name}</b>${lines[i]}`, 5200);
             sfx.talk();
-            if (npc.name === 'Capitana Brea' && st.tut === 'captain') advanceTutorial();
+            client.send({ t: 'cmd', type: 'talk', npc: npc.id }); // quests (accept, hand in), the stall
+          } else if (chest) {
+            client.send({ t: 'cmd', type: 'open', drop: chest });
+          } else if (runes) {
+            client.send({ t: 'cmd', type: 'tier', tier: tierNext });
           } else if (rack) {
             st.wantWeapon = other + 1; // sent with the next command; the sim checks the rack too
           } else if (nearShip) {
@@ -725,8 +744,20 @@ async function boot() {
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
         hud.setStats({
           hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
-          guard: ps.guardSt / tuning.guard.stamina, catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
+          guard: ps.guardSt / (ps.guardMax || tuning.guard.stamina), catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
         });
+        // M4: gold, potions, the weapon's mastery and what it has not opened yet.
+        hud.setGold(prof ? prof.gold : 0, st.encTier > 1 ? TIERS[st.encTier - 1].name : '');
+        hud.setPotions(ps.potions | 0, ps.potCd || 0, CONSUMABLES.potion.cd);
+        const mLvl = Math.floor((ps.mastery || 0) / 16 ** ps.weapon) % 16, kitW = weaponOf(ps.weapon);
+        const need = (slot) => (mLvl && mLvl < MASTERY.unlock[slot] ? MASTERY.unlock[slot] : 0);
+        const locks = { q: need('q'), e: need('e'), r: need('r') };
+        hud.setLocks(locks, kitW.short.toLowerCase());
+        if (isTouch) { touch.setPotions(ps.potions | 0, (ps.potCd || 0) / CONSUMABLES.potion.cd); touch.setLocks(locks); }
+        if (mLvl && prof && prof.mast[ps.weapon]) {
+          const mx = prof.mast[ps.weapon], nx = MASTERY.xp[Math.min(MASTERY.xp.length - 1, mLvl - 1)];
+          hud.setMastery(mLvl, mx[1] / nx, mLvl >= MASTERY.max, `Maestría de ${kitW.short.toLowerCase()}: ${Math.floor(mx[1])} / ${nx}`);
+        } else hud.setMastery(0, 0, false);
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
         const kit = weaponOf(ps.weapon);
         hud.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');

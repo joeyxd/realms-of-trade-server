@@ -15,6 +15,7 @@ export class WorldUI {
     this.plates = new Map();
     this.prompts = new Map();
     this.bubbles = new Map();
+    this.labels = new Map(); // loot on the ground (M4): its name in its rarity's colour
     this.w = innerWidth; this.h = innerHeight;
     this.playerRect = { x: 0, y: 0, w: 0, h: 0 };
     this.floats = [];
@@ -94,6 +95,18 @@ export class WorldUI {
     this.plates.set(id, { el, anchor: new THREE.Vector3(), p: { x: 0, y: 0, vis: false }, shown: true, hpEl: el.querySelector('.np-hp i'), lvEl: el.querySelector('.lv'), fr: 1, level, kind, range: kind === 'enemy' || kind === 'minor' ? 30 : 42 });
   }
 
+  // A floating label for loot (anchored like the plates; hidden beyond `range` u).
+  addLabel(id, html, { cls = '', color = '', range = 16 } = {}) {
+    this.removeLabel(id);
+    const el = document.createElement('div');
+    el.className = 'loot-label ' + cls;
+    el.innerHTML = html;
+    if (color) el.style.setProperty('--rc', color);
+    this.root.appendChild(el);
+    this.labels.set(id, { el, p: { x: 0, y: 0, vis: false }, range, shown: true });
+  }
+  removeLabel(id) { const l = this.labels.get(id); if (l) { l.el.remove(); this.labels.delete(id); } }
+
   removeNameplate(id) {
     const p = this.plates.get(id);
     if (p) { p.el.remove(); this.plates.delete(id); }
@@ -154,6 +167,30 @@ export class WorldUI {
       const show = plate.p.vis && a.dist < R && !covers && !a.hide && !talking;
       if (show !== plate.shown) { plate.el.hidden = !show; plate.shown = show; }
       if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1)); }
+    }
+    // Loot labels: nearest first, each one lifted above those it would cover (a pile of drops stays readable).
+    const shown = [];
+    for (const [id, l] of this.labels) {
+      const a = anchors.get(id);
+      const show = !!a && a.dist < l.range && !a.hide && (this.project(a.pos, l.p), l.p.vis);
+      if (show !== l.shown) { l.el.hidden = !show; l.shown = show; }
+      if (show) { if (!l.w) { l.w = l.el.offsetWidth; l.h = l.el.offsetHeight; } l.d = a.dist; shown.push(l); }
+    }
+    shown.sort((p, q) => p.d - q.d);
+    for (let i = 0; i < shown.length; i++) {
+      const l = shown[i], s = clamp(18 / Math.max(l.d, 1), 0.7, 1), w = l.w * s, h = l.h * s;
+      let y = l.p.y;
+      for (let pass = 0; pass < 8; pass++) {
+        let moved = false;
+        for (let j = 0; j < i; j++) {
+          const o = shown[j];
+          if (Math.abs(o.sx - l.p.x) < (o.sw + w) * 0.5 && y > o.sy - o.sh - 1 && y - h < o.sy + 1) { y = o.sy - o.sh - 2; moved = true; }
+        }
+        if (!moved) break;
+      }
+      l.sx = l.p.x; l.sy = y; l.sw = w; l.sh = h;
+      this.place(l.el, l.p, s, l.p.y - y);
+      l.el.style.opacity = String(clamp((l.range - l.d) / 4, 0, 1));
     }
     for (const [id, b] of this.bubbles) {
       const a = anchors.get(id);

@@ -19,6 +19,7 @@ import { CombatFx } from './vfx/combatfx.js';
 import { Debris } from './vfx/debris.js';
 import { Afterimages } from './vfx/afterimage.js';
 import { WeaponFx } from './vfx/weaponfx.js';
+import { LootLayer } from './loot.js';
 import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
 import { U } from './toon.js';
@@ -111,6 +112,7 @@ export class GameScene {
     this.tmpV = new THREE.Vector3();
     this.lighting.lavaU = this.terrain.material.userData.lavaU || null;
     this.lights = new LocalLights(map);
+    this.loot = new LootLayer(this.scene, map, this.effects, this.lights); // M4: your drops
     this.windowBase = new THREE.Color(0x3b2418);
     this.windowLit = new THREE.Color(0xffb04a);
     this.glassDay = new THREE.Color(0xa88a58);
@@ -185,6 +187,7 @@ export class GameScene {
   // Make every hidden FX material compile before play (no first-dash hitch).
   async prewarm() {
     const temp = [];
+    let lootProbe = null;
     const anyView = this.views.values().next().value;
     if (anyView) { this.after.capture(anyView, 0x3bf0ff, 0.01); temp.push(this.after.ghosts[0].mesh); }
     for (const r of this.effects.rings.slice(0, 1)) { r.m.visible = true; temp.push(r.m); }
@@ -192,6 +195,9 @@ export class GameScene {
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
     for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m]) { m.visible = true; temp.push(m); }
+    // A legendary drop (its model, beam and disc) so the first loot does not hitch either.
+    const lv = this.loot.add({ id: -1, kind: 'item', x: this.focus.x, z: this.focus.z, item: { u: 0, b: 'sable', r: 4, l: 1, a: [] } });
+    lootProbe = lv;
     const probe = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), characterMaterial('base'));
     probe.castShadow = true;
     this.scene.add(probe);
@@ -219,6 +225,7 @@ export class GameScene {
       r.setRenderTarget(prev);
       cam.layers.set(LAYER.WORLD); cam.layers.enable(LAYER.NO_OUTLINE);
       for (const m of temp) m.visible = false;
+      if (lootProbe) this.loot.dispose(-1);
       this.scene.remove(probe);
       probe.geometry.dispose();
     }
@@ -275,6 +282,7 @@ export class GameScene {
     }
     this.combatFx.update(sim);
     this.debris.update(sim);
+    this.loot.update(dt);
     // Floating cargo and the rowboat bob and drift a little.
     for (const f of this.props.floaters || []) {
       const ph = f.userData.phase, tt = this.time;

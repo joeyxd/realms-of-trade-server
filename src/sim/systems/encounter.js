@@ -175,7 +175,7 @@ function victory(world, enc) {
       const p = world.profiles.get(pl);
       if (!p || !(enc.tier >= p.flags.tier) || p.flags.tier >= T.length) continue;
       p.flags.tier = Math.min(T.length, (enc.tier || 1) + 1);
-      world.emit({ type: 'tier', to: pl, e: pl, open: p.flags.tier, sel: p.flags.tierSel });
+      world.emit({ type: 'tier', to: pl, e: pl, open: p.flags.tier, sel: p.flags.tierSel, why: 'open' });
       world.profileDirty.add(pl);
     }
   }
