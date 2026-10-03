@@ -70,8 +70,9 @@ export class GameClient {
   serverTick() { return this.serverOffset === null ? 0 : (this.clock + this.serverOffset) / DT; }
   viewTick(alpha) { return this.youLocal && !this.awaitingFirst ? this.displayTick(alpha) : this.serverTick(); }
 
-  join(name, skin, weapon = 0) {
-    this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon });
+  // save: the blob the server sent last time (M4), '' for a fresh start.
+  join(name, skin, weapon = 0, save = '') {
+    this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save });
   }
 
   send(msg) { this.t.send(msg); }
@@ -536,6 +537,7 @@ export class GameClient {
     out.level = ecs.level[e]; out.xp = ecs.xp[e]; out.hurtInv = ecs.hurtInv[e]; out.stagger = ecs.stagger[e];
     out.god = ecs.god[e];
     out.weapon = ecs.weapon[e]; out.cdQ = ecs.cdQ[e]; out.cdE = ecs.cdE[e]; out.castK = ecs.castK[e]; out.castT = ecs.castT[e];
+    out.potions = ecs.potions[e]; out.potCd = ecs.potCd[e]; out.mastery = ecs.mastery[e]; out.guardMax = tuning.guard.stamina + ecs.guardAdd[e];
     return out;
   }
 }

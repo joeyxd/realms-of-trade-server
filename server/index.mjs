@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GameHost } from './host.mjs';
+import { hmacSaves, saveSecret } from './saves.mjs';
 import { GAME } from '../src/data/meta.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -18,8 +19,10 @@ const MIME = {
 // Only the client is served: index.html, src/ and styles/ (never server/, tools/, .git…).
 const PUBLIC = ['src', 'styles'];
 
-export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT } = {}) {
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log });
+export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret } = {}) {
+  // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
+  const saves = hmacSaves(secret || saveSecret(process.env, log));
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves });
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }

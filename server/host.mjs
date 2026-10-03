@@ -17,7 +17,7 @@ const LIMITS = {
 };
 
 export class GameHost {
-  constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log } = {}) {
+  constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves } = {}) {
     this.log = log;
     this.maxPlayers = maxPlayers;
     this.origins = origins;
@@ -27,7 +27,7 @@ export class GameHost {
     this.errors = 0;
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({
-      seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true,
+      seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
     });
     this.started = performance.now();

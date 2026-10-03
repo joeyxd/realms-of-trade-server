@@ -182,7 +182,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
 - [x] **P2 Loot e inventario** (servidor): perfiles, tablas, caídas personales, recogida, expiración, equipar /
   quitar / desguazar / armero, eventos privados, `MSG.PROFILE`, cofre del jefe. Tests `tests/loot.test.mjs`
   (dos jugadores: cada uno lo suyo, el otro no lo ve; bolsa llena; el equipo cambia los números; cofre).
-- [ ] **P3 Guardado**: perfil ↔ blob, saneado y migración, adaptadores (confianza / HMAC), `hello.save`,
+- [x] **P3 Guardado**: perfil ↔ blob, saneado y migración, adaptadores (confianza / HMAC), `hello.save`,
   `MSG.SAVE`, persistencia en el cliente, `SAVE_SECRET` y `render.yaml`. Tests `tests/save.test.mjs` (ida y
   vuelta, manipulado → rechazado, el servidor Node reiniciado reconoce la partida, punto de control).
 - [ ] **P4 Misiones y vendedora**: datos, sistema, `talk` / `quest` / `buy` / `sell` / `tut`, objetos de misión,
@@ -225,3 +225,12 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   `potions`, `item {rarity, slot, lvl}`. El cliente guarda `client.profile` y una copia en
   `pred.profiles`. Los tests que juegan con el kit entero piden maestría 3 (`helpers.clientAndServer`,
   `nettest`). 114 tests.
+- **P3:** `sanitizeProfile` vive en `inventory.js` (sabe la forma del perfil; versión 1, `null` si no es nuestra).
+  `src/net/saves.js`: `trustSaves` (JSON), `MAX_SAVE` 32 KB, `SAVE_TIMING {after: 3, every: 10}`, `SAVE_NOW`
+  (eventos privados que guardan al momento). `server/saves.mjs`: `hmacSaves(secret)` (`base64url(json).firma`,
+  `timingSafeEqual`) y `saveSecret()` (`SAVE_SECRET` o uno aleatorio con aviso); `createGameServer({saveSecret})`.
+  `LocalServer({saves})`: el `hello.save` se carga (o perfil nuevo + `note {code: 'save'}`), `MSG.SAVE {blob}` al
+  entrar, al momento tras `pickup` / `mastery` / `chest` / `gear` / `sold` / `level`, 3 s tras otro cambio y un
+  vistazo cada 10 s (solo si el blob cambió). El cliente guarda en `mareanegra.v1.save.solo` o
+  `…save.online.<host>` (`settings.js`: `loadSave`, `storeSave`, `setSaveAside`); en solo también al cerrar la
+  página (`pagehide`, con nivel / XP / pociones predichos). Vuelves a tu último punto de control. 119 tests.

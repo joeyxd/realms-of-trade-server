@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { GAME } from './data/meta.js';
 import { tuning, DT } from './data/tuning.js';
-import { loadSettings, saveSettings, resetSave, settings } from './core/settings.js';
+import { loadSettings, saveSettings, resetSave, settings, loadSave, storeSave, setSaveAside } from './core/settings.js';
 import { Input } from './core/input.js';
 import { Loop } from './core/loop.js';
 import { bus } from './core/events.js';
@@ -192,6 +192,14 @@ async function boot() {
   const transport = await transportP;
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
   st.online = transport.kind === 'ws';
+  // Saved games (M4): one per server ('solo' for the Web Worker). The server sends a fresh blob when your
+  // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
+  const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
+  bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
+  addEventListener('pagehide', () => safe('save', () => {
+    if (st.online || !client.joined || !client.profile) return;
+    storeSave(saveSlot(), JSON.stringify({ ...client.profile, lvl: ps.level, xp: Math.round(ps.xp * 100) / 100, pot: ps.potions ?? client.profile.pot }));
+  }));
   // The mode pill: how many pirates are aboard (refreshed while on the title), or solo with a way back online.
   if (st.online) {
     title.setNet({ mode: 'online', ...(transport.status || {}) });
@@ -234,6 +242,10 @@ async function boot() {
     feedback.handle(ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
+    if (ev.type === 'note' && ev.code === 'save' && ev.me) {
+      setSaveAside(saveSlot());
+      hud.toast('<b>Tu partida guardada no vale en este servidor.</b> Empiezas de cero; la copia vieja queda aparte.', 6000);
+    }
   }));
   // The weapon you carry: remembered for the next session, the kit shown in a toast.
   function onEquip(w) {
@@ -430,7 +442,7 @@ async function boot() {
     music.start();
     sfx.play();
     saveSettings();
-    client.join(settings.name, settings.skin, weaponIndex(settings.weapon));
+    client.join(settings.name, settings.skin, weaponIndex(settings.weapon), loadSave(saveSlot()));
     if (st.online) {
       // Wait for the server's answer: a place aboard, or why not.
       title.boarding(true);

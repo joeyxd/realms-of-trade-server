@@ -33,3 +33,20 @@ export function resetSave() {
   } catch { /* ignore */ }
   Object.assign(settings, defaults);
 }
+
+// Saved games (M4): the blob the server last sent, one per server ('solo' for the Web Worker). Never parsed
+// here: the server reads (and online, verifies) it.
+const saveKey = (slot) => `${GAME.saveKey}.save.${slot}`;
+export function loadSave(slot) {
+  try { return localStorage.getItem(saveKey(slot)) || ''; } catch { return ''; }
+}
+export function storeSave(slot, blob) {
+  try { localStorage.setItem(saveKey(slot), blob); return true; } catch { return false; }
+}
+// A save the server refused stays aside (another build, another server secret), in case it is needed.
+export function setSaveAside(slot) {
+  try {
+    const b = localStorage.getItem(saveKey(slot));
+    if (b) localStorage.setItem(saveKey(slot) + '.old', b);
+  } catch { /* ignore */ }
+}

@@ -15,3 +15,6 @@ services:
         value: "4"
       - key: BOTS
         value: "3"
+      # Signs the saved games (M4): keep it, or every player starts over after a redeploy.
+      - key: SAVE_SECRET
+        generateValue: true

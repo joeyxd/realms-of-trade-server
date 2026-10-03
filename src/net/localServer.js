@@ -16,6 +16,7 @@ import { encounterState, encounterDev } from '../sim/systems/encounter.js';
 import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
 import { DROPS } from '../data/loot.js';
+import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
@@ -23,7 +24,9 @@ const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, now = () => performance.now() }) {
+    // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
+    this.saves = saves;
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
@@ -96,9 +99,13 @@ export class LocalServer {
         const skin = Math.max(0, Math.min(4, msg.skin | 0));
         // The weapon you last used (the client remembers it); after that you change it at a rack.
         const weapon = Math.max(0, Math.min(WEAPON_KINDS.length - 1, msg.weapon | 0));
-        const prof = newProfile({ weapon });
+        // Your saved game, if it is one of ours; otherwise a fresh start (and you are told why).
+        const saved = typeof msg.save === 'string' && msg.save.length <= MAX_SAVE && msg.save ? this.saves.load(msg.save) : null;
+        const prof = saved || newProfile({ weapon });
         c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
         attachProfile(this.world, c.entity, prof);
+        if (msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
+        c.saveAt = this.world.tick + 1;
         this.flushEvents();
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
         this.sendProfile(clientId, c);
@@ -152,6 +159,23 @@ export class LocalServer {
     c.profT = this.world.tick;
     this.world.profileDirty.delete(c.entity);
     this.send(id, { t: MSG.PROFILE, p });
+    this.saveSoon(c, SAVE_TIMING.after);
+  }
+
+  saveSoon(c, secs) {
+    const at = this.world.tick + Math.round(secs / DT);
+    if (!c.saveAt || at < c.saveAt) c.saveAt = at;
+  }
+
+  // A fresh blob for the player to keep (only when it changed).
+  sendSave(id, c) {
+    c.saveAt = 0;
+    const p = syncProfile(this.world, c.entity);
+    if (!p) return;
+    const blob = this.saves.store(p);
+    if (blob === c.lastBlob) return;
+    c.lastBlob = blob;
+    this.send(id, { t: MSG.SAVE, blob });
   }
 
   // F4 panel (local server only).
@@ -234,6 +258,13 @@ export class LocalServer {
     w.stepWorld();
     this.flushEvents();
     if (w.tick % SNAPSHOT_EVERY === 0) this.broadcastSnapshot();
+    // Saves: the ones due, and a look at everyone every SAVE_TIMING.every s (sent only if it changed).
+    const sweep = w.tick % Math.round(SAVE_TIMING.every / DT) === 0;
+    for (const [id, c] of this.clients) {
+      if (!c.entity) continue;
+      if (sweep && !c.saveAt) c.saveAt = w.tick;
+      if (c.saveAt && w.tick >= c.saveAt) this.sendSave(id, c);
+    }
   }
 
   // One neutral tick for a silent client: no movement, no buttons, aim kept, projectile time moving on
@@ -252,9 +283,13 @@ export class LocalServer {
       // Private (M4): loot, pickups, masteries… only for the player it is about.
       if (ev.to) {
         const id = this.clientOf(ev.to);
-        if (id !== undefined) this.send(id, { t: MSG.EVENT, ev });
+        if (id !== undefined) {
+          this.send(id, { t: MSG.EVENT, ev });
+          if (SAVE_NOW.has(ev.type)) this.saveSoon(this.clients.get(id), 0);
+        }
         continue;
       }
+      if (ev.type === 'level') { const id = this.clientOf(ev.e); if (id !== undefined) this.saveSoon(this.clients.get(id), 0); }
       if (ev.type === 'spawn') this.broadcast({ t: MSG.SPAWN, e: w.describe(ev.id) });
       else if (ev.type === 'despawn') this.broadcast({ t: MSG.DESPAWN, id: ev.id });
       else {

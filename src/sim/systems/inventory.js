@@ -4,13 +4,13 @@
 //   world.lootRng    the loot's own RNG (combat crits and AI keep theirs)
 // Everything a player owns changes here and nowhere else; the owner hears about it through private events
 // (`to`: LocalServer sends them to that client only) and profile messages.
-import { DT } from '../../data/tuning.js';
-import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, slotFits, RARITIES } from '../../data/items.js';
+import { DT, tuning } from '../../data/tuning.js';
+import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, QUEST_ITEMS, slotFits, RARITIES } from '../../data/items.js';
 import { LOOT, DROPS } from '../../data/loot.js';
 import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { mulberry32 } from '../../core/rng.js';
-import { rollItem, itemValue, itemScore } from '../items.js';
+import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
 import { refreshStats, masteryXpToNext } from './stats.js';
 import { setWeapon } from './skills.js';
 import { C } from '../ecs.js';
@@ -29,6 +29,53 @@ export function newProfile({ weapon = 0 } = {}) {
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
   return p;
 }
+// A saved profile made safe (P3): known items in the right slots, numbers in range. null when it is not one
+// of ours (an unknown version). The save is signed online, so this is about old builds and bugs, not cheats.
+export function sanitizeProfile(raw) {
+  if (!raw || typeof raw !== 'object' || raw.v !== PROFILE_VERSION) return null;
+  const int = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, Math.floor(v))) : d);
+  const num = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d);
+  const p = newProfile();
+  p.lvl = int(raw.lvl, 1, tuning.stats.maxLevel, 1);
+  p.xp = num(raw.xp, 0, 1e6, 0);
+  p.gold = int(raw.gold, 0, 1e9, 0);
+  p.pot = int(raw.pot, 0, CONSUMABLES.potion.max, 0);
+  const used = new Set();
+  const keep = (it) => {
+    const x = sanitizeItem(it);
+    if (!x) return null;
+    if (used.has(x.u)) x.u = 0; // re-numbered below
+    used.add(x.u);
+    return x;
+  };
+  p.bag = (Array.isArray(raw.bag) ? raw.bag : []).slice(0, ITEMS.bag).map(keep).filter(Boolean);
+  const eq = raw.eq && typeof raw.eq === 'object' ? raw.eq : {};
+  for (const slot of SLOTS) {
+    const x = eq[slot] ? keep(eq[slot]) : null;
+    p.eq[slot] = x && slotFits(BASES[x.b].slot, slot) ? x : null;
+  }
+  p.uid = Math.max(int(raw.uid, 1, 2 ** 31, 1), ...[...used].map((u) => u + 1));
+  for (const it of [...p.bag, ...SLOTS.map((s) => p.eq[s])]) if (it && it.u === 0) it.u = p.uid++;
+  if (!p.eq.weapon) p.eq.weapon = starterItem(p, 'sable');
+  p.mast = WEAPON_KINDS.map((_, i) => {
+    const m = Array.isArray(raw.mast) && Array.isArray(raw.mast[i]) ? raw.mast[i] : [1, 0];
+    return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
+  });
+  if (raw.quests && typeof raw.quests === 'object') {
+    for (const [id, q] of Object.entries(raw.quests)) {
+      if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];
+    }
+  }
+  const f = raw.flags && typeof raw.flags === 'object' ? raw.flags : {};
+  p.flags.tut = int(f.tut, 0, 99, 0);
+  p.flags.tier = int(f.tier, 1, 9, 1);
+  p.flags.tierSel = int(f.tierSel, 1, p.flags.tier, 1);
+  if (raw.items && typeof raw.items === 'object') for (const k in QUEST_ITEMS) if (raw.items[k]) p.items[k] = int(raw.items[k], 0, 999, 0);
+  p.cp = typeof raw.cp === 'string' && raw.cp.length <= 16 ? raw.cp : 'spawn';
+  if (raw.stats && typeof raw.stats === 'object') for (const k in p.stats) p.stats[k] = int(raw.stats[k], 0, 1e9, 0);
+  return p;
+}
+
 // A kit's common level-1 weapon (from a fresh profile or a rack). Starters are worth nothing.
 const starterItem = (p, kit) => ({ u: p.uid++, b: STARTER[kit] || STARTER.sable, r: 0, l: 1, a: [], s: 1 });
 export const kitOf = (item) => (item && BASES[item.b] && BASES[item.b].weapon) || 'sable';
