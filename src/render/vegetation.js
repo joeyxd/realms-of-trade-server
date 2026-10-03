@@ -4,8 +4,62 @@ import * as THREE from 'three';
 import { part, merge, ico, sphere, cyl, lumpy } from './geo.js';
 import { toon, normalMatFor } from './toon.js';
 import { LAYER } from './pipeline.js';
+import { INK_GLSL, INK_WN } from './inkGlsl.js';
 
 const CHUNK = 48;
+
+// Ink pass (P5), albedo only. Rocks: ink cracks like the terrain slopes. Palm trunks: ring bands every ~0.32 u of height
+// (darker band above each joint, thin ink line on the joint), in object space so they sway with the trunk. Bushes: two-tone
+// brush strokes, lighter on the upward-facing side.
+const ROCK_INK = {
+  vertPars: INK_WN.vertPars,
+  vertBody: INK_WN.vertBody,
+  fragPars: INK_GLSL + INK_WN.fragPars,
+  albedo: /* glsl */ `
+    {
+      float fade = mnDetailFade();
+      float cr = mnCracks(vMnWorld, normalize(vMnWN), 0.26, 0.022, 0.5, fade > 0.01);
+      diffuseColor.rgb = mix(diffuseColor.rgb, MN_INK, 0.65 * cr * fade);
+    }
+  `,
+};
+const TRUNK_INK = {
+  vertPars: 'varying vec3 vMnObj;\n',
+  vertBody: 'vMnObj = position;\n',
+  fragPars: INK_GLSL + 'varying vec3 vMnObj;\n',
+  albedo: /* glsl */ `
+    {
+      float fade = mnDetailFade();
+      if (fade > 0.01) {
+        float f = fract((vMnObj.y + vMnObj.z * 0.25) / 0.32); // rings tilt a little across the trunk
+        float ringZone = (1.0 - smoothstep(5.2, 5.6, vMnObj.y)) * fade; // none on the crown and coconuts
+        float band = mix(0.82, 1.0, smoothstep(0.0, 0.55, f));
+        diffuseColor.rgb *= mix(1.0, band, ringZone);
+        diffuseColor.rgb = mix(diffuseColor.rgb, MN_INK, 0.55 * mnLine(min(f, 1.0 - f) * 0.32, 0.016) * ringZone);
+      }
+    }
+  `,
+};
+const BUSH_INK = {
+  vertPars: INK_WN.vertPars,
+  vertBody: INK_WN.vertBody,
+  fragPars: INK_GLSL + INK_WN.fragPars,
+  albedo: /* glsl */ `
+    {
+      float fade = mnDetailFade();
+      if (fade > 0.01) {
+        vec3 wn = normalize(vMnWN);
+        mat2 r = mat2(0.866, 0.5, -0.5, 0.866);
+        float b = texture2D(mnNoiseTex, r * mnTri(vMnWorld, wn) * vec2(1.1, 0.35)).b; // strokes: fbm stretched along one axis
+        float top = smoothstep(0.15, 0.7, wn.y);
+        vec3 c = diffuseColor.rgb;
+        c = mix(c, c * 1.24 + vec3(0.03, 0.03, 0.0), smoothstep(0.56, 0.64, b) * top);
+        c *= 1.0 - 0.22 * smoothstep(0.44, 0.36, b) * (1.0 - top);
+        diffuseColor.rgb = mix(diffuseColor.rgb, c, fade);
+      }
+    }
+  `,
+};
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
 const up = new THREE.Vector3(0, 1, 0);
 
@@ -203,7 +257,7 @@ export function createVegetation(map) {
   group.name = 'vegetation';
   const swayU = { value: 0.3 };
   const palmOpts = { sway: true, occluder: true, swayUniform: swayU, key: 'palm' };
-  const trunkMat = toon({ color: 0xffffff, vertexColors: true }, palmOpts);
+  const trunkMat = toon({ color: 0xffffff, vertexColors: true }, { ...palmOpts, ...TRUNK_INK });
   const frondMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, { ...palmOpts, key: 'frond' });
   const trunkNm = normalMatFor(palmOpts);
   const frondNm = normalMatFor(palmOpts, THREE.DoubleSide);
@@ -219,7 +273,7 @@ export function createVegetation(map) {
   group.add(chunked('palmTrunks', palms, trunkGeo, trunkMat, trunkNm, placePalm));
   group.add(chunked('palmFronds', palms, frondGeo, frondMat, frondNm, placePalm));
 
-  const bushMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'bush' });
+  const bushMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'bush', ...BUSH_INK });
   const bushes = map.props.filter((p) => p.kind === 'bush');
   const tint = new THREE.Color();
   for (let variant = 0; variant < 2; variant++) {
@@ -230,7 +284,7 @@ export function createVegetation(map) {
     }, (p) => tint.setHSL(0.27 + (p.v - 0.5) * 0.06, 0.55, 0.62 + p.v * 0.12).clone(), { castShadow: false }));
   }
 
-  const rockMat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'rock' });
+  const rockMat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'rock', ...ROCK_INK });
   const rockNm = normalMatFor({ occluder: true });
   const rocks = map.props.filter((p) => p.kind === 'rock');
   for (let variant = 0; variant < 2; variant++) {

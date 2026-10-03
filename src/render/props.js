@@ -4,10 +4,52 @@ import * as THREE from 'three';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
 import { toon, normalMatFor, glowBasic } from './toon.js';
 import { LAYER } from './pipeline.js';
+import { INK_GLSL } from './inkGlsl.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
 const up = new THREE.Vector3(0, 1, 0);
+// Ink pass (P5): classify the vertex colour (hue / saturation / value in ~sRGB) and paint wood grain on browns and
+// brick bond on greys / violet basalt. Saturated colours (cloth, paint, metal trims) are left alone. Model-space position
+// and normal, so patterns stay glued to props that bob (ship, floaters) and follow the dock deck's own axes; chunk
+// meshes are baked in world space, so there it is world space. Grain: cell edges of the noise, stretched along the grain.
+const PROP_INK = {
+  vertPars: 'varying vec3 vMnObj;\nvarying vec3 vMnON;\n',
+  vertBody: 'vMnObj = position;\nvMnON = objectNormal;\n',
+  fragPars: INK_GLSL + 'varying vec3 vMnObj;\nvarying vec3 vMnON;\n',
+  albedo: /* glsl */ `
+    {
+      float fade = mnDetailFade();
+      if (fade > 0.01) {
+        vec3 c = diffuseColor.rgb;
+        vec3 hsv = mnHsv(sqrt(c));
+        float hue = hsv.x * 360.0;
+        // Wood: brown hues, mid saturation and value. Stone: neutral greys, or the violet Caldera basalt.
+        float woodW = smoothstep(12.0, 18.0, hue) * (1.0 - smoothstep(35.0, 38.0, hue)) * smoothstep(0.28, 0.36, hsv.y) * (1.0 - smoothstep(0.9, 0.95, hsv.y)) * smoothstep(0.18, 0.26, hsv.z) * (1.0 - smoothstep(0.82, 0.88, hsv.z));
+        float stoneW = (1.0 - smoothstep(0.1, 0.13, hsv.y)) * smoothstep(0.26, 0.32, hsv.z) * (1.0 - smoothstep(0.85, 0.9, hsv.z))
+          + smoothstep(250.0, 262.0, hue) * (1.0 - smoothstep(330.0, 340.0, hue)) * smoothstep(0.1, 0.14, hsv.y) * (1.0 - smoothstep(0.3, 0.34, hsv.y)) * smoothstep(0.2, 0.24, hsv.z) * (1.0 - smoothstep(0.6, 0.65, hsv.z));
+        vec3 N = normalize(vMnON);
+        vec2 tp = mnTri(vMnObj, N);
+        // Grain runs up the walls and along x on floors (the dock planks run across the deck).
+        vec2 gu = mnIsFloor(N) > 0.5 ? tp.yx : tp;
+        vec2 sk = vec2(0.8, 0.12);
+        vec2 gdx = dFdx(gu) * sk, gdy = dFdy(gu) * sk;
+        vec4 g = vec4(0.0, 9.0, 0.0, 0.0);
+        if (woodW > 0.01) g = textureGrad(mnNoiseTex, gu * sk, gdx, gdy);
+        float grain = mnLine(g.g * 0.3 / (8.0 * sk.x), 0.02);
+        float knot = mnLine(g.r, 0.3) * step(0.93, g.a);
+        c *= mix(1.0, (1.0 + (g.a - 0.5) * 0.14) * (1.0 - 0.2 * grain) * (1.0 - 0.3 * knot), woodW);
+        // Running-bond blocks 0.55 x 0.3 u: ink joints, a little value jitter per block.
+        vec2 bs = vec2(0.55, 0.3);
+        float joint = mnLine(mnBricks(tp, bs), 0.02);
+        c *= mix(1.0, 0.9 + 0.2 * mnBrickId(tp, bs), stoneW);
+        c = mix(c, MN_INK, 0.6 * joint * stoneW);
+        diffuseColor.rgb = mix(diffuseColor.rgb, c, fade);
+      }
+    }
+  `,
+};
+
 const WOOD = 0xb5803f, WOOD_D = 0x8a5a2e, WOOD_L = 0xd6a565, STRAW = 0xe9b54d, STRAW_D = 0xc98f2c, STONE = 0x9a948e;
 
 function hutGeo() {
@@ -157,7 +199,7 @@ function flagPoleGeo() {
   return merge([
     part(cyl(0.09, 0.13, 6.2, 6), WOOD_D, { pos: [0, 3.1, 0] }),
     part(sphere(0.14, 6, 4), 0xc9a44c, { pos: [0, 6.25, 0] }),
-    part(lumpy(ico(0.5, 1), 0.25, 3), 0x8f8a84, { pos: [0, 0.15, 0], scale: [1, 0.45, 1] }),
+    part(lumpy(ico(0.5, 1), 0.25, 3), 0x998c7c, { pos: [0, 0.15, 0], scale: [1, 0.45, 1] }),
   ]);
 }
 
@@ -165,7 +207,7 @@ function rockRingGeo() {
   const L = [];
   for (let i = 0; i < 9; i++) {
     const a = (i / 9) * Math.PI * 2;
-    L.push(part(lumpy(ico(0.22, 1), 0.2, i + 1), 0x8f8a84, { pos: [Math.cos(a) * 0.75, 0.12, Math.sin(a) * 0.75] }));
+    L.push(part(lumpy(ico(0.22, 1), 0.2, i + 1), 0x998c7c, { pos: [Math.cos(a) * 0.75, 0.12, Math.sin(a) * 0.75] }));
   }
   for (let i = 0; i < 3; i++) L.push(part(cyl(0.09, 0.09, 1.1, 6), 0x6b4423, { pos: [0, 0.2, 0], rot: [Math.PI / 2, (i / 3) * Math.PI, 0.3] }));
   return merge(L);
@@ -270,7 +312,7 @@ function blackFlagTexture() {
 export function createProps(map) {
   const group = new THREE.Group();
   group.name = 'props';
-  const mat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'prop' });
+  const mat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'prop', ...PROP_INK });
   const nm = normalMatFor({ occluder: true });
   const glowMat = glowBasic({ color: 0xffd36a }, 1);
   const kits = {

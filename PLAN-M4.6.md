@@ -113,7 +113,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 - [x] **P2** Botones táctiles v2 y HUD horizontal (2.2).
 - [x] **P3** Contornos de tinta (2.3).
 - [ ] **P4** Sombras de cómic (2.4).
-- [ ] **P5** Superficies pintadas (2.5).
+- [x] **P5** Superficies pintadas (2.5).
 - [ ] **P6** Etalonaje, rendimiento, capturas, docs, versión, artefacto, informe (2.6).
 
 ## 4. Notas de ejecución
@@ -145,3 +145,11 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
   (un píxel que no es personaje con uno a 2.5× en 8 tomas es tinta) y por dentro solo un contorno fino a 0.8×
   (a dos caras se comía brazos y piernas). +4 lecturas por píxel. Tinta 0x120a24, desvanecido 90 / 210.
   Pendiente menor: hojas muy finas alineadas a un eje pueden mostrar una línea paralela tenue.
+- **P5** (hecho antes que P4, en paralelo): `src/render/inkGlsl.js` (`MN_INK`, `mnLine`, `mnTri`, `mnDetailFade`
+  42 → 75 u, `mnHsv`, `mnBricks`, `mnCracks`, `mnMeander`; `INK_WN` = normal de mundo en varying). Terreno: ondas y
+  punteado en la arena seca, pinceladas y ticks en la hierba con un borde más oscuro contra la arena, losas con
+  junta de tinta y bisel, grietas en las laderas, línea en cada estrato volcánico, baldosas de la Caldera con
+  junta y bisel, grietas de lava perfiladas y una greca de 1.6 u en el borde del suelo (`mnArena`, 58 periodos
+  para R = 19, cierra). Props por color de vértice: vetas en la madera, sillares en la piedra (en espacio de
+  modelo: siguen al barco que se mece). Rocas con grietas, troncos con anillos, arbustos a dos tonos. Lecturas
+  extra de `mnNoiseTex`: 0–2 por superficie (`textureGrad` fuera de ramas). Roca de los anillos 0x998c7c.
