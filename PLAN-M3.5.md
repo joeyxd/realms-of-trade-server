@@ -222,7 +222,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   de la isla), `equip`, HELLO/describe/snapshot con arma, `Shots` con `key/homing/kind/knock/lag`, adopción por
   `key`, impactos con `historyAt(tick − lag)`. Tests: solo se cambia junto a un armero, la predicción del cambio
   es exacta, un disparo acierta donde el cliente veía al enemigo con 150 ms de lag.
-- [ ] **P4** Sable: Estocada, Hoja de viento (onda analítica en el comando), Tormenta como R del sable. Tests:
+- [x] **P4** Sable: Estocada, Hoja de viento (onda analítica en el comando), Tormenta como R del sable. Tests:
   la estocada recorre 4.5 u, daña una vez y destruye balas; la hoja destruye las parreables que cruza (también en la
   predicción) y daña una vez a cada enemigo; enfriamientos.
 - [ ] **P5** Pistolas: disparo continuo, Descarga, Paso de humo, Lluvia de plomo; la devolución de atrapadas con
@@ -259,6 +259,16 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   cuentan); reflejos y devoluciones como `'shot'`. Columnas nuevas ya en `PLAYER_FIELDS`: `weapon cdQ cdE qBuf eBuf
   castK castT castX castZ shotCd shotN` (las de onda/lluvia/estocada llegan con P4/P5). Tests en
   `tests/weapons.test.mjs`. El prop del armero se dibuja en P6 (hasta entonces es una colisión invisible).
+- P4: lanzamiento genérico en `skills.js` (`bufferSkills`, `tryCast`, `stepCast`, `castPose`): Q/E con búfer, esperan a
+  los frames activos de un golpe y cortan su recuperación, bajan la guardia; `castLock` impide empezar un dash en el
+  windup/activo (movement.js), un dash en la recuperación la cancela, el aturdido también. ACT nuevos 15–19.
+  Estocada: curva del dash por pasos con colisión, sin velocidad residual; destruye parreables a ≤ 1 u del tramo
+  recorrido cada tick; `world.lungeHits` (servidor, historial a `pt − interpTicks`, una vez por estocada con
+  `swingId`, pesado). Hoja de viento: columnas `wave*` (tick de salida en `pt`, origen, dirección, fin recortado
+  con `clipDistance`, id = seq), `stepWave` barre el frente `f(prev) − depth … f(pt)` (antes del chequeo de muerte:
+  sigue volando aunque caigas), `world.crescentHits` con `brain.waveBy` (una vez por enemigo). Daño de habilidades:
+  `kind 'skill'` (blindaje, escudo y DEF cuentan). Eventos `cast {skill, dx, dz}`, `wave {id, tick, end, …}`,
+  `destroy {skill}`. Tests en `tests/sable.test.mjs`.
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

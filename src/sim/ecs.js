@@ -21,6 +21,8 @@ export const STATE = { MOVE: 0, DASH: 1 };
 export const ACT = {
   IDLE: 0, SWING1: 1, SWING2: 2, SWING3: 3, GUARD: 4, PARRY: 4, STAGGER: 5, DEAD: 6, DORMANT: 7, WAKE: 8,
   WINDUP: 9, FIRE: 10, RECOVER: 11, HIT: 12, RIPOSTE: 13, ENRAGE: 14,
+  // Weapon skills (M3.5): the cutlass lunge and crescent throw, pistol fire, the blast, a cast (rain, blink).
+  LUNGE: 15, THROW: 16, SHOOT: 17, BLAST: 18, CAST: 19,
 };
 
 export class ECS {
@@ -60,6 +62,11 @@ export class ECS {
     // cast (castK 0 none · 1 Q · 2 E · 3 R, time in it, its aim), the pistol's fire timer and hand.
     this.weapon = f(); this.cdQ = f(); this.cdE = f(); this.qBuf = f(); this.eBuf = f();
     this.castK = f(); this.castT = f(); this.castX = f(); this.castZ = f(); this.shotCd = f(); this.shotN = f();
+    this.castLock = f(); // no dash while > 0 (a skill's windup and active frames)
+    // The cutlass crescent in flight (analytic, in projectile ticks): start tick (0 = none), origin, direction,
+    // end tick, id (the seq that threw it), RIPOSTE it has given. The lunge: distance covered so far.
+    this.waveT0 = f(); this.waveX = f(); this.waveZ = f(); this.waveDx = f(); this.waveDz = f(); this.waveEnd = f();
+    this.waveId = f(); this.waveN = f(); this.lungeCov = f();
     // ENEMY (server only)
     this.enemy = new Uint8Array(cap); // index into ENEMY_KINDS
     this.brain = new Array(cap).fill(null);
@@ -101,6 +108,9 @@ export class ECS {
     this.lastPt[id] = 0; this.xp[id] = 0; this.cpX[id] = this.cpZ[id] = 0; this.god[id] = 0;
     this.weapon[id] = this.cdQ[id] = this.cdE[id] = this.qBuf[id] = this.eBuf[id] = 0;
     this.castK[id] = this.castT[id] = this.castX[id] = this.castZ[id] = this.shotCd[id] = this.shotN[id] = 0;
+    this.castLock[id] = 0;
+    this.waveT0[id] = this.waveX[id] = this.waveZ[id] = this.waveDx[id] = this.waveDz[id] = this.waveEnd[id] = 0;
+    this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
     this.enemy[id] = 0; this.brain[id] = null;
     this.level[id] = 1; this.skin[id] = 0; this.clientId[id] = -1; this.lastSeq[id] = 0;
     this.names[id] = ''; this.titles[id] = ''; this.bot[id] = null;
@@ -134,5 +144,6 @@ export const PLAYER_FIELDS = [
   'guardT', 'guardP', 'guardRe', 'guardSt', 'guardRegT', 'catchN', 'catchHv', 'catchDmg', 'catchT',
   'chain', 'chainT', 'riposte', 'rBuf', 'pend0', 'pend0T', 'pend0D', 'pend1', 'pend1T', 'pend1D',
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',
-  'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN',
+  'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN', 'castLock',
+  'waveT0', 'waveX', 'waveZ', 'waveDx', 'waveDz', 'waveEnd', 'waveId', 'waveN', 'lungeCov',
 ];

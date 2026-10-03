@@ -83,8 +83,8 @@ export function stepMover(world, e, cmd, dt) {
   }
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
 
-  // Start a buffered dash.
-  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked) {
+  // Start a buffered dash (not during a skill's windup / active frames: the buffer waits).
+  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked && !(ecs.castLock[e] > 0)) {
     let dx, dz;
     if (len > 0.1) { dx = mx / len; dz = mz / len; }
     else { dx = Math.sin(ecs.facing[e]); dz = Math.cos(ecs.facing[e]); }

@@ -11,7 +11,8 @@ import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
-import { WEAPON_KINDS } from '../data/weapons.js';
+import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
+import { skillSegDist } from './systems/skills.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 
 const D2R = Math.PI / 180;
@@ -333,6 +334,43 @@ export class World {
       const stage = ecs.atkStage[e];
       damageEnemy(this, o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
+    }
+  }
+
+  // The cutlass lunge: enemies (where the attacker saw them) within reach of this step of its path, once
+  // per lunge. Heavy: staggers like the third hit of the combo.
+  lungeHits(e, x0, z0, x1, z1, pt, seq) {
+    const ecs = this.ecs, tmp = this.tmp, L = SKILLS.lunge;
+    const back = pt - tuning.combat.interpTicks;
+    const key = e * 65536 + ecs.swingId[e];
+    for (let o = 1; o < ecs.cap; o++) {
+      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      const b = ecs.brain[o];
+      if (b.hitBy.get(e) === key) continue;
+      historyAt(this, o, back, tmp);
+      if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > L.width + ecs.hurtR[o]) continue;
+      b.hitBy.set(e, key);
+      damageEnemy(this, o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock });
+      this.feel(e, seq, tuning.feel.hitstopMelee, 0);
+    }
+  }
+
+  // The cutlass crescent between fronts f0 → f1 (u from its origin): each enemy it crosses, once.
+  crescentHits(e, f0, f1, pt, seq) {
+    const ecs = this.ecs, tmp = this.tmp, W = SKILLS.wave;
+    const back = pt - tuning.combat.interpTicks;
+    const ox = ecs.waveX[e], oz = ecs.waveZ[e], dx = ecs.waveDx[e], dz = ecs.waveDz[e], id = ecs.waveId[e];
+    for (let o = 1; o < ecs.cap; o++) {
+      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      const b = ecs.brain[o];
+      if (!b.waveBy) b.waveBy = new Map();
+      if (b.waveBy.get(e) === id) continue;
+      historyAt(this, o, back, tmp);
+      const rx = tmp.x - ox, rz = tmp.z - oz, hr = ecs.hurtR[o];
+      const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
+      if (a < f0 - W.depth - hr || a > f1 + hr || l > W.half + hr) continue;
+      b.waveBy.set(e, id);
+      damageEnemy(this, o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6 });
     }
   }
 

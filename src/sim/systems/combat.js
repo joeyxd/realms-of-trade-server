@@ -19,7 +19,7 @@
 import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
-import { stepEquip } from './skills.js';
+import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf } from './skills.js';
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 
@@ -430,12 +430,16 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
+  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
+  // A crescent in flight keeps cutting whatever you do (even down).
+  stepWave(world, e, prev, pt, seq);
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;
     ecs.guardT[e] = -1;
+    cancelCast(ecs, e);
     ecs.deadT[e] -= dt;
     if (ecs.deadT[e] <= 0) respawnPlayer(world, e, seq);
     setAct(ecs, e, ecs.dead[e] > 0 ? ACT.DEAD : ACT.IDLE);
@@ -455,12 +459,15 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;
   if (atkPress) ecs.atkBuf[e] = T.player.inputBuffer;
   if (cmd.prs & BTN.R) ecs.rBuf[e] = T.player.inputBuffer;
+  bufferSkills(ecs, e, cmd);
 
   const dashing = ecs.dashT[e] >= 0;
   if (dashing) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = 0; ecs.atkStage[e] = 0; }
     ecs.guardT[e] = -1;
+    cancelCast(ecs, e); // only in a cast's recovery: its windup / active frames hold the dash back
   }
+  if (ecs.stagger[e] > 0) cancelCast(ecs, e);
   const canAct = !dashing && ecs.stagger[e] <= 0;
 
   // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
@@ -491,7 +498,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   // attack press wins over the guard). A new raise is only PERFECT-capable once the re-arm has run out.
   const st0 = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1] : null;
   const swingBusy = st0 && ecs.atkT[e] < st0.windup + st0.active;
-  if (guardHeld && canAct && !swingBusy && !(ecs.atkBuf[e] > 0) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max)) {
+  if (guardHeld && canAct && !swingBusy && !castBusy(ecs, e) && !(ecs.atkBuf[e] > 0) && !skillWanted(ecs, e) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max)) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = ecs.atkStage[e]; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
     if (ecs.guardT[e] < 0 && ecs.guardSt[e] >= G.minRaise) {
       ecs.guardT[e] = 0;
@@ -502,8 +509,12 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     } else if (ecs.guardT[e] >= 0 && !(cmd.btn & BTN.AIM)) faceAim(ecs, e, cmd); // auto-aim keeps facing the threat
   } else if (ecs.guardT[e] >= 0) ecs.guardT[e] = -1;
 
+  // Weapon skills (Q / E): wait for a swing's active frames, cut its recovery.
+  if (canAct && !swingBusy && !castBusy(ecs, e) && skillWanted(ecs, e)) tryCast(world, e, cmd, seq);
+  if (castBusy(ecs, e)) stepCast(world, e, cmd, dt, pt, seq);
+
   // Melee combo.
-  if (canAct && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
+  if (canAct && !castBusy(ecs, e) && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
     const ls = ecs.lastStage[e];
     swingStage(world, e, ecs.comboT[e] <= M.comboGap && ls > 0 && ls < 3 ? ls + 1 : 1, cmd);
   }
@@ -524,10 +535,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     else if (t1 >= a1 + st.recover) { ecs.lastStage[e] = stage; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
   }
 
-  // Riposte release.
-  if (canAct && ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max) {
+  // R: a full RIPOSTE meter. The cutlass's is the Tormenta (the reflecting wave).
+  if (canAct && ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max && skillOf(ecs, e, 'r') === 'storm') {
     ecs.rBuf[e] = 0;
     ecs.atkStage[e] = 0; ecs.guardT[e] = -1;
+    cancelCast(ecs, e);
     riposteWave(world, e, pt, seq);
     ecs.act[e] = ACT.RIPOSTE; ecs.actT[e] = 0;
   }
@@ -553,9 +565,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   // Movement multiplier and the action shown to others.
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
-  ecs.moveMul[e] = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move : ecs.stagger[e] > 0 ? 0 : 1;
+  const cp = castPose(ecs, e);
+  ecs.moveMul[e] = cp ? cp.move : ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move : ecs.stagger[e] > 0 ? 0 : 1;
   let a = ACT.IDLE;
   if (ecs.stagger[e] > 0) a = ACT.STAGGER;
+  else if (cp) a = cp.act;
   else if (ecs.guardT[e] >= 0) a = ACT.GUARD;
   else if (ecs.atkStage[e] > 0) a = ACT.SWING1 + ecs.atkStage[e] - 1;
   else if (ecs.act[e] === ACT.RIPOSTE && ecs.actT[e] < 0.45) a = ACT.RIPOSTE;

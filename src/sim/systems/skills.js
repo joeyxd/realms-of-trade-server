@@ -1,9 +1,25 @@
 // Weapons and their skills (M3.5). One step per command, after movement, inside stepPlayerCombat:
-// shared verbatim by the server and the client's prediction, like the rest of player combat.
+// shared verbatim by the server and the client's prediction, like the rest of player combat. Anything
+// that touches hostile bullets runs here, at the command's projectile tick, so prediction replays it;
+// hits on enemies are server-only (world.lungeHits / world.crescentHits).
 //
 //   Equip  cmd.w = weapon + 1. Only next to a rack (map.racks, RACK_R): a swing, the guard and a cast in
 //          progress are dropped; the cooldowns carry over.
-import { WEAPON_KINDS, RACK_R } from '../../data/weapons.js';
+//   Cast   Q / E (buffered like LMB) start the weapon's skill at the cursor when it is off cooldown and
+//          you are free (not dashing, staggered, dead or mid-swing; a swing's recovery is cut short; it
+//          lowers the guard). castK = 1 (Q) or 2 (E) while it runs; no dash in its windup / active frames.
+//   Sable  Q Estocada: a lunge along the dash curve that destroys the parryables near its path and hits
+//          each enemy on it once. E Hoja de viento: a crescent flies at the cursor (analytic, like the
+//          hostile bullets), destroys the parryables it crosses and hits each enemy once. R Tormenta: the
+//          RIPOSTE wave (combat.js).
+import { tuning, DT } from '../../data/tuning.js';
+import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf } from '../../data/weapons.js';
+import { PTYPE, KILL, clipDistance } from '../projectiles.js';
+import { BTN, moveWithCollision } from './movement.js';
+import { ACT } from '../ecs.js';
+
+export const CAST = { NONE: 0, Q: 1, E: 2 };
+const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
 // The rack within reach of (x, z), or null.
 export function rackNear(map, x, z, r = RACK_R) {
@@ -24,6 +40,161 @@ export function setWeapon(world, e, w, seq = 0) {
   ecs.weapon[e] = w;
   ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.lastStage[e] = 0;
   ecs.guardT[e] = -1;
-  ecs.castK[e] = 0; ecs.castT[e] = 0; ecs.qBuf[e] = ecs.eBuf[e] = 0; ecs.shotCd[e] = 0; ecs.shotN[e] = 0;
+  cancelCast(ecs, e);
+  ecs.qBuf[e] = ecs.eBuf[e] = 0; ecs.shotCd[e] = 0; ecs.shotN[e] = 0;
   world.emit({ type: 'equip', e, weapon: w, seq, x: ecs.x[e], z: ecs.z[e] });
 }
+
+// The skill a slot ('q' | 'e' | 'r' | 'basic') has with the weapon e carries.
+export const skillOf = (ecs, e, slot) => weaponOf(ecs.weapon[e])[slot];
+
+// Seconds a cast takes: [windup, active, recover].
+function phases(id) {
+  const S = SKILLS[id];
+  if (id === 'lunge') return [S.windup, S.time, S.recover];
+  if (id === 'wave') return [S.windup, 0, S.recover];
+  return [0, 0, 0];
+}
+export const castBusy = (ecs, e) => ecs.castK[e] > 0;
+
+export function cancelCast(ecs, e) {
+  ecs.castK[e] = 0; ecs.castT[e] = 0; ecs.castLock[e] = 0;
+}
+
+function addRiposte(ecs, e, n) {
+  ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n);
+}
+
+function faceAim(ecs, e, cmd) {
+  const dx = (cmd.ax || 0) - ecs.x[e], dz = (cmd.az || 0) - ecs.z[e];
+  if (dx * dx + dz * dz > 0.09) ecs.facing[e] = Math.atan2(dx, dz);
+}
+
+// Q / E presses go into their buffers (stepPlayerCombat decrements them). A buffered skill that is
+// ready wins over raising the guard.
+export function bufferSkills(ecs, e, cmd) {
+  const ib = tuning.player.inputBuffer;
+  if (cmd.prs & BTN.Q) ecs.qBuf[e] = ib;
+  if (cmd.prs & BTN.E) ecs.eBuf[e] = ib;
+}
+export const skillWanted = (ecs, e) => (ecs.qBuf[e] > 0 && ecs.cdQ[e] <= 0) || (ecs.eBuf[e] > 0 && ecs.cdE[e] <= 0);
+
+// Start a buffered Q or E (the caller checked you are free to act). Returns true when one started.
+export function tryCast(world, e, cmd, seq) {
+  const ecs = world.ecs;
+  let k = 0;
+  if (ecs.qBuf[e] > 0 && ecs.cdQ[e] <= 0) k = CAST.Q;
+  else if (ecs.eBuf[e] > 0 && ecs.cdE[e] <= 0) k = CAST.E;
+  if (!k) return false;
+  const id = skillOf(ecs, e, k === CAST.Q ? 'q' : 'e');
+  const S = SKILLS[id];
+  if (!S || !phases(id).some((t) => t > 0)) return false; // not a cast skill (P5 adds the pistols' kit)
+  if (k === CAST.Q) { ecs.qBuf[e] = 0; ecs.cdQ[e] = S.cd; } else { ecs.eBuf[e] = 0; ecs.cdE[e] = S.cd; }
+  ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
+  faceAim(ecs, e, cmd);
+  const [w, a] = phases(id);
+  ecs.castK[e] = k; ecs.castT[e] = 0;
+  ecs.castX[e] = Math.sin(ecs.facing[e]); ecs.castZ[e] = Math.cos(ecs.facing[e]);
+  ecs.castLock[e] = w + a;
+  ecs.faceLock[e] = w + a + 0.05;
+  ecs.lungeCov[e] = 0;
+  if (id === 'lunge') { ecs.vx[e] = 0; ecs.vz[e] = 0; } // the lunge is all the movement there is
+  ecs.swingId[e] += 1; // a fresh key for the server's once-per-attack hit bookkeeping
+  world.emit({ type: 'cast', e, skill: id, seq, x: ecs.x[e], z: ecs.z[e], dx: ecs.castX[e], dz: ecs.castZ[e] });
+  return true;
+}
+
+// One step of the skill being cast (castK > 0).
+export function stepCast(world, e, cmd, dt, pt, seq) {
+  const ecs = world.ecs;
+  const id = skillOf(ecs, e, ecs.castK[e] === CAST.Q ? 'q' : 'e');
+  const [w, a, r] = phases(id);
+  const t0 = ecs.castT[e];
+  ecs.castT[e] += dt;
+  const t1 = ecs.castT[e];
+  if (id === 'lunge' && t1 > w && t0 < w + a) lungeStep(world, e, t0, t1, pt, seq);
+  if (id === 'wave' && t0 <= w && t1 > w) throwWave(world, e, pt, seq);
+  if (t1 >= w + a + r) cancelCast(ecs, e);
+}
+
+// Movement multiplier and animation of a cast (null when nothing is being cast).
+export function castPose(ecs, e) {
+  if (!(ecs.castK[e] > 0)) return null;
+  const id = skillOf(ecs, e, ecs.castK[e] === CAST.Q ? 'q' : 'e');
+  if (id === 'lunge') return { move: 0, act: ACT.LUNGE };
+  if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
+  return { move: 1, act: ACT.CAST };
+}
+
+// ---- Sable: Estocada ------------------------------------------------------------------------------------
+function lungeStep(world, e, t0, t1, pt, seq) {
+  const ecs = world.ecs, H = world.hazards, L = SKILLS.lunge, P = tuning.parry;
+  const u0 = Math.max(0, (t0 - L.windup) / L.time), u1 = Math.min(1, (t1 - L.windup) / L.time);
+  const want = L.dist * (dashCurve(u1) - dashCurve(u0));
+  const x0 = ecs.x[e], z0 = ecs.z[e];
+  const steps = Math.max(1, Math.ceil(want / 0.3));
+  let moved = 0;
+  for (let s = 0; s < steps; s++) moved += moveWithCollision(world, e, (ecs.castX[e] * want) / steps, (ecs.castZ[e] * want) / steps);
+  ecs.lungeCov[e] += moved;
+  const x1 = ecs.x[e], z1 = ecs.z[e];
+  // Parryables near the path are cut down (the blade clears the line).
+  for (let s = 0; s < H.cap; s++) {
+    if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
+    const x = H.px(s, pt), z = H.pz(s, pt);
+    if (segDist(x, z, x0, z0, x1, z1) > L.width + H.r[s]) continue;
+    H.remove(s, pt, KILL.DESTROY, e, seq);
+    addRiposte(ecs, e, P.riposte.destroy);
+    world.emit({ type: 'destroy', pid: H.id[s], e, seq, x, z, skill: 'lunge' });
+  }
+  if (world.isServer) world.lungeHits(e, x0, z0, x1, z1, pt, seq);
+}
+
+// ---- Sable: Hoja de viento ------------------------------------------------------------------------------
+function throwWave(world, e, pt, seq) {
+  const ecs = world.ecs, W = SKILLS.wave;
+  const dx = ecs.castX[e], dz = ecs.castZ[e];
+  const x = ecs.x[e] + dx * 0.5, z = ecs.z[e] + dz * 0.5;
+  const maxD = W.speed * W.life;
+  const d = clipDistance(world.map, x, ecs.y[e] + 1.0, z, dx, dz, 0.4, maxD);
+  ecs.waveT0[e] = pt; ecs.waveX[e] = x; ecs.waveZ[e] = z; ecs.waveDx[e] = dx; ecs.waveDz[e] = dz;
+  ecs.waveEnd[e] = pt + Math.max(1, Math.round(d / W.speed / DT));
+  ecs.waveId[e] = seq; ecs.waveN[e] = 0;
+  world.emit({ type: 'wave', e, id: seq, seq, x, z, dx, dz, tick: pt, end: ecs.waveEnd[e], speed: W.speed, w: W.half });
+}
+
+// How far the crescent's front is from its origin at tick t.
+export function waveFront(ecs, e, t) {
+  const W = SKILLS.wave;
+  const tt = Math.max(ecs.waveT0[e], Math.min(ecs.waveEnd[e], t));
+  return W.speed * (tt - ecs.waveT0[e]) * DT;
+}
+
+// The crescent sweeps from where its front was at `prev` to where it is at `pt`: what it crossed.
+export function stepWave(world, e, prev, pt, seq) {
+  const ecs = world.ecs;
+  if (!(ecs.waveT0[e] > 0)) return;
+  const H = world.hazards, W = SKILLS.wave;
+  const ox = ecs.waveX[e], oz = ecs.waveZ[e], dx = ecs.waveDx[e], dz = ecs.waveDz[e];
+  const f0 = waveFront(ecs, e, Math.max(prev, ecs.waveT0[e])), f1 = waveFront(ecs, e, pt);
+  for (let s = 0; s < H.cap; s++) {
+    if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
+    const rx = H.px(s, pt) - ox, rz = H.pz(s, pt) - oz;
+    const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
+    if (a < f0 - W.depth - H.r[s] || a > f1 + H.r[s] || l > W.half + H.r[s]) continue;
+    H.remove(s, pt, KILL.DESTROY, e, seq);
+    const gain = Math.min(W.riposte, W.riposteMax - ecs.waveN[e]);
+    if (gain > 0) { addRiposte(ecs, e, gain); ecs.waveN[e] += gain; }
+    world.emit({ type: 'destroy', pid: H.id[s], e, seq, x: H.px(s, pt), z: H.pz(s, pt), skill: 'wave' });
+  }
+  if (world.isServer) world.crescentHits(e, f0, f1, pt, seq);
+  if (pt >= ecs.waveEnd[e]) ecs.waveT0[e] = 0;
+}
+
+// Distance from (px, pz) to the segment (ax, az)–(bx, bz).
+function segDist(px, pz, ax, az, bx, bz) {
+  const abx = bx - ax, abz = bz - az, l2 = abx * abx + abz * abz;
+  let t = l2 > 0 ? ((px - ax) * abx + (pz - az) * abz) / l2 : 0;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  return Math.hypot(px - (ax + abx * t), pz - (az + abz * t));
+}
+export { segDist as skillSegDist };
