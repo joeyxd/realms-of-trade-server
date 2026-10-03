@@ -192,7 +192,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   elección en las runas, estado 11. Tests en `tests/quests.test.mjs` o `tests/tiers.test.mjs`.
 - [x] **P6 Cliente I**: HUD (oro, poción, maestría, candados, avisos de desbloqueo), loot en el suelo (malla, haz,
   nombre, arco, recogida), sonidos, seguimiento de misiones, guardado local, aviso de partida rechazada.
-- [ ] **P7 Cliente II**: panel de Personaje (Equipo / Atributos / Misiones), fichas y comparación, diálogo,
+- [x] **P7 Cliente II**: panel de Personaje (Equipo / Atributos / Misiones), fichas y comparación, diálogo,
   vendedora, mapa, atajos, táctil y mando. Capturas.
 - [ ] **P8 Cierre**: balance (playtest de varias vueltas con equipo: nivel, poder, tiempos por Marea), README
   («Qué incluye M4»), DESIGN §9/§10/§16, versión `0.4.0-m4`, artefacto, informe final.
@@ -261,3 +261,20 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   herramientas: `dev drop {kind, rarity}`. Verificado en el navegador contra el servidor real (capturas en el
   scratchpad): HUD, haces y etiquetas, recogida, maestría, misión «Tierra firme» al entrar en la aldea, la partida
   firmada sobrevive a recargar. 129 tests.
+- **P7:** `src/ui/itemui.js` (iconos por hueco, líneas, `compareLines`, `targetSlot`, `itemCard`), `src/ui/charpanel.js`
+  (`CharPanel`: Equipo con el muñeco de 6 huecos alrededor de tu retrato, la bolsa, oro y pociones, y el puesto de
+  Tía Perla en lugar del muñeco; Atributos con todos los números, la maestría de cada arma con lo que abre en M1 / M2 /
+  M3 / M5 / M10 y las Mareas; Misiones con activas, listas, disponibles y cumplidas), `src/ui/dialog.js` (`Dialog`:
+  la línea, Misión → ficha con recompensa → Aceptar, Entregar, Comerciar, Adiós), `src/ui/mapview.js` (`MapView`:
+  el mapa de alturas en el marco (u, v) una vez, encima zonas, armeros, barco, PNJ, el objetivo de tu misión
+  latiendo, la tripulación y tu flecha). Atajos `I` / `B` / `C` / `L` / `M`, Select en el mando, botones Bolsa /
+  Mapa del HUD (el punto amarillo = algo NUEVO en la bolsa); ESC cierra diálogo → panel → mapa antes de la pausa;
+  alejarte (> 5 u) cierra el diálogo y la tienda. Doble clic equipa; desguazar o vender algo raro o mejor pide un
+  segundo clic. Cambios sobre el plan: la bolsa es de **8 × 3** en escritorio (6 × 4 en el móvil) para que la ficha
+  quepa sin desplazar; el panel tiene alto fijo y la ficha se desplaza en su caja con los botones siempre a la vista
+  (si el panel crecía, la bolsa se movía bajo el puntero y el clic se perdía). El panel solo toca el DOM cuando cambia
+  lo que muestra (llegan perfiles a menudo con la XP de maestría) y se repasa dos veces por segundo para la vida y las
+  pociones, que vienen en los snapshots. Móvil: la ficha se trae a la vista al tocar, el indicador de red baja bajo
+  los botones y Silenciar queda en Ajustes por debajo de 420 px. Verificado en el navegador contra el servidor (1100 ×
+  680 y 390 × 800): equipar, desguazar con confirmación, pestañas, mapa, Brea, Perla → Comerciar → comprar poción y
+  vender, la tienda se cierra al alejarte. 129 tests.

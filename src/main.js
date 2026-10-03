@@ -22,7 +22,7 @@ import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
 import { TitleScreen } from './ui/title.js';
-import { Hud } from './ui/hud.js';
+import { Hud, drawPortrait } from './ui/hud.js';
 import { WorldUI } from './ui/worldui.js';
 import { PauseMenu } from './ui/pause.js';
 import { TouchControls } from './ui/touch.js';
@@ -30,6 +30,9 @@ import { Feedback } from './ui/feedback.js';
 import { DevPanel } from './ui/devpanel.js';
 import { DebugDraw } from './render/debugdraw.js';
 import { Rewards } from './ui/rewards.js';
+import { CharPanel } from './ui/charpanel.js';
+import { Dialog } from './ui/dialog.js';
+import { MapView } from './ui/mapview.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -133,8 +136,35 @@ async function boot() {
   const hud = new Hud($('#hud'), {
     onSettings: () => openPause('settings'),
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
+    onBag: () => charPanel.toggle('gear'),
+    onMap: () => mapView.toggle(),
   });
   hud.setMuted(settings.muted);
+  // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
+  // map. None of them pauses the world; what they do is a `cmd` and the server answers with a new profile.
+  const sendCmd = (o) => { if (client && client.joined) client.send({ t: 'cmd', ...o }); };
+  const playerStats = () => {
+    const ecs = client.pred.ecs, e = client.youLocal, p = client.profile;
+    return {
+      level: ecs.level[e], atk: ecs.atk[e], def: ecs.def[e], maxHp: ecs.maxHp[e], speed: ecs.speed[e], cdr: ecs.cdr[e], ripMul: ecs.ripMul[e],
+      reflMul: ecs.reflMul[e], guardMax: tuning.guard.stamina + ecs.guardAdd[e], dashRec: ecs.dashRec[e], winBonus: ecs.winBonus[e],
+      fireMul: ecs.fireMul[e], potHeal: ecs.potHeal[e], xpMul: ecs.xpMul[e], potions: ecs.potions[e], weapon: ecs.weapon[e], gold: p ? p.gold : 0,
+    };
+  };
+  const charPanel = new CharPanel($('#charpanel'), {
+    send: sendCmd, profile: () => client && client.profile, stats: playerStats,
+    portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
+    onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
+  });
+  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }) });
+  const mapView = new MapView($('#mapview'), map);
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) fn(); };
+  input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
+  input.onHotkey('KeyB', panelKey(() => charPanel.toggle('gear')));
+  input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
+  input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
+  input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
+  input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
   const pause = new PauseMenu($('#pause'), settings, {
     onChange: (key) => {
@@ -169,6 +199,9 @@ async function boot() {
   }
   input.onHotkey('Escape', () => {
     if (pause.open) closePause();
+    else if (dialog.isOpen) dialog.hide();
+    else if (charPanel.isOpen) charPanel.close();
+    else if (mapView.isOpen) mapView.close();
     else if (st.mode === 'playing') openPause('settings');
   });
   input.onHotkey('F3', () => { st.perf = !st.perf; $('#perf').hidden = !st.perf; });
@@ -249,6 +282,7 @@ async function boot() {
     feedback.handle(ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
+    if (ev.type === 'talk' && ev.me) dialog.show(ev, st.lastLine);
     if (ev.type === 'note' && ev.code === 'save' && ev.me) {
       setSaveAside(saveSlot());
       hud.toast('<b>Tu partida guardada no vale en este servidor.</b> Empiezas de cero; la copia vieja queda aparte.', 6000);
@@ -367,6 +401,8 @@ async function boot() {
       st.tut = k >= ORDER.length ? 'done' : ORDER[k];
     }
     refreshTracker();
+    charPanel.refresh();
+    hud.setBagDot(!charPanel.isOpen && charPanel.hasNew());
   }));
 
   // ---- Zones -------------------------------------------------------------------------------------
@@ -440,6 +476,7 @@ async function boot() {
     return best;
   }
   const shipPos = map.landmarks.dockEnd;
+  const vendorAt = map.npcs.find((n) => n.id === 'vendor');
 
   // ---- Play ------------------------------------------------------------------------------------
   async function startPlaying() {
@@ -719,6 +756,7 @@ async function boot() {
             const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
             const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
             worldUI.bubble(npc.id, `<b>${npc.name}</b>${lines[i]}`, 5200);
+            st.lastLine = lines[i];
             sfx.talk();
             client.send({ t: 'cmd', type: 'talk', npc: npc.id }); // quests (accept, hand in), the stall
           } else if (chest) {
@@ -764,6 +802,16 @@ async function boot() {
         hud.setCooldowns(ps.cdQ, SKILLS[kit.q].cd, ps.cdE, SKILLS[kit.e].cd);
         if (isTouch) { touch.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable'); touch.setCooldowns(ps.cdQ / SKILLS[kit.q].cd, ps.cdE / SKILLS[kit.e].cd, ps.riposte >= tuning.parry.riposte.max); }
         encounterUi();
+        // Walking away from someone ends the talk (and the trading).
+        if (dialog.isOpen) { const r = client.entities.get(dialog.ev.ent); if (!r || !r.ready || Math.hypot(r.r.x - ps.x, r.r.z - ps.z) > 5) dialog.hide(); }
+        // The panel follows numbers that come with snapshots, not profiles (life, potions): a cheap look twice a second.
+        if (charPanel.isOpen && (st.cpT = (st.cpT || 0) + realDt) > 0.5) { st.cpT = 0; charPanel.refresh(); }
+        if (charPanel.shop && Math.hypot(vendorAt.x - ps.x, vendorAt.z - ps.z) > 5.5) { charPanel.shop = false; charPanel.refresh(); }
+        if (mapView.isOpen) {
+          const crew = [];
+          for (const r of client.entities.values()) if (r.human && r.id !== client.youServer && r.ready) crew.push(r.r);
+          mapView.update(ps, crew, prof, performance.now() / 1000);
+        }
         world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false, ps.guardSt / tuning.guard.stamina, SKINS[settings.skin].accent);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
       });
@@ -833,7 +881,7 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, panels: { charPanel, dialog, mapView } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.
