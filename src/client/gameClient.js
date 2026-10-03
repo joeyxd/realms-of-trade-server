@@ -111,6 +111,15 @@ export class GameClient {
       case MSG.EVENT:
         this.onEvent(m.ev);
         break;
+      case MSG.PROFILE:
+        // Your bag, gear, gold, masteries (M4). The prediction keeps a copy so a predicted level-up comes out
+        // with the same numbers as the server's.
+        this.profile = m.p;
+        if (!this.pred.profiles) this.pred.profiles = new Map();
+        if (this.youLocal) this.pred.profiles.set(this.youLocal, m.p);
+        this.bus.emit('profile', m.p);
+        break;
+      case MSG.SAVE: this.bus.emit('save', m); break;
       case MSG.FULL: this.bus.emit('net:full', m); break;
       case MSG.ERROR: this.bus.emit('net:error', m); break;
       default:

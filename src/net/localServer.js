@@ -7,12 +7,15 @@ import { DT, SNAPSHOT_EVERY, tuning } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { applyLevel } from '../sim/systems/combat.js';
 import { setWeapon } from '../sim/systems/skills.js';
-import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
+import { WEAPON_KINDS, SKILLS, weaponIndex } from '../data/weapons.js';
 import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
+import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery } from '../sim/systems/inventory.js';
+import { rollItem } from '../sim/items.js';
+import { DROPS } from '../data/loot.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
@@ -32,6 +35,7 @@ export class LocalServer {
     this.stats = { fill: 0, late: 0, trimmed: 0, clamped: 0 };
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
+    installInventory(this.world); // M4: profiles, personal loot, the bag
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
@@ -60,9 +64,12 @@ export class LocalServer {
 
   disconnect(clientId) {
     const c = this.clients.get(clientId);
-    if (c && c.entity) { this.world.despawn(c.entity); this.flushEvents(); }
+    if (c && c.entity) { detachProfile(this.world, c.entity); this.world.despawn(c.entity); this.flushEvents(); }
     this.clients.delete(clientId);
   }
+
+  // The client of a player entity (private events and profiles go only there).
+  clientOf(e) { for (const [id, c] of this.clients) if (c.entity === e) return id; return undefined; }
 
   isHuman(e) { for (const c of this.clients.values()) if (c.entity === e) return true; return false; }
 
@@ -89,9 +96,12 @@ export class LocalServer {
         const skin = Math.max(0, Math.min(4, msg.skin | 0));
         // The weapon you last used (the client remembers it); after that you change it at a rack.
         const weapon = Math.max(0, Math.min(WEAPON_KINDS.length - 1, msg.weapon | 0));
-        c.entity = this.world.spawnPlayer({ name, skin, level: 1, clientId, facing: 2.4, weapon });
+        const prof = newProfile({ weapon });
+        c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
+        attachProfile(this.world, c.entity, prof);
         this.flushEvents();
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
+        this.sendProfile(clientId, c);
         break;
       }
       case MSG.INPUTS: {
@@ -113,6 +123,7 @@ export class LocalServer {
           ecs.vx[c.entity] = 0; ecs.vz[c.entity] = 0;
         }
         if (this.dev && msg.type === 'dev' && c.entity) this.devCommand(c, msg);
+        else if (c.entity) this.playerCommand(c, msg);
         break;
       }
       case MSG.PING:
@@ -121,6 +132,26 @@ export class LocalServer {
       default:
         break;
     }
+  }
+
+  // What a player asks for with what they own (M4): the bag, the equipment, a chest.
+  playerCommand(c, msg) {
+    const w = this.world, e = c.entity, uid = msg.uid | 0;
+    switch (msg.type) {
+      case 'equip': equipItem(w, e, uid, typeof msg.slot === 'string' ? msg.slot : undefined); break;
+      case 'unequip': unequipItem(w, e, String(msg.slot)); break;
+      case 'salvage': salvageItem(w, e, uid); break;
+      case 'open': openChest(w, e, msg.drop | 0); break;
+      default: break;
+    }
+  }
+
+  sendProfile(id, c) {
+    const p = syncProfile(this.world, c.entity);
+    if (!p) return;
+    c.profT = this.world.tick;
+    this.world.profileDirty.delete(c.entity);
+    this.send(id, { t: MSG.PROFILE, p });
   }
 
   // F4 panel (local server only).
@@ -140,7 +171,11 @@ export class LocalServer {
       case 'weapon': setWeapon(w, e, Math.max(0, Math.min(WEAPON_KINDS.length - 1, f(msg.weapon) | 0))); break;
       case 'heal': ecs.hp[e] = ecs.maxHp[e]; break;
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
-      case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; break;
+      case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; w.profileDirty.add(e); break;
+      case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
+      case 'gold': { const p = w.profiles.get(e); if (p) { p.gold = Math.max(0, p.gold + (f(msg.n) | 0)); w.profileDirty.add(e); } break; }
+      case 'potions': ecs.potions[e] = Math.max(0, Math.min(5, f(msg.n, 5) | 0)); break;
+      case 'item': giveItem(w, e, rollItem(w.lootRng, { lvl: f(msg.lvl, ecs.level[e]), rarity: msg.rarity === undefined ? undefined : Math.max(0, Math.min(4, f(msg.rarity) | 0)), slot: typeof msg.slot === 'string' ? msg.slot : undefined })); break;
       default: break;
     }
   }
@@ -214,6 +249,12 @@ export class LocalServer {
   flushEvents() {
     const w = this.world;
     for (const ev of w.events) {
+      // Private (M4): loot, pickups, masteries… only for the player it is about.
+      if (ev.to) {
+        const id = this.clientOf(ev.to);
+        if (id !== undefined) this.send(id, { t: MSG.EVENT, ev });
+        continue;
+      }
       if (ev.type === 'spawn') this.broadcast({ t: MSG.SPAWN, e: w.describe(ev.id) });
       else if (ev.type === 'despawn') this.broadcast({ t: MSG.DESPAWN, id: ev.id });
       else {
@@ -230,6 +271,12 @@ export class LocalServer {
       }
     }
     w.events.length = 0;
+    // Profiles that changed, at most every DROPS.profileEvery ticks per player.
+    if (w.profileDirty && w.profileDirty.size) {
+      for (const [id, c] of this.clients) {
+        if (c.entity && w.profileDirty.has(c.entity) && !(w.tick - (c.profT ?? -1e9) < DROPS.profileEvery)) this.sendProfile(id, c);
+      }
+    }
   }
 
   broadcast(msg) {

@@ -4,9 +4,9 @@ export const PROTOCOL_VERSION = 4; // M4: hello.save, BTN.POTION, profiles, save
 
 export const MSG = {
   // client -> server
-  HELLO: 'hello',     // {v, name, skin, weapon}
+  HELLO: 'hello',     // {v, name, skin, weapon, save}
   INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}]}
-  CMD: 'cmd',         // {type: 'pause' | 'interact' | 'chat' | 'equip' | 'dev' ...}
+  CMD: 'cmd',         // {type: 'pause' | 'equip' | 'unequip' | 'salvage' | 'open' | 'dev' ...}
   PING: 'ping',       // {t}
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
@@ -18,6 +18,8 @@ export const MSG = {
   PONG: 'pong',       // {t, tick}
   FULL: 'full',       // {max}: the instance has no room for another player (you keep spectating)
   ERROR: 'error',     // {code: 'version' | 'name' ...}
+  PROFILE: 'profile', // {p}: your profile (bag, equipment, gold, masteries, quests…), private (M4)
+  SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
   // reserved: naval + trade slice (no gameplay yet)
   SHIP_SPAWN: 'ship_spawn',
   SHIP_INPUT: 'ship_input',

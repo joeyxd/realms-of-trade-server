@@ -14,6 +14,7 @@ import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projec
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR } from './systems/skills.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
+import { lootOnKill, stepDrops } from './systems/inventory.js';
 
 const D2R = Math.PI / 180;
 
@@ -432,13 +433,15 @@ export class World {
     ecs.dead[e] = 1;
     encounterKilled(this, e);
     this.hazards.cancelPending(e, this.tick);
-    // XP to every player nearby (the killer and whoever helped).
-    const xp = o.noXp ? 0 : def.xp;
+    // XP to every player nearby (the killer and whoever helped); each of them rolls their own loot (M4).
+    const xp = o.noXp ? 0 : def.xp, got = [];
     for (let p = 1; p < ecs.cap && xp; p++) {
       if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
       if (p !== by && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;
       gainXp(this, p, xp);
+      got.push(p);
     }
+    if (this.profiles && got.length) lootOnKill(this, e, by, got);
     this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp, tick: this.tick, boss: def.boss ? 1 : 0 });
     // A boss dies in slow motion for everyone in the instance (DESIGN §8).
     if (def.boss) this.emit({ type: 'time', e: 0, seq: 0, hitstop: 0.15, scale: 0.3, dur: 1.2 });
@@ -458,6 +461,7 @@ export class World {
     }
     if (this.isServer) {
       this.stepShots(DT);
+      if (this.drops) stepDrops(this);
       for (const enc of this.encounters) stepEncounter(this, enc, DT);
       for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && (ecs.mask[e] & C.ENEMY)) recordHistory(this, e);
       for (const sp of this.spawners) {

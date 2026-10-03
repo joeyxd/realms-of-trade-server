@@ -60,6 +60,8 @@ export function clientAndServer(place) {
   deliver();
   client.join('Test', 1);
   deliver();
+  // A fresh profile starts at mastery 1 (E and R locked, M4): these tests play the whole kit.
+  server.receive(1, { t: MSG.CMD, type: 'dev', op: 'mastery', level: 3 });
   for (let i = 0; i < 6; i++) { server.step(); deliver(); }
   assert.ok(client.joined);
   const sp = map.enemySpawns.find((s) => s.kind === 'archer');

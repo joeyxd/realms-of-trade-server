@@ -85,7 +85,9 @@ export function itemName(item) {
   return best ? `${B.name} ${STATS[best[0]].suffix}` : B.name;
 }
 
+// Gold it is worth (a starter weapon from a rack or a fresh profile: nothing).
 export function itemValue(item) {
+  if (item.s) return 0;
   const V = ITEMS.value, R = RARITIES[item.r] || RARITIES[0];
   return Math.max(1, Math.round((V.base + V.perLevel * item.l) * Math.pow(R.mul, V.rarityPow) * (1 + V.perAffix * item.a.length)));
 }
@@ -111,5 +113,7 @@ export function sanitizeItem(raw) {
     a.push([x[0], round2(clamp(x[1], 0, max))]);
   }
   if (a.length > RARITIES[r].affixes) return null;
-  return { u: Math.max(0, raw.u | 0), b: raw.b, r, l, a };
+  const out = { u: Math.max(0, raw.u | 0), b: raw.b, r, l, a };
+  if (raw.s === 1) out.s = 1;
+  return out;
 }

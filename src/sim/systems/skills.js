@@ -38,6 +38,7 @@ export function stepEquip(world, e, cmd) {
   if (want < 0 || want >= WEAPON_KINDS.length || want === ecs.weapon[e] || ecs.dead[e] > 0) return false;
   if (!rackNear(world.map, ecs.x[e], ecs.z[e])) return false;
   setWeapon(world, e, want, cmd.seq >>> 0);
+  if (world.onRack) world.onRack(e, want); // the server swaps the weapon item too (systems/inventory.js)
   return true;
 }
 

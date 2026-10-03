@@ -7,6 +7,7 @@ import { ENCOUNTERS } from '../../data/encounters.js';
 import { ENEMIES } from '../../data/enemies.js';
 import { C } from '../ecs.js';
 import { LAVA_FIELDS } from '../world.js';
+import { bossChests } from './inventory.js';
 
 const D2R = Math.PI / 180;
 
@@ -140,7 +141,18 @@ export function stepEncounter(world, enc, dt) {
   }
 }
 
+// Every human pirate inside the arena, fallen ones too (the boss chest is for the whole crew).
+function crewIn(world, enc) {
+  const ecs = world.ecs, out = [];
+  for (let p = 1; p < ecs.cap; p++) {
+    if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
+    if (Math.hypot(ecs.x[p] - enc.cx, ecs.z[p] - enc.cz) < enc.def.radius) out.push(p);
+  }
+  return out;
+}
+
 function victory(world, enc) {
+  if (world.profiles) bossChests(world, enc, crewIn(world, enc));
   enc.reached = '';
   enc.bossE = 0;
   // The minions crumble with their master (no XP: the boss paid for everything).

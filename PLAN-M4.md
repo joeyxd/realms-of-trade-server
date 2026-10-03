@@ -179,7 +179,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   E / R en `tryCast` / riposte, pasivas), pociones (`BTN.POTION`), críticos por jugador, protocolo v4 (máscara).
   Tests `tests/items.test.mjs` y `tests/mastery.test.mjs` (distribución de rarezas, rangos, la predicción y el
   servidor dan lo mismo con equipo de velocidad / enfriamiento / ventanas, kit bloqueado).
-- [ ] **P2 Loot e inventario** (servidor): perfiles, tablas, caídas personales, recogida, expiración, equipar /
+- [x] **P2 Loot e inventario** (servidor): perfiles, tablas, caídas personales, recogida, expiración, equipar /
   quitar / desguazar / armero, eventos privados, `MSG.PROFILE`, cofre del jefe. Tests `tests/loot.test.mjs`
   (dos jugadores: cada uno lo suyo, el otro no lo ve; bolsa llena; el equipo cambia los números; cofre).
 - [ ] **P3 Guardado**: perfil ↔ blob, saneado y migración, adaptadores (confianza / HMAC), `hello.save`,
@@ -213,3 +213,15 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   `locked {slot}` (predicho) y no gasta nada. `gainXp` multiplica por `xpMul` y llama `world.onXp` (la maestría,
   P2) también al tope. Poción: `BTN.POTION` 256 (`1`, cruceta ↑), `usePotion` → evento `potion {heal | denied}`.
   `PROTOCOL_VERSION` 4, `prs` & 0x1ff. Regeneración rebajada a 5 s / 5 %/s. 106 tests.
+- **P2:** `src/data/loot.js` (tablas, `DROPS`) y `src/sim/systems/inventory.js` (perfiles, caídas, recogida,
+  bolsa, armero, cofre, maestría). `installInventory(world)` (lo llama `LocalServer`) crea `profiles`, `drops`,
+  `profileDirty`, `lootRng` y los ganchos `onXp` (maestría) y `onRack` (el armero predicho llama
+  `world.onRack` tras `setWeapon`: el servidor cambia también el objeto). `killEnemy` reparte XP y luego
+  `lootOnKill` a los mismos jugadores; `victory()` llama `bossChests` con toda la tripulación dentro (caídos
+  incluidos), cofres en anillo alrededor de las runas. Las armas iniciales llevan `s: 1` y valen 0 (el armero
+  no es una mina de oro). Eventos privados: `loot {drops}`, `unloot {ids, why}`, `pickup`, `full {what}`,
+  `gear`, `sold`, `mastery {kit, level, opens, passive}`, `chest`. `MSG.PROFILE {p}` como mucho cada 15 ticks.
+  `cmd`: `equip {uid, slot?}`, `unequip {slot}`, `salvage {uid}`, `open {drop}`; F4: `mastery`, `gold`,
+  `potions`, `item {rarity, slot, lvl}`. El cliente guarda `client.profile` y una copia en
+  `pred.profiles`. Los tests que juegan con el kit entero piden maestría 3 (`helpers.clientAndServer`,
+  `nettest`). 114 tests.

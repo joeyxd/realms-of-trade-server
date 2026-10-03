@@ -92,6 +92,7 @@ async function run(rtt) {
   };
   for (const b of bots) {
     b.t.send({ t: 'cmd', type: 'dev', op: 'level', level: LV });
+    b.t.send({ t: 'cmd', type: 'dev', op: 'mastery', level: 3 }); // M4: a fresh profile has E and R locked
     b.t.send({ t: 'cmd', type: 'dev', op: 'god', on: true });
     b.t.send({ t: 'cmd', type: 'debug_teleport', x: A.x + (b.i - (N - 1) / 2) * 1.2, z: A.z });
   }
