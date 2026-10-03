@@ -8,6 +8,7 @@ import { ENEMIES } from '../../data/enemies.js';
 import { C } from '../ecs.js';
 import { LAVA_FIELDS } from '../world.js';
 import { bossChests } from './inventory.js';
+import { questWin } from './quests.js';
 
 const D2R = Math.PI / 180;
 
@@ -152,7 +153,7 @@ function crewIn(world, enc) {
 }
 
 function victory(world, enc) {
-  if (world.profiles) bossChests(world, enc, crewIn(world, enc));
+  if (world.profiles) { const crew = crewIn(world, enc); bossChests(world, enc, crew); questWin(world, enc, crew); }
   enc.reached = '';
   enc.bossE = 0;
   // The minions crumble with their master (no XP: the boss paid for everything).

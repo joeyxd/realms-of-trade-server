@@ -185,7 +185,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
 - [x] **P3 Guardado**: perfil ↔ blob, saneado y migración, adaptadores (confianza / HMAC), `hello.save`,
   `MSG.SAVE`, persistencia en el cliente, `SAVE_SECRET` y `render.yaml`. Tests `tests/save.test.mjs` (ida y
   vuelta, manipulado → rechazado, el servidor Node reiniciado reconoce la partida, punto de control).
-- [ ] **P4 Misiones y vendedora**: datos, sistema, `talk` / `quest` / `buy` / `sell` / `tut`, objetos de misión,
+- [x] **P4 Misiones y vendedora**: datos, sistema, `talk` / `quest` / `buy` / `sell` / `tut`, objetos de misión,
   recompensas. Tests `tests/quests.test.mjs` (cadena entera con eventos, distancia, cooperativo, repetible,
   compras sin oro).
 - [ ] **P5 Mareas**: niveles del encuentro, multiplicador de daño enemigo, bonus de loot / XP / oro, desbloqueo,
@@ -234,3 +234,11 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   vistazo cada 10 s (solo si el blob cambió). El cliente guarda en `mareanegra.v1.save.solo` o
   `…save.online.<host>` (`settings.js`: `loadSave`, `storeSave`, `setSaveAside`); en solo también al cerrar la
   página (`pagehide`, con nivel / XP / pociones predichos). Vuelves a tu último punto de control. 119 tests.
+- **P4:** `src/data/quests.js` (`QUESTS`, `QST` 0 ninguna · 1 activa · 2 hecha · 3 lista para entregar, `NPC_TALK`
+  con las líneas de Brea y Perla y lo que dicen de sus misiones) y `src/sim/systems/quests.js` (`startQuests`,
+  `questEvent`, `talkTo`, `acceptQuest`, `turnInQuest`, `questWants`, `questKill` / `questWin` / `zoneSweep`,
+  `buy` / `sell`, `setTutorial`). `world.npcs` (id → entidad) sale de `spawnNpc`. Las recompensas usan
+  `stashItem` y `givePotions` de `inventory.js` (bolsa llena o pociones al tope → al suelo, nada se pierde).
+  Hablar y aceptar exigen ≤ 3.5 u del PNJ; comprar / vender ≤ 4.5 u de Perla. Eventos privados `quest {id, st:
+  start | progress | ready | done, n, of, reward}`, `talk {npc, ent, offer, ready, shop}`, `bought {what, fail?}`.
+  `cmd`: `talk {npc: entidad}`, `quest {op: accept | turnin, id}`, `buy {what}`, `sell {uid}`, `tut {i}`. 125 tests.

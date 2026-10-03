@@ -15,6 +15,7 @@ import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR } from './systems/skills.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 import { lootOnKill, stepDrops } from './systems/inventory.js';
+import { questKill, zoneSweep } from './systems/quests.js';
 
 const D2R = Math.PI / 180;
 
@@ -80,6 +81,7 @@ export class World {
     ecs.names[e] = def.name;
     ecs.titles[e] = def.title || '';
     ecs.level[e] = 30;
+    if (def.id) { if (!this.npcs) this.npcs = new Map(); this.npcs.set(def.id, e); } // M4: quests, the vendor
     this.events.push({ type: 'spawn', id: e });
     return e;
   }
@@ -441,7 +443,7 @@ export class World {
       gainXp(this, p, xp);
       got.push(p);
     }
-    if (this.profiles && got.length) lootOnKill(this, e, by, got);
+    if (this.profiles && got.length) { lootOnKill(this, e, by, got); questKill(this, e, got); }
     this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp, tick: this.tick, boss: def.boss ? 1 : 0 });
     // A boss dies in slow motion for everyone in the instance (DESIGN §8).
     if (def.boss) this.emit({ type: 'time', e: 0, seq: 0, hitstop: 0.15, scale: 0.3, dur: 1.2 });
@@ -462,6 +464,7 @@ export class World {
     if (this.isServer) {
       this.stepShots(DT);
       if (this.drops) stepDrops(this);
+      if (this.profiles) zoneSweep(this);
       for (const enc of this.encounters) stepEncounter(this, enc, DT);
       for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && (ecs.mask[e] & C.ENEMY)) recordHistory(this, e);
       for (const sp of this.spawners) {

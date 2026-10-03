@@ -359,3 +359,31 @@ export function setMastery(world, e, level) {
   refreshStats(world, e);
   dirty(world, e);
 }
+
+// ---- Rewards (quests, the vendor) ------------------------------------------------------------------------
+export const markProfile = (world, e) => dirty(world, e);
+
+// An item for e: into the bag, or at its feet when the bag is full (nothing is ever lost).
+export function stashItem(world, e, item) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  if (!p) return false;
+  item.u = p.uid++;
+  if (p.bag.length < ITEMS.bag) {
+    p.bag.push(item);
+    p.stats.items++;
+    world.emit({ type: 'pickup', to: e, e, id: 0, kind: 'item', item, gold: p.gold, pot: ecs.potions[e], reward: 1 });
+  } else announce(world, e, [addDrop(world, e, 'item', ecs.x[e], ecs.z[e], { item })], ecs.x[e], ecs.z[e]);
+  dirty(world, e);
+  return true;
+}
+
+// Potions for e up to the most you can carry; the rest wait at its feet.
+export function givePotions(world, e, n) {
+  const ecs = world.ecs, max = CONSUMABLES.potion.max, list = [];
+  for (let k = 0; k < n; k++) {
+    if (ecs.potions[e] < max) ecs.potions[e] += 1;
+    else addDrop(world, e, 'potion', ecs.x[e], ecs.z[e], {}, list);
+  }
+  announce(world, e, list, ecs.x[e], ecs.z[e]);
+  dirty(world, e);
+}

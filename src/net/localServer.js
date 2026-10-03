@@ -15,6 +15,7 @@ import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
 import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
+import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
@@ -39,6 +40,9 @@ export class LocalServer {
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
     installInventory(this.world); // M4: profiles, personal loot, the bag
+    // Quests (M4): quest items drop only while wanted; picking one up counts.
+    this.world.questWants = (e, item) => questWants(this.world, e, item);
+    this.world.onPickup = (e, d) => { if (d.kind === 'quest') questEvent(this.world, e, 'collect', { item: d.q }); };
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
@@ -104,6 +108,7 @@ export class LocalServer {
         const prof = saved || newProfile({ weapon });
         c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
         attachProfile(this.world, c.entity, prof);
+        startQuests(this.world, c.entity);
         if (msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
         c.saveAt = this.world.tick + 1;
         this.flushEvents();
@@ -149,6 +154,11 @@ export class LocalServer {
       case 'unequip': unequipItem(w, e, String(msg.slot)); break;
       case 'salvage': salvageItem(w, e, uid); break;
       case 'open': openChest(w, e, msg.drop | 0); break;
+      case 'talk': talkTo(w, e, msg.npc | 0); break;
+      case 'quest': if (msg.op === 'accept') acceptQuest(w, e, String(msg.id)); else if (msg.op === 'turnin') turnInQuest(w, e, String(msg.id)); break;
+      case 'buy': buy(w, e, String(msg.what)); break;
+      case 'sell': sell(w, e, uid); break;
+      case 'tut': setTutorial(w, e, msg.i | 0); break;
       default: break;
     }
   }
@@ -164,12 +174,12 @@ export class LocalServer {
 
   saveSoon(c, secs) {
     const at = this.world.tick + Math.round(secs / DT);
-    if (!c.saveAt || at < c.saveAt) c.saveAt = at;
+    if (c.saveAt == null || at < c.saveAt) c.saveAt = at;
   }
 
   // A fresh blob for the player to keep (only when it changed).
   sendSave(id, c) {
-    c.saveAt = 0;
+    c.saveAt = null;
     const p = syncProfile(this.world, c.entity);
     if (!p) return;
     const blob = this.saves.store(p);
@@ -262,8 +272,8 @@ export class LocalServer {
     const sweep = w.tick % Math.round(SAVE_TIMING.every / DT) === 0;
     for (const [id, c] of this.clients) {
       if (!c.entity) continue;
-      if (sweep && !c.saveAt) c.saveAt = w.tick;
-      if (c.saveAt && w.tick >= c.saveAt) this.sendSave(id, c);
+      if (sweep && c.saveAt == null) c.saveAt = w.tick;
+      if (c.saveAt != null && w.tick >= c.saveAt) this.sendSave(id, c);
     }
   }
 
