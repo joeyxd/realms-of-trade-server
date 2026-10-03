@@ -72,6 +72,14 @@ export class WorldUI {
     if (level !== undefined && p.lvEl && level !== p.level) { p.lvEl.textContent = 'Nv ' + level; p.level = level; }
   }
 
+  // A pirate who can hurt you right now (both inside the Cala Calavera, M4.5): red, with a skull.
+  setPlateHostile(id, on) {
+    const p = this.plates.get(id);
+    if (!p || !!p.hostile === on) return;
+    p.hostile = on;
+    p.el.classList.toggle('hostile', on);
+  }
+
   resize(w, h) { this.w = w; this.h = h; }
 
   project(pos, out) {
@@ -164,9 +172,10 @@ export class WorldUI {
       const s = clamp(21 / Math.max(a.dist, 1), 0.55, 1.1);
       const covers = plate.p.x > pr.x && plate.p.x < pr.x + pr.w && plate.p.y > pr.y && plate.p.y < pr.y + pr.h + 30;
       const R = plate.range;
-      const show = plate.p.vis && a.dist < R && !covers && !a.hide && !talking;
+      // Over your character a plate steps aside, except a pirate fighting you (its life matters): faded.
+      const show = plate.p.vis && a.dist < R && (!covers || plate.hostile) && !a.hide && !talking;
       if (show !== plate.shown) { plate.el.hidden = !show; plate.shown = show; }
-      if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1)); }
+      if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1) * (covers ? 0.55 : 1)); }
     }
     // Prompts first: the loot labels under one fade so the prompt stays readable.
     const boxes = [];

@@ -417,11 +417,15 @@ export class GameClient {
     const key = ecs.swingId[e];
     const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
     const half = Math.cos((st.arc / 2) * Math.PI / 180);
+    // Inside the Cala Calavera (M4.5) the other pirates in it are fair game too.
+    const law = this.map.lawlessAt, pvp = !!law && law(ecs.x[e], ecs.z[e]);
     for (const rec of this.entities.values()) {
-      if (!rec.enemy || !rec.ready || rec.dying) continue;
+      if (!rec.ready || rec.dying || rec.id === this.youServer) continue;
+      const foe = rec.enemy || (pvp && rec.human && rec.r.hp > 0 && law(rec.r.x, rec.r.z));
+      if (!foe) continue;
       if (this.meleeSeen.get(rec.id) === key) continue;
       const dx = rec.r.x - ecs.x[e], dz = rec.r.z - ecs.z[e], d = Math.hypot(dx, dz);
-      if (d > st.range + rec.def.hurt) continue;
+      if (d > st.range + (rec.def ? rec.def.hurt : tuning.player.hurtRadius)) continue;
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       this.meleeSeen.set(rec.id, key);
       this.predicted.add('mhit:' + rec.id + ':' + seq);

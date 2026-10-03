@@ -277,17 +277,29 @@ async function boot() {
   let loop = null;
   const feedback = new Feedback({ world, client, hud, worldUI, loop: { addHitstop: (h) => loop && loop.addHitstop(h), slowmo: (a, b) => loop && loop.slowmo(a, b), get timeScale() { return loop ? loop.timeScale : 1; }, get alpha() { return loop ? loop.alpha : 0; } }, settings, map, ps, onTutorial: (k, d) => safe('tutorial', () => onTutorial(k, d)) });
   const rewards = new Rewards({ world, hud, worldUI, ps, map, settings });
+  // Public loot (M4.5): who took it (it flies to them) and which name is yours.
+  rewards.entityPos = (id) => { const r = client.entities.get(id); return r && r.ready ? { x: r.r.x, y: r.r.y, z: r.r.z } : null; };
+  bus.on('you:welcome', ({ id, rec }) => { rewards.meId = id; rewards.myName = rec ? rec.name : ''; });
   bus.on('combat', (ev) => safe('rewards', () => rewards.handle(ev)));
   bus.on('combat', (ev) => safe('feedback', () => {
     feedback.handle(ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
     if (ev.type === 'talk' && ev.me) dialog.show(ev, st.lastLine);
+    if (ev.type === 'death' && ev.by) killFeed(ev);
     if (ev.type === 'note' && ev.code === 'save' && ev.me) {
       setSaveAside(saveSlot());
       hud.toast('<b>Tu partida guardada no vale en este servidor.</b> Empiezas de cero; la copia vieja queda aparte.', 6000);
     }
   }));
+  // Pirates sinking pirates in the Cala Calavera (M4.5).
+  function killFeed(ev) {
+    const name = (id) => escHtml((client.entities.get(id) || {}).name || 'alguien');
+    const me = client.youServer;
+    if (ev.id === me) hud.toast(`<b class="pk">☠ Te hundió ${name(ev.by)}.</b>`, 4200);
+    else if (ev.by === me) { hud.toast(`<b class="pk">☠ Hundiste a ${name(ev.id)}.</b> Su botín es de quien lo pise primero.`, 4200); sfx.mastery(); }
+    else if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) hud.toast(`☠ ${name(ev.by)} hundió a ${name(ev.id)}.`, 3200);
+  }
   // The weapon you carry: remembered for the next session, the kit shown in a toast.
   function onEquip(w) {
     const kind = WEAPON_KINDS[w] || 'sable', W = WEAPONS[kind];
@@ -409,13 +421,22 @@ async function boot() {
   function enterZone(z) {
     const prev = st.zone;
     st.zone = z;
+    // Out of the Cala Calavera (M4.5): the law is back.
+    if (prev === 'calavera' && z !== 'calavera' && st.mode === 'playing') hud.toast('<b>A salvo.</b> Fuera de la Cala vuelve la ley: nadie de la tripulación te hiere y lo tuyo es tuyo.', 3800);
     if (z === 'mar') return;
     const Z = ZONES[z];
-    if (prev !== null || st.mode === 'playing') hud.showZone(Z.name, Z.sub, z === 'caldera', reduced());
+    if (prev !== null || st.mode === 'playing') hud.showZone(Z.name, Z.sub, z === 'caldera' ? 'caldera' : Z.lawless ? 'lawless' : '', reduced());
+    if (Z.lawless && st.mode === 'playing') {
+      sfx.calderaZone();
+      if (!settings.calaTaught) {
+        settings.calaTaught = true; saveSettings();
+        hud.toast('<b>☠ Cala Calavera: aquí no hay ley.</b> Tus golpes hieren a cualquier pirata de dentro (tu tripulación también) y los suyos a ti. Los mobs se pelean entre ellos y los <b>Desalmados</b> cazan a todos. El botín es de quien lo pisa primero. <b>Si caes aquí, sueltas todo lo que llevas</b> (el oro no).', 11000);
+      }
+    }
     ambience.setZone(z);
     world.lighting.setZone(z === 'caldera', 2);
     music.setMood(z === 'caldera' ? 'caldera' : 'island');
-    if (z === 'caldera') sfx.calderaZone(); else sfx.zone();
+    if (z === 'caldera') sfx.calderaZone(); else if (!Z.lawless) sfx.zone();
   }
   // Reaching a later goal first quietly ticks the earlier ones.
   function completeUpTo(id) {
@@ -658,6 +679,9 @@ async function boot() {
       });
       const playing = st.mode === 'playing' && client.joined;
       if (playing) safe('local', () => client.localState(alpha, ps));
+      // Inside the Cala Calavera (M4.5): no law.
+      st.lawless = playing && map.lawlessAt(ps.x, ps.z);
+      hud.setLawless(st.lawless);
       const viewTick = client.viewTick(alpha);
 
       // Characters.
@@ -678,7 +702,14 @@ async function boot() {
             view.root.visible = true;
             s = rec.r;
             if (rec.enemy) worldUI.setPlate(rec.id, { hp: s.hp, maxHp: s.maxHp, level: s.lvl });
-            else if (rec.kind === KIND.PLAYER) view.setWeapon(WEAPON_KINDS[s.wpn] || 'sable');
+            else if (rec.kind === KIND.PLAYER) {
+              view.setWeapon(WEAPON_KINDS[s.wpn] || 'sable');
+              // Another pirate: its life on its plate, and red when it can hurt you (both inside the Cala).
+              if (rec.human) {
+                worldUI.setPlate(rec.id, { hp: s.hp, maxHp: s.maxHp, level: s.lvl });
+                worldUI.setPlateHostile(rec.id, playing && st.lawless && map.lawlessAt(s.x, s.z));
+              }
+            }
             // Remote players' swings: a slash when their action turns into a new stage.
             if (!rec.enemy && s.act >= ACT.SWING1 && s.act <= ACT.SWING3 && s.act !== view.lastAct) {
               const st2 = tuning.melee.stages[s.act - ACT.SWING1];
@@ -813,6 +844,7 @@ async function boot() {
         if (mapView.isOpen) {
           const crew = [];
           for (const r of client.entities.values()) if (r.human && r.id !== client.youServer && r.ready) crew.push(r.r);
+          mapView.spill = rewards.spillAt();
           mapView.update(ps, crew, prof, performance.now() / 1000);
         }
         world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false, ps.guardSt / tuning.guard.stamina, SKINS[settings.skin].accent);
@@ -844,7 +876,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, occ2: playing ? rewards.focusPoint() : null, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);

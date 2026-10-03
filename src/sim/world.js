@@ -471,15 +471,23 @@ export class World {
     this.hazards.cancelPending(e, this.tick);
     // XP to every player nearby (the killer and whoever helped); each of them rolls their own loot (M4).
     const tierXp = ecs.brain[e] && ecs.brain[e].tier ? ecs.brain[e].tier.xp : 1;
+    // Finished off by another mob (the Cala, M4.5): the kill of the last pirate who hurt it lately; with none, its
+    // loot still drops (public) but nobody earns XP or a quest kill for watching.
+    let credit = by;
+    if (by > 0 && (ecs.mask[by] & C.ENEMY)) {
+      const b = ecs.brain[e];
+      credit = b && b.pirate && ecs.alive[b.pirate] && this.tick - b.pirateTick <= LAWLESS.assist / DT ? b.pirate : 0;
+    }
+    const earn = credit === by || credit > 0;
     const xp = o.noXp ? 0 : Math.round(def.xp * tierXp), got = [];
     for (let p = 1; p < ecs.cap && xp; p++) {
       if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT)) continue;
-      if (p !== by && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;
-      gainXp(this, p, xp);
+      if (p !== credit && Math.hypot(ecs.x[p] - ecs.x[e], ecs.z[p] - ecs.z[e]) > (def.boss ? 40 : 25)) continue;
+      if (earn) gainXp(this, p, xp);
       got.push(p);
     }
-    if (this.profiles && got.length) { lootOnKill(this, e, by, got); questKill(this, e, got); }
-    this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp, tick: this.tick, boss: def.boss ? 1 : 0 });
+    if (this.profiles && got.length) { lootOnKill(this, e, credit || by, got); if (earn) questKill(this, e, got); }
+    this.emit({ type: 'kill', id: e, by, x: ecs.x[e], z: ecs.z[e], xp: earn ? xp : 0, tick: this.tick, boss: def.boss ? 1 : 0 });
     // A boss dies in slow motion for everyone in the instance (DESIGN §8).
     if (def.boss) this.emit({ type: 'time', e: 0, seq: 0, hitstop: 0.15, scale: 0.3, dur: 1.2 });
     const sp = this.spawners.find((q) => q.entity === e);

@@ -62,7 +62,7 @@ export class Hud {
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
           <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
-          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span></div>
+          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden title="Cala Calavera: fuego amigo y botín completo">☠ SIN LEY</span></div>
         </div>
       </div>
       <div class="hud-top-right">
@@ -107,7 +107,11 @@ export class Hud {
     root.querySelector('#hud-settings').addEventListener('click', onSettings);
     if (onBag) root.querySelector('#hud-bag').addEventListener('click', onBag);
     if (onMap) root.querySelector('#hud-map').addEventListener('click', onMap);
-    this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip');
+    this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip'); this.lawChip = root.querySelector('.law-chip');
+    // Red at the edges of the screen while you stand in the Cala Calavera (M4.5).
+    this.lawVig = document.createElement('div');
+    this.lawVig.className = 'law-vig';
+    root.prepend(this.lawVig);
     this.potSlot = root.querySelector('.pot-slot');
     this.mastEl = root.querySelector('.actionbar .mast');
     this.muteBtn.addEventListener('click', onMute);
@@ -394,6 +398,7 @@ export class Hud {
     if (key === this.partyKey) return;
     this.partyKey = key;
     this.partyEl.hidden = !list.length;
+    this.root.style.setProperty('--party-n', Math.min(3, list.length)); // the toasts start under the crew
     this.partyEl.innerHTML = list.slice(0, 3).map((p) => {
       const f = Math.max(0, Math.min(1, p.hp / Math.max(1, p.maxHp)));
       const icon = p.weapon === 1 ? ICONS.pistol : ICONS.sword;
@@ -430,11 +435,22 @@ export class Hud {
     this.dashSlot.classList.remove('denied'); void this.dashSlot.offsetWidth; this.dashSlot.classList.add('denied');
   }
 
-  showZone(name, sub, caldera = false, reduced = false) {
+  // Inside the Cala Calavera: the chip and the red edges.
+  setLawless(on) {
+    if (on === this.lawOn) return;
+    this.lawOn = on;
+    this.lawChip.hidden = !on;
+    this.lawVig.classList.toggle('on', on);
+  }
+
+  // look: '' · 'caldera' (embers) · 'lawless' (blood red); true = 'caldera' (older callers).
+  showZone(name, sub, look = '', reduced = false) {
     const b = this.banner;
+    if (look === true) look = 'caldera';
     b.querySelector('.zname').textContent = name;
     b.querySelector('.zsub').textContent = sub;
-    b.querySelector('.zname').style.color = caldera ? '#ffb36b' : '';
+    b.querySelector('.zname').style.color = look === 'caldera' ? '#ffb36b' : look === 'lawless' ? '#ff5a4a' : '';
+    b.classList.toggle('lawless', look === 'lawless');
     if (this.bannerTl) this.bannerTl.kill();
     const line = b.querySelector('.zline');
     const tl = (this.bannerTl = gsap.timeline());

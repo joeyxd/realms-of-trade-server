@@ -20,10 +20,12 @@ export const SENTINEL = LOOKS.findIndex((l) => l.enemy && l.body === 'brute');
 export const ARCHER = LOOKS.findIndex((l) => l.archer);
 // Enemy kind → look index (sim kinds in data/enemies.js).
 export const ENEMY_LOOK = Object.fromEntries([['archer', ARCHER], ['sentinel', SENTINEL],
-  ...[['grunt', 'Grumete ahogado'], ['imp', 'Diablillo de fuego'], ['shaman', 'Chamán de coral'], ['hellfire', 'HELLFIRE']].map(([k, n]) => [k, LOOKS.findIndex((l) => l.name === n)])]);
+  ...[['grunt', 'Grumete ahogado'], ['imp', 'Diablillo de fuego'], ['shaman', 'Chamán de coral'], ['hellfire', 'HELLFIRE'],
+    ['renegado', 'Desalmado'], ['pistolera', 'Desalmada']].map(([k, n]) => [k, LOOKS.findIndex((l) => l.name === n)])]);
 // Attack id → pose family (enemy attack timelines).
 const POSE = {
   bite: 'cleave', slam: 'cleave', wall: 'spikes', heavy: 'orb', fan5: 'orb', fan7: 'orb',
+  tajo: 'cleave', medialuna: 'spikes', rafaga: 'orb', descarga: 'spread', // the Desalmados (M4.5)
   spiral: 'raise', spiral2: 'raise', flower: 'raise', summon: 'raise', ring: 'raise', rings2: 'spread', rings3: 'spread',
   charge: 'cleave', laser2: 'spread', meteors: 'raise', lanes: 'spread', curtain: 'orb', spiral3: 'raise',
 };

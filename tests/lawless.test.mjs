@@ -138,6 +138,18 @@ test('inside, the cutlass, the pistols and the storm hurt the other pirate (× p
   assert.ok(w);
 });
 
+test('a blade lands through the mercy window after a hit (the whole combo lands); bullets pass through it', () => {
+  const { ecs, a, b, both, events } = duel();
+  ecs.hurtInv[b] = 0.3; // a bullet just hit them
+  for (let i = 0; i < 12; i++) both({ prs: i === 0 ? BTN.ATTACK : 0 });
+  assert.ok(events(2, 'hurt').some((ev) => ev.e === b && ev.by === a && ev.kind === 'pvp'), 'the cutlass');
+  const P = server();
+  const p1 = P.join(1, OPEN.x, OPEN.z, WEAPON.PISTOLAS), p2 = P.join(2, OPEN.x + 6, OPEN.z);
+  for (let i = 0; i < 4; i++) P.both();
+  for (let i = 0; i < 50; i++) { P.ecs.hurtInv[p2] = 0.3; P.both({ btn: BTN.ATTACK, prs: i === 0 ? BTN.ATTACK : 0 }); }
+  assert.ok(!P.events(2, 'hurt').some((ev) => ev.by === p1), 'bullets do not');
+});
+
 test('inside, a raised guard blocks a pirate\'s cutlass, a perfect one stops it and staggers the attacker; the dash dodges it', () => {
   // Block: the guard has been up a while (not perfect).
   {
@@ -286,6 +298,56 @@ test('inside the Cala a mob\'s bullet lands on another mob, which turns on it; o
   const evs2 = o.step(60);
   assert.equal(o.ecs.hp[g2], hp2);
   assert.ok(!evs2.some((ev) => ev.type === 'damage' && ev.kind === 'ff'));
+});
+
+test('a mob another mob finishes off is the kill of the pirate who hurt it lately; with none, nobody earns XP for watching', () => {
+  const { w, ecs, step, shoot } = mobs();
+  const p = w.spawnPlayer({ x: OPEN.x - 6, z: OPEN.z });
+  attachProfile(w, p, newProfile());
+  ecs.god[p] = 1;
+  // Nobody touched it: its loot drops (public) but the pirate watching gets nothing.
+  const archer = w.spawnEnemy('archer', OPEN.x, OPEN.z, 0), grunt = w.spawnEnemy('grunt', OPEN.x + 6, OPEN.z, 0);
+  ecs.hp[grunt] = 1;
+  const xp0 = ecs.xp[p], lv0 = ecs.level[p];
+  shoot(archer, grunt);
+  let evs = step(60);
+  const kill = evs.find((ev) => ev.type === 'kill' && ev.id === grunt);
+  assert.ok(kill && kill.by === archer, 'the archer killed it');
+  assert.equal(kill.xp, 0);
+  assert.ok(ecs.xp[p] === xp0 && ecs.level[p] === lv0, 'no XP for watching');
+  assert.ok([...w.drops.values()].every((d) => d.to === 0), 'its loot is public all the same');
+  // A pirate hurt it a moment ago: theirs.
+  const g2 = w.spawnEnemy('grunt', OPEN.x + 6, OPEN.z + 0.5, 0);
+  w.strike(g2, 1, { by: p, kind: 'melee', seq: 0, x: ecs.x[p], z: ecs.z[p] });
+  assert.equal(ecs.brain[g2].foe, 0);
+  ecs.hp[g2] = 1;
+  shoot(archer, g2);
+  evs = step(60);
+  const k2 = evs.find((ev) => ev.type === 'kill' && ev.id === g2);
+  assert.ok(k2 && k2.by === archer && k2.xp > 0, 'the pirate gets the kill');
+  assert.ok(ecs.xp[p] > xp0 || ecs.level[p] > lv0);
+});
+
+test('the Desalmados go for a pirate in reach before any mob, and never hurt each other', () => {
+  const { w, ecs, step, shoot } = mobs();
+  const p = w.spawnPlayer({ x: OPEN.x + 5, z: OPEN.z });
+  attachProfile(w, p, newProfile());
+  ecs.god[p] = 1;
+  const r = w.spawnEnemy('renegado', OPEN.x, OPEN.z, 0, { cala: 1 }), g = w.spawnEnemy('grunt', OPEN.x - 1.5, OPEN.z, 0, { cala: 1 });
+  w.calaAwake = true;
+  let seq = 0;
+  for (let i = 0; i < 20; i++) { w.applyCommand(p, { seq: ++seq, mx: 0, mz: 0, ax: ecs.x[r], az: ecs.z[r], btn: 0, prs: 0, pt: w.tick }); step(); }
+  assert.equal(ecs.brain[r].target, p, 'the pirate, though the grunt is closer');
+  assert.ok(g);
+  // Two Desalmados: one's bullet passes through the other.
+  const q = mobs();
+  const a = q.w.spawnEnemy('pistolera', OPEN.x, OPEN.z, 0), b = q.w.spawnEnemy('renegado', OPEN.x + 6, OPEN.z, 0);
+  const hp = q.ecs.hp[b];
+  q.shoot(a, b);
+  const evs = q.step(60);
+  assert.equal(q.ecs.hp[b], hp);
+  assert.ok(!evs.some((ev) => ev.type === 'damage' && ev.kind === 'ff'));
+  assert.ok(shoot);
 });
 
 test('the Cala\'s mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around', () => {

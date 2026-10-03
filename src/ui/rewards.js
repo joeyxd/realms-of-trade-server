@@ -5,6 +5,7 @@ import { RARITIES, BASES, QUEST_ITEMS, SLOT_NAMES } from '../data/items.js';
 import { QUESTS } from '../data/quests.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY } from '../data/weapons.js';
 import { ENCOUNTERS } from '../data/encounters.js';
+import { LAWLESS } from '../data/lawless.js';
 import { itemName } from '../sim/items.js';
 import { sfx } from '../audio/sfx.js';
 
@@ -25,9 +26,11 @@ export class Rewards {
   over(html, cls, o) { return this.worldUI.float(this.ps.x, this.ps.y + 2.15, this.ps.z, html, cls, { rise: 34, spread: 6, life: 1.2, ...o }); }
 
   labelFor(d) {
-    if (d.kind === 'item') return [esc(itemName(d.item)), rarityColor(d.item.r), 16, 'item'];
+    // Public loot (the Cala Calavera, M4.5): whose it was, if a pirate dropped it.
+    const from = d.pub && d.from ? ` <span class="pub">☠ ${d.from === this.myName ? 'tuyo' : esc(d.from)}</span>` : '';
+    if (d.kind === 'item') return [esc(itemName(d.item)) + from, rarityColor(d.item.r), 16, 'item'];
     if (d.kind === 'gold') return [`${d.n} oro`, '#ffd24a', 9, 'gold'];
-    if (d.kind === 'potion') return ['Poción de ron-coco', '#ff8a6a', 10, 'potion'];
+    if (d.kind === 'potion') return ['Poción de ron-coco' + from, '#ff8a6a', 10, 'potion'];
     if (d.kind === 'quest') return [esc((QUEST_ITEMS[d.q] || { name: d.q }).name), '#ff9aa8', 12, 'quest'];
     return ['Cofre de HELLFIRE', rarityColor(d.r ?? 2), 24, 'chest'];
   }
@@ -71,22 +74,41 @@ export class Rewards {
     return `<span class="kbd">F</span> Abrir · <b style="color:${color}">${name}</b>`;
   }
 
-  // What the canopy must not hide (toon.js mnOcc2): your nearest chest within r.
+  // What the canopy must not hide (toon.js mnOcc2): your nearest chest (or spilled loot) within r.
   focusPoint(r = 10) {
     let best = null, bd = r;
     for (const v of this.world.loot.drops.values()) {
-      if (v.gone || v.d.kind !== 'chest') continue;
+      // Your chest, or what you spilled in the Cala Calavera (M4.5).
+      if (v.gone || (v.d.kind !== 'chest' && !(v.d.pub && v.d.from && v.d.from === this.myName))) continue;
       const d = Math.hypot(v.x - this.ps.x, v.z - this.ps.z);
       if (d < bd) { bd = d; best = v; }
     }
     return best ? best.root.position : null;
   }
 
+  // Where your spilled loot lies (the map's 💀), while it may still be there.
+  spillAt() { return this.spill && performance.now() < this.spill.until ? this.spill : null; }
+
+  // Public loot (the Cala Calavera, M4.5): everyone sees it fall and sees who takes it.
+  handlePublic(ev) {
+    if (ev.type === 'loot') {
+      let top = -1;
+      for (const d of ev.drops) { this.addDrop(d, ev.fx, ev.fz); if (d.kind === 'item' && d.item.r > top) top = d.item.r; }
+      if (Math.hypot(ev.fx - this.ps.x, ev.fz - this.ps.z) < 30) sfx.lootDrop(Math.max(0, top), this.vol(ev.fx, ev.fz));
+    } else if (ev.type === 'unloot') {
+      const by = ev.by && this.entityPos ? this.entityPos(ev.by) : null;
+      for (const id of ev.ids) if (!ev.by || ev.by !== this.meId) this.dropGone(id, ev.why === 'pick' ? 'pick' : 'expire', by);
+    }
+  }
+
   handle(ev) {
+    if (ev.pub && !ev.to && (ev.type === 'loot' || ev.type === 'unloot')) { this.handlePublic(ev); return; }
     if (!ev.me) return;
     const H = this.hud;
     switch (ev.type) {
       case 'loot': {
+        // Joining with public loot already on the ground: just draw it.
+        if (ev.late) { for (const d of ev.drops) this.addDrop(d, d.x, d.z); break; }
         let top = -1, legend = null;
         for (const d of ev.drops) {
           this.addDrop(d, ev.fx, ev.fz);
@@ -108,7 +130,7 @@ export class Rewards {
         else if (ev.kind === 'quest') { sfx.pickup(1); this.over(`${esc((QUEST_ITEMS[ev.q] || {}).name || ev.q)} ${ev.have ?? ''}`, 'xp', { life: 1 }); }
         else if (ev.kind === 'item') {
           sfx.pickup(ev.item.r);
-          H.toast(`${ev.reward ? 'Recompensa: ' : '+ '}${itemHtml(ev.item)} <small>· ${SLOT_NAMES[BASES[ev.item.b].slot]} · Nv ${ev.item.l}</small>`, 3600);
+          H.toast(`${ev.back ? '<b>¡Recuperado!</b> ' : ev.reward ? 'Recompensa: ' : '+ '}${itemHtml(ev.item)} <small>· ${SLOT_NAMES[BASES[ev.item.b].slot]} · Nv ${ev.item.l}</small>`, 3600);
           if (!this.settings.bagTaught) { this.settings.bagTaught = true; H.toast('<b>Bolsa:</b> pulsa <span class="kbd">I</span> para equiparte lo que encuentras.', 5200); }
         }
         break;
@@ -118,6 +140,13 @@ export class Rewards {
         sfx.denied();
         break;
       case 'gear': sfx.equip(); break;
+      case 'spill': {
+        // You fell in the Cala Calavera: what you carried is on the ground for anyone (the map marks it).
+        this.spill = { x: ev.x, z: ev.z, until: performance.now() + LAWLESS.spill.life * 1000 };
+        const what = [ev.n ? `${ev.n} ${ev.n > 1 ? 'objetos' : 'objeto'}` : '', ev.pot ? `${ev.pot} ${ev.pot > 1 ? 'pociones' : 'poción'}` : ''].filter(Boolean).join(' y ');
+        H.toast(what ? `<b class="pk">☠ Lo perdiste todo en la Cala.</b> ${what} quedan en el suelo ${Math.round(LAWLESS.spill.life / 60)} minutos para quien llegue primero: ¡vuelve a por ello! <small>(💀 en el mapa · el oro no se pierde)</small>` : '<b class="pk">☠ Caíste en la Cala.</b> No llevabas nada que perder.', 8000);
+        break;
+      }
       case 'sold': if (ev.gold > 0) { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold', { life: 0.9 }); } break;
       case 'bought':
         if (ev.fail) { sfx.denied(); H.toast(ev.fail === 'gold' ? '<b>No te alcanza el oro.</b>' : ev.fail === 'max' ? '<b>Ya llevas 5 pociones.</b>' : ev.fail === 'tier' ? '<b>Aún no:</b> ese cofre se abre venciendo su Marea en La Caldera.' : '<b>Bolsa llena.</b>', 2600); }

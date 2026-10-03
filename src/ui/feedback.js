@@ -137,7 +137,7 @@ export class Feedback {
         if (rec && rec.enemy === 'imp') this.sparks(x, y + 1, z, 22, [1, 0.62, 0.2], [0.9, 0.18, 0.04], { up: 4, spread: 4 });
         else this.sparks(x, y + 1, z, 16, BONE, BONE1, { up: 3, spread: 4 });
         W.combatFx.ring(x, y + 0.08, z, 2.2, 0xfff1c8, 0.4, 0.12, 0.6);
-        sfx.bones(this.vol(x, z));
+        if (rec && rec.def && rec.def.renegade) sfx.hit('flesh', true, this.vol(x, z)); else sfx.bones(this.vol(x, z));
         if (ev.xp && Math.hypot(x - ps.x, z - ps.z) < 25) this.float(x, z, 1.4, `+${ev.xp} XP`, 'xp', { life: 1.3, rise: 60 });
         if (ev.by === this.client.youServer) { this.shake(0.25); this.onTutorial('kill', rec); }
         break;
@@ -299,6 +299,12 @@ export class Feedback {
         if (!me) {
           const v = this.viewOf(ev.e);
           if (v) { v.flash(0xff4d5e, 1); v.hit(0.8); }
+          // Your blow on another pirate (the Cala Calavera, M4.5): its number, like an enemy's.
+          if (ev.by === this.client.youServer && ev.dmg > 0) {
+            const rec = this.client.entities.get(ev.e), x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
+            this.float(x, z, (v ? v.height : 1.8) + 0.25, ev.crit ? `<small>¡CRÍTICO!</small> ${ev.dmg}` : String(ev.dmg), ev.kind === 'block' ? 'graze' : ev.crit ? 'crit' : 'dmg');
+            sfx.hit('flesh', !!ev.crit, this.vol(x, z));
+          }
           break;
         }
         const v = this.me();
@@ -312,7 +318,7 @@ export class Feedback {
         if (ev.dmg <= 0) break;
         if (ev.kind === 'block') { this.overMe(`-${ev.dmg}`, 'graze', { life: 0.6, spread: 24 }); break; }
         sfx.hurt(ev.kind === 'aoe' || ev.dmg >= 18);
-        this.overMe(`-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
+        this.overMe(ev.crit ? `<small>¡CRÍTICO!</small> -${ev.dmg}` : `-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
         if (v) { v.flash(0xff4d5e, 1); v.hit(1); }
         this.shake(Math.min(0.55, 0.22 + ev.dmg / 60));
         this.screen(0.28, [1, 0.25, 0.25]);
@@ -540,7 +546,7 @@ export class Feedback {
   material(rec) {
     if (!rec) return 'flesh';
     if (rec.enemy === 'dummy') return 'straw';
-    if (rec.enemy && rec.enemy !== 'cannon' && rec.enemy !== 'imp') return 'bone';
+    if (rec.enemy && rec.enemy !== 'cannon' && rec.enemy !== 'imp' && !(rec.def && rec.def.renegade)) return 'bone';
     return 'flesh';
   }
 

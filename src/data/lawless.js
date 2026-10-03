@@ -13,9 +13,12 @@ export const LAWLESS = {
   // The Cala's mobs are harder and pay better (like a Marea: enemy HP and damage, item levels, rarity, XP, gold).
   tier: { name: 'Sin ley', hp: 1.6, dmg: 1.4, ilvl: 3, rar: 0.6, xp: 1.5, gold: 1.5 },
   // Mobs inside hurt each other: a bullet or a blow of one lands on any other mob inside (× this), and the one hit
-  // turns on whoever hit it for `foe` s.
+  // turns on whoever hit it for `foe` s (a pirate's blow turns it back on the pirate). A mob that another mob finishes
+  // off is still the kill of the last pirate who hurt it within `assist` s; with none, its loot drops for anyone and
+  // nobody earns XP for watching.
   mobDmg: 1,
   foe: 6,
+  assist: 8,
   rise: 1.1, // s a mob takes to stand up when it comes back (the Cala refills even with pirates around)
   // Who lives there: [kind, u, v] from the centre of the fort (the design frame of worldgen.js).
   spawns: [

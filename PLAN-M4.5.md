@@ -142,7 +142,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
 - [x] **P3 Mobs y Desalmados**: generadores con «Sin ley», peleas entre mobs, Desalmados (datos, IA, botín). Tests
   (una bala de arquero hiere a un grumete de la Cala y este se vuelve; fuera no; un Desalmado ataca a un mob;
   su botín es público).
-- [ ] **P4 Cliente**: frontera, carteles, chip, placas, números y avisos de muerte, botín público, pantalla de
+- [x] **P4 Cliente**: frontera, carteles, chip, placas, números y avisos de muerte, botín público, pantalla de
   muerte, mapa, líneas de los PNJ. Capturas y prueba en el navegador (solo y en línea con dos clientes).
 - [ ] **P5 Cierre**: playtest (`tools/lawless.mjs`: dos bots con equipo se pelean en la Cala → tiempo hasta
   morir; los mobs se pelean), ajuste de `pvpDmg`, README («Qué incluye M4.5»), DESIGN §9 / §10 / §16, versión
@@ -197,3 +197,29 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   muertes). `LOOT.renegado / pistolera.gear` (2 objetos, rareza + 0.8, el primero al menos Poco común) en
   `lootOnKill`. Medido en 3 min con un pirata quieto en la Cala: ~20 muertes entre mobs (la mitad a manos de
   Desalmados), ~18 reapariciones, ~20 caídas públicas. 140 tests.
+- **P4:** `render/vfx/calaring.js` (anillo de 220 segmentos a R ± 0.55 pegado al suelo, capa FX: banda roja con
+  marcas que late y se aviva al entrar), bandera negra que ondea. `hud`: chip «☠ SIN LEY» en la fila del oro, viñeta
+  roja (`.law-vig`), `showZone(..., 'lawless')` en rojo; `main.enterZone`: aviso largo la primera vez
+  (`settings.calaTaught`), «A salvo» al salir. Placas: `worldUI.setPlateHostile` (rojas con ☠) para los piratas que
+  pueden herirte (los dos dentro); los Desalmados con su título y su nombre. `feedback`: números de daño PvP para quien
+  golpea (crítico / bloqueo) y sonido de carne; `gameClient.predictMelee` también destella sobre piratas dentro.
+  `main.killFeed`: «☠ Te hundió X» / «☠ Hundiste a Y» / «X hundió a Y» (a ≤ 45 u). `rewards`: caídas públicas
+  (`handlePublic`: aparecen para todos, «☠ Fulano» / «☠ tuyo» en la etiqueta, vuelan hacia quien las recoge),
+  «¡Recuperado!», aviso de `spill` y `spillAt()` → 💀 en el mapa. `mapview`: la Cala en rojo con su ☠ (el nombre bajo el
+  anillo, que el del Sendero queda al lado), leyenda «Sin ley». Looks «Desalmado» / «Desalmada» (`charlooks`,
+  `ENEMY_LOOK`, poses de sus ataques; la pistolera lleva pistolas). Probado en el navegador con dos clientes en el
+  servidor Node (un navegador cada uno: con uno solo, el segundo no abre su socket en 4 s con swiftshader): placas
+  rojas, chip y viñeta, números, «Hundiste a Mendoza» en A; en B `death {by}`, `spill` (3 objetos y 2 pociones) y
+  `respawn`, con «Te hundió Barbanegra», «Lo perdiste todo en la Cala…» y «A salvo» al levantarse fuera; B se queda sin
+  bolsa, sombrero ni pociones y A lo recoge con «☠ Mendoza» en las etiquetas; 💀 en el mapa de B. Arreglos que
+  salieron: la ventana de gracia tras un golpe (0.35 s, para las balas) se comía el segundo tajo de cada combo contra
+  un pirata → el sable y la estocada la atraviesan (test); la placa de quien te pelea se ocultaba al tapar a tu
+  personaje (la regla de las placas) → la de un pirata hostil queda, al 55 %; las fichas de la tripulación tapaban la
+  fila del oro (desde M4) y los avisos tapaban las fichas → van debajo, con la escala de la interfaz; el disolvente de
+  palmeras apunta también a lo que derramaste. En solo salieron dos de la sim: una pirata quieta en la Cala subía de
+  nivel con las muertes entre mobs (la XP iba a todo pirata a ≤ 25 u) → `killEnemy` da la muerte de un mob rematado
+  por otro al último pirata que lo hirió en `LAWLESS.assist` (8 s) y, si no hay, sin XP ni misión (el botín cae igual);
+  y los Desalmados se enzarzaban entre ellos (sus círculos se tocaban y `foe` los encadenaba) o con los mobs sin mirar
+  a la pirata → no se hieren entre ellos, van a por un pirata a su alcance antes que a cualquier mob, y el golpe de
+  un pirata devuelve a un mob contra él. Con eso, una pirata de nivel 1 quieta dentro cae a los ~8 s (11 veces en
+  3 min). 143 tests.

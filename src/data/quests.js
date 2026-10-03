@@ -51,6 +51,7 @@ export const NPC_TALK = {
       '¿Ves el humo del volcán? Allí está La Caldera. Quien la cruza sale con un cofre… o no sale.',
       'Antes de ir, practica el dash. Esquivar a tiempo te salva más que cualquier espada.',
       'Mi barco zarpará cuando el mar se calme. Mientras tanto, la isla es tuya.',
+      'Del Sendero sale un desvío a la Cala Calavera. Allí no hay ley: ni tu tripulación te cubre la espalda, y quien cae lo pierde todo.',
     ],
     quests: {
       brea: { done: 'Bien, tienes agallas. Los arqueros malditos tienen tomado el Sendero del Humo: despéjalo y sigue hasta La Caldera.' },
@@ -63,6 +64,7 @@ export const NPC_TALK = {
       '¡Cocos, ron y vendas! Si traes oro, algo encontraremos, corazón.',
       'Dicen que en La Caldera hasta los cangrejos escupen fuego. Yo no me acercaría.',
       'Lo que no te sirva, tráemelo: te lo pago bien, que yo de todo saco provecho.',
+      '¿Vas a la Cala Calavera? No te lleves lo que no quieras perder, corazón: allí quien cae lo suelta todo, y lo que hay en el suelo es del primero que lo pisa.',
     ],
     quests: {
       coral: { offer: 'Mi ron de coral necesita coral, ¿sabes? Seis fragmentos. Los chamanes y los cangrejos de La Caldera lo llevan encima.', ready: '¡Qué coral más bonito! Toma, para que no te falte de nada.' },

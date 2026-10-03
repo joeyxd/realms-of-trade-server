@@ -69,8 +69,8 @@ export function pickTarget(world, e, def, b) {
     if (!def.fixed && Math.hypot(ecs.x[p] - b.homeX, ecs.z[p] - b.homeZ) > leash) continue;
     if (d * pw < bd) { bd = d * pw; best = p; }
   }
-  // …and the mobs of the Cala too (never another Desalmado), while a pirate is around to see it.
-  if (def.renegade && world.calaAwake) {
+  // …and, with no pirate in reach, the mobs of the Cala (never another Desalmado), while a pirate is around to see it.
+  if (def.renegade && world.calaAwake && !best) {
     for (let o = 1; o < ecs.cap; o++) {
       if (o === e || !ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
       const od = defOf(ecs, o);
@@ -326,8 +326,10 @@ export function damageEnemy(world, e, raw, o) {
   b.sinceHit = 0;
   if (b.state === 'dormant') wake(world, e, o.by);
   if (o.by && !def.fixed && b.state !== 'return') b.target = o.by;
-  // Hit by another mob (the Cala, M4.5): it turns on it.
+  // Hit by another mob (the Cala, M4.5): it turns on it. Hit by a pirate: back on the pirate (who gets the kill even
+  // if a mob finishes it off soon after: world.killEnemy).
   if (o.by && o.by !== e && ecs.alive[o.by] && (ecs.mask[o.by] & C.ENEMY) && !def.fixed) { b.foe = o.by; b.foeT = LAWLESS.foe; }
+  else if (o.by && (ecs.mask[o.by] & C.PLAYER)) { b.foe = 0; b.pirate = o.by; b.pirateTick = world.tick; }
   if (def.invulnerable) {
     world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
     return 0;

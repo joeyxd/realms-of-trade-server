@@ -68,9 +68,9 @@
 /* Narrow phones: mute lives in the settings (Ajustes → Sonido) so the life bar keeps its room. */
 @media (max-width: 420px) { #hud-mute { display: none; } }
 
-/* Party frames (online): the other human pirates, under yours */
+/* Party frames (online): the other human pirates, under yours (and under its gold row, which scales with it) */
 .party {
-  position: absolute; left: calc(14px + var(--safe-l)); top: calc(98px + var(--safe-t));
+  position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + 104px * var(--ui-scale));
   display: grid; gap: 6px; transform-origin: top left; transform: scale(var(--ui-scale)); pointer-events: none;
 }
 .party .pm {
@@ -103,6 +103,17 @@
 #zone-banner .zname { font-family: var(--font-display); font-size: clamp(28px, 5vw, 46px); line-height: 1; }
 #zone-banner .zsub { font-weight: 800; font-size: 14px; letter-spacing: 0.06em; color: var(--parch); text-shadow: 0 2px 0 var(--ink); text-transform: uppercase; }
 #zone-banner .zline { width: 0; height: 4px; border-radius: 2px; background: var(--brass); box-shadow: 0 0 0 2px var(--ink); margin-top: 4px; }
+#zone-banner.lawless .zline { background: #e0302a; }
+#zone-banner.lawless .zsub { color: #ffc2b8; }
+/* La Cala Calavera (M4.5): the chip by your gold and red edges on the screen. */
+.law-chip { margin-left: 6px; padding: 1px 8px 2px; border-radius: 999px; font-size: 11.5px; font-weight: 900; letter-spacing: 0.05em; color: #fff3ee; background: #a3201e; box-shadow: 0 0 0 2px var(--ink), 0 0 10px rgba(255, 60, 40, 0.6); animation: lawPulse 1.6s ease-in-out infinite; }
+@keyframes lawPulse { 50% { box-shadow: 0 0 0 2px var(--ink), 0 0 18px rgba(255, 60, 40, 0.95); } }
+.law-vig { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.8s; background: radial-gradient(ellipse at center, transparent 58%, rgba(150, 10, 10, 0.32) 100%); }
+.law-vig.on { opacity: 1; }
+.nameplate.hostile .np-name { color: #ff8a7a; }
+.nameplate.hostile .np-name::before { content: '☠ '; }
+.nameplate.hostile .np-hp i { background: linear-gradient(#ff5a4a, #b3261e); }
+.loot-label .pub { color: #ff9a8a; font-weight: 800; font-size: 0.85em; }
 
 /* Bottom-center: action bar */
 .actionbar {
@@ -181,7 +192,7 @@
 .bubble::after { content: ''; position: absolute; left: 50%; bottom: -8px; width: 12px; height: 12px; transform: translateX(-50%) rotate(45deg); background: var(--parch); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
 
 /* Toasts (left, under the portrait) */
-#toasts { position: absolute; left: calc(14px + var(--safe-l)); top: calc(110px + var(--safe-t)); display: grid; gap: 8px; width: min(300px, calc(100vw - 32px)); }
+#toasts { position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + (98px + var(--party-n, 0) * 44px) * var(--ui-scale)); display: grid; gap: 8px; width: min(300px, calc(100vw - 32px)); }
 .toast { padding: 8px 12px; font-weight: 800; font-size: 13.5px; line-height: 1.3; }
 .toast b { color: var(--brass-l); font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; }
 

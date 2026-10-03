@@ -141,6 +141,26 @@ export const LOOKS = [
     bone: 0x5e4c44, slate: 0x2a1814, slateD: 0x160c0a, gold: 0xd8642a, ice: 0xff8a3a, gemC: 0xffb040, socket: 0x0d0606,
     horns: 0x1a0e0c, weapon: 'greatsword',
   },
+  // ---- M4.5 «Sin ley»: the Desalmados of the Cala Calavera (pirates gone bad: the Bucanero and Tormenta builds in
+  // black and blood red) ----
+  {
+    name: 'Desalmado', body: 'male', accent: 0xff4a3a, swatch: [0x1c1820, 0xa3201e], renegade: true,
+    skin: 0xb07a5a, hair: 0x15110f, beard: 0x2a1a14, beardStyle: 'full', hairStyle: 'tied',
+    headwear: 'bandana', band: 0xa3201e, neck: 'none',
+    torso: 'coat', shirt: 0x6a5a4e, vest: 0x1c1820, trim: 0x7a2a22, sleeves: 'coat', cuff: 0x2a1418, glove: null,
+    lower: 'coat', coat: 0x1c1820, coatIn: 0x3a1014, pants: 0x221d22, boots: 'cuffed', boot: 0x181214,
+    belts: [{ dy: 0.01, c: 0xa3201e, sash: true }, { dy: -0.07, c: 0x2a1d17, tilt: -0.1, buckle: 1 }],
+    metal: 0x8a8f94, weapon: 'cutlass',
+  },
+  {
+    name: 'Desalmada', body: 'female', accent: 0xff4a3a, swatch: [0x6a1820, 0x1c1820], renegade: true,
+    skin: 0xc9906e, hair: 0x15110f, hairStyle: 'long', lips: 0x7a2a2a,
+    headwear: 'hood', hood: 0x6a1820, hoodIn: 0x120a0c, mantle: 'cowl', neck: 'scarf', scarf: 0x2a1418,
+    torso: 'corset', shirt: 0x4a3e3a, vest: 0x1c1820, lacing: 0xa3201e, sleeves: 'shirt', bracer: 0x2a1c18, glove: 0x1a1214,
+    lower: 'coat', coat: 0x1c1820, coatIn: 0x3a1014, pants: 0x221d22, boots: 'tall', boot: 0x181214,
+    belts: [{ dy: 0.0, c: 0xa3201e, buckle: 1, pouches: true }], bandolier: 0x2a1c18,
+    metal: 0x8a8f94, weapon: 'saber',
+  },
 ];
 
 // ---- Shared pieces --------------------------------------------------------------------------------

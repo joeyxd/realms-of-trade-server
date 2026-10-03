@@ -165,6 +165,8 @@
 .mapv-labels span { position: absolute; transform: translate(-50%, -160%); font-family: var(--font-display); font-size: 13px; color: var(--parch); white-space: nowrap; text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); pointer-events: none; }
 .mapv-legend { display: flex; gap: 14px; justify-content: center; font-weight: 800; font-size: 12px; }
 .mapv-legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; border: 2px solid var(--ink); vertical-align: -1px; }
+.mapv-legend .law::before { background: rgba(200, 30, 30, 0.6); border-color: #ff5a4a; border-style: dashed; }
+.mapv-labels span.lawless { color: #ff8a7a; transform: translate(-50%, 0); }
 .mapv-legend .me::before { background: #3bf0ff; } .mapv-legend .crew::before { background: #9dffc8; } .mapv-legend .npc::before { background: #ffe39a; } .mapv-legend .goal::before { background: #ffcf4a; box-shadow: 0 0 6px #ffcf4a; }
 @media (max-width: 760px) {
   #charpanel { padding: calc(10px + var(--safe-t)) 8px calc(10px + var(--safe-b)); justify-content: center; }

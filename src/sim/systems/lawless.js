@@ -4,10 +4,12 @@
 // the same bullets through their own commands (systems/combat.js): whatever touches first takes it.
 import { C } from '../ecs.js';
 import { KILL, PTYPE } from '../projectiles.js';
-import { damageEnemy } from './enemies.js';
+import { damageEnemy, defOf } from './enemies.js';
 import { LAWLESS } from '../../data/lawless.js';
 
 const inside = [];
+// The Desalmados are one crew: their bullets and blows pass through each other.
+const crew = (ecs, a, b) => !!(ecs.alive[a] && defOf(ecs, a).renegade && defOf(ecs, b).renegade);
 
 export function stepInfighting(world) {
   const map = world.map, K = map.cala;
@@ -31,7 +33,7 @@ export function stepInfighting(world) {
     const x = H.px(s, t), z = H.pz(s, t);
     if ((x - K.x) ** 2 + (z - K.z) ** 2 > R2) continue;
     for (const o of inside) {
-      if (o === own || ecs.dead[o] > 0) continue;
+      if (o === own || ecs.dead[o] > 0 || crew(ecs, own, o)) continue;
       const rr = ecs.hurtR[o] + H.r[s];
       if ((ecs.x[o] - x) ** 2 + (ecs.z[o] - z) ** 2 > rr * rr) continue;
       H.remove(s, t, KILL.HIT, o, 0);
@@ -45,7 +47,7 @@ export function stepInfighting(world) {
     if (a.cancel || a.tAct !== t || !a.owner) continue;
     if ((a.x - K.x) ** 2 + (a.z - K.z) ** 2 > R2) continue;
     for (const o of inside) {
-      if (o === a.owner || !ecs.alive[o] || ecs.dead[o] > 0) continue;
+      if (o === a.owner || !ecs.alive[o] || ecs.dead[o] > 0 || crew(ecs, a.owner, o)) continue;
       if (Math.hypot(ecs.x[o] - a.x, ecs.z[o] - a.z) > a.r + ecs.hurtR[o] * 0.5) continue;
       damageEnemy(world, o, a.dmg * LAWLESS.mobDmg, { by: a.owner, kind: 'ff', x: a.sx ?? a.x, z: a.sz ?? a.z, knock: 5 });
     }

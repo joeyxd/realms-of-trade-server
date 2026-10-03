@@ -9,6 +9,7 @@ import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { CameraRig } from './camera.js';
 import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
+import { createCalaRing } from './vfx/calaring.js';
 import { DummyView, CannonView } from './practice.js';
 import { CrabView } from './crab.js';
 import { Effects } from './vfx/effects.js';
@@ -100,6 +101,9 @@ export class GameScene {
     const A = map.landmarks.arena;
     this.runes = this.decals.ring(A.x, A.z, 3.2, 0xff8a3a);
     this.runes.mat.uniforms.uKind.value = 2;
+    // La Cala Calavera (M4.5): its glowing border.
+    this.calaRing = createCalaRing(map);
+    if (this.calaRing) this.scene.add(this.calaRing.mesh);
     this.shieldBubble = makeShieldBubble();
     this.shieldBubble.visible = false;
     this.scene.add(this.shieldBubble);
@@ -167,7 +171,10 @@ export class GameScene {
     else if (kind === 'cannon') view = new CannonView();
     else if (kind === 'crab') view = new CrabView();
     else if (kind === 'sentinel') view = new CharacterView(SENTINEL, { sword: true, pose: 'dormant' });
-    else if (ENEMY_LOOK[kind] >= 0) view = new CharacterView(ENEMY_LOOK[kind], { sword: true });
+    else if (ENEMY_LOOK[kind] >= 0) {
+      view = new CharacterView(ENEMY_LOOK[kind], { sword: true });
+      if (kind === 'pistolera') view.setWeapon('pistolas'); // a Desalmada carries a brace of flintlocks
+    }
     else view = new CharacterView(skin, opts);
     view.enemy = kind || null;
     this.scene.add(view.root);
@@ -282,6 +289,7 @@ export class GameScene {
       this.weaponFx.update(sim, ctx.combat.tick, ctx.combat.caught);
     }
     this.combatFx.update(sim);
+    if (this.calaRing) this.calaRing.update(dt, !!ctx.lawless);
     this.debris.update(sim);
     this.loot.update(dt);
     // Floating cargo and the rowboat bob and drift a little.
