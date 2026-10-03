@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 2;
+export const PROTOCOL_VERSION = 3;
 
 export const MSG = {
   // client -> server
@@ -16,6 +16,8 @@ export const MSG = {
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)
   PONG: 'pong',       // {t, tick}
+  FULL: 'full',       // {max}: the instance has no room for another player (you keep spectating)
+  ERROR: 'error',     // {code: 'version' | 'name' ...}
   // reserved: naval + trade slice (no gameplay yet)
   SHIP_SPAWN: 'ship_spawn',
   SHIP_INPUT: 'ship_input',
@@ -34,6 +36,12 @@ export function encodeEntity(ecs, e) {
     e, ecs.kind[e], ecs.x[e], ecs.y[e], ecs.z[e], ecs.facing[e], ecs.vx[e], ecs.vz[e], ecs.state[e], ecs.moveMag[e], ecs.wade[e], ecs.dashCount[e],
     Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], Math.round(ecs.actT[e] * 1000) / 1000, ecs.level[e], ecs.weapon[e],
   ];
+}
+
+// Player names: printable, trimmed, at most 16 characters; empty → the default.
+export function cleanName(v, fallback = 'Grumete') {
+  const s = String(v ?? '').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 16).trim();
+  return s || fallback;
 }
 
 // Input commands: axes quantized to 1/127 so client prediction uses exactly what the server sees.

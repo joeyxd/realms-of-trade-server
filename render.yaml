@@ -1,0 +1,17 @@
+# Render blueprint: one web service runs the game server (static client + WebSocket world).
+# Free instances sleep after 15 min without traffic; the first visit wakes it (~30 s).
+services:
+  - type: web
+    name: marea-negra
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: MAX_PLAYERS
+        value: "4"
+      - key: BOTS
+        value: "3"

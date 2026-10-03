@@ -500,7 +500,7 @@ export class World {
     const d = { id: e, kind: ecs.kind[e], name: ecs.names[e], title: ecs.titles[e], skin: ecs.skin[e], level: ecs.level[e] };
     if (ecs.mask[e] & C.ENEMY) { d.enemy = ecs.enemy[e]; d.maxHp = ecs.maxHp[e]; }
     if (ecs.mask[e] & C.HEALTH) d.team = ecs.team[e];
-    if (ecs.mask[e] & C.PLAYER) d.weapon = ecs.weapon[e];
+    if (ecs.mask[e] & C.PLAYER) { d.weapon = ecs.weapon[e]; if (ecs.clientId[e] >= 0 && !(ecs.mask[e] & C.BOT)) d.human = 1; }
     return d;
   }
 

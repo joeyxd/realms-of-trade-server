@@ -53,7 +53,7 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   `send(id, msg)` → `JSON.stringify` → socket. Límites por socket: cubeta de tokens (≤ 120 mensajes/s,
   ≤ 48 KB/s), JSON inválido o mensajes sin `t` se ignoran (3 strikes/s → cierre 1008), `cmds` ≤ 32 por mensaje,
   latido (ping 10 s, muerto si no responde en 30 s), cierre ordenado en SIGTERM/SIGINT (1001). Conexiones
-  simultáneas ≤ `MAX_PLAYERS × 2` (el resto: 1013).
+  simultáneas ≤ `MAX_PLAYERS + 4` (espectadores; el resto: 503).
 - `LocalServer`: `maxPlayers` (hello sobrante → `{t:'full', max}`), `{t:'error', code:'version'}` si `v` no
   coincide, nombre saneado (sin controles, recortado, vacío → «Grumete», repetido → «Nombre 2»), `pausable`
   (online: el menú de pausa no detiene el mundo), `describe()` con `human: 1` para jugadores con cliente.
@@ -106,7 +106,7 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
 ## 3. Pasos
 
 - [x] **P0** Este plan.
-- [ ] **P1 Servidor Node.** `ws` en `dependencies`; `server/index.mjs`, `server/host.mjs`; cambios de
+- [x] **P1 Servidor Node.** `ws` en `dependencies`; `server/index.mjs`, `server/host.mjs`; cambios de
   `LocalServer` (§2.1); `npm start` = servidor, `npm run static` = el `serve` de antes; `render.yaml` en la raíz.
   Tests `tests/server.test.mjs`: dos clientes WebSocket se unen y se ven, los inputs mueven, desconectar
   despawnea, servidor lleno, versión, basura y exceso no tumban el proceso, `/health` y `/status`.
@@ -122,3 +122,10 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   artefacto republicado (modo solo), informe final.
 
 ## 4. Notas de implementación (rellenar al cerrar cada paso)
+
+- **P1:** `server/index.mjs` exporta `createGameServer({port, host, bots, maxPlayers, dev, lagMs, jitterMs, origins})`
+  (los tests lo arrancan en el puerto 0) y solo se ejecuta como entrada con `npm start`. `GameHost` no llama a
+  `LocalServer.start()`: mueve su propio `pump()` cada 4 ms dentro de `try/catch` (un tick roto se registra y el
+  proceso sigue; `status().errors`). Un broadcast se serializa una sola vez (`lastMsg`). El `WebSocket` global de
+  Node 22 negocia permessage-deflate con `ws`. `PROTOCOL_VERSION` = 3; `cleanName` en `protocol.js`; `full` y
+  `error` en `MSG`. `npm run static` sirve los estáticos como antes; `engines.node` ≥ 22.

@@ -10,7 +10,7 @@
 import { DT, INTERP_DELAY, tuning } from '../data/tuning.js';
 import { World, BEAM_FIELDS, LAVA_FIELDS } from '../sim/world.js';
 import { C, ACT } from '../sim/ecs.js';
-import { MSG, ENT, quantAxis } from '../net/protocol.js';
+import { MSG, ENT, PROTOCOL_VERSION, quantAxis } from '../net/protocol.js';
 import { emitPattern, NEVER, KILL } from '../sim/projectiles.js';
 import { ENEMIES, ENEMY_KINDS } from '../data/enemies.js';
 import { lerp, wrapAngle } from '../core/math.js';
@@ -66,7 +66,7 @@ export class GameClient {
   viewTick(alpha) { return this.youLocal && !this.awaitingFirst ? this.displayTick(alpha) : this.serverTick(); }
 
   join(name, skin, weapon = 0) {
-    this.t.send({ t: MSG.HELLO, v: 2, name, skin, weapon });
+    this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon });
   }
 
   send(msg) { this.t.send(msg); }

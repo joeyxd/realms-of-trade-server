@@ -1,5 +1,5 @@
-// Authoritative server that runs the shared sim. Lives in a Web Worker (or in-process as a fallback);
-// a future Node server wraps the same class behind WebSockets.
+// Authoritative server that runs the shared sim. Lives in a Web Worker (or in-process as a fallback) for
+// solo play, and inside the Node server (server/host.mjs) behind WebSockets for online play.
 // Instance time: this server is one instance (like an MMO dungeon), so hitstop and slow-mo are
 // decided here and slow the whole world down; clients apply the same 'time' events to their loop.
 // An open-world server would set instanceTime: false and leave hitstop cosmetic on the client.
@@ -12,17 +12,19 @@ import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
-import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd } from './protocol.js';
+import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, now = () => performance.now() }) {
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
+    this.maxPlayers = maxPlayers;
+    this.pausable = pausable; // solo: the pause menu stops the world; online it never does
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
     this.send = send; // (clientId, msg) => void
@@ -53,8 +55,19 @@ export class LocalServer {
 
   disconnect(clientId) {
     const c = this.clients.get(clientId);
-    if (c && c.entity) this.world.despawn(c.entity);
+    if (c && c.entity) { this.world.despawn(c.entity); this.flushEvents(); }
     this.clients.delete(clientId);
+  }
+
+  // Players with an entity (bots are not clients).
+  get humans() { let n = 0; for (const c of this.clients.values()) if (c.entity) n++; return n; }
+
+  // A name nobody else in the instance has: «Grumete», «Grumete 2»…
+  uniqueName(name) {
+    const ecs = this.world.ecs, taken = new Set();
+    for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && (ecs.mask[e] & C.PLAYER)) taken.add(String(ecs.names[e]).toLowerCase());
+    if (!taken.has(name.toLowerCase())) return name;
+    for (let k = 2; ; k++) { const n = name.slice(0, 13) + ' ' + k; if (!taken.has(n.toLowerCase())) return n; }
   }
 
   receive(clientId, msg) {
@@ -63,7 +76,9 @@ export class LocalServer {
     switch (msg.t) {
       case MSG.HELLO: {
         if (c.entity) return;
-        const name = String(msg.name || 'Grumete').slice(0, 20);
+        if (msg.v !== PROTOCOL_VERSION) { this.send(clientId, { t: MSG.ERROR, code: 'version', v: PROTOCOL_VERSION }); return; }
+        if (this.humans >= this.maxPlayers) { this.send(clientId, { t: MSG.FULL, max: this.maxPlayers }); return; }
+        const name = this.uniqueName(cleanName(msg.name));
         const skin = Math.max(0, Math.min(4, msg.skin | 0));
         // The weapon you last used (the client remembers it); after that you change it at a rack.
         const weapon = Math.max(0, Math.min(WEAPON_KINDS.length - 1, msg.weapon | 0));
@@ -82,7 +97,7 @@ export class LocalServer {
         break;
       }
       case MSG.CMD: {
-        if (msg.type === 'pause') { c.paused = !!msg.on; break; }
+        if (msg.type === 'pause') { c.paused = this.pausable && !!msg.on; break; }
         // Local-only debug teleport (used by tools/shot.mjs). A real server never implements this.
         if (this.debug && msg.type === 'debug_teleport' && c.entity && Number.isFinite(msg.x) && Number.isFinite(msg.z)) {
           const ecs = this.world.ecs;

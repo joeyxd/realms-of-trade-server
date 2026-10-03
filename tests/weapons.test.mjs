@@ -5,7 +5,7 @@ import { tuning } from '../src/data/tuning.js';
 import { WEAPON, WEAPON_KINDS } from '../src/data/weapons.js';
 import { SHOT } from '../src/sim/projectiles.js';
 import { LocalServer } from '../src/net/localServer.js';
-import { MSG, ENT } from '../src/net/protocol.js';
+import { MSG, ENT, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { GAME } from '../src/data/meta.js';
 import { map, arena, clientAndServer } from './helpers.mjs';
 
@@ -48,9 +48,9 @@ test('HELLO picks the starting weapon; describe and the snapshot carry it', () =
   const out = [];
   const server = new LocalServer({ seed: GAME.seed, bots: 0, enemies: false, send: (id, m) => out.push([id, m]) });
   server.connect(1);
-  server.receive(1, { t: MSG.HELLO, name: 'A', skin: 0, weapon: WEAPON.PISTOLAS });
+  server.receive(1, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'A', skin: 0, weapon: WEAPON.PISTOLAS });
   server.connect(2);
-  server.receive(2, { t: MSG.HELLO, name: 'B', skin: 0, weapon: 77 });
+  server.receive(2, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'B', skin: 0, weapon: 77 });
   const a = server.clients.get(1).entity, b = server.clients.get(2).entity, ecs = server.world.ecs;
   assert.equal(ecs.weapon[a], WEAPON.PISTOLAS);
   assert.equal(ecs.weapon[b], WEAPON_KINDS.length - 1, 'clamped');
