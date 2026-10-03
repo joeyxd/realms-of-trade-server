@@ -125,5 +125,30 @@ export const ENEMIES = {
   },
 };
 
+// ---- M4.5 «Sin ley»: the Desalmados of the Cala Calavera ----
+// Renegade pirates drawn with the pirates' own looks. They hunt the nearest thing inside the Cala, pirates first and
+// mobs too (never each other); their blows are guardable like a pirate's. Each carries gear: it drops when they fall.
+ENEMIES.renegado = {
+  name: 'Desalmado', look: 'renegado', title: 'Desalmado', level: 7, renegade: true,
+  hp: 180, def: 5, speed: 4.4, radius: 0.4, hurt: 0.42, height: 1.9, chaser: true,
+  range: [0, 1.4], aggro: 14, leash: 30, xp: 110, respawn: 75,
+  attacks: [
+    // A cutlass cleave in front (a red circle that bursts at the end of the swing).
+    { id: 'tajo', kind: 'aoe', r: 1.7, reach: 1.1, dmg: 16, windup: 0.38, cd: 0.9, minD: 0, maxD: 2.2, recover: 0.3 },
+    // A crescent of three parryable blades when you keep your distance.
+    { id: 'medialuna', kind: 'pattern', pat: 'fan', type: 'parry', n: 3, spread: 14, speed: 11, dmg: 11, windup: 0.45, cd: 2.4, minD: 3, maxD: 11, every: 5, muzzle: [0, 1.1, 0.6], recover: 0.35 },
+  ],
+};
+ENEMIES.pistolera = {
+  name: 'Desalmada', look: 'pistolera', title: 'Desalmada', level: 7, renegade: true,
+  hp: 150, def: 3, speed: 4.6, radius: 0.4, hurt: 0.42, height: 1.85,
+  range: [6, 9], aggro: 15, leash: 30, xp: 110, respawn: 75,
+  attacks: [
+    // Four quick shots, then a point-blank spray when you come close.
+    { id: 'rafaga', kind: 'pattern', pat: 'burst', type: 'parry', n: 4, gap: 0.1, speed: 12, dmg: 9, windup: 0.4, cd: 1.6, minD: 0, maxD: 13, muzzle: [0.2, 1.15, 0.55], recover: 0.3 },
+    { id: 'descarga', kind: 'pattern', pat: 'fan', type: 'parry', n: 6, spread: 9, speed: 11, dmg: 8, life: 0.7, windup: 0.5, cd: 3, minD: 0, maxD: 5, every: 4, muzzle: [0, 1.1, 0.6], recover: 0.45 },
+  ],
+};
+
 export const ENEMY_KINDS = Object.keys(ENEMIES);
 export const enemyIndex = (kind) => ENEMY_KINDS.indexOf(kind);

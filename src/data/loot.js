@@ -9,6 +9,10 @@ export const LOOT = {
   crab: { gold: [0.8, 5, 10], item: 0.15, potion: 0.06, quest: { coral: 0.4 } },
   sentinel: { gold: [1, 8, 14], item: 0.35, potion: 0.15 },
   hellfire: { gold: [1, 40, 60], item: 0, potion: 0 }, // and a chest for each pirate who fought him
+  // The Desalmados (M4.5) drop their gear: `gear.n` items with extra rarity `gear.rar`, the k-th at least
+  // `gear.min[k]` (inside the Cala: public, like everything there).
+  renegado: { gold: [1, 25, 50], item: 0, potion: 0.4, gear: { n: 2, rar: 0.8, min: [1, 0] } },
+  pistolera: { gold: [1, 25, 50], item: 0, potion: 0.4, gear: { n: 2, rar: 0.8, min: [1, 0] } },
 };
 
 export const DROPS = {

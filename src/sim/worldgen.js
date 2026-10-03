@@ -1,6 +1,7 @@
 // Deterministic island generation. Pure: shared by the worker (authoritative sim), the client
 // (prediction + rendering) and node tests. Same seed => bit-identical world.
 import { tuning } from '../data/tuning.js';
+import { LAWLESS } from '../data/lawless.js';
 import { makeNoise2D } from './noise.js';
 import { mulberry32 } from '../core/rng.js';
 import { smoothstep, clamp01, lerp } from '../core/math.js';
@@ -353,6 +354,16 @@ export function generateWorld(seed) {
   for (const [u, v] of [[-60, 8], [-42, -8], [-26, 6]]) {
     const p = P([u, v]), q = P([u - 6, v * 0.3]);
     enemySpawns.push({ kind: 'archer', x: p.x, z: p.z, facing: Math.atan2(q.x - p.x, q.z - p.z) });
+  }
+  // La Cala Calavera (M4.5): its mobs are harder, refill with pirates around, and the Desalmados have names.
+  {
+    let n = 0;
+    for (const [kind, du, dv] of LAWLESS.spawns) {
+      const p = P([L.cala[0] + du, L.cala[1] + dv]), c = P(L.cala);
+      const extra = { cala: 1, tier: LAWLESS.tier, hpMul: LAWLESS.tier.hp };
+      if (kind === 'renegado' || kind === 'pistolera') extra.name = LAWLESS.names[n++ % LAWLESS.names.length];
+      enemySpawns.push({ kind, x: p.x, z: p.z, facing: Math.atan2(c.x - p.x, c.z - p.z), extra });
+    }
   }
   // Tutorial practice ground on the beach, up and left of the spawn (open sand, no palms in front of the
   // camera): a straw dummy, and a cannon up the slope that fires slow parryable balls at whoever stands

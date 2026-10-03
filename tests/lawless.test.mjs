@@ -1,4 +1,4 @@
-// M4.5 P2: La Cala Calavera. Inside the ring of skulls every pirate's blow lands on every other pirate in it, the
+// M4.5 P2–P3: La Cala Calavera. Inside the ring of skulls every pirate's blow lands on every other pirate in it, the
 // loot is public and a pirate who falls there drops everything they carry. Outside, nothing changed.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,6 +12,9 @@ import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { rollItem } from '../src/sim/items.js';
 import { GAME } from '../src/data/meta.js';
+import { World } from '../src/sim/world.js';
+import { ENEMIES } from '../src/data/enemies.js';
+import { installInventory, newProfile, attachProfile } from '../src/sim/systems/inventory.js';
 import { map, A } from './helpers.mjs';
 
 const K = map.cala;
@@ -248,4 +251,83 @@ test('a mob killed inside drops public loot, rolled once (quest items stay perso
   assert.equal(S.profile(2).gold, 5);
   assert.equal(S.profile(2).bag.length, 1);
   assert.ok(ITEMS.bag > 0 && S.ent(1) === a);
+});
+
+// ---- P3: the mobs of the Cala, their fights and the Desalmados ----------------------------------------------------
+
+function mobs() {
+  const w = new World(GAME.seed, { map, server: true });
+  installInventory(w);
+  const step = (n = 1) => { const evs = []; for (let i = 0; i < n; i++) { w.stepWorld(); evs.push(...w.events); w.events.length = 0; } return evs; };
+  // A bullet of `from` flying straight at `to`.
+  const shoot = (from, to, dmg = 12) => {
+    const ecs = w.ecs, dx = ecs.x[to] - ecs.x[from], dz = ecs.z[to] - ecs.z[from], d = Math.hypot(dx, dz);
+    w.hazards.spawn(w.nextPid++, 0, from, ecs.x[from] + dx / d, ecs.y[from] + 1.1, ecs.z[from] + dz / d, (dx / d) * 10, (dz / d) * 10, w.tick, dmg, map);
+  };
+  return { w, ecs: w.ecs, step, shoot };
+}
+
+test('inside the Cala a mob\'s bullet lands on another mob, which turns on it; outside it flies through', () => {
+  const { w, ecs, step, shoot } = mobs();
+  const archer = w.spawnEnemy('archer', OPEN.x, OPEN.z, 0), grunt = w.spawnEnemy('grunt', OPEN.x + 6, OPEN.z, 0);
+  const hp = ecs.hp[grunt];
+  shoot(archer, grunt);
+  const evs = step(60);
+  const hit = evs.find((ev) => ev.type === 'damage' && ev.id === grunt && ev.kind === 'ff');
+  assert.ok(hit && hit.by === archer, 'the grunt is hit by the archer');
+  assert.ok(evs.some((ev) => ev.type === 'phit' && ev.e === grunt && ev.ff), 'the bullet ends on it (clients remove it)');
+  assert.ok(ecs.hp[grunt] < hp);
+  assert.equal(ecs.brain[grunt].foe, archer, 'and it turns on the archer');
+  // Outside: La Caldera.
+  const o = mobs();
+  const a2 = o.w.spawnEnemy('archer', A.x, A.z, 0), g2 = o.w.spawnEnemy('grunt', A.x + 6, A.z, 0);
+  const hp2 = o.ecs.hp[g2];
+  o.shoot(a2, g2);
+  const evs2 = o.step(60);
+  assert.equal(o.ecs.hp[g2], hp2);
+  assert.ok(!evs2.some((ev) => ev.type === 'damage' && ev.kind === 'ff'));
+});
+
+test('the Cala\'s mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around', () => {
+  const { w, ecs, step } = mobs();
+  w.populate();
+  const cala = w.spawners.filter((s) => s.extra && s.extra.cala);
+  assert.equal(cala.length, LAWLESS.spawns.length);
+  for (const sp of cala) {
+    const e = sp.entity, def = ENEMIES[sp.kind];
+    assert.equal(ecs.maxHp[e], Math.round(def.hp * LAWLESS.tier.hp), sp.kind);
+    assert.equal(ecs.brain[e].tier, LAWLESS.tier);
+    if (def.renegade) assert.ok(LAWLESS.names.includes(ecs.names[e]), 'a name of their own');
+  }
+  // Nobody around: quiet.
+  let evs = step(60 * 8);
+  assert.ok(!evs.some((ev) => ev.type === 'damage' && ev.kind === 'ff'), 'the Cala sleeps when no pirate is near');
+  // A pirate at the door (god mode, standing still): the Desalmados go for the mobs too.
+  const p = w.spawnPlayer({ x: map.checkpoints.calavera.x, z: map.checkpoints.calavera.z });
+  attachProfile(w, p, newProfile());
+  ecs.god[p] = 1;
+  let seq = 0;
+  evs = [];
+  for (let i = 0; i < 60 * 40; i++) { w.applyCommand(p, { seq: ++seq, mx: 0, mz: 0, ax: K.x, az: K.z, btn: 0, prs: 0, pt: w.tick }); evs.push(...step()); }
+  const ren = new Set(cala.filter((s) => ENEMIES[s.kind].renegade).map((s) => s.entity));
+  assert.ok(evs.some((ev) => ev.type === 'damage' && ev.kind === 'ff' && ren.has(ev.by)), 'a Desalmado hurts a mob');
+  assert.ok(evs.some((ev) => ev.type === 'kill' && !ev.boss), 'something died');
+  assert.ok(evs.some((ev) => ev.type === 'rise'), 'and the Cala refills (rising) with a pirate around');
+});
+
+test('a Desalmado falls: its gear (2 items, one at least Uncommon), gold and maybe a potion, all public', () => {
+  const { w, ecs } = mobs();
+  const p = w.spawnPlayer({ x: OPEN.x, z: OPEN.z });
+  attachProfile(w, p, newProfile());
+  const r = w.spawnEnemy('renegado', OPEN.x + 2, OPEN.z, 0, { cala: 1, tier: LAWLESS.tier, hpMul: LAWLESS.tier.hp, name: 'Cuervo Malasangre' });
+  assert.equal(ecs.names[r], 'Cuervo Malasangre');
+  w.killEnemy(r, p);
+  const drops = [...w.drops.values()];
+  const items = drops.filter((d) => d.kind === 'item');
+  assert.equal(items.length, 2);
+  assert.ok(items.some((d) => d.item.r >= 1), 'at least Poco común');
+  assert.ok(items.every((d) => d.item.l === ENEMIES.renegado.level + LAWLESS.tier.ilvl));
+  assert.ok(drops.some((d) => d.kind === 'gold'));
+  assert.ok(drops.every((d) => d.to === 0), 'public');
+  assert.ok(w.events.some((ev) => ev.type === 'loot' && ev.pub));
 });

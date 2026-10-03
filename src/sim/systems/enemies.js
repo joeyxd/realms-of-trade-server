@@ -9,6 +9,7 @@ import { moveWithCollision } from './movement.js';
 import { patternSpan } from '../projectiles.js';
 import { bossBrain, stepBoss, summonMinions, bossFire } from './boss.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
+import { LAWLESS } from '../../data/lawless.js';
 
 export const defOf = (ecs, e) => ENEMIES[ENEMY_KINDS[ecs.enemy[e]]];
 
@@ -52,13 +53,32 @@ export function pickTarget(world, e, def, b) {
   const reach = def.fixed ? def.ring : b.aggro || def.aggro;
   const leash = b.leash || def.leash;
   if (!reach) return 0;
+  // Infighting (the Cala, M4.5): a mob keeps after whoever hit it for a while.
+  if (b.foe) {
+    const f = b.foe;
+    if (b.foeT > 0 && ecs.alive[f] && !(ecs.dead[f] > 0) && (ecs.mask[f] & C.ENEMY) && Math.hypot(ecs.x[f] - b.homeX, ecs.z[f] - b.homeZ) <= leash) return f;
+    b.foe = 0;
+  }
+  // A Desalmado would rather hunt a pirate (their distance counts less).
+  const pw = def.renegade ? LAWLESS.preferPirates : 1;
   for (let p = 1; p < ecs.cap; p++) {
     if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT) || ecs.dead[p] > 0) continue;
     const d = Math.hypot(ecs.x[p] - ax, ecs.z[p] - az);
     const keep = p === b.target ? reach * 1.35 : reach; // hysteresis: a target is kept a bit longer
     if (d > keep) continue;
     if (!def.fixed && Math.hypot(ecs.x[p] - b.homeX, ecs.z[p] - b.homeZ) > leash) continue;
-    if (d < bd) { bd = d; best = p; }
+    if (d * pw < bd) { bd = d * pw; best = p; }
+  }
+  // …and the mobs of the Cala too (never another Desalmado), while a pirate is around to see it.
+  if (def.renegade && world.calaAwake) {
+    for (let o = 1; o < ecs.cap; o++) {
+      if (o === e || !ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      const od = defOf(ecs, o);
+      if (od.renegade || od.fixed || od.practice || od.boss || !world.map.lawlessAt(ecs.x[o], ecs.z[o])) continue;
+      const d = Math.hypot(ecs.x[o] - ax, ecs.z[o] - az);
+      if (d > (o === b.target ? reach * 1.35 : reach) || Math.hypot(ecs.x[o] - b.homeX, ecs.z[o] - b.homeZ) > leash) continue;
+      if (d < bd) { bd = d; best = o; }
+    }
   }
   return best;
 }
@@ -117,6 +137,7 @@ export function stepEnemy(world, e, dt) {
   const ecs = world.ecs, def = defOf(ecs, e), b = ecs.brain[e];
   ecs.actT[e] += dt;
   b.t += dt; b.sinceHit += dt; b.gcd -= dt;
+  if (b.foeT > 0) b.foeT -= dt;
   for (let i = 0; i < b.every.length; i++) b.every[i] -= dt;
   if (def.regen && b.sinceHit > def.regen && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = ecs.maxHp[e];
   knockback(world, e, dt);
@@ -276,6 +297,7 @@ export function fire(world, e, def, b, a) {
   };
   if (a.arms) ev.arms = a.arms;
   if (a.waves) ev.waves = a.waves;
+  if (a.life) ev.life = a.life; // short-lived (the Desalmada's point-blank spray)
   if (a.alt) ev.alt = 1;
   world.firePattern(ev);
   b.fireDur = patternSpan(ev) + a.recover;
@@ -304,6 +326,8 @@ export function damageEnemy(world, e, raw, o) {
   b.sinceHit = 0;
   if (b.state === 'dormant') wake(world, e, o.by);
   if (o.by && !def.fixed && b.state !== 'return') b.target = o.by;
+  // Hit by another mob (the Cala, M4.5): it turns on it.
+  if (o.by && o.by !== e && ecs.alive[o.by] && (ecs.mask[o.by] & C.ENEMY) && !def.fixed) { b.foe = o.by; b.foeT = LAWLESS.foe; }
   if (def.invulnerable) {
     world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
     return 0;

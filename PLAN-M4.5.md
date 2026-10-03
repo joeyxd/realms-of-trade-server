@@ -107,7 +107,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   `e` = el mob).
 - **Desalmados** (`renegado`: sable, tajo en círculo que se puede bloquear + abanico de 3 medias lunas;
   `pistolera`: ráfaga de 4 + descarga de 6 perdigones a corta distancia). Vida 260, DEF 6, nivel 7, rápidos.
-  Atacan a lo más cercano dentro de su vista: piratas (preferidos) **y** mobs (y entre ellos). Nombres propios
+  Atacan a lo más cercano dentro de su vista: piratas (preferidos) **y** mobs (nunca a otro Desalmado). Nombres propios
   («Cuervo Malasangre»…), título «Desalmado», reaparecen a los 75 s. Al morir sueltan su «equipo»: 2 objetos (nivel
   7 + 3, rareza + 0.8, uno al menos Poco común), 25–50 oro y poción al 40 %, públicos. Se dibujan con los looks
   de jugador (Bucanero con sable, Tormenta con pistolas).
@@ -139,7 +139,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   públicas, protocolo v5. Tests `tests/lawless.test.mjs` (la isla de fuera no cambia; fuera no hay fuego amigo;
   dentro el sable, las pistolas y los reflejos dañan; la guardia bloquea; morir dentro lo derrama todo y otro lo
   recoge; fuera no se pierde nada; el recién llegado ve las caídas públicas).
-- [ ] **P3 Mobs y Desalmados**: generadores con «Sin ley», peleas entre mobs, Desalmados (datos, IA, botín). Tests
+- [x] **P3 Mobs y Desalmados**: generadores con «Sin ley», peleas entre mobs, Desalmados (datos, IA, botín). Tests
   (una bala de arquero hiere a un grumete de la Cala y este se vuelve; fuera no; un Desalmado ataca a un mob;
   su botín es público).
 - [ ] **P4 Cliente**: frontera, carteles, chip, placas, números y avisos de muerte, botín público, pantalla de
@@ -181,6 +181,19 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   llama `world.onDeath`. `inventory.js`: `spillOnDeath` (todo el equipo salvo el arma inicial, la bolsa y las
   pociones → caídas públicas con `from`; arma inicial del mismo kit; `stats.deaths` / `stats.pk`; evento privado
   `spill`), caídas públicas (`to: 0`, `loot {pub}` / `unloot {pub, by}`, el primero que la pisa y puede cargarla;
-  se renumera al recogerla), `lootOnKill` en la Cala tira una vez y deja público (`T.extra` para el equipo de los
+  se renumera al recogerla), `lootOnKill` en la Cala tira una vez y deja público (`T.gear` para el equipo de los
   Desalmados, P3), `publicDrops` → el que entra recibe `loot {pub, late}`. `spill` guarda al momento. Protocolo v5.
   La Cala vista en el navegador (tótems, empalizadas, cartel, cartel de zona). 137 tests.
+- **P3:** `LAWLESS.spawns` (13: 4 grumetes, 2 arqueros, 2 diablillos, chamán, cangrejo y 3 Desalmados) entran en
+  `map.enemySpawns` con `extra {cala, tier: LAWLESS.tier, hpMul}` (el cerebro hereda `tier`: daño, XP y loot de
+  «Sin ley») y los Desalmados con `name` propio (`LAWLESS.names`). Los generadores de la Cala reaparecen aunque haya
+  piratas cerca, levantándose del suelo (`riseT` 1.1 s). `systems/lawless.js` `stepInfighting` (tras `stepShots`):
+  balas armadas de un mob dentro de la Cala que tocan a otro mob de dentro → `phit {ff}` + `damageEnemy(kind: 'ff')`;
+  círculos que estallan ese tick, igual. `damageEnemy` con un mob como autor pone `b.foe` (6 s) y `pickTarget` lo
+  prefiere mientras viva y esté en su correa. Desalmados (`ENEMIES.renegado`: tajo en círculo + media luna de 3;
+  `ENEMIES.pistolera`: ráfaga de 4 + descarga de 6 perdigones de 0.7 s, `life` en el patrón), `renegade: true`:
+  `pickTarget` pesa la distancia a un pirata × 0.7 y, mientras haya un pirata a ≤ R + 18 u (`world.calaAwake`, cada 30
+  ticks), también caza mobs de la Cala (nunca a otro Desalmado). Sin piratas cerca, la Cala duerme (sin eventos ni
+  muertes). `LOOT.renegado / pistolera.gear` (2 objetos, rareza + 0.8, el primero al menos Poco común) en
+  `lootOnKill`. Medido en 3 min con un pirata quieto en la Cala: ~20 muertes entre mobs (la mitad a manos de
+  Desalmados), ~18 reapariciones, ~20 caídas públicas. 140 tests.

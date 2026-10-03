@@ -211,7 +211,7 @@ export function lootOnKill(world, enemy, by, players) {
       }
       if (T.item && rng() < T.item) addDrop(world, to, 'item', x, z, { item: rollItem(rng, { lvl: (def.level || 1) + tier.ilvl, uid: p.uid++, rarityBonus: tier.rar }) }, out, o);
       if (T.potion && rng() < T.potion) addDrop(world, to, 'potion', x, z, {}, out, o);
-      for (const it of T.extra ? T.extra(rng, tier) : []) addDrop(world, to, 'item', x, z, { item: { ...it, u: p.uid++ } }, out, o);
+      if (T.gear) for (let k = 0; k < T.gear.n; k++) addDrop(world, to, 'item', x, z, { item: rollItem(rng, { lvl: (def.level || 1) + tier.ilvl, uid: p.uid++, rarityBonus: tier.rar + T.gear.rar, minRarity: T.gear.min[k] || 0 }) }, out, o);
     }
     if (T.quest && world.questWants) for (const q in T.quest) if (world.questWants(pl, q) && rng() < T.quest[q]) addDrop(world, pl, 'quest', x, z, { q }, list);
     announce(world, pl, list, x, z);

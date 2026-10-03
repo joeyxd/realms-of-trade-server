@@ -16,6 +16,8 @@ import { skillSegDist, rainR } from './systems/skills.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
+import { stepInfighting } from './systems/lawless.js';
+import { LAWLESS } from '../data/lawless.js';
 
 const D2R = Math.PI / 180;
 
@@ -103,7 +105,7 @@ export class World {
     ecs.hp[e] = ecs.maxHp[e] = Math.round(def.hp * mul);
     ecs.def[e] = def.def;
     ecs.level[e] = def.level || 1;
-    ecs.names[e] = def.name;
+    ecs.names[e] = extra.name || def.name;
     ecs.titles[e] = def.title || '';
     ecs.brain[e] = makeEnemyBrain(def, x, z, facing, this.rng, extra);
     // The Marea of its encounter (M4): damage, XP and loot follow it.
@@ -496,6 +498,7 @@ export class World {
     }
     if (this.isServer) {
       this.stepShots(DT);
+      stepInfighting(this);
       if (this.drops) stepDrops(this);
       if (this.profiles) zoneSweep(this);
       for (const enc of this.encounters) stepEncounter(this, enc, DT);
@@ -509,11 +512,13 @@ export class World {
         sp.timer -= DT;
         if (sp.timer > 0) continue;
         let near = false;
-        for (let p = 1; p < ecs.cap; p++) {
+        // The Cala Calavera refills even with pirates around (its mobs rise out of the ground).
+        const cala = sp.extra && sp.extra.cala;
+        for (let p = 1; p < ecs.cap && !cala; p++) {
           if (ecs.alive[p] && (ecs.mask[p] & C.PLAYER) && !(ecs.mask[p] & C.BOT) && Math.hypot(ecs.x[p] - sp.x, ecs.z[p] - sp.z) < 18) near = true;
         }
         if (near) { sp.timer = 2; continue; }
-        sp.entity = this.spawnEnemy(sp.kind, sp.x, sp.z, sp.facing, sp.extra);
+        sp.entity = this.spawnEnemy(sp.kind, sp.x, sp.z, sp.facing, cala ? { ...sp.extra, riseT: LAWLESS.rise } : sp.extra);
       }
       if (this.tick % 30 === 0) this.hazards.sweep(this.tick);
     }
