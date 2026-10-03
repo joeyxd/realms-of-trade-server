@@ -70,3 +70,47 @@ test('two players at 100 ms RTT: prediction holds, they see each other walk and 
   a.t.close(); b.t.close();
   await gs.close();
 });
+
+test('a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched', async () => {
+  const { MSG } = await import('../src/net/protocol.js');
+  const { KIND } = await import('../src/sim/ecs.js');
+  const { ENEMY_KINDS } = await import('../src/data/enemies.js');
+  const { PTYPE } = await import('../src/sim/projectiles.js');
+  const msgs = [];
+  const transport = { onSnapshot() {}, onMessage: (cb) => msgs.push(cb), start() {}, send() {}, sendInput() {} };
+  const log = [];
+  let client = null;
+  const bus = { emit: (type, ev) => log.push({ type, ev, at50: client && client.entities.get(50) }) };
+  client = new GameClient(transport, map, bus);
+  const feed = (m) => msgs.forEach((cb) => cb(m));
+  const enemy = (kind, maxHp) => ({ t: MSG.SPAWN, e: { id: 50, kind: KIND.ENEMY, name: kind, title: '', skin: 0, level: 1, enemy: ENEMY_KINDS.indexOf(kind), maxHp } });
+  const shotAt = (sid) => {
+    feed({ t: MSG.EVENT, ev: { type: 'shot', sid, pid: 0, key: 0, owner: 99, x: 0, y: 1, z: 0, dx: 1, dz: 0, speed: 14, dmg: 5, life: 2, r: 0.25, ptype: PTYPE.PARRY, heavy: 0, seq: 0, homing: 0, cone: 0 } });
+    feed({ t: MSG.EVENT, ev: { type: 'shotEnd', sid, x: 6, z: 0, hit: 50 } });
+    feed({ t: MSG.EVENT, ev: { type: 'kill', id: 50, by: 99, x: 6, z: 0, xp: 5 } });
+    feed({ t: MSG.DESPAWN, id: 50 });
+  };
+  // 1) The shot lands (client update): the kill plays on the archer, then it goes.
+  feed(enemy('archer', 30));
+  const archer = client.entities.get(50);
+  shotAt(7);
+  assert.equal(client.entities.get(50), archer, 'despawn held while its death is in flight');
+  for (let i = 0; i < 20; i++) client.update(1 / 60);
+  const k1 = log.find((l) => l.type === 'combat' && l.ev.type === 'kill');
+  assert.ok(k1 && k1.at50 === archer, 'the death played on the archer');
+  assert.ok(!client.entities.has(50), 'then it was despawned');
+  // 2) The id comes back before the shot lands (the boss rises on the freed slot).
+  log.length = 0;
+  feed(enemy('archer', 30));
+  const second = client.entities.get(50);
+  shotAt(8);
+  feed(enemy('hellfire', 5600));
+  const kill = log.findIndex((l) => l.type === 'combat' && l.ev.type === 'kill');
+  const gone = log.findIndex((l) => l.type === 'entity:despawn' && l.ev === second);
+  const born = log.findIndex((l) => l.type === 'entity:spawn' && l.ev.enemy === 'hellfire');
+  assert.ok(kill >= 0 && kill < gone && gone < born, `order kill ${kill} < despawn ${gone} < spawn ${born}`);
+  assert.equal(log[kill].at50, second, 'the late death is the old archer’s');
+  const boss = client.entities.get(50);
+  assert.equal(boss.enemy, 'hellfire');
+  assert.ok(!boss.dying, 'the boss is not marked dying');
+});

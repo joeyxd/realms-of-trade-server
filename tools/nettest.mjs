@@ -21,7 +21,8 @@ const RTTS = (env.RTTS || '0,100,200').split(',').map(Number);
 const N = +(env.N || 2), LV = +(env.LV || 6), SKILL = +(env.SKILL || 0.9), JITTER = +(env.JITTER || 0), MAX = +(env.MAX || 420);
 const WEAPONS = (env.WEAPONS || 'sable,pistolas').split(',');
 const map = generateWorld(GAME.seed);
-const A = map.landmarks.arena, R = ENCOUNTERS.caldera.radius;
+// Enemies the bots go after: awake ones around La Caldera (archers kite out past its rim, so wider than it).
+const A = map.landmarks.arena, R = ENCOUNTERS.caldera.radius + 14;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function bot(i, url) {
@@ -99,6 +100,7 @@ async function run(rtt) {
   for (const b of bots) { b.err = { n: 0, sum: 0, max: 0 }; b.ptLag.length = 0; }
   const w0 = gs.game.wireOut(), started = performance.now();
   let last = performance.now();
+  const b0 = {};
   // The clients' frames: fixed 60 Hz commands from the brain, one flush per frame, then the client update.
   await new Promise((resolve) => {
     const timer = setInterval(() => {
@@ -114,6 +116,12 @@ async function run(rtt) {
         b.t.flush();
         b.client.update(dt, dt);
       }
+      if (env.DEBUG && (now - (b0.dbg || 0)) > 10000) {
+        b0.dbg = now;
+        const srvSide = [...enc.alive].filter((q) => w.ecs.alive[q]).map((q) => `${w.ecs.names[q]}@${Math.hypot(w.ecs.x[q] - A.x, w.ecs.z[q] - A.z).toFixed(0)}`).join(' ');
+        const seen = bots.map((b) => { const v = view(b); return `Bot${b.i + 1}@${Math.hypot(v.px - A.x, v.pz - A.z).toFixed(0)} ve ${v.enemies.map((o) => Math.hypot(o.x - v.px, o.z - v.pz).toFixed(0)).join(',')}`; }).join(' · ');
+        console.log(`[${rtt} ms ${((now - started) / 1000).toFixed(0)} s] ${enc.st} w${enc.wave + 1} · servidor: ${srvSide} · ${seen}`);
+      }
       if (victory || (now - started) / 1000 > MAX) { clearInterval(timer); resolve(); }
     }, 16);
   });
@@ -121,6 +129,9 @@ async function run(rtt) {
   const out = {
     rtt, victory: victory ? +((victory - t0) * DT).toFixed(1) : null, reached: log.at(-1) || '-', stepMs: st.stepMs, net: srv.stats, wipes,
     boss: enc.bossE && w.ecs.alive[enc.bossE] ? `${Math.ceil(w.ecs.hp[enc.bossE])}/${w.ecs.maxHp[enc.bossE]} fase ${w.ecs.brain[enc.bossE].phase + 1}` : '',
+    // Unfinished: where the encounter's enemies and the bots are (distance from the centre).
+    left: victory ? '' : [...enc.alive].filter((q) => w.ecs.alive[q]).map((q) => `${w.ecs.names[q]}@${Math.hypot(w.ecs.x[q] - A.x, w.ecs.z[q] - A.z).toFixed(0)}`).join(' ')
+      + ' | bots@' + bots.map((b) => Math.hypot(w.ecs.x[b.client.youServer] - A.x, w.ecs.z[b.client.youServer] - A.z).toFixed(0)).join('/'),
     players: bots.map((b) => {
       const s = ents.get(b.client.youServer), id = [...gs.game.sockets.keys()][b.i];
       return {
@@ -140,6 +151,7 @@ const results = await Promise.all(RTTS.map((r) => run(r).catch((err) => ({ rtt: 
 for (const r of results) {
   if (r.error) { console.log(`RTT ${r.rtt} ms: ERROR ${r.error}`); continue; }
   console.log(`\nRTT ${r.rtt} ms (±${JITTER / 2} por sentido) · victoria ${r.victory ?? 'no'} s (llegó a ${r.reached}${r.boss ? ', jefe ' + r.boss : ''}${r.wipes.length ? ', reinicios a los ' + r.wipes.join('/') + ' s' : ''}) · servidor ${r.stepMs} ms/paso · ${JSON.stringify(r.net)}`);
+  if (r.left) console.log(`  quedan: ${r.left}`);
   for (const p of r.players) {
     console.log(`  Bot${p.bot} ${p.weapon.padEnd(8)} daño recibido ${String(p.dmg).padStart(4)} (${p.hits} golpes) · reflejos E/B/P ${p.perfect}/${p.good}/${p.poor} · destruidas ${p.destroy} · atrapadas ${p.catch} · bloqueos ${p.block} · daño hecho ${p.dealt} · bajas ${p.kills}`);
     console.log(`        rtt medido ${p.rttMeasured} ms · correcciones ${p.corrections} (${p.perMin}/min, media ${p.meanErr} u, máx ${p.maxErr} u) · pt vs servidor ${p.ptLagAvg} ticks · ${p.wireKBs} KB/s`);

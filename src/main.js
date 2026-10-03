@@ -586,11 +586,11 @@ async function boot() {
       trailFrame++;
       safe('net', () => { transport.flush(); client.update(simDt, realDt); });
       if (st.online) safe('netHud', () => {
-        st.netT = (st.netT || 0) + realDt;
-        if (st.netT < 0.5) return;
+        const now = performance.now();
+        if (now - (st.netT || 0) < 500) return;
         const b = transport.stats.bytesIn;
-        st.kbIn = (b - (st.netB || 0)) / 1024 / st.netT;
-        st.netB = b; st.netT = 0;
+        if (st.netT) st.kbIn = (b - st.netB) / 1024 / ((now - st.netT) / 1000); // JSON before the socket inflates it
+        st.netB = b; st.netT = now;
         let humans = 0;
         for (const r of client.entities.values()) if (r.human) humans++;
         hud.setNet(st.mode === 'playing' && !transport.closed ? { rtt: transport.rtt, players: humans } : null);

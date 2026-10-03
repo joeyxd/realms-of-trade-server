@@ -46,6 +46,9 @@ export class GameClient {
     this.meleeSeen = new Map(); // enemy id → swing key (client-side melee feedback, once per swing)
     this.ending = new Map(); // shot slot → {sid, x, z, hit, t, queue} (server said it ended; finishing the flight)
     this.endedEarly = new Set(); // bounce sids that ended before their deferred flight began
+    // Despawns held until the death a shot is still flying to has been shown (the server frees the id at
+    // once and its next spawn may reuse it: without this the late death would land on the newcomer).
+    this.heldDespawn = new Map(); // id → clock when the despawn arrived
     this.tmp = { x: 0, y: 0, z: 0 };
     // Visual shots are spawned by prediction and by server events; during a replay they are reused.
     this.pred.spawnShot = (owner, o) => this.spawnLocalShot(owner, o);
@@ -77,6 +80,7 @@ export class GameClient {
     switch (m.t) {
       case MSG.SPAWN: {
         const d = m.e;
+        if (this.heldDespawn.has(d.id)) this.releaseDespawn(d.id);
         const rec = {
           id: d.id, kind: d.kind, name: d.name, title: d.title, skin: d.skin, level: d.level, team: d.team ?? 0, human: !!d.human,
           enemy: d.enemy !== undefined ? ENEMY_KINDS[d.enemy] : null, maxHp: d.maxHp || 0, weapon: d.weapon || 0,
@@ -88,9 +92,8 @@ export class GameClient {
         break;
       }
       case MSG.DESPAWN: {
-        const rec = this.entities.get(m.id);
-        this.entities.delete(m.id);
-        if (rec) this.bus.emit('entity:despawn', rec);
+        if (this.killPending(m.id)) { this.heldDespawn.set(m.id, this.clock); break; }
+        this.despawnNow(m.id);
         break;
       }
       case MSG.WELCOME: {
@@ -200,6 +203,41 @@ export class GameClient {
   }
 
   keyOf(ev) { return ev.type + ':' + (ev.pid ?? ev.id ?? '') + ':' + ev.seq; }
+
+  despawnNow(id) {
+    this.heldDespawn.delete(id);
+    const rec = this.entities.get(id);
+    this.entities.delete(id);
+    if (rec) this.bus.emit('entity:despawn', rec);
+  }
+
+  // A kill waiting for its shot to land on this entity?
+  killPending(id) {
+    for (const end of this.ending.values()) if (end.queue.some((q) => q.type === 'kill' && q.id === id)) return true;
+    return false;
+  }
+
+  // Show the deaths still in flight to `id` now (at the server's impact point), then despawn it.
+  releaseDespawn(id) {
+    for (const [s, end] of [...this.ending]) if (end.queue.some((q) => q.type === 'kill' && q.id === id)) this.finishEnding(s, end, end.x, end.z);
+    if (this.heldDespawn.has(id)) this.despawnNow(id);
+  }
+
+  // A visual shot the server already ended reaches its impact: the impact, then what it caused.
+  finishEnding(s, end, ix, iz) {
+    this.shots.free(s);
+    this.ending.delete(s);
+    this.bus.emit('combat', { type: 'shotImpact', x: ix, z: iz, hit: end.hit });
+    for (const q of end.queue) {
+      if (!q.spawnShot) { this.bus.emit('combat', q); continue; }
+      const b = q.spawnShot;
+      if (this.endedEarly.delete(b.sid)) continue;
+      const l = this.spawnLocalShot(b.owner, { ...b, x: ix, z: iz, type: b.ptype, server: true });
+      if (l) this.sidOf.set(b.sid, l);
+      this.bus.emit('combat', { type: 'bounce', x: ix, z: iz, owner: b.owner });
+    }
+    for (const q of end.queue) if (q.type === 'kill' && this.heldDespawn.has(q.id) && !this.killPending(q.id)) this.despawnNow(q.id);
+  }
 
   spawnLocalShot(owner, o) {
     const S = this.shots;
@@ -393,6 +431,8 @@ export class GameClient {
       this.sampleRemote(rec, rt);
     }
     if (simDt > 0) this.stepShots(simDt);
+    // A held despawn never waits long (its shot may have been cleared away).
+    for (const [id, t] of this.heldDespawn) if (this.clock - t > 0.4) this.releaseDespawn(id);
     // Hostile projectiles the client no longer needs.
     // (Every 32 ticks of pt, which can step by more than one per command.)
     if (this.ptCur && Math.abs(this.ptCur - this.lastSweep) >= 32) { this.pred.hazards.sweep(this.ptCur); this.lastSweep = this.ptCur; }
@@ -428,18 +468,7 @@ export class GameClient {
         const step = S.speed[s] * dt;
         end.t += dt;
         if (d <= step + 0.35 || end.t > 0.22) {
-          S.free(s);
-          this.ending.delete(s);
-          const ix = d < 3 ? ex : S.x[s], iz = d < 3 ? ez : S.z[s];
-          this.bus.emit('combat', { type: 'shotImpact', x: ix, z: iz, hit: end.hit });
-          for (const q of end.queue) {
-            if (!q.spawnShot) { this.bus.emit('combat', q); continue; }
-            const b = q.spawnShot;
-            if (this.endedEarly.delete(b.sid)) continue;
-            const l = this.spawnLocalShot(b.owner, { ...b, x: ix, z: iz, type: b.ptype, server: true });
-            if (l) this.sidOf.set(b.sid, l);
-            this.bus.emit('combat', { type: 'bounce', x: ix, z: iz, owner: b.owner });
-          }
+          this.finishEnding(s, end, d < 3 ? ex : S.x[s], d < 3 ? ez : S.z[s]);
           continue;
         }
         S.vx[s] = (dx / d) * S.speed[s]; S.vz[s] = (dz / d) * S.speed[s];

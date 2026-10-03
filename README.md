@@ -88,8 +88,8 @@ próxima partida.
 | M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | ✅ |
 | M3 | 5 oleadas, Cangrejo mortero, HELLFIRE en 3 fases (embestida, láser doble, meteoros, carriles de fuego, cortina, lava) → `PLAN-M3.md` | ✅ |
 | M3.5 | Combate V2: apuntar con ratón / mando, reflejo a tiempo en 3 niveles, guardia que atrapa, armas con su kit (sable y pistolas), armeros → `PLAN-M3.5.md` | ✅ |
-| M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer` | siguiente |
-| M4–M6 | Progresión/loot, momentos Highlight, rendimiento y móvil final | — |
+| M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer`, cooperativo medido con latencia → `PLAN-M3.6.md` | ✅ |
+| M4–M6 | Progresión/loot, momentos Highlight, rendimiento y móvil final | siguiente |
 
 ### Qué incluye M1
 
@@ -207,6 +207,38 @@ próxima partida.
 - Bot: `WEAPON=pistolas LV=6 SKILL=0.9 node tools/playtest.mjs`. Sable ~150 s (jefe ~55 s), pistolas ~215 s
   (jefe ~100 s); la sim tarda ~0,12 ms por paso.
 - 84 tests en Node.
+
+### Qué incluye M3.6 — en línea, 2–4 piratas
+
+- **Servidor Node real** (`npm start`): sirve el juego y corre el mundo en un proceso; el mismo `LocalServer` que en
+  solo vive en el Worker, detrás de WebSockets comprimidos. Límites por conexión, latidos, `/health`, `/status`,
+  `render.yaml` para Render. El quinto jugador recibe «tripulación completa» y sigue mirando.
+- **Cliente:** entra en línea solo si la página viene del servidor; nombre y aspecto en el título, píldora «EN
+  LÍNEA · n/4», «Jugar solo / en línea», ping en el HUD, aviso de conexión perdida con «Reconectar». En línea el
+  menú no congela el mundo.
+- **Cooperativo:** marcos de la tripulación (nombre, nivel, vida, arma, caído), placas verdes para los humanos,
+  «X subió a bordo / dejó la isla», el tajo de los demás. La Prueba de Fuego escala con la tripulación (oleadas
+  × 1,6 de vida con dos, HELLFIRE × 1,75) y lo dice («Tripulación 2»). Tu hitstop es tuyo: con compañía no
+  detiene a los demás; la muerte del jefe sí detiene a todos.
+- **Red robusta:** si un cliente se calla (pestaña oculta, pico de lag) el servidor lo rellena con comandos neutros
+  (le siguen golpeando); lo que llega tarde no da movimiento extra. Rebobinado 20 → 24 ticks (400 ms).
+- **Arreglo:** una muerte por disparo (que espera a que la bala visual llegue) podía caer sobre la entidad que
+  reusaba su id: el jefe nacía «muriendo» (sin barra, sin auto-apuntado) y los arqueros abatidos con reflejos no
+  contaban en el tutorial. Ahora el despawn espera a esa muerte.
+- **Medido** con `tools/nettest.mjs` (2 bots-cliente reales por WebSocket, sable + pistolas, Nv 6, habilidad 0,9,
+  ±5 ms de jitter):
+
+  | RTT | Victoria | Correcciones de predicción | Fuera del rebobinado | Por cliente |
+  |---|---|---|---|---|
+  | 0 ms | 128 s | 0 | 0 | ~6 KB/s |
+  | 100 ms | 175 s | ≤ 0,7/min (0,3 u) | 0 | ~6 KB/s |
+  | 200 ms | 201 s | ≤ 0,6/min (0,3–0,6 u) | 0 | ~6 KB/s |
+  | 300 ms | 277 s | ≤ 0,2/min (0,4–0,6 u) | 0 | ~5 KB/s |
+
+  Las correcciones son los empujones de los golpes (el servidor los decide); el daño recibido no crece con la
+  latencia porque cada golpe se juzga en el tick que veía el jugador. Con 4 jugadores en la arena: 8 KB/s por
+  cliente en el cable y ~0,3–0,6 ms por paso en el servidor. Entre ejecuciones la victoria varía ±30 s.
+- 95 tests en Node (servidor, cooperativo y red incluidos).
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.

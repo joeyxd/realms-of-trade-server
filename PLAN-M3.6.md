@@ -118,7 +118,7 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
 - [x] **P5 Latencia.** `tools/botbrain.mjs`, `tools/nettest.mjs`, informe, ajuste del rebobinado; test de red
   con 2 clientes a 100 ms de RTT (predicción sin correcciones, se ven, los reflejos de uno llegan al otro).
 - [x] **P6 Presentación cooperativa** (§2.6) + capturas con 2 navegadores.
-- [ ] **P7 Cierre.** README («Jugar en línea», despliegue en Render), DESIGN §10/§16, versión `0.3.6-m3.6`,
+- [x] **P7 Cierre.** README («Jugar en línea», despliegue en Render), DESIGN §10/§16, versión `0.3.6-m3.6`,
   artefacto republicado (modo solo), informe final.
 
 ## 4. Notas de implementación (rellenar al cerrar cada paso)
@@ -159,3 +159,13 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   tarde); placas `ally` (verde) para humanos; marcos «tripulación» bajo el tuyo (`hud.setParty`: nombre, nivel,
   vida, arma, caído); avisos «X subió a bordo / dejó la isla»; línea de la arena con «Tripulación n». Los nombres se
   escapan en el cliente (placas, marcos, avisos) además de limpiarse en el servidor.
+- **P5 (2.ª parte):** `nettest` daba falsos atascos: la vista del bot solo veía enemigos a ≤ 21 u del centro (los
+  arqueros se alejan más; ahora radio + 14) y un **bug real del cliente**: las muertes por disparo se aplazan hasta
+  que la bala visual llega, el servidor libera el id en el mismo tick (pila LIFO) y la siguiente entidad (p. ej.
+  HELLFIRE) lo reusa, así que la muerte aplazada la marcaba `dying`. `GameClient` retiene el `despawn` mientras
+  haya una muerte en vuelo (`heldDespawn`, ≤ 0.4 s) y, si llega un `spawn` con ese id, muestra antes la muerte
+  pendiente. Test de regresión en `tests/net.test.mjs`. Medición final: victoria 128 / 175 / 201 / 277 s a
+  0 / 100 / 200 / 300 ms, 0 comandos fuera del rebobinado, ≤ 0.7 correcciones/min, 5–6 KB/s por cliente.
+  `DEBUG=1` en `nettest` imprime cada 10 s qué ve cada bot frente al servidor.
+- **P7:** README («Jugar en línea», variables, Render, «Qué incluye M3.6»), DESIGN §10/§16, versión `0.3.6-m3.6`,
+  95 tests. El artefacto sigue siendo modo solo (no hay servidor detrás de claude.ai).
