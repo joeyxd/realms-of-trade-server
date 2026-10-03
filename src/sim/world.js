@@ -222,6 +222,7 @@ export class World {
       const S = this.shots, s = S.slot.get(sid);
       const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
       if (o.kind) ev.kind = o.kind;
+      if (o.tier) ev.tier = o.tier;
       if (o.from) { ev.from = o.from; ev.target = o.target; }
       this.emit(ev);
     }

@@ -11,7 +11,7 @@ import { bus } from './core/events.js';
 import { generateWorld, ZONES } from './sim/worldgen.js';
 import { KIND, ACT } from './sim/ecs.js';
 import { xpToNext } from './sim/systems/combat.js';
-import { PTYPE } from './sim/projectiles.js';
+import { PTYPE, SHOT } from './sim/projectiles.js';
 import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
 import { rackNear } from './sim/systems/skills.js';
@@ -399,6 +399,9 @@ async function boot() {
   function sheetFrame(dt) {
     const sh = st.sheet, n = sh.views.length, c = sh.center;
     sh.views.forEach((v, i) => {
+      if (sh.weapon) v.setWeapon(sh.weapon);
+      if (sh.fire && v.weaponKind === 'pistolas') { v.fireT = (v.fireT || 0) - dt; if (v.fireT <= 0) { v.fireT = 0.2; v.hand = -(v.hand || 1); v.recoil(v.hand); } }
+      if (sh.loop && sh.act) sh.actT = ((sh.actT || 0) + dt / n) % sh.loop;
       const x = c.x + (i - (n - 1) / 2) * sh.gap, z = c.z;
       const sp = sh.run ? 6.5 : 0, mv = sh.yaw + (sh.move || 0);
       v.update(dt, { x, y: map.groundAt(x, z), z, f: sh.yaw, vx: Math.sin(mv) * sp, vz: Math.cos(mv) * sp, st: 0, wade: 0, act: sh.act || 0, actT: sh.actT || 0 });
@@ -438,11 +441,20 @@ async function boot() {
   }
   // Reflected shots leave a cyan trail.
   let trailFrame = 0;
+  // Trails by what the shot is: a reflect's tier (EXCELENTE long and white-gold, POBRE short and faint),
+  // a pistol tracer (thin, short, amber).
+  const TRAIL = {
+    3: { life: 0.48, w: 0.24, color: [1, 0.96, 0.78], color1: [0.95, 0.75, 0.3] },
+    2: { life: 0.3, w: 0.17, color: [0.75, 1, 1], color1: [0.1, 0.6, 1] },
+    1: { life: 0.16, w: 0.12, color: [0.5, 0.75, 0.8], color1: [0.08, 0.35, 0.6] },
+    bullet: { life: 0.09, w: 0.06, color: [1, 0.9, 0.55], color1: [1, 0.5, 0.1] },
+  };
   const shotTrail = (s, x, y, z) => {
     const S = client.shots;
-    if ((trailFrame + s) & 1) return;
-    const heavy = S.heavy[s];
-    world.effects.streaks.spawn(x, y, z, -S.vx[s] * 0.12, 0, -S.vz[s] * 0.12, { life: 0.3, width: heavy ? 0.42 : 0.17, stretch: 0.6, color: [0.75, 1, 1], color1: [0.1, 0.6, 1], gravity: 0, drag: 2 });
+    const bullet = S.kind[s] === SHOT.BULLET || S.kind[s] === SHOT.PELLET;
+    if (!bullet && ((trailFrame + s) & 1)) return;
+    const heavy = S.heavy[s], T = bullet ? TRAIL.bullet : TRAIL[S.tier[s]] || TRAIL[2];
+    world.effects.streaks.spawn(x, y, z, -S.vx[s] * 0.12, 0, -S.vz[s] * 0.12, { life: T.life, width: heavy ? 0.42 : T.w, stretch: bullet ? 0.9 : 0.6, color: T.color, color1: T.color1, gravity: 0, drag: 2 });
   };
   // F4 → hitboxes: hurtboxes (green / red), graze band, parry and swing sectors, projectile radii.
   const PCOL = [0xffb02e, 0xff5a1f, 0x9b4dff];
@@ -508,11 +520,13 @@ async function boot() {
             if (!playing) { view.root.visible = false; continue; }
             view.root.visible = true;
             s = ps;
+            view.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
           } else {
             if (!rec.ready || view.dead) { view.root.visible = false; continue; }
             view.root.visible = true;
             s = rec.r;
             if (rec.enemy) worldUI.setPlate(rec.id, { hp: s.hp, maxHp: s.maxHp, level: s.lvl });
+            else if (rec.kind === KIND.PLAYER) view.setWeapon(WEAPON_KINDS[s.wpn] || 'sable');
             // Remote players' swings: a slash when their action turns into a new stage.
             if (!rec.enemy && s.act >= ACT.SWING1 && s.act <= ACT.SWING3 && s.act !== view.lastAct) {
               const st2 = tuning.melee.stages[s.act - ACT.SWING1];
@@ -606,7 +620,7 @@ async function boot() {
         });
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
         encounterUi();
-        world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false);
+        world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false, ps.guardSt / tuning.guard.stamina, SKINS[settings.skin].accent);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
       });
 
@@ -635,7 +649,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail } });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);

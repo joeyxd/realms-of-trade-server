@@ -320,7 +320,7 @@ function arms(k, R, L, weapon) {
         w: long ? w : fw, lining: 0x24170f,
       });
     }
-    hand(k, R, L, s, weapon && s < 0);
+    hand(k, R, L, s, weapon === 'pistols' || (weapon && s < 0));
     if (L.pauldrons) pauldron(k, R, L, s);
   }
 }
@@ -672,6 +672,28 @@ function weapon(k, R, L) {
   }
 }
 
+// Flintlock pistols (M3.5), one in each fist. Built hanging with the arm: the barrel runs down the
+// forearm's line in front of the knuckles, the grip goes back through the fist, so raising the arm to
+// the front (aim) points the muzzle forward with the butt below.
+function pistols(k, R, L) {
+  const brass = 0xc9a44c, wood = 0x6a3d22, iron = 0x34302e;
+  for (const s of [1, -1]) {
+    const w = side(s, B.foreL, B.foreR);
+    const x = s * (R.shX + 0.004), y = R.wrist - 0.1 * R.hand, z = 0.006;
+    const at = (g) => { g.translate(x, y, z); return g; };
+    // barrel (brass, flared muzzle) over the wooden fore-end
+    k.add(at(loft([{ y: 0.035, rx: 0.017, rz: 0.017, z: 0.045 }, { y: -0.2, rx: 0.014, rz: 0.014, z: 0.045 }, { y: -0.215, rx: 0.019, rz: 0.019, z: 0.045 }, { y: -0.245, rx: 0.018, rz: 0.018, z: 0.045 }], 6)), { color: brass, w, jitter: 0.04 });
+    k.add(at(xf(box(0.026, 0.19, 0.022), { pos: [0, -0.06, 0.026] })), { color: wood, w, jitter: 0.06 });
+    // grip back through the fist, brass butt cap
+    k.add(at(xf(box(0.028, 0.036, 0.12), { rot: [-0.38, 0, 0], pos: [0, 0.05, -0.012] })), { color: wood, w, jitter: 0.08 });
+    k.add(at(xf(ico(0.024, 0), { pos: [0, 0.075, -0.072] })), { color: brass, w });
+    // lock plate and hammer on the outer side, trigger guard
+    k.add(at(xf(box(0.008, 0.06, 0.03), { pos: [s * 0.017, 0.02, 0.036] })), { color: iron, w });
+    k.add(at(xf(spike(0.008, 0.008, 0.045, 4), { rot: [-0.9, 0, 0], pos: [s * 0.01, 0.045, 0.05] })), { color: iron, w });
+    k.add(at(xf(box(0.006, 0.04, 0.03), { pos: [0, 0.0, 0.004] })), { color: brass, w });
+  }
+}
+
 // ---- Skeleton sentinel (brute body) --------------------------------------------------------------------
 function skeleton(k, R, L, J) {
   const bone = L.bone, boneD = shade(L.bone, 0.84);
@@ -890,9 +912,12 @@ function horns(k, L, hw, at, S) {
 
 // ---- Assembly ------------------------------------------------------------------------------------------
 const cache = new Map();
-export function buildLook(idx, armed) {
+// wpn: falsy = empty hands, true = the look's own weapon, 'pistols' = a flintlock in each fist.
+export function buildLook(idx, wpn) {
   const i = Math.max(0, Math.min(LOOKS.length - 1, idx | 0));
-  const key = i + (armed ? 'a' : '');
+  const pist = wpn === 'pistols';
+  const armed = !!wpn && !pist;
+  const key = i + (pist ? 'p' : armed ? 'a' : '');
   if (cache.has(key)) return cache.get(key);
   const L = LOOKS[i];
   const R = BODY[L.body];
@@ -905,11 +930,12 @@ export function buildLook(idx, armed) {
     pelvisAndTorso(k, R, L);
     lower(k, R, L);
     belts(k, R, L);
-    arms(k, R, L, armed && L.weapon);
+    arms(k, R, L, pist ? 'pistols' : armed && L.weapon);
     mantle(k, R, L);
     neckwear(k, R, L);
     head(k, R, L, J);
     if (armed) weapon(k, R, L);
+    if (pist) pistols(k, R, L);
   }
   const geo = k.build();
   const height = geo.boundingBox.max.y;

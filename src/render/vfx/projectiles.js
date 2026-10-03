@@ -3,19 +3,20 @@
 //   parryable    amber diamond (stretched along its flight, like a bolt) inside a thin ring
 //   heavy        big pulsing orange-red orb with a halo
 //   unstoppable  long violet spike with a white ✕
-//   reflected    the same shape in the player's cyan, with a trail
+//   reflected    the same shape in the player's cyan, with a trail (EXCELENTE white-gold, POBRE dim)
+//   pistol shot  a short hot tracer (bullets and pellets)
 // One instanced draw of camera-facing quads (SDF shapes) + one of soft ground shadows that tell
 // where a projectile is in the isometric view. Hostile projectiles are analytic: positions are
 // evaluated at the client's projectile tick every frame (no per-projectile state here).
 import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
-import { PTYPE, NEVER } from '../../sim/projectiles.js';
+import { PTYPE, NEVER, SHOT } from '../../sim/projectiles.js';
 import { tuning, DT } from '../../data/tuning.js';
 
 const VERT = /* glsl */ `
 attribute vec3 iPos;
 attribute vec3 iVel;
-attribute vec4 iData; // type, age (s), radius, flags (1 = reflected, 2 = high contrast)
+attribute vec4 iData; // type (3 = tracer), age (s), radius, flags (1 = reflected, 2 = high contrast, 4 × reflect tier)
 uniform float uTime;
 varying vec2 vP;
 varying float vType;
@@ -35,7 +36,8 @@ void main() {
   float L, W;
   if (vType < 0.5) { L = 0.5; W = 0.46; }
   else if (vType < 1.5) { L = vR * 1.75; W = vR * 1.75; }
-  else { L = 0.66; W = 0.32; }
+  else if (vType < 2.5) { L = 0.66; W = 0.32; }
+  else { L = 0.5; W = 0.12; }
   // Spawn: grows in over the 150 ms arm time.
   float grow = mix(0.35, 1.0, smoothstep(0.0, ${tuning.projectiles.armTime.toFixed(3)}, vAge));
   L *= grow; W *= grow;
@@ -48,7 +50,7 @@ void main() {
 const FRAG = /* glsl */ `
 ${GLSL_FX_DEPTH}
 uniform float uTime;
-uniform vec3 uParry, uHeavy, uUnstop, uShot, uInk;
+uniform vec3 uParry, uHeavy, uUnstop, uShot, uInk, uTracer;
 varying vec2 vP;
 varying float vType;
 varying float vAge;
@@ -57,7 +59,9 @@ varying float vFlags;
 float aa(float d) { float w = max(fwidth(d), 1e-4); return clamp(0.5 - d / w, 0.0, 1.0); }
 void main() {
   bool shot = mod(vFlags, 2.0) > 0.5;
-  bool stripes = vFlags > 1.5;
+  bool stripes = mod(floor(vFlags / 2.0), 2.0) > 0.5;
+  float tier = floor(vFlags / 4.0);
+  vec3 shotC = tier > 2.5 ? mix(uShot, vec3(1.0, 0.93, 0.62), 0.78) : tier > 0.5 && tier < 1.5 ? uShot * 0.62 : uShot;
   vec3 col; float a; float glow;
   float a1 = vP.x, c1 = vP.y; // along flight, across
   float armed = smoothstep(0.1, ${tuning.projectiles.armTime.toFixed(3)}, vAge);
@@ -69,7 +73,7 @@ void main() {
     float rr = length(vP);
     float ring = aa(abs(rr - 0.38) - 0.03);
     float ringInk = aa(abs(rr - 0.38) - 0.06);
-    vec3 base = shot ? uShot : uParry;
+    vec3 base = shot ? shotC : uParry;
     col = mix(uInk, base, max(body, ring));
     col = mix(col, vec3(1.0, 0.97, 0.85), aa((k - 0.42) * 0.12));
     if (stripes) col = mix(col, uInk, body * step(0.5, fract((a1 + c1) * 9.0)) * 0.45);
@@ -83,7 +87,7 @@ void main() {
     float body = aa(rr - R);
     float ink = aa(rr - R - 0.07);
     float halo = (1.0 - smoothstep(R, R + 0.38 + pulse * 0.12, rr)) * 0.55;
-    vec3 base = shot ? uShot : uHeavy;
+    vec3 base = shot ? shotC : uHeavy;
     vec3 core = mix(base, vec3(1.0, 0.95, 0.7), 1.0 - smoothstep(0.0, R * 0.6, rr));
     float bands = smoothstep(0.45, 0.55, fract(rr * 4.0 - uTime * 1.6)) * 0.18;
     col = mix(base * (0.7 + pulse * 0.3), core, 1.0 - smoothstep(R * 0.35, R * 0.9, rr)) - bands * body;
@@ -93,7 +97,7 @@ void main() {
     col = mix(col, base, hal);
     a = max(ink, hal);
     glow = body * 0.8 + hal * 0.6;
-  } else {
+  } else if (vType < 2.5) {
     // unstoppable spike: long pointed shard with a white X across its middle
     float t = clamp((a1 + 0.62) / 1.24, 0.0, 1.0);
     float hw = 0.13 * (1.0 - pow(t, 3.0)) * smoothstep(0.0, 0.18, t) + 0.012;
@@ -108,6 +112,16 @@ void main() {
     if (stripes) col = mix(col, uInk, body * step(0.5, fract(a1 * 7.0)) * 0.4);
     a = max(body, ink);
     glow = body * 0.75;
+  } else {
+    // pistol tracer: a hot capsule with a white core
+    float d = length(vec2(max(abs(a1) - 0.36, 0.0), c1));
+    float body = aa(d - 0.075);
+    float ink = aa(d - 0.105);
+    float core = aa(d - 0.032);
+    col = mix(uInk, uTracer, body);
+    col = mix(col, vec3(1.0, 0.98, 0.88), core);
+    a = max(body, ink * 0.7);
+    glow = body;
   }
   // Unarmed (first 150 ms): lighter, with a white spawn ring.
   float sr = length(vP);
@@ -164,6 +178,7 @@ export class ProjectileView {
       ...FXU, uTime: { value: 0 },
       uParry: { value: new THREE.Color(0xffb02e) }, uHeavy: { value: new THREE.Color(0xff5a1f) },
       uUnstop: { value: new THREE.Color(0x9b4dff) }, uShot: { value: new THREE.Color(0x3bf0ff) }, uInk: { value: new THREE.Color(0x1a1033) },
+      uTracer: { value: new THREE.Color(0xffc23d) },
     };
     this.mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms, vertexShader: VERT, fragmentShader: FRAG,
@@ -221,7 +236,8 @@ export class ProjectileView {
     const S = shots;
     for (let s = 0; s < S.cap && n < this.cap; s++) {
       if (!S.id[s]) continue;
-      this.put(n++, S.x[s], S.y[s], S.z[s], S.vx[s], 0, S.vz[s], S.type[s], 1, S.r[s] * (S.type[s] === PTYPE.HEAVY ? 1.05 : 1), 1 | hc);
+      const tracer = S.kind[s] === SHOT.BULLET || S.kind[s] === SHOT.PELLET;
+      this.put(n++, S.x[s], S.y[s], S.z[s], S.vx[s], 0, S.vz[s], tracer ? 3 : S.type[s], 1, S.r[s] * (S.type[s] === PTYPE.HEAVY ? 1.05 : 1), 1 | hc | (S.tier[s] << 2));
       if (onShot) onShot(s, S.x[s], S.y[s], S.z[s]);
     }
     this.count = n;

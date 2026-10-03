@@ -152,7 +152,7 @@ function reflect(world, e, s, pt, seq, T, o = {}) {
   world.spawnShot(e, {
     key: pid, pid, type: H.type[s], x: from ? o.fromX : x, y: from ? ecs.y[e] + 1.1 : H.py(s, pt), z: from ? o.fromZ : z,
     dx: Math.sin(a), dz: Math.cos(a), speed: Math.min(R.maxSpeed, Math.max(T.minSpeed, H.speed[s]) * T.speed), dmg, life: R.life,
-    r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq, bounce: T.bounce, homing: T.homing, cone: T.cone, pt,
+    r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq, bounce: T.bounce, homing: T.homing, cone: T.cone, pt, tier: o.tier || 0,
   });
   return { x, z };
 }
@@ -164,7 +164,7 @@ function swordReflect(world, e, s, pt, seq, tier, o = {}) {
   if (tier >= 2) { ecs.chain[e] = ecs.chainT[e] <= P.chainGap ? Math.min(P.chainMax, ecs.chain[e] + 1) : 1; ecs.chainT[e] = 0; }
   addRiposte(ecs, e, T.riposte * (tier >= 2 ? chainMul(P.chainRiposte, ecs.chain[e]) : 1));
   if (tier === 3) gainXp(world, e, P.xp.perfect, seq);
-  const at = reflect(world, e, s, pt, seq, T, o);
+  const at = reflect(world, e, s, pt, seq, T, { ...o, tier });
   const ev = { type: 'parry', pid, e, seq, x: at.x, z: at.z, tier, perfect: tier === 3 ? 1 : 0, chain: ecs.chain[e], heavy: heavy ? 1 : 0 };
   if (o.coyote) ev.coyote = 1;
   world.emit(ev);

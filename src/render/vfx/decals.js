@@ -132,7 +132,8 @@ export class Decals {
 
   take() {
     let d = this.pool.find((q) => !q.active);
-    if (!d) d = this.pool.reduce((a, b) => ((a.t0 ?? 0) < (b.t0 ?? 0) ? a : b));
+    // Full: recycle the oldest telegraph (never a fixed ring: the practice ring, the runes).
+    if (!d) d = this.pool.filter((q) => !q.static).reduce((a, b) => ((a.t0 ?? 0) < (b.t0 ?? 0) ? a : b));
     return d;
   }
 

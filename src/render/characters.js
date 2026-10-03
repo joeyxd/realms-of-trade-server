@@ -13,6 +13,7 @@ import { LOOKS, buildLook } from './charlooks.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
+import { SKILLS } from '../data/weapons.js';
 
 export const SKINS = LOOKS;
 export const SENTINEL = LOOKS.findIndex((l) => l.enemy && l.body === 'brute');
@@ -116,7 +117,18 @@ export class CharacterView {
     this.attack = null; // enemy: {id, t (s since the wind-up began), windup, fire}
     this.dorm = pose === 'dormant' ? 1 : 0;
     this.downW = 0;
+    this.weaponKind = 'sable';
+    this.recoilL = 0; this.recoilR = 0; this.shootW = 0;
   }
+
+  // The weapon in hand (players): 'sable' (the look's own blade) or 'pistolas'. Same skeleton, new mesh.
+  setWeapon(kind) {
+    if (!this.armed || kind === this.weaponKind) return;
+    this.weaponKind = kind;
+    this.mesh.geometry = buildLook(this.skin, kind === 'pistolas' ? 'pistols' : true).geo;
+  }
+  // A pistol shot kicks that arm up (hand +1 = left, −1 = right, as the sim alternates them).
+  recoil(hand) { if (hand > 0) this.recoilL = 1; else this.recoilR = 1; }
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
 
@@ -269,6 +281,37 @@ export class CharacterView {
       w = Math.sin(p * Math.PI);
       T.cx = -0.22; T.hx = -0.15; T.hy = -0.05;
       set('armR', -0.5, -1.35); set('armL', -0.5, 1.35); set('foreR', -0.2); set('foreL', -0.2);
+    } else if (act === ACT.LUNGE) {
+      // Estocada: blade arm thrust straight out, body low and forward, free arm back.
+      const L = SKILLS.lunge;
+      w = t < L.windup ? sm(t / L.windup) : 1 - sm((t - L.windup - L.time) / L.recover);
+      lunge = w;
+      T.cx = 0.2; T.cy = -0.4; T.sy = -0.15; T.hy = -0.1;
+      set('armR', -1.58, 0.05); set('foreR', -0.05);
+      set('armL', 0.55, 0.3); set('foreL', -0.35);
+    } else if (act === ACT.THROW) {
+      // Hoja de viento: wound back to the right, then a wide flat cut across.
+      const Wv = SKILLS.wave;
+      const p = t < Wv.windup ? 0 : easeOutCubic(clamp((t - Wv.windup) / 0.1, 0, 1));
+      w = t < Wv.windup ? sm(t / Wv.windup) : 1 - sm((t - Wv.windup - 0.08) / Wv.recover);
+      const side = -1 + 2 * p;
+      T.cy = side * 0.7; T.sy = side * 0.25; T.cx = 0.06; T.hy = -0.04;
+      set('armR', -1.45, 0.15 + side * 1.05); set('foreR', -0.3 + 0.25 * p);
+      set('armL', -0.3 + 0.2 * side, 0.35); set('foreL', -0.6);
+    } else if (act === ACT.BLAST) {
+      // Descarga: both pistols forward together, then the kick.
+      const kick = t < SKILLS.blast.windup ? 0 : Math.max(0, 1 - (t - SKILLS.blast.windup) / 0.18);
+      w = 1;
+      T.cx = -0.18 * kick; T.sx = -0.08 * kick; T.hy = -0.04;
+      set('armR', -1.5 - 0.6 * kick, 0.22); set('foreR', -0.08 - 0.3 * kick);
+      set('armL', -1.5 - 0.6 * kick, -0.22); set('foreL', -0.08 - 0.3 * kick);
+    } else if (act === ACT.CAST) {
+      // Lluvia / paso de humo: pistol raised to the sky.
+      const p = clamp(t / 0.12, 0, 1);
+      w = t < 0.25 ? sm(p) : 1 - sm((t - 0.25) / 0.15);
+      T.cx = -0.12; T.hx = -0.2;
+      set('armR', -2.85, -0.2); set('foreR', -0.08);
+      set('armL', -0.4, 0.3); set('foreL', -0.7);
     } else if (act === ACT.STAGGER) {
       w = Math.max(0, 1 - t / 0.35);
       T.sx = -0.3; T.cx = -0.2; T.hx = -0.25; T.hy = -0.06;
@@ -278,13 +321,27 @@ export class CharacterView {
     }
     if (act !== ACT.DEAD) this.downW = damp(this.downW, 0, 8, dt);
 
-    // Parry guard: blade up across the body, fading out after the window.
+    const pist = this.weaponKind === 'pistolas';
+    // Pistols firing: both arms out to the front, each kicking up on its own shot.
+    this.shootW = damp(this.shootW, act === ACT.SHOOT ? 1 : 0, act === ACT.SHOOT ? 30 : 7, dt);
+    this.recoilL = Math.max(0, this.recoilL - dt * 7); this.recoilR = Math.max(0, this.recoilR - dt * 7);
+    const sw = this.shootW * (1 - w);
+    if (sw > 0.01) {
+      w = Math.max(w, sw);
+      const rl = easeOutCubic(this.recoilL), rr = easeOutCubic(this.recoilR);
+      T.cx += -0.03 * sw; T.cy += 0.05 * (rr - rl) * sw;
+      set('armR', -1.52 - 0.42 * rr, 0.14); set('foreR', -0.06 - 0.35 * rr);
+      set('armL', -1.52 - 0.42 * rl, -0.14); set('foreL', -0.06 - 0.35 * rl);
+    }
+
+    // Guard: blade up across the body (pistols: forearms crossed in front of the chest).
     this.parryW = damp(this.parryW, act === ACT.GUARD ? 1 : 0, act === ACT.GUARD ? 40 : 9, dt);
     const pw = this.parryW * (1 - w);
     if (pw > 0.01) {
       w = Math.max(w, pw);
-      T.cy += 0.3 * pw; T.sx += -0.04 * pw; T.hy += -0.04 * pw;
-      set('armR', -1.3, 0.5); set('foreR', -1.55); set('armL', -0.95, 0.32); set('foreL', -0.95);
+      T.cy += (pist ? 0.05 : 0.3) * pw; T.sx += -0.04 * pw; T.hy += -0.04 * pw;
+      if (pist) { set('armR', -1.25, 0.78); set('foreR', -1.75); set('armL', -1.25, -0.78); set('foreL', -1.75); }
+      else { set('armR', -1.3, 0.5); set('foreR', -1.55); set('armL', -0.95, 0.32); set('foreL', -0.95); }
     }
 
     // Enemy attacks (timeline from the wind-up event, see GameScene).

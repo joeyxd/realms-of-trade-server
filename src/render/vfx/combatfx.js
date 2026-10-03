@@ -80,6 +80,8 @@ void main() {
   #include <colorspace_fragment>
 }`;
 
+const GUARD_MID = new THREE.Color(0xff9a2e), GUARD_LOW = new THREE.Color(0xff3b30);
+
 export class CombatFx {
   constructor(scene) {
     this.slashes = [];
@@ -152,11 +154,15 @@ export class CombatFx {
     this.ring(x, y + 0.12, z, 2.2, 0xffffff, 0.3, 0.06, 1);
   }
 
-  // open: parry window open (0..1 weight); hit: a parry just succeeded.
-  setGuard(view, open, success) {
+  // open: the guard is up; hit: it just took a blow; stamina 0..1 tints it (accent → orange → red).
+  setGuard(view, open, success, stamina = 1, accent = 0x3bf0ff) {
     this.guardView = view;
     this.guardOpen = open;
     if (success) this.guardHit = 1;
+    const c = this.guard.material.uniforms.uColor.value;
+    if (stamina > 0.6) c.set(accent);
+    else if (stamina > 0.3) c.set(accent).lerp(GUARD_MID, (0.6 - stamina) / 0.3);
+    else c.copy(GUARD_MID).lerp(GUARD_LOW, (0.3 - stamina) / 0.3);
   }
 
   update(dt) {

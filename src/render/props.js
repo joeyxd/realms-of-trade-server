@@ -57,6 +57,36 @@ function stallGeo() {
   return merge(L);
 }
 
+// Weapon rack (M3.5): a little roofed wooden stand with a cutlass hanging on pegs and a brace of
+// flintlocks on the shelf. Front is +z (the side you walk up to).
+function rackGeo() {
+  const BRASS = 0xc9a44c, IRON = 0x3a3532, STEEL = 0xdfe6ea, RED = 0xb8352c;
+  const L = [];
+  for (const x of [-0.62, 0.62]) {
+    L.push(part(cyl(0.07, 0.085, 1.75, 6), WOOD_D, { pos: [x, 0.875, 0] }));
+    L.push(part(rbox(0.36, 0.08, 0.5, 0.02), WOOD_D, { pos: [x, 0.04, 0] }));
+  }
+  L.push(part(rbox(1.5, 0.09, 0.14, 0.02), WOOD, { pos: [0, 1.66, -0.04] }));
+  for (const x of [-0.62, 0.62]) L.push(part(cone(0.1, 0.18, 6), WOOD_D, { pos: [x, 1.84, 0] }));
+  L.push(part(rbox(1.3, 0.06, 0.34, 0.02), WOOD, { pos: [0, 0.78, 0.08] })); // shelf
+  L.push(part(rbox(1.3, 0.14, 0.04, 0.01), WOOD_D, { pos: [0, 0.86, 0.26] })); // shelf lip
+  L.push(part(rbox(1.26, 0.5, 0.04, 0.01), 0x7a4a26, { pos: [0, 1.3, -0.05] })); // back board
+  for (const x of [-0.2, 0.2]) L.push(part(cyl(0.025, 0.025, 0.14, 5), WOOD_D, { pos: [x, 1.5, 0.03], rot: [Math.PI / 2, 0, 0] }));
+  // the cutlass across the pegs (blade to the right, hilt left)
+  L.push(part(bbox(0.78, 0.07, 0.015), STEEL, { pos: [0.12, 1.53, 0.1], rot: [0, 0, -0.05] }));
+  L.push(part(bbox(0.05, 0.14, 0.04), IRON, { pos: [-0.3, 1.53, 0.1] }));
+  L.push(part(cyl(0.022, 0.022, 0.14, 6), 0x3a2418, { pos: [-0.4, 1.53, 0.1], rot: [0, 0, Math.PI / 2] }));
+  L.push(part(sphere(0.03, 6, 4), BRASS, { pos: [-0.48, 1.53, 0.1] }));
+  // two flintlocks on the shelf, barrels crossed
+  for (const [x, a] of [[-0.22, 0.35], [0.24, -0.4]]) {
+    L.push(part(cyl(0.022, 0.022, 0.34, 6), BRASS, { pos: [x, 0.84, 0.1], rot: [Math.PI / 2, 0, a] }));
+    L.push(part(rbox(0.06, 0.05, 0.16, 0.015), WOOD_D, { pos: [x - Math.sin(a) * 0.2, 0.84, 0.1 - Math.cos(a) * 0.2], rot: [0, a, 0] }));
+  }
+  // a red pennant on the left post
+  L.push(part(bbox(0.02, 0.24, 0.3), RED, { pos: [-0.64, 1.45, 0.2] }));
+  return merge(L);
+}
+
 function lanternGeo() {
   return merge([
     part(cyl(0.07, 0.09, 2.2, 6), WOOD_D, { pos: [0, 1.1, 0] }),
@@ -183,7 +213,7 @@ export function createProps(map) {
   const kits = {
     hut: hutGeo(), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(), lantern: lanternGeo(),
     dockPost: postGeo(), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: signGeo(),
-    campfire: rockRingGeo(),
+    campfire: rockRingGeo(), rack: rackGeo(),
   };
   const byKind = new Map();
   for (const p of map.props) {

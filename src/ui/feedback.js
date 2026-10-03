@@ -22,9 +22,19 @@ export class Feedback {
     this.aoes = new Map(); // aoe id → {src, tAct, x, z, r, done, keep, fall}
     this.fallers = []; // meteors and mortar shells in the air, landing on their circle at tAct
     this.taught = new Set();
+    world.weaponFx.onPulse = (ev) => {
+      sfx.rainPatter(ev.e === client.youServer ? 0.9 : this.vol(ev.x, ev.z));
+      world.combatFx.ring(ev.x, map.groundAt(ev.x, ev.z) + 0.12, ev.z, ev.r * 1.05, this.colorOf(ev.e), 0.2, 0.08, 0.6);
+    };
   }
 
   get accent() { return SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  // A player's accent color (yours, or another player's by their look).
+  colorOf(e) {
+    if (e === this.client.youServer) return this.accent;
+    const rec = this.client.entities.get(e);
+    return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
+  }
   me() { return this.world.views.get(this.client.youServer); }
   viewOf(id) { return this.world.views.get(id); }
   vol(x, z) { const d = Math.hypot(x - this.ps.x, z - this.ps.z); return Math.max(0, Math.min(1, 1 - (d - 6) / 30)); }
@@ -212,6 +222,53 @@ export class Feedback {
         this.sparks(ev.x, y, ev.z, 10, AMBER, AMBER1, { up: 2.4, spread: 3.6 });
         W.combatFx.ring(ev.x, y - 1, ev.z, 0.7, 0xffc46a, 0.2, 0.2, 0.7);
         sfx.destroy(me ? 1 : this.vol(ev.x, ev.z));
+        break;
+      }
+      // ---- weapon skills (M3.5) ----
+      case 'fire': {
+        const v = me ? this.me() : this.viewOf(ev.e);
+        if (v) v.recoil(ev.hand);
+        const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.2;
+        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz);
+        sfx.pistol(ev.hand, me ? 0.8 : 0.6 * this.vol(ev.x, ev.z));
+        break;
+      }
+      case 'blast': {
+        const v = me ? this.me() : this.viewOf(ev.e);
+        const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.15;
+        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, true);
+        W.combatFx.ring(ev.x + ev.dx * 1.2, y - 1.1, ev.z + ev.dz * 1.2, 1.6, 0xffd27a, 0.25, 0.18, 0.7);
+        if (me) { this.shake(0.22); W.rig.punchIn(0.25); }
+        sfx.blast(me ? 1 : this.vol(ev.x, ev.z));
+        break;
+      }
+      case 'blink': {
+        const v = me ? this.me() : this.viewOf(ev.e);
+        if (v) W.after.capture(v, this.colorOf(ev.e), 0.32, 0.65);
+        W.weaponFx.smoke(ev.x0, this.y(ev.x0, ev.z0), ev.z0, 12);
+        W.weaponFx.smoke(ev.x1, this.y(ev.x1, ev.z1), ev.z1, 7);
+        sfx.blink(me ? 1 : this.vol(ev.x0, ev.z0));
+        break;
+      }
+      case 'cast': {
+        const v = me ? this.me() : this.viewOf(ev.e);
+        if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e), [0.08, 0.13, 0.18], 0.24);
+        if (ev.skill === 'lunge') sfx.lunge(me ? 1 : this.vol(ev.x, ev.z));
+        if (me) this.hud.pulse(ev.skill === 'lunge' || ev.skill === 'blast' ? 'q' : 'e');
+        break;
+      }
+      case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); break;
+      case 'rain':
+        W.weaponFx.rain(ev, this.colorOf(ev.e));
+        sfx.rainCall(me ? 1 : this.vol(ev.x, ev.z));
+        if (me) this.hud.pulse('r');
+        break;
+      case 'equip': {
+        const v = me ? this.me() : this.viewOf(ev.e);
+        const y = (v ? v.root.position.y : this.y(ev.x, ev.z));
+        W.combatFx.ring(ev.x, y + 0.1, ev.z, 1.4, this.colorOf(ev.e), 0.4, 0.14, 0.9);
+        this.sparks(ev.x, y + 1.2, ev.z, 10, [1, 0.92, 0.6], [0.95, 0.6, 0.2], { up: 2.5 });
+        if (me) sfx.equip();
         break;
       }
       case 'clunk':

@@ -18,6 +18,7 @@ import { BeamFx, LavaRing } from './vfx/hazardfx.js';
 import { CombatFx } from './vfx/combatfx.js';
 import { Debris } from './vfx/debris.js';
 import { Afterimages } from './vfx/afterimage.js';
+import { WeaponFx } from './vfx/weaponfx.js';
 import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
 import { U } from './toon.js';
@@ -102,6 +103,7 @@ export class GameScene {
     this.shieldBubble.visible = false;
     this.scene.add(this.shieldBubble);
     this.after = new Afterimages(this.scene);
+    this.weaponFx = new WeaponFx(this.scene, this.effects, this.decals, this.after, map);
     this.ambient = new Ambient(this.scene, map);
     this.views = new Map();
     this.time = 0;
@@ -189,7 +191,7 @@ export class GameScene {
     // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
-    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh]) { m.visible = true; temp.push(m); }
+    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m]) { m.visible = true; temp.push(m); }
     const probe = new THREE.Mesh(new THREE.BoxGeometry(0.01, 0.01, 0.01), characterMaterial('base'));
     probe.castShadow = true;
     this.scene.add(probe);
@@ -269,6 +271,7 @@ export class GameScene {
       this.decals.update(dt, ctx.combat.tick);
       this.beamFx.update(dt, ctx.combat.hazards, ctx.combat.tick);
       this.lavaRing.update(dt, ctx.combat.hazards, ctx.combat.tick);
+      this.weaponFx.update(sim, ctx.combat.tick, ctx.combat.caught);
     }
     this.combatFx.update(sim);
     this.debris.update(sim);

@@ -134,6 +134,58 @@ export const sfx = {
     } else noiseBurst(d, t, { type: 'highpass', f: 1800, q: 0.7, dur: 0.05, g: 0.14 * vol });
     if (crit) bell(d, t + 0.01, 1320, 0.05 * vol, 0.25);
   },
+  // ---- weapons (M3.5) ----
+  // Flintlock: a sharp crack over a low boom; the hands alternate a little in pitch.
+  pistol(hand = 1, vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx, p = hand > 0 ? 1.08 : 0.94;
+    noiseBurst(d, t, { type: 'highpass', f: 2200 * p, q: 0.8, dur: 0.05, g: 0.3 * vol });
+    noiseBurst(d, t, { type: 'lowpass', f: 600 * p, q: 0.9, dur: 0.14, g: 0.26 * vol });
+    tone(d, t, { type: 'triangle', f0: 180 * p, f1: 60, dur: 0.12, g: 0.12 * vol });
+  },
+  blast(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'lowpass', f: 900, q: 0.7, dur: 0.3, g: 0.42 * vol });
+    noiseBurst(d, t, { type: 'bandpass', f: 3200, q: 0.6, dur: 0.08, g: 0.3 * vol });
+    tone(d, t, { type: 'sine', f0: 120, f1: 40, dur: 0.3, g: 0.3 * vol });
+  },
+  blink(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { type: 'bandpass', f0: 2600, f1: 380, q: 1.1, dur: 0.24, g: 0.22 * vol });
+    sweep(d, t + 0.05, { type: 'lowpass', f0: 1800, f1: 300, q: 0.7, dur: 0.4, g: 0.12 * vol });
+  },
+  rainCall(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    this.pistol(1, vol * 0.8);
+    sweep(d, t + 0.05, { type: 'bandpass', f0: 600, f1: 3000, q: 1.5, dur: 0.35, g: 0.12 * vol });
+  },
+  // Lead hail: a patter of small cracks (called once per rain pulse).
+  rainPatter(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    for (let i = 0; i < 5; i++) noiseBurst(d, t + Math.random() * 0.12, { type: 'bandpass', f: 2600 + Math.random() * 2400, q: 2, dur: 0.02, g: 0.08 * vol }, 1);
+  },
+  lunge(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { f0: 700, f1: 3400, q: 1.6, dur: 0.18, g: 0.3 * vol });
+    tone(d, t + 0.06, { type: 'triangle', f0: 1400, f1: 900, dur: 0.08, g: 0.06 * vol });
+  },
+  crescent(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { f0: 400, f1: 2400, q: 2.2, dur: 0.35, g: 0.24 * vol });
+    tone(d, t, { type: 'sine', f0: 880, f1: 1320, dur: 0.3, g: 0.05 * vol });
+  },
+  equip() {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    bell(d, t, 640, 0.08, 0.3);
+    noiseBurst(d, t + 0.05, { type: 'bandpass', f: 1800, q: 3, dur: 0.05, g: 0.12 });
+  },
   destroy(vol = 1) {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;

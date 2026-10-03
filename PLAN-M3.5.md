@@ -228,7 +228,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
 - [x] **P5** Pistolas: disparo continuo, Descarga, Paso de humo, Lluvia de plomo; la devolución de atrapadas con
   pistola. Tests: cadencia y daño, el escudo/blindaje frenan las balas pero no las devueltas, la descarga sopla
   balas, el blink no atraviesa rocas y da i-frames, la lluvia daña cada 0.15 s y borra balas; predicción exacta.
-- [ ] **P6** Render: pistolas en la mano + `setWeapon`, poses (guardia ×2, apuntar, estocada, hoja, descarga, lluvia),
+- [x] **P6** Render: pistolas en la mano + `setWeapon`, poses (guardia ×2, apuntar, estocada, hoja, descarga, lluvia),
   FX (niveles, guardia, atrapadas, fogonazo/trazador, media luna, humo/blink, lluvia), armero, prewarm.
 - [ ] **P7** UI/audio/tutorial: barra de acción por arma, enfriamientos, aguante y atrapadas, floats, táctil
   (GUARDIA mantenida, Q/E/R arrastrables), tutorial nuevo, sonidos, F4.
@@ -279,6 +279,19 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   `world.rainHits` (historial a `T − interpTicks`, perfora DEF); columnas `rainT0 rainX rainZ rainId`; evento `rain`.
   **Arreglo:** el cliente no adoptaba nunca los disparos predichos (el evento `shot` trae `owner`, no `e`): desde M2
   los reflejos se veían duplicados un momento. Tests en `tests/pistolas.test.mjs`.
+- P6: `buildLook(idx, wpn)` con `wpn = false | true | 'pistols'` (pistolas: cañón de latón sobre la caja de
+  madera, culata a través del puño, llave y martillo; caché por clave `i`, `ia`, `ip`), `CharacterView.setWeapon`
+  cambia la geometría (mismo esqueleto) y `recoil(hand)`; main.js lo fija cada frame desde `ps.weapon` (tú) y
+  `rec.r.wpn` (los demás). Poses nuevas: SHOOT (dos brazos al frente, cada uno salta con su disparo), guardia de
+  pistolas (antebrazos cruzados), LUNGE, THROW, BLAST (patada), CAST (pistola al cielo). `Shots.tier` (+ evento)
+  para el aspecto: EXCELENTE blanco-dorado con estela larga, POBRE tenue y corta; balas y perdigones = trazador
+  ámbar (tipo 3 del shader). `src/render/vfx/weaponfx.js`: media luna en el tiempo de proyectil, lluvia (anillo
+  del color del jugador, gotas, chispas, polvo; un pulso de anillo + repiqueteo cada 0.15 s), balas atrapadas
+  girando sobre el hombro (local), fogonazo + humo, humo del blink (+ afterimage). Guardia teñida por el aguante
+  (acento → naranja → rojo). Armero: prop `rack` (postes, travesaño, tablero con el sable, estante con dos
+  pistolas, banderín). `Decals.take()` ya no recicla anillos fijos (aro de práctica, runas). Sonidos de armas en
+  `sfx.js` (pistola alterna, descarga, blink, lluvia, estocada, media luna, equipar). `__mn.sheet({weapon, fire,
+  loop})` para revisar poses.
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía
