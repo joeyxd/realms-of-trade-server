@@ -8,11 +8,11 @@ import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
 import { generateWorld } from './worldgen.js';
 import { stepMover } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
-import { stepPlayerCombat, applyLevel, gainXp } from './systems/combat.js';
+import { stepPlayerCombat, applyLevel, gainXp, stormRadius } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
-import { skillSegDist } from './systems/skills.js';
+import { skillSegDist, rainR } from './systems/skills.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 
 const D2R = Math.PI / 180;
@@ -58,7 +58,7 @@ export class World {
     applyLevel(this, e, level);
     ecs.hp[e] = ecs.maxHp[e];
     ecs.dashCharges[e] = ecs.dashMax[e];
-    ecs.guardSt[e] = tuning.guard.stamina;
+    ecs.guardSt[e] = tuning.guard.stamina + ecs.guardAdd[e];
     ecs.weapon[e] = Math.max(0, Math.min(WEAPON_KINDS.length - 1, weapon | 0));
     const cp = this.map.checkpoints.spawn;
     ecs.cpX[e] = cp.x; ecs.cpZ[e] = cp.z;
@@ -381,11 +381,11 @@ export class World {
   // One pulse of the lead rain at tick T: every enemy in the zone (as the caller saw it), DEF pierced.
   rainHits(e, T, seq) {
     const ecs = this.ecs, tmp = this.tmp, R = SKILLS.rain;
-    const cx = ecs.rainX[e], cz = ecs.rainZ[e];
+    const cx = ecs.rainX[e], cz = ecs.rainZ[e], rr = rainR(ecs, e);
     for (let o = 1; o < ecs.cap; o++) {
       if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
       historyAt(this, o, T - tuning.combat.interpTicks, tmp);
-      if (Math.hypot(tmp.x - cx, tmp.z - cz) > R.r + ecs.hurtR[o]) continue;
+      if (Math.hypot(tmp.x - cx, tmp.z - cz) > rr + ecs.hurtR[o]) continue;
       damageEnemy(this, o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true });
     }
   }
@@ -394,7 +394,7 @@ export class World {
     const ecs = this.ecs, RP = tuning.parry.riposte;
     for (let o = 1; o < ecs.cap; o++) {
       if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
-      if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > RP.radius + ecs.hurtR[o]) continue;
+      if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > stormRadius(ecs, e) + ecs.hurtR[o]) continue;
       damageEnemy(this, o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true });
     }
   }

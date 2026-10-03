@@ -174,7 +174,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
 ## 3. Pasos
 
 - [x] **P0** Este plan.
-- [ ] **P1 Núcleo de estadísticas** (sim): `data/items.js`, `sim/items.js` (generar, estadísticas, nombre, valor),
+- [x] **P1 Núcleo de estadísticas** (sim): `data/items.js`, `sim/items.js` (generar, estadísticas, nombre, valor),
   `systems/stats.js` (`refreshStats`), columnas nuevas y `PLAYER_FIELDS`, maestría (empaquetado, desbloqueo de
   E / R en `tryCast` / riposte, pasivas), pociones (`BTN.POTION`), críticos por jugador, protocolo v4 (máscara).
   Tests `tests/items.test.mjs` y `tests/mastery.test.mjs` (distribución de rarezas, rangos, la predicción y el
@@ -203,3 +203,13 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   `main.js` y `hud.js`. Ideas que quedan fuera de M4: gráficos del equipo sobre el personaje (salvo quizá el brillo
   del arma por rareza), comercio entre jugadores, habilidades alternativas por maestría (Albion), la secuencia
   Highlight del cofre (M5).
+- **P1:** `src/data/items.js` (rarezas, `STATS` con lo que compra un punto, bases, afijos por hueco, pociones) y
+  `src/sim/items.js` (`rollItem`, `itemStats`, `itemName`, `itemValue`, `itemScore`, `sanitizeItem`). La base de
+  pistolas se llama `chispa` (el id `pistolas` es el kit). `systems/stats.js`: `statsFor` (se mudó de combat.js,
+  que lo reexporta), `refreshStats` (lee `world.profiles`; sin perfil = M3.6), `masteryOf` / `packMastery`,
+  `kitUnlocked`, `passive`. Columnas: `cdr, ripMul, reflMul, guardAdd, dashRec, winBonus, fireMul, potHeal, xpMul,
+  mastery, potions, potCd` (+ `speed`) en `PLAYER_FIELDS`; `critAdd, critDAdd, goldMul, onKill` solo servidor. El
+  aguante máximo es `tuning.guard.stamina + guardAdd` (F4 sigue editándolo en vivo). Una pulsación bloqueada emite
+  `locked {slot}` (predicho) y no gasta nada. `gainXp` multiplica por `xpMul` y llama `world.onXp` (la maestría,
+  P2) también al tope. Poción: `BTN.POTION` 256 (`1`, cruceta ↑), `usePotion` → evento `potion {heal | denied}`.
+  `PROTOCOL_VERSION` 4, `prs` & 0x1ff. Regeneración rebajada a 5 s / 5 %/s. 106 tests.

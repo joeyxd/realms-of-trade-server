@@ -23,32 +23,35 @@ import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, cast
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
+import { CONSUMABLES } from '../../data/items.js';
+import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
 
 const D2R = Math.PI / 180;
 const TIERS = [null, 'poor', 'good', 'excellent'];
 const tierCfg = (tier) => tuning.sword[TIERS[tier]];
 
-export function statsFor(level) {
-  const S = tuning.stats, l = Math.max(1, level) - 1;
-  return { hp: S.hp[0] + S.hp[1] * l, atk: S.atk[0] + S.atk[1] * l, def: S.def[0] + S.def[1] * l };
-}
+export { statsFor };
 export const xpToNext = (level) => tuning.stats.xp[Math.min(tuning.stats.xp.length - 1, Math.max(0, level - 1))];
 export const mitigate = (dmg, def) => (dmg <= 0 ? 0 : Math.max(1, Math.round(dmg * (1 - def / (def + tuning.stats.defK)))));
 
+// A new level: its stats (with the gear and mastery of a profile, systems/stats.js) and the dash charges.
 export function applyLevel(world, e, level) {
-  const ecs = world.ecs, s = statsFor(level);
-  const frac = ecs.maxHp[e] > 0 ? ecs.hp[e] / ecs.maxHp[e] : 1;
+  const ecs = world.ecs;
   ecs.level[e] = level;
-  ecs.maxHp[e] = s.hp; ecs.atk[e] = s.atk; ecs.def[e] = s.def;
-  ecs.hp[e] = Math.min(s.hp, Math.max(1, frac * s.hp));
+  refreshStats(world, e);
   const dm = level >= 2 ? tuning.dash.chargesLv2 : tuning.dash.chargesBase;
   if (dm > ecs.dashMax[e]) ecs.dashCharges[e] += dm - ecs.dashMax[e];
   ecs.dashMax[e] = dm;
 }
 
+// XP (× the gear's bonus). The server also feeds it to the equipped weapon's mastery (world.onXp), even at
+// the level cap.
 export function gainXp(world, e, n, seq = 0) {
   const ecs = world.ecs;
-  if (n <= 0 || ecs.level[e] >= tuning.stats.maxLevel) return;
+  if (n <= 0) return;
+  n *= ecs.xpMul[e];
+  if (world.onXp) world.onXp(e, n, seq);
+  if (ecs.level[e] >= tuning.stats.maxLevel) return;
   ecs.xp[e] += n;
   while (ecs.level[e] < tuning.stats.maxLevel && ecs.xp[e] >= xpToNext(ecs.level[e])) {
     ecs.xp[e] -= xpToNext(ecs.level[e]);
@@ -76,7 +79,7 @@ function inSector(ecs, e, px, pz, rad, arc) {
 }
 
 function addRiposte(ecs, e, n) {
-  ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n);
+  ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n * ecs.ripMul[e]);
 }
 
 export function hurtPlayer(world, e, raw, o) {
@@ -130,9 +133,11 @@ export function timeToContact(world, e, s, pt) {
   return pt + t / DT >= H.tEnd[s] ? Infinity : t;
 }
 
-export function reflectTier(tc) {
+// bonus: s added to the EXCELENTE and BUENO windows (the weapon base, Filo templado); POBRE stays put.
+export function reflectTier(tc, bonus = 0) {
   const S = tuning.sword;
-  return tc <= S.excellent.tc ? 3 : tc <= S.good.tc ? 2 : tc <= S.poor.tc ? 1 : 0;
+  const ex = Math.max(0.02, S.excellent.tc + bonus), gd = Math.max(ex, Math.min(S.poor.tc, S.good.tc + bonus));
+  return tc <= ex ? 3 : tc <= gd ? 2 : tc <= S.poor.tc ? 1 : 0;
 }
 
 // A hostile projectile becomes a player-owned shot. T: the tier's numbers (tuning.sword.*, the wave's).
@@ -147,7 +152,7 @@ function reflect(world, e, s, pt, seq, T, o = {}) {
     if (Math.hypot(rx, rz) > 0.3) a = Math.atan2(rx, rz);
   }
   if (T.spread) a += (hash01(pid, seq) * 2 - 1) * T.spread * D2R;
-  const dmg = T.dmg * Math.max(H.dmg[s], R.atkMult * ecs.atk[e]) * chainMul(P.chainDmg, ecs.chain[e]);
+  const dmg = T.dmg * Math.max(H.dmg[s], R.atkMult * ecs.atk[e]) * chainMul(P.chainDmg, ecs.chain[e]) * ecs.reflMul[e];
   const from = o.fromX !== undefined;
   world.spawnShot(e, {
     key: pid, pid, type: H.type[s], x: from ? o.fromX : x, y: from ? ecs.y[e] + 1.1 : H.py(s, pt), z: from ? o.fromZ : z,
@@ -175,7 +180,7 @@ function swordReflect(world, e, s, pt, seq, tier, o = {}) {
 function releaseCaught(world, e, seq) {
   const ecs = world.ecs, RL = tuning.guard.release, R = tuning.parry.reflect;
   const n = ecs.catchN[e], hv = ecs.catchHv[e];
-  const base = Math.max(ecs.catchDmg[e], R.atkMult * ecs.atk[e]);
+  const base = Math.max(ecs.catchDmg[e], R.atkMult * ecs.atk[e]) * ecs.reflMul[e];
   for (let k = 0; k < n; k++) {
     const heavy = k < hv;
     const a = ecs.facing[e] + (k - (n - 1) / 2) * RL.spread * D2R, dx = Math.sin(a), dz = Math.cos(a);
@@ -252,7 +257,7 @@ function swingActive(world, e, st, stage, pt, seq) {
     if (!H.live(s, pt) || H.type[s] === PTYPE.UNSTOP) continue;
     const x = H.px(s, pt), z = H.pz(s, pt);
     if (!inSector(ecs, e, x, z, st.range + H.r[s], st.arc)) continue;
-    const tier = reflectTier(timeToContact(world, e, s, pt));
+    const tier = reflectTier(timeToContact(world, e, s, pt), ecs.winBonus[e]);
     if (H.type[s] === PTYPE.HEAVY) {
       // Too early is a clunk, and that swing is spent on it (it cannot turn EXCELENTE a few frames later).
       if (H.hasMark(s, e, tag)) continue;
@@ -404,18 +409,21 @@ function contacts(world, e, prev, pt, seq) {
 }
 const SEG = { ax: 0, az: 0, bx: 0, bz: 0, cx: 0, cz: 0, ox: 0, oz: 0, ang: 0 };
 
+// The Tormenta's reach: 6 u, 8 with the cutlass's «Ojo del huracán».
+export const stormRadius = (ecs, e) => tuning.parry.riposte.radius + passive(ecs, e, 'stormR');
+
 function riposteWave(world, e, pt, seq) {
-  const ecs = world.ecs, H = world.hazards, RP = tuning.parry.riposte;
+  const ecs = world.ecs, H = world.hazards, rad = stormRadius(ecs, e);
   ecs.riposte[e] = 0;
   let n = 0;
   for (let s = 0; s < H.cap; s++) {
     if (!H.live(s, pt)) continue;
     const x = H.px(s, pt), z = H.pz(s, pt);
-    if (Math.hypot(x - ecs.x[e], z - ecs.z[e]) > RP.radius + H.r[s]) continue;
+    if (Math.hypot(x - ecs.x[e], z - ecs.z[e]) > rad + H.r[s]) continue;
     reflect(world, e, s, pt, seq, tuning.parry.reflect.wave, { radial: true, kind: KILL.WAVE });
     n++;
   }
-  world.emit({ type: 'riposte', e, seq, x: ecs.x[e], z: ecs.z[e], n });
+  world.emit({ type: 'riposte', e, seq, x: ecs.x[e], z: ecs.z[e], n, r: rad });
   if (world.isServer) world.waveHits(e, seq);
   world.feel(e, seq, tuning.feel.hitstopRiposte, 0);
 }
@@ -431,7 +439,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
-  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd');
+  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('potCd');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
   // A crescent in flight and the lead rain keep going whatever you do (even down).
@@ -449,21 +457,26 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   }
   dec('stagger');
   if (ecs.regenT[e] > Cb.regenDelay && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = Math.min(ecs.maxHp[e], ecs.hp[e] + ecs.maxHp[e] * Cb.regenRate * dt);
-  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < G.stamina) ecs.guardSt[e] = Math.min(G.stamina, ecs.guardSt[e] + G.regen * dt);
+  const gMax = guardMax(ecs, e);
+  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < gMax) ecs.guardSt[e] = Math.min(gMax, ecs.guardSt[e] + G.regen * dt);
   if (ecs.catchN[e] > 0 && ecs.catchT[e] > G.catchLife) {
     ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
     world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });
   }
   if (world.isServer && world.checkpoint) world.checkpoint(e);
   if (cmd.w) stepEquip(world, e, cmd);
+  if (cmd.prs & BTN.POTION) usePotion(world, e, seq);
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const pistol = skillOf(ecs, e, 'basic') === 'pistol';
   const trigger = pistol && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the pistols firing
   const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;
   if (atkPress) ecs.atkBuf[e] = T.player.inputBuffer;
-  if (cmd.prs & BTN.R) ecs.rBuf[e] = T.player.inputBuffer;
-  bufferSkills(ecs, e, cmd);
+  if (cmd.prs & BTN.R) {
+    if (kitUnlocked(ecs, e, 'r')) ecs.rBuf[e] = T.player.inputBuffer;
+    else world.emit({ type: 'locked', e, seq, slot: 'r' });
+  }
+  bufferSkills(world, e, cmd, seq);
 
   const dashing = ecs.dashT[e] >= 0;
   if (dashing) {
@@ -596,6 +609,19 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   else if (ecs.atkStage[e] > 0) a = ACT.SWING1 + ecs.atkStage[e] - 1;
   else if (ecs.act[e] === ACT.RIPOSTE && ecs.actT[e] < 0.45) a = ACT.RIPOSTE;
   setAct(ecs, e, a);
+}
+
+// A ron-coco potion (BTN.POTION): heals a share of max HP at once, then a short cooldown. Predicted.
+export function usePotion(world, e, seq) {
+  const ecs = world.ecs, Pn = CONSUMABLES.potion;
+  const why = ecs.potions[e] < 1 ? 'empty' : ecs.potCd[e] > 0 ? 'cd' : ecs.hp[e] >= ecs.maxHp[e] ? 'full' : '';
+  if (why) { world.emit({ type: 'potion', e, seq, denied: why }); return false; }
+  const heal = Math.min(ecs.maxHp[e] - ecs.hp[e], Math.round(ecs.maxHp[e] * Pn.heal * ecs.potHeal[e]));
+  ecs.hp[e] += heal;
+  ecs.potions[e] -= 1;
+  ecs.potCd[e] = Pn.cd;
+  world.emit({ type: 'potion', e, seq, heal, n: ecs.potions[e], x: ecs.x[e], z: ecs.z[e] });
+  return true;
 }
 
 function setAct(ecs, e, a) {

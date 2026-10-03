@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 3;
+export const PROTOCOL_VERSION = 4; // M4: hello.save, BTN.POTION, profiles, saves, private events
 
 export const MSG = {
   // client -> server
@@ -64,7 +64,7 @@ export function sanitizeCmd(c) {
     ax: n(c.ax),
     az: n(c.az),
     btn: n(c.btn) & 0xff,
-    prs: n(c.prs) & 0xff,
+    prs: n(c.prs) & 0x1ff, // + BTN.POTION (M4)
     pt: n(c.pt) >>> 0,
     w: n(c.w) & 0x0f,
   };

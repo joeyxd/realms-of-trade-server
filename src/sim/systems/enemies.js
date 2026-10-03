@@ -338,8 +338,10 @@ export function damageEnemy(world, e, raw, o) {
     else if (b.shieldOn && o.kind !== 'shot') { raw *= o.kind === 'bullet' ? def.shieldBullet ?? def.shield : def.shield; shielded = 1; }
     else if (def.phases[b.phase].guard && o.kind !== 'shot') raw *= def.phases[b.phase].guard;
   }
-  const crit = world.rng() < tuning.stats.crit;
-  const raw2 = raw * (crit ? tuning.stats.critMult : 1);
+  // Crits: the attacker's gear adds chance and damage (M4; 0 for anything without gear).
+  const by = o.by > 0 ? o.by : 0;
+  const crit = world.rng() < tuning.stats.crit + ecs.critAdd[by];
+  const raw2 = raw * (crit ? tuning.stats.critMult + ecs.critDAdd[by] : 1);
   const dmg = Math.max(1, Math.round(raw2 * (1 - (o.pierce ? 0 : ecs.def[e]) / ((o.pierce ? 0 : ecs.def[e]) + tuning.stats.defK))));
   ecs.hp[e] -= dmg;
   if (!def.fixed) {

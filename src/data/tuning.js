@@ -72,8 +72,8 @@ export const tuning = {
   },
   combat: {
     hurtIframes: 0.35, // after taking damage, projectiles pass through you
-    regenDelay: 4, // s without damage before HP comes back (M2 stand-in for potions)
-    regenRate: 0.1, // fraction of max HP per second
+    regenDelay: 5, // s without damage before HP comes back (M4: slower, the potions are the real heal)
+    regenRate: 0.05, // fraction of max HP per second (M2–M3.6: 4 s and 0.1)
     respawnTime: 3,
     respawnIframes: 2,
     hitKnock: 4, // u/s of knockback when hit (decays at 10/s → 0.4 u)

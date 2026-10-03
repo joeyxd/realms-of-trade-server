@@ -22,6 +22,7 @@ import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
 import { hash01 } from '../../core/rng.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { ACT } from '../ecs.js';
+import { kitUnlocked, passive } from './stats.js';
 
 export const CAST = { NONE: 0, Q: 1, E: 2 };
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
@@ -69,7 +70,7 @@ export function cancelCast(ecs, e) {
 }
 
 function addRiposte(ecs, e, n) {
-  ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n);
+  ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n * ecs.ripMul[e]);
 }
 
 function faceAim(ecs, e, cmd) {
@@ -78,12 +79,16 @@ function faceAim(ecs, e, cmd) {
 }
 
 // Q / E presses go into their buffers (stepPlayerCombat decrements them). A buffered skill that is
-// ready wins over raising the guard.
-export function bufferSkills(ecs, e, cmd) {
-  const ib = tuning.player.inputBuffer;
-  if (cmd.prs & BTN.Q) ecs.qBuf[e] = ib;
-  if (cmd.prs & BTN.E) ecs.eBuf[e] = ib;
+// ready wins over raising the guard. A slot the weapon's mastery has not opened yet says so instead (M4).
+export function bufferSkills(world, e, cmd, seq = 0) {
+  const ecs = world.ecs, ib = tuning.player.inputBuffer;
+  for (const [bit, slot, buf] of PRESSES) {
+    if (!(cmd.prs & bit)) continue;
+    if (kitUnlocked(ecs, e, slot)) ecs[buf][e] = ib;
+    else world.emit({ type: 'locked', e, seq, slot });
+  }
 }
+const PRESSES = [[BTN.Q, 'q', 'qBuf'], [BTN.E, 'e', 'eBuf']];
 export const skillWanted = (ecs, e) => (ecs.qBuf[e] > 0 && ecs.cdQ[e] <= 0) || (ecs.eBuf[e] > 0 && ecs.cdE[e] <= 0);
 
 // Start a buffered Q or E (the caller checked you are free to act). Returns true when one started.
@@ -96,7 +101,8 @@ export function tryCast(world, e, cmd, seq) {
   const id = skillOf(ecs, e, k === CAST.Q ? 'q' : 'e');
   const S = SKILLS[id];
   if (!S || !phases(id).some((t) => t > 0)) return false; // not a cast skill (P5 adds the pistols' kit)
-  if (k === CAST.Q) { ecs.qBuf[e] = 0; ecs.cdQ[e] = S.cd; } else { ecs.eBuf[e] = 0; ecs.cdE[e] = S.cd; }
+  const cd = S.cd * (1 - ecs.cdr[e]); // gear: Enfriamiento
+  if (k === CAST.Q) { ecs.qBuf[e] = 0; ecs.cdQ[e] = cd; } else { ecs.eBuf[e] = 0; ecs.cdE[e] = cd; }
   ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
   faceAim(ecs, e, cmd);
   const [w, a] = phases(id);
@@ -247,6 +253,10 @@ function blink(world, e, cmd, seq) {
 }
 
 // ---- Pistolas: Lluvia de plomo ---------------------------------------------------------------------------
+// How long it falls and how wide (the pistols' «Diluvio» at mastery 10 makes it longer and wider).
+export const rainDur = (ecs, e) => SKILLS.rain.dur + passive(ecs, e, 'rainDur');
+export const rainR = (ecs, e) => SKILLS.rain.r + passive(ecs, e, 'rainR');
+
 // R with a full meter: the zone goes where you aim (at most `range` away) and starts after `delay`.
 export function callRain(world, e, cmd, pt, seq) {
   const ecs = world.ecs, R = SKILLS.rain;
@@ -258,7 +268,7 @@ export function callRain(world, e, cmd, pt, seq) {
   ecs.rainT0[e] = pt + Math.max(1, Math.round(R.delay / DT));
   ecs.rainId[e] = seq;
   if (d > 0.3) ecs.facing[e] = Math.atan2(ax, az);
-  world.emit({ type: 'rain', e, id: seq, seq, x: ecs.rainX[e], z: ecs.rainZ[e], tick: ecs.rainT0[e], dur: R.dur, r: R.r });
+  world.emit({ type: 'rain', e, id: seq, seq, x: ecs.rainX[e], z: ecs.rainZ[e], tick: ecs.rainT0[e], dur: rainDur(ecs, e), r: rainR(ecs, e) });
 }
 
 // The rain falls from rainT0 for `dur`: parryables inside are erased; every `every` s it hits (server).
@@ -266,13 +276,13 @@ export function stepRain(world, e, prev, pt, seq) {
   const ecs = world.ecs;
   if (!(ecs.rainT0[e] > 0)) return;
   const R = SKILLS.rain, H = world.hazards, t0 = ecs.rainT0[e];
-  const end = t0 + Math.round(R.dur / DT), every = Math.max(1, Math.round(R.every / DT));
+  const end = t0 + Math.round(rainDur(ecs, e) / DT), every = Math.max(1, Math.round(R.every / DT)), rr = rainR(ecs, e);
   if (pt >= t0) {
     const cx = ecs.rainX[e], cz = ecs.rainZ[e];
     for (let s = 0; s < H.cap; s++) {
       if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
       const hx = H.px(s, pt), hz = H.pz(s, pt);
-      if (Math.hypot(hx - cx, hz - cz) > R.r + H.r[s]) continue;
+      if (Math.hypot(hx - cx, hz - cz) > rr + H.r[s]) continue;
       H.remove(s, pt, KILL.DESTROY, e, seq);
       world.emit({ type: 'destroy', pid: H.id[s], e, seq, x: hx, z: hz, skill: 'rain' });
     }
@@ -297,7 +307,7 @@ export function firePistol(world, e, pt, seq) {
     dmg: ecs.atk[e] * P.mult, life: P.life, r: P.r, heavy: false, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt,
   });
   ecs.shotN[e] += 1;
-  ecs.shotCd[e] = P.every;
+  ecs.shotCd[e] = P.every * ecs.fireMul[e]; // trabucos are slower, «Gatillo fácil» faster
   world.emit({ type: 'fire', e, seq, hand, x, z, dx, dz });
 }
 

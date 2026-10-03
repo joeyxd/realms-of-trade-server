@@ -29,3 +29,24 @@ export const SKILLS = {
   // R: lead rain on a zone at the cursor.
   rain: { name: 'Lluvia de plomo', hint: 'Zona de balas en el cursor', range: 9, delay: 0.35, dur: 1.5, every: 0.15, r: 3.2, mult: 0.55 },
 };
+
+// Weapon mastery (M4, PLAN-M4.md §2.2): 1–10 per weapon kit, fed by all the XP you earn with it equipped.
+// The kit opens with it (LMB + Q from 1, E at `unlock.e`, R at `unlock.r`); every level above 1 adds `dmg`
+// to the weapon's damage, and two levels bring a passive. A player without a profile (tests, tools) has
+// mastery 0 = unmanaged: the whole kit, no bonuses (the M3.5 game).
+export const MASTERY = {
+  max: 10,
+  xp: [60, 140, 260, 400, 560, 740, 940, 1160, 1400], // to go from n to n + 1
+  unlock: { q: 1, e: 2, r: 3 },
+  dmg: 0.02,
+  passives: {
+    sable: [
+      { at: 5, id: 'temple', name: 'Filo templado', hint: '+15 ms a las ventanas de EXCELENTE y BUENO', win: 0.015 },
+      { at: 10, id: 'eye', name: 'Ojo del huracán', hint: 'La Tormenta alcanza 8 u en lugar de 6', stormR: 2 },
+    ],
+    pistolas: [
+      { at: 5, id: 'trigger', name: 'Gatillo fácil', hint: 'Disparas un 15 % más rápido', fire: 0.85 },
+      { at: 10, id: 'deluge', name: 'Diluvio', hint: 'La Lluvia de plomo dura 2,25 s y crece 0,8 u', rainDur: 0.75, rainR: 0.8 },
+    ],
+  },
+};

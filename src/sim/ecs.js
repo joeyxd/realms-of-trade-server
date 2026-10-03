@@ -69,6 +69,12 @@ export class ECS {
     this.waveId = f(); this.waveN = f(); this.lungeCov = f();
     // The pistols' lead rain: first tick it falls (0 = none), centre, id (the seq that called it).
     this.rainT0 = f(); this.rainX = f(); this.rainZ = f(); this.rainId = f();
+    // Gear and mastery (M4, systems/stats.js): what the equipped items and the weapon's mastery change. All
+    // predicted (PLAYER_FIELDS) but crit / gold / life on kill, which only the server uses. Multipliers
+    // default to 1, additions to 0. mastery packs every kit's level, 4 bits each (0 = unmanaged: whole kit).
+    this.cdr = f(); this.ripMul = f(); this.reflMul = f(); this.guardAdd = f(); this.dashRec = f(); this.winBonus = f();
+    this.fireMul = f(); this.potHeal = f(); this.xpMul = f(); this.mastery = f(); this.potions = f(); this.potCd = f();
+    this.critAdd = f(); this.critDAdd = f(); this.goldMul = f(); this.onKill = f();
     // ENEMY (server only)
     this.enemy = new Uint8Array(cap); // index into ENEMY_KINDS
     this.brain = new Array(cap).fill(null);
@@ -114,6 +120,9 @@ export class ECS {
     this.waveT0[id] = this.waveX[id] = this.waveZ[id] = this.waveDx[id] = this.waveDz[id] = this.waveEnd[id] = 0;
     this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
     this.rainT0[id] = this.rainX[id] = this.rainZ[id] = this.rainId[id] = 0;
+    this.cdr[id] = this.guardAdd[id] = this.winBonus[id] = this.mastery[id] = this.potions[id] = this.potCd[id] = 0;
+    this.ripMul[id] = this.reflMul[id] = this.dashRec[id] = this.fireMul[id] = this.potHeal[id] = this.xpMul[id] = 1;
+    this.critAdd[id] = this.critDAdd[id] = this.onKill[id] = 0; this.goldMul[id] = 1;
     this.enemy[id] = 0; this.brain[id] = null;
     this.level[id] = 1; this.skin[id] = 0; this.clientId[id] = -1; this.lastSeq[id] = 0;
     this.names[id] = ''; this.titles[id] = ''; this.bot[id] = null;
@@ -150,4 +159,6 @@ export const PLAYER_FIELDS = [
   'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN', 'castLock',
   'waveT0', 'waveX', 'waveZ', 'waveDx', 'waveDz', 'waveEnd', 'waveId', 'waveN', 'lungeCov',
   'rainT0', 'rainX', 'rainZ', 'rainId',
+  // M4: gear and mastery (speed included: boots change it).
+  'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
 ];

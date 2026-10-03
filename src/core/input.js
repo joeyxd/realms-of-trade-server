@@ -1,7 +1,7 @@
 // Keyboard / mouse / touch / gamepad input. Produces raw axes (screen-relative), held buttons and press
 // edges that the fixed tick consumes, plus UI hotkeys dispatched immediately.
 // Gamepad (standard mapping): left stick moves, right stick aims, RT sword / shoot, LT guard, A dash,
-// X interact, RB Q, LB E, Y R, Start pause.
+// X interact, RB Q, LB E, Y R, D-pad up potion (M4), Start pause, Select the bag (hotkey 'PadSelect').
 import { BTN } from '../sim/systems/movement.js';
 
 const MOVE_KEYS = {
@@ -9,10 +9,10 @@ const MOVE_KEYS = {
   KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0],
 };
 // J / K: attack and guard without a mouse (they aim at the nearest threat or enemy). Both can be held.
-const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
+const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
 const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
 // Standard gamepad buttons → command bits (held ones also count as held).
-const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [5, BTN.Q, false], [4, BTN.E, false], [3, BTN.R, false]];
+const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [5, BTN.Q, false], [4, BTN.E, false], [3, BTN.R, false], [12, BTN.POTION, false]];
 const PAD_DEAD = 0.18;
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 
@@ -100,6 +100,9 @@ export class Input {
     const start = down(9);
     if (start && !P.prev[9]) { const hk = this.hotkeys.get('Escape'); if (hk) hk({ code: 'Escape' }); }
     P.prev[9] = start;
+    const select = down(8);
+    if (select && !P.prev[8]) { const hk = this.hotkeys.get('PadSelect'); if (hk) hk({ code: 'PadSelect' }); }
+    P.prev[8] = select;
     this.padHeld = held;
     P.active = any || P.active;
     if (any) { this.lastDevice = 'gamepad'; this.aimDevice = 'gamepad'; }

@@ -6,7 +6,7 @@ import { dampAngle } from '../../core/math.js';
 
 // AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
 // even while walking another way; without it you face where you walk (touch, keyboard only).
-export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128 };
+export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128, POTION: 256 };
 
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
@@ -75,10 +75,11 @@ export function stepMover(world, e, cmd, dt) {
 
   // Charges recharge sequentially.
   if (ecs.dashCharges[e] < ecs.dashMax[e]) {
+    const rec = D.recharge * ecs.dashRec[e]; // gear: Recarga de dash
     ecs.dashRecharge[e] += dt;
-    if (ecs.dashRecharge[e] >= D.recharge) {
+    if (ecs.dashRecharge[e] >= rec) {
       ecs.dashCharges[e] += 1;
-      ecs.dashRecharge[e] = ecs.dashCharges[e] < ecs.dashMax[e] ? ecs.dashRecharge[e] - D.recharge : 0;
+      ecs.dashRecharge[e] = ecs.dashCharges[e] < ecs.dashMax[e] ? ecs.dashRecharge[e] - rec : 0;
     }
   }
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
