@@ -94,6 +94,7 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M3.5 | Combate V2: apuntar con ratón / mando, reflejo a tiempo en 3 niveles, guardia que atrapa, armas con su kit (sable y pistolas), armeros → `PLAN-M3.5.md` | ✅ |
 | M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer`, cooperativo medido con latencia → `PLAN-M3.6.md` | ✅ |
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, Tía Perla, Mareas, partidas guardadas y firmadas, HUD y paneles completos → `PLAN-M4.md` | ✅ |
+| M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
 | M5–M6 | Momentos Highlight, rendimiento y móvil final | siguiente |
 
 ### Qué incluye M1
@@ -293,6 +294,55 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
   (~1000 por vuelta, con poco en qué gastarlo hasta M5).
 - Protocolo v4 (`hello.save`, `profile`, `save`, eventos privados con `to`). 129 tests en Node (objetos, maestría,
   loot, guardado, misiones y Mareas incluidos).
+
+### Qué incluye M4.5 — «Sin ley»
+
+- **Los detalles de M4:** el aviso `F` de un cofre va bajo el cofre y lo nombra en el color de su rareza (su
+  etiqueta se oculta y las de debajo se atenúan); las palmeras se disuelven también entre la cámara y tu cofre; el
+  oro tiene en qué gastarse: **Cofre de la Marea II** (450 oro, objeto + 3 niveles y más rareza) y **III** (1100 oro,
+  + 6 niveles, al menos Poco común) en el puesto de Tía Perla, con candado hasta que vences esa Marea.
+- **La Cala Calavera:** un fuerte en ruinas junto a la costa este, por un desvío de tierra desde el Sendero del Humo
+  (cartel «CALA CALAVERA · SIN LEY →»). Tótems de calaveras, empalizadas rotas, cajas y barriles para cubrirse,
+  braseros, una hoguera y la bandera negra; en el suelo, un anillo rojo que late cuando estás dentro. El resto de
+  la isla no cambia ni un prop (la vegetación de la Cala se descarta tras sus tiradas).
+- **Fuego amigo:** dentro, todo golpe de un pirata hiere a cualquier otro pirata que también esté dentro: el
+  combo del sable entero, la estocada, la hoja de viento, la tormenta, balas, perdigones, reflejos, rebotes y la
+  lluvia de plomo, × 0,6, con críticos, tras la DEF y con compensación de lag. El dash lo esquiva, la guardia lo
+  bloquea (gasta aguante), la guardia perfecta lo para y aturde al atacante cercano, y los golpes pesados aturden
+  0,3 s. Fuera de la Cala, nada cambia.
+- **Botín completo:** si caes dentro, todo lo que llevas puesto (salvo el arma inicial), la bolsa entera y las
+  pociones quedan en el suelo 3 minutos para el primero que las pise; tú también puedes volver a por ellas
+  («¡Recuperado!»). El oro no se pierde y te levantas con un arma inicial de tu kit (tu maestría sigue valiendo).
+  El botín de los mobs de la Cala también es público: se tira una vez y es de quien llegue primero.
+- **Mobs del caos:** 13 en el fuerte a «Sin ley» (vida × 1,6, daño × 1,4, objetos + 3 niveles y más rareza, XP y oro
+  × 1,5), que se levantan del suelo aunque haya piratas. Sus balas y círculos hieren a otros mobs, que se revuelven
+  contra quien les dio (hasta que un pirata les pega: entonces, contra el pirata). Tres **Desalmados** con nombre
+  («Cuervo Malasangre», «La Viuda Roja»…): renegados de sable (tajo en círculo y media luna) o de pistolas (ráfaga y
+  descarga a quemarropa) que van a por el pirata que tengan a su alcance y, si no hay ninguno, a por los mobs (nunca
+  entre ellos), y que sueltan su equipo (2 objetos, uno al menos Poco común). Si un mob remata a otro, la muerte es
+  del último pirata que lo hirió (8 s); si nadie lo tocó, su botín cae igual pero nadie gana XP por mirar. Sin
+  piratas cerca, la Cala duerme. Una pirata de nivel 1 que se queda quieta dentro cae a los ~8 s.
+- **En pantalla:** cartel de zona en rojo, un aviso largo la primera vez y «A salvo» al salir; chip «☠ SIN LEY» y
+  viñeta roja mientras estás dentro; placas en rojo con ☠ de los piratas que pueden herirte; números de daño PvP;
+  avisos «☠ Te hundió X», «☠ Hundiste a Y» y «X hundió a Y»; lo derramado lleva «☠ Fulano» y vuela hacia quien lo
+  recoge; 💀 en el mapa donde caíste. Tía Perla y Brea te avisan de la Cala.
+- **Balance** medido con `tools/lawless.mjs`: dos bots de `tools/botbrain.mjs` (habilidad 0,8) con perfil y equipo
+  de su nivel se pelean en el fuerte hasta que uno cae (`MOBS=1` añade los mobs de la Cala durante `SECS`):
+
+  | Duelo | Nivel · equipo | Tiempo hasta caer (mediana) |
+  |---|---|---|
+  | Sable contra sable | 6 · Poco común | 4,7 s |
+  | Sable contra pistolas | 3 · nada / 6 · Poco común / 10 · Raro | 8,4 s / 10,5 s / 14,5 s |
+  | Pistolas contra pistolas | 6 · Poco común | 16,4 s |
+
+  Los bots no esquivan las balas de otro pirata (solo ven los proyectiles de los mobs), así que las pistolas ganan
+  más de lo que ganarían contra alguien que las esquiva. Con los mobs, en 4 minutos: unos 57 mobs caen a manos de
+  los piratas y 1–2 entre ellos (5–10 balas de un mob en otro); a estos bots, que reflejan casi todo, los mobs les
+  quitan ~30 de vida por minuto y el otro pirata 130–240 (a una pirata de nivel 1 quieta, los mobs la hunden en ~8 s).
+  Quien gana se queda con todo: el pirata de pistolas acabó con 6 piezas puestas y la bolsa llena (24); el de sable,
+  con su arma inicial.
+- Protocolo v5 (botín público `loot` / `unloot` con `pub`, `spill`, `hurt` con `kind: 'pvp'` y `by`, `death` con `by`).
+  143 tests en Node.
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.

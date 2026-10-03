@@ -144,7 +144,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   su botín es público).
 - [x] **P4 Cliente**: frontera, carteles, chip, placas, números y avisos de muerte, botín público, pantalla de
   muerte, mapa, líneas de los PNJ. Capturas y prueba en el navegador (solo y en línea con dos clientes).
-- [ ] **P5 Cierre**: playtest (`tools/lawless.mjs`: dos bots con equipo se pelean en la Cala → tiempo hasta
+- [x] **P5 Cierre**: playtest (`tools/lawless.mjs`: dos bots con equipo se pelean en la Cala → tiempo hasta
   morir; los mobs se pelean), ajuste de `pvpDmg`, README («Qué incluye M4.5»), DESIGN §9 / §10 / §16, versión
   `0.4.5-m4.5`, artefacto, informe final.
 
@@ -223,3 +223,15 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   a la pirata → no se hieren entre ellos, van a por un pirata a su alcance antes que a cualquier mob, y el golpe de
   un pirata devuelve a un mob contra él. Con eso, una pirata de nivel 1 quieta dentro cae a los ~8 s (11 veces en
   3 min). 143 tests.
+- **P5:** `tools/lawless.mjs`: dos bots de `botbrain.mjs` (habilidad 0.8) con perfil, maestría y equipo rodado a su
+  nivel (`RAR`: rareza fija; `-1` sin equipo) se pelean en un claro del fuerte hasta que uno cae (`RUNS` duelos;
+  `A` / `B`: kit de cada uno). Con `MOBS=1` están también los mobs de la Cala durante `SECS`: los bots recogen lo
+  público a ≤ 6 u cuando no tienen nada que hacer y, al levantarse, vuelven a entrar con lo que les quede. Medido
+  (mediana del tiempo hasta caer): sable contra sable (Nv 6, Poco común) 4.7 s; sable contra pistolas 8.4 s (Nv 3, sin
+  equipo), 10.5 s (Nv 6, Poco común) y 14.5 s (Nv 10, Raro); pistolas contra pistolas 16.4 s. Las pistolas ganan casi
+  siempre al sable porque el bot no ve las balas de otro pirata (solo los proyectiles de los mobs). Con los mobs
+  (4 min, Nv 6, tras los arreglos de P4): ~57 mobs caen a manos de los piratas y 1–2 entre ellos (5–10 balas de un mob
+  en otro); un pirata pierde ~30 de vida por minuto con los mobs (los bots reflejan casi todo) y 130–240 con el otro
+  pirata; el que gana acaba con 6 piezas y la bolsa llena y el otro con su arma inicial. `pvpDmg` se queda en 0.6: con guardia y dash de por medio, un
+  duelo de varios segundos deja tiempo para reaccionar sin hacerse eterno. README («Qué incluye M4.5»), DESIGN §9 /
+  §10 / §16, versión `0.4.5-m4.5`, artefacto.

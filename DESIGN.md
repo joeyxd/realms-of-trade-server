@@ -349,6 +349,29 @@ Marinero de agua dulce (hablar con el capitán).
   La Caldera (300 XP + 100 oro); Coral para la tía (6 corales, 2 pociones + 60 oro + abalorio) y Caza en La Caldera
   (40 enemigos, repetible, 120 oro + 1 poción). Los logros quedan para M5.
 
+### M4.5: la Cala Calavera (`PLAN-M4.5.md`)
+
+- **Sumideros de oro:** Cofre de la Marea II (450 oro, nivel + 3, rareza + 0.5) y III (1100, + 6, + 1, al menos Poco
+  común) en el puesto de Tía Perla, con la Marea correspondiente abierta.
+- **Zona sin ley** (`src/data/lawless.js`): un fuerte de radio 21 u junto a la costa este. Dentro, los golpes de un
+  pirata hieren a los demás piratas de dentro × `pvpDmg` 0.6 (críticos del atacante, DEF del que recibe, compensación
+  de lag con un historial de posiciones de los piratas). Dash: esquiva. Guardia: × `blockMult` y aguante. Guardia
+  perfecta: 0 y aturde 0.5 s al atacante a ≤ 3.2 u. Golpe pesado: aturde 0.3 s. La ventana de gracia tras un golpe
+  (0.35 s) frena las balas pero no el sable ni la estocada (un tajo golpea una vez por swing de todos modos).
+- **Botín completo:** morir dentro deja en el suelo todo lo puesto (menos el arma inicial), la bolsa y las pociones,
+  180 s, públicos (el primero que los pisa y puede cargarlos); el oro se queda; arma inicial del mismo kit. El botín
+  de los mobs de dentro se tira una vez y es público (150 s).
+- **Mobs:** 13 generadores a «Sin ley» (vida × 1.6, daño × 1.4, nivel + 3, rareza + 0.6, XP y oro × 1.5) que reaparecen
+  aunque haya piratas (se levantan en 1.1 s). Las balas armadas y los círculos de un mob hieren a otros mobs de dentro,
+  que lo eligen como objetivo 6 s (el golpe de un pirata lo devuelve al pirata). Desalmados (sable: 180 de vida;
+  pistolas: 150): el pirata más cercano a su alcance (distancia × 0.7); sin ninguno, mobs de la Cala mientras haya un
+  pirata a ≤ R + 18 u; nunca se hieren entre ellos; sueltan 2 objetos (rareza + 0.8, uno al menos Poco común). Un mob
+  rematado por otro es la muerte del último pirata que lo hirió en 8 s (`assist`); sin él, sin XP ni misión (el botín
+  cae igual, público).
+- Medido (`tools/lawless.mjs`, bots de habilidad 0.8 con equipo de su nivel): un duelo de sable dura ~5 s, sable
+  contra pistolas 8–15 s y pistolas contra pistolas ~16 s; con los mobs, el otro pirata quita 130–240 de vida por
+  minuto y los mobs ~30 (a bots que reflejan casi todo; a una pirata de nivel 1 quieta la hunden en ~8 s).
+
 ## 10. Arquitectura (MMO-ready)
 
 ```
@@ -425,14 +448,14 @@ Marinero de agua dulce (hablar con el capitán).
 
 | Dir. | Tipo | Campos | Fiable |
 |---|---|---|---|
-| C→S | `hello` | `v` (4), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
+| C→S | `hello` | `v` (5), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
 | C→S | `input` | `seq, mx, mz` (−1..1, cuantizado 1/127), `ax, az` (punto de mira), `btn` (bits mantenidos), `prs` (bits pulsados este tick) | orden |
 | C→S | `cmd` | `{type: 'equip' \| 'unequip' \| 'salvage' \| 'open' \| 'talk' \| 'quest' \| 'buy' \| 'sell' \| 'tut' \| 'tier' \| 'pause' \| …}` | sí |
 | C→S | `ping` | `t` | no |
 | S→C | `welcome` | `you, tick, seed, tuningHash` | sí |
 | S→C | `snapshot` | `tick, ack, ents[{id,k,x,y,z,f,s,a,…}], ev[]` | no (20 Hz) |
 | S→C | `spawn` / `despawn` | entidad completa (nombre, skin, nivel) / id | sí |
-| S→C | `event` | `damage, death, loot, levelup, pattern, reflect, phase, wave, timescale` | sí |
+| S→C | `event` | `damage, death` (`by`: quién hundió a un pirata), `hurt` (`kind: 'pvp'`, `by`), `loot` / `unloot` (personales con `to`; públicos con `pub`, `from`, `late`), `spill`, `levelup, pattern, reflect, phase, wave, timescale` | sí |
 | S→C | `pong` | `t0, tick` | no |
 | S→C | `profile` / `save` | perfil completo (privado) / `blob` para guardar (M4) | sí |
 | S→C | `full` / `error` | `max` / `code: 'version'` (M3.6) | sí |
@@ -639,6 +662,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M3.5 | Combate V2: apuntar con ratón / stick, reflejo a tiempo en 3 niveles, guardia con atrapar y devolver, armas que definen las habilidades (sable / pistolas), armeros, disparos con lag compensation (`PLAN-M3.5.md`) | ✅ |
 | M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, relleno de comandos, tiempo de instancia y arena cooperativos, medición con latencia (`PLAN-M3.6.md`) | ✅ |
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, vendedora, Mareas, partidas firmadas, HUD y paneles (`PLAN-M4.md`) | ✅ |
+| M4.5 | «Sin ley»: detalles de M4 (aviso del cofre, oclusión del cofre, cofres de Marea) + la Cala Calavera: fuego amigo, botín completo y público, mobs que se pelean, Desalmados (`PLAN-M4.5.md`) | ✅ |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |
 
