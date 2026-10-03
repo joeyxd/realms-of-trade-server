@@ -6,6 +6,8 @@ import { clamp } from '../core/math.js';
 
 const v = new THREE.Vector3();
 
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
 export class WorldUI {
   constructor(root, camera) {
     this.root = root;
@@ -81,7 +83,9 @@ export class WorldUI {
 
   addNameplate(id, { name, level, title, kind }) {
     const el = document.createElement('div');
-    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'minor' ? ' enemy minor' : kind === 'practice' ? ' practice' : '');
+    // ally: another human pirate (online); player: a bot.
+    el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'minor' ? ' enemy minor' : kind === 'practice' ? ' practice' : kind === 'ally' ? ' ally' : '');
+    name = esc(name); title = esc(title);
     const lv = kind === 'npc' || kind === 'practice' ? '' : 'Nv ' + level;
     // Minor (swarm) enemies: just the HP bar, so a pack of ten stays readable.
     const nameRow = kind === 'minor' ? '<span class="lv" hidden></span>' : `<div class="np-name"><span class="lv">${lv}</span>${name}</div>`;

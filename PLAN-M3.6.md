@@ -115,9 +115,9 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
 - [x] **P3 Red robusta.** Comandos de relleno, tiempo de instancia cooperativo, escalado de la arena, nombres;
   tests en `tests/coop.test.mjs`.
 - [x] **P4 Ancho de banda.** Cuantización de `encodeEntity`, deflate, medición con 4 clientes (§2.4).
-- [ ] **P5 Latencia.** `tools/botbrain.mjs`, `tools/nettest.mjs`, informe, ajuste del rebobinado; test de red
+- [x] **P5 Latencia.** `tools/botbrain.mjs`, `tools/nettest.mjs`, informe, ajuste del rebobinado; test de red
   con 2 clientes a 100 ms de RTT (predicción sin correcciones, se ven, los reflejos de uno llegan al otro).
-- [ ] **P6 Presentación cooperativa** (§2.6) + capturas con 2 navegadores.
+- [x] **P6 Presentación cooperativa** (§2.6) + capturas con 2 navegadores.
 - [ ] **P7 Cierre.** README («Jugar en línea», despliegue en Render), DESIGN §10/§16, versión `0.3.6-m3.6`,
   artefacto republicado (modo solo), informe final.
 
@@ -148,3 +148,14 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
 - **P4:** cuantizado en `encodeEntity` (`q3` / `q2`). Medido (1 jugador, 17 entidades): bruto 55 → 33 KB/s,
   deflate con contexto 10 → **4.9 KB/s**. Con 4 clientes en la oleada 1 (3 bots): **8.0 KB/s por cliente** en el
   cable (`GameHost.wireOut()`, bytes reales del socket), 41 KB/s de JSON sin comprimir; `stepMs` ≈ 0.65.
+- **P5:** la política del bot vive en `tools/botbrain.mjs` (`makeBrain({weapon, skill, seed})(view)`); `playtest.mjs`
+  da resultados idénticos a los de M3.5 tras el cambio. `nettest.mjs` corre todos los RTT a la vez en un proceso
+  (cada uno con su servidor) y cuenta desde que los bots están en la arena (el teletransporte no es una corrección).
+  Primera medición (2 bots, sable + pistolas, LV 6, SKILL 0.9): victoria en ~204 s a 100 ms y ~211 s a 200 ms;
+  correcciones de predicción ≤ 0.6/min (0.3–0.5 u, son los empujones de los golpes); 4–6 KB/s por cliente. A 300 ms,
+  42 comandos se salían del rebobinado (20 ticks) → **`combat.rewind` = 24** (400 ms; `HIST` 32 ≥ 24 + 6).
+  `tests/net.test.mjs`: 2 clientes reales a 100 ms, 0 correcciones caminando, se ven andar y atacar.
+- **P6:** tajo de los demás (humanos y bots) con su color, esperando su wind-up + `INTERP_DELAY` (se dibujan 100 ms
+  tarde); placas `ally` (verde) para humanos; marcos «tripulación» bajo el tuyo (`hud.setParty`: nombre, nivel,
+  vida, arma, caído); avisos «X subió a bordo / dejó la isla»; línea de la arena con «Tripulación n». Los nombres se
+  escapan en el cliente (placas, marcos, avisos) además de limpiarse en el servidor.

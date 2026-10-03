@@ -11,14 +11,38 @@ son los CDN de Three.js y GSAP, y Google Fonts.
 ## Cómo ejecutarlo
 
 ```bash
-npx serve .          # o: npm start  → http://localhost:5173
-npm test             # tests en Node (simulación, geometría de personajes, luces locales, partículas)
-npm install          # opcional: trae three como devDependency para el test de geometría de personajes
+npm install          # ws (servidor) y three (tests de geometría)
+npm start            # servidor de juego: http://localhost:5173 → abre 2–4 pestañas o equipos y compartís la isla
+npm test             # tests en Node (simulación, red, servidor, geometría de personajes, luces, partículas)
+npm run static       # solo estáticos (sin servidor): cada pestaña juega su propia isla en un Web Worker
 ```
 
-Basta con cualquier servidor estático; no hace falta bundler. El juego también se puede publicar como Artifact
-multi-archivo: `node tools/build-artifact.mjs dist/index.html` genera la página (con los estilos incrustados) y
-lista los módulos `src/**` que hay que publicar junto a ella.
+No hace falta bundler. El juego también se puede publicar como Artifact multi-archivo (modo solo):
+`node tools/build-artifact.mjs dist/index.html` genera la página (con los estilos incrustados) y lista los módulos
+`src/**` que hay que publicar junto a ella.
+
+### Jugar en línea (M3.6)
+
+`npm start` levanta **un solo proceso** que sirve el cliente y corre el mundo: el mismo `LocalServer` que en solo
+vive en el Web Worker, detrás de WebSockets (`/ws`). La página que sirve lleva la marca `<meta name="mn-server">`
+y el cliente entra en línea sin preguntar; con `?solo` juega en su Worker, con `?server=wss://host/ws` se conecta a
+otro servidor. En el título eliges **nombre** y aspecto; la píldora dice cuántos piratas hay a bordo (máximo 4).
+
+| Variable | Por defecto | Qué hace |
+|---|---|---|
+| `PORT` / `HOST` | 5173 / 0.0.0.0 | dónde escucha |
+| `MAX_PLAYERS` | 4 | humanos por instancia (el resto puede mirar, y recibe «tripulación completa») |
+| `BOTS` | 3 | bots que pasean por la isla |
+| `DEV` | 0 | `1` habilita F4 y el teletransporte de `?debug` (nunca en un servidor público) |
+| `ORIGINS` | (todas) | orígenes permitidos para el WebSocket, separados por comas |
+| `LAG_MS` / `JITTER_MS` | 0 | latencia artificial por sentido, para probar (`?lag=&jitter=` hace lo mismo en el cliente) |
+
+**Desplegar en Render:** el `render.yaml` de la raíz crea un *web service* gratuito (Node 22, `npm install
+--omit=dev`, `npm start`, comprobación en `/health`). `/status` devuelve jugadores, tick, ms por paso y contadores
+de red. En el plan gratuito el servicio duerme tras 15 min sin visitas; la primera visita lo despierta (~30 s).
+
+Medir la red: `RTTS=0,100,200 N=2 LV=6 SKILL=0.9 node tools/nettest.mjs` levanta un servidor por RTT y bots-cliente
+reales por WebSocket que juegan la Prueba de Fuego en cooperativo (ver «Qué incluye M3.6»).
 
 Herramienta de capturas (Playwright, Chromium headless):
 
@@ -191,7 +215,8 @@ alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k trián
 
 ```
 src/sim/      simulación pura y determinista (sin THREE ni DOM): worldgen, ECS sobre typed arrays, movimiento, bots
-src/net/      protocolo, LocalServer (servidor autoritativo), worker, transportes (Worker / en proceso / WebSocket stub)
+src/net/      protocolo, LocalServer (servidor autoritativo), worker, transportes (Worker / en proceso / WebSocket), LagLink
+server/       servidor Node: estáticos + WebSocket + límites (GameHost envuelve el mismo LocalServer)
 src/client/   predicción del jugador local + reconciliación, interpolación del resto (buffer de 100 ms)
 src/render/   escena, pipeline de contornos, toon, terreno, agua, cielo, vegetación, props, personajes, VFX
 src/ui/       título, HUD, prompts/nameplates, pausa, táctil
@@ -199,16 +224,14 @@ src/audio/    motor Web Audio, SFX, ambiente, música
 src/data/     meta (nombre del juego), tuning (todos los números), ship_modules (gancho naval)
 ```
 
-- **Qué está simulado hoy:** el servidor corre en un Web Worker (`LocalServer` a 60 Hz, snapshots a 20 Hz). El
-  cliente solo envía inputs y predice su propio movimiento con el mismo código; el test
-  `client prediction matches the authoritative server exactly` comprueba error de predicción 0. Los bots son
-  entidades `player` del servidor que generan los mismos comandos que un humano.
-- **Plan para el servidor real:** un proceso Node que importe `src/net/localServer.js` (es puro) y lo ponga detrás
-  de WebSockets: cada conexión llama a `connect/receive/disconnect` y `send` escribe al socket. En el cliente,
-  cambiar `createTransport` por `new WsTransport(url)` (misma interfaz). Pasos: validar ritmo de inputs por
-  cliente (ya se limita la cola a 30 comandos y 1–4 por tick), autenticación en `hello`, instancias por arena,
-  persistencia del personaje y protocolo binario (formato en `DESIGN.md` §10). El servidor Socket.io de `legacy/`
-  sirve de plantilla para el despliegue en Render.
+- **Un solo servidor de juego:** `LocalServer` (60 Hz, snapshots a 20 Hz) corre en un Web Worker en solo y dentro
+  del proceso Node en línea (`server/host.mjs`: un id por socket, JSON comprimido con permessage-deflate, cubetas
+  de tokens, latidos). El cliente solo envía inputs y predice su propio movimiento con el mismo código; los tests
+  `client prediction matches the authoritative server exactly` (en proceso) y `two players at 100 ms RTT` (por
+  WebSocket) comprueban error de predicción 0. Los bots son entidades `player` del servidor que generan los mismos
+  comandos que un humano.
+- **Pendiente para un MMO de verdad:** autenticación en `hello`, varias instancias (una por arena / grupo),
+  persistencia del personaje y el protocolo binario (formato en `DESIGN.md` §10).
 - **Ganchos navales:** muelle con barco anclado e interacción «ZARPAR · próximamente», `src/data/ship_modules.js`,
   componente `VEHICLE` reservado en el ECS, `camera.setMode('naval')` y mensajes `ship_*`, `board`, `dock`,
   `trade_*` reservados en `protocol.js`.

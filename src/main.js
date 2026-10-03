@@ -45,6 +45,7 @@ function safe(name, fn) {
 }
 
 const params = new URLSearchParams(location.search);
+const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const $ = (s) => document.querySelector(s);
 
 async function boot() {
@@ -252,11 +253,16 @@ async function boot() {
     const practice = rec.def && rec.def.practice;
     // Swarm enemies get a bare HP bar; the boss has the boss bar instead of a plate.
     const minor = rec.def && rec.def.minor, boss = rec.def && rec.def.boss;
-    if (!rec.isYou && !boss) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice || minor ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : minor ? 'minor' : 'enemy') : 'player' });
+    if (!rec.isYou && !boss) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice || minor ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : minor ? 'minor' : 'enemy') : rec.human ? 'ally' : 'player' });
+    // Another pirate came aboard (not the ones already here when you arrived).
+    if (rec.human && !rec.isYou && st.mode === 'playing') { hud.toast(`<b>${escHtml(rec.name)}</b> subió a bordo`, 2600); sfx.click(); }
     rec.view = view;
     if (rec.ready) view.update(0, rec.r);
   }));
-  bus.on('entity:despawn', (rec) => { world.removeCharacter(rec.id); worldUI.removeNameplate(rec.id); });
+  bus.on('entity:despawn', (rec) => {
+    world.removeCharacter(rec.id); worldUI.removeNameplate(rec.id);
+    if (rec.human && rec.id !== client.youServer && st.mode === 'playing') hud.toast(`<b>${escHtml(rec.name)}</b> dejó la isla`, 2600);
+  });
   bus.on('you:welcome', ({ id }) => { worldUI.removeNameplate(id); });
   bus.on('you:ready', () => {
     const v = views.get(client.youServer);
@@ -388,6 +394,9 @@ async function boot() {
       else if (stE === 'rest') line = `Respira… · se acerca la OLEADA ${wave + 2}/${waves}`;
       else if (stE === 'boss' && left > 1) line = `Esbirros <b>${left - 1}</b>`;
       else if (stE === 'victory') line = '¡Victoria!';
+      // Co-op: the fight is scaled for the crew that started it.
+      const crew = E[10] || 0;
+      if (line && crew > 1) line += ` · Tripulación <b>${crew}</b>`;
     }
     hud.setEnc(line);
     world.rig.fightZoom = active && stE !== 'victory' ? 1.18 : 1;
@@ -585,6 +594,10 @@ async function boot() {
         let humans = 0;
         for (const r of client.entities.values()) if (r.human) humans++;
         hud.setNet(st.mode === 'playing' && !transport.closed ? { rtt: transport.rtt, players: humans } : null);
+        // The crew: every other human aboard (bots are not crew).
+        const party = [];
+        for (const r of client.entities.values()) if (r.human && r.id !== client.youServer && r.ready) party.push({ id: r.id, name: r.name, skin: r.skin, level: r.r.lvl, hp: r.r.hp, maxHp: r.r.maxHp, weapon: r.r.wpn, dead: r.r.act === ACT.DEAD || r.r.hp <= 0 });
+        hud.setParty(st.mode === 'playing' ? party : []);
       });
       const playing = st.mode === 'playing' && client.joined;
       if (playing) safe('local', () => client.localState(alpha, ps));

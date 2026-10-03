@@ -2,7 +2,7 @@
 // you see and hear: hitstop and slow-mo (instance time), camera trauma and punch, screen flash, sparks,
 // shockwaves, hit flashes and flinches, floating numbers and callouts, sounds, HUD pulses, and the
 // telegraph timeline of enemy attacks. Gameplay never lives here.
-import { tuning, DT } from '../data/tuning.js';
+import { tuning, DT, INTERP_DELAY } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { sfx } from '../audio/sfx.js';
 import { audio } from '../audio/engine.js';
@@ -65,9 +65,15 @@ export class Feedback {
         break;
       }
       case 'swing': {
-        if (!me) break;
-        const v = this.me();
         const st = tuning.melee.stages[ev.stage - 1];
+        if (!me) {
+          // Another pirate's cutlass (humans and bots): the same arc in their colour, sound by distance.
+          // (Drawn 100 ms late like their body, so the arc waits for the wind-up as they show it.)
+          const v = this.viewOf(ev.e), vol = v ? this.vol(v.root.position.x, v.root.position.z) : 0;
+          if (vol > 0) { W.combatFx.slash(v, ev.stage, this.colorOf(ev.e), st.active, st.windup + INTERP_DELAY); sfx.swing(ev.stage, vol * 0.5); }
+          break;
+        }
+        const v = this.me();
         if (v) W.combatFx.slash(v, ev.stage, this.accent, st.active, st.windup);
         sfx.swing(ev.stage);
         break;

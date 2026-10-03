@@ -77,7 +77,7 @@ export const tuning = {
     respawnTime: 3,
     respawnIframes: 2,
     hitKnock: 4, // u/s of knockback when hit (decays at 10/s → 0.4 u)
-    rewind: 20, // max ticks the server rewinds to a command's projectile tick (lag compensation)
+    rewind: 24, // max ticks (400 ms) the server rewinds to a command's projectile tick (lag compensation; M3.6: 20 clipped at 300 ms RTT)
     lead: 2, // max ticks a command may be ahead of the server
     interpTicks: 6, // remote entities are drawn this far behind (INTERP_DELAY): melee rewinds enemies by it
     starveTicks: 12, // online: a client silent this long gets neutral filler commands (it still gets hit)

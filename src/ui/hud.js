@@ -6,6 +6,7 @@ import { SKINS } from '../render/characters.js';
 import { WEAPONS, SKILLS } from '../data/weapons.js';
 
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const ICONS = {
   sword: '<svg viewBox="0 0 32 32"><path d="M24 3l5 0 0 5-13 13-3-2-2-3z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8 18l6 6-2 2-2-1-3 3-3-3 3-3-1-2z" fill="#ffc23d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   shield: '<svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8v16M10 14h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/></svg>',
@@ -300,6 +301,21 @@ export class Hud {
     this.netChip.querySelector('.ms').textContent = ms + ' ms';
     this.netChip.querySelector('.pl').textContent = '· ' + n.players + (n.players === 1 ? ' pirata' : ' piratas');
     this.netChip.title = `Latencia con el servidor: ${ms} ms (ida y vuelta)`;
+  }
+
+  // Party frames under yours: the other human pirates (name, level, HP, weapon, fallen).
+  setParty(list) {
+    if (!this.partyEl) { this.partyEl = document.createElement('div'); this.partyEl.className = 'party'; this.root.querySelector('.hud-player').after(this.partyEl); this.partyKey = ''; }
+    const key = list.map((p) => `${p.id}:${p.level}:${Math.round((p.hp / Math.max(1, p.maxHp)) * 40)}:${p.weapon}:${p.dead ? 1 : 0}`).join('|');
+    if (key === this.partyKey) return;
+    this.partyKey = key;
+    this.partyEl.hidden = !list.length;
+    this.partyEl.innerHTML = list.slice(0, 3).map((p) => {
+      const f = Math.max(0, Math.min(1, p.hp / Math.max(1, p.maxHp)));
+      const icon = p.weapon === 1 ? ICONS.pistol : ICONS.sword;
+      const c = hex((SKINS[p.skin] || SKINS[0]).accent ?? 0x3bf0ff);
+      return `<div class="pm${p.dead ? ' dead' : ''}" style="--pc:${c}"><span class="pw">${icon}</span><div class="pb"><div class="pn"><span class="lv">${p.level}</span>${esc(p.name)}</div><div class="bar hp thin"><div class="fill" style="width:${(f * 100).toFixed(0)}%"></div></div></div></div>`;
+    }).join('');
   }
 
   setMuted(m) { this.muteBtn.innerHTML = m ? ICONS.mute : ICONS.sound; this.muteBtn.setAttribute('aria-label', m ? 'Activar sonido' : 'Silenciar'); }

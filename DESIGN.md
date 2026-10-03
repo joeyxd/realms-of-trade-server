@@ -333,7 +333,7 @@ Marinero de agua dulce (hablar con el capitán).
  │ render/ ui/ audio/  (nunca deciden golpes)│snapshot│  · eventos fiables (daño, muerte, loot…)     │
  └───────────────────────────────────────────┘        └──────────────────────────────────────────────┘
           ▲ misma interfaz: Transport { sendInput(tick, cmd), send(msg), onSnapshot(cb), onEvent(cb) }
-          └─ WsTransport (stub) → servidor Node que importa los MISMOS módulos src/sim/
+          └─ WsTransport → server/ (Node, M3.6): estáticos + /ws + GameHost → el MISMO LocalServer
 ```
 
 - **Paso fijo 60 Hz** (acumulador), `dt` de frame limitado a 0.05 s, render desacoplado con interpolación.
@@ -356,7 +356,7 @@ Marinero de agua dulce (hablar con el capitán).
   es solo cosmético en el cliente (≤ 110 ms, la sim no se detiene).
 - **Bots** viven en el servidor como entidades `player` con nombre; la UI no distingue bots de humanos.
 - **Compensación de lag (M2):** cada comando lleva `pt`, el tick de proyectiles que el jugador estaba viendo. El
-  servidor lo limita a `[tick − 20, tick + 2]` y evalúa parries, destrucciones, golpes y roces en ese tick (los
+  servidor lo limita a `[tick − 24, tick + 2]` (20 hasta M3.5; a 300 ms de RTT se quedaba corto) y evalúa parries, destrucciones, golpes y roces en ese tick (los
   proyectiles son analíticos: no hace falta historial); el melee usa el historial de posiciones de los enemigos
   `interpTicks` antes de `pt`. El cliente avanza `pt` +1 por comando con recuperación (hasta +3 si va ≥ 2 ticks
   atrás, −1 si va ≥ 2 adelante, salto si el error pasa de 12). La estimación del reloj del servidor usa un filtro
@@ -364,12 +364,33 @@ Marinero de agua dulce (hablar con el capitán).
   > 0.25 s), para que un cliente lento no se quede cerca del límite de rebobinado.
 - **Tiempo de instancia (M2):** hitstop y slow-mo se aplican en el servidor (la sim de la instancia se detiene o se
   ralentiza) y en el cliente con el mismo evento `time {hitstop, scale, dur}`.
+- **Servidor real (M3.6):** `npm start` = un proceso que sirve el cliente y corre el mundo. `GameHost`
+  (`server/host.mjs`) envuelve el `LocalServer` del Worker: un id por socket, JSON + permessage-deflate, cubetas de
+  tokens (120 mensajes/s, 48 KB/s), 5 mensajes basura por segundo cierran el socket, `cmds` ≤ 32 por mensaje,
+  latido cada 15 s, `MAX_PLAYERS` (4) con `full` para el quinto (sigue mirando), `PROTOCOL_VERSION` 3 con `error`.
+  El cliente entra en línea si la página trae `<meta name="mn-server">` (la inyecta el servidor) o `?server=`.
+- **Comandos de relleno (M3.6, solo en línea):** un cliente callado más de `combat.starveTicks` (12 = 200 ms) recibe
+  comandos neutros (sin moverse, botones sueltos, `pt` avanzando dentro del rebobinado): el mundo le sigue
+  golpeando y el encuentro no se atasca. Los comandos que lleguen después con `pt` ≤ el último relleno se
+  descartan (no dan movimiento extra tras un pico de lag) y sus pulsaciones pasan al siguiente; tras una pestaña
+  oculta el cliente sigue desde «ahora» y no se pierde nada. El `ack` no avanza con el relleno: el cliente
+  reconcilia. En solo un dispositivo lento no se castiga (sin relleno).
+- **Tiempo de instancia en cooperativo (M3.6):** el servidor marca cada `time` con `inst`. Un evento del mundo
+  (`e: 0`, la muerte del jefe) detiene a todos. El hitstop / slow-mo de un jugador solo detiene la instancia si es
+  el único humano; con compañía queda en su pantalla (hitstop ≤ `combat.coopHitstop` 60 ms, sin cámara lenta) y los
+  demás lo ignoran. Los bots nunca detienen el mundo.
+- **Cooperativo en la Prueba de Fuego (M3.6):** `n` = participantes humanos al empezar cada oleada / el jefe; vida
+  × `1 + 0.6·(n − 1)` en las oleadas y × `1 + 0.75·(n − 1)` para HELLFIRE y sus esbirros. El evento `enc` y el
+  estado del encuentro (índice 10) llevan `n`; el HUD dice «Tripulación n».
+- **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
+  1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
+  (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.
 
 ### Protocolo (JSON hoy, binario después) — `src/net/protocol.js`
 
 | Dir. | Tipo | Campos | Fiable |
 |---|---|---|---|
-| C→S | `hello` | `v, name, skin` | sí |
+| C→S | `hello` | `v` (3), `name` (≤ 16, saneado, único), `skin`, `weapon` | sí |
 | C→S | `input` | `seq, mx, mz` (−1..1, cuantizado 1/127), `ax, az` (punto de mira), `btn` (bits mantenidos), `prs` (bits pulsados este tick) | orden |
 | C→S | `cmd` | `{type: 'interact' \| 'chat' \| 'equip' \| …}` | sí |
 | C→S | `ping` | `t` | no |
@@ -377,7 +398,8 @@ Marinero de agua dulce (hablar con el capitán).
 | S→C | `snapshot` | `tick, ack, ents[{id,k,x,y,z,f,s,a,…}], ev[]` | no (20 Hz) |
 | S→C | `spawn` / `despawn` | entidad completa (nombre, skin, nivel) / id | sí |
 | S→C | `event` | `damage, death, loot, levelup, pattern, reflect, phase, wave, timescale` | sí |
-| S→C | `pong` | `t, tick` | no |
+| S→C | `pong` | `t0, tick` | no |
+| S→C | `full` / `error` | `max` / `code: 'version'` (M3.6) | sí |
 | reservado | `ship_spawn, ship_input, ship_state, board, dock, trade_offer, trade_accept` | naval/comercio (§13) | — |
 
 Binario futuro: cabecera `u8 tipo, u32 tick, u16 n`; entidad `u16 id, u8 kind, i16 x·64, i16 z·64, i16 y·64,
@@ -579,7 +601,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | ✅ |
 | M3 | Oleadas + enemigos restantes + jefe 3 fases: 5 oleadas, Cangrejo mortero, HELLFIRE con embestida, láser doble, meteoros, carriles, cortina y lava (`PLAN-M3.md`) | ✅ |
 | M3.5 | Combate V2: apuntar con ratón / stick, reflejo a tiempo en 3 niveles, guardia con atrapar y devolver, armas que definen las habilidades (sable / pistolas), armeros, disparos con lag compensation (`PLAN-M3.5.md`) | ✅ |
-| M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, medir el combate con latencia real | |
+| M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, relleno de comandos, tiempo de instancia y arena cooperativos, medición con latencia (`PLAN-M3.6.md`) | ✅ |
 | M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |
