@@ -5,7 +5,9 @@ import { tuning } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { setPath } from '../net/localServer.js';
 import { MSG } from '../net/protocol.js';
-import { WEAPON_KINDS } from '../data/weapons.js';
+import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
+
+const ROOTS = { tuning, enemies: ENEMIES, skills: SKILLS };
 
 const get = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
@@ -26,6 +28,13 @@ const SLIDERS = [
   ['Roce: margen (u)', 'tuning', 'projectiles.graze', 0, 1, 0.05],
   ['Invulnerable tras golpe (s)', 'tuning', 'combat.hurtIframes', 0, 1, 0.05],
   ['Dash: recarga (s)', 'tuning', 'dash.recharge', 0.2, 2, 0.05],
+  ['Pistola: cadencia (s)', 'skills', 'pistol.every', 0.08, 0.5, 0.01],
+  ['Pistola: daño × ATK', 'skills', 'pistol.mult', 0.2, 1.5, 0.05],
+  ['Descarga: enfriamiento (s)', 'skills', 'blast.cd', 1, 12, 0.5],
+  ['Paso de humo: distancia (u)', 'skills', 'blink.dist', 2, 8, 0.25],
+  ['Estocada: distancia (u)', 'skills', 'lunge.dist', 2, 8, 0.25],
+  ['Hoja de viento: enfriamiento (s)', 'skills', 'wave.cd', 1, 10, 0.5],
+  ['Lluvia: daño × ATK', 'skills', 'rain.mult', 0.2, 1.5, 0.05],
   ['Arquero: vel. flecha', 'enemies', 'archer.attacks.0.speed', 4, 14, 0.5],
   ['Arquero: enfriamiento (s)', 'enemies', 'archer.attacks.0.cd', 0.6, 5, 0.1],
   ['Arquero: aviso (s)', 'enemies', 'archer.attacks.0.windup', 0.15, 1, 0.05],
@@ -97,7 +106,7 @@ export class DevPanel {
   refresh() {
     this.root.querySelectorAll('input[data-i]').forEach((el) => {
       const [, rootName, path] = SLIDERS[+el.dataset.i];
-      const v = get(rootName === 'enemies' ? ENEMIES : tuning, path);
+      const v = get(ROOTS[rootName] || tuning, path);
       el.value = v;
       this.root.querySelector(`b[data-v="${el.dataset.i}"]`).textContent = (+v).toFixed(3).replace(/\.?0+$/, '');
     });
@@ -125,7 +134,7 @@ export class DevPanel {
 
   slide(i, value) {
     const [, rootName, path] = SLIDERS[i];
-    const obj = rootName === 'enemies' ? ENEMIES : tuning;
+    const obj = ROOTS[rootName] || tuning;
     if (setPath(obj, path, value)) this.send('tune', { root: rootName, path, value });
     this.root.querySelector(`b[data-v="${i}"]`).textContent = String(+value.toFixed(3));
   }

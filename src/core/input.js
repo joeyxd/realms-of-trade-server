@@ -21,6 +21,7 @@ export class Input {
     this.keys = new Set();
     this.pressed = 0;
     this.mouseHeld = 0; this.keyHeld = 0; this.padHeld = 0; this.touchHeld = 0;
+    this.touchAim = null; // a touch skill button being dragged: {x, y (screen dir, y up), k 0..1, release}
     // Gamepad: sticks after the dead zone (screen-relative, y up), aim = right stick tilted.
     this.pad = { active: false, mx: 0, my: 0, ax: 0, ay: 0, aim: false, prev: [] };
     this.mouse = { x: innerWidth / 2, y: innerHeight / 2, moved: false };

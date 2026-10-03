@@ -15,7 +15,7 @@ import { PTYPE, SHOT } from './sim/projectiles.js';
 import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
 import { rackNear } from './sim/systems/skills.js';
-import { WEAPONS, WEAPON_KINDS, weaponIndex, weaponOf } from './data/weapons.js';
+import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { GameScene } from './render/scene.js';
@@ -196,7 +196,10 @@ async function boot() {
   function onEquip(w) {
     const kind = WEAPON_KINDS[w] || 'sable', W = WEAPONS[kind];
     if (settings.weapon !== kind) { settings.weapon = kind; saveSettings(); }
-    hud.toast(`<b>${W.name}</b> · ${W.short === 'Sable' ? 'combo y reflejos a tiempo' : 'disparo continuo, atrapa con la guardia'}`, 3200);
+    const kitLine = kind === 'pistolas'
+      ? 'LMB mantenido: dispara · Q Descarga · E Paso de humo · R Lluvia de plomo. No reflejan: <b>atrapa</b> con la guardia y tu siguiente disparo lo devuelve.'
+      : 'LMB: combo y reflejo a tiempo · Q Estocada · E Hoja de viento · R Tormenta.';
+    hud.toast(`<b>${W.name}</b><br>${kitLine}`, 4600);
     sfx.click();
   }
 
@@ -490,7 +493,14 @@ async function boot() {
       // Mouse or right stick: you face the aim point (AIM). Touch / keyboard only / a pad without the
       // right stick: you face where you walk, and actions turn to the nearest threat or enemy.
       let aimBit = 0;
-      if (padAiming()) {
+      const ta = input.touchAim;
+      if (ta) {
+        // Dragging a touch skill button: aim that way, up to 9 u out (the drag length).
+        world.rig.moveBasis(ta.x, ta.y, padDir);
+        const l = Math.hypot(padDir.x, padDir.z) || 1, d = 1.5 + ta.k * 7.5;
+        aim.set(ps.x + (padDir.x / l) * d, ps.y, ps.z + (padDir.z / l) * d);
+        aimBit = BTN.AIM;
+      } else if (padAiming()) {
         world.rig.moveBasis(input.pad.ax, input.pad.ay, padDir);
         const l = Math.hypot(padDir.x, padDir.z) || 1;
         aim.set(ps.x + (padDir.x / l) * 4, ps.y, ps.z + (padDir.z / l) * 4);
@@ -499,6 +509,7 @@ async function boot() {
       else autoAim(move);
       client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held | aimBit, prs, w: st.wantWeapon || 0 });
       st.wantWeapon = 0;
+      if (ta && ta.release) input.touchAim = null;
     }),
     frame: (realDt, simDt, alpha) => {
       loop.paused = st.paused;
@@ -573,7 +584,10 @@ async function boot() {
         const other = (ps.weapon + 1) % WEAPON_KINDS.length;
         let act = null;
         if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
-        else if (rack) act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
+        else if (rack) {
+          act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
+          if (!st.rackTaught) { st.rackTaught = true; hud.toast('<b>Armero:</b> aquí cambias de arma. Cada arma trae su LMB, Q, E y R. <span class="kbd">F</span> para probar las pistolas.', 5200); }
+        }
         else if (nearShip) act = '<span class="kbd">F</span> ZARPAR · próximamente';
         else if (st.tut === 'move') act = isTouch ? 'Usa el joystick para moverte' : '<span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> para moverte';
         else if (st.tut === 'dash') act = isTouch ? 'Toca <b>DASH</b> para esquivar' : '<span class="kbd">ESPACIO</span> para hacer dash';
@@ -619,6 +633,10 @@ async function boot() {
           guard: ps.guardSt / tuning.guard.stamina, catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
         });
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
+        const kit = weaponOf(ps.weapon);
+        hud.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
+        hud.setCooldowns(ps.cdQ, SKILLS[kit.q].cd, ps.cdE, SKILLS[kit.e].cd);
+        if (isTouch) { touch.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable'); touch.setCooldowns(ps.cdQ / SKILLS[kit.q].cd, ps.cdE / SKILLS[kit.e].cd, ps.riposte >= tuning.parry.riposte.max); }
         encounterUi();
         world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false, ps.guardSt / tuning.guard.stamina, SKINS[settings.skin].accent);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);

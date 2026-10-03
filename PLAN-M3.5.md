@@ -230,7 +230,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   balas, el blink no atraviesa rocas y da i-frames, la lluvia daña cada 0.15 s y borra balas; predicción exacta.
 - [x] **P6** Render: pistolas en la mano + `setWeapon`, poses (guardia ×2, apuntar, estocada, hoja, descarga, lluvia),
   FX (niveles, guardia, atrapadas, fogonazo/trazador, media luna, humo/blink, lluvia), armero, prewarm.
-- [ ] **P7** UI/audio/tutorial: barra de acción por arma, enfriamientos, aguante y atrapadas, floats, táctil
+- [x] **P7** UI/audio/tutorial: barra de acción por arma, enfriamientos, aguante y atrapadas, floats, táctil
   (GUARDIA mantenida, Q/E/R arrastrables), tutorial nuevo, sonidos, F4.
 - [ ] **P8** Balance con el bot para las dos armas (`WEAPON=pistolas`), perf (≤ 0.5 ms/step), verificación
   (tests, capturas 23-aim-strafe, 24-reflect-excelente, 25-guard-catch, 26-pistolas, 27-lluvia), docs (DESIGN §4 §5
@@ -292,6 +292,13 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   pistolas, banderín). `Decals.take()` ya no recicla anillos fijos (aro de práctica, runas). Sonidos de armas en
   `sfx.js` (pistola alterna, descarga, blink, lluvia, estocada, media luna, equipar). `__mn.sheet({weapon, fire,
   loop})` para revisar poses.
+- P7: `Hud.setWeapon(kind)` (iconos y textos de LMB/Q/E/R, nombre del arma sobre la barra) y
+  `setCooldowns(q, qMax, e, eMax)` (barrido cónico + segundos); se quitan los «Pronto». Táctil: ATK y GUARDIA
+  mantenidos (`input.touchHeld`), Q / E / R arrastrables (`input.touchAim {x, y, k, release}`: el comando de la
+  pulsación lleva ese apuntado con `AIM`, línea de apuntado, soltar sobre el botón cancela), etiquetas por arma,
+  barrido de enfriamiento, R brilla con el medidor lleno. Aviso la primera vez junto a un armero; toast con el kit
+  al equipar. Controles de la pausa reescritos. F4: 7 deslizadores de habilidades (`root 'skills'`). El tutorial
+  sigue con «parry» (reflejo a tiempo) y «guard» de P2; las pistolas se enseñan con el armero y el toast.
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

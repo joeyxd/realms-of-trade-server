@@ -43,16 +43,17 @@ export class PauseMenu {
       <div class="section controls-list">
         <span><span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span></span><span>Moverte (o flechas)</span>
         <span class="kbd">ESPACIO</span><span>Dash: invulnerable 0,22 s. Una carga en Nv 1, dos desde Nv 2</span>
-        <span class="kbd">F</span><span>Hablar / interactuar</span>
+        <span class="kbd">F</span><span>Hablar / interactuar. Junto a un armero: cambiar de arma (sable ↔ pistolas)</span>
         <span class="kbd">Rueda</span><span>Zoom (3 niveles)</span>
         <span><span class="kbd">Z</span> <span class="kbd">X</span></span><span>Rotar cámara 90° (actívalo en Ajustes)</span>
         <span class="kbd">ESC</span><span>Pausa</span>
         <span class="kbd">F3</span><span>Rendimiento</span>
-        <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>Atacar: combo de 3 golpes. Rompe las balas ámbar</span>
-        <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>Parry: devuelve lo que te disparan. Justo antes del impacto: ¡PERFECTO!</span>
-        <span class="kbd">R</span><span>Riposte: con la barra llena, una onda que limpia todo a tu alrededor</span>
-        <span class="kbd">F4</span><span>Panel de pruebas: ajustes de combate, enemigos, hitboxes</span>
-        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span class="soon">Habilidades: se desbloquean en Nv 3 y 5</span>
+        <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>Sable: combo de 3. Golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar</span>
+        <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>Guardia (mantener): bloquea de frente y gasta aguante. Súbela justo a tiempo para ATRAPAR la bala; tu siguiente ataque la devuelve</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span>Habilidades del arma, al cursor. Sable: Estocada y Hoja de viento. Pistolas: Descarga y Paso de humo</span>
+        <span class="kbd">R</span><span>Con el RIPOSTE lleno. Sable: Tormenta (refleja todo cerca). Pistolas: Lluvia de plomo en el cursor</span>
+        <span class="kbd">Ratón</span><span>Apuntar: miras al cursor (o con el stick derecho del mando)</span>
+        <span class="kbd">F4</span><span>Panel de pruebas: ajustes de combate, enemigos, arma, hitboxes</span>
       </div>`;
     this.root.innerHTML = `
       <div class="panel frame interactive" role="dialog" aria-modal="true" aria-labelledby="pause-title">

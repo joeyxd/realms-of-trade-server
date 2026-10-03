@@ -247,7 +247,17 @@ body.touch .actionbar { display: none; }
 .fnum.info { font-size: 15px; color: var(--parch); }
 #touch .t-atk { right: calc(124px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 70px; height: 70px; font-size: 14px; background: radial-gradient(circle at 40% 30%, #fff1b0, var(--brass) 55%, var(--brass-d)); }
 #touch .t-parry { right: calc(36px + var(--safe-r)); bottom: calc(205px + var(--safe-b)); width: 70px; height: 70px; font-size: 12px; }
-#touch .t-r { right: calc(210px + var(--safe-r)); bottom: calc(80px + var(--safe-b)); width: 52px; height: 52px; font-size: 15px; background: radial-gradient(circle at 40% 30%, #c8fbff, #6ad8ff 55%, #2a7fa6); }
+#touch .t-skill { overflow: hidden; font-size: 12px; background: radial-gradient(circle at 40% 30%, #c8fbff, #6ad8ff 55%, #2a7fa6); }
+#touch .t-skill .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+#touch .t-skill .lbl, #touch .t-atk .lbl { position: relative; }
+#touch .t-q { right: calc(212px + var(--safe-r)); bottom: calc(150px + var(--safe-b)); width: 58px; height: 58px; }
+#touch .t-e { right: calc(150px + var(--safe-r)); bottom: calc(232px + var(--safe-b)); width: 58px; height: 58px; }
+#touch .t-r { right: calc(210px + var(--safe-r)); bottom: calc(80px + var(--safe-b)); width: 52px; height: 52px; font-size: 15px; }
+#touch .t-r.ready { animation: rready 0.8s ease-in-out infinite; }
+#touch .aimline { position: absolute; height: 6px; margin-top: -3px; transform-origin: 0 50%; display: none; pointer-events: none;
+  background: linear-gradient(90deg, rgba(59, 240, 255, 0.15), rgba(59, 240, 255, 0.9)); border-radius: 3px; box-shadow: 0 0 10px rgba(59, 240, 255, 0.6); }
+#touch .aimline i { position: absolute; right: -8px; top: -5px; border: 8px solid transparent; border-left: 12px solid rgba(160, 250, 255, 0.95); border-right: 0; }
+#touch .aimline.cancel { background: rgba(255, 80, 70, 0.6); box-shadow: none; }
 
 /* ---- M2.5: boss bar + encounter line ---- */
 #boss-bar { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); width: min(560px, calc(100vw - 32px)); display: grid; gap: 4px; justify-items: center; pointer-events: none; }
@@ -269,3 +279,18 @@ body.touch .actionbar { display: none; }
 .boss-on #enc-info { top: calc(84px + var(--safe-t)); font-size: 13px; }
 .boss-on #zone-banner { top: calc(108px + var(--safe-t)); }
 .nameplate.minor .np-hp { width: 44px; height: 5px; }
+
+/* ---- Weapons (M3.5) ------------------------------------------------------------------------------ */
+.slot .ico { display: grid; place-items: center; position: relative; }
+.slot .cd {
+  position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+  font-family: var(--font-display); font-size: 20px; color: #fff;
+  text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink);
+}
+.skill-slot.cooling svg { opacity: 0.45; }
+.actionbar .wname {
+  position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 4px; white-space: nowrap;
+  font-family: var(--font-display); font-size: 14px; letter-spacing: 0.04em; color: var(--brass-l);
+  text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink);
+}
+.slot .key { z-index: 2; }

@@ -3,6 +3,7 @@
 // tracker, toasts and the "fallen" screen. Plain DOM over the canvas; GSAP for the choreography.
 import { gsap } from 'gsap';
 import { SKINS } from '../render/characters.js';
+import { WEAPONS, SKILLS } from '../data/weapons.js';
 
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
 const ICONS = {
@@ -12,6 +13,12 @@ const ICONS = {
   spin: '<svg viewBox="0 0 32 32"><path d="M16 5a11 11 0 1 1-10 6" fill="none" stroke="#ffc23d" stroke-width="3.5" stroke-linecap="round"/><path d="M3 6l4 6 6-3z" fill="#ffc23d" stroke="#1a1033" stroke-width="1.5" stroke-linejoin="round"/></svg>',
   wave: '<svg viewBox="0 0 32 32"><path d="M3 20c4-6 8-6 12 0s8 6 14 0M3 13c4-6 8-6 12 0s8 6 14 0" fill="none" stroke="#36c9ff" stroke-width="3" stroke-linecap="round"/></svg>',
   storm: '<svg viewBox="0 0 32 32"><path d="M18 3L7 18h8l-2 11 12-16h-8z" fill="#ffe14d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
+  pistol: '<svg viewBox="0 0 32 32"><path d="M3 9h21l3 2v3H13l-1 2h-2l-1 9H4l2-10-3-3z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M5 25l2-9" stroke="#6a3d22" stroke-width="3" stroke-linecap="round"/><path d="M27 9l3-2" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  lunge: '<svg viewBox="0 0 32 32"><path d="M4 28L24 8l4-4-1 5-20 21z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M14 4l-6 2M20 2l-4 5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  crescent: '<svg viewBox="0 0 32 32"><path d="M6 24C10 12 20 6 28 6c-6 4-10 10-11 18-3-2-7-2-11 0z" fill="#9ff6ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M3 20h6M5 15h5" stroke="#3bf0ff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  blast: '<svg viewBox="0 0 32 32"><path d="M4 16l10-3v6z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M16 16l12-9M16 16h13M16 16l12 9M16 16l11-4M16 16l11 4" stroke="#ffc23d" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  blink: '<svg viewBox="0 0 32 32"><circle cx="10" cy="19" r="6" fill="#b8bcc8" stroke="#1a1033" stroke-width="2"/><circle cx="16" cy="14" r="5" fill="#d8dce6" stroke="#1a1033" stroke-width="2"/><path d="M19 22h10M24 17l5 5-5 5" fill="none" stroke="#3bf0ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  rain: '<svg viewBox="0 0 32 32"><ellipse cx="16" cy="26" rx="12" ry="4" fill="none" stroke="#3bf0ff" stroke-width="2.4"/><path d="M8 4v8M14 2v10M20 5v8M26 3v8M11 14v5M18 15v6M24 14v5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 5.1l1.6 1.2-2 3.5-1.9-.7a7.6 7.6 0 0 1-1.8 1l-.3 2h-4l-.3-2a7.6 7.6 0 0 1-1.8-1l-1.9.7-2-3.5 1.6-1.2a7.7 7.7 0 0 1 0-2.1L2 10.3l2-3.5 1.9.7a7.6 7.6 0 0 1 1.8-1L8 4.5h4l.3 2a7.6 7.6 0 0 1 1.8 1l1.9-.7 2 3.5-1.6 1.2a7.7 7.7 0 0 1 0 2.1z" fill="currentColor"/></svg>',
   sound: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
   mute: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -66,12 +73,13 @@ export class Hud {
       <div class="tracker frame-dark"><h3>Primeros pasos</h3><ul></ul></div>
       <div id="chain" class="outlined" hidden><span class="x">CADENA</span><b>x2</b></div>
       <div class="actionbar frame">
-        <div class="slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span>${ICONS.sword}<div class="combo"><i></i><i></i><i></i></div></div>
+        <div class="wname"></div>
+        <div class="slot lmb-slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
         <div class="slot rmb-slot" data-slot="rmb" title="Guardia (mantener): bloquea de frente. Súbela justo a tiempo para ATRAPAR la bala; el siguiente golpe la devuelve"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
-        ${this.slot('q', 'Q', ICONS.spin, 'Pronto')}
-        ${this.slot('e', 'E', ICONS.wave, 'Pronto')}
-        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div>${ICONS.storm}</div>
+        ${this.slot('q', 'Q', ICONS.lunge)}
+        ${this.slot('e', 'E', ICONS.crescent)}
+        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span></div>
       </div>
       <div id="fallen" hidden><div class="ftitle outlined">HAS CAÍDO</div><div class="fsub">Reapareces en <b>3</b>…</div></div>`;
     this.portrait = root.querySelector('.portrait canvas');
@@ -99,6 +107,9 @@ export class Hud {
     this.catchPips = this.rmbSlot.querySelectorAll('.catch i');
     this.rSlot = root.querySelector('.r-slot'); this.rFill = this.rSlot.querySelector('.rfill');
     this.comboPips = root.querySelectorAll('[data-slot="lmb"] .combo i');
+    this.lmbSlot = root.querySelector('.lmb-slot');
+    this.qSlot = root.querySelector('[data-slot="q"]'); this.eSlot = root.querySelector('[data-slot="e"]');
+    this.wname = root.querySelector('.actionbar .wname');
     this.chainEl = root.querySelector('#chain');
     this.fallen = root.querySelector('#fallen');
     this.last = {};
@@ -230,8 +241,41 @@ export class Hud {
     el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
   }
 
-  slot(id, key, icon, lock) {
-    return `<div class="slot locked" data-slot="${id}" title="${lock === 'Pronto' ? 'Se aprende con la Capitana Brea' : 'Se desbloquea en ' + lock}"><span class="kbd key">${key}</span>${icon}<span class="lock">${lock}</span></div>`;
+  slot(id, key, icon) {
+    return `<div class="slot skill-slot" data-slot="${id}"><span class="kbd key">${key}</span><span class="ico">${icon}</span><div class="sweep"></div><span class="cd"></span></div>`;
+  }
+
+  // The weapon decides LMB and Q / E / R: icons, tooltips and the name over the bar.
+  setWeapon(kind) {
+    if (kind === this.last.weapon) return;
+    this.last.weapon = kind;
+    const W = WEAPONS[kind] || WEAPONS.sable, pist = W.basic === 'pistol';
+    const icon = { combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
+    const tip = (id) => `${SKILLS[id].name}: ${SKILLS[id].hint}${SKILLS[id].cd ? ` · ${SKILLS[id].cd} s` : ''}`;
+    this.lmbSlot.querySelector('.ico').innerHTML = icon[W.basic];
+    this.lmbSlot.title = pist ? 'Disparo (mantener): balas rectas; no refleja. Atrapa con la guardia y el siguiente disparo devuelve lo atrapado' : 'Combo de 3 golpes: golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE)';
+    this.lmbSlot.querySelector('.combo').hidden = pist;
+    this.qSlot.querySelector('.ico').innerHTML = icon[W.q]; this.qSlot.title = tip(W.q);
+    this.eSlot.querySelector('.ico').innerHTML = icon[W.e]; this.eSlot.title = tip(W.e);
+    this.rSlot.querySelector('.ico').innerHTML = icon[W.r];
+    this.rSlot.title = W.r === 'rain' ? 'Lluvia de plomo: con el medidor lleno, una zona de balas en el cursor' : 'Tormenta: con el medidor lleno, refleja todo a tu alrededor';
+    this.wname.textContent = W.name;
+    gsap.fromTo(this.wname, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+  }
+
+  // Q / E cooldowns (seconds left, full length): a dark sweep that empties clockwise and the seconds.
+  setCooldowns(q, qMax, e, eMax) {
+    for (const [el, t, max, k] of [[this.qSlot, q, qMax, 'cq'], [this.eSlot, e, eMax, 'ce']]) {
+      const f = max > 0 ? Math.max(0, Math.min(1, t / max)) : 0;
+      const key = Math.round(f * 60) + ':' + Math.ceil(t);
+      if (key === this.last[k]) continue;
+      if (this.last[k] && f === 0) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+      this.last[k] = key;
+      const deg = Math.round((1 - f) * 360);
+      el.querySelector('.sweep').style.background = f > 0 ? `conic-gradient(transparent 0deg ${deg}deg, rgba(10,6,24,0.66) ${deg}deg 360deg)` : '';
+      el.querySelector('.cd').textContent = f > 0 ? String(Math.ceil(t)) : '';
+      el.classList.toggle('cooling', f > 0);
+    }
   }
 
   show() {
