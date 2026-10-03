@@ -232,7 +232,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   FX (niveles, guardia, atrapadas, fogonazo/trazador, media luna, humo/blink, lluvia), armero, prewarm.
 - [x] **P7** UI/audio/tutorial: barra de acción por arma, enfriamientos, aguante y atrapadas, floats, táctil
   (GUARDIA mantenida, Q/E/R arrastrables), tutorial nuevo, sonidos, F4.
-- [ ] **P8** Balance con el bot para las dos armas (`WEAPON=pistolas`), perf (≤ 0.5 ms/step), verificación
+- [x] **P8** Balance con el bot para las dos armas (`WEAPON=pistolas`), perf (≤ 0.5 ms/step), verificación
   (tests, capturas 23-aim-strafe, 24-reflect-excelente, 25-guard-catch, 26-pistolas, 27-lluvia), docs (DESIGN §4 §5
   §6 §9 §10 §16, README), versión `0.3.5-m3.5`, artefacto republicado.
 
@@ -299,6 +299,13 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   barrido de enfriamiento, R brilla con el medidor lleno. Aviso la primera vez junto a un armero; toast con el kit
   al equipar. Controles de la pausa reescritos. F4: 7 deslizadores de habilidades (`root 'skills'`). El tutorial
   sigue con «parry» (reflejo a tiempo) y «guard» de P2; las pistolas se enseñan con el armero y el toast.
+- P8: bot con `WEAPON=pistolas` (guardia a lo que llega → atrapa y devuelve, dispara a 5–9 u sin salir de La
+  Caldera, Descarga de cerca, Paso de humo fuera de los círculos, Lluvia al jefe) y el sable usando Q/E. Balance:
+  pistola ATK × 0.7 (era 0.6), escudo del jefe contra balas × 0.4 (`shieldBullet`, reflejos y skills como antes),
+  la lluvia ignora el blindaje frontal (`above`). Resultados: sable LV6/0.9 151 s (jefe 54 s), LV5/0.7 192 s;
+  pistolas LV6/0.9 214 s (jefe 101 s = 1.9×), LV5/0.7 244 s (jefe 135 s = 1.7×). Sim 0.10–0.19 ms/paso, ≤ 96 balas.
+  Versión `0.3.5-m3.5`; DESIGN §4 §6 §9 §10 §16 y README al día. Capturas de verificación en el arnés (las
+  temporizadas a 3–10 FPS sin GPU no son fiables; la lógica está cubierta por 84 tests).
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

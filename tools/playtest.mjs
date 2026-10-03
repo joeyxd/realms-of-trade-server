@@ -1,24 +1,29 @@
 // Headless playtest of La Prueba de Fuego (balance, PLAN-M3.md P7, M3.5): a scripted player (god mode, but
 // every hit is counted) reflects bullets with timed sword swings, catches heavy orbs with a perfect guard
 // and throws them back, dashes through spikes and beams, steps out of circles, keeps off the lava and
-// fights whatever is nearest. SKILL also blurs its timing. Usage: LV=5 SKILL=0.8 node tools/playtest.mjs
+// fights whatever is nearest. SKILL also blurs its timing. WEAPON=pistolas plays the flintlocks instead:
+// it guards what comes at it (catching and firing it back), shoots from range, blasts what gets close,
+// blinks out of circles and calls the lead rain on the boss. Both use their Q / E.
+// Usage: LV=5 SKILL=0.8 [WEAPON=pistolas] node tools/playtest.mjs
 import { generateWorld } from '../src/sim/worldgen.js';
 import { World } from '../src/sim/world.js';
 import { GAME } from '../src/data/meta.js';
 import { DT, tuning } from '../src/data/tuning.js';
 import { C } from '../src/sim/ecs.js';
 import { PTYPE, beamSeg, segDist, lavaR } from '../src/sim/projectiles.js';
-const LV = +(process.env.LV || 5), SKILL = +(process.env.SKILL || 0.8);
+import { weaponIndex, SKILLS } from '../src/data/weapons.js';
+const LV = +(process.env.LV || 5), SKILL = +(process.env.SKILL || 0.8), WEAPON = process.env.WEAPON || 'sable';
+const PIST = WEAPON === 'pistolas';
 const map = generateWorld(GAME.seed);
 const w = new World(GAME.seed, { map, server: true });
 w.populate();
 const enc = w.encounters[0], ecs = w.ecs, H = w.hazards;
-const e = w.spawnPlayer({ x: enc.cx, z: enc.cz, level: LV });
+const e = w.spawnPlayer({ x: enc.cx, z: enc.cz, level: LV, weapon: weaponIndex(WEAPON) });
 ecs.god[e] = 1;
 let seq = 0, rnd = 12345;
 const rand = () => ((rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
 const bossDmg = {};
-const stats = { dmg: 0, hits: 0, parry: 0, perfect: 0, good: 0, poor: 0, destroy: 0, block: 0, catch: 0, release: 0, broken: 0, dodge: 0, ghost: 0, graze: 0, bounce: 0, kills: 0, shotKills: 0, riposte: 0 };
+const stats = { dmg: 0, hits: 0, parry: 0, perfect: 0, good: 0, poor: 0, destroy: 0, block: 0, catch: 0, release: 0, broken: 0, dodge: 0, ghost: 0, graze: 0, bounce: 0, kills: 0, shotKills: 0, riposte: 0, fire: 0, cast: 0, rain: 0 };
 let guardHold = 0;
 const t0wave = {}; const log = []; const byKind = {};
 const decided = new Set();
@@ -43,6 +48,13 @@ function policy() {
     if (H.type[best] === PTYPE.UNSTOP) {
       decided.add(H.id[best]);
       if (ok && ecs.dashCharges[e] >= 1) { prs |= 1; const vx = H.vx[best], vz = H.vz[best], l = Math.hypot(vx, vz); mx = -vz / l; mz = vx / l; }
+    } else if (PIST) {
+      // Pistols: everything parryable or heavy goes to the guard, raised just before it lands.
+      if (tb < 0.1) {
+        decided.add(H.id[best]);
+        if (ok) { guardHold = 12; ax = H.px(best, pt); az = H.pz(best, pt); }
+        else if (ecs.dashCharges[e] >= 1 && rand() < 0.5) { prs |= 1; const vx = H.vx[best], vz = H.vz[best], l = Math.hypot(vx, vz); mx = -vz / l; mz = vx / l; }
+      }
     } else if (H.type[best] === PTYPE.HEAVY) {
       // Heavy orbs: catch them with a perfect guard (then the next swing throws them back), or dash.
       if (tb < 0.1) {
@@ -71,7 +83,10 @@ function policy() {
   }
   let inAoe = null;
   for (const a of H.aoes) if (!a.cancel && a.tAct > pt && a.tAct - pt < 40 && Math.hypot(px - a.x, pz - a.z) < a.r + 0.4) inAoe = a;
-  if (inAoe && !(prs & 1) && rand() < SKILL + 0.15) { const dx = px - inAoe.x, dz = pz - inAoe.z, l = Math.hypot(dx, dz) || 1; mx = dx / l; mz = dz / l; }
+  if (inAoe && !(prs & 1) && rand() < SKILL + 0.15) {
+    const dx = px - inAoe.x, dz = pz - inAoe.z, l = Math.hypot(dx, dz) || 1; mx = dx / l; mz = dz / l;
+    if (PIST && ecs.cdE[e] <= 0 && inAoe.tAct - pt < 20) prs |= 16; // Paso de humo out of it
+  }
   if (H.lava) { const dx = H.lava.cx - px, dz = H.lava.cz - pz, d = Math.hypot(dx, dz); if (d > lavaR(H.lava, pt) - 2.5) {
     // Inward with a sideways slide (straight lines get stuck on the rim pillars).
     const k = Math.sin(w.tick * 0.01) > 0 ? 0.8 : -0.8;
@@ -82,6 +97,26 @@ function policy() {
   for (let o = 1; o < ecs.cap; o++) if (ecs.alive[o] && (ecs.mask[o] & C.ENEMY) && !ecs.dead[o] && ecs.brain[o]?.enc) { const d = Math.hypot(ecs.x[o] - px, ecs.z[o] - pz); if (d < nd) { nd = d; ne = o; } }
   // Caught bullets: throw them at the nearest enemy.
   if (!btn && ecs.catchN[e] > 0 && ne) { prs |= 2; ax = ecs.x[ne]; az = ecs.z[ne]; }
+  if (PIST && ne) {
+    // Shoot from range (keep 5–9 u), blast what gets close, rain on the boss with a full meter.
+    if (!btn) { btn |= 2; ax = ecs.x[ne]; az = ecs.z[ne]; }
+    if (!inAoe && !(prs & 1)) {
+      const dx = ecs.x[ne] - px, dz = ecs.z[ne] - pz;
+      if (nd < 4.5) { mx = -dx / nd; mz = -dz / nd; } else if (nd > 9) { mx = dx / nd; mz = dz / nd; }
+      else { mx = -dz / nd * 0.6; mz = dx / nd * 0.6; } // strafe around it
+      // ...but never out of La Caldera (leaving resets the trial).
+      const cx = enc.cx - px, cz = enc.cz - pz, cd = Math.hypot(cx, cz);
+      if (cd > 12) { mx = mx * 0.3 + (cx / cd) * 0.9; mz = mz * 0.3 + (cz / cd) * 0.9; }
+    }
+    if (nd < 3.5 && ecs.cdQ[e] <= 0 && !btn4()) { prs |= 8; ax = ecs.x[ne]; az = ecs.z[ne]; }
+    if (ecs.riposte[e] >= 100) { prs |= 32; const t = enc.bossE && ecs.alive[enc.bossE] ? enc.bossE : ne; ax = ecs.x[t]; az = ecs.z[t]; }
+    return { seq: ++seq, mx, mz, ax, az, btn, prs, pt };
+  }
+  // Cutlass skills: lunge into what is close, throw the crescent at what is farther.
+  if (!PIST && ne && !btn && !(prs & 3)) {
+    if (nd < 4.5 && ecs.cdQ[e] <= 0) { prs |= 8; ax = ecs.x[ne]; az = ecs.z[ne]; }
+    else if (nd > 3 && nd < 10 && ecs.cdE[e] <= 0) { prs |= 16; ax = ecs.x[ne]; az = ecs.z[ne]; }
+  }
   if (!(prs & 3) && !btn && !inAoe) {
     if (ne && nd < 2) { ax = ecs.x[ne]; az = ecs.z[ne]; if (w.tick % 8 === 0) prs |= 2; }
     else if (ne && nd < 9) { const dx = ecs.x[ne] - px, dz = ecs.z[ne] - pz; mx = dx / nd; mz = dz / nd; ax = ecs.x[ne]; az = ecs.z[ne]; }
@@ -90,6 +125,7 @@ function policy() {
   if (ecs.riposte[e] >= 100 && best >= 0) prs |= 32;
   return { seq: ++seq, mx, mz, ax, az, btn, prs, pt };
 }
+function btn4() { return guardHold > 0; }
 let boss = 0, end = 0;
 const perf = { sum: 0, n: 0, max: 0, live: 0 };
 for (let i = 0; i < 60 * 600 && !end; i++) {
@@ -111,6 +147,9 @@ for (let i = 0; i < 60 * 600 && !end; i++) {
     else if (ev.type === 'release') stats.release++;
     else if (ev.type === 'dodge') stats.dodge++; else if (ev.type === 'ghost') stats.ghost++; else if (ev.type === 'graze') stats.graze++;
     else if (ev.type === 'riposte') stats.riposte++;
+    else if (ev.type === 'fire') stats.fire++;
+    else if (ev.type === 'cast' || ev.type === 'blink') stats.cast++;
+    else if (ev.type === 'rain') stats.rain++;
     else if (ev.type === 'shot' && ev.from) stats.bounce++;
     else if (ev.type === 'kill') stats.kills++;
     else if (ev.type === 'phase') log.push(`${(w.tick * DT).toFixed(1)}s PHASE ${ev.phase}`);

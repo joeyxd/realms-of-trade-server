@@ -38,17 +38,20 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 |---|---|---|
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
-| Hablar / interactuar | F | botón F |
+| Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R |
+| Hablar / interactuar · junto a un armero: cambiar de arma | F | botón F |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
-| Atacar (combo de 3; rompe las bolas ámbar) | LMB / J | botón ATK |
-| Parry / reflejar (¡PERFECTO! justo antes del impacto) | RMB / K | botón PARRY |
-| RIPOSTE (onda que refleja todo; con el medidor lleno) | R | botón R |
-| Pausa y ajustes | ESC | botón ⚙ |
+| Ataque del arma. Sable: combo de 3, golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar | LMB / J / RT | botón ATK (mantener) |
+| Guardia (mantener): bloquea de frente; alzada justo a tiempo ATRAPA la bala y tu siguiente ataque la devuelve | RMB / K / LT | botón GUARDIA (mantener) |
+| Habilidades del arma (al cursor). Sable: Estocada / Hoja de viento. Pistolas: Descarga / Paso de humo | Q / E · RB / LB | botones Q / E |
+| R con el RIPOSTE lleno. Sable: Tormenta. Pistolas: Lluvia de plomo | R / Y | botón R |
+| Pausa y ajustes | ESC / Start | botón ⚙ |
 | Rendimiento | F3 | — |
-| Panel de pruebas (tuning en vivo, spawns, modo dios, hitboxes) | F4 | — |
+| Panel de pruebas (tuning en vivo, spawns, modo dios, cambiar de arma, hitboxes) | F4 | — |
 
-Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean por nivel (3/5) en M4.
+Hay dos armeros: en la playa, junto al punto de inicio, y en la aldea. El arma que lleves se recuerda para la
+próxima partida.
 
 ## Estado de los milestones
 
@@ -60,6 +63,8 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
 | M2 | Proyectiles, parry/reflect, 2 enemigos, hitstop, números de daño, F4. **Test de diversión** | ✅ |
 | M2.5 | «La Prueba de Fuego»: oleadas bullet hell en La Caldera + jefe HELLFIRE (2 fases) → `PLAN-M2.5.md` | ✅ |
 | M3 | 5 oleadas, Cangrejo mortero, HELLFIRE en 3 fases (embestida, láser doble, meteoros, carriles de fuego, cortina, lava) → `PLAN-M3.md` | ✅ |
+| M3.5 | Combate V2: apuntar con ratón / mando, reflejo a tiempo en 3 niveles, guardia que atrapa, armas con su kit (sable y pistolas), armeros → `PLAN-M3.5.md` | ✅ |
+| M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer` | siguiente |
 | M4–M6 | Progresión/loot, momentos Highlight, rendimiento y móvil final | — |
 
 ### Qué incluye M1
@@ -159,6 +164,25 @@ Las habilidades Q/E aparecen bloqueadas en la barra de acción y se desbloquean 
   Casi perfecto: ~170 s en total (jefe ~70 s), ~2,5 barras de daño recibido; con `SKILL=0.7`: ~260 s.
   La sim tarda ~0,16 ms por paso con ~115 balas vivas.
 - 55 tests en Node.
+
+### Qué incluye M3.5 — Combate V2
+
+- **Apuntar:** con ratón o stick derecho el cuerpo mira al cursor mientras caminas hacia otro lado (las piernas
+  siguen la marcha, el torso el cursor; hacia atrás vas a × 0,9). Mando completo (Gamepad API).
+- **Sable de cubierta:** el reflejo depende de cuándo golpeas: EXCELENTE (≤ 70 ms antes del impacto: recta al cursor,
+  × 3, devuelve orbes pesados, cámara lenta), BUENO (≤ 150 ms, × 2), POBRE (≤ 260 ms, × 1, se desvía); antes,
+  la bala solo se destruye. Q **Estocada** (embestida de 4,5 u que atraviesa la línea), E **Hoja de viento** (media
+  luna que vuela al cursor, corta balas y daña a todo lo que cruza), R **Tormenta**.
+- **Pistolas de chispa:** disparo alterno mantenido (balas que el blindaje y el escudo frenan), Q **Descarga**
+  (escopetazo que sopla balas), E **Paso de humo** (blink con invulnerabilidad), R **Lluvia de plomo** (zona en el
+  cursor). No reflejan: atrapan con la guardia.
+- **Guardia** (RMB mantenido) con aguante, rotura y **guardia perfecta**: atrapa hasta 3 balas que tu siguiente
+  ataque devuelve, y aturde a quien estaba atacándote de cerca.
+- Red: el cambio de arma, las habilidades y los disparos se predicen exactos; los disparos se juzgan contra los
+  enemigos tal como los veía quien disparó (lag compensation). Arreglo: el cliente ya no duplica sus reflejos.
+- Bot: `WEAPON=pistolas LV=6 SKILL=0.9 node tools/playtest.mjs`. Sable ~150 s (jefe ~55 s), pistolas ~215 s
+  (jefe ~100 s); la sim tarda ~0,12 ms por paso.
+- 84 tests en Node.
 
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.

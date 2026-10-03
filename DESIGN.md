@@ -88,11 +88,13 @@ cámara (copas de palmera en el borde de la pantalla). El jugador nunca queda ta
 | Acción | Teclado/ratón | Táctil | Disponible |
 |---|---|---|---|
 | Mover (8 dir., relativo a cámara) | WASD / flechas | joystick flotante (mitad izquierda) | M1 |
-| Apuntar | cursor (raycast al plano del jugador) | auto-apuntado al enemigo más cercano | M1 (look-ahead) / M2 |
-| Combo melee 3 golpes | LMB | ATAQUE | M2 |
-| Parry / reflejar | RMB | PARRY | M2 |
-| Dash | ESPACIO | DASH | M1 |
-| Habilidades | Q / E / R | botones Q E R | Lv 3 / 5 / 7 |
+| Apuntar (el cuerpo mira al cursor, M3.5) | cursor · stick derecho del mando | auto-apuntado; arrastrar Q/E/R apunta | M1 / M3.5 |
+| Ataque básico del arma (sable: combo + reflejo a tiempo; pistolas: disparo mantenido) | LMB · J · RT | ATK (mantener) | M2 / M3.5 |
+| Guardia (mantener; perfecta = atrapar) | RMB · K · LT | GUARDIA (mantener) | M3.5 |
+| Dash | ESPACIO · A | DASH | M1 |
+| Habilidades del arma | Q / E · RB / LB | Q / E (tocar o arrastrar) | M3.5 (todo el kit desde Nv 1) |
+| R (RIPOSTE lleno; depende del arma) | R · Y | R | M2 / M3.5 |
+| Cambiar de arma | F junto a un armero | F | M3.5 |
 | Interactuar / recoger | F | botón contextual | M1 (NPC) |
 | Inventario · Mapa · Stats | I · M · TAB | menú | M4 |
 | Zoom | rueda | pellizco | M1 |
@@ -100,8 +102,20 @@ cámara (copas de palmera en el borde de la pantalla). El jugador nunca queda ta
 | Stats de rendimiento · Debug | F3 · F4 | — | M1 · M2 |
 
 - **Buffer de inputs: 130 ms**, dentro de la simulación (determinista: cliente y servidor lo ven igual).
-- **Coyote de parry: 60 ms.** El daño de un proyectil *parreable* se aplica con 60 ms de retraso; si llega un
-  RMB en esa ventana se anula el daño y se convierte en parry **normal** (nunca perfecto).
+- **Coyote: 60 ms.** El daño de un proyectil *parreable* se aplica con 60 ms de retraso; en esa ventana LMB (sable)
+  lo convierte en un reflejo **POBRE** desde tu posición y RMB en un bloqueo de guardia.
+- **Combate V2 (M3.5): el arma define las habilidades** (estilo Albion). Detalle completo en `PLAN-M3.5.md` §2.
+  - **Sable de cubierta**: LMB combo de 3; cada bala que el golpe toca se juzga por su tiempo hasta el impacto:
+    **EXCELENTE** ≤ 70 ms (recta al cursor, × 3, 2 rebotes, el único que devuelve orbes pesados), **BUENO** ≤ 150 ms
+    (± 10°, × 2), **POBRE** ≤ 260 ms (± 35°, × 1), más lejos = destruida. Q **Estocada** (4.5 u, ATK × 1.8, CD 7 s),
+    E **Hoja de viento** (media luna a 14 u/s, ATK × 1.4, destruye las balas que cruza, CD 5 s), R **Tormenta**.
+  - **Pistolas de chispa**: LMB mantenido = disparo alterno cada 0.2 s (ATK × 0.7, el blindaje y el escudo cuentan,
+    no reflejan), Q **Descarga** (7 perdigones, sopla balas, CD 6 s), E **Paso de humo** (blink 4.5 u con i-frames,
+    CD 7 s), R **Lluvia de plomo** (zona en el cursor, 1.5 s).
+  - **Guardia (RMB mantenido, todas las armas)**: arco frontal de 130°, deja pasar × 0.25 (pesado × 0.4) y gasta
+    aguante (60, a 0 = GUARDIA ROTA 0.9 s); alzada ≤ 130 ms antes del golpe = **PERFECTA**: 0 daño, la bala queda
+    **atrapada** (hasta 3, 6 s) y tu siguiente ataque básico las devuelve; aturde a los enemigos cercanos.
+  - **Armeros** (playa y aldea): F cambia de arma; el arma viaja en HELLO, `describe` y la snapshot.
 
 ## 5. Movimiento y dash
 
@@ -132,12 +146,13 @@ Codificados por **FORMA** primero, color después (accesibilidad). Todo proyecti
 | **AoE de suelo** | círculo rojo que se llena | 1.5–3.5 | — | 18 | ✘ | ✘ | ✔ telegraph 0.8–1.5 s |
 | **Láser / carril** | línea de telegraph → barrido | ancho 0.9 | barrido 40–60 °/s | 10 / 0.2 s | ✘ | ✘ | ✔ telegraph 0.6 s |
 
-**Reflejo (RMB):** el proyectil cambia de dueño, color al acento del jugador (`#3BF0FF`), daño
-`2 × max(dañoBase, 0.8·ATK)`, velocidad × 1.4, homing suave 4 rad/s al enemigo más cercano dentro de un cono de 60°,
-vida 2.5 s, trail luminoso. Los reflejos **ignoran blindaje** (cangrejo) y **rompen escudos** (jefe).
+**Reflejo (M3.5: con el sable, por tiempo; con la guardia perfecta, atrapando):** el proyectil cambia de dueño,
+color al acento del jugador (`#3BF0FF`; EXCELENTE blanco-dorado, POBRE tenue), daño `nivel × max(dañoBase,
+0.8·ATK)` (× 3 / × 2 / × 1), homing por nivel, vida 2.5 s, trail. Los reflejos **ignoran blindaje** (cangrejo) y
+el escudo del jugador; el orbe pesado reflejado **rompe el escudo** del jefe. Las balas de pistola son otra cosa
+(`kind 'bullet'`): el blindaje frontal las frena × 0.2 y el escudo del jefe × 0.4.
 
-**Parry:** sector de 110° frente al jugador, radio 1.6 u. Whiff (sin nada que parrear): 0.35 s sin poder
-volver a parrear. Parry exitoso: sin recuperación (premia encadenar).
+**~~Parry RMB~~ (M2–M3):** sustituido en M3.5 por el reflejo a tiempo de la espada y la guardia (ver §4).
 
 **Graze (ROCE):** proyectil hostil que pasa a < 0.35 u del borde de la hurtbox sin tocar → +2 XP, +4 % RIPOSTE,
 toast «ROCE». Una vez por proyectil.
@@ -147,8 +162,9 @@ toast «ROCE». Una vez por proyectil.
 | Evento | Hitstop | Otros |
 |---|---|---|
 | Destruir (LMB) | 70 ms | chispas, «tic» metálico |
-| Reflejar (RMB normal) | 110 ms | whoosh + trail |
-| **PERFECTO** | 110 ms | slow-mo 0.35× durante 0.25 s, flash, onda de choque 3 capas (ancha-tenue / media / fina-brillante), toast «¡PERFECTO!», «clang» que sube un semitono por parry encadenado |
+| Reflejo POBRE / BUENO | 50 / 80 ms | whoosh + trail; «POBRE» / «BUENO» |
+| **EXCELENTE** | 110 ms | slow-mo 0.35× durante 0.25 s, flash, onda de choque 3 capas (ancha-tenue / media / fina-brillante), toast «¡EXCELENTE!», «clang» que sube un semitono por reflejo encadenado |
+| **Guardia perfecta** | 90 ms | slow-mo 0.5×, «¡ATRAPADA!», las balas atrapadas giran sobre tu hombro |
 | Cadena | — | ≤ 1.2 s entre parries → multiplicador x1→x5 |
 | Medidor RIPOSTE | — | perfecto +18, normal +10, destruir +4, roce +4, fantasma +8 (máx 100). R lo libera: onda radial r=6 u que refleja TODO |
 
@@ -261,14 +277,18 @@ CRIT 5 % (equipo) · ventana de parry 180 ms (± arma).
 
 **Daño:** `max(1, round(ATK · mult · (crit ? 1.75 : 1) · (1 − DEF/(DEF+40))))`. Combo: 1.0 / 1.15 / 1.6 (360°).
 
+**M3.5:** el kit lo da el **arma** (§4) y está entero desde Nv 1; los desbloqueos de Q / E / R por nivel de esta
+tabla quedan **sustituidos** (M4 atará el kit a la maestría de cada arma, como Albion). Los niveles siguen dando
+stats y la 2ª carga de dash.
+
 | Lv → Lv+1 | XP | Acumulado | Desbloqueo al llegar |
 |---|---|---|---|
 | 1 → 2 | 100 | 100 | 2ª carga de dash |
-| 2 → 3 | 180 | 280 | **Q «Tajo Giratorio»** (destruye parreables en r=2.6 u, CD 6 s) |
+| 2 → 3 | 180 | 280 | ~~Q «Tajo Giratorio»~~ (M3.5: Q del arma) |
 | 3 → 4 | 280 | 560 | |
-| 4 → 5 | 400 | 960 | **E «Guardia de Marea»** (escudo 2 s que refleja todo, CD 14 s) |
+| 4 → 5 | 400 | 960 | ~~E «Guardia de Marea»~~ (M3.5: E del arma) |
 | 5 → 6 | 550 | 1510 | |
-| 6 → 7 | 720 | 2230 | **R «Riposte Tormenta»** (consume RIPOSTE 100) |
+| 6 → 7 | 720 | 2230 | ~~R «Riposte Tormenta»~~ (M3.5: R del arma, con el RIPOSTE lleno) |
 | 7 → 8 | 920 | 3150 | |
 | 8 → 9 | 1150 | 4300 | |
 | 9 → 10 | 1400 | 5700 | pasiva «Ojo del Huracán»: PERFECTO +20 ms |
@@ -324,6 +344,13 @@ Marinero de agua dulce (hablar con el capitán).
 - **Modelo de comandos (tipo Source):** el jugador solo avanza cuando se procesa uno de sus comandos, tanto en el
   cliente (predicción) como en el servidor. Con colisión estática determinista el error de predicción es 0;
   lo que el servidor añada (knockback, etc.) se corrige por reconciliación con suavizado visual (λ=15).
+- **Combate V2 en red (M3.5):** el comando lleva `btn` con el bit `AIM` (apuntado explícito) y `w` (arma pedida + 1,
+  solo junto a un armero). Todo lo que toca balas hostiles (golpes, guardia, estocada, media luna, descarga, lluvia)
+  corre en el paso del comando al `pt` del cliente, así que la predicción lo repite exacto; el daño a enemigos es
+  solo del servidor con historial rebobinado (`pt − interpTicks`). Los disparos del jugador (`Shots`) llevan `kind`,
+  `tier`, `knock` y `lag`: el servidor los prueba contra los enemigos tal como los veía quien disparó
+  (`lag = clamp(tick − pt, 0, rewind) + interpTicks`, `world.lagPos`), y el cliente adopta la copia del servidor por
+  `key` (la del evento `shot`, con `owner`). Snapshot: `ENT.WPN` (17).
 - **Tiempo de instancia:** el slow-mo y el hitstop son propiedades de la *instancia* (la arena es una instancia por
   grupo, como una mazmorra de MMO), decididas por el servidor y replicadas. En el mundo abierto compartido el hitstop
   es solo cosmético en el cliente (≤ 110 ms, la sim no se detiene).
@@ -551,6 +578,8 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M2 | Proyectiles + parry/reflect/dash + 2 enemigos + feel + F4 → **test de diversión** | ✅ |
 | M2.5 | «La Prueba de Fuego»: 3 oleadas bullet hell en La Caldera + HELLFIRE en 2 fases + esbirros melee + rebote de reflejos (`PLAN-M2.5.md`) | ✅ |
 | M3 | Oleadas + enemigos restantes + jefe 3 fases: 5 oleadas, Cangrejo mortero, HELLFIRE con embestida, láser doble, meteoros, carriles, cortina y lava (`PLAN-M3.md`) | ✅ |
+| M3.5 | Combate V2: apuntar con ratón / stick, reflejo a tiempo en 3 niveles, guardia con atrapar y devolver, armas que definen las habilidades (sable / pistolas), armeros, disparos con lag compensation (`PLAN-M3.5.md`) | ✅ |
+| M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, medir el combate con latencia real | |
 | M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |

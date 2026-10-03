@@ -82,7 +82,7 @@ export const ENEMIES = {
     name: 'HELLFIRE', look: 'hellfire', title: 'Señor de La Caldera', level: 7, boss: true,
     hp: 3200, def: 8, speed: 1.8, radius: 1.1, hurt: 1.25, height: 3.9, light: 0.15,
     range: [6, 11], aggro: 40, leash: 60, xp: 1500, respawn: 0,
-    shield: 0.2, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4.5, spin: 23,
+    shield: 0.2, shieldBullet: 0.4, brokenMult: 1.5, brokenTime: 4, breakStagger: 1.5, enrage: 2.0, slamR: 4.5, spin: 23,
     lava: { r0: 19, rMin: 11, rate: 0.12, R: 21, dmg: 6, every: 0.5 },
     phases: [
       { until: 0.75, cycle: ['fan5', 'spiral2', 'charge', 'fan5', 'rings2'], gap: 0.75, heavyEvery: 12 },

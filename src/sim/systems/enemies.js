@@ -313,7 +313,7 @@ export function damageEnemy(world, e, raw, o) {
     b.shotN = (b.shotN || 0) + 1; b.shotTick = world.tick;
   }
   let shielded = 0, armor = 0;
-  if (def.armor && o.kind !== 'shot') {
+  if (def.armor && o.kind !== 'shot' && !o.above) {
     // Armoured front: hits from inside the arc in front of it barely scratch it (reflects ignore it).
     const from = Math.atan2(o.x - ecs.x[e], o.z - ecs.z[e]);
     if (Math.abs(angleDelta(ecs.facing[e], from)) < (def.armor.arc / 2) * Math.PI / 180) { raw *= def.armor.mult; armor = 1; }
@@ -335,7 +335,7 @@ export function damageEnemy(world, e, raw, o) {
       world.emit({ type: 'shield', id: e, st: 'broken', by: o.by, x: ecs.x[e], z: ecs.z[e] });
     }
     if (b.broken > 0) raw *= BR ? BR.mult : def.brokenMult;
-    else if (b.shieldOn && o.kind !== 'shot') { raw *= def.shield; shielded = 1; }
+    else if (b.shieldOn && o.kind !== 'shot') { raw *= o.kind === 'bullet' ? def.shieldBullet ?? def.shield : def.shield; shielded = 1; }
     else if (def.phases[b.phase].guard && o.kind !== 'shot') raw *= def.phases[b.phase].guard;
   }
   const crit = world.rng() < tuning.stats.crit;
