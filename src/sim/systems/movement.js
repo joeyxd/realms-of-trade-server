@@ -4,7 +4,9 @@ import { tuning } from '../../data/tuning.js';
 import { STATE } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
 
-export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, Q: 8, E: 16, R: 32, INTERACT: 64 };
+// AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
+// even while walking another way; without it you face where you walk (touch, keyboard only).
+export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128 };
 
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
@@ -56,7 +58,7 @@ export function moveWithCollision(world, e, dx, dz) {
   return Math.hypot(nx - x, nz - z);
 }
 
-// One fixed step of locomotion for entity e driven by command cmd {mx, mz, prs}.
+// One fixed step of locomotion for entity e driven by command cmd {mx, mz, ax, az, btn, prs}.
 export function stepMover(world, e, cmd, dt) {
   const ecs = world.ecs, map = world.map;
   const P = tuning.player, D = tuning.dash, W = tuning.world;
@@ -126,6 +128,13 @@ export function stepMover(world, e, cmd, dt) {
     let mul = 1;
     if (depth > W.wadeStart) mul = 1 - W.wadeSlow * Math.min(1, depth / W.wadeMax);
     mul *= ecs.moveMul[e]; // swings and parries slow you down
+    // Walking backwards (away from where you aim) is a little slower; sideways is free.
+    const aimed = (cmd.btn & BTN.AIM) !== 0;
+    if (aimed && len > 0.05) {
+      const c = (mx * Math.sin(ecs.facing[e]) + mz * Math.cos(ecs.facing[e])) / len;
+      const k = Math.min(1, Math.max(0, (-c - 0.17) / 0.6));
+      mul *= 1 - (1 - P.backMul) * k;
+    }
     const tx = mx * ecs.speed[e] * mul, tz = mz * ecs.speed[e] * mul;
     const rate = (len > 0.05 ? P.accel : P.decel) * dt;
     let ddx = tx - ecs.vx[e], ddz = tz - ecs.vz[e];
@@ -139,7 +148,11 @@ export function stepMover(world, e, cmd, dt) {
       const sp = Math.hypot(ecs.vx[e], ecs.vz[e]) * dt;
       if (sp > 1e-6 && moved < sp * 0.5) { ecs.vx[e] *= moved / sp; ecs.vz[e] *= moved / sp; }
     }
-    if (len > 0.05 && ecs.faceLock[e] <= 0) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(mx, mz), P.turnLambda, dt);
+    if (ecs.faceLock[e] <= 0 && !locked) {
+      const ax = (cmd.ax || 0) - ecs.x[e], az = (cmd.az || 0) - ecs.z[e];
+      if (aimed) { if (ax * ax + az * az > 0.0225) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(ax, az), P.aimLambda, dt); }
+      else if (len > 0.05) ecs.facing[e] = dampAngle(ecs.facing[e], Math.atan2(mx, mz), P.turnLambda, dt);
+    }
   }
   // Knockback (hits, blocked heavy orbs): its own velocity, decaying fast.
   if (ecs.kbx[e] !== 0 || ecs.kbz[e] !== 0) {

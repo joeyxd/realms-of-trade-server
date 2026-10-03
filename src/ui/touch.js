@@ -22,7 +22,7 @@ export class TouchControls {
       knob.style.transform = '';
       zone.setPointerCapture(pid);
       input.joy.active = true; input.joy.x = 0; input.joy.y = 0;
-      input.lastDevice = 'touch';
+      input.lastDevice = 'touch'; input.aimDevice = 'touch';
     });
     zone.addEventListener('pointermove', (e) => {
       if (e.pointerId !== pid) return;

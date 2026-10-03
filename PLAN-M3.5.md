@@ -207,7 +207,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
 ## 3. Pasos
 
 - [x] **P0** Este plan (commit + push).
-- [ ] **P1** Apuntar: `BTN.AIM`, frente al cursor en `movement.js` (+ `backMul`), mando (Gamepad API), K mantenida,
+- [x] **P1** Apuntar: `BTN.AIM`, frente al cursor en `movement.js` (+ `backMul`), mando (Gamepad API), K mantenida,
   piernas/torso separados en `characters.js`. Tests: el frente sigue al apuntado y no al movimiento con `AIM`,
   vuelve a seguir al movimiento sin `AIM`, el retroceso es más lento; la predicción sigue exacta.
 - [ ] **P2** Espada V2 + guardia: niveles por `tc` en `swingActive`, coyote con LMB (POBRE) y RMB (bloqueo), borrar
@@ -235,6 +235,12 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
 - [ ] **P8** Balance con el bot para las dos armas (`WEAPON=pistolas`), perf (≤ 0.5 ms/step), verificación
   (tests, capturas 23-aim-strafe, 24-reflect-excelente, 25-guard-catch, 26-pistolas, 27-lluvia), docs (DESIGN §4 §5
   §6 §9 §10 §16, README), versión `0.3.5-m3.5`, artefacto republicado.
+
+## 4b. Estado real (lo que quedó, difiere del §2 donde se indica)
+- P1: `input.aimDevice` ('mouse' | 'gamepad' | 'keys' | 'touch') decide el bit `AIM` (WASD no lo cambia: ratón +
+  teclado sigue apuntando con el cursor); el ratón se escucha en toda la ventana (sobre el HUD también). El mando
+  se lee cada frame (`input.pollPad()`, Start abre la pausa). `__mn.sheet({ run: true, move: π/2 })` muestra la
+  marcha lateral / hacia atrás en la hoja de personajes. Tests en `tests/m35.test.mjs` (+ `tests/helpers.mjs`).
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

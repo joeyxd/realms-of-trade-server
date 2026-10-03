@@ -10,7 +10,7 @@ import { toon, U } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { BONES, makeBones } from './charkit.js';
 import { LOOKS, buildLook } from './charlooks.js';
-import { damp, angleDelta, clamp, spring, easeOutCubic } from '../core/math.js';
+import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
 
@@ -107,6 +107,7 @@ export class CharacterView {
     this.cb = { x: 0, v: 0 };
     this.onStep = null;
     this.wasDash = false;
+    this.legYaw = 0; this.back = false; this.fwd = 1; this.side = 0;
     // Combat layer.
     this.ao = { cx: 0, cy: 0, sx: 0, sy: 0, hx: 0, hy: 0 }; // damped torso offsets
     this.parryW = 0;
@@ -143,9 +144,21 @@ export class CharacterView {
     if (!dashing && this.wasDash) this.sy.v -= 1.4;
     this.wasDash = dashing;
 
+    // Aimed movement (M3.5): the legs follow where you walk, the torso where you aim. Walking sideways
+    // turns the hips toward the motion (the chest turns back); walking backwards plays the stride in
+    // reverse. Hysteresis on the backwards switch so the feet don't flicker around 110°.
+    let legT = 0;
+    if (speed > 0.6 && !dashing) {
+      const lm = wrapAngle(Math.atan2(s.vx, s.vz) - s.f);
+      const al = Math.abs(lm);
+      if (this.back ? al > 1.75 : al > 2.0) { this.back = true; legT = clamp(wrapAngle(lm - Math.PI), -0.9, 0.9); }
+      else { this.back = false; legT = clamp(lm, -1.1, 1.1); }
+      this.fwd = damp(this.fwd, Math.cos(lm), 8, dt); this.side = damp(this.side, Math.sin(lm), 8, dt);
+    } else { this.back = false; this.fwd = damp(this.fwd, 1, 6, dt); this.side = damp(this.side, 0, 6, dt); }
+    this.legYaw = damp(this.legYaw, legT, 10, dt);
     // Stride: one cycle per `stride` u; a footstep when either foot plants (thigh most forward).
     const prev = this.phase;
-    this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1);
+    this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1) * (this.back ? -1 : 1);
     const H = Math.PI;
     if (this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
       if (this.onStep) this.onStep(Math.floor((this.phase - H / 2) / H) & 1);
@@ -167,16 +180,17 @@ export class CharacterView {
     spring(this.sz, dashing ? 1.05 : 1, 240, 19, dt);
     const sx = 1 / Math.sqrt(Math.max(0.5, this.sy.x * this.sz.x));
     this.body.scale.set(sx, this.sy.x, this.sz.x);
-    this.lean = damp(this.lean, 0.09 * r + 0.3 * d, 8, dt);
-    this.roll = damp(this.roll, clamp(-turnRate * 0.025, -0.2, 0.2) * r, 7, dt);
+    this.lean = damp(this.lean, 0.09 * r * clamp(this.fwd, -0.5, 1) + 0.3 * d, 8, dt);
+    this.roll = damp(this.roll, clamp(-turnRate * 0.025, -0.2, 0.2) * r - 0.07 * r * this.side, 7, dt);
     this.body.rotation.set(this.lean, 0, this.roll);
 
     // Pelvis: two bobs per stride, crouch in the dash, weight shift when idle.
     this.hips.position.y = this.restHipsY - 0.025 * r + 0.04 * r * Math.abs(sn) - 0.07 * d - 0.01 * idle * (0.5 + 0.5 * sway) - 0.04 * dorm;
     this.hips.position.x = 0.012 * sway;
-    this.hips.rotation.set(0, -0.16 * r * sn, -0.035 * sway);
-    this.spine.rotation.set(0.05 * r + 0.14 * d + 0.14 * dorm, 0.08 * r * sn, 0.02 * sway);
-    this.chest.rotation.set(-0.02 * br + 0.04 * r + 0.08 * dorm, 0.13 * r * sn, 0.015 * sway);
+    const ly = this.legYaw;
+    this.hips.rotation.set(0, -0.16 * r * sn + ly, -0.035 * sway);
+    this.spine.rotation.set(0.05 * r + 0.14 * d + 0.14 * dorm, 0.08 * r * sn - 0.6 * ly, 0.02 * sway);
+    this.chest.rotation.set(-0.02 * br + 0.04 * r + 0.08 * dorm, 0.13 * r * sn - 0.4 * ly, 0.015 * sway);
     this.head.rotation.set(
       -(this.lean + 0.05 * r + 0.14 * d) * 0.75 + 0.015 * br + 0.45 * dorm,
       -0.1 * r * sn + 0.06 * sway * (1 - dorm),

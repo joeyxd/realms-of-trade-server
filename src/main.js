@@ -109,6 +109,9 @@ async function boot() {
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const ndc = new THREE.Vector2();
   const move = { x: 0, z: 0 };
+  const padDir = { x: 0, z: 0 };
+  const padAiming = () => input.aimDevice === 'gamepad' && input.pad.aim;
+  const mouseAiming = () => input.aimDevice === 'mouse' && input.mouse.moved;
   const axes = { x: 0, y: 0 };
   const screenP = { x: 0, y: 0, vis: false };
 
@@ -383,8 +386,8 @@ async function boot() {
     const sh = st.sheet, n = sh.views.length, c = sh.center;
     sh.views.forEach((v, i) => {
       const x = c.x + (i - (n - 1) / 2) * sh.gap, z = c.z;
-      const sp = sh.run ? 6.5 : 0;
-      v.update(dt, { x, y: map.groundAt(x, z), z, f: sh.yaw, vx: Math.sin(sh.yaw) * sp, vz: Math.cos(sh.yaw) * sp, st: 0, wade: 0 });
+      const sp = sh.run ? 6.5 : 0, mv = sh.yaw + (sh.move || 0);
+      v.update(dt, { x, y: map.groundAt(x, z), z, f: sh.yaw, vx: Math.sin(mv) * sp, vz: Math.cos(mv) * sp, st: 0, wade: 0, act: sh.act || 0, actT: sh.actT || 0 });
     });
     const p = (sh.pitch * Math.PI) / 180, cam = world.camera;
     const ty = c.y + (sh.pitch > 30 ? 0.6 : 1.0);
@@ -458,12 +461,21 @@ async function boot() {
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
-      // Touch / keyboard-only: aim at the nearest enemy in front, else where you are going.
-      if (input.lastDevice !== 'mouse') autoAim(move);
-      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held, prs });
+      // Mouse or right stick: you face the aim point (AIM). Touch / keyboard only / a pad without the
+      // right stick: you face where you walk, and actions turn to the nearest threat or enemy.
+      let aimBit = 0;
+      if (padAiming()) {
+        world.rig.moveBasis(input.pad.ax, input.pad.ay, padDir);
+        const l = Math.hypot(padDir.x, padDir.z) || 1;
+        aim.set(ps.x + (padDir.x / l) * 4, ps.y, ps.z + (padDir.z / l) * 4);
+        aimBit = BTN.AIM;
+      } else if (mouseAiming()) aimBit = BTN.AIM;
+      else autoAim(move);
+      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held | aimBit, prs });
     }),
     frame: (realDt, simDt, alpha) => {
       loop.paused = st.paused;
+      safe('pad', () => input.pollPad());
       trailFrame++;
       safe('net', () => { transport.flush(); client.update(simDt, realDt); });
       const playing = st.mode === 'playing' && client.joined;
@@ -556,12 +568,12 @@ async function boot() {
           }
         }
         // Mouse aim (raycast cursor → plane at player height) for the camera look-ahead.
-        if (input.lastDevice === 'mouse' && input.mouse.moved) {
+        if (mouseAiming()) {
           ndc.set((input.mouse.x / innerWidth) * 2 - 1, -(input.mouse.y / innerHeight) * 2 + 1);
           ray.setFromCamera(ndc, world.camera);
           plane.constant = -ps.y;
           if (!ray.ray.intersectPlane(plane, aim)) aim.set(ps.x, ps.y, ps.z);
-        } else aim.set(ps.x, ps.y, ps.z);
+        } else if (!padAiming()) aim.set(ps.x, ps.y, ps.z);
         const zw = input.consumeWheel();
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
@@ -582,7 +594,7 @@ async function boot() {
         else if (playing) {
           focus.set(ps.x, ps.y, ps.z);
           if (st.snapCam) { world.rig.snapTo(focus); st.snapCam = false; }
-          world.rig.update(realDt, focus, input.lastDevice === 'mouse' ? aim : null, loop.timeScale);
+          world.rig.update(realDt, focus, mouseAiming() || padAiming() ? aim : null, loop.timeScale);
         } else {
           // Title: slow orbit around the island.
           st.titleAngle += realDt * (reduced() ? 0.008 : 0.03);
@@ -664,7 +676,8 @@ async function boot() {
       for (let i = 0; i < 6; i++) world.effects.alpha.spawn(ps.x - dx * (0.5 + i * 0.5), ps.y + 0.15, ps.z - dz * (0.5 + i * 0.5), 0, 0, 0, { life: 30, size: 0.45 + i * 0.05, color: [0.97, 0.9, 0.72], alpha: 0.8, drag: 10 });
       world.effects.ripple(ps.x + 2, Math.max(ps.y, 0) + 0.03, ps.z + 1, 2.2, 30);
     };
-    // Character sheet: every look in a row on the beach. yaw turns them, run plays the cycle in place,
+    // Character sheet: every look in a row on the beach. yaw turns them, run plays the cycle in place
+    // (move: walking direction relative to the facing, e.g. π/2 strafes, π backpedals; act/actT pose them),
     // pitch/dist frame the camera (8°/6.5 = sheet, 48°/17 = gameplay view).
     window.__mn.sheet = (o = {}) => {
       if (!st.sheet) {

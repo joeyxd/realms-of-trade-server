@@ -23,6 +23,8 @@ export const tuning = {
     accel: 70,
     decel: 50,
     turnLambda: 20,
+    aimLambda: 30, // facing → aim point (mouse / right stick) when the command says AIM
+    backMul: 0.9, // speed × this walking away from where you aim (blends in from 100° to 145°)
     radius: 0.4,
     hurtRadius: 0.36,
     inputBuffer: 0.13,
