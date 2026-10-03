@@ -298,7 +298,7 @@ export function createVegetation(map) {
     }));
   }
 
-  const flowerMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'flower' });
+  const flowerMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'flower', comic: false });
   const flowers = map.props.filter((p) => p.kind === 'flower');
   const fColors = [0xff5f8a, 0xffd166, 0xffffff, 0xff8a3d];
   fColors.forEach((c, ci) => {
@@ -312,7 +312,7 @@ export function createVegetation(map) {
 
   // Underwater: seaweed (slow sway) and pale pebbles.
   const weedSway = { value: 0.1 };
-  const weedOpts = { sway: true, swayUniform: weedSway, key: 'seaweed' };
+  const weedOpts = { sway: true, swayUniform: weedSway, key: 'seaweed', comic: false };
   const weedMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, weedOpts);
   const weedNm = normalMatFor(weedOpts, THREE.DoubleSide);
   const weeds = map.props.filter((p) => p.kind === 'seaweed');
@@ -320,7 +320,7 @@ export function createVegetation(map) {
     q.setFromAxisAngle(up, p.rot);
     m.compose(v.set(p.x, p.y - 0.05, p.z), q, sc.setScalar(p.scale));
   }, null, { castShadow: false }));
-  const pebbleMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'pebble' });
+  const pebbleMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'pebble', comic: false });
   const pebbles = map.props.filter((p) => p.kind === 'pebble');
   const pebbleColors = [0xf4f1ea, 0xc9d8e6, 0xe8d3b0, 0xf2b8a8, 0x9fb4c6].map((c) => new THREE.Color(c));
   group.add(chunked('pebbles', pebbles, pebbleGeometry(), pebbleMat, null, (p, m) => {

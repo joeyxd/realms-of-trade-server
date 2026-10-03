@@ -80,13 +80,13 @@ float mnCloudShadow(vec2 xz) {
   float c = texture2D(mnNoiseTex, xz * 0.0024 + mnWind * mnTime * 0.0016).b;
   return 1.0 - mnCloud * smoothstep(0.5, 0.6, c);
 }
-// The one light-band function. x = N·L in [-1, 1]. Antialiased band edges.
+// The one light-band function. x = N·L in [-1, 1]. Three hard tones, antialiased edges:
+// deep 0.36 (x < -0.04), mid 0.70, lit 1.0 (x > 0.30).
 float mnBand(float x) {
   float w = max(fwidth(x), 0.0008) * 1.1;
-  float b = 0.42;
-  b = mix(b, 0.68, smoothstep(-0.02 - w, -0.02 + w, x));
-  b = mix(b, 0.88, smoothstep(0.30 - w, 0.30 + w, x));
-  b = mix(b, 1.00, smoothstep(0.64 - w, 0.64 + w, x));
+  float b = 0.36;
+  b = mix(b, 0.70, smoothstep(-0.04 - w, -0.04 + w, x));
+  b = mix(b, 1.00, smoothstep(0.30 - w, 0.30 + w, x));
   return b;
 }
 `;
@@ -158,6 +158,12 @@ export const glowOut = (expr) => /* glsl */ `
 
 const VERT_PARS = /* glsl */ `
 varying vec3 vMnWorld;
+// Rest-pose world position (before wind sway): the comic hatching is pinned to it, so lines do not swim on swaying leaves.
+#ifdef MN_SWAY
+varying vec3 vMnRest;
+#else
+#define vMnRest vMnWorld
+#endif
 #ifdef MN_GLOW
 attribute float aGlow;
 varying float vMnGlow;
@@ -173,6 +179,7 @@ const VERT_SWAY = /* glsl */ `
 vMnGlow = aGlow;
 #endif
 #ifdef MN_SWAY
+vec3 mnT0 = transformed;
 {
   vec3 o = vec3(0.0);
   #ifdef USE_INSTANCING
@@ -197,11 +204,23 @@ const VERT_WORLD = /* glsl */ `
   mnW = instanceMatrix * mnW;
   #endif
   vMnWorld = (modelMatrix * mnW).xyz;
+  #ifdef MN_SWAY
+  vec4 mnR = vec4(mnT0, 1.0);
+  #ifdef USE_INSTANCING
+  mnR = instanceMatrix * mnR;
+  #endif
+  vMnRest = (modelMatrix * mnR).xyz;
+  #endif
 }
 `;
 
 const FRAG_PARS = /* glsl */ `
 varying vec3 vMnWorld;
+#ifdef MN_SWAY
+varying vec3 vMnRest;
+#else
+#define vMnRest vMnWorld
+#endif
 uniform vec4 mnOcc2;
 // How much a fragment sits inside the cylinder from the camera to target (0 outside).
 float mnOccFade(vec3 target) {
@@ -234,16 +253,39 @@ if (mnOccOn > 0.5) {
 `;
 
 const BAND_PARS = /* glsl */ `
-float mnVis = 1.0;
+uniform vec3 mnShadowTint;
+#define MN_SHADE_TINT 0.3
+float mnVis = 1.0;       // sun visibility: cloud x shadow map (1 lit, 0 shadowed)
+float mnShF = 1.0;       // shadow-map factor of the light being added
+float mnIsSun = 0.0;     // 1 while the light being added is the sun (directional loop index 0)
+// Sun terms for the comic pass (hatching, shadow ink edge); only the sun writes them.
+float mnSunShadow = 1.0; // shadow-map factor alone, before cloud (1 lit, 0 in a cast shadow)
+float mnSunNdl = 1.0;    // raw N·L of the sun, before cloud and shadow
+float mnSunLit = 1.0;    // 0..1 lit amount without cloud: 1 above the terminator (x > -0.04), 0 deep in shade (x < -0.6) or a cast shadow
+float mnShade = 0.0;     // 0 lit .. 1 deep tone of the sun band (tints the sky fill in shade)
 vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
   float ndl = dot( normal, lightDirection );
+  float raw = ndl;
   ndl = mix( -1.0, ndl, mnVis );
   #ifdef MN_SOFT_BAND
-  // Faceted characters: half band, half smooth ramp, so every facet keeps its own tone.
-  return vec3( mix( mnBand( ndl ), 0.42 + 0.58 * smoothstep( -0.45, 0.95, ndl ), 0.5 ) );
+  // Faceted characters: mostly two tones, a quarter smooth ramp, so every facet keeps its own tone.
+  float b = mix( mnBand( ndl ), 0.36 + 0.64 * smoothstep( -0.45, 0.95, ndl ), 0.25 );
   #else
-  return vec3( mnBand( ndl ) );
+  float b = mnBand( ndl );
   #endif
+  // The tint follows the sun's real shade (back side, cast shadows), not the clouds: a cloud only darkens, so a
+  // beach under a passing cloud stays warm sand instead of turning grey-violet.
+  float tb = b;
+  if ( mnIsSun > 0.5 ) {
+    float sh = mix( -1.0, raw, mnShF );
+    mnSunNdl = raw;
+    mnSunLit = smoothstep( -0.6, -0.04, sh ); // shadow map only: hatching does not follow clouds
+    tb = mnBand( sh );
+    mnShade = 1.0 - ( tb - 0.36 ) / 0.64;
+  }
+  // Deep shade leans toward the tint (normalised, so the lit side stays neutral).
+  vec3 tintN = mnShadowTint / max( max( mnShadowTint.r, mnShadowTint.g ), max( mnShadowTint.b, 1e-3 ) );
+  return mix( tintN, vec3( 1.0 ), ( tb - 0.36 ) / 0.64 ) * b;
 }
 `;
 
@@ -254,22 +296,80 @@ function lightsBegin() {
   const a = 'getDirectionalLightInfo( directionalLight, directLight );';
   const b = 'directLight.color *= ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ]';
   if (!s.includes(a) || !s.includes(b)) console.warn('[toon] lights_fragment_begin layout changed; cloud/shadow banding disabled');
-  s = s.replace(a, a + '\n\t\tmnVis = 1.0;\n\t\t#if ( UNROLLED_LOOP_INDEX == 0 )\n\t\tmnVis = mnSunCloud;\n\t\t#endif');
-  s = s.replace(b, 'mnVis *= ( directLight.visible && receiveShadow ) ? getShadow( directionalShadowMap[ i ]');
+  s = s.replace(a, a + '\n\t\tmnVis = 1.0;\n\t\tmnIsSun = 0.0;\n\t\t#if ( UNROLLED_LOOP_INDEX == 0 )\n\t\tmnVis = mnSunCloud;\n\t\tmnIsSun = 1.0;\n\t\t#endif');
+  // The shadow factor is kept apart (mnShF) so the sun's alone survives (hatching, ink edge); the band sees cloud x shadow.
+  const i = s.indexOf(b), j = s.indexOf(';', i);
+  if (i >= 0 && j > i) {
+    s = s.slice(0, i) + s.slice(i, j + 1).replace('directLight.color *=', 'mnShF =')
+      + '\n\t\tmnVis *= mnShF;\n\t\t#if ( UNROLLED_LOOP_INDEX == 0 )\n\t\tmnSunShadow = mnShF;\n\t\t#endif' + s.slice(j + 1);
+  }
   LIGHTS_BEGIN = s;
   return s;
 }
 
 const FRAG_RIM = /* glsl */ `
+// The sky fill that lights the shade leans toward the tint too (luminance-preserving, so it stays as bright).
+reflectedLight.indirectDiffuse *= mix( vec3( 1.0 ), mix( vec3( 1.0 ), mnShadowTint / max( dot( mnShadowTint, vec3( 0.2126, 0.7152, 0.0722 ) ), 1e-3 ), MN_SHADE_TINT ), mnShade );
 reflectedLight.directDiffuse += mnLocalLight( vMnWorld, inverseTransformDirection( normal, viewMatrix ) ) * BRDF_Lambert( material.diffuseColor );
 #ifdef MN_RIM
 {
   vec3 mnV = normalize( vViewPosition );
   float fr = 1.0 - saturate( dot( normal, mnV ) );
-  float rimB = smoothstep( 0.58, 0.72, fr );
+  float rimB = smoothstep( 0.6, 0.68, fr );
   reflectedLight.directDiffuse += mnRimColor * mnRimStr * rimB * diffuseColor.rgb;
   // Fill from the camera side so characters stay readable at night and in the Caldera.
   reflectedLight.directDiffuse += mnCharFill * BRDF_Lambert( material.diffuseColor ) * ( 0.35 + 0.65 * smoothstep( -0.1, 0.8, dot( normal, mnV ) ) );
+}
+#endif
+`;
+
+// Comic shadows (MN_COMIC), on the final colour. In shade (mnSunLit < 1: facing away from the sun, inside a cast
+// shadow) the surface gets ink hatching in world space on the plane of its dominant normal axis: diagonal strokes
+// every MN_HATCH_PERIOD, each line wobbled and broken by the noise (one read, per-line offset), wider the darker it is,
+// a thinner crossing set only in the deepest sun-averted shade (a cast shadow alone gets one direction).
+// Where the sun's shadow map crosses 0.5 (a cast shadow's edge, not a cloud's) a thin ink line is drawn.
+// Both fade with stroke size on screen (no moire when zoomed out) and with distance; green surfaces get less.
+const COMIC_PARS = /* glsl */ `
+#ifdef MN_COMIC
+#define MN_HATCH_PERIOD 0.4
+// Antialiased line coverage for the coordinate c (1 = one period): w = width in periods, fw = fwidth(c).
+float mnHatchLine( float c, float w, float fw ) {
+  float e = 0.5 - abs( fract( c ) - 0.5 );
+  return clamp( ( w * 0.5 - e ) / max( fw, 1e-4 ) + 0.5, 0.0, 1.0 ) * smoothstep( 0.0, 0.04, w );
+}
+#endif
+`;
+const comicPost = (mask) => /* glsl */ `
+#ifdef MN_COMIC
+{
+  float mnM = ${mask};
+  // Glowing surfaces (lava, embers, gems, lit windows) stay clean; grass is busy already (painted strokes): 40 % less.
+  mnM *= 1.0 - smoothstep( 0.15, 0.6, max( max( totalEmissiveRadiance.r, totalEmissiveRadiance.g ), totalEmissiveRadiance.b ) );
+  mnM *= 1.0 - 0.4 * smoothstep( 0.04, 0.2, diffuseColor.g - max( diffuseColor.r, diffuseColor.b ) );
+  mnM *= 1.0 - smoothstep( 45.0, 80.0, length( vViewPosition ) );
+  float mnDark = 1.0 - mnSunLit;                                // shade + cast shadow: the first direction
+  float mnDark2 = 1.0 - smoothstep( -0.6, -0.04, mnSunNdl );    // the surface's own back side: the crossing set
+  vec3 mnWn = abs( inverseTransformDirection( normal, viewMatrix ) );
+  // Dominant-axis plane: y = floor (x, z), x = wall facing x (z, y), z = wall facing z (x, y). The camera looks along a
+  // diagonal, so on the floor the lines run along the world axes and on walls at 45 degrees: both read as "/" on screen.
+  float mnAx = mnWn.y >= max( mnWn.x, mnWn.z ) ? 0.0 : ( mnWn.x >= mnWn.z ? 1.0 : 2.0 );
+  vec3 mnQ = vMnRest;
+  vec2 mnP = mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? mnQ.zy : mnQ.xy );
+  vec2 mnU = ( mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? vec2( mnP.x + mnP.y, mnP.x - mnP.y ) : vec2( mnP.x - mnP.y, mnP.x + mnP.y ) ) * 0.7071 ) / MN_HATCH_PERIOD;
+  // One noise read, shifted per line: wobble (+-0.06 u) from B, pen lifts from A (cell id: ~20 % of cells blank).
+  float mnK = floor( mnU.x + 0.5 );
+  vec4 mnN = texture2D( mnNoiseTex, mnP * 0.2 + vec2( mnK * 0.37, mnK * 0.61 ) + mnAx * 0.29 );
+  float mnWob = ( mnN.b - 0.5 ) * 0.24 / MN_HATCH_PERIOD;
+  float mnF1 = fwidth( mnU.x ) * 1.2, mnF2 = fwidth( mnU.y ) * 1.2;
+  float mnPx = 1.0 - smoothstep( 0.125, 0.2, max( mnF1, mnF2 ) ); // fades out under ~5 px per period
+  float mnH = max(
+    mnHatchLine( mnU.x + mnWob, 0.3 * smoothstep( 0.25, 1.0, mnDark ), mnF1 ) * ( 1.0 - smoothstep( 0.78, 0.86, mnN.a ) ),
+    mnHatchLine( mnU.y - mnWob, 0.22 * smoothstep( 0.8, 1.0, mnDark2 ), mnF2 ) * ( 1.0 - smoothstep( 0.7, 0.78, mnN.r ) ) ) * mnPx;
+  gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * 0.42, mnH * 0.7 * mnM );
+  // Cast-shadow edge: ink where the shadow factor crosses 0.5, only on surfaces that face the sun.
+  float mnSd = abs( mnSunShadow - 0.5 ) / max( fwidth( mnSunShadow ), 1e-4 );
+  float mnEdge = ( 1.0 - smoothstep( 0.8, 2.0, mnSd ) ) * smoothstep( 0.02, 0.22, mnSunNdl );
+  gl_FragColor.rgb = mix( gl_FragColor.rgb, vec3( 0.07, 0.04, 0.14 ), mnEdge * 0.65 * mnM );
 }
 #endif
 `;
@@ -281,10 +381,12 @@ function definesFor(opts) {
   if (opts.rim) d.MN_RIM = '';
   if (opts.glow) d.MN_GLOW = '';
   if (opts.softBand) d.MN_SOFT_BAND = '';
+  if (opts.comic ?? !opts.softBand) d.MN_COMIC = ''; // comic shadows: on in the world, off on characters
   return d;
 }
 
-// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, uniforms, fragPars, albedo, emissive,
+// Patch a MeshToonMaterial in place. opts: {sway, occluder, rim, glow, softBand, comic (hatching + shadow ink edge,
+// default on unless softBand), hatchMask (GLSL float, 0 kills the comic ink; default 1.0), uniforms, fragPars, albedo, emissive,
 // post (GLSL on the final color, before the glow mask), glowMask (GLSL expression for the bloom mask, default:
 // bright emissive), key}
 export function patchToon(mat, opts = {}) {
@@ -298,16 +400,16 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <begin_vertex>', '#include <begin_vertex>\n' + VERT_SWAY + (opts.vertBody || ''))
       .replace('#include <project_vertex>', '#include <project_vertex>\n' + VERT_WORLD);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + GLSL_LIGHTS + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\nuniform vec3 mnCharFill;\nuniform float mnGlowOut;\n' + (opts.fragPars || ''))
+      .replace('#include <common>', '#include <common>\n' + GLSL_COMMON + GLSL_BAND + GLSL_LIGHTS + FRAG_PARS + 'uniform vec3 mnRimColor;\nuniform float mnRimStr;\nuniform vec3 mnCharFill;\nuniform float mnGlowOut;\n' + COMIC_PARS + (opts.fragPars || ''))
       .replace('#include <gradientmap_pars_fragment>', BAND_PARS)
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
       .replace('#include <color_fragment>', '#include <color_fragment>\n' + (opts.albedo || ''))
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || '') + '\n#ifdef MN_GLOW\ntotalEmissiveRadiance += diffuseColor.rgb * vMnGlow * mnGlowAmt;\n#endif')
       .replace('#include <lights_fragment_begin>', 'float mnSunCloud = mnCloudShadow(vMnWorld.xz);\n' + lightsBegin())
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM)
-      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + (opts.post || '') + glowOut(opts.glowMask || 'smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b))'));
+      .replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + comicPost(opts.hatchMask || '1.0') + (opts.post || '') + glowOut(opts.glowMask || 'smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b))'));
   };
-  mat.customProgramCacheKey = () => 'mn-toon-' + (opts.key || '') + JSON.stringify(definesFor(opts));
+  mat.customProgramCacheKey = () => 'mn-toon-' + (opts.key || '') + JSON.stringify(definesFor(opts)) + (opts.hatchMask || '');
   return mat;
 }
 

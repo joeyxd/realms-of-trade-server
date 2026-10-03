@@ -50,6 +50,8 @@ export function createTerrain(map, { segments = 250 } = {}) {
   const opts = {
     key: 'terrain',
     glowMask: 'mnGlowSrc',
+    // No comic hatching on lava, on the hot cracks or under water.
+    hatchMask: '(1.0 - smoothstep(0.05, 0.35, vMask.w)) * (1.0 - smoothstep(0.0, 0.15, mnTerrainCrack)) * smoothstep(0.02, 0.12, vMnWorld.y)',
     vertPars: 'attribute vec4 aMask;\nvarying vec4 vMask;\nvarying vec3 vTN;\n',
     vertBody: 'vMask = aMask; vTN = normal;\n',
     fragPars: /* glsl */ `
@@ -231,7 +233,7 @@ export function createSeabed(map) {
   const geo = new THREE.PlaneGeometry(2400, 2400, 1, 1);
   geo.rotateX(-Math.PI / 2);
   // Same toon lighting and sand tone as the deep terrain so the seam is invisible through the water.
-  const mesh = toonMesh(geo, { color: new THREE.Color(0xf2dba0).multiplyScalar(0.32) }, { key: 'seabed' });
+  const mesh = toonMesh(geo, { color: new THREE.Color(0xf2dba0).multiplyScalar(0.32) }, { key: 'seabed', comic: false });
   mesh.receiveShadow = false;
   mesh.position.y = -7.56;
   mesh.name = 'seabed';

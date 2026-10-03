@@ -176,6 +176,7 @@ export class Lighting {
     U.mnRimColor.value.copy(p.rim);
     U.mnCharFill.value.copy(p.fill);
     U.mnCloud.value = p.cloud;
+    U.mnShadowTint.value.copy(p.splitShadow); // the grading's shadow colour also tints the toon shadow band (toon.js)
     if (this.lavaU) this.lavaU.value = p.lava;
     const el = THREE.MathUtils.degToRad(p.el);
     const az = THREE.MathUtils.degToRad(p.az);

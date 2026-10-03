@@ -46,7 +46,7 @@ export class Ambient {
   constructor(scene, map) {
     this.map = map;
     const rng = mulberry32(map.seed ^ 0xc0ffee);
-    const mat = toon({ color: 0xffffff, vertexColors: true }, { key: 'critter' });
+    const mat = toon({ color: 0xffffff, vertexColors: true }, { key: 'critter', comic: false });
     // Crabs on the beach band.
     this.crabs = [];
     let tries = 0;

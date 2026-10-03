@@ -112,7 +112,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 - [x] **P1** El escenario girado (2.1) + test del mapeo.
 - [x] **P2** Botones táctiles v2 y HUD horizontal (2.2).
 - [x] **P3** Contornos de tinta (2.3).
-- [ ] **P4** Sombras de cómic (2.4).
+- [x] **P4** Sombras de cómic (2.4).
 - [x] **P5** Superficies pintadas (2.5).
 - [ ] **P6** Etalonaje, rendimiento, capturas, docs, versión, artefacto, informe (2.6).
 
@@ -153,3 +153,13 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
   para R = 19, cierra). Props por color de vértice: vetas en la madera, sillares en la piedra (en espacio de
   modelo: siguen al barco que se mece). Rocas con grietas, troncos con anillos, arbustos a dos tonos. Lecturas
   extra de `mnNoiseTex`: 0–2 por superficie (`textureGrad` fuera de ramas). Roca de los anillos 0x998c7c.
+- **P4**: `mnBand` a tres tonos (0.36 / 0.70 / 1.0, sin el escalón de 0.88). La sombra se tiñe con
+  `mnShadowTint` (ahora sí lo escribe `lighting.js`, del `splitShadow` de cada preset) en el sol y, al 30 %, en el
+  relleno del cielo; el tinte sigue a la sombra **real** (cara oculta, sombras proyectadas), no a las nubes (bajo
+  una nube la arena se volvía gris violeta). Globales del sol: `mnSunShadow`, `mnSunNdl`, `mnSunLit`, `mnShade`.
+  Trama (`MN_COMIC`, `opts.comic`, `opts.hatchMask`): periodo 0.40 u, en el suelo por los ejes del mundo y en
+  paredes a 45° (las dos se leen «/» con la cámara a 45°), ancho según lo oscuro, cruzada solo en la cara oculta
+  muy oscura, temblor ± 0.06 u y cortes de pluma (una lectura de ruido), −40 % sobre el verde, fuera de lo que
+  brilla, se apaga bajo ~5 px por periodo y de 45 a 80 u. Línea de tinta en el borde de la sombra proyectada.
+  Terreno sin trama en lava, grietas y bajo el agua; fondo marino, flores, algas, guijarros y bichos sin trama.
+  Personajes: rampa al 25 %, rim 1.1. Coste: una lectura de ruido y ~60 operaciones.

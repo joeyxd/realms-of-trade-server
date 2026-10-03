@@ -39,7 +39,7 @@ export function characterMaterial(kind = 'base') {
   // Stronger rim than the props so slim adult silhouettes separate from the ground.
   const m = toon({ color: 0xffffff, vertexColors: true }, {
     rim: true, glow: true, softBand: true, key: 'char',
-    uniforms: { mnGlowAmt: glow, mnRimStr: { value: 0.85 }, mnFlash: flash },
+    uniforms: { mnGlowAmt: glow, mnRimStr: { value: 1.1 }, mnFlash: flash },
     fragPars: 'uniform vec4 mnFlash;\n',
     post: 'gl_FragColor.rgb = mix(gl_FragColor.rgb, mnFlash.rgb, mnFlash.a);\n',
     glowMask: 'max(smoothstep(0.35, 1.4, max(max(totalEmissiveRadiance.r, totalEmissiveRadiance.g), totalEmissiveRadiance.b)), mnFlash.a * 0.6)',
