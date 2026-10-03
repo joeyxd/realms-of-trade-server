@@ -38,6 +38,7 @@ export class PauseMenu {
         ${check('set-rotate', 'Rotar cámara con Z / X', s.camRotate)}
         ${range('set-ui', 'Tamaño de la interfaz', s.uiScale, 0.8, 1.3, 0.05)}
         ${check('set-contrast', 'Alto contraste (proyectiles con patrón)', s.highContrast)}
+        ${check('set-landscape', 'Forzar horizontal (móvil)', s.landscape !== false)}
       </div>`;
     const controlsHtml = `
       <div class="section controls-list">
@@ -86,6 +87,7 @@ export class PauseMenu {
     bind('set-rotate', 'camRotate', (el) => el.checked);
     bind('set-ui', 'uiScale');
     bind('set-contrast', 'highContrast', (el) => el.checked);
+    bind('set-landscape', 'landscape', (el) => el.checked);
   }
 
   confirmNew() {

@@ -3,6 +3,7 @@
 // (¡PERFECTO!, ROCE, FANTASMA, chain). Pooled elements, transforms only.
 import * as THREE from 'three';
 import { clamp } from '../core/math.js';
+import { stage } from './stage.js';
 
 const v = new THREE.Vector3();
 
@@ -16,7 +17,7 @@ export class WorldUI {
     this.prompts = new Map();
     this.bubbles = new Map();
     this.labels = new Map(); // loot on the ground (M4): its name in its rarity's colour
-    this.w = innerWidth; this.h = innerHeight;
+    this.w = stage.w; this.h = stage.h;
     this.playerRect = { x: 0, y: 0, w: 0, h: 0 };
     this.floats = [];
     this.floatCursor = 0;

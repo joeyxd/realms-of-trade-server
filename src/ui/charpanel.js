@@ -13,6 +13,7 @@ import { gearTotals, statsFor } from '../sim/systems/stats.js';
 import { canAccept } from '../sim/systems/quests.js';
 import { esc, itemIcon, slotIcon, itemCard, targetSlot, statText } from './itemui.js';
 import { sfx } from '../audio/sfx.js';
+import { stage } from './stage.js';
 
 const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
@@ -113,7 +114,7 @@ export class CharPanel {
   // On a phone the card is under the bag: bring it into view.
   reveal() {
     const box = this.root.querySelector('.cp-detail');
-    if (box && matchMedia('(max-width: 760px)').matches) box.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    if (box && stage.w <= 760) box.scrollIntoView({ block: 'end', behavior: 'smooth' });
   }
 
   mark() {

@@ -1,8 +1,10 @@
 // Mobile controls: floating joystick on the left half; on the right ATK (hold: the pistols keep firing),
 // GUARDIA (hold), DASH, the action button and the weapon's Q / E / R. Q, E and R can be dragged to aim:
 // a tap uses the auto-aim, dragging shows an aim line (the body turns to it) and releasing casts there;
-// dragging back onto the button cancels.
+// dragging back onto the button cancels. Pointer events arrive in screen coordinates: the joystick and the aim
+// line are placed with stage.toLocal and every drag delta goes through stage.vec (the stage may be rotated).
 import { BTN } from '../sim/systems/movement.js';
+import { stage } from './stage.js';
 
 const LABELS = { sable: { atk: 'ATK', q: 'ESTOC', e: 'HOJA' }, pistolas: { atk: 'FUEGO', q: 'DESC', e: 'HUMO' } };
 
@@ -20,13 +22,14 @@ export class TouchControls {
       <button class="tbtn t-skill t-r" aria-label="Riposte"><span class="sweep"></span><span class="lbl">R</span></button>
       <button class="tbtn t-pot" aria-label="Poción"><span class="sweep"></span><span class="lbl">🧪</span><b class="cnt">0</b></button>`;
     const zone = root.querySelector('.joy-zone'), joy = root.querySelector('.joy'), knob = joy.querySelector('i');
-    let pid = null, ox = 0, oy = 0;
+    let pid = null, ox = 0, oy = 0; // ox, oy: where the thumb landed (screen px)
     const R = 52;
     zone.addEventListener('pointerdown', (e) => {
       if (pid !== null) return;
       pid = e.pointerId; ox = e.clientX; oy = e.clientY;
+      const at = stage.toLocal(ox, oy); // the base sits at the thumb, in stage px (the zone is the stage's left half)
       joy.style.display = 'block';
-      joy.style.left = ox + 'px'; joy.style.top = oy + 'px';
+      joy.style.left = at.x + 'px'; joy.style.top = at.y + 'px';
       knob.style.transform = '';
       zone.setPointerCapture(pid);
       input.joy.active = true; input.joy.x = 0; input.joy.y = 0;
@@ -34,7 +37,7 @@ export class TouchControls {
     });
     zone.addEventListener('pointermove', (e) => {
       if (e.pointerId !== pid) return;
-      let dx = e.clientX - ox, dy = e.clientY - oy;
+      let { x: dx, y: dy } = stage.vec(e.clientX - ox, e.clientY - oy);
       const l = Math.hypot(dx, dy);
       if (l > R) { dx *= R / l; dy *= R / l; }
       knob.style.transform = `translate(${dx}px, ${dy}px)`;
@@ -72,8 +75,9 @@ export class TouchControls {
       let id = null, sx = 0, sy = 0, far = false;
       const show = (dx, dy, cancel) => {
         const r = b.getBoundingClientRect(), l = Math.hypot(dx, dy);
+        const c = stage.toLocal(r.left + r.width / 2, r.top + r.height / 2); // the rect is in screen px
         line.style.display = 'block';
-        line.style.left = r.left + r.width / 2 + 'px'; line.style.top = r.top + r.height / 2 + 'px';
+        line.style.left = c.x + 'px'; line.style.top = c.y + 'px';
         line.style.width = l + 'px';
         line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
         line.classList.toggle('cancel', cancel);
@@ -81,7 +85,7 @@ export class TouchControls {
       b.addEventListener('pointerdown', (e) => { e.preventDefault(); id = e.pointerId; sx = e.clientX; sy = e.clientY; far = false; b.setPointerCapture(id); input.aimDevice = 'touch'; });
       b.addEventListener('pointermove', (e) => {
         if (e.pointerId !== id) return;
-        const dx = e.clientX - sx, dy = e.clientY - sy, l = Math.hypot(dx, dy);
+        const { x: dx, y: dy } = stage.vec(e.clientX - sx, e.clientY - sy), l = Math.hypot(dx, dy);
         if (l > 22) far = true;
         if (!far) return;
         const cancel = l < 22;

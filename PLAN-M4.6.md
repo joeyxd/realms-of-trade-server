@@ -109,7 +109,7 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 ## 3. Pasos
 
 - [x] **P0** Este plan.
-- [ ] **P1** El escenario girado (2.1) + test del mapeo.
+- [x] **P1** El escenario girado (2.1) + test del mapeo.
 - [ ] **P2** Botones táctiles v2 y HUD horizontal (2.2).
 - [ ] **P3** Contornos de tinta (2.3).
 - [ ] **P4** Sombras de cómic (2.4).
@@ -119,3 +119,14 @@ Caldera con junta de tinta y greca), con un etalonaje más contrastado y saturad
 ## 4. Notas de ejecución
 
 (se rellenan al terminar cada paso)
+
+- **Método (desde P1)**: cada paso lo construye un asistente con un encargo cerrado (archivos, valores, criterios,
+  sin commit); el autor principal revisa el diff y las capturas, corrige, mejora y hace el commit.
+- **P1**: `src/ui/stage.js` (`rotPoint`, `rotDelta`, `stage.w/h/rotated/toLocal/vec/onChange/update`), `#stage`
+  con `container-type: size` (contención de layout: es el bloque contenedor de los `fixed` en los dos modos),
+  `body.rotated` rota las `--safe-*`. Todo `@media` de tamaño → `@container stage`, `vw/vh` → `cqw/cqh`.
+  Renderer, cámara, `worldUI`, ratón, joystick y arrastre de Q/E/R miden el escenario; el velo de «conexión
+  perdida» se cuelga del escenario; `charpanel.reveal` usa `stage.w`. Ajustes: «Forzar horizontal (móvil)».
+  Al «Jugar» en táctil: pantalla completa + bloqueo horizontal (si el navegador deja, el escenario se des-gira
+  solo). Comprobado en 390×844 (girado: lienzo 844×390, un deslizamiento físico hacia arriba mueve a la
+  izquierda del escenario) y 844×390. 149 tests.

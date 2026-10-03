@@ -6,6 +6,7 @@ import { GAME } from './data/meta.js';
 import { tuning, DT } from './data/tuning.js';
 import { loadSettings, saveSettings, resetSave, settings, loadSave, storeSave, setSaveAside } from './core/settings.js';
 import { Input } from './core/input.js';
+import { stage } from './ui/stage.js';
 import { Loop } from './core/loop.js';
 import { bus } from './core/events.js';
 import { generateWorld, ZONES } from './sim/worldgen.js';
@@ -66,6 +67,9 @@ async function boot() {
   if (params.get('q')) settings.quality = params.get('q');
   const isTouch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
   document.body.classList.toggle('touch', isTouch);
+  // Phones upright draw the whole game rotated 90° (stage.js); this runs before anything is sized.
+  stage.configure({ enabled: () => isTouch && settings.landscape !== false });
+  stage.update();
   const applyUiScale = () => document.documentElement.style.setProperty('--ui-scale', String(settings.uiScale));
   applyUiScale();
 
@@ -91,7 +95,8 @@ async function boot() {
   const quality = new Quality((cfg) => world.applyQuality(cfg), settings.quality, isTouch);
   const studio = safe('portrait', () => new PortraitStudio(world.renderer));
   const portrait = (i) => (studio ? safe('portrait', () => studio.render(i)) : null);
-  addEventListener('resize', () => safe('resize', () => { world.onResize(); worldUI.resize(innerWidth, innerHeight); }));
+  // The stage (not the window) is what the renderer and the world-anchored UI are sized to.
+  stage.onChange(() => safe('resize', () => { world.onResize(); worldUI.resize(stage.w, stage.h); }));
 
   // ---- State -----------------------------------------------------------------------------------
   const st = {
@@ -172,6 +177,7 @@ async function boot() {
       if (['master', 'sfx', 'music', 'ambience', 'muted'].includes(key)) { audio.set(settings); hud.setMuted(settings.muted); }
       if (key === 'quality') quality.setMode(settings.quality);
       if (key === 'uiScale') applyUiScale();
+      if (key === 'landscape') stage.update();
       if (key === 'timeOfDay') world.lighting.setTimeOfDay(settings.timeOfDay, 2.5);
     },
     onResume: () => closePause(),
@@ -257,7 +263,7 @@ async function boot() {
     el.className = 'net-lost';
     el.setAttribute('role', 'alertdialog');
     el.innerHTML = `<div class="frame net-card"><h2 class="outlined">Se perdió la conexión</h2><p>El servidor de la isla no responde. Tu nombre, aspecto y arma están guardados.</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">Reconectar</button><button class="btn secondary interactive" id="btn-go-solo">Jugar solo</button></div></div>`;
-    document.body.appendChild(el);
+    $('#stage').appendChild(el);
     el.querySelector('#btn-reconnect').addEventListener('click', () => location.reload());
     el.querySelector('#btn-go-solo').addEventListener('click', () => switchMode('solo'));
     el.querySelector('#btn-reconnect').focus();
@@ -502,6 +508,14 @@ async function boot() {
   // ---- Play ------------------------------------------------------------------------------------
   async function startPlaying() {
     audio.unlock();
+    // On a phone: fullscreen + landscape lock while the tap is still a user gesture. iOS and iframes refuse it
+    // (the CSS rotation then does the job); once the lock works the window turns landscape and the stage un-rotates.
+    if (isTouch) {
+      try {
+        const fs = document.documentElement.requestFullscreen?.({ navigationUI: 'hide' });
+        fs?.then(() => screen.orientation?.lock?.('landscape')).catch(() => {});
+      } catch { /* no fullscreen API */ }
+    }
     audio.set(settings);
     ambience.start();
     music.start();
@@ -806,7 +820,7 @@ async function boot() {
         }
         // Mouse aim (raycast cursor → plane at player height) for the camera look-ahead.
         if (mouseAiming()) {
-          ndc.set((input.mouse.x / innerWidth) * 2 - 1, -(input.mouse.y / innerHeight) * 2 + 1);
+          ndc.set((input.mouse.x / stage.w) * 2 - 1, -(input.mouse.y / stage.h) * 2 + 1);
           ray.setFromCamera(ndc, world.camera);
           plane.constant = -ps.y;
           if (!ray.ray.intersectPlane(plane, aim)) aim.set(ps.x, ps.y, ps.z);
@@ -907,7 +921,7 @@ async function boot() {
   if (debug && params.get('maxdt')) { loop.maxFrameDt = +params.get('maxdt'); loop.maxSteps = Math.ceil(loop.maxFrameDt / DT); }
   world.setTitleShadows(true);
   world.onResize();
-  worldUI.resize(innerWidth, innerHeight);
+  worldUI.resize(stage.w, stage.h);
   loop.start();
   await new Promise((r) => setTimeout(r, 60));
   await world.prewarm().catch((e) => console.warn('prewarm', e));

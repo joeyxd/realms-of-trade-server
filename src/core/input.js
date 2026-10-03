@@ -3,6 +3,7 @@
 // Gamepad (standard mapping): left stick moves, right stick aims, RT sword / shoot, LT guard, A dash,
 // X interact, RB Q, LB E, Y R, D-pad up potion (M4), Start pause, Select the bag (hotkey 'PadSelect').
 import { BTN } from '../sim/systems/movement.js';
+import { stage } from '../ui/stage.js';
 
 const MOVE_KEYS = {
   KeyW: [0, 1], ArrowUp: [0, 1], KeyS: [0, -1], ArrowDown: [0, -1],
@@ -24,7 +25,7 @@ export class Input {
     this.touchAim = null; // a touch skill button being dragged: {x, y (screen dir, y up), k 0..1, release}
     // Gamepad: sticks after the dead zone (screen-relative, y up), aim = right stick tilted.
     this.pad = { active: false, mx: 0, my: 0, ax: 0, ay: 0, aim: false, prev: [] };
-    this.mouse = { x: innerWidth / 2, y: innerHeight / 2, moved: false };
+    this.mouse = { x: stage.w / 2, y: stage.h / 2, moved: false }; // stage px (rotated on an upright phone)
     this.wheel = 0;
     this.joy = { active: false, x: 0, y: 0 };
     this.enabled = false;
@@ -51,7 +52,7 @@ export class Input {
     addEventListener('blur', () => { this.keys.clear(); this.mouseHeld = this.keyHeld = this.touchHeld = 0; });
     // The cursor aims anywhere on the page (over the HUD too); clicks only count on the canvas.
     addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'mouse') { this.mouse.x = e.clientX; this.mouse.y = e.clientY; this.mouse.moved = true; this.lastDevice = 'mouse'; this.aimDevice = 'mouse'; }
+      if (e.pointerType === 'mouse') { const p = stage.toLocal(e.clientX, e.clientY); this.mouse.x = p.x; this.mouse.y = p.y; this.mouse.moved = true; this.lastDevice = 'mouse'; this.aimDevice = 'mouse'; }
     });
     target.addEventListener('pointerdown', (e) => {
       if (e.pointerType !== 'mouse' || !this.enabled) return;

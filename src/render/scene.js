@@ -25,6 +25,7 @@ import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
 import { U } from './toon.js';
 import { tuning } from '../data/tuning.js';
+import { stage } from '../ui/stage.js';
 
 // Boss shield: an additive fresnel ellipsoid with drifting hex cells (no depth write, no outline).
 function makeShieldBubble() {
@@ -65,7 +66,7 @@ export class GameScene {
     r.shadowMap.autoUpdate = false;
     r.info.autoReset = false;
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.5, 1400);
+    this.camera = new THREE.PerspectiveCamera(35, stage.w / stage.h, 0.5, 1400);
     this.rig = new CameraRig(this.camera);
     this.pipeline = new Pipeline(r, this.scene, this.camera);
     this.lighting = new Lighting(this.scene);
@@ -135,7 +136,7 @@ export class GameScene {
   }
 
   onResize() {
-    const w = innerWidth, h = innerHeight;
+    const w = stage.w, h = stage.h; // the stage (rotated on an upright phone), not the window
     this.pipeline.resize(w, h);
     this.effects.setViewport(this.pipeline.fxHeight, this.camera.fov);
   }

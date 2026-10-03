@@ -9,12 +9,12 @@
   display: grid; justify-items: center; align-content: space-between;
   grid-template-rows: auto 1fr auto; gap: 10px;
   max-width: 760px; width: 100%; height: 100%;
-  padding-block: 2vh 4vh;
+  padding-block: 2cqh 4cqh;
 }
 .title-head { display: grid; justify-items: center; gap: 10px; }
 .title-logo {
   font-family: var(--font-display);
-  font-size: clamp(48px, min(12vw, 14vh), 124px);
+  font-size: clamp(48px, min(12cqw, 14cqh), 124px);
   line-height: 0.92;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0 0.28em;
   text-align: center;
@@ -37,7 +37,7 @@
 }
 .title-sub {
   font-family: var(--font-display);
-  font-size: clamp(16px, 3.6vw, 24px);
+  font-size: clamp(16px, 3.6cqw, 24px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
@@ -49,7 +49,7 @@
   box-shadow: 0 0 0 2px var(--ink), 0 3px 0 var(--ink);
 }
 .title-actions { display: grid; justify-items: center; gap: 18px; margin-top: 6px; }
-#btn-play { font-size: clamp(22px, 5vw, 30px); padding: 0.45em 2.2em 0.5em; }
+#btn-play { font-size: clamp(22px, 5cqw, 30px); padding: 0.45em 2.2em 0.5em; }
 #btn-play .loading { font-size: 0.6em; letter-spacing: 0.06em; }
 .title-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .skin-picker { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px 16px; }
@@ -94,5 +94,5 @@
 }
 .title-msg { max-width: 34em; margin-top: -8px; text-align: center; font-weight: 800; font-size: 14px; color: #ffd27a; text-shadow: 0 2px 0 var(--ink); }
 .title-hint { font-weight: 800; font-size: 13px; text-align: center; color: var(--parch); text-shadow: 0 2px 0 var(--ink); }
-@media (max-height: 640px) { .title-actions { gap: 12px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }
-@media (max-width: 520px) { .title-card { gap: 12px; } .skin-dot { width: 32px; height: 32px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }
+@container stage (max-height: 640px) { .title-actions { gap: 12px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }
+@container stage (max-width: 520px) { .title-card { gap: 12px; } .skin-dot { width: 32px; height: 32px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }

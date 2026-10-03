@@ -29,7 +29,7 @@
 /* F4 debug panel */
 .devpanel {
   position: fixed; right: calc(14px + var(--safe-r)); top: calc(70px + var(--safe-t)); z-index: 25;
-  width: min(320px, calc(100vw - 32px)); max-height: calc(100vh - 100px); overflow: auto;
+  width: min(320px, calc(100cqw - 32px)); max-height: calc(100cqh - 100px); overflow: auto;
   padding: 10px 12px 12px; display: grid; gap: 8px; pointer-events: auto; font-size: 13px;
 }
 .devpanel h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--brass-l); display: flex; gap: 8px; align-items: center; }
@@ -160,7 +160,7 @@
 #mapview { position: fixed; inset: 0; z-index: 24; display: grid; place-items: center; background: rgba(8, 6, 20, 0.5); padding: calc(16px + var(--safe-t)) 14px calc(16px + var(--safe-b)); }
 .mapv { width: min(680px, 100%); max-height: 100%; display: grid; gap: 8px; padding: 10px 12px 12px; grid-template-rows: auto minmax(0, 1fr) auto; }
 .mapv-head { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-display); font-size: 20px; }
-.mapv-body { position: relative; aspect-ratio: 1; max-height: calc(100vh - 150px); margin: 0 auto; width: 100%; max-width: calc(100vh - 150px); border-radius: 12px; overflow: hidden; border: 3px solid var(--ink); box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5); }
+.mapv-body { position: relative; aspect-ratio: 1; max-height: calc(100cqh - 150px); margin: 0 auto; width: 100%; max-width: calc(100cqh - 150px); border-radius: 12px; overflow: hidden; border: 3px solid var(--ink); box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5); }
 .mapv-body canvas { width: 100%; height: 100%; display: block; }
 .mapv-labels span { position: absolute; transform: translate(-50%, -160%); font-family: var(--font-display); font-size: 13px; color: var(--parch); white-space: nowrap; text-shadow: 0 2px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); pointer-events: none; }
 .mapv-legend { display: flex; gap: 14px; justify-content: center; font-weight: 800; font-size: 12px; }
@@ -168,7 +168,7 @@
 .mapv-legend .law::before { background: rgba(200, 30, 30, 0.6); border-color: #ff5a4a; border-style: dashed; }
 .mapv-labels span.lawless { color: #ff8a7a; transform: translate(-50%, 0); }
 .mapv-legend .me::before { background: #3bf0ff; } .mapv-legend .crew::before { background: #9dffc8; } .mapv-legend .npc::before { background: #ffe39a; } .mapv-legend .goal::before { background: #ffcf4a; box-shadow: 0 0 6px #ffcf4a; }
-@media (max-width: 760px) {
+@container stage (max-width: 760px) {
   #charpanel { padding: calc(10px + var(--safe-t)) 8px calc(10px + var(--safe-b)); justify-content: center; }
   .cp-gear, .cp-stats { grid-template-columns: minmax(0, 1fr); }
   .doll { height: 220px; } .doll-slot { width: 50px; height: 50px; }

@@ -38,6 +38,13 @@
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
 }
+/* Rotated stage (M4.6): its top is the physical right edge, its left the physical top, and so on. */
+body.rotated {
+  --safe-l: env(safe-area-inset-top, 0px);
+  --safe-t: env(safe-area-inset-right, 0px);
+  --safe-r: env(safe-area-inset-bottom, 0px);
+  --safe-b: env(safe-area-inset-left, 0px);
+}
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; overflow: hidden; }
@@ -52,6 +59,10 @@ body {
   -webkit-user-select: none;
   overscroll-behavior: none;
 }
+/* The stage holds the canvas, the UI and the fade; stage.js sizes it in px and rotates it 90° on an upright phone.
+   Layout containment makes it the containing block of the fixed children either way; @container stage / cqw / cqh
+   replace the viewport media queries and units. */
+#stage { position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; container-name: stage; }
 /* Opaque backing: three.js always asks for an alpha drawing buffer, and FX blends that lower the alpha (the glow
    mask on medium/high) would let the page show through on low, where they draw straight to the canvas. */
 canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; background: #000; }
