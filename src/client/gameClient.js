@@ -76,7 +76,7 @@ export class GameClient {
       case MSG.SPAWN: {
         const d = m.e;
         const rec = {
-          id: d.id, kind: d.kind, name: d.name, title: d.title, skin: d.skin, level: d.level, team: d.team ?? 0,
+          id: d.id, kind: d.kind, name: d.name, title: d.title, skin: d.skin, level: d.level, team: d.team ?? 0, human: !!d.human,
           enemy: d.enemy !== undefined ? ENEMY_KINDS[d.enemy] : null, maxHp: d.maxHp || 0, weapon: d.weapon || 0,
           buf: [], r: { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashes: 0, hp: 1, maxHp: 1, act: 0, actT: 0, lvl: 1, wpn: d.weapon || 0 }, ready: false,
         };
@@ -106,6 +106,8 @@ export class GameClient {
       case MSG.EVENT:
         this.onEvent(m.ev);
         break;
+      case MSG.FULL: this.bus.emit('net:full', m); break;
+      case MSG.ERROR: this.bus.emit('net:error', m); break;
       default:
         break;
     }

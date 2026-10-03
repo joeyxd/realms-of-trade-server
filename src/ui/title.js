@@ -1,5 +1,6 @@
 // Animated title screen: letters drop in with a bounce over the already-rendered island.
-// JUGAR is enabled only after the renderer has compiled every shader.
+// JUGAR is enabled only after the renderer has compiled every shader. Your name and look are picked here;
+// the mode pill says whether you sail online (the Node server: how many pirates are aboard) or solo.
 import { gsap } from 'gsap';
 import { GAME } from '../data/meta.js';
 import { SKINS } from '../render/characters.js';
@@ -8,7 +9,7 @@ import { sfx } from '../audio/sfx.js';
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
 
 export class TitleScreen {
-  constructor(root, settings, { onPlay, onSettings, onControls }) {
+  constructor(root, settings, { onPlay, onSettings, onControls, onMode }) {
     this.root = root;
     this.settings = settings;
     const words = GAME.title.split(' ');
@@ -23,11 +24,15 @@ export class TitleScreen {
         </div>
         <div aria-hidden="true"></div>
         <div class="title-actions">
+          <div class="title-net" hidden><span class="net-pill"><i></i><span class="txt"></span></span><button id="btn-mode" class="link-btn interactive" hidden></button></div>
           <button id="btn-play" class="btn interactive" disabled><span class="loading">PREPARANDO LA ISLA…</span></button>
+          <div class="title-who">
+          <label class="name-field frame-dark interactive"><span class="label outlined">Nombre</span><input id="title-name" maxlength="16" autocomplete="off" spellcheck="false" enterkeyhint="go"></label>
           <div class="skin-picker frame-dark interactive" role="group" aria-label="Aspecto">
             <span class="label outlined">Aspecto</span>
             ${SKINS.slice(0, 5).map((s, i) => `<button class="skin-dot" data-skin="${i}" aria-label="${s.name}" aria-pressed="false" style="background:linear-gradient(180deg, ${hex(s.swatch[0])} 55%, ${hex(s.swatch[1])} 55%)"></button>`).join('')}
             <span class="skin-name"></span>
+          </div>
           </div>
           <div class="title-row">
             <button id="btn-settings" class="btn secondary interactive">Ajustes</button>
@@ -41,6 +46,17 @@ export class TitleScreen {
     this.play.addEventListener('click', () => { if (!this.play.disabled) { sfx.click(); onPlay(); } });
     root.querySelector('#btn-settings').addEventListener('click', () => { sfx.click(); onSettings(); });
     root.querySelector('#btn-controls').addEventListener('click', () => { sfx.click(); onControls(); });
+    this.net = root.querySelector('.title-net');
+    this.pill = this.net.querySelector('.net-pill');
+    this.modeBtn = root.querySelector('#btn-mode');
+    this.modeBtn.addEventListener('click', () => { sfx.click(); if (onMode) onMode(this.modeBtn.dataset.to); });
+    this.msg = null;
+    // Name: what other pirates see over your head (the server keeps it printable and unique).
+    this.name = root.querySelector('#title-name');
+    this.name.value = settings.name || '';
+    this.name.addEventListener('input', () => { settings.name = this.name.value.slice(0, 16); if (this.onName) this.onName(); });
+    this.name.addEventListener('change', () => { if (!this.name.value.trim()) { this.name.value = settings.name = 'Grumete'; if (this.onName) this.onName(); } });
+    this.name.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { this.name.blur(); if (!this.play.disabled) this.play.click(); } });
     this.skinName = root.querySelector('.skin-name');
     root.querySelectorAll('.skin-dot').forEach((b) => {
       b.addEventListener('click', () => { this.selectSkin(+b.dataset.skin); sfx.hover(); });
@@ -64,6 +80,34 @@ export class TitleScreen {
     this.root.querySelectorAll('.skin-dot').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.skin === i)));
     this.skinName.textContent = SKINS[i].name;
     if (this.onSkin) this.onSkin(i);
+  }
+
+  // Mode pill. online: {players, max} from the server; solo: {server} when a game server could be joined.
+  setNet({ mode, players = 0, max = 4, server = null, full = false }) {
+    this.net.hidden = false;
+    const on = mode === 'online';
+    this.pill.classList.toggle('online', on);
+    this.pill.classList.toggle('full', on && (full || players >= max));
+    this.pill.querySelector('.txt').textContent = on
+      ? `EN LÍNEA · ${players}/${max} ${players === 1 ? 'pirata' : 'piratas'} a bordo`
+      : 'SOLO · tu propia isla';
+    this.modeBtn.hidden = !on && !server;
+    this.modeBtn.dataset.to = on ? 'solo' : 'online';
+    this.modeBtn.textContent = on ? 'Jugar solo' : `Jugar en línea · ${server ? server.players + '/' + server.max : ''}`;
+  }
+
+  // A line under JUGAR (the instance is full, the server is gone…); null clears it.
+  message(html) {
+    if (!this.msg) { this.msg = document.createElement('div'); this.msg.className = 'title-msg'; this.play.after(this.msg); }
+    this.msg.hidden = !html;
+    this.msg.innerHTML = html || '';
+  }
+
+  // While the server answers the hello.
+  boarding(on) {
+    this.play.disabled = on;
+    this.play.textContent = on ? 'SUBIENDO A BORDO…' : 'JUGAR';
+    if (on && this.pulse) this.pulse.pause(); else if (this.pulse) this.pulse.resume();
   }
 
   show(reduced) {

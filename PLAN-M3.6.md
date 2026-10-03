@@ -110,7 +110,7 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   `LocalServer` (§2.1); `npm start` = servidor, `npm run static` = el `serve` de antes; `render.yaml` en la raíz.
   Tests `tests/server.test.mjs`: dos clientes WebSocket se unen y se ven, los inputs mueven, desconectar
   despawnea, servidor lleno, versión, basura y exceso no tumban el proceso, `/health` y `/status`.
-- [ ] **P2 Cliente en línea.** `WsTransport` completo, autodetección y `?server`/`?solo`, píldora y botones del
+- [x] **P2 Cliente en línea.** `WsTransport` completo, autodetección y `?server`/`?solo`, píldora y botones del
   título, pausa que no congela, velo de desconexión, ping. Verificación con Playwright: servidor + 2 páginas.
 - [ ] **P3 Red robusta.** Comandos de relleno, tiempo de instancia cooperativo, escalado de la arena, nombres;
   tests en `tests/coop.test.mjs`.
@@ -129,3 +129,11 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   proceso sigue; `status().errors`). Un broadcast se serializa una sola vez (`lastMsg`). El `WebSocket` global de
   Node 22 negocia permessage-deflate con `ws`. `PROTOCOL_VERSION` = 3; `cleanName` en `protocol.js`; `full` y
   `error` en `MSG`. `npm run static` sirve los estáticos como antes; `engines.node` ≥ 22.
+- **P2:** la autodetección no sondea: el servidor inyecta `<meta name="mn-server">` en el `index.html` que sirve
+  (`servedByGameServer()`); `/status` solo se pide para la píldora (cada 4 s en el título). El título tiene ahora
+  **campo de nombre** (antes no había forma de elegirlo) y «Jugar solo / Jugar en línea» (recarga con o sin
+  `?solo`). Al pulsar JUGAR en línea se espera `welcome` / `full` / `error` (8 s) antes de esconder el título.
+  En línea `openPause` no pone `st.paused` (el bucle sigue con la entrada neutra). El HUD muestra
+  `ms · piratas` (`hud.setNet`) y F3 el RTT y los KB/s. **Ojo con las capturas:** en el Chromium sin GPU de este
+  contenedor un fotograma del juego tarda 1–2 s (rAF espera al GPU emulado): no es un cuelgue del juego. Para ver
+  el título asentado, `&debug` (GSAP sin lag smoothing) y esperar ~9 s.

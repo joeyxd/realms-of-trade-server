@@ -35,6 +35,16 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     if (rel !== 'index.html' && !PUBLIC.includes(top)) { res.writeHead(404).end('not found'); return; }
     const file = path.join(root, rel);
     if (!file.startsWith(root + path.sep)) { res.writeHead(404).end(); return; }
+    // The page says it came from a game server (the client then plays online without probing).
+    if (rel === 'index.html') {
+      fs.readFile(file, 'utf8', (err, html) => {
+        if (err) { res.writeHead(500).end(); return; }
+        const body = html.replace('<head>', '<head>\n<meta name="mn-server" content="ws">');
+        res.writeHead(200, { 'content-type': MIME['.html'], 'cache-control': 'no-cache' });
+        res.end(req.method === 'HEAD' ? undefined : body);
+      });
+      return;
+    }
     fs.stat(file, (err, st) => {
       if (err || !st.isFile()) { res.writeHead(404).end('not found'); return; }
       const etag = `"${st.size.toString(36)}-${Math.floor(st.mtimeMs).toString(36)}"`;

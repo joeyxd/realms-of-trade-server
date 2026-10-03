@@ -49,7 +49,9 @@ test('/health, /status and only the client files are served', async () => {
   assert.equal(st.max, 4);
   const page = await fetch(http + '/');
   assert.equal(page.status, 200);
-  assert.match(await page.text(), /src\/main\.js/);
+  const html = await page.text();
+  assert.match(html, /src\/main\.js/);
+  assert.match(html, /<meta name="mn-server"/, 'the page says it came from a game server');
   assert.equal((await fetch(http + '/src/net/protocol.js')).headers.get('content-type'), 'text/javascript; charset=utf-8');
   for (const p of ['/server/host.mjs', '/package.json', '/src/../server/index.mjs', '/..%2f..%2fetc/passwd', '/.git/config']) {
     assert.equal((await fetch(http + p)).status, 404, p);

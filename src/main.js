@@ -16,7 +16,7 @@ import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
 import { rackNear } from './sim/systems/skills.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
-import { createTransport } from './net/transport.js';
+import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
@@ -62,7 +62,12 @@ async function boot() {
 
   const map = generateWorld(GAME.seed);
   const debug = params.has('debug');
-  const transportP = createTransport({ seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug });
+  // Online when this page comes from the game server (or ?server=ws://…), solo with ?solo or without one.
+  // ?lag=&jitter= add artificial latency per direction (testing).
+  const transportP = createTransport({
+    seed: GAME.seed, bots: 5, preferWorker: params.get('worker') !== '0', debug,
+    server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0,
+  });
   const canvas = $('#game');
   const world = new GameScene(canvas, map);
   // ?tod=night|dusk|day|cycle and ?phase=0..1 for screenshots; otherwise the saved setting.
@@ -139,11 +144,13 @@ async function boot() {
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
-    st.paused = true;
+    // Online the world never waits: the menu opens, your input goes neutral and the island carries on.
+    st.paused = !st.online;
     setServerPause(true);
     input.enabled = false;
     input.keys.clear();
     pause.show(tab);
+    safe('pause', () => { pause.root.querySelector('#pause-title').textContent = st.online ? 'Menú · la isla sigue' : 'Pausa'; });
     audio.muffle(true);
   }
   function closePause() {
@@ -170,8 +177,10 @@ async function boot() {
     onPlay: () => startPlaying(),
     onSettings: () => openPauseFromTitle('settings'),
     onControls: () => openPauseFromTitle('controls'),
+    onMode: (to) => switchMode(to),
   });
   title.onSkin = () => saveSettings();
+  title.onName = () => saveSettings();
   function openPauseFromTitle(tab) {
     pause.show(tab);
     const resume = pause.root.querySelector('#btn-resume');
@@ -181,6 +190,39 @@ async function boot() {
   // ---- Net / entities --------------------------------------------------------------------------
   const transport = await transportP;
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
+  st.online = transport.kind === 'ws';
+  // The mode pill: how many pirates are aboard (refreshed while on the title), or solo with a way back online.
+  if (st.online) {
+    title.setNet({ mode: 'online', ...(transport.status || {}) });
+    const refresh = setInterval(() => {
+      if (st.mode !== 'title') { clearInterval(refresh); return; }
+      probeServer(httpUrlFor(transport.url)).then((s2) => { if (s2 && st.mode === 'title') title.setNet({ mode: 'online', ...s2 }); });
+    }, 4000);
+    transport.onClose(() => safe('net', () => netLost()));
+  } else {
+    title.setNet({ mode: 'solo' });
+    if (servedByGameServer()) probeServer().then((s2) => { if (s2) title.setNet({ mode: 'solo', server: s2 }); });
+  }
+  // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
+  function netLost() {
+    if (document.querySelector('.net-lost')) return;
+    const el = document.createElement('div');
+    el.className = 'net-lost';
+    el.setAttribute('role', 'alertdialog');
+    el.innerHTML = `<div class="frame net-card"><h2 class="outlined">Se perdió la conexión</h2><p>El servidor de la isla no responde. Tu nombre, aspecto y arma están guardados.</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">Reconectar</button><button class="btn secondary interactive" id="btn-go-solo">Jugar solo</button></div></div>`;
+    document.body.appendChild(el);
+    el.querySelector('#btn-reconnect').addEventListener('click', () => location.reload());
+    el.querySelector('#btn-go-solo').addEventListener('click', () => switchMode('solo'));
+    el.querySelector('#btn-reconnect').focus();
+    input.enabled = false;
+    hud.setNet(null);
+  }
+  // Switching modes reloads the page with or without ?solo.
+  function switchMode(to) {
+    const q = new URLSearchParams(location.search);
+    if (to === 'solo') q.set('solo', ''); else q.delete('solo');
+    location.search = q.toString().replace(/=(&|$)/g, '$1');
+  }
 
   const views = world.views;
   const devPanel = new DevPanel($('#devpanel'), { client, world, hud });
@@ -380,13 +422,31 @@ async function boot() {
     sfx.play();
     saveSettings();
     client.join(settings.name, settings.skin, weaponIndex(settings.weapon));
+    if (st.online) {
+      // Wait for the server's answer: a place aboard, or why not.
+      title.boarding(true);
+      title.message(null);
+      const r = await new Promise((resolve) => {
+        const offs = [bus.on('you:welcome', () => done('ok')), bus.on('net:full', (m) => done('full', m)), bus.on('net:error', (m) => done('error', m))];
+        const timer = setTimeout(() => done('timeout'), 8000);
+        function done(k, m) { clearTimeout(timer); offs.forEach((off) => off && off()); resolve({ k, m }); }
+      });
+      title.boarding(false);
+      if (r.k !== 'ok') {
+        title.message(r.k === 'full' ? `La tripulación está completa (${r.m.max}/${r.m.max}). Prueba en un rato o juega solo.`
+          : r.k === 'error' ? 'Tu versión del juego es distinta a la del servidor: recarga la página.'
+            : 'El servidor no contesta. Prueba de nuevo o juega solo.');
+        sfx.click();
+        return;
+      }
+    }
     await title.hide();
   }
   bus.on('you:ready', () => {
     st.mode = 'playing';
     world.setTitleShadows(false);
     const rec = client.entities.get(client.youServer);
-    hud.setPlayer({ name: settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
+    hud.setPlayer({ name: rec ? rec.name : settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
     client.localState(1, ps);
     focus.set(ps.x, ps.y, ps.z);
     world.rig.snapTo(focus);
@@ -516,6 +576,16 @@ async function boot() {
       safe('pad', () => input.pollPad());
       trailFrame++;
       safe('net', () => { transport.flush(); client.update(simDt, realDt); });
+      if (st.online) safe('netHud', () => {
+        st.netT = (st.netT || 0) + realDt;
+        if (st.netT < 0.5) return;
+        const b = transport.stats.bytesIn;
+        st.kbIn = (b - (st.netB || 0)) / 1024 / st.netT;
+        st.netB = b; st.netT = 0;
+        let humans = 0;
+        for (const r of client.entities.values()) if (r.human) humans++;
+        hud.setNet(st.mode === 'playing' && !transport.closed ? { rtt: transport.rtt, players: humans } : null);
+      });
       const playing = st.mode === 'playing' && client.joined;
       if (playing) safe('local', () => client.localState(alpha, ps));
       const viewTick = client.viewTick(alpha);
@@ -685,7 +755,7 @@ async function boot() {
         $('#perf').textContent =
           `FPS ${st.fps.toFixed(0)}  calidad ${quality.current}${settings.quality === 'auto' ? ' (auto)' : ''}\n` +
           `draw calls ${info.render.calls}  tris ${(info.render.triangles / 1000).toFixed(1)}k\n` +
-          `entidades ${client.entities.size}  red ${transport.kind}  snaps ${transport.stats.snaps}\n` +
+          `entidades ${client.entities.size}  red ${transport.kind}  snaps ${transport.stats.snaps}${st.online ? `  rtt ${transport.rtt.toFixed(0)} ms  ↓${(st.kbIn || 0).toFixed(1)} KB/s` : ''}\n` +
           `pred err ${client.stats.predErr.toFixed(4)}  cmds pendientes ${client.stats.pending}\n` +
           `pos ${ps.x.toFixed(1)}, ${ps.z.toFixed(1)}  zona ${st.zone || '-'}\n` +
           `proyectiles ${client.hazards.count}  reflejos ${client.shots.count}  pt ${client.ptCur} (${client.stats.ptLag >= 0 ? '+' : ''}${client.stats.ptLag})`;

@@ -59,6 +59,7 @@ export class Hud {
         </div>
       </div>
       <div class="hud-top-right">
+        <div class="net-chip" hidden><i></i><span class="ms"></span><span class="pl"></span></div>
         <button class="icon-btn interactive" id="hud-mute" aria-label="Silenciar">${ICONS.sound}</button>
         <button class="icon-btn interactive" id="hud-settings" aria-label="Ajustes">${ICONS.gear}</button>
       </div>
@@ -284,6 +285,21 @@ export class Hud {
     gsap.from(this.root.querySelector('.actionbar'), { y: 60, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.1 });
     gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.2 });
     gsap.from(this.root.querySelector('.hud-top-right'), { y: -30, opacity: 0, duration: 0.5, ease: 'back.out(2)', delay: 0.25 });
+  }
+
+  // Online: round trip to the server (green < 90 ms, amber < 180, red beyond) and pirates aboard; null hides it.
+  setNet(n) {
+    if (!this.netChip) { this.netChip = this.root.querySelector('.net-chip'); this.netKey = ''; }
+    const key = n ? Math.round(n.rtt / 5) + '/' + n.players : '';
+    if (key === this.netKey) return;
+    this.netKey = key;
+    this.netChip.hidden = !n;
+    if (!n) return;
+    const ms = Math.round(n.rtt);
+    this.netChip.className = 'net-chip ' + (ms < 90 ? 'good' : ms < 180 ? 'ok' : 'bad');
+    this.netChip.querySelector('.ms').textContent = ms + ' ms';
+    this.netChip.querySelector('.pl').textContent = '· ' + n.players + (n.players === 1 ? ' pirata' : ' piratas');
+    this.netChip.title = `Latencia con el servidor: ${ms} ms (ida y vuelta)`;
   }
 
   setMuted(m) { this.muteBtn.innerHTML = m ? ICONS.mute : ICONS.sound; this.muteBtn.setAttribute('aria-label', m ? 'Activar sonido' : 'Silenciar'); }
