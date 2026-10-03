@@ -112,9 +112,9 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   despawnea, servidor lleno, versión, basura y exceso no tumban el proceso, `/health` y `/status`.
 - [x] **P2 Cliente en línea.** `WsTransport` completo, autodetección y `?server`/`?solo`, píldora y botones del
   título, pausa que no congela, velo de desconexión, ping. Verificación con Playwright: servidor + 2 páginas.
-- [ ] **P3 Red robusta.** Comandos de relleno, tiempo de instancia cooperativo, escalado de la arena, nombres;
+- [x] **P3 Red robusta.** Comandos de relleno, tiempo de instancia cooperativo, escalado de la arena, nombres;
   tests en `tests/coop.test.mjs`.
-- [ ] **P4 Ancho de banda.** Cuantización de `encodeEntity`, deflate, medición con 4 clientes (§2.4).
+- [x] **P4 Ancho de banda.** Cuantización de `encodeEntity`, deflate, medición con 4 clientes (§2.4).
 - [ ] **P5 Latencia.** `tools/botbrain.mjs`, `tools/nettest.mjs`, informe, ajuste del rebobinado; test de red
   con 2 clientes a 100 ms de RTT (predicción sin correcciones, se ven, los reflejos de uno llegan al otro).
 - [ ] **P6 Presentación cooperativa** (§2.6) + capturas con 2 navegadores.
@@ -137,3 +137,14 @@ juega la arena en cooperativo con bots-cliente reales por WebSocket y latencia s
   `ms · piratas` (`hud.setNet`) y F3 el RTT y los KB/s. **Ojo con las capturas:** en el Chromium sin GPU de este
   contenedor un fotograma del juego tarda 1–2 s (rAF espera al GPU emulado): no es un cuelgue del juego. Para ver
   el título asentado, `&debug` (GSAP sin lag smoothing) y esperar ~9 s.
+- **P3:** `LocalServer({fill})` (solo `GameHost` lo activa). Los comandos que llegan tarde se descartan si su `pt`
+  ≤ `fillPt` (el último `pt` de relleno): así un pico de lag no da movimiento extra, y tras una pestaña oculta (el
+  cliente sigue desde «ahora», `pt` mayor) no se pierde nada. El recorte de la cola (`MAX_QUEUE` 30) también guarda
+  las pulsaciones (`carry`). `stats {fill, late, trimmed, clamped}` en `/status.net`. Tiempo de instancia: el
+  servidor marca cada evento `time` con `inst`; el cliente aplica `inst` siempre, lo suyo sin `inst` en pleno si es
+  el único humano (`client.humans`) y, con compañía, solo un hitstop ≤ `combat.coopHitstop` (60 ms); el de los
+  demás (y el de los bots) no le afecta. Arena: `enc.n` (participantes al empezar cada oleada / el jefe),
+  `coopMul`, los esbirros heredan `enc.bossMul`; `encounterState()[10]` = tripulación.
+- **P4:** cuantizado en `encodeEntity` (`q3` / `q2`). Medido (1 jugador, 17 entidades): bruto 55 → 33 KB/s,
+  deflate con contexto 10 → **4.9 KB/s**. Con 4 clientes en la oleada 1 (3 bots): **8.0 KB/s por cliente** en el
+  cable (`GameHost.wireOut()`, bytes reales del socket), 41 KB/s de JSON sin comprimir; `stepMs` ≈ 0.65.

@@ -27,7 +27,7 @@ export class GameHost {
     this.errors = 0;
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({
-      seed, bots, dev, debug: dev, maxPlayers, pausable: false,
+      seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true,
       send: (id, msg) => this.sendTo(id, msg),
     });
     this.started = performance.now();
@@ -65,12 +65,16 @@ export class GameHost {
     return this;
   }
 
+  // Bytes actually written to the sockets (after permessage-deflate), per open socket.
+  wireOut() { const out = {}; for (const [id, k] of this.sockets) out[id] = k.ws._socket ? k.ws._socket.bytesWritten : 0; return out; }
+
   status() {
     const s = this.server;
     return {
       players: s.humans, max: this.maxPlayers, sockets: this.sockets.size, tick: s.world.tick,
       uptime: Math.round((performance.now() - this.started) / 1000), stepMs: +this.stats.stepMs.toFixed(3),
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
+      net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
   }
 

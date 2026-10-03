@@ -52,10 +52,18 @@ export class Feedback {
     const W = this.world, F = tuning.feel, ps = this.ps;
     const me = ev.me;
     switch (ev.type) {
-      case 'time':
+      case 'time': {
+        // Instance time (inst: the server stops the world too) for everyone. Otherwise only your own: in full
+        // when you are the only human here, and with company a short hitstop on your screen, no slow-mo.
+        if (ev.inst === 0 && !me) break;
+        if (me && !ev.inst && this.client.humans > 1) {
+          if (ev.hitstop > 0) this.loop.addHitstop(Math.min(ev.hitstop, tuning.combat.coopHitstop));
+          break;
+        }
         if (ev.hitstop > 0) this.loop.addHitstop(ev.hitstop);
         if (ev.scale < 1 && ev.dur > 0) this.loop.slowmo(ev.scale, ev.dur);
         break;
+      }
       case 'swing': {
         if (!me) break;
         const v = this.me();

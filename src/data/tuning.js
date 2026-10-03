@@ -80,6 +80,8 @@ export const tuning = {
     rewind: 20, // max ticks the server rewinds to a command's projectile tick (lag compensation)
     lead: 2, // max ticks a command may be ahead of the server
     interpTicks: 6, // remote entities are drawn this far behind (INTERP_DELAY): melee rewinds enemies by it
+    starveTicks: 12, // online: a client silent this long gets neutral filler commands (it still gets hit)
+    coopHitstop: 0.06, // with other humans in the instance, your own hitstop is yours alone, capped here
   },
   // 3-hit combo (LMB). windup → active (hits + destroys parryables) → recover. A buffered press at the end
   // of the active frames chains the next stage; within comboGap after a stage ends it also continues.

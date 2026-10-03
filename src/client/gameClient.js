@@ -57,6 +57,8 @@ export class GameClient {
   start() { this.t.start(); }
 
   get joined() { return this.youLocal !== 0 && !this.awaitingFirst; }
+  // Human players in the instance (you included): with company, your hitstop is yours alone.
+  get humans() { let n = 0; for (const r of this.entities.values()) if (r.human) n++; return n; }
   get hazards() { return this.pred.hazards; }
   get shots() { return this.pred.shots; }
   // Projectile tick being displayed this frame (fractional).

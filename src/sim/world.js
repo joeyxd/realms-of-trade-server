@@ -93,7 +93,10 @@ export class World {
     ecs.radius[e] = def.radius;
     ecs.hurtR[e] = def.hurt;
     ecs.team[e] = TEAM.ENEMIES;
-    ecs.hp[e] = ecs.maxHp[e] = def.hp;
+    // Co-op scaling (encounters): the boss's minions take their boss's multiplier.
+    let mul = extra.hpMul > 0 ? extra.hpMul : 1;
+    if (extra.minion && extra.enc) { const q = this.encounters.find((o) => o.id === extra.enc); if (q && q.bossMul) mul = q.bossMul; }
+    ecs.hp[e] = ecs.maxHp[e] = Math.round(def.hp * mul);
     ecs.def[e] = def.def;
     ecs.level[e] = def.level || 1;
     ecs.names[e] = def.name;

@@ -42,8 +42,12 @@ const participants = (world, enc, r) => {
 };
 
 function emit(world, enc, extra = {}) {
-  world.emit({ type: 'enc', id: enc.id, st: enc.st, wave: enc.wave, waves: enc.def.waves.length, left: enc.alive.size, tick: world.tick, ...extra });
+  world.emit({ type: 'enc', id: enc.id, st: enc.st, wave: enc.wave, waves: enc.def.waves.length, left: enc.alive.size, tick: world.tick, n: enc.n || 1, ...extra });
 }
+
+// Co-op: the pirates in the arena when a wave (or the boss) arrives set how tough it is.
+function crew(world, enc) { enc.n = Math.max(1, participants(world, enc, enc.def.radius).length); return enc.n; }
+export const coopMul = (k, n) => 1 + (k || 0) * Math.max(0, n - 1);
 
 function go(world, enc, st, extra) { enc.st = st; enc.t = 0; emit(world, enc, extra); }
 
@@ -54,7 +58,7 @@ function spawnGroups(world, enc, groups) {
       // A little scatter so a group from one point does not stack.
       const j = (enc.cursor * 2.399) % (Math.PI * 2), r = (i % 3) * 0.9;
       const x = p.x + Math.sin(j) * r, z = p.z + Math.cos(j) * r;
-      const e = world.spawnEnemy(kind, x, z, Math.atan2(enc.cx - x, enc.cz - z), { riseT: enc.def.riseT, aggro: 40, leash: 60, enc: enc.id });
+      const e = world.spawnEnemy(kind, x, z, Math.atan2(enc.cx - x, enc.cz - z), { riseT: enc.def.riseT, aggro: 40, leash: 60, enc: enc.id, hpMul: coopMul(enc.def.coopHp, enc.n) });
       enc.alive.add(e);
     }
   }
@@ -72,6 +76,7 @@ function sweepOut(world, enc) {
 
 function startWave(world, enc, i) {
   enc.wave = i; enc.late = false;
+  crew(world, enc);
   spawnGroups(world, enc, enc.def.waves[i].groups);
   go(world, enc, 'wave');
 }
@@ -119,7 +124,8 @@ export function stepEncounter(world, enc, dt) {
       if (!enc.bossE) {
         enc.reached = 'boss';
         const B = D.boss, b = enc.boss;
-        enc.bossE = world.spawnEnemy(B.kind, b.x, b.z, Math.atan2(enc.cx - b.x, enc.cz - b.z), { riseT: B.riseT, aggro: 40, leash: 60, enc: enc.id, boss: 1 });
+        enc.bossMul = coopMul(D.coopBossHp, crew(world, enc));
+        enc.bossE = world.spawnEnemy(B.kind, b.x, b.z, Math.atan2(enc.cx - b.x, enc.cz - b.z), { riseT: B.riseT, aggro: 40, leash: 60, enc: enc.id, boss: 1, hpMul: enc.bossMul });
         emit(world, enc, { boss: enc.bossE });
       }
       if (enc.t >= D.boss.intro) go(world, enc, 'boss', { boss: enc.bossE });
@@ -147,7 +153,7 @@ function victory(world, enc) {
 
 export function reset(world, enc) {
   sweepOut(world, enc);
-  enc.wave = -1; enc.cool = 3; enc.out = 0; enc.left = -1;
+  enc.wave = -1; enc.cool = 3; enc.out = 0; enc.left = -1; enc.bossMul = 0;
   go(world, enc, 'idle', { wipe: 1 });
 }
 
@@ -163,13 +169,13 @@ export function encounterKilled(world, e) {
 
 // Compact state for snapshots (late joiners, the HUD):
 // [id, st, wave, waves, left, boss, bossPhase (0-based), shield (0 off · 1 up · 2 broken), invulnerable,
-//  lava (0, or its LAVA_FIELDS values: late joiners rebuild it)].
+//  lava (0, or its LAVA_FIELDS values: late joiners rebuild it), crew (pirates the fight is scaled for; 0 idle)].
 export function encounterState(world, enc) {
   const b = enc.bossE && world.ecs.alive[enc.bossE] ? world.ecs.brain[enc.bossE] : null;
   const L = world.hazards.lava;
   return [enc.id, enc.st, enc.wave, enc.def.waves.length, enc.alive.size, b ? enc.bossE : 0,
     b ? b.phase : 0, b ? (b.broken > 0 ? 2 : b.shieldOn ? 1 : 0) : 0, b && (b.inv > 0 || b.state === 'wake') ? 1 : 0,
-    L ? LAVA_FIELDS.map((k) => L[k]) : 0];
+    L ? LAVA_FIELDS.map((k) => L[k]) : 0, enc.st === 'idle' ? 0 : enc.n || 1];
 }
 
 // F4: start | wave (finish the current one) | boss | phase2 | phase3 | win | reset.

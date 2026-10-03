@@ -3,10 +3,12 @@
 //   radius    players inside are participants; none alive inside for wipeGrace s → reset
 //   waves     groups of [kind, count]; `late` reinforcements come `after` s in (or when the rest is dead)
 //   boss      kind and where it rises (u, v offsets from the arena centre, design frame of worldgen.js)
+//   coopHp    co-op (M3.6): each participant beyond the first adds this much to every wave enemy's HP
+//   coopBossHp      … and this much to the boss's (and its minions')
 export const ENCOUNTERS = {
   caldera: {
     name: 'La Prueba de Fuego', startR: 3.2, radius: 21, wipeGrace: 6, intro: 1.5, rest: 4, cooldown: 40,
-    spawnR: 14, spawnN: 10, gateGap: 35, riseT: 0.8,
+    spawnR: 14, spawnN: 10, gateGap: 35, riseT: 0.8, coopHp: 0.6, coopBossHp: 0.75,
     waves: [
       { groups: [['grunt', 5], ['archer', 2]] },
       { groups: [['imp', 4], ['grunt', 4], ['archer', 2]], late: { after: 8, groups: [['grunt', 5]] } },

@@ -31,10 +31,15 @@ export const MSG = {
 // Snapshot entity tuple layout.
 export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17 };
 
+// Remote entities are only interpolated, so their floats travel rounded (≈ 45 % fewer characters before the
+// socket compresses them): positions and facing to 1/1000, velocities and blends to 1/100. Your own
+// predicted state goes separately, at full precision (`you`, PLAYER_FIELDS).
+const q3 = (v) => Math.round(v * 1000) / 1000;
+const q2 = (v) => Math.round(v * 100) / 100;
 export function encodeEntity(ecs, e) {
   return [
-    e, ecs.kind[e], ecs.x[e], ecs.y[e], ecs.z[e], ecs.facing[e], ecs.vx[e], ecs.vz[e], ecs.state[e], ecs.moveMag[e], ecs.wade[e], ecs.dashCount[e],
-    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], Math.round(ecs.actT[e] * 1000) / 1000, ecs.level[e], ecs.weapon[e],
+    e, ecs.kind[e], q3(ecs.x[e]), q3(ecs.y[e]), q3(ecs.z[e]), q3(ecs.facing[e]), q2(ecs.vx[e]), q2(ecs.vz[e]), ecs.state[e], q2(ecs.moveMag[e]), q2(ecs.wade[e]), ecs.dashCount[e],
+    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], q3(ecs.actT[e]), ecs.level[e], ecs.weapon[e],
   ];
 }
 

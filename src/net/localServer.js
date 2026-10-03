@@ -10,6 +10,7 @@ import { setWeapon } from '../sim/systems/skills.js';
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
+import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
@@ -19,12 +20,16 @@ const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, now = () => performance.now() }) {
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
     this.maxPlayers = maxPlayers;
     this.pausable = pausable; // solo: the pause menu stops the world; online it never does
+    // Online: a client that stops sending (hidden tab, lag spike) gets neutral filler commands, so the world
+    // keeps acting on it. Solo leaves a stalled player alone (a slow device is not punished).
+    this.fill = fill;
+    this.stats = { fill: 0, late: 0, trimmed: 0, clamped: 0 };
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
     this.send = send; // (clientId, msg) => void
@@ -48,7 +53,7 @@ export class LocalServer {
 
   // Connected clients spectate (see bots, NPCs) until they say hello and get a player entity.
   connect(clientId) {
-    this.clients.set(clientId, { entity: 0, queue: [], ack: 0, paused: false });
+    this.clients.set(clientId, { entity: 0, queue: [], ack: 0, paused: false, starve: 0, fillPt: 0, lastPt: 0, carry: 0, last: null });
     const ecs = this.world.ecs;
     for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e]) this.send(clientId, { t: MSG.SPAWN, e: this.world.describe(e) });
   }
@@ -58,6 +63,8 @@ export class LocalServer {
     if (c && c.entity) { this.world.despawn(c.entity); this.flushEvents(); }
     this.clients.delete(clientId);
   }
+
+  isHuman(e) { for (const c of this.clients.values()) if (c.entity === e) return true; return false; }
 
   // Players with an entity (bots are not clients).
   get humans() { let n = 0; for (const c of this.clients.values()) if (c.entity) n++; return n; }
@@ -93,7 +100,8 @@ export class LocalServer {
           const cmd = sanitizeCmd(raw);
           if (cmd && cmd.seq > c.ack && (c.queue.length === 0 || cmd.seq > c.queue[c.queue.length - 1].seq)) c.queue.push(cmd);
         }
-        if (c.queue.length > MAX_QUEUE) c.queue.splice(0, c.queue.length - MAX_QUEUE);
+        // Too many waiting: the oldest go, but what they pressed is kept for the next one played.
+        if (c.queue.length > MAX_QUEUE) for (const d of c.queue.splice(0, c.queue.length - MAX_QUEUE)) { c.carry |= d.prs; this.stats.trimmed++; }
         break;
       }
       case MSG.CMD: {
@@ -166,18 +174,41 @@ export class LocalServer {
     const w = this.world;
     for (const c of this.clients.values()) {
       if (!c.entity) continue;
+      // Commands the fillers already stood in for (they arrived late, from before fillPt): dropped, their
+      // presses kept for the next real command.
+      while (c.fillPt && c.queue.length && c.queue[0].pt <= c.fillPt) {
+        const cmd = c.queue.shift();
+        c.carry |= cmd.prs; c.ack = cmd.seq; this.stats.late++;
+      }
+      if (!c.queue.length) {
+        if (this.fill && ++c.starve > tuning.combat.starveTicks) this.applyFiller(c);
+        continue;
+      }
+      c.starve = 0; c.fillPt = 0;
       const n = c.queue.length > 6 ? CATCHUP_CMDS : MAX_CMDS_PER_TICK;
       // Process at most one per tick unless backlog: keeps the player in step with real time.
       const take = c.queue.length > 2 ? Math.min(n, c.queue.length) : Math.min(1, c.queue.length);
       for (let i = 0; i < take; i++) {
         const cmd = c.queue.shift();
+        if (c.carry) { cmd.prs |= c.carry; c.carry = 0; }
+        if (cmd.pt < w.tick - tuning.combat.rewind) this.stats.clamped++;
         w.applyCommand(c.entity, cmd);
-        c.ack = cmd.seq;
+        c.ack = cmd.seq; c.lastPt = cmd.pt; c.last = cmd;
       }
     }
     w.stepWorld();
     this.flushEvents();
     if (w.tick % SNAPSHOT_EVERY === 0) this.broadcastSnapshot();
+  }
+
+  // One neutral tick for a silent client: no movement, no buttons, aim kept, projectile time moving on
+  // (the world clamps it to the rewind window). The ack does not move: the client reconciles from it.
+  applyFiller(c) {
+    const pt = Math.max(c.lastPt + 1, this.world.tick - tuning.combat.rewind);
+    c.lastPt = c.fillPt = pt;
+    const l = c.last;
+    this.world.applyCommand(c.entity, { seq: c.ack, mx: 0, mz: 0, ax: l ? l.ax : 0, az: l ? l.az : 0, btn: l ? l.btn & BTN.AIM : 0, prs: 0, pt, w: 0 });
+    this.stats.fill++;
   }
 
   flushEvents() {
@@ -186,9 +217,14 @@ export class LocalServer {
       if (ev.type === 'spawn') this.broadcast({ t: MSG.SPAWN, e: w.describe(ev.id) });
       else if (ev.type === 'despawn') this.broadcast({ t: MSG.DESPAWN, id: ev.id });
       else {
-        if (ev.type === 'time' && this.instanceTime) {
-          this.freeze = Math.max(this.freeze, ev.hitstop || 0);
-          if (ev.scale < 1 && ev.dur > 0) { this.slowScale = ev.scale; this.slowT = Math.max(this.slowT, ev.dur); }
+        if (ev.type === 'time') {
+          // Instance time: world events (e 0: the boss falls) always; a player's own hitstop only while they
+          // are the only human here (with company it stays on their screen; bots never stop the world).
+          ev.inst = this.instanceTime && (!ev.e || (this.humans <= 1 && this.isHuman(ev.e))) ? 1 : 0;
+          if (ev.inst) {
+            this.freeze = Math.max(this.freeze, ev.hitstop || 0);
+            if (ev.scale < 1 && ev.dur > 0) { this.slowScale = ev.scale; this.slowT = Math.max(this.slowT, ev.dur); }
+          }
         }
         this.broadcast({ t: MSG.EVENT, ev });
       }
