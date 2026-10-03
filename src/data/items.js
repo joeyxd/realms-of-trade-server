@@ -98,8 +98,12 @@ export const AFFIXES = {
 // Consumables and quest items (not equipment).
 export const CONSUMABLES = {
   potion: { name: 'Poción de ron-coco', heal: 0.4, cd: 2, max: 5, start: 2, price: 25 },
-  crate: { name: 'Cofre misterioso', price: 120 },
+  crate: { name: 'Cofre misterioso', price: 120, crate: { ilvl: 0, rar: 0 } },
+  // Gold sinks (M4.5): a Marea's crate once you have opened that Marea. ilvl: levels over yours; rar: rarity bonus.
+  crate2: { name: 'Cofre de la Marea II', price: 450, crate: { tier: 2, ilvl: 3, rar: 0.5 } },
+  crate3: { name: 'Cofre de la Marea III', price: 1100, crate: { tier: 3, ilvl: 6, rar: 1, minRarity: 1 } },
 };
+export const CRATES = Object.keys(CONSUMABLES).filter((k) => CONSUMABLES[k].crate);
 export const QUEST_ITEMS = {
   coral: { name: 'Fragmento de coral', color: '#ff7a8a' },
 };

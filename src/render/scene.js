@@ -249,6 +249,7 @@ export class GameScene {
     this.focus.copy(ctx.focus);
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
     U.mnOccOn.value = ctx.playing ? 1 : 0;
+    if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus);
     this.applyPreset(this.lighting.cur);
     this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);

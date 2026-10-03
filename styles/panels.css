@@ -116,6 +116,7 @@
 .shop h4, .cp-quests h4 { margin: 2px 0; font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--brass-l); text-shadow: 0 2px 0 var(--ink); }
 .shop-row { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 8px; border-radius: 10px; background: rgba(12, 8, 26, 0.55); }
 .shop-row b { display: block; } .shop-row small { color: var(--text-dim); font-weight: 800; font-size: 11.5px; }
+.shop-row.locked b { color: var(--text-dim); }
 .shop-row .btn { font-size: 14px; padding: 0.35em 0.8em 0.4em; white-space: nowrap; }
 .shop-note { margin: 0; font-size: 12px; font-weight: 800; color: var(--text-dim); }
 /* Atributos */

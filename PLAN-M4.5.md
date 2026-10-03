@@ -132,7 +132,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
 ## 3. Pasos
 
 - [x] **P0** Este plan.
-- [ ] **P1 Detalles**: aviso / etiqueta del cofre, segundo cilindro de oclusión, cofres de Marea (datos, `buy`,
+- [x] **P1 Detalles**: aviso / etiqueta del cofre, segundo cilindro de oclusión, cofres de Marea (datos, `buy`,
   puesto). Tests de compra (requisito de Marea, precio, nivel / rareza).
 - [ ] **P2 La Cala (sim)**: lugar y desvío en `worldgen` (con la isla de fuera intacta), `ZONES`, punto de
   control, `src/data/lawless.js`, `canHit` + historial de piratas + `hurtByPlayer`, botín completo y caídas
@@ -153,3 +153,11 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
 - **P0:** plan escrito tras leer `world.js`, `combat.js`, `skills.js`, `enemies.js`, `projectiles.js`,
   `inventory.js`, `quests.js`, `worldgen.js`, `localServer.js`, `gameClient.js`, `feedback.js` y el render de
   personajes y props.
+- **P1:** el aviso de `F` de un cofre va bajo el cofre (no bajo tus pies, donde lo tapaba) y dice «F Abrir · Cofre de
+  HELLFIRE» en su color; la etiqueta de ese cofre se oculta mientras (`rewards.promptDrop`) y cualquier etiqueta de
+  botín bajo un aviso se atenúa al 22 % (`worldui`: los avisos se colocan antes que las etiquetas). Oclusión:
+  `U.mnOcc2` (xyz + encendido) y `mnOccFade()` en `FRAG_PARS`; `rewards.focusPoint()` (tu cofre a ≤ 10 u) →
+  `scene.update(ctx.occ2)`. Oro: `CONSUMABLES.crate2` / `crate3` con `crate {tier, ilvl, rar, minRarity}`,
+  `CRATES`; `buy` los trata a todos igual (falla con `tier` si no has abierto esa Marea; solo mercancía propia de
+  `CONSUMABLES`). El puesto enseña los tres cofres (el bloqueado con 🔒 y lo que hace falta). Verificado en el
+  navegador (cofre tras palmeras, aviso, compra de un Cofre de la Marea II: nivel + 3). 130 tests.

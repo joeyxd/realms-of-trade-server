@@ -2,7 +2,7 @@
 // systems/inventory.js. Progress comes from the world (kills, zones, wins, pickups) and from `cmd`s (talk,
 // accept, hand in, buy, sell); the player hears about it through private `quest` / `talk` / `bought` events.
 import { QUESTS, QUEST_IDS, QST, goalCount, NPC_TALK } from '../../data/quests.js';
-import { CONSUMABLES } from '../../data/items.js';
+import { CONSUMABLES, ITEMS } from '../../data/items.js';
 import { ENEMY_KINDS } from '../../data/enemies.js';
 import { rollItem } from '../items.js';
 import { gainXp } from './combat.js';
@@ -148,18 +148,21 @@ export function zoneSweep(world) {
 }
 
 // ---- Tía Perla -----------------------------------------------------------------------------------------------
-// buy 'potion' (25 oro) or 'crate' (120: an item of your level); sell an item from the bag for all its worth.
+// buy 'potion' (25 oro) or a crate: 'crate' (120, an item of your level), 'crate2' / 'crate3' (the Mareas' crates,
+// once you have opened that Marea: higher level, better rarity); sell an item from the bag for all its worth.
 export function buy(world, e, what) {
-  const p = profileOf(world, e), ecs = world.ecs, C = CONSUMABLES[what];
+  const p = profileOf(world, e), ecs = world.ecs, C = Object.hasOwn(CONSUMABLES, what) ? CONSUMABLES[what] : null;
   if (!p || !C || !C.price || !npcNear(world, e, 'vendor', SHOP_R)) return false;
   const fail = (why) => { world.emit({ type: 'bought', to: e, e, what, fail: why, gold: p.gold }); return false; };
+  const K = C.crate;
+  if (K && K.tier && p.flags.tier < K.tier) return fail('tier');
   if (p.gold < C.price) return fail('gold');
   if (what === 'potion' && ecs.potions[e] >= C.max) return fail('max');
-  if (what === 'crate' && p.bag.length >= 24) return fail('bag');
+  if (K && p.bag.length >= ITEMS.bag) return fail('bag');
   p.gold -= C.price;
   let item;
   if (what === 'potion') ecs.potions[e] += 1;
-  else { item = rollItem(world.lootRng, { lvl: ecs.level[e] }); stashItem(world, e, item); }
+  else { item = rollItem(world.lootRng, { lvl: ecs.level[e] + (K.ilvl || 0), rarityBonus: K.rar || 0, minRarity: K.minRarity || 0 }); stashItem(world, e, item); }
   world.emit({ type: 'bought', to: e, e, what, gold: p.gold, pot: ecs.potions[e], ...(item ? { item } : {}) });
   markProfile(world, e);
   return true;

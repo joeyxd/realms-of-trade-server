@@ -187,3 +187,24 @@ test('the beach tutorial\'s progress is kept in the profile (only forward)', () 
   assert.equal(w.profiles.get(e).flags.tut, 3);
   assert.ok(DT > 0);
 });
+
+test('M4.5: the Mareas\' crates (gold sinks) open with their Marea, cost what they say and roll higher and rarer', () => {
+  const { w, ecs, join, nextTo, events, cmd } = server();
+  const e = join(1), p = w.profiles.get(e);
+  nextTo(e, 'vendor');
+  p.gold = 10000;
+  ecs.level[e] = 5;
+  cmd(1, { type: 'buy', what: 'crate3' });
+  assert.equal(events(1, 'bought').at(-1).fail, 'tier', 'Marea III not opened yet');
+  assert.equal(p.gold, 10000);
+  p.flags.tier = 3;
+  const lv = [], rar = [];
+  for (let i = 0; i < 6; i++) { cmd(1, { type: 'buy', what: 'crate3' }); const it = p.bag.at(-1); lv.push(it.l); rar.push(it.r); }
+  assert.equal(p.gold, 10000 - 6 * CONSUMABLES.crate3.price);
+  assert.ok(lv.every((l) => l === 5 + CONSUMABLES.crate3.crate.ilvl), 'level + 6');
+  assert.ok(rar.every((r) => r >= 1), 'at least Poco común');
+  cmd(1, { type: 'buy', what: 'crate2' });
+  assert.equal(p.bag.at(-1).l, 5 + CONSUMABLES.crate2.crate.ilvl);
+  cmd(1, { type: 'buy', what: 'toString' });
+  assert.equal(p.bag.length, 7, 'only real wares');
+});

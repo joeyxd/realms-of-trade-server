@@ -43,10 +43,11 @@ export class Rewards {
     if (this.label.delete(id)) this.worldUI.removeLabel('L' + id);
   }
 
-  // Anchors for the loot labels (main.js passes its anchor() helper).
+  // Anchors for the loot labels (main.js passes its anchor() helper). The drop the F prompt is about shows its
+  // name in the prompt instead (promptDrop).
   anchors(anchor) {
     for (const [id, v] of this.world.loot.drops) {
-      if (v.gone || !this.label.has(id)) continue;
+      if (v.gone || !this.label.has(id) || id === this.promptDrop) continue;
       const p = v.root.position;
       anchor('L' + id, p.x, p.y + (v.L.chest ? 1.3 : 0.75), p.z, Math.hypot(p.x - this.ps.x, p.z - this.ps.z));
     }
@@ -61,6 +62,24 @@ export class Rewards {
       if (d < bd) { bd = d; best = id; }
     }
     return best;
+  }
+
+  // The F prompt for chest `id`: what it is, in its rarity's colour (its own label hides meanwhile).
+  chestPrompt(id) {
+    const v = this.world.loot.drops.get(id);
+    const [name, color] = v ? this.labelFor(v.d) : ['Cofre de HELLFIRE', rarityColor(2)];
+    return `<span class="kbd">F</span> Abrir · <b style="color:${color}">${name}</b>`;
+  }
+
+  // What the canopy must not hide (toon.js mnOcc2): your nearest chest within r.
+  focusPoint(r = 10) {
+    let best = null, bd = r;
+    for (const v of this.world.loot.drops.values()) {
+      if (v.gone || v.d.kind !== 'chest') continue;
+      const d = Math.hypot(v.x - this.ps.x, v.z - this.ps.z);
+      if (d < bd) { bd = d; best = v; }
+    }
+    return best ? best.root.position : null;
   }
 
   handle(ev) {
@@ -101,7 +120,7 @@ export class Rewards {
       case 'gear': sfx.equip(); break;
       case 'sold': if (ev.gold > 0) { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold', { life: 0.9 }); } break;
       case 'bought':
-        if (ev.fail) { sfx.denied(); H.toast(ev.fail === 'gold' ? '<b>No te alcanza el oro.</b>' : ev.fail === 'max' ? '<b>Ya llevas 5 pociones.</b>' : '<b>Bolsa llena.</b>', 2600); }
+        if (ev.fail) { sfx.denied(); H.toast(ev.fail === 'gold' ? '<b>No te alcanza el oro.</b>' : ev.fail === 'max' ? '<b>Ya llevas 5 pociones.</b>' : ev.fail === 'tier' ? '<b>Aún no:</b> ese cofre se abre venciendo su Marea en La Caldera.' : '<b>Bolsa llena.</b>', 2600); }
         else { sfx.buy(); if (ev.what === 'potion') this.over('+1 poción', 'heal'); }
         break;
       case 'mastery': {

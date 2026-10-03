@@ -13,6 +13,8 @@ export const U = {
   mnPlayer: { value: new THREE.Vector3(0, -1000, 0) },
   mnOccR: { value: 1.8 },
   mnOccOn: { value: 1 },
+  // A second thing that must not hide under the canopy (M4.5): your chest, your spilled loot. xyz + on (w).
+  mnOcc2: { value: new THREE.Vector4(0, -1000, 0, 0) },
   mnNearFade: { value: 13 },
   mnCloud: { value: 0.32 },
   mnWind: { value: new THREE.Vector2(0.9, 0.45) },
@@ -200,6 +202,17 @@ const VERT_WORLD = /* glsl */ `
 
 const FRAG_PARS = /* glsl */ `
 varying vec3 vMnWorld;
+uniform vec4 mnOcc2;
+// How much a fragment sits inside the cylinder from the camera to target (0 outside).
+float mnOccFade(vec3 target) {
+  vec3 seg = target - cameraPosition;
+  float L = length(seg);
+  vec3 dir = seg / L;
+  vec3 rel = vMnWorld - cameraPosition;
+  float t = dot(rel, dir);
+  if (t <= 0.0 || t >= L - 0.5) return 0.0;
+  return 1.0 - smoothstep(mnOccR * 0.5, mnOccR, length(rel - dir * t));
+}
 #ifdef MN_GLOW
 varying float vMnGlow;
 uniform float mnGlowAmt;
@@ -209,16 +222,9 @@ uniform float mnGlowAmt;
 const FRAG_OCCLUDE = /* glsl */ `
 #ifdef MN_OCCLUDER
 if (mnOccOn > 0.5) {
-  vec3 seg = mnPlayer - cameraPosition;
-  float L = length(seg);
-  vec3 dir = seg / L;
-  vec3 rel = vMnWorld - cameraPosition;
-  float t = dot(rel, dir);
-  if (t > 0.0 && t < L - 0.5) {
-    float d = length(rel - dir * t);
-    float fade = 1.0 - smoothstep(mnOccR * 0.5, mnOccR, d);
-    if (fade * 0.9 > mnBayer(gl_FragCoord.xy)) discard;
-  }
+  float fade = mnOccFade(mnPlayer);
+  if (mnOcc2.w > 0.5) fade = max(fade, mnOccFade(mnOcc2.xyz));
+  if (fade * 0.9 > mnBayer(gl_FragCoord.xy)) discard;
   // Anything very close to the camera dissolves too (tall palms at the screen edge).
   float camD = distance(vMnWorld, cameraPosition);
   float near = 1.0 - smoothstep(mnNearFade, mnNearFade + 4.0, camD);

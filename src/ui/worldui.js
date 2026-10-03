@@ -168,6 +168,19 @@ export class WorldUI {
       if (show !== plate.shown) { plate.el.hidden = !show; plate.shown = show; }
       if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1)); }
     }
+    // Prompts first: the loot labels under one fade so the prompt stays readable.
+    const boxes = [];
+    for (const [id, pm] of this.prompts) {
+      if (pm.el.hidden) continue;
+      const a = anchors.get(id);
+      if (!a) { pm.el.hidden = true; continue; }
+      this.project(a.pos, pm.p);
+      if (!pm.p.vis) continue;
+      this.place(pm.el, pm.p, 1, pm.below ? -14 : 12, pm.below);
+      if (pm.w === undefined || pm.wHtml !== pm.html) { pm.w = pm.el.offsetWidth; pm.h = pm.el.offsetHeight; pm.wHtml = pm.html; }
+      const top = pm.below ? pm.p.y + 14 : pm.p.y - 12 - pm.h;
+      boxes.push({ x0: pm.p.x - pm.w / 2 - 6, x1: pm.p.x + pm.w / 2 + 6, y0: top - 6, y1: top + pm.h + 6 });
+    }
     // Loot labels: nearest first, each one lifted above those it would cover (a pile of drops stays readable).
     const shown = [];
     for (const [id, l] of this.labels) {
@@ -190,7 +203,8 @@ export class WorldUI {
       }
       l.sx = l.p.x; l.sy = y; l.sw = w; l.sh = h;
       this.place(l.el, l.p, s, l.p.y - y);
-      l.el.style.opacity = String(clamp((l.range - l.d) / 4, 0, 1));
+      const under = boxes.some((b) => l.sx + w / 2 > b.x0 && l.sx - w / 2 < b.x1 && y > b.y0 && y - h < b.y1);
+      l.el.style.opacity = String(clamp((l.range - l.d) / 4, 0, 1) * (under ? 0.22 : 1));
     }
     for (const [id, b] of this.bubbles) {
       const a = anchors.get(id);
@@ -212,13 +226,6 @@ export class WorldUI {
       f.sx = f.p.x + f.dx * k; f.sy = f.p.y - up - f.lift;
       f.el.style.transform = `translate3d(${f.sx}px, ${f.sy}px, 0) translate(-50%, -100%)`;
       f.el.style.opacity = String(k < 0.7 ? 1 : 1 - (k - 0.7) / 0.3);
-    }
-    for (const [id, pm] of this.prompts) {
-      if (pm.el.hidden) continue;
-      const a = anchors.get(id);
-      if (!a) { pm.el.hidden = true; continue; }
-      this.project(a.pos, pm.p);
-      if (pm.p.vis) this.place(pm.el, pm.p, 1, pm.below ? -14 : 12, pm.below);
     }
   }
 }

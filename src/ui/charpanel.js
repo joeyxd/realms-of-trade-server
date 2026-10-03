@@ -3,7 +3,7 @@
 // what it opens) and Misiones (the journal). It never pauses the world. Everything it does is a `cmd`; the
 // server answers with a new profile and the panel redraws from it.
 import { gsap } from 'gsap';
-import { SLOTS, SLOT_NAMES, BASES, ITEMS, CONSUMABLES, STATS } from '../data/items.js';
+import { SLOTS, SLOT_NAMES, BASES, ITEMS, CONSUMABLES, CRATES, STATS } from '../data/items.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY } from '../data/weapons.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from '../data/quests.js';
 import { ENCOUNTERS } from '../data/encounters.js';
@@ -149,11 +149,17 @@ export class CharPanel {
   }
 
   shopHtml(p) {
-    const st = this.stats(), P = CONSUMABLES.potion, Cr = CONSUMABLES.crate;
-    const row = (what, name, price, note, ok) => `<div class="shop-row"><div><b>${name}</b><small>${note}</small></div><button class="btn" data-buy="${what}" ${ok ? '' : 'disabled'}>${price} oro</button></div>`;
+    const st = this.stats(), P = CONSUMABLES.potion, T = ENCOUNTERS.caldera.tiers;
+    const row = (what, name, price, note, ok, lock) => `<div class="shop-row${lock ? ' locked' : ''}"><div><b>${name}</b><small>${note}</small></div><button class="btn" data-buy="${what}" ${ok ? '' : 'disabled'}>${lock ? '🔒 ' : ''}${price} oro</button></div>`;
+    // The crates: a random item of your level, and the Mareas' (better ones) once you have opened that Marea.
+    const crates = CRATES.map((k) => {
+      const C = CONSUMABLES[k], K = C.crate, lock = K.tier && p.flags.tier < K.tier;
+      const note = lock ? `Vence la ${T[K.tier - 2].name} para abrirlo` : K.ilvl ? `Un objeto de nivel ${st.level + K.ilvl}${K.minRarity ? ', al menos Poco común' : ''}, mejor rareza` : 'Un objeto al azar de tu nivel';
+      return row(k, C.name, C.price, note, !lock && p.gold >= C.price && p.bag.length < ITEMS.bag, lock);
+    }).join('');
     return `<div class="shop"><h4>Puesto de ${esc(NPC_TALK.vendor.name)}</h4>
       ${row('potion', P.name, P.price, `Cura el ${Math.round(P.heal * 100)} % de tu vida · llevas ${st.potions}/${P.max}`, p.gold >= P.price && st.potions < P.max)}
-      ${row('crate', Cr.name, Cr.price, 'Un objeto al azar de tu nivel', p.gold >= Cr.price && p.bag.length < ITEMS.bag)}
+      ${crates}
       <p class="shop-note">Toca algo de tu bolsa para <b>venderlo</b>: Tía Perla paga todo lo que vale (desguazar en el camino da solo un ${Math.round(ITEMS.salvage * 100)} %).</p></div>`;
   }
 

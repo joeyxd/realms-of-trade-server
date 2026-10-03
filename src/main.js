@@ -730,7 +730,7 @@ async function boot() {
         const other = (ps.weapon + 1) % WEAPON_KINDS.length;
         let act = null;
         if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
-        else if (chest) act = '<span class="kbd">F</span> Abrir el cofre';
+        else if (chest) act = rewards.chestPrompt(chest);
         else if (runes) act = `<b>${TIERS[tierSel - 1].name}</b> · <span class="kbd">F</span> cambiar a ${TIERS[tierNext - 1].name}`;
         else if (rack) {
           act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
@@ -749,7 +749,10 @@ async function boot() {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
           act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>GUARDIA</b> justo antes del impacto' : 'Sube la guardia (<span class="kbd">RMB</span>) justo antes del impacto') : 'Vuelve al aro de cuerda';
         }
-        anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
+        rewards.promptDrop = chest || 0;
+        // A chest's prompt sits under the chest (it would cover it under your feet).
+        const cv = chest ? world.loot.get(chest) : null;
+        if (cv) anchor('you', cv.x, cv.y - 0.1, cv.z, 0); else anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         if (input.consumeInteract()) {
           if (npc) {
@@ -841,7 +844,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, occ2: playing ? rewards.focusPoint() : null, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);
