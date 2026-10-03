@@ -18,7 +18,8 @@
 //   Graze: a projectile passing within 0.35 u of your hurtbox without touching = ROCE.
 import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
-import { PTYPE, KILL, NEVER, beamSeg, segDist, lavaR } from '../projectiles.js';
+import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
+import { stepEquip } from './skills.js';
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 
@@ -150,7 +151,7 @@ function reflect(world, e, s, pt, seq, T, o = {}) {
   world.spawnShot(e, {
     key: pid, pid, type: H.type[s], x: from ? o.fromX : x, y: from ? ecs.y[e] + 1.1 : H.py(s, pt), z: from ? o.fromZ : z,
     dx: Math.sin(a), dz: Math.cos(a), speed: Math.min(R.maxSpeed, Math.max(T.minSpeed, H.speed[s]) * T.speed), dmg, life: R.life,
-    r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq, bounce: T.bounce, homing: T.homing, cone: T.cone,
+    r: Math.max(0.2, H.r[s] * 0.9), heavy: H.type[s] === PTYPE.HEAVY, seq, bounce: T.bounce, homing: T.homing, cone: T.cone, pt,
   });
   return { x, z };
 }
@@ -180,7 +181,7 @@ function releaseCaught(world, e, seq) {
     world.spawnShot(e, {
       key: -(seq * 8 + k + 1), pid: 0, type: heavy ? PTYPE.HEAVY : PTYPE.PARRY, x: ecs.x[e] + dx * 0.6, y: ecs.y[e] + 1.1, z: ecs.z[e] + dz * 0.6,
       dx, dz, speed: heavy ? RL.heavySpeed : RL.speed, dmg: base * (heavy ? RL.heavyDmg : RL.dmg), life: R.life,
-      r: heavy ? 0.58 : 0.25, heavy, seq, bounce: RL.bounce, homing: RL.homing, cone: RL.cone,
+      r: heavy ? 0.58 : 0.25, heavy, seq, bounce: RL.bounce, homing: RL.homing, cone: RL.cone, kind: SHOT.RELEASE, pt: ecs.lastPt[e],
     });
   }
   ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
@@ -448,6 +449,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });
   }
   if (world.isServer && world.checkpoint) world.checkpoint(e);
+  if (cmd.w) stepEquip(world, e, cmd);
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;

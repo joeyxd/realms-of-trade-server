@@ -65,8 +65,8 @@ export class GameClient {
   serverTick() { return this.serverOffset === null ? 0 : (this.clock + this.serverOffset) / DT; }
   viewTick(alpha) { return this.youLocal && !this.awaitingFirst ? this.displayTick(alpha) : this.serverTick(); }
 
-  join(name, skin) {
-    this.t.send({ t: MSG.HELLO, v: 2, name, skin });
+  join(name, skin, weapon = 0) {
+    this.t.send({ t: MSG.HELLO, v: 2, name, skin, weapon });
   }
 
   send(msg) { this.t.send(msg); }
@@ -77,8 +77,8 @@ export class GameClient {
         const d = m.e;
         const rec = {
           id: d.id, kind: d.kind, name: d.name, title: d.title, skin: d.skin, level: d.level, team: d.team ?? 0,
-          enemy: d.enemy !== undefined ? ENEMY_KINDS[d.enemy] : null, maxHp: d.maxHp || 0,
-          buf: [], r: { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashes: 0, hp: 1, maxHp: 1, act: 0, actT: 0, lvl: 1 }, ready: false,
+          enemy: d.enemy !== undefined ? ENEMY_KINDS[d.enemy] : null, maxHp: d.maxHp || 0, weapon: d.weapon || 0,
+          buf: [], r: { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashes: 0, hp: 1, maxHp: 1, act: 0, actT: 0, lvl: 1, wpn: d.weapon || 0 }, ready: false,
         };
         if (rec.enemy) rec.def = ENEMIES[rec.enemy];
         this.entities.set(d.id, rec);
@@ -95,7 +95,7 @@ export class GameClient {
         this.youServer = m.you;
         const rec = this.entities.get(m.you);
         this.youLocal = this.pred.spawnPlayer({
-          name: rec ? rec.name : 'Grumete', skin: rec ? rec.skin : 0, level: rec ? rec.level : 1,
+          name: rec ? rec.name : 'Grumete', skin: rec ? rec.skin : 0, level: rec ? rec.level : 1, weapon: rec ? rec.weapon : 0,
         });
         this.pred.events.length = 0;
         this.awaitingFirst = true;
@@ -224,7 +224,7 @@ export class GameClient {
       const sample = {
         time: st, x: e[ENT.X], y: e[ENT.Y], z: e[ENT.Z], f: e[ENT.F], vx: e[ENT.VX], vz: e[ENT.VZ],
         st: e[ENT.ST], mag: e[ENT.MAG], wade: e[ENT.WADE], dashes: e[ENT.DASHES],
-        hp: e[ENT.HP], maxHp: e[ENT.MAXHP], act: e[ENT.ACT], actT: e[ENT.ACTT], lvl: e[ENT.LVL],
+        hp: e[ENT.HP], maxHp: e[ENT.MAXHP], act: e[ENT.ACT], actT: e[ENT.ACTT], lvl: e[ENT.LVL], wpn: e[ENT.WPN] | 0,
       };
       const b = rec.buf;
       if (b.length && b[b.length - 1].time >= st) continue;
@@ -322,7 +322,7 @@ export class GameClient {
     const cmd = {
       seq: ++this.seq,
       mx: quantAxis(input.mx), mz: quantAxis(input.mz),
-      ax: input.ax, az: input.az, btn: input.btn | 0, prs: input.prs | 0, pt,
+      ax: input.ax, az: input.az, btn: input.btn | 0, prs: input.prs | 0, pt, w: input.w | 0,
     };
     this.ptPrev = this.ptCur || pt;
     this.ptCur = pt;
@@ -458,7 +458,7 @@ export class GameClient {
       const ex = c ? 0 : Math.min(0.1, Math.max(0, time - a.time));
       r.x = a.x + a.vx * ex; r.z = a.z + a.vz * ex; r.y = a.y; r.f = a.f;
       r.vx = a.vx; r.vz = a.vz; r.st = a.st; r.mag = a.mag; r.wade = a.wade; r.dashes = a.dashes;
-      r.hp = a.hp; r.maxHp = a.maxHp; r.act = a.act; r.actT = a.actT + Math.max(0, time - a.time); r.lvl = a.lvl;
+      r.hp = a.hp; r.maxHp = a.maxHp; r.act = a.act; r.actT = a.actT + Math.max(0, time - a.time); r.lvl = a.lvl; r.wpn = a.wpn;
       return;
     }
     const t = Math.min(1, (time - a.time) / (c.time - a.time));
@@ -467,7 +467,7 @@ export class GameClient {
     r.vx = lerp(a.vx, c.vx, t); r.vz = lerp(a.vz, c.vz, t);
     r.st = t < 0.5 ? a.st : c.st; r.mag = lerp(a.mag, c.mag, t); r.wade = lerp(a.wade, c.wade, t);
     r.dashes = c.dashes;
-    r.hp = c.hp; r.maxHp = c.maxHp; r.lvl = c.lvl;
+    r.hp = c.hp; r.maxHp = c.maxHp; r.lvl = c.lvl; r.wpn = t < 0.5 ? a.wpn : c.wpn;
     // Action: keep counting time inside the same action, switch when the next sample does.
     if (c.act === a.act) { r.act = a.act; r.actT = lerp(a.actT, c.actT, t); }
     else { r.act = t < 0.5 ? a.act : c.act; r.actT = t < 0.5 ? a.actT + (time - a.time) : Math.max(0, c.actT - (c.time - time)); }
@@ -492,6 +492,7 @@ export class GameClient {
     out.riposte = ecs.riposte[e]; out.chain = ecs.chain[e]; out.chainT = ecs.chainT[e];
     out.level = ecs.level[e]; out.xp = ecs.xp[e]; out.hurtInv = ecs.hurtInv[e]; out.stagger = ecs.stagger[e];
     out.god = ecs.god[e];
+    out.weapon = ecs.weapon[e]; out.cdQ = ecs.cdQ[e]; out.cdE = ecs.cdE[e]; out.castK = ecs.castK[e]; out.castT = ecs.castT[e];
     return out;
   }
 }

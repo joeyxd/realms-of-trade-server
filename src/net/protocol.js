@@ -4,8 +4,8 @@ export const PROTOCOL_VERSION = 2;
 
 export const MSG = {
   // client -> server
-  HELLO: 'hello',     // {v, name, skin}
-  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt}]}
+  HELLO: 'hello',     // {v, name, skin, weapon}
+  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}]}
   CMD: 'cmd',         // {type: 'pause' | 'interact' | 'chat' | 'equip' | 'dev' ...}
   PING: 'ping',       // {t}
   // server -> client
@@ -27,17 +27,18 @@ export const MSG = {
 };
 
 // Snapshot entity tuple layout.
-export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16 };
+export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17 };
 
 export function encodeEntity(ecs, e) {
   return [
     e, ecs.kind[e], ecs.x[e], ecs.y[e], ecs.z[e], ecs.facing[e], ecs.vx[e], ecs.vz[e], ecs.state[e], ecs.moveMag[e], ecs.wade[e], ecs.dashCount[e],
-    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], Math.round(ecs.actT[e] * 1000) / 1000, ecs.level[e],
+    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], Math.round(ecs.actT[e] * 1000) / 1000, ecs.level[e], ecs.weapon[e],
   ];
 }
 
 // Input commands: axes quantized to 1/127 so client prediction uses exactly what the server sees.
 // pt = the projectile tick the client was showing when it made the command (lag compensation).
+// w = the weapon asked for + 1 (0 = no change): the sim only swaps it next to a rack.
 export const quantAxis = (v) => Math.round(Math.max(-1, Math.min(1, v)) * 127) / 127;
 
 export function sanitizeCmd(c) {
@@ -52,5 +53,6 @@ export function sanitizeCmd(c) {
     btn: n(c.btn) & 0xff,
     prs: n(c.prs) & 0xff,
     pt: n(c.pt) >>> 0,
+    w: n(c.w) & 0x0f,
   };
 }

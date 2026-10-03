@@ -327,10 +327,18 @@ export function generateWorld(seed) {
     };
   })();
   colliders.push({ x: practice.dummy.x, z: practice.dummy.z, r: 0.35 }, { x: practice.cannon.x, z: practice.cannon.z, r: 0.75 });
-  // Keep the practice ground clear of palms, bushes and rocks (checked after the random draws so the
-  // rest of the island keeps its exact layout).
+  // Weapon racks (M3.5): F next to one swaps the sable and the pistols. One on the beach by the spawn,
+  // one in the village. Their props are added after every random draw (fixed rot / variant, no rng).
+  const racks = [
+    { id: 'playa', ...P([-136, 10]), face: spawn },
+    { id: 'aldea', ...V(3, -6), face: P(L.campfire) },
+  ].map((k) => ({ id: k.id, x: k.x, z: k.z, facing: Math.atan2(k.face.x - k.x, k.face.z - k.z) }));
+  for (const k of racks) colliders.push({ x: k.x, z: k.z, r: 0.55 });
+  // Keep the practice ground and the racks clear of palms, bushes and rocks (checked after the random
+  // draws so the rest of the island keeps its exact layout).
   const nearPractice = (x, z) => Math.hypot(x - practice.ring.x, z - practice.ring.z) < practice.ring.r + 5
-    || Math.hypot(x - practice.dummy.x, z - practice.dummy.z) < 6 || Math.hypot(x - practice.cannon.x, z - practice.cannon.z) < 5;
+    || Math.hypot(x - practice.dummy.x, z - practice.dummy.z) < 6 || Math.hypot(x - practice.cannon.x, z - practice.cannon.z) < 5
+    || racks.some((k) => Math.hypot(x - k.x, z - k.z) < 3.2);
 
   // Scattered vegetation and rocks (rejection sampling, deterministic).
   const palms = new Set(['palm']);
@@ -444,6 +452,8 @@ export function generateWorld(seed) {
     }
   }
 
+  for (const k of racks) addProp('rack', k.x, k.z, { r: 0, rot: k.facing, v: 0.5 });
+
   // Static collider spatial hash.
   const CELL = 4;
   const grid = new Map();
@@ -496,7 +506,7 @@ export function generateWorld(seed) {
 
   return {
     seed, size, half, res, N, heights,
-    enemySpawns, practice, checkpoints, checkpointAt,
+    enemySpawns, practice, racks, checkpoints, checkpointAt,
     heightAt, groundAt, onDock, masks, materialAt, zoneAt, pathInfo,
     props, colliders, queryColliders, npcs, botWaypoints, dock,
     landmarks: { spawn, village, arena, arenaR: L.arenaR, volcano, dockBase, dockEnd, path, ship: P(L.ship) },

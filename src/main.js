@@ -14,6 +14,8 @@ import { xpToNext } from './sim/systems/combat.js';
 import { PTYPE } from './sim/projectiles.js';
 import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
+import { rackNear } from './sim/systems/skills.js';
+import { WEAPONS, WEAPON_KINDS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { GameScene } from './render/scene.js';
@@ -91,6 +93,7 @@ async function boot() {
   const ps = {
     x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashT: -1, dashes: 0, charges: 1, maxCharges: 1, recharge: 0, iframes: 0,
     hp: 100, maxHp: 100, dead: 0, deadT: 0, act: 0, actT: 0, atkStage: 0, atkT: 0, guardT: -1, guardSt: 60, catchN: 0, catchHv: 0, catchT: 0, riposte: 0, chain: 0, chainT: 99, level: 1, xp: 0,
+    weapon: 0, cdQ: 0, cdE: 0, castK: 0, castT: 0,
   };
   const focus = new THREE.Vector3(map.landmarks.spawn.x, 1, map.landmarks.spawn.z);
   const aim = new THREE.Vector3();
@@ -187,7 +190,15 @@ async function boot() {
   bus.on('combat', (ev) => safe('feedback', () => {
     feedback.handle(ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
+    if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
   }));
+  // The weapon you carry: remembered for the next session, the kit shown in a toast.
+  function onEquip(w) {
+    const kind = WEAPON_KINDS[w] || 'sable', W = WEAPONS[kind];
+    if (settings.weapon !== kind) { settings.weapon = kind; saveSettings(); }
+    hud.toast(`<b>${W.name}</b> · ${W.short === 'Sable' ? 'combo y reflejos a tiempo' : 'disparo continuo, atrapa con la guardia'}`, 3200);
+    sfx.click();
+  }
 
   bus.on('entity:spawn', (rec) => safe('spawn', () => {
     const isNpc = rec.kind === KIND.NPC;
@@ -365,7 +376,7 @@ async function boot() {
     music.start();
     sfx.play();
     saveSettings();
-    client.join(settings.name, settings.skin);
+    client.join(settings.name, settings.skin, weaponIndex(settings.weapon));
     await title.hide();
   }
   bus.on('you:ready', () => {
@@ -474,7 +485,8 @@ async function boot() {
         aimBit = BTN.AIM;
       } else if (mouseAiming()) aimBit = BTN.AIM;
       else autoAim(move);
-      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held | aimBit, prs });
+      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held | aimBit, prs, w: st.wantWeapon || 0 });
+      st.wantWeapon = 0;
     }),
     frame: (realDt, simDt, alpha) => {
       loop.paused = st.paused;
@@ -543,8 +555,11 @@ async function boot() {
         // One action prompt floats under the player's feet: interaction first, then the tutorial.
         const npc = nearestNpc();
         const nearShip = Math.hypot(ps.x - shipPos.x, ps.z - shipPos.z) < 4;
+        const rack = !npc && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
+        const other = (ps.weapon + 1) % WEAPON_KINDS.length;
         let act = null;
         if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
+        else if (rack) act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
         else if (nearShip) act = '<span class="kbd">F</span> ZARPAR · próximamente';
         else if (st.tut === 'move') act = isTouch ? 'Usa el joystick para moverte' : '<span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> para moverte';
         else if (st.tut === 'dash') act = isTouch ? 'Toca <b>DASH</b> para esquivar' : '<span class="kbd">ESPACIO</span> para hacer dash';
@@ -568,6 +583,8 @@ async function boot() {
             worldUI.bubble(npc.id, `<b>${npc.name}</b>${lines[i]}`, 5200);
             sfx.talk();
             if (npc.name === 'Capitana Brea' && st.tut === 'captain') advanceTutorial();
+          } else if (rack) {
+            st.wantWeapon = other + 1; // sent with the next command; the sim checks the rack too
           } else if (nearShip) {
             hud.toast('<b>El barco aún no zarpa.</b> La navegación llegará en una próxima actualización.', 3600);
             sfx.click();

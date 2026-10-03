@@ -6,6 +6,8 @@
 import { DT, SNAPSHOT_EVERY, tuning } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { applyLevel } from '../sim/systems/combat.js';
+import { setWeapon } from '../sim/systems/skills.js';
+import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { World } from '../sim/world.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
@@ -63,7 +65,9 @@ export class LocalServer {
         if (c.entity) return;
         const name = String(msg.name || 'Grumete').slice(0, 20);
         const skin = Math.max(0, Math.min(4, msg.skin | 0));
-        c.entity = this.world.spawnPlayer({ name, skin, level: 1, clientId, facing: 2.4 });
+        // The weapon you last used (the client remembers it); after that you change it at a rack.
+        const weapon = Math.max(0, Math.min(WEAPON_KINDS.length - 1, msg.weapon | 0));
+        c.entity = this.world.spawnPlayer({ name, skin, level: 1, clientId, facing: 2.4, weapon });
         this.flushEvents();
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
         break;
@@ -101,7 +105,7 @@ export class LocalServer {
     const w = this.world, ecs = w.ecs, e = c.entity;
     const f = (v, d = 0) => (Number.isFinite(v) ? v : d);
     switch (msg.op) {
-      case 'tune': setPath(msg.root === 'enemies' ? ENEMIES : tuning, msg.path, msg.value); break;
+      case 'tune': setPath(msg.root === 'enemies' ? ENEMIES : msg.root === 'skills' ? SKILLS : tuning, msg.path, msg.value); break;
       case 'spawn': {
         const a = f(msg.ang, ecs.facing[e]), d = f(msg.dist, 8);
         w.debugSpawn(String(msg.kind), ecs.x[e] + Math.sin(a) * d, ecs.z[e] + Math.cos(a) * d, a + Math.PI);
@@ -110,6 +114,7 @@ export class LocalServer {
       case 'clear': w.debugClear(); break;
       case 'enc': { const q = w.encounters[0]; if (q) encounterDev(w, q, String(msg.sub)); break; }
       case 'god': ecs.god[e] = msg.on ? 1 : 0; break;
+      case 'weapon': setWeapon(w, e, Math.max(0, Math.min(WEAPON_KINDS.length - 1, f(msg.weapon) | 0))); break;
       case 'heal': ecs.hp[e] = ecs.maxHp[e]; break;
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
       case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; break;

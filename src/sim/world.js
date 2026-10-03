@@ -10,7 +10,8 @@ import { stepMover } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf } from './systems/enemies.js';
-import { Hazards, Shots, emitPattern, patternCount, PTYPE } from './projectiles.js';
+import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
+import { WEAPON_KINDS } from '../data/weapons.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 
 const D2R = Math.PI / 180;
@@ -34,12 +35,13 @@ export class World {
     this.feelQ = new Map(); // e → {seq, hitstop, slowmo} merged per command
     this.shockSeq = new Map(); // e → seq of its last perfect-guard shock
     this.tmp = { x: 0, z: 0, y: 0 };
+    this.tmpLag = { x: 0, z: 0 };
   }
 
   emit(ev) { this.events.push(ev); }
 
   // ---- Spawning ---------------------------------------------------------------------------------------
-  spawnPlayer({ name = 'Grumete', skin = 0, level = 1, x, z, clientId = -1, bot = false, facing = 0 }) {
+  spawnPlayer({ name = 'Grumete', skin = 0, level = 1, x, z, clientId = -1, bot = false, facing = 0, weapon = 0 }) {
     const ecs = this.ecs;
     const e = ecs.create(KIND.PLAYER, C.POS | C.MOVER | C.DASH | C.PLAYER | C.HEALTH | (bot ? C.BOT : 0));
     const s = this.map.landmarks.spawn;
@@ -56,6 +58,7 @@ export class World {
     ecs.hp[e] = ecs.maxHp[e];
     ecs.dashCharges[e] = ecs.dashMax[e];
     ecs.guardSt[e] = tuning.guard.stamina;
+    ecs.weapon[e] = Math.max(0, Math.min(WEAPON_KINDS.length - 1, weapon | 0));
     const cp = this.map.checkpoints.spawn;
     ecs.cpX[e] = cp.x; ecs.cpZ[e] = cp.z;
     ecs.skin[e] = skin;
@@ -207,24 +210,38 @@ export class World {
     this.emit({ type: 'cancel', src: e, tick: this.tick });
   }
 
+  // o.pt: the projectile tick of the command that fired it (the server judges the shot against the
+  // enemies as that player saw them: lag = how far behind the present, + the interpolation delay).
   spawnShot(owner, o) {
     const sid = this.nextSid++;
-    this.shots.spawn(sid, { ...o, owner, pred: this.isServer ? 0 : o.seq });
+    const Cb = tuning.combat;
+    const lag = o.lag ?? (this.isServer && o.pt ? Math.max(0, Math.min(Cb.rewind, this.tick - o.pt)) + Cb.interpTicks : Cb.interpTicks);
+    this.shots.spawn(sid, { ...o, owner, lag, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
-      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: this.shots.homing[this.shots.slot.get(sid)], cone: this.shots.cone[this.shots.slot.get(sid)] };
+      const S = this.shots, s = S.slot.get(sid);
+      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
+      if (o.kind) ev.kind = o.kind;
       if (o.from) { ev.from = o.from; ev.target = o.target; }
       this.emit(ev);
     }
     return sid;
   }
 
-  // Server: nearest enemy (team 2) in a cone ahead of a shot.
-  findEnemy(x, z, dx, dz, coneCos, maxD = 16) {
-    const ecs = this.ecs;
+  // Server: where enemy e was `lag` ticks ago (the history melee rewinds with).
+  lagPos(e, lag, out) {
+    if (lag > 0) return historyAt(this, e, this.tick - lag, out);
+    out.x = this.ecs.x[e]; out.z = this.ecs.z[e];
+    return out;
+  }
+
+  // Server: nearest enemy (team 2) in a cone ahead of a shot (as seen `lag` ticks ago).
+  findEnemy(x, z, dx, dz, coneCos, maxD = 16, lag = 0) {
+    const ecs = this.ecs, p = this.tmpLag;
     let best = 0, bd = maxD;
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0) continue;
-      const ox = ecs.x[e] - x, oz = ecs.z[e] - z, d = Math.hypot(ox, oz);
+      this.lagPos(e, lag, p);
+      const ox = p.x - x, oz = p.z - z, d = Math.hypot(ox, oz);
       if (d > bd || d < 1e-6) continue;
       if ((ox * dx + oz * dz) / d < coneCos) continue;
       bd = d; best = e;
@@ -233,15 +250,17 @@ export class World {
   }
 
   stepShots(dt) {
-    const S = this.shots, ecs = this.ecs, map = this.map, tmp = this.tmp;
-    const find = (x, z, dx, dz, c) => this.findEnemy(x, z, dx, dz, c);
+    const S = this.shots, ecs = this.ecs, map = this.map, tmp = this.tmp, p = this.tmpLag;
+    let lag = 0;
+    const find = (x, z, dx, dz, c) => this.findEnemy(x, z, dx, dz, c, 16, lag);
     const pos = (id, out) => {
-      if (!ecs.alive[id] || !(ecs.mask[id] & C.ENEMY)) return false;
-      out.x = ecs.x[id]; out.z = ecs.z[id]; out.y = ecs.y[id] + 1.1;
+      if (!ecs.alive[id] || !(ecs.mask[id] & C.ENEMY) || ecs.dead[id] > 0) return false;
+      this.lagPos(id, lag, out); out.y = ecs.y[id] + 1.1;
       return true;
     };
     for (let s = 0; s < S.cap; s++) {
       if (S.id[s] === 0) continue;
+      lag = S.lag[s];
       S.step(s, dt, find, pos, tmp);
       let end = S.life[s] <= 0, hit = 0;
       const x = S.x[s], z = S.z[s];
@@ -257,16 +276,20 @@ export class World {
         for (let e = 1; e < ecs.cap; e++) {
           if (!ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0 || e === S.lastHit[s]) continue;
           const rr = ecs.hurtR[e] + S.r[s];
-          if ((ecs.x[e] - x) ** 2 + (ecs.z[e] - z) ** 2 < rr * rr) { hit = e; end = true; break; }
+          this.lagPos(e, lag, p);
+          if ((p.x - x) ** 2 + (p.z - z) ** 2 < rr * rr) { hit = e; end = true; break; }
         }
       }
       if (!end) continue;
-      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s];
-      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s] };
+      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s];
+      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s], lag, kind };
+      const knock = S.knock[s] || undefined;
       S.free(s);
       this.emit({ type: 'shotEnd', sid, x, z, hit });
       if (hit) {
-        damageEnemy(this, hit, dmg, { by: owner, kind: 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: true });
+        // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
+        const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
+        damageEnemy(this, hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -274,18 +297,19 @@ export class World {
 
   // A reflected shot that hit jumps to the nearest other enemy in range (straight at it, soft homing).
   bounceShot(from, owner, hit, x, z, dmg, bounce, o) {
-    const ecs = this.ecs, B = tuning.parry.reflect.bounce;
-    let best = 0, bd = B.range;
+    const ecs = this.ecs, B = tuning.parry.reflect.bounce, p = this.tmpLag;
+    let best = 0, bd = B.range, bx = 0, bz = 0;
     for (let e = 1; e < ecs.cap; e++) {
       if (e === hit || !ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0) continue;
-      const d = Math.hypot(ecs.x[e] - x, ecs.z[e] - z);
-      if (d < bd) { bd = d; best = e; }
+      this.lagPos(e, o.lag, p);
+      const d = Math.hypot(p.x - x, p.z - z);
+      if (d < bd) { bd = d; best = e; bx = p.x; bz = p.z; }
     }
     if (!best) return 0;
-    const dx = (ecs.x[best] - x) / Math.max(bd, 1e-6), dz = (ecs.z[best] - z) / Math.max(bd, 1e-6);
+    const dx = (bx - x) / Math.max(bd, 1e-6), dz = (bz - z) / Math.max(bd, 1e-6);
     return this.spawnShot(owner, {
       pid: 0, type: o.type, x, y: o.y, z, dx, dz, speed: o.speed, dmg: Math.max(1, Math.round(dmg * B.dmgMult)), life: B.life, r: o.r,
-      heavy: false, seq: 0, bounce: bounce - 1, lastHit: hit, target: best, from,
+      heavy: false, seq: 0, bounce: bounce - 1, lastHit: hit, target: best, from, lag: o.lag, kind: o.kind,
     });
   }
 
@@ -425,6 +449,7 @@ export class World {
     const d = { id: e, kind: ecs.kind[e], name: ecs.names[e], title: ecs.titles[e], skin: ecs.skin[e], level: ecs.level[e] };
     if (ecs.mask[e] & C.ENEMY) { d.enemy = ecs.enemy[e]; d.maxHp = ecs.maxHp[e]; }
     if (ecs.mask[e] & C.HEALTH) d.team = ecs.team[e];
+    if (ecs.mask[e] & C.PLAYER) d.weapon = ecs.weapon[e];
     return d;
   }
 

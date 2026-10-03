@@ -218,7 +218,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   desvío determinista igual en cliente y servidor, pesado solo en EXCELENTE, aporrear destruye pero no refleja,
   guardia bloquea × 0.25 y gasta aguante, rotura aturde, perfecta atrapa y el golpe siguiente devuelve,
   rearme, imparable atraviesa la guardia, círculo del cielo no se bloquea, predicción exacta con guardias.
-- [ ] **P3** Armas: `weapons.js`, columnas ECS, `cmd.w`, armeros (`map.racks` en `worldgen.js` sin mover nada más
+- [x] **P3** Armas: `weapons.js`, columnas ECS, `cmd.w`, armeros (`map.racks` en `worldgen.js` sin mover nada más
   de la isla), `equip`, HELLO/describe/snapshot con arma, `Shots` con `key/homing/kind/knock/lag`, adopción por
   `key`, impactos con `historyAt(tick − lag)`. Tests: solo se cambia junto a un armero, la predicción del cambio
   es exacta, un disparo acierta donde el cliente veía al enemigo con 150 ms de lag.
@@ -247,6 +247,18 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   puede reflejar. Los círculos llevan `sx, sz` (de dónde viene el golpe) para el arco de la guardia. `Shots` ya
   tiene `key/homing/cone` (adelantado de P3) y el cliente adopta por `key`. Evento `stun {id}` (guardia perfecta).
   Tutorial: paso nuevo «guard» tras «parry». Bot: golpes a tiempo + atrapar orbes pesados (LV6/0.9 ≈ 205 s).
+- P3: `src/data/weapons.js` (`WEAPONS`, `WEAPON_KINDS`, `WEAPON`, `SKILLS`, `RACK_R 2.4`; F4 los ajusta con
+  `root: 'skills'`). Dos armeros: `map.racks` = playa (junto al spawn) y aldea; su colisión se añade antes de la
+  vegetación y su prop después de todos los sorteos (la isla queda idéntica: mismo hash de props sin los armeros).
+  El cambio vive en `src/sim/systems/skills.js` (`rackNear`, `stepEquip`, `setWeapon`: suelta golpe, guardia y
+  lanzamiento; los enfriamientos siguen). En el cliente F junto a un armero manda `w` en el siguiente comando
+  (aviso «F Armero: tomar …», toast con el kit, `settings.weapon` recuerda el arma para el próximo HELLO); F4:
+  botón «Arma: cambiar» (op `weapon`, sin armero). `Shots.kind` (`SHOT.REFLECT/BULLET/PELLET/RELEASE`), `knock`,
+  `lag`: `spawnShot` recibe `pt` y el servidor calcula `lag`; `stepShots`, el homing y los rebotes usan
+  `world.lagPos(e, lag)` (= `historyAt`). Balas y perdigones dañan como `kind 'bullet'` (blindaje, escudo y DEF
+  cuentan); reflejos y devoluciones como `'shot'`. Columnas nuevas ya en `PLAYER_FIELDS`: `weapon cdQ cdE qBuf eBuf
+  castK castT castX castZ shotCd shotN` (las de onda/lluvia/estocada llegan con P4/P5). Tests en
+  `tests/weapons.test.mjs`. El prop del armero se dibuja en P6 (hasta entonces es una colisión invisible).
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

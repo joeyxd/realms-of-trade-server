@@ -56,6 +56,10 @@ export class ECS {
     this.chain = f(); this.chainT = f(); this.riposte = f(); this.rBuf = f();
     this.pend0 = f(); this.pend0T = f(); this.pend0D = f(); this.pend1 = f(); this.pend1T = f(); this.pend1D = f();
     this.lastPt = f(); this.xp = f(); this.cpX = f(); this.cpZ = f(); this.god = f();
+    // Weapon (index into WEAPON_KINDS) and its skills: Q / E cooldowns and input buffers, the skill being
+    // cast (castK 0 none · 1 Q · 2 E · 3 R, time in it, its aim), the pistol's fire timer and hand.
+    this.weapon = f(); this.cdQ = f(); this.cdE = f(); this.qBuf = f(); this.eBuf = f();
+    this.castK = f(); this.castT = f(); this.castX = f(); this.castZ = f(); this.shotCd = f(); this.shotN = f();
     // ENEMY (server only)
     this.enemy = new Uint8Array(cap); // index into ENEMY_KINDS
     this.brain = new Array(cap).fill(null);
@@ -95,6 +99,8 @@ export class ECS {
     this.chain[id] = 0; this.chainT[id] = 99; this.riposte[id] = this.rBuf[id] = 0;
     this.pend0[id] = this.pend0T[id] = this.pend0D[id] = this.pend1[id] = this.pend1T[id] = this.pend1D[id] = 0;
     this.lastPt[id] = 0; this.xp[id] = 0; this.cpX[id] = this.cpZ[id] = 0; this.god[id] = 0;
+    this.weapon[id] = this.cdQ[id] = this.cdE[id] = this.qBuf[id] = this.eBuf[id] = 0;
+    this.castK[id] = this.castT[id] = this.castX[id] = this.castZ[id] = this.shotCd[id] = this.shotN[id] = 0;
     this.enemy[id] = 0; this.brain[id] = null;
     this.level[id] = 1; this.skin[id] = 0; this.clientId[id] = -1; this.lastSeq[id] = 0;
     this.names[id] = ''; this.titles[id] = ''; this.bot[id] = null;
@@ -128,4 +134,5 @@ export const PLAYER_FIELDS = [
   'guardT', 'guardP', 'guardRe', 'guardSt', 'guardRegT', 'catchN', 'catchHv', 'catchDmg', 'catchT',
   'chain', 'chainT', 'riposte', 'rBuf', 'pend0', 'pend0T', 'pend0D', 'pend1', 'pend1T', 'pend1D',
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',
+  'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN',
 ];

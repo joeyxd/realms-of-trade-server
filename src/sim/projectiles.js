@@ -11,13 +11,18 @@
 // player caused it, the sequence number of that player's command (prediction dedupes by it).
 //
 // Reflected projectiles become SHOTS: owned by a player, stepped every tick with soft homing toward
-// enemies, decided by the server (the client steps a visual copy toward what it sees).
+// enemies, decided by the server (the client steps a visual copy toward what it sees). Weapons fire
+// shots too (pistol bullets, pellets). The server tests a shot against the enemies as its shooter saw
+// them: `lag` ticks in the past (lag compensation, like melee).
 import { tuning, DT } from '../data/tuning.js';
 
 export const PTYPE = { PARRY: 0, HEAVY: 1, UNSTOP: 2 };
 export const PTYPE_OF = { parry: PTYPE.PARRY, heavy: PTYPE.HEAVY, unstop: PTYPE.UNSTOP };
 export const KILL = { NONE: 0, HIT: 1, DESTROY: 2, REFLECT: 3, BLOCK: 4, CANCEL: 5, WAVE: 6 };
 export const NEVER = 0x7fffffff;
+// What a player shot is (Shots.kind): a reflected bullet and a released catch ignore armour and the
+// boss's shield; pistol bullets and pellets do not.
+export const SHOT = { REFLECT: 0, BULLET: 1, PELLET: 2, RELEASE: 3 };
 
 const typeCfg = (t) => (t === PTYPE.HEAVY ? tuning.projectiles.heavy : t === PTYPE.UNSTOP ? tuning.projectiles.unstoppable : tuning.projectiles.parryable);
 export const radiusOf = (t) => typeCfg(t).radius;
@@ -269,6 +274,9 @@ export class Shots {
     // projectile id; shots made by a command: −(seq·8 + k + 1); bounces: 0, never predicted).
     this.key = F();
     this.homing = F(); this.cone = F(); // soft homing (rad/s) toward enemies in a cone ahead (deg); 0 = straight
+    this.kind = new Uint8Array(cap); // SHOT.*
+    this.knock = F(); // knockback on hit (0 = the melee default)
+    this.lag = new Int32Array(cap); // server: ticks behind the present its hits and homing are judged at
     this.bounce = new Uint8Array(cap); // server: jumps left after a hit
     this.lastHit = new Int32Array(cap); // server: the enemy it bounced off (not chosen again right away)
     this.pred = new Uint32Array(cap); // client: seq of the command that predicted it (0 = from the server)
@@ -292,6 +300,7 @@ export class Shots {
     this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0; this.key[s] = o.key || 0;
     this.homing[s] = o.homing ?? tuning.parry.reflect.wave.homing; this.cone[s] = o.cone ?? tuning.parry.reflect.wave.cone;
     this.bounce[s] = o.bounce || 0; this.lastHit[s] = o.lastHit || 0;
+    this.kind[s] = o.kind || 0; this.knock[s] = o.knock || 0; this.lag[s] = o.lag || 0;
     this.slot.set(id, s);
     this.count++;
     return s;

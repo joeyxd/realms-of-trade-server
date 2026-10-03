@@ -5,6 +5,7 @@ import { tuning } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { setPath } from '../net/localServer.js';
 import { MSG } from '../net/protocol.js';
+import { WEAPON_KINDS } from '../data/weapons.js';
 
 const get = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
 
@@ -70,6 +71,7 @@ export class DevPanel {
         <button data-op="riposte">Riposte lleno</button>
         <button data-op="lvdown">Nv −</button>
         <button data-op="lvup">Nv +</button>
+        <button data-op="weapon">Arma: cambiar</button>
       </div>
       <label class="dv-check"><input type="checkbox" data-flag="god"> Modo dios (sin daño)</label>
       <label class="dv-check"><input type="checkbox" data-flag="hitboxes"> Mostrar hitboxes</label>
@@ -111,6 +113,7 @@ export class DevPanel {
       case 'riposte': this.send('riposte'); break;
       case 'lvup': this.send('level', { level: (ps.level[e] || 1) + 1 }); break;
       case 'lvdown': this.send('level', { level: Math.max(1, (ps.level[e] || 1) - 1) }); break;
+      case 'weapon': this.send('weapon', { weapon: ((ps.weapon[e] | 0) + 1) % WEAPON_KINDS.length }); break;
       default: break;
     }
   }
