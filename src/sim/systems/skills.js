@@ -12,9 +12,14 @@
 //          each enemy on it once. E Hoja de viento: a crescent flies at the cursor (analytic, like the
 //          hostile bullets), destroys the parryables it crosses and hits each enemy once. R Tormenta: the
 //          RIPOSTE wave (combat.js).
+//   Pistolas  LMB held: alternating shots (combat.js, the basic attack). Q Descarga: 7 pellets in a cone,
+//          blows away the parryables in front, kicks you back. E Paso de humo: a short collision-stepped
+//          blink toward where you walk (the cursor when standing) with i-frames. R Lluvia de plomo: a zone
+//          at the cursor (≤ 9 u) where lead rains for 1.5 s: hits every 0.15 s, erases parryables.
 import { tuning, DT } from '../../data/tuning.js';
 import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf } from '../../data/weapons.js';
-import { PTYPE, KILL, clipDistance } from '../projectiles.js';
+import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
+import { hash01 } from '../../core/rng.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { ACT } from '../ecs.js';
 
@@ -53,6 +58,8 @@ function phases(id) {
   const S = SKILLS[id];
   if (id === 'lunge') return [S.windup, S.time, S.recover];
   if (id === 'wave') return [S.windup, 0, S.recover];
+  if (id === 'blast') return [S.windup, 0, S.root];
+  if (id === 'blink') return [0, 0, S.recover];
   return [0, 0, 0];
 }
 export const castBusy = (ecs, e) => ecs.castK[e] > 0;
@@ -113,7 +120,11 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
   ecs.castT[e] += dt;
   const t1 = ecs.castT[e];
   if (id === 'lunge' && t1 > w && t0 < w + a) lungeStep(world, e, t0, t1, pt, seq);
-  if (id === 'wave' && t0 <= w && t1 > w) throwWave(world, e, pt, seq);
+  if (t0 <= w && t1 > w) {
+    if (id === 'wave') throwWave(world, e, pt, seq);
+    else if (id === 'blast') fireBlast(world, e, pt, seq);
+    else if (id === 'blink') blink(world, e, cmd, seq);
+  }
   if (t1 >= w + a + r) cancelCast(ecs, e);
 }
 
@@ -123,6 +134,7 @@ export function castPose(ecs, e) {
   const id = skillOf(ecs, e, ecs.castK[e] === CAST.Q ? 'q' : 'e');
   if (id === 'lunge') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
+  if (id === 'blast') return { move: 0, act: ACT.BLAST };
   return { move: 1, act: ACT.CAST };
 }
 
@@ -188,6 +200,105 @@ export function stepWave(world, e, prev, pt, seq) {
   }
   if (world.isServer) world.crescentHits(e, f0, f1, pt, seq);
   if (pt >= ecs.waveEnd[e]) ecs.waveT0[e] = 0;
+}
+
+// ---- Pistolas: Descarga -----------------------------------------------------------------------------
+function fireBlast(world, e, pt, seq) {
+  const ecs = world.ecs, H = world.hazards, B = SKILLS.blast;
+  const f = Math.atan2(ecs.castX[e], ecs.castZ[e]), dx = ecs.castX[e], dz = ecs.castZ[e];
+  const x = ecs.x[e] + dx * 0.6, y = ecs.y[e] + 1.1, z = ecs.z[e] + dz * 0.6;
+  for (let k = 0; k < B.n; k++) {
+    const a = f + (k - (B.n - 1) / 2) * (B.arc / Math.max(1, B.n - 1)) * Math.PI / 180;
+    world.spawnShot(e, {
+      key: -(seq * 8 + k + 1), pid: 0, type: PTYPE.PARRY, x, y, z, dx: Math.sin(a), dz: Math.cos(a), speed: B.speed,
+      dmg: ecs.atk[e] * B.mult, life: B.life, r: B.r, heavy: false, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.PELLET, knock: B.knock, pt,
+    });
+  }
+  // The blast blows away the parryables in front of you.
+  const half = Math.cos((B.clearArc / 2) * Math.PI / 180);
+  let gained = 0;
+  for (let s = 0; s < H.cap; s++) {
+    if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
+    const hx = H.px(s, pt), hz = H.pz(s, pt), rx = hx - ecs.x[e], rz = hz - ecs.z[e], d = Math.hypot(rx, rz);
+    if (d > B.clearR + H.r[s] || (d > 0.5 && (rx * dx + rz * dz) / d < half)) continue;
+    H.remove(s, pt, KILL.DESTROY, e, seq);
+    const g = Math.min(B.riposte, B.riposteMax - gained);
+    if (g > 0) { addRiposte(ecs, e, g); gained += g; }
+    world.emit({ type: 'destroy', pid: H.id[s], e, seq, x: hx, z: hz, skill: 'blast' });
+  }
+  ecs.kbx[e] -= dx * B.recoil; ecs.kbz[e] -= dz * B.recoil;
+  world.emit({ type: 'blast', e, seq, x, z, dx, dz });
+}
+
+// ---- Pistolas: Paso de humo -----------------------------------------------------------------------------
+function blink(world, e, cmd, seq) {
+  const ecs = world.ecs, B = SKILLS.blink;
+  let dx = cmd.mx || 0, dz = cmd.mz || 0;
+  const len = Math.hypot(dx, dz);
+  if (len > 0.1) { dx /= len; dz /= len; } else { dx = ecs.castX[e]; dz = ecs.castZ[e]; }
+  const x0 = ecs.x[e], z0 = ecs.z[e], step = 0.3;
+  for (let d = 0; d < B.dist - 1e-9; d += step) {
+    const s = Math.min(step, B.dist - d);
+    if (moveWithCollision(world, e, dx * s, dz * s) < s * 0.5) break; // a rock, a cliff, deep water
+  }
+  ecs.iframes[e] = Math.max(ecs.iframes[e], B.iframes);
+  ecs.facing[e] = Math.atan2(dx, dz);
+  world.emit({ type: 'blink', e, seq, x0, z0, x1: ecs.x[e], z1: ecs.z[e] });
+}
+
+// ---- Pistolas: Lluvia de plomo ---------------------------------------------------------------------------
+// R with a full meter: the zone goes where you aim (at most `range` away) and starts after `delay`.
+export function callRain(world, e, cmd, pt, seq) {
+  const ecs = world.ecs, R = SKILLS.rain;
+  let ax = (cmd.ax || 0) - ecs.x[e], az = (cmd.az || 0) - ecs.z[e];
+  const d = Math.hypot(ax, az);
+  if (d > R.range) { ax *= R.range / d; az *= R.range / d; }
+  ecs.riposte[e] = 0;
+  ecs.rainX[e] = ecs.x[e] + ax; ecs.rainZ[e] = ecs.z[e] + az;
+  ecs.rainT0[e] = pt + Math.max(1, Math.round(R.delay / DT));
+  ecs.rainId[e] = seq;
+  if (d > 0.3) ecs.facing[e] = Math.atan2(ax, az);
+  world.emit({ type: 'rain', e, id: seq, seq, x: ecs.rainX[e], z: ecs.rainZ[e], tick: ecs.rainT0[e], dur: R.dur, r: R.r });
+}
+
+// The rain falls from rainT0 for `dur`: parryables inside are erased; every `every` s it hits (server).
+export function stepRain(world, e, prev, pt, seq) {
+  const ecs = world.ecs;
+  if (!(ecs.rainT0[e] > 0)) return;
+  const R = SKILLS.rain, H = world.hazards, t0 = ecs.rainT0[e];
+  const end = t0 + Math.round(R.dur / DT), every = Math.max(1, Math.round(R.every / DT));
+  if (pt >= t0) {
+    const cx = ecs.rainX[e], cz = ecs.rainZ[e];
+    for (let s = 0; s < H.cap; s++) {
+      if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
+      const hx = H.px(s, pt), hz = H.pz(s, pt);
+      if (Math.hypot(hx - cx, hz - cz) > R.r + H.r[s]) continue;
+      H.remove(s, pt, KILL.DESTROY, e, seq);
+      world.emit({ type: 'destroy', pid: H.id[s], e, seq, x: hx, z: hz, skill: 'rain' });
+    }
+    if (world.isServer) {
+      const last = Math.min(pt, end - 1);
+      for (let k = Math.max(0, Math.ceil((prev + 1 - t0) / every)); t0 + k * every <= last; k++) world.rainHits(e, t0 + k * every, seq);
+    }
+  }
+  if (pt >= end - 1) ecs.rainT0[e] = 0;
+}
+
+// The pistol's basic shot: alternating hands, a hair of deterministic spread.
+export function firePistol(world, e, pt, seq) {
+  const ecs = world.ecs, P = SKILLS.pistol;
+  const hand = ecs.shotN[e] % 2 ? 1 : -1;
+  const f = ecs.facing[e] + (hash01(seq, ecs.shotN[e], 7) * 2 - 1) * P.spread * Math.PI / 180;
+  const dx = Math.sin(f), dz = Math.cos(f);
+  const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
+  const x = ecs.x[e] + fx * 0.55 + fz * P.side * hand, z = ecs.z[e] + fz * 0.55 - fx * P.side * hand;
+  world.spawnShot(e, {
+    key: -(seq * 8 + 5), pid: 0, type: PTYPE.PARRY, x, y: ecs.y[e] + 1.15, z, dx, dz, speed: P.speed,
+    dmg: ecs.atk[e] * P.mult, life: P.life, r: P.r, heavy: false, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt,
+  });
+  ecs.shotN[e] += 1;
+  ecs.shotCd[e] = P.every;
+  world.emit({ type: 'fire', e, seq, hand, x, z, dx, dz });
 }
 
 // Distance from (px, pz) to the segment (ax, az)–(bx, bz).

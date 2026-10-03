@@ -19,9 +19,10 @@
 import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
-import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf } from './skills.js';
+import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain } from './skills.js';
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
+import { SKILLS } from '../../data/weapons.js';
 
 const D2R = Math.PI / 180;
 const TIERS = [null, 'poor', 'good', 'excellent'];
@@ -430,11 +431,12 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
-  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock');
+  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
-  // A crescent in flight keeps cutting whatever you do (even down).
+  // A crescent in flight and the lead rain keep going whatever you do (even down).
   stepWave(world, e, prev, pt, seq);
+  stepRain(world, e, prev, pt, seq);
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;
@@ -456,6 +458,8 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   if (cmd.w) stepEquip(world, e, cmd);
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
+  const pistol = skillOf(ecs, e, 'basic') === 'pistol';
+  const trigger = pistol && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the pistols firing
   const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;
   if (atkPress) ecs.atkBuf[e] = T.player.inputBuffer;
   if (cmd.prs & BTN.R) ecs.rBuf[e] = T.player.inputBuffer;
@@ -471,8 +475,8 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   const canAct = !dashing && ecs.stagger[e] <= 0;
 
   // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
-  // where you stand) and RMB into a block.
-  if ((atkPress || guardPress) && canAct) {
+  // where you stand; the cutlass only: the pistols reflect by catching) and RMB into a block.
+  if (((atkPress && !pistol) || guardPress) && canAct) {
     for (const k of [0, 1]) {
       const id = k ? ecs.pend1[e] : ecs.pend0[e];
       if (!id) continue;
@@ -482,7 +486,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
       if (s === undefined) continue;
       const H = world.hazards;
       faceAim(ecs, e, cmd);
-      if (atkPress) {
+      if (atkPress && !pistol) {
         H.dead[s] = NEVER; // re-open it so reflect() sees a live projectile at the hit point
         swordReflect(world, e, s, Math.min(pt, H.dead[s]), seq, 1, { fromX: ecs.x[e], fromZ: ecs.z[e], coyote: true });
       } else {
@@ -498,7 +502,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   // attack press wins over the guard). A new raise is only PERFECT-capable once the re-arm has run out.
   const st0 = ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1] : null;
   const swingBusy = st0 && ecs.atkT[e] < st0.windup + st0.active;
-  if (guardHeld && canAct && !swingBusy && !castBusy(ecs, e) && !(ecs.atkBuf[e] > 0) && !skillWanted(ecs, e) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max)) {
+  if (guardHeld && canAct && !swingBusy && !castBusy(ecs, e) && !trigger && !(ecs.atkBuf[e] > 0) && !skillWanted(ecs, e) && !(ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max)) {
     if (ecs.atkStage[e] > 0) { ecs.lastStage[e] = ecs.atkStage[e]; ecs.atkStage[e] = 0; ecs.comboT[e] = 0; }
     if (ecs.guardT[e] < 0 && ecs.guardSt[e] >= G.minRaise) {
       ecs.guardT[e] = 0;
@@ -513,8 +517,17 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   if (canAct && !swingBusy && !castBusy(ecs, e) && skillWanted(ecs, e)) tryCast(world, e, cmd, seq);
   if (castBusy(ecs, e)) stepCast(world, e, cmd, dt, pt, seq);
 
+  // Pistols: fire while LMB is held (a press is buffered), every SKILLS.pistol.every s. The first shot after
+  // a perfect guard also throws the caught bullets back.
+  if (pistol && canAct && !castBusy(ecs, e) && (trigger || ecs.atkBuf[e] > 0) && ecs.shotCd[e] <= 0) {
+    ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
+    faceAim(ecs, e, cmd);
+    if (ecs.catchN[e] > 0) releaseCaught(world, e, seq);
+    firePistol(world, e, pt, seq);
+  }
+
   // Melee combo.
-  if (canAct && !castBusy(ecs, e) && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
+  if (!pistol && canAct && !castBusy(ecs, e) && ecs.atkStage[e] === 0 && ecs.atkBuf[e] > 0) {
     const ls = ecs.lastStage[e];
     swingStage(world, e, ecs.comboT[e] <= M.comboGap && ls > 0 && ls < 3 ? ls + 1 : 1, cmd);
   }
@@ -542,6 +555,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     cancelCast(ecs, e);
     riposteWave(world, e, pt, seq);
     ecs.act[e] = ACT.RIPOSTE; ecs.actT[e] = 0;
+  } else if (canAct && ecs.rBuf[e] > 0 && ecs.riposte[e] >= P.riposte.max && skillOf(ecs, e, 'r') === 'rain') {
+    // The pistols' R: lead rain on the cursor (you keep moving).
+    ecs.rBuf[e] = 0; ecs.guardT[e] = -1;
+    callRain(world, e, cmd, pt, seq);
+    ecs.act[e] = ACT.CAST; ecs.actT[e] = 0;
   }
 
   contacts(world, e, prev, pt, seq);
@@ -566,11 +584,15 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   // Movement multiplier and the action shown to others.
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
   const cp = castPose(ecs, e);
-  ecs.moveMul[e] = cp ? cp.move : ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move : ecs.stagger[e] > 0 ? 0 : 1;
+  const firing = pistol && ecs.shotCd[e] > 0;
+  ecs.moveMul[e] = cp ? cp.move : ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move
+    : ecs.stagger[e] > 0 ? 0 : firing ? SKILLS.pistol.move : 1;
   let a = ACT.IDLE;
   if (ecs.stagger[e] > 0) a = ACT.STAGGER;
   else if (cp) a = cp.act;
   else if (ecs.guardT[e] >= 0) a = ACT.GUARD;
+  else if (firing) a = ACT.SHOOT;
+  else if (ecs.act[e] === ACT.CAST && ecs.actT[e] < 0.4) a = ACT.CAST;
   else if (ecs.atkStage[e] > 0) a = ACT.SWING1 + ecs.atkStage[e] - 1;
   else if (ecs.act[e] === ACT.RIPOSTE && ecs.actT[e] < 0.45) a = ACT.RIPOSTE;
   setAct(ecs, e, a);

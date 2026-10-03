@@ -23,9 +23,9 @@ export const SKILLS = {
   // LMB held: alternating hands, every `every` s.
   pistol: { name: 'Disparo', hint: 'Mantén para disparar', every: 0.2, speed: 20, life: 0.65, r: 0.16, mult: 0.6, spread: 1.5, move: 0.85, side: 0.24 },
   // Q: a shotgun cone that also blows away the parryables in front.
-  blast: { name: 'Descarga', hint: 'Escopetazo que sopla balas', n: 7, arc: 44, speed: 16, life: 0.4, mult: 0.55, knock: 7, clearR: 3.2, clearArc: 70, recoil: 5, root: 0.15, cd: 6 },
+  blast: { name: 'Descarga', hint: 'Escopetazo que sopla balas', windup: 0.05, n: 7, arc: 44, speed: 16, life: 0.4, r: 0.14, mult: 0.55, knock: 7, clearR: 3.2, clearArc: 70, riposte: 2, riposteMax: 10, recoil: 5, root: 0.15, cd: 6 },
   // E: a short teleport (collision-stepped) with i-frames.
-  blink: { name: 'Paso de humo', hint: 'Teletransporte corto', dist: 4.5, iframes: 0.3, cd: 7 },
+  blink: { name: 'Paso de humo', hint: 'Teletransporte corto', dist: 4.5, iframes: 0.3, recover: 0.1, cd: 7 },
   // R: lead rain on a zone at the cursor.
   rain: { name: 'Lluvia de plomo', hint: 'Zona de balas en el cursor', range: 9, delay: 0.35, dur: 1.5, every: 0.15, r: 3.2, mult: 0.55 },
 };

@@ -225,7 +225,7 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
 - [x] **P4** Sable: Estocada, Hoja de viento (onda analítica en el comando), Tormenta como R del sable. Tests:
   la estocada recorre 4.5 u, daña una vez y destruye balas; la hoja destruye las parreables que cruza (también en la
   predicción) y daña una vez a cada enemigo; enfriamientos.
-- [ ] **P5** Pistolas: disparo continuo, Descarga, Paso de humo, Lluvia de plomo; la devolución de atrapadas con
+- [x] **P5** Pistolas: disparo continuo, Descarga, Paso de humo, Lluvia de plomo; la devolución de atrapadas con
   pistola. Tests: cadencia y daño, el escudo/blindaje frenan las balas pero no las devueltas, la descarga sopla
   balas, el blink no atraviesa rocas y da i-frames, la lluvia daña cada 0.15 s y borra balas; predicción exacta.
 - [ ] **P6** Render: pistolas en la mano + `setWeapon`, poses (guardia ×2, apuntar, estocada, hoja, descarga, lluvia),
@@ -269,6 +269,16 @@ Daño por segundo de referencia (ATK 10): pistola ≈ 30 a 13 u; combo de sable 
   sigue volando aunque caigas), `world.crescentHits` con `brain.waveBy` (una vez por enemigo). Daño de habilidades:
   `kind 'skill'` (blindaje, escudo y DEF cuentan). Eventos `cast {skill, dx, dz}`, `wave {id, tick, end, …}`,
   `destroy {skill}`. Tests en `tests/sable.test.mjs`.
+- P5: disparo de pistola en `combat.js` (es el ataque básico: LMB mantenido o pulsado con búfer, `shotCd`, mano
+  alterna con `shotN`, `firePistol` en `skills.js`, clave `−(seq·8 + 5)`, evento `fire {hand}`); con pistolas el
+  LMB no refleja (ni coyote: solo RMB bloquea), y el gatillo mantenido gana a la guardia. Descarga: windup 0.05,
+  perdigones `SHOT.PELLET` (claves `−(seq·8 + k + 1)`), sopla parreables (+2 RIPOSTE c/u, máx. 10), retroceso por
+  `kbx/kbz`, enraizado 0.15 s. Paso de humo: pasos de 0.3 u con `moveWithCollision` (se para si avanza < la mitad),
+  i-frames 0.3 (ESQUIVA/FANTASMA como el dash), evento `blink`. Lluvia: `callRain` (punto recortado a 9 u, retraso
+  0.35 s), `stepRain` antes del chequeo de muerte (borra parreables dentro; pulsos `t0 + k·9` en `(prev, pt]`),
+  `world.rainHits` (historial a `T − interpTicks`, perfora DEF); columnas `rainT0 rainX rainZ rainId`; evento `rain`.
+  **Arreglo:** el cliente no adoptaba nunca los disparos predichos (el evento `shot` trae `owner`, no `e`): desde M2
+  los reflejos se veían duplicados un momento. Tests en `tests/pistolas.test.mjs`.
 
 ## 4. Riesgos y notas
 - **Latencia y ventanas cortas:** EXCELENTE es 70 ms de `tc`, pero se mide en el tick `pt` que el jugador veía

@@ -116,7 +116,8 @@ export class GameClient {
 
   onEvent(ev) {
     const H = this.pred.hazards;
-    const mine = this.isMe(ev.e) || ((ev.type === 'death' || ev.type === 'respawn') && ev.id === this.youServer);
+    // (A shot names its owner, not `e`.)
+    const mine = this.isMe(ev.type === 'shot' ? ev.owner : ev.e) || ((ev.type === 'death' || ev.type === 'respawn') && ev.id === this.youServer);
     let show = true;
     switch (ev.type) {
       case 'pattern':

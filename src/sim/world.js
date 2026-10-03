@@ -374,6 +374,18 @@ export class World {
     }
   }
 
+  // One pulse of the lead rain at tick T: every enemy in the zone (as the caller saw it), DEF pierced.
+  rainHits(e, T, seq) {
+    const ecs = this.ecs, tmp = this.tmp, R = SKILLS.rain;
+    const cx = ecs.rainX[e], cz = ecs.rainZ[e];
+    for (let o = 1; o < ecs.cap; o++) {
+      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      historyAt(this, o, T - tuning.combat.interpTicks, tmp);
+      if (Math.hypot(tmp.x - cx, tmp.z - cz) > R.r + ecs.hurtR[o]) continue;
+      damageEnemy(this, o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6 });
+    }
+  }
+
   waveHits(e, seq) {
     const ecs = this.ecs, RP = tuning.parry.riposte;
     for (let o = 1; o < ecs.cap; o++) {

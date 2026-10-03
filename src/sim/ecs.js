@@ -67,6 +67,8 @@ export class ECS {
     // end tick, id (the seq that threw it), RIPOSTE it has given. The lunge: distance covered so far.
     this.waveT0 = f(); this.waveX = f(); this.waveZ = f(); this.waveDx = f(); this.waveDz = f(); this.waveEnd = f();
     this.waveId = f(); this.waveN = f(); this.lungeCov = f();
+    // The pistols' lead rain: first tick it falls (0 = none), centre, id (the seq that called it).
+    this.rainT0 = f(); this.rainX = f(); this.rainZ = f(); this.rainId = f();
     // ENEMY (server only)
     this.enemy = new Uint8Array(cap); // index into ENEMY_KINDS
     this.brain = new Array(cap).fill(null);
@@ -111,6 +113,7 @@ export class ECS {
     this.castLock[id] = 0;
     this.waveT0[id] = this.waveX[id] = this.waveZ[id] = this.waveDx[id] = this.waveDz[id] = this.waveEnd[id] = 0;
     this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
+    this.rainT0[id] = this.rainX[id] = this.rainZ[id] = this.rainId[id] = 0;
     this.enemy[id] = 0; this.brain[id] = null;
     this.level[id] = 1; this.skin[id] = 0; this.clientId[id] = -1; this.lastSeq[id] = 0;
     this.names[id] = ''; this.titles[id] = ''; this.bot[id] = null;
@@ -146,4 +149,5 @@ export const PLAYER_FIELDS = [
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',
   'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN', 'castLock',
   'waveT0', 'waveX', 'waveZ', 'waveDx', 'waveDz', 'waveEnd', 'waveId', 'waveN', 'lungeCov',
+  'rainT0', 'rainX', 'rainZ', 'rainId',
 ];
