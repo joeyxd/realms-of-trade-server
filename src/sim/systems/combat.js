@@ -24,6 +24,7 @@ import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
+import { LAWLESS } from '../../data/lawless.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
 
 const D2R = Math.PI / 180;
@@ -82,20 +83,24 @@ function addRiposte(ecs, e, n) {
   ecs.riposte[e] = Math.min(tuning.parry.riposte.max, ecs.riposte[e] + n * ecs.ripMul[e]);
 }
 
+// o: {x, z (where the blow comes from), kind, src, seq, knock, noInv, pierce (ignores DEF), by (the pirate who
+// struck, friendly fire), crit}.
 export function hurtPlayer(world, e, raw, o) {
   const ecs = world.ecs, C = tuning.combat;
   if (ecs.dead[e] > 0) return 0;
-  const dmg = ecs.god[e] > 0 ? 0 : mitigate(raw, ecs.def[e]);
+  const dmg = ecs.god[e] > 0 ? 0 : mitigate(raw, o.pierce ? 0 : ecs.def[e]);
   if (dmg > 0) { ecs.hp[e] -= dmg; ecs.regenT[e] = 0; }
   if (!o.noInv) ecs.hurtInv[e] = C.hurtIframes;
   const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
   if (kl > 1e-6) { const k = o.knock ?? C.hitKnock; ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
-  world.emit({ type: 'hurt', e, dmg, raw, kind: o.kind, src: o.src || 0, seq: o.seq, x: o.x, z: o.z, practice: raw <= 0 ? 1 : 0 });
-  if (ecs.hp[e] <= 0) killPlayer(world, e, o.seq);
+  const ev = { type: 'hurt', e, dmg, raw, kind: o.kind, src: o.src || 0, seq: o.seq, x: o.x, z: o.z, practice: raw <= 0 ? 1 : 0 };
+  if (o.by) { ev.by = o.by; if (o.crit) ev.crit = 1; }
+  world.emit(ev);
+  if (ecs.hp[e] <= 0) killPlayer(world, e, o.seq, o.by || 0);
   return dmg;
 }
 
-function killPlayer(world, e, seq) {
+function killPlayer(world, e, seq, by = 0) {
   const ecs = world.ecs;
   ecs.hp[e] = 0;
   ecs.dead[e] = 1;
@@ -103,7 +108,52 @@ function killPlayer(world, e, seq) {
   ecs.atkStage[e] = 0; ecs.guardT[e] = -1; ecs.chain[e] = 0;
   ecs.pend0[e] = ecs.pend1[e] = 0;
   ecs.dashT[e] = -1; ecs.state[e] = 0;
-  world.emit({ type: 'death', id: e, seq, x: ecs.x[e], z: ecs.z[e] });
+  const ev = { type: 'death', id: e, seq, x: ecs.x[e], z: ecs.z[e] };
+  if (by) ev.by = by;
+  world.emit(ev);
+  // The server: falling inside the Cala Calavera spills what you carry (systems/inventory.js).
+  if (world.onDeath) world.onDeath(e, by);
+}
+
+// A blow from another pirate inside the Cala Calavera (M4.5; server only, between the victim's own commands, which
+// it then reconciles). What the victim's dash, invulnerability after a hit and guard make of it. The damage is
+// × LAWLESS.pvpDmg and can crit; the third hit, the lunge and the storm (heavy) stagger. o: as damageEnemy's
+// {by, kind, seq (the attacker's), x, z, heavy, knock, pierce, above}.
+export function hurtByPlayer(world, e, raw, o) {
+  const ecs = world.ecs, G = tuning.guard, by = o.by > 0 ? o.by : 0;
+  if (ecs.dead[e] > 0) return 0;
+  if (ecs.iframes[e] > 0) { world.emit({ type: 'dodge', e, seq: 0, pvp: 1, x: o.x, z: o.z }); return 0; }
+  if (ecs.hurtInv[e] > 0) return 0;
+  const crit = world.rng() < tuning.stats.crit + ecs.critAdd[by];
+  raw *= LAWLESS.pvpDmg * (crit ? tuning.stats.critMult + ecs.critDAdd[by] : 1);
+  if (guardUp(ecs, e) && !o.above && inGuardArc(ecs, e, o.x, o.z)) {
+    if (guardPerfect(ecs, e)) {
+      // Nothing gets through; whoever struck it from close by reels.
+      addRiposte(ecs, e, G.riposte);
+      world.emit({ type: 'guard', st: 'perfect', e, seq: 0, pvp: 1, x: o.x, z: o.z, heavy: 0, n: ecs.catchN[e] });
+      if (by && ecs.alive[by] && Math.hypot(ecs.x[by] - ecs.x[e], ecs.z[by] - ecs.z[e]) < LAWLESS.shockR) {
+        ecs.stagger[by] = Math.max(ecs.stagger[by], LAWLESS.shockStagger);
+        ecs.atkStage[by] = 0; ecs.guardT[by] = -1;
+        cancelCast(ecs, by);
+        world.emit({ type: 'stun', id: by, by: e, seq: 0, x: ecs.x[by], z: ecs.z[by] });
+      }
+      return 0;
+    }
+    ecs.guardSt[e] -= raw * (o.heavy ? G.heavyCost : G.cost);
+    ecs.guardRegT[e] = 0;
+    addRiposte(ecs, e, G.blockRiposte);
+    world.emit({ type: 'guard', st: 'block', e, seq: 0, pvp: 1, x: o.x, z: o.z, heavy: o.heavy ? 1 : 0 });
+    const d = hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x: o.x, z: o.z, kind: 'block', src: by, by, seq: 0, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true });
+    if (ecs.dead[e] <= 0 && ecs.guardSt[e] <= 0) breakGuard(world, e, 0);
+    return d;
+  }
+  const d = hurtPlayer(world, e, raw, { x: o.x, z: o.z, kind: 'pvp', src: by, by, crit, seq: 0, knock: Math.min(o.knock ?? tuning.combat.hitKnock, 8), pierce: o.pierce });
+  if (o.heavy && ecs.dead[e] <= 0) {
+    ecs.stagger[e] = Math.max(ecs.stagger[e], LAWLESS.heavyStagger);
+    ecs.atkStage[e] = 0; ecs.guardT[e] = -1;
+    cancelCast(ecs, e);
+  }
+  return d;
 }
 
 function respawnPlayer(world, e, seq) {

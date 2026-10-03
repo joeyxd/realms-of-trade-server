@@ -126,6 +126,41 @@ function signGeo() {
   return merge([part(cyl(0.08, 0.1, 2.2, 6), WOOD_D, { pos: [0, 1.1, 0] })]);
 }
 
+// La Cala Calavera (M4.5): the border totems, the old fort's stakes and the black flag's pole. Front is +z.
+const BONE = 0xe9dfc6, BONE_D = 0xb9ac8e, RAG = 0xb3262b, SOCKET = 0x1a1033;
+function skullPostGeo() {
+  const L = [
+    part(cyl(0.11, 0.15, 2.3, 6), WOOD_D, { pos: [0, 1.15, 0] }),
+    part(rbox(0.9, 0.09, 0.09, 0.02), WOOD_D, { pos: [0, 1.75, 0], rot: [0, 0, 0.08] }),
+    part(sphere(0.25, 8, 6), BONE, { pos: [0, 2.52, 0.02], scale: [1, 0.92, 1.05] }),
+    part(rbox(0.3, 0.13, 0.22, 0.04), BONE_D, { pos: [0, 2.31, 0.08] }),
+    part(sphere(0.07, 6, 4), SOCKET, { pos: [-0.09, 2.53, 0.22] }),
+    part(sphere(0.07, 6, 4), SOCKET, { pos: [0.09, 2.53, 0.22] }),
+    part(cone(0.04, 0.08, 3), SOCKET, { pos: [0, 2.43, 0.24], rot: [Math.PI, 0, 0] }),
+    // a red rag tied under the skull, and two crossed bones on the bar
+    part(bbox(0.34, 0.5, 0.03), RAG, { pos: [0.18, 1.5, 0.08], rot: [0, 0, -0.12] }),
+    part(cyl(0.035, 0.035, 0.6, 5), BONE, { pos: [-0.25, 1.78, 0.06], rot: [0, 0, 0.7] }),
+    part(cyl(0.035, 0.035, 0.6, 5), BONE, { pos: [-0.25, 1.78, 0.06], rot: [0, 0, -0.7] }),
+  ];
+  return merge(L);
+}
+function palisadeGeo() {
+  const L = [];
+  for (const [x, h, t] of [[-0.42, 1.9, 0.05], [0, 2.3, -0.04], [0.42, 1.6, 0.09]]) {
+    L.push(part(cyl(0.16, 0.18, h, 6), x ? WOOD_D : 0x7a4a26, { pos: [x, h / 2, 0], rot: [t, 0, t * 0.6] }));
+    L.push(part(cone(0.16, 0.36, 6), WOOD_L, { pos: [x + t * h * 0.6, h + 0.16, -t * h * 0.1], rot: [t, 0, t * 0.6] }));
+  }
+  L.push(part(rbox(1.3, 0.12, 0.1, 0.02), WOOD, { pos: [0, 1.05, 0.17], rot: [0, 0, 0.1] }));
+  return merge(L);
+}
+function flagPoleGeo() {
+  return merge([
+    part(cyl(0.09, 0.13, 6.2, 6), WOOD_D, { pos: [0, 3.1, 0] }),
+    part(sphere(0.14, 6, 4), 0xc9a44c, { pos: [0, 6.25, 0] }),
+    part(lumpy(ico(0.5, 1), 0.25, 3), 0x8f8a84, { pos: [0, 0.15, 0], scale: [1, 0.45, 1] }),
+  ]);
+}
+
 function rockRingGeo() {
   const L = [];
   for (let i = 0; i < 9; i++) {
@@ -190,17 +225,45 @@ function flagTexture() {
   });
 }
 
-function signTexture() {
+function signTexture(cala = false) {
   return canvasTexture(256, (ctx, s) => {
     ctx.fillStyle = '#c9925a'; ctx.fillRect(0, 0, s, s);
     for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? '#b98352' : '#d6a565'; ctx.fillRect(0, i * (s / 6), s, s / 12); }
     ctx.strokeStyle = '#5b3a24'; ctx.lineWidth = 10; ctx.strokeRect(5, 5, s - 10, s - 10);
     ctx.fillStyle = '#3b2418';
-    ctx.font = 'bold 44px "Lilita One", "Titan One", sans-serif';
     ctx.textAlign = 'center';
+    if (cala) {
+      // The Cala's sign: its name, a skull, and the warning in red.
+      ctx.font = 'bold 40px "Lilita One", "Titan One", sans-serif';
+      ctx.fillText('CALA', s / 2, s * 0.24);
+      ctx.fillText('CALAVERA', s / 2, s * 0.42);
+      ctx.beginPath(); ctx.arc(s / 2, s * 0.6, 26, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(s / 2 - 16, s * 0.6 + 10, 32, 22);
+      ctx.fillStyle = '#c9925a';
+      ctx.beginPath(); ctx.arc(s / 2 - 10, s * 0.6 - 2, 7, 0, Math.PI * 2); ctx.arc(s / 2 + 10, s * 0.6 - 2, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#a3201e';
+      ctx.font = 'bold 30px "Lilita One", "Titan One", sans-serif';
+      ctx.fillText('SIN LEY →', s / 2, s * 0.9);
+      return;
+    }
+    ctx.font = 'bold 44px "Lilita One", "Titan One", sans-serif';
     ctx.fillText('LA CALDERA', s / 2, s * 0.45);
     ctx.font = 'bold 80px sans-serif';
     ctx.fillText('↑', s / 2, s * 0.85);
+  });
+}
+
+// The black flag of the Cala: a skull over crossed bones on black.
+function blackFlagTexture() {
+  return canvasTexture(128, (ctx, s) => {
+    ctx.fillStyle = '#15101c'; ctx.fillRect(0, 0, s, s);
+    ctx.strokeStyle = '#f2ead6'; ctx.lineWidth = 11; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(s * 0.22, s * 0.62); ctx.lineTo(s * 0.78, s * 0.9); ctx.moveTo(s * 0.78, s * 0.62); ctx.lineTo(s * 0.22, s * 0.9); ctx.stroke();
+    ctx.fillStyle = '#f2ead6';
+    ctx.beginPath(); ctx.arc(s * 0.5, s * 0.36, 26, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(s * 0.5 - 15, s * 0.36 + 14, 30, 18);
+    ctx.fillStyle = '#15101c';
+    ctx.beginPath(); ctx.arc(s * 0.5 - 10, s * 0.35, 7, 0, Math.PI * 2); ctx.arc(s * 0.5 + 10, s * 0.35, 7, 0, Math.PI * 2); ctx.fill();
   });
 }
 
@@ -213,7 +276,7 @@ export function createProps(map) {
   const kits = {
     hut: hutGeo(), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(), lantern: lanternGeo(),
     dockPost: postGeo(), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: signGeo(),
-    campfire: rockRingGeo(), rack: rackGeo(),
+    campfire: rockRingGeo(), rack: rackGeo(), skullPost: skullPostGeo(), palisade: palisadeGeo(), blackFlag: flagPoleGeo(),
   };
   const byKind = new Map();
   for (const p of map.props) {
@@ -306,14 +369,26 @@ export function createProps(map) {
     group.add(ship);
   }
 
-  // Sign board with text.
-  const signP = map.props.find((p) => p.kind === 'sign');
-  if (signP) {
-    const board = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.1, 0.1), toon({ map: signTexture(), color: 0xffffff }, { key: 'signboard' }));
-    board.position.set(signP.x, signP.y + 1.75, signP.z);
+  // Sign boards with text (h 1: the Cala's).
+  for (const signP of map.props.filter((p) => p.kind === 'sign')) {
+    const board = new THREE.Mesh(new THREE.BoxGeometry(1.5, signP.h ? 1.45 : 1.1, 0.1), toon({ map: signTexture(!!signP.h), color: 0xffffff }, { key: 'signboard' }));
+    board.position.set(signP.x, signP.y + (signP.h ? 1.85 : 1.75), signP.z);
     board.rotation.y = signP.rot;
     board.castShadow = true;
     group.add(board);
+  }
+  // The Cala's black flag (it flutters: GameScene.update).
+  const flags = [];
+  for (const fp of map.props.filter((p) => p.kind === 'blackFlag')) {
+    const g = new THREE.PlaneGeometry(1.9, 1.3, 6, 1);
+    g.translate(0.95, 0, 0);
+    const flag = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: blackFlagTexture(), side: THREE.DoubleSide }));
+    flag.position.set(fp.x, fp.y + 5.5, fp.z);
+    flag.rotation.y = fp.rot + 0.6;
+    flag.layers.set(LAYER.NO_OUTLINE);
+    flag.userData.base = g.attributes.position.array.slice();
+    group.add(flag);
+    flags.push(flag);
   }
 
   // Gate doors (open; M3 closes them).
@@ -357,5 +432,5 @@ export function createProps(map) {
     floaters.push(holder);
   }
 
-  return { group, ship, gate, floaters, windowMat, glassMat: glowMat };
+  return { group, ship, gate, floaters, flags, windowMat, glassMat: glowMat };
 }

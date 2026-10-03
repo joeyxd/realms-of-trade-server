@@ -14,6 +14,7 @@ import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
 import { refreshStats, masteryXpToNext } from './stats.js';
 import { setWeapon } from './skills.js';
 import { C } from '../ecs.js';
+import { LAWLESS } from '../../data/lawless.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -23,7 +24,7 @@ export function newProfile({ weapon = 0 } = {}) {
   const p = {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
     mast: WEAPON_KINDS.map(() => [1, 0]), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
-    stats: { kills: 0, wins: 0, gold: 0, items: 0 },
+    stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
   };
   for (const s of SLOTS) p.eq[s] = null;
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
@@ -88,6 +89,7 @@ export function installInventory(world) {
   world.lootRng = mulberry32((world.seed ^ 0x10075ed) >>> 0);
   world.onXp = (e, n) => masteryXp(world, e, n);
   world.onRack = (e, w) => rackWeapon(world, e, WEAPON_KINDS[w]);
+  world.onDeath = (e, by) => spillOnDeath(world, e, by);
   return world;
 }
 
@@ -151,54 +153,102 @@ export function masteryXp(world, e, n) {
 }
 
 // ---- Drops ---------------------------------------------------------------------------------------------------
-// A new drop for `to` near (x, z), scattered with the loot RNG (not into deep water).
-function addDrop(world, to, kind, x, z, extra, out) {
-  const rng = world.lootRng, map = world.map, [r0, r1] = DROPS.scatter;
+// A new drop for `to` near (x, z), scattered with the loot RNG (not into deep water). to 0: a public drop (M4.5:
+// the Cala Calavera's), whoever walks over it first. o: {scatter: [r0, r1], life: s}.
+function addDrop(world, to, kind, x, z, extra, out, o = {}) {
+  const rng = world.lootRng, map = world.map, [r0, r1] = o.scatter || DROPS.scatter;
   let dx = x, dz = z;
   for (let k = 0; k < 4; k++) {
     const a = rng() * Math.PI * 2, r = r0 + (r1 - r0) * rng();
     const tx = x + Math.sin(a) * r, tz = z + Math.cos(a) * r;
     if (map.groundAt(tx, tz) > -0.3) { dx = tx; dz = tz; break; }
   }
-  const d = { id: world.nextDrop++, to, kind, x: dx, z: dz, t: world.tick + Math.round(DROPS.life / DT), ...extra };
+  const d = { id: world.nextDrop++, to, kind, x: dx, z: dz, t: world.tick + Math.round((o.life || DROPS.life) / DT), ...extra };
   world.drops.set(d.id, d);
   if (out) out.push(d);
   return d;
 }
-// What the owner's client needs to draw a drop.
+// What a client needs to draw a drop (public ones: who dropped it, if a pirate did).
 export const dropView = (d) => {
   const v = { id: d.id, kind: d.kind, x: d.x, z: d.z };
   if (d.item) v.item = d.item;
   if (d.n) v.n = d.n;
   if (d.q) v.q = d.q;
+  if (!d.to) { v.pub = 1; if (d.fromName) v.from = d.fromName; }
   return v;
 };
 function announce(world, to, list, fx, fz) {
   if (list.length) world.emit({ type: 'loot', to, e: to, fx, fz, drops: list.map(dropView) });
 }
+// Public drops go to everyone (no `to`).
+function announcePublic(world, list, fx, fz, extra = {}) {
+  if (list.length) world.emit({ type: 'loot', pub: 1, fx, fz, drops: list.map(dropView), ...extra });
+}
+// Every public drop on the ground (a pirate who joins now sees them too).
+export const publicDrops = (world) => (world.drops ? [...world.drops.values()].filter((d) => !d.to).map(dropView) : []);
+const lawlessAt = (world, x, z) => !!world.map.lawlessAt && world.map.lawlessAt(x, z);
 
 // An enemy died: everyone with a right to its XP rolls its loot table for themselves.
+// Inside the Cala Calavera (M4.5) the table is rolled once (the killer's, or the first pirate's with a right to
+// it) and what falls is public; quest items stay personal.
 export function lootOnKill(world, enemy, by, players) {
   const ecs = world.ecs, kind = ENEMY_KINDS[ecs.enemy[enemy]], def = ENEMIES[kind], T = LOOT[kind];
   if (!T || !world.profiles) return;
   const rng = world.lootRng, tier = (ecs.brain[enemy] && ecs.brain[enemy].tier) || NO_TIER;
   const x = ecs.x[enemy], z = ecs.z[enemy];
+  const pub = lawlessAt(world, x, z), roller = players.includes(by) ? by : players.find((pl) => profileOf(world, pl));
+  const shared = [], o = pub ? { life: LAWLESS.publicLife } : {};
   for (const pl of players) {
     const p = profileOf(world, pl);
     if (!p) continue;
     p.stats.kills++;
     const list = [];
-    if (T.gold && rng() < T.gold[0]) {
-      const n = Math.max(1, Math.round((T.gold[1] + Math.floor(rng() * (T.gold[2] - T.gold[1] + 1))) * ecs.goldMul[pl] * tier.gold));
-      addDrop(world, pl, 'gold', x, z, { n }, list);
+    if (!pub || pl === roller) {
+      const to = pub ? 0 : pl, out = pub ? shared : list;
+      if (T.gold && rng() < T.gold[0]) {
+        const n = Math.max(1, Math.round((T.gold[1] + Math.floor(rng() * (T.gold[2] - T.gold[1] + 1))) * ecs.goldMul[pl] * tier.gold));
+        addDrop(world, to, 'gold', x, z, { n }, out, o);
+      }
+      if (T.item && rng() < T.item) addDrop(world, to, 'item', x, z, { item: rollItem(rng, { lvl: (def.level || 1) + tier.ilvl, uid: p.uid++, rarityBonus: tier.rar }) }, out, o);
+      if (T.potion && rng() < T.potion) addDrop(world, to, 'potion', x, z, {}, out, o);
+      for (const it of T.extra ? T.extra(rng, tier) : []) addDrop(world, to, 'item', x, z, { item: { ...it, u: p.uid++ } }, out, o);
     }
-    if (T.item && rng() < T.item) addDrop(world, pl, 'item', x, z, { item: rollItem(rng, { lvl: (def.level || 1) + tier.ilvl, uid: p.uid++, rarityBonus: tier.rar }) }, list);
-    if (T.potion && rng() < T.potion) addDrop(world, pl, 'potion', x, z, {}, list);
     if (T.quest && world.questWants) for (const q in T.quest) if (world.questWants(pl, q) && rng() < T.quest[q]) addDrop(world, pl, 'quest', x, z, { q }, list);
     announce(world, pl, list, x, z);
     // Vida al matar: the killer only.
     if (pl === by && ecs.onKill[pl] > 0 && ecs.dead[pl] <= 0) ecs.hp[pl] = Math.min(ecs.maxHp[pl], ecs.hp[pl] + ecs.onKill[pl]);
   }
+  announcePublic(world, shared, x, z);
+}
+
+// A pirate fell inside the Cala Calavera (M4.5): everything they wear (a starter weapon aside) and carry, and
+// their potions, spill around the body for whoever gets there first. The gold is safe. Returns how many drops.
+export function spillOnDeath(world, e, by = 0) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  if (!p || !lawlessAt(world, ecs.x[e], ecs.z[e])) return 0;
+  const x = ecs.x[e], z = ecs.z[e], kit = kitOf(p.eq.weapon), items = [];
+  for (const s of SLOTS) {
+    const it = p.eq[s];
+    if (!it || (s === 'weapon' && it.s)) continue;
+    items.push(it);
+    p.eq[s] = null;
+  }
+  items.push(...p.bag);
+  p.bag = [];
+  if (!p.eq.weapon) p.eq.weapon = starterItem(p, kit); // same kit: the mastery you earned stays usable
+  const pots = Math.max(0, ecs.potions[e] | 0);
+  ecs.potions[e] = 0;
+  const list = [], o = { scatter: LAWLESS.spill.scatter, life: LAWLESS.spill.life }, from = { fromName: ecs.names[e], from: e };
+  for (const it of items) addDrop(world, 0, 'item', x, z, { item: it, ...from }, list, o);
+  for (let k = 0; k < pots; k++) addDrop(world, 0, 'potion', x, z, { ...from }, list, o);
+  p.stats.deaths++;
+  const pk = by && by !== e ? profileOf(world, by) : null;
+  if (pk) { pk.stats.pk++; dirty(world, by); }
+  refreshStats(world, e);
+  world.emit({ type: 'spill', to: e, e, n: items.length, pot: pots, x, z, by });
+  announcePublic(world, list, x, z, { spill: e });
+  dirty(world, e);
+  return list.length;
 }
 
 // The boss fell: a chest for every pirate in the fight (dead ones too), around the rune circle.
@@ -237,28 +287,48 @@ export function openChest(world, e, id) {
   return true;
 }
 
-// Every few ticks: walk over your drops to take them; old ones fade.
+// Every few ticks: walk over your drops (or a public one) to take them; old ones fade.
 export function stepDrops(world) {
   if (!world.drops || !world.drops.size || world.tick % 3) return;
-  const ecs = world.ecs, gone = new Map();
+  const ecs = world.ecs, gone = new Map(), pubGone = [];
   for (const [id, d] of world.drops) {
-    if (!ecs.alive[d.to] || !(ecs.mask[d.to] & C.PLAYER)) { world.drops.delete(id); continue; }
-    if (world.tick > d.t) { world.drops.delete(id); (gone.get(d.to) || gone.set(d.to, []).get(d.to)).push(id); continue; }
-    if (d.kind === 'chest' || ecs.dead[d.to] > 0) continue;
-    if (Math.hypot(ecs.x[d.to] - d.x, ecs.z[d.to] - d.z) <= DROPS.pickR) pickUp(world, d);
+    if (d.to && (!ecs.alive[d.to] || !(ecs.mask[d.to] & C.PLAYER))) { world.drops.delete(id); continue; }
+    if (world.tick > d.t) {
+      world.drops.delete(id);
+      if (d.to) (gone.get(d.to) || gone.set(d.to, []).get(d.to)).push(id); else pubGone.push(id);
+      continue;
+    }
+    if (d.kind === 'chest') continue;
+    if (d.to) {
+      if (ecs.dead[d.to] <= 0 && Math.hypot(ecs.x[d.to] - d.x, ecs.z[d.to] - d.z) <= DROPS.pickR) pickUp(world, d, d.to);
+      continue;
+    }
+    // Public: the first pirate standing on it (that can carry it).
+    for (const e of world.profiles.keys()) {
+      if (!ecs.alive[e] || ecs.dead[e] > 0 || Math.hypot(ecs.x[e] - d.x, ecs.z[e] - d.z) > DROPS.pickR) continue;
+      if (pickUp(world, d, e)) break;
+    }
   }
   for (const [to, ids] of gone) world.emit({ type: 'unloot', to, e: to, ids, why: 'expire' });
+  if (pubGone.length) world.emit({ type: 'unloot', pub: 1, ids: pubGone, why: 'expire' });
 }
 
-function pickUp(world, d) {
-  const ecs = world.ecs, e = d.to, p = profileOf(world, e);
-  if (!p) return;
+// e takes drop d (its owner, or anyone for a public one). False when it cannot carry it (and is told once).
+function pickUp(world, d, e) {
+  const ecs = world.ecs, p = profileOf(world, e);
+  if (!p) return false;
+  const full = (what) => {
+    const told = d.full || (d.full = new Set());
+    if (!told.has(e)) { told.add(e); world.emit({ type: 'full', to: e, e, what }); }
+    return false;
+  };
   if (d.kind === 'gold') { p.gold += d.n; p.stats.gold += d.n; }
   else if (d.kind === 'potion') {
-    if (ecs.potions[e] >= CONSUMABLES.potion.max) { if (!d.full) { d.full = 1; world.emit({ type: 'full', to: e, e, what: 'potion' }); } return; }
+    if (ecs.potions[e] >= CONSUMABLES.potion.max) return full('potion');
     ecs.potions[e] += 1;
   } else if (d.kind === 'item') {
-    if (p.bag.length >= ITEMS.bag) { if (!d.full) { d.full = 1; world.emit({ type: 'full', to: e, e, what: 'bag' }); } return; }
+    if (p.bag.length >= ITEMS.bag) return full('bag');
+    if (!d.to) d.item.u = p.uid++; // someone else's numbering: yours now
     p.bag.push(d.item);
     p.stats.items++;
   } else if (d.kind === 'quest') p.items[d.q] = (p.items[d.q] || 0) + 1;
@@ -267,9 +337,12 @@ function pickUp(world, d) {
   if (d.item) ev.item = d.item;
   if (d.n) ev.n = d.n;
   if (d.q) { ev.q = d.q; ev.have = p.items[d.q]; }
+  if (!d.to) { ev.pub = 1; if (d.from === e) ev.back = 1; } // back: your own spilled gear, recovered
   world.emit(ev);
+  if (!d.to) world.emit({ type: 'unloot', pub: 1, ids: [d.id], why: 'pick', by: e });
   if (world.onPickup) world.onPickup(e, d);
   dirty(world, e);
+  return true;
 }
 
 // ---- The bag ------------------------------------------------------------------------------------------------

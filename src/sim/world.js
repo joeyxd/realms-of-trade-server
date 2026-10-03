@@ -8,8 +8,8 @@ import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
 import { generateWorld } from './worldgen.js';
 import { stepMover } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
-import { stepPlayerCombat, applyLevel, gainXp, stormRadius } from './systems/combat.js';
-import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf } from './systems/enemies.js';
+import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer } from './systems/combat.js';
+import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR } from './systems/skills.js';
@@ -37,6 +37,7 @@ export class World {
     this.encounters = []; // server: scripted fights (populate)
     this.feelQ = new Map(); // e → {seq, hitstop, slowmo} merged per command
     this.shockSeq = new Map(); // e → seq of its last perfect-guard shock
+    this.phist = new Map(); // server: pirate → position history and hit bookkeeping (friendly fire, M4.5)
     this.tmp = { x: 0, z: 0, y: 0 };
     this.tmpLag = { x: 0, z: 0 };
   }
@@ -129,6 +130,7 @@ export class World {
 
   despawn(e) {
     this.ecs.destroy(e);
+    this.phist.delete(e);
     this.events.push({ type: 'despawn', id: e });
   }
 
@@ -287,8 +289,9 @@ export class World {
         }
       }
       if (!end) {
+        const own = S.owner[s];
         for (let e = 1; e < ecs.cap; e++) {
-          if (!ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0 || e === S.lastHit[s]) continue;
+          if (e === S.lastHit[s] || !this.canHit(own, e)) continue;
           const rr = ecs.hurtR[e] + S.r[s];
           this.lagPos(e, lag, p);
           if ((p.x - x) ** 2 + (p.z - z) ** 2 < rr * rr) { hit = e; end = true; break; }
@@ -303,7 +306,7 @@ export class World {
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        damageEnemy(this, hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock });
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -314,7 +317,7 @@ export class World {
     const ecs = this.ecs, B = tuning.parry.reflect.bounce, p = this.tmpLag;
     let best = 0, bd = B.range, bx = 0, bz = 0;
     for (let e = 1; e < ecs.cap; e++) {
-      if (e === hit || !ecs.alive[e] || !(ecs.mask[e] & C.ENEMY) || ecs.dead[e] > 0) continue;
+      if (e === hit || !this.canHit(owner, e)) continue;
       this.lagPos(e, o.lag, p);
       const d = Math.hypot(p.x - x, p.z - z);
       if (d < bd) { bd = d; best = e; bx = p.x; bz = p.z; }
@@ -327,6 +330,29 @@ export class World {
     });
   }
 
+  // ---- Friendly fire (M4.5) ----------------------------------------------------------------------------
+  // Where nobody is safe: inside the Cala Calavera.
+  lawless(e) { const m = this.map, ecs = this.ecs; return !!m.lawlessAt && m.lawlessAt(ecs.x[e], ecs.z[e]); }
+  // Who player e's blows land on: enemies, and every other pirate (not a bot) inside the Cala with e.
+  canHit(e, o) {
+    const ecs = this.ecs;
+    if (!ecs.alive[o] || ecs.dead[o] > 0 || o === e) return false;
+    if (ecs.mask[o] & C.ENEMY) return true;
+    return (ecs.mask[o] & C.PLAYER) !== 0 && !(ecs.mask[o] & C.BOT) && this.lawless(o) && this.lawless(e);
+  }
+  // Once-per-attack bookkeeping of a target: an enemy's brain, a pirate's history record.
+  hitState(o) {
+    const b = this.ecs.brain[o];
+    if (b) return b;
+    let h = this.phist.get(o);
+    if (!h) { h = newHistory(); this.phist.set(o, h); }
+    return h;
+  }
+  // A player's blow on target o: an enemy takes it, a pirate may dodge, guard or take it.
+  strike(o, raw, opts) {
+    return this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
+  }
+
   // ---- Server-only combat hooks (called from systems/combat.js) ----------------------------------
   // Melee against enemies where the attacker saw them: interpTicks behind the command's projectile tick.
   meleeHits(e, st, pt, seq) {
@@ -336,8 +362,8 @@ export class World {
     const half = Math.cos((st.arc / 2) * D2R);
     const key = e * 65536 + ecs.swingId[e];
     for (let o = 1; o < ecs.cap; o++) {
-      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
-      const b = ecs.brain[o];
+      if (!this.canHit(e, o)) continue;
+      const b = this.hitState(o);
       if (b.hitBy.get(e) === key) continue;
       historyAt(this, o, back, tmp);
       const dx = tmp.x - ecs.x[e], dz = tmp.z - ecs.z[e], d = Math.hypot(dx, dz);
@@ -345,7 +371,7 @@ export class World {
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       b.hitBy.set(e, key);
       const stage = ecs.atkStage[e];
-      damageEnemy(this, o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock });
+      this.strike(o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -357,13 +383,13 @@ export class World {
     const back = pt - tuning.combat.interpTicks;
     const key = e * 65536 + ecs.swingId[e];
     for (let o = 1; o < ecs.cap; o++) {
-      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
-      const b = ecs.brain[o];
+      if (!this.canHit(e, o)) continue;
+      const b = this.hitState(o);
       if (b.hitBy.get(e) === key) continue;
       historyAt(this, o, back, tmp);
       if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > L.width + ecs.hurtR[o]) continue;
       b.hitBy.set(e, key);
-      damageEnemy(this, o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock });
+      this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -374,8 +400,8 @@ export class World {
     const back = pt - tuning.combat.interpTicks;
     const ox = ecs.waveX[e], oz = ecs.waveZ[e], dx = ecs.waveDx[e], dz = ecs.waveDz[e], id = ecs.waveId[e];
     for (let o = 1; o < ecs.cap; o++) {
-      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
-      const b = ecs.brain[o];
+      if (!this.canHit(e, o)) continue;
+      const b = this.hitState(o);
       if (!b.waveBy) b.waveBy = new Map();
       if (b.waveBy.get(e) === id) continue;
       historyAt(this, o, back, tmp);
@@ -383,7 +409,7 @@ export class World {
       const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
       if (a < f0 - W.depth - hr || a > f1 + hr || l > W.half + hr) continue;
       b.waveBy.set(e, id);
-      damageEnemy(this, o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6 });
+      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6 });
     }
   }
 
@@ -392,19 +418,19 @@ export class World {
     const ecs = this.ecs, tmp = this.tmp, R = SKILLS.rain;
     const cx = ecs.rainX[e], cz = ecs.rainZ[e], rr = rainR(ecs, e);
     for (let o = 1; o < ecs.cap; o++) {
-      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      if (!this.canHit(e, o)) continue;
       historyAt(this, o, T - tuning.combat.interpTicks, tmp);
       if (Math.hypot(tmp.x - cx, tmp.z - cz) > rr + ecs.hurtR[o]) continue;
-      damageEnemy(this, o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true });
+      this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true });
     }
   }
 
   waveHits(e, seq) {
     const ecs = this.ecs, RP = tuning.parry.riposte;
     for (let o = 1; o < ecs.cap; o++) {
-      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      if (!this.canHit(e, o)) continue;
       if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > stormRadius(ecs, e) + ecs.hurtR[o]) continue;
-      damageEnemy(this, o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true });
+      this.strike(o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true });
     }
   }
 
@@ -473,7 +499,11 @@ export class World {
       if (this.drops) stepDrops(this);
       if (this.profiles) zoneSweep(this);
       for (const enc of this.encounters) stepEncounter(this, enc, DT);
-      for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && (ecs.mask[e] & C.ENEMY)) recordHistory(this, e);
+      for (let e = 1; e < ecs.cap; e++) {
+        if (!ecs.alive[e]) continue;
+        if (ecs.mask[e] & C.ENEMY) recordHistory(this, e);
+        else if ((ecs.mask[e] & C.PLAYER) && !(ecs.mask[e] & C.BOT)) recordHistory(this, e, this.hitState(e));
+      }
       for (const sp of this.spawners) {
         if (sp.entity) continue;
         sp.timer -= DT;

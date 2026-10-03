@@ -13,7 +13,7 @@ import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
-import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop } from '../sim/systems/inventory.js';
+import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop, publicDrops } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
@@ -109,6 +109,9 @@ export class LocalServer {
         c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
         attachProfile(this.world, c.entity, prof);
         startQuests(this.world, c.entity);
+        // The Cala's public loot already on the ground (M4.5).
+        const pub = publicDrops(this.world);
+        if (pub.length) this.world.emit({ type: 'loot', to: c.entity, e: c.entity, pub: 1, late: 1, fx: pub[0].x, fz: pub[0].z, drops: pub });
         if (msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
         c.saveAt = this.world.tick + 1;
         this.flushEvents();

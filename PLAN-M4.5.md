@@ -134,7 +134,7 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
 - [x] **P0** Este plan.
 - [x] **P1 Detalles**: aviso / etiqueta del cofre, segundo cilindro de oclusión, cofres de Marea (datos, `buy`,
   puesto). Tests de compra (requisito de Marea, precio, nivel / rareza).
-- [ ] **P2 La Cala (sim)**: lugar y desvío en `worldgen` (con la isla de fuera intacta), `ZONES`, punto de
+- [x] **P2 La Cala (sim)**: lugar y desvío en `worldgen` (con la isla de fuera intacta), `ZONES`, punto de
   control, `src/data/lawless.js`, `canHit` + historial de piratas + `hurtByPlayer`, botín completo y caídas
   públicas, protocolo v5. Tests `tests/lawless.test.mjs` (la isla de fuera no cambia; fuera no hay fuego amigo;
   dentro el sable, las pistolas y los reflejos dañan; la guardia bloquea; morir dentro lo derrama todo y otro lo
@@ -161,3 +161,26 @@ quien lo pise primero, tú también si vuelves a tiempo. El oro no se pierde.
   `CRATES`; `buy` los trata a todos igual (falla con `tier` si no has abierto esa Marea; solo mercancía propia de
   `CONSUMABLES`). El puesto enseña los tres cofres (el bloqueado con 🔒 y lo que hace falta). Verificado en el
   navegador (cofre tras palmeras, aviso, compra de un Cofre de la Marea II: nivel + 3). 130 tests.
+- **P2:** `worldgen.js`: `L.cala` (−35, 66), `calaR` 21, `calaTrail` (de (−37, 6) a (−36, 45.5)), `calaSign`,
+  `calaCp`; `trailInfo`, `calaClear`. Las palmeras, arbustos, rocas y flores que caerían en la Cala o en el desvío se
+  descartan tras sus tiradas con `ghost()`: gasta las dos tiradas que habría hecho `addProp` (giro y variante) y deja
+  su entrada en la rejilla de separación, así que fuera de la Cala no cambia ningún prop (comprobado: 35 quitados,
+  0 movidos, 0 nuevos; el terreno solo cambia dentro de R + 7 y a ≤ 8 u del desvío). Tras la vegetación el suelo se
+  asienta hacia 3.6 (con el 30 % de su relieve) y el desvío es una rampa; los props tocados suben o bajan con él.
+  Decorado fijo: 16 tótems (`skullPost`) con hueco en la entrada, arcos de empalizada (`palisade`), cajas y
+  barriles, 4 braseros, la hoguera y la bandera negra (`blackFlag`, ondea en `scene.update`); cartel «CALA
+  CALAVERA · SIN LEY →» (`sign` con `h: 1`; `props.js` dibuja todos los carteles). `masks().path` pinta el desvío y
+  el suelo del fuerte; `zoneAt` → `calavera`; `map.lawlessAt`, `map.cala {x, z, r, trail, entry, sign}`, punto de
+  control `calavera` fuera del círculo. `src/data/lawless.js` (`LAWLESS`: `pvpDmg` 0.6, `heavyStagger` 0.3,
+  `shockStagger` 0.5 a ≤ 3.2 u, `spill` 180 s / 0.8–2.6 u, `publicLife` 150 s). `World.canHit / hitState / strike /
+  lawless`: todos los golpes de jugador (`meleeHits`, `lungeHits`, `crescentHits`, `rainHits`, `waveHits`,
+  `stepShots`, `bounceShot`) pasan por ahí; `world.phist` guarda el historial de los piratas (`recordHistory` con
+  registro propio, `historyAt` lo busca si no hay cerebro). `combat.js`: `hurtByPlayer` (dash → `dodge`, invulnerable
+  → nada, guardia perfecta → nada y aturde al atacante cercano, bloqueo → × `blockMult` y aguante, si no → `hurtPlayer`
+  con crítico del atacante, `kind: 'pvp'`, `by`); `hurtPlayer` admite `pierce` y `by`; `killPlayer` emite `death {by}` y
+  llama `world.onDeath`. `inventory.js`: `spillOnDeath` (todo el equipo salvo el arma inicial, la bolsa y las
+  pociones → caídas públicas con `from`; arma inicial del mismo kit; `stats.deaths` / `stats.pk`; evento privado
+  `spill`), caídas públicas (`to: 0`, `loot {pub}` / `unloot {pub, by}`, el primero que la pisa y puede cargarla;
+  se renumera al recogerla), `lootOnKill` en la Cala tira una vez y deja público (`T.extra` para el equipo de los
+  Desalmados, P3), `publicDrops` → el que entra recibe `loot {pub, late}`. `spill` guarda al momento. Protocolo v5.
+  La Cala vista en el navegador (tótems, empalizadas, cartel, cartel de zona). 137 tests.

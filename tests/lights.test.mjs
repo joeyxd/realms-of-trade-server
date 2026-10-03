@@ -35,7 +35,7 @@ test('light sources come from the island props', opts, () => {
   assert.ok(count('lantern') >= 8, 'path + dock lanterns');
   assert.equal(count('window'), map.props.filter((p) => p.kind === 'hut').length);
   assert.ok(count('brazier') >= 8, 'arena braziers + gate fires');
-  assert.equal(count('campfire'), 1);
+  assert.equal(count('campfire'), 2, 'the village and the Cala Calavera');
   assert.ok(count('lava') >= 3, 'lava river and crater');
   assert.equal(count('eyes'), 2);
 });

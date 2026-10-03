@@ -292,6 +292,12 @@ export class GameScene {
       f.rotation.z = Math.sin(tt * 0.9 + ph * 1.7) * 0.07;
       f.rotation.y = f.userData.baseRot + Math.sin(tt * 0.25 + ph) * (f.userData.boat ? 0.06 : 0.3);
     }
+    // The Cala's black flags ripple from the pole out.
+    for (const f of this.props.flags || []) {
+      const pa = f.geometry.attributes.position, b = f.userData.base;
+      for (let i = 0; i < pa.count; i++) { const x = b[i * 3]; pa.array[i * 3 + 2] = Math.sin(this.time * 4.2 - x * 2.6) * 0.16 * x; }
+      pa.needsUpdate = true;
+    }
     // Ship bobbing + flag flutter.
     const ship = this.props.ship;
     if (ship) {

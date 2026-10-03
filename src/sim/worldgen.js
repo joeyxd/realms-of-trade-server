@@ -16,6 +16,8 @@ export const ZONES = {
   camino: { name: 'Sendero del Humo', sub: 'Sigue el humo hasta el volcán' },
   selva: { name: 'Selva Esmeralda', sub: 'Algo se mueve entre las palmas' },
   caldera: { name: 'La Caldera', sub: 'Solo los valientes salen con el cofre' },
+  // M4.5: no law inside the ring of skulls (friendly fire, public loot, you drop what you carry).
+  calavera: { name: 'Cala Calavera', sub: 'Sin ley: fuego amigo y botín completo', lawless: true },
   mar: { name: 'Mar Turquesa', sub: '' },
 };
 
@@ -34,6 +36,12 @@ const L = {
   volcano: [84, 6],
   path: [[-88, -3], [-72, 6], [-55, -5], [-37, 5], [-20, -4], [-6, 1], [3, 0]],
   sign: [-85, 4],
+  // La Cala Calavera (M4.5): a ruined pirate fort near the east shore, off the Sendero by a side trail.
+  cala: [-35, 66],
+  calaR: 21,
+  calaTrail: [[-37, 6], [-38, 24], [-36, 45.5]],
+  calaSign: [-33.5, 7.5],
+  calaCp: [-36, 41],
 };
 
 function segDist(px, pz, ax, az, bx, bz, out) {
@@ -82,6 +90,22 @@ export function generateWorld(seed) {
   }
 
   const dockDist = (x, z) => segDist(x, z, dockBase.x, dockBase.z, dockEnd.x, dockEnd.z, tmp);
+  // La Cala Calavera and the trail to it (M4.5): distance to the trail and progress along it (0 at the Sendero).
+  const cala = P(L.cala), calaR = L.calaR, trail = L.calaTrail.map(P);
+  const trailLen = [];
+  let tacc = 0;
+  for (let i = 0; i < trail.length - 1; i++) { trailLen.push(tacc); tacc += Math.hypot(trail[i + 1].x - trail[i].x, trail[i + 1].z - trail[i].z); }
+  function trailInfo(x, z) {
+    let best = 1e9, prog = 0;
+    for (let i = 0; i < trail.length - 1; i++) {
+      const d = segDist(x, z, trail[i].x, trail[i].z, trail[i + 1].x, trail[i + 1].z, tmp);
+      if (d < best) { best = d; prog = (trailLen[i] + tmp.t * Math.hypot(trail[i + 1].x - trail[i].x, trail[i + 1].z - trail[i].z)) / tacc; }
+    }
+    return { d: best, t: prog };
+  }
+  const calaD = (x, z) => Math.hypot(x - cala.x, z - cala.z);
+  // Nothing random grows here (checked after the draws: the rest of the island keeps its layout).
+  const calaClear = (x, z, pad, padTrail) => calaD(x, z) < calaR + pad || trailInfo(x, z).d < padTrail;
   // Meandering lava river from the crater lip down to the back of the arena.
   const lavaPath = [[80, 5], [73, 1], [66, 7], [58, 2], [51, 6], [46, 3]].map(P);
   const lavaRiverDist = (x, z) => {
@@ -185,7 +209,13 @@ export function generateWorld(seed) {
     const volcanic = Math.max(1 - smoothstep(L.arenaR + 6, L.arenaR + 20, da), 1 - smoothstep(26, 60, dvol));
     const arenaFloor = 1 - smoothstep(L.arenaR - 0.5, L.arenaR + 0.5, da);
     const lava = Math.max(1 - smoothstep(1.3, 2.4, lavaRiverDist(x, z)), 1 - smoothstep(5.5, 7.5, dvol));
-    return { path: Math.max(onPath, villageDirt * 0.85), volcanic, arenaFloor, lava };
+    // The Cala (M4.5): a trodden dirt trail and a patchy dirt floor inside the fort.
+    const dc = calaD(x, z);
+    let cal = 0;
+    if (dc < calaR + 12) cal = (1 - smoothstep(calaR - 6, calaR + 1, dc)) * clamp01(0.55 + fbm2(x * 0.13 + 4, z * 0.13, 2));
+    const tr = dc < 120 ? trailInfo(x, z) : null;
+    if (tr && tr.t > 0.02) cal = Math.max(cal, 1 - smoothstep(1.2, 2.3, tr.d));
+    return { path: Math.max(onPath, villageDirt * 0.85, cal), volcanic, arenaFloor, lava };
   }
 
   function materialAt(x, z) {
@@ -203,6 +233,7 @@ export function generateWorld(seed) {
     const h = groundAt(x, z);
     if (h < -tuning.world.wadeMax && !onDock(x, z)) return 'mar';
     if (Math.hypot(x - arena.x, z - arena.z) < L.arenaR + 8) return 'caldera';
+    if (calaD(x, z) < calaR + 1) return 'calavera';
     if (Math.hypot(x - village.x, z - village.z) < 30) return 'aldea';
     const pi = pathInfo(x, z);
     if (pi.d < 9 && pi.t > 0.02 && pi.t < 0.99) return 'camino';
@@ -245,6 +276,14 @@ export function generateWorld(seed) {
     occ.get(key).push(p);
     if (p.r > 0) colliders.push({ x, z, r: p.r });
     return p;
+  }
+  // A prop the Cala clears (M4.5): never placed, but it still keeps its neighbours apart as it did, so every
+  // later random draw lands where it always has.
+  function ghost(kind, x, z, r) {
+    rng(); rng(); // the rot and variant addProp would have drawn
+    const key = cellKey(x, z, 4);
+    if (!occ.has(key)) occ.set(key, []);
+    occ.get(key).push({ kind, x, z, r });
   }
   const slopeAt = (x, z) => {
     const e = 0.75;
@@ -367,6 +406,7 @@ export function generateWorld(seed) {
     if (!farFromOthers(x, z, 3.4, palms)) continue;
     const scale = rng.range(0.85, 1.15), ph = rng.range(3.9, 5.6);
     if (nearPractice(x, z)) continue;
+    if (calaClear(x, z, 2, 4.5)) { ghost('palm', x, z, 0.38); continue; }
     addProp('palm', x, z, { r: 0.38, scale, h: ph });
   }
   // A few hand-placed palms framing the village and the spawn.
@@ -390,6 +430,7 @@ export function generateWorld(seed) {
     if (!farFromOthers(x, z, 1.9, bushSet)) continue;
     const scale = rng.range(0.7, 1.35);
     if (nearPractice(x, z)) continue;
+    if (calaClear(x, z, 0, 3.4)) { ghost('bush', x, z, 0.55); continue; }
     addProp('bush', x, z, { r: 0.55, scale });
   }
   const rockSet = new Set(['rock']);
@@ -405,6 +446,7 @@ export function generateWorld(seed) {
     if (!farFromOthers(x, z, 3.0, rockSet)) continue;
     const s = rng.range(0.6, 1.9) * (1 + m.volcanic * 0.5);
     if (nearPractice(x, z)) continue;
+    if (calaClear(x, z, 1, 3.2)) { ghost('rock', x, z, 0.55 * s); continue; }
     addProp('rock', x, z, { r: 0.55 * s, scale: s, y: h - 0.15 * s });
   }
   for (let n = 0; n < 9000; n++) {
@@ -418,7 +460,9 @@ export function generateWorld(seed) {
     if (!nearPath && !nearVillage) continue;
     if (!farFromOthers(x, z, 0.9, null)) continue;
     if (rng() > 0.45) continue;
-    addProp('flower', x, z, { r: 0, scale: rng.range(0.7, 1.2) });
+    const fs = rng.range(0.7, 1.2);
+    if (calaClear(x, z, 0, 2.2)) { ghost('flower', x, z, 0); continue; }
+    addProp('flower', x, z, { r: 0, scale: fs });
   }
 
   // Underwater dressing (cosmetic, no colliders): seaweed and pebbles in the shallows so the
@@ -453,6 +497,61 @@ export function generateWorld(seed) {
   }
 
   for (const k of racks) addProp('rack', k.x, k.z, { r: 0, rot: k.facing, v: 0.5 });
+
+  // ---- La Cala Calavera (M4.5) -------------------------------------------------------------------------
+  // After every random draw. The ground inside the fort settles toward a gentle floor (keeping a little of its
+  // swell) and the trail becomes a ramp from the Sendero; the props standing on the reshaped ground move with it.
+  {
+    const floorH = 3.6, h0 = heightAt(trail[0].x, trail[0].z);
+    const reach = calaR + 7;
+    const near = (x, z) => calaD(x, z) < reach + 2 || trailInfo(x, z).d < 9;
+    const keep = props.filter((p) => near(p.x, p.z)).map((p) => [p, heightAt(p.x, p.z)]);
+    const xs = trail.map((q) => q.x).concat([cala.x - reach, cala.x + reach]), zs = trail.map((q) => q.z).concat([cala.z - reach, cala.z + reach]);
+    const i0 = Math.max(0, Math.floor((Math.min(...xs) - 8 + half) * res)), i1 = Math.min(N - 1, Math.ceil((Math.max(...xs) + 8 + half) * res));
+    const j0 = Math.max(0, Math.floor((Math.min(...zs) - 8 + half) * res)), j1 = Math.min(N - 1, Math.ceil((Math.max(...zs) + 8 + half) * res));
+    for (let j = j0; j <= j1; j++) {
+      const z = -half + j / res;
+      for (let i = i0; i <= i1; i++) {
+        const x = -half + i / res, k = j * N + i;
+        let h = heights[k];
+        if (h < -0.3) continue; // the sea stays the sea
+        const wC = 1 - smoothstep(calaR - 2, reach, calaD(x, z));
+        const ti = trailInfo(x, z), wT = (1 - smoothstep(2.6, 7.5, ti.d)) * (1 - wC);
+        if (wC > 0) h = lerp(h, floorH + (h - floorH) * 0.3, wC);
+        if (wT > 0) h = lerp(h, lerp(h0, floorH, smoothstep(0, 1, ti.t)), wT);
+        heights[k] = h;
+      }
+    }
+    for (const [p, was] of keep) p.y += heightAt(p.x, p.z) - was;
+  }
+  // The fort: a ring of skull posts on the border (a gap where the trail comes in), broken palisades for cover,
+  // crates and barrels, braziers, a fire and the black flag in the middle; the sign by the Sendero.
+  const C = (du, dv) => P([L.cala[0] + du, L.cala[1] + dv]);
+  const fromC = (a, r) => C(Math.cos(a) * r, Math.sin(a) * r); // a: 0 = up the screen (+u), π/2 = right (+v)
+  const entryA = Math.atan2(L.calaTrail[2][1] - L.cala[1], L.calaTrail[2][0] - L.cala[0]);
+  const fortProps = [];
+  const fort = (kind, q, o) => { const pr = addProp(kind, q.x, q.z, { v: 0.5, rot: 0, ...o }); fortProps.push(pr); return pr; };
+  for (let i = 0; i < 16; i++) {
+    const a = entryA + ((i + 0.5) / 16) * Math.PI * 2;
+    const q = fromC(a, calaR);
+    fort('skullPost', q, { r: 0.3, rot: Math.atan2(cala.x - q.x, cala.z - q.z), v: (i * 0.37) % 1 });
+  }
+  // Palisade arcs around the old fort (angles in the (u, v) frame, from the centre).
+  for (const [a0, a1, r] of [[0.35, 1.2, 10.5], [1.95, 2.55, 10.5], [3.55, 4.25, 10.5], [4.85, 5.75, 10.5], [0.9, 1.5, 15], [3.9, 4.5, 15.5]]) {
+    const n = Math.max(2, Math.round(((a1 - a0) * r) / 1.25));
+    for (let k = 0; k <= n; k++) {
+      if ((k * 7 + Math.round(a0 * 10)) % 9 === 4) continue; // a broken stake here and there
+      const a = a0 + ((a1 - a0) * k) / n, q = fromC(a, r), t = fromC(a + 0.05, r);
+      fort('palisade', q, { r: 0.5, rot: Math.atan2(t.x - q.x, t.z - q.z), v: (k * 0.61) % 1 });
+    }
+  }
+  for (const [du, dv, kind] of [[-6, 4, 'crate'], [5, -6, 'barrel'], [7, 5, 'crate'], [-4, -7, 'barrel'], [13, -3, 'crate'], [-12, 2, 'crate'], [1, 13, 'barrel'], [3, -14, 'crate'], [-15, -6, 'barrel'], [8, 15, 'crate']]) {
+    fort(kind, C(du, dv), { r: 0.6, rot: du * 0.7 + dv });
+  }
+  for (const a of [0.785, 2.356, 3.927, 5.498]) fort('brazier', fromC(a, 6.5), { r: 0.55 });
+  fort('campfire', C(0, 0), { r: 0.9 });
+  fort('blackFlag', C(2.5, 2.5), { r: 0.25 });
+  { const q = P(L.calaSign); addProp('sign', q.x, q.z, { r: 0.35, rot: Math.PI / 4 + 0.3, v: 0, h: 1 }); } // facing the camera, turned to the trail
 
   // Static collider spatial hash.
   const CELL = 4;
@@ -495,9 +594,11 @@ export function generateWorld(seed) {
     aldea: { ...V(2, 3) },
     camino: { ...path[3] },
     puerta: { ...path[path.length - 2] },
+    calavera: { ...P(L.calaCp) }, // outside the ring: who falls in the Cala wakes at its door
   };
   function checkpointAt(x, z) {
     const zn = zoneAt(x, z);
+    if (zn === 'calavera') return 'calavera';
     if (zn === 'aldea') return 'aldea';
     if (zn === 'camino') return pathInfo(x, z).t > 0.45 ? 'camino' : 'aldea';
     if (zn === 'caldera') return 'puerta';
@@ -507,7 +608,10 @@ export function generateWorld(seed) {
   return {
     seed, size, half, res, N, heights,
     enemySpawns, practice, racks, checkpoints, checkpointAt,
-    heightAt, groundAt, onDock, masks, materialAt, zoneAt, pathInfo,
+    heightAt, groundAt, onDock, masks, materialAt, zoneAt, pathInfo, trailInfo,
+    // Inside the ring of skulls (M4.5): no law.
+    lawlessAt: (x, z) => calaD(x, z) < calaR,
+    cala: { x: cala.x, z: cala.z, r: calaR, trail, entry: P(L.calaTrail[2]), sign: P(L.calaSign) },
     props, colliders, queryColliders, npcs, botWaypoints, dock,
     landmarks: { spawn, village, arena, arenaR: L.arenaR, volcano, dockBase, dockEnd, path, ship: P(L.ship) },
     toWorld, toUV,

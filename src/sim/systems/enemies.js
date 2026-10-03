@@ -26,15 +26,17 @@ export function makeEnemyBrain(def, x, z, facing, rng, extra = {}) {
   };
 }
 
-// Position history for lag-compensated melee: the attacker saw enemies interpTicks in the past.
-export function recordHistory(world, e) {
-  const b = world.ecs.brain[e], i = world.tick % HIST;
+// Position history for lag-compensated melee: the attacker saw enemies interpTicks in the past. Pirates keep one
+// too (world.phist, M4.5): inside the Cala they are hit where their attacker saw them.
+export const newHistory = () => ({ hx: new Float64Array(HIST), hz: new Float64Array(HIST), histTick: -1, hitBy: new Map(), waveBy: new Map() });
+export function recordHistory(world, e, b = world.ecs.brain[e]) {
+  const i = world.tick % HIST;
   b.hx[i] = world.ecs.x[e]; b.hz[i] = world.ecs.z[e];
   if (b.histTick < 0) { b.hx.fill(world.ecs.x[e]); b.hz.fill(world.ecs.z[e]); }
   b.histTick = world.tick;
 }
 export function historyAt(world, e, tick, out) {
-  const ecs = world.ecs, b = ecs.brain[e];
+  const ecs = world.ecs, b = ecs.brain[e] || (world.phist && world.phist.get(e));
   const back = world.tick - tick;
   if (!b || b.histTick < 0 || back <= 0 || back >= HIST - 1) { out.x = ecs.x[e]; out.z = ecs.z[e]; return out; }
   const i = ((tick % HIST) + HIST) % HIST;

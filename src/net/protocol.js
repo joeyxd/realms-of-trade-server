@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 4; // M4: hello.save, BTN.POTION, profiles, saves, private events
+export const PROTOCOL_VERSION = 5; // M4: hello.save, BTN.POTION, profiles, saves, private events · M4.5: public loot, friendly fire
 
 export const MSG = {
   // client -> server
