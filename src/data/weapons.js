@@ -36,7 +36,7 @@ export const SKILLS = {
 // mastery 0 = unmanaged: the whole kit, no bonuses (the M3.5 game).
 export const MASTERY = {
   max: 10,
-  xp: [60, 140, 260, 400, 560, 740, 940, 1160, 1400], // to go from n to n + 1
+  xp: [60, 140, 300, 900, 1800, 3200, 5600, 9000, 14000], // to go from n to n + 1: the kit on the path, M5 in the first trial, M10 after ~5
   unlock: { q: 1, e: 2, r: 3 },
   dmg: 0.02,
   passives: {

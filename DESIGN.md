@@ -322,6 +322,33 @@ Fantasma (20 imparables atravesados) · Rozando la muerte (50 roces) · Sin un r
 Rompe-escudos · Domador del infierno (vencer a Hellfire) · Coleccionista (equipar un épico) ·
 Marinero de agua dulce (hablar con el capitán).
 
+### M4: lo construido (`PLAN-M4.md`)
+
+- **Estadísticas** = base por nivel (arriba) + equipo + maestría → columnas del ECS. ATK final =
+  `round((base + equipo) × (1 + 0.02·(maestría − 1)))`; la vida conserva su fracción al cambiar. Topes: CRÍT 50 %,
+  velocidad −10 % … +25 %, enfriamiento 30 %, recarga de dash 30 %.
+- **Maestría por arma** (1–10; sustituye los desbloqueos tachados de la tabla): toda la XP va también al arma
+  equipada, aun en el nivel máximo. XP por nivel `[60, 140, 300, 900, 1800, 3200, 5600, 9000, 14000]` (acumulado
+  M3 200, M5 1400, M10 35 000). LMB + Q en M1, E en M2, R en M3, +2 % de daño por nivel; Sable M5 «Filo templado»
+  (+15 ms a EXCELENTE y BUENO), M10 «Ojo del huracán» (Tormenta 6 → 8 u); Pistolas M5 «Gatillo fácil» (cadencia ×
+  0.85), M10 «Diluvio» (Lluvia 1.5 → 2.25 s, r + 0.8). Ritmo medido: el kit se abre en el camino, M5 en la primera
+  Prueba y M10 hacia la quinta.
+- **Objetos:** presupuesto `(2 + 0.8·nivel) × mul(rareza)` repartido por la base y los afijos (`STATS[k].per`
+  puntos → valor). 20 bases, afijos por hueco sin repetir, el nombre lleva el sufijo del afijo mayor. Valor
+  `round((3 + 2·nivel) × mul^1.4 × (1 + 0.15·afijos))`; Tía Perla paga el 100 %, desguazar el 25 %.
+- **Loot** (`src/data/loot.js`): tablas por enemigo (oro, objeto, poción, coral), personal para cada pirata con
+  derecho a la XP, 120 s en el suelo, recogida a 1.5 u. Cofre del jefe (sin la etapa de clics hasta M5): Raro +
+  2 tiradas de subir al 35 %, 2 objetos más, 60–100 oro y una poción. Nivel del objeto = nivel del enemigo (o el
+  tuyo en el cofre) + la Marea.
+- **Mareas:** I (× 1) · II (vida × 1.8, daño × 1.5, +3 niveles, rareza +0.5, XP × 1.6, oro × 1.5) · III (× 3.2,
+  × 2.4, +6, +1, × 2.4, × 2.2). Medido: la primera Marea II cuesta ~1–1.3 vidas y la primera III ~1.5 (sin
+  regeneración ni pociones); con el equipo de III baja a ~0.3. Nivel 10 tras la segunda Prueba; desde ahí progresa
+  el equipo.
+- **Misiones** como se construyeron: la cadena Tierra firme (40 XP) → La capitana del puerto (100 XP + 20 oro) →
+  Limpia el camino (3 arqueros, 200 XP + 2 pociones) → Los guardianes (2 centinelas, 150 XP + 40 oro) → Sobrevive a
+  La Caldera (300 XP + 100 oro); Coral para la tía (6 corales, 2 pociones + 60 oro + abalorio) y Caza en La Caldera
+  (40 enemigos, repetible, 120 oro + 1 poción). Los logros quedan para M5.
+
 ## 10. Arquitectura (MMO-ready)
 
 ```
@@ -367,7 +394,8 @@ Marinero de agua dulce (hablar con el capitán).
 - **Servidor real (M3.6):** `npm start` = un proceso que sirve el cliente y corre el mundo. `GameHost`
   (`server/host.mjs`) envuelve el `LocalServer` del Worker: un id por socket, JSON + permessage-deflate, cubetas de
   tokens (120 mensajes/s, 48 KB/s), 5 mensajes basura por segundo cierran el socket, `cmds` ≤ 32 por mensaje,
-  latido cada 15 s, `MAX_PLAYERS` (4) con `full` para el quinto (sigue mirando), `PROTOCOL_VERSION` 3 con `error`.
+  latido cada 15 s, `MAX_PLAYERS` (4) con `full` para el quinto (sigue mirando), `PROTOCOL_VERSION` 3 con `error`
+  (4 desde M4).
   El cliente entra en línea si la página trae `<meta name="mn-server">` (la inyecta el servidor) o `?server=`.
 - **Comandos de relleno (M3.6, solo en línea):** un cliente callado más de `combat.starveTicks` (12 = 200 ms) recibe
   comandos neutros (sin moverse, botones sueltos, `pt` avanzando dentro del rebobinado): el mundo le sigue
@@ -382,6 +410,13 @@ Marinero de agua dulce (hablar con el capitán).
 - **Cooperativo en la Prueba de Fuego (M3.6):** `n` = participantes humanos al empezar cada oleada / el jefe; vida
   × `1 + 0.6·(n − 1)` en las oleadas y × `1 + 0.75·(n − 1)` para HELLFIRE y sus esbirros. El evento `enc` y el
   estado del encuentro (índice 10) llevan `n`; el HUD dice «Tripulación n».
+- **Perfiles y guardado (M4):** `world.profiles` (entidad → perfil) solo en el servidor; lo que cambia los números
+  (equipo, nivel, maestría) se vuelca en columnas de `PLAYER_FIELDS` y el cliente guarda una copia del perfil en su
+  mundo de predicción, así que una subida de nivel predicha da las mismas stats. Los eventos con `to` (loot,
+  recogidas, misiones, diálogo, Marea, `note`) solo van a ese cliente. `MSG.PROFILE` (agrupado por tick) y
+  `MSG.SAVE` (a los 3 s de un cambio, al momento en lo importante y un repaso cada 10 s; solo si cambió). En Node el
+  blob es `base64url(json).firma` con HMAC-SHA256 (`SAVE_SECRET`); en el Worker es el JSON. Todo perfil cargado se
+  sanea (bases y afijos conocidos, rangos, misiones y banderas). El loot sale de `world.lootRng` (otra semilla).
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.
@@ -390,15 +425,16 @@ Marinero de agua dulce (hablar con el capitán).
 
 | Dir. | Tipo | Campos | Fiable |
 |---|---|---|---|
-| C→S | `hello` | `v` (3), `name` (≤ 16, saneado, único), `skin`, `weapon` | sí |
+| C→S | `hello` | `v` (4), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
 | C→S | `input` | `seq, mx, mz` (−1..1, cuantizado 1/127), `ax, az` (punto de mira), `btn` (bits mantenidos), `prs` (bits pulsados este tick) | orden |
-| C→S | `cmd` | `{type: 'interact' \| 'chat' \| 'equip' \| …}` | sí |
+| C→S | `cmd` | `{type: 'equip' \| 'unequip' \| 'salvage' \| 'open' \| 'talk' \| 'quest' \| 'buy' \| 'sell' \| 'tut' \| 'tier' \| 'pause' \| …}` | sí |
 | C→S | `ping` | `t` | no |
 | S→C | `welcome` | `you, tick, seed, tuningHash` | sí |
 | S→C | `snapshot` | `tick, ack, ents[{id,k,x,y,z,f,s,a,…}], ev[]` | no (20 Hz) |
 | S→C | `spawn` / `despawn` | entidad completa (nombre, skin, nivel) / id | sí |
 | S→C | `event` | `damage, death, loot, levelup, pattern, reflect, phase, wave, timescale` | sí |
 | S→C | `pong` | `t0, tick` | no |
+| S→C | `profile` / `save` | perfil completo (privado) / `blob` para guardar (M4) | sí |
 | S→C | `full` / `error` | `max` / `code: 'version'` (M3.6) | sí |
 | reservado | `ship_spawn, ship_input, ship_state, board, dock, trade_offer, trade_accept` | naval/comercio (§13) | — |
 
@@ -602,7 +638,7 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 | M3 | Oleadas + enemigos restantes + jefe 3 fases: 5 oleadas, Cangrejo mortero, HELLFIRE con embestida, láser doble, meteoros, carriles, cortina y lava (`PLAN-M3.md`) | ✅ |
 | M3.5 | Combate V2: apuntar con ratón / stick, reflejo a tiempo en 3 niveles, guardia con atrapar y devolver, armas que definen las habilidades (sable / pistolas), armeros, disparos con lag compensation (`PLAN-M3.5.md`) | ✅ |
 | M3.6 | Servidor Node real (WebSocket) con 2–4 jugadores: el mismo `LocalServer`, relleno de comandos, tiempo de instancia y arena cooperativos, medición con latencia (`PLAN-M3.6.md`) | ✅ |
-| M4 | Progresión + inventario + loot + HUD completo + misiones + guardado | |
+| M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, vendedora, Mareas, partidas firmadas, HUD y paneles (`PLAN-M4.md`) | ✅ |
 | M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
 | M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |
 

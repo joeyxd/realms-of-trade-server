@@ -36,6 +36,7 @@ otro servidor. En el título eliges **nombre** y aspecto; la píldora dice cuán
 | `DEV` | 0 | `1` habilita F4 y el teletransporte de `?debug` (nunca en un servidor público) |
 | `ORIGINS` | (todas) | orígenes permitidos para el WebSocket, separados por comas |
 | `LAG_MS` / `JITTER_MS` | 0 | latencia artificial por sentido, para probar (`?lag=&jitter=` hace lo mismo en el cliente) |
+| `SAVE_SECRET` | (al azar) | clave HMAC de las partidas guardadas (M4). Sin ella se inventa una al arrancar y las partidas no sobreviven a un reinicio; `render.yaml` la genera |
 
 **Desplegar en Render:** el `render.yaml` de la raíz crea un *web service* gratuito (Node 22, `npm install
 --omit=dev`, `npm start`, comprobación en `/health`). `/status` devuelve jugadores, tick, ms por paso y contadores
@@ -63,19 +64,22 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
 | Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R |
-| Hablar / interactuar · junto a un armero: cambiar de arma | F | botón F |
+| Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón F |
+| Poción de ron-coco (cura el 40 %, 2 s de espera, máx. 5) | 1 · cruceta ↑ | botón de poción |
+| Personaje: Equipo / Atributos / Misiones | I o B / C / L · Select | botón Bolsa |
+| Mapa de la isla | M | botón Mapa |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
 | Ataque del arma. Sable: combo de 3, golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar | LMB / J / RT | botón ATK (mantener) |
 | Guardia (mantener): bloquea de frente; alzada justo a tiempo ATRAPA la bala y tu siguiente ataque la devuelve | RMB / K / LT | botón GUARDIA (mantener) |
 | Habilidades del arma (al cursor). Sable: Estocada / Hoja de viento. Pistolas: Descarga / Paso de humo | Q / E · RB / LB | botones Q / E |
 | R con el RIPOSTE lleno. Sable: Tormenta. Pistolas: Lluvia de plomo | R / Y | botón R |
-| Pausa y ajustes | ESC / Start | botón ⚙ |
+| Pausa y ajustes (ESC cierra antes el diálogo, el panel o el mapa) | ESC / Start | botón ⚙ |
 | Rendimiento | F3 | — |
 | Panel de pruebas (tuning en vivo, spawns, modo dios, cambiar de arma, hitboxes) | F4 | — |
 
-Hay dos armeros: en la playa, junto al punto de inicio, y en la aldea. El arma que lleves se recuerda para la
-próxima partida.
+Hay dos armeros: en la playa, junto al punto de inicio, y en la aldea. Desde M4 tu partida (nivel, equipo, bolsa,
+maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nueva partida» en Pausa la borra.
 
 ## Estado de los milestones
 
@@ -89,7 +93,8 @@ próxima partida.
 | M3 | 5 oleadas, Cangrejo mortero, HELLFIRE en 3 fases (embestida, láser doble, meteoros, carriles de fuego, cortina, lava) → `PLAN-M3.md` | ✅ |
 | M3.5 | Combate V2: apuntar con ratón / mando, reflejo a tiempo en 3 niveles, guardia que atrapa, armas con su kit (sable y pistolas), armeros → `PLAN-M3.5.md` | ✅ |
 | M3.6 | Servidor Node real con 2–4 jugadores (WebSocket), mismo `LocalServer`, cooperativo medido con latencia → `PLAN-M3.6.md` | ✅ |
-| M4–M6 | Progresión/loot, momentos Highlight, rendimiento y móvil final | siguiente |
+| M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, Tía Perla, Mareas, partidas guardadas y firmadas, HUD y paneles completos → `PLAN-M4.md` | ✅ |
+| M5–M6 | Momentos Highlight, rendimiento y móvil final | siguiente |
 
 ### Qué incluye M1
 
@@ -240,6 +245,55 @@ próxima partida.
   cliente en el cable y ~0,3–0,6 ms por paso en el servidor. Entre ejecuciones la victoria varía ±30 s.
 - 95 tests en Node (servidor, cooperativo y red incluidos).
 
+### Qué incluye M4 — «El botín»
+
+- **Objetos** (`src/data/items.js`, `src/sim/items.js`): 6 huecos (arma, cabeza, pecho, botas, dos abalorios), 20
+  bases (3 sables, 3 pistolas, 3 sombreros, 3 pechos, 3 botas, 5 abalorios), 5 rarezas (Común 55 % · Poco común 28 %
+  · Raro 12 % · Épico 4,2 % · Legendario 0,8 %; presupuesto × 1 a × 3 y 0–4 afijos), 15 afijos con nombre
+  («Sable de cubierta del Tiburón»), nivel 1–15 y valor en oro.
+- **Estadísticas:** nivel + equipo + maestría → las columnas del ECS, **predichas** por el cliente (velocidad,
+  enfriamiento, carga de RIPOSTE, daño de reflejos, aguante, recarga de dash, ventanas de reflejo, cadencia,
+  pociones, XP); crítico, oro y vida al matar solo en el servidor. Con equipo, 0 correcciones de predicción.
+- **Maestría por arma** (como Albion): toda la XP alimenta también la del arma que llevas (1–10). LMB + Q desde M1,
+  **E en M2, R en M3** (candado «M2 / M3» en la barra), +2 % de daño por nivel y pasivas en M5 y M10 (Filo templado /
+  Ojo del huracán; Gatillo fácil / Diluvio). El kit se abre en el camino; M10 llega hacia la quinta Prueba.
+- **Pociones de ron-coco** (`1`, cruceta ↑, botón táctil): 40 % de vida al momento, 2 s de espera, máximo 5;
+  empiezas con 2 y caen de los enemigos.
+- **Loot personal:** cada pirata con derecho a la XP tira el suyo y solo ve y recoge sus caídas. Saltan del cadáver
+  en arco, con haz de luz y nombre del color de su rareza, y se recogen solas al pasar. **Cofre de HELLFIRE** por
+  participante (Raro o mejor + 2 objetos + oro + poción), que se abre con F. 7–11 objetos por vuelta.
+- **Misiones** que decide el servidor: la cadena de la playa a HELLFIRE (Tierra firme → La capitana del puerto →
+  Limpia el camino → Los guardianes → Sobrevive a La Caldera), «Coral para la tía» de Tía Perla y la «Caza en La
+  Caldera» repetible de Brea. **Diálogo** con los PNJ (aceptar, entregar, comerciar). **Tía Perla** vende pociones
+  (25 oro) y cofres misteriosos (120) y compra todo por su valor; desguazar en el camino da el 25 %.
+- **Mareas**, la dificultad de La Caldera: I · II (vida × 1,8, daño × 1,5, objetos +3 niveles y más rareza, XP × 1,6,
+  oro × 1,5) · III (× 3,2, × 2,4, +6, XP × 2,4, oro × 2,2). Vencer una abre la siguiente; se elige con F en las
+  runas; en cooperativo manda la más baja de la tripulación.
+- **Partidas guardadas:** el servidor manda tu perfil (nivel, XP, oro, pociones, bolsa, equipo, maestrías, misiones,
+  Mareas, tutorial, último punto de control) y el cliente lo guarda en `localStorage`, uno por servidor. En Node va
+  firmado con HMAC-SHA256 (`SAVE_SECRET`): una copia tocada se rechaza, empiezas de cero y la vieja queda aparte. En
+  solo, el Worker confía en la suya.
+- **HUD y paneles:** oro, Marea en combate, poción, candados, barra de maestría, seguimiento de misiones. Panel de
+  Personaje (I / C / L) con el muñeco y tu retrato, la bolsa, fichas con comparación (▲ / ▼), equipar, desguazar
+  (lo raro pide confirmación) y vender; diálogo; **mapa** de la isla (M) con tu objetivo y la tripulación. No pausan
+  el mundo. En el móvil: bolsa 6 × 4 y la ficha a la vista.
+- **Balance** medido con `RUNS=8 node tools/progress.mjs`: el bot de la Prueba con perfil propio (Nv 5, habilidad
+  0,8) abre su cofre, recoge, se pone lo que puntúa mejor, desguaza el resto y sube de Marea. «Vida» es el daño
+  recibido tras la defensa (en modo dios) dividido por la vida máxima, sin contar regeneración ni pociones:
+
+  | Vuelta | Marea | Sable: tiempo · vida | Nv · maestría | ATK / DEF / VIDA | Pistolas: tiempo · vida | Oro de la vuelta |
+  |---|---|---|---|---|---|---|
+  | 1 | I | 161 s · 98 % | 9 · M6 | 32 / 39 / 339 | 191 s · 91 % | ~300 |
+  | 2 | II | 207 s · 131 % | 10 · M7 | 35 / 67 / 325 | 227 s · 76 % | ~700 |
+  | 3 | III | 260 s · 155 % | 10 · M8 | 82 / 77 / 457 | 341 s · 148 % | ~900 |
+  | 5 | III | 148 s · 52 % | 10 · M10 | 85 / 77 / 514 | 284 s · 78 % | ~1200 |
+  | 8 | III | 151 s · 32 % | 10 · M10 | 85 / 47 / 673 | 203 s · 29 % | ~900 |
+
+  La primera Marea III es un muro y con su equipo baja a un tercio de la vida. Pendiente: en Marea III el oro sobra
+  (~1000 por vuelta, con poco en qué gastarlo hasta M5).
+- Protocolo v4 (`hello.save`, `profile`, `save`, eventos privados con `to`). 129 tests en Node (objetos, maestría,
+  loot, guardado, misiones y Mareas incluidos).
+
 Medido en la vista de juego (sumando todas las pasadas, incluido el bloom): 80–130 draw calls y 180–315 k triángulos en
 alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k triángulos en baja.
 
@@ -251,7 +305,7 @@ src/net/      protocolo, LocalServer (servidor autoritativo), worker, transporte
 server/       servidor Node: estáticos + WebSocket + límites (GameHost envuelve el mismo LocalServer)
 src/client/   predicción del jugador local + reconciliación, interpolación del resto (buffer de 100 ms)
 src/render/   escena, pipeline de contornos, toon, terreno, agua, cielo, vegetación, props, personajes, VFX
-src/ui/       título, HUD, prompts/nameplates, pausa, táctil
+src/ui/       título, HUD, prompts/nameplates, pausa, táctil, botín, panel de personaje, diálogo, mapa
 src/audio/    motor Web Audio, SFX, ambiente, música
 src/data/     meta (nombre del juego), tuning (todos los números), ship_modules (gancho naval)
 ```
@@ -262,8 +316,11 @@ src/data/     meta (nombre del juego), tuning (todos los números), ship_modules
   `client prediction matches the authoritative server exactly` (en proceso) y `two players at 100 ms RTT` (por
   WebSocket) comprueban error de predicción 0. Los bots son entidades `player` del servidor que generan los mismos
   comandos que un humano.
-- **Pendiente para un MMO de verdad:** autenticación en `hello`, varias instancias (una por arena / grupo),
-  persistencia del personaje y el protocolo binario (formato en `DESIGN.md` §10).
+- **Partidas (M4):** el servidor es el dueño del perfil (`world.profiles`) y lo manda firmado; el cliente solo lo
+  guarda y lo devuelve en `hello`. Equipo y maestría viven en columnas del ECS para que la predicción coincida.
+- **Pendiente para un MMO de verdad:** cuentas y autenticación en `hello`, perfiles en una base de datos del
+  servidor (hoy viajan firmados en el navegador), varias instancias (una por arena / grupo) y el protocolo binario
+  (formato en `DESIGN.md` §10).
 - **Ganchos navales:** muelle con barco anclado e interacción «ZARPAR · próximamente», `src/data/ship_modules.js`,
   componente `VEHICLE` reservado en el ECS, `camera.setMode('naval')` y mensajes `ship_*`, `board`, `dock`,
   `trade_*` reservados en `protocol.js`.

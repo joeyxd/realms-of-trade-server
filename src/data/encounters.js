@@ -14,8 +14,8 @@ export const ENCOUNTERS = {
     // levels added to the loot; rar: rarity bonus (data/items.js); xp, gold: multipliers.
     tiers: [
       { name: 'Marea I', hp: 1, dmg: 1, ilvl: 0, rar: 0, xp: 1, gold: 1 },
-      { name: 'Marea II', hp: 1.7, dmg: 1.35, ilvl: 3, rar: 0.5, xp: 1.6, gold: 1.5 },
-      { name: 'Marea III', hp: 2.6, dmg: 1.7, ilvl: 6, rar: 1, xp: 2.4, gold: 2.2 },
+      { name: 'Marea II', hp: 1.8, dmg: 1.5, ilvl: 3, rar: 0.5, xp: 1.6, gold: 1.5 },
+      { name: 'Marea III', hp: 3.2, dmg: 2.4, ilvl: 6, rar: 1, xp: 2.4, gold: 2.2 },
     ],
     tierR: 6, // u from the runes where you can change your Marea (F)
     waves: [

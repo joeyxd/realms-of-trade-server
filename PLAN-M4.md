@@ -194,7 +194,7 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   nombre, arco, recogida), sonidos, seguimiento de misiones, guardado local, aviso de partida rechazada.
 - [x] **P7 Cliente II**: panel de Personaje (Equipo / Atributos / Misiones), fichas y comparación, diálogo,
   vendedora, mapa, atajos, táctil y mando. Capturas.
-- [ ] **P8 Cierre**: balance (playtest de varias vueltas con equipo: nivel, poder, tiempos por Marea), README
+- [x] **P8 Cierre**: balance (playtest de varias vueltas con equipo: nivel, poder, tiempos por Marea), README
   («Qué incluye M4»), DESIGN §9/§10/§16, versión `0.4.0-m4`, artefacto, informe final.
 
 ## 4. Notas de implementación (rellenar al cerrar cada paso)
@@ -278,3 +278,17 @@ firma tu partida (HMAC) y la guardas tú, así sobrevive a reinicios y despliegu
   los botones y Silenciar queda en Ajustes por debajo de 420 px. Verificado en el navegador contra el servidor (1100 ×
   680 y 390 × 800): equipar, desguazar con confirmación, pestañas, mapa, Brea, Perla → Comerciar → comprar poción y
   vender, la tienda se cierra al alejarte. 129 tests.
+- **P8:** `tools/progress.mjs` (playtest de progresión: el bot de la Prueba con perfil propio, vuelta tras vuelta;
+  abre su cofre, recoge, se pone lo que puntúa mejor del mismo kit, desguaza el resto y sube de Marea; «vida» =
+  daño recibido tras la defensa / vida máxima, en modo dios). La primera medida mostró dos problemas: la maestría
+  llegaba a M8 en la primera Prueba y a M10 en la segunda (una vuelta da ~3400 XP en Marea I, ~5200 en II y
+  ~9500 en III, y toda va a la maestría), y la Marea III costaba menos vida que la I (52 % frente a 99 %: nivel,
+  equipo y maestría crecían más que los multiplicadores). Cambios: maestría `[60, 140, 300, 900, 1800, 3200, 5600,
+  9000, 14000]` (el kit sigue abriéndose en el camino, M5 en la primera Prueba, M10 hacia la quinta); Marea II vida
+  × 1.8 y daño × 1.5 (antes 1.7 / 1.35); Marea III × 3.2 y × 2.4 (antes 2.6 / 1.7). Resultado (sable, habilidad
+  0,8): I 161 s · 98 % → II 207 s · 131 % → primera III 260 s · 155 % → con su equipo 130–150 s · 30–50 %; pistolas,
+  primera III 341 s · 148 % → 170–200 s · 30 %; habilidad 0,6, primera III 155 % → 60–90 %. Nivel 10 tras la segunda
+  Prueba; 7–11 objetos por vuelta. Pendiente: el oro sobra en Marea III (~1000 por vuelta). README («Qué incluye
+  M4», controles, `SAVE_SECRET`), DESIGN §9 (lo construido en M4), §10 (perfiles y guardado, protocolo v4) y §16;
+  versión `0.4.0-m4`. Artefacto (solo) comprobado en el navegador (Worker, panel, la partida sobrevive a recargar) y
+  republicado en la misma URL (versión 10). 129 tests.
