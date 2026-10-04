@@ -203,5 +203,6 @@ escritura. El sanitizer actual usa un tope genérico de bodega, no una política
 4. Captura solo de carga al principio frente a captura temporal/permanente de barcos bajo condiciones especiales.
 5. Alcance de protección de puertos y rutas, y reglas para solos, rendición y desconexión.
 
-Estas preguntas no autorizan aún implementación ni la inspección Unreal. El inventario de assets se inicia tras
-cerrar la conversación y recibir la ruta concreta de los proyectos.
+Estas preguntas no autorizan aún implementación de las mecánicas propuestas. Actualización del autor, 2026-10-04:
+la exploración Unreal puede comenzar en paralelo mientras redacta su respuesta. Falta la ruta concreta de los
+proyectos; seguimiento en `docs/research/unreal-assets/README.md`.

@@ -95,10 +95,11 @@ autor.
 - Construir y habitar en tierra o en barcos modulares es la joya del juego; barcos aéreos más adelante.
 - Usar **GPT-6 Luna** para trabajo delegable que ahorre tiempo/tokens sin comprometer calidad, con autoría,
   integración y revisión final del agente principal. Regla persistente: `AGENTS.md`.
-- Antes de investigar los proyectos Unreal/FAB del autor, cerrar la conversación sobre combate naval, carga,
-  pérdidas y protección de la casa. Propuesta y evidencia: `docs/NAVAL-HOUSING-DISCUSSION.md`.
-- No inspeccionar esa carpeta todavía. Cuando toque: inventario de solo lectura con Luna, contenido adicional
-  adquirido y su portabilidad/utilidad; excluir módulos base de Unreal. El autor gestiona las licencias.
+- La conversación sobre combate naval, carga, pérdidas y protección de la casa sigue abierta. Propuesta y
+  evidencia: `docs/NAVAL-HOUSING-DISCUSSION.md`.
+- El autor autorizó iniciar la exploración Unreal/FAB en paralelo mientras redacta sus decisiones. Ruta exacta
+  aún por confirmar: inventario de solo lectura con Luna, contenido adicional adquirido y su portabilidad/utilidad;
+  excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
 - Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Brasa.
 
 ## 4. Cómo trabajar

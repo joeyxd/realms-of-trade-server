@@ -27,7 +27,8 @@
   Comercio entre ciudades, transporte con riesgo y combate/piratería deben reforzar esa identidad.
 - La discusión de pérdidas y combate naval está en `docs/NAVAL-HOUSING-DISCUSSION.md`. Sus mecanismos y números
   son propuestas pendientes de decisión; no implementarlos como si ya estuvieran aprobados.
-- Primero terminar esta discusión con el autor; después enviar la investigación de proyectos Unreal.
+- El autor autorizó iniciar la investigación Unreal en paralelo mientras redacta sus decisiones navales
+  (2026-10-04). Esperar la ruta concreta o identificar los proyectos antes de inventariar su contenido.
 - Esa investigación debe usar GPT-6 Luna para listar/clasificar assets, scripts, modelos, efectos, audio y arte,
   priorizando portabilidad al juego actual y mejora concreta. Examinar contenido añadido/adquirido y dependencias;
   excluir módulos base de Unreal. No modificar los proyectos fuente. El autor se encarga de las licencias;
