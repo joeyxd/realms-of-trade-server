@@ -1,6 +1,7 @@
 // Village, dock, ship and Caldera dressing: one merged vertex-colored geometry per prop kind,
 // instanced per kind. Glowing bits (lantern glass, coals, hut windows at night) use unlit materials.
 import * as THREE from 'three';
+import { assets } from './assets/registry.js';
 import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, canvasTexture } from './geo.js';
 import { toon, normalMatFor, glowBasic } from './toon.js';
 import { LAYER } from './pipeline.js';
@@ -309,6 +310,13 @@ function blackFlagTexture() {
   });
 }
 
+// The size an imported model is fitted to when it replaces a procedural piece: { w: largest horizontal extent, h }.
+function boxTarget(geo) {
+  if (!geo.boundingBox) geo.computeBoundingBox();
+  const b = geo.boundingBox;
+  return { w: Math.max(b.max.x - b.min.x, b.max.z - b.min.z), h: b.max.y - b.min.y };
+}
+
 export function createProps(map) {
   const group = new THREE.Group();
   group.name = 'props';
@@ -326,6 +334,10 @@ export function createProps(map) {
     if (!byKind.has(p.kind)) byKind.set(p.kind, []);
     byKind.get(p.kind).push(p);
   }
+  // Imported models (assets/manifest.json "prop" entries) replace whole kinds: instanced, fitted to the procedural
+  // prop's size (so the sim's colliders still match), their own emission instead of the glass / coal / window parts.
+  const extOf = new Map(), extAt = new Map();
+  for (const kind of byKind.keys()) { const id = assets.propId(kind); if (id) { extOf.set(kind, id); extAt.set(kind, []); } }
   // Static props are baked into one merged mesh per world chunk (few draw calls, culls per chunk).
   const CH = 72;
   const buckets = new Map();
@@ -338,6 +350,7 @@ export function createProps(map) {
       q.setFromAxisAngle(up, p.rot);
       const s = kind === 'pillar' ? sc.set(1, p.h, 1) : sc.set(p.scale, p.scale, p.scale);
       m4.compose(v.set(p.x, p.y, p.z), q, s);
+      if (extOf.has(kind)) { extAt.get(kind).push(m4.clone()); continue; }
       const key = `${Math.floor(p.x / CH)},${Math.floor(p.z / CH)}`;
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(kits[kind].clone().applyMatrix4(m4));
@@ -357,6 +370,10 @@ export function createProps(map) {
     mesh.userData.nm = nm;
     mesh.name = 'propsChunk';
     group.add(mesh);
+  }
+  for (const [kind, id] of extOf) {
+    const ext = assets.instanced(id, extAt.get(kind), boxTarget(kits[kind]));
+    if (ext) group.add(ext);
   }
   const coalMat = glowBasic({ color: 0xff7a1a }, 0.85);
   if (glowParts.length) group.add(new THREE.Mesh(mergeGeometries(glowParts), glowMat));
@@ -393,7 +410,17 @@ export function createProps(map) {
   // Ship (bobs gently).
   const shipProp = map.props.find((p) => p.kind === 'ship');
   const ship = new THREE.Group();
-  if (shipProp) {
+  // An imported model for the ship at the dock ("ship:dock"), fitted to the procedural hull unless it says its size.
+  const shipExt = shipProp && assets.has('ship:dock') ? assets.model('ship:dock', boxTarget(shipGeo())) : null;
+  if (shipProp && shipExt) {
+    ship.add(shipExt);
+    const flag = new THREE.Object3D(); // the procedural flag's flutter keeps a target; the model brings its own flag
+    ship.add(flag);
+    ship.position.set(shipProp.x, -0.35, shipProp.z);
+    ship.rotation.y = shipProp.rot;
+    ship.userData.flag = flag;
+    group.add(ship);
+  } else if (shipProp) {
     const hull = new THREE.Mesh(shipGeo(), mat);
     hull.userData.nm = nm;
     const sailMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, { occluder: true, key: 'sail' });

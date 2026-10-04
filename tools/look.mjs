@@ -97,6 +97,14 @@ for (const s of scen) {
     await tp('11-fight-close', L.grunt.x + 5, L.grunt.z + 4, null, 4000);
     await page.mouse.wheel(0, 400); await wait(1500);
   }
+  if (s === 'lineup' || s === 'lineup-run') {
+    // LOOKS (comma list of look indices; default the first eight) in a row, imported models and procedural alike.
+    const looks = (process.env.LOOKS || '0,1,2,3,4,5,6,7').split(',').map(Number);
+    await tp(s === 'lineup' ? '12-lineup-ref' : '13-lineup-run-ref', L.spawn.x, L.spawn.z, null, 2500);
+    console.log(JSON.stringify(await page.evaluate(([k, run]) => window.__mn.lineup(k, { run }), [looks, s === 'lineup' ? 0 : 0.8])));
+    await wait(4000); await shot(s === 'lineup' ? '12-lineup' : '13-lineup-run');
+    await page.evaluate(() => window.__mn.lineup());
+  }
   if (s === 'pause') {
     await page.keyboard.press('Escape'); await wait(1200); await shot('09-pause');
     await page.keyboard.press('Escape'); await wait(600);

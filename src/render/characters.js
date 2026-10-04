@@ -10,6 +10,8 @@ import { toon, U, charNormalMat } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { BONES, makeBones } from './charkit.js';
 import { LOOKS, buildLook } from './charlooks.js';
+import { assets } from './assets/registry.js';
+import { charToon } from './assets/toonmat.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
@@ -59,8 +61,12 @@ export class CharacterView {
     this.look = L;
     this.skin = skinIdx;
     this.armed = sword && !!L.weapon;
-    const built = buildLook(skinIdx, this.armed);
+    // An imported model for this look (assets/manifest.json, render/assets/): the same rig, its own geometry.
+    const ext = assets.charLook(skinIdx, this.armed);
+    const built = ext || buildLook(skinIdx, this.armed);
     this.built = built;
+    this.ext = ext ? ext.ext : null;
+    this.debrisKey = (ext ? 'x' : '') + skinIdx + (this.armed ? 'a' : '');
     this.height = built.height;
     this.rigKey = built.key;
     this.pose = pose;
@@ -71,7 +77,8 @@ export class CharacterView {
     this.material = characterMaterial(L.enemy ? 'sentinel' : 'base');
     this.glow = this.material.userData.glow;
     this.flashU = this.material.userData.flash.value;
-    this.mesh = new THREE.SkinnedMesh(built.geo, this.material);
+    this.mesh = new THREE.SkinnedMesh(built.geo, this.ext ? this.extMaterials() : this.material);
+    if (this.ext) this.mesh.userData.nm = charNormalMat(); // a material array: the outline pass takes the mesh's pair
     this.mesh.add(this.body);
     this.mesh.bind(new THREE.Skeleton(this.bones));
     this.mesh.castShadow = true;
@@ -124,11 +131,21 @@ export class CharacterView {
     this.recoilL = 0; this.recoilR = 0; this.shootW = 0;
   }
 
+  // An imported model's materials, one per geometry group: its own (toon-converted), then the procedural weapon's
+  // group on this view's vertex-colour material. All share the view's glow and hit-flash uniforms.
+  extMaterials() {
+    const shared = { glow: this.material.userData.glow, flash: this.material.userData.flash };
+    const list = this.ext.mats.map((m) => charToon(m, this.ext.entry, shared));
+    list.push(this.material);
+    return list;
+  }
+
   // The weapon in hand (players): 'sable' (the look's own blade) or 'pistolas'. Same skeleton, new mesh.
   setWeapon(kind) {
     if (!this.armed || kind === this.weaponKind) return;
     this.weaponKind = kind;
-    this.mesh.geometry = buildLook(this.skin, kind === 'pistolas' ? 'pistols' : true).geo;
+    const w = kind === 'pistolas' ? 'pistols' : true;
+    this.mesh.geometry = (this.ext && assets.charLook(this.skin, w) || buildLook(this.skin, w)).geo;
   }
   // A pistol shot kicks that arm up (hand +1 = left, −1 = right, as the sim alternates them).
   recoil(hand) { if (hand > 0) this.recoilL = 1; else this.recoilR = 1; }

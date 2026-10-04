@@ -44,6 +44,7 @@ import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
 import { Ambience } from './audio/ambience.js';
 import { Music } from './audio/music.js';
+import { assets } from './render/assets/registry.js';
 
 const errors = new Map();
 function safe(name, fn) {
@@ -75,6 +76,9 @@ async function boot() {
   const applyUiScale = () => document.documentElement.style.setProperty('--ui-scale', String(settings.uiScale));
   applyUiScale();
 
+  // Imported models and textures (assets/manifest.json; docs/ASSETS.md) load while the world generates; anything
+  // missing or broken stays procedural. ?noassets skips them (compare against the procedural look).
+  const assetsP = params.has('noassets') ? Promise.resolve(assets) : assets.load('assets/manifest.json');
   const map = generateWorld(GAME.seed);
   const debug = params.has('debug');
   // Online when this page comes from the game server (or ?server=ws://…), solo with ?solo or without one.
@@ -84,6 +88,7 @@ async function boot() {
     server: params.get('server'), solo: params.has('solo'), lagMs: +params.get('lag') || 0, jitterMs: +params.get('jitter') || 0,
   });
   const canvas = $('#game');
+  await assetsP;
   const world = new GameScene(canvas, map);
   // ?tod=night|dusk|day|cycle and ?phase=0..1 for screenshots; otherwise the saved setting.
   world.lighting.setTimeOfDay(params.get('tod') || settings.timeOfDay, 0);
@@ -947,7 +952,7 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, panels: { charPanel, dialog, mapView } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, panels: { charPanel, dialog, mapView } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.
@@ -955,6 +960,31 @@ async function boot() {
       world.lighting.setTimeOfDay(mode, seconds);
       if (phase !== undefined) world.lighting.setPhase(phase);
       return { tod: world.lighting.tod, phase: world.lighting.phase, lights: world.lights.picked.filter((s) => s.w > 0).map((s) => s.kind) };
+    };
+    // Asset check: __mn.lineup([0, 1, 6], { run: 0.6 }) stands those looks in a row in front of you, animated
+    // (run 0 idle … 1 full run; act: an ACT pose id), the camera at its closest; __mn.lineup() clears it. Imported
+    // models (docs/ASSETS.md) and procedural looks side by side.
+    let lineup = null;
+    window.__mn.lineup = (skins = [], o = {}) => {
+      if (lineup) { cancelAnimationFrame(lineup.raf); for (const v of lineup.views) world.scene.remove(v.root); lineup = null; }
+      if (!skins.length) return [];
+      // Facing the camera, in a row across the view a little in front of you.
+      const yaw = world.rig.yaw, f = o.facing ?? yaw, gap = o.gap ?? 1.3, cx = ps.x + Math.sin(yaw) * 1.5, cz = ps.z + Math.cos(yaw) * 1.5;
+      const views = skins.map((k) => { const v = new CharacterView(k, { sword: !SKINS[k].npc }); world.scene.add(v.root); return v; });
+      let t = 0;
+      const step = () => {
+        t += 1 / 60;
+        views.forEach((v, i) => {
+          const off = (i - (views.length - 1) / 2) * gap, x = cx + Math.cos(yaw) * off, z = cz - Math.sin(yaw) * off;
+          const run = o.run || 0, sp = run * 6.5;
+          v.update(1 / 60, { x, y: map.groundAt(x, z), z, f, vx: Math.sin(f) * sp, vz: Math.cos(f) * sp, st: 0, act: o.act || 0, actT: (t % 1) * 0.6, wade: 0 });
+        });
+        lineup.raf = requestAnimationFrame(step);
+      };
+      lineup = { views, raf: 0 };
+      step();
+      world.rig.distTarget = o.dist ?? 6.5;
+      return views.map((v) => ({ look: v.look.name, ext: v.ext ? v.ext.id : null, height: +v.height.toFixed(2) }));
     };
     // Bloom debug views: __mn.view('bloom') (bloom only), __mn.view('glow') (glow mask), __mn.view() (normal).
     window.__mn.view = (v) => { world.pipeline.view = { bloom: 1, glow: 2 }[v] || 0; return world.pipeline.view; };

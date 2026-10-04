@@ -963,3 +963,22 @@ export function buildLook(idx, wpn) {
   cache.set(key, res);
   return res;
 }
+
+// Only the look's weapon (its blade, staff or greatsword; or the pair of pistols), on the procedural hands: the
+// imported characters carry it (render/assets/rebind.js moves it to the model's hands). Null when it has none.
+const weaponCache = new Map();
+export function buildWeaponOnly(idx, wpn) {
+  const i = Math.max(0, Math.min(LOOKS.length - 1, idx | 0));
+  const pist = wpn === 'pistols', armed = !!wpn && !pist, key = i + (pist ? 'p' : 'a');
+  if (!pist && !armed) return null;
+  if (weaponCache.has(key)) return weaponCache.get(key);
+  const L = LOOKS[i], R = BODY[L.body];
+  let res = null;
+  if (pist || (L.weapon && L.body !== 'brute' && !L.archer && L.skel !== 'light')) {
+    const k = new Builder();
+    if (pist) pistols(k, R, L); else weapon(k, R, L);
+    if (k.list.length) res = { geo: k.build(), R };
+  }
+  weaponCache.set(key, res);
+  return res;
+}

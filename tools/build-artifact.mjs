@@ -36,4 +36,15 @@ const walk = (dir) => {
   }
 };
 walk('src');
+// Imported models and textures (assets/manifest.json, docs/ASSETS.md): published next to the page as they are.
+const ASSET_EXT = /\.(json|glb|gltf|bin|png|jpe?g|webp|ktx2)$/i;
+const walkAssets = (dir) => {
+  if (!fs.existsSync(path.join(root, dir))) return;
+  for (const e of fs.readdirSync(path.join(root, dir), { withFileTypes: true })) {
+    const rel = path.posix.join(dir, e.name);
+    if (e.isDirectory()) walkAssets(rel);
+    else if (ASSET_EXT.test(e.name)) files.push(rel);
+  }
+};
+walkAssets('assets');
 console.log(JSON.stringify({ page: out, bytes: page.length, files }, null, 1));

@@ -58,7 +58,7 @@ export class Debris {
   burst(view, dirX = 0, dirZ = 0, power = 1) {
     view.root.updateMatrixWorld(true);
     const sk = view.mesh.skeleton;
-    const pieces = piecesOf(view.built, view.skin + (view.armed ? 'a' : ''));
+    const pieces = piecesOf(view.built, view.debrisKey || view.skin + (view.armed ? 'a' : ''));
     const base = view.root.position;
     for (const pc of pieces) {
       const mesh = new THREE.Mesh(pc.geo, view.material);
