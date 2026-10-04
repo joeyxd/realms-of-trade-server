@@ -7,6 +7,7 @@ son los CDN de Three.js y GSAP, y Google Fonts.
 
 - Diseño completo (números, jefe, progresión, protocolo): [`DESIGN.md`](DESIGN.md)
 - Revisión del intento anterior (servidor Socket.io 2D): [`legacy/REVIEW.md`](legacy/REVIEW.md)
+- **Para seguir el proyecto:** [`docs/HANDOFF.md`](docs/HANDOFF.md) · modelos externos (Meshy…): [`docs/ASSETS.md`](docs/ASSETS.md) · jugar en línea en tu servidor: [`docs/DEPLOY.md`](docs/DEPLOY.md)
 
 ## Cómo ejecutarlo
 

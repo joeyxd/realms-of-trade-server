@@ -12,9 +12,11 @@ import { Economy } from '../economy/economy.js';
 import { board } from '../economy/market.js';
 import { newHold, sanitizeHold, holdUsed, PACK_CAP } from '../economy/cargo.js';
 import { HULLS, MODULES } from '../../data/ships.js';
+import { sanitizeRaft } from '../economy/raft.js';
 
 // p.eco: id (stable owner key for plots and ships; '' until first needed), pack (what you carry on foot), ships
-// ([{ n: name, hull, mods: [ids], hold, at: town | '' at sea, hp }]; M6), deeds ([[town, plot index]]; M8).
+// ([{ n: name, hull, mods: [ids], hold, at: town | '' at sea, hp }], or a raft you build: { kind: 'raft', n, grid
+// (sim/economy/raft.js), hold, at, hp, look }; M6), deeds ([[town, plot index]]; M8).
 export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [], deeds: [] });
 export function sanitizeEco(raw) {
   const o = newEco();
@@ -22,7 +24,8 @@ export function sanitizeEco(raw) {
   if (typeof raw.id === 'string' && /^[a-z0-9]{1,24}$/.test(raw.id)) o.id = raw.id;
   o.pack = sanitizeHold(raw.pack, PACK_CAP);
   if (Array.isArray(raw.ships)) {
-    o.ships = raw.ships.slice(0, 8).filter((s) => s && HULLS[s.hull]).map((s) => {
+    o.ships = raw.ships.slice(0, 8).filter((s) => s && (HULLS[s.hull] || s.kind === 'raft')).map((s) => {
+      if (s.kind === 'raft') return { kind: 'raft', n: String(s.n || 'La Balsa').slice(0, 24), grid: sanitizeRaft(s.grid), hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
       const mods = (Array.isArray(s.mods) ? s.mods : []).filter((m) => MODULES[m]).slice(0, 32);
       return { n: String(s.n || HULLS[s.hull].name).slice(0, 24), hull: s.hull, mods, hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)) };
     });

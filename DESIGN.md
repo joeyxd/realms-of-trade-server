@@ -10,6 +10,9 @@ Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isomé
 **El chiste del juego** (decisión del autor, M4.7): la estructura es la **economía**, la **construcción**, los
 **barcos** y el **comercio entre pueblos**, y descansa sobre una base de acción que es divertida por sí misma
 (combate bullet hell, tatuajes, perlas negras). Orden: primero terminar la base divertida, luego la estructura.
+Construcción y barcos se unen en **«La Balsa»** (referencia del autor: *Raft*): tu barco es tu casa, empieza con
+cuatro tablones y una vela y crece pieza a pieza hasta una fortaleza flotante con la que comercias de pueblo en
+pueblo (`PLAN-M6.md`). Para seguir el proyecto: `docs/HANDOFF.md`.
 
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
@@ -679,10 +682,10 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | en curso |
 | M4.8 | «Perlas negras»: perlas raras que se tragan (habilidad en G, elemento que tiñe el kit, pasiva, maldición) y se caen al morir (`PLAN-M4.8.md`) | diseño |
-| M5 | Mundo persistente: base de datos en el servidor, cuentas, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA | propuesta |
-| M6 | Barcos: zarpar, navegar entre islas, combate naval (§13) | propuesta |
-| M7 | Comercio entre pueblos: mercancías, precios por pueblo (oferta y demanda), rutas, contrabando en la Cala | propuesta |
-| M8 | Construcción: puestos, talleres, casas, fuertes | propuesta |
+| M5 | Mundo persistente con Supabase: cuentas, perfiles y economía en base de datos, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA (`PLAN-M5.md`) | plan |
+| M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
+| M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |
+| M8 | Construcción en pueblos: solares, talleres con recetas, almacenes, astillero, taberna, fortín (`PLAN-M8.md`) | núcleo hecho |
 | — | Pulido continuo: highlights (level-up, cofre), música por capas, accesibilidad, bots + chat | |
 
 Checklist de capturas por milestone: ¿el personaje queda tapado por glow/partículas/texto/vegetación? ¿algo se quema

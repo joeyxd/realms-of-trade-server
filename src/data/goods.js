@@ -11,6 +11,7 @@ export const GOODS = {
   harina: { name: 'Harina', cat: 'food', base: 7, w: 1 },
   galleta: { name: 'Galleta de barco', cat: 'food', base: 9, w: 1 },
   ron: { name: 'Ron', cat: 'drink', base: 22, w: 1 },
+  agua: { name: 'Agua dulce', cat: 'drink', base: 2, w: 1 }, // rafts make it (purifier) and drink it (crops)
   cana: { name: 'Caña de azúcar', cat: 'material', base: 6, w: 2, perish: 0.02 },
   madera: { name: 'Madera', cat: 'material', base: 9, w: 3 },
   hierro: { name: 'Hierro', cat: 'material', base: 16, w: 3 },

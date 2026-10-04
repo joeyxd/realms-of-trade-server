@@ -186,6 +186,9 @@ test('profiles carry the trade state; old saves without it get an empty pack', (
   const q = sanitizeProfile(JSON.parse(JSON.stringify(p)));
   assert.deepEqual(q.eco.pack.goods, { ron: 3 });
   assert.equal(q.eco.ships.length, 1); assert.deepEqual(q.eco.ships[0].mods, ['cannon_bronce']); assert.equal(q.eco.ships[0].hold.goods.pescado, 4);
+  p.eco.ships = [{ kind: 'raft', n: 'Mi balsa', grid: { parts: [['foundation', 0, 0, 0, 0], ['sail', 0, 0, 0, 0], ['sail', 9, 9, 0, 0]] }, at: 'aldea', hold: { goods: { madera: 2 } } }];
+  const r = sanitizeProfile(JSON.parse(JSON.stringify(p))).eco.ships[0];
+  assert.equal(r.kind, 'raft'); assert.equal(r.grid.parts.length, 2, 'the floating sail is dropped'); assert.equal(r.hold.goods.madera, 2);
   const old = JSON.parse(JSON.stringify(newProfile())); delete old.eco;
   assert.deepEqual(sanitizeProfile(old).eco.pack.goods, {});
 });
@@ -220,4 +223,87 @@ test('server: the market command lists, buys and sells where you stand, refuses 
   assert.equal(why({ op: 'sell', town: 'aldea', g: 'pescado', n: 1 }), 'combat');
   ecs.regenT[e] = 99;
   assert.equal(why({ op: 'buy', town: 'nowhere', g: 'pescado', n: 1 }), 'town');
+});
+
+// ---- La Balsa (PLAN-M6.md): the raft you build piece by piece ----------------------------------------------
+import { RAFT, RAFT_PARTS, STARTER_RAFT } from '../src/data/raftparts.js';
+import { newRaft, canPlace, place, remove, raftStats, stepRaft, sanitizeRaft } from '../src/sim/economy/raft.js';
+
+test('raft pieces: costs are known goods, layers known, the starter raft is valid', () => {
+  for (const [id, P] of Object.entries(RAFT_PARTS)) {
+    assert.ok(['base', 'floor', 'pillar', 'roof', 'edge', 'tile'].includes(P.layer), id);
+    for (const g of [...Object.keys(P.cost), ...Object.keys(P.makes || {}), ...Object.keys(P.needs || {})]) assert.ok(GOODS[g], `${id}: ${g}`);
+  }
+  assert.equal(newRaft().parts.length, STARTER_RAFT.length);
+});
+
+test('raft building: foundations must touch, tiles need a free deck, floors need support, edges need a deck', () => {
+  const r = newRaft();
+  assert.equal(canPlace(r.parts, ['foundation', 5, 5, 0]), 'adjacent');
+  assert.equal(canPlace(r.parts, ['foundation', 2, 0, 0]), '');
+  assert.equal(canPlace(r.parts, ['foundation', 0, 0, 0]), 'overlap');
+  assert.equal(canPlace(r.parts, ['storage', 0, 0, 0]), 'overlap', 'the sail is there');
+  assert.equal(canPlace(r.parts, ['storage', 1, 0, 0]), '');
+  assert.equal(canPlace(r.parts, ['storage', 3, 0, 0]), 'deck', 'over the water');
+  assert.equal(canPlace(r.parts, ['bigSail', 0, 0, 0]), 'overlap');
+  assert.equal(canPlace(r.parts, ['floor', 0, 1, 1]), 'support');
+  r.parts.push(['pillar', 0, 1, 0, 0]);
+  assert.equal(canPlace(r.parts, ['floor', 0, 1, 1]), '');
+  r.parts.push(['floor', 0, 1, 1, 0]);
+  assert.equal(canPlace(r.parts, ['floor', 1, 1, 1]), '', 'one cell of overhang from a held-up floor');
+  assert.equal(canPlace(r.parts, ['wall', 0, 0, 0, 3]), '', 'the west edge of a deck cell');
+  assert.equal(canPlace(r.parts, ['wall', 4, 4, 0, 0]), 'edge');
+  assert.equal(canPlace(r.parts, ['net', 1, 0, 0]), '', 'a net on the rim');
+});
+
+test('raft: placing pays from the hold, removing refunds half and refuses to drop what holds something up', () => {
+  const r = newRaft(), h = newHold(500);
+  assert.equal(place(r, ['storage', 1, 0, 0], h), 'goods');
+  load(h, 'madera', 30);
+  assert.equal(place(r, ['storage', 1, 0, 0], h), '');
+  assert.equal(h.goods.madera, 30 - RAFT_PARTS.storage.cost.madera);
+  const sailFoundation = r.parts.findIndex((p) => p[0] === 'foundation' && p[1] === 0 && p[2] === 0);
+  assert.equal(remove(r, sailFoundation, h), 'needed', 'the sail stands on it');
+  const storage = r.parts.findIndex((p) => p[0] === 'storage');
+  const before = h.goods.madera;
+  assert.equal(remove(r, storage, h), '');
+  assert.equal(h.goods.madera, before + Math.floor(RAFT_PARTS.storage.cost.madera * RAFT.refund));
+  // A bridge foundation between two halves cannot go.
+  const b = newRaft([['foundation', 0, 0, 0], ['foundation', 1, 0, 0], ['foundation', 2, 0, 0]]);
+  assert.equal(remove(b, 1, null), 'needed');
+  assert.equal(remove(b, 2, null), '');
+});
+
+test('raft stats: sails make it fast, weight slows it, overload drags it, storage carries, beds crew', () => {
+  const small = raftStats(newRaft());
+  assert.ok(small.speed > 0 && small.hold === RAFT_PARTS.crate.hold && small.buoyancy === 4 * RAFT.buoyancy);
+  const big = newRaft([...STARTER_RAFT, ['foundation', 2, 0, 0], ['foundation', 2, 1, 0], ['sail', 2, 0, 0], ['storage', 2, 1, 0], ['bed', 1, 0, 0]]);
+  const bs = raftStats(big);
+  assert.ok(bs.speed > small.speed, `two sails beat one: ${bs.speed.toFixed(2)} vs ${small.speed.toFixed(2)}`);
+  assert.equal(bs.crew, 1); assert.ok(bs.respawn); assert.equal(bs.hold, RAFT_PARTS.crate.hold + RAFT_PARTS.storage.hold);
+  const heavy = newHold(1e4); load(heavy, 'hierro', 200);
+  assert.ok(raftStats(big, heavy).load > 1 && raftStats(big, heavy).speed < bs.speed * 0.5, 'overloaded');
+  const bare = newRaft([['foundation', 0, 0, 0]]);
+  assert.ok(raftStats(bare).speed > 0 && raftStats(bare).speed < small.speed, 'no sail: paddling');
+});
+
+test('raft work: purifiers water the crops, nets fish, the still makes rum; a roof catches rain', () => {
+  const r = newRaft([...STARTER_RAFT, ['foundation', 2, 0, 0], ['foundation', 2, 1, 0], ['purifier', 1, 0, 0], ['cropPlot', 0, 1, 0], ['net', 2, 0, 0], ['still', 2, 1, 0]]);
+  const h = newHold(500); load(h, 'cana', 40);
+  const out = stepRaft(r, h, 2);
+  assert.ok(out.made.fruta >= 9, 'two days of a watered crop');
+  assert.ok(out.made.pescado >= 11, 'two days of fishing');
+  assert.equal(out.made.ron, 2 * 3 * 2, 'the still ran its batches');
+  assert.ok(out.made.agua > 0, 'spare water stored');
+  const dry = newRaft([...STARTER_RAFT.filter((p) => p[0] !== 'crate'), ['cropPlot', 1, 1, 0]]);
+  assert.equal(stepRaft(dry, newHold(50), 2).made.fruta, undefined, 'no water: no fruit');
+  const roofed = newRaft([...STARTER_RAFT, ['purifier', 1, 0, 0], ['roof', 1, 0, 0]]);
+  assert.ok(raftStats(roofed).makes.agua > RAFT_PARTS.purifier.makes.agua);
+});
+
+test('raft saves: sanitize keeps what is valid in order, drops the rest', () => {
+  const r = newRaft(); r.parts.push(['storage', 1, 0, 0, 0]);
+  const back = sanitizeRaft(JSON.parse(JSON.stringify({ parts: [...r.parts, ['zzz', 0, 0, 0], ['storage', 9, 9, 0], ['floor', 0, 0, 1]] })));
+  assert.deepEqual(back.parts, r.parts);
+  assert.equal(sanitizeRaft(null).parts.length, STARTER_RAFT.length);
 });
