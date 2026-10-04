@@ -130,6 +130,83 @@ function rackGeo() {
   return merge(L);
 }
 
+// Doña Sepia's stall (M4.7): a slanted indigo-striped awning on four posts, a bar at the back for the hides she
+// shows her designs on (a textured mesh of their own: tattooHidesMesh), a low table with ink pots, a needle box and a
+// candle, a stool. Front is +z (the side she stands on). About 2.4 × 1.4 u.
+function tattooStallGeo() {
+  const INDIGO = 0x3a2a5a, CREAM = 0xd8cbb0, INK = 0x1e2238, BRASS = 0xc9a44c;
+  const awning = (x) => (Math.floor((x + 5) * 2.2) % 2 ? INDIGO : CREAM);
+  const L = [];
+  for (const [x, z, h] of [[1.1, 0.55, 2.0], [-1.1, 0.55, 2.0], [1.1, -0.6, 2.35], [-1.1, -0.6, 2.35]]) L.push(part(cyl(0.055, 0.065, h, 6), WOOD_D, { pos: [x, h / 2, z] }));
+  L.push(part(rbox(2.6, 0.1, 1.55, 0.03), 0, { pos: [0, 2.22, -0.02], rot: [-0.24, 0, 0], paint: awning }));
+  for (const x of [-1.25, -0.42, 0.42, 1.25]) L.push(part(cone(0.09, 0.2, 4), INDIGO, { pos: [x, 1.98, 0.74], rot: [Math.PI, 0, 0] })); // the awning's scalloped edge
+  L.push(part(cyl(0.035, 0.035, 2.3, 6), WOOD, { pos: [0, 2.05, -0.6], rot: [0, 0, Math.PI / 2] })); // the hide bar
+  // The table: top, legs, a cloth runner; ink pots (black, indigo, red), a needle box, a candle.
+  L.push(part(rbox(1.3, 0.07, 0.62, 0.02), WOOD, { pos: [0.35, 0.78, 0.05] }));
+  for (const [x, z] of [[0.95, 0.3], [-0.25, 0.3], [0.95, -0.2], [-0.25, -0.2]]) L.push(part(cyl(0.035, 0.035, 0.76, 5), WOOD_D, { pos: [x, 0.38, z] }));
+  L.push(part(rbox(0.5, 0.01, 0.66, 0.005), 0x6e3a5a, { pos: [0.35, 0.82, 0.05] }));
+  for (const [x, z, c, r] of [[0.0, 0.18, INK, 0.07], [0.18, 0.2, 0x2a3a8a, 0.06], [0.33, 0.16, 0x8a1e22, 0.055], [0.12, -0.05, INK, 0.05]]) {
+    L.push(part(cyl(r, r * 1.1, 0.12, 8), c, { pos: [x, 0.88, z] }));
+    L.push(part(cyl(r * 0.6, r * 0.6, 0.03, 8), 0x0e0c14, { pos: [x, 0.95, z] }));
+  }
+  L.push(part(rbox(0.3, 0.07, 0.16, 0.01), 0x5a3418, { pos: [0.72, 0.86, 0.12] }));
+  for (let i = 0; i < 4; i++) L.push(part(cyl(0.006, 0.006, 0.18, 4), 0xdfe6ea, { pos: [0.64 + i * 0.05, 0.92, 0.12], rot: [0, 0, Math.PI / 2] }));
+  L.push(part(cyl(0.035, 0.04, 0.14, 6), 0xf2e6c8, { pos: [0.95, 0.89, -0.08] }));
+  L.push(part(cyl(0.06, 0.06, 0.02, 8), BRASS, { pos: [0.95, 0.82, -0.08] }));
+  // The stool.
+  L.push(part(cyl(0.2, 0.2, 0.06, 8), WOOD, { pos: [-0.75, 0.5, 0.25] }));
+  for (const a of [0, 2.1, 4.2]) L.push(part(cyl(0.025, 0.03, 0.5, 5), WOOD_D, { pos: [-0.75 + Math.cos(a) * 0.13, 0.25, 0.25 + Math.sin(a) * 0.13] }));
+  return merge(L);
+}
+
+// The hides on the bar: three stretched skins painted with an anchor, a skull and waves (one canvas, one mesh).
+function tattooHidesTexture() {
+  return canvasTexture(512, (ctx, s) => {
+    ctx.clearRect(0, 0, s, s);
+    const w = s / 3;
+    for (let i = 0; i < 3; i++) {
+      const x0 = i * w, cx = x0 + w / 2;
+      // A skin: an irregular parchment shape with stitched corners.
+      ctx.fillStyle = ['#d9c09a', '#cfb28a', '#dcc6a2'][i];
+      ctx.beginPath();
+      ctx.moveTo(x0 + w * 0.14, s * 0.06); ctx.quadraticCurveTo(cx, s * 0.0, x0 + w * 0.86, s * 0.06);
+      ctx.quadraticCurveTo(x0 + w * 0.98, s * 0.5, x0 + w * 0.84, s * 0.94); ctx.quadraticCurveTo(cx, s * 1.0, x0 + w * 0.16, s * 0.94);
+      ctx.quadraticCurveTo(x0 + w * 0.02, s * 0.5, x0 + w * 0.14, s * 0.06);
+      ctx.fill();
+      ctx.lineWidth = 6; ctx.strokeStyle = '#3b2418'; ctx.stroke();
+      ctx.strokeStyle = '#1e2238'; ctx.fillStyle = '#1e2238'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (i === 0) {
+        // Anchor.
+        ctx.beginPath(); ctx.arc(cx, s * 0.24, 16, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx, s * 0.29); ctx.lineTo(cx, s * 0.78); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - 40, s * 0.38); ctx.lineTo(cx + 40, s * 0.38); ctx.stroke();
+        ctx.beginPath(); ctx.arc(cx, s * 0.6, 56, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+        for (const sx of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx + sx * 52, s * 0.7); ctx.lineTo(cx + sx * 66, s * 0.64); ctx.lineTo(cx + sx * 58, s * 0.76); ctx.fill(); }
+      } else if (i === 1) {
+        // Skull and crossed bones, with a red rose.
+        ctx.beginPath(); ctx.arc(cx, s * 0.36, 44, 0, Math.PI * 2); ctx.fill();
+        ctx.fillRect(cx - 26, s * 0.4, 52, 40);
+        ctx.fillStyle = '#dcc6a2';
+        for (const sx of [-1, 1]) { ctx.beginPath(); ctx.arc(cx + sx * 17, s * 0.35, 12, 0, Math.PI * 2); ctx.fill(); }
+        ctx.beginPath(); ctx.moveTo(cx, s * 0.41); ctx.lineTo(cx - 6, s * 0.45); ctx.lineTo(cx + 6, s * 0.45); ctx.fill();
+        ctx.fillStyle = '#1e2238';
+        for (const a of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx - 60, s * (0.62 + a * 0.08)); ctx.lineTo(cx + 60, s * (0.62 - a * 0.08)); ctx.stroke(); }
+        ctx.fillStyle = '#a3201e'; ctx.beginPath(); ctx.arc(cx + 34, s * 0.82, 14, 0, Math.PI * 2); ctx.fill();
+      } else {
+        // Waves under a little ship.
+        for (let k = 0; k < 3; k++) {
+          ctx.beginPath();
+          for (let j = 0; j <= 4; j++) { const x = x0 + w * 0.18 + j * (w * 0.16), y = s * (0.56 + k * 0.12); if (j === 0) ctx.moveTo(x, y); ctx.quadraticCurveTo(x + w * 0.04, y - 22, x + w * 0.08, y); ctx.quadraticCurveTo(x + w * 0.12, y + 14, x + w * 0.16, y); }
+          ctx.stroke();
+        }
+        ctx.beginPath(); ctx.moveTo(cx - 44, s * 0.4); ctx.lineTo(cx + 44, s * 0.4); ctx.lineTo(cx + 30, s * 0.47); ctx.lineTo(cx - 30, s * 0.47); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx, s * 0.4); ctx.lineTo(cx, s * 0.14); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx + 4, s * 0.16); ctx.lineTo(cx + 36, s * 0.34); ctx.lineTo(cx + 4, s * 0.34); ctx.fill();
+      }
+    }
+  });
+}
+
 function lanternGeo() {
   return merge([
     part(cyl(0.07, 0.09, 2.2, 6), WOOD_D, { pos: [0, 1.1, 0] }),
@@ -362,6 +439,23 @@ export function createProps(map) {
       }
       if (kind === 'brazier') coalParts.push(strip(coalDisc.clone().applyMatrix4(new THREE.Matrix4().makeTranslation(p.x, p.y + 1.12, p.z))));
     }
+  }
+  // Doña Sepia's stall (M4.7), render only: 2 u behind her, facing the way she faces (the sim keeps her space clear).
+  const sepia = (map.npcs || []).find((n) => n.id === 'tattoo');
+  if (sepia) {
+    const f = sepia.facing || 0, sx = sepia.x - Math.sin(f) * 2.0, sz = sepia.z - Math.cos(f) * 2.0;
+    q.setFromAxisAngle(up, f);
+    m4.compose(v.set(sx, map.groundAt(sx, sz), sz), q, sc.set(1, 1, 1));
+    const key = `${Math.floor(sx / CH)},${Math.floor(sz / CH)}`;
+    if (!buckets.has(key)) buckets.set(key, []);
+    buckets.get(key).push(tattooStallGeo().applyMatrix4(m4));
+    const hides = new THREE.PlaneGeometry(2.1, 0.86);
+    hides.translate(0, 1.6, -0.62);
+    const hm = new THREE.Mesh(hides, toon({ map: tattooHidesTexture(), color: 0xffffff, alphaTest: 0.5, side: THREE.DoubleSide }, { key: 'hides' }));
+    hm.applyMatrix4(m4);
+    hm.castShadow = true;
+    hm.userData.nm = normalMatFor({}, THREE.DoubleSide);
+    group.add(hm);
   }
   for (const list of buckets.values()) {
     const mesh = new THREE.Mesh(merge(list), mat);

@@ -1,5 +1,5 @@
 // Talking to people (M4): the server says what they have for you (talk event: quests to take, quests to hand
-// in, the stall) and this card offers it. Accepting or handing in is a `cmd`; the answer comes back as quest
+// in, the stall; Doña Sepia's «Tatuar», M4.7) and this card offers it. Accepting or handing in is a `cmd`; the answer comes back as quest
 // events and a new profile.
 import { gsap } from 'gsap';
 import { QUESTS, NPC_TALK } from '../data/quests.js';
@@ -9,8 +9,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const reward = (R = {}) => [R.xp && `${R.xp} XP`, R.gold && `${R.gold} oro`, R.potions && `${R.potions} ${R.potions > 1 ? 'pociones' : 'poción'}`, R.item && 'un objeto'].filter(Boolean).join(' · ');
 
 export class Dialog {
-  constructor(root, { send, onShop }) {
-    Object.assign(this, { root, send, onShop });
+  constructor(root, { send, onShop, onTattoo }) {
+    Object.assign(this, { root, send, onShop, onTattoo });
     this.isOpen = false;
     this.ev = null;
     this.focus = null; // a quest being read before accepting
@@ -43,7 +43,8 @@ export class Dialog {
       }).join('');
       const offer = ev.offer.map((id) => `<button class="btn" data-read="${id}">Misión: ${esc(QUESTS[id].name)}</button>`).join('');
       const shop = ev.shop ? '<button class="btn" data-shop>Comerciar</button>' : '';
-      opts = `${ready}${offer}${shop}<button class="btn secondary" data-bye>Adiós</button>`;
+      const ink = T.tattoo ? '<button class="btn" data-tattoo>Tatuar</button>' : '';
+      opts = `${ready}${offer}${shop}${ink}<button class="btn secondary" data-bye>Adiós</button>`;
     }
     this.root.innerHTML = `<div class="dlg frame interactive" role="dialog" aria-label="${esc(T.name)}">
       <div class="dlg-who outlined">${esc(T.name)}</div><p class="dlg-line">${text}</p><div class="dlg-opts">${opts}</div></div>`;
@@ -59,6 +60,7 @@ export class Dialog {
     else if ((id = pick('data-turnin'))) { this.send({ type: 'quest', op: 'turnin', id }); ev.ready = ev.ready.filter((q) => q !== id); this.render(); }
     else if (t.closest('[data-back]')) { this.focus = null; this.render(); sfx.click(); }
     else if (t.closest('[data-shop]')) { this.hide(); this.onShop(); }
+    else if (t.closest('[data-tattoo]')) { this.hide(); if (this.onTattoo) this.onTattoo(); }
     else if (t.closest('[data-bye]')) { this.hide(); sfx.click(); }
   }
 }

@@ -46,7 +46,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | Milestone | Estado |
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
-| **M4.7 «Tatuajes»** | P0, P1 (cómic Ultra), P2 (huecos Q/E), P3 (sim de los tatuajes) ✅; P4–P6 pendientes |
+| **M4.7 «Tatuajes»** | P0–P5 ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia); P6 pendiente |
 | M4.8 «Perlas negras» | diseño (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
@@ -62,8 +62,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
    `slam {x, z, r, form}`, `blink`, `tromba {x, z, tick, r, form, n}` (n 0 la primera, 1 la gemela), `trombaHit`,
    `trombaEnd`, `wheel {x, z, dx, dz, v0, R, r, k, hang, tick, form, slot}`, `wheelBack`, `wheelCatch`,
    `wheelDrop`; la posición del timón en vuelo está en `ecs.whX / whZ` (y `wheelOut()` para la ida).
-2. **P4 + P5** (cliente): `docs/briefs/m47-p4-p5-tattoos-client.md` (indicadores tipo MOBA, VFX, animación, iconos,
-   sonido, pestaña Tatuajes, Doña Sepia).
+2. **P4 + P5** (cliente) ✅: apuntado tipo MOBA, VFX, animación, iconos, sonido, pestaña Tatuajes y Doña Sepia.
 3. **P1**: el autor revisa el cómic Ultra y manda ajustes.
 4. **P6**: equilibrio, rendimiento de Ultra, README / DESIGN, versión `0.4.7` (`package.json`, `src/data/meta.js`
    `'0.4.7-m4.7'`), casillas del plan, artefacto, informe.

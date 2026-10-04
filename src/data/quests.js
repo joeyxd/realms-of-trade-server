@@ -71,10 +71,16 @@ export const NPC_TALK = {
     },
     shop: true,
   },
-  // Tattooist (M4.7): she teaches the tattoos (data/tattoos.js). Dialog and tab come with P5.
+  // Tattooist (M4.7): she teaches the tattoos (data/tattoos.js); «Tatuar» opens the Tatuajes tab to learn.
   tattoo: {
     name: 'Doña Sepia',
-    lines: ['La tinta no se olvida, grumete. Ven cuando quieras llevar el mar en la piel.'],
+    lines: [
+      'La tinta no se olvida, grumete. Ven cuando quieras llevar el mar en la piel.',
+      'Una tromba, un abordaje, un timón que vuelve… Cada dibujo despierta cuando lo usas. El primero te lo regalo.',
+      'Mis agujas son de hueso de tiburón y la tinta, de calamar del arrecife. Nada se borra, ni el miedo.',
+      'Cuanto más pelees con un tatuaje puesto, más se oscurece. Y cuanto más oscuro, más formas te enseña.',
+    ],
     quests: {},
+    tattoo: true,
   },
 };

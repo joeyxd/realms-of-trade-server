@@ -595,7 +595,7 @@ export function generateWorld(seed) {
     { id: 'captain', name: 'Capitana Brea', title: 'Capitana del puerto', skin: 5, ...P(L.captain), facing: Math.atan2(-dockDir.x, -dockDir.z) },
     { id: 'vendor', name: 'Tía Perla', title: 'Vendedora', skin: 6, ...P([L.vendor[0] - 2.2, L.vendor[1] - 1.2]), facing: 2.2 },
     // No look of her own yet: she wears the vendor's (no spare NPC skin). Facing the walk up from the beach.
-    { id: 'tattoo', name: 'Doña Sepia', title: 'Tatuadora', skin: 6, ...P(L.tattoo), facing: 1.1 },
+    { id: 'tattoo', name: 'Doña Sepia', title: 'Tatuadora', skin: 15, ...P(L.tattoo), facing: 1.1 },
   ];
   const botWaypoints = [
     [-100, 2], [-108, -10], [-92, -14], [-94, 6], [-112, 4], [-122, 10], [-128, 0], [-118, 18],

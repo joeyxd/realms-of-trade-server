@@ -178,3 +178,53 @@
   .cp-head .tab .kbd { display: none; }
   #dialog { bottom: calc(14px + var(--safe-b)); }
 }
+
+/* ---- Tatuajes (M4.7) ------------------------------------------------------------------------------- */
+.cp-tattoo { display: grid; gap: 8px; }
+.tt-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; background: rgba(20, 10, 30, 0.45); border-radius: 10px; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45); padding: 8px 10px; }
+.tt-weapon b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 17px; color: var(--brass-l); text-shadow: 0 2px 0 var(--ink); }
+.tt-weapon small { color: var(--text-dim); font-weight: 800; font-size: 12px; }
+.tt-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tt-slot { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: center; gap: 2px 8px; text-align: left; padding: 6px 8px; min-height: 56px; border-radius: 10px; border: 2px solid var(--ink); background: radial-gradient(circle at 30% 20%, #3a2a5a, #1c1232); color: var(--parch); cursor: pointer; }
+.tt-slot.tattoo { box-shadow: inset 0 0 0 2px #8a5cff; }
+.tt-slot .kbd { grid-row: 1 / 3; }
+.tt-slot .tt-ico { grid-row: 1 / 3; }
+.tt-slot .tinta { grid-column: 3; width: auto; }
+.tt-ico svg { width: 32px; height: 32px; display: block; }
+.tt-name { display: grid; line-height: 1.15; min-width: 0; }
+.tt-name b { font-size: 14px; }
+.tt-name small { color: var(--text-dim); font-weight: 800; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tt-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 10px; }
+.tt-list, .tt-detail { background: rgba(20, 10, 30, 0.45); border-radius: 10px; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45); padding: 8px 10px; }
+.tt-list h4 { margin: 2px 0 6px; font-family: var(--font-display); font-weight: 400; font-size: 15px; color: var(--brass-l); text-shadow: 0 2px 0 var(--ink); }
+.tt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin-bottom: 8px; }
+.tt-card .tt-name small { white-space: normal; }
+.tt-card { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: center; text-align: left; padding: 6px 26px 6px 8px; min-height: 48px; border-radius: 10px; border: 2px solid var(--ink); background: rgba(40, 24, 60, 0.85); color: var(--parch); cursor: pointer; }
+.tt-card.tattoo { box-shadow: inset 0 0 0 1.5px rgba(138, 92, 255, 0.75); }
+.tt-card.locked { filter: grayscale(0.85); opacity: 0.7; }
+.tt-card.unlearned:not(.locked) { box-shadow: inset 0 0 0 1.5px var(--brass-l); }
+.tt-card.sel, .tt-slot.sel { outline: 3px solid var(--brass-l); outline-offset: 1px; }
+.tt-card .rk { position: absolute; right: 6px; top: 4px; font: 400 12px var(--font-display); font-style: normal; color: #d9c6ff; text-shadow: 0 1px 0 var(--ink); }
+.tt-card .in { position: absolute; right: 5px; bottom: 5px; font: 900 10px/1 var(--font-display); font-style: normal; color: var(--ink); background: var(--brass-l); border-radius: 4px; padding: 2px 4px; }
+.tt-card-big .tt-head { display: flex; gap: 10px; align-items: center; }
+.tt-card-big .tt-head .tt-ico svg { width: 44px; height: 44px; }
+.tt-card-big .tt-head b { font-family: var(--font-display); font-size: 18px; font-weight: 400; color: var(--parch); }
+.tt-card-big .tt-head small { display: block; color: var(--text-dim); font-weight: 800; font-size: 12px; }
+.tt-hint { margin: 8px 0 4px; font-weight: 800; font-size: 13.5px; }
+.tt-num { margin: 0 0 4px; font-size: 12.5px; color: #ffe0a8; font-weight: 700; }
+.tt-how { margin: 0 0 8px; font-size: 12px; color: var(--text-dim); font-weight: 800; }
+.tt-forms { display: grid; gap: 5px; margin-bottom: 8px; }
+.tt-form { text-align: left; padding: 5px 8px; min-height: 44px; border-radius: 8px; border: 2px solid var(--ink); background: rgba(20, 10, 30, 0.6); color: var(--parch); cursor: pointer; }
+.tt-form b { font-size: 13px; font-weight: 900; }
+.tt-form small { display: block; color: var(--text-dim); font-size: 11.5px; font-weight: 800; }
+.tt-form.on { background: linear-gradient(180deg, #6b46d8, #3f2590); box-shadow: inset 0 0 0 2px #c9a8ff; }
+.tt-form.locked, .tt-form:disabled { opacity: 0.55; cursor: default; }
+.tt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.tt-actions .btn { min-height: 44px; }
+.tt-note { margin: 0; font-size: 11.5px; color: var(--text-dim); font-weight: 800; text-align: center; }
+.tt-card-big.shake { animation: ttShake 0.35s; }
+@keyframes ttShake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@container stage (max-width: 760px) {
+  .tt-body, .tt-top { grid-template-columns: minmax(0, 1fr); }
+  .tt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -38,6 +38,9 @@ const ICONS = {
   mute: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
 };
 
+// The HUD icon of a skill (the slots, the Tatuajes tab).
+export const skillIcon = (id) => ICONS[SLOT_ICON[id] || id] || ICONS.sword;
+
 // Portrait: the real 3D model rendered by PortraitStudio when available, else a flat silhouette.
 export function drawPortrait(canvas, skinIdx, image) {
   const S = SKINS[skinIdx] || SKINS[0];

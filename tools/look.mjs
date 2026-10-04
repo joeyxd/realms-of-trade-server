@@ -1,7 +1,8 @@
 // Look check (the screenshots every visual change is reviewed with): solo on a static server, a few places at a
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
-//      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo),
+//      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo,
+//      sepia),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
 // Example: OUT=shots/look Q=ultra SCEN=village,impact node tools/look.mjs
@@ -161,6 +162,24 @@ for (const s of scen) {
     await wait(2500); await shot('25-spout-frozen');
     console.log('wheels', JSON.stringify(await page.evaluate(() => window.__mn.world.skillFx.wheels.map((w) => ({ v: w.m.visible, ph: w.ph, hand: w.hand, ev: !!w.ev, x: +w.m.position.x.toFixed(1), y: +w.m.position.y.toFixed(1), z: +w.m.position.z.toFixed(1), s: +w.m.scale.x.toFixed(2) })))), JSON.stringify(await page.evaluate(() => ({ x: window.__mn.ps.x, z: window.__mn.ps.z }))));
     await page.evaluate(() => { const m = window.__mn; m.world.skillFx.freeze = false; m.world.indicators.freeze = false; });
+  }
+  if (s === 'sepia') {
+    // M4.7 P5: Doña Sepia, her stall, her dialog and the Tatuajes tab (learning at her stall).
+    const n = await page.evaluate(() => { const d = window.__mn.map.npcs.find((q) => q.id === 'tattoo'); return { x: d.x, z: d.z, f: d.facing }; });
+    await page.mouse.move(W / 2, H / 2); await page.mouse.wheel(0, -400); await wait(1500);
+    await tp('30-sepia', n.x + Math.sin(n.f) * 3, n.z + Math.cos(n.f) * 3, null, 4000);
+    await page.mouse.wheel(0, 400); await wait(800);
+    await page.keyboard.press('KeyF'); await wait(1800); await shot('31-sepia-dialog');
+    const tat = await page.$('[data-tattoo]');
+    if (tat) await tat.click({ force: true });
+    else await page.evaluate(() => window.__mn.panels.charPanel.open('tattoo', { learn: true }));
+    await wait(1500); await shot('32-tattoo-tab');
+    const learn = await page.$('[data-tt="tromba"]');
+    if (learn) { await learn.click({ force: true }); await wait(600); const b = await page.$('[data-learn]'); if (b) await b.click({ force: true }); await wait(1500); }
+    const put = await page.$('[data-put="q"]');
+    if (put) { await put.click({ force: true }); await wait(1500); }
+    await shot('33-tattoo-learned');
+    await page.keyboard.press('Escape'); await wait(600);
   }
   if (s === 'pause') {
     await page.keyboard.press('Escape'); await wait(1200); await shot('09-pause');

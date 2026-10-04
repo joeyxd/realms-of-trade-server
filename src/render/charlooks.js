@@ -161,6 +161,17 @@ export const LOOKS = [
     belts: [{ dy: 0.0, c: 0xa3201e, buckle: 1, pouches: true }], bandolier: 0x2a1c18,
     metal: 0x8a8f94, weapon: 'saber',
   },
+  // ---- M4.7: Doña Sepia, the tattooist (appended: the indexes above must not move) ----
+  // An old tattooist: grey bun, round glasses, a dark shawl over a violet blouse with the sleeves rolled up, her
+  // forearms banded with ink, an ink-stained apron over a dark skirt.
+  {
+    name: 'Tatuadora', body: 'female', accent: 0xa77bff, swatch: [0x52346e, 0x7e78a0], npc: true, heavy: 1.06,
+    skin: 0xb8876a, hair: 0xbab6b0, hairStyle: 'bun', lips: 0x8a5a4c, glasses: 0x3a2a1c,
+    headwear: 'none', neck: 'none', mantle: 'shawl', shawl: 0x52346e,
+    torso: 'blouse', shirt: 0x7e78a0, vest: 0x7e78a0, sleeves: 'blouse', glove: null, tattoos: 0x1e2c52,
+    lower: 'dress', skirt: 0x4a3c62, apron: 0x8a8274, apronInk: 0x1e2c52, pants: 0x4a3c62, boots: 'short', boot: 0x2a201c,
+    belts: [{ dy: 0.0, c: 0x4a3426, pouches: true }], metal: 0xb39250, weapon: null,
+  },
 ];
 
 // ---- Shared pieces --------------------------------------------------------------------------------
@@ -342,6 +353,13 @@ function arms(k, R, L, weapon) {
     }
     hand(k, R, L, s, weapon === 'pistols' || (weapon && s < 0));
     if (L.pauldrons) pauldron(k, R, L, s);
+    // Tattooed forearms (M4.7): thin ink bands just proud of the skin, a wide one and two fine ones.
+    if (L.tattoos) {
+      for (const [v, th] of [[0.3, 0.03], [0.52, 0.012], [0.64, 0.012]]) {
+        const y = R.wrist + (R.elbow - R.wrist) * v;
+        k.add(loft([{ y: y - th, rx: fo * 1.05 * hv, rz: fo * 1.09 * hv, x }, { y: y + th, rx: fo * 1.06 * hv, rz: fo * 1.1 * hv, x }], 7, { phase: Math.PI / 7, capTop: false, capBot: false }), { color: L.tattoos, w: fw, lining: L.tattoos });
+      }
+    }
   }
 }
 
@@ -396,6 +414,13 @@ function lower(k, R, L) {
     // apron
     const ap = tbox(0, 0.32 - top, -0.02, 0, 0.13 * hv, 0.008, 0.1 * hv, 0.008);
     k.add(xf(ap, { rot: [-0.2, 0, 0], pos: [0, top, R.belt[1] * hv + 0.01] }), { color: L.apron, w: skirtW(top, 0.1, { thigh: 0.35, back: 0.0 }), grad: [0.3, top, 0.86] });
+    // Ink stains (the tattooist's apron, M4.7): a few dark blots just in front of it.
+    if (L.apronInk) {
+      for (const [dx, dy, sz] of [[0.04, -0.12, 0.022], [-0.05, -0.2, 0.016], [0.015, -0.27, 0.028], [-0.02, -0.09, 0.012]]) {
+        const blot = tbox(dx, dy - sz, dy + sz, 0.012, sz * 1.2, 0.004, sz, 0.004);
+        k.add(xf(blot, { rot: [-0.2, 0, 0], pos: [0, top, R.belt[1] * hv + 0.01] }), { color: L.apronInk, w: skirtW(top, 0.1, { thigh: 0.35, back: 0.0 }) });
+      }
+    }
   } else if (L.lower === 'tassets' || L.lower === 'flaps') {
     const leather = L.lower === 'flaps';
     const flapW = (bone) => (x, y, z) => { const t = sstep(top - 0.02, top - 0.2, y); return [[B.hips, 1 - t], [bone, t]]; };
@@ -580,6 +605,16 @@ function head(k, R, L, J) {
     } else {
       k.add(tbox(s * 0.1 * S, 0.105 * S, 0.165 * S, -0.008, 0.01 * S, 0.02 * S, 0.012 * S, 0.026 * S), { color: shade(L.skin, 0.95), w: hw, at });
     }
+  }
+  // Round-ish glasses (M4.7, Doña Sepia): two small frames over the eyes and a bridge.
+  if (L.glasses) {
+    for (const s of [1, -1]) {
+      const ex = s * 0.037 * S, ey = 0.148 * S, r = 0.024 * S, t = 0.006 * S;
+      for (const [dx, dy, w2, h2] of [[0, r, r * 0.8, t], [0, -r, r * 0.8, t], [r, 0, t, r * 0.8], [-r, 0, t, r * 0.8]]) {
+        k.add(xf(box(w2 * 2, h2 * 2, 0.008), { pos: P(ex + dx, ey + dy, 0.01) }), { color: L.glasses, w: hw, at, jitter: 0 });
+      }
+    }
+    k.add(xf(box(0.022 * S, 0.006 * S, 0.008), { pos: P(0, 0.156 * S, 0.012) }), { color: L.glasses, w: hw, at, jitter: 0 });
   }
   hair(k, R, L, J, S);
   headwear(k, R, L, J, S, raw);

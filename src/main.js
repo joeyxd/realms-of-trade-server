@@ -176,13 +176,14 @@ async function boot() {
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
   });
-  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }) });
+  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }) });
   const mapView = new MapView($('#mapview'), map);
   const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) fn(); };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
   input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
+  input.onHotkey('KeyT', panelKey(() => charPanel.toggle('tattoo'))); // M4.7: your tattoos and the Q / E loadout
   input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
@@ -313,6 +314,7 @@ async function boot() {
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
     if (ev.type === 'talk' && ev.me) dialog.show(ev, st.lastLine);
+    if (ev.type === 'skillDenied' && ev.me) charPanel.denyTattoo();
     if (ev.type === 'death' && ev.by) killFeed(ev);
     if (ev.type === 'note' && ev.code === 'save' && ev.me) {
       setSaveAside(saveSlot());
@@ -856,6 +858,10 @@ async function boot() {
         } else st.zoneCandidate = null;
         // One action prompt floats under the player's feet: interaction first, then the tutorial.
         const npc = nearestNpc();
+        if (npc && npcKey(npc) === 'tattoo' && !st.sepiaTaught) {
+          st.sepiaTaught = true;
+          hud.toast('<b>Doña Sepia</b> tatúa habilidades para tus huecos Q / E. El primero es gratis. (<span class="kbd">T</span>: tus tatuajes)', 6500);
+        }
         const nearShip = Math.hypot(ps.x - shipPos.x, ps.z - shipPos.z) < 4;
         const chest = !npc && !ps.dead ? rewards.chestNear() : null;
         // The runes of La Caldera, before a trial: pick your Marea (once you have opened more than one).

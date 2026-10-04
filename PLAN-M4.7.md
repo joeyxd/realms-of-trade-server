@@ -179,7 +179,7 @@ cambia (`ax/az` ya es el punto apuntado).
 - [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
 - [x] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
 - [x] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
-- [ ] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
+- [x] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
 - [ ] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,
       informe.
 
@@ -188,6 +188,14 @@ cambia (`ax/az` ya es el punto apuntado).
 - Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
   **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
   los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.
+- P5: pestaña «Tatuajes» (tecla T) en `ui/charpanel.js`: los dos huecos del arma que llevas, las artes del arma (las
+  que pide maestría, en gris), tus tatuajes (rango, barra de tinta, formas con su pista o el rango que piden) y los que
+  faltan; la ficha de la elegida con sus números y «Poner en Q / E», «Aprender · gratis / 150 oro» cuando te atiende
+  Doña Sepia. Mensajes en `ui/rewards.js` (rechazos con su motivo y la ficha que tiembla, aprendido, sube de rango y
+  forma nueva). Doña Sepia: aspecto propio al final de `LOOKS` (moño gris, gafas, chal morado, antebrazos tatuados,
+  delantal con manchas de tinta; `skin: 15` en `worldgen.js`), su puesto solo de render detrás de ella en `props.js`
+  (toldo, pieles con un ancla, una calavera y olas, mesa con tinteros, taburete), cuatro frases y el botón «Tatuar»
+  en el diálogo, y el aviso la primera vez que te acercas. `tools/look.mjs` escenario `sepia`.
 - P4: `client/aimcast.js` (controlador de apuntado puro + `tests/aimcast.test.mjs`), Q / E / R como bordes de hueco en
   `input.js` (teclado, mando RB / LB / Y, táctil; RMB, ESC o B del mando cancelan un área y el RMB no sube la guardia),
   `main.js` calcula el punto (cursor, stick por inclinación, arrastre táctil por longitud, auto-apuntado) recortado a

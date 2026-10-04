@@ -8,6 +8,15 @@ import { ENCOUNTERS } from '../data/encounters.js';
 import { LAWLESS } from '../data/lawless.js';
 import { itemName } from '../sim/items.js';
 import { sfx } from '../audio/sfx.js';
+import { TATTOOS, skillId } from '../data/tattoos.js';
+
+// Why a tattoo change was refused (skillDenied, M4.7).
+const DENY = {
+  combat: 'Fuera de combate para cambiar (3 s sin recibir daño).', lawless: 'En la Cala sin ley no se cambia de tatuaje.',
+  weapon: 'Ese arte es de otra arma.', gold: 'Te falta oro.', far: 'Acércate a Doña Sepia.', rank: 'Esa forma pide más rango.',
+  unknown: 'No puedes hacer eso.',
+};
+const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 export const rarityColor = (r) => (RARITIES[r] || RARITIES[0]).color;
@@ -152,6 +161,27 @@ export class Rewards {
         if (ev.fail) { sfx.denied(); H.toast(ev.fail === 'gold' ? '<b>No te alcanza el oro.</b>' : ev.fail === 'max' ? '<b>Ya llevas 5 pociones.</b>' : ev.fail === 'tier' ? '<b>Aún no:</b> ese cofre se abre venciendo su Marea en La Caldera.' : '<b>Bolsa llena.</b>', 2600); }
         else { sfx.buy(); if (ev.what === 'potion') this.over('+1 poción', 'heal'); }
         break;
+      // ---- Tattoos (M4.7) ----
+      case 'skillDenied': sfx.denied(); H.toast(`<b>${DENY[ev.why] || DENY.unknown}</b>`, 3000); break;
+      case 'learned': {
+        const T = TATTOOS[ev.id];
+        if (!T) break;
+        sfx.mastery();
+        this.over(`¡${T.name.toUpperCase()}!`, 'level', { life: 1.4, rise: 50 });
+        H.toast(`Doña Sepia te tatúa <b>${T.name}</b>${ev.cost ? ` por ${ev.cost} oro` : ' (el primero no se cobra)'}.<br>Ponlo en <b>Q</b> o <b>E</b> en la pestaña Tatuajes (<span class="kbd">T</span>).`, 5600);
+        break;
+      }
+      case 'tattooRank': {
+        const T = TATTOOS[ev.id];
+        if (!T) break;
+        sfx.levelUp();
+        const F = T.forms.find((f, i) => i > 0 && f.rank === ev.rank);
+        this.over(`${T.name.toUpperCase()} ${ROMAN[ev.rank]}`, 'level', { life: 1.4, rise: 50 });
+        H.toast(`<b>${T.name}</b> sube a rango ${ROMAN[ev.rank]}${F ? `<br>Forma nueva: <b>${F.name}</b> · ${F.hint}` : ''}`, 5600);
+        H.pulse(skillId(this.ps.skQ) === ev.id ? 'q' : 'e');
+        break;
+      }
+      case 'loadout': case 'form': sfx.equip(); break;
       case 'mastery': {
         const kind = WEAPON_KINDS[ev.kit], W = WEAPONS[kind];
         sfx.mastery();

@@ -1,10 +1,14 @@
 // The character panel (M4, PLAN-M4.md §2.7): Equipo (what you wear around your portrait, the bag, gold and
 // potions; Tía Perla's stall in its place when you trade), Atributos (every number, each weapon's mastery and
-// what it opens) and Misiones (the journal). It never pauses the world. Everything it does is a `cmd`; the
-// server answers with a new profile and the panel redraws from it.
+// what it opens), Misiones (the journal) and Tatuajes (M4.7: the Q / E of the weapon you carry and your repertoire —
+// the weapon's arts, the tattoos you know with their rank, tinta and forms, the ones Doña Sepia can still teach you).
+// It never pauses the world. Everything it does is a `cmd`; the server answers with a new profile and the panel
+// redraws from it.
 import { gsap } from 'gsap';
 import { SLOTS, SLOT_NAMES, BASES, ITEMS, CONSUMABLES, CRATES, STATS } from '../data/items.js';
-import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY } from '../data/weapons.js';
+import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY, formed } from '../data/weapons.js';
+import { ARTS, TATTOOS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, castKind, formRank, tattooXpToNext } from '../data/tattoos.js';
+import { skillIcon, ROMAN } from './hud.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from '../data/quests.js';
 import { ENCOUNTERS } from '../data/encounters.js';
 import { tuning } from '../data/tuning.js';
@@ -15,7 +19,7 @@ import { esc, itemIcon, slotIcon, itemCard, targetSlot, statText } from './itemu
 import { sfx } from '../audio/sfx.js';
 import { stage } from './stage.js';
 
-const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L']];
+const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
 const pct = (v, d = 0) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
@@ -39,8 +43,8 @@ export class CharPanel {
     });
   }
 
-  open(tab = this.tab, { shop = false } = {}) {
-    this.tab = tab; this.shop = shop; this.pinned = null; this.hover = null;
+  open(tab = this.tab, { shop = false, learn = false } = {}) {
+    this.tab = tab; this.shop = shop; this.pinned = null; this.hover = null; this.learn = learn;
     this.render();
     this.root.hidden = false;
     if (!this.isOpen) gsap.fromTo(this.root.querySelector('.cp'), { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: 'back.out(1.8)' });
@@ -49,7 +53,7 @@ export class CharPanel {
   }
   close() {
     if (!this.isOpen) return;
-    this.isOpen = false; this.shop = false;
+    this.isOpen = false; this.shop = false; this.learn = false;
     this.root.hidden = true;
     const p = this.profile();
     if (p) for (const it of p.bag) this.seen.add(it.u);
@@ -66,7 +70,8 @@ export class CharPanel {
     const t = e.target;
     if (t.closest('[data-close]')) { this.close(); sfx.click(); return; }
     const tab = t.closest('[data-tab]');
-    if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.pinned = null; this.render(); sfx.click(); return; }
+    if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.learn = this.learn && this.tab === 'tattoo'; this.pinned = null; this.render(); sfx.click(); return; }
+    if (this.tab === 'tattoo' && this.tattooClick(t)) return;
     const buy = t.closest('[data-buy]');
     if (buy) { this.send({ type: 'buy', what: buy.dataset.buy }); return; }
     const act = t.closest('[data-act]');
@@ -96,7 +101,7 @@ export class CharPanel {
     const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${name} <span class="kbd">${key}</span></button>`).join('');
     const html = `<div class="cp frame interactive" role="dialog" aria-label="Personaje">
       <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="Cerrar">✕</button></div>
-      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.questsHtml(p)}</div>
+      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.
@@ -247,5 +252,103 @@ export class CharPanel {
     return `<div class="cp-quests">${[...ready, ...active].join('') || '<p class="cp-hint">No tienes misiones activas.</p>'}
       ${offers.length ? `<h4>Disponibles</h4>${offers.join('')}` : ''}
       ${done.length ? `<h4>Cumplidas</h4><ul class="q-done">${done.join('')}</ul>` : ''}</div>`;
+  }
+
+  // ---- Tatuajes (M4.7) ---------------------------------------------------------------------------------------
+  // The Q / E of the weapon you carry on top; the repertoire below (this weapon's arts, the tattoos you know, the ones
+  // still to learn); the card you pick shows its numbers, its forms and what you can do with it.
+  tattooHtml(p) {
+    const w = this.stats().weapon | 0, kind = WEAPON_KINDS[w], W = WEAPONS[kind];
+    const sk = p.sk || { has: {}, lo: [], free: 1 }, lo = sk.lo[w] || DEFAULT_LOADOUT[kind];
+    const mlvl = (p.mast[w] || [1])[0];
+    const sel = this.ttSel || lo[0];
+    const has = (id) => sk.has[id];
+    const tinta = (id) => {
+      const t = has(id);
+      if (!t) return '';
+      const top = t[0] >= TATTOO.maxRank, next = tattooXpToNext(t[0]);
+      return `<div class="bar xp thin tinta"><div class="fill" style="width:${top ? 100 : Math.min(100, (t[1] / next) * 100).toFixed(1)}%"></div><div class="num">${top ? 'tinta completa' : `${Math.floor(t[1])} / ${next} tinta`}</div></div>`;
+    };
+    const nameOf = (id) => (TATTOOS[id] ? TATTOOS[id].name : SKILLS[id].name);
+    const formOf = (id) => (has(id) ? has(id)[2] | 0 : 0);
+    const slotCard = (slot, i) => {
+      const id = lo[i], T = TATTOOS[id], f = formOf(id), F = T ? T.forms[f] : null;
+      return `<button class="tt-slot${id === sel ? ' sel' : ''}${T ? ' tattoo' : ''}" data-tt="${id}"><span class="kbd">${slot.toUpperCase()}</span><span class="tt-ico">${skillIcon(id)}</span>
+        <span class="tt-name"><b>${esc(nameOf(id))}</b>${T ? `<small>${f ? esc(F.name) + ' · ' : ''}rango ${ROMAN[has(id) ? has(id)[0] : 1]}</small>` : `<small>Arte del ${esc(W.short.toLowerCase())}</small>`}</span>
+        ${T ? tinta(id) : ''}</button>`;
+    };
+    const card = (id, kindCls, note, locked) => `<button class="tt-card ${kindCls}${locked ? ' locked' : ''}${id === sel ? ' sel' : ''}${lo.includes(id) ? ' worn' : ''}" data-tt="${id}">
+      <span class="tt-ico">${skillIcon(id)}</span><span class="tt-name"><b>${esc(nameOf(id))}</b><small>${note}</small></span>
+      ${has(id) ? `<i class="rk">${ROMAN[has(id)[0]]}</i>` : ''}${lo.includes(id) ? `<i class="in">${lo[0] === id ? 'Q' : 'E'}</i>` : ''}</button>`;
+    const arts = Object.keys(ARTS).filter((id) => ARTS[id].weapon === kind).map((id) => {
+      const need = ARTS[id].mastery, locked = mlvl < need;
+      return card(id, 'art', locked ? `🔒 Maestría ${need}` : `Arte del ${esc(W.short.toLowerCase())}`, locked);
+    }).join('');
+    const known = TATTOO_IDS.filter((id) => has(id)).map((id) => card(id, 'tattoo', `${esc(TATTOOS[id].forms[formOf(id)].name)} · rango ${ROMAN[has(id)[0]]}`)).join('');
+    const price = sk.free ? 'gratis' : `${TATTOO.price} oro`;
+    const unknown = TATTOO_IDS.filter((id) => !has(id)).map((id) => card(id, 'tattoo unlearned', this.learn ? `Aprender · ${price}` : 'Aprende con Doña Sepia', !this.learn)).join('');
+    return `<div class="cp-tattoo">
+      <div class="tt-top"><div class="tt-weapon"><b>${esc(W.name)}</b><small>Tus huecos con esta arma${this.learn ? ' · Doña Sepia te atiende' : ''}</small></div>
+        <div class="tt-slots">${slotCard('q', 0)}${slotCard('e', 1)}</div></div>
+      <div class="tt-body">
+        <div class="tt-list"><h4>Artes del ${esc(W.short.toLowerCase())}</h4><div class="tt-grid">${arts}</div>
+          <h4>Tatuajes</h4><div class="tt-grid">${known}${unknown}</div></div>
+        <div class="tt-detail">${this.tattooDetail(p, sel, { lo, has, mlvl, kind, price })}</div>
+      </div>
+      <p class="tt-note">Cambiar un hueco o una forma pide estar fuera de combate (3 s sin recibir daño) y no se puede en la Cala Calavera. Los tatuajes suben de rango con la tinta: la experiencia que ganas llevándolos puestos.</p>
+    </div>`;
+  }
+
+  // What a skill does in numbers (the form in use for a tattoo).
+  tattooNumbers(id, form) {
+    const S = formed(id, form), n = (v) => (+v).toLocaleString('es-ES', { maximumFractionDigits: 2 });
+    if (id === 'tromba') return `Área a ≤ ${n(S.range)} u · radio ${n(S.r)} u · ATK × ${n(S.mult)} · aturde ${n(S.lift)} s${S.linger ? ` · remolino ${n(S.linger)} s` : ''}${S.twin ? ' · dos columnas' : ''} · ${n(S.cd)} s`;
+    if (id === 'leap') return S.blink ? `Parpadeo a ≤ ${n(S.range)} u · el siguiente golpe × ${n(S.empMult)} y crítico · ${n(S.cd)} s` : `Salto de ${n(S.min)} a ${n(S.range)} u · radio ${n(S.r)} u · ATK × ${n(S.mult)}${S.stun ? ` · aturde ${n(S.stun)} s` : ''} · ${n(S.cd)} s`;
+    if (id === 'wheel') return `Alcance ${n(S.fast.range)}–${n(S.slow.range)} u · ATK × ${n(S.fast.mult * (S.multMul || 1))}–${n(S.slow.mult * (S.multMul || 1))} ida y vuelta${S.hang ? ` · gira ${n(S.hang)} s en el ápice` : ''} · ${S.refund ? `atraparlo devuelve el ${Math.round(S.refund * 100)} % del enfriamiento` : 'sin devolución'} · ${n(S.cd)} s`;
+    if (id === 'lunge') return `Embestida de ${n(S.dist)} u · ATK × ${n(S.mult)} · ${n(S.cd)} s`;
+    if (id === 'wave') return `Media luna a ${n(S.speed * S.life)} u · ATK × ${n(S.mult)} · borra balas · ${n(S.cd)} s`;
+    if (id === 'blast') return `${S.n} perdigones en cono · ATK × ${n(S.mult)} cada uno · sopla las balas · ${n(S.cd)} s`;
+    if (id === 'blink') return `Salto de ${n(S.dist)} u invulnerable · ${n(S.cd)} s`;
+    return SKILLS[id].cd ? `${n(SKILLS[id].cd)} s` : '';
+  }
+
+  tattooDetail(p, id, { lo, has, mlvl, kind, price }) {
+    if (!id) return '<p class="cp-hint">Toca una habilidad para verla.</p>';
+    const T = TATTOOS[id], t = has(id), form = t ? t[2] | 0 : 0, rank = t ? t[0] : 0;
+    const how = { dir: 'Hacia el cursor', self: 'Sobre ti', ground: 'Área en el suelo: mantén para apuntar, suelta para lanzar', charge: 'Mantén para cargar, suelta para lanzar' }[castKind(id)];
+    const art = ARTS[id], artLocked = art && mlvl < art.mastery;
+    let forms = '', actions = '';
+    if (T) {
+      forms = `<div class="tt-forms">${T.forms.map((F, i) => {
+        const need = formRank(id, i), lockedF = !t || rank < need;
+        return `<button class="tt-form${i === form ? ' on' : ''}${lockedF ? ' locked' : ''}" data-form="${i}" ${lockedF || !t ? 'disabled' : ''}><b>${i === 0 ? 'Base' : i === 1 ? 'A' : 'B'} · ${esc(F.name)}</b><small>${lockedF && t ? `Rango ${ROMAN[need]}` : esc(F.hint)}</small></button>`;
+      }).join('')}</div>`;
+    }
+    if (T && !t) {
+      actions = this.learn ? `<button class="btn" data-learn="${id}" ${!p.sk.free && p.gold < TATTOO.price ? 'disabled' : ''}>Aprender · ${price}</button>` : '<p class="cp-hint">Doña Sepia, en la Aldea Coralina, te lo tatúa (el primero es gratis).</p>';
+    } else if (artLocked) actions = `<p class="cp-hint">Se abre con Maestría ${art.mastery} del arma.</p>`;
+    else actions = ['q', 'e'].map((slot, i) => `<button class="btn${lo[i] === id ? ' secondary' : ''}" data-put="${slot}" ${lo[i] === id ? 'disabled' : ''}>${lo[i] === id ? `En ${slot.toUpperCase()}` : `Poner en ${slot.toUpperCase()}`}</button>`).join('');
+    return `<div class="tt-card-big"><div class="tt-head"><span class="tt-ico">${skillIcon(id)}</span><div><b>${esc(T ? T.name : SKILLS[id].name)}</b>
+      <small>${T ? (t ? `Tatuaje · rango ${ROMAN[rank]}` : 'Tatuaje · por aprender') : `Arte · ${esc(WEAPONS[kind].short)}`}</small></div></div>
+      <p class="tt-hint">${esc(T ? T.forms[form].hint : SKILLS[id].hint)}</p>
+      <p class="tt-num">${this.tattooNumbers(id, form)}</p><p class="tt-how">${how}</p>
+      ${forms}<div class="tt-actions">${actions}</div></div>`;
+  }
+
+  tattooClick(t) {
+    const put = t.closest('[data-put]'), learn = t.closest('[data-learn]'), form = t.closest('[data-form]'), pick = t.closest('[data-tt]');
+    if (put && this.ttSel) { this.send({ type: 'loadout', slot: put.dataset.put, id: this.ttSel }); sfx.click(); return true; }
+    if (learn) { this.send({ type: 'learn', id: learn.dataset.learn }); sfx.click(); return true; }
+    if (form && this.ttSel && !form.disabled) { this.send({ type: 'form', id: this.ttSel, form: +form.dataset.form }); sfx.click(); return true; }
+    if (pick) { this.ttSel = pick.dataset.tt; this.render(); sfx.click(); return true; }
+    return false;
+  }
+
+  // A refused change (skillDenied): the card shakes.
+  denyTattoo() {
+    if (!this.isOpen || this.tab !== 'tattoo') return;
+    const el = this.root.querySelector('.tt-card-big');
+    if (!el) return;
+    el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
   }
 }
