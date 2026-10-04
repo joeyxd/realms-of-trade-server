@@ -23,7 +23,15 @@ export const ACT = {
   WINDUP: 9, FIRE: 10, RECOVER: 11, HIT: 12, RIPOSTE: 13, ENRAGE: 14,
   // Weapon skills (M3.5): the cutlass lunge and crescent throw, pistol fire, the blast, a cast (rain, blink).
   LUNGE: 15, THROW: 16, SHOOT: 17, BLAST: 18, CAST: 19,
+  // Tattoos (M4.7): a held charge (the wheel) and the boarding leap (the render takes the height from actT).
+  CHARGE: 20, LEAP: 21,
 };
+
+// The columns of tattoo effects in flight (all 0 = nothing going on).
+const TATTOO_STATE = [
+  'trT0', 'trX', 'trZ', 'trId', 'trF', 'trEnd', 'trT1', 'trX1', 'trZ1', 'trN', 'lpX0', 'lpZ0', 'lpX1', 'lpZ1', 'empT', 'empK',
+  'chg', 'whT0', 'whX0', 'whZ0', 'whDx', 'whDz', 'whV', 'whR', 'whRr', 'whMul', 'whF', 'whPh', 'whX', 'whZ', 'whS', 'whTb', 'whId', 'whN', 'whSlot',
+];
 
 export class ECS {
   constructor(cap = 2048) {
@@ -72,6 +80,19 @@ export class ECS {
     // Tattoos (M4.7, data/tattoos.js): what Q / E hold (index into SKILL_IDS), its form (0–2) and rank (1–5; arts 1),
     // one set per slot in SLOT_COLS; elem: the element every blow carries (0 = none; M4.8's black pearls).
     this.skQ = f(); this.skE = f(); this.fmQ = f(); this.fmE = f(); this.rkQ = f(); this.rkE = f(); this.elem = f();
+    // Tromba (analytic, in projectile ticks): first impact tick (0 = none), centre, id (the seq), form, end tick of a
+    // whirlpool (form A), second impact tick and centre (form B), RIPOSTE it has given.
+    this.trT0 = f(); this.trX = f(); this.trZ = f(); this.trId = f(); this.trF = f(); this.trEnd = f();
+    this.trT1 = f(); this.trX1 = f(); this.trZ1 = f(); this.trN = f();
+    // Abordaje: the leap's start and landing points; empT: seconds left to the empowered attack after a Parpadeo,
+    // empK: 1 while the swing in progress is that attack.
+    this.lpX0 = f(); this.lpZ0 = f(); this.lpX1 = f(); this.lpZ1 = f(); this.empT = f(); this.empK = f();
+    // Timón: chg = 1 while charging (castT counts the hold). The wheel in flight: throw tick, origin, direction,
+    // speed, range (clipped), radius, damage × (form's), form, phase (0 none · 1 out · 2 hang · 3 back), position now,
+    // return speed, tick the phase began, id (the seq), RIPOSTE given, the slot it came from.
+    this.chg = f(); this.whT0 = f(); this.whX0 = f(); this.whZ0 = f(); this.whDx = f(); this.whDz = f(); this.whV = f();
+    this.whR = f(); this.whRr = f(); this.whMul = f(); this.whF = f(); this.whPh = f(); this.whX = f(); this.whZ = f();
+    this.whS = f(); this.whTb = f(); this.whId = f(); this.whN = f(); this.whSlot = f();
     // Gear and mastery (M4, systems/stats.js): what the equipped items and the weapon's mastery change. All
     // predicted (PLAYER_FIELDS) but crit / gold / life on kill, which only the server uses. Multipliers
     // default to 1, additions to 0. mastery packs every kit's level, 4 bits each (0 = unmanaged: whole kit).
@@ -124,6 +145,7 @@ export class ECS {
     this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
     this.rainT0[id] = this.rainX[id] = this.rainZ[id] = this.rainId[id] = 0;
     this.skQ[id] = 0; this.skE[id] = 1; this.fmQ[id] = this.fmE[id] = 0; this.rkQ[id] = this.rkE[id] = 1; this.elem[id] = 0; // the cutlass kit
+    for (const k of TATTOO_STATE) this[k][id] = 0;
     this.cdr[id] = this.guardAdd[id] = this.winBonus[id] = this.mastery[id] = this.potions[id] = this.potCd[id] = 0;
     this.ripMul[id] = this.reflMul[id] = this.dashRec[id] = this.fireMul[id] = this.potHeal[id] = this.xpMul[id] = 1;
     this.critAdd[id] = this.critDAdd[id] = this.onKill[id] = 0; this.goldMul[id] = 1;
@@ -165,6 +187,8 @@ export const PLAYER_FIELDS = [
   'rainT0', 'rainX', 'rainZ', 'rainId',
   // M4.7: the slots' tattoos and the element of your blows.
   'skQ', 'skE', 'fmQ', 'fmE', 'rkQ', 'rkE', 'elem',
+  // M4.7 P3: the tattoos in flight (Tromba, Abordaje, Timón).
+  ...TATTOO_STATE,
   // M4: gear and mastery (speed included: boots change it).
   'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
 ];

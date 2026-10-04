@@ -177,7 +177,9 @@ cambia (`ax/az` ya es el punto apuntado).
 - [x] **P1** Cómic Ultra (2.1): gpu.js + test, tier `ultra`, ajustes, sombras, contornos, pasada final,
       viñetas de impacto, líneas, onomatopeyas.
 - [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
-- [ ] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
+- [ ] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida). **A medias**:
+      números y formas (`TATTOO_SKILLS`, `formed`), columnas, `canStand`, ayudas de golpe del servidor y el reparto
+      en `skills.js` están; faltan las funciones de lanzamiento y vuelo y los tests (`docs/HANDOFF.md` §3).
 - [ ] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
 - [ ] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
 - [ ] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,

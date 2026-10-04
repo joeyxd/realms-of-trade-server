@@ -126,7 +126,7 @@ export function hurtByPlayer(world, e, raw, o) {
   // The mercy window after a hit is for bullets; a blade lands once per swing anyway, so the combo and the
   // lunge go through it (otherwise the second swing of every combo is lost).
   if (ecs.hurtInv[e] > 0 && o.kind !== 'melee' && o.skill !== 'lunge') return 0;
-  const crit = world.rng() < tuning.stats.crit + ecs.critAdd[by];
+  const crit = world.rng() < tuning.stats.crit + ecs.critAdd[by] || !!o.crit;
   raw *= LAWLESS.pvpDmg * (crit ? tuning.stats.critMult + ecs.critDAdd[by] : 1);
   if (guardUp(ecs, e) && !o.above && inGuardArc(ecs, e, o.x, o.z)) {
     if (guardPerfect(ecs, e)) {

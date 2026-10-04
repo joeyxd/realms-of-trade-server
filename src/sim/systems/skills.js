@@ -8,8 +8,9 @@
 //   Slots  Q / E hold a skill each (M4.7, data/tattoos.js): an art of the weapon (the four below) or a learned
 //          tattoo. ecs.skQ / skE (index into SKILL_IDS) + form + rank say which; skillOf(slot) reads them
 //          (`basic` and `r` still come from the weapon). Loadouts live in the profile; the server changes them
-//          with the loadout / form / learn commands (systems/inventory.js). A tattoo with no cast yet is
-//          not buffered: pressing it does nothing (no event, no cooldown).
+//          with the loadout / form / learn commands (systems/inventory.js). An id with no numbers in SKILLS (no
+//          cast) is not buffered: pressing it does nothing (no event, no cooldown). A tattoo's numbers depend on
+//          its form (skillNum / formed) and its damage on its rank (tattooMul).
 //   Cast   Q / E (buffered like LMB) start the slot's skill at the cursor when it is off cooldown and
 //          you are free (not dashing, staggered, dead or mid-swing; a swing's recovery is cut short; it
 //          lowers the guard). castK = 1 (Q) or 2 (E) while it runs; no dash in its windup / active frames.
@@ -21,14 +22,25 @@
 //          blows away the parryables in front, kicks you back. E Paso de humo: a short collision-stepped
 //          blink toward where you walk (the cursor when standing) with i-frames. R Lluvia de plomo: a zone
 //          at the cursor (≤ 9 u) where lead rains for 1.5 s: hits every 0.15 s, erases parryables.
+//   Tattoos (M4.7, any weapon; the forms in data/weapons.js)
+//          Tromba (ground): after a short windup a column of water lands `delay` s later on the aim point (≤ 10 u):
+//          erases parryables, stuns. A: a whirlpool lingers (pulls, hits, erases). B: a second column follows.
+//          Abordaje (ground): a leap (i-frames, no collision in the air) to the last standable point of the line to
+//          the aim point; the landing slams, knocks back and erases parryables. A «Parpadeo»: a blink instead, and
+//          the next basic attack is a crit. B: higher, wider, stuns.
+//          Timón (charge): Q / E HELD (cmd.btn) charges, releasing throws a wheel: fast and short when tapped, slow,
+//          long and heavy when charged. It goes out decelerating, comes back to you (catch it for a cooldown
+//          refund), hits each enemy once each way and erases the parryables it crosses.
+//          Their effects in flight (stepTromba, stepWheel) keep running whatever you do, like the crescent and the
+//          rain: everything that touches hostile bullets is here at the command's tick; hits are the server's.
 import { tuning, DT } from '../../data/tuning.js';
-import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf } from '../../data/weapons.js';
+import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf, formed } from '../../data/weapons.js';
 import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
 import { hash01 } from '../../core/rng.js';
-import { BTN, moveWithCollision } from './movement.js';
+import { BTN, moveWithCollision, canStand } from './movement.js';
 import { ACT } from '../ecs.js';
 import { kitUnlocked, passive, applyLoadout } from './stats.js';
-import { SLOTS, SLOT_COLS, slotSkill } from '../../data/tattoos.js';
+import { SLOTS, SLOT_COLS, TATTOO, slotSkill } from '../../data/tattoos.js';
 
 export const CAST = { NONE: 0, Q: 1, E: 2 };
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
@@ -62,22 +74,36 @@ export function setWeapon(world, e, w, seq = 0) {
 // The skill in a slot: 'q' / 'e' read the loadout columns (an art or a tattoo); 'basic' and 'r' are the weapon's.
 export const skillOf = (ecs, e, slot) => (SLOT_COLS[slot] ? slotSkill(ecs, e, slot) : weaponOf(ecs.weapon[e])[slot]);
 const castSlot = (k) => SLOTS[k - 1]; // castK 1 = the first slot (Q), 2 = E
+const SLOT_BTN = { q: BTN.Q, e: BTN.E }; // the held bit of each slot in cmd.btn (a charge ends when it lets go)
 
-// Seconds a cast takes: [windup, active, recover].
-function phases(id) {
-  const S = SKILLS[id];
+// The numbers of the skill in a slot, in the form it is set to (arts: the base).
+export const skillNum = (ecs, e, slot) => formed(slotSkill(ecs, e, slot), ecs[SLOT_COLS[slot].fm][e]);
+// A tattoo's damage factor: + TATTOO.dmg per rank above I, read from the rank column of the slot that holds it.
+export function tattooMul(ecs, e, id) {
+  for (const slot of SLOTS) if (slotSkill(ecs, e, slot) === id) return 1 + TATTOO.dmg * Math.max(0, ecs[SLOT_COLS[slot].rk][e] - 1);
+  return 1;
+}
+
+// Seconds a cast takes: [windup, active, recover]. S: the numbers in the form in use.
+function phases(id, S = SKILLS[id]) {
   if (id === 'lunge') return [S.windup, S.time, S.recover];
   if (id === 'wave') return [S.windup, 0, S.recover];
   if (id === 'blast') return [S.windup, 0, S.root];
   if (id === 'blink') return [0, 0, S.recover];
-  return [0, 0, 0];
+  if (id === 'tromba') return [S.windup, 0, S.recover];
+  if (id === 'leap') return [S.windup, S.blink ? 0 : S.air, S.recover];
+  return [0, 0, 0]; // the wheel's charge has no fixed phases: it lasts as long as you hold
 }
-// Does the skill have a cast (windup / active / recover)? A tattoo without one yet is skipped.
-export const castable = (id) => !!SKILLS[id] && phases(id).some((t) => t > 0);
+// Does the skill have a cast (phases or a charge)? An id with no numbers is skipped.
+// P3 IN PROGRESS (docs/HANDOFF.md §3): the numbers, columns, hit helpers (world.areaHits / pathHits / stun /
+// pullEnemies) and the dispatch below are in, but castTromba / stepTromba, planLeap / leapAir / leapBlink and
+// stepCharge / stepWheel are not written yet, so these stay uncastable until they are (remove them from PENDING).
+const PENDING = new Set(['tromba', 'leap', 'wheel']);
+export const castable = (id) => { const S = SKILLS[id]; return !!S && !PENDING.has(id) && (S.charge > 0 || phases(id, S).some((t) => t > 0)); };
 export const castBusy = (ecs, e) => ecs.castK[e] > 0;
 
 export function cancelCast(ecs, e) {
-  ecs.castK[e] = 0; ecs.castT[e] = 0; ecs.castLock[e] = 0;
+  ecs.castK[e] = 0; ecs.castT[e] = 0; ecs.castLock[e] = 0; ecs.chg[e] = 0;
 }
 
 function addRiposte(ecs, e, n) {
@@ -113,35 +139,43 @@ export function tryCast(world, e, cmd, seq) {
   if (!k) return false;
   const slot = castSlot(k), c = SLOT_COLS[slot], id = skillOf(ecs, e, slot);
   if (!castable(id)) { ecs[c.buf][e] = 0; return false; } // no cast (yet): nothing happens, nothing is spent
-  const cd = SKILLS[id].cd * (1 - ecs.cdr[e]); // gear: Enfriamiento
-  ecs[c.buf][e] = 0; ecs[c.cd][e] = cd;
+  const S = skillNum(ecs, e, slot), charge = S.charge > 0;
+  ecs[c.buf][e] = 0;
+  if (!charge) ecs[c.cd][e] = S.cd * (1 - ecs.cdr[e]); // gear: Enfriamiento. A charge pays when it is thrown
   ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
   faceAim(ecs, e, cmd);
-  const [w, a] = phases(id);
+  const [w, a] = phases(id, S);
   ecs.castK[e] = k; ecs.castT[e] = 0;
   ecs.castX[e] = Math.sin(ecs.facing[e]); ecs.castZ[e] = Math.cos(ecs.facing[e]);
-  ecs.castLock[e] = w + a;
+  ecs.castLock[e] = charge ? 0 : w + a; // a dash cancels a charge (with no cooldown); it cannot interrupt the others
   ecs.faceLock[e] = w + a + 0.05;
   ecs.lungeCov[e] = 0;
+  ecs.chg[e] = charge ? 1 : 0;
+  const ev = { type: 'cast', e, skill: id, seq, x: ecs.x[e], z: ecs.z[e], dx: ecs.castX[e], dz: ecs.castZ[e] };
   if (id === 'lunge') { ecs.vx[e] = 0; ecs.vz[e] = 0; } // the lunge is all the movement there is
+  else if (id === 'leap') planLeap(world, e, cmd, S, ecs[c.fm][e], ev);
   ecs.swingId[e] += 1; // a fresh key for the server's once-per-attack hit bookkeeping
-  world.emit({ type: 'cast', e, skill: id, seq, x: ecs.x[e], z: ecs.z[e], dx: ecs.castX[e], dz: ecs.castZ[e] });
+  world.emit(ev);
   return true;
 }
 
 // One step of the skill being cast (castK > 0).
 export function stepCast(world, e, cmd, dt, pt, seq) {
-  const ecs = world.ecs;
-  const id = skillOf(ecs, e, castSlot(ecs.castK[e]));
-  const [w, a, r] = phases(id);
+  const ecs = world.ecs, slot = castSlot(ecs.castK[e]), id = skillOf(ecs, e, slot);
+  const S = skillNum(ecs, e, slot);
+  if (S.charge > 0) { stepCharge(world, e, cmd, dt, pt, seq, slot, S); return; }
+  const [w, a, r] = phases(id, S);
   const t0 = ecs.castT[e];
   ecs.castT[e] += dt;
   const t1 = ecs.castT[e];
   if (id === 'lunge' && t1 > w && t0 < w + a) lungeStep(world, e, t0, t1, pt, seq);
+  else if (id === 'leap' && !S.blink && t1 > w && t0 < w + a) leapAir(world, e, S, slot, t0, t1, pt, seq);
   if (t0 <= w && t1 > w) {
     if (id === 'wave') throwWave(world, e, pt, seq);
     else if (id === 'blast') fireBlast(world, e, pt, seq);
     else if (id === 'blink') blink(world, e, cmd, seq);
+    else if (id === 'tromba') castTromba(world, e, cmd, S, ecs[SLOT_COLS[slot].fm][e], pt, seq);
+    else if (id === 'leap' && S.blink) leapBlink(world, e, cmd, S, seq);
   }
   if (t1 >= w + a + r) cancelCast(ecs, e);
 }
@@ -149,10 +183,17 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
 // Movement multiplier and animation of a cast (null when nothing is being cast).
 export function castPose(ecs, e) {
   if (!(ecs.castK[e] > 0)) return null;
-  const id = skillOf(ecs, e, castSlot(ecs.castK[e]));
+  const slot = castSlot(ecs.castK[e]), id = skillOf(ecs, e, slot);
   if (id === 'lunge') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };
+  if (id === 'tromba' || id === 'leap' || id === 'wheel') {
+    const S = skillNum(ecs, e, slot);
+    if (id === 'tromba') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
+    if (id === 'wheel') return { move: S.move, act: ACT.CHARGE };
+    if (S.blink) return { move: 1, act: ACT.CAST };
+    return { move: ecs.castT[e] < S.windup + S.air ? 0 : 0.5, act: ACT.LEAP };
+  }
   return { move: 1, act: ACT.CAST };
 }
 
@@ -249,19 +290,25 @@ function fireBlast(world, e, pt, seq) {
 }
 
 // ---- Pistolas: Paso de humo -----------------------------------------------------------------------------
+// A collision-stepped teleport of up to `dist` u along (dx, dz) with i-frames (also Abordaje's Parpadeo).
+function blinkStep(world, e, dx, dz, dist, iframes, seq) {
+  const ecs = world.ecs;
+  const x0 = ecs.x[e], z0 = ecs.z[e], step = 0.3;
+  for (let d = 0; d < dist - 1e-9; d += step) {
+    const s = Math.min(step, dist - d);
+    if (moveWithCollision(world, e, dx * s, dz * s) < s * 0.5) break; // a rock, a cliff, deep water
+  }
+  ecs.iframes[e] = Math.max(ecs.iframes[e], iframes);
+  ecs.facing[e] = Math.atan2(dx, dz);
+  world.emit({ type: 'blink', e, seq, x0, z0, x1: ecs.x[e], z1: ecs.z[e] });
+}
+
 function blink(world, e, cmd, seq) {
   const ecs = world.ecs, B = SKILLS.blink;
   let dx = cmd.mx || 0, dz = cmd.mz || 0;
   const len = Math.hypot(dx, dz);
   if (len > 0.1) { dx /= len; dz /= len; } else { dx = ecs.castX[e]; dz = ecs.castZ[e]; }
-  const x0 = ecs.x[e], z0 = ecs.z[e], step = 0.3;
-  for (let d = 0; d < B.dist - 1e-9; d += step) {
-    const s = Math.min(step, B.dist - d);
-    if (moveWithCollision(world, e, dx * s, dz * s) < s * 0.5) break; // a rock, a cliff, deep water
-  }
-  ecs.iframes[e] = Math.max(ecs.iframes[e], B.iframes);
-  ecs.facing[e] = Math.atan2(dx, dz);
-  world.emit({ type: 'blink', e, seq, x0, z0, x1: ecs.x[e], z1: ecs.z[e] });
+  blinkStep(world, e, dx, dz, B.dist, B.iframes, seq);
 }
 
 // ---- Pistolas: Lluvia de plomo ---------------------------------------------------------------------------

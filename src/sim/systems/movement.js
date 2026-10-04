@@ -26,6 +26,20 @@ function walkStep(map, x0, z0, x1, z1) {
   return dh / d <= W.maxSlope;
 }
 
+// Could a body of radius r stand at (x, z)? The rules moveWithCollision applies to where you end up: inside the map,
+// not in deep water (a dock is dry), not inside a collider. (Landing spots of a leap.)
+export function canStand(world, x, z, r = tuning.player.radius) {
+  const map = world.map, W = tuning.world, lim = map.half - 2;
+  if (x < -lim || x > lim || z < -lim || z > lim) return false;
+  if (!map.onDock(x, z) && W.waterLevel - map.groundAt(x, z) > W.wadeMax) return false;
+  const list = map.queryColliders(x, z, r + 3);
+  for (let k = 0; k < list.length; k++) {
+    const c = map.colliders[list[k]], ox = x - c.x, oz = z - c.z, m = r + c.r;
+    if (ox * ox + oz * oz < m * m) return false;
+  }
+  return true;
+}
+
 // Moves entity e by (dx, dz) resolving terrain walkability (axis sliding) and static circle colliders.
 export function moveWithCollision(world, e, dx, dz) {
   const ecs = world.ecs, map = world.map;

@@ -65,7 +65,7 @@ export function sanitizeCmd(c) {
     mz: quantAxis(n(c.mz)),
     ax: n(c.ax),
     az: n(c.az),
-    btn: n(c.btn) & 0xff,
+    btn: n(c.btn) & 0x3ff, // held bits: + BTN.Q / BTN.E held (a charge, M4.7)
     prs: n(c.prs) & 0x1ff, // + BTN.POTION (M4)
     pt: n(c.pt) >>> 0,
     w: n(c.w) & 0x0f,

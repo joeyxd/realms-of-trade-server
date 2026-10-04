@@ -6,13 +6,13 @@ import { ENEMIES, ENEMY_KINDS as ENEMY_KINDS_LIST, enemyIndex } from '../data/en
 import { mulberry32 } from '../core/rng.js';
 import { ECS, C, KIND, TEAM, ACT, PLAYER_FIELDS } from './ecs.js';
 import { generateWorld } from './worldgen.js';
-import { stepMover } from './systems/movement.js';
+import { stepMover, moveWithCollision } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
-import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
-import { skillSegDist, rainR } from './systems/skills.js';
+import { WEAPON_KINDS, SKILLS, formed } from '../data/weapons.js';
+import { skillSegDist, rainR, cancelCast } from './systems/skills.js';
 import { applyLoadout } from './systems/stats.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 import { lootOnKill, stepDrops } from './systems/inventory.js';
@@ -240,6 +240,7 @@ export class World {
       const S = this.shots, s = S.slot.get(sid);
       const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
       if (o.kind) ev.kind = o.kind;
+      if (o.crit) ev.crit = 1;
       if (o.tier) ev.tier = o.tier;
       if (o.from) { ev.from = o.from; ev.target = o.target; }
       this.emit(ev);
@@ -302,7 +303,7 @@ export class World {
         }
       }
       if (!end) continue;
-      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s];
+      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s], crit = S.crit[s] > 0;
       const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s], lag, kind };
       const knock = S.knock[s] || undefined;
       S.free(s);
@@ -310,7 +311,7 @@ export class World {
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, elem: ecs.elem[owner] });
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem: ecs.elem[owner] });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -378,8 +379,8 @@ export class World {
       if (d > st.range + ecs.hurtR[o]) continue;
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       b.hitBy.set(e, key);
-      const stage = ecs.atkStage[e];
-      this.strike(o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, elem: ecs.elem[e] });
+      const stage = ecs.atkStage[e], emp = ecs.empK[e] > 0; // empowered: the first swing after a Parpadeo (× empMult, a crit)
+      this.strike(o, ecs.atk[e] * st.mult * (emp ? formed('leap', 1).empMult : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp, elem: ecs.elem[e] });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -430,6 +431,84 @@ export class World {
       historyAt(this, o, T - tuning.combat.interpTicks, tmp);
       if (Math.hypot(tmp.x - cx, tmp.z - cz) > rr + ecs.hurtR[o]) continue;
       this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true, elem: ecs.elem[e] });
+    }
+  }
+
+  // ---- Tattoo hits (M4.7 P3, server only) ---------------------------------------------------------------
+  // One blow of a tattoo (ATK × mult) on target t: the strike (elem: the attacker's), then o.stun s of stagger.
+  // o: {skill, knock, stun, heavy, kind}.
+  skillStrike(e, t, mult, o, x, z, seq) {
+    const ecs = this.ecs;
+    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e] });
+    if (o.stun > 0) this.stun(e, t, o.stun, seq, dmg);
+    return dmg;
+  }
+
+  // Every enemy within r (+ its hurt radius) of (x, z) as the attacker saw it at tick pt, hit for ATK × mult. Returns
+  // how many. o: skillStrike's.
+  areaHits(e, x, z, r, mult, o, pt, seq) {
+    const ecs = this.ecs, tmp = this.tmp, back = pt - tuning.combat.interpTicks;
+    let n = 0;
+    for (let t = 1; t < ecs.cap; t++) {
+      if (!this.canHit(e, t)) continue;
+      historyAt(this, t, back, tmp);
+      if (Math.hypot(tmp.x - x, tmp.z - z) > r + ecs.hurtR[t]) continue;
+      this.skillStrike(e, t, mult, o, x, z, seq);
+      n++;
+    }
+    return n;
+  }
+
+  // The same along a segment (x0, z0) → (x1, z1) of width r, each enemy once per `key` (like lungeHits: a fresh key
+  // is a fresh chance). A blow's knockback comes from the segment's start.
+  pathHits(e, x0, z0, x1, z1, r, mult, key, o, pt, seq) {
+    const ecs = this.ecs, tmp = this.tmp, back = pt - tuning.combat.interpTicks;
+    let n = 0;
+    for (let t = 1; t < ecs.cap; t++) {
+      if (!this.canHit(e, t)) continue;
+      const b = this.hitState(t);
+      if (!b.pathBy) b.pathBy = new Map();
+      if (b.pathBy.get(e) === key) continue;
+      historyAt(this, t, back, tmp);
+      if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > r + ecs.hurtR[t]) continue;
+      b.pathBy.set(e, key);
+      this.skillStrike(e, t, mult, o, x0, z0, seq);
+      n++;
+    }
+    return n;
+  }
+
+  // Stagger from a tattoo: enemies (not bosses or fixed ones) get `secs`, and one winding up or striking drops it and
+  // chases (as the perfect guard's shock does). In the Cala a pirate that was hurt gets half of it and loses its
+  // swing, guard and cast.
+  stun(e, o, secs, seq, dmg = 1) {
+    const ecs = this.ecs;
+    if (!ecs.alive[o] || ecs.dead[o] > 0) return;
+    if (ecs.mask[o] & C.ENEMY) {
+      const b = ecs.brain[o], def = ENEMIES[ENEMY_KINDS_LIST[ecs.enemy[o]]];
+      if (!b || def.boss || def.fixed) return;
+      ecs.stagger[o] = Math.max(ecs.stagger[o], secs);
+      if (b.state === 'windup' || b.state === 'fire') { this.cancelEmitter(o); b.state = 'chase'; b.t = 0; b.gcd = 0.8; }
+    } else {
+      if (!(dmg > 0)) return;
+      ecs.stagger[o] = Math.max(ecs.stagger[o], secs / 2);
+      ecs.atkStage[o] = 0; ecs.guardT[o] = -1;
+      cancelCast(ecs, o);
+    }
+    this.emit({ type: 'stun', id: o, by: e, seq, x: ecs.x[o], z: ecs.z[o] });
+  }
+
+  // The whirlpool of «Ojo de tormenta»: enemies (not bosses or fixed ones) within r of (cx, cz) slide `step` u toward it.
+  pullEnemies(cx, cz, r, step) {
+    const ecs = this.ecs;
+    for (let o = 1; o < ecs.cap; o++) {
+      if (!ecs.alive[o] || !(ecs.mask[o] & C.ENEMY) || ecs.dead[o] > 0) continue;
+      const def = ENEMIES[ENEMY_KINDS_LIST[ecs.enemy[o]]];
+      if (def.boss || def.fixed) continue;
+      const dx = cx - ecs.x[o], dz = cz - ecs.z[o], d = Math.hypot(dx, dz);
+      if (d > r + ecs.hurtR[o] || d < 0.05) continue;
+      const m = Math.min(step, d);
+      moveWithCollision(this, o, (dx / d) * m, (dz / d) * m);
     }
   }
 
