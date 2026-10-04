@@ -17,6 +17,7 @@ import { installInventory, newProfile, attachProfile, detachProfile, syncProfile
 import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
+import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
@@ -40,6 +41,7 @@ export class LocalServer {
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
     installInventory(this.world); // M4: profiles, personal loot, the bag
+    installTrade(this.world); // M7: the economy (markets, plots) and the market command
     // Quests (M4): quest items drop only while wanted; picking one up counts.
     this.world.questWants = (e, item) => questWants(this.world, e, item);
     this.world.onPickup = (e, d) => { if (d.kind === 'quest') questEvent(this.world, e, 'collect', { item: d.q }); };
@@ -167,6 +169,8 @@ export class LocalServer {
       case 'loadout': setLoadout(w, e, String(msg.slot), String(msg.id)); break;
       case 'form': setForm(w, e, String(msg.id), msg.form); break;
       case 'learn': learnTattoo(w, e, String(msg.id)); break;
+      // Trade (M7): a town's board, buying and selling goods into your pack.
+      case 'market': marketCmd(w, e, msg); break;
       default: break;
     }
   }

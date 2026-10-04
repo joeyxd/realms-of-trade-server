@@ -16,6 +16,7 @@ import { refreshStats, masteryXpToNext } from './stats.js';
 import { setWeapon } from './skills.js';
 import { C } from '../ecs.js';
 import { LAWLESS } from '../../data/lawless.js';
+import { newEco, sanitizeEco } from './trade.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -29,6 +30,7 @@ export function newProfile({ weapon = 0 } = {}) {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
+    eco: newEco(), // trade (M7): pack, ships, deeds (systems/trade.js)
   };
   for (const s of SLOTS) p.eq[s] = null;
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
@@ -67,6 +69,7 @@ export function sanitizeProfile(raw) {
     return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
   });
   p.sk = sanitizeSk(raw.sk, int, num);
+  p.eco = sanitizeEco(raw.eco);
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];

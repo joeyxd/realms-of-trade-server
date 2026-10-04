@@ -593,6 +593,7 @@ export class World {
       this.stepShots(DT);
       stepInfighting(this);
       if (this.drops) stepDrops(this);
+      if (this.economy) this.economy.step(DT); // M7: markets and workshops on the game clock
       if (this.profiles) zoneSweep(this);
       for (const enc of this.encounters) stepEncounter(this, enc, DT);
       for (let e = 1; e < ecs.cap; e++) {
