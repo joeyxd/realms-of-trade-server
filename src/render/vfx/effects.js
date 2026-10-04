@@ -109,6 +109,20 @@ export class Effects {
     }
   }
 
+  // A low orange flame ribbon marks the Cometa's burning ground without hiding the pirate.
+  cometTrail(x0, z0, x1, z1) {
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 0.5));
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5) / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t, y = this.map.groundAt(x, z);
+      this.alpha.spawn(x, y + 0.3, z, 0, 0.3, 0, { life: 2, size: 1.2, size1: 0.5,
+        color: [1, 0.3, 0.04], alpha: 0.75, heat: 1, drag: 1 });
+      this.add.spawn(x, y + 0.4, z, 0, 0.45, 0, { life: 1.8, size: 0.85, size1: 0.25,
+        color: [1, 0.48, 0.06], alpha: 0.5, shape: SHAPE.GLOW, drag: 1 });
+    }
+    this.sparks(x1, this.map.groundAt(x1, z1) + 0.4, z1, 2,
+      { color: [1, 0.58, 0.12], color1: [0.9, 0.12, 0.03], up: 1.4, spread: 0.6, gravity: -0.3, life: 1.8 });
+  }
+
   footstep(x, y, z, material, wade) {
     if (wade > 0.08) { this.ripple(x, Math.max(y, 0) + 0.02, z, 0.9, 0.7); this.splash(x, z, 3); return; }
     const c = COLORS[material] || COLORS.sand;

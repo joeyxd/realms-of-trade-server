@@ -277,7 +277,7 @@ export class GameClient {
       const sample = {
         time: st, x: e[ENT.X], y: e[ENT.Y], z: e[ENT.Z], f: e[ENT.F], vx: e[ENT.VX], vz: e[ENT.VZ],
         st: e[ENT.ST], mag: e[ENT.MAG], wade: e[ENT.WADE], dashes: e[ENT.DASHES],
-        hp: e[ENT.HP], maxHp: e[ENT.MAXHP], act: e[ENT.ACT], actT: e[ENT.ACTT], lvl: e[ENT.LVL], wpn: e[ENT.WPN] | 0,
+        hp: e[ENT.HP], maxHp: e[ENT.MAXHP], act: e[ENT.ACT], actT: e[ENT.ACTT], lvl: e[ENT.LVL], wpn: e[ENT.WPN] | 0, elem: e[ENT.ELEM] | 0,
       };
       const b = rec.buf;
       if (b.length && b[b.length - 1].time >= st) continue;
@@ -544,6 +544,7 @@ export class GameClient {
     out.potions = ecs.potions[e]; out.potCd = ecs.potCd[e]; out.mastery = ecs.mastery[e]; out.guardMax = tuning.guard.stamina + ecs.guardAdd[e];
     // M4.7: what the slots hold (skill index, form, rank), the charge and the empowered attack after a Parpadeo.
     out.skQ = ecs.skQ[e]; out.skE = ecs.skE[e]; out.fmQ = ecs.fmQ[e]; out.fmE = ecs.fmE[e]; out.rkQ = ecs.rkQ[e]; out.rkE = ecs.rkE[e];
+    out.skG = ecs.skG[e]; out.cdG = ecs.cdG[e];
     out.elem = ecs.elem[e]; out.chg = ecs.chg[e]; out.empT = ecs.empT[e]; out.cdr = ecs.cdr[e];
     return out;
   }

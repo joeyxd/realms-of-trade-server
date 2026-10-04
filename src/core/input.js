@@ -16,8 +16,8 @@ const MOVE_KEYS = {
 // J / K: attack and guard without a mouse (they aim at the nearest threat or enemy). Both can be held.
 const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
 const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
-const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r' };
-const PAD_SLOTS = [[5, 'q'], [4, 'e'], [3, 'r']];
+const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyG: 'g' };
+const PAD_SLOTS = [[5, 'q'], [4, 'e'], [3, 'r'], [13, 'g']]; // D-pad down: pearl power.
 const SRC = ['key', 'pad', 'touch'];
 // Standard gamepad buttons → command bits (held ones also count as held).
 const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
@@ -43,8 +43,9 @@ export class Input {
     this.aimDevice = 'keys';
     this.interactEdge = false;
     // Skill slots: edges since the last fixed tick and what each source holds; the cancel edge; RMB swallowed.
-    this.slots = { down: { q: false, e: false, r: false }, up: { q: false, e: false, r: false } };
-    this.slotSrc = { key: { q: false, e: false, r: false }, pad: { q: false, e: false, r: false }, touch: { q: false, e: false, r: false } };
+    const emptySlots = () => ({ q: false, e: false, r: false, g: false });
+    this.slots = { down: emptySlots(), up: emptySlots() };
+    this.slotSrc = { key: emptySlots(), pad: emptySlots(), touch: emptySlots() };
     this.cancelEdge = false;
     this.previewing = false;
     this.swallowRmb = false;
@@ -110,7 +111,7 @@ export class Input {
   slotHeld(slot) { return this.enabled && (this.slotSrc.key[slot] || this.slotSrc.pad[slot] || this.slotSrc.touch[slot]); }
   // The edges since the last call and what is held now (one fixed tick's input for the aim controller).
   consumeSlots(out) {
-    for (const k of ['q', 'e', 'r']) {
+    for (const k of ['q', 'e', 'r', 'g']) {
       out.down[k] = this.slots.down[k]; out.up[k] = this.slots.up[k]; out.held[k] = this.slotHeld(k);
       this.slots.down[k] = this.slots.up[k] = false;
     }

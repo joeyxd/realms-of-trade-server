@@ -6,7 +6,7 @@ import { dampAngle } from '../../core/math.js';
 
 // AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
 // even while walking another way; without it you face where you walk (touch, keyboard only).
-export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128, POTION: 256 };
+export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32, INTERACT: 64, AIM: 128, POTION: 256, G: 512 };
 
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
@@ -35,7 +35,7 @@ export function canStand(world, x, z, r = tuning.player.radius) {
   const list = map.queryColliders(x, z, r + 3);
   for (let k = 0; k < list.length; k++) {
     const c = map.colliders[list[k]], ox = x - c.x, oz = z - c.z, m = r + c.r;
-    if (ox * ox + oz * oz < m * m) return false;
+    if (ox * ox + oz * oz < m * m - 1e-9) return false; // A collision-resolved tangent is standable despite float rounding.
   }
   return true;
 }

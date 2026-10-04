@@ -12,6 +12,7 @@ import { stage } from './stage.js';
 // background. Styled in hud.css (`#touch .tbtn svg`).
 const ico = (p) => `<svg viewBox="0 0 24 24" aria-hidden="true"><g class="u">${p}</g><g class="f">${p}</g></svg>`;
 export const ICONS = {
+  comet: ico('<circle cx="16" cy="16" r="6"/><path d="M2 3l12 5M3 8l6 4M8 2l6 6"/><circle cx="16" cy="16" r="2"/>'),
   sword: ico('<path d="M20 4L11 13"/><path d="M7.5 11.5l5 5"/><path d="M10 14L5.5 18.5"/><path d="M4.5 19.5h.01"/>'),
   pistol: ico('<path d="M3 8h17v4h-7.5L11 19H7l1.5-7H3z"/><path d="M4.5 8V5.5H7"/>'),
   shield: ico('<path d="M12 3l8 3v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M12 7.5v9"/>'),
@@ -63,6 +64,7 @@ export class TouchControls {
         <button class="tbtn t-skill t-q" aria-label="Habilidad Q"><span class="sweep"></span>${face('thrust', 'ESTOC')}</button>
         <button class="tbtn t-skill t-e" aria-label="Habilidad E"><span class="sweep"></span>${face('crescent', 'HOJA')}</button>
         <button class="tbtn t-skill t-r" aria-label="Riposte"><span class="sweep"></span>${face('spiral', 'TORM')}</button>
+        <button class="tbtn t-skill t-g" aria-label="Poder de la perla" hidden><span class="sweep"></span>${face('comet', 'COMETA')}</button>
         <button class="tbtn t-pot" aria-label="Poción"><span class="sweep"></span>${face('flask', null)}<b class="cnt">0</b></button>
         <button class="tbtn t-act" aria-label="Interactuar" hidden>${face('talk', '')}</button>
       </div>`;
@@ -128,7 +130,7 @@ export class TouchControls {
     // the drag (its length = the distance) and shows while the finger is down, a charge starts on touch; releasing
     // casts / throws, dragging back to the button cancels an area.
     const line = root.querySelector('.aimline');
-    this.kinds = { q: 'dir', e: 'dir', r: 'self' };
+    this.kinds = { q: 'dir', e: 'dir', r: 'self', g: 'dir' };
     const drag = (sel, bit, slot) => {
       const b = root.querySelector(sel);
       let id = null, sx = 0, sy = 0, far = false, held = false;
@@ -180,10 +182,12 @@ export class TouchControls {
       b.addEventListener('pointercancel', (e) => up(e, true));
     };
     drag('.t-q', BTN.Q, 'q'); drag('.t-e', BTN.E, 'e'); drag('.t-r', BTN.R, 'r');
+    drag('.t-g', BTN.G, 'g');
     const q = (sel) => root.querySelector(sel);
     this.atkBtn = q('.t-atk'); this.qBtn = q('.t-q'); this.eBtn = q('.t-e'); this.rBtn = q('.t-r');
     this.potBtn = q('.t-pot'); this.actBtn = q('.t-act');
-    this.btns = { atk: this.atkBtn, q: this.qBtn, e: this.eBtn, r: this.rBtn };
+    this.gBtn = q('.t-g');
+    this.btns = { atk: this.atkBtn, q: this.qBtn, e: this.eBtn, r: this.rBtn, g: this.gBtn };
   }
 
   // --tb = the user's setting x an automatic factor that follows the stage height (small phones shrink, tall grow).
@@ -228,6 +232,16 @@ export class TouchControls {
   }
 
   // A quick ring pulse when something comes off cooldown.
+  setPearl(id, cd01) {
+    this.gBtn.hidden = id === 'none';
+    const k = Math.round(Math.max(0, Math.min(1, cd01)) * 40);
+    if (this.gBtn.dataset.k === String(k)) return;
+    const was = +this.gBtn.dataset.k || 0;
+    this.gBtn.dataset.k = String(k);
+    this.gBtn.querySelector('.sweep').style.background = k > 0 ? cone(Math.round((1 - k / 40) * 360)) : '';
+    if (was > 0 && !k) this.flash(this.gBtn);
+  }
+
   flash(b) {
     b.classList.remove('ready-flash');
     void b.offsetWidth; // restart the animation

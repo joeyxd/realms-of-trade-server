@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (≈210 tests)
+tests/        node --test (233 tests, incluyendo 17 de perlas)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -47,7 +47,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
-| M4.8 «Perlas negras» | diseño (`PLAN-M4.8.md`) |
+| M4.8 «Perlas negras» | **en curso**: Brasa y circulación jugables; faltan Escarcha, Tormenta, Tinta y cierre (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
@@ -69,13 +69,43 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
+### M4.8 en curso — checkpoint Brasa (`0.4.8-alpha.1`)
+
+- Base compartida: perfil `pirateId` / `pearls`, ledger UID en memoria, botín público, bolsa de 8, confirmación
+  con UID anterior, entregar a otro pirata, vender, escupir, caída al morir en cualquier zona y retorno a playa tras 90 s.
+- Brasa: G / cruceta abajo / botón COMETA. Embestida predicha, colisiones, limpieza de balas parreables, estela
+  ardiente de 2 s; quemadura de todo el kit y maldición al vadear. El poder no se puede poner en Q/E.
+- Pestaña Perlas (P), HUD G, VFX naranja iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
+  perla en solo para probar; cerrar el panel y esperar 4 s antes de G.
+- Archivos de entrada: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, `skills.js`,
+  `src/ui/pearlpanel.js`. Próximo paso concreto: **P2 Escarcha** en `PLAN-M4.8.md`.
+- **Protocolo 8**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
+  no sobrevive a reinicios; M5 debe cerrar los duplicados antes de introducir perlas únicas.
+- Validación: 233 tests (231 sin red + 2 de red); capturas y recorrido de panel/confirmación/G en desktop y
+  móvil emulado 844×390. VFX de Cometa capturados con partículas detenidas por el render de software. Falta
+  aceptación a 60 fps con GPU y dispositivos reales. `shots/review/` contiene evidencia local, ignorada por Git.
+- `package-lock.json` corregido: Three.js 0.160 viene del registro npm, sin enlaces a carpetas temporales;
+  `npm ci` comprobado en instalación limpia. `tools/look.mjs` acepta Playwright/Chrome instalados en Windows.
+- No se han seleccionado/importado assets FAB. El autor los está revisando; la mecánica conserva el arte
+  procedural y el importer GLB de `docs/ASSETS.md`. Tampoco se ha desplegado el servidor ni republicado el artefacto;
+  la URL de claude.ai conserva M4.7.
+
 ## 4. Cómo trabajar
 
 - **Tests**: `npm test`. Si el equipo va cargado (otro navegador corriendo), la suite entera puede pasar de 10 min:
   correr `ls tests/*.test.mjs | grep -v net.test | xargs node --test` y `node --test tests/net.test.mjs` aparte.
+  En PowerShell, limitar concurrencia y separar red:
+  ```powershell
+  $testFiles = @(rg --files tests -g '*.test.mjs' | Where-Object { $_ -notmatch '(^|[\\/])net\.test\.mjs$' })
+  node --test --test-concurrency=2 @testFiles
+  node --test tests/net.test.mjs
+  ```
 - **Ver los cambios visuales** (siempre, con capturas): `OUT=shots/x Q=high SCEN=village,fight,impact node
   tools/look.mjs` (escenarios en su cabecera; `lineup` para personajes de cerca; `MN_LIBS` si la red bloquea el
   CDN). Mirar las capturas antes de dar algo por bueno.
+  En Windows: `MN_PLAYWRIGHT` = ruta absoluta al `index.mjs` de Playwright; `MN_BROWSER` = ruta al Chrome/Edge
+  instalado. `MN_THREE` / `MN_GSAP` = carpetas de los paquetes locales si el CDN está bloqueado. `SCEN=pearl`
+  prueba esta entrega; para móvil `PHONE=1`, `VW=844`, `VH=390`.
 - **Artefacto** (la versión que se juega en claude.ai, modo solo): construir desde lo **commiteado**, no desde el
   árbol de trabajo:
   ```bash

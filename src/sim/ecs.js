@@ -32,6 +32,7 @@ const TATTOO_STATE = [
   'trT0', 'trX', 'trZ', 'trId', 'trF', 'trEnd', 'trT1', 'trX1', 'trZ1', 'trN', 'lpX0', 'lpZ0', 'lpX1', 'lpZ1', 'empT', 'empK',
   'chg', 'whT0', 'whX0', 'whZ0', 'whDx', 'whDz', 'whV', 'whR', 'whRr', 'whMul', 'whF', 'whPh', 'whX', 'whZ', 'whS', 'whTb', 'whId', 'whN', 'whSlot',
 ];
+const PEARL_STATE = ['skG', 'fmG', 'rkG', 'cdG', 'gBuf', 'waterT'];
 
 export class ECS {
   constructor(cap = 2048) {
@@ -67,7 +68,7 @@ export class ECS {
     this.pend0 = f(); this.pend0T = f(); this.pend0D = f(); this.pend1 = f(); this.pend1T = f(); this.pend1D = f();
     this.lastPt = f(); this.xp = f(); this.cpX = f(); this.cpZ = f(); this.god = f();
     // Weapon (index into WEAPON_KINDS) and its skills: Q / E cooldowns and input buffers, the skill being
-    // cast (castK 0 none · 1 Q · 2 E · 3 R, time in it, its aim), the pistol's fire timer and hand.
+    // cast (castK 0 none · 1 Q · 2 E · 3 G, time in it, its aim), the pistol's fire timer and hand.
     this.weapon = f(); this.cdQ = f(); this.cdE = f(); this.qBuf = f(); this.eBuf = f();
     this.castK = f(); this.castT = f(); this.castX = f(); this.castZ = f(); this.shotCd = f(); this.shotN = f();
     this.castLock = f(); // no dash while > 0 (a skill's windup and active frames)
@@ -80,6 +81,7 @@ export class ECS {
     // Tattoos (M4.7, data/tattoos.js): what Q / E hold (index into SKILL_IDS), its form (0–2) and rank (1–5; arts 1),
     // one set per slot in SLOT_COLS; elem: the element every blow carries (0 = none; M4.8's black pearls).
     this.skQ = f(); this.skE = f(); this.fmQ = f(); this.fmE = f(); this.rkQ = f(); this.rkE = f(); this.elem = f();
+    for (const k of PEARL_STATE) this[k] = f();
     // Tromba (analytic, in projectile ticks): first impact tick (0 = none), centre, id (the seq), form, end tick of a
     // whirlpool (form A), second impact tick and centre (form B), RIPOSTE it has given.
     this.trT0 = f(); this.trX = f(); this.trZ = f(); this.trId = f(); this.trF = f(); this.trEnd = f();
@@ -146,6 +148,8 @@ export class ECS {
     this.rainT0[id] = this.rainX[id] = this.rainZ[id] = this.rainId[id] = 0;
     this.skQ[id] = 0; this.skE[id] = 1; this.fmQ[id] = this.fmE[id] = 0; this.rkQ[id] = this.rkE[id] = 1; this.elem[id] = 0; // the cutlass kit
     for (const k of TATTOO_STATE) this[k][id] = 0;
+    for (const k of PEARL_STATE) this[k][id] = 0;
+    this.skG[id] = 7; this.rkG[id] = 1;
     this.cdr[id] = this.guardAdd[id] = this.winBonus[id] = this.mastery[id] = this.potions[id] = this.potCd[id] = 0;
     this.ripMul[id] = this.reflMul[id] = this.dashRec[id] = this.fireMul[id] = this.potHeal[id] = this.xpMul[id] = 1;
     this.critAdd[id] = this.critDAdd[id] = this.onKill[id] = 0; this.goldMul[id] = 1;
@@ -189,6 +193,7 @@ export const PLAYER_FIELDS = [
   'skQ', 'skE', 'fmQ', 'fmE', 'rkQ', 'rkE', 'elem',
   // M4.7 P3: the tattoos in flight (Tromba, Abordaje, Timón).
   ...TATTOO_STATE,
+  ...PEARL_STATE,
   // M4: gear and mastery (speed included: boots change it).
   'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
 ];

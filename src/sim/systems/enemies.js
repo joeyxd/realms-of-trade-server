@@ -368,7 +368,7 @@ export function damageEnemy(world, e, raw, o) {
   }
   // Crits: the attacker's gear adds chance and damage (M4; 0 for anything without gear).
   const by = o.by > 0 ? o.by : 0;
-  const roll = world.rng() < tuning.stats.crit + ecs.critAdd[by];
+  const roll = !o.noCrit && world.rng() < tuning.stats.crit + ecs.critAdd[by];
   const crit = roll || !!o.crit; // o.crit: an empowered blow (a Parpadeo's next attack) crits whatever the roll
   const raw2 = raw * (crit ? tuning.stats.critMult + ecs.critDAdd[by] : 1);
   const dmg = Math.max(1, Math.round(raw2 * (1 - (o.pierce ? 0 : ecs.def[e]) / ((o.pierce ? 0 : ecs.def[e]) + tuning.stats.defK))));

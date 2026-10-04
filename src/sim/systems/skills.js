@@ -42,7 +42,7 @@ import { ACT } from '../ecs.js';
 import { kitUnlocked, passive, applyLoadout } from './stats.js';
 import { SLOTS, SLOT_COLS, TATTOO, slotSkill } from '../../data/tattoos.js';
 
-export const CAST = { NONE: 0, Q: 1, E: 2 };
+export const CAST = { NONE: 0, Q: 1, E: 2, G: 3 };
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
 // The rack within reach of (x, z), or null.
@@ -74,7 +74,7 @@ export function setWeapon(world, e, w, seq = 0) {
 // The skill in a slot: 'q' / 'e' read the loadout columns (an art or a tattoo); 'basic' and 'r' are the weapon's.
 export const skillOf = (ecs, e, slot) => (SLOT_COLS[slot] ? slotSkill(ecs, e, slot) : weaponOf(ecs.weapon[e])[slot]);
 const castSlot = (k) => SLOTS[k - 1]; // castK 1 = the first slot (Q), 2 = E
-const SLOT_BTN = { q: BTN.Q, e: BTN.E }; // the held bit of each slot in cmd.btn (a charge ends when it lets go)
+const SLOT_BTN = { q: BTN.Q, e: BTN.E, g: BTN.G }; // the held bit of each slot in cmd.btn (a charge ends when it lets go)
 
 // The numbers of the skill in a slot, in the form it is set to (arts: the base).
 export const skillNum = (ecs, e, slot) => formed(slotSkill(ecs, e, slot), ecs[SLOT_COLS[slot].fm][e]);
@@ -86,7 +86,7 @@ export function tattooMul(ecs, e, id) {
 
 // Seconds a cast takes: [windup, active, recover]. S: the numbers in the form in use.
 function phases(id, S = SKILLS[id]) {
-  if (id === 'lunge') return [S.windup, S.time, S.recover];
+  if (id === 'lunge' || id === 'comet') return [S.windup, S.time, S.recover];
   if (id === 'wave') return [S.windup, 0, S.recover];
   if (id === 'blast') return [S.windup, 0, S.root];
   if (id === 'blink') return [0, 0, S.recover];
@@ -126,7 +126,7 @@ export function bufferSkills(world, e, cmd, seq = 0) {
     else if (castable(skillOf(ecs, e, slot))) ecs[SLOT_COLS[slot].buf][e] = ib;
   }
 }
-const PRESSES = [[BTN.Q, 'q'], [BTN.E, 'e']];
+const PRESSES = [[BTN.Q, 'q'], [BTN.E, 'e'], [BTN.G, 'g']];
 export const skillWanted = (ecs, e) => SLOTS.some((s) => ecs[SLOT_COLS[s].buf][e] > 0 && ecs[SLOT_COLS[s].cd][e] <= 0);
 
 // Start a buffered Q or E (the caller checked you are free to act). Returns true when one started.
@@ -153,7 +153,7 @@ export function tryCast(world, e, cmd, seq) {
   ecs.lungeCov[e] = 0;
   ecs.chg[e] = charge ? 1 : 0;
   const ev = { type: 'cast', e, skill: id, seq, x: ecs.x[e], z: ecs.z[e], dx: ecs.castX[e], dz: ecs.castZ[e] };
-  if (id === 'lunge') { ecs.vx[e] = 0; ecs.vz[e] = 0; } // the lunge is all the movement there is
+  if (id === 'lunge' || id === 'comet') { ecs.vx[e] = 0; ecs.vz[e] = 0; } // the lunge is all the movement there is
   else if (id === 'leap') planLeap(world, e, cmd, S, ecs[c.fm][e], ev);
   ecs.swingId[e] += 1; // a fresh key for the server's once-per-attack hit bookkeeping
   world.emit(ev);
@@ -170,6 +170,7 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
   ecs.castT[e] += dt;
   const t1 = ecs.castT[e];
   if (id === 'lunge' && t1 > w && t0 < w + a) lungeStep(world, e, t0, t1, pt, seq);
+  else if (id === 'comet' && t1 > w && t0 < w + a) cometStep(world, e, t0, t1, pt, seq);
   else if (id === 'leap' && !S.blink && t1 > w && t0 < w + a) leapAir(world, e, S, slot, t0, t1, pt, seq);
   if (t0 <= w && t1 > w) {
     if (id === 'wave') throwWave(world, e, pt, seq);
@@ -185,7 +186,7 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
 export function castPose(ecs, e) {
   if (!(ecs.castK[e] > 0)) return null;
   const slot = castSlot(ecs.castK[e]), id = skillOf(ecs, e, slot);
-  if (id === 'lunge') return { move: 0, act: ACT.LUNGE };
+  if (id === 'lunge' || id === 'comet') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };
   if (id === 'tromba' || id === 'leap' || id === 'wheel') {
@@ -199,6 +200,23 @@ export function castPose(ecs, e) {
 }
 
 // ---- Sable: Estocada ------------------------------------------------------------------------------------
+function cometStep(world, e, t0, t1, pt, seq) {
+  const ecs = world.ecs, S = SKILLS.comet;
+  const u0 = Math.max(0, (t0 - S.windup) / S.time), u1 = Math.min(1, (t1 - S.windup) / S.time);
+  const want = S.dist * (dashCurve(u1) - dashCurve(u0)), x0 = ecs.x[e], z0 = ecs.z[e];
+  const steps = Math.max(1, Math.ceil(want / 0.25));
+  for (let i = 0; i < steps; i++) moveWithCollision(world, e, ecs.castX[e] * want / steps, ecs.castZ[e] * want / steps);
+  const x1 = ecs.x[e], z1 = ecs.z[e];
+  clearParry(world, e, onSegment(x0, z0, x1, z1, S.width), pt, seq, 'comet', 0, 0);
+  if (world.isServer) world.pathHits(e, x0, z0, x1, z1, S.width, S.mult, ecs.swingId[e], { skill: 'comet', knock: 4 }, pt, seq);
+  if (world.isServer && Math.hypot(x1 - x0, z1 - z0) > 0.05) {
+    const trails = world.fireTrails || (world.fireTrails = []);
+    if (trails.length < 256) trails.push({ e, x0, z0, x1, z1, castId: ecs.swingId[e],
+      next: (Math.floor(world.tick / 30) + 1) * 30, until: world.tick + 120, pirateId: world.profiles?.get(e)?.pirateId || '' });
+  }
+  if (Math.hypot(x1 - x0, z1 - z0) > 0.05) world.emit({ type: 'cometTrail', e, seq, x0, z0, x1, z1, elem: 1 });
+}
+
 function lungeStep(world, e, t0, t1, pt, seq) {
   const ecs = world.ecs, H = world.hazards, L = SKILLS.lunge, P = tuning.parry;
   const u0 = Math.max(0, (t0 - L.windup) / L.time), u1 = Math.min(1, (t1 - L.windup) / L.time);

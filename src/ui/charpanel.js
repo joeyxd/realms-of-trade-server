@@ -18,14 +18,15 @@ import { canAccept } from '../sim/systems/quests.js';
 import { esc, itemIcon, slotIcon, itemCard, targetSlot, statText } from './itemui.js';
 import { sfx } from '../audio/sfx.js';
 import { stage } from './stage.js';
+import { pearlHtml } from './pearlpanel.js';
 
-const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T']];
+const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T'], ['pearl', 'Perlas', 'P']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
 const pct = (v, d = 0) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
 export class CharPanel {
-  constructor(root, { send, profile, stats, portrait, onClose }) {
-    Object.assign(this, { root, send, profile, stats, portrait, onClose });
+  constructor(root, { send, profile, stats, portrait, onClose, nearby }) {
+    Object.assign(this, { root, send, profile, stats, portrait, onClose, nearby });
     this.tab = 'gear';
     this.shop = false;
     this.pinned = null; // {where: 'bag' | 'worn', uid, slot}
@@ -55,6 +56,7 @@ export class CharPanel {
     if (!this.isOpen) return;
     this.isOpen = false; this.shop = false; this.learn = false;
     this.root.hidden = true;
+    this.pearlConfirm = null;
     const p = this.profile();
     if (p) for (const it of p.bag) this.seen.add(it.u);
     if (this.onClose) this.onClose();
@@ -72,6 +74,8 @@ export class CharPanel {
     const tab = t.closest('[data-tab]');
     if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.learn = this.learn && this.tab === 'tattoo'; this.pinned = null; this.render(); sfx.click(); return; }
     if (this.tab === 'tattoo' && this.tattooClick(t)) return;
+    const pearl = t.closest('[data-pearl-op]');
+    if (pearl) { this.pearlClick(pearl); return; }
     const buy = t.closest('[data-buy]');
     if (buy) { this.send({ type: 'buy', what: buy.dataset.buy }); return; }
     const act = t.closest('[data-act]');
@@ -101,13 +105,15 @@ export class CharPanel {
     const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${name} <span class="kbd">${key}</span></button>`).join('');
     const html = `<div class="cp frame interactive" role="dialog" aria-label="Personaje">
       <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="Cerrar">✕</button></div>
-      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.questsHtml(p)}</div>
+      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, this.pearlConfirm, this.nearby?.() || []) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.
     if (html === this.html && this.root.firstElementChild) { this.renderDetail(); this.mark(); return; }
-    this.html = html; this.detail = null;
+    const scroll = this.renderedTab === this.tab ? this.root.querySelector('.cp-body')?.scrollTop || 0 : 0;
+    this.html = html; this.detail = null; this.renderedTab = this.tab;
     this.root.innerHTML = html;
+    this.root.querySelector('.cp-body').scrollTop = scroll;
     if (p && this.tab === 'gear') {
       const c = this.root.querySelector('.cp-portrait canvas');
       if (c && this.portrait) this.portrait(c);
@@ -345,6 +351,19 @@ export class CharPanel {
   }
 
   // A refused change (skillDenied): the card shakes.
+  pearlClick(button) {
+    const op = button.dataset.pearlOp, uid = button.dataset.pearlUid, p = this.profile();
+    if (op === 'cancel') { this.pearlConfirm = null; this.render(); return; }
+    const current = p?.pearls?.swallowed;
+    if (op === 'swallow' && current && (this.pearlConfirm?.uid !== uid || this.pearlConfirm.replaceUid !== current.uid)) {
+      this.pearlConfirm = { uid, replaceUid: current.uid }; this.render();
+      this.root.querySelector('.pearl-confirm')?.scrollIntoView({ block: 'center' }); return;
+    }
+    const target = op === 'give' ? +this.root.querySelector(`[data-pearl-target="${uid}"]`)?.value : undefined;
+    this.send({ type: 'pearl', op, uid, ...(op === 'swallow' && current ? { replaceUid: current.uid } : {}), ...(target ? { target } : {}) });
+    this.pearlConfirm = null; sfx.click();
+  }
+
   denyTattoo() {
     if (!this.isOpen || this.tab !== 'tattoo') return;
     const el = this.root.querySelector('.tt-card-big');

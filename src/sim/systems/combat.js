@@ -26,6 +26,7 @@ import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
 import { LAWLESS } from '../../data/lawless.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
+import { stepWaterCurse } from './pearlcombat.js';
 
 const D2R = Math.PI / 180;
 const TIERS = [null, 'poor', 'good', 'excellent'];
@@ -493,6 +494,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
   dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('potCd'); dec('empT');
+  dec('cdG'); dec('gBuf');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
   // A crescent in flight, the lead rain, a Tromba and a Timón keep going whatever you do (even down).
@@ -500,6 +502,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   stepRain(world, e, prev, pt, seq);
   stepTromba(world, e, cmd, prev, pt, seq);
   stepWheel(world, e, prev, pt, seq);
+  stepWaterCurse(world, e, dt, seq);
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;

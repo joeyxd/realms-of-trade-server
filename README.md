@@ -64,10 +64,10 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 |---|---|---|
 | Moverte (8 direcciones, relativo a la cámara) | WASD / flechas | joystick (mitad izquierda) |
 | Dash (0,22 s, 5,5 u, invulnerable) | ESPACIO | botón DASH |
-| Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R |
+| Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R/G |
 | Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón de acción (aparece con su verbo: Hablar, Abrir, Cambiar, Marea, Zarpar) |
 | Poción de ron-coco (cura el 40 %, 2 s de espera, máx. 5) | 1 · cruceta ↑ | botón de poción |
-| Personaje: Equipo / Atributos / Misiones / Tatuajes | I o B / C / L / T · Select | botón Bolsa |
+| Personaje: Equipo / Atributos / Misiones / Tatuajes / Perlas | I o B / C / L / T / P · Select | botón Bolsa |
 | Mapa de la isla | M | botón Mapa |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
@@ -75,6 +75,7 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Guardia (mantener): bloquea de frente; alzada justo a tiempo ATRAPA la bala y tu siguiente ataque la devuelve | RMB / K / LT | botón GUARDIA (mantener) |
 | Tus dos huecos: las artes del arma (sable: Estocada / Hoja de viento; pistolas: Descarga / Paso de humo) o tus tatuajes. Un área (Tromba, Abordaje) se apunta manteniendo y sale al soltar (RMB / ESC / B cancelan); el Timón se carga manteniendo | Q / E · RB / LB | botones Q / E (arrastrar apunta; mantener carga) |
 | R con el RIPOSTE lleno. Sable: Tormenta. Pistolas: Lluvia de plomo | R / Y | botón R |
+| Poder de la perla tragada: Brasa → Cometa | G · cruceta ↓ | botón COMETA (arrastrar apunta) |
 | Pausa y ajustes (ESC cierra antes el diálogo, el panel o el mapa) | ESC / Start | botón ⚙ |
 | Rendimiento | F3 | — |
 | Panel de pruebas (tuning en vivo, spawns, modo dios, cambiar de arma, hitboxes) | F4 | — |
@@ -98,8 +99,21 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
 | M4.6 | «Tinta»: el móvil siempre en horizontal (el juego se dibuja girado si el teléfono está de pie), botones táctiles de cristal por colores en arco, y el pase de cómic: contornos de tinta con peso, sombras duras teñidas con trama, superficies pintadas → `PLAN-M4.6.md` | ✅ |
 | M4.7 | «Tatuajes»: Q / E libres (artes del arma o tatuajes), tres tatuajes con rangos y formas (Tromba, Abordaje, Timón), apuntado tipo MOBA, Doña Sepia y la pestaña Tatuajes; el cómic Ultra para GPU potentes → `PLAN-M4.7.md` | ✅ |
-| M4.8 | «Perlas negras»: un tercer hueco y un elemento en cada golpe → `PLAN-M4.8.md` | diseño |
+| M4.8 | «Perlas negras»: Brasa, poder G, quemadura, maldición y circulación → `PLAN-M4.8.md`; faltan las otras tres perlas | en curso |
 | M5–M8 | La estructura: mundo persistente (Supabase), «La Balsa», comercio entre pueblos, construcción → `PLAN-M5.md` … `PLAN-M8.md`, `docs/HANDOFF.md` | núcleo en parte |
+
+### Primera entrega de M4.8 — Brasa (`0.4.8-alpha.1`)
+
+- Las perlas raras salen de élites, HELLFIRE y cofres de Marea. Recogerlas las guarda sin tragar en **Perlas (P)**;
+  puedes tragarlas, entregarlas a un pirata cercano, dejarlas en el suelo o venderlas junto a Tía Perla.
+- Brasa da **Cometa (G)**: una embestida de fuego que despeja balas parreables y deja suelo ardiente. Tus golpes
+  queman durante 3 s; el agua te quita ~4 % de vida máxima por segundo. El panel explica el poder y la maldición.
+- Al morir caen **todas** tus perlas, incluso fuera de la Cala, con un pilar naranja. Cualquiera puede recogerlas;
+  después de 90 s sin recoger vuelven a una playa. Cambiar la tragada requiere confirmación y calma.
+- Para probar sin esperar botín: en solo, **F4 → + Perla de Brasa → P → Tragar**; cierra el panel y espera 4 s antes de G.
+- **M4.8 sigue en curso:** Escarcha, Tormenta y Tinta están pendientes, junto con el pulido y balance final.
+  El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
+  tras reinicios corresponde a M5. Protocolo **8**: cliente y servidor en línea deben actualizarse juntos.
 
 ### Qué incluye M1
 

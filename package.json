@@ -1,6 +1,6 @@
 {
   "name": "marea-negra",
-  "version": "0.4.7",
+  "version": "0.4.8-alpha.1",
   "private": true,
   "description": "Isometric action-RPG (Three.js) — vertical slice 1: tropical island + La Caldera arena. MMO-ready architecture.",
   "type": "module",

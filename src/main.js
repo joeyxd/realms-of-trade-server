@@ -173,6 +173,7 @@ async function boot() {
   };
   const charPanel = new CharPanel($('#charpanel'), {
     send: sendCmd, profile: () => client && client.profile, stats: playerStats,
+    nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
   });
@@ -184,6 +185,7 @@ async function boot() {
   input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
   input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
   input.onHotkey('KeyT', panelKey(() => charPanel.toggle('tattoo'))); // M4.7: your tattoos and the Q / E loadout
+  input.onHotkey('KeyP', panelKey(() => charPanel.toggle('pearl')));
   input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
@@ -630,12 +632,12 @@ async function boot() {
   // The slot keys go through the aim controller: an area (Tromba, Abordaje, the pistols' Lluvia) shows its marker
   // while the key is held and goes out on release at the marked point; the Timón holds its bit while charging.
   const aimCtl = new AimCast();
-  const slotIn = { down: { q: false, e: false, r: false }, up: { q: false, e: false, r: false }, held: { q: false, e: false, r: false }, cancel: false, kinds: { q: 'dir', e: 'dir', r: 'self' }, mode: 'indicator' };
-  const slotD = { q: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, e: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, r: { id: '', kind: 'self', S: null, range: 0, min: 0, r: 0 } };
+  const slotIn = { down: { q: false, e: false, r: false, g: false }, up: { q: false, e: false, r: false, g: false }, held: { q: false, e: false, r: false, g: false }, cancel: false, kinds: { q: 'dir', e: 'dir', r: 'self', g: 'dir' }, mode: 'indicator' };
+  const slotD = { q: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, e: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, r: { id: '', kind: 'self', S: null, range: 0, min: 0, r: 0 }, g: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 } };
   // What each slot holds right now (from the predicted pirate): id, how it is cast, its numbers in the form in use.
   function readSlots() {
     const ecs = client.pred.ecs, e = client.youLocal;
-    for (const s of ['q', 'e']) {
+    for (const s of ['q', 'e', 'g']) {
       const d = slotD[s], S = skillNum(ecs, e, s);
       d.id = skillOf(ecs, e, s); d.kind = castKind(d.id); d.S = S;
       d.range = S.range || 0; d.min = S.min || 0; d.r = d.id === 'leap' && S.blink ? 0.7 : S.r || 0;
@@ -645,7 +647,7 @@ async function boot() {
     // The rain aims like an area only when the meter is full (otherwise the press just says why it cannot).
     R.kind = rid === 'rain' && ps.riposte >= tuning.parry.riposte.max ? 'ground' : 'self';
     R.range = rid === 'rain' ? SKILLS.rain.range : 0; R.min = 0; R.r = rid === 'rain' ? rainR(ecs, e) : 0;
-    for (const s of ['q', 'e', 'r']) slotIn.kinds[s] = slotD[s].kind;
+    for (const s of ['q', 'e', 'r', 'g']) slotIn.kinds[s] = slotD[s].kind;
     return slotD;
   }
   // The nearest enemy's feet within `range` (+ a little), or null.
@@ -964,10 +966,12 @@ async function boot() {
         const sd = readSlots(), cdQ = (sd.q.S.cd || 1) * (1 - (ps.cdr || 0)), cdE = (sd.e.S.cd || 1) * (1 - (ps.cdr || 0));
         hud.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
         hud.setSlots({ id: sd.q.id, form: ps.fmQ | 0, rank: ps.rkQ | 0 }, { id: sd.e.id, form: ps.fmE | 0, rank: ps.rkE | 0 });
-        hud.setCooldowns(ps.cdQ, cdQ, ps.cdE, cdE);
+        hud.setPearl(sd.g.id);
+        hud.setCooldowns(ps.cdQ, cdQ, ps.cdE, cdE, ps.cdG, (sd.g.S.cd || 0) * (1 - (ps.cdr || 0)));
         if (isTouch) {
           touch.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
           touch.setSlots(sd.q.id, sd.e.id, ps.fmQ | 0, ps.fmE | 0);
+          touch.setPearl(sd.g.id, ps.cdG / ((sd.g.S.cd || 1) * (1 - (ps.cdr || 0))));
           touch.kinds = slotIn.kinds;
           touch.setCooldowns(ps.cdQ / cdQ, ps.cdE / cdE, ps.riposte >= tuning.parry.riposte.max);
         }

@@ -19,6 +19,7 @@ import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
 import { stepInfighting } from './systems/lawless.js';
 import { LAWLESS } from '../data/lawless.js';
+import { burnOnHit, stepBurns } from './systems/pearlcombat.js';
 
 const D2R = Math.PI / 180;
 
@@ -45,7 +46,10 @@ export class World {
     this.tmpLag = { x: 0, z: 0 };
   }
 
-  emit(ev) { this.events.push(ev); }
+  emit(ev) {
+    if (ev.elem === undefined && ev.e && this.ecs.elem[ev.e]) ev.elem = this.ecs.elem[ev.e];
+    this.events.push(ev);
+  }
 
   // ---- Spawning ---------------------------------------------------------------------------------------
   spawnPlayer({ name = 'Grumete', skin = 0, level = 1, x, z, clientId = -1, bot = false, facing = 0, weapon = 0 }) {
@@ -133,6 +137,7 @@ export class World {
   }
 
   despawn(e) {
+    this.burns?.delete(e);
     this.ecs.destroy(e);
     this.phist.delete(e);
     this.events.push({ type: 'despawn', id: e });
@@ -359,6 +364,7 @@ export class World {
     const n = this.events.length;
     const dmg = this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
     if (opts.elem) for (let i = n; i < this.events.length; i++) { const ev = this.events[i]; if (ev.type === 'damage' || ev.type === 'hurt') ev.elem = opts.elem; }
+    if (dmg > 0 && opts.elem === 1 && !opts.noElement) burnOnHit(this, o, opts.by);
     return dmg;
   }
 
@@ -590,6 +596,7 @@ export class World {
       else if (m & C.ENEMY) stepEnemy(this, e, DT);
     }
     if (this.isServer) {
+      stepBurns(this);
       this.stepShots(DT);
       stepInfighting(this);
       if (this.drops) stepDrops(this);
@@ -646,7 +653,7 @@ export class World {
     const d = { id: e, kind: ecs.kind[e], name: ecs.names[e], title: ecs.titles[e], skin: ecs.skin[e], level: ecs.level[e] };
     if (ecs.mask[e] & C.ENEMY) { d.enemy = ecs.enemy[e]; d.maxHp = ecs.maxHp[e]; }
     if (ecs.mask[e] & C.HEALTH) d.team = ecs.team[e];
-    if (ecs.mask[e] & C.PLAYER) { d.weapon = ecs.weapon[e]; if (ecs.clientId[e] >= 0 && !(ecs.mask[e] & C.BOT)) d.human = 1; }
+    if (ecs.mask[e] & C.PLAYER) { d.weapon = ecs.weapon[e]; d.elem = ecs.elem[e]; if (ecs.clientId[e] >= 0 && !(ecs.mask[e] & C.BOT)) d.human = 1; }
     return d;
   }
 

@@ -32,11 +32,12 @@ export class Feedback {
     };
   }
 
-  get accent() { return SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  get accent() { return this.ps.elem === 1 ? 0xff793b : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
   // A player's accent color (yours, or another player's by their look).
   colorOf(e) {
     if (e === this.client.youServer) return this.accent;
     const rec = this.client.entities.get(e);
+    if (rec?.r?.elem === 1) return 0xff793b;
     return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
   }
   me() { return this.world.views.get(this.client.youServer); }
@@ -127,7 +128,7 @@ export class Feedback {
         if (v) { v.flash(0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, 8, CYAN, CYAN1);
+          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : CYAN, ev.elem === 1 ? AMBER1 : CYAN1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;
@@ -290,6 +291,7 @@ export class Feedback {
         const v = me ? this.me() : this.viewOf(ev.e), vol = me ? 1 : this.vol(ev.x, ev.z);
         if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e), [0.08, 0.13, 0.18], 0.24);
         if (ev.skill === 'lunge') sfx.lunge(vol);
+        else if (ev.skill === 'comet') { sfx.lunge(vol); if (v) W.after.dash(v, 0xff793b, [0.08, 0.13, 0.18], 0.3); }
         else if (ev.skill === 'tromba') sfx.trombaCall(vol);
         else if (ev.skill === 'leap' && ev.air) {
           // Abordaje: the shadow grows on the landing point while the body flies (characters.js lifts it).
@@ -297,17 +299,27 @@ export class Feedback {
           W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e));
           sfx.leap(vol);
         }
-        if (me) this.hud.pulse(skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        if (me) this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
         break;
       }
       // ---- tattoos (M4.7) ----
+      case 'cometTrail': {
+        W.effects.cometTrail(ev.x0, ev.z0, ev.x1, ev.z1);
+        break;
+      }
+      case 'burn': {
+        const v = this.viewOf(ev.id);
+        if (v) v.flash(0xff793b, 0.35);
+        this.sparks(ev.x, this.y(ev.x, ev.z) + 0.9, ev.z, 3, AMBER, AMBER1, { gravity: -1, life: 0.6 });
+        break;
+      }
       case 'tromba': // a column on its way: everyone sees where (the ring closes until it lands)
         W.indicators.tromba(ev.id * 2 + (ev.n | 0), ev.x, ev.z, ev.r, Math.min(this.viewTick ?? ev.tick, ev.tick - 1), ev.tick, me);
         break;
       case 'trombaHit': {
         const twin = ev.n === 1, vol = me ? 1 : this.vol(ev.x, ev.z);
-        W.skillFx.spout(ev.x, ev.z, ev.r, twin);
-        if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger);
+        W.skillFx.spout(ev.x, ev.z, ev.r, twin, ev.elem === 1);
+        if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger, ev.elem === 1);
         sfx.waterSpout(vol);
         if (me) {
           this.shake(0.22);

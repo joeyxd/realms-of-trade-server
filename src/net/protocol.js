@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 7; // M4: hello.save, BTN.POTION, profiles, saves, private events · M4.5: public loot, friendly fire · M4.7: slot / element columns in `you`, loadout / form / learn (6), the tattoos' state in `you` and held Q / E in btn (7)
+export const PROTOCOL_VERSION = 8; // M4.8: pearl profiles/events, G input and predicted state, remote element.
 
 export const MSG = {
   // client -> server
@@ -31,7 +31,7 @@ export const MSG = {
 };
 
 // Snapshot entity tuple layout.
-export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17 };
+export const ENT = { ID: 0, KIND: 1, X: 2, Y: 3, Z: 4, F: 5, VX: 6, VZ: 7, ST: 8, MAG: 9, WADE: 10, DASHES: 11, HP: 12, MAXHP: 13, ACT: 14, ACTT: 15, LVL: 16, WPN: 17, ELEM: 18 };
 
 // Remote entities are only interpolated, so their floats travel rounded (≈ 45 % fewer characters before the
 // socket compresses them): positions and facing to 1/1000, velocities and blends to 1/100. Your own
@@ -41,7 +41,7 @@ const q2 = (v) => Math.round(v * 100) / 100;
 export function encodeEntity(ecs, e) {
   return [
     e, ecs.kind[e], q3(ecs.x[e]), q3(ecs.y[e]), q3(ecs.z[e]), q3(ecs.facing[e]), q2(ecs.vx[e]), q2(ecs.vz[e]), ecs.state[e], q2(ecs.moveMag[e]), q2(ecs.wade[e]), ecs.dashCount[e],
-    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], q3(ecs.actT[e]), ecs.level[e], ecs.weapon[e],
+    Math.ceil(ecs.hp[e]), ecs.maxHp[e], ecs.act[e], q3(ecs.actT[e]), ecs.level[e], ecs.weapon[e], ecs.elem[e],
   ];
 }
 
@@ -66,7 +66,7 @@ export function sanitizeCmd(c) {
     ax: n(c.ax),
     az: n(c.az),
     btn: n(c.btn) & 0x3ff, // held bits: + BTN.Q / BTN.E held (a charge, M4.7)
-    prs: n(c.prs) & 0x1ff, // + BTN.POTION (M4)
+    prs: n(c.prs) & 0x3ff, // + BTN.G (M4.8)
     pt: n(c.pt) >>> 0,
     w: n(c.w) & 0x0f,
   };

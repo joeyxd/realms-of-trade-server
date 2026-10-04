@@ -429,6 +429,9 @@ body.touch .actionbar { display: none; }
 #touch .t-q { --c: 176 112 255; --d: 58; --x: -172; --y: -34; }
 #touch .t-e { --c: 176 112 255; --d: 58; --x: -124; --y: -124; }
 #touch .t-r { --c: 255 204 64; --d: 54; --x: -34; --y: -172; }
+#touch .t-g { --c: 255 121 59; --d: 54; --x: -208; --y: -138; }
+.slot[data-slot='g'] { border-color: #ff793b; }
+.slot[data-slot='g'].empty { opacity: 0.5; }
 #touch .t-pot { --c: 255 84 128; --d: 48; --x: -262; --y: 14; padding: 0; }
 #touch .t-act { --c: 255 172 40; --d: 64; --x: -118; --y: -232; }
 #touch .t-parry .lbl, #touch .t-r .lbl { font-size: calc(9.5px * var(--tb)); }

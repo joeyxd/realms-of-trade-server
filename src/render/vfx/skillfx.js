@@ -220,14 +220,16 @@ export class SkillFx {
 
   // ---- Tromba ----------------------------------------------------------------------------------------------
   // A column lands at (x, z) of radius r. twin: the Gemelas' second (a little thinner).
-  spout(x, z, r, twin = false) {
+  spout(x, z, r, twin = false, fire = false) {
     const s = this.spouts.find((q) => q.t < 0) || this.spouts.reduce((a, b) => (a.t > b.t ? a : b));
     Object.assign(s, { t: 0, r: r * (twin ? 0.46 : 0.55), h: 4.2 + r * 0.4, x, z, drops: 0 });
     s.m.position.set(x, this.map.groundAt(x, z) - 0.05, z);
     s.m.visible = true;
+    s.mat.uniforms.uDeep.value.set(fire ? 0xc22d0b : DEEP);
+    s.mat.uniforms.uFoam.value.set(fire ? 0xffbf64 : FOAM);
     const E = this.effects, y = this.map.groundAt(x, z);
     // The foot: foam ring, splash ring, droplets thrown out, a burst of spray.
-    this.combatFx.ring(x, y + 0.1, z, r * 1.1, 0xbff6ff, 0.45, 0.18, 0.9);
+    this.combatFx.ring(x, y + 0.1, z, r * 1.1, fire ? 0xff793b : 0xbff6ff, 0.45, 0.18, 0.9);
     this.combatFx.ring(x, y + 0.12, z, r * 0.55, 0xffffff, 0.3, 0.1, 0.8);
     for (let i = 0; i < 26; i++) {
       const a = Math.random() * Math.PI * 2, s2 = 2 + Math.random() * 4.5;
@@ -242,11 +244,13 @@ export class SkillFx {
   }
 
   // «Ojo de tormenta»: the whirlpool at (x, z) until vortexEnd (or `life` s).
-  vortex(id, x, z, r, life) {
+  vortex(id, x, z, r, life, fire = false) {
     const v = this.vortices.find((q) => !q.live) || this.vortices[0];
     Object.assign(v, { live: true, id, x, z, r, t: 0, life, end: -1 });
     this.lay(v, x, z, r);
     v.mat.uniforms.uFade.value = 0;
+    v.mat.uniforms.uDeep.value.set(fire ? 0xc22d0b : DEEP);
+    v.mat.uniforms.uFoam.value.set(fire ? 0xffbf64 : FOAM);
     v.m.visible = true;
   }
   vortexEnd(id) { for (const v of this.vortices) if (v.live && v.id === id && v.end < 0) v.end = 0; }

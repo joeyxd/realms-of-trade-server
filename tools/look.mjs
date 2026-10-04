@@ -2,13 +2,14 @@
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
 //      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo,
-//      sepia),
+//      sepia, pearl),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
+//      MN_PLAYWRIGHT / MN_BROWSER (installed module / browser paths), MN_THREE / MN_GSAP (package directories).
 // Example: OUT=shots/look Q=ultra SCEN=village,impact node tools/look.mjs
-import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
+import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath, pathToFileURL } from 'node:url';
 let chromium;
-try { ({ chromium } = await import('playwright')); }
+try { ({ chromium } = await import(process.env.MN_PLAYWRIGHT ? pathToFileURL(process.env.MN_PLAYWRIGHT).href : 'playwright')); }
 catch { ({ chromium } = await import('/opt/node22/lib/node_modules/playwright/index.mjs')); }
 const root = process.env.ROOT || path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.OUT || '.'; fs.mkdirSync(OUT, { recursive: true });
@@ -22,16 +23,18 @@ const server = http.createServer((req, res) => {
 });
 await new Promise((r) => server.listen(0, r));
 const port = server.address().port;
-const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ ...(process.env.MN_BROWSER ? { executablePath: process.env.MN_BROWSER } : {}), args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 const W = +(process.env.VW || 1280), H = +(process.env.VH || 720);
 const phone = !!process.env.PHONE;
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: +(process.env.DPR || 1), ...(phone ? { isMobile: true, hasTouch: true } : {}) });
 const page = await ctx.newPage();
 const libs = process.env.MN_LIBS;
 const local = { 'three@0.160.0': 'three-0.160.0/package', 'gsap@3.12.5': 'gsap-3.12.5/package' };
-if (libs) await page.route(/https:\/\/(cdn\.jsdelivr\.net\/npm|unpkg\.com)\/(three@0\.160\.0|gsap@3\.12\.5)\/(.*)/, (route) => {
+if (libs || process.env.MN_THREE) await page.route(/https:\/\/(cdn\.jsdelivr\.net\/npm|unpkg\.com)\/(three@0\.160\.0|gsap@3\.12\.5)\/(.*)/, (route) => {
   const m = route.request().url().match(/(three@0\.160\.0|gsap@3\.12\.5)\/([^?#]*)/);
-  const f = path.join(libs, local[m[1]], m[2]);
+  const packageDir = m[1] === 'three@0.160.0' ? process.env.MN_THREE : process.env.MN_GSAP;
+  if (!packageDir && !libs) return route.continue();
+  const f = packageDir ? path.join(packageDir, m[2]) : path.join(libs, local[m[1]], m[2]);
   if (!fs.existsSync(f)) return route.fulfill({ status: 404, body: '' });
   route.fulfill({ status: 200, headers: { 'content-type': 'text/javascript', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) });
 });
@@ -59,6 +62,51 @@ const L = await page.evaluate(() => {
 const tp = async (name, x, z, extra, ms = 5000) => { await page.evaluate(([x, z]) => window.__mn.teleport(x, z), [x, z]); await wait(ms); if (extra) await extra(); await shot(name); };
 const scen = (process.env.SCEN || 'spawn,village,fight,cala,caldera').split(',');
 for (const s of scen) {
+  if (s === 'pearl') {
+    await tp('40-pearl-before', L.spawn.x, L.spawn.z);
+    await dev({ op: 'pearl', kind: 'brasa' });
+    await wait(1800); await page.keyboard.press('KeyP'); await wait(1000); await shot('41-pearl-bag');
+    if (phone) { await page.locator('[data-pearl-op="swallow"]').scrollIntoViewIfNeeded(); await shot('41b-pearl-actions'); }
+    await page.click('[data-pearl-op="swallow"]');
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.swallowed, null, { timeout: 15000 });
+    await shot('42-pearl-swallowed');
+    await page.keyboard.press('Escape'); await wait(4700);
+    await page.evaluate(() => {
+      const m = window.__mn, emit = m.client.bus.emit.bind(m.client.bus), update = m.world.effects.update.bind(m.world.effects);
+      window.__pearlRestore = () => { m.client.bus.emit = emit; m.world.effects.update = update; };
+      m.client.bus.emit = (type, ev) => {
+        emit(type, ev);
+        if (type === 'combat' && ev.type === 'cometTrail') {
+          // Publish the newly spawned particles once, then hold their age while continuing GPU uploads.
+          for (const pool of [m.world.effects.streaks, m.world.effects.alpha, m.world.effects.add])
+            for (let i = 0; i < pool.cap; i++) if (pool.alive[i] && pool.life[i] === 0) pool.life[i] = 0.2;
+          update(0, m.world.effects.focus);
+          m.world.effects.update = (_dt, focus) => update(0, focus);
+        }
+      };
+    });
+    if (phone) await page.locator('.t-g').tap();
+    else await page.keyboard.press('KeyG');
+    await page.waitForFunction(() => window.__mn.ps.cdG > 5, null, { timeout: 15000 });
+    await wait(1200); await shot('43-comet');
+    await page.evaluate(() => window.__pearlRestore());
+    console.log('pearl', JSON.stringify(await page.evaluate(() => ({ profile: window.__mn.client.profile.pearls, skill: window.__mn.ps.skG, cd: window.__mn.ps.cdG, elem: window.__mn.ps.elem, errors: window.__mn.errors }))));
+    await page.keyboard.press('KeyP'); await wait(900); await page.click('[data-pearl-op="spit"]');
+    await page.waitForFunction(() => !window.__mn.client.profile?.pearls?.swallowed, null, { timeout: 15000 });
+    await page.keyboard.press('Escape'); await wait(1200); await shot('44-pearl-ground');
+    // Test the replacement confirmation through the actual panel, including an unchanged UID after cancel.
+    await dev({ op: 'pearl', kind: 'brasa' }); await dev({ op: 'pearl', kind: 'brasa' });
+    await wait(1800); await page.keyboard.press('KeyP'); await wait(800);
+    await page.locator('[data-pearl-op="swallow"]').first().click(); await wait(1800);
+    const before = await page.evaluate(() => window.__mn.client.profile.pearls.swallowed.uid);
+    await page.locator('[data-pearl-op="swallow"]').first().click(); await wait(600); await shot('45-pearl-confirm');
+    const confirmation = await page.locator('.pearl-confirm').boundingBox();
+    if (!confirmation || confirmation.y < 0 || confirmation.y + confirmation.height > H) throw new Error('Replacement warning is outside the viewport');
+    await page.click('[data-pearl-op="cancel"]');
+    const after = await page.evaluate(() => window.__mn.client.profile.pearls.swallowed.uid);
+    if (before !== after) throw new Error('Cancelling changed the swallowed pearl');
+    await page.keyboard.press('Escape');
+  }
   if (s === 'spawn') await tp('01-spawn', L.spawn.x, L.spawn.z);
   if (s === 'close') { await page.mouse.move(W / 2, H / 2); await page.mouse.wheel(0, -400); await wait(3000); await tp('01b-close', L.spawn.x, L.spawn.z); await page.mouse.wheel(0, 400); await wait(2000); }
   if (s === 'village') await tp('02-village', L.village.x + 6, L.village.z + 6);

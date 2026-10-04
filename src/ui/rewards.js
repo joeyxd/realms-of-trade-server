@@ -9,6 +9,7 @@ import { LAWLESS } from '../data/lawless.js';
 import { itemName } from '../sim/items.js';
 import { sfx } from '../audio/sfx.js';
 import { TATTOOS, skillId } from '../data/tattoos.js';
+import { PEARLS } from '../data/pearls.js';
 
 // Why a tattoo change was refused (skillDenied, M4.7).
 const DENY = {
@@ -37,6 +38,7 @@ export class Rewards {
   labelFor(d) {
     // Public loot (the Cala Calavera, M4.5): whose it was, if a pirate dropped it.
     const from = d.pub && d.from ? ` <span class="pub">☠ ${d.from === this.myName ? 'tuyo' : esc(d.from)}</span>` : '';
+    if (d.kind === 'pearl') return [esc(PEARLS[d.pearl.kind].name) + from, PEARLS[d.pearl.kind].color, 40, 'pearl'];
     if (d.kind === 'item') return [esc(itemName(d.item)) + from, rarityColor(d.item.r), 16, 'item'];
     if (d.kind === 'gold') return [`${d.n} oro`, '#ffd24a', 9, 'gold'];
     if (d.kind === 'potion') return ['Poción de ron-coco' + from, '#ff8a6a', 10, 'potion'];
@@ -111,6 +113,7 @@ export class Rewards {
   }
 
   handle(ev) {
+    if (ev.type === 'pearlReturn') { this.hud.toast('<b>Una perla negra volvió al mar.</b> Busca su pilar de luz en la playa.', 6000); return; }
     if (ev.pub && !ev.to && (ev.type === 'loot' || ev.type === 'unloot')) { this.handlePublic(ev); return; }
     if (!ev.me) return;
     const H = this.hud;
@@ -136,6 +139,7 @@ export class Rewards {
         if (ev.id) this.dropGone(ev.id, 'pick', this.ps);
         if (ev.kind === 'gold') { sfx.coins(ev.n); this.over(`+${ev.n} oro`, 'gold', { life: 0.9 }); }
         else if (ev.kind === 'potion') { sfx.pickup(0); this.over('+1 poción', 'heal', { life: 0.9 }); }
+        else if (ev.kind === 'pearl') { sfx.pickup(3); H.toast(`<b style="color:${PEARLS[ev.pearl.kind].color}">${PEARLS[ev.pearl.kind].name}</b> en tu bolsa. Abre <b>Perlas (P)</b> para tragarla o entregarla.`, 6000); }
         else if (ev.kind === 'quest') { sfx.pickup(1); this.over(`${esc((QUEST_ITEMS[ev.q] || {}).name || ev.q)} ${ev.have ?? ''}`, 'xp', { life: 1 }); }
         else if (ev.kind === 'item') {
           sfx.pickup(ev.item.r);
@@ -162,6 +166,17 @@ export class Rewards {
         else { sfx.buy(); if (ev.what === 'potion') this.over('+1 poción', 'heal'); }
         break;
       // ---- Tattoos (M4.7) ----
+      case 'pearlDenied': {
+        const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', confirm: 'Confirma qué perla quieres soltar antes de reemplazarla.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', vendor: 'Acércate al puesto de Tía Perla para vender.', unknown: 'Ya no llevas esa perla.' };
+        sfx.denied(); H.toast(`<b>${why[ev.why] || why.unknown}</b>`, 5000); break;
+      }
+      case 'pearlChanged': {
+        if (ev.op === 'swallow') { sfx.mastery(); H.toast('<b>Brasa arde en ti.</b> G: Cometa. Tus golpes queman; cuidado con el agua.', 6200); }
+        else if (ev.op === 'death') H.toast('<b>Tus perlas cayeron al suelo.</b> Vuelve por ellas: cualquiera puede tomarlas.', 6000);
+        else if (ev.op === 'sell') { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold'); }
+        else { sfx.equip(); H.toast(ev.op === 'give' ? '<b>Perla entregada.</b>' : '<b>Perla en el suelo.</b> Cualquiera puede recogerla.', 3600); }
+        break;
+      }
       case 'skillDenied': sfx.denied(); H.toast(`<b>${DENY[ev.why] || DENY.unknown}</b>`, 3000); break;
       case 'learned': {
         const T = TATTOOS[ev.id];
@@ -220,6 +235,7 @@ export class Rewards {
         const now = performance.now();
         if (now - this.lockT < 1200) break;
         this.lockT = now;
+        if (ev.slot === 'g') { sfx.locked(); H.denySlot('g'); H.toast('<b>G necesita una perla tragada.</b> Abre Perlas (P).', 3400); break; }
         const kind = WEAPON_KINDS[this.ps.weapon] || 'sable', W = WEAPONS[kind], id = W[SLOT_SKILL[ev.slot]];
         sfx.locked();
         H.denySlot(ev.slot);

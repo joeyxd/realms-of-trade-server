@@ -9,8 +9,8 @@
 // being held without an up edge (a lost focus) is dropped. Pure logic: no DOM, no three.
 import { BTN } from '../sim/systems/movement.js';
 
-export const AIM_SLOTS = ['q', 'e', 'r'];
-export const SLOT_BIT = { q: BTN.Q, e: BTN.E, r: BTN.R };
+export const AIM_SLOTS = ['q', 'e', 'r', 'g'];
+export const SLOT_BIT = { q: BTN.Q, e: BTN.E, r: BTN.R, g: BTN.G };
 
 export class AimCast {
   constructor() {

@@ -9,6 +9,7 @@ import { applyLevel } from '../sim/systems/combat.js';
 import { setWeapon } from '../sim/systems/skills.js';
 import { WEAPON_KINDS, SKILLS, weaponIndex } from '../data/weapons.js';
 import { World } from '../sim/world.js';
+import { givePearl, swallowPearl, spitPearl, leavePearl, transferPearl, sellPearl } from '../sim/systems/pearls.js';
 import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
@@ -40,7 +41,12 @@ export class LocalServer {
     this.stats = { fill: 0, late: 0, trimmed: 0, clamped: 0 };
     this.freeze = 0; this.slowT = 0; this.slowScale = 1;
     this.world = new World(seed, { server: true });
-    installInventory(this.world); // M4: profiles, personal loot, the bag
+    // A session namespace is generated outside the deterministic simulation. New UIDs cannot collide
+    // with pearls imported from a previous server run; injected test worlds use a seeded namespace.
+    const crypto = globalThis.crypto;
+    const namespace = crypto.randomUUID ? crypto.randomUUID() :
+      Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) => n.toString(16).padStart(8, '0')).join('');
+    installInventory(this.world, namespace);
     installTrade(this.world); // M7: the economy (markets, plots) and the market command
     // Quests (M4): quest items drop only while wanted; picking one up counts.
     this.world.questWants = (e, item) => questWants(this.world, e, item);
@@ -116,8 +122,14 @@ export class LocalServer {
         if (pub.length) this.world.emit({ type: 'loot', to: c.entity, e: c.entity, pub: 1, late: 1, fx: pub[0].x, fz: pub[0].z, drops: pub });
         if (msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
         c.saveAt = this.world.tick + 1;
-        this.flushEvents();
+        // Own spawn must precede welcome (name, skin and weapon); welcome must precede private loot.
+        const birth = this.world.events.findIndex((ev) => ev.type === 'spawn' && ev.id === c.entity);
+        if (birth >= 0) {
+          this.world.events.splice(birth, 1);
+          this.broadcast({ t: MSG.SPAWN, e: this.world.describe(c.entity) });
+        }
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
+        this.flushEvents(); // Private events and already circulating pearls now know who "you" is.
         this.sendProfile(clientId, c);
         break;
       }
@@ -169,6 +181,15 @@ export class LocalServer {
       case 'loadout': setLoadout(w, e, String(msg.slot), String(msg.id)); break;
       case 'form': setForm(w, e, String(msg.id), msg.form); break;
       case 'learn': learnTattoo(w, e, String(msg.id)); break;
+      case 'pearl': {
+        const pearlUid = typeof msg.uid === 'string' ? msg.uid : '';
+        if (msg.op === 'swallow') swallowPearl(w, e, pearlUid, msg.replaceUid);
+        else if (msg.op === 'spit') spitPearl(w, e);
+        else if (msg.op === 'leave') leavePearl(w, e, pearlUid);
+        else if (msg.op === 'give') transferPearl(w, e, pearlUid, msg.target | 0);
+        else if (msg.op === 'sell') sellPearl(w, e, pearlUid);
+        break;
+      }
       // Trade (M7): a town's board, buying and selling goods into your pack.
       case 'market': marketCmd(w, e, msg); break;
       default: break;
@@ -220,6 +241,7 @@ export class LocalServer {
       case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; w.profileDirty.add(e); break;
       case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
       case 'tattoos': devTattoos(w, e, f(msg.rank, 1)); break;
+      case 'pearl': givePearl(w, e, String(msg.kind || 'brasa')); break;
       case 'tattoo': devTattoo(w, e, String(msg.id), f(msg.rank, 1), f(msg.form)); break;
       case 'loadout': devLoadout(w, e, String(msg.slot), String(msg.id)); break;
       case 'tier': { const p = w.profiles.get(e); if (p) { p.flags.tier = p.flags.tierSel = Math.max(1, Math.min(3, f(msg.tier, 1) | 0)); w.profileDirty.add(e); } break; }

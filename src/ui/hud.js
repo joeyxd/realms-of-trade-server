@@ -12,6 +12,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 const SLOT_ICON = { wave: 'crescent' };
 export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const ICONS = {
+  comet: '<svg viewBox="0 0 32 32"><path d="M4 5l12 3L7 2l20 11-8-2 9 9" fill="none" stroke="#ff793b" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="21" r="8" fill="#ff793b" stroke="#1a1033" stroke-width="2"/><circle cx="21" cy="22" r="4" fill="#ffe09b"/></svg>',
   sword: '<svg viewBox="0 0 32 32"><path d="M24 3l5 0 0 5-13 13-3-2-2-3z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8 18l6 6-2 2-2-1-3 3-3-3 3-3-1-2z" fill="#ffc23d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   shield: '<svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8v16M10 14h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/></svg>',
   dash: '<svg viewBox="0 0 32 32"><path d="M6 10h11M3 16h14M6 22h11" stroke="#fff6e2" stroke-width="3" stroke-linecap="round"/><path d="M18 7l10 9-10 9z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
@@ -101,6 +102,7 @@ export class Hud {
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.lunge)}
         ${this.slot('e', 'E', ICONS.crescent)}
+        ${this.slot('g', 'G', ICONS.comet)}
         <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>
         <div class="slot pot-slot" data-slot="pot" title="Poción de ron-coco: cura el 40 % de tu vida"><span class="kbd key">1</span><span class="ico">${ICONS.potion}</span><div class="sweep"></div><b class="cnt">0</b></div>
       </div>
@@ -141,6 +143,7 @@ export class Hud {
     this.comboPips = root.querySelectorAll('[data-slot="lmb"] .combo i');
     this.lmbSlot = root.querySelector('.lmb-slot');
     this.qSlot = root.querySelector('[data-slot="q"]'); this.eSlot = root.querySelector('[data-slot="e"]');
+    this.gSlot = root.querySelector('[data-slot="g"]');
     this.wname = root.querySelector('.actionbar .wname');
     this.chainEl = root.querySelector('#chain');
     this.fallen = root.querySelector('#fallen');
@@ -299,6 +302,16 @@ export class Hud {
   }
 
   // ---- M4: gold, potions, mastery, locks, quests ---------------------------------------------------------
+  setPearl(id) {
+    if (id === this.last.pearl) return;
+    this.last.pearl = id;
+    const S = SKILLS[id] || SKILLS.none, empty = id === 'none';
+    this.gSlot.title = `${S.name}: ${S.hint}`;
+    this.gSlot.classList.toggle('empty', empty);
+    this.gSlot.querySelector('.lock').hidden = !empty;
+    this.gSlot.querySelector('.ico').innerHTML = ICONS.comet;
+  }
+
   setGold(n, tierName = '') {
     if (n !== this.last.gold) {
       if (this.last.gold !== undefined && n > this.last.gold) gsap.fromTo(this.goldEl, { scale: 1.35 }, { scale: 1, duration: 0.4, ease: 'back.out(3)' });
@@ -383,8 +396,8 @@ export class Hud {
   }
 
   // Q / E cooldowns (seconds left, full length): a dark sweep that empties clockwise and the seconds.
-  setCooldowns(q, qMax, e, eMax) {
-    for (const [el, t, max, k] of [[this.qSlot, q, qMax, 'cq'], [this.eSlot, e, eMax, 'ce']]) {
+  setCooldowns(q, qMax, e, eMax, g = 0, gMax = 0) {
+    for (const [el, t, max, k] of [[this.qSlot, q, qMax, 'cq'], [this.eSlot, e, eMax, 'ce'], [this.gSlot, g, gMax, 'cg']]) {
       const f = max > 0 ? Math.max(0, Math.min(1, t / max)) : 0;
       const key = Math.round(f * 60) + ':' + Math.ceil(t);
       if (key === this.last[k]) continue;

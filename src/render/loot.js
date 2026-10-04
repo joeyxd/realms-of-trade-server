@@ -10,6 +10,7 @@ import { worldNormalMat } from './toon.js';
 import { LAYER, FXU, GLSL_FX_DEPTH } from './pipeline.js';
 import { SHAPE } from './vfx/particles.js';
 import { RARITIES, BASES } from '../data/items.js';
+import { PEARLS } from '../data/pearls.js';
 
 const WOOD = 0x8a5a2e, WOOD_D = 0x5e3a1c, BRASS = 0xd9b04a, IRON = 0x4a4d57, SAIL = 0xe8dcc0, CLOTH = 0x6a3d8a;
 const LEATHER = 0x7a4a2a, GOLD = 0xffcf4a, GOLD_D = 0xc8962a, GLASS = 0xb8e0d8, RUM = 0xd8442a, CORAL = 0xff7a8a, STEEL = 0xdfe6ee;
@@ -29,7 +30,12 @@ function geoFor(kind, sub) {
   if (GEO[key]) return GEO[key];
   const L = [];
   let glow = null;
-  if (kind === 'gold') {
+  if (kind === 'pearl') {
+    L.push(part(sphere(0.26, 14, 10), 0x171027, { pos: [0, 0.35, 0] }));
+    L.push(part(torus(0.26, 0.018, 5, 16), 0xff793b, { pos: [0, 0.35, 0], rot: [0.6, 0.2, 0] }));
+    L.push(part(sphere(0.06, 8, 6), 0xffd090, { pos: [-0.08, 0.48, 0.19] }));
+    glow = (x, y, z) => y > 0.42 && z > 0.15 ? 1 : 0.15;
+  } else if (kind === 'gold') {
     for (const [x, y, z] of [[0, 0.03, 0], [0.04, 0.08, 0.02], [-0.02, 0.13, -0.01], [0.16, 0.03, 0.1], [-0.15, 0.03, 0.08]]) L.push(part(cyl(0.11, 0.11, 0.045, 12), GOLD, { pos: [x, y, z] }));
     glow = (x, y) => (y > 0.1 ? 0.6 : 0.3);
   } else if (kind === 'potion') {
@@ -133,6 +139,7 @@ const DISC_GEO = (() => { const g = new THREE.PlaneGeometry(1, 1); g.rotateX(-Ma
 
 // What a drop looks like: its model, its beam (height, width, strength) and its colour.
 function lookOf(d) {
+  if (d.kind === 'pearl') return { geo: geoFor('pearl'), color: PEARLS[d.pearl.kind].color, h: 12, w: 0.22, a: 0.85, r: 3, sparks: true };
   if (d.kind === 'item') {
     const B = BASES[d.item.b], r = d.item.r;
     const sub = B.slot === 'weapon' ? B.weapon : B.slot;

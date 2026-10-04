@@ -8,7 +8,9 @@ import { DT, tuning } from '../../data/tuning.js';
 import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, QUEST_ITEMS, slotFits, RARITIES } from '../../data/items.js';
 import { LOOT, DROPS } from '../../data/loot.js';
 import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
-import { SKILL_IDS, ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
+import { ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
+import { PEARL, newPearls, sanitizePearls } from '../../data/pearls.js';
+import { installPearls, attachPearls, detachPearls, spillPearls, pickPearl, returnPearl, rollPearl, dropPearl } from './pearls.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { mulberry32 } from '../../core/rng.js';
 import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
@@ -31,6 +33,7 @@ export function newProfile({ weapon = 0 } = {}) {
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
     eco: newEco(), // trade (M7): pack, ships, deeds (systems/trade.js)
+    pirateId: '', pearls: newPearls(),
   };
   for (const s of SLOTS) p.eq[s] = null;
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
@@ -69,6 +72,8 @@ export function sanitizeProfile(raw) {
     return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
   });
   p.sk = sanitizeSk(raw.sk, int, num);
+  p.pearls = sanitizePearls(raw.pearls);
+  p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
   p.eco = sanitizeEco(raw.eco);
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
@@ -115,7 +120,7 @@ function sanitizeSk(raw, int, num) {
 const starterItem = (p, kit) => ({ u: p.uid++, b: STARTER[kit] || STARTER.sable, r: 0, l: 1, a: [], s: 1 });
 export const kitOf = (item) => (item && BASES[item.b] && BASES[item.b].weapon) || 'sable';
 
-export function installInventory(world) {
+export function installInventory(world, pearlNamespace) {
   world.profiles = new Map();
   world.drops = new Map();
   world.nextDrop = 1;
@@ -123,7 +128,8 @@ export function installInventory(world) {
   world.lootRng = mulberry32((world.seed ^ 0x10075ed) >>> 0);
   world.onXp = (e, n) => { masteryXp(world, e, n); tattooXp(world, e, n); };
   world.onRack = (e, w) => rackWeapon(world, e, WEAPON_KINDS[w]);
-  world.onDeath = (e, by) => spillOnDeath(world, e, by);
+  installPearls(world, pearlNamespace);
+  world.onDeath = (e, by) => { spillPearls(world, e); spillOnDeath(world, e, by); };
   return world;
 }
 
@@ -134,6 +140,7 @@ const profileOf = (world, e) => (world.profiles ? world.profiles.get(e) : null);
 export function attachProfile(world, e, p) {
   const ecs = world.ecs;
   world.profiles.set(e, p);
+  attachPearls(world, e, p);
   ecs.level[e] = Math.max(1, p.lvl | 0);
   ecs.xp[e] = p.xp;
   ecs.potions[e] = p.pot;
@@ -160,6 +167,7 @@ export function syncProfile(world, e) {
 // The player leaves: its drops go with it. Returns the final profile.
 export function detachProfile(world, e) {
   const p = syncProfile(world, e);
+  detachPearls(world, e);
   if (world.profiles) world.profiles.delete(e);
   if (world.drops) for (const [id, d] of world.drops) if (d.to === e) world.drops.delete(id);
   if (world.profileDirty) world.profileDirty.delete(e);
@@ -228,7 +236,7 @@ function putInSlot(world, e, si, id, cd) {
 // {type: 'loadout', slot, id}: the skill in a slot of the weapon you carry.
 export function setLoadout(world, e, slot, id) {
   const p = profileOf(world, e), si = SKILL_SLOTS.indexOf(slot);
-  if (!p || si < 0 || !SKILL_IDS.includes(id)) return denied(world, e, 'unknown');
+  if (!p || si < 0 || (!isArt(id) && !isTattoo(id))) return denied(world, e, 'unknown');
   if (isArt(id) && ARTS[id].weapon !== WEAPON_KINDS[world.ecs.weapon[e] | 0]) return denied(world, e, 'weapon');
   if (isTattoo(id) && !skOf(p).has[id]) return denied(world, e, 'unknown');
   const why = calmDenial(world, e);
@@ -311,7 +319,7 @@ export function devTattoo(world, e, id, rank = 1, form = 0) {
 }
 export function devLoadout(world, e, slot, id) {
   const si = SKILL_SLOTS.indexOf(slot);
-  if (!profileOf(world, e) || si < 0 || !SKILL_IDS.includes(id)) return false;
+  if (!profileOf(world, e) || si < 0 || (!isArt(id) && !isTattoo(id))) return false;
   return putInSlot(world, e, si, id, false);
 }
 
@@ -337,6 +345,7 @@ export const dropView = (d) => {
   if (d.item) v.item = d.item;
   if (d.n) v.n = d.n;
   if (d.q) v.q = d.q;
+  if (d.pearl) v.pearl = d.pearl;
   if (!d.to) { v.pub = 1; if (d.fromName) v.from = d.fromName; }
   return v;
 };
@@ -382,6 +391,12 @@ export function lootOnKill(world, enemy, by, players) {
     if (pl === by && ecs.onKill[pl] > 0 && ecs.dead[pl] <= 0) ecs.hp[pl] = Math.min(ecs.maxHp[pl], ecs.hp[pl] + ecs.onKill[pl]);
   }
   announcePublic(world, shared, x, z);
+  // One public pearl roll per elite/boss, independent of crew size or the personal loot rolls.
+  if (roller && (def.boss || kind === 'sentinel' || def.renegade)) {
+    const tide = world.encounters.find((q) => q.id === ecs.brain[enemy]?.enc)?.tier || 1;
+    const pearl = rollPearl(world, def.boss ? PEARL.bossChance : PEARL.eliteChance, tide);
+    if (pearl) dropPearl(world, pearl, x, z);
+  }
 }
 
 // A pirate fell inside the Cala Calavera (M4.5): everything they wear (a starter weapon aside) and carry, and
@@ -428,7 +443,7 @@ export function bossChests(world, enc, crew) {
     contents.push({ kind: 'gold', n: Math.round((Cc.gold[0] + Math.floor(rng() * (Cc.gold[1] - Cc.gold[0] + 1))) * ecs.goldMul[pl] * tier.gold) });
     for (let k = 0; k < Cc.potions; k++) contents.push({ kind: 'potion' });
     const a = (i / Math.max(1, mine.length)) * Math.PI * 2 + 0.6, x = enc.cx + Math.sin(a) * 2.2, z = enc.cz + Math.cos(a) * 2.2;
-    const d = { id: world.nextDrop++, to: pl, kind: 'chest', x, z, t: world.tick + Math.round(DROPS.life * 2 / DT), contents, rarity: r };
+    const d = { id: world.nextDrop++, to: pl, kind: 'chest', x, z, t: world.tick + Math.round(DROPS.life * 2 / DT), contents, rarity: r, tide: enc.tier || 1 };
     world.drops.set(d.id, d);
     world.emit({ type: 'loot', to: pl, e: pl, fx: x, fz: z, drops: [{ id: d.id, kind: 'chest', x, z, r }] });
     p.stats.wins++;
@@ -445,6 +460,8 @@ export function openChest(world, e, id) {
   world.emit({ type: 'unloot', to: e, e, ids: [id], why: 'open' });
   const list = [];
   for (const c of d.contents) addDrop(world, e, c.kind, d.x, d.z, c.item ? { item: c.item } : c.n ? { n: c.n } : {}, list);
+  const pearl = rollPearl(world, PEARL.chestChance, d.tide || 1);
+  if (pearl) dropPearl(world, pearl, d.x, d.z);
   world.emit({ type: 'chest', to: e, e, id, x: d.x, z: d.z, r: d.rarity });
   announce(world, e, list, d.x, d.z);
   return true;
@@ -457,6 +474,7 @@ export function stepDrops(world) {
   for (const [id, d] of world.drops) {
     if (d.to && (!ecs.alive[d.to] || !(ecs.mask[d.to] & C.PLAYER))) { world.drops.delete(id); continue; }
     if (world.tick > d.t) {
+      if (d.kind === 'pearl') { returnPearl(world, d); continue; }
       world.drops.delete(id);
       if (d.to) (gone.get(d.to) || gone.set(d.to, []).get(d.to)).push(id); else pubGone.push(id);
       continue;
@@ -478,6 +496,7 @@ export function stepDrops(world) {
 
 // e takes drop d (its owner, or anyone for a public one). False when it cannot carry it (and is told once).
 function pickUp(world, d, e) {
+  if (d.kind === 'pearl') return pickPearl(world, d, e);
   const ecs = world.ecs, p = profileOf(world, e);
   if (!p) return false;
   const full = (what) => {

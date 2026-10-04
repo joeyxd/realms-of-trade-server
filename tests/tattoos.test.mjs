@@ -54,9 +54,9 @@ function server(saves) {
 }
 
 test('tattoo data: a fixed skill order, the arts of each weapon, three tattoos with a base and two ranked forms', () => {
-  assert.deepEqual(SKILL_IDS, ['lunge', 'wave', 'blast', 'blink', 'tromba', 'leap', 'wheel']);
+  assert.deepEqual(SKILL_IDS.slice(0, 7), ['lunge', 'wave', 'blast', 'blink', 'tromba', 'leap', 'wheel'], 'existing skill indices stay stable');
   SKILL_IDS.forEach((id, i) => { assert.equal(skillIndex(id), i); assert.equal(skillId(i), id); });
-  assert.deepEqual([...Object.keys(ARTS), ...Object.keys(TATTOOS)], SKILL_IDS, 'every id is an art or a tattoo');
+  assert.deepEqual([...Object.keys(ARTS), ...Object.keys(TATTOOS)], SKILL_IDS.slice(0, 7), 'the first seven ids are arts/tattoos; pearl skills follow');
   assert.deepEqual(Object.entries(ARTS).map(([id, a]) => [id, a.weapon, a.mastery]),
     [['lunge', 'sable', 1], ['wave', 'sable', 2], ['blast', 'pistolas', 1], ['blink', 'pistolas', 2]]);
   for (const k of WEAPON_KINDS) {
@@ -66,7 +66,7 @@ test('tattoo data: a fixed skill order, the arts of each weapon, three tattoos w
     assert.equal(ARTS[DEFAULT_LOADOUT[k][0]].mastery, MASTERY.unlock.q);
     assert.equal(ARTS[DEFAULT_LOADOUT[k][1]].mastery, MASTERY.unlock.e);
   }
-  assert.deepEqual(SKILL_IDS.map(castKind), ['dir', 'dir', 'dir', 'self', 'ground', 'ground', 'charge']);
+  assert.deepEqual(SKILL_IDS.slice(0, 7).map(castKind), ['dir', 'dir', 'dir', 'self', 'ground', 'ground', 'charge']);
   assert.deepEqual(Object.values(TATTOOS).map((t) => t.name), ['Tromba', 'Abordaje', 'Timón']);
   for (const t of Object.values(TATTOOS)) {
     assert.equal(t.forms.length, 3);
@@ -82,7 +82,7 @@ test('tattoo data: a fixed skill order, the arts of each weapon, three tattoos w
 
 test('the slot columns exist, are predicted (PLAYER_FIELDS) and a new entity holds the cutlass kit; elem is one of them', () => {
   const ecs = new ECS(8);
-  assert.deepEqual(SLOTS, ['q', 'e']);
+  assert.deepEqual(SLOTS, ['q', 'e', 'g']);
   for (const slot of SLOTS) {
     for (const col of Object.values(SLOT_COLS[slot])) {
       assert.ok(ecs[col] instanceof Float64Array, col);

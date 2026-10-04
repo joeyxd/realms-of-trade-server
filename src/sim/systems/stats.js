@@ -5,7 +5,8 @@
 import { tuning } from '../../data/tuning.js';
 import { STATS, SLOTS } from '../../data/items.js';
 import { MASTERY, WEAPON_KINDS } from '../../data/weapons.js';
-import { ARTS, DEFAULT_LOADOUT, SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
+import { ARTS, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
+import { PEARLS } from '../../data/pearls.js';
 import { itemStats, emptyStats } from '../items.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -25,6 +26,7 @@ export const masteryXpToNext = (lvl) => MASTERY.xp[Math.min(MASTERY.xp.length - 
 // May e use this slot ('q' | 'e' | 'r') yet? (0 = unmanaged: always.) Q / E hold an art (it needs its mastery on the
 // weapon e carries) or a tattoo (always open); R is the weapon's and opens at MASTERY.unlock.r.
 export function kitUnlocked(ecs, e, slot) {
+  if (slot === 'g') return ecs.elem[e] > 0;
   const m = masteryOf(ecs, e);
   if (SLOT_COLS[slot]) {
     const id = slotSkill(ecs, e, slot);
@@ -92,7 +94,9 @@ export function refreshStats(world, e) {
   ecs.goldMul[e] = 1 + g.gold;
   ecs.onKill[e] = g.kill;
   applyLoadout(world, e);
-  ecs.elem[e] = 0; // M4.8: a black pearl's element goes here
+  const pearl = prof?.pearls?.swallowed, power = pearl && PEARLS[pearl.kind];
+  ecs.elem[e] = power?.elem || 0;
+  ecs.skG[e] = skillIndex(power?.skill || 'none'); ecs.fmG[e] = 0; ecs.rkG[e] = 1;
 }
 
 export const guardMax = (ecs, e) => tuning.guard.stamina + ecs.guardAdd[e];

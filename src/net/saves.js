@@ -9,7 +9,7 @@ export const MAX_SAVE = 32 * 1024; // characters of a blob in a hello
 // a level, a mastery, a quest), and every `every` s anyway if anything differs (XP, potions, checkpoint).
 export const SAVE_TIMING = { after: 3, every: 10 };
 // Private events after which the player's save goes out at once.
-export const SAVE_NOW = new Set(['pickup', 'mastery', 'chest', 'gear', 'sold', 'quest', 'bought', 'spill', 'learned', 'tattooRank', 'traded']);
+export const SAVE_NOW = new Set(['pickup', 'mastery', 'chest', 'gear', 'sold', 'quest', 'bought', 'spill', 'learned', 'tattooRank', 'traded', 'pearlChanged', 'pearlDenied']);
 
 // load(blob) → profile | null (not ours / tampered); store(profile) → blob.
 export const trustSaves = {
