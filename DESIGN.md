@@ -14,6 +14,10 @@ Construcción y barcos se unen en **«La Balsa»** (referencia del autor: *Raft*
 cuatro tablones y una vela y crece pieza a pieza hasta una fortaleza flotante con la que comercias de pueblo en
 pueblo (`PLAN-M6.md`). Para seguir el proyecto: `docs/HANDOFF.md`.
 
+**Prioridad del autor (2026-10-04):** construir y habitar en tierra firme o en un barco modular es la joya del
+juego; barcos aéreos más adelante. La discusión de combate naval, comercio con riesgo y pérdidas recuperables
+vive en `docs/NAVAL-HOUSING-DISCUSSION.md`; sus mecanismos y números siguen siendo propuestas.
+
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
 NPCs, pasados por `patchToon` para que compartan bandas de luz, contornos, luces locales y bloom; traen su propio

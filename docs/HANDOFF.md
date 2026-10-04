@@ -1,6 +1,6 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-Para quien retome el proyecto (persona o modelo). Leer esto primero, luego `DESIGN.md` (el diseño entero) y el
+Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `DESIGN.md` (el diseño entero) y el
 `PLAN-*.md` del milestone en curso.
 
 ## 1. Qué es y sus reglas
@@ -90,6 +90,17 @@ autor.
   procedural y el importer GLB de `docs/ASSETS.md`. Tampoco se ha desplegado el servidor ni republicado el artefacto;
   la URL de claude.ai conserva M4.7.
 
+### Dirección del autor y discusión naval (2026-10-04)
+
+- Construir y habitar en tierra o en barcos modulares es la joya del juego; barcos aéreos más adelante.
+- Usar **GPT-6 Luna** para trabajo delegable que ahorre tiempo/tokens sin comprometer calidad, con autoría,
+  integración y revisión final del agente principal. Regla persistente: `AGENTS.md`.
+- Antes de investigar los proyectos Unreal/FAB del autor, cerrar la conversación sobre combate naval, carga,
+  pérdidas y protección de la casa. Propuesta y evidencia: `docs/NAVAL-HOUSING-DISCUSSION.md`.
+- No inspeccionar esa carpeta todavía. Cuando toque: inventario de solo lectura con Luna, contenido adicional
+  adquirido y su portabilidad/utilidad; excluir módulos base de Unreal. El autor gestiona las licencias.
+- Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Brasa.
+
 ## 4. Cómo trabajar
 
 - **Tests**: `npm test`. Si el equipo va cargado (otro navegador corriendo), la suite entera puede pasar de 10 min:
@@ -117,8 +128,9 @@ autor.
 - **Git**: rama `claude/loving-lovelace-ptbif7`, PR https://github.com/joeyxd/realms-of-trade-server/pull/1 (no
   abrir otro). Mensajes de commit descriptivos en inglés, con las líneas de coautoría del entorno al final; ningún
   identificador de modelo en commits ni en el código.
-- **Método del autor**: el modelo principal diseña, revisa y pule; las bases pueden hacerlas agentes más baratos con
-  un brief preciso (ejemplos en `docs/briefs/`). Se revisa todo antes del commit.
+- **Método del autor**: el agente principal diseña, integra, revisa y pule; usar agentes GPT-6 Luna para todo trabajo
+  delegable que ahorre tiempo/tokens sin comprometer el resultado (`AGENTS.md`), con un brief preciso
+  (ejemplos en `docs/briefs/`). Se revisa todo antes del commit.
 - Hablar con el autor en **español**.
 
 ## 5. Trampas conocidas
