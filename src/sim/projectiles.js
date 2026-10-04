@@ -1,12 +1,12 @@
 // Projectiles. Pure and deterministic (sim, worker, client, node tests).
 //
-// Hostile projectiles are ANALYTIC: a straight line from (x0, z0) at tick t0 with constant velocity,
-// alive until tEnd (life, or the first pillar / rock / cliff on its path, computed once at spawn).
+// Hostile projectiles are ANALYTIC: a straight path from (x0, z0) at tick t0, slowed while it crosses
+// historical frost fields, and bounded by a fixed lifetime or its first pillar / rock / cliff.
 // Their position at any tick is a formula, so:
 //   · the server never sends them one by one: it sends a PATTERN event (who, where, angle, params) and
 //     every client expands it into the same projectiles with the same ids;
 //   · the server can evaluate a player's command at the projectile tick that player was seeing
-//     (lag compensation for parries, destroys, hits and grazes) without keeping any history.
+//     (lag compensation for parries, destroys, hits and grazes) without storing per-bullet positions.
 // What changes a projectile (a hit, a destroy, a reflect) is an event with the tick and, when a
 // player caused it, the sequence number of that player's command (prediction dedupes by it).
 //
@@ -56,39 +56,50 @@ export class Hazards {
     this.x0 = F(); this.z0 = F(); this.y = F(); this.vx = F(); this.vy = F(); this.vz = F(); this.speed = F();
     this.t0 = I(); this.tEnd = I();
     this.r = F(); this.len = F(); this.dmg = F();
+    this.fire = new Uint8Array(cap);
+    this.clipD = F().fill(Infinity); // first static blocker, measured along the path
     this.dead = I().fill(NEVER); // tick it was removed (hit, destroyed, reflected…)
     this.kill = new Uint8Array(cap);
     this.killBy = I();
     this.killSeq = new Uint32Array(cap);
     this.confirmed = new Uint8Array(cap); // client: the server agreed with a predicted kill
     this.marks = new Array(cap).fill(null); // per-player one-shot flags: [{e, k ('g' graze | 'h' ghost), seq}]
+    this.pathCacheTick = new Float64Array(cap).fill(NaN);
+    this.pathCacheRev = new Uint32Array(cap);
+    this.pathCache = new Array(cap);
     this.slot = new Map(); // id → slot
     this.freeList = [];
     for (let i = cap - 1; i >= 0; i--) this.freeList.push(i);
     this.count = 0;
     this.aoes = []; // {id, owner, x, z, r, t0, tAct, dmg, keep, hits: [{e, seq}]}
     this.beams = []; // lasers, fire lanes, the boss charge (see beamSeg)
+    this.frostFields = []; // history reconstructs analytic bullet paths after fields expire
+    this.frostRev = 0;
+    this.maxLifeTicks = Math.round(Math.max(tuning.projectiles.parryable.life, tuning.projectiles.heavy.life, tuning.projectiles.unstoppable.life) / DT);
     this.lava = null; // the shrinking lava ring of the boss's last phase (see lavaR)
     this.dropped = 0;
   }
 
   // Returns the slot or -1 when the pool is full (oldest projectiles are not evicted: patterns are fair).
   // life: seconds, overrides the type's (curtains that must cross the whole arena).
-  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0) {
+  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0, fire = 0) {
     const s = this.freeList.pop();
     if (s === undefined) { this.dropped++; return -1; }
     const cfg = typeCfg(type);
     const speed = Math.hypot(vx, vz);
     this.id[s] = id; this.type[s] = type; this.owner[s] = owner;
+    this.pathCacheTick[s] = NaN;
     this.x0[s] = x; this.z0[s] = z; this.y[s] = y; this.vx[s] = vx; this.vy[s] = slope * speed; this.vz[s] = vz; this.speed[s] = speed;
     this.r[s] = cfg.radius; this.len[s] = lengthOf(type); this.dmg[s] = dmg;
+    this.fire[s] = fire ? 1 : 0;
     const L = life || cfg.life;
     let lifeT = Math.round(L / DT);
+    this.maxLifeTicks = Math.max(this.maxLifeTicks, lifeT);
     if (map && speed > 1e-6) {
       const maxD = speed * L;
       const d = clipDistance(map, x, y, z, vx / speed, vz / speed, cfg.radius, maxD, slope);
-      if (d < maxD) lifeT = Math.max(1, Math.round(d / speed / DT));
-    }
+      this.clipD[s] = d;
+    } else this.clipD[s] = speed > 1e-6 ? speed * L : Infinity;
     this.t0[s] = t0; this.tEnd[s] = t0 + lifeT;
     this.dead[s] = NEVER; this.kill[s] = 0; this.killBy[s] = 0; this.killSeq[s] = 0; this.confirmed[s] = 0;
     this.marks[s] = null;
@@ -100,6 +111,7 @@ export class Hazards {
   free(s) {
     this.slot.delete(this.id[s]);
     this.id[s] = 0;
+    this.pathCacheTick[s] = NaN;
     this.marks[s] = null;
     this.freeList.push(s);
     this.count--;
@@ -107,11 +119,97 @@ export class Hazards {
 
   // Elapsed seconds since spawn at tick t (may be negative: staggered patterns spawn later).
   age(s, t) { return (t - this.t0[s]) * DT; }
-  px(s, t) { return this.x0[s] + this.vx[s] * (t - this.t0[s]) * DT; }
-  pz(s, t) { return this.z0[s] + this.vz[s] * (t - this.t0[s]) * DT; }
-  py(s, t) { return this.y[s] + this.vy[s] * (t - this.t0[s]) * DT; }
+  fieldSlowAt(x, z, tick) { return this._fieldSlowAt(x, z, tick * DT); }
+  _fieldSlowAt(x, z, sec, dirX = 0, dirZ = 0) {
+    let mul = 1;
+    x += dirX * 1e-7; z += dirZ * 1e-7;
+    for (const f of this.frostFields) {
+      if (sec < f.t0 * DT || sec >= f.tEnd * DT) continue;
+      const dx = x - f.x, dz = z - f.z;
+      if (dx * dx + dz * dz <= f.r * f.r) mul = Math.min(mul, f.slow);
+    }
+    return mul;
+  }
+  addFrostField(o) {
+    if (!Number.isFinite(o.e) || !Number.isFinite(o.seq) || !Number.isFinite(o.x) || !Number.isFinite(o.z) ||
+        !Number.isFinite(o.r) || o.r <= 0 || !Number.isFinite(o.slow) || !Number.isFinite(o.t0) ||
+        !Number.isFinite(o.tEnd) || o.tEnd <= o.t0) return null;
+    const i = this.frostFields.findIndex((f) => f.e === o.e && f.seq === o.seq);
+    const f = { e: o.e, seq: o.seq >>> 0, x: o.x, z: o.z, r: o.r, t0: o.t0, tEnd: o.tEnd,
+      slow: Math.max(0.05, Math.min(1, o.slow)), predicted: !!o.predicted };
+    if (i >= 0) {
+      const old = this.frostFields[i];
+      if (old.predicted && !f.predicted) { Object.assign(old, f); this.frostRev++; }
+      return this.frostFields[i];
+    }
+    this.frostFields.push(f);
+    this.frostRev++;
+    return f;
+  }
+  removePredictedFrostFields(e, afterSeq = 0) {
+    const n = this.frostFields.length;
+    this.frostFields = this.frostFields.filter((f) => !(f.predicted && f.e === e && (!afterSeq || f.seq > afterSeq)));
+    if (n !== this.frostFields.length) this.frostRev++;
+  }
+  _path(s, tick) {
+    if (this.pathCacheTick[s] === tick && this.pathCacheRev[s] === this.frostRev) return this.pathCache[s];
+    const vx = this.vx[s], vz = this.vz[s], speed = this.speed[s], dirX = speed > 1e-9 ? vx / speed : 0, dirZ = speed > 1e-9 ? vz / speed : 0;
+    const duration = Math.max(0, (tick - this.t0[s]) * DT);
+    let elapsed = 0, dist = 0, x = this.x0[s], z = this.z0[s];
+    if (!this.frostFields.length) {
+      const moved = Math.min(speed * duration, this.clipD[s]);
+      const out = { x: x + dirX * moved, z: z + dirZ * moved,
+        y: this.y[s] + (speed > 1e-9 ? (this.vy[s] / speed) * moved : 0), dist: moved };
+      this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+      return out;
+    }
+    const maxSteps = this.frostFields.length * 5 + 16;
+    for (let step = 0; elapsed < duration - 1e-10 && step < maxSteps && speed > 1e-9; step++) {
+      const now = this.t0[s] * DT + elapsed;
+      const mul = this._fieldSlowAt(x, z, now, dirX, dirZ);
+      let nextTime = duration;
+      let nextDist = Infinity;
+      for (const f of this.frostFields) {
+        const a = f.t0 * DT, b = f.tEnd * DT;
+        if (a > now + 1e-9) nextTime = Math.min(nextTime, elapsed + a - now);
+        if (b > now + 1e-9) nextTime = Math.min(nextTime, elapsed + b - now);
+        const ox = x - f.x, oz = z - f.z;
+        const proj = ox * dirX + oz * dirZ;
+        const c = ox * ox + oz * oz - f.r * f.r;
+        const disc = proj * proj - c;
+        if (disc < 0) continue;
+        const root = Math.sqrt(disc);
+        const near = -proj - root, far = -proj + root;
+        if (near > 1e-7) nextDist = Math.min(nextDist, near);
+        if (far > 1e-7) nextDist = Math.min(nextDist, far);
+      }
+      let span = Math.max(0, nextTime - elapsed);
+      if (Number.isFinite(nextDist)) span = Math.min(span, nextDist / (speed * mul));
+      if (!(span > 1e-10)) { elapsed += 1e-9; continue; }
+      const stepDist = speed * mul * span;
+      const left = this.clipD[s] - dist;
+      const moved = Math.min(stepDist, Math.max(0, left));
+      x += dirX * moved; z += dirZ * moved; dist += moved; elapsed += span;
+      if (moved + 1e-9 < stepDist) break;
+    }
+    if (elapsed < duration && speed > 1e-9 && dist < this.clipD[s]) {
+      const mul = this._fieldSlowAt(x, z, this.t0[s] * DT + elapsed, dirX, dirZ), moved = Math.min(speed * mul * (duration - elapsed), this.clipD[s] - dist);
+      x += dirX * moved; z += dirZ * moved; dist += moved;
+    }
+    const out = { x, z, y: this.y[s] + (speed > 1e-9 ? (this.vy[s] / speed) * dist : 0), dist };
+    this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+    return out;
+  }
+  px(s, t) { return this._path(s, t).x; }
+  pz(s, t) { return this._path(s, t).z; }
+  py(s, t) { return this._path(s, t).y; }
+  velocityAt(s, t) {
+    const p = this._path(s, t);
+    const speed = this.speed[s], mul = this._fieldSlowAt(p.x, p.z, t * DT, speed > 1e-9 ? this.vx[s] / speed : 0, speed > 1e-9 ? this.vz[s] / speed : 0);
+    return { x: this.vx[s] * mul, z: this.vz[s] * mul, speed: this.speed[s] * mul };
+  }
   // Exists in the world at tick t (spawned, not past its end, not removed).
-  live(s, t) { return this.id[s] !== 0 && t >= this.t0[s] && t < this.tEnd[s] && this.dead[s] === NEVER; }
+  live(s, t) { return this.id[s] !== 0 && t >= this.t0[s] && t < this.tEnd[s] && this.dead[s] === NEVER && this._path(s, t).dist < this.clipD[s] - 1e-9; }
   armed(s, t) { return (t - this.t0[s]) * DT >= tuning.projectiles.armTime; }
 
   remove(s, tick, kind, by = 0, seq = 0) {
@@ -155,6 +253,10 @@ export class Hazards {
       const b = this.beams[i];
       if (tick - b.tEnd > 40 || (b.cancel && tick - b.cancelT > 40)) this.beams.splice(i, 1);
     }
+    const history = this.maxLifeTicks + tuning.combat.rewind;
+    const before = this.frostFields.length;
+    this.frostFields = this.frostFields.filter((f) => tick - f.tEnd <= history);
+    if (before !== this.frostFields.length) this.frostRev++;
     if (this.lava) this.lava.hits = this.lava.hits.filter((h) => tick - h.tick < 120);
   }
 
@@ -244,7 +346,7 @@ export function emitPattern(store, ev, map) {
     }
     const speed = Math.min(ev.speed, tuning.projectiles.maxSpeed);
     const t = (ev.pat === 'ring' || ev.pat === 'rings') && ev.alt ? (j % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
-    store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0, ev.life || 0);
+    store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0, ev.life || 0, ev.fire);
   }
   return n;
 }

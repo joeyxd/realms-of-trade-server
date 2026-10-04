@@ -376,12 +376,15 @@ export class LocalServer {
   broadcastSnapshot() {
     const w = this.world, ecs = w.ecs;
     const ents = [], enc = w.encounters.map((q) => encounterState(w, q));
+    // Keep expired field history too: a live bullet may already have lost travel time in it.
+    // Sending only active fields would make a late joiner move that bullet too far ahead.
+    const frost = w.hazards.frostFields.map(({ e, seq, x, z, r, t0, tEnd, slow }) => ({ e, seq, x, z, r, t0, tEnd, slow }));
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e] || !(ecs.mask[e] & C.POS)) continue;
       ents.push(encodeEntity(ecs, e));
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc });
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost });
     }
   }
 }

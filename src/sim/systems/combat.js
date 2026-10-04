@@ -89,12 +89,14 @@ function addRiposte(ecs, e, n) {
 export function hurtPlayer(world, e, raw, o) {
   const ecs = world.ecs, C = tuning.combat;
   if (ecs.dead[e] > 0) return 0;
+  if (ecs.elem[e] === 2 && o.fire) raw *= 1.5;
   const dmg = ecs.god[e] > 0 ? 0 : mitigate(raw, o.pierce ? 0 : ecs.def[e]);
   if (dmg > 0) { ecs.hp[e] -= dmg; ecs.regenT[e] = 0; }
   if (!o.noInv) ecs.hurtInv[e] = C.hurtIframes;
   const kx = ecs.x[e] - o.x, kz = ecs.z[e] - o.z, kl = Math.hypot(kx, kz);
   if (kl > 1e-6) { const k = o.knock ?? C.hitKnock; ecs.kbx[e] += (kx / kl) * k; ecs.kbz[e] += (kz / kl) * k; }
   const ev = { type: 'hurt', e, dmg, raw, kind: o.kind, src: o.src || 0, seq: o.seq, x: o.x, z: o.z, practice: raw <= 0 ? 1 : 0 };
+  if (o.fire) ev.fire = 1;
   if (o.by) { ev.by = o.by; if (o.crit) ev.crit = 1; }
   world.emit(ev);
   if (ecs.hp[e] <= 0) killPlayer(world, e, o.seq, o.by || 0);
@@ -146,11 +148,11 @@ export function hurtByPlayer(world, e, raw, o) {
     ecs.guardRegT[e] = 0;
     addRiposte(ecs, e, G.blockRiposte);
     world.emit({ type: 'guard', st: 'block', e, seq: 0, pvp: 1, x: o.x, z: o.z, heavy: o.heavy ? 1 : 0 });
-    const d = hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x: o.x, z: o.z, kind: 'block', src: by, by, seq: 0, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true });
+    const d = hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x: o.x, z: o.z, kind: 'block', src: by, by, seq: 0, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true, fire: o.fire });
     if (ecs.dead[e] <= 0 && ecs.guardSt[e] <= 0) breakGuard(world, e, 0);
     return d;
   }
-  const d = hurtPlayer(world, e, raw, { x: o.x, z: o.z, kind: 'pvp', src: by, by, crit, seq: 0, knock: Math.min(o.knock ?? tuning.combat.hitKnock, 8), pierce: o.pierce });
+  const d = hurtPlayer(world, e, raw, { x: o.x, z: o.z, kind: 'pvp', src: by, by, crit, seq: 0, knock: Math.min(o.knock ?? tuning.combat.hitKnock, 8), pierce: o.pierce, fire: o.fire });
   if (o.heavy && ecs.dead[e] <= 0) {
     ecs.stagger[e] = Math.max(ecs.stagger[e], LAWLESS.heavyStagger);
     ecs.atkStage[e] = 0; ecs.guardT[e] = -1;
@@ -178,12 +180,32 @@ export function timeToContact(world, e, s, pt) {
   const R = ecs.hurtR[e] + H.r[s] + tuning.sword.slack + H.len[s] * 0.5;
   const c = px * px + pz * pz - R * R;
   if (c <= 0) return 0;
-  const vx = H.vx[s], vz = H.vz[s], a = vx * vx + vz * vz, b = px * vx + pz * vz;
-  if (a < 1e-9 || b >= 0) return Infinity;
-  const disc = b * b - a * c;
-  if (disc < 0) return Infinity;
-  const t = (-b - Math.sqrt(disc)) / a;
-  return pt + t / DT >= H.tEnd[s] ? Infinity : t;
+  if (!H.frostFields.length) {
+    const vx = H.vx[s], vz = H.vz[s], a = vx * vx + vz * vz, b = px * vx + pz * vz;
+    if (a < 1e-9 || b >= 0) return Infinity;
+    const disc = b * b - a * c;
+    if (disc < 0) return Infinity;
+    const t = (-b - Math.sqrt(disc)) / a;
+    const dist = Math.sqrt(a) * t;
+    return pt + t / DT >= H.tEnd[s] || H._path(s, pt).dist + dist >= H.clipD[s] ? Infinity : t;
+  }
+  const speed = H.speed[s];
+  if (speed < 1e-9) return Infinity;
+  const ux = H.vx[s] / speed, uz = H.vz[s] / speed;
+  const toward = -(px * ux + pz * uz);
+  if (toward <= 0) return Infinity;
+  const perp2 = Math.max(0, px * px + pz * pz - toward * toward);
+  if (perp2 > R * R) return Infinity;
+  const dist = toward - Math.sqrt(R * R - perp2);
+  if (dist <= 0) return 0;
+  const startDist = H._path(s, pt).dist, endTick = Math.min(H.tEnd[s], pt + tuning.sword.poor.tc / DT);
+  if (endTick <= pt || H._path(s, endTick).dist - startDist < dist) return Infinity;
+  let lo = 0, hi = (endTick - pt) * DT;
+  for (let i = 0; i < 16; i++) {
+    const mid = (lo + hi) / 2;
+    if (H._path(s, pt + mid / DT).dist - startDist >= dist) hi = mid; else lo = mid;
+  }
+  return hi;
 }
 
 // bonus: s added to the EXCELENTE and BUENO windows (the weapon base, Filo templado); POBRE stays put.
@@ -287,7 +309,7 @@ function guardTake(world, e, raw, x, z, seq, o) {
   ecs.guardRegT[e] = 0;
   addRiposte(ecs, e, G.blockRiposte);
   world.emit({ type: 'guard', st: 'block', e, seq, pid: o.pid || 0, aoe: o.aoe || 0, x, z, heavy: o.heavy ? 1 : 0 });
-  hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x, z, kind: 'block', src: o.pid || o.aoe || 0, seq, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true });
+  hurtPlayer(world, e, raw * (o.heavy ? G.heavyMult : G.blockMult), { x, z, kind: 'block', src: o.pid || o.aoe || 0, seq, knock: o.heavy ? G.heavyKnock : G.knock, noInv: true, fire: o.fire });
   if (ecs.dead[e] <= 0 && ecs.guardSt[e] <= 0) breakGuard(world, e, seq);
 }
 
@@ -372,7 +394,7 @@ function contacts(world, e, prev, pt, seq) {
         // The guard takes it (a block, or a catch when it was just raised).
         const pid = H.id[s], raw = H.dmg[s];
         H.remove(s, pt, KILL.BLOCK, e, seq);
-        guardTake(world, e, raw, hx, hz, seq, { pid, heavy: type === PTYPE.HEAVY });
+        guardTake(world, e, raw, hx, hz, seq, { pid, heavy: type === PTYPE.HEAVY, fire: H.fire[s] });
         if (ecs.dead[e] > 0) return;
         continue;
       }
@@ -386,7 +408,7 @@ function contacts(world, e, prev, pt, seq) {
       }
       // Unstoppables pierce a raised guard and stun you.
       const punish = type === PTYPE.UNSTOP && guardUp(ecs, e);
-      hurtPlayer(world, e, H.dmg[s], { x: hx, z: hz, kind: punish ? 'punish' : 'proj', src: H.id[s], seq });
+      hurtPlayer(world, e, H.dmg[s], { x: hx, z: hz, kind: punish ? 'punish' : 'proj', src: H.id[s], seq, fire: H.fire[s] });
       if (punish && ecs.dead[e] <= 0) {
         ecs.stagger[e] = PR.unstoppable.stagger;
         ecs.guardT[e] = -1; ecs.atkStage[e] = 0;
@@ -395,7 +417,8 @@ function contacts(world, e, prev, pt, seq) {
     } else if (d < touch + PR.graze && !H.hasMark(s, e, 'g') && !H.hasMark(s, e, 'h') && !H.hasMark(s, e, 'p')) {
       // Brushed past and now moving away (straight lines only get farther from here on).
       const rx = H.px(s, pt) - px, rz = H.pz(s, pt) - pz;
-      if (rx * H.vx[s] + rz * H.vz[s] > 0) {
+      const v = H.velocityAt(s, pt);
+      if (rx * v.x + rz * v.z > 0) {
         H.mark(s, e, 'g', seq);
         addRiposte(ecs, e, P.riposte.graze);
         gainXp(world, e, P.xp.graze, seq);
@@ -416,11 +439,11 @@ function contacts(world, e, prev, pt, seq) {
     // Melee circles (a bite, a cleave, a slam) can be guarded if the blow comes from in front; shells and
     // meteors falling from the sky cannot.
     if (!a.keep && guardUp(ecs, e) && inGuardArc(ecs, e, a.sx ?? a.x, a.sz ?? a.z)) {
-      guardTake(world, e, a.dmg, a.sx ?? a.x, a.sz ?? a.z, seq, { aoe: a.id });
+      guardTake(world, e, a.dmg, a.sx ?? a.x, a.sz ?? a.z, seq, { aoe: a.id, fire: a.fire });
       if (ecs.dead[e] > 0) return;
       continue;
     }
-    hurtPlayer(world, e, a.dmg, { x: a.x, z: a.z, kind: 'aoe', src: a.id, seq, knock: 6 });
+    hurtPlayer(world, e, a.dmg, { x: a.x, z: a.z, kind: 'aoe', src: a.id, seq, knock: 6, fire: a.fire });
     if (ecs.dead[e] > 0) return;
   }
   // Beams (lasers, fire lanes, the boss charge): damage every `every` ticks while you stand in them;
@@ -444,7 +467,7 @@ function contacts(world, e, prev, pt, seq) {
     for (const h of b.hits) if (h.e === e && h.tick > last) last = h.tick;
     if (pt - last < b.every) continue;
     b.hits.push({ e, seq, tick: pt });
-    hurtPlayer(world, e, b.dmg, { x: SEG.cx, z: SEG.cz, kind: 'beam', src: b.id, seq, knock: b.knock ?? 4 });
+    hurtPlayer(world, e, b.dmg, { x: SEG.cx, z: SEG.cz, kind: 'beam', src: b.id, seq, knock: b.knock ?? 4, fire: b.fire });
     if (ecs.dead[e] > 0) return;
   }
   // Lava: burns outside the safe radius on every `every`-th tick (the ground: no dash, no iframes).
@@ -455,7 +478,7 @@ function contacts(world, e, prev, pt, seq) {
       const dx = px - L.cx, dz = pz - L.cz, d = Math.hypot(dx, dz);
       if (d > lavaR(L, t) && d < L.R + 1) {
         L.hits.push({ e, seq, tick: t });
-        hurtPlayer(world, e, L.dmg, { x: px + dx / d, z: pz + dz / d, kind: 'lava', src: L.id, seq, knock: 3, noInv: true });
+        hurtPlayer(world, e, L.dmg, { x: px + dx / d, z: pz + dz / d, kind: 'lava', src: L.id, seq, knock: 3, noInv: true, fire: 1 });
         if (ecs.dead[e] > 0) return;
       }
     }
@@ -564,7 +587,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
         const hx = H.px(s, H.dead[s]), hz = H.pz(s, H.dead[s]);
         ecs.guardSt[e] -= dmg * G.cost; ecs.guardRegT[e] = 0;
         world.emit({ type: 'guard', st: 'block', e, seq, pid: id, x: hx, z: hz, heavy: 0, coyote: 1 });
-        hurtPlayer(world, e, dmg * G.blockMult, { x: hx, z: hz, kind: 'block', src: id, seq, knock: G.knock, noInv: true });
+        hurtPlayer(world, e, dmg * G.blockMult, { x: hx, z: hz, kind: 'block', src: id, seq, knock: G.knock, noInv: true, fire: H.fire[s] });
       }
     }
   }
@@ -648,7 +671,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     const H = world.hazards;
     const hx = s !== undefined ? H.px(s, H.dead[s] === NEVER ? pt : H.dead[s]) : ecs.x[e];
     const hz = s !== undefined ? H.pz(s, H.dead[s] === NEVER ? pt : H.dead[s]) : ecs.z[e];
-    hurtPlayer(world, e, dmg, { x: hx, z: hz, kind: 'proj', src: id, seq });
+    hurtPlayer(world, e, dmg, { x: hx, z: hz, kind: 'proj', src: id, seq, fire: s !== undefined ? H.fire[s] : 0 });
   }
   if (ecs.guardT[e] >= 0) ecs.guardT[e] += dt;
 

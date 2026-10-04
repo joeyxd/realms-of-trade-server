@@ -610,11 +610,11 @@ async function boot() {
     let threat = -1, tBest = 0.7;
     for (let s = 0; s < H.cap; s++) {
       if (!H.live(s, pt)) continue;
-      const rx = ps.x - H.px(s, pt), rz = ps.z - H.pz(s, pt), v2 = H.vx[s] * H.vx[s] + H.vz[s] * H.vz[s];
+      const v = H.velocityAt(s, pt), rx = ps.x - H.px(s, pt), rz = ps.z - H.pz(s, pt), v2 = v.x * v.x + v.z * v.z;
       if (v2 < 1e-6) continue;
-      const tca = (rx * H.vx[s] + rz * H.vz[s]) / v2;
+      const tca = (rx * v.x + rz * v.z) / v2;
       if (tca < 0 || tca > tBest) continue;
-      if (Math.hypot(rx - H.vx[s] * tca, rz - H.vz[s] * tca) > reach + H.r[s]) continue;
+      if (Math.hypot(rx - v.x * tca, rz - v.z * tca) > reach + H.r[s]) continue;
       threat = s; tBest = tca;
     }
     if (threat >= 0) { aim.set(H.px(threat, pt), ps.y, H.pz(threat, pt)); return; }
@@ -934,7 +934,7 @@ async function boot() {
         const pv = aimCtl.preview;
         if (pv && pv.kind === 'ground' && !ps.dead) {
           const d = readSlots()[pv.slot], g = groundTarget(d);
-          world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0);
+          world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0, d.id === 'iceanchor' ? 0x91e8ff : undefined);
         } else if (ps.chg && ps.castK && !ps.dead) {
           const S = slotD[ps.castK === 1 ? 'q' : 'e'].S, k = Math.min(1, ps.castT / S.charge);
           const len = S.fast.range + (S.slow.range - S.fast.range) * k, w = S.fast.r + (S.slow.r - S.fast.r) * k + (S.rAdd || 0);

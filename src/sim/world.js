@@ -19,7 +19,7 @@ import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
 import { stepInfighting } from './systems/lawless.js';
 import { LAWLESS } from '../data/lawless.js';
-import { burnOnHit, stepBurns } from './systems/pearlcombat.js';
+import { burnOnHit, chillOnHit, enemyChillMul, stepBurns, stepChills } from './systems/pearlcombat.js';
 
 const D2R = Math.PI / 180;
 
@@ -33,6 +33,8 @@ export class World {
     this.events = [];
     this.isServer = server;
     this.hazards = new Hazards();
+    this.chills = new Map();
+    this.fieldOwner = 0; // online prediction may set this to the server entity id for stable field identities
     this.shots = new Shots();
     this.nextPid = 1;
     this.nextSid = 1;
@@ -98,6 +100,7 @@ export class World {
   spawnEnemy(kind, x, z, facing = 0, extra = {}) {
     const ecs = this.ecs, def = ENEMIES[kind];
     const e = ecs.create(KIND.ENEMY, C.POS | C.MOVER | C.HEALTH | C.ENEMY);
+    this.chills.delete(e);
     ecs.x[e] = x; ecs.z[e] = z; ecs.y[e] = this.map.groundAt(x, z);
     ecs.facing[e] = facing;
     ecs.enemy[e] = enemyIndex(kind);
@@ -138,6 +141,7 @@ export class World {
 
   despawn(e) {
     this.burns?.delete(e);
+    this.chills.delete(e);
     this.ecs.destroy(e);
     this.phist.delete(e);
     this.events.push({ type: 'despawn', id: e });
@@ -180,6 +184,10 @@ export class World {
   // ---- Projectiles ------------------------------------------------------------------------------------
   // How hard enemy e hits (its Marea, M4): every hostile pattern, circle, beam and the lava go through here.
   dmgMul(e) { const b = e ? this.ecs.brain[e] : null; return b && b.tier ? b.tier.dmg : 1; }
+  enemyMoveMul(e) {
+    const ecs = this.ecs;
+    return Math.min(this.hazards.fieldSlowAt(ecs.x[e], ecs.z[e], this.tick), enemyChillMul(this, e));
+  }
 
   firePattern(ev) {
     if (ev.src && this.dmgMul(ev.src) !== 1) ev.dmg = Math.round(ev.dmg * this.dmgMul(ev.src));
@@ -197,12 +205,13 @@ export class World {
 
   // Ground circle / beam / lava, created here so the event carries everything the client rebuilds.
   addAoe(o) {
-    const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: Math.round(o.dmg * this.dmgMul(o.owner)), keep: o.keep ? 1 : 0 };
+    const a = { id: this.nextAoe++, owner: o.owner || 0, x: o.x, z: o.z, r: o.r, t0: o.t0 ?? this.tick, tAct: o.tAct, dmg: Math.round(o.dmg * this.dmgMul(o.owner)), keep: o.keep ? 1 : 0, fire: o.fire ? 1 : 0 };
     // Where the blow comes from (a melee bite / cleave / slam): the guard checks it against its arc.
     if (o.sx !== undefined) { a.sx = o.sx; a.sz = o.sz; }
     this.hazards.addAoe(a);
     const ev = { type: 'aoe', id: a.id, src: a.owner, x: a.x, z: a.z, r: a.r, tick: a.t0, tAct: a.tAct, dmg: a.dmg };
     if (a.keep) ev.keep = 1;
+    if (a.fire) ev.fire = 1;
     if (a.sx !== undefined) { ev.sx = a.sx; ev.sz = a.sz; }
     if (o.fall) { ev.fall = o.fall; ev.fx = o.fx; ev.fz = o.fz; ev.fy = o.fy; }
     this.emit(ev);
@@ -212,7 +221,7 @@ export class World {
     const b = {
       id: this.nextAoe++, owner: o.owner || 0, kind: o.kind, x0: o.x0, z0: o.z0, ang0: o.ang0, omega: o.omega || 0,
       vx: o.vx || 0, vz: o.vz || 0, off: o.off || 0, len: o.len, w: o.w, t0: o.t0 ?? this.tick, tAct: o.tAct, tEnd: o.tEnd,
-      dmg: Math.round(o.dmg * this.dmgMul(o.owner)), every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0, tele: o.tele || 0, travel: o.travel || 0,
+      dmg: Math.round(o.dmg * this.dmgMul(o.owner)), every: o.every || 12, knock: o.knock ?? 4, keep: o.keep ? 1 : 0, tele: o.tele || 0, travel: o.travel || 0, fire: o.fire ? 1 : 0,
     };
     this.hazards.addBeam(b);
     const ev = { type: 'beam', src: b.owner, tick: b.t0 };
@@ -365,6 +374,7 @@ export class World {
     const dmg = this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
     if (opts.elem) for (let i = n; i < this.events.length; i++) { const ev = this.events[i]; if (ev.type === 'damage' || ev.type === 'hurt') ev.elem = opts.elem; }
     if (dmg > 0 && opts.elem === 1 && !opts.noElement) burnOnHit(this, o, opts.by);
+    if (dmg > 0 && opts.elem === 2 && !opts.noElement) chillOnHit(this, o, opts.by);
     return dmg;
   }
 
@@ -445,7 +455,7 @@ export class World {
   // o: {skill, knock, stun, heavy, kind}.
   skillStrike(e, t, mult, o, x, z, seq) {
     const ecs = this.ecs;
-    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e] });
+    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e], fire: o.fire });
     if (o.stun > 0) this.stun(e, t, o.stun, seq, dmg);
     return dmg;
   }
@@ -589,6 +599,7 @@ export class World {
   // World systems that are not driven by player commands.
   stepWorld() {
     const ecs = this.ecs;
+    stepChills(this);
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e]) continue;
       const m = ecs.mask[e];
@@ -675,5 +686,5 @@ export class World {
 }
 
 export { PTYPE };
-export const BEAM_FIELDS = ['id', 'kind', 'x0', 'z0', 'ang0', 'omega', 'vx', 'vz', 'off', 'len', 'w', 'tAct', 'tEnd', 'dmg', 'every', 'knock', 'keep', 'tele', 'travel'];
+export const BEAM_FIELDS = ['id', 'kind', 'x0', 'z0', 'ang0', 'omega', 'vx', 'vz', 'off', 'len', 'w', 'tAct', 'tEnd', 'dmg', 'every', 'knock', 'keep', 'tele', 'travel', 'fire'];
 export const LAVA_FIELDS = ['id', 'cx', 'cz', 'r0', 'rMin', 'rate', 't0', 'R', 'dmg', 'every'];

@@ -13,6 +13,7 @@ const SLOT_ICON = { wave: 'crescent' };
 export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const ICONS = {
   comet: '<svg viewBox="0 0 32 32"><path d="M4 5l12 3L7 2l20 11-8-2 9 9" fill="none" stroke="#ff793b" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="21" r="8" fill="#ff793b" stroke="#1a1033" stroke-width="2"/><circle cx="21" cy="22" r="4" fill="#ffe09b"/></svg>',
+  iceanchor: '<svg viewBox="0 0 32 32"><path d="M16 3v26M5 9l22 14M27 9L5 23" stroke="#1a1033" stroke-width="5" stroke-linecap="round"/><path d="M16 3v26M5 9l22 14M27 9L5 23" stroke="#a9f6ff" stroke-width="2.5" stroke-linecap="round"/><path d="M7 24l-3 4 7-1M25 24l3 4-7-1" fill="none" stroke="#e9fdff" stroke-width="2" stroke-linejoin="round"/><path d="M16 3l-3 4h6z" fill="#fff"/></svg>',
   sword: '<svg viewBox="0 0 32 32"><path d="M24 3l5 0 0 5-13 13-3-2-2-3z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8 18l6 6-2 2-2-1-3 3-3-3 3-3-1-2z" fill="#ffc23d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   shield: '<svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8v16M10 14h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/></svg>',
   dash: '<svg viewBox="0 0 32 32"><path d="M6 10h11M3 16h14M6 22h11" stroke="#fff6e2" stroke-width="3" stroke-linecap="round"/><path d="M18 7l10 9-10 9z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
@@ -309,7 +310,7 @@ export class Hud {
     this.gSlot.title = `${S.name}: ${S.hint}`;
     this.gSlot.classList.toggle('empty', empty);
     this.gSlot.querySelector('.lock').hidden = !empty;
-    this.gSlot.querySelector('.ico').innerHTML = ICONS.comet;
+    this.gSlot.querySelector('.ico').innerHTML = ICONS[id] || ICONS.comet;
   }
 
   setGold(n, tierName = '') {

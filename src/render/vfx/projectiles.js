@@ -226,12 +226,10 @@ export class ProjectileView {
     const H = hazards, hc = this.highContrast ? 2 : 0;
     let n = 0;
     for (let s = 0; s < H.cap && n < this.cap; s++) {
-      if (H.id[s] === 0 || H.dead[s] !== NEVER || tick < H.t0[s] || tick >= H.tEnd[s]) continue;
+      if (!H.live(s, tick)) continue;
       const t = tick;
-      const x = H.x0[s] + H.vx[s] * (t - H.t0[s]) * DT;
-      const z = H.z0[s] + H.vz[s] * (t - H.t0[s]) * DT;
-      const y = H.y[s] + H.vy[s] * (t - H.t0[s]) * DT;
-      this.put(n++, x, y, z, H.vx[s], H.vy[s], H.vz[s], H.type[s], (t - H.t0[s]) * DT, H.r[s], hc);
+      const x = H.px(s, t), z = H.pz(s, t), y = H.py(s, t), v = H.velocityAt(s, t);
+      this.put(n++, x, y, z, v.x, H.vy[s] * (H.speed[s] ? v.speed / H.speed[s] : 1), v.z, H.type[s], (t - H.t0[s]) * DT, H.r[s], hc);
     }
     const S = shots;
     for (let s = 0; s < S.cap && n < this.cap; s++) {

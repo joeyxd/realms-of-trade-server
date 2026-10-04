@@ -2,7 +2,7 @@
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
 //      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo,
-//      sepia, pearl),
+//      sepia, pearl, escarcha),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
 //      MN_PLAYWRIGHT / MN_BROWSER (installed module / browser paths), MN_THREE / MN_GSAP (package directories).
@@ -45,7 +45,13 @@ page.on('pageerror', (e) => logs.add('[pageerror] ' + e.message));
 const wait = (ms) => page.waitForTimeout(ms);
 const shot = async (n) => { await page.screenshot({ path: OUT + '/' + n + '.png' }); console.log('shot', n); };
 await page.goto(`http://127.0.0.1:${port}/?q=${process.env.Q || 'high'}&debug&maxdt=0.5&tod=${process.env.TOD || 'day'}`);
-await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play').disabled, null, { timeout: 180000 });
+try {
+  await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-play').disabled, null, { timeout: 180000 });
+} catch (err) {
+  console.error('Boot failed:', [...logs].join('\n'), await page.locator('body').innerText());
+  await page.screenshot({ path: OUT + '/boot-failed.png' });
+  await browser.close(); server.close(); throw err;
+}
 if (process.env.TITLE) { await wait(2500); await shot('00-title'); }
 await page.click('#btn-play', { force: true });
 await page.waitForFunction(() => window.__mn.st.mode === 'playing', null, { timeout: 90000 });
@@ -62,6 +68,79 @@ const L = await page.evaluate(() => {
 const tp = async (name, x, z, extra, ms = 5000) => { await page.evaluate(([x, z]) => window.__mn.teleport(x, z), [x, z]); await wait(ms); if (extra) await extra(); await shot(name); };
 const scen = (process.env.SCEN || 'spawn,village,fight,cala,caldera').split(',');
 for (const s of scen) {
+  if (s === 'escarcha') {
+    await tp('50-escarcha-before', L.spawn.x, L.spawn.z);
+    await dev({ op: 'pearl', kind: 'escarcha' });
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.bag.some((q) => q.kind === 'escarcha'));
+    await page.keyboard.press('KeyP');
+    await page.locator('[data-pearl-op="swallow"]').first().click();
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.swallowed?.kind === 'escarcha');
+    await shot('51-escarcha-panel');
+    await page.keyboard.press('Escape');
+    try {
+      await page.waitForFunction(() => window.__mn.ps.cdG <= 0, null, { timeout: 60000 });
+    } catch (err) {
+      console.error('Escarcha cooldown stalled', await page.evaluate(() => ({ st: window.__mn.st,
+        cd: window.__mn.ps.cdG, panel: window.__mn.panels.charPanel.isOpen,
+        tick: window.__mn.client.pred.tick, errors: window.__mn.errors })), [...logs]);
+      await browser.close(); server.close(); throw err;
+    }
+    // Capture a real authoritative cast on its own timeline. SwiftShader may draw only a few
+    // frames during the whole field lifetime; hold the received field before the next render.
+    await page.evaluate(() => {
+      const m = window.__mn, onEvent = m.client.onEvent.bind(m.client), tickInput = m.client.tickInput.bind(m.client), viewTick = m.client.viewTick.bind(m.client);
+      window.__frostHeld = false;
+      m.client.onEvent = (ev) => {
+        onEvent(ev);
+        if (ev.type !== 'frostField' || ev.e !== m.client.youServer) return;
+        m.client.tickInput = () => {};
+        m.client.viewTick = () => ev.t0 + Math.min(12, (ev.tEnd - ev.t0) / 2);
+        m.transport.send({ t: 'cmd', type: 'pause', on: true });
+        window.__frostHeld = true;
+      };
+      window.__frostRestore = () => {
+        m.client.onEvent = onEvent; m.client.tickInput = tickInput; m.client.viewTick = viewTick;
+        m.transport.send({ t: 'cmd', type: 'pause', on: false });
+      };
+    });
+    if (!phone) {
+      await page.mouse.move(W * 0.64, H * 0.51);
+      await page.keyboard.down('KeyG');
+      await page.waitForFunction(() => window.__mn.aimCtl.preview?.slot === 'g' && window.__mn.world.indicators.marker.mesh.visible);
+      await shot('52-escarcha-aim');
+      await page.keyboard.press('Escape'); await page.keyboard.up('KeyG');
+      await page.waitForFunction(() => !window.__mn.aimCtl.preview && !window.__mn.world.indicators.marker.mesh.visible);
+      const canceled = await page.evaluate(() => ({ cd: window.__mn.ps.cdG, fields: window.__mn.client.hazards.frostFields.length }));
+      if (canceled.cd > 0 || canceled.fields) throw new Error('Cancelling Ancla spent its cooldown or created a field');
+      await page.keyboard.down('KeyG');
+      await page.waitForFunction(() => window.__mn.aimCtl.preview?.slot === 'g' && window.__mn.world.indicators.marker.mesh.visible);
+      await page.keyboard.up('KeyG');
+    } else {
+      const button = await page.locator('.t-g').boundingBox();
+      if (!button || button.y < 0 || button.y + button.height > H) throw new Error('Ancla touch button is outside the viewport');
+      if (!(await page.locator('.t-g').innerText()).includes('ANCLA')) throw new Error('Touch G still names another pearl');
+      await page.locator('.t-g').tap();
+    }
+    try {
+      await page.waitForFunction(() => {
+        const m = window.__mn, t = m.client.viewTick(m.loop.alpha);
+        return window.__frostHeld && m.client.hazards.frostFields.some((f) => !f.predicted && t >= f.t0 && t < f.tEnd)
+          && m.world.frostFx.slots.some((s) => s.live && s.disk.visible);
+      }, null, { timeout: 60000 });
+    } catch (err) {
+      console.error('Escarcha cast stalled', await page.evaluate(() => ({ st: window.__mn.st,
+        cd: window.__mn.ps.cdG, skill: window.__mn.ps.skG, preview: window.__mn.aimCtl.preview,
+        input: window.__mn.input.slots, fields: window.__mn.client.hazards.frostFields,
+        pt: window.__mn.client.ptCur, errors: window.__mn.errors })), [...logs]);
+      await browser.close(); server.close(); throw err;
+    }
+    await wait(800); await shot('53-escarcha-field');
+    console.log('escarcha', JSON.stringify(await page.evaluate(() => ({ pearl: window.__mn.client.profile.pearls.swallowed.kind, elem: window.__mn.ps.elem,
+      fields: window.__mn.client.hazards.frostFields, pt: window.__mn.client.viewTick(window.__mn.loop.alpha),
+      visible: window.__mn.world.frostFx.slots.filter((s) => s.live && s.disk.visible).length,
+      cd: window.__mn.ps.cdG, errors: window.__mn.errors }))));
+    await page.evaluate(() => window.__frostRestore());
+  }
   if (s === 'pearl') {
     await tp('40-pearl-before', L.spawn.x, L.spawn.z);
     await dev({ op: 'pearl', kind: 'brasa' });

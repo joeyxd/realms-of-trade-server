@@ -685,7 +685,7 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4.5 | «Sin ley»: detalles de M4 (aviso del cofre, oclusión del cofre, cofres de Marea) + la Cala Calavera: fuego amigo, botín completo y público, mobs que se pelean, Desalmados (`PLAN-M4.5.md`) | ✅ |
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | ✅ |
-| M4.8 | «Perlas negras»: Brasa jugable (G, quemadura, maldición del agua), circulación y caída al morir; pendientes Escarcha, Tormenta y Tinta (`PLAN-M4.8.md`) | en curso |
+| M4.8 | «Perlas negras»: Brasa y Escarcha jugables (G, pasivas, maldiciones), circulación y caída al morir; pendientes Tormenta y Tinta (`PLAN-M4.8.md`) | en curso |
 | M5 | Mundo persistente con Supabase: cuentas, perfiles y economía en base de datos, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA (`PLAN-M5.md`) | plan |
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |

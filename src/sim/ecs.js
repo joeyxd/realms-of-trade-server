@@ -32,7 +32,7 @@ const TATTOO_STATE = [
   'trT0', 'trX', 'trZ', 'trId', 'trF', 'trEnd', 'trT1', 'trX1', 'trZ1', 'trN', 'lpX0', 'lpZ0', 'lpX1', 'lpZ1', 'empT', 'empK',
   'chg', 'whT0', 'whX0', 'whZ0', 'whDx', 'whDz', 'whV', 'whR', 'whRr', 'whMul', 'whF', 'whPh', 'whX', 'whZ', 'whS', 'whTb', 'whId', 'whN', 'whSlot',
 ];
-const PEARL_STATE = ['skG', 'fmG', 'rkG', 'cdG', 'gBuf', 'waterT'];
+const PEARL_STATE = ['skG', 'fmG', 'rkG', 'cdG', 'gBuf', 'waterT', 'icX', 'icZ', 'icT0', 'icEnd', 'icSeq'];
 
 export class ECS {
   constructor(cap = 2048) {

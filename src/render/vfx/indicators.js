@@ -12,7 +12,7 @@ import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { DT } from '../../data/tuning.js';
 
-export const AIM_COLOR = { mine: 0xa77bff, other: 0xffb347, ink: 0x1a1033 };
+export const AIM_COLOR = { mine: 0xa77bff, other: 0xffb347, frost: 0x71eaff, ink: 0x1a1033 };
 const RINGS = 6, SEGS = 64;
 
 const BLEND = {
@@ -194,10 +194,12 @@ export class Indicators {
 
   // ---- your own aim (call every frame while aiming, hide() when not) -----------------------------------
   // An area: range ring around (px, pz), marker at (x, z) of radius r; arcH > 0 draws the leap arc to it.
-  area(px, pz, range, x, z, r, arcH = 0) {
+  area(px, pz, range, x, z, r, arcH = 0, color = AIM_COLOR.mine) {
     this.lay(this.range, px, pz, Math.max(0.5, range));
+    this.range.mat.uniforms.uColor.value.set(color);
     this.range.mesh.visible = range > 0.5;
     this.lay(this.marker, x, z, Math.max(0.35, r));
+    this.marker.mat.uniforms.uColor.value.set(color);
     this.marker.mesh.visible = true;
     this.chargeRing.mesh.visible = false; this.arrow.mesh.visible = false;
     if (arcH > 0) this.layArc(px, pz, x, z, arcH); else this.arc.mesh.visible = false;
@@ -206,6 +208,8 @@ export class Indicators {
 
   // The charge: arrow from (px, pz) along (dx, dz), `len` long, `w` wide; ring at your feet filled to k (0..1).
   charge(px, pz, dx, dz, len, w, k, range) {
+    this.chargeRing.mat.uniforms.uColor.value.set(AIM_COLOR.mine);
+    this.arrow.mat.uniforms.uColor.value.set(AIM_COLOR.mine);
     const U = this.chargeRing.mat.uniforms;
     this.lay(this.chargeRing, px, pz, 0.95, 0.06);
     this.chargeRing.key = ''; // follows you every frame

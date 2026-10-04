@@ -174,6 +174,27 @@ export const sfx = {
     sweep(d, t, { f0: 700, f1: 3400, q: 1.6, dur: 0.18, g: 0.3 * vol });
     tone(d, t + 0.06, { type: 'triangle', f0: 1400, f1: 900, dur: 0.08, g: 0.06 * vol });
   },
+  iceAnchor(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { type: 'bandpass', f0: 420, f1: 2500, q: 1.8, dur: 0.28, g: 0.16 * vol });
+    tone(d, t + 0.03, { type: 'triangle', f0: 880, f1: 1320, dur: 0.18, g: 0.065 * vol });
+    tone(d, t + 0.11, { type: 'sine', f0: 1760, f1: 1174.66, dur: 0.24, g: 0.045 * vol });
+    noiseBurst(d, t + 0.14, { type: 'highpass', f: 5200, q: 2.2, dur: 0.035, g: 0.07 * vol });
+  },
+  iceHit(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'highpass', f: 4300, q: 2.6, dur: 0.045, g: 0.075 * vol });
+    tone(d, t, { type: 'triangle', f0: 1174.66, f1: 784, dur: 0.12, g: 0.055 * vol });
+  },
+  freeze(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { type: 'triangle', f0: 1568, f1: 1046.5, dur: 0.24, g: 0.09 * vol });
+    bell(d, t + 0.025, 2093, 0.045 * vol, 0.3, [1, 2.1, 3.6]);
+    noiseBurst(d, t + 0.02, { type: 'highpass', f: 4800, q: 2.4, dur: 0.06, g: 0.09 * vol });
+  },
   crescent(vol = 1) {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;

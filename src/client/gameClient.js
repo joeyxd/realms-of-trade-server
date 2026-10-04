@@ -13,6 +13,7 @@ import { C, ACT } from '../sim/ecs.js';
 import { MSG, ENT, PROTOCOL_VERSION, quantAxis } from '../net/protocol.js';
 import { emitPattern, NEVER, KILL } from '../sim/projectiles.js';
 import { ENEMIES, ENEMY_KINDS } from '../data/enemies.js';
+import { SKILLS } from '../data/weapons.js';
 import { lerp, wrapAngle } from '../core/math.js';
 
 const BUF_MAX = 40;
@@ -99,6 +100,8 @@ export class GameClient {
       }
       case MSG.WELCOME: {
         this.youServer = m.you;
+        // Field keys use server entity IDs, including locally predicted casts.
+        this.pred.fieldOwner = m.you;
         const rec = this.entities.get(m.you);
         this.youLocal = this.pred.spawnPlayer({
           name: rec ? rec.name : 'Grumete', skin: rec ? rec.skin : 0, level: rec ? rec.level : 1, weapon: rec ? rec.weapon : 0,
@@ -145,9 +148,12 @@ export class GameClient {
         H.clear(Math.round(this.ptCur));
         if (!ev.hostile) for (let s = 0; s < this.shots.cap; s++) if (this.shots.id[s]) this.shots.free(s);
         break;
+      case 'frostField':
+        H.addFrostField({ ...ev, predicted: false });
+        break;
       case 'aoe':
         if (!H.aoes.some((a) => a.id === ev.id)) {
-          const a = { id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0 };
+          const a = { id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0, fire: ev.fire || 0 };
           if (ev.sx !== undefined) { a.sx = ev.sx; a.sz = ev.sz; }
           H.addAoe(a);
         }
@@ -293,6 +299,14 @@ export class GameClient {
       if (L && (!H.lava || H.lava.id !== L[0])) { const o = {}; LAVA_FIELDS.forEach((k, i) => { o[k] = L[i]; }); H.setLava(o); }
       else if (s.enc[0] && !L && H.lava) H.setLava(null);
     }
+    if (s.frost && (this.lastFrostTick === undefined || s.tick >= this.lastFrostTick)) {
+      this.lastFrostTick = s.tick;
+      // A complete authoritative list repairs lost creation events and rejected local casts.
+      // Pending commands below recreate any fields that have not yet been acknowledged.
+      const H = this.pred.hazards;
+      H.frostFields = []; H.frostRev++;
+      for (const f of s.frost) H.addFrostField({ ...f, predicted: false });
+    }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
   }
 
@@ -335,6 +349,13 @@ export class GameClient {
   // the pending commands from the server's state. Events from a replay are not shown again.
   replay(ack) {
     const H = this.pred.hazards, me = this.youLocal;
+    H.removePredictedFrostFields(this.youServer);
+    const ecs = this.pred.ecs;
+    // The restored player state also names its last deployed field. Pending commands may start
+    // after its activation, so they cannot recreate it by crossing the cast's windup again.
+    if (ecs.icEnd[me] > ecs.icT0[me] && this.ptCur - ecs.icEnd[me] <= H.maxLifeTicks + tuning.combat.rewind) H.addFrostField({ e: this.youServer, seq: ecs.icSeq[me],
+      x: ecs.icX[me], z: ecs.icZ[me], t0: ecs.icT0[me], tEnd: ecs.icEnd[me],
+      r: SKILLS.iceanchor.r, slow: SKILLS.iceanchor.slow, predicted: false });
     for (let s = 0; s < H.cap; s++) {
       if (H.id[s] === 0) continue;
       if (H.dead[s] !== NEVER && H.killBy[s] === me && H.killSeq[s] > ack && !H.confirmed[s]) {
@@ -506,7 +527,7 @@ export class GameClient {
       const ex = c ? 0 : Math.min(0.1, Math.max(0, time - a.time));
       r.x = a.x + a.vx * ex; r.z = a.z + a.vz * ex; r.y = a.y; r.f = a.f;
       r.vx = a.vx; r.vz = a.vz; r.st = a.st; r.mag = a.mag; r.wade = a.wade; r.dashes = a.dashes;
-      r.hp = a.hp; r.maxHp = a.maxHp; r.act = a.act; r.actT = a.actT + Math.max(0, time - a.time); r.lvl = a.lvl; r.wpn = a.wpn;
+      r.hp = a.hp; r.maxHp = a.maxHp; r.act = a.act; r.actT = a.actT + Math.max(0, time - a.time); r.lvl = a.lvl; r.wpn = a.wpn; r.elem = a.elem;
       return;
     }
     const t = Math.min(1, (time - a.time) / (c.time - a.time));
@@ -515,7 +536,7 @@ export class GameClient {
     r.vx = lerp(a.vx, c.vx, t); r.vz = lerp(a.vz, c.vz, t);
     r.st = t < 0.5 ? a.st : c.st; r.mag = lerp(a.mag, c.mag, t); r.wade = lerp(a.wade, c.wade, t);
     r.dashes = c.dashes;
-    r.hp = c.hp; r.maxHp = c.maxHp; r.lvl = c.lvl; r.wpn = t < 0.5 ? a.wpn : c.wpn;
+    r.hp = c.hp; r.maxHp = c.maxHp; r.lvl = c.lvl; r.wpn = t < 0.5 ? a.wpn : c.wpn; r.elem = t < 0.5 ? a.elem : c.elem;
     // Action: keep counting time inside the same action, switch when the next sample does.
     if (c.act === a.act) { r.act = a.act; r.actT = lerp(a.actT, c.actT, t); }
     else { r.act = t < 0.5 ? a.act : c.act; r.actT = t < 0.5 ? a.actT + (time - a.time) : Math.max(0, c.actT - (c.time - time)); }

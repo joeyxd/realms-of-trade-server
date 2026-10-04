@@ -1,7 +1,7 @@
-# PLAN M4.8 — «Perlas negras» (en curso: Brasa y circulación)
+# PLAN M4.8 — «Perlas negras» (en curso: Brasa, Escarcha y circulación)
 
-> Acordado con el autor durante M4.7 (2026-10-04). Primera entrega jugable: `0.4.8-alpha.1`, Brasa completa
-> en mecánica y la base compartida. **M4.8 no está terminado**: faltan Escarcha, Tormenta y Tinta, pulido y balance.
+> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.2`, Brasa, Escarcha
+> y la base compartida. **M4.8 no está terminado**: faltan Tormenta y Tinta, pulido y balance.
 > Las perlas legendarias únicas dependen de M5 (mundo persistente en el servidor): aquí solo las raras.
 
 ## 0. La idea
@@ -58,7 +58,7 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 
 ### 2.4 Lo técnico
 - Hueco G: `SLOTS` gana `g`; `LOADOUT_SLOTS` conserva Q/E para que las perlas no se puedan equipar como tatuajes.
-  `BTN.G`, `KeyG`, botón táctil COMETA y cruceta abajo en mando. Panel Perlas en P.
+  `BTN.G`, `KeyG`, botón táctil del poder (COMETA / ANCLA) y cruceta abajo en mando. Panel Perlas en P.
 - La perla es un objeto con `uid` único.
 - **Duplicados**: hoy la partida vive firmada en el navegador del jugador, así que alguien puede guardar una copia
   de antes de morir y recuperar la perla. En M4.8, mitigación en memoria (el servidor recuerda qué `uid` salió de
@@ -90,12 +90,23 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
   de todo el kit (gotas, Timón, proyectiles) en P5.
 - Protocolo 8: estado G predicho y elemento remoto. El servidor en línea debe usar esta misma revisión.
 
-### P2 — Escarcha ⏳ (siguiente)
-- Añadir contenido y columnas predichas necesarias; ralentización/acumulaciones y congelación sin bloquear jefes.
-- Ancla de hielo con campo apuntado y balas frenadas determinísticamente al `pt`; maldición fuego/lava ×1.5.
-- Pruebas de expiración, enemigos/jefes, balas y reconciliación; capturas desktop/móvil.
+### P2 — Escarcha ✅ (mecánica; VFX iniciales)
+- Ancla de hielo: mantener G apunta y soltar lanza; ESC / RMB / B cancelan sin gastar. Alcance 10 u, radio 3 u,
+  duración 4 s, enfriamiento 16 s. En el campo, enemigos y balas hostiles van al 50 %; los campos superpuestos
+  aplican la ralentización más fuerte. Tus disparos y reflejos conservan su velocidad.
+- Golpes del kit: ralentización del 30 % durante 3 s; tres golpes consumen acumulaciones y congelan 0,6 s.
+  Los jefes se ralentizan pero nunca se congelan. Este estado afecta a NPC enemigos; congelar jugadores en PvP
+  no forma parte de esta entrega. La congelación detiene movimiento y relojes de acción del enemigo.
+- Maldición: daño recibido de fuego/lava ×1.5, con marcas explícitas de fuente; flechas y golpes físicos no
+  cambian. Conserva la marca al bloquear y en daño pendiente, áreas, láseres, Cometa y quemaduras de Brasa.
+- Trayectoria analítica de balas al `pt`: entrada/salida del campo, expiración, solapamiento y obstáculos;
+  se conserva historia durante la vida de las balas más el rewind para evitar saltos al expirar o reconectar.
+- Protocolo 9: columnas predichas `icX/icZ/icT0/icEnd/icSeq` y lista autoritativa `frost` en snapshots. El eco
+  adopta el campo predicho por pirata/secuencia; la reconciliación retira casts rechazados y repara eventos perdidos.
+- Panel, HUD, botón ANCLA, área azul, campo con cristales y sonidos de hielo. 14 pruebas nuevas en
+  `tests/escarcha.test.mjs`; regresión completa: 247/247. La revisión visual se registra en `docs/HANDOFF.md`.
 
-### P3 — Tormenta ⏳
+### P3 — Tormenta ⏳ (siguiente)
 - Cadena de golpes con selección determinista y sin ciclos; Rayo de mástil cargable, saltos por carga.
 - Curvatura de balas para la maldición compartida por cliente/servidor; pruebas de predicción y VFX.
 
@@ -112,10 +123,12 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 
 ## 4. Probar esta entrega
 
-En solo: F4 → «+ Perla de Brasa» → P → Tragar → cerrar el panel → esperar 4 s → G. En móvil, Bolsa → Perlas y
-botón COMETA; en mando, cruceta abajo. El botín normal no requiere F4. Prueba también escupir, reemplazar y cancelar,
+En solo: F4 → «+ Perla de Brasa» o «+ Perla de Escarcha» → P → Tragar → cerrar el panel → esperar 4 s → G.
+Con Escarcha, mantener apunta y soltar coloca el campo. En móvil, Bolsa → Perlas y botón COMETA / ANCLA;
+arrastrar ANCLA apunta y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Prueba escupir, reemplazar y cancelar,
 vadear sin modo dios y morir fuera de la Cala. En línea, otro pirata debe poder recoger la perla caída.
 
 Implementación: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, hueco G en `skills.js`,
-`src/ui/pearlpanel.js`. Pruebas nuevas: `tests/pearls.test.mjs` (17); escenario visual `SCEN=pearl` en `tools/look.mjs`.
+`src/ui/pearlpanel.js`. Pruebas: `tests/pearls.test.mjs` (17), `tests/escarcha.test.mjs` (14); escenarios visuales
+`SCEN=pearl` y `SCEN=escarcha` en `tools/look.mjs`.
 Los assets FAB elegidos por el autor se integrarán mediante `docs/ASSETS.md`; esta entrega conserva el arte procedural.

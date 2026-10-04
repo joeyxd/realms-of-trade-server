@@ -91,6 +91,7 @@ function phases(id, S = SKILLS[id]) {
   if (id === 'blast') return [S.windup, 0, S.root];
   if (id === 'blink') return [0, 0, S.recover];
   if (id === 'tromba') return [S.windup, 0, S.recover];
+  if (id === 'iceanchor') return [S.windup, 0, S.recover];
   if (id === 'leap') return [S.windup, S.blink ? 0 : S.air, S.recover];
   return [0, 0, 0]; // the wheel's charge has no fixed phases: it lasts as long as you hold
 }
@@ -177,6 +178,7 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
     else if (id === 'blast') fireBlast(world, e, pt, seq);
     else if (id === 'blink') blink(world, e, cmd, seq);
     else if (id === 'tromba') castTromba(world, e, cmd, S, ecs[SLOT_COLS[slot].fm][e], pt, seq);
+    else if (id === 'iceanchor') castIceanchor(world, e, cmd, S, pt, seq);
     else if (id === 'leap' && S.blink) leapBlink(world, e, cmd, S, seq);
   }
   if (t1 >= w + a + r) cancelCast(ecs, e);
@@ -189,9 +191,10 @@ export function castPose(ecs, e) {
   if (id === 'lunge' || id === 'comet') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };
-  if (id === 'tromba' || id === 'leap' || id === 'wheel') {
+  if (id === 'tromba' || id === 'iceanchor' || id === 'leap' || id === 'wheel') {
     const S = skillNum(ecs, e, slot);
     if (id === 'tromba') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
+    if (id === 'iceanchor') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
     if (id === 'wheel') return { move: S.move, act: ACT.CHARGE };
     if (S.blink) return { move: 1, act: ACT.CAST };
     return { move: ecs.castT[e] < S.windup + S.air ? 0 : 0.5, act: ACT.LEAP };
@@ -208,7 +211,7 @@ function cometStep(world, e, t0, t1, pt, seq) {
   for (let i = 0; i < steps; i++) moveWithCollision(world, e, ecs.castX[e] * want / steps, ecs.castZ[e] * want / steps);
   const x1 = ecs.x[e], z1 = ecs.z[e];
   clearParry(world, e, onSegment(x0, z0, x1, z1, S.width), pt, seq, 'comet', 0, 0);
-  if (world.isServer) world.pathHits(e, x0, z0, x1, z1, S.width, S.mult, ecs.swingId[e], { skill: 'comet', knock: 4 }, pt, seq);
+  if (world.isServer) world.pathHits(e, x0, z0, x1, z1, S.width, S.mult, ecs.swingId[e], { skill: 'comet', knock: 4, fire: 1 }, pt, seq);
   if (world.isServer && Math.hypot(x1 - x0, z1 - z0) > 0.05) {
     const trails = world.fireTrails || (world.fireTrails = []);
     if (trails.length < 256) trails.push({ e, x0, z0, x1, z1, castId: ecs.swingId[e],
@@ -419,6 +422,15 @@ function aimAt(ecs, e, cmd, min, max) {
   return [ecs.x[e] + dx * k, ecs.z[e] + dz * k];
 }
 const ticks = (s) => Math.max(1, Math.round(s / DT));
+
+function castIceanchor(world, e, cmd, S, pt, seq) {
+  const ecs = world.ecs, [x, z] = aimAt(ecs, e, cmd, 0, S.range);
+  const owner = world.fieldOwner || e, t0 = pt, tEnd = pt + ticks(S.dur);
+  ecs.icX[e] = x; ecs.icZ[e] = z; ecs.icT0[e] = t0; ecs.icEnd[e] = tEnd; ecs.icSeq[e] = seq;
+  const field = { type: 'frostField', e: owner, seq, x, z, r: S.r, t0, tEnd, slow: S.slow, predicted: !world.isServer };
+  world.hazards.addFrostField(field);
+  world.emit(field);
+}
 
 // ---- Tromba ----------------------------------------------------------------------------------------------
 // The end of the windup: the column will land `delay` s later on the aim point. trT0 > 0: the impact tick, still to

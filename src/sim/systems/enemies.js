@@ -93,6 +93,7 @@ export function setAct(ecs, e, a) { if (ecs.act[e] !== a) { ecs.act[e] = a; ecs.
 
 export function steer(world, e, def, vx, vz, dt) {
   const ecs = world.ecs;
+  const slow = world.enemyMoveMul ? world.enemyMoveMul(e) : 1;
   // Keep a little space between enemies.
   for (let o = 1; o < ecs.cap; o++) {
     if (o === e || !ecs.alive[o] || !(ecs.mask[o] & C.ENEMY)) continue;
@@ -100,6 +101,7 @@ export function steer(world, e, def, vx, vz, dt) {
     const m = ecs.radius[e] + ecs.radius[o] + 0.6;
     if (d < m && d > 1e-6) { vx += (dx / d) * (m - d) * 4; vz += (dz / d) * (m - d) * 4; }
   }
+  vx *= slow; vz *= slow;
   const k = 1 - Math.exp(-8 * dt);
   ecs.vx[e] += (vx - ecs.vx[e]) * k;
   ecs.vz[e] += (vz - ecs.vz[e]) * k;
@@ -135,6 +137,11 @@ function chooseAttack(def, b, d) {
 
 export function stepEnemy(world, e, dt) {
   const ecs = world.ecs, def = defOf(ecs, e), b = ecs.brain[e];
+  if (world.chills?.get(e)?.freezeUntil > world.tick) {
+    ecs.vx[e] = ecs.vz[e] = ecs.moveMag[e] = 0;
+    setAct(ecs, e, ACT.STAGGER);
+    return;
+  }
   ecs.actT[e] += dt;
   b.t += dt; b.sinceHit += dt; b.gcd -= dt;
   if (b.foeT > 0) b.foeT -= dt;
@@ -295,6 +302,7 @@ export function fire(world, e, def, b, a) {
     n: a.n || 1, gap: a.gap || 0, spread: a.spread || 0, speed: a.speed, dmg: a.dmg,
     x: mx, y: my, z: mz, ang: a.omni ? f + (b.spin || 0) : f, slope,
   };
+  if (a.fire) ev.fire = 1;
   if (a.arms) ev.arms = a.arms;
   if (a.waves) ev.waves = a.waves;
   if (a.life) ev.life = a.life; // short-lived (the Desalmada's point-blank spray)

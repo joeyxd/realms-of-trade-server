@@ -79,6 +79,7 @@ export class DevPanel {
         <button data-op="heal">Curar</button>
         <button data-op="riposte">Riposte lleno</button>
         <button data-op="pearl">+ Perla de Brasa</button>
+        <button data-op="pearl" data-kind="escarcha">+ Perla de Escarcha</button>
         <button data-op="lvdown">Nv −</button>
         <button data-op="lvup">Nv +</button>
         <button data-op="weapon">Arma: cambiar</button>
@@ -121,7 +122,7 @@ export class DevPanel {
       case 'enc': this.send('enc', { sub: d.sub }); break;
       case 'heal': this.send('heal'); break;
       case 'riposte': this.send('riposte'); break;
-      case 'pearl': this.send('pearl', { kind: 'brasa' }); break;
+      case 'pearl': this.send('pearl', { kind: d.kind || 'brasa' }); break;
       case 'lvup': this.send('level', { level: (ps.level[e] || 1) + 1 }); break;
       case 'lvdown': this.send('level', { level: Math.max(1, (ps.level[e] || 1) - 1) }); break;
       case 'weapon': this.send('weapon', { weapon: ((ps.weapon[e] | 0) + 1) % WEAPON_KINDS.length }); break;

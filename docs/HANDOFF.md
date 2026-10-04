@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (233 tests, incluyendo 17 de perlas)
+tests/        node --test (247 tests, incluyendo 17 de perlas y 14 de Escarcha)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -47,7 +47,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
-| M4.8 «Perlas negras» | **en curso**: Brasa y circulación jugables; faltan Escarcha, Tormenta, Tinta y cierre (`PLAN-M4.8.md`) |
+| M4.8 «Perlas negras» | **en curso**: Brasa, Escarcha y circulación jugables; faltan Tormenta, Tinta y cierre (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
@@ -69,21 +69,33 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
-### M4.8 en curso — checkpoint Brasa (`0.4.8-alpha.1`)
+### M4.8 en curso — checkpoint Escarcha (`0.4.8-alpha.2`)
 
 - Base compartida: perfil `pirateId` / `pearls`, ledger UID en memoria, botín público, bolsa de 8, confirmación
   con UID anterior, entregar a otro pirata, vender, escupir, caída al morir en cualquier zona y retorno a playa tras 90 s.
 - Brasa: G / cruceta abajo / botón COMETA. Embestida predicha, colisiones, limpieza de balas parreables, estela
   ardiente de 2 s; quemadura de todo el kit y maldición al vadear. El poder no se puede poner en Q/E.
-- Pestaña Perlas (P), HUD G, VFX naranja iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
+- Escarcha: G / cruceta abajo / botón ANCLA. Campo apuntado (mantener/soltar), alcance 10 u, radio 3 u, 4 s,
+  CD 16 s; ralentiza al 50 % a NPC enemigos y balas hostiles. Golpes ralentizan 30 % durante 3 s y tres congelan
+  0,6 s (jefes nunca). Fuego/lava recibido ×1.5; fuentes físicas normales conservan su daño.
+- Balas: trayectoria analítica con historia de campos y obstáculos; no se acelera la bala al expirar un campo.
+  Snapshot `frost` completo, dedupe por pirata/secuencia, rollback del cast rechazado y recuperación de eventos
+  perdidos. Estado predicho `icX/icZ/icT0/icEnd/icSeq`. El renderer usa la misma trayectoria que el combate.
+- Pestaña Perlas (P), HUD G, VFX naranja/azul iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
   perla en solo para probar; cerrar el panel y esperar 4 s antes de G.
 - Archivos de entrada: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, `skills.js`,
-  `src/ui/pearlpanel.js`. Próximo paso concreto: **P2 Escarcha** en `PLAN-M4.8.md`.
-- **Protocolo 8**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
+  `src/ui/pearlpanel.js`, `src/sim/projectiles.js`, `src/render/vfx/frostfx.js`. Próximo paso concreto:
+  **P3 Tormenta** en `PLAN-M4.8.md`; M5 sigue en plan, sin capa de almacenamiento implementada.
+- **Protocolo 9**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
   no sobrevive a reinicios; M5 debe cerrar los duplicados antes de introducir perlas únicas.
-- Validación: 233 tests (231 sin red + 2 de red); capturas y recorrido de panel/confirmación/G en desktop y
-  móvil emulado 844×390. VFX de Cometa capturados con partículas detenidas por el render de software. Falta
+- Validación: 247 tests (245 sin red + 2 de red), incluidas 14 de Escarcha. Revisión previa de Brasa: panel,
+  confirmación/G en desktop y móvil emulado 844×390; Cometa con partículas detenidas por el render de software. Falta
   aceptación a 60 fps con GPU y dispositivos reales. `shots/review/` contiene evidencia local, ignorada por Git.
+- Escarcha: panel y apuntado/cancelación en desktop 1280×720; panel, botón ANCLA dentro de pantalla y lanzamiento
+  táctil en móvil emulado 844×390. Capturas inspeccionadas en `shots/review/escarcha-desktop/` y
+  `shots/review/escarcha-mobile/`. El escenario detiene el campo ya aceptado por el servidor para capturarlo
+  con SwiftShader; no certifica rendimiento. Sin errores JS de juego; avisos del render de software y fuentes
+  Google bloqueadas durante el recorrido. Tras revisar la integración, 37/37 pruebas de Escarcha/apuntado/tatuajes.
 - `package-lock.json` corregido: Three.js 0.160 viene del registro npm, sin enlaces a carpetas temporales;
   `npm ci` comprobado en instalación limpia. `tools/look.mjs` acepta Playwright/Chrome instalados en Windows.
 - No se han seleccionado/importado assets FAB. El autor los está revisando; la mecánica conserva el arte
@@ -100,7 +112,7 @@ autor.
 - El autor autorizó iniciar la exploración Unreal/FAB en paralelo mientras redacta sus decisiones. Ruta fuente
   confirmada: `C:\Unreal` (tres proyectos), inventario de solo lectura con Luna, contenido adicional y su portabilidad/utilidad;
   excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
-- Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Brasa.
+- Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Escarcha.
 
 ### Inventario Unreal terminado (2026-10-04)
 
@@ -130,7 +142,7 @@ autor.
   CDN). Mirar las capturas antes de dar algo por bueno.
   En Windows: `MN_PLAYWRIGHT` = ruta absoluta al `index.mjs` de Playwright; `MN_BROWSER` = ruta al Chrome/Edge
   instalado. `MN_THREE` / `MN_GSAP` = carpetas de los paquetes locales si el CDN está bloqueado. `SCEN=pearl`
-  prueba esta entrega; para móvil `PHONE=1`, `VW=844`, `VH=390`.
+  prueba Brasa y `SCEN=escarcha` prueba esta entrega; para móvil `PHONE=1`, `VW=844`, `VH=390`.
 - **Artefacto** (la versión que se juega en claude.ai, modo solo): construir desde lo **commiteado**, no desde el
   árbol de trabajo:
   ```bash

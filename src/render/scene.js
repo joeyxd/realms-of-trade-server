@@ -22,6 +22,7 @@ import { Afterimages } from './vfx/afterimage.js';
 import { WeaponFx } from './vfx/weaponfx.js';
 import { Indicators } from './vfx/indicators.js';
 import { SkillFx } from './vfx/skillfx.js';
+import { FrostFx } from './vfx/frostfx.js';
 import { LootLayer } from './loot.js';
 import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
@@ -117,6 +118,7 @@ export class GameScene {
     // M4.7: aiming marks (yours, and every pirate's Tromba on its way) and the tattoos' VFX.
     this.indicators = new Indicators(this.scene, map);
     this.skillFx = new SkillFx(this.scene, this.effects, this.combatFx, this.after, map, (e) => this.views.get(e) || null);
+    this.frostFx = new FrostFx(this.scene, map);
     this.time = 0;
     this.focus = new THREE.Vector3();
     this.tmpV = new THREE.Vector3();
@@ -297,6 +299,7 @@ export class GameScene {
       this.weaponFx.update(sim, ctx.combat.tick, ctx.combat.caught);
       this.indicators.update(dt, ctx.combat.tick);
       this.skillFx.update(sim, ctx.combat.tick);
+      this.frostFx.update(ctx.combat.hazards.frostFields, ctx.combat.tick);
     }
     this.combatFx.update(sim);
     if (this.calaRing) this.calaRing.update(dt, !!ctx.lawless);

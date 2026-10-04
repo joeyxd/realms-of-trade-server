@@ -17,6 +17,7 @@ const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
 const VIOLET = [0.85, 0.6, 1], VIOLET1 = [0.45, 0.2, 0.9];
 const BONE = [1, 0.95, 0.85], BONE1 = [0.9, 0.7, 0.4];
+const FROST = [0.64, 0.96, 1], FROST1 = [0.2, 0.76, 1];
 
 export class Feedback {
   constructor({ world, client, hud, worldUI, loop, settings, map, ps, onTutorial }) {
@@ -32,12 +33,13 @@ export class Feedback {
     };
   }
 
-  get accent() { return this.ps.elem === 1 ? 0xff793b : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
   // A player's accent color (yours, or another player's by their look).
   colorOf(e) {
     if (e === this.client.youServer) return this.accent;
     const rec = this.client.entities.get(e);
     if (rec?.r?.elem === 1) return 0xff793b;
+    if (rec?.r?.elem === 2) return 0x72eaff;
     return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
   }
   me() { return this.world.views.get(this.client.youServer); }
@@ -128,7 +130,7 @@ export class Feedback {
         if (v) { v.flash(0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : CYAN, ev.elem === 1 ? AMBER1 : CYAN1);
+          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : CYAN1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;
@@ -299,7 +301,32 @@ export class Feedback {
           W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e));
           sfx.leap(vol);
         }
-        if (me) this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        if (me && ev.skill !== 'iceanchor') this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        break;
+      }
+      case 'frostField': {
+        const vol = me ? 1 : this.vol(ev.x, ev.z);
+        // The field itself is drawn from the live hazard snapshot; this event is only its one-shot onset.
+        sfx.iceAnchor(vol);
+        if (me) { this.hud.pulse('g'); this.shake(0.12); }
+        break;
+      }
+      case 'chill': {
+        const v = this.viewOf(ev.id), rec = this.client.entities.get(ev.id);
+        if (v) v.flash(0x84eaff, 0.55);
+        this.sparks(ev.x, (rec ? rec.r.y : this.y(ev.x, ev.z)) + 0.9, ev.z, 4, FROST, FROST1, { gravity: -0.8, life: 0.42, spread: 1.8, up: 1.2 });
+        sfx.iceHit(this.vol(ev.x, ev.z));
+        break;
+      }
+      case 'freeze': {
+        const v = this.viewOf(ev.id), rec = this.client.entities.get(ev.id);
+        const y = rec ? rec.r.y : this.y(ev.x, ev.z), vol = this.vol(ev.x, ev.z);
+        if (v) v.flash(0xc9f8ff, 0.95);
+        W.combatFx.ring(ev.x, y + 0.08, ev.z, 1.25, 0x9cefff, 0.8, 0.1, 0.65);
+        this.sparks(ev.x, y + 1, ev.z, 12, FROST, [1, 1, 1], { gravity: -1.2, life: 0.65, spread: 2.1, up: 1.8, size: 0.22, size1: 0.09 });
+        this.float(ev.x, ev.z, (v ? v.height : 1.8) + 0.55, 'CONGELADO', 'immune', { life: 1.05, rise: 16, spread: 4 });
+        sfx.freeze(vol);
+        if (me) this.shake(0.18);
         break;
       }
       // ---- tattoos (M4.7) ----

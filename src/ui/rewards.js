@@ -171,7 +171,11 @@ export class Rewards {
         sfx.denied(); H.toast(`<b>${why[ev.why] || why.unknown}</b>`, 5000); break;
       }
       case 'pearlChanged': {
-        if (ev.op === 'swallow') { sfx.mastery(); H.toast('<b>Brasa arde en ti.</b> G: Cometa. Tus golpes queman; cuidado con el agua.', 6200); }
+        if (ev.op === 'swallow') {
+          const P = PEARLS[ev.pearl?.kind];
+          sfx.mastery();
+          H.toast(P ? `<b>${esc(P.name)} tragada.</b> G: ${esc(SKILLS[P.skill].name)}. ${esc(P.passive)} <small>${esc(P.curse)}</small>` : '<b>Perla tragada.</b> Tu poder está en G.', 6200);
+        }
         else if (ev.op === 'death') H.toast('<b>Tus perlas cayeron al suelo.</b> Vuelve por ellas: cualquiera puede tomarlas.', 6000);
         else if (ev.op === 'sell') { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold'); }
         else { sfx.equip(); H.toast(ev.op === 'give' ? '<b>Perla entregada.</b>' : '<b>Perla en el suelo.</b> Cualquiera puede recogerla.', 3600); }

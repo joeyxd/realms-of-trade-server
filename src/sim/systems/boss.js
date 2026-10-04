@@ -160,7 +160,7 @@ function bossWindup(world, e, def, b, a, tx, tz) {
     for (let k = 0; k < a.beams; k++) {
       b.lasers.push(world.addBeam({
         owner: e, kind: 'laser', x0: ecs.x[e], z0: ecs.z[e], ang0: f + (k / a.beams) * Math.PI * 2, omega: om,
-        off: a.off, len: a.len, w: a.w, tAct, tEnd: tAct + Math.round(a.dur / DT), dmg: a.dmg, every: Math.round(a.every / DT),
+        off: a.off, len: a.len, w: a.w, tAct, tEnd: tAct + Math.round(a.dur / DT), dmg: a.dmg, every: Math.round(a.every / DT), fire: a.fire,
       }));
     }
   } else if (a.kind === 'lanes') {
@@ -172,7 +172,7 @@ function bossWindup(world, e, def, b, a, tx, tz) {
       world.addBeam({
         owner: e, kind: 'lane', x0: c.x + px * o - dx * a.len / 2, z0: c.z + pz * o - dz * a.len / 2, ang0: th,
         vx: px * a.speed, vz: pz * a.speed, off: 0, len: a.len, w: a.w, tAct, tEnd: tAct + Math.round(a.dur / DT),
-        dmg: a.dmg, every: Math.round(a.every / DT), travel,
+        dmg: a.dmg, every: Math.round(a.every / DT), travel, fire: a.fire,
       });
     }
   }
@@ -193,7 +193,7 @@ export function bossFire(world, e, def, b, a) {
         const r = Math.sqrt(world.rng()) * R, an = world.rng.range(0, Math.PI * 2);
         x = c.x + Math.sin(an) * r; z = c.z + Math.cos(an) * r;
       }
-      world.addAoe({ owner: e, x, z, r: a.r, tAct: world.tick + Math.round((a.tele + i * a.stagger) / DT), dmg: a.dmg, keep: 1, fall: 'meteor', fx: x + 4, fz: z - 3, fy: ecs.y[e] + 22 });
+      world.addAoe({ owner: e, x, z, r: a.r, tAct: world.tick + Math.round((a.tele + i * a.stagger) / DT), dmg: a.dmg, keep: 1, fire: a.fire, fall: 'meteor', fx: x + 4, fz: z - 3, fy: ecs.y[e] + 22 });
     }
     b.fireDur = a.recover + 0.3;
     return true;
