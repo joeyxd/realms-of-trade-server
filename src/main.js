@@ -22,12 +22,14 @@ import { GameClient } from './client/gameClient.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
+import { gpuInfo } from './render/gpu.js';
 import { TitleScreen } from './ui/title.js';
 import { Hud, drawPortrait } from './ui/hud.js';
 import { WorldUI } from './ui/worldui.js';
 import { PauseMenu } from './ui/pause.js';
 import { TouchControls } from './ui/touch.js';
 import { Feedback } from './ui/feedback.js';
+import { comic } from './ui/comic.js';
 import { DevPanel } from './ui/devpanel.js';
 import { DebugDraw } from './render/debugdraw.js';
 import { Rewards } from './ui/rewards.js';
@@ -92,7 +94,11 @@ async function boot() {
   const music = new Music();
   const reduced = () => settings.reducedMotion;
 
-  const quality = new Quality((cfg) => world.applyQuality(cfg), settings.quality, isTouch);
+  // The GPU's name and class, read once: AUTO starts a strong one on Ultra, and the settings show it.
+  const gpu = safe('gpu', () => gpuInfo(world.renderer, isTouch)) || { name: '', tier: 'mid' };
+  const quality = new Quality((cfg) => world.applyQuality(cfg), settings.quality, isTouch, gpu.tier);
+  // Comic hits (impact frames, speed lines, onomatopoeia): Ultra only, and the player can turn them off.
+  comic.configure({ pipeline: world.pipeline, camera: world.camera, worldUI, settings, isOn: () => quality.current === 'ultra' && settings.comicFx !== false });
   const studio = safe('portrait', () => new PortraitStudio(world.renderer));
   const portrait = (i) => (studio ? safe('portrait', () => studio.render(i)) : null);
   // The stage (not the window) is what the renderer and the world-anchored UI are sized to.
@@ -108,6 +114,7 @@ async function boot() {
     titleAngle: 0.6,
     perf: params.has('perf'),
     fps: 60,
+    gpu,
   };
   const ps = {
     x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, mag: 0, wade: 0, dashT: -1, dashes: 0, charges: 1, maxCharges: 1, recharge: 0, iframes: 0,
@@ -185,6 +192,7 @@ async function boot() {
     },
     onResume: () => closePause(),
     onNewGame: () => { resetSave(); location.reload(); },
+    gpu: () => st.gpu,
   });
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
@@ -939,7 +947,7 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, panels: { charPanel, dialog, mapView } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, panels: { charPanel, dialog, mapView } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

@@ -8,6 +8,7 @@ export const defaults = {
   master: 0.8, sfx: 0.9, music: 0.55, ambience: 0.8, muted: false,
   quality: 'auto', shake: 1, reducedMotion: reduced, uiScale: 1, highContrast: false, landscape: true, touchSize: 1, haptics: true,
   skin: 0, name: '', camRotate: false, timeOfDay: 'cycle', weapon: 'sable',
+  comicFx: true, // impact frames, speed lines and onomatopoeia; only act on the Ultra tier (M4.7)
 };
 
 export const settings = { ...defaults };

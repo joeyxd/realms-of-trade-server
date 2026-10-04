@@ -27,9 +27,10 @@ float mnIsFloor(vec3 wn) {
   return step(a.x, a.y) * step(a.z, a.y);
 }
 
-// 1 near the camera, 0 from ~75 u: far detail only costs and shimmers. 0 everywhere on the low tier (mnInk).
+// 1 near the camera, 0 from ~75 u: far detail only costs and shimmers. 0 everywhere on the low tier (mnInk;
+// min() keeps it at 1 on Ultra, whose extra ink is the comic shading, not more painted detail).
 float mnDetailFade() {
-  return mnInk * (1.0 - smoothstep(42.0, 75.0, distance(vMnWorld, cameraPosition)));
+  return min(mnInk, 1.0) * (1.0 - smoothstep(42.0, 75.0, distance(vMnWorld, cameraPosition)));
 }
 
 // x = hue in turns [0, 1), y = saturation, z = value.

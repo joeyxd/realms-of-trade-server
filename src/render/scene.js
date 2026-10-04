@@ -126,13 +126,13 @@ export class GameScene {
 
   applyQuality(cfg) {
     this.qcfg = cfg;
-    this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa });
+    this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa, comic: cfg.comic ?? 0, outlineMul: cfg.outlineMul ?? 1 });
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles, cfg.outlines);
     this.lights.max = cfg.lights;
     this.water.material.uniforms.uWaves.value = cfg.waves;
     U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
-    U.mnInk.value = cfg.ink ?? 1; // comic hatching + painted detail (off on low)
+    U.mnInk.value = cfg.ink ?? 1; // 0 low: no comic hatching or painted detail; 1 medium / high; 2 ultra (deeper bands, halftone)
     this.onResize();
   }
 
@@ -255,6 +255,7 @@ export class GameScene {
   update(dt, ctx) {
     this.time += dt;
     U.mnTime.value = this.time;
+    this.pipeline.update(dt);
     this.focus.copy(ctx.focus);
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
     U.mnOccOn.value = ctx.playing ? 1 : 0;

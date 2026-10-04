@@ -174,7 +174,7 @@ cambia (`ax/az` ya es el punto apuntado).
 ## 3. Pasos
 
 - [x] **P0** Este plan.
-- [ ] **P1** Cómic Ultra (2.1): gpu.js + test, tier `ultra`, ajustes, sombras, contornos, pasada final,
+- [x] **P1** Cómic Ultra (2.1): gpu.js + test, tier `ultra`, ajustes, sombras, contornos, pasada final,
       viñetas de impacto, líneas, onomatopeyas.
 - [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
 - [ ] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
@@ -193,3 +193,9 @@ cambia (`ax/az` ya es el punto apuntado).
   recuperación, Doña Sepia en la aldea (uv −102, 3; aún con el aspecto de Tía Perla), `elem` en cada golpe (se
   copia al evento `damage` / `hurt`). `PROTOCOL_VERSION` 6 (el `you` creció). Un tatuaje sin lanzamiento en Q/E no
   hace nada hasta P3. 166 tests.
+- P1: `src/render/gpu.js` clasifica la GPU (`WEBGL_debug_renderer_info`; sin él, `high`); en AUTO una GPU fuerte
+  arranca en Ultra. `tierConfig('ultra')`: `mnInk` 2 (tramas Ben-Day de celda 0.30, rayado más denso, contornos
+  × 1.3, banda honda de personajes 0.30 para que no se ennegrezcan en La Caldera). `pipeline.impact()` (viñeta,
+  líneas de velocidad con semilla) y `ui/comic.js` (onomatopeyas 42 / 66 px con trazo de 6 px, pop en un span
+  interno), solo en Ultra y con el ajuste «Efectos de cómic». En swiftshader rinde como Alto. **El autor revisa
+  el aspecto** y manda los ajustes.

@@ -15,6 +15,7 @@
 .panel .tab[aria-selected='true'] { background: linear-gradient(180deg, var(--brass-l), var(--brass)); color: var(--ink); }
 .panel .section { display: grid; gap: 10px; padding: 12px 14px; background: rgba(20, 10, 30, 0.42); border-radius: 10px; box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 12px; align-items: center; font-weight: 800; }
+.row-note { margin-top: -6px; font-size: 12px; font-weight: 700; color: var(--text-dim); opacity: 0.85; overflow-wrap: anywhere; }
 .row label { color: var(--text); text-shadow: 0 1px 0 var(--ink); }
 .row input[type='range'] { width: 100%; accent-color: var(--brass); }
 .row select {

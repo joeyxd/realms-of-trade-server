@@ -79,13 +79,14 @@ void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }
 // depth edge. Never faded. 12 + 4 texture reads per pixel, no extra pass.
 const COMPOSITE_FRAG = /* glsl */ `
 #include <packing>
-// Line widths in uThick units: world silhouette (both sides), character silhouette (inside / outside), crease.
-const float W_SIL = 1.5, W_CHAR_IN = 0.8, W_CHAR_OUT = 2.5, W_CREASE = 0.5;
+// Line widths in uThick units: world silhouette (both sides), character silhouette (inside / outside); the crease
+// width is a uniform (0.5, 0.7 on Ultra).
+const float W_SIL = 1.5, W_CHAR_IN = 0.8, W_CHAR_OUT = 2.5;
 uniform sampler2D tColor;
 uniform sampler2D tNormal;
 uniform sampler2D tDepth;
 uniform vec2 uTexel;
-uniform float uNear, uFar, uThick, uDepthThr, uNormalThr, uFadeNear, uFadeFar;
+uniform float uNear, uFar, uThick, uDepthThr, uNormalThr, uFadeNear, uFadeFar, uCreaseW;
 uniform vec3 uOutline;
 varying vec2 vUv;
 float linD(float raw) { return -perspectiveDepthToViewZ(raw, uNear, uFar); }
@@ -109,7 +110,7 @@ void main() {
   float thr = uDepthThr * dmin * (1.0 + 5.0 * (1.0 - ndv));
   float de = smoothstep(thr, thr * 1.7, g);
   // Creases: normal jumps, thin.
-  vec2 o1 = uTexel * max(1.0, uThick * W_CREASE);
+  vec2 o1 = uTexel * max(1.0, uThick * uCreaseW);
   vec4 t1 = texture2D(tNormal, vUv + o1), t2 = texture2D(tNormal, vUv - o1);
   vec4 t3 = texture2D(tNormal, vUv + vec2(-o1.x, o1.y)), t4 = texture2D(tNormal, vUv + vec2(o1.x, -o1.y));
   float ng = (length(t1.rgb - t2.rgb) + length(t3.rgb - t4.rgb)) * 2.0; // packed *0.5 + 0.5: back to normal scale
@@ -177,12 +178,19 @@ void main() {
 // Final: bloom, grading (S-curve contrast, split toning, saturation, vignette, danger, capped screen flash,
 // slow-mo chroma) and
 // FXAA (medium) or bilinear downsample of the supersampled buffer (high), + output color space.
+// Ultra (uComic = 1): +0.08 contrast and saturation, a vignette toward ink instead of black, a static paper grain,
+// the impact frame (uImpact: two-tone ink and paper print in the hit's colour) and radial speed lines (uLines)
+// from uLinesPos. One branch on a uniform; nothing else costs anything when it is 0.
 const FINAL_FRAG = /* glsl */ `
 uniform sampler2D tInput;
 uniform vec2 uTexel;
 uniform float uFxaa;
 uniform float uVignette, uSat, uChroma, uDanger, uFlash, uContrast, uSplit, uBloom;
 uniform vec3 uFlashColor, uSplitShadow, uSplitHigh;
+uniform float uComic, uImpact, uLines, uSeed;
+uniform vec2 uImpactPos, uLinesPos;
+uniform vec3 uImpactCol;
+float cHash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 uniform sampler2D tBloom;
 uniform int uView;
 varying vec2 vUv;
@@ -206,6 +214,7 @@ vec3 fxaa(vec2 uv) {
   return (lB < lMin || lB > lMax) ? a : b;
 }
 void main() {
+  float comic = step(0.5, uComic);
   vec3 col = uFxaa > 0.5 ? fxaa(vUv) : texture2D(tInput, vUv).rgb;
   if (uChroma > 0.0001) {
     vec2 dir = (vUv - 0.5) * uChroma;
@@ -220,18 +229,49 @@ void main() {
   // highlights toward another (luma-neutral tints), then saturation.
   vec3 lw = vec3(0.2126, 0.7152, 0.0722);
   vec3 p = sqrt(max(col, 0.0));
-  p = mix(p, p * p * (3.0 - 2.0 * p), uContrast);
+  p = mix(p, p * p * (3.0 - 2.0 * p), uContrast + 0.08 * comic);
   float pl = dot(p, lw);
   p += (uSplitShadow - dot(uSplitShadow, lw)) * (1.0 - smoothstep(0.05, 0.55, pl)) * uSplit;
   p += (uSplitHigh - dot(uSplitHigh, lw)) * smoothstep(0.45, 0.95, pl) * uSplit;
   col = max(p, 0.0);
   col *= col;
   float l = dot(col, lw);
-  col = mix(vec3(l), col, uSat);
+  col = mix(vec3(l), col, uSat + 0.08 * comic);
   float r = length((vUv - 0.5) * vec2(1.25, 1.0));
-  col *= 1.0 - uVignette * smoothstep(0.42, 0.95, r);
+  const vec3 INK = vec3(0.07, 0.04, 0.14);
+  float vig = uVignette * smoothstep(0.42, 0.95, r);
+  col = comic > 0.5 ? mix(col, INK, vig) : col * (1.0 - vig);
   col = mix(col, col * vec3(1.0, 0.35, 0.3) + vec3(0.25, 0.0, 0.0), uDanger * smoothstep(0.35, 0.9, r));
   col = 1.0 - (1.0 - col) * (1.0 - min(uFlash, 0.8) * uFlashColor);
+  if (uComic > 0.5) {
+    // Paper grain: static, in screen pixels (2 px blocks), +-1.25 %.
+    col *= 1.0 - 0.025 * (cHash(floor(gl_FragCoord.xy / 2.0)) - 0.5);
+    // Impact frame: the picture as a two-tone print (paper where it is light, ink tinted by the hit's colour where dark).
+    if (uImpact > 0.001) {
+      float L = dot(sqrt(max(col, 0.0)), lw);
+      // The print's colours are display values (squared into the linear buffer): near-black ink, a hint of the hit's colour, cream paper.
+      vec3 dark = mix(INK, sqrt(uImpactCol) * 0.4, 0.25), paper = vec3(0.98, 0.95, 0.86);
+      vec3 print = mix(dark * dark, paper * paper, smoothstep(0.43, 0.47, L));
+      col = mix(col, print, uImpact * 0.9);
+    }
+    // Speed lines: ~56 angular sectors round the hit, ~30 % of them hold a wedge that widens outward, starting
+    // 0.16-0.3 screen heights out. No loops, no texture reads.
+    if (uLines > 0.001) {
+      vec2 d = (vUv - uLinesPos) * vec2(uTexel.y / uTexel.x, 1.0);
+      float rr = length(d);
+      float sec = atan(d.y, d.x) * (56.0 / 6.2831853);
+      float id = floor(sec);
+      float h = cHash(vec2(id, uSeed));
+      if (h < 0.3 && rr > 0.12) {
+        float h2 = fract(h * 91.7), h3 = fract(h * 37.3);
+        float rIn = mix(0.16, 0.3, h2);
+        float halfW = mix(0.12, 0.34, h3) * smoothstep(rIn, rIn + 0.55, rr); // in sector units, 0 at the tip
+        float aa = uTexel.y / max(rr, 0.05) * (56.0 / 6.2831853) * 0.9;
+        float line = (1.0 - smoothstep(halfW - aa, halfW + aa, abs(fract(sec) - 0.5))) * smoothstep(rIn - 0.01, rIn + 0.02, rr);
+        col = mix(col, INK, line * uLines * 0.6);
+      }
+    }
+  }
   gl_FragColor = vec4(col, 1.0);
   #include <colorspace_fragment>
   // Dither to 8 bits (interleaved gradient noise): no banding in dark skies and glow halos.
@@ -256,7 +296,8 @@ export class Pipeline {
     this.scene = scene;
     this.camera = camera;
     this.quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    this.q = { pixelRatio: 1, ss: 1, outlines: true, fxaa: true };
+    this.q = { pixelRatio: 1, ss: 1, outlines: true, fxaa: true, comic: 0, outlineMul: 1 };
+    this.hit = { frames: 0, lastT: -1e9, linesK: 0, linesT: 0 }; // comic impact state (impact())
     this.size = new THREE.Vector2(1, 1);
     this.defaultNormal = worldNormalMat(); // line weight 0.5
     this.casters = [];
@@ -284,7 +325,7 @@ export class Pipeline {
         tColor: { value: this.rtMain.texture }, tNormal: { value: this.rtNormal.texture }, tDepth: { value: this.rtNormal.depthTexture },
         uTexel: { value: new THREE.Vector2() }, uNear: { value: camera.near }, uFar: { value: camera.far },
         uThick: { value: 2 }, uDepthThr: { value: 0.022 }, uNormalThr: { value: 0.55 },
-        uFadeNear: { value: 90 }, uFadeFar: { value: 210 }, uOutline: { value: new THREE.Color(tuning.visual.outlineColor) },
+        uFadeNear: { value: 90 }, uFadeFar: { value: 210 }, uCreaseW: { value: 0.5 }, uOutline: { value: new THREE.Color(tuning.visual.outlineColor) },
       },
       vertexShader: FS_QUAD_VERT, fragmentShader: COMPOSITE_FRAG, depthTest: false, depthWrite: false,
     });
@@ -299,6 +340,8 @@ export class Pipeline {
         uFlash: { value: 0 }, uFlashColor: { value: new THREE.Color(1, 1, 1) },
         uContrast: { value: 0 }, uSplit: { value: 0 }, uSplitShadow: { value: new THREE.Color() }, uSplitHigh: { value: new THREE.Color() },
         tBloom: { value: null }, uBloom: { value: 0 }, uView: { value: 0 },
+        uComic: { value: 0 }, uImpact: { value: 0 }, uImpactPos: { value: new THREE.Vector2(0.5, 0.5) }, uImpactCol: { value: new THREE.Color(1, 1, 1) },
+        uLines: { value: 0 }, uLinesPos: { value: new THREE.Vector2(0.5, 0.5) }, uSeed: { value: 0 },
       },
       vertexShader: FS_QUAD_VERT, fragmentShader: FINAL_FRAG, depthTest: false, depthWrite: false,
     });
@@ -325,6 +368,12 @@ export class Pipeline {
 
   setQuality(q) {
     Object.assign(this.q, q);
+    // Ultra inks bolder: creases 0.5 -> 0.7 and the world's lines hold out to 140 / 320 u instead of 90 / 210.
+    const ultra = this.q.comic > 0, cu = this.composite.uniforms;
+    cu.uCreaseW.value = ultra ? 0.7 : 0.5;
+    cu.uFadeNear.value = ultra ? 140 : 90; cu.uFadeFar.value = ultra ? 320 : 210;
+    this.final.uniforms.uComic.value = ultra ? 1 : 0;
+    if (!ultra) { this.hit.frames = 0; this.hit.linesT = 0; }
     if (this.water) this.water.setMode(this.q.outlines);
     this.resize(this.size.x, this.size.y);
   }
@@ -343,7 +392,7 @@ export class Pipeline {
     this.rtRefract.setSize(Math.max(1, sw >> 1), Math.max(1, sh >> 1));
     this.composite.uniforms.uTexel.value.set(1 / sw, 1 / sh);
     // Outline thickness scales with resolution so it reads the same on 720p and 4K.
-    this.composite.uniforms.uThick.value = Math.max(1, Math.round((sh / 1080) * 2.2 * 10) / 10);
+    this.composite.uniforms.uThick.value = Math.max(1, Math.round((sh / 1080) * 2.2 * 10) / 10) * (this.q.outlineMul || 1);
     this.final.uniforms.uTexel.value.set(1 / sw, 1 / sh);
     this.final.uniforms.uFxaa.value = this.q.fxaa && this.q.ss <= 1 ? 1 : 0;
     let bx = bw, by = bh;
@@ -357,6 +406,30 @@ export class Pipeline {
   }
 
   markDirty() { this.castersDirty = true; }
+
+  // Per frame (real dt): the speed lines fade out over 0.3 s.
+  update(dt) {
+    const h = this.hit;
+    if (h.linesT > 0) h.linesT = Math.max(0, h.linesT - dt);
+  }
+
+  // A comic hit at screen position (uvx, uvy in 0..1, y up) in `color` (hex or THREE.Color). Ultra only (else ignored).
+  // frame: the two-frame ink-and-paper impact (at most one every 0.4 s); lines: speed lines' strength 0..1, fading in 0.3 s
+  // (they can retrigger as often as you like).
+  impact(uvx, uvy, color = 0xffffff, { lines = 1, frame = true } = {}) {
+    if (!(this.q.comic > 0) || !this.q.outlines) return;
+    const h = this.hit, fu = this.final.uniforms, now = performance.now();
+    if (frame && now - h.lastT >= 400) {
+      h.lastT = now; h.frames = 2;
+      fu.uImpactPos.value.set(uvx, uvy);
+      fu.uImpactCol.value.set(color);
+    }
+    if (lines > 0) {
+      h.linesK = lines; h.linesT = 0.3;
+      fu.uLinesPos.value.set(uvx, uvy);
+      fu.uSeed.value = Math.random() * 97;
+    }
+  }
 
   collectCasters() {
     this.casters.length = 0;
@@ -451,6 +524,10 @@ export class Pipeline {
     fu.uSplitShadow.value.copy(g.splitShadow); fu.uSplitHigh.value.copy(g.splitHigh);
     fu.uBloom.value = bloomOn ? Math.max(g.bloom, this.view === 1 ? 1 : 0) : 0;
     fu.uView.value = this.view;
+    const hit = this.hit;
+    fu.uImpact.value = hit.frames > 0 ? 1 : 0;
+    fu.uLines.value = hit.linesT > 0 ? hit.linesK * (hit.linesT / 0.3) : 0;
+    if (hit.frames > 0) hit.frames--;
     r.setRenderTarget(null);
     r.render(this.finalQuad.scene, this.quadCam);
     worldLayers();

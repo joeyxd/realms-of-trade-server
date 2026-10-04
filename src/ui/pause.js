@@ -2,13 +2,17 @@
 import { gsap } from 'gsap';
 import { sfx } from '../audio/sfx.js';
 
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const GPU_TIER = { strong: 'potente', mid: 'media', weak: 'básica' };
+
 export class PauseMenu {
-  constructor(root, settings, { onChange, onResume, onNewGame }) {
+  constructor(root, settings, { onChange, onResume, onNewGame, gpu }) {
     this.root = root;
     this.s = settings;
     this.onChange = onChange;
     this.onResume = onResume;
     this.onNewGame = onNewGame;
+    this.gpu = gpu || (() => null); // { name, tier } of the graphics card, for the quality hint
     this.open = false;
     this.tab = 'settings';
   }
@@ -17,6 +21,7 @@ export class PauseMenu {
     const s = this.s;
     const range = (id, label, val, min = 0, max = 1, step = 0.05) =>
       `<div class="row"><label for="${id}">${label}</label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}"></div>`;
+    const gpu = this.gpu() || { name: '', tier: 'mid' };
     const check = (id, label, val) => `<div class="row"><label for="${id}">${label}</label><input id="${id}" type="checkbox" ${val ? 'checked' : ''}></div>`;
     const settingsHtml = `
       <div class="section">
@@ -28,8 +33,9 @@ export class PauseMenu {
       </div>
       <div class="section">
         <div class="row"><label for="set-quality">Calidad gráfica</label><select id="set-quality">
-          ${['auto', 'low', 'medium', 'high'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta' }[q]}</option>`).join('')}
+          ${['auto', 'low', 'medium', 'high', 'ultra'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta', ultra: 'Ultra · cómic dramático' }[q]}</option>`).join('')}
         </select></div>
+        <div class="row-note" id="set-gpu">GPU: ${esc(gpu.name || '—')} · ${GPU_TIER[gpu.tier] || GPU_TIER.mid}</div>
         <div class="row"><label for="set-tod">Hora del día</label><select id="set-tod">
           ${['cycle', 'day', 'dusk', 'night'].map((q) => `<option value="${q}" ${s.timeOfDay === q ? 'selected' : ''}>${{ cycle: 'Ciclo día y noche', day: 'Día', dusk: 'Atardecer', night: 'Noche' }[q]}</option>`).join('')}
         </select></div>
@@ -43,6 +49,7 @@ export class PauseMenu {
           ${[[0.85, 'Pequeño'], [1, 'Mediano'], [1.18, 'Grande']].map(([v, n]) => `<option value="${v}" ${+s.touchSize === v ? 'selected' : ''}>${n}</option>`).join('')}
         </select></div>
         ${check('set-haptics', 'Vibración (móvil)', s.haptics !== false)}
+        ${check('set-comicfx', 'Efectos de cómic (impactos, onomatopeyas)', s.comicFx !== false)}
       </div>`;
     const controlsHtml = `
       <div class="section controls-list">
@@ -94,6 +101,7 @@ export class PauseMenu {
     bind('set-landscape', 'landscape', (el) => el.checked);
     bind('set-touchsize', 'touchSize');
     bind('set-haptics', 'haptics', (el) => el.checked);
+    bind('set-comicfx', 'comicFx', (el) => el.checked);
   }
 
   confirmNew() {

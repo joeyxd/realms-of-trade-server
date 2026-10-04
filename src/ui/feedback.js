@@ -1,13 +1,15 @@
 // Combat feedback: turns combat events (predicted for the local player, or from the server) into what
 // you see and hear: hitstop and slow-mo (instance time), camera trauma and punch, screen flash, sparks,
 // shockwaves, hit flashes and flinches, floating numbers and callouts, sounds, HUD pulses, and the
-// telegraph timeline of enemy attacks. Gameplay never lives here.
+// telegraph timeline of enemy attacks. On the Ultra tier your big moments (and the boss's) also get a comic word, an
+// impact frame and speed lines (comic.js). Gameplay never lives here.
 import { tuning, DT, INTERP_DELAY } from '../data/tuning.js';
 import { ENEMIES } from '../data/enemies.js';
 import { sfx } from '../audio/sfx.js';
 import { audio } from '../audio/engine.js';
 import { SKINS } from '../render/characters.js';
 import { patternSpan } from '../sim/projectiles.js';
+import { comic } from './comic.js';
 
 const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
@@ -45,6 +47,9 @@ export class Feedback {
 
   float(x, z, h, html, cls, o) { return this.worldUI.float(x, this.y(x, z) + h, z, html, cls, o); }
   overMe(html, cls, o) { return this.worldUI.float(this.ps.x, this.ps.y + 2.15, this.ps.z, html, cls, { rise: 34, spread: 6, life: 1, ...o }); }
+
+  // A comic hit (Ultra only, see comic.js) at a ground point, h above it.
+  comicAt(x, z, h, o) { comic.hit(x, this.y(x, z) + h, z, o); }
 
   sparks(x, y, z, n, c0, c1, o = {}) { this.world.effects.sparks(x, y, z, n, { color: c0, color1: c1, up: 2, spread: 3.2, gravity: 7, life: 0.35, ...o }); }
 
@@ -85,6 +90,7 @@ export class Feedback {
         W.combatFx.ring(ev.x, y - 0.9, ev.z, 0.9, 0xfff1c8, 0.22, 0.2, 0.7);
         if (v) { v.flash(0xffffff, 1); this.flinch(v, ev.x, ev.z); }
         sfx.hit(this.material(rec), false);
+        if (ev.stage === 3) comic.hit(ev.x, y + 0.5, ev.z, { word: '¡ZAS!', color: 0xfff1c8 });
         this.loop.addHitstop(F.hitstopMelee);
         this.shake(ev.stage === 3 ? 0.22 : 0.12);
         W.rig.punchIn(ev.stage === 3 ? 0.4 : 0.2);
@@ -102,6 +108,7 @@ export class Feedback {
           break;
         }
         this.float(x, z, h, ev.crit ? `<small>¡CRÍTICO!</small> ${ev.dmg}` : String(ev.dmg), ev.crit ? 'crit' : 'dmg');
+        if (ev.crit && ev.by === this.client.youServer) this.comicAt(x, z, h * 0.7, { word: '¡CRAC!', color: 0xffe14d });
         if (ev.armor) {
           // The crab's iron plate: show it, and teach the flank once.
           this.float(x, z, h + 0.45, 'BLINDADO', 'immune', { life: 0.8 });
@@ -140,6 +147,10 @@ export class Feedback {
         if (rec && rec.def && rec.def.renegade) sfx.hit('flesh', true, this.vol(x, z)); else sfx.bones(this.vol(x, z));
         if (ev.xp && Math.hypot(x - ps.x, z - ps.z) < 25) this.float(x, z, 1.4, `+${ev.xp} XP`, 'xp', { life: 1.3, rise: 60 });
         if (ev.by === this.client.youServer) { this.shake(0.25); this.onTutorial('kill', rec); }
+        // The boss falling, or an elite (140+ life: Centinela, Desalmados) by your hand.
+        if (ev.boss || (ev.by === this.client.youServer && rec && rec.def && !rec.def.practice && rec.def.hp >= 100)) {
+          comic.hit(x, y + (v ? v.height : 1.8) * 0.6, z, { word: '¡KABUM!', big: true, frame: true, lines: true, color: 0xff7a2a });
+        }
         break;
       }
       case 'parry': {
@@ -158,6 +169,7 @@ export class Feedback {
             if (v) v.flash(this.accent, 0.8);
             W.lights.flash(ps.x, ps.y + 1.3, ps.z, this.accent, 7, 4.5, 0.4);
             this.sparks(ev.x, y, ev.z, 18, CYAN, CYAN1, { up: 3, spread: 4.5 });
+            comic.hit(ev.x, y + 0.4, ev.z, { word: '¡PING!', lines: true, color: this.accent });
             if (ev.heavy) this.teach('heavyBack', '<b>¡Orbe devuelto!</b> Solo un golpe EXCELENTE (o atraparlo con la guardia) devuelve los orbes pesados.');
           } else if (tier === 2) {
             sfx.parry(false, ev.chain);
@@ -195,6 +207,7 @@ export class Feedback {
           this.overMe(ev.pid ? '¡ATRAPADA!' : '¡GUARDIA PERFECTA!', 'perfect', { life: 1 });
           if (ev.pid && ev.n > 1) this.overMe(`x${ev.n}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
           this.sparks(ev.x, y, ev.z, 14, AMBER, AMBER1, { up: 2.5, spread: 3 });
+          comic.hit(ev.x, y + 0.4, ev.z, { word: '¡CLANG!', frame: true, lines: true, color: 0xffc46a });
           W.lights.flash(ps.x, ps.y + 1.3, ps.z, 0xffc46a, 6, 3.5, 0.3);
           this.shake(0.25);
           if (v) v.flash(0xffe2a0, 0.6);
@@ -275,7 +288,7 @@ export class Feedback {
       case 'rain':
         W.weaponFx.rain(ev, this.colorOf(ev.e));
         sfx.rainCall(me ? 1 : this.vol(ev.x, ev.z));
-        if (me) this.hud.pulse('r');
+        if (me) { this.hud.pulse('r'); this.comicAt(ev.x, ev.z, 1.6, { word: '¡RA-TA-TA!', color: 0xffd27a }); }
         break;
       case 'equip': {
         const v = me ? this.me() : this.viewOf(ev.e);
@@ -303,6 +316,7 @@ export class Feedback {
           if (ev.by === this.client.youServer && ev.dmg > 0) {
             const rec = this.client.entities.get(ev.e), x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
             this.float(x, z, (v ? v.height : 1.8) + 0.25, ev.crit ? `<small>¡CRÍTICO!</small> ${ev.dmg}` : String(ev.dmg), ev.kind === 'block' ? 'graze' : ev.crit ? 'crit' : 'dmg');
+            if (ev.crit) this.comicAt(x, z, (v ? v.height : 1.8) * 0.7, { word: '¡CRAC!', color: 0xffe14d });
             sfx.hit('flesh', !!ev.crit, this.vol(x, z));
           }
           break;
@@ -371,6 +385,7 @@ export class Feedback {
         W.combatFx.ring(ps.x, ps.y + 0.12, ps.z, R, 0xffffff, 0.45, 0.08, 1);
         W.combatFx.ring(ps.x, ps.y + 0.14, ps.z, R * 0.6, this.accent, 0.35, 0.14, 0.8);
         this.overMe('¡TORMENTA!', 'perfect', { life: 1.2 });
+        comic.hit(ps.x, ps.y + 1.4, ps.z, { word: '¡FUAAA!', big: true, frame: true, lines: true, color: this.accent });
         this.screen(0.55);
         this.shake(0.6);
         W.rig.punchIn(0.8);
@@ -480,6 +495,7 @@ export class Feedback {
         W.lights.flash(ev.x, this.y(ev.x, ev.z) + 3, ev.z, 0xff3b1f, 14, 6, 1.6);
         W.combatFx.ring(ev.x, this.y(ev.x, ev.z) + 0.1, ev.z, 9, 0xff7a2a, 0.9, 0.1, 1.0);
         this.sparks(ev.x, this.y(ev.x, ev.z) + 2, ev.z, 40, [1, 0.6, 0.2], [0.9, 0.16, 0.04], { up: 6, spread: 6 });
+        if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) this.comicAt(ev.x, ev.z, 3.2, { word: '¡KABUM!', big: true, frame: true, lines: true, color: 0xff4d2a });
         if (ev.last) this.hud.showZone('¡HELLFIRE DESATADO!', 'La lava devora La Caldera: no te alejes del centro', true, !!this.settings.reducedMotion);
         else this.hud.showZone(`FASE ${ev.phase}`, ev.shield ? 'Su escudo solo cede ante tus reflejos' : '¡Hellfire se enfurece!', true, !!this.settings.reducedMotion);
         if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas con la espada, y devuélvele el <b>orbe pesado</b> (golpe EXCELENTE o atrapándolo con la guardia) para romperlo.', 6500);

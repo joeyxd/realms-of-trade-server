@@ -278,6 +278,21 @@ body.touch .actionbar { display: none; }
 .fnum.level { font-size: 30px; color: var(--brass-l); }
 .fnum.info { font-size: 15px; color: var(--parch); }
 
+/* Comic onomatopoeia (M4.7, Ultra): a word with a thick ink outline that pops 0.4 -> 1.15 -> 1 in 120 ms, holds, fades.
+   The float is moved by JS (transform); the tilt (inline `rotate`) and the pop live on the inner span. */
+.fnum.ono { font-size: calc(42px * var(--ui-scale, 1)); line-height: 1; text-shadow: none; animation: none; }
+.fnum.ono.big { font-size: calc(66px * var(--ui-scale, 1)); }
+.ono-in { display: block; position: relative; isolation: isolate; animation: onopop 0.12s ease-out; }
+.fnum.ono .ono-w {
+  position: relative; display: block; font-weight: 900; font-synthesis: none; text-transform: uppercase; letter-spacing: 0.02em;
+  color: #ffd23d; -webkit-text-stroke: calc(6px * var(--ui-scale, 1)) var(--ink); paint-order: stroke fill;
+  filter: drop-shadow(calc(3px * var(--ui-scale, 1)) calc(4px * var(--ui-scale, 1)) 0 var(--ink));
+}
+.fnum.ono.big .ono-w { color: #ff6a3d; }
+.ono-burst { position: absolute; left: 50%; top: 50%; width: 205%; height: 290%; translate: -50% -50%; z-index: -1; overflow: visible; }
+.ono-burst polygon { fill: #fff; stroke: var(--ink); stroke-width: 4; stroke-linejoin: miter; }
+@keyframes onopop { 0% { scale: 0.4; } 60% { scale: 1.15; } 100% { scale: 1; } }
+
 /* ---- M2.5: boss bar + encounter line ---- */
 #boss-bar { position: absolute; left: 50%; top: calc(14px + var(--safe-t)); transform: translateX(-50%); width: min(560px, calc(100cqw - 32px)); display: grid; gap: 4px; justify-items: center; pointer-events: none; }
 #boss-bar .bname { display: flex; gap: 10px; align-items: baseline; }

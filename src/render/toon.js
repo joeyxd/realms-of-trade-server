@@ -75,7 +75,11 @@ vec2 mnVoronoi(vec2 x) {
 // Fragment-only (derivatives + the shared noise texture).
 export const GLSL_BAND = /* glsl */ `
 uniform sampler2D mnNoiseTex;
-uniform float mnInk; // 1 medium / high, 0 low: comic hatching and painted detail off
+uniform float mnInk; // 0 low (comic hatching and painted detail off) / 1 medium, high / 2 ultra
+// 0 below the Ultra tier, 1 on it: deeper bands, denser hatching, halftone dots, a bolder rim.
+float mnUltra() { return clamp(mnInk - 1.0, 0.0, 1.0); }
+float mnDeep() { return mix(0.36, 0.20, mnUltra()); } // deep band level (the tint normalises with it)
+float mnMid() { return mix(0.70, 0.62, mnUltra()); }
 // R = cellular F1, G = cellular edge (F2-F1), B = fbm, A = cell id. 8x8 cells per tile.
 vec4 mnTex(vec2 uv) { return texture2D(mnNoiseTex, uv); }
 float mnCloudShadow(vec2 xz) {
@@ -83,14 +87,15 @@ float mnCloudShadow(vec2 xz) {
   return 1.0 - mnCloud * smoothstep(0.5, 0.6, c);
 }
 // The one light-band function. x = N·L in [-1, 1]. Three hard tones, antialiased edges:
-// deep 0.36 (x < -0.04), mid 0.70, lit 1.0 (x > 0.30).
-float mnBand(float x) {
+// deep 0.36 (x < -0.04), mid 0.70, lit 1.0 (x > 0.30); on Ultra deep 0.20 and mid 0.62.
+float mnBandDM(float x, float deep, float mid) {
   float w = max(fwidth(x), 0.0008) * 1.1;
-  float b = 0.36;
-  b = mix(b, 0.70, smoothstep(-0.04 - w, -0.04 + w, x));
+  float b = deep;
+  b = mix(b, mid, smoothstep(-0.04 - w, -0.04 + w, x));
   b = mix(b, 1.00, smoothstep(0.30 - w, 0.30 + w, x));
   return b;
 }
+float mnBand(float x) { return mnBandDM(x, mnDeep(), mnMid()); }
 `;
 
 // Local lights (lanterns, braziers, lava, windows, flashes), evaluated by every lit shader in the
@@ -269,11 +274,15 @@ vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
   float ndl = dot( normal, lightDirection );
   float raw = ndl;
   ndl = mix( -1.0, ndl, mnVis );
+  float mnUl = mnUltra();
+  float md = mnMid();
   #ifdef MN_SOFT_BAND
-  // Faceted characters: mostly two tones, a quarter smooth ramp, so every facet keeps its own tone.
-  float b = mix( mnBand( ndl ), 0.36 + 0.64 * smoothstep( -0.45, 0.95, ndl ), 0.25 );
+  // Faceted characters: mostly two tones, a quarter smooth ramp, so every facet keeps its own tone (deep 0.36, 0.30 on Ultra).
+  float dp = mix( 0.36, 0.30, mnUl );
+  float b = mix( mnBandDM( ndl, dp, md ), dp + ( 1.0 - dp ) * smoothstep( -0.45, 0.95, ndl ), 0.25 );
   #else
-  float b = mnBand( ndl );
+  float dp = mnDeep();
+  float b = mnBandDM( ndl, dp, md );
   #endif
   // The tint follows the sun's real shade (back side, cast shadows), not the clouds: a cloud only darkens, so a
   // beach under a passing cloud stays warm sand instead of turning grey-violet.
@@ -282,12 +291,13 @@ vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
     float sh = mix( -1.0, raw, mnShF );
     mnSunNdl = raw;
     mnSunLit = smoothstep( -0.6, -0.04, sh ); // shadow map only: hatching does not follow clouds
-    tb = mnBand( sh );
-    mnShade = 1.0 - ( tb - 0.36 ) / 0.64;
+    tb = mnBandDM( sh, dp, md );
+    mnShade = 1.0 - ( tb - dp ) / ( 1.0 - dp );
   }
-  // Deep shade leans toward the tint (normalised, so the lit side stays neutral).
+  // Deep shade leans toward the tint (normalised, so the lit side stays neutral); a more saturated shade on Ultra.
   vec3 tintN = mnShadowTint / max( max( mnShadowTint.r, mnShadowTint.g ), max( mnShadowTint.b, 1e-3 ) );
-  return mix( tintN, vec3( 1.0 ), ( tb - 0.36 ) / 0.64 ) * b;
+  tintN = pow( tintN, vec3( mix( 1.0, 1.4, mnUl ) ) );
+  return mix( tintN, vec3( 1.0 ), ( tb - dp ) / ( 1.0 - dp ) ) * b;
 }
 `;
 
@@ -318,7 +328,7 @@ reflectedLight.directDiffuse += mnLocalLight( vMnWorld, inverseTransformDirectio
   vec3 mnV = normalize( vViewPosition );
   float fr = 1.0 - saturate( dot( normal, mnV ) );
   float rimB = smoothstep( 0.6, 0.68, fr );
-  reflectedLight.directDiffuse += mnRimColor * mnRimStr * rimB * diffuseColor.rgb;
+  reflectedLight.directDiffuse += mnRimColor * mnRimStr * mix( 1.0, 1.4, mnUltra() ) * rimB * diffuseColor.rgb;
   // Fill from the camera side so characters stay readable at night and in the Caldera.
   reflectedLight.directDiffuse += mnCharFill * BRDF_Lambert( material.diffuseColor ) * ( 0.35 + 0.65 * smoothstep( -0.1, 0.8, dot( normal, mnV ) ) );
 }
@@ -327,13 +337,14 @@ reflectedLight.directDiffuse += mnLocalLight( vMnWorld, inverseTransformDirectio
 
 // Comic shadows (MN_COMIC), on the final colour. In shade (mnSunLit < 1: facing away from the sun, inside a cast
 // shadow) the surface gets ink hatching in world space on the plane of its dominant normal axis: diagonal strokes
-// every MN_HATCH_PERIOD, each line wobbled and broken by the noise (one read, per-line offset), wider the darker it is,
+// every 0.4 u (0.3 on Ultra), each line wobbled and broken by the noise (one read, per-line offset), wider the darker it is,
 // a thinner crossing set only in the deepest sun-averted shade (a cast shadow alone gets one direction).
 // Where the sun's shadow map crosses 0.5 (a cast shadow's edge, not a cloud's) a thin ink line is drawn.
 // Both fade with stroke size on screen (no moire when zoomed out) and with distance; green surfaces get less.
+// Ultra (mnInk = 2) adds Ben-Day halftone dots (world space, 45 degrees, 0.30 u cells) in the light -> shade
+// transition and inks harder: denser, wider, crossed earlier, darker, visible further out.
 const COMIC_PARS = /* glsl */ `
 #ifdef MN_COMIC
-#define MN_HATCH_PERIOD 0.4
 // Antialiased line coverage for the coordinate c (1 = one period): w = width in periods, fw = fwidth(c).
 float mnHatchLine( float c, float w, float fw ) {
   float e = 0.5 - abs( fract( c ) - 0.5 );
@@ -345,7 +356,9 @@ const comicPost = (mask) => /* glsl */ `
 #ifdef MN_COMIC
 {
   // Derivatives first (uniform control flow); the work below only runs where there is something to ink, so the
-  // lit majority of the screen pays a few ops. mnInk = 0 (low tier) skips it all.
+  // lit majority of the screen pays a few ops. mnInk = 0 (low tier) skips it all; mnInk = 2 (Ultra) inks harder.
+  float mnUl = mnUltra();
+  float mnPer = mix( 0.4, 0.3, mnUl );                          // hatch period (u)
   float mnDark = 1.0 - mnSunLit;                                // shade + cast shadow: the first direction
   float mnDark2 = 1.0 - smoothstep( -0.6, -0.04, mnSunNdl );    // the surface's own back side: the crossing set
   vec3 mnWn = abs( inverseTransformDirection( normal, viewMatrix ) );
@@ -354,14 +367,17 @@ const comicPost = (mask) => /* glsl */ `
   float mnAx = mnWn.y >= max( mnWn.x, mnWn.z ) ? 0.0 : ( mnWn.x >= mnWn.z ? 1.0 : 2.0 );
   vec3 mnQ = vMnRest;
   vec2 mnP = mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? mnQ.zy : mnQ.xy );
-  vec2 mnU = ( mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? vec2( mnP.x + mnP.y, mnP.x - mnP.y ) : vec2( mnP.x - mnP.y, mnP.x + mnP.y ) ) * 0.7071 ) / MN_HATCH_PERIOD;
+  vec2 mnU = ( mnAx < 0.5 ? mnQ.xz : ( mnAx < 1.5 ? vec2( mnP.x + mnP.y, mnP.x - mnP.y ) : vec2( mnP.x - mnP.y, mnP.x + mnP.y ) ) * 0.7071 ) / mnPer;
   float mnF1 = fwidth( mnU.x ) * 1.2, mnF2 = fwidth( mnU.y ) * 1.2;
+  // Halftone cells: the same plane coordinates turned 45 degrees (derivative taken here, before any branch).
+  vec2 mnHp = mat2( 0.7071, -0.7071, 0.7071, 0.7071 ) * mnP / 0.30;
+  float mnFh = fwidth( mnHp.x );
   vec2 mnGx = dFdx( mnP * 0.2 ), mnGy = dFdy( mnP * 0.2 );
   float mnSdW = max( fwidth( mnSunShadow ), 1e-4 );
   float mnPx = 1.0 - smoothstep( 0.125, 0.2, max( mnF1, mnF2 ) ); // fades out under ~5 px per period
   float mnSd = abs( mnSunShadow - 0.5 ) / mnSdW;
-  float mnM = mnInk * ( 1.0 - smoothstep( 45.0, 80.0, length( vViewPosition ) ) );
-  if ( mnM > 0.01 && ( mnDark > 0.25 || mnSd < 2.0 ) ) {
+  float mnM = min( mnInk, 1.0 ) * ( 1.0 - smoothstep( mix( 45.0, 60.0, mnUl ), mix( 80.0, 100.0, mnUl ), length( vViewPosition ) ) );
+  if ( mnM > 0.01 && ( mnDark > mix( 0.25, 0.05, mnUl ) || mnSd < 2.0 ) ) {
     mnM *= ${mask};
     // Glowing surfaces (lava, embers, gems, lit windows) stay clean; grass is busy already (painted strokes): 40 % less.
     mnM *= 1.0 - smoothstep( 0.15, 0.6, max( max( totalEmissiveRadiance.r, totalEmissiveRadiance.g ), totalEmissiveRadiance.b ) );
@@ -370,11 +386,22 @@ const comicPost = (mask) => /* glsl */ `
       // One noise read, shifted per line: wobble (+-0.06 u) from B, pen lifts from A (cell id: ~20 % of cells blank).
       float mnK = floor( mnU.x + 0.5 );
       vec4 mnN = textureGrad( mnNoiseTex, mnP * 0.2 + vec2( mnK * 0.37, mnK * 0.61 ) + mnAx * 0.29, mnGx, mnGy );
-      float mnWob = ( mnN.b - 0.5 ) * 0.24 / MN_HATCH_PERIOD;
+      float mnWob = ( mnN.b - 0.5 ) * 0.24 / mnPer;
+      float mnSw = mix( 1.0, 1.35, mnUl );                      // stroke width
       float mnH = max(
-        mnHatchLine( mnU.x + mnWob, 0.3 * smoothstep( 0.25, 1.0, mnDark ), mnF1 ) * ( 1.0 - smoothstep( 0.78, 0.86, mnN.a ) ),
-        mnHatchLine( mnU.y - mnWob, 0.22 * smoothstep( 0.8, 1.0, mnDark2 ), mnF2 ) * ( 1.0 - smoothstep( 0.7, 0.78, mnN.r ) ) ) * mnPx;
-      gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * 0.42, mnH * 0.7 * mnM );
+        mnHatchLine( mnU.x + mnWob, 0.3 * mnSw * smoothstep( 0.25, 1.0, mnDark ), mnF1 ) * ( 1.0 - smoothstep( 0.78, 0.86, mnN.a ) ),
+        mnHatchLine( mnU.y - mnWob, 0.22 * mnSw * smoothstep( mix( 0.8, 0.55, mnUl ), mix( 1.0, 0.9, mnUl ), mnDark2 ), mnF2 ) * ( 1.0 - smoothstep( 0.7, 0.78, mnN.r ) ) ) * mnPx;
+      gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * mix( 0.42, 0.30, mnUl ), mnH * mix( 0.7, 0.85, mnUl ) * mnM );
+    }
+    // Ultra: Ben-Day dots where the light turns to shade, thinning out where the hatching takes over.
+    float mnPxH = 1.0 - smoothstep( 0.16, 0.26, mnFh ); // dots under ~4 px go
+    if ( mnUl > 0.01 && mnDark > 0.05 && mnPxH > 0.0 ) {
+      float mnTone = smoothstep( 0.05, 0.45, mnDark ) * ( 1.0 - 0.5 * smoothstep( 0.6, 0.9, mnDark ) );
+      float mnRad = 0.5 * sqrt( mnTone ) * 0.92;
+      float mnAa = mnFh * 0.7 + 1e-4;
+      float mnDot = ( 1.0 - smoothstep( mnRad - mnAa, mnRad + mnAa, length( fract( mnHp ) - 0.5 ) ) ) * mnPxH * mnUl;
+      vec3 mnTn = mnShadowTint / max( max( mnShadowTint.r, mnShadowTint.g ), max( mnShadowTint.b, 1e-3 ) );
+      gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * 0.55 * mnTn, mnDot * 0.6 * mnM );
     }
     // Cast-shadow edge: ink where the shadow factor crosses 0.5, only on surfaces that face the sun.
     float mnEdge = ( 1.0 - smoothstep( 0.8, 2.0, mnSd ) ) * smoothstep( 0.02, 0.22, mnSunNdl );
