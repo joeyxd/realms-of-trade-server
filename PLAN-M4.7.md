@@ -13,7 +13,7 @@
   habilidades: un **área en el suelo tipo MOBA** con marca tipo RTS que se lanza como un mago a distancia, un
   **salto o blink** que cae más adelante golpeando, y un **proyectil que regresa**, rápido o lento según cuánto
   mantengas; (3) que las habilidades **se equipen** (no fijas al personaje ni como Albion), que suban de nivel y
-  que cambiar de estilo sea fácil; (4) más adelante, zonas con partidas tipo MOBA (§2.7, solo diseño).
+  que cambiar de estilo sea fácil; (4) más adelante, zonas con partidas tipo MOBA (§2.7, aparcado).
 - Método: el autor principal escribe este plan y los encargos; asistentes construyen la base de cada paso; el
   autor revisa, corrige y pule. Tests: `npm test`. **Nunca** empujar en rojo.
 - Artefacto (solo): `node tools/build-artifact.mjs dist/index.html` → republicar en la MISMA URL
@@ -95,6 +95,10 @@
   why: 'combat' | 'lawless' | 'weapon' | 'unknown' | 'gold' | 'far' | 'rank'}` (evento privado).
 - XP: `grantXp` también da tinta a los tatuajes equipados (los dos enteros), con la recuperación; al subir:
   evento privado `{type: 'tattooRank', id, rank}`.
+- **Preparación para las Perlas negras (M4.8, `PLAN-M4.8.md`)**: columna `elem` (0 = ninguno, en
+  `PLAYER_FIELDS`) que cada golpe del pirata pasa a `strike(..., { elem })` y que viaja en los eventos de golpe y
+  de habilidad; sin efecto todavía. El código de huecos va sobre una lista `SLOTS = ['q', 'e']` para que la perla
+  añada `g`. La tecla G queda libre para ella.
 
 ### 2.3 Las tres habilidades (P3, sim)
 Números en `SKILLS` (`src/data/weapons.js`, afinables desde F4), las formas como sobrescrituras.
@@ -156,7 +160,10 @@ cambia (`ax/az` ya es el punto apuntado).
   «Aprender (gratis / 150 oro)».
 - Mensajes: «Fuera de combate para cambiar», «En la Cala no se cambia de tatuaje», «Te falta oro»…
 
-### 2.7 Zonas de marea tipo MOBA (diseño, no se construye ahora)
+### 2.7 Zonas de marea tipo MOBA (aparcado)
+> Aparcado por el autor: primero la base divertida, luego la estructura (economía, construcción, barcos,
+> comercio entre pueblos). Se queda como idea.
+
 - Instancias con partida: **Arena 3c3** (rondas al mejor de 5, estilo Battlerite), **Asalto al fuerte** (un
   carril con torres y esbirros en la Cala) y **Rey del islote**.
 - Dentro todos empiezan iguales: estadísticas normalizadas (el equipo no cuenta), los tatuajes empiezan en
@@ -177,3 +184,7 @@ cambia (`ax/az` ya es el punto apuntado).
       informe.
 
 ## 4. Notas de ejecución
+
+- Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
+  **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
+  los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.

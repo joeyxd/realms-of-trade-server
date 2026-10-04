@@ -7,6 +7,10 @@
 Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isométrico para navegador
 (Three.js 0.160), arquitectura MMO-ready, todo procedural (geometría, texturas, shaders, audio).
 
+**El chiste del juego** (decisión del autor, M4.7): la estructura es la **economía**, la **construcción**, los
+**barcos** y el **comercio entre pueblos**, y descansa sobre una base de acción que es divertida por sí misma
+(combate bullet hell, tatuajes, perlas negras). Orden: primero terminar la base divertida, luego la estructura.
+
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
 NPCs, pasados por `patchToon` para que compartan bandas de luz, contornos, luces locales y bloom; traen su propio
@@ -673,8 +677,13 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, vendedora, Mareas, partidas firmadas, HUD y paneles (`PLAN-M4.md`) | ✅ |
 | M4.5 | «Sin ley»: detalles de M4 (aviso del cofre, oclusión del cofre, cofres de Marea) + la Cala Calavera: fuego amigo, botín completo y público, mobs que se pelean, Desalmados (`PLAN-M4.5.md`) | ✅ |
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
-| M5 | Highlights (level-up, cofre) + pulido VFX + música por capas | |
-| M6 | Rendimiento, calidad auto, móvil, accesibilidad, bots + chat, ganchos navales, README final | |
+| M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | en curso |
+| M4.8 | «Perlas negras»: perlas raras que se tragan (habilidad en G, elemento que tiñe el kit, pasiva, maldición) y se caen al morir (`PLAN-M4.8.md`) | diseño |
+| M5 | Mundo persistente: base de datos en el servidor, cuentas, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA | propuesta |
+| M6 | Barcos: zarpar, navegar entre islas, combate naval (§13) | propuesta |
+| M7 | Comercio entre pueblos: mercancías, precios por pueblo (oferta y demanda), rutas, contrabando en la Cala | propuesta |
+| M8 | Construcción: puestos, talleres, casas, fuertes | propuesta |
+| — | Pulido continuo: highlights (level-up, cofre), música por capas, accesibilidad, bots + chat | |
 
 Checklist de capturas por milestone: ¿el personaje queda tapado por glow/partículas/texto/vegetación? ¿algo se quema
 a blanco? ¿se distinguen parreable/pesado/imparable al zoom por defecto? ¿artefactos de contorno? ¿texto pequeño
