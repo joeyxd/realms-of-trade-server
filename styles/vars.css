@@ -1,0 +1,146 @@
+/* Single committed look (nautical wood + brass over a turquoise sea): one theme on purpose,
+   every color is still a token so the HUD stays consistent. */
+:root {
+  color-scheme: dark;
+  --ink: #1a1033;
+  --sea-deep: #0b1630;
+  --sea: #0f5f8c;
+  --wood: #7a4a26;
+  --wood-l: #a8703e;
+  --wood-d: #45280f;
+  --brass: #e7bb4f;
+  --brass-l: #ffe39a;
+  --brass-d: #94681e;
+  --parch: #fbf0d6;
+  --parch-d: #e3cfa2;
+  --text: #fff6e2;
+  --text-dim: #d9c6a0;
+  --accent: #3bf0ff;
+  --hp: #ff4d5e;
+  --hp-d: #9e1b2e;
+  --en: #36c9ff;
+  --xp: #ffc23d;
+  --good: #7be07b;
+  --warn: #ffb02e;
+  --r-common: #9aa3ad;
+  --r-uncommon: #4cd964;
+  --r-rare: #3fa9ff;
+  --r-epic: #b36bff;
+  --r-legend: #ffc23d;
+  --shadow: rgba(10, 6, 24, 0.55);
+  --glass: rgba(20, 12, 40, 0.55);
+
+  --font-display: 'Lilita One', 'Titan One', 'Arial Black', system-ui, sans-serif;
+  --font-ui: 'Nunito', 'Trebuchet MS', system-ui, sans-serif;
+  --ui-scale: 1;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+/* Rotated stage (M4.6): its top is the physical right edge, its left the physical top, and so on. */
+body.rotated {
+  --safe-l: env(safe-area-inset-top, 0px);
+  --safe-t: env(safe-area-inset-right, 0px);
+  --safe-r: env(safe-area-inset-bottom, 0px);
+  --safe-b: env(safe-area-inset-left, 0px);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body {
+  background: var(--sea-deep);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
+}
+/* The stage holds the canvas, the UI and the fade; stage.js sizes it in px and rotates it 90° on an upright phone.
+   Layout containment makes it the containing block of the fixed children either way; @container stage / cqw / cqh
+   replace the viewport media queries and units. */
+#stage { position: fixed; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; container-type: size; container-name: stage; }
+/* Opaque backing: three.js always asks for an alpha drawing buffer, and FX blends that lower the alpha (the glow
+   mask on medium/high) would let the page show through on low, where they draw straight to the canvas. */
+canvas#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; background: #000; }
+#ui { position: fixed; inset: 0; pointer-events: none; font-size: calc(15px * var(--ui-scale)); }
+#ui .interactive, #ui button, #ui input, #ui select, #ui label { pointer-events: auto; }
+[hidden] { display: none !important; }
+
+/* Shared nautical frame: beveled wood, brass rim, inner shadow. */
+.frame {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.12)),
+    repeating-linear-gradient(90deg, var(--wood) 0 22px, #6f4222 22px 24px, var(--wood) 24px 47px, #81502b 47px 48px);
+  border: 3px solid var(--brass-d);
+  border-radius: 14px;
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 228, 170, 0.35),
+    inset -2px -3px 0 rgba(40, 18, 4, 0.55),
+    inset 0 0 18px rgba(20, 8, 0, 0.45),
+    0 0 0 2px var(--ink),
+    0 6px 0 var(--ink),
+    0 10px 24px var(--shadow);
+}
+.frame-dark {
+  background: linear-gradient(180deg, rgba(36, 22, 60, 0.82), rgba(20, 12, 36, 0.86));
+  border: 2px solid var(--brass-d);
+  border-radius: 12px;
+  box-shadow: inset 1px 1px 0 rgba(255, 228, 170, 0.22), inset -1px -2px 0 rgba(0, 0, 0, 0.5), 0 0 0 2px var(--ink), 0 4px 14px var(--shadow);
+}
+.btn {
+  font-family: var(--font-display);
+  font-size: 1.15em;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--brass-l), var(--brass) 45%, var(--brass-d));
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 0.5em 1.3em 0.55em;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.65), inset 0 -3px 0 rgba(90, 50, 10, 0.5), 0 4px 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.15s ease;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5), inset 0 -2px 0 rgba(90, 50, 10, 0.5), 0 1px 0 var(--ink); }
+.btn:disabled { filter: grayscale(0.7) brightness(0.8); cursor: default; }
+.btn:focus-visible, .icon-btn:focus-visible, .skin-dot:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.btn.secondary {
+  color: var(--text);
+  background: linear-gradient(180deg, var(--wood-l), var(--wood) 55%, var(--wood-d));
+  text-shadow: 0 2px 0 var(--ink);
+  box-shadow: inset 0 2px 0 rgba(255, 220, 160, 0.35), inset 0 -3px 0 rgba(30, 12, 0, 0.5), 0 4px 0 var(--ink);
+}
+.icon-btn {
+  width: 2.6em; height: 2.6em;
+  display: grid; place-items: center;
+  color: var(--parch);
+  background: linear-gradient(180deg, var(--wood-l), var(--wood-d));
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--brass-d), inset 0 2px 0 rgba(255, 220, 160, 0.4), 0 3px 0 var(--ink);
+  cursor: pointer;
+  padding: 0;
+}
+.icon-btn svg { width: 1.3em; height: 1.3em; }
+.display { font-family: var(--font-display); letter-spacing: 0.02em; }
+.outlined {
+  color: var(--parch);
+  text-shadow: 0 2px 0 var(--ink), 2px 0 0 var(--ink), -2px 0 0 var(--ink), 0 -2px 0 var(--ink),
+    2px 2px 0 var(--ink), -2px 2px 0 var(--ink), 2px -2px 0 var(--ink), -2px -2px 0 var(--ink), 0 5px 0 var(--ink);
+}
+.kbd {
+  display: inline-grid; place-items: center;
+  min-width: 1.7em; height: 1.6em; padding: 0 0.35em;
+  font-family: var(--font-ui); font-weight: 900; font-size: 0.78em;
+  color: var(--ink);
+  background: linear-gradient(180deg, #fffaf0, var(--parch-d));
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 2px 0 var(--ink);
+}
+#fade { position: fixed; inset: 0; background: #000; pointer-events: none; z-index: 50; }
