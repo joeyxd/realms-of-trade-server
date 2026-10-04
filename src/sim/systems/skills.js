@@ -4,8 +4,13 @@
 // hits on enemies are server-only (world.lungeHits / world.crescentHits).
 //
 //   Equip  cmd.w = weapon + 1. Only next to a rack (map.racks, RACK_R): a swing, the guard and a cast in
-//          progress are dropped; the cooldowns carry over.
-//   Cast   Q / E (buffered like LMB) start the weapon's skill at the cursor when it is off cooldown and
+//          progress are dropped; the cooldowns carry over; the new weapon's loadout (below) takes the slots.
+//   Slots  Q / E hold a skill each (M4.7, data/tattoos.js): an art of the weapon (the four below) or a learned
+//          tattoo. ecs.skQ / skE (index into SKILL_IDS) + form + rank say which; skillOf(slot) reads them
+//          (`basic` and `r` still come from the weapon). Loadouts live in the profile; the server changes them
+//          with the loadout / form / learn commands (systems/inventory.js). A tattoo with no cast yet is
+//          not buffered: pressing it does nothing (no event, no cooldown).
+//   Cast   Q / E (buffered like LMB) start the slot's skill at the cursor when it is off cooldown and
 //          you are free (not dashing, staggered, dead or mid-swing; a swing's recovery is cut short; it
 //          lowers the guard). castK = 1 (Q) or 2 (E) while it runs; no dash in its windup / active frames.
 //   Sable  Q Estocada: a lunge along the dash curve that destroys the parryables near its path and hits
@@ -22,7 +27,8 @@ import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
 import { hash01 } from '../../core/rng.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { ACT } from '../ecs.js';
-import { kitUnlocked, passive } from './stats.js';
+import { kitUnlocked, passive, applyLoadout } from './stats.js';
+import { SLOTS, SLOT_COLS, slotSkill } from '../../data/tattoos.js';
 
 export const CAST = { NONE: 0, Q: 1, E: 2 };
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
@@ -49,11 +55,13 @@ export function setWeapon(world, e, w, seq = 0) {
   ecs.guardT[e] = -1;
   cancelCast(ecs, e);
   ecs.qBuf[e] = ecs.eBuf[e] = 0; ecs.shotCd[e] = 0; ecs.shotN[e] = 0;
+  applyLoadout(world, e); // each weapon keeps its own loadout (a profile-less player: the weapon's arts)
   world.emit({ type: 'equip', e, weapon: w, seq, x: ecs.x[e], z: ecs.z[e] });
 }
 
-// The skill a slot ('q' | 'e' | 'r' | 'basic') has with the weapon e carries.
-export const skillOf = (ecs, e, slot) => weaponOf(ecs.weapon[e])[slot];
+// The skill in a slot: 'q' / 'e' read the loadout columns (an art or a tattoo); 'basic' and 'r' are the weapon's.
+export const skillOf = (ecs, e, slot) => (SLOT_COLS[slot] ? slotSkill(ecs, e, slot) : weaponOf(ecs.weapon[e])[slot]);
+const castSlot = (k) => SLOTS[k - 1]; // castK 1 = the first slot (Q), 2 = E
 
 // Seconds a cast takes: [windup, active, recover].
 function phases(id) {
@@ -64,6 +72,8 @@ function phases(id) {
   if (id === 'blink') return [0, 0, S.recover];
   return [0, 0, 0];
 }
+// Does the skill have a cast (windup / active / recover)? A tattoo without one yet is skipped.
+export const castable = (id) => !!SKILLS[id] && phases(id).some((t) => t > 0);
 export const castBusy = (ecs, e) => ecs.castK[e] > 0;
 
 export function cancelCast(ecs, e) {
@@ -83,27 +93,28 @@ function faceAim(ecs, e, cmd) {
 // ready wins over raising the guard. A slot the weapon's mastery has not opened yet says so instead (M4).
 export function bufferSkills(world, e, cmd, seq = 0) {
   const ecs = world.ecs, ib = tuning.player.inputBuffer;
-  for (const [bit, slot, buf] of PRESSES) {
+  for (const [bit, slot] of PRESSES) {
     if (!(cmd.prs & bit)) continue;
-    if (kitUnlocked(ecs, e, slot)) ecs[buf][e] = ib;
-    else world.emit({ type: 'locked', e, seq, slot });
+    if (!kitUnlocked(ecs, e, slot)) world.emit({ type: 'locked', e, seq, slot });
+    else if (castable(skillOf(ecs, e, slot))) ecs[SLOT_COLS[slot].buf][e] = ib;
   }
 }
-const PRESSES = [[BTN.Q, 'q', 'qBuf'], [BTN.E, 'e', 'eBuf']];
-export const skillWanted = (ecs, e) => (ecs.qBuf[e] > 0 && ecs.cdQ[e] <= 0) || (ecs.eBuf[e] > 0 && ecs.cdE[e] <= 0);
+const PRESSES = [[BTN.Q, 'q'], [BTN.E, 'e']];
+export const skillWanted = (ecs, e) => SLOTS.some((s) => ecs[SLOT_COLS[s].buf][e] > 0 && ecs[SLOT_COLS[s].cd][e] <= 0);
 
 // Start a buffered Q or E (the caller checked you are free to act). Returns true when one started.
 export function tryCast(world, e, cmd, seq) {
   const ecs = world.ecs;
   let k = 0;
-  if (ecs.qBuf[e] > 0 && ecs.cdQ[e] <= 0) k = CAST.Q;
-  else if (ecs.eBuf[e] > 0 && ecs.cdE[e] <= 0) k = CAST.E;
+  for (let i = 0; i < SLOTS.length && !k; i++) {
+    const c = SLOT_COLS[SLOTS[i]];
+    if (ecs[c.buf][e] > 0 && ecs[c.cd][e] <= 0) k = i + 1;
+  }
   if (!k) return false;
-  const id = skillOf(ecs, e, k === CAST.Q ? 'q' : 'e');
-  const S = SKILLS[id];
-  if (!S || !phases(id).some((t) => t > 0)) return false; // not a cast skill (P5 adds the pistols' kit)
-  const cd = S.cd * (1 - ecs.cdr[e]); // gear: Enfriamiento
-  if (k === CAST.Q) { ecs.qBuf[e] = 0; ecs.cdQ[e] = cd; } else { ecs.eBuf[e] = 0; ecs.cdE[e] = cd; }
+  const slot = castSlot(k), c = SLOT_COLS[slot], id = skillOf(ecs, e, slot);
+  if (!castable(id)) { ecs[c.buf][e] = 0; return false; } // no cast (yet): nothing happens, nothing is spent
+  const cd = SKILLS[id].cd * (1 - ecs.cdr[e]); // gear: Enfriamiento
+  ecs[c.buf][e] = 0; ecs[c.cd][e] = cd;
   ecs.atkStage[e] = 0; ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
   faceAim(ecs, e, cmd);
   const [w, a] = phases(id);
@@ -121,7 +132,7 @@ export function tryCast(world, e, cmd, seq) {
 // One step of the skill being cast (castK > 0).
 export function stepCast(world, e, cmd, dt, pt, seq) {
   const ecs = world.ecs;
-  const id = skillOf(ecs, e, ecs.castK[e] === CAST.Q ? 'q' : 'e');
+  const id = skillOf(ecs, e, castSlot(ecs.castK[e]));
   const [w, a, r] = phases(id);
   const t0 = ecs.castT[e];
   ecs.castT[e] += dt;
@@ -138,7 +149,7 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
 // Movement multiplier and animation of a cast (null when nothing is being cast).
 export function castPose(ecs, e) {
   if (!(ecs.castK[e] > 0)) return null;
-  const id = skillOf(ecs, e, ecs.castK[e] === CAST.Q ? 'q' : 'e');
+  const id = skillOf(ecs, e, castSlot(ecs.castK[e]));
   if (id === 'lunge') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };

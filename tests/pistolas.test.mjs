@@ -7,6 +7,7 @@ import { SKILLS, WEAPON } from '../src/data/weapons.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { PTYPE, SHOT } from '../src/sim/projectiles.js';
 import { ACT } from '../src/sim/ecs.js';
+import { setWeapon } from '../src/sim/systems/skills.js';
 import { map, arena, incoming, clientAndServer } from './helpers.mjs';
 
 const P = SKILLS.pistol, B = SKILLS.blast, K = SKILLS.blink, R = SKILLS.rain;
@@ -141,7 +142,7 @@ test('Lluvia de plomo: R calls a zone at the cursor (≤ 9 u) that hits every 0.
 
 test('client prediction stays exact with the pistols: fire, blast, blink, rain, catches and releases', () => {
   const { server, client, deliver, shown, sp, se, ecs } = clientAndServer();
-  ecs.weapon[se] = WEAPON.PISTOLAS; // as if picked up at a rack
+  setWeapon(server.world, se, WEAPON.PISTOLAS); // as if picked up at a rack
   for (let i = 0; i < 12; i++) { server.step(); deliver(); client.tickInput({ mx: 0, mz: 0, ax: sp.x, az: sp.z, btn: 0, prs: 0 }); }
   let maxErr = 0, shotsFired = 0;
   for (let i = 0; i < 900; i++) {

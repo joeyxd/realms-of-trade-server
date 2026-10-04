@@ -71,4 +71,10 @@ export const NPC_TALK = {
     },
     shop: true,
   },
+  // Tattooist (M4.7): she teaches the tattoos (data/tattoos.js). Dialog and tab come with P5.
+  tattoo: {
+    name: 'Doña Sepia',
+    lines: ['La tinta no se olvida, grumete. Ven cuando quieras llevar el mar en la piel.'],
+    quests: {},
+  },
 };

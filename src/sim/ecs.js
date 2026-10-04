@@ -69,6 +69,9 @@ export class ECS {
     this.waveId = f(); this.waveN = f(); this.lungeCov = f();
     // The pistols' lead rain: first tick it falls (0 = none), centre, id (the seq that called it).
     this.rainT0 = f(); this.rainX = f(); this.rainZ = f(); this.rainId = f();
+    // Tattoos (M4.7, data/tattoos.js): what Q / E hold (index into SKILL_IDS), its form (0–2) and rank (1–5; arts 1),
+    // one set per slot in SLOT_COLS; elem: the element every blow carries (0 = none; M4.8's black pearls).
+    this.skQ = f(); this.skE = f(); this.fmQ = f(); this.fmE = f(); this.rkQ = f(); this.rkE = f(); this.elem = f();
     // Gear and mastery (M4, systems/stats.js): what the equipped items and the weapon's mastery change. All
     // predicted (PLAYER_FIELDS) but crit / gold / life on kill, which only the server uses. Multipliers
     // default to 1, additions to 0. mastery packs every kit's level, 4 bits each (0 = unmanaged: whole kit).
@@ -120,6 +123,7 @@ export class ECS {
     this.waveT0[id] = this.waveX[id] = this.waveZ[id] = this.waveDx[id] = this.waveDz[id] = this.waveEnd[id] = 0;
     this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
     this.rainT0[id] = this.rainX[id] = this.rainZ[id] = this.rainId[id] = 0;
+    this.skQ[id] = 0; this.skE[id] = 1; this.fmQ[id] = this.fmE[id] = 0; this.rkQ[id] = this.rkE[id] = 1; this.elem[id] = 0; // the cutlass kit
     this.cdr[id] = this.guardAdd[id] = this.winBonus[id] = this.mastery[id] = this.potions[id] = this.potCd[id] = 0;
     this.ripMul[id] = this.reflMul[id] = this.dashRec[id] = this.fireMul[id] = this.potHeal[id] = this.xpMul[id] = 1;
     this.critAdd[id] = this.critDAdd[id] = this.onKill[id] = 0; this.goldMul[id] = 1;
@@ -159,6 +163,8 @@ export const PLAYER_FIELDS = [
   'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN', 'castLock',
   'waveT0', 'waveX', 'waveZ', 'waveDx', 'waveDz', 'waveEnd', 'waveId', 'waveN', 'lungeCov',
   'rainT0', 'rainX', 'rainZ', 'rainId',
+  // M4.7: the slots' tattoos and the element of your blows.
+  'skQ', 'skE', 'fmQ', 'fmE', 'rkQ', 'rkE', 'elem',
   // M4: gear and mastery (speed included: boots change it).
   'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
 ];

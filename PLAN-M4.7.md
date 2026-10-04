@@ -176,7 +176,7 @@ cambia (`ax/az` ya es el punto apuntado).
 - [x] **P0** Este plan.
 - [ ] **P1** Cómic Ultra (2.1): gpu.js + test, tier `ultra`, ajustes, sombras, contornos, pasada final,
       viñetas de impacto, líneas, onomatopeyas.
-- [ ] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
+- [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
 - [ ] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
 - [ ] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
 - [ ] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
@@ -188,3 +188,8 @@ cambia (`ax/az` ya es el punto apuntado).
 - Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
   **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
   los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.
+- P2: `src/data/tattoos.js` (`SLOTS` + `SLOT_COLS`: columnas de habilidad, forma, rango, enfriamiento y búfer por
+  hueco), carga por arma en `p.sk`, comandos `loadout` / `form` / `learn` con sus rechazos, tinta con
+  recuperación, Doña Sepia en la aldea (uv −102, 3; aún con el aspecto de Tía Perla), `elem` en cada golpe (se
+  copia al evento `damage` / `hurt`). `PROTOCOL_VERSION` 6 (el `you` creció). Un tatuaje sin lanzamiento en Q/E no
+  hace nada hasta P3. 166 tests.

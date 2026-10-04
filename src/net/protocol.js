@@ -1,12 +1,12 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 5; // M4: hello.save, BTN.POTION, profiles, saves, private events · M4.5: public loot, friendly fire
+export const PROTOCOL_VERSION = 6; // M4: hello.save, BTN.POTION, profiles, saves, private events · M4.5: public loot, friendly fire · M4.7: slot / element columns in `you`, loadout / form / learn
 
 export const MSG = {
   // client -> server
   HELLO: 'hello',     // {v, name, skin, weapon, save}
   INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}]}
-  CMD: 'cmd',         // {type: 'pause' | 'equip' | 'unequip' | 'salvage' | 'open' | 'dev' ...}
+  CMD: 'cmd',         // {type: 'pause' | 'equip' | 'unequip' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
   PING: 'ping',       // {t}
   // server -> client
   READY: 'ready',     // transport is up (worker booted)

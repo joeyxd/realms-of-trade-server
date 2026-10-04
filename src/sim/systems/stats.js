@@ -5,6 +5,7 @@
 import { tuning } from '../../data/tuning.js';
 import { STATS, SLOTS } from '../../data/items.js';
 import { MASTERY, WEAPON_KINDS } from '../../data/weapons.js';
+import { ARTS, DEFAULT_LOADOUT, SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
 import { itemStats, emptyStats } from '../items.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -21,10 +22,30 @@ export const masteryOf = (ecs, e, kind = ecs.weapon[e]) => Math.floor(ecs.master
 export const packMastery = (levels) => levels.reduce((s, l, k) => s + Math.max(0, Math.min(15, l | 0)) * 16 ** k, 0);
 export const masteryXpToNext = (lvl) => MASTERY.xp[Math.min(MASTERY.xp.length - 1, Math.max(0, lvl - 1))];
 
-// May the weapon e carries use this slot ('q' | 'e' | 'r') yet? (0 = unmanaged: always.)
+// May e use this slot ('q' | 'e' | 'r') yet? (0 = unmanaged: always.) Q / E hold an art (it needs its mastery on the
+// weapon e carries) or a tattoo (always open); R is the weapon's and opens at MASTERY.unlock.r.
 export function kitUnlocked(ecs, e, slot) {
   const m = masteryOf(ecs, e);
+  if (SLOT_COLS[slot]) {
+    const id = slotSkill(ecs, e, slot);
+    return m === 0 || !isArt(id) || m >= ARTS[id].mastery;
+  }
   return m === 0 || m >= (MASTERY.unlock[slot] || 0);
+}
+
+// ---- Tattoos ------------------------------------------------------------------------------------------------
+// The loadout of the weapon e carries → the slot columns (skill, form, rank). A profile keeps it in p.sk (lo per
+// weapon, has[id] = [rank, xp, form]); without one (bots, tests, tools) it is the weapon's default arts.
+export function applyLoadout(world, e) {
+  const ecs = world.ecs, prof = world.profiles ? world.profiles.get(e) : null, k = Math.max(0, ecs.weapon[e] | 0);
+  const kind = WEAPON_KINDS[k] || WEAPON_KINDS[0], sk = prof && prof.sk && prof.sk.lo ? prof.sk : null;
+  const lo = (sk && sk.lo[k]) || DEFAULT_LOADOUT[kind];
+  SKILL_SLOTS.forEach((slot, i) => {
+    const c = SLOT_COLS[slot], id = lo[i] || DEFAULT_LOADOUT[kind][i], has = sk && sk.has ? sk.has[id] : null;
+    ecs[c.sk][e] = skillIndex(id);
+    ecs[c.fm][e] = has ? has[2] | 0 : 0;
+    ecs[c.rk][e] = has ? has[0] | 0 : 1;
+  });
 }
 
 // The passives of the weapon e carries reached so far, summed over `key` (0 when none has it).
@@ -70,6 +91,8 @@ export function refreshStats(world, e) {
   ecs.critDAdd[e] = g.critD;
   ecs.goldMul[e] = 1 + g.gold;
   ecs.onKill[e] = g.kill;
+  applyLoadout(world, e);
+  ecs.elem[e] = 0; // M4.8: a black pearl's element goes here
 }
 
 export const guardMax = (ecs, e) => tuning.guard.stamina + ecs.guardAdd[e];

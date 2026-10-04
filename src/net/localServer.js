@@ -13,7 +13,7 @@ import { C, KIND } from '../sim/ecs.js';
 import { BTN } from '../sim/systems/movement.js';
 import { BOT_NAMES } from '../sim/systems/bots.js';
 import { encounterState, encounterDev } from '../sim/systems/encounter.js';
-import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop, publicDrops } from '../sim/systems/inventory.js';
+import { installInventory, newProfile, attachProfile, detachProfile, syncProfile, kitOf, equipItem, unequipItem, salvageItem, openChest, giveItem, setMastery, spawnDrop, publicDrops, setLoadout, setForm, learnTattoo, devTattoos, devTattoo, devLoadout } from '../sim/systems/inventory.js';
 import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
@@ -163,6 +163,10 @@ export class LocalServer {
       case 'sell': sell(w, e, uid); break;
       case 'tut': setTutorial(w, e, msg.i | 0); break;
       case 'tier': setTier(w, e, msg.tier | 0); break;
+      // Tattoos (M4.7): the Q / E slots, a tattoo's form, learning one from Doña Sepia.
+      case 'loadout': setLoadout(w, e, String(msg.slot), String(msg.id)); break;
+      case 'form': setForm(w, e, String(msg.id), msg.form); break;
+      case 'learn': learnTattoo(w, e, String(msg.id)); break;
       default: break;
     }
   }
@@ -211,6 +215,9 @@ export class LocalServer {
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
       case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; w.profileDirty.add(e); break;
       case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
+      case 'tattoos': devTattoos(w, e, f(msg.rank, 1)); break;
+      case 'tattoo': devTattoo(w, e, String(msg.id), f(msg.rank, 1), f(msg.form)); break;
+      case 'loadout': devLoadout(w, e, String(msg.slot), String(msg.id)); break;
       case 'tier': { const p = w.profiles.get(e); if (p) { p.flags.tier = p.flags.tierSel = Math.max(1, Math.min(3, f(msg.tier, 1) | 0)); w.profileDirty.add(e); } break; }
       case 'gold': { const p = w.profiles.get(e); if (p) { p.gold = Math.max(0, p.gold + (f(msg.n) | 0)); w.profileDirty.add(e); } break; }
       case 'drop': {

@@ -8,6 +8,7 @@ import { DT, tuning } from '../../data/tuning.js';
 import { ITEMS, BASES, SLOTS, STARTER, CONSUMABLES, QUEST_ITEMS, slotFits, RARITIES } from '../../data/items.js';
 import { LOOT, DROPS } from '../../data/loot.js';
 import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
+import { SKILL_IDS, ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { mulberry32 } from '../../core/rng.js';
 import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
@@ -20,10 +21,13 @@ export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
 
 // ---- Profiles -------------------------------------------------------------------------------------------------
+// Tattoos (M4.7): has[id] = [rank, xp (tinta), form] for what you learned; lo = the Q / E loadout of each weapon
+// (ids, SLOTS order); free = 1 while your first tattoo is still free.
+const newSk = () => ({ has: {}, lo: WEAPON_KINDS.map((k) => [...DEFAULT_LOADOUT[k]]), free: 1 });
 export function newProfile({ weapon = 0 } = {}) {
   const p = {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
-    mast: WEAPON_KINDS.map(() => [1, 0]), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
+    mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
   };
   for (const s of SLOTS) p.eq[s] = null;
@@ -62,6 +66,7 @@ export function sanitizeProfile(raw) {
     const m = Array.isArray(raw.mast) && Array.isArray(raw.mast[i]) ? raw.mast[i] : [1, 0];
     return [int(m[0], 1, MASTERY.max, 1), num(m[1], 0, 1e6, 0)];
   });
+  p.sk = sanitizeSk(raw.sk, int, num);
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];
@@ -77,6 +82,32 @@ export function sanitizeProfile(raw) {
   return p;
 }
 
+// Learned tattoos (known ids, rank 1–5, xp ≥ 0, a form the rank allows) and the loadouts: each slot an art of that
+// weapon or a learned tattoo, none twice in a loadout; anything else gets the slot's default (or, if that is taken,
+// another art of the weapon).
+function sanitizeSk(raw, int, num) {
+  const r = raw && typeof raw === 'object' ? raw : {}, has = {};
+  if (r.has && typeof r.has === 'object') {
+    for (const id of TATTOO_IDS) {
+      const t = Object.prototype.hasOwnProperty.call(r.has, id) ? r.has[id] : null;
+      if (!Array.isArray(t)) continue;
+      const rank = int(t[0], 1, TATTOO.maxRank, 1), form = int(t[2], 0, 2, 0);
+      has[id] = [rank, rank >= TATTOO.maxRank ? 0 : num(t[1], 0, 1e6, 0), formRank(id, form) <= rank ? form : 0];
+    }
+  }
+  const lo = WEAPON_KINDS.map((kind, k) => {
+    const row = Array.isArray(r.lo) && Array.isArray(r.lo[k]) ? r.lo[k] : [], out = [];
+    const arts = Object.keys(ARTS).filter((a) => ARTS[a].weapon === kind);
+    SKILL_SLOTS.forEach((_, i) => {
+      const id = row[i];
+      const ok = typeof id === 'string' && !out.includes(id) && ((isArt(id) && ARTS[id].weapon === kind) || (isTattoo(id) && has[id]));
+      out.push(ok ? id : [DEFAULT_LOADOUT[kind][i], ...arts].find((a) => !out.includes(a)) ?? DEFAULT_LOADOUT[kind][i]);
+    });
+    return out;
+  });
+  return { has, lo, free: Number.isFinite(r.free) ? (r.free > 0 ? 1 : 0) : Object.keys(has).length ? 0 : 1 };
+}
+
 // A kit's common level-1 weapon (from a fresh profile or a rack). Starters are worth nothing.
 const starterItem = (p, kit) => ({ u: p.uid++, b: STARTER[kit] || STARTER.sable, r: 0, l: 1, a: [], s: 1 });
 export const kitOf = (item) => (item && BASES[item.b] && BASES[item.b].weapon) || 'sable';
@@ -87,7 +118,7 @@ export function installInventory(world) {
   world.nextDrop = 1;
   world.profileDirty = new Set();
   world.lootRng = mulberry32((world.seed ^ 0x10075ed) >>> 0);
-  world.onXp = (e, n) => masteryXp(world, e, n);
+  world.onXp = (e, n) => { masteryXp(world, e, n); tattooXp(world, e, n); };
   world.onRack = (e, w) => rackWeapon(world, e, WEAPON_KINDS[w]);
   world.onDeath = (e, by) => spillOnDeath(world, e, by);
   return world;
@@ -150,6 +181,135 @@ export function masteryXp(world, e, n) {
   }
   if (m[0] >= MASTERY.max) m[1] = 0;
   dirty(world, e);
+}
+
+// ---- Tattoos: loadouts, forms, learning, tinta (M4.7, data/tattoos.js) --------------------------------------
+// Everything a pirate does with its Q / E slots happens here, on the server. A refusal is a private event
+// {type: 'skillDenied', why: 'unknown' | 'weapon' | 'lawless' | 'combat' | 'rank' | 'far' | 'gold'}; a change is a
+// private event too (loadout / form / learned / tattooRank) and a fresh profile for the owner.
+const skOf = (p) => p.sk || (p.sk = newSk());
+const denied = (world, e, why) => { world.emit({ type: 'skillDenied', to: e, e, why }); return false; };
+// The weapon e carries: its loadout row (made if the profile has none).
+const loadoutOf = (world, e) => {
+  const sk = skOf(profileOf(world, e)), k = world.ecs.weapon[e] | 0;
+  return sk.lo[k] || (sk.lo[k] = [...DEFAULT_LOADOUT[WEAPON_KINDS[k] || WEAPON_KINDS[0]]]);
+};
+// Changing anything needs calm: not in the lawless Cala, no damage taken for TATTOO.calm s, not casting.
+const calmDenial = (world, e) => {
+  const ecs = world.ecs;
+  if (world.lawless(e)) return 'lawless';
+  return ecs.dead[e] > 0 || ecs.regenT[e] < TATTOO.calm || ecs.castK[e] > 0 ? 'combat' : '';
+};
+// A slot's skill changed: its press buffer is dropped and (a player's change) it cools down for at least swapCd.
+const cooled = (ecs, e, slot, cd) => {
+  const c = SLOT_COLS[slot];
+  ecs[c.buf][e] = 0;
+  if (cd) ecs[c.cd][e] = Math.max(ecs[c.cd][e], TATTOO.swapCd);
+};
+
+// Put `id` in slot index si of the loadout (the same id in the other slot: they swap).
+function putInSlot(world, e, si, id, cd) {
+  const ecs = world.ecs, lo = loadoutOf(world, e), cur = lo[si];
+  if (cur !== id) {
+    const other = lo.indexOf(id);
+    lo[si] = id;
+    cooled(ecs, e, SKILL_SLOTS[si], cd);
+    if (other >= 0) { lo[other] = cur; cooled(ecs, e, SKILL_SLOTS[other], cd); }
+    refreshStats(world, e);
+    dirty(world, e);
+  }
+  world.emit({ type: 'loadout', to: e, e, weapon: ecs.weapon[e] | 0, lo: [...lo] });
+  return true;
+}
+
+// {type: 'loadout', slot, id}: the skill in a slot of the weapon you carry.
+export function setLoadout(world, e, slot, id) {
+  const p = profileOf(world, e), si = SKILL_SLOTS.indexOf(slot);
+  if (!p || si < 0 || !SKILL_IDS.includes(id)) return denied(world, e, 'unknown');
+  if (isArt(id) && ARTS[id].weapon !== WEAPON_KINDS[world.ecs.weapon[e] | 0]) return denied(world, e, 'weapon');
+  if (isTattoo(id) && !skOf(p).has[id]) return denied(world, e, 'unknown');
+  const why = calmDenial(world, e);
+  return why ? denied(world, e, why) : putInSlot(world, e, si, id, true);
+}
+
+// {type: 'form', id, form}: the variant (0 base, 1 A, 2 B) of a learned tattoo; the rank opens them.
+export function setForm(world, e, id, form) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  const t = p && isTattoo(id) ? skOf(p).has[id] : null;
+  if (!t || !Number.isInteger(form) || form < 0 || form > 2) return denied(world, e, 'unknown');
+  if (formRank(id, form) > t[0]) return denied(world, e, 'rank');
+  const why = calmDenial(world, e);
+  if (why) return denied(world, e, why);
+  if (t[2] !== form) {
+    t[2] = form;
+    loadoutOf(world, e).forEach((s, i) => { if (s === id) cooled(ecs, e, SKILL_SLOTS[i], true); });
+    refreshStats(world, e);
+    dirty(world, e);
+  }
+  world.emit({ type: 'form', to: e, e, id, form });
+  return true;
+}
+
+// {type: 'learn', id}: from Doña Sepia (map npc 'tattoo'): the first tattoo is free, the rest cost TATTOO.price.
+export function learnTattoo(world, e, id) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  if (!p || !isTattoo(id) || skOf(p).has[id]) return denied(world, e, 'unknown');
+  const n = world.npcs && world.npcs.get('tattoo');
+  if (ecs.dead[e] > 0 || !n || !ecs.alive[n] || Math.hypot(ecs.x[n] - ecs.x[e], ecs.z[n] - ecs.z[e]) > TATTOO.learnR) return denied(world, e, 'far');
+  const sk = skOf(p), cost = sk.free ? 0 : TATTOO.price;
+  if (p.gold < cost) return denied(world, e, 'gold');
+  p.gold -= cost;
+  if (!cost) sk.free = 0;
+  sk.has[id] = [1, 0, 0];
+  world.emit({ type: 'learned', to: e, e, id, cost, gold: p.gold });
+  dirty(world, e);
+  return true;
+}
+
+// Tinta: all XP you earn also inks the tattoos in your slots (world.onXp, from gainXp). A tattoo whose rank is
+// below (your best − 1) learns TATTOO.catchUp times faster; max rank keeps no xp.
+export function tattooXp(world, e, n) {
+  const p = profileOf(world, e), ecs = world.ecs;
+  if (!p || !p.sk || !(n > 0)) return;
+  const has = p.sk.has, lo = loadoutOf(world, e);
+  let best = 0, touched = false;
+  for (const id in has) best = Math.max(best, has[id][0]);
+  SKILL_SLOTS.forEach((_, i) => {
+    const id = lo[i], t = isTattoo(id) ? has[id] : null;
+    if (!t || t[0] >= TATTOO.maxRank) return;
+    touched = true;
+    t[1] = Math.round((t[1] + n * (t[0] < best - 1 ? TATTOO.catchUp : 1)) * 100) / 100;
+    while (t[0] < TATTOO.maxRank && t[1] >= tattooXpToNext(t[0])) {
+      t[1] = Math.round((t[1] - tattooXpToNext(t[0])) * 100) / 100;
+      t[0] += 1;
+      refreshStats(world, e);
+      world.emit({ type: 'tattooRank', to: e, e, id, rank: t[0] });
+    }
+    if (t[0] >= TATTOO.maxRank) t[1] = 0;
+  });
+  if (touched) dirty(world, e);
+}
+
+// F4 / tools (no rules): every tattoo at `rank`; one tattoo's rank and form; a slot's skill.
+export function devTattoos(world, e, rank = 1) {
+  const p = profileOf(world, e);
+  if (!p) return;
+  const r = Math.max(1, Math.min(TATTOO.maxRank, rank | 0 || 1)), sk = skOf(p);
+  for (const id of TATTOO_IDS) sk.has[id] = [r, 0, sk.has[id] && formRank(id, sk.has[id][2]) <= r ? sk.has[id][2] : 0];
+  refreshStats(world, e);
+  dirty(world, e);
+}
+export function devTattoo(world, e, id, rank = 1, form = 0) {
+  const p = profileOf(world, e);
+  if (!p || !isTattoo(id)) return;
+  skOf(p).has[id] = [Math.max(1, Math.min(TATTOO.maxRank, rank | 0 || 1)), 0, Math.max(0, Math.min(2, form | 0))];
+  refreshStats(world, e);
+  dirty(world, e);
+}
+export function devLoadout(world, e, slot, id) {
+  const si = SKILL_SLOTS.indexOf(slot);
+  if (!profileOf(world, e) || si < 0 || !SKILL_IDS.includes(id)) return false;
+  return putInSlot(world, e, si, id, false);
 }
 
 // ---- Drops ---------------------------------------------------------------------------------------------------

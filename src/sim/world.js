@@ -13,6 +13,7 @@ import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR } from './systems/skills.js';
+import { applyLoadout } from './systems/stats.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
 import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
@@ -65,6 +66,7 @@ export class World {
     ecs.dashCharges[e] = ecs.dashMax[e];
     ecs.guardSt[e] = tuning.guard.stamina + ecs.guardAdd[e];
     ecs.weapon[e] = Math.max(0, Math.min(WEAPON_KINDS.length - 1, weapon | 0));
+    applyLoadout(this, e); // its weapon's arts in Q / E (a profile replaces them: attachProfile)
     const cp = this.map.checkpoints.spawn;
     ecs.cpX[e] = cp.x; ecs.cpZ[e] = cp.z;
     ecs.skin[e] = skin;
@@ -308,7 +310,7 @@ export class World {
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock });
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, elem: ecs.elem[owner] });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -350,9 +352,13 @@ export class World {
     if (!h) { h = newHistory(); this.phist.set(o, h); }
     return h;
   }
-  // A player's blow on target o: an enemy takes it, a pirate may dodge, guard or take it.
+  // A player's blow on target o: an enemy takes it, a pirate may dodge, guard or take it. opts.elem (M4.8: the
+  // attacker's element, ecs.elem; 0 = none) is copied onto the damage / hurt event it emits.
   strike(o, raw, opts) {
-    return this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
+    const n = this.events.length;
+    const dmg = this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
+    if (opts.elem) for (let i = n; i < this.events.length; i++) { const ev = this.events[i]; if (ev.type === 'damage' || ev.type === 'hurt') ev.elem = opts.elem; }
+    return dmg;
   }
 
   // ---- Server-only combat hooks (called from systems/combat.js) ----------------------------------
@@ -373,7 +379,7 @@ export class World {
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       b.hitBy.set(e, key);
       const stage = ecs.atkStage[e];
-      this.strike(o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock });
+      this.strike(o, ecs.atk[e] * st.mult, { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, elem: ecs.elem[e] });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -391,7 +397,7 @@ export class World {
       historyAt(this, o, back, tmp);
       if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > L.width + ecs.hurtR[o]) continue;
       b.hitBy.set(e, key);
-      this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock });
+      this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock, elem: ecs.elem[e] });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -411,7 +417,7 @@ export class World {
       const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
       if (a < f0 - W.depth - hr || a > f1 + hr || l > W.half + hr) continue;
       b.waveBy.set(e, id);
-      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6 });
+      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6, elem: ecs.elem[e] });
     }
   }
 
@@ -423,7 +429,7 @@ export class World {
       if (!this.canHit(e, o)) continue;
       historyAt(this, o, T - tuning.combat.interpTicks, tmp);
       if (Math.hypot(tmp.x - cx, tmp.z - cz) > rr + ecs.hurtR[o]) continue;
-      this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true });
+      this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true, elem: ecs.elem[e] });
     }
   }
 
@@ -432,7 +438,7 @@ export class World {
     for (let o = 1; o < ecs.cap; o++) {
       if (!this.canHit(e, o)) continue;
       if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > stormRadius(ecs, e) + ecs.hurtR[o]) continue;
-      this.strike(o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true });
+      this.strike(o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true, elem: ecs.elem[e] });
     }
   }
 
