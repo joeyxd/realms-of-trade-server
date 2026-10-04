@@ -15,8 +15,9 @@ cuatro tablones y una vela y crece pieza a pieza hasta una fortaleza flotante co
 pueblo (`PLAN-M6.md`). Para seguir el proyecto: `docs/HANDOFF.md`.
 
 **Prioridad del autor (2026-10-04):** construir y habitar en tierra firme o en un barco modular es la joya del
-juego; barcos aéreos más adelante. La discusión de combate naval, comercio con riesgo y pérdidas recuperables
-vive en `docs/NAVAL-HOUSING-DISCUSSION.md`; sus mecanismos y números siguen siendo propuestas.
+juego; barcos aéreos más adelante. Acuerdos de manejo por materiales/navegación/carga/distribución, piratería,
+oficios regionales y ciudades en `docs/NAVAL-ROADMAP.md`. Topología naval/abordaje, fórmulas y detalles de
+pérdidas/recuperación siguen abiertos. La discusión inicial vive en `docs/NAVAL-HOUSING-DISCUSSION.md`.
 
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
@@ -45,6 +46,10 @@ esqueleto y animaciones (no el rig de 15 huesos). A vigilar: licencias, peso de 
   logro cercano, misión activa.
 
 ## 2. Convenciones del mundo
+
+Dirección de contenido del autor (2026-10-04): regiones con tecnologías distintas, desde balsa/vela y motores
+hasta vapor, estética victoriana/steampunk y enclaves de alta tecnología con robots. Materiales/oficios y
+logística regionales sostienen esa convivencia. Barcos aéreos después; el contenido actual no entrega esas eras.
 
 - 1 u ≈ 1 m. Eje **X = este**, **Z = sur**, **Y = arriba**. Nivel del mar `y = 0`.
 - Cámara al **sureste** del jugador mirando al **noroeste** (yaw 45°). En pantalla:
@@ -282,6 +287,11 @@ stinger musical, luz más roja, nueva pose.
 → −0.05. Cada 45 s sin recibir daño → +0.03. Escala cadencia de disparo (`CD / k`) y HP enemigo (`× k`).
 
 ## 9. Progresión
+
+Extensiones acordadas, aún sin implementación: navegación para operar barcos mayores y mejorar su manejo;
+especialidades de comercio/oficio para mercancías, cantidades y recetas; afinidad por uso de poderes de perla.
+Propuesta de afinidad por personaje/tipo de poder, separada del UID que cae/circula; techo/mejoras pendientes.
+Ver `docs/NAVAL-ROADMAP.md` §§2 y 6; no modifica los números actuales de esta sección.
 
 **Stats por nivel:** HP `100 + 12·(Lv−1)` · ATK `10 + 2·(Lv−1)` · DEF `2 + (Lv−1)` · SPD 6.5 (solo equipo) ·
 CRIT 5 % (equipo) · ventana de parry 180 ms (± arma).
@@ -581,6 +591,13 @@ Muelle con barco anclado e interacción «ZARPAR — próximamente» · `data/sh
 (casco; módulos cañón/bodega/mástil/camarotes con slots de tripulación) · componente `vehicle` reservado en el ECS ·
 `camera.setMode('naval')` · tipos de mensaje reservados en el protocolo. Los cañones del v0 (pistola, ráfaga,
 escopeta, pesado) inspiran los módulos de cañón.
+
+Dirección naval ampliada (2026-10-04): material/navegación/carga/distribución cambian manejo, soltar carga para
+escapar, rendición y notoriedad/patrullas, reservas locales en puerto, rutas protegidas con PvE y atajos disputados.
+Crafting/harvesting regionales y remesas financian obras visibles de ciudad. M5–M8 tienen sus ampliaciones en
+plan; el núcleo económico existente aún no es navegación/abordaje jugable. Formato recomendado, aún abierto:
+mar regional compartido con dos zooms y abordaje sobre cubiertas reales enganchadas. `docs/NAVAL-ROADMAP.md`
+separa acuerdos, alternativas, contratos técnicos y aceptación por fases.
 
 ## 14. Plan de archivos
 

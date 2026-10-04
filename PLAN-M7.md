@@ -31,6 +31,22 @@ Sol ~12). Tus compras y ventas mueven el precio sobre la marcha y el mercado vue
   sin ley?).
 - Contrabando: la Corona lo confisca (en sus aguas y en su puerto); la Cala lo paga × 1.5.
 
+### 1.1 Dirección acordada con el autor, 2026-10-04
+
+- Comercio/crafting regionales extensos: recursos por tier/región, harvesting terrestre con combate y cadenas
+  de refinado/componentes/productos. Ampliar desde unas pocas cadenas completas; catálogo grande después.
+- Especialidades de comercio abren mercancías/contratos, cantidades o mejores condiciones. Bonus limitados,
+  stock real y precios del servidor; evitar aprendizaje/descuentos explotables mediante comprar y revender.
+- Rutas protegidas frente a PvP con ganancia modesta o mayor distancia/bienes raros; PvE vencible y peligros
+  con aviso/respuesta. Atajos disputados por NPC/jugadores, sin obligar PvP para progresar en vivienda.
+- Rendición por carga, notoriedad y patrullas; precios/acceso a ciudades dependen de hechos/facción. Bandera
+  voluntaria y marca criminal son capas distintas. Bounty y treguas necesitan reglas concretas antes de pago.
+- Reservas depositadas en puerto seguras localmente; retirar/transportar expone mercancías, incluso en casa-nave.
+- Ciudades demandan/consumen bienes; entregas/caravanas escoltadas y asaltables alimentan obras visibles (M8).
+
+Diseño y alternativas: `docs/NAVAL-ROADMAP.md` §§5–8. Las reglas de mochila/equipo personal al morir, curvas,
+legalidad por zona y pérdidas finales siguen por decidir. La UI inicial P1–P6 no entrega toda esta ampliación.
+
 ## 2. Pasos
 
 - [ ] **P1 Mercaderes en el mundo.** Un NPC mercader por pueblo caminable (`worldgen.js`: `npcs`, como la
@@ -54,6 +70,14 @@ Sol ~12). Tus compras y ventas mueven el precio sobre la marcha y el mercado vue
 - [ ] **P6 Equilibrio.** `tools/econsim.mjs`: un comerciante bot compra barato y vende caro durante 30 días de
   juego; medir oro por hora contra el oro por hora de pelear (M4: `tools/progress.mjs`). Ajustar `MARKET`,
   producciones y consumos para que comerciar sea tan rentable como pelear, no más, al principio.
+- [ ] **P7 Red regional inicial.** Pocas cadenas/talleres y nodos de harvesting; especialidades con progreso
+  acreditado por acciones válidas. Separar masa/volumen de mercancía si el prototipo naval lo requiere.
+- [ ] **P8 Rutas y reglas legales.** Elegir ruta por duración, coste, riesgos y acceso; NPC interactivo con M6 B,
+  rendición, marca/notoriedad y patrulla básica. Bounty monetario posterior a fuente y liquidación verificadas.
+- [ ] **P9 Reservas y remesas.** Depósito/retirada local, carga expulsada/saqueada/entregada con recibos M5;
+  pedidos de ciudad y una caravana escoltable que mueve bienes reales para M8.
+- [ ] **P10 Balance ampliado.** Oro neto/hora, supervivencia tras derrotas, stock y sinks; comparar solos/coops,
+  novatos/expertos y seguro/disputado. Ningún bucle de rescate, bounty, entrega o negociación crea riqueza gratis.
 
 ## 3. Notas
 

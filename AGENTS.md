@@ -25,8 +25,11 @@
 
 - La joya del juego es construir y habitar en tierra firme o en un barco modular; barcos aéreos más adelante.
   Comercio entre ciudades, transporte con riesgo y combate/piratería deben reforzar esa identidad.
-- La discusión de pérdidas y combate naval está en `docs/NAVAL-HOUSING-DISCUSSION.md`. Sus mecanismos y números
-  son propuestas pendientes de decisión; no implementarlos como si ya estuvieran aprobados.
+- Dirección naval aprobada y fases en `docs/NAVAL-ROADMAP.md`: materiales/navegación/distribución/carga afectan
+  tamaño y manejo; expulsar carga, rendición, patrullas/notoriedad, rutas PvE/PvP, oficios regionales, afinidad
+  y desarrollo de ciudades. La discusión inicial está en `docs/NAVAL-HOUSING-DISCUSSION.md`.
+- Distinguir dirección acordada de recomendaciones abiertas: formato naval/abordaje, fórmulas, patrimonio
+  protegido, costes/pérdidas y bounty no están cerrados ni implementados. No decidirlos silenciosamente.
 - El autor autorizó iniciar la investigación Unreal en paralelo mientras redacta sus decisiones navales
   (2026-10-04). Ruta fuente confirmada: `C:\Unreal`, con tres proyectos. Informes e inventario en
   `docs/research/unreal-assets/`; los proyectos fuente permanecen de solo lectura.

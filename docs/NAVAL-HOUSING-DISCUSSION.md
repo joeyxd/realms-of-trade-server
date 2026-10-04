@@ -1,6 +1,8 @@
 # Casas, barcos modulares y piratería — discusión de diseño
 
-Fecha: 2026-10-04. Estado: **propuesta para discutir**, sin cambios de mecánicas ni de milestones.
+Fecha: 2026-10-04. Estado: **discusión inicial**, sin implementación de estas mecánicas.
+El autor ya respondió y aprobó varias direcciones. Estado vigente, acuerdos, fases y alternativas abiertas:
+[NAVAL-ROADMAP.md](NAVAL-ROADMAP.md). Esa hoja prevalece si una propuesta de este texto parece un acuerdo.
 
 ## Lo que pidió el autor
 
@@ -11,7 +13,8 @@ Fecha: 2026-10-04. Estado: **propuesta para discutir**, sin cambios de mecánica
 - Evitar que una derrota borre todo el patrimonio y provoque abandono.
 - Conversar primero; investigar proyectos Unreal/FAB después, con agentes GPT-6 Luna y revisión del principal.
 
-La prioridad es decisión del autor. Todas las reglas concretas siguientes son recomendaciones pendientes.
+La prioridad es decisión del autor. Las reglas siguientes documentan la propuesta inicial; consultar la hoja
+de ruta para distinguir las direcciones ya acordadas de detalles aún pendientes.
 
 ## Recomendación central
 
@@ -195,14 +198,15 @@ escritura. El sanitizer actual usa un tope genérico de bodega, no una política
   excluye módulos y carga. Lección propuesta: distinguir categorías; copiar ese nivel de pérdidas puede ser
   demasiado duro para una casa cuya construcción es el centro del juego.
 
-## Decisiones que falta conversar
+## Detalles que siguen abiertos tras la respuesta del autor
 
-1. Cuánto patrimonio material debe quedar protegido dentro de una vivienda flotante, además del plano/decoración.
-2. Pérdida de toda la carga de viaje en aguas disputadas frente a un saqueo limitado por encuentro.
-3. Coste/tiempo aceptable de recuperación y grado de destrucción visual/funcional.
+1. Protección exacta de plano, decoración y equipo personal: llevar mercancías/recursos en la casa-nave sí los expone.
+2. Magnitud de pérdida de carga y límites de saqueo por encuentro; el riesgo ya está acordado.
+3. Coste/tiempo de recuperación y grado de destrucción visual/funcional; no duplicar módulos está acordado.
 4. Captura solo de carga al principio frente a captura temporal/permanente de barcos bajo condiciones especiales.
-5. Alcance de protección de puertos y rutas, y reglas para solos, rendición y desconexión.
+5. Topología naval/abordaje, legalidad por facción y reglas concretas de rendición, refuerzos y desconexión.
 
-Estas preguntas no autorizan aún implementación de las mecánicas propuestas. Actualización del autor, 2026-10-04:
-la exploración Unreal puede comenzar en paralelo mientras redacta su respuesta. Ruta fuente confirmada:
-`C:\Unreal`, tres proyectos; seguimiento en `docs/research/unreal-assets/README.md`.
+Acuerdos adicionales del autor: materiales/skills y distribución afectan manejo; soltar carga, patrullas y
+notoriedad, rutas seguras con PvE, oficios regionales, especialidad comercial, afinidad de perlas y ciudades
+que crecen por entregas/caravanas. Quedaron incorporados a los planes M4.8–M8 y a la hoja de ruta.
+Investigación Unreal terminada, fuentes `C:\Unreal`: [informe](research/unreal-assets/SUMMARY.md).

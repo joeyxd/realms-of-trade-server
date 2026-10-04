@@ -107,12 +107,32 @@ autor.
 - Construir y habitar en tierra o en barcos modulares es la joya del juego; barcos aéreos más adelante.
 - Usar **GPT-6 Luna** para trabajo delegable que ahorre tiempo/tokens sin comprometer calidad, con autoría,
   integración y revisión final del agente principal. Regla persistente: `AGENTS.md`.
-- La conversación sobre combate naval, carga, pérdidas y protección de la casa sigue abierta. Propuesta y
-  evidencia: `docs/NAVAL-HOUSING-DISCUSSION.md`.
+- Dirección naval acordada y fases: `docs/NAVAL-ROADMAP.md`; discusión inicial y antecedentes en
+  `docs/NAVAL-HOUSING-DISCUSSION.md`. Formato de combate y detalles de balance/protección siguen abiertos.
 - El autor autorizó iniciar la exploración Unreal/FAB en paralelo mientras redacta sus decisiones. Ruta fuente
   confirmada: `C:\Unreal` (tres proyectos), inventario de solo lectura con Luna, contenido adicional y su portabilidad/utilidad;
   excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
-- Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Escarcha.
+- El autor aprobó direcciones de manejo/economía/piratería, sin implementación de esos sistemas.
+  M4.8 sigue en el checkpoint Escarcha.
+
+### Dirección naval y productiva incorporada a los planes (2026-10-04)
+
+- `docs/NAVAL-ROADMAP.md` registra acuerdos: materiales/navegación/carga/distribución afectan tamaño/manejo;
+  soltar carga, rendición por bienes, recuperación sin duplicados, patrullas/notoriedad y riesgo a bordo.
+- Rutas protegidas con PvE interactivo y atajos disputados; tiers/recursos/oficios regionales, especialidades
+  comerciales, afinidad de perlas y ciudades que crecen con entregas/caravanas. Tecnología variada; aire después.
+- Recomendación todavía abierta: mar regional compartido con dos zooms; proyectiles esquivables y maniobra
+  naval con inercia; abordar cubiertas reales enganchadas a baja velocidad antes de saltos entre barcos móviles.
+- Planes M4.8–M8 actualizados como trabajo futuro. Orden propuesto: cerrar kit actual → habitar/cargar/comerciar
+  → manejo → autoridad durable → NPC naval → PvP/rendición/patrulla → oficios regionales → ciudad/convoy.
+- M5 puede avanzar en paralelo, pero es requisito para publicar pérdidas/recuperación y bienes persistentes.
+  Plano frente a daño, transferencias idempotentes y liquidación de remesas antes de PvP económico público.
+- Afinidad solicitada: aprendizaje guardado; personaje/tipo de poder es recomendación, sin curvas ni mejoras
+  decididas. La perla conserva su circulación actual. No añadir alcance silenciosamente al cierre de M4.8.
+- Pendientes: fórmulas, nivel de barco, topología/controles, patrimonio protegido, pérdidas/rescate, legalidad
+  por región, treguas/bounty, XP y población requerida para obras. No asumir que estas cifras están aprobadas.
+- Esta actualización solo cambia planificación/documentación; simulación, versión, protocolo y despliegue
+  permanecen en el checkpoint del commit `40949b2` (Escarcha).
 
 ### Inventario Unreal terminado (2026-10-04)
 

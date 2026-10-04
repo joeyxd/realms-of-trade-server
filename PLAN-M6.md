@@ -21,7 +21,7 @@
 | Barcos clásicos (balandra… galeón) para más adelante | `src/data/ships.js` | ✅ datos |
 | Modelos externos por pieza (`part:<id>` en el manifiesto) | `docs/ASSETS.md` | gancho por añadir (P2) |
 
-## 1. Decisiones (a confirmar con el autor)
+## 1. Base de la primera entrega (detalles a confirmar con el autor)
 
 - Todo pirata empieza con la **balsa inicial** (`STARTER_RAFT`: 2 × 2, una vela, una caja) amarrada al muelle de la
   Aldea.
@@ -29,12 +29,28 @@
   mochila al estar en ella). Se consiguen comerciando (M7), pescando con la red, recogiendo restos flotantes
   (P5) y saqueando.
 - **Se camina por la balsa**: la cubierta es suelo (y los pisos superiores, con escaleras); las paredes chocan. En el
-  muelle es una zona más de la isla; en el mar, una instancia propia (fase B).
+  muelle es una zona más de la isla. El formato del mar/abordaje sigue abierto; ver la recomendación regional abajo.
 - **Viajar** (fase A): desde el timón, elegir destino en la carta (mesa de cartas) → travesía con el tiempo de
   `voyageHours(leguas, raftStats.speed)` y los eventos de la ruta; la balsa produce mientras viaja.
-- **Defender** (fase B): tiburones, piratas y la Corona atacan en el mar. Se pelea **sobre tu propia cubierta** con
-  el combate de siempre (bullet hell, parry, tatuajes), y los cañones giratorios disparan solos o a mano.
+- **Resolver encuentros** (fase B, formato pendiente): amenazas NPC y navales se prototipan por rebanadas.
+  Topología, combate de cubierta y controles de cañones siguen abiertos. Reutilizar el kit del personaje donde
+  encaje, con balance naval específico; alternativas en `docs/NAVAL-ROADMAP.md` §§3–4.
 - **Personalizar**: bandera y pintura (`RAFT_LOOKS`), adornos.
+
+### 1.1 Dirección acordada con el autor, 2026-10-04
+
+- Materiales de calidad y navegación condicionan tamaño/capacidad útil. Carga/peso penalizan claramente giro
+  y velocidad; skill mejora manejo sin eliminar las desventajas del grande. Posible nivel de barco pendiente.
+- Distribución de módulos importa: equilibrio, resistencia al giro y arcos, con estadísticas explicables en el editor.
+- Soltar carga para acelerar/maniobrar; bienes retirados realmente, disputables/perdidos y sin recuperación automática.
+- Reservas locales de puerto seguras; mercancías/recursos a bordo de la casa-nave expuestos en rutas de combate.
+- Rendición por carga, patrullas/notoriedad y recuperación con costes sin duplicación; políticas en M5/M7.
+- Balsa/vela/motor/buque y regiones con tecnologías distintas comparten construcción/logística; aire después.
+
+Fórmulas, límites por tier, patrimonio vinculado, pérdida de carga y controles no están cerrados. Recomendación:
+mar compartido en regiones acotadas, zoom de navegación/combate sobre el mismo estado, acción naval con inercia
+y proyectiles esquivables; abordaje sobre dos cubiertas reales enganchadas a baja velocidad primero.
+Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
 
 ## 2. Pasos
 
@@ -48,23 +64,29 @@
 - [ ] **P3 Modo construcción** (tecla B / botón táctil). Menú de piezas (rejilla de iconos como la referencia:
   nombre, coste, lo que hace), fantasma verde / rojo en la casilla apuntada con el motivo de `canPlace` en español,
   rotar bordes con R, quitar con clic derecho. Comandos `raft` `{op: 'place', piece}` / `{op: 'remove', i}` →
-  eventos `raftPart` / `raftDenied`. Gancho de assets `part:<id>` (un kit modular de Meshy: misma medida de casilla,
-  `RAFT.cell` = 2 u).
+  eventos `raftPart` / `raftDenied`. Gancho de assets `part:<id>`: geometría procedural o piezas exportadas de
+  un kit compatible, misma medida de casilla (`RAFT.cell` = 2 u). Selección FAB según el inventario Unreal.
 - [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaft` en `economy.step` para las balsas de los
   jugadores conectados), panel de la balsa (bodega, agua, lo que produce, peso / flotación, velocidad), cofres,
   hamaca como punto de reaparición, faroles de noche (luces locales).
 - [ ] **P5 Zarpar.** El timón abre la carta; travesía (`planVoyage` + `stepRaft` acelerado); restos flotantes que
   recoger con un gancho por el camino (madera, lona, barriles); llegar a puerto abre su mercado (M7).
-- [ ] **P6 (fase B) El mar.** Instancia de mar, la balsa movida por el viento y el timón, encuentros de la ruta
-  como peleas sobre cubierta, cañones giratorios, daño por pieza (`hp`), reparar.
+  Este viaje abstracto es fase A; sus pérdidas aleatorias no sustituyen el combate naval interactivo de fase B.
+- [ ] **P6 (fase B) El mar.** Movimiento por timón/propulsión, proyectiles, daño por pieza y reparación.
+  Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
+  → patrulla/notoriedad → abordaje de dos cubiertas. Topología y costes pendientes; M5 es puerta de persistencia.
 - [ ] **P7 Progresión y aspecto.** Mesa de cartas: investigar piezas (vela mayor, motor, alambique) con muestras
   que se traen de cada isla. Banderas y pintura. Las cinco etapas de la referencia: balsa desnuda → refugio →
   ampliada (huertos, bodega) → avanzada (motor) → mega balsa.
+  Incluir tiers de materiales y navegación, con vista vacío/cargado. No convertir nivel de barco en bonus
+  universal que anule peso o haga desaparecer roles. No es necesario cerrar todas las tecnologías en M6.
 
 ## 3. Notas
 
 - La cuadrícula y las reglas son del servidor; el cliente solo pide y dibuja. `sanitizeRaft` rehace la balsa
   guardada pieza a pieza, así que una partida editada no puede colocar lo imposible.
-- `RAFT.maxCells` (12 × 12) y 3 niveles: suficiente para la «mega balsa» sin romper el rendimiento (una malla
-  fusionada por balsa, como los props por trozo).
+- `RAFT.maxCells` (12 × 12) y 3 niveles son límites técnicos actuales; los límites por materiales/skill son
+  trabajo futuro dentro de un presupuesto medido. Fusionar mallas no prueba por sí solo rendimiento de combate.
 - Los barcos clásicos (`data/ships.js`) quedan como alternativa de compra en el astillero (M8), o como enemigos.
+- Separar plano de daño operativo antes de persistir destrucción; no usar `sanitizeRaft` para borrar partes
+  domésticas porque perdieron soporte en combate. Identidades estables de piezas/carga y recuperación en M5.

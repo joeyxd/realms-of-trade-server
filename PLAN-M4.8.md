@@ -20,6 +20,9 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
   quién la trae y, si su portador no entra en unos días, vuelve al mar.
 - Las zonas tipo MOBA quedan aparcadas: primero la base divertida, luego la estructura (economía, construcción,
   barcos, comercio entre pueblos; ver `DESIGN.md`).
+- **Afinidad por uso** (dirección del autor, 2026-10-04): guardar aprendizaje del poder y desarrollar sus niveles.
+  Extensión posterior al kit actual; propuesta de personaje + tipo de poder, independiente del UID circulante,
+  en `docs/NAVAL-ROADMAP.md` §6. Curvas, mejoras y límites todavía abiertos; no está implementada.
 
 ## 2. Propuesta (por afinar al empezar)
 
@@ -132,3 +135,12 @@ Implementación: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat
 `src/ui/pearlpanel.js`. Pruebas: `tests/pearls.test.mjs` (17), `tests/escarcha.test.mjs` (14); escenarios visuales
 `SCEN=pearl` y `SCEN=escarcha` en `tools/look.mjs`.
 Los assets FAB elegidos por el autor se integrarán mediante `docs/ASSETS.md`; esta entrega conserva el arte procedural.
+
+## 5. Extensión posterior: afinidad (plan; fuera del cierre P5 actual)
+
+- [ ] Definir llave, curva/techo de XP y mejoras por aprendizaje. Recomendación: personaje + tipo de poder,
+  independiente del UID; aprender queda al perder la perla y no se transfiere al prestar el objeto.
+- [ ] Acreditar uso válido en servidor; defaults/migración/saneado y persistencia M5. Bloquear progresión por
+  pulsar en puerto o repetir acciones sin desafío. Revisar protocolo/UI al exponer el aprendizaje.
+- [ ] Mostrar nivel y siguiente mejora, conservar maldición/circulación y comparar novato/experto sin una brecha
+  enorme de daño. No elegir cifras ni implementar antes de cerrar esta definición.
