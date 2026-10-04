@@ -67,13 +67,13 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R |
 | Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón de acción (aparece con su verbo: Hablar, Abrir, Cambiar, Marea, Zarpar) |
 | Poción de ron-coco (cura el 40 %, 2 s de espera, máx. 5) | 1 · cruceta ↑ | botón de poción |
-| Personaje: Equipo / Atributos / Misiones | I o B / C / L · Select | botón Bolsa |
+| Personaje: Equipo / Atributos / Misiones / Tatuajes | I o B / C / L / T · Select | botón Bolsa |
 | Mapa de la isla | M | botón Mapa |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
 | Ataque del arma. Sable: combo de 3, golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar | LMB / J / RT | botón ATK (mantener) |
 | Guardia (mantener): bloquea de frente; alzada justo a tiempo ATRAPA la bala y tu siguiente ataque la devuelve | RMB / K / LT | botón GUARDIA (mantener) |
-| Habilidades del arma (al cursor). Sable: Estocada / Hoja de viento. Pistolas: Descarga / Paso de humo | Q / E · RB / LB | botones Q / E |
+| Tus dos huecos: las artes del arma (sable: Estocada / Hoja de viento; pistolas: Descarga / Paso de humo) o tus tatuajes. Un área (Tromba, Abordaje) se apunta manteniendo y sale al soltar (RMB / ESC / B cancelan); el Timón se carga manteniendo | Q / E · RB / LB | botones Q / E (arrastrar apunta; mantener carga) |
 | R con el RIPOSTE lleno. Sable: Tormenta. Pistolas: Lluvia de plomo | R / Y | botón R |
 | Pausa y ajustes (ESC cierra antes el diálogo, el panel o el mapa) | ESC / Start | botón ⚙ |
 | Rendimiento | F3 | — |
@@ -97,7 +97,9 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M4 | «El botín»: objetos y rarezas, maestría por arma que abre el kit, loot personal, pociones, misiones y diálogo, Tía Perla, Mareas, partidas guardadas y firmadas, HUD y paneles completos → `PLAN-M4.md` | ✅ |
 | M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
 | M4.6 | «Tinta»: el móvil siempre en horizontal (el juego se dibuja girado si el teléfono está de pie), botones táctiles de cristal por colores en arco, y el pase de cómic: contornos de tinta con peso, sombras duras teñidas con trama, superficies pintadas → `PLAN-M4.6.md` | ✅ |
-| M5–M6 | Momentos Highlight, rendimiento y móvil final | siguiente |
+| M4.7 | «Tatuajes»: Q / E libres (artes del arma o tatuajes), tres tatuajes con rangos y formas (Tromba, Abordaje, Timón), apuntado tipo MOBA, Doña Sepia y la pestaña Tatuajes; el cómic Ultra para GPU potentes → `PLAN-M4.7.md` | ✅ |
+| M4.8 | «Perlas negras»: un tercer hueco y un elemento en cada golpe → `PLAN-M4.8.md` | diseño |
+| M5–M8 | La estructura: mundo persistente (Supabase), «La Balsa», comercio entre pueblos, construcción → `PLAN-M5.md` … `PLAN-M8.md`, `docs/HANDOFF.md` | núcleo en parte |
 
 ### Qué incluye M1
 
@@ -374,6 +376,29 @@ alta (el pico es la aldea al atardecer), 65–80 draw calls y 140–190 k trián
   los props, anillos en las palmeras, arbustos a dos tonos.
 - **Etalonaje** más contrastado y saturado en las cuatro horas. Todo es procedural con la textura de ruido que ya
   había: ni texturas nuevas ni pasadas nuevas. Rendimiento: ver `PLAN-M4.6.md` §4.
+
+### Qué incluye M4.7 — «Tatuajes»
+
+- **Huecos libres:** Q y E llevan las artes de tu arma (las de siempre) o un **tatuaje** aprendido, que sirve con
+  cualquier arma. Cada arma recuerda su carga. Se cambia fuera de combate (3 s sin recibir daño), nunca en la Cala, y
+  el hueco cambiado se enfría unos segundos. Pestaña **Tatuajes** (`T`) en el panel del personaje.
+- **Tres tatuajes**, con rango (I–V, sube con la *tinta*: la experiencia que ganas llevándolos puestos; el que va
+  rezagado aprende el doble) y dos formas que abren los rangos II y IV:
+  - **Tromba** (área): una columna de agua cae en el punto apuntado; aturde y borra las balas. *Ojo de tormenta* deja
+    un remolino que atrae y golpea; *Gemelas* tira una segunda columna donde apuntas cuando cae la primera.
+  - **Abordaje** (área): salto invulnerable hasta el último punto donde se puede pisar; al caer golpea, empuja y borra
+    balas. *Parpadeo* es un teletransporte y tu siguiente golpe es crítico; *Ancla de abordaje* salta más y aturde.
+  - **Timón** (carga): mantén para cargar y suelta: un timón que sale rápido y corto o lento, lejos y fuerte, golpea a
+    la ida y a la vuelta, borra balas y, si lo atrapas, devuelve parte del enfriamiento. *Remolino* gira en el ápice;
+    *Timón de guerra* es más grande, empuja y no devuelve nada.
+- **Apuntar tipo MOBA:** mantener Q / E muestra el aro de alcance y la marca del área (el salto, con su arco y su
+  aterrizaje real); soltar lanza; RMB, ESC o B del mando cancelan. «Lanzamiento de áreas: Rápido» en Ajustes lo lanza al
+  pulsar. La Tromba de cualquier pirata se ve llegar (morada la tuya, ámbar la de otros). En táctil: arrastrar el botón
+  lleva la marca, mantener carga el Timón.
+- **Doña Sepia**, la tatuadora de la aldea, con su puesto de pieles y tinteros: el primer tatuaje es gratis, los
+  demás cuestan 150 de oro.
+- **Cómic Ultra** (GPU potentes): tramas Ben-Day, contornos más gruesos, viñetas de impacto, líneas de velocidad y
+  onomatopeyas (¡CHOF!, ¡PATAPÚM!, ¡ZUUUM!…). «Efectos de cómic» en Ajustes.
 
 ## Arquitectura
 

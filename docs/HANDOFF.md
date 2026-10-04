@@ -46,7 +46,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | Milestone | Estado |
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
-| **M4.7 «Tatuajes»** | P0–P5 ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia); P6 pendiente |
+| **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | diseño (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
@@ -55,7 +55,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
 
-### Lo inmediato: terminar M4.7
+### M4.7 terminado (lo que queda abierto)
 
 1. **P3** (sim de los tatuajes) ✅: los tres tatuajes y sus formas se lanzan, golpean, borran balas y se predicen
    (`tests/tattoos2.test.mjs`). Eventos para el render: `cast` (el del salto con `x0, z0, x1, z1, air, h, form`),
@@ -64,8 +64,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
    `wheelDrop`; la posición del timón en vuelo está en `ecs.whX / whZ` (y `wheelOut()` para la ida).
 2. **P4 + P5** (cliente) ✅: apuntado tipo MOBA, VFX, animación, iconos, sonido, pestaña Tatuajes y Doña Sepia.
 3. **P1**: el autor revisa el cómic Ultra y manda ajustes.
-4. **P6**: equilibrio, rendimiento de Ultra, README / DESIGN, versión `0.4.7` (`package.json`, `src/data/meta.js`
-   `'0.4.7-m4.7'`), casillas del plan, artefacto, informe.
+4. **P6** ✅: versión `0.4.7-m4.7`, protocolo 7, README / DESIGN, artefacto.
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.

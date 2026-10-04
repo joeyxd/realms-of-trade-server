@@ -180,7 +180,7 @@ cambia (`ax/az` ya es el punto apuntado).
 - [x] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
 - [x] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
 - [x] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
-- [ ] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,
+- [x] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,
       informe.
 
 ## 4. Notas de ejecución
@@ -188,6 +188,12 @@ cambia (`ax/az` ya es el punto apuntado).
 - Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
   **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
   los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.
+- P6: los números son los de 2.3 (primera pasada, se afinan en vivo desde F4 → raíz `skills`); por cuenta, el Timón
+  cargado es el que más daño hace por segundo de enfriamiento (≈ 2 golpes de ATK × 2,2 con el 40 % devuelto), pero
+  pide 0,9 s de carga quieto a medias y atraparlo; la Tromba y el Abordaje pagan con área, aturdimiento y balas
+  borradas. Rendimiento: todo lo nuevo va en pools hechos al arrancar (marcas, columnas, remolinos, sombras, seis
+  timones) y una marca solo se vuelve a tender sobre el suelo cuando se mueve. `PROTOCOL_VERSION` 7 (el estado de los
+  tatuajes en `you`), versión `0.4.7-m4.7`, README y DESIGN al día. 214 tests.
 - P5: pestaña «Tatuajes» (tecla T) en `ui/charpanel.js`: los dos huecos del arma que llevas, las artes del arma (las
   que pide maestría, en gris), tus tatuajes (rango, barra de tinta, formas con su pista o el rango que piden) y los que
   faltan; la ficha de la elegida con sus números y «Poner en Q / E», «Aprender · gratis / 150 oro» cuando te atiende
