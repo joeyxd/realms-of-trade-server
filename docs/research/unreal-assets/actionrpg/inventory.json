@@ -1,0 +1,88 @@
+{
+  "source_project": "C:\\Unreal\\ActionRPGMultiplayerStart",
+  "uproject": "ActionRPGMultiplayerStart.uproject",
+  "engine_association": "5.8",
+  "scope": "Content recursively; excludes non-Content project folders (DerivedDataCache, Intermediate, Saved), root engine/modules/Binaries absent, and repo metadata/secrets.",
+  "content_file_count": 1086,
+  "content_bytes": 524074501,
+  "extensions": {
+    ".png": {
+      "files": 2,
+      "bytes": 12250
+    },
+    ".uasset": {
+      "files": 1078,
+      "bytes": 522021607
+    },
+    ".umap": {
+      "files": 6,
+      "bytes": 2040644
+    }
+  },
+  "packs": {
+    "ActionRPGStarterSystem": {
+      "files": 1084,
+      "bytes": 524062251
+    },
+    "Slate": {
+      "files": 2,
+      "bytes": 12250
+    }
+  },
+  "categories": {
+    "animation_or_rig": {
+      "files": 99,
+      "bytes": 36262608
+    },
+    "audio_asset_or_mixer": {
+      "files": 50,
+      "bytes": 3410442
+    },
+    "blueprint_system_candidate": {
+      "files": 214,
+      "bytes": 73621218
+    },
+    "data_schema_or_interface": {
+      "files": 89,
+      "bytes": 1707853
+    },
+    "demo_map_or_environment": {
+      "files": 37,
+      "bytes": 18713823
+    },
+    "engine_starter_demo_content": {
+      "files": 13,
+      "bytes": 42668168
+    },
+    "material": {
+      "files": 73,
+      "bytes": 9620298
+    },
+    "model_or_character_art": {
+      "files": 121,
+      "bytes": 116874331
+    },
+    "other_content": {
+      "files": 81,
+      "bytes": 4641309
+    },
+    "texture": {
+      "files": 89,
+      "bytes": 162603475
+    },
+    "ui_art_cursor": {
+      "files": 2,
+      "bytes": 12250
+    },
+    "ui_widget_or_icon": {
+      "files": 203,
+      "bytes": 47255202
+    },
+    "vfx_asset": {
+      "files": 15,
+      "bytes": 6683524
+    }
+  },
+  "bounded_binary_sample_bytes": 2038828,
+  "class_confidence_note": "Class/type labels remain unknown for Unreal .uasset packages without Unreal asset metadata tooling; folders and filenames are suggestive only."
+}

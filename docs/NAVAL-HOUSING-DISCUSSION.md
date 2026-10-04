@@ -204,5 +204,5 @@ escritura. El sanitizer actual usa un tope genérico de bodega, no una política
 5. Alcance de protección de puertos y rutas, y reglas para solos, rendición y desconexión.
 
 Estas preguntas no autorizan aún implementación de las mecánicas propuestas. Actualización del autor, 2026-10-04:
-la exploración Unreal puede comenzar en paralelo mientras redacta su respuesta. Falta la ruta concreta de los
-proyectos; seguimiento en `docs/research/unreal-assets/README.md`.
+la exploración Unreal puede comenzar en paralelo mientras redacta su respuesta. Ruta fuente confirmada:
+`C:\Unreal`, tres proyectos; seguimiento en `docs/research/unreal-assets/README.md`.

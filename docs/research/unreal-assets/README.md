@@ -4,9 +4,15 @@ Autorizada por el autor el 2026-10-04 en paralelo a la discusión naval.
 
 ## Estado
 
-- Ruta de origen: pendiente de respuesta del autor/localización acotada de proyectos.
-- Inventario de contenido fuente: todavía no realizado.
-- Agentes GPT-6 Luna: localización de proyectos y evaluación de los ganchos reales de portabilidad del juego.
+- Ruta de origen confirmada por el autor: `C:\Unreal`.
+- Inventario de contenido fuente terminado: un agente GPT-6 Luna por proyecto, con revisión e integración del principal.
+- **Leer primero [SUMMARY.md](SUMMARY.md)**: dictamen, prioridades, pruebas propuestas y huecos de contenido.
+- 7.406 archivos inventariados / 6.934.252.744 bytes (6,458 GiB), contando repeticiones entre proyectos;
+  7.113 registros de Content y 293 del plugin/editor de MyProject. El suplemento de contexto no es parte de esa suma.
+  Reconciliación de los tres CSV/JSON y 18 muestras SHA-256 documentadas en [DUPLICATES.md](DUPLICATES.md).
+- Proyectos: `ActionRPGMultiplayerStart`, `MyProject`, `survival project\SimpleMultiplayerSurvival`.
+  `ActionRPGMultiplayerStart` y `SimpleMultiplayerSurvival` declaran asociación Unreal `5.8`;
+  `MyProject` declara un GUID de instalación, versión aún no resuelta.
 - Localización acotada: `C:\Users\xxajx\Documents\Unreal Projects` no existe;
   `C:\Users\xxajx\OneDrive\Documents\Unreal Projects\multi survival project` está vacío. No se identificó
   ningún `.uproject` en esas ubicaciones; no se realizó búsqueda general por discos/carpetas ajenas.
@@ -23,7 +29,7 @@ Priorizar mejoras para vivienda terrestre, barcos modulares habitables, puertos/
 personajes y combate. Naves aéreas son una categoría de interés futuro, no una tarea de implementación actual.
 Conservar la distinción entre asset presente, tipo confirmado, apariencia revisada y exportación probada.
 
-## Entregables al identificar la carpeta
+## Entregables
 
 1. Proyectos y packs: ruta relativa, versión de Unreal, plugins propios/adicionales y dependencias relevantes.
 2. Inventario estructurado: categoría, pack/proyecto, archivo/ruta, cantidad/tamaño y evidencia del tipo.
@@ -32,6 +38,11 @@ Conservar la distinción entre asset presente, tipo confirmado, apariencia revis
 4. Separación clara: reutilización directa, exportación/conversión, recreación de lógica/efecto e inspiración.
 5. Duplicados entre proyectos identificados por evidencia; hashes selectivos si hacen falta, sin borrar nada.
 6. Lista corta de pruebas de exportación para la fase siguiente; ninguna exportación se da por hecha.
+
+Informes por proyecto: [ActionRPG](actionrpg/FINDINGS.md), [MyProject](myproject/FINDINGS.md),
+[Supervivencia](survival/FINDINGS.md). Datos conjuntos: [packs](PACKS.csv), [candidatos](CANDIDATES.csv),
+[cruce de copias](DUPLICATES.md) y [validación](validation.json). Las miniaturas de inspección están enlazadas
+desde los informes; las imágenes de los packs fuente permanecen en `C:\Unreal`.
 
 ## Campos del catálogo
 

@@ -97,10 +97,23 @@ autor.
   integración y revisión final del agente principal. Regla persistente: `AGENTS.md`.
 - La conversación sobre combate naval, carga, pérdidas y protección de la casa sigue abierta. Propuesta y
   evidencia: `docs/NAVAL-HOUSING-DISCUSSION.md`.
-- El autor autorizó iniciar la exploración Unreal/FAB en paralelo mientras redacta sus decisiones. Ruta exacta
-  aún por confirmar: inventario de solo lectura con Luna, contenido adicional adquirido y su portabilidad/utilidad;
+- El autor autorizó iniciar la exploración Unreal/FAB en paralelo mientras redacta sus decisiones. Ruta fuente
+  confirmada: `C:\Unreal` (tres proyectos), inventario de solo lectura con Luna, contenido adicional y su portabilidad/utilidad;
   excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
 - Las reglas de esa discusión aún no están aprobadas ni implementadas. M4.8 sigue en el checkpoint Brasa.
+
+### Inventario Unreal terminado (2026-10-04)
+
+- Tres agentes GPT-6 Luna analizaron `C:\Unreal`; informes y revisión del principal en
+  `docs/research/unreal-assets/SUMMARY.md`, CSV por proyecto, catálogo de packs y comparación selectiva SHA-256.
+- 7.406 archivos / 6.934.252.744 bytes, contando repeticiones; CSV y JSON reconciliados. Se revisaron miniaturas
+  de vivienda/props/VFX y dos texturas PNG sueltas. No se abrió Unreal ni se modificaron proyectos fuente.
+- Prioridades: mapas PNG de sA para VFX; banco/caja/hut Dreamrise para arte doméstico; flujos de construcción,
+  inventario/crafting/vendor como referencias. No identificado kit modular naval ni doméstico completo.
+- Casi todo está empaquetado en `.uasset`; exportabilidad, rigs, polígonos y rendimiento aún no comprobados.
+  No hay imports, exportaciones GLB/audio ni implementación de estas propuestas. `assets/manifest.json` sigue vacío.
+- Contexto previo de MyProject menciona otros packs de entorno/aldea, sin presencia identificada por sus nombres
+  exactos. Son pistas para buscar después, no contenido local verificado.
 
 ## 4. Cómo trabajar
 

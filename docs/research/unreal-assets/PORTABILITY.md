@@ -2,7 +2,7 @@
 
 ## Alcance y evidencia
 
-Esta matriz compara capacidades del repositorio con los tipos de contenido habituales en proyectos Unreal. No se inspeccionó ningún proyecto Unreal ni sus assets, porque aún no se proporcionó la carpeta fuente. Tampoco se probaron exportaciones; los resultados concretos dependen del asset, sus dependencias y la versión/configuración del exportador. Las referencias Epic describen formatos/exportador de Unreal, no garantizan que cada asset exporte sin ajustes.
+Esta matriz compara capacidades del repositorio con los tipos de contenido habituales en proyectos Unreal. Es la evaluación del runtime, previa al inventario de `C:\Unreal`; los informes por proyecto documentan la inspección posterior. No se probaron exportaciones; los resultados concretos dependen del asset, sus dependencias y la versión/configuración del exportador. Las referencias Epic describen formatos/exportador de Unreal, no garantizan que cada asset exporte sin ajustes.
 
 Evidencia local: `docs/ASSETS.md`, `tools/import-asset.mjs`, `src/render/assets/registry.js`, `src/render/assets/manifest.js`, `src/render/assets/rebind.js`, `src/render/assets/toonmat.js`, `src/render/characters.js`, `src/render/props.js`, `src/audio/engine.js`, `src/audio/sfx.js`, `src/audio/music.js`, `src/audio/ambience.js`, `src/render/vfx/effects.js`, `src/render/vfx/particles.js`.
 
@@ -19,7 +19,7 @@ Evidencia local: `docs/ASSETS.md`, `tools/import-asset.mjs`, `src/render/assets/
 | SoundCue / MetaSound | **Recrear o traducir; diseño útil como referencia.** | No se ejecutan grafos/cues Unreal. Exportar un WAV de una señal no conserva lógica de mezcla, aleatoriedad, parámetros, atenuación o eventos; habría que trasladarlos al Web Audio/runtime nuevo. La referencia Epic de audio describe Sound Waves y formatos, no compatibilidad de ejecución de Cue/MetaSound. |
 | C++ / Blueprints de gameplay o construcción | **Reimplementar en la simulación del juego; código y grafos sirven como referencia.** | No existe runtime Unreal ni importación de Blueprints/C++. Las reglas de construcción, propiedad, colisión, economía y gameplay deben convertirse a sistemas autoritativos del servidor. Los modelos pueden entrar visualmente por `assets.model`, con integración de gameplay aparte. Epic describe Blueprints como grafos de lógica en su [guía técnica](https://dev.epicgames.com/documentation/en-us/unreal-engine/technical-guide-for-blueprints-visual-scripting-in-unreal-engine); [Blueprint Header View](https://dev.epicgames.com/documentation/unreal-engine/an-overview-of-the-blueprint-header-view-in-unreal-engine?lang=en-US) genera declaraciones de variables/funciones/componentes, no porta ejecución de grafos. |
 
-## Datos a recopilar cuando se indique la carpeta fuente
+## Datos a recopilar de la carpeta fuente
 
 - Ruta del proyecto, versión (`.uproject`), plugins del proyecto y lista de carpetas `Content/` añadidas o adquiridas con sus dependencias referenciadas; excluir módulos base de Unreal.
 - Para mallas: tipo, nombre/ruta, dependencias, dimensiones, materiales, LODs; exportación GLB y FBX de origen si existe. Para personajes: jerarquía/nombres de huesos, pose de reposo y nombres de clips.

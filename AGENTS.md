@@ -28,7 +28,8 @@
 - La discusión de pérdidas y combate naval está en `docs/NAVAL-HOUSING-DISCUSSION.md`. Sus mecanismos y números
   son propuestas pendientes de decisión; no implementarlos como si ya estuvieran aprobados.
 - El autor autorizó iniciar la investigación Unreal en paralelo mientras redacta sus decisiones navales
-  (2026-10-04). Esperar la ruta concreta o identificar los proyectos antes de inventariar su contenido.
+  (2026-10-04). Ruta fuente confirmada: `C:\Unreal`, con tres proyectos. Informes e inventario en
+  `docs/research/unreal-assets/`; los proyectos fuente permanecen de solo lectura.
 - Esa investigación debe usar GPT-6 Luna para listar/clasificar assets, scripts, modelos, efectos, audio y arte,
   priorizando portabilidad al juego actual y mejora concreta. Examinar contenido añadido/adquirido y dependencias;
   excluir módulos base de Unreal. No modificar los proyectos fuente. El autor se encarga de las licencias;
