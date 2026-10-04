@@ -3,10 +3,14 @@
 // tracker, toasts and the "fallen" screen. Plain DOM over the canvas; GSAP for the choreography.
 import { gsap } from 'gsap';
 import { SKINS } from '../render/characters.js';
-import { WEAPONS, SKILLS } from '../data/weapons.js';
+import { WEAPONS, SKILLS, formed } from '../data/weapons.js';
+import { TATTOOS } from '../data/tattoos.js';
 
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// Skill id → icon key where they differ; roman ranks.
+const SLOT_ICON = { wave: 'crescent' };
+export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const ICONS = {
   sword: '<svg viewBox="0 0 32 32"><path d="M24 3l5 0 0 5-13 13-3-2-2-3z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8 18l6 6-2 2-2-1-3 3-3-3 3-3-1-2z" fill="#ffc23d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   shield: '<svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8v16M10 14h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/></svg>',
@@ -20,6 +24,10 @@ const ICONS = {
   blast: '<svg viewBox="0 0 32 32"><path d="M4 16l10-3v6z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M16 16l12-9M16 16h13M16 16l12 9M16 16l11-4M16 16l11 4" stroke="#ffc23d" stroke-width="2.2" stroke-linecap="round"/></svg>',
   blink: '<svg viewBox="0 0 32 32"><circle cx="10" cy="19" r="6" fill="#b8bcc8" stroke="#1a1033" stroke-width="2"/><circle cx="16" cy="14" r="5" fill="#d8dce6" stroke="#1a1033" stroke-width="2"/><path d="M19 22h10M24 17l5 5-5 5" fill="none" stroke="#3bf0ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   rain: '<svg viewBox="0 0 32 32"><ellipse cx="16" cy="26" rx="12" ry="4" fill="none" stroke="#3bf0ff" stroke-width="2.4"/><path d="M8 4v8M14 2v10M20 5v8M26 3v8M11 14v5M18 15v6M24 14v5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  // Tattoos (M4.7): a waterspout, a boot over its arc, a ship's wheel.
+  tromba: '<svg viewBox="0 0 32 32"><path d="M9 3.5c4.5 1.2 9.5 1.2 14 0-1.2 4.5-3.6 6.8-4.6 10 1 3.2 1 6.4 0 9.5h-4.8c-1-3.1-1-6.3 0-9.5-1-3.2-3.4-5.5-4.6-10z" fill="#5fd6ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M11.5 7.5c3 .9 6 .9 9 0M14 15c1.4.6 2.6.6 4 0" stroke="#effcff" stroke-width="1.8" stroke-linecap="round" fill="none"/><path d="M3 27c2.6-2.2 5.2-2.2 7.8 0s5.2 2.2 7.8 0 5.2-2.2 7.8 0" fill="none" stroke="#1a1033" stroke-width="4.4" stroke-linecap="round"/><path d="M3 27c2.6-2.2 5.2-2.2 7.8 0s5.2 2.2 7.8 0 5.2-2.2 7.8 0" fill="none" stroke="#3bf0ff" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  leap: '<svg viewBox="0 0 32 32"><path d="M3.5 27C7 11 21 8 28.5 25" fill="none" stroke="#ffc23d" stroke-width="2.6" stroke-dasharray="3.2 3" stroke-linecap="round"/><path d="M12.5 4.5h6.5v7.5l5.5 2.2v4.3h-12z" fill="#8a5530" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M12.5 15.5h12" stroke="#c9a44c" stroke-width="1.8"/><path d="M23.5 29h7M27 25.5l3-2.5" stroke="#e3ebf5" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  wheel: '<svg viewBox="0 0 32 32"><path d="M16 2.5v27M2.5 16h27M6.5 6.5l19 19M25.5 6.5l-19 19" stroke="#1a1033" stroke-width="4.6" stroke-linecap="round"/><path d="M16 2.5v27M2.5 16h27M6.5 6.5l19 19M25.5 6.5l-19 19" stroke="#d29655" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="#1a1033" stroke-width="5.4"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="#8a5a2e" stroke-width="3.2"/><circle cx="16" cy="16" r="3.4" fill="#ffc23d" stroke="#1a1033" stroke-width="1.8"/></svg>',
   potion: '<svg viewBox="0 0 32 32"><path d="M12 4h8v3l-1 1v4c4 1.5 7 5 7 9.5C26 26 21.5 29 16 29S6 26 6 21.5C6 17 9 13.5 13 12V8l-1-1z" fill="#cfeee8" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 20c2 1.5 4.5 2 7.5 2s5.5-.5 7.5-2c.3 4.5-3.5 6.5-7.5 6.5S8.2 24.5 8.5 20z" fill="#e2482c"/><rect x="11.5" y="2.5" width="9" height="3.5" rx="1" fill="#8a5a2e" stroke="#1a1033" stroke-width="1.6"/></svg>',
   lock: '<svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" fill="#c9a44c" stroke="#1a1033" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#1a1033" stroke-width="2.4"/><circle cx="12" cy="15.5" r="1.8" fill="#1a1033"/></svg>',
   coin: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#ffcf4a" stroke="#1a1033" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="#c8962a" stroke-width="1.8"/><path d="M12 8.5v7" stroke="#c8962a" stroke-width="1.8" stroke-linecap="round"/></svg>',
@@ -263,7 +271,28 @@ export class Hud {
   }
 
   slot(id, key, icon) {
-    return `<div class="slot skill-slot" data-slot="${id}"><span class="kbd key">${key}</span><span class="ico">${icon}</span><div class="sweep"></div><span class="cd"></span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>`;
+    return `<div class="slot skill-slot" data-slot="${id}"><span class="kbd key">${key}</span><span class="ico">${icon}</span><div class="sweep"></div><span class="cd"></span><b class="rk" hidden></b><i class="fm" hidden></i><span class="lock" hidden>${ICONS.lock}<em></em></span></div>`;
+  }
+
+  // What Q / E hold (M4.7): {id, form, rank} each. A tattoo shows its rank (I–V) and its form letter (A / B) and
+  // its slot a violet rim; the title says name · form · rank and what it does.
+  setSlots(q, e) {
+    const key = `${q.id}:${q.form}:${q.rank}|${e.id}:${e.form}:${e.rank}`;
+    if (key === this.last.slots) return;
+    this.last.slots = key;
+    for (const [el, d] of [[this.qSlot, q], [this.eSlot, e]]) {
+      const T = TATTOOS[d.id], S = SKILLS[d.id];
+      el.querySelector('.ico').innerHTML = ICONS[SLOT_ICON[d.id] || d.id] || ICONS.sword;
+      el.classList.toggle('tattoo', !!T);
+      const rk = el.querySelector('.rk'), fm = el.querySelector('.fm');
+      rk.hidden = !T; fm.hidden = !T || !d.form;
+      if (T) {
+        const f = T.forms[d.form] || T.forms[0];
+        rk.textContent = ROMAN[d.rank] || 'I';
+        fm.textContent = d.form === 2 ? 'B' : 'A';
+        el.title = `${T.name}${d.form ? ' · ' + f.name : ''} · rango ${ROMAN[d.rank] || 'I'}: ${f.hint}${S && S.cd ? ` · ${formed(d.id, d.form).cd} s` : ''}`;
+      } else el.title = `${S.name}: ${S.hint}${S.cd ? ` · ${S.cd} s` : ''}`;
+    }
   }
 
   // ---- M4: gold, potions, mastery, locks, quests ---------------------------------------------------------
@@ -341,12 +370,9 @@ export class Hud {
     this.last.weapon = kind;
     const W = WEAPONS[kind] || WEAPONS.sable, pist = W.basic === 'pistol';
     const icon = { combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
-    const tip = (id) => `${SKILLS[id].name}: ${SKILLS[id].hint}${SKILLS[id].cd ? ` · ${SKILLS[id].cd} s` : ''}`;
     this.lmbSlot.querySelector('.ico').innerHTML = icon[W.basic];
     this.lmbSlot.title = pist ? 'Disparo (mantener): balas rectas; no refleja. Atrapa con la guardia y el siguiente disparo devuelve lo atrapado' : 'Combo de 3 golpes: golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE)';
     this.lmbSlot.querySelector('.combo').hidden = pist;
-    this.qSlot.querySelector('.ico').innerHTML = icon[W.q]; this.qSlot.title = tip(W.q);
-    this.eSlot.querySelector('.ico').innerHTML = icon[W.e]; this.eSlot.title = tip(W.e);
     this.rSlot.querySelector('.ico').innerHTML = icon[W.r];
     this.rSlot.title = W.r === 'rain' ? 'Lluvia de plomo: con el medidor lleno, una zona de balas en el cursor' : 'Tormenta: con el medidor lleno, refleja todo a tu alrededor';
     this.wname.textContent = W.name;

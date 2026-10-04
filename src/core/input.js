@@ -1,7 +1,11 @@
 // Keyboard / mouse / touch / gamepad input. Produces raw axes (screen-relative), held buttons and press
 // edges that the fixed tick consumes, plus UI hotkeys dispatched immediately.
 // Gamepad (standard mapping): left stick moves, right stick aims, RT sword / shoot, LT guard, A dash,
-// X interact, RB Q, LB E, Y R, D-pad up potion (M4), Start pause, Select the bag (hotkey 'PadSelect').
+// X interact, RB Q, LB E, Y R, B cancels an area being aimed, D-pad up potion (M4), Start pause, Select the bag
+// (hotkey 'PadSelect').
+// The skill slots Q / E / R are not presses here: their down / up edges and held state per source (keys, pad,
+// touch) go to the aim controller (client/aimcast.js) through consumeSlots(), which decides when the press goes out.
+// While it shows an area (`previewing`), RMB cancels it instead of raising the guard (swallowed until released).
 import { BTN } from '../sim/systems/movement.js';
 import { stage } from '../ui/stage.js';
 
@@ -10,10 +14,13 @@ const MOVE_KEYS = {
   KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0],
 };
 // J / K: attack and guard without a mouse (they aim at the nearest threat or enemy). Both can be held.
-const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
-const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, KeyQ: BTN.Q, KeyE: BTN.E }; // Q / E held: the Timón charges
+const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
+const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
+const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r' };
+const PAD_SLOTS = [[5, 'q'], [4, 'e'], [3, 'r']];
+const SRC = ['key', 'pad', 'touch'];
 // Standard gamepad buttons → command bits (held ones also count as held).
-const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [5, BTN.Q, true], [4, BTN.E, true], [3, BTN.R, false], [12, BTN.POTION, false]];
+const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [12, BTN.POTION, false]];
 const PAD_DEAD = 0.18;
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 
@@ -35,6 +42,12 @@ export class Input {
     // Walking with WASD does not change it: mouse + keyboard keeps aiming with the cursor.
     this.aimDevice = 'keys';
     this.interactEdge = false;
+    // Skill slots: edges since the last fixed tick and what each source holds; the cancel edge; RMB swallowed.
+    this.slots = { down: { q: false, e: false, r: false }, up: { q: false, e: false, r: false } };
+    this.slotSrc = { key: { q: false, e: false, r: false }, pad: { q: false, e: false, r: false }, touch: { q: false, e: false, r: false } };
+    this.cancelEdge = false;
+    this.previewing = false;
+    this.swallowRmb = false;
 
     addEventListener('keydown', (e) => {
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) return;
@@ -46,10 +59,18 @@ export class Input {
       this.keys.add(e.code);
       if (PRESS_KEYS[e.code] && this.enabled) { this.pressed |= PRESS_KEYS[e.code]; }
       if (HOLD_KEYS[e.code]) { this.keyHeld |= HOLD_KEYS[e.code]; this.aimDevice = 'keys'; }
+      if (SLOT_KEYS[e.code] && this.enabled) this.slotDown(SLOT_KEYS[e.code], 'key');
       if (e.code === 'KeyF' && this.enabled) this.interactEdge = true;
     });
-    addEventListener('keyup', (e) => { this.keys.delete(e.code); if (HOLD_KEYS[e.code]) this.keyHeld &= ~HOLD_KEYS[e.code]; });
-    addEventListener('blur', () => { this.keys.clear(); this.mouseHeld = this.keyHeld = this.touchHeld = 0; });
+    addEventListener('keyup', (e) => {
+      this.keys.delete(e.code);
+      if (HOLD_KEYS[e.code]) this.keyHeld &= ~HOLD_KEYS[e.code];
+      if (SLOT_KEYS[e.code]) this.slotUp(SLOT_KEYS[e.code], 'key');
+    });
+    addEventListener('blur', () => {
+      this.keys.clear(); this.mouseHeld = this.keyHeld = this.touchHeld = 0;
+      for (const s of SRC) for (const k in this.slotSrc[s]) this.slotSrc[s][k] = false; // the controller drops what was held
+    });
     // The cursor aims anywhere on the page (over the HUD too); clicks only count on the canvas.
     addEventListener('pointermove', (e) => {
       if (e.pointerType === 'mouse') { const p = stage.toLocal(e.clientX, e.clientY); this.mouse.x = p.x; this.mouse.y = p.y; this.mouse.moved = true; this.lastDevice = 'mouse'; this.aimDevice = 'mouse'; }
@@ -58,12 +79,13 @@ export class Input {
       if (e.pointerType !== 'mouse' || !this.enabled) return;
       this.aimDevice = 'mouse';
       if (e.button === 0) { this.pressed |= BTN.ATTACK; this.mouseHeld |= BTN.ATTACK; }
+      if (e.button === 2 && this.previewing) { this.cancelEdge = true; this.swallowRmb = true; return; } // cancels the area
       if (e.button === 2) { this.pressed |= BTN.GUARD; this.mouseHeld |= BTN.GUARD; }
     });
     addEventListener('pointerup', (e) => {
       if (e.pointerType !== 'mouse') return;
       if (e.button === 0) this.mouseHeld &= ~BTN.ATTACK;
-      if (e.button === 2) this.mouseHeld &= ~BTN.GUARD;
+      if (e.button === 2) { this.mouseHeld &= ~BTN.GUARD; this.swallowRmb = false; }
     });
     target.addEventListener('contextmenu', (e) => e.preventDefault());
     target.addEventListener('wheel', (e) => { this.wheel += Math.sign(e.deltaY); e.preventDefault(); }, { passive: false });
@@ -74,13 +96,40 @@ export class Input {
   // Buttons held right now (mouse, J/K, gamepad triggers, touch GUARD), as command bits.
   get held() { return this.enabled ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
 
+  // A slot key going down / up from a source ('key' | 'pad' | 'touch'). Held = any source holds it.
+  slotDown(slot, src) {
+    if (!this.enabled || this.slotSrc[src][slot]) return;
+    this.slotSrc[src][slot] = true; this.slots.down[slot] = true;
+    if (src === 'touch') { this.lastDevice = 'touch'; this.aimDevice = 'touch'; }
+  }
+  slotUp(slot, src) {
+    if (!this.slotSrc[src][slot]) return;
+    this.slotSrc[src][slot] = false;
+    if (!this.slotHeld(slot)) this.slots.up[slot] = true;
+  }
+  slotHeld(slot) { return this.enabled && (this.slotSrc.key[slot] || this.slotSrc.pad[slot] || this.slotSrc.touch[slot]); }
+  // The edges since the last call and what is held now (one fixed tick's input for the aim controller).
+  consumeSlots(out) {
+    for (const k of ['q', 'e', 'r']) {
+      out.down[k] = this.slots.down[k]; out.up[k] = this.slots.up[k]; out.held[k] = this.slotHeld(k);
+      this.slots.down[k] = this.slots.up[k] = false;
+    }
+    out.cancel = this.cancelEdge; this.cancelEdge = false;
+    return out;
+  }
+  cancelAim() { this.cancelEdge = true; }
+
   // Read the first connected gamepad (call once per fixed tick, before axes()).
   pollPad() {
     const pads = typeof navigator !== 'undefined' && navigator.getGamepads ? navigator.getGamepads() : [];
     let g = null;
     for (const p of pads) if (p && p.connected) { g = p; break; }
     const P = this.pad;
-    if (!g) { P.active = false; P.aim = false; this.padHeld = 0; return; }
+    if (!g) {
+      P.active = false; P.aim = false; this.padHeld = 0;
+      for (const [i, slot] of PAD_SLOTS) if (P.prev[i]) { P.prev[i] = false; this.slotUp(slot, 'pad'); }
+      return;
+    }
     const stick = (x, y) => {
       const l = Math.hypot(x, y);
       if (l < PAD_DEAD) return [0, 0];
@@ -104,6 +153,15 @@ export class Input {
     const select = down(8);
     if (select && !P.prev[8]) { const hk = this.hotkeys.get('PadSelect'); if (hk) hk({ code: 'PadSelect' }); }
     P.prev[8] = select;
+    for (const [i, slot] of PAD_SLOTS) {
+      const d = down(i);
+      if (d) any = true;
+      if (d && !P.prev[i]) this.slotDown(slot, 'pad'); else if (!d && P.prev[i]) this.slotUp(slot, 'pad');
+      P.prev[i] = d;
+    }
+    const b = down(1);
+    if (b && !P.prev[1] && this.previewing) this.cancelEdge = true;
+    P.prev[1] = b;
     this.padHeld = held;
     P.active = any || P.active;
     if (any) { this.lastDevice = 'gamepad'; this.aimDevice = 'gamepad'; }

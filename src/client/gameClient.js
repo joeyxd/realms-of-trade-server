@@ -542,6 +542,9 @@ export class GameClient {
     out.god = ecs.god[e];
     out.weapon = ecs.weapon[e]; out.cdQ = ecs.cdQ[e]; out.cdE = ecs.cdE[e]; out.castK = ecs.castK[e]; out.castT = ecs.castT[e];
     out.potions = ecs.potions[e]; out.potCd = ecs.potCd[e]; out.mastery = ecs.mastery[e]; out.guardMax = tuning.guard.stamina + ecs.guardAdd[e];
+    // M4.7: what the slots hold (skill index, form, rank), the charge and the empowered attack after a Parpadeo.
+    out.skQ = ecs.skQ[e]; out.skE = ecs.skE[e]; out.fmQ = ecs.fmQ[e]; out.fmE = ecs.fmE[e]; out.rkQ = ecs.rkQ[e]; out.rkE = ecs.rkE[e];
+    out.elem = ecs.elem[e]; out.chg = ecs.chg[e]; out.empT = ecs.empT[e]; out.cdr = ecs.cdr[e];
     return out;
   }
 }

@@ -9,6 +9,7 @@ export const defaults = {
   quality: 'auto', shake: 1, reducedMotion: reduced, uiScale: 1, highContrast: false, landscape: true, touchSize: 1, haptics: true,
   skin: 0, name: '', camRotate: false, timeOfDay: 'cycle', weapon: 'sable',
   comicFx: true, // impact frames, speed lines and onomatopoeia; only act on the Ultra tier (M4.7)
+  launch: 'indicator', // areas (Tromba, Abordaje, Lluvia): 'indicator' = hold to aim, release to cast · 'quick' = cast on press (M4.7)
 };
 
 export const settings = { ...defaults };

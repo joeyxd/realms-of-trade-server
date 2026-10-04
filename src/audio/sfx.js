@@ -180,6 +180,55 @@ export const sfx = {
     sweep(d, t, { f0: 400, f1: 2400, q: 2.2, dur: 0.35, g: 0.24 * vol });
     tone(d, t, { type: 'sine', f0: 880, f1: 1320, dur: 0.3, g: 0.05 * vol });
   },
+  // ---- Tattoos (M4.7) ----
+  // Tromba: the call (a rising, bubbling whoosh during its windup) and the column landing (a wet crash + a low thump).
+  trombaCall(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { type: 'bandpass', f0: 260, f1: 1600, q: 1.2, dur: 0.5, g: 0.18 * vol, a: 0.12 });
+    for (let i = 0; i < 4; i++) tone(d, t + 0.08 + i * 0.07, { f0: 380 + i * 120, f1: 760 + i * 160, dur: 0.06, g: 0.035 * vol });
+  },
+  waterSpout(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'lowpass', f: 1600, q: 0.6, dur: 0.55, g: 0.42 * vol });
+    noiseBurst(d, t + 0.02, { type: 'bandpass', f: 3800, q: 0.8, dur: 0.25, g: 0.16 * vol });
+    tone(d, t, { f0: 95, f1: 38, dur: 0.4, g: 0.38 * vol });
+    sweep(d, t + 0.15, { type: 'bandpass', f0: 1200, f1: 300, q: 1, dur: 0.5, g: 0.1 * vol });
+  },
+  // Abordaje: the jump (a rising whoosh) and its landing (a heavy thud with debris).
+  leap(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    sweep(d, t, { f0: 300, f1: 1700, q: 1.4, dur: 0.3, g: 0.22 * vol });
+  },
+  boardSlam(vol = 1, big = false) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { f0: big ? 62 : 80, f1: 26, dur: big ? 0.6 : 0.45, g: 0.55 * vol });
+    noiseBurst(d, t, { type: 'lowpass', f: 1100, q: 0.7, dur: 0.32, g: 0.42 * vol });
+    for (let i = 0; i < 5; i++) noiseBurst(d, t + 0.05 + Math.random() * 0.2, { type: 'bandpass', f: 1800 + Math.random() * 2200, q: 2.5, dur: 0.025, g: 0.07 * vol }, 1);
+  },
+  // Timón: the throw's whirr (faster with the charge), the catch (a bright click + chime) and the full charge (a tick).
+  wheelThrow(k = 0, vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    for (let i = 0; i < 6; i++) noiseBurst(d, t + i * (0.05 - k * 0.012), { type: 'bandpass', f: 900 + i * 90, q: 3, dur: 0.035, g: (0.12 - i * 0.012) * vol }, 1);
+    sweep(d, t, { f0: 500, f1: 1500 + k * 900, q: 1.8, dur: 0.3, g: 0.14 * vol });
+  },
+  wheelCatch() {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'bandpass', f: 2400, q: 4, dur: 0.03, g: 0.2 });
+    bell(d, t + 0.02, 1046.5, 0.07, 0.35);
+    tone(d, t + 0.06, { type: 'triangle', f0: 1568, dur: 0.12, g: 0.05 });
+  },
+  chargeFull() {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    tone(d, t, { type: 'triangle', f0: 1760, dur: 0.05, g: 0.08 });
+    tone(d, t + 0.05, { type: 'triangle', f0: 2349, dur: 0.07, g: 0.06 });
+  },
   equip() {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;

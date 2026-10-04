@@ -50,6 +50,9 @@ export class PauseMenu {
         </select></div>
         ${check('set-haptics', 'Vibración (móvil)', s.haptics !== false)}
         ${check('set-comicfx', 'Efectos de cómic (impactos, onomatopeyas)', s.comicFx !== false)}
+        <div class="row"><label for="set-launch">Lanzamiento de áreas</label><select id="set-launch">
+          ${[['indicator', 'Con indicador (mantén y suelta)'], ['quick', 'Rápido (al pulsar)']].map(([v, n]) => `<option value="${v}" ${(s.launch || 'indicator') === v ? 'selected' : ''}>${n}</option>`).join('')}
+        </select></div>
       </div>`;
     const controlsHtml = `
       <div class="section controls-list">
@@ -62,7 +65,8 @@ export class PauseMenu {
         <span class="kbd">F3</span><span>Rendimiento</span>
         <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>Sable: combo de 3. Golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar</span>
         <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>Guardia (mantener): bloquea de frente y gasta aguante. Súbela justo a tiempo para ATRAPAR la bala; tu siguiente ataque la devuelve</span>
-        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span>Habilidades del arma, al cursor. Sable: Estocada y Hoja de viento. Pistolas: Descarga y Paso de humo</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span>Tus dos huecos: las artes del arma (sable: Estocada y Hoja de viento; pistolas: Descarga y Paso de humo) o tus tatuajes (<span class="kbd">T</span>)</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span> mantener</span><span>Tromba y Abordaje: mantén para ver el área, suelta para lanzar · <span class="kbd">RMB</span> o <span class="kbd">ESC</span> cancela · Timón: mantén para cargar, suelta para lanzar</span>
         <span class="kbd">R</span><span>Con el RIPOSTE lleno. Sable: Tormenta (refleja todo cerca). Pistolas: Lluvia de plomo en el cursor</span>
         <span class="kbd">Ratón</span><span>Apuntar: miras al cursor (o con el stick derecho del mando)</span>
         <span class="kbd">F4</span><span>Panel de pruebas: ajustes de combate, enemigos, arma, hitboxes</span>
@@ -98,6 +102,7 @@ export class PauseMenu {
     bind('set-rotate', 'camRotate', (el) => el.checked);
     bind('set-ui', 'uiScale');
     bind('set-contrast', 'highContrast', (el) => el.checked);
+    bind('set-launch', 'launch', (el) => el.value);
     bind('set-landscape', 'landscape', (el) => el.checked);
     bind('set-touchsize', 'touchSize');
     bind('set-haptics', 'haptics', (el) => el.checked);

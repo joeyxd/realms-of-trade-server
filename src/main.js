@@ -15,7 +15,10 @@ import { xpToNext } from './sim/systems/combat.js';
 import { PTYPE, SHOT } from './sim/projectiles.js';
 import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
-import { rackNear } from './sim/systems/skills.js';
+import { rackNear, skillOf, skillNum, rainR } from './sim/systems/skills.js';
+import { canStand } from './sim/systems/movement.js';
+import { castKind, isArt, ARTS } from './data/tattoos.js';
+import { AimCast } from './client/aimcast.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
@@ -220,6 +223,7 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (aimCtl.preview && aimCtl.preview.kind === 'ground' && !pause.open) { input.cancelAim(); return; } // ESC drops an area being aimed
     if (pause.open) closePause();
     else if (dialog.isOpen) dialog.hide();
     else if (charPanel.isOpen) charPanel.close();
@@ -298,6 +302,7 @@ async function boot() {
   const debugDraw = new DebugDraw(world.scene);
   let loop = null;
   const feedback = new Feedback({ world, client, hud, worldUI, loop: { addHitstop: (h) => loop && loop.addHitstop(h), slowmo: (a, b) => loop && loop.slowmo(a, b), get timeScale() { return loop ? loop.timeScale : 1; }, get alpha() { return loop ? loop.alpha : 0; } }, settings, map, ps, onTutorial: (k, d) => safe('tutorial', () => onTutorial(k, d)) });
+  world.indicators.onFull = () => sfx.chargeFull(); // the Timón's charge is full
   const rewards = new Rewards({ world, hud, worldUI, ps, map, settings });
   // Public loot (M4.5): who took it (it flies to them) and which name is yours.
   rewards.entityPos = (id) => { const r = client.entities.get(id); return r && r.ready ? { x: r.r.x, y: r.r.y, z: r.r.z } : null; };
@@ -619,6 +624,64 @@ async function boot() {
     else if (Math.hypot(mv.x, mv.z) > 0.2) aim.set(ps.x + mv.x * 3, ps.y, ps.z + mv.z * 3);
     else aim.set(ps.x + Math.sin(ps.f) * 3, ps.y, ps.z + Math.cos(ps.f) * 3);
   }
+  // ---- Aiming areas and charges (M4.7 P4, client/aimcast.js) -------------------------------------------------
+  // The slot keys go through the aim controller: an area (Tromba, Abordaje, the pistols' Lluvia) shows its marker
+  // while the key is held and goes out on release at the marked point; the Timón holds its bit while charging.
+  const aimCtl = new AimCast();
+  const slotIn = { down: { q: false, e: false, r: false }, up: { q: false, e: false, r: false }, held: { q: false, e: false, r: false }, cancel: false, kinds: { q: 'dir', e: 'dir', r: 'self' }, mode: 'indicator' };
+  const slotD = { q: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, e: { id: '', kind: 'dir', S: null, range: 0, min: 0, r: 0 }, r: { id: '', kind: 'self', S: null, range: 0, min: 0, r: 0 } };
+  // What each slot holds right now (from the predicted pirate): id, how it is cast, its numbers in the form in use.
+  function readSlots() {
+    const ecs = client.pred.ecs, e = client.youLocal;
+    for (const s of ['q', 'e']) {
+      const d = slotD[s], S = skillNum(ecs, e, s);
+      d.id = skillOf(ecs, e, s); d.kind = castKind(d.id); d.S = S;
+      d.range = S.range || 0; d.min = S.min || 0; d.r = d.id === 'leap' && S.blink ? 0.7 : S.r || 0;
+    }
+    const R = slotD.r, rid = weaponOf(ps.weapon).r;
+    R.id = rid; R.S = SKILLS[rid];
+    // The rain aims like an area only when the meter is full (otherwise the press just says why it cannot).
+    R.kind = rid === 'rain' && ps.riposte >= tuning.parry.riposte.max ? 'ground' : 'self';
+    R.range = rid === 'rain' ? SKILLS.rain.range : 0; R.min = 0; R.r = rid === 'rain' ? rainR(ecs, e) : 0;
+    for (const s of ['q', 'e', 'r']) slotIn.kinds[s] = slotD[s].kind;
+    return slotD;
+  }
+  // The nearest enemy's feet within `range` (+ a little), or null.
+  function enemyWithin(range) {
+    let best = null, bd = range + 1;
+    for (const rec of client.entities.values()) {
+      if (!rec.enemy || !rec.ready || rec.dying || rec.enemy === 'cannon') continue;
+      const d = Math.hypot(rec.r.x - ps.x, rec.r.z - ps.z);
+      if (d < bd) { bd = d; best = rec; }
+    }
+    return best;
+  }
+  // Where an area in slot d lands: the touch drag (its length = the distance), the right stick (its tilt), the cursor,
+  // else the nearest enemy in reach or 4 u ahead; clamped to [min, range] along the line like the sim does. The
+  // Abordaje snaps to its real landing point (the last standable point of the line).
+  const gTarget = { x: 0, z: 0 };
+  function groundTarget(d, out = gTarget) {
+    let dx = Math.sin(ps.f), dz = Math.cos(ps.f), dist = 4;
+    const ta = input.touchAim;
+    if (ta) { world.rig.moveBasis(ta.x, ta.y, padDir); dx = padDir.x; dz = padDir.z; dist = d.min + ta.k * (d.range - d.min); }
+    else if (padAiming()) {
+      world.rig.moveBasis(input.pad.ax, input.pad.ay, padDir); dx = padDir.x; dz = padDir.z;
+      dist = d.min + Math.min(1, Math.hypot(input.pad.ax, input.pad.ay)) * (d.range - d.min);
+    } else if (mouseAiming()) { dx = aim.x - ps.x; dz = aim.z - ps.z; dist = Math.hypot(dx, dz); }
+    else { const t = enemyWithin(d.range); if (t) { dx = t.r.x - ps.x; dz = t.r.z - ps.z; dist = Math.hypot(dx, dz); } }
+    const l = Math.hypot(dx, dz);
+    if (l < 1e-3) { dx = Math.sin(ps.f); dz = Math.cos(ps.f); } else { dx /= l; dz /= l; }
+    dist = Math.max(d.min, Math.min(d.range, dist));
+    out.x = ps.x + dx * dist; out.z = ps.z + dz * dist;
+    if (d.id === 'leap' && d.S && !d.S.blink) {
+      const n = Math.ceil(dist / 0.3), w = { map };
+      let k = n;
+      while (k > 0 && !canStand(w, ps.x + (dx * dist * k) / n, ps.z + (dz * dist * k) / n, tuning.player.radius)) k--;
+      out.x = ps.x + (dx * dist * k) / n; out.z = ps.z + (dz * dist * k) / n;
+    }
+    return out;
+  }
+
   // Reflected shots leave a cyan trail.
   let trailFrame = 0;
   // Trails by what the shot is: a reflect's tier (EXCELENTE long and white-gold, POBRE short and faint),
@@ -684,7 +747,16 @@ async function boot() {
         aimBit = BTN.AIM;
       } else if (mouseAiming()) aimBit = BTN.AIM;
       else autoAim(move);
-      client.tickInput({ mx: move.x, mz: move.z, ax: aim.x, az: aim.z, btn: input.held | aimBit, prs, w: st.wantWeapon || 0 });
+      // The slot keys through the aim controller: an area's press goes out on release, aimed at its marker.
+      readSlots();
+      input.consumeSlots(slotIn);
+      slotIn.mode = input.aimDevice === 'touch' ? 'indicator' : settings.launch || 'indicator';
+      const ac = aimCtl.step(slotIn);
+      input.previewing = !!(ac.preview && ac.preview.kind === 'ground');
+      let ax = aim.x, az = aim.z;
+      if (ac.fire) { const g = groundTarget(slotD[ac.fire]); ax = g.x; az = g.z; aimBit = BTN.AIM; }
+      else if (ac.preview && ac.preview.kind === 'ground') { const g = groundTarget(slotD[ac.preview.slot]); ax = g.x; az = g.z; aimBit = BTN.AIM; }
+      client.tickInput({ mx: move.x, mz: move.z, ax, az, btn: input.held | aimBit | ac.held, prs: prs | ac.prs, w: st.wantWeapon || 0 });
       st.wantWeapon = 0;
       if (ta && ta.release) input.touchAim = null;
     }),
@@ -755,6 +827,9 @@ async function boot() {
             }
           }
           view.update(simDt, s);
+          // M4.7: a Timón being charged rides at the shoulder; your blade glows while a Parpadeo's crit waits.
+          if ((s.act | 0) === ACT.CHARGE) world.skillFx.charging(rec.id, Math.min(1, (rec.id === client.youServer ? ps.castT : s.actT) / SKILLS.wheel.charge));
+          if (rec.id === client.youServer) view.glow.value = ps.empT > 0 ? 1.6 + 0.6 * Math.sin(performance.now() / 70) : 1;
           // Wading leaves a trail of foam ripples (anyone: you, bots, NPCs).
           if ((s.wade || 0) > 0.08) {
             view.rippleT = (view.rippleT || 0) - realDt;
@@ -847,6 +922,16 @@ async function boot() {
           plane.constant = -ps.y;
           if (!ray.ray.intersectPlane(plane, aim)) aim.set(ps.x, ps.y, ps.z);
         } else if (!padAiming()) aim.set(ps.x, ps.y, ps.z);
+        // M4.7: your aim on the ground: the area being aimed (range ring, marker, the leap's arc) or the Timón's charge.
+        const pv = aimCtl.preview;
+        if (pv && pv.kind === 'ground' && !ps.dead) {
+          const d = readSlots()[pv.slot], g = groundTarget(d);
+          world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0);
+        } else if (ps.chg && ps.castK && !ps.dead) {
+          const S = slotD[ps.castK === 1 ? 'q' : 'e'].S, k = Math.min(1, ps.castT / S.charge);
+          const len = S.fast.range + (S.slow.range - S.fast.range) * k, w = S.fast.r + (S.slow.r - S.fast.r) * k + (S.rAdd || 0);
+          world.indicators.charge(ps.x, ps.z, Math.sin(ps.f), Math.cos(ps.f), len, w, k, 0);
+        } else world.indicators.hide();
         const zw = input.consumeWheel();
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
@@ -858,8 +943,10 @@ async function boot() {
         hud.setGold(prof ? prof.gold : 0, st.encTier > 1 ? TIERS[st.encTier - 1].name : '');
         hud.setPotions(ps.potions | 0, ps.potCd || 0, CONSUMABLES.potion.cd);
         const mLvl = Math.floor((ps.mastery || 0) / 16 ** ps.weapon) % 16, kitW = weaponOf(ps.weapon);
+        // Q / E lock only an art the weapon's mastery has not opened (a tattoo never locks); R as before.
         const need = (slot) => (mLvl && mLvl < MASTERY.unlock[slot] ? MASTERY.unlock[slot] : 0);
-        const locks = { q: need('q'), e: need('e'), r: need('r') };
+        const needArt = (slot) => { const id = slotD[slot].id; return isArt(id) && mLvl && mLvl < ARTS[id].mastery ? ARTS[id].mastery : 0; };
+        const locks = { q: needArt('q'), e: needArt('e'), r: need('r') };
         hud.setLocks(locks, kitW.short.toLowerCase());
         if (isTouch) { touch.setPotions(ps.potions | 0, (ps.potCd || 0) / CONSUMABLES.potion.cd); touch.setLocks(locks); }
         if (mLvl && prof && prof.mast[ps.weapon]) {
@@ -867,10 +954,17 @@ async function boot() {
           hud.setMastery(mLvl, mx[1] / nx, mLvl >= MASTERY.max, `Maestría de ${kitW.short.toLowerCase()}: ${Math.floor(mx[1])} / ${nx}`);
         } else hud.setMastery(0, 0, false);
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
-        const kit = weaponOf(ps.weapon);
+        // Q / E follow the loadout (M4.7): icon, rank, form, and the cooldown of the form in use (× the gear's cdr).
+        const sd = readSlots(), cdQ = (sd.q.S.cd || 1) * (1 - (ps.cdr || 0)), cdE = (sd.e.S.cd || 1) * (1 - (ps.cdr || 0));
         hud.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
-        hud.setCooldowns(ps.cdQ, SKILLS[kit.q].cd, ps.cdE, SKILLS[kit.e].cd);
-        if (isTouch) { touch.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable'); touch.setCooldowns(ps.cdQ / SKILLS[kit.q].cd, ps.cdE / SKILLS[kit.e].cd, ps.riposte >= tuning.parry.riposte.max); }
+        hud.setSlots({ id: sd.q.id, form: ps.fmQ | 0, rank: ps.rkQ | 0 }, { id: sd.e.id, form: ps.fmE | 0, rank: ps.rkE | 0 });
+        hud.setCooldowns(ps.cdQ, cdQ, ps.cdE, cdE);
+        if (isTouch) {
+          touch.setWeapon(WEAPON_KINDS[ps.weapon] || 'sable');
+          touch.setSlots(sd.q.id, sd.e.id, ps.fmQ | 0, ps.fmE | 0);
+          touch.kinds = slotIn.kinds;
+          touch.setCooldowns(ps.cdQ / cdQ, ps.cdE / cdE, ps.riposte >= tuning.parry.riposte.max);
+        }
         encounterUi();
         // Walking away from someone ends the talk (and the trading).
         if (dialog.isOpen) { const r = client.entities.get(dialog.ev.ent); if (!r || !r.ready || Math.hypot(r.r.x - ps.x, r.r.z - ps.z) > 5) dialog.hide(); }
@@ -952,7 +1046,7 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, panels: { charPanel, dialog, mapView } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

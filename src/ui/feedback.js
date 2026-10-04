@@ -10,6 +10,8 @@ import { audio } from '../audio/engine.js';
 import { SKINS } from '../render/characters.js';
 import { patternSpan } from '../sim/projectiles.js';
 import { comic } from './comic.js';
+import { formed } from '../data/weapons.js';
+import { skillId } from '../data/tattoos.js';
 
 const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
@@ -50,6 +52,13 @@ export class Feedback {
 
   // A comic hit (Ultra only, see comic.js) at a ground point, h above it.
   comicAt(x, z, h, o) { comic.hit(x, this.y(x, z) + h, z, o); }
+
+  // Enemies (alive, shown) within r of (x, z): how many a blow of yours is about to catch (for the comic words).
+  enemiesNear(x, z, r) {
+    let n = 0;
+    for (const rec of this.client.entities.values()) if (rec.enemy && rec.ready && !rec.dying && Math.hypot(rec.r.x - x, rec.r.z - z) < r + 0.6) n++;
+    return n;
+  }
 
   sparks(x, y, z, n, c0, c1, o = {}) { this.world.effects.sparks(x, y, z, n, { color: c0, color1: c1, up: 2, spread: 3.2, gravity: 7, life: 0.35, ...o }); }
 
@@ -278,12 +287,58 @@ export class Feedback {
         break;
       }
       case 'cast': {
-        const v = me ? this.me() : this.viewOf(ev.e);
+        const v = me ? this.me() : this.viewOf(ev.e), vol = me ? 1 : this.vol(ev.x, ev.z);
         if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e), [0.08, 0.13, 0.18], 0.24);
-        if (ev.skill === 'lunge') sfx.lunge(me ? 1 : this.vol(ev.x, ev.z));
-        if (me) this.hud.pulse(ev.skill === 'lunge' || ev.skill === 'blast' ? 'q' : 'e');
+        if (ev.skill === 'lunge') sfx.lunge(vol);
+        else if (ev.skill === 'tromba') sfx.trombaCall(vol);
+        else if (ev.skill === 'leap' && ev.air) {
+          // Abordaje: the shadow grows on the landing point while the body flies (characters.js lifts it).
+          if (v) v.setLeap(ev.air, ev.h);
+          W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e));
+          sfx.leap(vol);
+        }
+        if (me) this.hud.pulse(skillId(ps.skQ) === ev.skill ? 'q' : 'e');
         break;
       }
+      // ---- tattoos (M4.7) ----
+      case 'tromba': // a column on its way: everyone sees where (the ring closes until it lands)
+        W.indicators.tromba(ev.id * 2 + (ev.n | 0), ev.x, ev.z, ev.r, Math.min(this.viewTick ?? ev.tick, ev.tick - 1), ev.tick, me);
+        break;
+      case 'trombaHit': {
+        const twin = ev.n === 1, vol = me ? 1 : this.vol(ev.x, ev.z);
+        W.skillFx.spout(ev.x, ev.z, ev.r, twin);
+        if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger);
+        sfx.waterSpout(vol);
+        if (me) {
+          this.shake(0.22);
+          const n = this.enemiesNear(ev.x, ev.z, ev.r);
+          if (n > 0) this.comicAt(ev.x, ev.z, 2.2, { word: '¡CHOF!', color: 0x7fe0ff, big: n >= 3, frame: n >= 3, lines: n >= 3 });
+        }
+        break;
+      }
+      case 'trombaEnd': W.skillFx.vortexEnd(ev.id); break;
+      case 'slam': {
+        const big = ev.form === 2, vol = me ? 1 : this.vol(ev.x, ev.z);
+        W.skillFx.slam(ev.x, ev.z, ev.r, this.colorOf(ev.e), big);
+        sfx.boardSlam(vol, big);
+        if (me) {
+          this.shake(big ? 0.55 : 0.38); W.rig.punchIn(big ? 0.5 : 0.35);
+          if (this.enemiesNear(ev.x, ev.z, ev.r) > 0 || big) this.comicAt(ev.x, ev.z, 1.6, { word: '¡PATAPÚM!', color: 0xffc46a, big, frame: big, lines: true });
+        }
+        break;
+      }
+      case 'wheel': {
+        W.skillFx.wheel(ev);
+        sfx.wheelThrow(ev.k, me ? 1 : this.vol(ev.x, ev.z));
+        if (me) { this.hud.pulse(ev.slot || 'q'); if (ev.k >= 1) this.comicAt(ev.x, ev.z, 1.4, { word: '¡ZUUUM!', color: 0xffe08a, lines: true }); }
+        break;
+      }
+      case 'wheelBack': W.skillFx.wheelBack(ev); break;
+      case 'wheelCatch':
+        W.skillFx.wheelEnd(ev, true);
+        if (me) { sfx.wheelCatch(); this.overMe('¡Atrapado!', 'xp', { life: 0.9 }); }
+        break;
+      case 'wheelDrop': W.skillFx.wheelEnd(ev, false); break;
       case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); break;
       case 'rain':
         W.weaponFx.rain(ev, this.colorOf(ev.e));
@@ -577,6 +632,7 @@ export class Feedback {
 
   // Per frame: screen flash decay, AoE bursts on the projectile timeline, danger vignette, slow-mo chroma.
   update(dt, tick) {
+    this.viewTick = tick;
     const g = this.world.pipeline.grading;
     this.flash = Math.max(0, this.flash - dt * 3.2);
     g.flash = this.flash * (this.settings.reducedMotion ? 0.5 : 1);

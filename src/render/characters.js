@@ -152,6 +152,14 @@ export class CharacterView {
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
 
+  // The leap this view is flying (M4.7): its cast event's air time and height (a remote pirate's come from its
+  // event; without one, the base Abordaje). How high the body is t s into the cast.
+  setLeap(air, h) { this.leapAir = air; this.leapH = h; }
+  leapLift(t) {
+    const L = SKILLS.leap, air = this.leapAir || L.air, u = (t - L.windup) / air;
+    return u > 0 && u < 1 ? (this.leapH || L.h) * 4 * u * (1 - u) : 0;
+  }
+
   // Short white (or tinted) flash: hits taken, perfect parries.
   flash(color = 0xffffff, amount = 1) { this.flashCol.set(color); this.flashA = Math.max(this.flashA, amount); }
   // Flinch away from a hit (dir: +1 hit from the front).
@@ -163,6 +171,10 @@ export class CharacterView {
     this.t += dt;
     if (this.look.hover) this.mesh.position.y = 0.32 + Math.sin(this.t * 2.6 + this.seed) * 0.08;
     this.root.position.set(s.x, s.y, s.z);
+    // Abordaje (ACT.LEAP, M4.7): the body rides the jump's parabola h · 4u(1 − u), render only; the shadow stays down.
+    const lift = (s.act | 0) === ACT.LEAP ? this.leapLift(s.actT || 0) : 0;
+    this.root.position.y += lift;
+    this.blob.position.y = 0.03 - lift;
     if (this.lastF === null) this.lastF = s.f;
     const turnRate = angleDelta(this.lastF, s.f) / Math.max(dt, 1e-4);
     this.lastF = s.f;
@@ -332,6 +344,25 @@ export class CharacterView {
       T.cx = -0.12; T.hx = -0.2;
       set('armR', -2.85, -0.2); set('foreR', -0.08);
       set('armL', -0.4, 0.3); set('foreL', -0.7);
+    } else if (act === ACT.CHARGE) {
+      // Timón (M4.7): the wheel cocked back at the right shoulder, the free arm forward to aim; it trembles when full.
+      const W = SKILLS.wheel, k = clamp(t / W.charge, 0, 1), full = k >= 1 ? Math.sin(this.t * 60) * 0.03 : 0;
+      w = sm(clamp(t / 0.12, 0, 1));
+      T.cy = 0.35 + 0.25 * k + full; T.sy = 0.12 * k; T.cx = -0.06; T.hy = -0.04 * k;
+      set('armR', -1.0 - 0.5 * k, -0.9 - 0.35 * k + full); set('foreR', -1.5);
+      set('armL', -1.35, 0.15); set('foreL', -0.25);
+    } else if (act === ACT.LEAP) {
+      // Abordaje: crouch (the first 15 %), stretch in the air with the blade high, squash on landing.
+      const L = SKILLS.leap, air = this.leapAir || L.air, u = clamp((t - L.windup) / air, 0, 1.6);
+      const crouch = u < 0.15 ? sm(u / 0.15) * (1 - u / 0.15) + (t < L.windup ? sm(t / L.windup) : 0) : 0;
+      const fly = u > 0 && u < 1 ? Math.sin(u * Math.PI) : 0;
+      const land = u >= 1 ? Math.max(0, 1 - (u - 1) / 0.35) : 0;
+      w = Math.max(crouch, fly, land);
+      T.cx = 0.3 * crouch - 0.25 * fly + 0.35 * land; T.hy = -0.12 * crouch - 0.1 * land; T.sx = 0.15 * land;
+      set('armR', -2.4 * fly - 0.6 * land - 0.3 * crouch, -0.2); set('foreR', -0.4);
+      set('armL', -0.9 * fly + 0.4 * land, 0.6 * fly + 0.3); set('foreL', -0.5);
+      if (land > 0 && !this.landed) { this.landed = true; this.sy.v -= 2.4; this.sz.v += 1.2; }
+      if (u < 1) this.landed = false;
     } else if (act === ACT.STAGGER) {
       w = Math.max(0, 1 - t / 0.35);
       T.sx = -0.3; T.cx = -0.2; T.hx = -0.25; T.hy = -0.06;

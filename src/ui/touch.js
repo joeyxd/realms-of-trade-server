@@ -28,9 +28,17 @@ export const ICONS = {
   swap: ico('<path d="M4 8h15M15 4l4 4-4 4"/><path d="M20 16H5M9 12l-4 4 4 4"/>'),
   rune: ico('<path d="M8 3v18M8 9l9-5M8 15l9-5"/>'),
   ship: ico('<path d="M3 16h18l-3 4H6z"/><path d="M12 3v13"/><path d="M12 4.5l7 9.5h-7z"/><path d="M10.5 7L5 14h5.5"/>'),
+  spout: ico('<path d="M7.5 3c3 .8 6 .8 9 0-1 3-2.5 4.6-3 7 .7 2.4.7 4.8 0 7.2h-3c-.7-2.4-.7-4.8 0-7.2-.5-2.4-2-4-3-7z"/><path d="M2.5 21c2-1.5 4-1.5 6.3 0s4.3 1.5 6.4 0 4.3-1.5 6.3 0"/>'),
+  leap: ico('<path d="M3 20.5C5.5 8.5 16 6.5 21 18.5" stroke-dasharray="2.4 2.4"/><path d="M9.5 3.5h4.5v5l3.5 1.5v3h-8z"/>'),
+  helm: ico('<circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="1.7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M7.7 16.3l-2.8 2.8"/>'),
   lock: ico('<path d="M5.5 11h13v9.5h-13z"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/><path d="M12 15v2"/>'),
 };
 
+// What a skill in Q / E looks like on its button: [icon, label] (the arts as in KITS; the tattoos, M4.7).
+const SKILL_FACE = {
+  lunge: ['thrust', 'ESTOC'], wave: ['crescent', 'HOJA'], blast: ['burst', 'DESC'], blink: ['cloud', 'HUMO'],
+  tromba: ['spout', 'TROMBA'], leap: ['leap', 'ABORD'], wheel: ['helm', 'TIMÓN'],
+};
 // What each weapon puts on the ATK / Q / E / R buttons: [icon, label].
 const KITS = {
   sable: { atk: ['sword', 'ATK'], q: ['thrust', 'ESTOC'], e: ['crescent', 'HOJA'], r: ['spiral', 'TORM'] },
@@ -115,11 +123,15 @@ export class TouchControls {
     };
     hold('.t-atk', BTN.ATTACK);
     hold('.t-parry', BTN.GUARD);
-    // Draggable skills.
+    // Draggable skills. dir / self: the press goes out on release, aimed by the drag (or auto-aimed on a tap). An area
+    // (ground) and a charge go through the aim controller (client/aimcast.js) as a held slot: the area marker follows
+    // the drag (its length = the distance) and shows while the finger is down, a charge starts on touch; releasing
+    // casts / throws, dragging back to the button cancels an area.
     const line = root.querySelector('.aimline');
-    const drag = (sel, bit) => {
+    this.kinds = { q: 'dir', e: 'dir', r: 'self' };
+    const drag = (sel, bit, slot) => {
       const b = root.querySelector(sel);
-      let id = null, sx = 0, sy = 0, far = false;
+      let id = null, sx = 0, sy = 0, far = false, held = false;
       const show = (dx, dy, cancel) => {
         const r = b.getBoundingClientRect(), l = Math.hypot(dx, dy);
         const c = stage.toLocal(r.left + r.width / 2, r.top + r.height / 2); // the rect is in screen px
@@ -129,7 +141,12 @@ export class TouchControls {
         line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
         line.classList.toggle('cancel', cancel);
       };
-      b.addEventListener('pointerdown', (e) => { e.preventDefault(); id = e.pointerId; sx = e.clientX; sy = e.clientY; far = false; b.setPointerCapture(id); input.aimDevice = 'touch'; });
+      b.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); id = e.pointerId; sx = e.clientX; sy = e.clientY; far = false; b.setPointerCapture(id); input.aimDevice = 'touch';
+        const k = this.kinds[slot];
+        held = (k === 'ground' || k === 'charge') && !b.classList.contains('locked');
+        if (held) { input.touchAim = null; input.slotDown(slot, 'touch'); if (k === 'charge') this.buzz(12); }
+      });
       b.addEventListener('pointermove', (e) => {
         if (e.pointerId !== id) return;
         const { x: dx, y: dy } = stage.vec(e.clientX - sx, e.clientY - sy), l = Math.hypot(dx, dy);
@@ -143,6 +160,16 @@ export class TouchControls {
         if (e.pointerId !== id) return;
         id = null;
         line.style.display = 'none';
+        if (held) {
+          held = false;
+          const aimedH = far && input.touchAim;
+          if (this.kinds[slot] === 'ground' && (cancelled || (far && !aimedH))) input.cancelAim();
+          else this.buzz(bit === BTN.R ? 24 : 12);
+          input.slotUp(slot, 'touch');
+          if (aimedH) input.touchAim.release = true;
+          else input.touchAim = null;
+          return;
+        }
         const aimed = far && input.touchAim;
         if (cancelled || (far && !aimed)) { input.touchAim = null; return; }
         input.press(bit);
@@ -152,7 +179,7 @@ export class TouchControls {
       b.addEventListener('pointerup', (e) => up(e, false));
       b.addEventListener('pointercancel', (e) => up(e, true));
     };
-    drag('.t-q', BTN.Q); drag('.t-e', BTN.E); drag('.t-r', BTN.R);
+    drag('.t-q', BTN.Q, 'q'); drag('.t-e', BTN.E, 'e'); drag('.t-r', BTN.R, 'r');
     const q = (sel) => root.querySelector(sel);
     this.atkBtn = q('.t-atk'); this.qBtn = q('.t-q'); this.eBtn = q('.t-e'); this.rBtn = q('.t-r');
     this.potBtn = q('.t-pot'); this.actBtn = q('.t-act');
@@ -190,7 +217,14 @@ export class TouchControls {
     if (kind === this.weapon) return;
     this.weapon = kind;
     const K = KITS[kind] || KITS.sable;
-    for (const k of ['atk', 'q', 'e', 'r']) this.setFace(k, K[k]);
+    for (const k of ['atk', 'r']) this.setFace(k, K[k]);
+  }
+
+  // What Q / E hold (M4.7): ids; «Parpadeo» (the Abordaje's form A) gets its own label.
+  setSlots(q, e, qForm = 0, eForm = 0) {
+    const face = (id, form) => (id === 'leap' && form === 1 ? ['leap', 'PARP'] : SKILL_FACE[id] || SKILL_FACE.lunge);
+    this.setFace('q', face(q, qForm));
+    this.setFace('e', face(e, eForm));
   }
 
   // A quick ring pulse when something comes off cooldown.

@@ -178,7 +178,7 @@ cambia (`ax/az` ya es el punto apuntado).
       viñetas de impacto, líneas, onomatopeyas.
 - [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
 - [x] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
-- [ ] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
+- [x] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
 - [ ] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
 - [ ] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,
       informe.
@@ -188,6 +188,18 @@ cambia (`ax/az` ya es el punto apuntado).
 - Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
   **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
   los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.
+- P4: `client/aimcast.js` (controlador de apuntado puro + `tests/aimcast.test.mjs`), Q / E / R como bordes de hueco en
+  `input.js` (teclado, mando RB / LB / Y, táctil; RMB, ESC o B del mando cancelan un área y el RMB no sube la guardia),
+  `main.js` calcula el punto (cursor, stick por inclinación, arrastre táctil por longitud, auto-apuntado) recortado a
+  `[min, alcance]` y el aterrizaje real del salto con `canStand`. `render/vfx/indicators.js` (aro de alcance, marca,
+  arco del salto, flecha y aro de carga, aviso de Tromba para todos: morado tuyo, ámbar de otros) y
+  `render/vfx/skillfx.js` (tromba de agua, remolino, sombra y golpe del salto, timón de 8 radios con tinta y latón que
+  va, se queda en el ápice, vuelve y cae; al hombro mientras cargas). `ACT.CHARGE` / `ACT.LEAP` en `characters.js`
+  (el cuerpo sube por la parábola). HUD y táctil siguen la carga (icono, rango en romano, letra de forma, el
+  enfriamiento de la forma; solo las artes se bloquean por maestría). Sonidos nuevos en `sfx.js`, palabras de cómic
+  (¡CHOF!, ¡PATAPÚM!, ¡ZUUUM!) y el ajuste «Lanzamiento de áreas». `tools/look.mjs` escenario `tattoo` (cuenta el
+  flujo real y congela los efectos para la captura). Pendiente de P5: la carga en táctil ya funciona (pulsar carga,
+  soltar lanza).
 - P3: todo en `src/sim/systems/skills.js` (`castTromba` / `stepTromba`, `planLeap` / `leapAir` / `leapBlink`,
   `stepCharge` / `throwWheel` / `stepWheel`, `clearParry` compartido) y los pasos en vuelo junto a `stepRain` en
   `combat.js`. Cambios sobre 2.3: «Gemelas» es una segunda columna 0.4 s después en el punto al que apuntas cuando

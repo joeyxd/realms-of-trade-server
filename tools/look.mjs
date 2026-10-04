@@ -1,7 +1,7 @@
 // Look check (the screenshots every visual change is reviewed with): solo on a static server, a few places at a
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
-//      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause),
+//      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
 // Example: OUT=shots/look Q=ultra SCEN=village,impact node tools/look.mjs
@@ -104,6 +104,63 @@ for (const s of scen) {
     console.log(JSON.stringify(await page.evaluate(([k, run]) => window.__mn.lineup(k, { run }), [looks, s === 'lineup' ? 0 : 0.8])));
     await wait(4000); await shot(s === 'lineup' ? '12-lineup' : '13-lineup-run');
     await page.evaluate(() => window.__mn.lineup());
+  }
+  if (s === 'tattoo') {
+    // M4.7 P4: the tattoos. The real flow (keys → aim controller → sim events → VFX) is counted; the timed effects are
+    // then frozen in place so the slow software renderer can show them.
+    await tp('20-tattoo-ref', L.arena.x + 6, L.arena.z + 6, null, 3500);
+    await dev({ op: 'tattoos', rank: 5 });
+    await dev({ op: 'tattoo', id: 'tromba', rank: 3, form: 1 });
+    await dev({ op: 'loadout', slot: 'q', id: 'tromba' });
+    await dev({ op: 'loadout', slot: 'e', id: 'leap' });
+    await dev({ op: 'spawn', kind: 'grunt', ang: 0.6, dist: 6 });
+    await dev({ op: 'spawn', kind: 'sentinel', ang: 0.9, dist: 6.5 });
+    await wait(1500);
+    await page.evaluate(() => {
+      const m = window.__mn, F = m.world.skillFx, I = m.world.indicators;
+      m.fxCount = {};
+      for (const [o, ks] of [[F, ['spout', 'vortex', 'leap', 'slam', 'wheel', 'wheelBack', 'wheelEnd', 'charging']], [I, ['tromba', 'area', 'charge']]]) {
+        for (const k of ks) { const f = o[k].bind(o); o[k] = (...a) => { m.fxCount[k] = (m.fxCount[k] || 0) + 1; return f(...a); }; }
+      }
+    });
+    // (a) Tromba aimed (Q held): range ring and marker, the HUD slots with their rank and form.
+    await page.mouse.move(W / 2 + 150, H / 2 - 40); await wait(400);
+    const probe = (tag) => page.evaluate((tag) => { const m = window.__mn; return tag + ' ' + JSON.stringify({ pv: m.aimCtl.preview, held: m.input.slotHeld('q'), q: m.slotD.q.id, kq: m.slotD.q.kind, cdQ: +m.ps.cdQ.toFixed(2), castK: m.ps.castK, chg: m.ps.chg, act: m.ps.act, fps: +m.st.fps.toFixed(1) }); }, tag).then(console.log);
+    await page.keyboard.down('KeyQ'); await wait(1600); await probe('held'); await shot('21-tromba-aim');
+    await page.keyboard.up('KeyQ'); await wait(400); await probe('released'); await wait(2100);
+    // (c) Abordaje aimed: its landing marker and arc.
+    await page.mouse.move(W / 2 - 160, H / 2 + 30); await wait(400);
+    await page.keyboard.down('KeyE'); await wait(1600); await shot('22-leap-aim');
+    await page.keyboard.up('KeyE'); await wait(3000);
+    // (d) Timón: charging (the arrow and the ring), then thrown.
+    await dev({ op: 'loadout', slot: 'q', id: 'wheel' });
+    await wait(16000); // the Tromba's cooldown (the software renderer runs the game slower than the clock)
+    await page.mouse.move(W / 2 + 170, H / 2 + 10); await wait(300);
+    await probe('before-wheel');
+    await page.keyboard.down('KeyQ'); await wait(1800); await probe('wheel-held'); await shot('23-wheel-charge');
+    await page.keyboard.up('KeyQ'); await wait(300);
+    await page.evaluate(() => { window.__mn.world.skillFx.freeze = true; });
+    await wait(1200); await shot('24-wheel-out');
+    console.log('wheel', JSON.stringify(await page.evaluate(() => window.__mn.world.skillFx.wheels.filter((w) => w.m.visible).map((w) => ({ ph: w.ph, x: +w.m.position.x.toFixed(1), z: +w.m.position.z.toFixed(1), s: +w.m.scale.x.toFixed(2) })))));
+    await page.evaluate(() => { window.__mn.world.skillFx.freeze = false; });
+    await wait(3000);
+    console.log('fx calls', JSON.stringify(await page.evaluate(() => window.__mn.fxCount)));
+    // (b) Frozen: a spout on the two enemies, a whirlpool, a slam ring, a wheel in flight, a Tromba warning.
+    await page.evaluate(() => {
+      const m = window.__mn, W2 = m.world, F = W2.skillFx, I = W2.indicators, ps = m.ps;
+      const x = ps.x + 3.5, z = ps.z - 2.5;
+      F.spout(x, z, 3.0); F.vortex(99, x, z, 3.0, 1e9);
+      F.spouts.forEach((q) => { if (q.t >= 0) q.t = 0.2; });
+      F.vortices.forEach((q) => { if (q.live) q.t = 1; });
+      F.wheel({ e: -5, id: 1, x: ps.x - 1, z: ps.z + 1, dx: -0.7, dz: 0.7, v0: 13, R: 12, r: 0.8, hang: 0, tick: m.client.viewTick(0) - 20, form: 0 });
+      I.tromba(777, ps.x - 4, ps.z - 3, 2.4, m.client.viewTick(0) - 10, m.client.viewTick(0) + 20, false);
+      I.freeze = true; I.freezeTick = m.client.viewTick(0) + 5;
+      F.freeze = true; F.frozenTick = m.client.viewTick(0);
+      F.spouts.forEach((q) => { if (q.t >= 0) q.t = 0.2; });
+    });
+    await wait(2500); await shot('25-spout-frozen');
+    console.log('wheels', JSON.stringify(await page.evaluate(() => window.__mn.world.skillFx.wheels.map((w) => ({ v: w.m.visible, ph: w.ph, hand: w.hand, ev: !!w.ev, x: +w.m.position.x.toFixed(1), y: +w.m.position.y.toFixed(1), z: +w.m.position.z.toFixed(1), s: +w.m.scale.x.toFixed(2) })))), JSON.stringify(await page.evaluate(() => ({ x: window.__mn.ps.x, z: window.__mn.ps.z }))));
+    await page.evaluate(() => { const m = window.__mn; m.world.skillFx.freeze = false; m.world.indicators.freeze = false; });
   }
   if (s === 'pause') {
     await page.keyboard.press('Escape'); await wait(1200); await shot('09-pause');
