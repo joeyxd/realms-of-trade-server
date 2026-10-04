@@ -95,14 +95,15 @@ function phases(id, S = SKILLS[id]) {
   return [0, 0, 0]; // the wheel's charge has no fixed phases: it lasts as long as you hold
 }
 // Does the skill have a cast (phases or a charge)? An id with no numbers is skipped.
-// P3 IN PROGRESS (docs/HANDOFF.md §3): the numbers, columns, hit helpers (world.areaHits / pathHits / stun /
-// pullEnemies) and the dispatch below are in, but castTromba / stepTromba, planLeap / leapAir / leapBlink and
-// stepCharge / stepWheel are not written yet, so these stay uncastable until they are (remove them from PENDING).
-const PENDING = new Set(['tromba', 'leap', 'wheel']);
-export const castable = (id) => { const S = SKILLS[id]; return !!S && !PENDING.has(id) && (S.charge > 0 || phases(id, S).some((t) => t > 0)); };
+export const castable = (id) => { const S = SKILLS[id]; return !!S && (S.charge > 0 || phases(id, S).some((t) => t > 0)); };
 export const castBusy = (ecs, e) => ecs.castK[e] > 0;
 
 export function cancelCast(ecs, e) {
+  // A leap cut short in the air (something that ignores i-frames) still lands where it was going: never on water.
+  if (ecs.castK[e] > 0 && !ecs.chg[e] && skillOf(ecs, e, castSlot(ecs.castK[e])) === 'leap') {
+    const S = skillNum(ecs, e, castSlot(ecs.castK[e]));
+    if (!S.blink && ecs.castT[e] > S.windup && ecs.castT[e] < S.windup + S.air) { ecs.x[e] = ecs.lpX1[e]; ecs.z[e] = ecs.lpZ1[e]; }
+  }
   ecs.castK[e] = 0; ecs.castT[e] = 0; ecs.castLock[e] = 0; ecs.chg[e] = 0;
 }
 
@@ -361,13 +362,239 @@ export function firePistol(world, e, pt, seq) {
   const dx = Math.sin(f), dz = Math.cos(f);
   const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
   const x = ecs.x[e] + fx * 0.55 + fz * P.side * hand, z = ecs.z[e] + fz * 0.55 - fx * P.side * hand;
+  const emp = takeEmpower(ecs, e); // the first shot after a Parpadeo: × empMult, a crit
   world.spawnShot(e, {
     key: -(seq * 8 + 5), pid: 0, type: PTYPE.PARRY, x, y: ecs.y[e] + 1.15, z, dx, dz, speed: P.speed,
-    dmg: ecs.atk[e] * P.mult, life: P.life, r: P.r, heavy: false, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt,
+    dmg: ecs.atk[e] * P.mult * (emp || 1), life: P.life, r: P.r, heavy: false, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt, crit: emp > 0,
   });
   ecs.shotN[e] += 1;
   ecs.shotCd[e] = P.every * ecs.fireMul[e]; // trabucos are slower, «Gatillo fácil» faster
   world.emit({ type: 'fire', e, seq, hand, x, z, dx, dz });
+}
+
+// ---- Tattoos (M4.7 P3) ----------------------------------------------------------------------------------
+// Erases the live parryables that `near(x, z, r)` accepts at tick pt: each gives `per` RIPOSTE while the cast has
+// given less than `left` more (returns what it gave). The shared bullet clearing of the three tattoos.
+function clearParry(world, e, near, pt, seq, skill, per, left) {
+  const ecs = world.ecs, H = world.hazards;
+  let got = 0;
+  for (let s = 0; s < H.cap; s++) {
+    if (!H.live(s, pt) || H.type[s] !== PTYPE.PARRY) continue;
+    const hx = H.px(s, pt), hz = H.pz(s, pt);
+    if (!near(hx, hz, H.r[s])) continue;
+    H.remove(s, pt, KILL.DESTROY, e, seq);
+    const g = Math.min(per, left - got);
+    if (g > 0) { addRiposte(ecs, e, g); got += g; }
+    world.emit({ type: 'destroy', pid: H.id[s], e, seq, x: hx, z: hz, skill });
+  }
+  return got;
+}
+const inCircle = (x, z, r) => (hx, hz, hr) => Math.hypot(hx - x, hz - z) <= r + hr;
+const onSegment = (x0, z0, x1, z1, r) => (hx, hz, hr) => segDist(hx, hz, x0, z0, x1, z1) <= r + hr;
+
+// The aim point of cmd clamped to [min, max] from you (straight ahead at `min` when you aim at your feet).
+function aimAt(ecs, e, cmd, min, max) {
+  let dx = (cmd.ax || 0) - ecs.x[e], dz = (cmd.az || 0) - ecs.z[e];
+  let d = Math.hypot(dx, dz);
+  if (d < 1e-3) { dx = ecs.castX[e]; dz = ecs.castZ[e]; d = 1; }
+  const k = Math.max(min, Math.min(max, d)) / d;
+  return [ecs.x[e] + dx * k, ecs.z[e] + dz * k];
+}
+const ticks = (s) => Math.max(1, Math.round(s / DT));
+
+// ---- Tromba ----------------------------------------------------------------------------------------------
+// The end of the windup: the column will land `delay` s later on the aim point. trT0 > 0: the impact tick, still to
+// come; < 0: it landed (at −trT0) and a whirlpool (trEnd) or the twin (trT1) may still be pending.
+function castTromba(world, e, cmd, S, form, pt, seq) {
+  const ecs = world.ecs, [x, z] = aimAt(ecs, e, cmd, S.min || 0, S.range);
+  ecs.trT0[e] = pt + ticks(S.delay); ecs.trX[e] = x; ecs.trZ[e] = z; ecs.trId[e] = seq; ecs.trF[e] = form;
+  ecs.trEnd[e] = 0; ecs.trT1[e] = 0; ecs.trN[e] = 0;
+  world.emit({ type: 'tromba', e, id: seq, seq, x, z, tick: ecs.trT0[e], r: S.r, form, n: 0 });
+}
+
+// A column lands at (x, z): erases the parryables under it, stuns and knocks up what it hits (server).
+function trombaImpact(world, e, x, z, S, T, pt, seq, n) {
+  const ecs = world.ecs;
+  ecs.trN[e] += clearParry(world, e, inCircle(x, z, S.r), pt, seq, 'tromba', S.riposte, S.riposteMax - ecs.trN[e]);
+  if (world.isServer) world.areaHits(e, x, z, S.r, S.mult * tattooMul(ecs, e, 'tromba'), { stun: S.lift, knock: S.knock, skill: 'tromba', heavy: true }, T, seq);
+  world.emit({ type: 'trombaHit', e, id: ecs.trId[e], seq, x, z, r: S.r, form: ecs.trF[e], n });
+}
+
+// The Tromba in flight (keeps going whatever you do): the impact, the whirlpool of «Ojo de tormenta», the second
+// column of «Gemelas» (aimed where you aim when the first one lands).
+export function stepTromba(world, e, cmd, prev, pt, seq) {
+  const ecs = world.ecs;
+  if (!ecs.trT0[e]) return;
+  const S = formed('tromba', ecs.trF[e]);
+  if (ecs.trT0[e] > 0) {
+    if (pt < ecs.trT0[e]) return;
+    const T = ecs.trT0[e];
+    trombaImpact(world, e, ecs.trX[e], ecs.trZ[e], S, T, pt, seq, 0);
+    ecs.trT0[e] = -T;
+    if (S.linger > 0) ecs.trEnd[e] = T + ticks(S.linger);
+    if (S.twin) {
+      const [x, z] = aimAt(ecs, e, cmd, S.min || 0, S.range);
+      ecs.trT1[e] = T + ticks(S.gap); ecs.trX1[e] = x; ecs.trZ1[e] = z;
+      world.emit({ type: 'tromba', e, id: ecs.trId[e], seq, x, z, tick: ecs.trT1[e], r: S.r, form: ecs.trF[e], n: 1 });
+    }
+  } else if (ecs.trEnd[e] > 0) {
+    // The whirlpool: erases what drifts in, pulls enemies to the centre and hits every `every` s (server).
+    const T0 = -ecs.trT0[e], x = ecs.trX[e], z = ecs.trZ[e], end = ecs.trEnd[e];
+    ecs.trN[e] += clearParry(world, e, inCircle(x, z, S.r), pt, seq, 'tromba', S.riposte, S.riposteMax - ecs.trN[e]);
+    if (world.isServer) {
+      const every = ticks(S.every), last = Math.min(pt, end), m = S.mult * S.tick * tattooMul(ecs, e, 'tromba');
+      for (let k = Math.max(1, Math.ceil((prev + 1 - T0) / every)); T0 + k * every <= last; k++) world.areaHits(e, x, z, S.r, m, { knock: 0, skill: 'tromba' }, T0 + k * every, seq);
+      world.pullEnemies(x, z, S.r, S.pull * Math.max(1, Math.min(pt, end) - prev) * DT);
+    }
+    if (pt >= end) { ecs.trEnd[e] = 0; world.emit({ type: 'trombaEnd', e, id: ecs.trId[e], seq, x, z }); }
+  }
+  if (ecs.trT1[e] > 0 && pt >= ecs.trT1[e]) {
+    trombaImpact(world, e, ecs.trX1[e], ecs.trZ1[e], S, ecs.trT1[e], pt, seq, 1);
+    ecs.trT1[e] = 0;
+  }
+  if (ecs.trT0[e] < 0 && !ecs.trEnd[e] && !ecs.trT1[e]) ecs.trT0[e] = 0;
+}
+
+// ---- Abordaje ------------------------------------------------------------------------------------------------
+// At the cast: where it lands. The leap flies over anything, so it is the farthest point of the line to the aim
+// (min…range) where a pirate can stand (not water, rock or out of bounds); the blink (Parpadeo) just aims there.
+function planLeap(world, e, cmd, S, form, ev) {
+  const ecs = world.ecs, x0 = ecs.x[e], z0 = ecs.z[e];
+  let [x1, z1] = aimAt(ecs, e, cmd, S.min, S.range);
+  if (!S.blink) {
+    const d = Math.hypot(x1 - x0, z1 - z0), n = Math.ceil(d / 0.3);
+    let k = n;
+    while (k > 0 && !canStand(world, x0 + ((x1 - x0) * k) / n, z0 + ((z1 - z0) * k) / n, ecs.radius[e])) k--;
+    x1 = x0 + ((x1 - x0) * k) / n; z1 = z0 + ((z1 - z0) * k) / n;
+    ecs.iframes[e] = Math.max(ecs.iframes[e], S.windup + S.air);
+    ev.air = S.air; ev.h = S.h;
+  }
+  if (Math.hypot(x1 - x0, z1 - z0) > 0.05) ecs.facing[e] = Math.atan2(x1 - x0, z1 - z0);
+  ecs.castX[e] = Math.sin(ecs.facing[e]); ecs.castZ[e] = Math.cos(ecs.facing[e]);
+  ecs.lpX0[e] = x0; ecs.lpZ0[e] = z0; ecs.lpX1[e] = x1; ecs.lpZ1[e] = z1;
+  ecs.vx[e] = 0; ecs.vz[e] = 0;
+  ev.dx = ecs.castX[e]; ev.dz = ecs.castZ[e];
+  ev.x0 = x0; ev.z0 = z0; ev.x1 = x1; ev.z1 = z1; ev.form = form;
+}
+
+// In the air (windup → windup + air): no collision, eased along the line; crossing the end, the slam.
+function leapAir(world, e, S, slot, t0, t1, pt, seq) {
+  const ecs = world.ecs, u = Math.min(1, (t1 - S.windup) / S.air), k = u * u * (3 - 2 * u);
+  ecs.x[e] = ecs.lpX0[e] + (ecs.lpX1[e] - ecs.lpX0[e]) * k;
+  ecs.z[e] = ecs.lpZ0[e] + (ecs.lpZ1[e] - ecs.lpZ0[e]) * k;
+  ecs.y[e] = world.map.groundAt(ecs.x[e], ecs.z[e]);
+  if (u < 1) return;
+  const x = ecs.x[e], z = ecs.z[e], form = ecs[SLOT_COLS[slot].fm][e];
+  clearParry(world, e, inCircle(x, z, S.clearR), pt, seq, 'leap', S.riposte, S.riposteMax);
+  if (world.isServer) world.areaHits(e, x, z, S.r, S.mult * tattooMul(ecs, e, 'leap'), { knock: S.knock, stun: S.stun || 0, skill: 'leap', heavy: true }, pt, seq);
+  world.emit({ type: 'slam', e, seq, x, z, r: S.r, form });
+}
+
+// «Parpadeo»: the blink toward the planned point, and the next basic attack within `emp` s is empowered.
+function leapBlink(world, e, cmd, S, seq) {
+  const ecs = world.ecs, dx = ecs.lpX1[e] - ecs.x[e], dz = ecs.lpZ1[e] - ecs.z[e], d = Math.hypot(dx, dz);
+  if (d > 1e-3) blinkStep(world, e, dx / d, dz / d, d, S.iframes, seq);
+  else blinkStep(world, e, ecs.castX[e], ecs.castZ[e], 0, S.iframes, seq);
+  ecs.empT[e] = S.emp;
+}
+
+// The damage factor of the basic attack starting now: × empMult (and a crit) right after a Parpadeo, which it spends.
+export function takeEmpower(ecs, e) {
+  if (!(ecs.empT[e] > 0)) return 0;
+  ecs.empT[e] = 0;
+  return formed('leap', 1).empMult * tattooMul(ecs, e, 'leap');
+}
+
+// ---- Timón ---------------------------------------------------------------------------------------------------
+// The charge (castK > 0, chg = 1): you face the aim and castT counts while the slot's key is held; letting go (a tap
+// throws at once, k = 0) or maxHold throws. A dash, a stagger or death cancel it with no cooldown spent.
+function stepCharge(world, e, cmd, dt, pt, seq, slot, S) {
+  const ecs = world.ecs;
+  faceAim(ecs, e, cmd);
+  ecs.castX[e] = Math.sin(ecs.facing[e]); ecs.castZ[e] = Math.cos(ecs.facing[e]);
+  if ((cmd.btn & SLOT_BTN[slot]) && ecs.castT[e] < S.maxHold) { ecs.castT[e] += dt; return; }
+  throwWheel(world, e, slot, S, Math.min(1, ecs.castT[e] / S.charge), pt, seq);
+  cancelCast(ecs, e);
+}
+
+// The throw: k = 0 fast and short … 1 slow, long and heavy (form B: wider, heavier, slower). A wall ahead shortens
+// the range (it turns early). The flight is analytic out (whPh 1) and stepped back (3); 2 = hanging at the apex.
+function throwWheel(world, e, slot, S, k, pt, seq) {
+  const ecs = world.ecs, F = S.fast, L = S.slow, mix = (a, b) => a + (b - a) * k;
+  const c = SLOT_COLS[slot], form = ecs[c.fm][e];
+  if (ecs.whPh[e] > 0) world.emit({ type: 'wheelDrop', e, id: ecs.whId[e], seq, x: ecs.whX[e], z: ecs.whZ[e] });
+  const dx = ecs.castX[e], dz = ecs.castZ[e];
+  const x = ecs.x[e] + dx * 0.6, z = ecs.z[e] + dz * 0.6;
+  const v0 = mix(F.speed, L.speed) * (S.speedMul || 1), r = mix(F.r, L.r) + (S.rAdd || 0);
+  const R = Math.max(0.6, clipDistance(world.map, x, ecs.y[e] + 1.0, z, dx, dz, r, mix(F.range, L.range)));
+  ecs[c.cd][e] = S.cd * (1 - ecs.cdr[e]);
+  ecs.whT0[e] = pt; ecs.whX0[e] = x; ecs.whZ0[e] = z; ecs.whDx[e] = dx; ecs.whDz[e] = dz;
+  ecs.whV[e] = v0; ecs.whR[e] = R; ecs.whRr[e] = r; ecs.whMul[e] = mix(F.mult, L.mult) * (S.multMul || 1) * tattooMul(ecs, e, 'wheel');
+  ecs.whF[e] = form; ecs.whPh[e] = 1; ecs.whX[e] = x; ecs.whZ[e] = z; ecs.whS[e] = 0; ecs.whTb[e] = pt;
+  ecs.whId[e] = seq; ecs.whN[e] = 0; ecs.whSlot[e] = SLOTS.indexOf(slot) + 1;
+  world.emit({ type: 'wheel', e, id: seq, seq, x, z, dx, dz, v0, R, r, k, hang: S.hang || 0, tick: pt, form, slot });
+}
+
+// Ticks the wheel takes to reach its apex: s(t) = v0·t − v0²·t² / (4R) stops at R after 2R / v0.
+const wheelOutTicks = (ecs, e) => ticks((2 * ecs.whR[e]) / ecs.whV[e]);
+// How far out the wheel is at tick T (out phase).
+export function wheelOut(ecs, e, T) {
+  const v = ecs.whV[e], R = ecs.whR[e], t = Math.min(Math.max(0, T - ecs.whT0[e]), wheelOutTicks(ecs, e)) * DT;
+  return Math.min(R, v * t - (v * v * t * t) / (4 * R));
+}
+
+// The wheel in flight (keeps going whatever you do; dropped when you die or after `life` s): each step sweeps from
+// where it was to where it is, erasing the parryables it crosses and hitting (server) each enemy once out, once back.
+export function stepWheel(world, e, prev, pt, seq) {
+  const ecs = world.ecs;
+  if (!(ecs.whPh[e] > 0)) return;
+  const S = formed('wheel', ecs.whF[e]), id = ecs.whId[e];
+  if (ecs.dead[e] > 0 || pt - ecs.whT0[e] > ticks(S.life)) {
+    ecs.whPh[e] = 0;
+    world.emit({ type: 'wheelDrop', e, id, seq, x: ecs.whX[e], z: ecs.whZ[e] });
+    return;
+  }
+  const r = ecs.whRr[e], x0 = ecs.whX[e], z0 = ecs.whZ[e];
+  const sweep = (x1, z1, back) => {
+    ecs.whN[e] += clearParry(world, e, onSegment(x0, z0, x1, z1, r), pt, seq, 'wheel', S.riposte, S.riposteMax - ecs.whN[e]);
+    if (world.isServer) world.pathHits(e, x0, z0, x1, z1, r, ecs.whMul[e], id * 2 + (back ? 1 : 0), { knock: S.knock || 1.5, skill: 'wheel' }, pt, seq);
+    ecs.whX[e] = x1; ecs.whZ[e] = z1;
+  };
+  const toBack = () => { ecs.whPh[e] = 3; ecs.whTb[e] = pt; ecs.whS[e] = 0; world.emit({ type: 'wheelBack', e, id, seq, x: ecs.whX[e], z: ecs.whZ[e], tick: pt }); };
+  if (ecs.whPh[e] === 1) {
+    const s = wheelOut(ecs, e, pt);
+    sweep(ecs.whX0[e] + ecs.whDx[e] * s, ecs.whZ0[e] + ecs.whDz[e] * s, false);
+    if (pt - ecs.whT0[e] >= wheelOutTicks(ecs, e)) {
+      if (S.hang > 0) { ecs.whPh[e] = 2; ecs.whTb[e] = pt; } else toBack();
+    }
+    return;
+  }
+  if (ecs.whPh[e] === 2) {
+    // «Remolino»: it spins at the apex, erasing what drifts in and hitting every hangEvery s (server).
+    const x = ecs.whX[e], z = ecs.whZ[e], T0 = ecs.whTb[e], every = ticks(S.hangEvery);
+    ecs.whN[e] += clearParry(world, e, inCircle(x, z, S.hangR), pt, seq, 'wheel', S.riposte, S.riposteMax - ecs.whN[e]);
+    if (world.isServer) {
+      for (let k = Math.max(1, Math.ceil((prev + 1 - T0) / every)); T0 + k * every <= pt; k++) world.areaHits(e, x, z, S.hangR, ecs.whMul[e] * S.hangMult, { knock: 0, skill: 'wheel' }, T0 + k * every, seq);
+    }
+    if (pt - T0 >= ticks(S.hang)) toBack();
+    return;
+  }
+  // Back: it homes on where you are now, speeding up to ret × max(v0, 14) in retRamp s, one tick at a time.
+  const vRet = S.ret * Math.max(ecs.whV[e], 14);
+  let x = x0, z = z0;
+  for (let T = Math.max(prev, ecs.whTb[e]) + 1; T <= pt; T++) {
+    const v = vRet * Math.min(1, ((T - ecs.whTb[e]) * DT) / S.retRamp);
+    const dx = ecs.x[e] - x, dz = ecs.z[e] - z, d = Math.hypot(dx, dz), m = Math.min(d, v * DT);
+    if (d > 1e-6) { x += (dx / d) * m; z += (dz / d) * m; }
+    ecs.whS[e] = v;
+  }
+  sweep(x, z, true);
+  if (Math.hypot(ecs.x[e] - x, ecs.z[e] - z) <= S.catchR) {
+    ecs.whPh[e] = 0;
+    const cd = SLOT_COLS[SLOTS[ecs.whSlot[e] - 1]]?.cd;
+    if (cd && skillOf(ecs, e, SLOTS[ecs.whSlot[e] - 1]) === 'wheel') ecs[cd][e] *= 1 - S.refund;
+    world.emit({ type: 'wheelCatch', e, id, seq, x, z });
+  }
 }
 
 // Distance from (px, pz) to the segment (ax, az)–(bx, bz).

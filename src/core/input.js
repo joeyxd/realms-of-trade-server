@@ -11,9 +11,9 @@ const MOVE_KEYS = {
 };
 // J / K: attack and guard without a mouse (they aim at the nearest threat or enemy). Both can be held.
 const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyQ: BTN.Q, KeyE: BTN.E, KeyR: BTN.R, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
-const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
+const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, KeyQ: BTN.Q, KeyE: BTN.E }; // Q / E held: the Timón charges
 // Standard gamepad buttons → command bits (held ones also count as held).
-const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [5, BTN.Q, false], [4, BTN.E, false], [3, BTN.R, false], [12, BTN.POTION, false]];
+const PAD_PRESS = [[7, BTN.ATTACK, true], [6, BTN.GUARD, true], [0, BTN.DASH, false], [2, BTN.INTERACT, false], [5, BTN.Q, true], [4, BTN.E, true], [3, BTN.R, false], [12, BTN.POTION, false]];
 const PAD_DEAD = 0.18;
 const BLOCK_DEFAULT = new Set(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'F3', 'F4']);
 

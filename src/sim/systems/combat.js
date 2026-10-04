@@ -19,7 +19,7 @@
 import { tuning, DT } from '../../data/tuning.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
-import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain } from './skills.js';
+import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
@@ -294,6 +294,7 @@ function swingStage(world, e, stage, cmd) {
   const ecs = world.ecs, st = tuning.melee.stages[stage - 1];
   ecs.atkStage[e] = stage; ecs.atkT[e] = 0; ecs.atkBuf[e] = 0; ecs.swingId[e] += 1;
   ecs.guardT[e] = -1;
+  ecs.empK[e] = takeEmpower(ecs, e); // the first swing after a Parpadeo hits harder, as a crit (world.meleeHits)
   faceAim(ecs, e, cmd);
   ecs.faceLock[e] = st.windup + st.active + 0.05;
   world.emit({ type: 'swing', e, stage, seq: cmd.seq >>> 0 });
@@ -491,12 +492,14 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
-  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('potCd');
+  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('potCd'); dec('empT');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
-  // A crescent in flight and the lead rain keep going whatever you do (even down).
+  // A crescent in flight, the lead rain, a Tromba and a Timón keep going whatever you do (even down).
   stepWave(world, e, prev, pt, seq);
   stepRain(world, e, prev, pt, seq);
+  stepTromba(world, e, cmd, prev, pt, seq);
+  stepWheel(world, e, prev, pt, seq);
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;

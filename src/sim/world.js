@@ -11,7 +11,7 @@ import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
 import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
-import { WEAPON_KINDS, SKILLS, formed } from '../data/weapons.js';
+import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR, cancelCast } from './systems/skills.js';
 import { applyLoadout } from './systems/stats.js';
 import { createEncounter, stepEncounter, encounterKilled } from './systems/encounter.js';
@@ -379,8 +379,8 @@ export class World {
       if (d > st.range + ecs.hurtR[o]) continue;
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       b.hitBy.set(e, key);
-      const stage = ecs.atkStage[e], emp = ecs.empK[e] > 0; // empowered: the first swing after a Parpadeo (× empMult, a crit)
-      this.strike(o, ecs.atk[e] * st.mult * (emp ? formed('leap', 1).empMult : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp, elem: ecs.elem[e] });
+      const stage = ecs.atkStage[e], emp = ecs.empK[e]; // empowered: the first swing after a Parpadeo (× empK, a crit)
+      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e] });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }

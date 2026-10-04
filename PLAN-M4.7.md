@@ -177,9 +177,7 @@ cambia (`ax/az` ya es el punto apuntado).
 - [x] **P1** Cómic Ultra (2.1): gpu.js + test, tier `ultra`, ajustes, sombras, contornos, pasada final,
       viñetas de impacto, líneas, onomatopeyas.
 - [x] **P2** Huecos y cargas (2.2): datos, perfil, ECS, CMD, reglas, tinta y rangos + tests.
-- [ ] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida). **A medias**:
-      números y formas (`TATTOO_SKILLS`, `formed`), columnas, `canStand`, ayudas de golpe del servidor y el reparto
-      en `skills.js` están; faltan las funciones de lanzamiento y vuelo y los tests (`docs/HANDOFF.md` §3).
+- [x] **P3** Tromba, Abordaje, Timón y sus formas (2.3) en la sim + tests (predicción incluida).
 - [ ] **P4** Apuntar, VFX, animación, iconos, sonido (2.4, 2.5).
 - [ ] **P5** Pestaña Tatuajes, Doña Sepia, mensajes (2.6).
 - [ ] **P6** Equilibrio (bots / medidas), rendimiento Ultra, README / DESIGN, versión `0.4.7-m4.7`, artefacto,
@@ -190,6 +188,13 @@ cambia (`ax/az` ya es el punto apuntado).
 - Pausa de diseño antes de P1/P2: el autor propuso habilidades raras tipo frutas del diablo. Decidido: las
   **Perlas negras** van en M4.8 (`PLAN-M4.8.md`) sobre la base de los tatuajes; M4.7 solo deja el gancho `elem` y
   los huecos sobre `SLOTS`. Las zonas MOBA quedan aparcadas.
+- P3: todo en `src/sim/systems/skills.js` (`castTromba` / `stepTromba`, `planLeap` / `leapAir` / `leapBlink`,
+  `stepCharge` / `throwWheel` / `stepWheel`, `clearParry` compartido) y los pasos en vuelo junto a `stepRain` en
+  `combat.js`. Cambios sobre 2.3: «Gemelas» es una segunda columna 0.4 s después en el punto al que apuntas cuando
+  cae la primera (no dos cargas); `empK` guarda el multiplicador del golpe potenciado (× empMult × rango), no un 1.
+  Un salto cortado en el aire (algo que ignore los i-frames) aterriza igual donde iba. Q / E mantenidos ya van en
+  `btn` desde teclado y mando (`input.js`); en táctil el botón lanza al soltar, así que el Timón sale sin carga
+  hasta P4. 210 tests (12 nuevos en `tests/tattoos2.test.mjs`).
 - P2: `src/data/tattoos.js` (`SLOTS` + `SLOT_COLS`: columnas de habilidad, forma, rango, enfriamiento y búfer por
   hueco), carga por arma en `p.sk`, comandos `loadout` / `form` / `learn` con sus rechazos, tinta con
   recuperación, Doña Sepia en la aldea (uv −102, 3; aún con el aspecto de Tía Perla), `elem` en cada golpe (se

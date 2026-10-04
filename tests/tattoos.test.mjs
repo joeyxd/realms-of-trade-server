@@ -1,5 +1,5 @@
 // M4.7 P2: the Q / E slots, loadouts per weapon, Doña Sepia and the tattoos' meta (learning, forms, tinta and ranks),
-// profiles that survive garbage and a save. The tattoos have no cast until P3: pressing one must do nothing.
+// profiles that survive garbage and a save. Their casts are in tattoos2.test.mjs (P3).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { tuning } from '../src/data/tuning.js';
@@ -403,29 +403,33 @@ test('tinta catch-up: a tattoo below (your best − 1) learns twice as fast; onl
   assert.equal(has2.wheel[1], wheelXp, 'out of the slots: nothing');
 });
 
-test('Q / E with a tattoo that has no cast yet: the press does nothing (no cast, no cooldown, the guard still rises)', () => {
+test('Q / E with a tattoo: it casts from either slot (the Timón spends its cooldown at the throw), is never locked', () => {
   const S = server();
   const e = S.join(1), { ecs, dev, act, events } = S;
   dev(1, { op: 'tattoos', rank: 3 });
   dev(1, { op: 'loadout', slot: 'q', id: 'tromba' });
   dev(1, { op: 'loadout', slot: 'e', id: 'wheel' });
   assert.deepEqual([ecs.cdQ[e], ecs.cdE[e]], [0, 0], 'the dev op costs no cooldown');
-  const casts = events(1, 'cast').length;
-  for (const prs of [BTN.Q, BTN.E, BTN.Q | BTN.E]) {
-    assert.doesNotThrow(() => { for (let i = 0; i < 12; i++) act(e, { prs: i === 0 ? prs : 0, mx: i % 2 }); });
-    assert.deepEqual([ecs.cdQ[e], ecs.cdE[e], ecs.castK[e], ecs.qBuf[e], ecs.eBuf[e]], [0, 0, 0, 0, 0]);
-  }
-  assert.equal(events(1, 'cast').length, casts, 'no cast event');
+  act(e, { prs: BTN.Q });
+  assert.ok(events(1, 'cast').some((ev) => ev.skill === 'tromba' && ev.e === e), 'the Tromba from Q');
+  assert.ok(ecs.cdQ[e] > 0 && ecs.cdE[e] === 0);
+  for (let i = 0; i < 30; i++) act(e);
+  act(e, { prs: BTN.E, btn: BTN.E });
+  assert.equal(ecs.chg[e], 1, 'E held: the Timón charges');
+  assert.equal(ecs.cdE[e], 0, 'no cooldown while charging');
+  act(e); // let go: thrown
+  assert.ok(events(1, 'wheel').some((ev) => ev.e === e) && ecs.cdE[e] > 0 && ecs.whPh[e] > 0);
   assert.equal(events(1, 'locked').length, 0, 'a tattoo is never locked');
-  // A press right before RMB would block the guard for the input buffer if it were buffered: it is not.
+  // A press on a slot that is cooling down does not hold the guard back.
   act(e, { prs: BTN.Q | BTN.GUARD, btn: BTN.GUARD });
   assert.ok(ecs.guardT[e] >= 0, 'the guard is up');
   // An art next to it still works: the cutlass' Q Estocada in the other slot.
+  for (let i = 0; i < 300; i++) act(e);
   dev(1, { op: 'loadout', slot: 'e', id: 'lunge' });
   dev(1, { op: 'mastery', level: 3 });
+  ecs.cdE[e] = 0;
   act(e, { prs: BTN.E });
   assert.ok(events(1, 'cast').some((ev) => ev.skill === 'lunge' && ev.e === e), 'the lunge from E');
-  assert.ok(ecs.cdE[e] > 0 && ecs.cdQ[e] === 0);
 });
 
 test('mastery opens the arts of a slot, wherever they are; a tattoo is never locked', () => {

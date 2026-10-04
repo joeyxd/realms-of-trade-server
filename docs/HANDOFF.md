@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (≈200 tests)
+tests/        node --test (≈210 tests)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -46,7 +46,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | Milestone | Estado |
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
-| **M4.7 «Tatuajes»** | P0, P1 (cómic Ultra), P2 (huecos Q/E) ✅. **P3 a medias**, P4–P6 pendientes |
+| **M4.7 «Tatuajes»** | P0, P1 (cómic Ultra), P2 (huecos Q/E), P3 (sim de los tatuajes) ✅; P4–P6 pendientes |
 | M4.8 «Perlas negras» | diseño (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
@@ -57,18 +57,11 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 
 ### Lo inmediato: terminar M4.7
 
-1. **P3** (sim de los tatuajes). Hecho: números y formas (`TATTOO_SKILLS`, `formed` en `src/data/weapons.js`),
-   columnas de estado (`TATTOO_STATE` en `ecs.js`), `canStand`, ayudas de golpe del servidor (`world.areaHits`,
-   `pathHits`, `stun`, `pullEnemies`), críticos potenciados (`empK`), el reparto en `skills.js` (`tryCast`,
-   `stepCast`, `castPose`, `skillNum`, `tattooMul`). **Falta** escribir en `src/sim/systems/skills.js`:
-   `castTromba` + `stepTromba` (impacto tras `delay`, forma A remolino, forma B gemelas), `planLeap` / `leapAir` /
-   `leapBlink` (salto con altura `h`, aterrizaje con golpe, forma A parpadeo + `empT`, forma B aturde),
-   `stepCharge` / `stepWheel` (cargar con el botón sostenido, timón que va y vuelve, devolución del enfriamiento al
-   atraparlo). Llamar los pasos en vuelo desde `combat.js` como `stepRain`. Quitar los tres de `PENDING` en
-   `castable`. Tests en `tests/tattoos.test.mjs`. La especificación completa está en
-   `docs/briefs/m47-p2-p3-tattoos-sim.md`, «Phase B». Campos que el render necesita en los eventos: `cast` del
-   salto con `h` y `form`; `slam` con `form`; `tromba` / `trombaHit` con `form`, `n` (0 la primera tromba, 1 la
-   gemela) y `r`; `wheel` con `slot`.
+1. **P3** (sim de los tatuajes) ✅: los tres tatuajes y sus formas se lanzan, golpean, borran balas y se predicen
+   (`tests/tattoos2.test.mjs`). Eventos para el render: `cast` (el del salto con `x0, z0, x1, z1, air, h, form`),
+   `slam {x, z, r, form}`, `blink`, `tromba {x, z, tick, r, form, n}` (n 0 la primera, 1 la gemela), `trombaHit`,
+   `trombaEnd`, `wheel {x, z, dx, dz, v0, R, r, k, hang, tick, form, slot}`, `wheelBack`, `wheelCatch`,
+   `wheelDrop`; la posición del timón en vuelo está en `ecs.whX / whZ` (y `wheelOut()` para la ida).
 2. **P4 + P5** (cliente): `docs/briefs/m47-p4-p5-tattoos-client.md` (indicadores tipo MOBA, VFX, animación, iconos,
    sonido, pestaña Tatuajes, Doña Sepia).
 3. **P1**: el autor revisa el cómic Ultra y manda ajustes.
