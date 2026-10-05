@@ -1785,5 +1785,52 @@
     "reason": "Open interior and separate wooden planks replace the low-detail cube, including low mobile; compatible with existing toon/shadows. Footprint stays near the procedural target and existing 15-percent fitting allowance; visual height is lower (~0.703 versus 1). Night remains dark like surrounding props.",
     "limits": "Visual bounding boxes are not an independent gameplay collider test. No storage, ownership, cargo safety, blueprint behavior, publishing or deployment claims."
   },
-  "next": "D04 P1: authoritative player raft at dock, snapshot and procedural renderer; then P2 walkable deck. Repair bench export remains pending."
+  "next": "D04 P1: authoritative player raft at dock, snapshot and procedural renderer; then P2 walkable deck. Repair bench export remains pending.",
+  "artifact": {
+    "sourceSha": "59b5b3555895d1c0dbbf9d0c53d6f6db2de1e565",
+    "directory": "dist/a02-crate-59b5b35",
+    "version": "0.4.8-rc.1",
+    "protocol": 12,
+    "fileCount": 129,
+    "payloadBytes": 1500476,
+    "verification": "All 129 files match release.json bytes/SHA256; all non-generated payload files match committed Git blobs; manifest GLB path present; no source uasset, engine modules, caches or export tooling in payload.",
+    "glbSha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273",
+    "releaseMetadataSha256": "db0e1f5f6a7c6843ff49b3cf44f59fbac2751eba55477e63ca27739232007f8d",
+    "published": false,
+    "deployed": false,
+    "smoke": {
+      "evidencePath": "shots/asset-a02/artifact-low-phone-day/evidence.json",
+      "assetState": "ok",
+      "model": {
+        "tris": 204,
+        "parts": 1
+      },
+      "instances": 7,
+      "pageErrors": [],
+      "gameErrors": [],
+      "browser": {
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+        "swiftshader": true
+      },
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "captures": [
+        {
+          "path": "shots/asset-a02/artifact-low-phone-day/01-procedural.png",
+          "sha256": "a7fa9e4b3956c7cd4b60685074b2a9c34a3f51b097ac17de18ce9efc5407edf7"
+        },
+        {
+          "path": "shots/asset-a02/artifact-low-phone-day/02-storage-crate.png",
+          "sha256": "cb4577ad6a184ec434d8f2a41aa72097103054c46da1ca84619a8492015cd1b6"
+        }
+      ],
+      "inspected": true,
+      "limits": "HTTP served committed artifact; local Three/GSAP copies substitute CDN during QA; Google fonts blocked; SwiftShader and frozen comparison are not real-device performance."
+    }
+  }
 }
