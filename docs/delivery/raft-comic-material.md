@@ -80,3 +80,18 @@ Revisión visual con SwiftShader y teléfono emulado. GPU real, teléfono físic
 No modifica simulación, almacenamiento, balance, protocolo, navegación ni colisiones de cubierta.
 No acepta un kit FAB modular A05 y no habilita editor o piratería. Próximo trabajo: D04 P2, playa→muelle→balsa,
 suelo/bloqueos y escaleras compartidos entre servidor y predicción. Publicación sigue siendo una fase aparte.
+
+## Paquete del commit comprobado
+
+Implementación `fa07148a598e7104bc07e1dc459d26f961cb8614`, integrada sobre cuentas `f0b74a7`.
+`node tools/build-release.mjs fa07148a598e7104bc07e1dc459d26f961cb8614 dist/raft-comic-fa07148`
+produce **136 archivos / 1.981.458 B** del árbol commiteado, con versión/protocolo conservados.
+Incluye ambos WebP y excluye PNG fuente, docs, tests, herramientas y caches.
+[Auditoría de archivos y smoke](raft-comic-release.json): 135 recursos/módulos coinciden byte a byte con Git;
+`index.html` tiene CSS incrustado por el builder y su hash coincide con `release.json`.
+
+El propio paquete pasa dos recorridos más (high día + low móvil), **siete capturas inspeccionadas**,
+sin errores de página/juego. Atlas 1024/512 y URL seleccionada comprobados; SAVE/reload conserva identidad,
+piezas y bodega. Total: 33 capturas inspeccionadas entre el checkout y el paquete.
+Bundle local, sin publicación ni actualización de servidor desde esta misión. El trabajo concurrente de
+host/mundo queda con su dueño y sus propios criterios de aceptación.
