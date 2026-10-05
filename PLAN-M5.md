@@ -24,6 +24,10 @@ Checkpoint D09b, integrado sobre `15bfb44`: **003 aplicada por el autor y verifi
 sesiones para operaciones/guardados, recibos ambiguos y validación de UIDs registrados antes de entrar.
 Canarios reales temporales limpiados; falta staging/ack del juego, suelo durable y adopción de raras.
 [Contrato y evidencia](docs/delivery/d09b-pearl-sessions.md). P4/P6 siguen parciales.
+Checkpoint D09c, integrado sobre `991db89`: **ubicación durable de perlas aceptada localmente**. Una operación
+confirma perfiles, ledger, posición/relojes de suelo y recibos juntos; también cubre mint/relocación sin cuentas.
+SQL **004 nueva, pendiente de aplicar/verificar en Supabase**. No conecta todavía cola ni circulación de juego.
+[Contrato y evidencia](docs/delivery/d09c-pearl-ground.md). P4/P6 siguen parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -65,7 +69,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 ## 3. Pasos
 
 - [x] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
-  saveWorld, claimUnique, releaseUnique }`, ampliada por D09a/b con `loadUnique`/`commitPearl`/`loadPearlOperation`, con dos implementaciones:
+  saveWorld, claimUnique, releaseUnique }`, ampliada por D09a/b con `loadUnique`/`commitPearl`/`loadPearlOperation`
+  y por D09c con `commitPearlGround`/`loadPearlLocation`/`listPearlGround`/`loadPearlGroundOperation`, con dos implementaciones:
   `memory` (tests/host sin DB) y `supabase`
   (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
   servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
@@ -83,25 +88,32 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   económico v2 con RNG, tendencia de mercados y solares. Fallos de carga no fabrican un reemplazo; conflictos
   o errores de escritura detienen ese host y dejan health 503. Memoria no sobrevive al proceso; Supabase sí.
   No hay avance offline ni transacción atómica entre mundo/perfil; un proceso por ID hasta P5/P6. [D07d](docs/delivery/d07d-world.md).
-- [ ] **P4 Únicos — base D09a/b de almacenamiento y sesión.** `commitPearl` mueve una perla de UID conocido junto
+- [ ] **P4 Únicos — base D09a/b/c de almacenamiento, sesión y suelo.** `commitPearl` mueve una perla de UID conocido junto
   con los snapshots CAS de sus cuentas y un recibo idempotente. Ledger `kind=pearl:<kind>`; guardados/importaciones
   no pueden contradecir un UID gestionado. `claimUnique`/`releaseUnique` independientes quedan para otros tipos.
   Migración 003 aplicada/verificada. `ProfileSessions.commitPearl` reserva cuentas/UID, ordena CAS y rebasa
   snapshots posteriores; valida al entrar los UIDs registrados. Falta conectar staging/ack del juego y
-  definir adopción/backfill de perlas raras existentes, colisiones, invitados y suelo
-  durable. Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
+  definir adopción/backfill de perlas raras existentes, colisiones e invitados. D09c agrega posición durable
+  con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 pendiente.
+  Falta restauración/publicación del suelo en juego. Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
 - [ ] **P6 Movimientos y recuperación durables.** Transacciones/reintentos y fallos parciales de bienes/barcos;
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
   D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
-  aún no cubre mundo, suelo ni barcos, ni publica efectos en la simulación.
+  D09c suma el suelo a esa transacción mediante una API nueva, probada con PostgreSQL/SDK locales.
+  No está conectada a la cola ni al juego y 004 aún no se verifica real; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas
 
 - Los tests usan `memory`: ninguna prueba necesita red.
 - La suite SQL usa PGlite y el SDK con un transporte local; no necesita credenciales ni red externa.
+- D09c conserva coordenadas y tiempos enteros `availableAt`/`returnAt`; storage no decide precio, reloj de juego,
+  expiración offline ni ubicación navegable. Un UID registrado 003 y validado en su dueño empieza a guardar ubicación
+  al moverse legítimamente; no adopta UIDs ausentes ni recupera un holder:null sin posición conocida.
+  Recibos 003/004 comparten exclusión por UUID. Un replay entrega el resultado histórico sin revertir una ubicación
+  posterior; el caller debe comparar versiones antes de publicar. Todas las lecturas/escrituras son service-only.
 - D09b comprobó RPC/RLS y operaciones del SDK en el proyecto configurado con UUIDs temporales exactos,
   limpieza verificada y sin consultar jugadores existentes. Contendientes HTTP reales no prueban un
   solapamiento forzado de backends PostgreSQL independientes; leases siguen pendientes.

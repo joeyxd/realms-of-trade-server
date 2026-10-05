@@ -159,6 +159,14 @@ antes de WELCOME. Tras dos respuestas ambiguas sin recibo, las reservas permanec
 `ProfileSessions.reconcilePearl(operationId)` solo lee recibo/perfiles/UID. No hay reintento mutante ilimitado,
 endpoint público de recuperación ni lease entre procesos. [Resultado y límites D09b](delivery/d09b-pearl-sessions.md).
 
+D09c añade **[004_pearl_ground.sql](../server/migrations/004_pearl_ground.sql)**: nueva, después de 001/002/003;
+pendiente de aplicar en el SQL Editor de Supabase y verificar con fixtures aislados. Guarda posición/tiempos
+de suelo, ledger, perfiles y recibos en una transacción; todas las tablas/RPCs quedan solo para el servicio.
+No requiere variables nuevas y aplicarla no activa comandos del juego ni exige reiniciar el host.
+Reaplicarla conserva filas/recibos. Antes de activar circulación, integrar cola/restauración/staging y política
+de adopción; el caller conserva UUIDs y comprueba estado actual al recuperar recibos históricos.
+[Resultado y límites D09c](delivery/d09c-pearl-ground.md).
+
 El mundo guarda un sobre `{v:1, seed, economy}`; la economía usa formato v2 con RNG. El formato previo v1
 sin RNG no se acepta silenciosamente como mundo persistente. El tiempo apagado no se simula. Mantenimiento
 solo cobra a perfiles conectados; guardados de perfil/mundo aún son independientes, sin atomicidad P6.

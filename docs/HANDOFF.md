@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a/b**: 003 verificada real, perlas atómicas y cola de sesión; staging/juego/suelo/leases, correo humano/publicación pendientes (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a/b/c**: 003 real, perlas atómicas, cola y ubicación local; 004 pendiente, staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 local**: balsa visible/transitable y editor autoritativo con materiales reales; bodega/producción, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -113,6 +113,23 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
+
+### M5 P4/P6 — ubicación durable D09c (2026-10-05)
+
+- Base M5 `12a6854`, integrada sobre editor D05 `991db89`; `0.6.0-alpha.2`, protocolo 14 conservados.
+  [Brief](briefs/m5-pearl-ground.md), [informe](delivery/d09c-pearl-ground.md).
+- `commitPearlGround` confirma perfiles CAS, UID/generación, posición/tiempos y recibos juntos; mint/relocación
+  sin cuentas. Lecturas de ubicación, listado paginado por mundo/UID y recibo por UUID solo del servicio.
+- Tombstone al estar en perfil; mundo estable y generaciones coincidentes. Replay histórico sin mutar;
+  UUID compartido entre familias 003/004; guardias diferidas impiden usar la RPC antigua o saves para perder suelo.
+- **149/149** pruebas pertinentes (132 previas + 17 nuevas), PostgreSQL/SDK locales y revisión Luna aceptada
+  por el principal. RLS, rollback de perfiles/ledger/suelo/recibos, replay histórico y guardias raw verificados.
+  **70/70** del subconjunto sobre fuentes M5 `12a6854` más este corte prueban independencia del editor D05.
+- **004 nueva pendiente de aplicar/verificar en Supabase**, después de 001/002/003. No se reinició/publicó el host
+  ni se cambió cliente/sim/editor. Este corte es almacenamiento local, no acepta persistencia de suelo en juego.
+- Próximo corte: aplicar/verificar 004 con fixtures, ampliar cola/reconciliación para ubicación y acordar seam
+  previo a mutación/ack con dueño de LocalServer. Retener UUIDs tras restart, restaurar suelo y cerrar adopción/
+  invitados antes de activar circulación. Reloj/expiración offline y leases siguen pendientes.
 
 ### M5 P4/P6 — cola y reconciliación D09b (2026-10-05)
 
