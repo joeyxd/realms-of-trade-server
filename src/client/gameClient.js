@@ -204,7 +204,11 @@ export class GameClient {
         const S = this.shots;
         if (mine && ev.key) for (let s = 0; s < S.cap; s++) if (S.id[s] && S.key[s] === ev.key && S.pred[s]) { local = S.id[s]; S.pred[s] = 0; break; }
         if (!local) local = this.spawnLocalShot(ev.owner, { ...ev, type: ev.ptype, server: true });
-        if (local) this.sidOf.set(ev.sid, local);
+        if (local) {
+          this.sidOf.set(ev.sid, local);
+          const s = S.slot.get(local);
+          if (s !== undefined) S.elem[s] = ev.elem || 0;
+        }
         break;
       }
       case 'shotEnd': {
@@ -213,9 +217,9 @@ export class GameClient {
         const local = this.sidOf.get(ev.sid);
         this.sidOf.delete(ev.sid);
         const s = local !== undefined ? this.shots.slot.get(local) : undefined;
-        if (s !== undefined) { this.ending.set(s, { sid: ev.sid, x: ev.x, z: ev.z, hit: ev.hit, t: 0, queue: [] }); return; }
+        if (s !== undefined) { this.ending.set(s, { sid: ev.sid, owner: ev.owner ?? this.shots.owner[s], elem: ev.elem ?? this.shots.elem[s], x: ev.x, z: ev.z, hit: ev.hit, t: 0, queue: [] }); return; }
         for (const en of this.ending.values()) if (en.queue.some((q) => q.spawnShot && q.spawnShot.sid === ev.sid)) this.endedEarly.add(ev.sid);
-        this.bus.emit('combat', { type: 'shotImpact', x: ev.x, z: ev.z, hit: ev.hit });
+        this.bus.emit('combat', { type: 'shotImpact', e: ev.owner, elem: ev.elem || 0, x: ev.x, z: ev.z, hit: ev.hit });
         return;
       }
       case 'damage': case 'kill':
@@ -254,9 +258,10 @@ export class GameClient {
 
   // A visual shot the server already ended reaches its impact: the impact, then what it caused.
   finishEnding(s, end, ix, iz) {
+    const elem = end.elem ?? this.shots.elem[s], owner = end.owner ?? this.shots.owner[s];
     this.shots.free(s);
     this.ending.delete(s);
-    this.bus.emit('combat', { type: 'shotImpact', x: ix, z: iz, hit: end.hit });
+    this.bus.emit('combat', { type: 'shotImpact', e: owner, elem, x: ix, z: iz, hit: end.hit });
     for (const q of end.queue) {
       if (!q.spawnShot) { this.bus.emit('combat', q); continue; }
       const b = q.spawnShot;
@@ -275,7 +280,8 @@ export class GameClient {
       for (let s = 0; s < S.cap; s++) if (S.id[s] && o.key && S.key[s] === o.key) { this.keepShots.add(s); return S.id[s]; }
     }
     const id = this.nextLocalSid++;
-    S.spawn(id, { ...o, owner: owner === this.youLocal ? this.youServer : owner, pred: o.server ? 0 : o.seq || 0 });
+    const elem = o.elem ?? (o.server ? 0 : this.pred.ecs.elem[owner]) ?? 0;
+    S.spawn(id, { ...o, elem, owner: owner === this.youLocal ? this.youServer : owner, pred: o.server ? 0 : o.seq || 0 });
     return id;
   }
 

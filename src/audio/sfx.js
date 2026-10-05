@@ -83,6 +83,25 @@ export const sfx = {
     tone(a.sfx, t + 0.01, { type: 'triangle', f0: 1400, f1: 2400, dur: 0.08, g: 0.05 });
     if (wade > 0.08) noiseBurst(a.sfx, t, STEP.water, 0.8);
   },
+  // A quiet element signature layered onto attack onset sounds; never used for per-particle feedback.
+  elemental(elem, vol = 1) {
+    const v = Math.max(0, Math.min(1, Number.isFinite(vol) ? vol : 0));
+    if (!audio.ready || v < 0.03 || !Number.isInteger(elem) || elem < 1 || elem > 4) return;
+    const t = audio.now, d = audio.sfx;
+    if (elem === 1) {
+      noiseBurst(d, t, { type: 'lowpass', f: 1500, q: 0.8, dur: 0.075, g: 0.045 * v });
+      tone(d, t, { type: 'sawtooth', f0: 220, f1: 520, dur: 0.11, g: 0.035 * v });
+    } else if (elem === 2) {
+      noiseBurst(d, t, { type: 'highpass', f: 4200, q: 2, dur: 0.055, g: 0.035 * v });
+      tone(d, t, { type: 'triangle', f0: 1174.66, f1: 1568, dur: 0.12, g: 0.03 * v });
+    } else if (elem === 3) {
+      noiseBurst(d, t, { type: 'highpass', f: 2800, q: 1.2, dur: 0.04, g: 0.04 * v });
+      tone(d, t, { type: 'triangle', f0: 660, f1: 1320, dur: 0.09, g: 0.035 * v });
+    } else {
+      noiseBurst(d, t, { type: 'lowpass', f: 500, q: 1.1, dur: 0.085, g: 0.04 * v });
+      tone(d, t, { type: 'sine', f0: 180, f1: 310, dur: 0.12, g: 0.035 * v });
+    }
+  },
   denied() {
     if (!audio.ready) return;
     const t = audio.now;

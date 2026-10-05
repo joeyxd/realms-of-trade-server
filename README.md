@@ -22,6 +22,10 @@ No hace falta bundler. El juego también se puede publicar como Artifact multi-a
 `node tools/build-artifact.mjs dist/index.html` genera la página (con los estilos incrustados) y lista los módulos
 `src/**` que hay que publicar junto a ella.
 
+Para un paquete ligado a un commit: `node tools/build-release.mjs HEAD`. Lee el árbol commiteado, comprueba
+versión/protocolo e imports y crea `dist/<versión>-<SHA>/` con la página, módulos y assets. `release.json` registra
+origen, bytes y SHA256 de cada archivo; cambios locales sin commit no entran. Servir por HTTP para probarlo.
+
 ### Jugar en línea (M3.6)
 
 `npm start` levanta **un solo proceso** que sirve el cliente y corre el mundo: el mismo `LocalServer` que en solo
@@ -99,10 +103,10 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
 | M4.6 | «Tinta»: el móvil siempre en horizontal (el juego se dibuja girado si el teléfono está de pie), botones táctiles de cristal por colores en arco, y el pase de cómic: contornos de tinta con peso, sombras duras teñidas con trama, superficies pintadas → `PLAN-M4.6.md` | ✅ |
 | M4.7 | «Tatuajes»: Q / E libres (artes del arma o tatuajes), tres tatuajes con rangos y formas (Tromba, Abordaje, Timón), apuntado tipo MOBA, Doña Sepia y la pestaña Tatuajes; el cómic Ultra para GPU potentes → `PLAN-M4.7.md` | ✅ |
-| M4.8 | «Perlas negras»: las cuatro perlas, poder G, pasivas, maldiciones y circulación → `PLAN-M4.8.md`; falta cierre P5 | en curso |
+| M4.8 | «Perlas negras»: kit integrado y pulido, candidato P5 → `PLAN-M4.8.md`; aceptación física y publicación pendientes | rc.1 |
 | M5–M8 | La estructura: mundo persistente (Supabase), «La Balsa», comercio entre pueblos, construcción → `PLAN-M5.md` … `PLAN-M8.md`, `docs/HANDOFF.md` | núcleo en parte |
 
-### Entrega actual de M4.8 — las cuatro perlas (`0.4.8-alpha.4`)
+### Entrega actual de M4.8 — candidato integrado (`0.4.8-rc.1`)
 
 - Las perlas raras salen de élites, HELLFIRE y cofres de Marea. Recogerlas las guarda sin tragar en **Perlas (P)**;
   puedes tragarlas, entregarlas a un pirata cercano, dejarlas en el suelo o venderlas junto a Tía Perla.
@@ -122,9 +126,14 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 - Para probar sin esperar botín: en solo, **F4 → + Perla → P → Tragar**; cierra el panel y espera 4 s antes de G.
   ANCLA y NUBE se apuntan manteniendo/arrastrando y se lanzan al soltar; RAYO se carga manteniendo.
   F4 permite cambiar la hora del mundo para probar Tinta. «Luz del escenario» solo cambia la presentación.
-- **M4.8 sigue en curso:** quedan pulido, balance y aceptación con dispositivos reales en P5.
+- P5 unifica paleta y sonido elemental de golpes, artes, tatuajes y proyectiles propios/remotos. Una bala conserva
+  el elemento con el que salió, incluso tras escupir o cambiar la perla; sus rebotes e impactos también.
+- Revisión de balance reproducible: `node tools/pearl-balance.mjs`. Conserva probabilidades y valor actuales;
+  separa daño, control, marcas/ocultación y maldiciones. No acredita equilibrio competitivo por sí sola.
+- **M4.8 sigue pendiente de aceptación física y publicación:** GPU, teléfono y mando reales, audición en juego.
+  Regresión actual: **278/278**. Evidencia y alcance en [D03 / P5](docs/delivery/d03-pearlkit.md).
   El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
-  tras reinicios corresponde a M5. Protocolo **11**: cliente y servidor en línea deben actualizarse juntos.
+  tras reinicios corresponde a M5. Protocolo **12**: cliente y servidor en línea deben actualizarse juntos.
 
 ### Qué incluye M1
 

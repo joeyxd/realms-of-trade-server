@@ -479,6 +479,7 @@ export class Shots {
     this.key = F();
     this.homing = F(); this.cone = F(); // soft homing (rad/s) toward enemies in a cone ahead (deg); 0 = straight
     this.kind = new Uint8Array(cap); // SHOT.*
+    this.elem = new Uint8Array(cap); // The element at launch, retained through impact and bounces.
     this.tier = new Uint8Array(cap); // a reflect's tier (3 EXCELENTE · 2 BUENO · 1 POBRE; 0 = not a sword reflect): its look
     this.knock = F(); // knockback on hit (0 = the melee default)
     this.crit = new Uint8Array(cap); // 1: hits as a crit whatever the roll (an empowered shot after a Parpadeo)
@@ -506,7 +507,7 @@ export class Shots {
     this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0; this.key[s] = o.key || 0;
     this.homing[s] = o.homing ?? tuning.parry.reflect.wave.homing; this.cone[s] = o.cone ?? tuning.parry.reflect.wave.cone;
     this.bounce[s] = o.bounce || 0; this.lastHit[s] = o.lastHit || 0;
-    this.kind[s] = o.kind || 0; this.knock[s] = o.knock || 0; this.crit[s] = o.crit ? 1 : 0; this.lag[s] = o.lag || 0; this.tier[s] = o.tier || 0;
+    this.kind[s] = o.kind || 0; this.elem[s] = o.elem || 0; this.knock[s] = o.knock || 0; this.crit[s] = o.crit ? 1 : 0; this.lag[s] = o.lag || 0; this.tier[s] = o.tier || 0;
     this.slot.set(id, s);
     this.count++;
     return s;

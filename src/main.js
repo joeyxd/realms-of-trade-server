@@ -44,6 +44,7 @@ import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
 import { CONSUMABLES } from './data/items.js';
 import { phaseAt } from './data/clock.js';
+import { elementVisual } from './data/elements.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
 import { Ambience } from './audio/ambience.js';
@@ -373,7 +374,7 @@ async function boot() {
   });
   bus.on('local:dash', (d) => safe('dash', () => {
     const v = views.get(client.youServer);
-    const accent = SKINS[settings.skin].accent;
+    const accent = elementVisual(ps.elem)?.accent ?? SKINS[settings.skin].accent;
     if (v) world.after.dash(v, accent, tuning.dash.afterimages, tuning.dash.afterimageLife);
     const mat = map.materialAt(d.x, d.z);
     world.effects.dashBurst(d.x, map.groundAt(d.x, d.z), d.z, d.dx, d.dz, mat, ps.wade);
@@ -702,7 +703,8 @@ async function boot() {
     const bullet = S.kind[s] === SHOT.BULLET || S.kind[s] === SHOT.PELLET;
     if (!bullet && ((trailFrame + s) & 1)) return;
     const heavy = S.heavy[s], T = bullet ? TRAIL.bullet : TRAIL[S.tier[s]] || TRAIL[2];
-    world.effects.streaks.spawn(x, y, z, -S.vx[s] * 0.12, 0, -S.vz[s] * 0.12, { life: T.life, width: heavy ? 0.42 : T.w, stretch: bullet ? 0.9 : 0.6, color: T.color, color1: T.color1, gravity: 0, drag: 2 });
+    const palette = elementVisual(S.elem[s]);
+    world.effects.streaks.spawn(x, y, z, -S.vx[s] * 0.12, 0, -S.vz[s] * 0.12, { life: T.life, width: heavy ? 0.42 : T.w, stretch: bullet ? 0.9 : 0.6, color: palette?.c0 ?? T.color, color1: palette?.c1 ?? T.color1, gravity: 0, drag: 2 });
   };
   // F4 → hitboxes: hurtboxes (green / red), graze band, parry and swing sectors, projectile radii.
   const PCOL = [0xffb02e, 0xff5a1f, 0x9b4dff];
@@ -820,12 +822,12 @@ async function boot() {
             // Remote players' swings: a slash when their action turns into a new stage.
             if (!rec.enemy && s.act >= ACT.SWING1 && s.act <= ACT.SWING3 && s.act !== view.lastAct) {
               const st2 = tuning.melee.stages[s.act - ACT.SWING1];
-              world.combatFx.slash(view, s.act - ACT.SWING1 + 1, SKINS[rec.skin]?.accent ?? 0x3bf0ff, st2.active, Math.max(0, st2.windup - s.actT));
+              world.combatFx.slash(view, s.act - ACT.SWING1 + 1, elementVisual(s.elem)?.accent ?? SKINS[rec.skin]?.accent ?? 0x3bf0ff, st2.active, Math.max(0, st2.windup - s.actT));
             }
             view.lastAct = s.act;
             if (s.dashes !== view.lastDashes) {
               if (view.lastDashes) {
-                world.after.dash(view, SKINS[rec.skin]?.accent ?? 0x3bf0ff, [0, 0.07, 0.14], 0.22);
+                world.after.dash(view, elementVisual(s.elem)?.accent ?? SKINS[rec.skin]?.accent ?? 0x3bf0ff, [0, 0.07, 0.14], 0.22);
                 world.effects.dashBurst(s.x, s.y, s.z, Math.sin(s.f), Math.cos(s.f), map.materialAt(s.x, s.z), s.wade);
               }
               view.lastDashes = s.dashes;
@@ -836,7 +838,7 @@ async function boot() {
           const mastboltCharge = rec.id === client.youServer
             ? ps.castK === 3 && skillId(ps.skG) === 'mastbolt'
             : rec.chargeSkill ? rec.chargeSkill === 'mastbolt' : s.elem === 3;
-          if ((s.act | 0) === ACT.CHARGE && !mastboltCharge) world.skillFx.charging(rec.id, Math.min(1, (rec.id === client.youServer ? ps.castT : s.actT) / SKILLS.wheel.charge));
+          if ((s.act | 0) === ACT.CHARGE && !mastboltCharge) world.skillFx.charging(rec.id, Math.min(1, (rec.id === client.youServer ? ps.castT : s.actT) / SKILLS.wheel.charge), s.elem);
           if (rec.id === client.youServer) view.glow.value = ps.empT > 0 ? 1.6 + 0.6 * Math.sin(performance.now() / 70) : 1;
           // Wading leaves a trail of foam ripples (anyone: you, bots, NPCs).
           if ((s.wade || 0) > 0.08) {

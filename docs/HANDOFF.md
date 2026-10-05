@@ -47,7 +47,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
-| M4.8 «Perlas negras» | **en curso**: las cuatro perlas y circulación jugables; falta cierre P5 (`PLAN-M4.8.md`) |
+| M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
@@ -69,7 +69,25 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
-### M4.8 en curso — checkpoint Tinta (`0.4.8-alpha.4`)
+### M4.8 — candidato P5 (`0.4.8-rc.1`)
+
+- Base `9a76925`; commit de esta entrega: el que incorpora [D03](delivery/d03-pearlkit.md). Paleta compartida,
+  partículas y capa de sonido de todo el kit, tanto local como remoto. Timones independientes conservan toon.
+- Protocolo **12**: `shot` y `shotEnd` conservan propietario y elemento de salida. Daño/pasiva, rebote, estela e
+  impacto diferido lo usan aunque cambie la perla; el servidor corrige predicción, incluido cero. Eventos de ataque
+  neutrales declaran cero. La maldición nocturna sigue usando el portador y la hora del impacto.
+- Regresión **276/276 sin red + 2/2 de red**. `tests/pearlkit.test.mjs` tiene cinco pruebas con comandos reales de
+  arma/artes/tatuajes para las cuatro perlas, balas/reflejos tras escupir, rebote, eco e impacto remoto y base neutral.
+- `tools/pearl-balance.mjs` da una muestra determinista de daño y tablas de circulación/control/maldiciones.
+  Se conservan los valores actuales: no confundir esa muestra con aceptación de equilibrio competitivo.
+- Capturas de paletas en `shots/review/p5-desktop/` (high) y `p5-mobile/` (low). Galería sintética congelada;
+  no mide FPS. Chrome + Edge comprobaron disparo/impacto remoto, cancelación G con mando emulado y nube canónica
+  compartida en WebSocket local. Compañeros/avisos se separan del reloj. Evidencia en D03 y `p5-online/`.
+- Próximo cierre P5: GPU/teléfono/mando físicos y audición del conjunto, después republicar cliente y servidor
+  compatibles. El artefacto local se construye desde el commit; no es despliegue. D04 sigue en la cola de entrega;
+  M5, afinidad y decisiones navales mantienen su alcance pendiente.
+
+### Checkpoint previo Tinta (`0.4.8-alpha.4`)
 
 - Base compartida: perfil `pirateId` / `pearls`, ledger UID en memoria, botín público, bolsa de 8, confirmación
   con UID anterior, entregar a otro pirata, vender, escupir, caída al morir en cualquier zona y retorno a playa tras 90 s.

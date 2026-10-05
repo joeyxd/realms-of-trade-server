@@ -12,6 +12,7 @@ import { patternSpan } from '../sim/projectiles.js';
 import { comic } from './comic.js';
 import { formed } from '../data/weapons.js';
 import { skillId } from '../data/tattoos.js';
+import { elementVisual } from '../data/elements.js';
 
 const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
@@ -19,6 +20,7 @@ const VIOLET = [0.85, 0.6, 1], VIOLET1 = [0.45, 0.2, 0.9];
 const BONE = [1, 0.95, 0.85], BONE1 = [0.9, 0.7, 0.4];
 const FROST = [0.64, 0.96, 1], FROST1 = [0.2, 0.76, 1];
 const STORM = [1, 0.9, 0.28], STORM1 = [1, 0.48, 0.06];
+const NEUTRAL_ELEMENT = { c0: CYAN, c1: CYAN1 };
 
 export class Feedback {
   constructor({ world, client, hud, worldUI, loop, settings, map, ps, onTutorial }) {
@@ -30,19 +32,20 @@ export class Feedback {
     this.taught = new Set();
     world.weaponFx.onPulse = (ev) => {
       sfx.rainPatter(ev.e === client.youServer ? 0.9 : this.vol(ev.x, ev.z));
-      world.combatFx.ring(ev.x, map.groundAt(ev.x, ev.z) + 0.12, ev.z, ev.r * 1.05, this.colorOf(ev.e), 0.2, 0.08, 0.6);
+      world.combatFx.ring(ev.x, map.groundAt(ev.x, ev.z) + 0.12, ev.z, ev.r * 1.05, this.colorOf(ev.e, ev.elem), 0.2, 0.08, 0.6);
     };
   }
 
-  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : this.ps.elem === 3 ? 0xffdf3b : this.ps.elem === 4 ? 0xaa70ed : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  get accent() { return elementVisual(this.ps.elem)?.accent ?? SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  palette(elem) {
+    return elementVisual(elem) || NEUTRAL_ELEMENT;
+  }
   // A player's accent color (yours, or another player's by their look).
-  colorOf(e) {
+  colorOf(e, elem = undefined) {
+    if (elem !== undefined) return elementVisual(elem)?.accent ?? (e === this.client.youServer ? SKINS[this.settings.skin]?.accent : SKINS[this.client.entities.get(e)?.skin]?.accent) ?? 0x3bf0ff;
     if (e === this.client.youServer) return this.accent;
     const rec = this.client.entities.get(e);
-    if (rec?.r?.elem === 1) return 0xff793b;
-    if (rec?.r?.elem === 2) return 0x72eaff;
-    if (rec?.r?.elem === 3) return 0xffdf3b;
-    if (rec?.r?.elem === 4) return 0xaa70ed;
+    if (elementVisual(rec?.r?.elem)) return elementVisual(rec.r.elem).accent;
     return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
   }
   me() { return this.world.views.get(this.client.youServer); }
@@ -90,12 +93,13 @@ export class Feedback {
           // Another pirate's cutlass (humans and bots): the same arc in their colour, sound by distance.
           // (Drawn 100 ms late like their body, so the arc waits for the wind-up as they show it.)
           const v = this.viewOf(ev.e), vol = v ? this.vol(v.root.position.x, v.root.position.z) : 0;
-          if (vol > 0) { W.combatFx.slash(v, ev.stage, this.colorOf(ev.e), st.active, st.windup + INTERP_DELAY); sfx.swing(ev.stage, vol * 0.5); }
+          if (vol > 0) { W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup + INTERP_DELAY); sfx.swing(ev.stage, vol * 0.5); sfx.elemental(ev.elem, vol * 0.28); }
           break;
         }
         const v = this.me();
-        if (v) W.combatFx.slash(v, ev.stage, this.accent, st.active, st.windup);
+        if (v) W.combatFx.slash(v, ev.stage, this.colorOf(ev.e, ev.elem), st.active, st.windup);
         sfx.swing(ev.stage);
+        sfx.elemental(ev.elem, 0.28);
         break;
       }
       case 'mhit': {
@@ -130,11 +134,12 @@ export class Feedback {
           sfx.armor(this.vol(x, z));
           if (ev.by === this.client.youServer) this.teach('crabArmor', '<b>Cangrejo blindado:</b> de frente apenas le haces daño. Rodéalo con un dash y golpéale por detrás, o <b>devuélvele las balas</b>: los reflejos atraviesan la placa.', 6500);
         }
-        if (v) { v.flash(ev.elem === 4 ? 0xaa70ed : 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
+        const hitPalette = this.palette(ev.elem);
+        if (v) { v.flash(elementVisual(ev.elem)?.accent ?? 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
           if (ev.elem === 4) sfx.inkHit(this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : ev.elem === 3 ? STORM : ev.elem === 4 ? VIOLET : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : ev.elem === 3 ? STORM1 : ev.elem === 4 ? VIOLET1 : CYAN1);
+          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, hitPalette.c0, hitPalette.c1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;
@@ -272,22 +277,24 @@ export class Feedback {
         const v = me ? this.me() : this.viewOf(ev.e);
         if (v) v.recoil(ev.hand);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.2;
-        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz);
+        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, false, ev.elem);
         sfx.pistol(ev.hand, me ? 0.8 : 0.6 * this.vol(ev.x, ev.z));
+        sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
         break;
       }
       case 'blast': {
         const v = me ? this.me() : this.viewOf(ev.e);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.15;
-        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, true);
-        W.combatFx.ring(ev.x + ev.dx * 1.2, y - 1.1, ev.z + ev.dz * 1.2, 1.6, 0xffd27a, 0.25, 0.18, 0.7);
+        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, true, ev.elem);
+        W.combatFx.ring(ev.x + ev.dx * 1.2, y - 1.1, ev.z + ev.dz * 1.2, 1.6, elementVisual(ev.elem)?.accent ?? 0xffd27a, 0.25, 0.18, 0.7);
         if (me) { this.shake(0.22); W.rig.punchIn(0.25); }
         sfx.blast(me ? 1 : this.vol(ev.x, ev.z));
+        sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
         break;
       }
       case 'blink': {
         const v = me ? this.me() : this.viewOf(ev.e);
-        if (v) W.after.capture(v, this.colorOf(ev.e), 0.32, 0.65);
+        if (v) W.after.capture(v, this.colorOf(ev.e, ev.elem), 0.32, 0.65);
         W.weaponFx.smoke(ev.x0, this.y(ev.x0, ev.z0), ev.z0, 12);
         W.weaponFx.smoke(ev.x1, this.y(ev.x1, ev.z1), ev.z1, 7);
         sfx.blink(me ? 1 : this.vol(ev.x0, ev.z0));
@@ -295,22 +302,26 @@ export class Feedback {
       }
       case 'cast': {
         const v = me ? this.me() : this.viewOf(ev.e), vol = me ? 1 : this.vol(ev.x, ev.z);
-        if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e), [0.08, 0.13, 0.18], 0.24);
-        if (ev.skill === 'lunge') sfx.lunge(vol);
-        else if (ev.skill === 'comet') { sfx.lunge(vol); if (v) W.after.dash(v, 0xff793b, [0.08, 0.13, 0.18], 0.3); }
-        else if (ev.skill === 'tromba') sfx.trombaCall(vol);
+        let elementalOnset = false;
+        if (ev.skill === 'lunge' && v) W.after.dash(v, this.colorOf(ev.e, ev.elem), [0.08, 0.13, 0.18], 0.24);
+        if (ev.skill === 'lunge') { sfx.lunge(vol); elementalOnset = true; }
+        else if (ev.skill === 'comet') { sfx.lunge(vol); elementalOnset = true; if (v) W.after.dash(v, this.colorOf(ev.e, ev.elem), [0.08, 0.13, 0.18], 0.3); }
+        else if (ev.skill === 'tromba') { sfx.trombaCall(vol); elementalOnset = true; }
         else if (ev.skill === 'leap' && ev.air) {
           // Abordaje: the shadow grows on the landing point while the body flies (characters.js lifts it).
           if (v) v.setLeap(ev.air, ev.h);
-          W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e));
+          W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e, ev.elem));
           sfx.leap(vol);
+          elementalOnset = true;
         }
-        if (me && ev.skill !== 'iceanchor' && ev.skill !== 'mastbolt') this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        if (elementalOnset) sfx.elemental(ev.elem, vol * 0.45);
+        if (me && ev.skill !== 'iceanchor' && ev.skill !== 'mastbolt') this.hud.pulse(ev.skill === 'comet' || ev.skill === 'inkcloud' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
         break;
       }
       case 'mastbolt': {
         const vol = me ? 1 : this.vol(ev.x, ev.z);
         sfx.mastbolt(vol);
+        sfx.elemental(ev.elem, vol * 0.45);
         if (me) this.hud.pulse('g');
         break;
       }
@@ -333,13 +344,15 @@ export class Feedback {
         const vol = me ? 1 : this.vol(ev.x, ev.z);
         // The field itself is drawn from the live hazard snapshot; this event is only its one-shot onset.
         sfx.iceAnchor(vol);
+        sfx.elemental(ev.elem, vol * 0.45);
         if (me) { this.hud.pulse('g'); this.shake(0.12); }
         break;
       }
       case 'inkCloud': {
         const vol = me ? 1 : this.vol(ev.x, ev.z);
         sfx.inkCloud(vol);
-        if (me) { this.hud.pulse('g'); this.screen(0.09, [0.6, 0.38, 0.82]); }
+        sfx.elemental(ev.elem, vol * 0.45);
+        if (me) this.screen(0.09, [0.6, 0.38, 0.82]);
         break;
       }
       case 'chill': {
@@ -376,8 +389,8 @@ export class Feedback {
         break;
       case 'trombaHit': {
         const twin = ev.n === 1, vol = me ? 1 : this.vol(ev.x, ev.z);
-        W.skillFx.spout(ev.x, ev.z, ev.r, twin, ev.elem === 1);
-        if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger, ev.elem === 1);
+        W.skillFx.spout(ev.x, ev.z, ev.r, twin, ev.elem);
+        if (ev.form === 1 && !twin) W.skillFx.vortex(ev.id, ev.x, ev.z, ev.r, formed('tromba', 1).linger, ev.elem);
         sfx.waterSpout(vol);
         if (me) {
           this.shake(0.22);
@@ -389,7 +402,7 @@ export class Feedback {
       case 'trombaEnd': W.skillFx.vortexEnd(ev.id); break;
       case 'slam': {
         const big = ev.form === 2, vol = me ? 1 : this.vol(ev.x, ev.z);
-        W.skillFx.slam(ev.x, ev.z, ev.r, this.colorOf(ev.e), big);
+        W.skillFx.slam(ev.x, ev.z, ev.r, this.colorOf(ev.e, ev.elem), big, ev.elem);
         sfx.boardSlam(vol, big);
         if (me) {
           this.shake(big ? 0.55 : 0.38); W.rig.punchIn(big ? 0.5 : 0.35);
@@ -400,6 +413,7 @@ export class Feedback {
       case 'wheel': {
         W.skillFx.wheel(ev);
         sfx.wheelThrow(ev.k, me ? 1 : this.vol(ev.x, ev.z));
+        sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.45);
         if (me) { this.hud.pulse(ev.slot || 'q'); if (ev.k >= 1) this.comicAt(ev.x, ev.z, 1.4, { word: '¡ZUUUM!', color: 0xffe08a, lines: true }); }
         break;
       }
@@ -409,10 +423,11 @@ export class Feedback {
         if (me) { sfx.wheelCatch(); this.overMe('¡Atrapado!', 'xp', { life: 0.9 }); }
         break;
       case 'wheelDrop': W.skillFx.wheelEnd(ev, false); break;
-      case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); break;
+      case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e, ev.elem)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3); break;
       case 'rain':
-        W.weaponFx.rain(ev, this.colorOf(ev.e));
+        W.weaponFx.rain(ev, this.colorOf(ev.e, ev.elem));
         sfx.rainCall(me ? 1 : this.vol(ev.x, ev.z));
+        sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
         if (me) { this.hud.pulse('r'); this.comicAt(ev.x, ev.z, 1.6, { word: '¡RA-TA-TA!', color: 0xffd27a }); }
         break;
       case 'equip': {
@@ -520,8 +535,9 @@ export class Feedback {
       }
       case 'shotImpact': {
         const y = this.y(ev.x, ev.z) + 1.1;
-        this.sparks(ev.x, y, ev.z, ev.hit ? 12 : 6, CYAN, CYAN1, { up: 2.5 });
-        if (ev.hit) { W.combatFx.ring(ev.x, y - 1, ev.z, 1.1, this.accent, 0.25, 0.18, 0.8); sfx.shotHit(this.vol(ev.x, ev.z)); }
+        const palette = this.palette(ev.elem);
+        this.sparks(ev.x, y, ev.z, ev.hit ? 12 : 6, palette.c0, palette.c1, { up: 2.5 });
+        if (ev.hit) { W.combatFx.ring(ev.x, y - 1, ev.z, 1.1, this.colorOf(ev.e, ev.elem), 0.25, 0.18, 0.8); sfx.shotHit(this.vol(ev.x, ev.z)); }
         break;
       }
       case 'death':

@@ -57,7 +57,7 @@ export class World {
   }
 
   emit(ev) {
-    if (ev.elem === undefined && ev.e && this.ecs.elem[ev.e]) ev.elem = this.ecs.elem[ev.e];
+    if (ev.elem === undefined && ev.e && (this.ecs.elem[ev.e] || (this.ecs.mask[ev.e] & C.PLAYER))) ev.elem = this.ecs.elem[ev.e];
     this.events.push(ev);
   }
 
@@ -277,10 +277,11 @@ export class World {
     const sid = this.nextSid++;
     const Cb = tuning.combat;
     const lag = o.lag ?? (this.isServer && o.pt ? Math.max(0, Math.min(Cb.rewind, this.tick - o.pt)) + Cb.interpTicks : Cb.interpTicks);
-    this.shots.spawn(sid, { ...o, owner, lag, pred: this.isServer ? 0 : o.seq });
+    const elem = o.elem ?? this.ecs.elem[owner] ?? 0;
+    this.shots.spawn(sid, { ...o, elem, owner, lag, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
       const S = this.shots, s = S.slot.get(sid);
-      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
+      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, elem, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
       if (o.kind) ev.kind = o.kind;
       if (o.crit) ev.crit = 1;
       if (o.tier) ev.tier = o.tier;
@@ -345,15 +346,15 @@ export class World {
         }
       }
       if (!end) continue;
-      const sid = S.id[s], owner = S.owner[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s], crit = S.crit[s] > 0;
-      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s], lag, kind };
+      const sid = S.id[s], owner = S.owner[s], elem = S.elem[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s], crit = S.crit[s] > 0;
+      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s], lag, kind, elem };
       const knock = S.knock[s] || undefined;
       S.free(s);
-      this.emit({ type: 'shotEnd', sid, x, z, hit });
+      this.emit({ type: 'shotEnd', sid, owner, elem, x, z, hit });
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem: ecs.elem[owner], pt: this.tick });
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem, pt: this.tick });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -373,7 +374,7 @@ export class World {
     const dx = (bx - x) / Math.max(bd, 1e-6), dz = (bz - z) / Math.max(bd, 1e-6);
     return this.spawnShot(owner, {
       pid: 0, type: o.type, x, y: o.y, z, dx, dz, speed: o.speed, dmg: Math.max(1, Math.round(dmg * B.dmgMult)), life: B.life, r: o.r,
-      heavy: false, seq: 0, bounce: bounce - 1, lastHit: hit, target: best, from, lag: o.lag, kind: o.kind,
+      heavy: false, seq: 0, bounce: bounce - 1, lastHit: hit, target: best, from, lag: o.lag, kind: o.kind, elem: o.elem,
     });
   }
 

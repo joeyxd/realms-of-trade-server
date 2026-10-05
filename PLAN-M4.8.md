@@ -1,7 +1,7 @@
-# PLAN M4.8 — «Perlas negras» (en curso: cuatro perlas y circulación; cierre P5 pendiente)
+# PLAN M4.8 — «Perlas negras» (candidato integrado; aceptación física pendiente)
 
-> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.4`, las cuatro perlas
-> y la base compartida. **M4.8 no está terminado**: faltan pulido, balance y aceptación real en P5.
+> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-rc.1`, las cuatro perlas,
+> circulación y pulido integrado. **M4.8 no está terminado**: aceptación física y publicación pendientes.
 > Las perlas legendarias únicas dependen de M5 (mundo persistente en el servidor): aquí solo las raras.
 
 ## 0. La idea
@@ -146,12 +146,22 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
   del tutorial con la hora en móvil. 12 pruebas en `tests/tinta.test.mjs`; evidencia y límites en
   [informe D02](docs/delivery/d02-tinta.md). P5 conserva aceptación con GPU y dispositivos reales.
 
-### P5 — Cierre ⏳
-- Pulido de elementos en todos los ataques, sonido y balance de daño/probabilidad/valor.
+### P5 — Candidato integrado; aceptación física pendiente ⏳
+- Paleta compartida en todo el kit: Tromba/vórtice/gotas, carga/estela/captura del Timón, Abordaje, Hoja,
+  Lluvia, boca de pistola y proyectiles/impactos propios y remotos. Geometría/señales hostiles y pools conservados.
+  El Timón usa seis materiales independientes con el shader toon original; no cambia otro pirata al tintarse.
+- Capa de sonido breve por elemento al iniciar un ataque/habilidad; máximo dos voces añadidas por inicio,
+  sin emitir por partícula. Audición del conjunto en dispositivo real aún pendiente.
+- Protocolo 12: `shot` / `shotEnd` incluyen `elem` de salida y propietario. Predicción adopta el valor del servidor;
+  impacto diferido y rebotes lo conservan tras cambiar/escupir. Eventos neutrales declaran `elem: 0`.
+- Balance auditado mediante `tools/pearl-balance.mjs`: una muestra de ATK 13 sin crítico produce 13 base,
+  23 con Brasa tras 3 s y 20 con Tormenta frente a dos objetivos. Control/marcas/maldiciones se evalúan aparte.
+  Se conservan probabilidades y 600 oro; hace falta juego real para afirmar equilibrio competitivo.
+- Suite completa **278/278**, versión `0.4.8-rc.1` y documentación: [informe D03](docs/delivery/d03-pearlkit.md).
 - Aceptación con GPU real, mando real, teléfono real y dos navegadores en línea; las capturas SwiftShader no
   certifican 60 fps ni sustituyen esos dispositivos.
-- Suite completa, documentación, versión final M4.8 y artefacto construido desde el commit. La URL pública de
-  claude.ai sigue siendo M4.7 hasta republicarlo; esta entrega no despliega el servidor.
+- La versión final M4.8 requiere esa aceptación. Construir el artefacto desde el commit con
+  `node tools/build-release.mjs HEAD`; republicación pública y servidor compatible se verifican por separado.
 
 ## 4. Probar esta entrega
 

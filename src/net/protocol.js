@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 11; // M4.8 P4: predicted ink clouds, marks and the authoritative game clock.
+export const PROTOCOL_VERSION = 12; // M4.8 P5: launch element retained on shots and their delayed impacts.
 
 export const MSG = {
   // client -> server

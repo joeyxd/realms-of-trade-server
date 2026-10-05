@@ -18,7 +18,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   fogatas: [resultado](docs/delivery/a01-noise00.md); código/PNG experimentales no incorporados al runtime principal.
 - Checkpoint posterior D02: Tinta integrada, `0.4.8-alpha.4`, protocolo 11; marca/nube/IA y reloj autoritativo.
   Regresión 271/271 y capturas inspeccionadas en escritorio/móvil emulado. GPU y dispositivos reales pendientes.
-  Evidencia: [informe D02](docs/delivery/d02-tinta.md). Próxima entrega: D03 / P5 cierre; M5 conserva su plan.
+  Evidencia: [informe D02](docs/delivery/d02-tinta.md). M5 conserva su plan.
+- Checkpoint posterior D03: kit integrado y pulido, `0.4.8-rc.1`, protocolo 12. Regresión 278/278, balance
+  reproducible sin cambiar cifras y paletas revisadas en escritorio/móvil emulado. Es un candidato: GPU,
+  teléfono/mando físicos, audición en juego y publicación pendientes. [Informe D03](docs/delivery/d03-pearlkit.md).
 - Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; **ningún candidato importado**
   al crear este plan. `assets/manifest.json` está vacío. No reiniciar la investigación desde cero.
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
@@ -51,7 +54,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D00 | Inventario y dirección naval | A00: catálogo, miniaturas y candidatos | CSV/JSON reconciliados, límites de evidencia registrados | Hecho |
 | D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
 | D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
-| D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Cierre pendiente; A01 no lo bloquea |
+| D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: probar primero el hook `crate` que ya existe en la isla; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | Pendiente |
 | D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |

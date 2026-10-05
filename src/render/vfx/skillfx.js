@@ -14,6 +14,7 @@ import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { toon, normalMatFor } from '../toon.js';
 import { DT } from '../../data/tuning.js';
 import { SKILLS } from '../../data/weapons.js';
+import { elementVisual } from '../../data/elements.js';
 
 const NORMAL = {
   transparent: true, depthWrite: false, blending: THREE.CustomBlending,
@@ -197,13 +198,15 @@ export class SkillFx {
     this.vortices = [mkDisk(0), mkDisk(0), mkDisk(0)];
     this.shadows = [mkDisk(1), mkDisk(1), mkDisk(1), mkDisk(1)];
     // Wheels: toon + ink (an object, not light).
-    const wg = wheelGeometry(), wmat = toon({ color: 0xffffff, vertexColors: true }, { key: 'wheel' }), wnm = normalMatFor({});
+    const wg = wheelGeometry(), wnm = normalMatFor({});
     this.wheels = [];
     for (let i = 0; i < 6; i++) {
-      const m = new THREE.Mesh(wg, wmat);
+      // Use the factory: Material.clone() does not preserve the toon shader hooks.
+      const wheelMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'wheel' });
+      const m = new THREE.Mesh(wg, wheelMat);
       m.userData.nm = wnm; m.castShadow = true; m.visible = false; m.frustumCulled = false;
       scene.add(m);
-      this.wheels.push({ m, ev: null, ph: 0, x: 0, z: 0, y: 0, back: null, fall: 0, spin: 0, trail: 0, owner: 0, hand: false });
+      this.wheels.push({ m, mat: wheelMat, visual: null, elem: 0, ev: null, ph: 0, x: 0, z: 0, y: 0, back: null, fall: 0, spin: 0, trail: 0, owner: 0, hand: false });
     }
   }
 
@@ -220,37 +223,39 @@ export class SkillFx {
 
   // ---- Tromba ----------------------------------------------------------------------------------------------
   // A column lands at (x, z) of radius r. twin: the Gemelas' second (a little thinner).
-  spout(x, z, r, twin = false, fire = false) {
+  spout(x, z, r, twin = false, elem = 0) {
+    const visual = elementVisual(elem);
     const s = this.spouts.find((q) => q.t < 0) || this.spouts.reduce((a, b) => (a.t > b.t ? a : b));
-    Object.assign(s, { t: 0, r: r * (twin ? 0.46 : 0.55), h: 4.2 + r * 0.4, x, z, drops: 0 });
+    Object.assign(s, { t: 0, r: r * (twin ? 0.46 : 0.55), h: 4.2 + r * 0.4, x, z, drops: 0, visual });
     s.m.position.set(x, this.map.groundAt(x, z) - 0.05, z);
     s.m.visible = true;
-    s.mat.uniforms.uDeep.value.set(fire ? 0xc22d0b : DEEP);
-    s.mat.uniforms.uFoam.value.set(fire ? 0xffbf64 : FOAM);
+    s.mat.uniforms.uDeep.value.set(visual ? visual.deep : DEEP);
+    s.mat.uniforms.uFoam.value.set(visual ? visual.bright : FOAM);
     const E = this.effects, y = this.map.groundAt(x, z);
     // The foot: foam ring, splash ring, droplets thrown out, a burst of spray.
-    this.combatFx.ring(x, y + 0.1, z, r * 1.1, fire ? 0xff793b : 0xbff6ff, 0.45, 0.18, 0.9);
-    this.combatFx.ring(x, y + 0.12, z, r * 0.55, 0xffffff, 0.3, 0.1, 0.8);
+    this.combatFx.ring(x, y + 0.1, z, r * 1.1, visual ? visual.accent : 0xbff6ff, 0.45, 0.18, 0.9);
+    this.combatFx.ring(x, y + 0.12, z, r * 0.55, visual ? visual.bright : 0xffffff, 0.3, 0.1, 0.8);
     for (let i = 0; i < 26; i++) {
       const a = Math.random() * Math.PI * 2, s2 = 2 + Math.random() * 4.5;
       E.alpha.spawn(x + Math.cos(a) * r * 0.5, y + 0.3, z + Math.sin(a) * r * 0.5, Math.cos(a) * s2, 3 + Math.random() * 4, Math.sin(a) * s2,
-        { life: 0.55 + Math.random() * 0.3, size: 0.16, size1: 0.07, color: [0.9, 1, 1], alpha: 0.95, gravity: 14, drag: 0.6 });
+        { life: 0.55 + Math.random() * 0.3, size: 0.16, size1: 0.07, color: visual ? visual.c0 : [0.9, 1, 1], alpha: 0.95, gravity: 14, drag: 0.6 });
     }
     for (let i = 0; i < 8; i++) {
       const a = Math.random() * Math.PI * 2;
       E.alpha.spawn(x + Math.cos(a) * r * 0.7, y + 0.25, z + Math.sin(a) * r * 0.7, Math.cos(a) * 1.4, 0.8 + Math.random(), Math.sin(a) * 1.4,
-        { life: 0.8 + Math.random() * 0.3, size: 0.5, size1: 1.4, color: [0.85, 0.95, 1], alpha: 0.45, gravity: -0.2, drag: 2.5 });
+        { life: 0.8 + Math.random() * 0.3, size: 0.5, size1: 1.4, color: visual ? visual.c1 : [0.85, 0.95, 1], alpha: 0.45, gravity: -0.2, drag: 2.5 });
     }
   }
 
   // «Ojo de tormenta»: the whirlpool at (x, z) until vortexEnd (or `life` s).
-  vortex(id, x, z, r, life, fire = false) {
+  vortex(id, x, z, r, life, elem = 0) {
+    const visual = elementVisual(elem);
     const v = this.vortices.find((q) => !q.live) || this.vortices[0];
-    Object.assign(v, { live: true, id, x, z, r, t: 0, life, end: -1 });
+    Object.assign(v, { live: true, id, x, z, r, t: 0, life, end: -1, visual });
     this.lay(v, x, z, r);
     v.mat.uniforms.uFade.value = 0;
-    v.mat.uniforms.uDeep.value.set(fire ? 0xc22d0b : DEEP);
-    v.mat.uniforms.uFoam.value.set(fire ? 0xffbf64 : FOAM);
+    v.mat.uniforms.uDeep.value.set(visual ? visual.deep : DEEP);
+    v.mat.uniforms.uFoam.value.set(visual ? visual.bright : FOAM);
     v.m.visible = true;
   }
   vortexEnd(id) { for (const v of this.vortices) if (v.live && v.id === id && v.end < 0) v.end = 0; }
@@ -267,12 +272,13 @@ export class SkillFx {
   }
 
   // The landing: shock ring of radius r, dust thrown out, chips; big: «Ancla de abordaje».
-  slam(x, z, r, color, big = false) {
+  slam(x, z, r, color, big = false, elem = 0) {
+    const visual = elementVisual(elem);
     const E = this.effects, y = this.map.groundAt(x, z);
     for (const s of this.shadows) if (s.live && Math.abs(s.t - s.air) < 0.3) s.t = Math.max(s.t, s.air);
-    this.combatFx.ring(x, y + 0.1, z, r, color, 0.4, 0.2, 1);
-    this.combatFx.ring(x, y + 0.08, z, r * 0.55, 0xfff1d0, 0.25, 0.12, 0.9);
-    this.combatFx.shockwave(x, y + 0.2, z, big ? 0xffb35a : color);
+    this.combatFx.ring(x, y + 0.1, z, r, visual ? visual.accent : color, 0.4, 0.2, 1);
+    this.combatFx.ring(x, y + 0.08, z, r * 0.55, visual ? visual.bright : 0xfff1d0, 0.25, 0.12, 0.9);
+    this.combatFx.shockwave(x, y + 0.2, z, visual ? visual.accent : (big ? 0xffb35a : color));
     const n = big ? 30 : 20;
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2, s = 3 + Math.random() * (big ? 6 : 4);
@@ -282,7 +288,7 @@ export class SkillFx {
     for (let i = 0; i < (big ? 18 : 10); i++) {
       const a = Math.random() * Math.PI * 2, s = 2 + Math.random() * 4;
       E.streaks.spawn(x, y + 0.2, z, Math.cos(a) * s, 3 + Math.random() * 4, Math.sin(a) * s,
-        { life: 0.4 + Math.random() * 0.3, width: 0.1, stretch: 0.05, color: [0.72, 0.6, 0.46], color1: [0.35, 0.26, 0.2], gravity: 16, drag: 0.6 });
+        { life: 0.4 + Math.random() * 0.3, width: 0.1, stretch: 0.05, color: visual ? visual.c0 : [0.72, 0.6, 0.46], color1: visual ? visual.c1 : [0.35, 0.26, 0.2], gravity: 16, drag: 0.6 });
     }
   }
 
@@ -292,6 +298,7 @@ export class SkillFx {
     for (const w of this.wheels) if (w.ev && w.owner === ev.e && !w.hand) this.endWheel(w, false); // one per pirate
     const w = this.wheels.find((q) => q.hand && q.owner === ev.e) || this.wheels.find((q) => !q.ev && !q.hand) || this.wheels[0];
     Object.assign(w, { ev, ph: 1, back: null, fall: 0, trail: 0, owner: ev.e, hand: false, x: ev.x, z: ev.z });
+    this.setWheelElement(w, ev.elem || 0);
     w.m.scale.setScalar(Math.max(0.5, ev.r * 1.15));
     w.m.visible = true;
   }
@@ -304,8 +311,9 @@ export class SkillFx {
     if (w) this.endWheel(w, !caught);
     if (caught) {
       const y = this.map.groundAt(ev.x, ev.z) + 1.0;
-      this.combatFx.ring(ev.x, y, ev.z, 0.9, 0xffe08a, 0.25, 0.12, 1);
-      this.effects.sparks(ev.x, y, ev.z, 10, { color: [1, 0.95, 0.7], color1: [1, 0.7, 0.2], up: 2, spread: 2.4, life: 0.3 });
+      const visual = elementVisual(ev.elem);
+      this.combatFx.ring(ev.x, y, ev.z, 0.9, visual ? visual.accent : 0xffe08a, 0.25, 0.12, 1);
+      this.effects.sparks(ev.x, y, ev.z, 10, { color: visual ? visual.c0 : [1, 0.95, 0.7], color1: visual ? visual.c1 : [1, 0.7, 0.2], up: 2, spread: 2.4, life: 0.3 });
     }
   }
   endWheel(w, drop) {
@@ -314,14 +322,24 @@ export class SkillFx {
   }
 
   // While charging: the wheel rides at the right shoulder of view v, spinning slowly (k: the charge, 0..1).
-  charging(e, k) {
+  charging(e, k, elem = 0) {
     let w = this.wheels.find((q) => q.hand && q.owner === e);
     if (!w) {
       w = this.wheels.find((q) => !q.ev && !q.hand);
       if (!w) return;
       Object.assign(w, { hand: true, owner: e, ph: 0, ev: null });
     }
+    this.setWheelElement(w, elem);
     w.k = k; w.seen = this.time;
+  }
+
+  // Each wheel owns its material so one pirate's element cannot tint another pirate's wheel.
+  setWheelElement(w, elem) {
+    if (w.elem === elem) return;
+    w.elem = elem;
+    w.visual = elementVisual(elem);
+    const c = w.visual ? w.visual.c0 : null;
+    w.mat.color.setRGB(c ? 0.82 + c[0] * 0.18 : 1, c ? 0.82 + c[1] * 0.18 : 1, c ? 0.82 + c[2] * 0.18 : 1);
   }
 
   // The wheel's distance along its throw at tick T (out phase): s(t) = v0·t − v0²·t² / (4R), stopping at R.
@@ -354,7 +372,7 @@ export class SkillFx {
         const a = Math.random() * Math.PI * 2, hy = Math.random() * s.h * grow, y = map.groundAt(s.x, s.z) + hy;
         const rr = s.r * (hy / s.h > 0.6 ? 1.4 : 0.6), sp = 1.5 + Math.random() * 2.5;
         E.alpha.spawn(s.x + Math.cos(a) * rr, y, s.z + Math.sin(a) * rr, Math.cos(a + 1.2) * sp, 0.5 + Math.random() * 2, Math.sin(a + 1.2) * sp,
-          { life: 0.4 + Math.random() * 0.3, size: 0.12, size1: 0.05, color: [0.92, 1, 1], alpha: 0.9, gravity: 12, drag: 0.8 });
+          { life: 0.4 + Math.random() * 0.3, size: 0.12, size1: 0.05, color: s.visual ? s.visual.c0 : [0.92, 1, 1], alpha: 0.9, gravity: 12, drag: 0.8 });
       }
     }
     for (const v of this.vortices) {
@@ -370,7 +388,7 @@ export class SkillFx {
       if (Math.random() < dt * 30) {
         const a = Math.random() * Math.PI * 2, rr = v.r * (0.6 + Math.random() * 0.4), x = v.x + Math.cos(a) * rr, z = v.z + Math.sin(a) * rr;
         E.alpha.spawn(x, map.groundAt(x, z) + 0.12, z, (-Math.cos(a) - Math.sin(a) * 1.6) * 1.8, 0.1, (-Math.sin(a) + Math.cos(a) * 1.6) * 1.8,
-          { life: 0.5, size: 0.2, size1: 0.1, color: [0.9, 1, 1], alpha: 0.8, gravity: 0, drag: 1 });
+          { life: 0.5, size: 0.2, size1: 0.1, color: v.visual ? v.visual.c0 : [0.9, 1, 1], alpha: 0.8, gravity: 0, drag: 1 });
       }
     }
     for (const s of this.shadows) {
@@ -442,7 +460,7 @@ export class SkillFx {
       const R = w.m.scale.x * 1.2;
       for (const k of [0, Math.PI]) {
         const a = w.spin + k, px = x + Math.cos(a) * R, pz = z - Math.sin(a) * R;
-        E.streaks.spawn(px, y, pz, 0, 0, 0, { life: 0.16, width: 0.07, stretch: 0.2, color: [1, 0.92, 0.7], color1: [0.95, 0.6, 0.25], drag: 4 });
+        E.streaks.spawn(px, y, pz, 0, 0, 0, { life: 0.16, width: 0.07, stretch: 0.2, color: w.visual ? w.visual.c0 : [1, 0.92, 0.7], color1: w.visual ? w.visual.c1 : [0.95, 0.6, 0.25], drag: 4 });
       }
     }
   }

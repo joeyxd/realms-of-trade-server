@@ -469,18 +469,25 @@ Marinero de agua dulce (hablar con el capitán).
 
 | Dir. | Tipo | Campos | Fiable |
 |---|---|---|---|
-| C→S | `hello` | `v` (5), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
+| C→S | `hello` | `v` (12), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
 | C→S | `input` | `seq, mx, mz` (−1..1, cuantizado 1/127), `ax, az` (punto de mira), `btn` (bits mantenidos), `prs` (bits pulsados este tick) | orden |
 | C→S | `cmd` | `{type: 'equip' \| 'unequip' \| 'salvage' \| 'open' \| 'talk' \| 'quest' \| 'buy' \| 'sell' \| 'tut' \| 'tier' \| 'pause' \| …}` | sí |
 | C→S | `ping` | `t` | no |
 | S→C | `welcome` | `you, tick, seed, tuningHash` | sí |
-| S→C | `snapshot` | `tick, ack, ents[{id,k,x,y,z,f,s,a,…}], ev[]` | no (20 Hz) |
+| S→C | `snapshot` | `tick, ack, ents[{id,k,x,y,z,f,s,a,…}], you, enc, frost, storm, ink, clock` | no (20 Hz) |
 | S→C | `spawn` / `despawn` | entidad completa (nombre, skin, nivel) / id | sí |
 | S→C | `event` | `damage, death` (`by`: quién hundió a un pirata), `hurt` (`kind: 'pvp'`, `by`), `loot` / `unloot` (personales con `to`; públicos con `pub`, `from`, `late`), `spill`, `levelup, pattern, reflect, phase, wave, timescale` | sí |
 | S→C | `pong` | `t0, tick` | no |
 | S→C | `profile` / `save` | perfil completo (privado) / `blob` para guardar (M4) | sí |
 | S→C | `full` / `error` | `max` / `code: 'version'` (M3.6) | sí |
 | reservado | `ship_spawn, ship_input, ship_state, board, dock, trade_offer, trade_accept` | naval/comercio (§13) | — |
+
+M4.8 P5 / protocolo 12: los eventos `shot` y `shotEnd` llevan `owner` y `elem` fijado al salir. `Shots.elem`
+alimenta daño/pasiva, rebotes, shader, estela e impacto diferido; el eco corrige predicción, incluido `elem: 0`.
+Escupir/cambiar después no altera esa bala. La maldición nocturna de Tinta sigue comprobando al portador y la
+hora en el tick de impacto. Los eventos de ataque de un jugador sin perla también declaran cero para no adquirir
+el tinte de una perla tragada después. Paletas congeladas en `src/data/elements.js`, pools y señales hostiles
+conservados; sonido elemental de dos voces máximo al inicio. Balance/evidencia: [D03](docs/delivery/d03-pearlkit.md).
 
 Binario futuro: cabecera `u8 tipo, u32 tick, u16 n`; entidad `u16 id, u8 kind, i16 x·64, i16 z·64, i16 y·64,
 u8 facing·(256/2π), u8 estado`. ~11 bytes/entidad → 50 jugadores a 20 Hz ≈ 11 KB/s por cliente.
@@ -702,7 +709,7 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4.5 | «Sin ley»: detalles de M4 (aviso del cofre, oclusión del cofre, cofres de Marea) + la Cala Calavera: fuego amigo, botín completo y público, mobs que se pelean, Desalmados (`PLAN-M4.5.md`) | ✅ |
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | ✅ |
-| M4.8 | «Perlas negras»: Brasa, Escarcha, Tormenta y Tinta jugables (G, pasivas, maldiciones), circulación y caída al morir; pendiente cierre P5 (`PLAN-M4.8.md`) | en curso |
+| M4.8 | «Perlas negras»: kit/circulación pulidos, candidato `0.4.8-rc.1`; aceptación física y publicación pendientes (`PLAN-M4.8.md`) | rc.1 |
 | M5 | Mundo persistente con Supabase: cuentas, perfiles y economía en base de datos, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA (`PLAN-M5.md`) | plan |
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |

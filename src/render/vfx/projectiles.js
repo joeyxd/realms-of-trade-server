@@ -12,11 +12,12 @@ import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { PTYPE, NEVER, SHOT } from '../../sim/projectiles.js';
 import { tuning, DT } from '../../data/tuning.js';
+import { elementVisual } from '../../data/elements.js';
 
 const VERT = /* glsl */ `
 attribute vec3 iPos;
 attribute vec3 iVel;
-attribute vec4 iData; // type (3 = tracer), age (s), radius, flags (1 = reflected, 2 = high contrast, 4 × reflect tier)
+attribute vec4 iData; // type (3 = tracer), age (s), radius, flags (friendly + contrast + 4 × tier + 16 × element)
 uniform float uTime;
 varying vec2 vP;
 varying float vType;
@@ -51,6 +52,7 @@ const FRAG = /* glsl */ `
 ${GLSL_FX_DEPTH}
 uniform float uTime;
 uniform vec3 uParry, uHeavy, uUnstop, uShot, uInk, uTracer;
+uniform vec3 uFire, uIce, uStorm, uDark;
 varying vec2 vP;
 varying float vType;
 varying float vAge;
@@ -60,8 +62,10 @@ float aa(float d) { float w = max(fwidth(d), 1e-4); return clamp(0.5 - d / w, 0.
 void main() {
   bool shot = mod(vFlags, 2.0) > 0.5;
   bool stripes = mod(floor(vFlags / 2.0), 2.0) > 0.5;
-  float tier = floor(vFlags / 4.0);
-  vec3 shotC = tier > 2.5 ? mix(uShot, vec3(1.0, 0.93, 0.62), 0.78) : tier > 0.5 && tier < 1.5 ? uShot * 0.62 : uShot;
+  float tier = mod(floor(vFlags / 4.0), 4.0);
+  float elem = floor(vFlags / 16.0);
+  vec3 ownC = elem > 3.5 ? uDark : elem > 2.5 ? uStorm : elem > 1.5 ? uIce : elem > 0.5 ? uFire : uShot;
+  vec3 shotC = tier > 2.5 ? mix(ownC, vec3(1.0, 0.93, 0.62), elem > 0.5 ? 0.35 : 0.78) : tier > 0.5 && tier < 1.5 ? ownC * 0.62 : ownC;
   vec3 col; float a; float glow;
   float a1 = vP.x, c1 = vP.y; // along flight, across
   float armed = smoothstep(0.1, ${tuning.projectiles.armTime.toFixed(3)}, vAge);
@@ -106,7 +110,7 @@ void main() {
     float ink = aa(d - 0.055);
     float x1 = abs(c1 - a1 * 0.9), x2 = abs(c1 + a1 * 0.9);
     float cross = aa(min(x1, x2) - 0.022) * step(abs(a1), 0.12) * body;
-    vec3 base = shot ? uShot : uUnstop;
+    vec3 base = shot ? shotC : uUnstop;
     col = mix(uInk, mix(base, vec3(0.86, 0.75, 1.0), smoothstep(0.2, 0.9, t) * 0.5), body);
     col = mix(col, vec3(1.0), cross);
     if (stripes) col = mix(col, uInk, body * step(0.5, fract(a1 * 7.0)) * 0.4);
@@ -118,7 +122,7 @@ void main() {
     float body = aa(d - 0.075);
     float ink = aa(d - 0.105);
     float core = aa(d - 0.032);
-    col = mix(uInk, uTracer, body);
+    col = mix(uInk, shot && elem > 0.5 ? ownC : uTracer, body);
     col = mix(col, vec3(1.0, 0.98, 0.88), core);
     a = max(body, ink * 0.7);
     glow = body;
@@ -179,6 +183,10 @@ export class ProjectileView {
       uParry: { value: new THREE.Color(0xffb02e) }, uHeavy: { value: new THREE.Color(0xff5a1f) },
       uUnstop: { value: new THREE.Color(0x9b4dff) }, uShot: { value: new THREE.Color(0x3bf0ff) }, uInk: { value: new THREE.Color(0x1a1033) },
       uTracer: { value: new THREE.Color(0xffc23d) },
+      uFire: { value: new THREE.Color(elementVisual(1).accent) },
+      uIce: { value: new THREE.Color(elementVisual(2).accent) },
+      uStorm: { value: new THREE.Color(elementVisual(3).accent) },
+      uDark: { value: new THREE.Color(elementVisual(4).accent) },
     };
     this.mat = new THREE.ShaderMaterial({
       uniforms: this.uniforms, vertexShader: VERT, fragmentShader: FRAG,
@@ -235,7 +243,7 @@ export class ProjectileView {
     for (let s = 0; s < S.cap && n < this.cap; s++) {
       if (!S.id[s]) continue;
       const tracer = S.kind[s] === SHOT.BULLET || S.kind[s] === SHOT.PELLET;
-      this.put(n++, S.x[s], S.y[s], S.z[s], S.vx[s], 0, S.vz[s], tracer ? 3 : S.type[s], 1, S.r[s] * (S.type[s] === PTYPE.HEAVY ? 1.05 : 1), 1 | hc | (S.tier[s] << 2));
+      this.put(n++, S.x[s], S.y[s], S.z[s], S.vx[s], 0, S.vz[s], tracer ? 3 : S.type[s], 1, S.r[s] * (S.type[s] === PTYPE.HEAVY ? 1.05 : 1), 1 | hc | (S.tier[s] << 2) | (S.elem[s] << 4));
       if (onShot) onShot(s, S.x[s], S.y[s], S.z[s]);
     }
     this.count = n;
