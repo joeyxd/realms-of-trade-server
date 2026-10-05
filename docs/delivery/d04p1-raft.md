@@ -57,3 +57,14 @@ predicción y autoridad concordantes. Después D05 editor y D06 bodega/producci�
 habitar, editar, zarpar ni combatir con esta balsa. M5 mantiene su puerta antes de bienes persistentes
 en riesgo: blobs anónimos siguen siendo reproducibles fuera del proceso; P1 no ofrece custodia durable.
 No se realizó push, despliegue ni publicación.
+
+## Artefacto local fijado
+
+Implementación aceptada: **`bfe377d648027c178823ccce9464ea81df027c79`**. Build reproducible en
+`C:\DEV\real of trade\raft-d04\dist\d04p1-bfe377d`: **131 archivos / 1.526.691 bytes**, protocolo 13.
+Los 130 módulos/assets coinciden con los blobs del commit; el HTML generado con CSS integrado coincide
+con una segunda construcción independiente desde el mismo commit. Todos coinciden con el manifiesto.
+Servidor, tests, docs, herramientas y configuración privada quedan fuera. [Prueba del artefacto](d04p1-artifact.json).
+El recorrido high/día del bundle confirmó
+una balsa, caja FAB y guardado/reload con el mismo ID, sin errores de página/juego. Capturas inspeccionadas
+en `C:\DEV\real of trade\raft-d04\shots\review\d04p1\artifact-high-day`.
