@@ -9,10 +9,12 @@
   display: grid; justify-items: center; align-content: space-between;
   grid-template-rows: auto 1fr auto; gap: 10px;
   max-width: 760px; width: 100%; height: 100%;
+  min-height: 0;
   padding-block: 2cqh 4cqh;
 }
 .title-head { display: grid; justify-items: center; gap: 10px; }
 .title-logo {
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(48px, min(12cqw, 14cqh), 124px);
   line-height: 0.92;
@@ -88,11 +90,24 @@
 .name-field { display: flex; gap: 10px; align-items: center; padding: 8px 14px; }
 .name-field .label { font-family: var(--font-display); letter-spacing: 0.05em; }
 .name-field input {
-  width: 9.5em; font: 800 16px var(--font-ui); color: var(--ink);
+  width: 7.5em; font: 800 16px var(--font-ui); color: var(--ink);
   background: linear-gradient(180deg, #fffaf0, var(--parch-d)); border: 2px solid var(--ink); border-radius: 8px;
   padding: 4px 10px; box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.12);
 }
-.title-msg { max-width: 34em; margin-top: -8px; text-align: center; font-weight: 800; font-size: 14px; color: #ffd27a; text-shadow: 0 2px 0 var(--ink); }
+.title-msg { max-width: 34em; text-align: center; font-weight: 800; font-size: 14px; color: #ffd27a; text-shadow: 0 2px 0 var(--ink); }
 .title-hint { font-weight: 800; font-size: 13px; text-align: center; color: var(--parch); text-shadow: 0 2px 0 var(--ink); }
 @container stage (max-height: 640px) { .title-actions { gap: 12px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }
 @container stage (max-width: 520px) { .title-card { gap: 12px; } .skin-dot { width: 32px; height: 32px; } .skin-dot.has-portrait { width: 42px; height: 42px; } }
+@container stage (max-height: 450px) {
+  .title-card { padding-block: 0; gap: 4px; }
+  .title-head { gap: 5px; }
+  .title-logo { font-size: clamp(36px, 12cqh, 56px); }
+  .title-sub { font-size: 16px; }
+  .rope { height: 6px; }
+  .title-actions { gap: 8px; }
+  #btn-play { font-size: 22px; padding: 0.35em 1.8em; }
+  .skin-picker { padding: 6px 12px; }
+  .skin-dot.has-portrait { width: 36px; height: 36px; }
+  .title-hint { font-size: 11px; }
+  .title-msg { max-width: 100%; margin-top: 8px; font-size: 12px; }
+}

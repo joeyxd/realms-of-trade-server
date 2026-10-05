@@ -58,17 +58,43 @@ reinicia y muestra `/status`). Las partidas guardadas viven en el navegador de c
 | `MAX_PLAYERS` | 4 | Jugadores a la vez |
 | `BOTS` | 3 | Bots en la isla (se apartan cuando entran jugadores) |
 | `SAVE_SECRET` | aleatorio (aviso) | Firma las partidas guardadas |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | sin configurar | Adaptador durable; ambos juntos, clave de servicio privada |
+| `SUPABASE_PUBLIC_KEY` | sin configurar | Activa cuentas; solo publishable o JWT anon, publicado en `/auth/config` |
 | `ORIGINS` | (cualquiera) | Lista de orígenes permitidos para el socket del juego |
 | `DEV` | 0 | `1` habilita F4 y el teletransporte de `?debug`: **nunca** en un servidor público |
 | `LAG_MS` / `JITTER_MS` | 0 | Latencia artificial para pruebas |
 
-## Más adelante: base de datos y servicios (M5)
+## Cuentas y almacenamiento (M5 P1–P2)
+
+El entrypoint carga el `.env` local de la raíz del repo si existe; las variables del proceso tienen prioridad.
+Ese archivo y `.env.*` están ignorados por Git. Los nombres de este servidor son `SUPABASE_URL`,
+`SUPABASE_PUBLIC_KEY` y `SUPABASE_SERVICE_KEY`; no utiliza el prefijo `NEXT_PUBLIC_` de Next.js.
 
 P1 ya incluye `server/store.mjs` (memoria/Supabase) y `server/migrations/001_store.sql`, probados localmente.
 `npm start` selecciona memoria sin `SUPABASE_URL`/`SUPABASE_SERVICE_KEY`; exige ambas si se configura una.
-La selección del adaptador aún no activa perfiles de cuentas: falta P2 y su verificador de identidad. Las
-partidas anónimas siguen firmadas en el navegador. No se aplicó la migración a una base real ni hubo despliegue.
-Contrato, activación pendiente y límites en [D07a](delivery/d07a-store.md).
+El par anterior sin `SUPABASE_PUBLIC_KEY` selecciona solo almacenamiento y deja cuentas desactivadas de forma
+intencional. Añadir la clave pública activa el login del título y la verificación de `hello.token` con Auth.
+Configuraciones parciales y claves públicas de tipo secret/service_role se rechazan al arrancar. Las cuentas
+usan perfiles del servidor; un token inválido nunca entra como invitado. El Worker conserva sus partidas locales.
+
+Antes de activar un proyecto real:
+
+1. Aplicar `server/migrations/001_store.sql` y luego `002_accounts.sql` en ese proyecto. No se ejecutan automáticamente.
+2. Configurar Auth con correo/contraseña y la URL real del juego para los correos de confirmación. Google/Discord
+   y recuperación de contraseña aún no tienen UI propia. Mantener HTTPS y configurar `ORIGINS` para esa URL.
+3. Conservar `SAVE_SECRET` original para importar partidas anteriores. La opción de importación es voluntaria y
+   solo sirve antes de crear el primer personaje de la cuenta; una cuenta existente siempre prevalece, sin mezcla.
+   Se exige firma válida e identidad `pirateId`. Partidas antiguas sin identidad se rechazan explícitamente.
+4. Comprobar en el servicio real login, confirmación, perfil tras reiniciar, rechazo de acceso RLS/RPC con clave
+   pública, duplicados y fallo del proveedor. `/status.storage.accounts` indica activación, no acredita esas pruebas.
+
+La importación registra una identidad legacy única en la misma transacción que crea el perfil. Todas las versiones
+firmadas de ese pirata quedan retiradas del flujo invitado del servidor con cuentas activas. La reserva de invitados
+y cuentas cubre un solo proceso: no ejecutar varios hosts hasta implementar leases P5. El JSON de economía y el
+ledger de perlas todavía no están conectados a persistencia; P3/P4/P6 siguen pendientes.
+
+No se aplicaron estas migraciones a un proyecto real ni hubo despliegue. Evidencia local y límites:
+[D07a almacenamiento](delivery/d07a-store.md), [D07b cuentas](delivery/d07b-accounts.md).
 
 Para el mundo persistente de M5 (personajes,
 inventario, perlas únicas, economía, barcos), la propuesta es **Supabase**: Postgres con Auth (cuentas), Realtime

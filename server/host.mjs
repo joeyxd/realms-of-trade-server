@@ -8,6 +8,7 @@ import { LagLink } from '../src/net/lagLink.js';
 import { C } from '../src/sim/ecs.js';
 import { createMemoryStore, StoreError } from './store.mjs';
 import { ProfileSessions } from './profileSessions.mjs';
+import { legacyKey } from './legacy.mjs';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -20,9 +21,10 @@ const LIMITS = {
 
 export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
-    store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000 } = {}) {
+    store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false } = {}) {
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
+    if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
     this.log = log;
     this.maxPlayers = maxPlayers;
     this.origins = origins;
@@ -32,6 +34,8 @@ export class GameHost {
     this.errors = 0;
     this.store = store;
     this.resolvePlayer = resolvePlayer; // Optional server-owned identity verifier; the title/login is P2.
+    this.initializeAccounts = initializeAccounts;
+    this.legacyReservations = new Map();
     this.joinTimeoutMs = joinTimeoutMs;
     this.joins = new Set(); this.pendingJoins = 0; this.closing = false;
     this.profiles = new ProfileSessions(store, (id, code) => {
@@ -118,6 +122,9 @@ export class GameHost {
 
   receive(sock, msg) {
     if (this.closing || !this.sockets.has(sock.id)) return;
+    if (msg.t === MSG.HELLO && !this.resolvePlayer && Object.hasOwn(msg, 'token')) {
+      this.sendTo(sock.id, { t: MSG.ERROR, code: 'auth_disabled' }); return;
+    }
     if (msg.t !== MSG.HELLO || !this.resolvePlayer || this.server.clients.get(sock.id)?.entity || msg.v !== PROTOCOL_VERSION) {
       this.server.receive(sock.id, msg); return;
     }
@@ -140,20 +147,65 @@ export class GameHost {
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       let profile;
       if (identity !== null) {
-        profile = await untilAbort(this.profiles.open(sock.id, identity, msg.weapon === 1 ? 1 : 0), signal);
+        const initialize = this.initializeAccounts ? (key, fresh) => this.initializeProfile(sock, msg, key, fresh) : null;
+        profile = await untilAbort(this.profiles.open(sock.id, identity, msg.weapon === 1 ? 1 : 0, initialize), signal);
+      } else if (this.initializeAccounts && msg.save) {
+        // A converted legacy character may no longer continue through the guest route.
+        const saved = this.server.saves.load(msg.save);
+        if (saved?.pirateId) {
+          const key = legacyKey(saved);
+          await untilAbort(this.withLegacy(sock, key, async () => {
+            if (await this.store.legacyClaimed(key)) throw new StoreError('legacy_used');
+          }, () => !signal.aborted), signal);
+        }
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
       this.server.receive(sock.id, msg, profile);
-      if (!this.server.clients.get(sock.id)?.entity) this.profiles.close(sock.id);
+      if (!this.server.clients.get(sock.id)?.entity) {
+        this.profiles.close(sock.id);
+        this.releaseLegacy(sock.id);
+      }
     } catch (err) {
       this.profiles.close(sock.id);
       if (this.sockets.has(sock.id)) {
-        const code = err instanceof StoreError && err.code === 'session' ? 'session' : 'storage';
+        const allowed = ['session', 'auth', 'legacy', 'legacy_used', 'legacy_active'];
+        const code = err instanceof StoreError && allowed.includes(err.code) ? err.code : 'storage';
         this.sendTo(sock.id, { t: MSG.ERROR, code });
         // Resolver/provider errors may contain tokens: only a fixed code enters the log.
         this.log(`[store] #${sock.id} join failed: ${code}`);
       }
     }
+  }
+
+  async initializeProfile(sock, msg, id, fresh) {
+    if (msg.importSave !== true) return this.store.initializeProfile(id, fresh);
+    const saved = this.server.saves.load(msg.save);
+    const key = legacyKey(saved); // Rejects invalid signatures and id-less blobs explicitly.
+    return this.withLegacy(sock, key, () => {
+      saved.pirateId = `account:${id}`;
+      return this.store.initializeProfile(id, saved, key);
+    });
+  }
+
+  async withLegacy(sock, key, run, keep = false) {
+    if (this.legacyReservations.has(key)) throw new StoreError('legacy_active');
+    // A fresh guest gets its identity at spawn, before its first signed save exists.
+    for (const p of this.server.world.profiles.values()) {
+      if (p.pirateId && !p.pirateId.startsWith('account:') && legacyKey(p) === key) throw new StoreError('legacy_active');
+    }
+    const reservation = { id: sock.id, pending: true };
+    this.legacyReservations.set(key, reservation);
+    let succeeded = false;
+    try { const result = await run(); succeeded = true; return result; }
+    finally {
+      reservation.pending = false;
+      const retain = typeof keep === 'function' ? keep() : keep;
+      if ((!succeeded || !retain || !this.sockets.has(sock.id)) && this.legacyReservations.get(key) === reservation) this.legacyReservations.delete(key);
+    }
+  }
+
+  releaseLegacy(id) {
+    for (const [key, r] of this.legacyReservations) if (r.id === id && !r.pending) this.legacyReservations.delete(key);
   }
 
   onMessage(sock, data, isBinary) {
@@ -183,6 +235,7 @@ export class GameHost {
     sock.in.close(); sock.out.close();
     this.server.disconnect(sock.id);
     this.profiles.close(sock.id);
+    this.releaseLegacy(sock.id);
     this.log(`[net] #${sock.id} left · players ${this.server.humans} · sockets ${this.sockets.size}`);
   }
 

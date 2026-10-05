@@ -7,8 +7,10 @@ Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09
 > único (perlas legendarias, solares) sin duplicados.
 
 Checkpoint D07a, base `61a34a5`: **P1 implementado y probado localmente**. Memoria, adaptador Supabase,
-migración SQL y ciclo de perfiles del host; P2/P3 y conexión a un proyecto real siguen pendientes.
-`npm start` conserva personajes anónimos con partidas firmadas. [Evidencia y contrato](docs/delivery/d07a-store.md).
+migración SQL y ciclo de perfiles del host. [Evidencia y contrato](docs/delivery/d07a-store.md).
+Checkpoint D07b, base inicial `da757d3`, integrado sobre `a01294c`: **P2 cuentas e importación aceptados
+localmente**. Credenciales configuradas y API real consultada; migraciones/aceptación del proyecto y P3
+siguen pendientes. [Contrato y evidencia](docs/delivery/d07b-accounts.md).
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -54,10 +56,14 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
   servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
   `storeFromEnv` selecciona memoria sin credenciales y rechaza configuración incompleta. El entrypoint lo usa,
-  pero configurar Supabase aún no habilita cuentas. Migración `server/migrations/001_store.sql` probada con
+  y habilita cuentas al añadir la clave pública P2. Migración `server/migrations/001_store.sql` probada con
   PostgreSQL embebido; proyecto real/PostgREST y concurrencia de conexiones independientes por verificar.
-- [ ] **P2 Cuentas.** Inicio de sesión en el título (Supabase Auth en el cliente), el token en el `hello`; el
-  servidor lo verifica y carga el perfil. Migración: un jugador con partida firmada la sube una vez.
+- [x] **P2 Cuentas (local).** Inicio de sesión en el título (Supabase Auth en el cliente), el token en el `hello`; el
+  servidor lo verifica y carga el perfil. Implementación local: correo/contraseña, registro con confirmación,
+  sesión renovable y cierre local, cliente Auth separado del servicio, configuración pública y rechazos
+  explícitos. Importación voluntaria de una partida firmada con `pirateId`, RPC atómica `002_accounts.sql` y
+  recibo único entre versiones; cuenta existente prevalece e invitado importado queda retirado. D07b aceptado
+  localmente. Google/Discord, recuperación de contraseña y aceptación del proyecto real pendientes.
 - [ ] **P3 Economía persistente.** `world_state` cada 60 s y al apagar; al arrancar, `Economy.from()`.
 - [ ] **P4 Únicos.** Perlas legendarias (`PLAN-M4.8.md`): `claimUnique` al tragar o recoger, `releaseUnique` al
   morir; si el portador no entra en X días, vuelve al mar (tarea programada). Cartel de SE BUSCA con el portador.

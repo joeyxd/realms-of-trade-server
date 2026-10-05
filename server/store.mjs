@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const LEGACY_KEY = /^[0-9a-f]{64}$/;
 const MAX_VERSION = 2147483647;
 export class StoreError extends Error {
   constructor(code) { super(`Storage: ${code}`); this.name = 'StoreError'; this.code = code; }
@@ -33,10 +34,14 @@ function profile(value) {
   if (!p) throw new StoreError('profile');
   return p;
 }
+function legacyKey(value) {
+  if (typeof value !== 'string' || !LEGACY_KEY.test(value)) throw new StoreError('legacy_key');
+  return value;
+}
 const conflict = () => ({ ok: false, why: 'conflict' });
 
 export function createMemoryStore() {
-  const profiles = new Map(), worlds = new Map(), uniques = new Map();
+  const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
     const current = map.get(id);
@@ -48,6 +53,20 @@ export function createMemoryStore() {
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
     async saveProfile(id, data, expected) { return save(profiles, playerKey(id), profile(data), version(expected, 0, MAX_VERSION - 1)); },
+    async initializeProfile(id, data, importedKey = null) {
+      id = playerKey(id);
+      data = profile(data);
+      if (importedKey !== null) importedKey = legacyKey(importedKey);
+      const existing = profiles.get(id);
+      if (existing) return structuredClone(existing);
+      if (importedKey !== null && legacyImports.has(importedKey) && legacyImports.get(importedKey) !== id) {
+        throw new StoreError('legacy_used');
+      }
+      profiles.set(id, { data, version: 1 });
+      if (importedKey !== null) legacyImports.set(importedKey, id);
+      return { data: structuredClone(data), version: 1 };
+    },
+    async legacyClaimed(importedKey) { return legacyImports.has(legacyKey(importedKey)); },
     async loadWorld(id) { return load(worlds, key(id)); },
     async saveWorld(id, data, expected) { return save(worlds, key(id), json(data), version(expected, 0, MAX_VERSION - 1)); },
     async claimUnique(uid, kind, holder) {
@@ -74,12 +93,18 @@ export function createMemoryStore() {
 
 export function createSupabaseStore(client) {
   if (!client || typeof client.rpc !== 'function') throw new StoreError('configuration');
-  async function rpc(name, args) {
+  async function rpc(name, args, duplicateCode = null) {
     try {
       const result = await client.rpc(name, args);
-      if (!result || result.error) throw new Error('rpc');
+      if (!result || result.error) {
+        if (duplicateCode && result?.error?.code === duplicateCode) throw new StoreError('legacy_used');
+        throw new Error('rpc');
+      }
       return result.data;
-    } catch { throw new StoreError('unavailable'); } // Never forward credential-bearing provider errors.
+    } catch (error) {
+      if (error instanceof StoreError) throw error;
+      throw new StoreError('unavailable'); // Never forward credential-bearing provider errors.
+    }
   }
   function record(raw, sanitize) {
     if (raw === null) return null;
@@ -94,6 +119,19 @@ export function createSupabaseStore(client) {
   return {
     kind: 'supabase', durable: true,
     async loadProfile(id) { return record(await rpc('mn_load_profile', { p_player_id: playerKey(id) }), profile); },
+    async initializeProfile(id, data, importedKey = null) {
+      if (importedKey !== null) importedKey = legacyKey(importedKey);
+      const raw = await rpc('mn_initialize_profile', {
+        p_player_id: playerKey(id), p_data: profile(data), p_legacy_key: importedKey,
+      }, 'MNL01');
+      if (!raw) throw new StoreError('response');
+      return record(raw, profile);
+    },
+    async legacyClaimed(importedKey) {
+      const result = await rpc('mn_legacy_claimed', { p_legacy_key: legacyKey(importedKey) });
+      if (typeof result !== 'boolean') throw new StoreError('response');
+      return result;
+    },
     async saveProfile(id, data, expected) {
       return written(await rpc('mn_save_profile', { p_player_id: playerKey(id), p_data: profile(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
     },

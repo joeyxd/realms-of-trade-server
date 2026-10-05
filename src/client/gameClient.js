@@ -74,8 +74,9 @@ export class GameClient {
   viewTick(alpha) { return this.youLocal && !this.awaitingFirst ? this.displayTick(alpha) : this.serverTick(); }
 
   // save: the blob the server sent last time (M4), '' for a fresh start.
-  join(name, skin, weapon = 0, save = '') {
-    this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save });
+  join(name, skin, weapon = 0, save = '', account = null) {
+    this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save,
+      ...(account ? { token: account.token, importSave: account.importSave === true } : {}) });
   }
 
   send(msg) { this.t.send(msg); }

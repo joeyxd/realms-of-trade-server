@@ -48,7 +48,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1 local**: memoria/Supabase y ciclo de perfiles; cuentas/mundo/servicio real pendientes (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P2 local**: almacenamiento, cuentas e importación; mundo/servicio real pendientes (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1 local**: balsa amarrada visible/replicada, identidad/migración y fallback; P2 cubierta y editor pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -68,6 +68,25 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
+
+### M5 P2 — cuentas e importación D07b (2026-10-05)
+
+- Base inicial `da757d3`; integrado sobre `a01294c`, protocolo 13/`0.6.0-alpha.1` de M6 P1 conservados.
+  HELLO con token/importación opcionales. [Informe D07b](delivery/d07b-accounts.md).
+- Correo/contraseña, registro/confirmación, sesión SDK renovable y cierre local en título online. Worker sin login.
+  Configuración pública desde servidor; verificador Auth separado de la clave de servicio. Token inválido no entra
+  como invitado. Errores de sesión/almacenamiento/importación tienen mensajes propios y códigos fijos.
+- El trio URL/servicio/pública activa cuentas en `npm start`; par sin pública conserva adaptador sin cuentas.
+  `.env` local ignorado configurado por el autor; conexión real responde, pero tablas/RPCs aún no están en la API.
+  Aplicar 001 y 002 explícitamente; SQL conjunto en `.scratch/m5-supabase-setup.sql`. Sin correo, push ni despliegue.
+- Importación opt-in al crear personaje: HMAC e identidad obligatorios; perfil/recibo único se guardan juntos.
+  Cuenta existente prevalece, versiones de un legacy no se importan en otra cuenta y dejan de entrar como invitado.
+  Reserva de cuenta/legacy de un proceso; leases/concurrencia de conexiones independientes aún pendientes.
+- Regresión sobre M6 P1 **321/321 + 2/2 red = 323/323**; CLI memoria/adaptador/cuentas y configuración rechazada comprobados.
+  SQL en PGlite/SDK y recorrido Chrome desktop/móvil emulado contra Auth local simulado, sin errores JS de página.
+  Capturas `shots/review/m5-accounts/`, logs `m5-p2-*.log`; no certifican Supabase real ni GPU/dispositivos físicos.
+- Próximo corte **P3 economía persistente**: carga, autosave y cierre con CAS. Aceptación real de Auth/DB pendiente;
+  Google/Discord y recuperación sin UI propia. P4/P6 ledger/transferencias y P5 leases siguen abiertos.
 
 ### M5 P1 — base de almacenamiento D07a
 

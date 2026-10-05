@@ -124,7 +124,8 @@ export class TitleScreen {
     });
     tl.to(chars, { scaleY: 0.82, scaleX: 1.12, duration: 0.08, stagger: 0.055, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 0.62);
     tl.from(['.title-sub', '.rope'].map((s) => this.root.querySelector(s)), { opacity: 0, y: 14, duration: 0.45, stagger: 0.1, ease: 'back.out(2)' }, '-=0.3');
-    tl.from(this.root.querySelectorAll('.title-actions > *'), { opacity: 0, y: 20, scale: 0.92, duration: 0.45, stagger: 0.08, ease: 'back.out(2.2)' }, '-=0.2');
+    // JUGAR has its own ready/pulse tween; sharing its transform leaves the entry offset cached by the pulse.
+    tl.from(this.root.querySelectorAll('.title-actions > :not(#btn-play)'), { opacity: 0, y: 20, scale: 0.92, duration: 0.45, stagger: 0.08, ease: 'back.out(2.2)' }, '-=0.2');
     tl.from(this.root.querySelector('.title-foot'), { opacity: 0, duration: 0.4 }, '-=0.2');
   }
 

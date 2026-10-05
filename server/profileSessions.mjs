@@ -13,14 +13,21 @@ export class ProfileSessions {
     this.errors = 0;
   }
 
-  async open(id, key, weapon = 0) {
+  async open(id, key, weapon = 0, initialize = null) {
     key = playerKey(key);
     if (this.accounts.has(key)) throw new StoreError('session');
     const s = { id, key, version: 0, pending: null, running: null, last: null, failed: false, closed: false };
     this.accounts.set(key, s); this.clients.set(id, s);
     try {
-      const row = await this.store.loadProfile(key);
+      let row = await this.store.loadProfile(key);
       if (s.closed) throw new StoreError('cancelled');
+      if (!row && initialize) {
+        const fresh = newProfile({ weapon });
+        fresh.pirateId = `account:${key}`;
+        row = await initialize(key, fresh);
+        if (s.closed) throw new StoreError('cancelled');
+        if (!row) throw new StoreError('response');
+      }
       const p = row ? sanitizeProfile(row.data) : newProfile({ weapon });
       if (!p) throw new StoreError('profile');
       if (row && (!Number.isSafeInteger(row.version) || row.version < 1 || row.version > 2147483647)) throw new StoreError('response');

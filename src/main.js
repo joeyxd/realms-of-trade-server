@@ -22,6 +22,8 @@ import { AimCast } from './client/aimcast.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
+import { AccountAuth } from './client/accountAuth.js';
+import { AccountPanel } from './ui/account.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
@@ -264,6 +266,10 @@ async function boot() {
   // Saved games (M4): one per server ('solo' for the Web Worker). The server sends a fresh blob when your
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
+  const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, { hasLegacySave: () => !!loadSave(saveSlot()) }) : null;
+  let accountReady;
+  const initializeAccount = () => accountReady ??= accountAuth.bootstrap({ online: st.online });
   bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
   addEventListener('pagehide', () => safe('save', () => {
     if (st.online || !client.joined || !client.profile) return;
@@ -534,42 +540,66 @@ async function boot() {
 
   // ---- Play ------------------------------------------------------------------------------------
   async function startPlaying() {
-    audio.unlock();
-    // On a phone: fullscreen + landscape lock while the tap is still a user gesture. iOS and iframes refuse it
-    // (the CSS rotation then does the job); once the lock works the window turns landscape and the stage un-rotates.
-    if (isTouch) {
-      try {
-        const fs = document.documentElement.requestFullscreen?.({ navigationUI: 'hide' });
-        fs?.then(() => screen.orientation?.lock?.('landscape')).catch(() => {});
-      } catch { /* no fullscreen API */ }
-    }
-    audio.set(settings);
-    ambience.start();
-    music.start();
-    sfx.play();
-    saveSettings();
-    client.join(settings.name, settings.skin, weaponIndex(settings.weapon), loadSave(saveSlot()));
-    if (st.online) {
-      // Wait for the server's answer: a place aboard, or why not.
-      title.boarding(true);
-      title.message(null);
-      const r = await new Promise((resolve) => {
-        const offs = [bus.on('you:welcome', () => done('ok')), bus.on('net:full', (m) => done('full', m)), bus.on('net:error', (m) => done('error', m))];
-        const timer = setTimeout(() => done('timeout'), 8000);
-        function done(k, m) { clearTimeout(timer); offs.forEach((off) => off && off()); resolve({ k, m }); }
-      });
-      title.boarding(false);
-      if (r.k !== 'ok') {
-        title.message(r.k === 'full' ? `La tripulación está completa (${r.m.max}/${r.m.max}). Prueba en un rato o juega solo.`
-          : r.k === 'error' ? (r.m.code === 'session' ? 'Esta partida ya está abierta. Cierra la otra sesión y vuelve a intentar.'
-            : r.m.code === 'storage' ? 'No pudimos cargar tu partida. Vuelve a intentar en un momento.'
-              : 'Tu versión del juego es distinta a la del servidor: recarga la página.')
-            : 'El servidor no contesta. Prueba de nuevo o juega solo.');
-        sfx.click();
-        return;
+    if (st.boarding || st.mode !== 'title' || accountAuth.state.busy) return;
+    st.boarding = true;
+    title.boarding(true);
+    accountPanel?.setBoarding(true);
+    title.message(null);
+    try {
+      audio.unlock();
+      // On a phone: fullscreen + landscape lock while the tap is still a user gesture. iOS and iframes refuse it
+      // (the CSS rotation then does the job); once the lock works the window turns landscape and the stage un-rotates.
+      if (isTouch) {
+        try {
+          const fs = document.documentElement.requestFullscreen?.({ navigationUI: 'hide' });
+          fs?.then(() => screen.orientation?.lock?.('landscape')).catch(() => {});
+        } catch { /* no fullscreen API */ }
       }
+      audio.set(settings);
+      ambience.start();
+      music.start();
+      sfx.play();
+      saveSettings();
+      await initializeAccount();
+      const token = st.online ? await accountAuth.token() : null;
+      const account = token ? { token, importSave: accountPanel?.importRequested() } : null;
+      const saved = account && !account.importSave ? '' : loadSave(saveSlot());
+      if (st.online) {
+        // Wait for the server's answer: a place aboard, or why not.
+        const r = await new Promise((resolve) => {
+          const offs = [bus.on('you:welcome', () => done('ok')), bus.on('net:full', (m) => done('full', m)), bus.on('net:error', (m) => done('error', m))];
+          const timer = setTimeout(() => done('timeout'), 20000);
+          function done(k, m) { clearTimeout(timer); offs.forEach((off) => off && off()); resolve({ k, m }); }
+          client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
+        });
+        if (r.k !== 'ok') {
+          if (r.k === 'timeout') transport.close();
+          const joinErrors = {
+            version: 'Tu versión del juego es distinta a la del servidor: recarga la página.',
+            auth: 'Tu sesión no es válida o caducó. Vuelve a iniciar sesión.',
+            auth_disabled: 'Este servidor no tiene cuentas activas. Cierra sesión y vuelve a entrar.',
+            session: 'Tu cuenta ya está a bordo. Cierra la otra partida y vuelve a intentar.',
+            storage: 'No se pudo cargar o guardar el personaje. Prueba de nuevo en un rato.',
+            legacy: 'Esta partida no se puede importar: necesita una firma válida y una identidad de pirata.',
+            legacy_used: 'Esta partida ya fue importada. Entra con la cuenta que la recibió.',
+            legacy_active: 'Esta partida sigue abierta en otra ventana. Ciérrala antes de importar.',
+          };
+          title.message(r.k === 'full' ? `La tripulación está completa (${r.m.max}/${r.m.max}). Prueba en un rato o juega solo.`
+            : r.k === 'error' ? (joinErrors[r.m.code] || 'No se pudo entrar a la isla. Prueba de nuevo.')
+              : 'El servidor no contesta. Prueba de nuevo o juega solo.');
+          sfx.click();
+          return;
+        }
+      } else client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved);
+      accountPanel?.hide();
+      await title.hide();
+    } catch {
+      title.message('No se pudo recuperar tu sesión. Abre Cuenta para volver a iniciar sesión.');
+    } finally {
+      st.boarding = false;
+      title.boarding(false);
+      accountPanel?.setBoarding(false);
     }
-    await title.hide();
   }
   bus.on('you:ready', () => {
     st.mode = 'playing';
@@ -1071,6 +1101,8 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
+  // Start network timeouts after shader compilation has finished blocking the browser thread.
+  initializeAccount();
   window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });

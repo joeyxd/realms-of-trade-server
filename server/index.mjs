@@ -9,9 +9,11 @@ import { fileURLToPath } from 'node:url';
 import { GameHost } from './host.mjs';
 import { hmacSaves, saveSecret } from './saves.mjs';
 import { storeFromEnv } from './store.mjs';
+import { accountAuthFromEnv, publicAuthConfig } from './auth.mjs';
 import { GAME } from '../src/data/meta.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
@@ -22,10 +24,12 @@ const MIME = {
 const PUBLIC = ['src', 'styles', 'assets'];
 
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
-  store, resolvePlayer, joinTimeoutMs } = {}) {
+  store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs });
+  const authConfig = publicAuthConfig(publicAuth);
+  if (authConfig.enabled && !resolvePlayer) throw new Error('Account verifier is required');
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts });
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
@@ -36,6 +40,17 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       return;
     }
     if (req.method !== 'GET' && req.method !== 'HEAD') { res.writeHead(405).end(); return; }
+    if (p === '/auth/config') {
+      res.writeHead(200, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'access-control-allow-origin': '*' });
+      res.end(req.method === 'HEAD' ? undefined : JSON.stringify(authConfig)); return;
+    }
+    if (p === '/auth/sdk.js' && authConfig.enabled) {
+      fs.readFile(AUTH_SDK, (err, body) => {
+        if (err) { res.writeHead(503).end(); return; }
+        res.writeHead(200, { 'content-type': MIME['.js'], 'cache-control': 'no-cache', 'access-control-allow-origin': '*' });
+        res.end(req.method === 'HEAD' ? undefined : body);
+      }); return;
+    }
     const rel = p === '/' ? 'index.html' : path.normalize(p).replace(/^[/\\]+/, '');
     const top = rel.split(/[/\\]/)[0];
     if (rel !== 'index.html' && !PUBLIC.includes(top)) { res.writeHead(404).end('not found'); return; }
@@ -75,12 +90,16 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
 
 // Entry point (npm start).
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const localEnv = path.join(ROOT, '.env');
+  if (fs.existsSync(localEnv)) process.loadEnvFile(localEnv);
   const env = process.env, num = (v, d) => (v !== undefined && v !== '' && Number.isFinite(+v) ? +v : d);
+  const auth = accountAuthFromEnv(env);
   const gs = createGameServer({
     port: num(env.PORT, 5173), host: env.HOST || '0.0.0.0', bots: num(env.BOTS, 3), maxPlayers: num(env.MAX_PLAYERS, 4),
     dev: env.DEV === '1', lagMs: num(env.LAG_MS, 0), jitterMs: num(env.JITTER_MS, 0),
     origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
-    store: storeFromEnv(env), // Account admission is inactive until P2 supplies the verifier.
+    store: storeFromEnv(env), resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig,
+    initializeAccounts: auth.publicConfig.enabled,
   });
   const port = await gs.listen();
   console.log(`${GAME.title} v${GAME.version} · http://localhost:${port} · máx ${gs.game.maxPlayers} jugadores${env.DEV === '1' ? ' · DEV' : ''}${gs.game.lag.ms ? ` · lag ${gs.game.lag.ms}±${gs.game.lag.jitter} ms` : ''}`);

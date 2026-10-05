@@ -465,8 +465,11 @@ Marinero de agua dulce (hablar con el capitán).
   versiones optimistas y propiedad única. `GameHost` puede resolver una identidad verificada antes del
   HELLO, cargar su perfil, serializar guardados y esperar el último al cerrar. Ese perfil no produce un blob
   anónimo reutilizable. La reserva de cuenta es local al host; un conflicto cierra la sesión sin sobrescribir.
-  Login/importación, snapshots periódicos de economía, leases entre procesos y movimientos durables quedan
-  para P2/P3/P5/P6. Sin verificador, los personajes siguen usando las partidas firmadas anteriores.
+  P2 añade correo/contraseña en el título en línea, token verificado por un cliente Auth separado y configuración
+  pública del servidor. Importación voluntaria con firma/identidad, perfil y recibo único en una transacción;
+  el perfil existente prevalece y el legacy importado deja de restaurarse como invitado. Sin cuentas activas,
+  sigue el flujo firmado anterior; Worker sin login. Proveedor real, Google/Discord y recuperación pendientes.
+  Economía periódica, leases y movimientos durables quedan para P3/P5/P6.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.
@@ -475,7 +478,7 @@ Marinero de agua dulce (hablar con el capitán).
 
 | Dir. | Tipo | Campos | Fiable |
 |---|---|---|---|
-| C→S | `hello` | `v` (12), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB) | sí |
+| C→S | `hello` | `v` (12), `name` (≤ 16, saneado, único), `skin`, `weapon`, `save` (M4, ≤ 32 KB), `token?` (P2, ≤ 8 KB), `importSave?` | sí |
 | C→S | `input` | `seq, mx, mz` (−1..1, cuantizado 1/127), `ax, az` (punto de mira), `btn` (bits mantenidos), `prs` (bits pulsados este tick) | orden |
 | C→S | `cmd` | `{type: 'equip' \| 'unequip' \| 'salvage' \| 'open' \| 'talk' \| 'quest' \| 'buy' \| 'sell' \| 'tut' \| 'tier' \| 'pause' \| …}` | sí |
 | C→S | `ping` | `t` | no |
@@ -716,7 +719,7 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | ✅ |
 | M4.8 | «Perlas negras»: kit/circulación pulidos, candidato `0.4.8-rc.1`; aceptación física y publicación pendientes (`PLAN-M4.8.md`) | rc.1 |
-| M5 | Capa de almacenamiento P1 local; cuentas/mundo persistente, operaciones durables y perlas únicas pendientes (`PLAN-M5.md`) | P1 local |
+| M5 | Almacenamiento/cuentas e importación locales; mundo persistente, servicio real, operaciones durables y perlas únicas pendientes (`PLAN-M5.md`) | P1–P2 local |
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |
 | M8 | Construcción en pueblos: solares, talleres con recetas, almacenes, astillero, taberna, fortín (`PLAN-M8.md`) | núcleo hecho |

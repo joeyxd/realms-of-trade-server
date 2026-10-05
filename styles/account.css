@@ -1,0 +1,50 @@
+.account-launch { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: min(92vw, 42em); }
+.account-open, .account-dialog button {
+  border: 2px solid var(--ink); border-radius: 10px; padding: 7px 14px; color: var(--parch);
+  background: linear-gradient(180deg, #34465f, #1a2036); box-shadow: 0 3px 0 var(--ink);
+  font: 900 14px var(--font-ui); cursor: pointer;
+}
+.account-open:hover, .account-dialog button:hover { filter: brightness(1.14); }
+.account-open:focus-visible, .account-dialog button:focus-visible, .account-dialog input:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 3px;
+}
+.account-open:disabled, .account-dialog button:disabled, .account-dialog input:disabled { opacity: 0.55; cursor: wait; }
+.account-status { max-width: min(76vw, 32em); color: var(--parch); font-size: 12px; font-weight: 800; text-align: center; text-shadow: 0 2px 0 var(--ink); }
+.account-overlay[hidden] { display: none; }
+.account-overlay {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+  background: rgba(5, 8, 18, 0.78); backdrop-filter: blur(4px);
+}
+.account-dialog {
+  box-sizing: border-box; width: min(100%, 440px); max-height: min(100%, 680px); overflow-y: auto;
+  padding: clamp(16px, 4vw, 28px); border: 3px solid var(--ink); border-radius: 16px;
+  color: var(--parch); background: linear-gradient(155deg, #26334b, #14182b 75%);
+  box-shadow: 0 9px 0 rgba(0, 0, 0, 0.55), 0 22px 70px rgba(0, 0, 0, 0.55);
+}
+.account-dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.account-dialog h2 { margin: 0; font: 900 clamp(22px, 6vw, 30px) var(--font-display); color: #fff0c0; }
+.account-dialog .account-close { padding: 2px 10px 5px; font-size: 26px; line-height: 1; }
+.account-copy { margin: 9px 0 18px; color: #d3d5df; font-weight: 700; }
+.account-form { display: grid; gap: 14px; }
+.account-form[hidden], .account-signed[hidden], .account-import[hidden], .account-guest-note[hidden] { display: none; }
+.account-form > label { display: grid; gap: 6px; font-size: 13px; font-weight: 900; }
+.account-form input { box-sizing: border-box; width: 100%; min-height: 42px; padding: 8px 10px; border: 2px solid var(--ink); border-radius: 8px; color: var(--ink); background: var(--parch); font: 700 16px var(--font-ui); }
+.account-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 2px; }
+.account-buttons button[data-action='signup'] { color: var(--ink); background: linear-gradient(180deg, #ffe5a2, #d39b46); }
+.account-signed { display: grid; justify-items: center; gap: 10px; overflow-wrap: anywhere; }
+.account-email { margin: 6px 0; font-weight: 900; }
+.account-import { margin-top: 14px; padding: 12px; border: 1px solid rgba(255, 224, 153, 0.5); border-radius: 9px; background: rgba(255, 224, 153, 0.08); }
+.account-import label { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; font-weight: 900; line-height: 1.35; }
+.account-import input { flex: 0 0 auto; width: 18px; height: 18px; margin: 0; accent-color: #f0bd65; }
+.account-import p { margin: 8px 0 0 27px; color: #e7d6ae; font-size: 12px; line-height: 1.4; }
+.account-feedback { min-height: 1.3em; margin: 14px 0 0; color: #ffd27a; font-size: 13px; font-weight: 900; text-align: center; }
+.account-guest-note { margin: 6px 0 0; color: #b9bdcb; font-size: 12px; text-align: center; }
+@media (max-height: 450px) {
+  .account-overlay { padding: 8px; }
+  .account-dialog { max-height: calc(100dvh - 16px); padding: 12px 16px; }
+  .account-copy { margin: 4px 0 8px; }
+  .account-form { gap: 8px; }
+  .account-form input { min-height: 36px; }
+  .account-import { margin-top: 7px; padding: 8px; }
+  .account-feedback { margin-top: 6px; }
+}

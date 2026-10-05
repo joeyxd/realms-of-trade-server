@@ -143,15 +143,22 @@ son los siguientes cortes. [Evidencia y límites de D04 P1](docs/delivery/d04p1-
   El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
   tras reinicios corresponde a M5. Protocolo **12**: cliente y servidor en línea deben actualizarse juntos.
 
-### Base de M5 — almacenamiento P1
+### Base de M5 — almacenamiento y cuentas P1–P2
 
 Memoria y Supabase comparten carga/guardado de perfiles y mundo, versiones optimistas y reclamación/liberación
 de objetos únicos. El host carga una cuenta verificada antes de crear el personaje, evita sesiones simultáneas
 en el mismo proceso y espera el guardado final al cerrar. [Contrato y pruebas D07a](docs/delivery/d07a-store.md).
 
-El login y el mundo persistente siguen pendientes. `npm start` conserva partidas anónimas firmadas; configurar
-Supabase selecciona el adaptador, pero aún no activa cuentas. La migración fue probada localmente, sin proyecto
-remoto ni despliegue. No convierte el ledger actual de perlas ni sus transferencias en operaciones durables.
+El título en línea incluye acceso por correo/contraseña, creación de cuenta y cierre de sesión. Añadir
+`SUPABASE_PUBLIC_KEY` al par `SUPABASE_URL`/`SUPABASE_SERVICE_KEY` activa cuentas; el par solo conserva el modo
+anónimo. El servidor verifica el token antes de cargar el perfil. Una partida firmada con identidad puede
+importarse una vez al crear el personaje; la cuenta existente prevalece y el pirata importado deja de entrar
+como invitado. [Activación y límites](docs/DEPLOY.md), [pruebas D07b](docs/delivery/d07b-accounts.md).
+
+Las migraciones y Auth fueron probados localmente con un proveedor simulado. La conexión al proyecto remoto
+responde; sus migraciones y aceptación real siguen pendientes. No hay despliegue de cuentas.
+El mundo persistente, Google/Discord, recuperación de contraseña, leases y transferencias durables siguen
+pendientes. El Worker mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 
 ### Qué incluye M1
 
