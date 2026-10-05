@@ -11,6 +11,9 @@ migración SQL y ciclo de perfiles del host. [Evidencia y contrato](docs/deliver
 Checkpoint D07b, base inicial `da757d3`, integrado sobre `a01294c`: **P2 cuentas e importación aceptados
 localmente**. Credenciales configuradas y API real consultada; migraciones/aceptación del proyecto y P3
 siguen pendientes. [Contrato y evidencia](docs/delivery/d07b-accounts.md).
+Checkpoint D07c: acceso de cómic, registro/confirmación y selector de cinco aspectos implementados.
+Migraciones aplicadas; Auth, permisos y perfil tras reiniciar comprobados con un canario real aislado.
+Correo humano y economía P3 pendientes. [UI y pruebas](docs/delivery/d07c-comic-account.md).
 
 ## 1. Decisión: Supabase (propuesta del autor)
 

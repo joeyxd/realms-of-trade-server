@@ -267,7 +267,17 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
-  const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, { hasLegacySave: () => !!loadSave(saveSlot()) }) : null;
+  const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, {
+    hasLegacySave: () => !!loadSave(saveSlot()),
+    looks: SKINS.slice(0, 5).map((look, id) => ({ id, name: look.name, color: '#' + look.swatch[0].toString(16).padStart(6, '0') })),
+    getCharacter: () => ({ name: settings.name, skin: settings.skin }),
+    onCharacterChange: ({ name, skin }) => {
+      if (typeof name === 'string') { settings.name = name.slice(0, 16); title.name.value = settings.name; }
+      if (Number.isInteger(skin) && skin >= 0 && skin < 5) title.selectSkin(skin);
+      saveSettings();
+    },
+    onReady: () => startPlaying(),
+  }) : null;
   let accountReady;
   const initializeAccount = () => accountReady ??= accountAuth.bootstrap({ online: st.online });
   bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
@@ -1097,6 +1107,7 @@ async function boot() {
   await new Promise((r) => setTimeout(r, 60));
   await world.prewarm().catch((e) => console.warn('prewarm', e));
   safe('portraits', () => title.setPortraits(portrait));
+  safe('account portraits', () => accountPanel?.setPortraits(portrait));
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());

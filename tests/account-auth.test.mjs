@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { AccountAuth } from '../src/client/accountAuth.js';
 
 function authHarness({ config = { enabled: true, url: 'https://auth.example.test', publicKey: 'public-test-key' }, fetchFailure = false, sdkFailure = false } = {}) {
-  const calls = { config: 0, session: 0, signIn: [], signUp: [], signOut: [], clientOptions: null, created: 0 };
+  const calls = { config: 0, session: 0, signIn: [], signUp: [], resend: [], signOut: [], clientOptions: null, created: 0 };
   let session = null;
   const authApi = {
     onAuthStateChange(callback) { this.listener = callback; return { data: { subscription: { unsubscribe() {} } } }; },
@@ -15,6 +15,7 @@ function authHarness({ config = { enabled: true, url: 'https://auth.example.test
       return { data: { session }, error: null };
     },
     async signUp(credentials) { calls.signUp.push(credentials); return { data: { session: null, user: { email: credentials.email } }, error: null }; },
+    async resend(request) { calls.resend.push(request); return { data: {}, error: null }; },
     async signOut(options) { calls.signOut.push(options); session = null; this.listener?.('SIGNED_OUT', null); return { error: null }; },
   };
   const fetchImpl = async (url, options) => {
@@ -79,11 +80,79 @@ test('signup reports confirmation safely and logout only ends this browser sessi
   assert.deepEqual(await controller.signup('new@example.test', 'temporary-password'), { ok: true, confirmationPending: true });
   assert.equal(controller.state.signedIn, false);
   assert.equal(calls.signUp[0].password, 'temporary-password');
+  assert.deepEqual(calls.signUp[0].options, { emailRedirectTo: 'https://game.example.test/' });
   await controller.login('new@example.test', 'temporary-password');
   assert.deepEqual(await controller.logout(), { ok: true });
   assert.deepEqual(calls.signOut, [{ scope: 'local' }]);
   assert.equal(controller.state.signedIn, false);
   assert.equal(controller.state.email, '');
+});
+
+test('signup redirect and resend use the game origin and trimmed email', async () => {
+  const { controller, calls } = authHarness();
+  await controller.bootstrap({ online: true });
+
+  assert.deepEqual(await controller.signup(' new@example.test ', 'safe-password'), { ok: true, confirmationPending: true });
+  assert.equal(calls.signUp[0].email, 'new@example.test');
+  assert.deepEqual(calls.signUp[0].options, { emailRedirectTo: 'https://game.example.test/' });
+
+  assert.deepEqual(await controller.resend(' new@example.test '), { ok: true });
+  assert.deepEqual(calls.resend, [{
+    type: 'signup',
+    email: 'new@example.test',
+    options: { emailRedirectTo: 'https://game.example.test/' },
+  }]);
+});
+
+test('known provider codes map to fixed Spanish errors and arbitrary provider text stays hidden', async () => {
+  const { controller } = authHarness();
+  await controller.bootstrap({ online: true });
+  const auth = controller.client.auth;
+
+  auth.signInWithPassword = async () => ({ error: Object.assign(new Error('private provider detail'), { code: 'email_not_confirmed' }) });
+  assert.deepEqual(await controller.login('pirate@example.test', 'password'), { ok: false });
+  assert.equal(controller.state.error, 'Confirma tu correo antes de iniciar sesión.');
+
+  auth.signUp = async () => ({ error: Object.assign(new Error('secret policy text'), { code: 'weak_password' }) });
+  assert.deepEqual(await controller.signup('pirate@example.test', 'weak'), { ok: false });
+  assert.equal(controller.state.error, 'Elige una contraseña más segura.');
+
+  auth.resend = async () => ({ error: Object.assign(new Error('email enumeration detail'), { code: 'over_email_send_rate_limit' }) });
+  assert.deepEqual(await controller.resend('pirate@example.test'), { ok: false });
+  assert.equal(controller.state.error, 'Demasiados intentos. Espera un momento y vuelve a probar.');
+  assert.equal(JSON.stringify(controller.state).includes('private provider detail'), false);
+  assert.equal(JSON.stringify(controller.state).includes('secret policy text'), false);
+  assert.equal(JSON.stringify(controller.state).includes('email enumeration detail'), false);
+
+  auth.resend = async () => ({ error: Object.assign(new Error('request throttle detail'), { code: 'over_request_rate_limit' }) });
+  assert.deepEqual(await controller.resend('pirate@example.test'), { ok: false });
+  assert.equal(controller.state.error, 'Demasiados intentos. Espera un momento y vuelve a probar.');
+  assert.equal(JSON.stringify(controller.state).includes('request throttle detail'), false);
+
+  auth.signUp = async () => ({ error: Object.assign(new Error('account exists'), { code: 'user_already_exists' }) });
+  assert.deepEqual(await controller.signup('known@example.test', 'password'), { ok: false });
+  assert.equal(controller.state.error, 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.');
+});
+
+test('resend reports a fixed failure when the installed Auth SDK has no resend method', async () => {
+  const { controller } = authHarness();
+  await controller.bootstrap({ online: true });
+  delete controller.client.auth.resend;
+  assert.deepEqual(await controller.resend('new@example.test'), { ok: false });
+  assert.equal(controller.state.error, 'No se pudo reenviar el correo. Inténtalo de nuevo.');
+});
+
+test('malformed auth success responses fail with fixed errors', async () => {
+  const { controller } = authHarness();
+  await controller.bootstrap({ online: true });
+  controller.client.auth.signInWithPassword = async () => ({ data: { session: { access_token: '' } }, error: null });
+  assert.deepEqual(await controller.login('pirate@example.test', 'password'), { ok: false });
+  assert.equal(controller.state.error, 'No se pudo iniciar sesión. Revisa el correo y la contraseña.');
+  assert.equal(controller.state.signedIn, false);
+
+  controller.client.auth.signUp = async () => ({ data: { session: null }, error: null });
+  assert.deepEqual(await controller.signup('new@example.test', 'password'), { ok: false });
+  assert.equal(controller.state.error, 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.');
 });
 
 test('token fails closed when a known session disappears or the SDK cannot validate it', async () => {

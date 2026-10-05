@@ -90,6 +90,9 @@ Referencias primarias revisadas: [verificar usuario](https://supabase.com/docs/r
 
 ## Configuración del proyecto real
 
+Este apartado conserva el probe inicial, previo a ejecutar SQL. El autor ya aplicó las migraciones y el
+[corte D07c](d07c-comic-account.md) registra su verificación y el canario real de Auth/persistencia.
+
 El autor configuró URL, clave pública y servicio en el `.env` local ignorado por Git. El entrypoint lo carga,
 con prioridad para variables del proceso; no se registraron las claves en código, documentación ni evidencia.
 La configuración habilita cuentas y selecciona Supabase. Consultas de solo lectura al proyecto real:

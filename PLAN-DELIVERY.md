@@ -29,6 +29,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   importación única de partida firmada con identidad. Pruebas 323/323 y UI contra Auth local simulado;
   conexión real comprobada, migraciones/aceptación Supabase, economía P3 y publicación pendientes.
   Integrado sobre M6 P1 `a01294c`. [Informe D07b](docs/delivery/d07b-accounts.md).
+- Checkpoint posterior D07c: modal de cómic y selector de aspectos/nombre, 43/43 pruebas pertinentes y UI
+  desktop/móvil horizontal/vertical. SQL aplicado, Auth/DB reales verificados con fixture eliminado al cerrar;
+  entrega de correo, economía P3 y publicación pendientes. [Informe D07c](docs/delivery/d07c-comic-account.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).

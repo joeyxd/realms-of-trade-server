@@ -155,8 +155,10 @@ anónimo. El servidor verifica el token antes de cargar el perfil. Una partida f
 importarse una vez al crear el personaje; la cuenta existente prevalece y el pirata importado deja de entrar
 como invitado. [Activación y límites](docs/DEPLOY.md), [pruebas D07b](docs/delivery/d07b-accounts.md).
 
-Las migraciones y Auth fueron probados localmente con un proveedor simulado. La conexión al proyecto remoto
-responde; sus migraciones y aceptación real siguen pendientes. No hay despliegue de cuentas.
+Las migraciones y Auth fueron probados localmente con un proveedor simulado. No hay despliegue de cuentas.
+Migraciones aplicadas y canario real de confirmación/login, permisos y perfil tras reiniciar
+aprobado. El acceso ahora usa un dossier de cómic y selector de cinco aspectos; correo humano/publicación
+pendientes. [Resultado D07c](docs/delivery/d07c-comic-account.md).
 El mundo persistente, Google/Discord, recuperación de contraseña, leases y transferencias durables siguen
 pendientes. El Worker mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 

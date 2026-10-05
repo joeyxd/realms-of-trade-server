@@ -93,7 +93,12 @@ firmadas de ese pirata quedan retiradas del flujo invitado del servidor con cuen
 y cuentas cubre un solo proceso: no ejecutar varios hosts hasta implementar leases P5. El JSON de economía y el
 ledger de perlas todavía no están conectados a persistencia; P3/P4/P6 siguen pendientes.
 
-No se aplicaron estas migraciones a un proyecto real ni hubo despliegue. Evidencia local y límites:
+Las migraciones ya se aplicaron al proyecto local configurado por el autor. Un canario aislado comprobó
+confirmación Auth, login por contraseña, permisos y perfil tras reiniciar; entrega de correo y despliegue
+siguen pendientes. El registro/reenvío solicitan `emailRedirectTo` con el HTTP base del juego: añadir esa URL
+en Auth → URL Configuration (desarrollo: `http://localhost:5173/`; producción: la URL HTTPS del juego).
+El selector cambia nombre/aspecto de esta partida; todavía no sincroniza esos ajustes entre dispositivos.
+Evidencia: [D07c UI y canario real](delivery/d07c-comic-account.md). Contrato previo y límites:
 [D07a almacenamiento](delivery/d07a-store.md), [D07b cuentas](delivery/d07b-accounts.md).
 
 Para el mundo persistente de M5 (personajes,

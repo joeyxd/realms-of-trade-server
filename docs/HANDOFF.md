@@ -71,14 +71,21 @@ autor.
 
 ### M5 P2 — cuentas e importación D07b (2026-10-05)
 
+Actualización D07c: [dossier de cómic y selector](delivery/d07c-comic-account.md). Login/registro separados,
+confirmación/reenvío, teclado/foco, cinco retratos reales y nombre sincronizado con el HELLO. Un perfil de progreso
+por cuenta; nombre/aspecto siguen siendo preferencias locales, creador/múltiples personajes posteriores.
+43/43 pruebas pertinentes y recorrido desktop/móvil horizontal/vertical sin errores JS. 001/002 aplicadas:
+canario real de alta por enlace/OTP, login, RPC denegada al cliente y perfil tras reiniciar, con limpieza del fixture.
+Entrega de correo humano, P3 economía y publicación pendientes. Vista previa local en `http://localhost:5173/`.
+
 - Base inicial `da757d3`; integrado sobre `a01294c`, protocolo 13/`0.6.0-alpha.1` de M6 P1 conservados.
   HELLO con token/importación opcionales. [Informe D07b](delivery/d07b-accounts.md).
 - Correo/contraseña, registro/confirmación, sesión SDK renovable y cierre local en título online. Worker sin login.
   Configuración pública desde servidor; verificador Auth separado de la clave de servicio. Token inválido no entra
   como invitado. Errores de sesión/almacenamiento/importación tienen mensajes propios y códigos fijos.
 - El trio URL/servicio/pública activa cuentas en `npm start`; par sin pública conserva adaptador sin cuentas.
-  `.env` local ignorado configurado por el autor; conexión real responde, pero tablas/RPCs aún no están en la API.
-  Aplicar 001 y 002 explícitamente; SQL conjunto en `.scratch/m5-supabase-setup.sql`. Sin correo, push ni despliegue.
+  `.env` local ignorado configurado por el autor; 001/002 aplicadas y tablas/RPCs disponibles.
+  Consultas de servicio 200 y acceso público denegado; D07c completa el canario Auth/DB. Sin push ni despliegue.
 - Importación opt-in al crear personaje: HMAC e identidad obligatorios; perfil/recibo único se guardan juntos.
   Cuenta existente prevalece, versiones de un legacy no se importan en otra cuenta y dejan de entrar como invitado.
   Reserva de cuenta/legacy de un proceso; leases/concurrencia de conexiones independientes aún pendientes.

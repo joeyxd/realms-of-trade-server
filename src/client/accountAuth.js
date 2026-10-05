@@ -8,8 +8,16 @@ const ERRORS = Object.freeze({
   sdk: 'No se pudo iniciar el servicio de cuentas. Puedes jugar como invitado.',
   credentials: 'No se pudo iniciar sesión. Revisa el correo y la contraseña.',
   signup: 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.',
+  resend: 'No se pudo reenviar el correo. Inténtalo de nuevo.',
   logout: 'No se pudo cerrar la sesión. Inténtalo de nuevo.',
   session: 'No se pudo validar la sesión. Inténtalo de nuevo.',
+});
+
+const PROVIDER_ERRORS = Object.freeze({
+  email_not_confirmed: 'Confirma tu correo antes de iniciar sesión.',
+  weak_password: 'Elige una contraseña más segura.',
+  over_email_send_rate_limit: 'Demasiados intentos. Espera un momento y vuelve a probar.',
+  over_request_rate_limit: 'Demasiados intentos. Espera un momento y vuelve a probar.',
 });
 
 function normalizedBase(value) {
@@ -152,6 +160,8 @@ export class AccountAuth {
     return true;
   }
 
+  dismissError() { this.publish({ error: '' }); }
+
   async withBusy(failKey, operation, action) {
     if (this.state.busy) return { ok: false };
     this.publish({ busy: true, error: '' });
@@ -160,8 +170,10 @@ export class AccountAuth {
       const result = await action(client);
       if (result?.error) throw result.error;
       return { ok: true, ...operation(result) };
-    } catch {
-      this.publish({ error: ERRORS[failKey] });
+    } catch (error) {
+      const code = typeof error?.code === 'string' ? error.code : '';
+      const message = code === 'user_already_exists' && failKey === 'signup' ? ERRORS.signup : (PROVIDER_ERRORS[code] || ERRORS[failKey]);
+      this.publish({ error: message });
       return { ok: false };
     } finally {
       this.publish({ busy: false });
@@ -170,8 +182,10 @@ export class AccountAuth {
 
   login(email, password) {
     return this.withBusy('credentials', (result) => {
+      const session = result?.data?.session;
+      if (typeof session?.access_token !== 'string' || !session.access_token) throw new Error('session');
       this.publish({ guestChoice: false });
-      this.applySession(result?.data?.session || null);
+      this.applySession(session);
       return {};
     }, (client) => client.auth.signInWithPassword({ email: String(email || '').trim(), password: String(password || '') }));
   }
@@ -179,10 +193,28 @@ export class AccountAuth {
   signup(email, password) {
     return this.withBusy('signup', (result) => {
       const session = result?.data?.session || null;
+      const hasUser = result?.data?.user && typeof result.data.user === 'object';
+      const hasSession = typeof session?.access_token === 'string' && Boolean(session.access_token);
+      if (!hasUser && !hasSession) throw new Error('signup');
       this.publish({ guestChoice: false });
       this.applySession(session);
       return { confirmationPending: !session };
-    }, (client) => client.auth.signUp({ email: String(email || '').trim(), password: String(password || '') }));
+    }, (client) => client.auth.signUp({
+      email: String(email || '').trim(),
+      password: String(password || ''),
+      options: { emailRedirectTo: this.httpBase },
+    }));
+  }
+
+  resend(email) {
+    return this.withBusy('resend', () => ({}), (client) => {
+      if (typeof client.auth.resend !== 'function') throw new Error('resend');
+      return client.auth.resend({
+        type: 'signup',
+        email: String(email || '').trim(),
+        options: { emailRedirectTo: this.httpBase },
+      });
+    });
   }
 
   async logout() {
