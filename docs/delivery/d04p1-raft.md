@@ -68,3 +68,28 @@ Servidor, tests, docs, herramientas y configuración privada quedan fuera. [Prue
 El recorrido high/día del bundle confirmó
 una balsa, caja FAB y guardado/reload con el mismo ID, sin errores de página/juego. Capturas inspeccionadas
 en `C:\DEV\real of trade\raft-d04\shots\review\d04p1\artifact-high-day`.
+
+## Integración con el checkout de continuidad
+
+Los commits `bfe377d` y `a01294c` se integraron en `claude/loving-lovelace-ptbif7`, conservando los cambios
+M5 P2 sin incluirlos en estos commits. Se combinaron seis archivos compartidos; 22 archivos ajenos conservaron
+sus bytes durante la integración y no quedó trabajo ajeno staged. El mapper de errores de cuentas más completo
+prevalece sobre el mapper simple del corte aislado. [Registro y verificación](d04p1-integration.json).
+
+Después de combinar, **323/323 pruebas**: regresión 321/321 y red 2/2. El recorrido real del Worker en el
+checkout principal también conservó balsa/caja/ID al recargar, con capturas inspeccionadas y sin errores
+de página/juego. Esto comprueba compatibilidad con el árbol de cuentas local en curso; no acepta un servicio
+Auth remoto. Logs y fotos: `shots/review/d04p1/integration-*`. El artefacto fijado sigue siendo el corte D04
+aislado descrito arriba; durante estas pruebas el checkout principal conservaba cambios ajenos pendientes.
+
+Después de la regresión, cuentas ajustó el tween de entrada del botón JUGAR e indentó el bloque de login.
+Simulación/servidor/tests conservaron su contenido; una copia fija de 138 archivos del cliente combinado
+permitió comprobar también móvil low con ese ajuste, sin errores de página/juego y con el mismo ID tras reload.
+Su lista de hashes y capturas quedan en el registro de integración; no es un artefacto para publicar.
+
+Preparación P2 por lectura Luna: `World.applyCommand → stepMover → moveWithCollision` es común a autoridad
+y predicción; `walkStep`/`canStand` consultan `map.groundAt`, `onDock` y colliders estáticos. La siguiente misión
+necesita una consulta compartida de superficies/bloqueos de balsas alimentada por el Map autoritativo y la
+lista pública que llega antes del replay. Antes de escribir, el principal fija selección de nivel/transiciones,
+puertas/barandillas y acceso desde muelle; no reconstruir a ciegas el hash estático ni elegir siempre el piso
+más alto. P2 requiere pruebas de recorrido, agua/huecos, paredes, dash, escaleras y predicción; no está aceptado.
