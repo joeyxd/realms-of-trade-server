@@ -64,7 +64,13 @@ reinicia y muestra `/status`). Las partidas guardadas viven en el navegador de c
 
 ## Más adelante: base de datos y servicios (M5)
 
-Hoy no hay base de datos: cada partida va firmada en el navegador. Para el mundo persistente de M5 (personajes,
+P1 ya incluye `server/store.mjs` (memoria/Supabase) y `server/migrations/001_store.sql`, probados localmente.
+`npm start` selecciona memoria sin `SUPABASE_URL`/`SUPABASE_SERVICE_KEY`; exige ambas si se configura una.
+La selección del adaptador aún no activa perfiles de cuentas: falta P2 y su verificador de identidad. Las
+partidas anónimas siguen firmadas en el navegador. No se aplicó la migración a una base real ni hubo despliegue.
+Contrato, activación pendiente y límites en [D07a](delivery/d07a-store.md).
+
+Para el mundo persistente de M5 (personajes,
 inventario, perlas únicas, economía, barcos), la propuesta es **Supabase**: Postgres con Auth (cuentas), Realtime
 para chat y presencia (en lugar de Redis) y almacenamiento. El combate sigue en nuestros procesos Node. Solo el
 servidor escribe en las tablas del juego, con la clave de servicio; el cliente solo lee lo público (reglas RLS).

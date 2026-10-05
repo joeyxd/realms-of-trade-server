@@ -6,6 +6,10 @@ Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09
 > M5 lo pasa a una base de datos en el servidor: cuentas, personajes, inventario, economía, y lo que necesita ser
 > único (perlas legendarias, solares) sin duplicados.
 
+Checkpoint D07a, base `61a34a5`: **P1 implementado y probado localmente**. Memoria, adaptador Supabase,
+migración SQL y ciclo de perfiles del host; P2/P3 y conexión a un proyecto real siguen pendientes.
+`npm start` conserva personajes anónimos con partidas firmadas. [Evidencia y contrato](docs/delivery/d07a-store.md).
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
@@ -45,9 +49,13 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 
 ## 3. Pasos
 
-- [ ] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
-  saveWorld, claimUnique, releaseUnique }` con dos implementaciones: `memory` (tests, solo) y `supabase`
-  (`@supabase/supabase-js`). `GameHost` usa la interfaz; sin variables de Supabase, la de hoy (partidas firmadas).
+- [x] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
+  saveWorld, claimUnique, releaseUnique }` con dos implementaciones: `memory` (tests/host sin DB) y `supabase`
+  (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
+  servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
+  `storeFromEnv` selecciona memoria sin credenciales y rechaza configuración incompleta. El entrypoint lo usa,
+  pero configurar Supabase aún no habilita cuentas. Migración `server/migrations/001_store.sql` probada con
+  PostgreSQL embebido; proyecto real/PostgREST y concurrencia de conexiones independientes por verificar.
 - [ ] **P2 Cuentas.** Inicio de sesión en el título (Supabase Auth en el cliente), el token en el `hello`; el
   servidor lo verifica y carga el perfil. Migración: un jugador con partida firmada la sube una vez.
 - [ ] **P3 Economía persistente.** `world_state` cada 60 s y al apagar; al arrancar, `Economy.from()`.
@@ -62,4 +70,9 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 ## 4. Notas
 
 - Los tests usan `memory`: ninguna prueba necesita red.
+- La suite SQL usa PGlite y el SDK con un transporte local; no necesita credenciales ni red externa.
+- P1 impide dos autoridades de un perfil dentro del host y rechaza escrituras con versión atrasada. Las
+  reservas de sesión todavía no son leases entre procesos; P5 debe resolverlos antes de varias zonas.
+- Los métodos de propiedad única aún no sustituyen el ledger de perlas del juego. P4/P6 deben integrar
+  operaciones durables de perfiles, suelo y propietarios; no activar legendarias ni riesgo persistente con P1.
 - Respaldo diario de la base (Supabase lo hace en los planes de pago; si no, `pg_dump` programado).

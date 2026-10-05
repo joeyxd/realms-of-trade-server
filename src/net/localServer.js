@@ -28,9 +28,10 @@ const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
+    this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
@@ -80,7 +81,11 @@ export class LocalServer {
 
   disconnect(clientId) {
     const c = this.clients.get(clientId);
-    if (c && c.entity) { detachProfile(this.world, c.entity); this.world.despawn(c.entity); this.flushEvents(); }
+    if (c && c.entity) {
+      const p = detachProfile(this.world, c.entity);
+      if (p && this.onSave) this.onSave(clientId, p);
+      this.world.despawn(c.entity); this.flushEvents();
+    }
     this.clients.delete(clientId);
   }
 
@@ -100,7 +105,7 @@ export class LocalServer {
     for (let k = 2; ; k++) { const n = name.slice(0, 13) + ' ' + k; if (!taken.has(n.toLowerCase())) return n; }
   }
 
-  receive(clientId, msg) {
+  receive(clientId, msg, trustedProfile = undefined) {
     const c = this.clients.get(clientId);
     if (!c || !msg) return;
     switch (msg.t) {
@@ -113,15 +118,20 @@ export class LocalServer {
         // The weapon you last used (the client remembers it); after that you change it at a rack.
         const weapon = Math.max(0, Math.min(WEAPON_KINDS.length - 1, msg.weapon | 0));
         // Your saved game, if it is one of ours; otherwise a fresh start (and you are told why).
-        const saved = typeof msg.save === 'string' && msg.save.length <= MAX_SAVE && msg.save ? this.saves.load(msg.save) : null;
+        // The third argument is host-owned, never read from the message. Account imports belong to P2;
+        // a browser's old signed blob cannot overwrite a stored account profile.
+        const saved = trustedProfile === undefined
+          ? (typeof msg.save === 'string' && msg.save.length <= MAX_SAVE && msg.save ? this.saves.load(msg.save) : null)
+          : trustedProfile;
         const prof = saved || newProfile({ weapon });
+        c.serverProfile = trustedProfile !== undefined;
         c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
         attachProfile(this.world, c.entity, prof);
         startQuests(this.world, c.entity);
         // The Cala's public loot already on the ground (M4.5).
         const pub = publicDrops(this.world);
         if (pub.length) this.world.emit({ type: 'loot', to: c.entity, e: c.entity, pub: 1, late: 1, fx: pub[0].x, fz: pub[0].z, drops: pub });
-        if (msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
+        if (trustedProfile === undefined && msg.save && !saved) this.world.emit({ type: 'note', to: c.entity, e: c.entity, code: 'save' });
         c.saveAt = this.world.tick + 1;
         // Own spawn must precede welcome (name, skin and weapon); welcome must precede private loot.
         const birth = this.world.events.findIndex((ev) => ev.type === 'spawn' && ev.id === c.entity);
@@ -216,6 +226,9 @@ export class LocalServer {
     c.saveAt = null;
     const p = syncProfile(this.world, c.entity);
     if (!p) return;
+    if (this.onSave) this.onSave(id, p);
+    // An account snapshot must not become a reusable anonymous save. P2's one-time import is separate.
+    if (c.serverProfile) return;
     const blob = this.saves.store(p);
     if (blob === c.lastBlob) return;
     c.lastBlob = blob;

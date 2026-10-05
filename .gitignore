@@ -1,6 +1,7 @@
 node_modules/
 dist/
 shots/
+.scratch/
 .DS_Store
 *.log
 .claude/worktrees/

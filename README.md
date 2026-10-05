@@ -135,6 +135,16 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
   El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
   tras reinicios corresponde a M5. Protocolo **12**: cliente y servidor en línea deben actualizarse juntos.
 
+### Base de M5 — almacenamiento P1
+
+Memoria y Supabase comparten carga/guardado de perfiles y mundo, versiones optimistas y reclamación/liberación
+de objetos únicos. El host carga una cuenta verificada antes de crear el personaje, evita sesiones simultáneas
+en el mismo proceso y espera el guardado final al cerrar. [Contrato y pruebas D07a](docs/delivery/d07a-store.md).
+
+El login y el mundo persistente siguen pendientes. `npm start` conserva partidas anónimas firmadas; configurar
+Supabase selecciona el adaptador, pero aún no activa cuentas. La migración fue probada localmente, sin proyecto
+remoto ni despliegue. No convierte el ledger actual de perlas ni sus transferencias en operaciones durables.
+
 ### Qué incluye M1
 
 - **Isla de 400×400 u** generada con semilla: playa, Aldea Coralina (6 chozas, fogata, puesto, faroles, muelle con

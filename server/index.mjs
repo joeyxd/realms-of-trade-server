@@ -8,6 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GameHost } from './host.mjs';
 import { hmacSaves, saveSecret } from './saves.mjs';
+import { storeFromEnv } from './store.mjs';
 import { GAME } from '../src/data/meta.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,10 +21,11 @@ const MIME = {
 // Only the client is served: index.html, src/, styles/ and assets/ (imported models; never server/, tools/, .git…).
 const PUBLIC = ['src', 'styles', 'assets'];
 
-export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret } = {}) {
+export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
+  store, resolvePlayer, joinTimeoutMs } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves });
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs });
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
@@ -64,7 +66,10 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     listen() {
       return new Promise((resolve) => server.listen(port, host, () => { game.start(); resolve(server.address().port); }));
     },
-    close() { game.close(); return new Promise((resolve) => server.close(() => resolve())); },
+    async close() {
+      const transport = new Promise((resolve) => server.close(() => resolve()));
+      await Promise.all([game.close(), transport]);
+    },
   };
 }
 
@@ -75,6 +80,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     port: num(env.PORT, 5173), host: env.HOST || '0.0.0.0', bots: num(env.BOTS, 3), maxPlayers: num(env.MAX_PLAYERS, 4),
     dev: env.DEV === '1', lagMs: num(env.LAG_MS, 0), jitterMs: num(env.JITTER_MS, 0),
     origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
+    store: storeFromEnv(env), // Account admission is inactive until P2 supplies the verifier.
   });
   const port = await gs.listen();
   console.log(`${GAME.title} v${GAME.version} · http://localhost:${port} · máx ${gs.game.maxPlayers} jugadores${env.DEV === '1' ? ' · DEV' : ''}${gs.game.lag.ms ? ` · lag ${gs.game.lag.ms}±${gs.game.lag.jitter} ms` : ''}`);

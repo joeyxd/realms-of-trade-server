@@ -461,6 +461,12 @@ Marinero de agua dulce (hablar con el capitán).
   `MSG.SAVE` (a los 3 s de un cambio, al momento en lo importante y un repaso cada 10 s; solo si cambió). En Node el
   blob es `base64url(json).firma` con HMAC-SHA256 (`SAVE_SECRET`); en el Worker es el JSON. Todo perfil cargado se
   sanea (bases y afijos conocidos, rangos, misiones y banderas). El loot sale de `world.lootRng` (otra semilla).
+- **Almacenamiento M5 P1:** `server/store.mjs` proporciona memoria y Supabase con el mismo contrato de
+  versiones optimistas y propiedad única. `GameHost` puede resolver una identidad verificada antes del
+  HELLO, cargar su perfil, serializar guardados y esperar el último al cerrar. Ese perfil no produce un blob
+  anónimo reutilizable. La reserva de cuenta es local al host; un conflicto cierra la sesión sin sobrescribir.
+  Login/importación, snapshots periódicos de economía, leases entre procesos y movimientos durables quedan
+  para P2/P3/P5/P6. Sin verificador, los personajes siguen usando las partidas firmadas anteriores.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.
@@ -710,7 +716,7 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M4.6 | «Tinta»: móvil siempre en horizontal (escenario girado), botones táctiles v2, contornos con peso, sombras de cómic con trama, superficies pintadas, etalonaje (`PLAN-M4.6.md`) | ✅ |
 | M4.7 | «Tatuajes»: habilidades equipables en Q / E (Tromba, Abordaje, Timón) con rangos y formas, y el cómic Ultra para GPU potentes (`PLAN-M4.7.md`) | ✅ |
 | M4.8 | «Perlas negras»: kit/circulación pulidos, candidato `0.4.8-rc.1`; aceptación física y publicación pendientes (`PLAN-M4.8.md`) | rc.1 |
-| M5 | Mundo persistente con Supabase: cuentas, perfiles y economía en base de datos, sin duplicados; perlas legendarias únicas con cartel de SE BUSCA (`PLAN-M5.md`) | plan |
+| M5 | Capa de almacenamiento P1 local; cuentas/mundo persistente, operaciones durables y perlas únicas pendientes (`PLAN-M5.md`) | P1 local |
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |
 | M8 | Construcción en pueblos: solares, talleres con recetas, almacenes, astillero, taberna, fortín (`PLAN-M8.md`) | núcleo hecho |

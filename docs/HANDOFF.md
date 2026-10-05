@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (271 tests, incluyendo 17 de perlas, 14 de Escarcha, 12 de Tormenta y 12 de Tinta)
+tests/        node --test (regresión y contratos de simulación, red y almacenamiento)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -48,7 +48,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1 local**: memoria/Supabase y ciclo de perfiles; cuentas/mundo/servicio real pendientes (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -68,6 +68,25 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
+
+### M5 P1 — base de almacenamiento D07a
+
+- Base `61a34a5`, protocolo 12 y versión cliente `0.4.8-rc.1` conservados. [Informe D07a](delivery/d07a-store.md).
+- `server/store.mjs`: memoria y Supabase, CAS de perfiles/mundo y propiedad única por generación.
+  `server/migrations/001_store.sql`: RPCs solo para `service_role`, RLS sin permisos de cliente.
+- Host con verificador de identidad inyectado: carga antes del HELLO, reserva de cuenta/capacidad, cierre de
+  joins cancelados, snapshots aislados, escrituras serializadas y guardado final esperado al cerrar.
+  Un conflicto cierra la sesión sin sobrescribir. Las cuentas no reciben blobs reutilizables como anónimos.
+- `npm start` selecciona adaptador con `storeFromEnv`, pero aún no tiene verificador/login P2. Sin cuentas
+  activas, siguen las partidas firmadas anteriores. Configuración parcial de Supabase falla al arrancar.
+- Suite SQL ejecuta la migración en PGlite y usa el SDK con transporte local; verifica permisos y reaplicación.
+  No demuestra concurrencia de conexiones independientes ni aceptación de un proyecto real/PostgREST.
+- Regresión **296/296 + 2/2 red = 298/298**, instalación limpia y selección CLI memory/Supabase/rechazo
+  parcial comprobados. Logs `shots/review/m5-tests.log`, `m5-net.log`, `m5-cli.log`; resumen en D07a.
+- P2 cuentas/importación y P3 economía siguen pendientes. P4/P6 aún deben conectar ledger, perfiles y suelo
+  mediante transacciones durables; P5 requiere leases entre procesos. P1 no activa legendarias ni pérdidas navales.
+- Próximo paso en M5: P2, verificación de token y login con configuración pública/privada separada; después
+  aceptación del proyecto real y migración única. D04 sigue preparado para cuando el autor retome construcción.
 
 ### M4.8 — candidato P5 (`0.4.8-rc.1`)
 
