@@ -41,6 +41,7 @@ import { Rewards } from './ui/rewards.js';
 import { CharPanel } from './ui/charpanel.js';
 import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
+import { RaftEditor } from './ui/raftEditor.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -160,8 +161,8 @@ async function boot() {
   const hud = new Hud($('#hud'), {
     onSettings: () => openPause('settings'),
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
-    onBag: () => charPanel.toggle('gear'),
-    onMap: () => mapView.toggle(),
+    onBag: () => { raftEditor.close(); charPanel.toggle('gear'); },
+    onMap: () => { raftEditor.close(); mapView.toggle(); },
   });
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
@@ -183,9 +184,24 @@ async function boot() {
   });
   const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }) });
   const mapView = new MapView($('#mapview'), map);
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) fn(); };
+  const raftEditor = new RaftEditor({
+    parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
+    profile: () => client?.profile, rafts: () => client?.pred.rafts,
+    raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer,
+    player: () => ps, send: sendCmd,
+    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead,
+    onContext: (active) => {
+      input.setBuildContext(active); aimCtl.reset(); st.wantWeapon = 0;
+      document.body.classList.toggle('building-raft', active);
+      if (active) { charPanel.close(); dialog.hide(); mapView.close(); }
+      canvas.focus({ preventScroll: true });
+    },
+  });
+  bus.on('raftEdit', (ev) => safe('raftEdit', () => raftEditor.onResult(ev)));
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
-  input.onHotkey('KeyB', panelKey(() => charPanel.toggle('gear')));
+  input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
+  input.onHotkey('KeyR', () => { if (!raftEditor.active) return false; raftEditor.rotate(); return true; });
   input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
   input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
   input.onHotkey('KeyT', panelKey(() => charPanel.toggle('tattoo'))); // M4.7: your tattoos and the Q / E loadout
@@ -212,6 +228,7 @@ async function boot() {
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    raftEditor.close();
     // Online the world never waits: the menu opens, your input goes neutral and the island carries on.
     st.paused = !st.online;
     setServerPause(true);
@@ -230,6 +247,7 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (raftEditor.active) { raftEditor.close(); return; }
     if (aimCtl.preview && aimCtl.preview.kind === 'ground' && !pause.open) { input.cancelAim(); return; } // ESC drops an area being aimed
     if (pause.open) closePause();
     else if (dialog.isOpen) dialog.hide();
@@ -299,6 +317,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost() {
+    raftEditor.close();
     if (document.querySelector('.net-lost')) return;
     const el = document.createElement('div');
     el.className = 'net-lost';
@@ -780,6 +799,10 @@ async function boot() {
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
+      if (raftEditor.active) {
+        client.tickInput({ mx: move.x, mz: move.z, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
+        return;
+      }
       // Mouse or right stick: you face the aim point (AIM). Touch / keyboard only / a pad without the
       // right stick: you face where you walk, and actions turn to the nearest threat or enemy.
       let aimBit = 0;
@@ -1082,6 +1105,7 @@ async function boot() {
         if (playing) worldUI.project(tmpV.set(ps.x, ps.y + 1, ps.z), screenP);
         worldUI.update(anchors, screenP);
       });
+      safe('raftEditor', () => raftEditor.update());
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));
       st.fps = st.fps * 0.9 + (1 / Math.max(loop.rawDt, 1e-3)) * 0.1;
@@ -1115,7 +1139,7 @@ async function boot() {
   title.ready();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView, raftEditor } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

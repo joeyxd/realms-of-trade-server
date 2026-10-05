@@ -55,11 +55,29 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1–P3 + base D09a/b**: 003 verificada real, perlas atómicas y cola de sesión; staging/juego/suelo/leases, correo humano/publicación pendientes (`PLAN-M5.md`) |
-| M6 «La Balsa» | **P1–P2 local**: balsa visible y transitable, pasarela/bloqueos/escaleras compartidos; editor/bodega y dispositivos/publicación pendientes (`PLAN-M6.md`) |
+| M6 «La Balsa» | **P1–P3 local**: balsa visible/transitable y editor autoritativo con materiales reales; bodega/producción, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
+
+### D05 / M6 P3 — construir la balsa (2026-10-05)
+
+- Base `15bfb44`, integrada sobre M5 sesiones `12a6854`; **`0.6.0-alpha.2`, protocolo 14**.
+  [Informe](delivery/d05-raft-editor.md), [registro durable](delivery/d05-evidence.json).
+- Editor B/botón táctil, R rotación contextual, I inventario y Esc cerrar. Siete piezas, fantasma, nivel,
+  orientación, costes y retirada explícita; comandos privados con revisión/UUID, acuse y snapshots antes de desbloquear.
+- Materiales bodega→mochila; compras de madera/hierro al precio/stock de Aldea con oro real. Devolución mitad
+  sin pérdida, capacidad recalculada al poner/quitar cajas. Guardado y amarre se conservan al reentrar.
+- Protección de soporte, ocupantes, aterrizajes, salida y pasarela; no invadir muelle/otra balsa. Techo técnico
+  de 600 piezas para respetar saneado y preflight de guardado firmado 32 KiB; no es presupuesto móvil medido.
+- **413/413** regresión, 12 pruebas nuevas y 24 capturas PC/móvil horizontal/vertical inspeccionadas.
+  Worker normal, compras/colocación/retirada por UI; error de predicción 0 en muestras, atlas 1024/512.
+  Fixtures aislados: starter intacta y oro QA; 19 madera compradas, siete piezas añadidas y una caja retirada.
+- No se reinició/publicó el host ni se alteró una partida online. **Actualizar cliente y servidor juntos a 14**
+  antes de usar el editor en línea. Teléfono/GPU físicos y sensación humana pendientes.
+- **Siguiente D06**: bodega/transferencias, producción y mercaderes; banco Dreamrise como candidato acotado.
+  Después [bahía D08](briefs/d08-navigation-feel.md), carga/giro/materiales/navegación; viento y balance siguen abiertos.
 
 ### D04 P2 — cubierta transitable (2026-10-05)
 

@@ -21,6 +21,7 @@ import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, 
 import { DROPS } from '../data/loot.js';
 import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
+import { raftCmd } from '../sim/systems/raftEditor.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
@@ -208,6 +209,7 @@ export class LocalServer {
       }
       // Trade (M7): a town's board, buying and selling goods into your pack.
       case 'market': marketCmd(w, e, msg); break;
+      case 'raft': raftCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       default: break;
     }
   }
@@ -362,7 +364,7 @@ export class LocalServer {
         const id = this.clientOf(ev.to);
         if (id !== undefined) {
           this.send(id, { t: MSG.EVENT, ev });
-          if (SAVE_NOW.has(ev.type)) this.saveSoon(this.clients.get(id), 0);
+          if (SAVE_NOW.has(ev.type) || (ev.type === 'raftEdit' && ev.ok && ev.op !== 'quote')) this.saveSoon(this.clients.get(id), 0);
         }
         continue;
       }

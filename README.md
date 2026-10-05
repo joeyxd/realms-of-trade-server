@@ -115,8 +115,21 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 Cada partida nueva empieza con una balsa de cuatro cimientos, vela y caja junto al muelle. El servidor elige el amarre;
 las piezas visibles se sincronizan con todos los jugadores, mientras la bodega permanece privada. Guardar y
 volver a entrar conserva su identidad; las flotas o planos marcados vacíos no se restauran automáticamente.
-La caja usa el modelo FAB ya aceptado con fallback procedural. Caminar por la cubierta, construir y zarpar
-son los siguientes cortes. [Evidencia y límites de D04 P1](docs/delivery/d04p1-raft.md).
+La caja usa el modelo FAB ya aceptado con fallback procedural. [Evidencia y límites de D04 P1](docs/delivery/d04p1-raft.md).
+La cubierta transitable llegó en P2; construcción en P3, descrita debajo. Zarpar sigue pendiente.
+
+### Construir la balsa — M6 P3 (`0.6.0-alpha.2`, protocolo 14)
+
+Junto a tu balsa amarrada en Aldea, **B** o el botón táctil abre el astillero. Puedes colocar cimientos, pisos,
+pilares, paredes, barandillas, escaleras y cajas. **R** gira dentro del editor; **Esc** lo cierra e **I** abre el
+inventario. En móvil, toca una casilla y pulsa **Colocar**. Para retirar, selecciona la pieza en modo **Retirar**
+y confirma la devolución mostrada. El servidor cobra materiales de bodega y mochila; también puedes comprar
+madera/hierro al precio de Aldea si tienes oro y espacio. El plano y los recursos se conservan al reentrar.
+
+La construcción protege soporte, ocupantes y salida al muelle. Máximos técnicos actuales: base 12×12, tres
+niveles y 600 piezas; todavía no son un límite de rendimiento móvil medido. Regresión **413/413** y recorrido
+PC/móvil emulado aceptados. [Evidencia y límites D05](docs/delivery/d05-raft-editor.md).
+Para jugar online, cliente y servidor deben actualizarse juntos a protocolo 14; este corte no reinició ni publicó el host.
 
 ### Entrega de M4.8 — candidato integrado (`0.4.8-rc.1`)
 

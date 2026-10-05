@@ -36,6 +36,8 @@ export class Input {
     this.wheel = 0;
     this.joy = { active: false, x: 0, y: 0 };
     this.enabled = false;
+    this.buildContext = false;
+    this.padBlocked = new Set();
     this.hotkeys = new Map();
     this.lastDevice = 'keyboard';
     // Who aims: 'mouse' (cursor), 'gamepad' (right stick), 'keys' (J/K, auto-aim) or 'touch' (auto-aim).
@@ -55,9 +57,10 @@ export class Input {
       if (BLOCK_DEFAULT.has(e.code)) e.preventDefault();
       this.lastDevice = 'keyboard';
       const hk = this.hotkeys.get(e.code);
-      if (hk && !e.repeat) hk(e);
+      if (hk && !e.repeat && hk(e) === true) { e.preventDefault(); return; }
       if (e.repeat) return;
       this.keys.add(e.code);
+      if (this.buildContext) return;
       if (PRESS_KEYS[e.code] && this.enabled) { this.pressed |= PRESS_KEYS[e.code]; }
       if (HOLD_KEYS[e.code]) { this.keyHeld |= HOLD_KEYS[e.code]; this.aimDevice = 'keys'; }
       if (SLOT_KEYS[e.code] && this.enabled) this.slotDown(SLOT_KEYS[e.code], 'key');
@@ -77,7 +80,7 @@ export class Input {
       if (e.pointerType === 'mouse') { const p = stage.toLocal(e.clientX, e.clientY); this.mouse.x = p.x; this.mouse.y = p.y; this.mouse.moved = true; this.lastDevice = 'mouse'; this.aimDevice = 'mouse'; }
     });
     target.addEventListener('pointerdown', (e) => {
-      if (e.pointerType !== 'mouse' || !this.enabled) return;
+      if (e.pointerType !== 'mouse' || !this.enabled || this.buildContext) return;
       this.aimDevice = 'mouse';
       if (e.button === 0) { this.pressed |= BTN.ATTACK; this.mouseHeld |= BTN.ATTACK; }
       if (e.button === 2 && this.previewing) { this.cancelEdge = true; this.swallowRmb = true; return; } // cancels the area
@@ -94,12 +97,29 @@ export class Input {
 
   onHotkey(code, fn) { this.hotkeys.set(code, fn); }
 
+  // Construction preserves movement, but never carries a combat press across its boundary.
+  setBuildContext(active) {
+    this.buildContext = !!active;
+    this.clearActions();
+  }
+
+  clearActions() {
+    this.keys.clear();
+    this.pressed = this.mouseHeld = this.keyHeld = this.padHeld = this.touchHeld = 0;
+    this.interactEdge = this.cancelEdge = this.previewing = this.swallowRmb = false;
+    this.touchAim = null;
+    this.joy.active = false; this.joy.x = this.joy.y = 0;
+    for (const src of SRC) for (const slot in this.slotSrc[src]) this.slotSrc[src][slot] = false;
+    for (const slot in this.slots.down) this.slots.down[slot] = this.slots.up[slot] = false;
+    this.pad.prev.forEach((down, i) => { if (down) this.padBlocked.add(i); });
+  }
+
   // Buttons held right now (mouse, J/K, gamepad triggers, touch GUARD), as command bits.
-  get held() { return this.enabled ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
+  get held() { return this.enabled && !this.buildContext ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
 
   // A slot key going down / up from a source ('key' | 'pad' | 'touch'). Held = any source holds it.
   slotDown(slot, src) {
-    if (!this.enabled || this.slotSrc[src][slot]) return;
+    if (!this.enabled || this.buildContext || this.slotSrc[src][slot]) return;
     this.slotSrc[src][slot] = true; this.slots.down[slot] = true;
     if (src === 'touch') { this.lastDevice = 'touch'; this.aimDevice = 'touch'; }
   }
@@ -108,7 +128,7 @@ export class Input {
     this.slotSrc[src][slot] = false;
     if (!this.slotHeld(slot)) this.slots.up[slot] = true;
   }
-  slotHeld(slot) { return this.enabled && (this.slotSrc.key[slot] || this.slotSrc.pad[slot] || this.slotSrc.touch[slot]); }
+  slotHeld(slot) { return this.enabled && !this.buildContext && (this.slotSrc.key[slot] || this.slotSrc.pad[slot] || this.slotSrc.touch[slot]); }
   // The edges since the last call and what is held now (one fixed tick's input for the aim controller).
   consumeSlots(out) {
     for (const k of ['q', 'e', 'r', 'g']) {
@@ -140,12 +160,17 @@ export class Input {
     [P.mx, P.my] = stick(g.axes[0] || 0, g.axes[1] || 0);
     [P.ax, P.ay] = stick(g.axes[2] || 0, g.axes[3] || 0);
     P.aim = Math.hypot(P.ax, P.ay) > 0.3;
-    const down = (i) => { const b = g.buttons[i]; return !!b && (b.pressed || b.value > 0.5); };
+    const down = (i) => {
+      const b = g.buttons[i], d = !!b && (b.pressed || b.value > 0.5);
+      if (!d) this.padBlocked.delete(i);
+      if (this.padBlocked.has(i)) return false;
+      return d;
+    };
     let held = 0, any = P.aim || Math.hypot(P.mx, P.my) > 0;
     for (const [i, bit, hold] of PAD_PRESS) {
       const d = down(i);
-      if (d) { any = true; if (hold) held |= bit; }
-      if (d && !P.prev[i] && this.enabled) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
+      if (d) { any = true; if (hold && !this.buildContext) held |= bit; }
+      if (d && !P.prev[i] && this.enabled && !this.buildContext) { this.pressed |= bit; if (bit === BTN.INTERACT) this.interactEdge = true; }
       P.prev[i] = d;
     }
     const start = down(9);
@@ -182,9 +207,9 @@ export class Input {
     return out;
   }
 
-  pressDash() { if (this.enabled) this.pressed |= BTN.DASH; }
-  press(bit) { if (this.enabled) { this.pressed |= bit; this.lastDevice = 'touch'; this.aimDevice = 'touch'; } }
-  pressInteract() { if (this.enabled) { this.pressed |= BTN.INTERACT; this.interactEdge = true; } }
+  pressDash() { if (this.enabled && !this.buildContext) this.pressed |= BTN.DASH; }
+  press(bit) { if (this.enabled && !this.buildContext) { this.pressed |= bit; this.lastDevice = 'touch'; this.aimDevice = 'touch'; } }
+  pressInteract() { if (this.enabled && !this.buildContext) { this.pressed |= BTN.INTERACT; this.interactEdge = true; } }
 
   consumeInteract() {
     const v = this.interactEdge;
@@ -195,7 +220,7 @@ export class Input {
   consumePresses() {
     const p = this.pressed;
     this.pressed = 0;
-    return p;
+    return this.buildContext ? 0 : p;
   }
 
   consumeWheel() {

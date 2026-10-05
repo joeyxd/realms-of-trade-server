@@ -18,7 +18,7 @@ import { newRaft, raftStats, sanitizeRaft } from '../economy/raft.js';
 // (vessels or rafts), raftV (one-time starter migration), deeds ([[town, plot index]]; M8).
 const starterRaft = () => {
   const grid = newRaft();
-  return { kind: 'raft', id: '', rev: 1, berth: -1, n: 'La Balsa', grid, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
+  return { kind: 'raft', id: '', rev: 1, berth: -1, berthBasis: null, n: 'La Balsa', grid, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
 };
 export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, deeds: [] });
 export function sanitizeEco(raw) {
@@ -38,10 +38,15 @@ export function sanitizeEco(raw) {
         const hp = Number.isFinite(s.hp) ? s.hp : 1;
         const rev = Number.isInteger(s.rev) ? Math.max(1, Math.min(2147483647, s.rev)) : 1;
         const berth = Number.isInteger(s.berth) ? Math.max(-1, Math.min(63, s.berth)) : -1;
+        // Keep the mooring's original grid origin while a builder expands the blueprint.
+        // These bounded grid coordinates derive a server berth; saved world positions stay ignored.
+        const b = s.berthBasis;
+        const berthBasis = Array.isArray(b) && b.length === 4 && b.every((n) => Number.isInteger(n) && Math.abs(n) <= 600)
+          && b[1] >= b[0] && b[1] - b[0] < 12 && b[3] >= b[2] && b[3] - b[2] < 12 ? [...b] : null;
         const grid = sanitizeRaft(s.grid);
         const hold = sanitizeHold(s.hold, 1e6);
         hold.cap = raftStats(grid).hold;
-        return { kind: 'raft', id, rev, berth, n: String(s.n || 'La Balsa').slice(0, 24), grid, hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
+        return { kind: 'raft', id, rev, berth, berthBasis, n: String(s.n || 'La Balsa').slice(0, 24), grid, hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
       }
       const mods = (Array.isArray(s.mods) ? s.mods : []).filter((m) => MODULES[m]).slice(0, 32);
       return { n: String(s.n || HULLS[s.hull].name).slice(0, 24), hull: s.hull, mods, hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)) };

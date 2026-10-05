@@ -2,10 +2,12 @@
 
 Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04–D06/D08 y mar D10–D12.
 
-Checkpoint 2026-10-05: **P1–P2 implementados y aceptados localmente en software**, versión `0.6.0-alpha.1`, protocolo 13.
+Checkpoint 2026-10-05: **P1–P3 implementados y aceptados localmente en software**, versión `0.6.0-alpha.2`, protocolo 14.
 Identidad/migración, amarre, snapshot y renderer; [P1](docs/delivery/d04p1-raft.md).
 Pasarela/cubierta, bloqueos y escaleras compartidos; [P2](docs/delivery/d04p2-raft-walk.md), 383/383 y PC/móvil emulado.
-Editor y bodega siguen pendientes. No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
+Editor con siete piezas, compras de materiales en Aldea y retirada segura; [P3](docs/delivery/d05-raft-editor.md),
+413/413 y 24 capturas PC/móvil emulado. Bodega interactiva y producción siguen pendientes.
+No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
 
 Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
 atlas original de cuatro superficies y derivados WebP para escritorio/móvil. Se integra sobre P1;
@@ -27,7 +29,7 @@ P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a imp
 | Colocar pagando con una bodega, quitar devolviendo la mitad (sin tirar lo que sostiene algo ni partir la balsa) | `place` / `remove` | ✅ |
 | Lo que hace la balsa: flotación contra peso (sobrecarga = se arrastra), velocidad por velas y motores, bodega, tripulación, cañones, reaparición | `raftStats` | ✅ |
 | Producción en el reloj del juego: el purificador riega los huertos (más con techo), las redes pescan, la parrilla y el alambique cocinan, el motor quema madera | `stepRaft` | ✅ |
-| Guardado en el perfil (`p.eco.ships`: `{kind: 'raft', id, rev, berth, grid, hold, at, hp, look}`) | `trade.js` (`sanitizeEco`) | ✅ |
+| Guardado en el perfil (`p.eco.ships`: identidad, revisión, amarre, base privada de amarre, plano, bodega, puerto, HP y aspecto) | `trade.js` (`sanitizeEco`) | ✅ |
 | Viajes entre pueblos (ruta, horas por velocidad, eventos con semilla), bodegas | `voyage.js`, `cargo.js` | ✅ |
 | Barcos clásicos (balandra… galeón) para más adelante | `src/data/ships.js` | ✅ datos |
 | Modelos externos por pieza (`part:<id>` en el manifiesto) | `docs/ASSETS.md` | gancho por añadir (P2) |
@@ -67,7 +69,7 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
 
 - [x] **P1 La balsa en el muelle.** Al crear perfil, `p.eco.ships = [{ kind: 'raft', grid: newRaft(), … }]`.
   Entidad `vehicle` en el ECS enlazada a su cuadrícula; el servidor la manda en el snapshot (piezas al
-  entrar; en P1 lista completa para reparar entrada tardía/bajas, eventos `raftPart` al implementar el editor).
+  entrar; lista pública completa para reparar entrada tardía/bajas, acuse privado `raftEdit` en P3).
   Render: piezas en su casilla, geometría procedural agrupada por color y caja FAB con fallback, balanceo visual
   leve. Los perfiles marcados vacíos no reciben otra starter; solo la balsa primaria amarrada en Aldea es visible.
 - [x] **P2 Caminar por ella.** `RaftDeck` aporta suelo/bloqueos a movimiento y aterrizajes compartidos.
@@ -75,12 +77,16 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   direcciones; predicción instala geometría antes del replay. PC/móvil emulado muelle→cubierta→piso→muelle,
   14 pruebas nuevas y regresión 383/383. Amarres remotos, puertas interactuables y escalas quedan abiertos;
   [informe y límites](docs/delivery/d04p2-raft-walk.md).
-- [ ] **P3 Modo construcción** ([brief D05](docs/briefs/d05-raft-editor.md), tecla B / botón táctil). Menú de piezas (rejilla de iconos como la referencia:
-  nombre, coste, lo que hace), fantasma verde / rojo en la casilla apuntada con el motivo de `canPlace` en español,
-  rotar con R solo dentro del editor y retirada en modo explícito; fuera R sigue habilidad/clic derecho guardia.
-  Comandos `raft` `{op: 'place', piece}` / `{op: 'remove', i}` con identidad/revisión/operación del brief →
-  eventos `raftPart` / `raftDenied`. Gancho de assets `part:<id>`: geometría procedural o piezas exportadas de
-  un kit compatible, misma medida de casilla (`RAFT.cell` = 2 u). Selección FAB según el inventario Unreal.
+- [x] **P3 Modo construcción** ([informe D05](docs/delivery/d05-raft-editor.md), B / botón táctil). Siete piezas,
+  fantasma verde/rojo, coste, motivo, nivel y orientación; R rota solo dentro del editor, Esc cierra.
+  Fuera, R sigue habilidad e I inventario. Retirada con selección y confirmación explícita.
+  Comandos `raft` `place/remove/quote/supply` con identidad/revisión/UUID → acuse privado `raftEdit`;
+  plano y perfil confirmados antes de desbloquear UI. Costes bodega→mochila y mitad de devolución sin pérdida.
+  Compras acotadas de madera/hierro al precio y stock reales de Aldea; no reemplazan el panel M7.
+  Protección de ocupantes/salida/pasarela, amarre estable al reentrar y preflight de guardado firmado.
+  Máximos técnicos: base 12×12, tres niveles y 600 piezas para no superar el saneado de persistencia;
+  no son un presupuesto móvil medido. Renderer/atlas existentes y caja FAB con fallback; sin nuevo kit exportado.
+  12 pruebas nuevas, regresión 413/413 y escritorio/móvil horizontal/vertical aceptados en software.
 - [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaft` en `economy.step` para las balsas de los
   jugadores conectados), panel de la balsa (bodega, agua, lo que produce, peso / flotación, velocidad), cofres,
   hamaca como punto de reaparición, faroles de noche (luces locales).

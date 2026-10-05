@@ -1,12 +1,12 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 13; // M6 P1: full public raft blueprints and server-owned mooring pose.
+export const PROTOCOL_VERSION = 14; // D05: authoritative raft edit/supply intents and private acknowledgements.
 
 export const MSG = {
   // client -> server
   HELLO: 'hello',     // {v, name, skin, weapon, save, token?, importSave?}; token absence is guest mode
   INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}]}
-  CMD: 'cmd',         // {type: 'pause' | 'equip' | 'unequip' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
+  CMD: 'cmd',         // {type: 'pause' | 'equip' | 'raft' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
   PING: 'ping',       // {t}
   // server -> client
   READY: 'ready',     // transport is up (worker booted)

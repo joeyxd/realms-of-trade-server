@@ -1,6 +1,6 @@
 // Moored player rafts (M6 P1). Saved ships stay private; only their visible blueprint and a server-selected
 // berth are replicated. Active vessels are ECS vehicles, never character spawns. Their shared walk geometry
-// does not accept client placement, cargo, damage or navigation commands.
+// accepts edits only through the authoritative raft editor, not client-owned blueprints or poses.
 import { C, KIND } from '../ecs.js';
 import { RAFT } from '../../data/raftparts.js';
 import { SLOTS, slotSkill } from '../../data/tattoos.js';
@@ -44,10 +44,10 @@ export function prepareRaftProfile(w, p) {
 // grid width, so even legacy blueprints do not overlap each other. This is a local mooring prototype, not a
 // decision about sea regions or port ownership. Pose is derived afresh, never copied from a saved x/z/yaw.
 function mooring(map, ship, berth) {
-  const ix = indexRaft(ship.grid.parts), cell = RAFT.cell, d = map.dock;
-  const cx = (ix.minX + ix.maxX + 1) * cell / 2;
-  const cz = (ix.minZ + ix.maxZ + 1) * cell / 2;
-  const width = (ix.maxX - ix.minX + 1) * cell;
+  const [minX, maxX, minZ, maxZ] = ship.berthBasis, cell = RAFT.cell, d = map.dock;
+  const cx = (minX + maxX + 1) * cell / 2;
+  const cz = (minZ + maxZ + 1) * cell / 2;
+  const width = (maxX - minX + 1) * cell;
   const across = (berth % 2 ? -1 : 1) * (d.halfWidth + width / 2 + 0.15 + Math.floor(berth / 2) * 32);
   const along = Math.max(0, d.len - 10);
   const x = d.base.x + d.dir.x * along - d.dir.z * across;
@@ -72,6 +72,10 @@ export function attachRafts(w, owner, p) {
   // remain saved; logging in must not teleport a vessel back from sea or grant another starter.
   const ship = p.eco.ships.find((s) => s.kind === 'raft' && s.at === 'aldea' && s.grid.parts.length && s.hp > 0);
   if (!ship) return;
+  if (!ship.berthBasis) {
+    const ix = indexRaft(ship.grid.parts);
+    ship.berthBasis = [ix.minX, ix.maxX, ix.minZ, ix.maxZ];
+  }
   const used = new Set([...w.rafts.values()].map((r) => r.ship.berth));
   const candidates = [ship.berth, ...Array.from({ length: 64 }, (_, i) => i)];
   const berth = candidates.find((b) => b >= 0 && b <= 63 && !used.has(b) && insideMap(w.map, ship, mooring(w.map, ship, b)));
@@ -86,6 +90,7 @@ export function attachRafts(w, owner, p) {
 }
 
 export function detachRafts(w, owner) {
+  w.raftEditReceipts?.delete(owner);
   const removed = new Set([...w.rafts.values()].filter((r) => r.owner === owner).map((r) => r.ship.id));
   // A guest must not remain hovering over deep water after the owner's logout removes the moored deck.
   const guests = [...w.ecs.each(C.PLAYER)].filter((e) => {
@@ -113,7 +118,7 @@ export function detachRafts(w, owner) {
 }
 
 // Full lists repair late joins, dropped snapshots and logout removals. Private holds, eco owner keys and
-// profile data never enter this whitelist. No piece edit events exist until the authoritative editor (D05).
+// profile data never enter this whitelist. Editor acknowledgements remain private; this list repairs edits.
 export function publicRafts(w) {
   const ecs = w.ecs;
   return [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,

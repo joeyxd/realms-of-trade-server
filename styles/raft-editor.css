@@ -1,0 +1,59 @@
+.raft-editor {
+  position: absolute; z-index: 42; right: 12px; top: 12px; width: min(310px, calc(100% - 24px));
+  max-height: calc(100% - 24px); overflow: auto; box-sizing: border-box; padding: 12px;
+  color: #f7e7bc; background: linear-gradient(145deg, rgb(33 27 26), rgb(15 22 26));
+  border: 2px solid #b9894d; border-radius: 9px; box-shadow: 0 5px 0 #3a2923, 0 12px 35px #0009;
+  font: 600 13px/1.25 system-ui, sans-serif; text-shadow: 0 1px #000; touch-action: manipulation; pointer-events: auto;
+}
+.raft-editor[hidden] { display: none; }
+.building-raft #touch .t-cluster, .building-raft #touch .joy-rest { display: none; }
+.building-raft #touch .joy-zone { top: auto; bottom: 0; height: 20%; width: 30%; }
+.building-raft .actionbar, .building-raft .tracker, .building-raft .prompt { visibility: hidden; }
+.raft-build-launcher[hidden] { display: none; }
+.raft-build-launcher { position: absolute; z-index: 41; right: 18px; bottom: 82px; min-height: 46px; padding: 0 15px; border: 2px solid #d6a95b; border-radius: 7px; background: linear-gradient(#79542e, #513924); color: #fff0c3; font: 800 14px system-ui, sans-serif; text-shadow: 0 1px #000; box-shadow: 0 4px 0 #34231d, 0 8px 20px #0008; touch-action: manipulation; }
+.raft-editor button, .raft-editor select { color: inherit; font: inherit; }
+.raft-editor button { min-height: 34px; border: 1px solid #806447; border-radius: 5px; background: #383332; cursor: pointer; }
+.raft-editor button:active { transform: translateY(1px); }
+.raft-editor button:disabled { opacity: .48; cursor: default; }
+.re-head, .re-options, .raft-editor footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.re-head { color: #f4bd65; letter-spacing: .07em; font-size: 12px; }
+.raft-editor .re-close { width: 36px; min-height: 34px; font-size: 23px; line-height: 1; }
+.re-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+.raft-editor .re-tabs .on, .raft-editor [data-part].on { border-color: #f6c767; background: #674b30; box-shadow: inset 0 0 0 1px #e1ab54; }
+.re-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+.raft-editor .re-pieces button { display: flex; min-width: 0; min-height: 54px; padding: 4px 2px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.re-pieces i { font-style: normal; color: #edc176; font-size: 20px; line-height: 1; }
+.re-pieces span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.re-details { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-height: 32px; margin: 7px 0; padding: 6px 7px; border-left: 3px solid #d39a54; background: #ffffff0b; }
+.re-details small { text-align: right; color: #d6c6a5; font-size: 10px; }
+.re-options { margin: 5px 0; }
+.re-options label { display: flex; align-items: center; gap: 6px; }
+.raft-editor select { min-height: 34px; background: #383332; border: 1px solid #806447; border-radius: 5px; padding: 0 7px; }
+.raft-editor .re-rotate { padding: 0 10px; }
+.re-status { min-height: 33px; margin: 5px 0; padding: 6px 7px; border-radius: 4px; background: #080d10a8; color: #dbe5d4; }
+.re-supplies { display: flex; gap: 5px; }
+.raft-editor .re-supplies button { flex: 1; min-height: 31px; border-color: #7a7652; background: #343a2e; color: #e4d79a; font-size: 10px; }
+.re-supplies:empty { display: none; }
+.re-remove-choice { display: flex; align-items: center; gap: 6px; min-height: 32px; color: #e9c88d; font-size: 11px; }
+.raft-editor .re-cycle { min-height: 30px; padding: 3px 7px; }
+.re-remove-choice span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.raft-editor footer { align-items: stretch; margin-top: 7px; }
+.re-route { max-width: 54%; align-self: center; color: #b6ac98; font-size: 9px; }
+.raft-editor .re-action { flex: 1; min-height: 42px; border-color: #ddb45e; background: linear-gradient(#79542e, #513924); color: #fff0c3; font-weight: 800; }
+.raft-editor.is-remove .re-action { border-color: #cf8061; background: linear-gradient(#743e33, #4f2e2c); }
+@media (max-width: 700px), (max-height: 430px) {
+  .raft-build-launcher { right: 7px; bottom: 7px; min-height: 44px; padding: 0 11px; font-size: 12px; }
+  .raft-editor { right: 5px; top: 5px; width: min(278px, calc(100% - 10px)); max-height: calc(100% - 10px); padding: 7px; font-size: 12px; }
+  .re-head { font-size: 10px; }
+  .raft-editor button { min-height: 32px; }
+  .raft-editor .re-pieces { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+  .raft-editor .re-pieces button { min-height: 43px; }
+  .re-pieces i { font-size: 17px; }
+  .re-pieces span { font-size: 9px; }
+  .re-details { min-height: 25px; margin: 4px 0; padding: 4px; }
+  .re-details small { font-size: 9px; }
+  .re-status { min-height: 25px; margin: 4px 0; padding: 4px; }
+  .raft-editor .re-supplies button { min-height: 29px; font-size: 9px; }
+  .re-route { font-size: 8px; }
+  .raft-editor .re-action { min-height: 38px; }
+}

@@ -57,6 +57,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   protocolo 13 conservado; 383/383, 18 capturas PC/móvil emulado inspeccionadas, atlas 1024/512 confirmado.
   [Informe](docs/delivery/d04p2-raft-walk.md). Sigue D05: editor autoritativo; banco Dreamrise para D06 y hut
   prefabricada para M8 son candidatos, no un kit modular exportado. Dispositivos/publicación pendientes.
+- Checkpoint posterior D05 (2026-10-05): editor autoritativo de siete piezas, compras cotizadas de materiales,
+  retirada segura y guardado exacto; `0.6.0-alpha.2`, protocolo 14. Regresión 413/413 y 24 capturas inspeccionadas
+  PC/móvil horizontal/vertical; atlas 1024/512. [Informe](docs/delivery/d05-raft-editor.md).
+  Sigue D06 (bodega/producción/mercaderes), luego prototipo D08. Host/dispositivos físicos sin aceptar.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),
@@ -88,8 +92,8 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; muelle → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1–P2 local aceptado en software ([P2](docs/delivery/d04p2-raft-walk.md)); dispositivos/publicación pendientes |
-| D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | [Brief preparado](docs/briefs/d05-raft-editor.md); sin implementar |
-| D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |
+| D05 | M6 P3: editor de construcción | Renderer/atlas existentes y caja A02; no nuevo kit A05 | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Local aceptado en software, 413/413 y 24 capturas ([informe](docs/delivery/d05-raft-editor.md)); dispositivos/publicación pendientes |
+| D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente; D05 solo añade compra acotada de materiales del editor |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
 | D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a/b: perla/perfiles/recibo y cola de sesión, 003 verificada real ([informe](docs/delivery/d09b-pearl-sessions.md)); staging/juego/adopción/suelo y operaciones navales pendientes |
