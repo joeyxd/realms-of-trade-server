@@ -13,7 +13,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   si Tormenta ya está aceptada, pasar a Tinta. No pisar ni reasignar archivos activos sin identificar al dueño.
 - Checkpoint posterior D01: Tormenta integrada en `66e6e67`, `0.4.8-alpha.3`, protocolo 10. Mecánica y recorrido
   visual en escritorio/móvil emulado aceptados; GPU, teléfono/mando reales y publicación pendientes.
-  Evidencia: [informe D01](docs/delivery/d01-tormenta.md). Próxima entrega: D02 Tinta; A01 sigue sin integrar.
+  Evidencia: [informe D01](docs/delivery/d01-tormenta.md). Próxima entrega: D02 Tinta, con implementación concurrente
+  en el checkout compartido, todavía sin aceptación aquí. A01 probado en aislamiento y aplazado para humo de
+  fogatas: [resultado](docs/delivery/a01-noise00.md); código/PNG experimentales no incorporados al runtime principal.
 - Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; **ningún candidato importado**
   al crear este plan. `assets/manifest.json` está vacío. No reiniciar la investigación desde cero.
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
@@ -45,8 +47,8 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 |---|---|---|---|---|
 | D00 | Inventario y dirección naval | A00: catálogo, miniaturas y candidatos | CSV/JSON reconciliados, límites de evidencia registrados | Hecho |
 | D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
-| D02 | M4.8 P4: Tinta | Seleccionar un recurso de humo/tinta desde catálogo, sin incorporarlo aún | D01 integrado; marca/nube/IA y maldición día-noche probadas | Pendiente |
-| D03 | M4.8 P5: cierre integrado | A01 fase B en un efecto; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Pendiente |
+| D02 | M4.8 P4: Tinta | Seleccionar un recurso de humo/tinta desde catálogo, sin incorporarlo aún | D01 integrado; marca/nube/IA y maldición día-noche probadas | En curso en otra sesión; aceptación pendiente, no revalidada en A01 |
+| D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Cierre pendiente; A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: probar primero el hook `crate` que ya existe en la isla; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | Pendiente |
 | D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |
@@ -78,8 +80,8 @@ exportación Unreal. Una miniatura, un `--dry` exitoso o un manifiesto correcto 
 | ID | Candidato y primer uso | Paso concreto / límite |
 |---|---|---|
 | A00 | Inventario existente | Completado; conservar rutas y confianza, sin deduplicar/borrar fuentes |
-| A01 | `Noise00.png` (sA, Survival), ruido de un VFX actual | PNG ya visible como fuente; shader de un solo efecto, `data:true`, baseline procedural. [Brief](docs/briefs/assets-a01-texture-canary.md) |
-| A02 | `SM_StoragePart_03` y `SM_RepairBench` (Dreamrise) | Exportación pendiente, una caja opaca primero por `prop:storage-crate`/`crate`; banco requiere hook propio |
+| A01 | `Noise00.png` (sA, Survival), ruido de un VFX actual | Aplazado para humo de fogatas: comparación día/noche high y low móvil sin mejora clara frente a procedural por 287 KB/~5,33 MiB. [Resultado](docs/delivery/a01-noise00.md); experimento aislado, sin entrada en manifiesto principal. [Brief](docs/briefs/assets-a01-texture-canary.md) |
+| A02 | `SM_StoragePart_03` y `SM_RepairBench` (Dreamrise) | [Fuente y UE 5.8/glTF Exporter localizados](docs/delivery/a02-crate-readiness.md); exportación en copia aislada pendiente. Una caja primero por `prop:storage-crate`/`crate`; banco requiere hook propio |
 | A03 | SlashTrailElemental/SwordTrail/ArrowTrail | Un efecto y un recurso por prueba; Niagara se recrea, no se ejecuta en Three.js |
 | A04 | `SW_Water_Slash_01` u otro sonido corto seleccionado | Audición/exportación pendientes; nuevo puente de audio y publicación. Conservar SFX sintetizado |
 | A05 | Piezas para construcción/tierra/naval | No identificado kit completo en C:\Unreal; geometría procedural primero, probar medidas/pivotes/uniones al traer uno |
