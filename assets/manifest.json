@@ -7,6 +7,14 @@
       "props": [
         "crate"
       ]
+    },
+    {
+      "id": "tex:raft-comic-v1",
+      "kind": "tex",
+      "src": "textures/raft/comic-materials-v1.webp",
+      "mobileSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "repeat": [1, 1],
+      "notes": "Original generated comic raft albedo atlas: wood, iron, rope and patched sailcloth. See docs/delivery/raft-comic-material.md."
     }
   ]
 }

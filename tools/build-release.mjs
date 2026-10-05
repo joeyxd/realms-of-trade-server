@@ -145,8 +145,25 @@ for (const moduleFile of files.filter((name) => name.startsWith('src/') && name.
     if (!target.startsWith('src/') || !target.endsWith('.js') || !publishPaths.has(target) || !hasFile(target)) fail(`Module import ${specifier} from ${moduleFile} does not resolve inside the publish tree.`);
   }
 }
-try { JSON.parse(fs.readFileSync(path.join(stageRoot, 'assets/manifest.json'), 'utf8')); }
+let assetManifest;
+try { assetManifest = JSON.parse(fs.readFileSync(path.join(stageRoot, 'assets/manifest.json'), 'utf8')); }
 catch { fail('Published assets/manifest.json is missing or invalid JSON.'); }
+if (!assetManifest || !Array.isArray(assetManifest.assets)) fail('Published assets/manifest.json has no assets list.');
+const safeAssetPath = (value) => typeof value === 'string' && !!value && !value.startsWith('/') && !value.startsWith('\\')
+  && !value.includes('\\') && !value.includes(':') && !value.includes('..');
+for (const entry of assetManifest.assets) {
+  const kind = entry && (entry.kind || (typeof entry.id === 'string' ? entry.id.split(':')[0] : ''));
+  const references = [{ field: 'src', value: entry && entry.src }];
+  if (kind === 'tex' && entry && Object.hasOwn(entry, 'mobileSrc')) references.push({ field: 'mobileSrc', value: entry.mobileSrc });
+  for (const { field, value } of references) {
+    if (!safeAssetPath(value)) fail(`Published asset ${entry && entry.id || '(unknown)'} has an invalid ${field} path.`);
+    const bundled = path.posix.normalize(value);
+    const publishPath = `assets/${bundled}`;
+    if (!publishPaths.has(publishPath) || !hasFile(publishPath)) {
+      fail(`Published asset ${entry.id || '(unknown)'} references a missing bundled ${field}: ${value}`);
+    }
+  }
+}
 
 const artifactFiles = files.map((name) => {
   const data = fs.readFileSync(path.join(stageRoot, name));

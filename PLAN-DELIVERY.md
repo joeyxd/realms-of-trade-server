@@ -40,6 +40,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - Checkpoint posterior D04 P1 (2026-10-05): balsa propia visible y replicada, `0.6.0-alpha.1` / protocolo 13;
   P2 transitar cubiertas sigue pendiente. [Informe](docs/delivery/d04p1-raft.md).
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
+- Prueba de arte posterior sobre D04 P1: [balsa cómic y presupuesto móvil](docs/delivery/raft-comic-material.md),
+  atlas original 1024/512 WebP; siguiente corte jugable sigue siendo D04 P2. No sustituye A05 (kit FAB modular).
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),

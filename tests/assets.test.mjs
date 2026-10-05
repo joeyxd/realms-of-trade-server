@@ -1,7 +1,7 @@
 // External assets (docs/ASSETS.md): the manifest contract, the bone map for the usual rig conventions, the box fit.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeManifest, fitBox, OUR_BONES } from '../src/render/assets/manifest.js';
+import { normalizeManifest, fitBox, OUR_BONES, selectTextureSource } from '../src/render/assets/manifest.js';
 import { parseBoneName, boneRole, mapBones, followMap } from '../src/render/assets/bonemap.js';
 import { readGlb } from '../tools/glb.mjs';
 
@@ -10,7 +10,7 @@ test('manifest: defaults, kinds, bad entries dropped with a message', () => {
     { id: 'char:corsaria', src: 'models/c.glb', looks: ['Corsaria'] },
     { id: 'prop:barrel', src: 'models/b.glb', props: ['barrel', 'nope'] },
     { id: 'ship:balandra', kind: 'model', src: 'models/s.glb', size: 9 },
-    { id: 'tex:planks', src: 'textures/p.webp', repeat: [2, 3] },
+    { id: 'tex:planks', src: 'textures/p.webp', mobileSrc: 'textures/p-512.webp', repeat: [2, 3] },
     { id: 'char:x', src: 'x.glb' }, // no looks
     { id: 'prop:barrel', src: 'again.glb', props: ['crate'] }, // duplicate id
     { id: 'model:evil', src: 'https://evil.example/x.glb' },
@@ -25,10 +25,38 @@ test('manifest: defaults, kinds, bad entries dropped with a message', () => {
   assert.deepEqual(p.props, ['barrel']); assert.equal(p.fit, 'proc'); assert.equal(m.byProp.get('barrel'), 'prop:barrel');
   assert.equal(m.entries.get('ship:balandra').fit, 'size');
   assert.deepEqual(m.entries.get('tex:planks').repeat, [2, 3]);
+  assert.equal(m.entries.get('tex:planks').mobileSrc, 'textures/p-512.webp');
   assert.ok(m.errors.length >= 5, m.errors.join('\n'));
   assert.ok(m.errors.some((e) => /nope/.test(e)));
   assert.deepEqual(normalizeManifest(null).errors, []);
   assert.equal(normalizeManifest({}).errors.length, 1);
+});
+
+test('texture source selection: desktop default, explicit mobile variant, and desktop fallback', () => {
+  const withMobile = { src: 'textures/raft-1024.webp', mobileSrc: 'textures/raft-512.webp' };
+  assert.equal(selectTextureSource(withMobile), 'textures/raft-1024.webp');
+  assert.equal(selectTextureSource(withMobile, false), 'textures/raft-1024.webp');
+  assert.equal(selectTextureSource(withMobile, true), 'textures/raft-512.webp');
+  assert.equal(selectTextureSource({ src: 'textures/only.webp' }, true), 'textures/only.webp');
+});
+
+test('manifest: invalid optional mobile texture path is reported without dropping the desktop texture', () => {
+  for (const mobileSrc of ['https://example.test/texture.webp', '../outside.webp', '', '/textures/absolute.webp', '\\textures\\absolute.webp', 'C:\\textures\\drive.webp', 'scheme:path.webp']) {
+    const m = normalizeManifest({ assets: [{ id: 'tex:test', kind: 'tex', src: 'textures/desktop.webp', mobileSrc }] });
+    assert.equal(m.entries.get('tex:test').src, 'textures/desktop.webp');
+    assert.equal(m.entries.get('tex:test').mobileSrc, undefined);
+    assert.ok(m.errors.some((e) => /mobileSrc must be a relative path/.test(e)));
+  }
+  const ignoredOnModel = normalizeManifest({ assets: [{ id: 'model:test', kind: 'model', src: 'models/test.glb', mobileSrc: 'models/mobile.glb' }] });
+  assert.equal(ignoredOnModel.entries.get('model:test').mobileSrc, undefined);
+});
+
+test('manifest: primary asset paths reject absolute and drive-qualified paths', () => {
+  for (const src of ['/textures/absolute.webp', '\\textures\\absolute.webp', 'C:\\textures\\drive.webp', 'scheme:path.webp']) {
+    const m = normalizeManifest({ assets: [{ id: 'tex:test', kind: 'tex', src }] });
+    assert.equal(m.entries.has('tex:test'), false);
+    assert.ok(m.errors.some((e) => /src must be a relative path/.test(e)));
+  }
 });
 
 test('manifest: unknown looks are reported, a char keeps the ones that exist', () => {

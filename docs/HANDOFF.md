@@ -148,6 +148,20 @@ Entrega de correo humano, P3 economía y publicación pendientes. Vista previa l
 - GPU/teléfono/mando físicos, rendimiento y publicación siguen pendientes. Fuente/caches/proyectos no van al
   bundle; solo manifiesto y GLB final. Continuar PR #1; un commit local no actualiza servidor ni artefacto público.
 
+### Balsa cómic — material y móvil (2026-10-05)
+
+- Prueba de arte sobre D04 P1, solicitada por el autor: madera ámbar/turquesa, hierro oxidado, cuerda y lona
+  remendada. Atlas original, UVs semánticas y herrajes/aparejo; la caja FAB se viste sin mutar su fuente.
+  [Informe, pruebas y siguiente corte](delivery/raft-comic-material.md), [evidencia](delivery/raft-comic-evidence.json).
+- WebP escritorio 1024² / 308.536 B; táctil 512² / 82.878 B. Móvil descarga solo su variante: 97,3 % menos
+  que el PNG fuente. Original fuera del bundle; reconstrucción con tools/optimize-raft-texture.mjs.
+  La regla de presupuesto móvil queda en AGENTS.md; no confundir estimación de texels con VRAM/FPS medidos.
+- 340/340 pruebas sobre cuentas f0b74a7 + material; ocho casos visuales y 26 capturas inspeccionadas:
+  día/noche high/low móvil, comparación sin skin, atlas 404/corrupto y noassets; SAVE/reload conserva balsa/bodega.
+- Versión 0.6.0-alpha.1 y protocolo 13 conservados. GPU/teléfono físicos y publicación pendientes.
+  Próximo corte sigue D04 P2: cubierta/bloqueos/escaleras compartidos entre servidor y predicción;
+  no se habilitan navegación, editor ni pérdidas persistentes. Host para amigos tiene otro dueño.
+
 ### D04 P1 — balsa propia amarrada (2026-10-05)
 
 - Base `da757d3`, build `0.6.0-alpha.1`, protocolo **13**: cliente/servidor deben actualizarse juntos.

@@ -71,10 +71,22 @@ if (flags.check) {
   for (const e of n.entries.values()) {
     const f = path.join(dir, e.src);
     console.log(`${e.id} (${e.kind}) → ${e.src}`);
-    if (!fs.existsSync(f)) { console.log('  ⚠ file missing'); bad++; continue; }
-    const r = report(f, e.kind, e.bones);
-    print(r);
-    if (!r.ok) bad++;
+    if (!fs.existsSync(f)) { console.log('  ⚠ file missing'); bad++; }
+    else {
+      const r = report(f, e.kind, e.bones);
+      print(r);
+      if (!r.ok) bad++;
+    }
+    if (e.kind === 'tex' && e.mobileSrc) {
+      const mobileFile = path.join(dir, e.mobileSrc);
+      console.log(`  mobile variant → ${e.mobileSrc}`);
+      if (!fs.existsSync(mobileFile)) { console.log('  ⚠ mobile texture file missing'); bad++; }
+      else {
+        const r = report(mobileFile, 'tex', e.bones);
+        print(r);
+        if (!r.ok) bad++;
+      }
+    }
   }
   console.log(bad ? `${bad} problem(s)` : `${n.entries.size} asset(s) OK`);
   process.exit(bad ? 1 : 0);

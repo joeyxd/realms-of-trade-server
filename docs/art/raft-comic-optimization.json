@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T15:22:55.613Z",
+  "tool": {
+    "name": "FFmpeg",
+    "version": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "path": "ffmpeg"
+  },
+  "source": {
+    "path": "docs/art/source/raft-comic-v1.png",
+    "codec": "PNG",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 3032353,
+    "sha256": "fd06e39b63e3a96b23e33d335facb6ed1d2d197b0552af74145b66ae7be8753e"
+  },
+  "outputs": [
+    {
+      "path": "assets/textures/raft/comic-materials-v1.webp",
+      "codec": "WebP lossy (libwebp)",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 308536,
+      "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54",
+      "settings": {
+        "scale": "1024x1024",
+        "filter": "Lanczos",
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "estimatedDecodedRgbaBytes": 4194304,
+      "estimatedDecodedRgbaWithFullMipChainBytes": 5592406,
+      "estimateNote": "Decoded RGBA and full-mip-chain byte estimates only; not measured VRAM or performance.",
+      "matchesApprovedByteSize": true
+    },
+    {
+      "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+      "codec": "WebP lossy (libwebp)",
+      "width": 512,
+      "height": 512,
+      "bytes": 82878,
+      "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719",
+      "settings": {
+        "scale": "512x512",
+        "filter": "Lanczos",
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "estimatedDecodedRgbaBytes": 1048576,
+      "estimatedDecodedRgbaWithFullMipChainBytes": 1398102,
+      "estimateNote": "Decoded RGBA and full-mip-chain byte estimates only; not measured VRAM or performance.",
+      "matchesApprovedByteSize": true
+    }
+  ]
+}

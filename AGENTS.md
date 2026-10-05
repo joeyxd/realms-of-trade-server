@@ -48,3 +48,6 @@
 - Todo campo nuevo de perfil requiere valores por defecto y saneado. Cambios de snapshots/`you` requieren revisar
   `PROTOCOL_VERSION`. No confiar en validación del cliente para inventarios, precios o propiedad.
 - Verificar cambios visuales con capturas inspeccionadas. Ejecutar pruebas pertinentes; un push no es despliegue.
+- Texturas nuevas deben tener presupuesto móvil: conservar originales fuera del bundle, comprimir los derivados
+  y ofrecer menor resolución cuando aporte ahorro. Cargar una variante por dispositivo; verificar la URL/resolución
+  realmente cargada y la lectura visual en móvil emulado. Bytes/estimaciones de texels no prueban FPS en teléfono real.

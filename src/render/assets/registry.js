@@ -10,12 +10,17 @@
 //   assets.texture(id)              → a THREE.Texture, or null
 //   assets.list()                   → [{id, kind, state, error, tris}] (pause menu, ?debug, tools)
 import * as THREE from 'three';
-import { normalizeManifest, fitBox } from './manifest.js';
+import { normalizeManifest, fitBox, selectTextureSource } from './manifest.js';
 import { bakeCharacter, sizedCharacter } from './rebind.js';
 import { worldToon } from './toonmat.js';
 import { LOOKS, buildLook, buildWeaponOnly } from '../charlooks.js';
 
 const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`${what}: timed out after ${ms / 1000} s`)), ms))]);
+
+function coarsePointerDefault() {
+  try { return globalThis.matchMedia?.('(pointer: coarse)')?.matches === true; }
+  catch { return false; }
+}
 
 class Assets {
   constructor() {
@@ -29,7 +34,8 @@ class Assets {
 
   // Load the manifest and every asset in it. Resolves when all are done or failed (never rejects).
   // onProgress(done, total, id). timeoutMs: per file.
-  async load(url = 'assets/manifest.json', { onProgress = null, timeoutMs = 60000, fetchFn = (u, o) => fetch(u, o) } = {}) {
+  async load(url = 'assets/manifest.json', { onProgress = null, timeoutMs = 60000, fetchFn = (u, o) => fetch(u, o), mobileTextures = null } = {}) {
+    const useMobileTextures = mobileTextures === null ? coarsePointerDefault() : !!mobileTextures;
     this.base = url.replace(/[^/]*$/, '');
     let json = null;
     try {
@@ -45,19 +51,22 @@ class Assets {
     const tex = new THREE.TextureLoader();
     let done = 0;
     const one = async (e) => {
-      this.state.set(e.id, { state: 'loading' });
+      const selectedSrc = e.kind === 'tex' ? selectTextureSource(e, useMobileTextures) : e.src;
+      this.state.set(e.id, { state: 'loading', selectedSrc });
       try {
         let data;
-        if (e.kind === 'tex') data = this.prepTexture(await withTimeout(tex.loadAsync(this.base + e.src), timeoutMs, e.src), e);
+        if (e.kind === 'tex') {
+          data = this.prepTexture(await withTimeout(tex.loadAsync(this.base + selectedSrc), timeoutMs, selectedSrc), e);
+        }
         else {
           if (!gltf) throw new Error('no glTF loader');
           const g = await withTimeout(gltf.loadAsync(this.base + e.src), timeoutMs, e.src);
           data = e.kind === 'char' ? { bake: bakeCharacter(g.scene, e) } : prepStatic(g.scene, e);
         }
-        this.state.set(e.id, { state: 'ok', data });
+        this.state.set(e.id, { state: 'ok', data, selectedSrc });
       } catch (err) {
         const msg = `${e.id}: ${err && err.message ? err.message : err}`;
-        this.state.set(e.id, { state: 'error', error: msg });
+        this.state.set(e.id, { state: 'error', error: msg, selectedSrc });
         this.errors.push(msg);
       }
       done++;
@@ -108,7 +117,7 @@ class Assets {
     return [...this.man.entries.values()].map((e) => {
       const s = this.state.get(e.id) || { state: 'pending' };
       const d = s.data;
-      return { id: e.id, kind: e.kind, src: e.src, state: s.state, error: s.error || '', tris: d ? (d.bake ? d.bake.tris : d.tris || 0) : 0, notes: d && d.bake ? d.bake.notes : [] };
+      return { id: e.id, kind: e.kind, src: e.src, selectedSrc: s.selectedSrc || e.src, state: s.state, error: s.error || '', tris: d ? (d.bake ? d.bake.tris : d.tris || 0) : 0, notes: d && d.bake ? d.bake.notes : [] };
     });
   }
 

@@ -13,6 +13,11 @@ Si falta, está rota o tarda demasiado, esa pieza sigue procedural; el motivo ap
 | **Modelo** por id (barco del muelle, futuros barcos, edificios, mercancías) | `assets.model(id)` lo da ajustado o `null` | Material toon, sombras, tinta |
 | **Textura** por id | `assets.texture(id)` | sRGB, repetición, filtro |
 
+Las texturas pueden incluir `mobileSrc` relativo a `assets/`: variante de menor resolución para puntero táctil.
+El registro selecciona una sola fuente al cargar; `assets.load(..., { mobileTextures: true/false })` permite
+elección explícita. `assets.list()` informa `selectedSrc`. Los originales quedan fuera del bundle y los derivados
+se revisan en juego: [balsa cómic 1024/512 WebP](delivery/raft-comic-material.md).
+
 Todos los materiales pasan al toon del juego (bandas de luz, sombras de nubes, luces locales, borde, trama de
 cómic, bloom de lo que emite), así que un modelo de Meshy no desentona.
 

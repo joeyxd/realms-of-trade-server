@@ -39,7 +39,8 @@
 //        size (u: the largest horizontal extent, with fit "size"), height (u, with fit "height").
 // model  fit: "size" (default when size is given) | "height" (default when only height is) | "proc" (otherwise: the size of
 //        the procedural piece the code passes, if any, else as authored) | "none", size, height.
-// tex    repeat: [u, v], data (bool: linear, for normal / roughness maps), filter: "nearest" | "linear" (default).
+// tex    repeat: [u, v], data (bool: linear, for normal / roughness maps), filter: "nearest" | "linear" (default),
+//        mobileSrc (optional lower-resolution relative texture selected on coarse-pointer devices).
 
 export const KINDS = ['char', 'prop', 'model', 'tex'];
 export const OUR_BONES = ['hips', 'spine', 'chest', 'head', 'thighL', 'shinL', 'thighR', 'shinR', 'armL', 'foreL', 'armR', 'foreR'];
@@ -48,6 +49,13 @@ const FITS = { prop: ['proc', 'height', 'size', 'none'], model: ['proc', 'size',
 
 const num = (v, d) => (typeof v === 'number' && Number.isFinite(v) ? v : d);
 const strList = (v) => (Array.isArray(v) ? v.filter((s) => typeof s === 'string' && s) : typeof v === 'string' && v ? [v] : []);
+const validAssetPath = (v) => typeof v === 'string' && !!v && !v.startsWith('/') && !v.startsWith('\\')
+  && !v.includes('\\') && !v.includes(':') && !/^[a-z]+:\/\//i.test(v) && !v.includes('..');
+
+// A missing mobile variant deliberately falls back to the regular source.
+export function selectTextureSource(entry, mobileTextures = false) {
+  return mobileTextures && entry && entry.mobileSrc ? entry.mobileSrc : entry && entry.src;
+}
 
 // Validates and fills defaults. Never throws: bad entries are dropped with a message in `errors` (the game then draws
 // the procedural piece), so one broken line in the manifest cannot take the game down.
@@ -62,7 +70,7 @@ export function normalizeManifest(json, { looks = null } = {}) {
     if (typeof raw.id !== 'string' || !raw.id) { err('missing id'); continue; }
     if (out.entries.has(raw.id)) { err('duplicate id'); continue; }
     if (typeof raw.src !== 'string' || !raw.src) { err('missing src'); continue; }
-    if (/^[a-z]+:\/\//i.test(raw.src) || raw.src.includes('..')) { err('src must be a relative path inside assets/'); continue; }
+    if (!validAssetPath(raw.src)) { err('src must be a relative path inside assets/'); continue; }
     const kind = raw.kind || raw.id.split(':')[0];
     if (!KINDS.includes(kind)) { err(`unknown kind "${kind}" (${KINDS.join(', ')})`); continue; }
     const t = raw.toon || {};
@@ -114,6 +122,10 @@ export function normalizeManifest(json, { looks = null } = {}) {
       e.size = num(raw.size, 0); e.height = num(raw.height, 0);
       e.fit = FITS.model.includes(raw.fit) ? raw.fit : e.height > 0 && !(e.size > 0) ? 'height' : e.size > 0 ? 'size' : 'proc';
     } else {
+      if (raw.mobileSrc !== undefined) {
+        if (validAssetPath(raw.mobileSrc)) e.mobileSrc = raw.mobileSrc;
+        else err('mobileSrc must be a relative path inside assets/');
+      }
       const r = Array.isArray(raw.repeat) ? raw.repeat : [1, 1];
       e.repeat = [num(r[0], 1), num(r[1], 1)];
       e.data = !!raw.data;

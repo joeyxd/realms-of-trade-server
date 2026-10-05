@@ -5,9 +5,19 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RAFT, RAFT_PARTS, RAFT_LOOKS } from '../data/raftparts.js';
 import { toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
+import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
 
-const WOOD = 0xb5803f, WOOD_DARK = 0x704522, WOOD_LIGHT = 0xd6a565;
-const IRON = 0x626b72, IRON_LIGHT = 0xb1b9b8, CLOTH = 0xe8d39d, CLOTH_DARK = 0xb49362;
+const WOOD = surface('wood', 0xb5803f), WOOD_DARK = surface('wood', 0x704522, 0xd5bfa5), WOOD_LIGHT = surface('wood', 0xd6a565);
+const IRON = surface('iron', 0x626b72), IRON_LIGHT = surface('iron', 0xb1b9b8, 0xffecd2);
+const CLOTH = surface('cloth', 0xe8d39d), CLOTH_DARK = surface('cloth', 0xb49362, 0xdac8ac);
+const ROPE = surface('rope', 0xc69b51), INK = 0x251c1b;
+// The painting already carries pen texture. Grade in perceptual space and reduce the second procedural
+// hatch layer, so grain stays graphic rather than turning into moire under the isometric camera.
+const ATLAS_ALBEDO = `{
+  vec3 mnRaftPaint = pow(max(diffuseColor.rgb, vec3(0.0)), vec3(0.4545));
+  mnRaftPaint = floor(mnRaftPaint * 6.0 + 0.5) / 6.0;
+  diffuseColor.rgb = pow(mnRaftPaint, vec3(2.2)) * 1.16;
+}`;
 const GREEN = 0x56844b, GREEN_LIGHT = 0x91b65c, FIRE = 0xe88835;
 const LEVEL_H = RAFT.levelHeight || 2.6;
 const CELL = RAFT.cell;
@@ -21,12 +31,12 @@ function keyOf(record) {
 function paintColor(look) {
   const paints = RAFT_LOOKS.paints;
   const i = Number.isInteger(look?.paint) ? look.paint : -1;
-  return i >= 0 && i < paints.length ? paints[i] : WOOD;
+  return i >= 0 && i < paints.length ? surface('wood', paints[i], paints[i]) : WOOD;
 }
 
 function bannerColor(banner) {
   const colors = { calavera: 0xe7d7aa, franjas: 0xb84435, kraken: 0x4b728d, ojo: 0x8d4f91 };
-  return colors[banner] || colors.calavera;
+  return surface('cloth', colors[banner] || colors.calavera, banner && banner !== 'calavera' ? colors[banner] || 0xffffff : 0xffffff);
 }
 
 function hashPhase(id) {
@@ -36,12 +46,15 @@ function hashPhase(id) {
 }
 
 export class RaftLayer {
-  constructor(scene) {
+  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0' } = {}) {
     this.scene = scene;
     this.views = new Map(); // id -> { root, visual, revKey, record, ownedGeometries, ... }
     this.materials = new Map();
     this.shapes = new Map();
-    this.nm = normalMatFor({ occluder: true });
+    this.skinEnabled = skin;
+    this.atlas = skin ? assets.texture(RAFT_ATLAS_ID) : null;
+    this.nm = normalMatFor({ occluder: true, lineW: 0.65 });
+    this.clothNm = normalMatFor({ occluder: true, lineW: 0.65 }, THREE.DoubleSide);
     this.tempMatrix = new THREE.Matrix4();
     this.tempQuaternion = new THREE.Quaternion();
     this.tempPosition = new THREE.Vector3();
@@ -50,11 +63,19 @@ export class RaftLayer {
   }
 
   material(color) {
-    const hex = colorHex(color);
-    if (!this.materials.has(hex)) {
-      this.materials.set(hex, toon({ color: hex }, { occluder: true, key: 'public-raft' }));
+    const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
+    const key = materialKey(spec);
+    if (!this.materials.has(key)) {
+      const mapped = this.atlas && spec.kind !== 'solid';
+      const mat = toon({ color: mapped ? spec.tint : spec.color, map: mapped ? this.atlas : null,
+        side: spec.kind === 'cloth' ? THREE.DoubleSide : THREE.FrontSide }, { occluder: true,
+        key: mapped ? 'public-raft-comic-v1' : 'public-raft-plain', albedo: mapped ? ATLAS_ALBEDO : '',
+        hatchMask: mapped ? '0.25' : '1.0' });
+      mat.name = `raft:${spec.kind}`;
+      mat.userData.raftSurface = spec.kind;
+      this.materials.set(key, mat);
     }
-    return this.materials.get(hex);
+    return this.materials.get(key);
   }
 
   shape(key, make) {
@@ -89,20 +110,31 @@ export class RaftLayer {
     const external = [];
     const ownedGeometries = [];
     const add = (color, shape, x, y, z, rx = 0, ry = 0, rz = 0) => {
-      const hex = colorHex(color);
-      if (!batches.has(hex)) batches.set(hex, []);
+      const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
+      const key = materialKey(spec);
+      if (!batches.has(key)) batches.set(key, { spec, pieces: [] });
       const g = shape.clone();
+      if (this.atlas && spec.kind !== 'solid') mapRaftUV(g, spec.kind, {
+        grain: shape.type === 'BoxGeometry' ? 'box' : shape.type === 'CylinderGeometry' ? 'cylinder' : 'raw',
+        variant: Math.abs(Math.round(x * 19 + z * 31 + y * 11)) });
       this.tmpEuler.set(rx, ry, rz, 'XYZ');
       this.tempQuaternion.setFromEuler(this.tmpEuler);
       this.tempPosition.set(x, y, z);
       this.tempMatrix.compose(this.tempPosition, this.tempQuaternion, this.tempScale);
       g.applyMatrix4(this.tempMatrix);
-      batches.get(hex).push(g);
+      batches.get(key).pieces.push(g);
     };
     const box = (color, w, h, d, x, y, z, rx = 0, ry = 0, rz = 0) =>
       add(color, this.boxShape(w, h, d), x, y, z, rx, ry, rz);
     const cyl = (color, rt, rb, h, x, y, z, segments = 8, rx = 0, ry = 0, rz = 0) =>
       add(color, this.cylinderShape(rt, rb, h, segments), x, y, z, rx, ry, rz);
+    const ring = (color, radius, tube, x, y, z, ry = 0, rx = 0) =>
+      add(color, this.shape(`ring:${radius}:${tube}`, () => new THREE.TorusGeometry(radius, tube, 4, 12)), x, y, z, rx, ry);
+    const line = (color, from, to, radius = 0.025) => {
+      const curve = new THREE.LineCurve3(new THREE.Vector3(...from), new THREE.Vector3(...to));
+      const g = new THREE.TubeGeometry(curve, 1, radius, 5, false);
+      add(color, g, 0, 0, 0); g.dispose();
+    };
 
     const parts = Array.isArray(record.parts) ? record.parts : [];
     const hull = paintColor(record.look);
@@ -121,14 +153,23 @@ export class RaftLayer {
 
       if (part.layer === 'base' || part.layer === 'floor') {
         // A framed deck with visible cross-planks. Its top is exactly at this level's walk surface.
-        if (part.layer === 'base') for (const side of [-1, 1])
+        if (part.layer === 'base') for (const side of [-1, 1]) {
           cyl(WOOD_DARK, 0.28, 0.28, w * 0.96, cx, y - 0.48, cz + side * depth * 0.28, 8, 0, 0, Math.PI / 2);
-        const thick = 0.18, plankN = Math.max(2, Math.round(pd * 2));
+          for (const sx of [-1, 1]) {
+            ring(ROPE, 0.292, 0.038, cx + sx * w * 0.32, y - 0.48, cz + side * depth * 0.28, Math.PI / 2);
+            for (const radius of [0.13, 0.235]) ring(INK, radius, 0.009, cx + sx * w * 0.481, y - 0.48, cz + side * depth * 0.28, Math.PI / 2);
+          }
+        }
+        const thick = 0.18, plankN = Math.max(4, Math.round(pd * 5));
         box(WOOD_DARK, w * 0.94, 0.22, 0.14, cx, y - 0.22, cz - depth * 0.31);
         box(WOOD_DARK, w * 0.94, 0.22, 0.14, cx, y - 0.22, cz + depth * 0.31);
         for (let i = 0; i < plankN; i++) {
           const pz = cz - depth / 2 + (i + 0.5) * depth / plankN;
           box(i % 3 === 0 ? WOOD_LIGHT : base, w * 0.98, thick, depth / plankN - 0.035, cx, y - thick / 2, pz);
+        }
+        for (const sx of [-1, 1]) {
+          box(IRON, 0.085, 0.045, depth * 0.96, cx + sx * w * 0.33, y + 0.025, cz);
+          for (const dz of [-0.34, 0, 0.34]) cyl(IRON_LIGHT, 0.035, 0.042, 0.045, cx + sx * w * 0.33, y + 0.064, cz + dz * depth, 6);
         }
       } else if (part.layer === 'pillar') {
         const ph = LEVEL_H - 0.18;
@@ -181,14 +222,44 @@ export class RaftLayer {
           const sailH = id === 'bigSail' ? 2.8 : 2.15;
           const mastX = cx - w * 0.2;
           cyl(WOOD_DARK, 0.075, 0.12, mastH, mastX, y + mastH / 2, cz, 8);
-          box(CLOTH, sailW, sailH, 0.055, mastX + sailW * 0.48, y + mastH * 0.59, cz);
+          const sailX = mastX + sailW * 0.48, sailY = y + mastH * 0.59;
+          const sail = this.shape(`sail:${sailW}:${sailH}`, () => {
+            const g = new THREE.PlaneGeometry(sailW, sailH, 8, 10), p = g.attributes.position, uv = g.attributes.uv;
+            for (let i = 0; i < p.count; i++) p.setZ(i, 0.22 * Math.sin(uv.getX(i) * Math.PI) * Math.sin(uv.getY(i) * Math.PI));
+            g.computeVertexNormals(); return g;
+          });
+          add(CLOTH, sail, sailX, sailY, cz);
+          for (const sy of [-1, 1]) {
+            box(WOOD_LIGHT, sailW + 0.18, 0.09, 0.10, sailX, sailY + sy * sailH / 2, cz);
+            line(ROPE, [sailX - sailW / 2, sailY + sy * sailH / 2, cz + 0.02], [sailX + sailW / 2, sailY + sy * sailH / 2, cz + 0.02], 0.025);
+          }
+          for (const sx of [-1, 1]) line(ROPE, [sailX + sx * sailW / 2, sailY - sailH / 2, cz + 0.02], [sailX + sx * sailW / 2, sailY + sailH / 2, cz + 0.02], 0.023);
+          for (const yy of [0.26, mastH * 0.61, mastH - 0.1]) {
+            for (const off of [-0.035, 0.035]) ring(ROPE, 0.115, 0.025, mastX, y + yy + off, cz, 0, Math.PI / 2);
+          }
+          // Rigging and fittings are visual only: they do not change the authoritative blueprint or deck.
+          line(ROPE, [mastX, y + mastH - 0.07, cz], [cx + w * 0.40, y + 0.1, cz + depth * 0.41], 0.026);
+          line(ROPE, [mastX, y + mastH - 0.07, cz], [cx - w * 0.40, y + 0.1, cz - depth * 0.41], 0.026);
+          for (let i = 0; i < 5; i++) ring(IRON, 0.027, 0.009, sailX - sailW * 0.42 + i * sailW * 0.21, sailY + sailH * 0.45, cz + 0.018);
           box(bannerColor(record.look?.banner), Math.min(0.68, sailW * 0.46), 0.38, 0.07,
             mastX + sailW * 0.52, y + mastH + 0.15, cz);
-          box(WOOD_LIGHT, 0.16, 0.09, sailW + 0.1, mastX + sailW * 0.48, y + mastH * 0.59 - sailH / 2, cz);
         } else if (id === 'crate') {
           const assetId = assets.propId('crate');
           const model = assetId ? assets.model(assetId, { w: 1.25, h: 1.15 }) : null;
+          let crateWidth = 1.18, crateDepth = 1.18, crateBottom = 0, crateTop = 1.1;
           if (model) {
+            const fitBounds = new THREE.Box3().setFromObject(model);
+            const fitSize = fitBounds.getSize(new THREE.Vector3());
+            crateWidth = fitSize.x; crateDepth = fitSize.z;
+            crateBottom = fitBounds.min.y; crateTop = fitBounds.max.y;
+            if (this.atlas) model.traverse((o) => {
+              if (!o.isMesh) return;
+              // Reskin this fitted instance, leaving the island's registry source and shared resources intact.
+              o.geometry = o.geometry.clone();
+              mapRaftUV(o.geometry, 'wood', { grain: 'box', variant: x + z * 3 });
+              ownedGeometries.push(o.geometry);
+              o.material = this.material(WOOD); o.userData.nm = this.nm; o.userData.raftSurface = 'wood';
+            });
             model.position.set(cx, y, cz);
             model.name = `raft:crate:${x}:${z}:${level}`;
             visual.add(model);
@@ -199,6 +270,17 @@ export class RaftLayer {
               box(WOOD_DARK, 0.11, 1.18, 1.25, cx + s * 0.49, y + 0.55, cz);
               box(WOOD_DARK, 1.25, 1.18, 0.11, cx, y + 0.55, cz + s * 0.49);
             }
+          }
+          for (const sx of [-1, 1]) {
+            // Thin straps wrap the fitted crate surface; a full slab would cut through its open interior.
+            const strapX = cx + sx * crateWidth * 0.32, crateHeight = crateTop - crateBottom;
+            for (const sz of [-1, 1]) {
+              const strapZ = cz + sz * (crateDepth / 2 + 0.018);
+              box(IRON, 0.085, crateHeight, 0.035, strapX, y + (crateTop + crateBottom) / 2, strapZ);
+              for (const sy of [0.2, 0.8]) cyl(IRON_LIGHT, 0.03, 0.035, 0.035, strapX,
+                y + crateBottom + crateHeight * sy, strapZ + sz * 0.025, 6, Math.PI / 2);
+            }
+            box(IRON, 0.085, 0.035, crateDepth + 0.07, strapX, y + crateTop + 0.016, cz);
           }
         } else if (id === 'chest' || id === 'storage') {
           const ww = id === 'storage' ? 1.55 : 1.2;
@@ -278,18 +360,19 @@ export class RaftLayer {
       }
     }
 
-    for (const [color, pieces] of batches) {
+    for (const [key, { spec, pieces }] of batches) {
       const merged = mergeGeometries(pieces, false);
       for (const piece of pieces) piece.dispose();
       if (!merged) continue;
       merged.computeBoundingBox();
       merged.computeBoundingSphere();
       ownedGeometries.push(merged);
-      const mesh = new THREE.Mesh(merged, this.material(color));
+      const mesh = new THREE.Mesh(merged, this.material(spec));
       mesh.castShadow = true;
       mesh.receiveShadow = true;
-      mesh.userData.nm = this.nm;
-      mesh.name = `raft:parts:${color.toString(16)}`;
+      mesh.userData.nm = spec.kind === 'cloth' ? this.clothNm : this.nm;
+      mesh.userData.raftSurface = spec.kind;
+      mesh.name = `raft:parts:${key}`;
       visual.add(mesh);
     }
 
@@ -375,5 +458,6 @@ export class RaftLayer {
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();
     this.nm.dispose();
+    this.clothNm.dispose();
   }
 }

@@ -6,6 +6,10 @@ Checkpoint 2026-10-05: **P1 implementado localmente**, versión `0.6.0-alpha.1`,
 Identidad/migración, amarre, snapshot completo y renderer por piezas; [informe D04 P1](docs/delivery/d04p1-raft.md).
 P2 cubierta transitable, editor y bodega siguen pendientes. No es aceptación de mar/pérdidas ni publicación.
 
+Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
+atlas original de cuatro superficies y derivados WebP para escritorio/móvil. Se integra sobre P1;
+su aceptación visual no completa P2 ni la importación de un kit FAB modular.
+
 > Idea del autor (referencia: *Raft*): **empiezas con cuatro tablones y una vela** y la vas haciendo crecer, pieza a
 > pieza en una cuadrícula, hasta una fortaleza flotante. La balsa es tu casa, tu taller, tu bodega y lo que te lleva
 > de pueblo en pueblo a comerciar (M7). Une las dos patas de la estructura: **construcción y barcos**. Los solares en
