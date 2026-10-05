@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RAFT, RAFT_PARTS, RAFT_LOOKS } from '../data/raftparts.js';
+import { STAIR, raftGangplank } from '../sim/raftGeometry.js';
 import { toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
@@ -46,8 +47,9 @@ function hashPhase(id) {
 }
 
 export class RaftLayer {
-  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0' } = {}) {
+  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null } = {}) {
     this.scene = scene;
+    this.dock = dock;
     this.views = new Map(); // id -> { root, visual, revKey, record, ownedGeometries, ... }
     this.materials = new Map();
     this.shapes = new Map();
@@ -83,6 +85,67 @@ export class RaftLayer {
     return this.shapes.get(key);
   }
 
+  updateGangplank(view, record) {
+    const pose = raftGangplank(record, this.dock);
+    if (!pose || ![pose.x, pose.y, pose.z, pose.yaw, pose.length, pose.width, pose.rise].every(Number.isFinite)
+      || pose.length <= 0 || pose.width <= 0) {
+      if (!view.gangplank) return false;
+      view.visual.remove(view.gangplank);
+      const geometry = view.gangplank.geometry;
+      view.gangplank = null;
+      view.gangplankPoseKey = '';
+      view.ownedGeometries = view.ownedGeometries.filter((owned) => owned !== geometry);
+      geometry.dispose();
+      return true;
+    }
+
+    const plankDepth = Math.hypot(pose.length, pose.rise);
+    const sizeKey = `${pose.width.toFixed(3)}:${plankDepth.toFixed(3)}`;
+    const poseKey = JSON.stringify([pose.x, pose.y, pose.z, pose.yaw, pose.length, pose.width, pose.rise]);
+    let changed = false;
+    if (!view.gangplank || view.gangplank.userData.sizeKey !== sizeKey) {
+      const oldGeometry = view.gangplank?.geometry;
+      const geometry = this.boxShape(pose.width, 0.14, plankDepth).clone();
+      if (this.atlas) mapRaftUV(geometry, 'wood', { grain: 'box', variant: 0 });
+      if (oldGeometry) {
+        view.ownedGeometries = view.ownedGeometries.filter((owned) => owned !== oldGeometry);
+        oldGeometry.dispose();
+      }
+      if (view.gangplank) view.gangplank.geometry = geometry;
+      else {
+        view.gangplank = new THREE.Mesh(geometry, this.material(WOOD));
+        view.gangplank.name = 'raft:gangplank';
+        view.gangplank.castShadow = true;
+        view.gangplank.receiveShadow = true;
+        view.gangplank.userData.nm = this.nm;
+        view.gangplank.userData.raftSurface = 'wood';
+        view.visual.add(view.gangplank);
+      }
+      view.gangplank.userData.sizeKey = sizeKey;
+      view.ownedGeometries.push(geometry);
+      changed = true;
+    }
+    if (view.gangplankPoseKey !== poseKey) {
+      const raftX = cleanNum(record.x), raftY = cleanNum(record.y, 0.72), raftZ = cleanNum(record.z);
+      const raftYaw = cleanNum(record.yaw);
+      const dx = pose.x - raftX, dz = pose.z - raftZ;
+      const c = Math.cos(raftYaw), s = Math.sin(raftYaw);
+      const localX = dx * c - dz * s;
+      const localZ = dx * s + dz * c;
+      const slope = Math.atan2(pose.rise, pose.length);
+      const halfThickness = 0.07;
+      const relativeYaw = pose.yaw - raftYaw;
+      const normalOffset = halfThickness * Math.sin(slope);
+      view.gangplank.position.set(localX + normalOffset * Math.sin(relativeYaw),
+        pose.y - raftY - halfThickness * Math.cos(slope),
+        localZ + normalOffset * Math.cos(relativeYaw));
+      view.gangplank.rotation.set(-slope, relativeYaw, 0, 'YXZ');
+      view.gangplankPoseKey = poseKey;
+      changed = true;
+    }
+    return changed;
+  }
+
   boxShape(w, h, d) {
     const a = [w, h, d].map((v) => Math.max(0.025, +v).toFixed(3));
     const key = `b:${a.join(':')}`;
@@ -109,7 +172,7 @@ export class RaftLayer {
     const batches = new Map();
     const external = [];
     const ownedGeometries = [];
-    const add = (color, shape, x, y, z, rx = 0, ry = 0, rz = 0) => {
+    const add = (color, shape, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') => {
       const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
       const key = materialKey(spec);
       if (!batches.has(key)) batches.set(key, { spec, pieces: [] });
@@ -117,15 +180,15 @@ export class RaftLayer {
       if (this.atlas && spec.kind !== 'solid') mapRaftUV(g, spec.kind, {
         grain: shape.type === 'BoxGeometry' ? 'box' : shape.type === 'CylinderGeometry' ? 'cylinder' : 'raw',
         variant: Math.abs(Math.round(x * 19 + z * 31 + y * 11)) });
-      this.tmpEuler.set(rx, ry, rz, 'XYZ');
+      this.tmpEuler.set(rx, ry, rz, order);
       this.tempQuaternion.setFromEuler(this.tmpEuler);
       this.tempPosition.set(x, y, z);
       this.tempMatrix.compose(this.tempPosition, this.tempQuaternion, this.tempScale);
       g.applyMatrix4(this.tempMatrix);
       batches.get(key).pieces.push(g);
     };
-    const box = (color, w, h, d, x, y, z, rx = 0, ry = 0, rz = 0) =>
-      add(color, this.boxShape(w, h, d), x, y, z, rx, ry, rz);
+    const box = (color, w, h, d, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') =>
+      add(color, this.boxShape(w, h, d), x, y, z, rx, ry, rz, order);
     const cyl = (color, rt, rb, h, x, y, z, segments = 8, rx = 0, ry = 0, rz = 0) =>
       add(color, this.cylinderShape(rt, rb, h, segments), x, y, z, rx, ry, rz);
     const ring = (color, radius, tube, x, y, z, ry = 0, rx = 0) =>
@@ -191,6 +254,27 @@ export class RaftLayer {
           for (const s of [-1, 1]) box(WOOD_DARK, horizontal ? 0.16 : thick, LEVEL_H - 0.18, horizontal ? thick : 0.16,
             ex + off[0] * s, eh, ez + off[2] * s);
           edgeBox(WOOD, 1.8, 0.18, thick, y + LEVEL_H - 0.27);
+          // P2 keeps doors visually closed; the solid leaf makes the doorway read clearly from every side.
+          const normal = horizontal ? [0, 0, d === 0 ? -1 : 1] : [d === 1 ? 1 : -1, 0, 0];
+          const leafOffset = 0.035;
+          const doorPoint = (u, yy, face = leafOffset) => [
+            ex + (horizontal ? u : normal[0] * face), yy,
+            ez + (horizontal ? normal[2] * face : u),
+          ];
+          const faceBox = (color, wide, tall, deep, u, yy, face = leafOffset) => {
+            const p = doorPoint(u, yy, face);
+            box(color, horizontal ? wide : deep, tall, horizontal ? deep : wide, p[0], p[1], p[2]);
+          };
+          faceBox(WOOD_DARK, 1.35, 2.25, 0.12, 0, y + 1.125);
+          for (let i = 0; i < 4; i++) faceBox(WOOD, 0.31, 2.17, 0.045, -0.51 + i * 0.34, y + 1.125, leafOffset + 0.078);
+          // Cross braces are thin iron rods on the leaf face, and remain part of the atlas-mapped batch.
+          const brace = (u0, h0, u1, h1) => line(IRON, doorPoint(u0, y + h0, leafOffset + 0.12), doorPoint(u1, y + h1, leafOffset + 0.12), 0.035);
+          brace(-0.52, 0.20, 0.52, 0.72); brace(-0.52, 2.05, 0.52, 1.53);
+          faceBox(IRON, 0.09, 0.24, 0.04, 0.45, y + 1.12, leafOffset + 0.13);
+          const handle = doorPoint(0.45, y + 1.12, leafOffset + 0.18);
+          const handleRx = horizontal ? (normal[2] > 0 ? Math.PI / 2 : -Math.PI / 2) : 0;
+          const handleRz = horizontal ? 0 : (normal[0] > 0 ? -Math.PI / 2 : Math.PI / 2);
+          cyl(IRON_LIGHT, 0.035, 0.035, 0.08, handle[0], handle[1], handle[2], 8, handleRx, 0, handleRz);
         } else if (id === 'window') {
           edgeBox(base, 1.9, 0.15, thick, y + 0.25);
           edgeBox(base, 1.9, 0.15, thick, y + 1.85);
@@ -288,7 +372,27 @@ export class RaftLayer {
           box(WOOD, ww * 0.96, 0.18, 1.34, cx, y + 0.82, cz);
           box(IRON, 0.12, 0.3, 0.08, cx, y + 0.58, cz + 0.69);
         } else if (id === 'stairs') {
-          for (let i = 0; i < 6; i++) box(WOOD, 1.55, 0.13, 0.3, cx, y + (i + 1) * LEVEL_H / 6 - 0.065, cz - 0.72 + i * 0.29);
+          const count = Math.max(1, STAIR.steps | 0), treadDepth = CELL / count, rise = LEVEL_H / count;
+          const slope = Math.atan2(LEVEL_H, CELL), slopeLength = Math.hypot(LEVEL_H, CELL);
+          const turn = (lx, lz) => {
+            if (d === 1) return [lz, -lx];
+            if (d === 2) return [-lx, -lz];
+            if (d === 3) return [-lz, lx];
+            return [lx, lz];
+          };
+          for (let i = 0; i < count; i++) {
+            const [ox, oz] = turn(0, -CELL / 2 + (i + 0.5) * treadDepth);
+            box(WOOD, STAIR.width, 0.13, treadDepth - 0.015, cx + ox, y + (i + 1) * rise - 0.065, cz + oz, 0, d * Math.PI / 2);
+          }
+          // Paired sloped stringers and handrails mark both blocked sides of the climb.
+          for (const side of [-1, 1]) {
+            const [sx, sz] = turn(side * (STAIR.width / 2 + 0.045), 0);
+            box(WOOD_DARK, 0.11, 0.17, slopeLength, cx + sx, y + LEVEL_H / 2 - 0.03, cz + sz,
+              -slope, d * Math.PI / 2, 0, 'YXZ');
+            const [hx, hz] = turn(side * (STAIR.width / 2 + 0.14), 0);
+            box(WOOD, 0.09, 0.11, slopeLength, cx + hx, y + LEVEL_H / 2 + 0.74, cz + hz,
+              -slope, d * Math.PI / 2, 0, 'YXZ');
+          }
         } else if (id === 'ladder') {
           for (let s of [-1, 1]) cyl(WOOD_DARK, 0.065, 0.065, 2.3, cx + s * 0.42, y + 1.17, cz, 6);
           for (let i = 0; i < 7; i++) box(WOOD_LIGHT, 0.9, 0.07, 0.07, cx, y + 0.25 + i * 0.3, cz);
@@ -379,8 +483,10 @@ export class RaftLayer {
     const view = {
       id: String(record.id), root, visual, revKey: keyOf(record), record,
       ownedGeometries, external, phase: hashPhase(record.id), isLocal: false,
+      gangplank: null, gangplankPoseKey: '',
       x: NaN, y: NaN, z: NaN, yaw: NaN,
     };
+    this.updateGangplank(view, record);
     return view;
   }
 
@@ -433,6 +539,7 @@ export class RaftLayer {
       view.root.userData.berth = record.berth ?? '';
       view.root.userData.isLocal = local;
       view.record = record;
+      if (this.updateGangplank(view, record)) changed = true;
 
       const t = cleanNum(time);
       const bob = Math.sin(t * 0.85 + view.phase) * 0.018;

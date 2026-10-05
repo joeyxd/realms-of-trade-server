@@ -50,6 +50,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   15/15 pruebas pertinentes y movimiento compartido público. No sustituye aceptación humana/FPS ni D04 P2.
 - Prueba de arte posterior sobre D04 P1: [balsa cómic y presupuesto móvil](docs/delivery/raft-comic-material.md),
   atlas original 1024/512 WebP; siguiente corte jugable sigue siendo D04 P2. No sustituye A05 (kit FAB modular).
+- Checkpoint posterior D04 P2 (2026-10-05): cubierta transitable aceptada localmente en software sobre `d028a42`,
+  protocolo 13 conservado; 383/383, 18 capturas PC/móvil emulado inspeccionadas, atlas 1024/512 confirmado.
+  [Informe](docs/delivery/d04p2-raft-walk.md). Sigue D05: editor autoritativo; banco Dreamrise para D06 y hut
+  prefabricada para M8 son candidatos, no un kit modular exportado. Dispositivos/publicación pendientes.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),
@@ -80,8 +84,8 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
 | D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
-| D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1 local implementado ([informe](docs/delivery/d04p1-raft.md)); P2 pendiente |
-| D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |
+| D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; muelle → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1–P2 local aceptado en software ([P2](docs/delivery/d04p2-raft-walk.md)); dispositivos/publicación pendientes |
+| D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | [Brief preparado](docs/briefs/d05-raft-editor.md); sin implementar |
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |

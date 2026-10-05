@@ -94,7 +94,7 @@ export class GameScene {
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
-    this.rafts = new RaftLayer(this.scene);
+    this.rafts = new RaftLayer(this.scene, { dock: map.dock });
     this.effects = new Effects(this.scene, map);
     this.projectiles = new ProjectileView(this.scene, map);
     this.decals = new Decals(this.scene, map, 32);

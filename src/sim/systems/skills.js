@@ -37,7 +37,7 @@ import { tuning, DT } from '../../data/tuning.js';
 import { WEAPON_KINDS, RACK_R, SKILLS, weaponOf, formed } from '../../data/weapons.js';
 import { PTYPE, KILL, SHOT, clipDistance } from '../projectiles.js';
 import { hash01 } from '../../core/rng.js';
-import { BTN, moveWithCollision, canStand } from './movement.js';
+import { BTN, moveWithCollision, canStand, standingHeight } from './movement.js';
 import { ACT } from '../ecs.js';
 import { kitUnlocked, passive, applyLoadout } from './stats.js';
 import { SLOTS, SLOT_COLS, TATTOO, slotSkill } from '../../data/tattoos.js';
@@ -509,7 +509,7 @@ function planLeap(world, e, cmd, S, form, ev) {
   if (!S.blink) {
     const d = Math.hypot(x1 - x0, z1 - z0), n = Math.ceil(d / 0.3);
     let k = n;
-    while (k > 0 && !canStand(world, x0 + ((x1 - x0) * k) / n, z0 + ((z1 - z0) * k) / n, ecs.radius[e])) k--;
+    while (k > 0 && !canStand(world, x0 + ((x1 - x0) * k) / n, z0 + ((z1 - z0) * k) / n, ecs.radius[e], ecs.y[e])) k--;
     x1 = x0 + ((x1 - x0) * k) / n; z1 = z0 + ((z1 - z0) * k) / n;
     ecs.iframes[e] = Math.max(ecs.iframes[e], S.windup + S.air);
     ev.air = S.air; ev.h = S.h;
@@ -527,7 +527,9 @@ function leapAir(world, e, S, slot, t0, t1, pt, seq) {
   const ecs = world.ecs, u = Math.min(1, (t1 - S.windup) / S.air), k = u * u * (3 - 2 * u);
   ecs.x[e] = ecs.lpX0[e] + (ecs.lpX1[e] - ecs.lpX0[e]) * k;
   ecs.z[e] = ecs.lpZ0[e] + (ecs.lpZ1[e] - ecs.lpZ0[e]) * k;
-  ecs.y[e] = world.map.groundAt(ecs.x[e], ecs.z[e]);
+  // Over water the flight keeps its support height; a valid landing uses the same deck query as walking.
+  if (canStand(world, ecs.x[e], ecs.z[e], ecs.radius[e], ecs.y[e]))
+    ecs.y[e] = standingHeight(world, ecs.x[e], ecs.z[e], ecs.y[e]);
   if (u < 1) return;
   const x = ecs.x[e], z = ecs.z[e], form = ecs[SLOT_COLS[slot].fm][e];
   clearParry(world, e, inCircle(x, z, S.clearR), pt, seq, 'leap', S.riposte, S.riposteMax);

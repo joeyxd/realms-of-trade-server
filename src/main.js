@@ -382,7 +382,7 @@ async function boot() {
     const v = views.get(client.youServer);
     if (v) {
       v.onStep = () => safe('step', () => {
-        const mat = map.materialAt(ps.x, ps.z);
+        const mat = client.pred.raftDeck.surface(ps.x, ps.z, ps.y) ? 'wood' : map.materialAt(ps.x, ps.z);
         world.effects.footstep(ps.x, ps.y, ps.z, mat, ps.wade);
         sfx.step(mat, ps.wade);
       });
@@ -392,9 +392,10 @@ async function boot() {
     const v = views.get(client.youServer);
     const accent = elementVisual(ps.elem)?.accent ?? SKINS[settings.skin].accent;
     if (v) world.after.dash(v, accent, tuning.dash.afterimages, tuning.dash.afterimageLife);
-    const mat = map.materialAt(d.x, d.z);
-    world.effects.dashBurst(d.x, map.groundAt(d.x, d.z), d.z, d.dx, d.dz, mat, ps.wade);
-    world.lights.flash(d.x, map.groundAt(d.x, d.z) + 1.1, d.z, accent, 5.5, 2.6, 0.32);
+    const deck = client.pred.raftDeck.surface(d.x, d.z, ps.y);
+    const mat = deck ? 'wood' : map.materialAt(d.x, d.z), y = deck?.y ?? map.groundAt(d.x, d.z);
+    world.effects.dashBurst(d.x, y, d.z, d.dx, d.dz, mat, ps.wade);
+    world.lights.flash(d.x, y + 1.1, d.z, accent, 5.5, 2.6, 0.32);
     sfx.dash(ps.wade);
     world.rig.punchIn(0.35);
     if (st.tut === 'dash') advanceTutorial();

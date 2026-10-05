@@ -10,14 +10,21 @@ export const BTN = { DASH: 1, ATTACK: 2, PARRY: 4, GUARD: 4, Q: 8, E: 16, R: 32,
 
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
 
-function walkStep(map, x0, z0, x1, z1) {
+export function standingHeight(world, x, z, referenceY) {
+  return world.raftDeck?.surface(x, z, referenceY)?.y ?? world.map.groundAt(x, z);
+}
+
+function walkStep(world, x0, z0, x1, z1, y0, r) {
+  const map = world.map;
   const W = tuning.world;
   const lim = map.half - 2;
   if (x1 < -lim || x1 > lim || z1 < -lim || z1 > lim) return false;
-  const deck1 = map.onDock(x1, z1), deck0 = map.onDock(x0, z0);
-  const g1 = map.groundAt(x1, z1);
+  const raft0 = world.raftDeck?.surface(x0, z0, y0), raft1 = world.raftDeck?.surface(x1, z1, y0);
+  const deck1 = map.onDock(x1, z1) || raft1, deck0 = map.onDock(x0, z0) || raft0;
+  const g1 = raft1?.y ?? map.groundAt(x1, z1);
   if (!deck1 && W.waterLevel - g1 > W.wadeMax) return false;
-  const g0 = map.groundAt(x0, z0);
+  if (world.raftDeck?.blocked(x1, z1, g1, r)) return false;
+  const g0 = raft0?.y ?? map.groundAt(x0, z0);
   const d = Math.hypot(x1 - x0, z1 - z0);
   if (d < 1e-9) return true;
   const dh = g1 - g0;
@@ -28,10 +35,12 @@ function walkStep(map, x0, z0, x1, z1) {
 
 // Could a body of radius r stand at (x, z)? The rules moveWithCollision applies to where you end up: inside the map,
 // not in deep water (a dock is dry), not inside a collider. (Landing spots of a leap.)
-export function canStand(world, x, z, r = tuning.player.radius) {
+export function canStand(world, x, z, r = tuning.player.radius, referenceY) {
   const map = world.map, W = tuning.world, lim = map.half - 2;
   if (x < -lim || x > lim || z < -lim || z > lim) return false;
-  if (!map.onDock(x, z) && W.waterLevel - map.groundAt(x, z) > W.wadeMax) return false;
+  const surface = world.raftDeck?.surface(x, z, referenceY), y = surface?.y ?? map.groundAt(x, z);
+  if (!surface && !map.onDock(x, z) && W.waterLevel - y > W.wadeMax) return false;
+  if (world.raftDeck?.blocked(x, z, y, r)) return false;
   const list = map.queryColliders(x, z, r + 3);
   for (let k = 0; k < list.length; k++) {
     const c = map.colliders[list[k]], ox = x - c.x, oz = z - c.z, m = r + c.r;
@@ -42,12 +51,22 @@ export function canStand(world, x, z, r = tuning.player.radius) {
 
 // Moves entity e by (dx, dz) resolving terrain walkability (axis sliding) and static circle colliders.
 export function moveWithCollision(world, e, dx, dz) {
+  // A continuous sampled path also protects ordinary walking, knockback and skill movement from
+  // skipping a narrow deck gap or an edge. Keep the existing island path unchanged without rafts.
+  const steps = world.raftDeck?.size ? Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.15)) : 1;
+  let moved = 0;
+  for (let i = 0; i < steps; i++) moved += moveOnce(world, e, dx / steps, dz / steps);
+  return moved;
+}
+
+function moveOnce(world, e, dx, dz) {
   const ecs = world.ecs, map = world.map;
   const x = ecs.x[e], z = ecs.z[e], r = ecs.radius[e];
   let nx = x + dx, nz = z + dz;
-  if (!walkStep(map, x, z, nx, nz)) {
-    if (walkStep(map, x, z, nx, z)) nz = z;
-    else if (walkStep(map, x, z, x, nz)) nx = x;
+  const y = ecs.y[e];
+  if (!walkStep(world, x, z, nx, nz, y, r)) {
+    if (walkStep(world, x, z, nx, z, y, r)) nz = z;
+    else if (walkStep(world, x, z, x, nz, y, r)) nx = x;
     else { nx = x; nz = z; }
   }
   for (let iter = 0; iter < 2; iter++) {
@@ -65,10 +84,10 @@ export function moveWithCollision(world, e, dx, dz) {
       }
     }
   }
-  if (!walkStep(map, x, z, nx, nz)) { nx = x; nz = z; }
+  if (!walkStep(world, x, z, nx, nz, y, r)) { nx = x; nz = z; }
   ecs.x[e] = nx;
   ecs.z[e] = nz;
-  ecs.y[e] = map.groundAt(nx, nz);
+  ecs.y[e] = standingHeight(world, nx, nz, y);
   return Math.hypot(nx - x, nz - z);
 }
 

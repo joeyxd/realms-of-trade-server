@@ -1,8 +1,9 @@
 // Moored player rafts (M6 P1). Saved ships stay private; only their visible blueprint and a server-selected
-// berth are replicated. Active vessels are ECS vehicles, never character spawns. Sailing and deck movement
-// are separate slices: this module does not accept client placement, cargo, damage or navigation commands.
+// berth are replicated. Active vessels are ECS vehicles, never character spawns. Their shared walk geometry
+// does not accept client placement, cargo, damage or navigation commands.
 import { C, KIND } from '../ecs.js';
 import { RAFT } from '../../data/raftparts.js';
+import { SLOTS, slotSkill } from '../../data/tattoos.js';
 import { indexRaft } from '../economy/raft.js';
 import { newEco } from './trade.js';
 
@@ -80,13 +81,34 @@ export function attachRafts(w, owner, p) {
   const entity = ecs.create(KIND.SHIP, C.POS | C.VEHICLE);
   ecs.x[entity] = pose.x; ecs.y[entity] = pose.y; ecs.z[entity] = pose.z; ecs.facing[entity] = pose.yaw;
   w.rafts.set(ship.id, { entity, owner, ship });
+  w.raftDeck.update(publicRafts(w));
   w.profileDirty.add(owner);
 }
 
 export function detachRafts(w, owner) {
+  const removed = new Set([...w.rafts.values()].filter((r) => r.owner === owner).map((r) => r.ship.id));
+  // A guest must not remain hovering over deep water after the owner's logout removes the moored deck.
+  const guests = [...w.ecs.each(C.PLAYER)].filter((e) => {
+    const ecs = w.ecs;
+    if (removed.has(w.raftDeck.surface(ecs.x[e], ecs.z[e], ecs.y[e])?.id)) return true;
+    // Abordaje may be over unsupported water when its planned landing disappears.
+    const slot = SLOTS[ecs.castK[e] - 1];
+    return !!slot && slotSkill(ecs, e, slot) === 'leap'
+      && removed.has(w.raftDeck.surface(ecs.lpX1[e], ecs.lpZ1[e], ecs.y[e])?.id);
+  });
   for (const [id, r] of w.rafts) if (r.owner === owner) {
     w.ecs.destroy(r.entity);
     w.rafts.delete(id);
+  }
+  w.raftDeck.update(publicRafts(w));
+  for (const e of guests) {
+    const d = w.map.dock, ecs = w.ecs;
+    ecs.x[e] = d.base.x + d.dir.x * Math.max(0, d.len - 10);
+    ecs.z[e] = d.base.z + d.dir.z * Math.max(0, d.len - 10);
+    ecs.y[e] = w.map.groundAt(ecs.x[e], ecs.z[e]);
+    ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = 0;
+    ecs.dashT[e] = -1;
+    ecs.castK[e] = ecs.castT[e] = ecs.castLock[e] = ecs.chg[e] = 0;
   }
 }
 

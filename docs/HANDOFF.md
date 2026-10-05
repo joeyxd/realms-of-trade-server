@@ -55,11 +55,32 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1–P3 + base D09a local**: cuentas/economía y operación atómica de perlas; SQL 003/juego, correo humano/publicación pendientes (`PLAN-M5.md`) |
-| M6 «La Balsa» | **P1 local**: balsa amarrada visible/replicada, identidad/migración y fallback; P2 cubierta y editor pendientes (`PLAN-M6.md`) |
+| M6 «La Balsa» | **P1–P2 local**: balsa visible y transitable, pasarela/bloqueos/escaleras compartidos; editor/bodega y dispositivos/publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
+
+### D04 P2 — cubierta transitable (2026-10-05)
+
+- Base inicial `6402462`, integrada sobre D09a `d028a42`; `0.6.0-alpha.1`, protocolo 13 conservado.
+  [Informe](delivery/d04p2-raft-walk.md), [registro durable](delivery/d04p2-evidence.json).
+- `RaftDeck` compila soporte/bloqueos por plano y pose; autoridad/predicción usan las mismas consultas.
+  Pasarela real en amarres adyacentes, pisos/escaleras en cuatro direcciones, pared/puerta cerrada/barandilla,
+  marcha/dash y aterrizaje Abordaje. Geometría instalada antes del replay; corrección Y y snapshots antiguos probados.
+- **383/383** regresión acotada, 14 pruebas nuevas, 18 capturas PC/móvil emulado inspeccionadas; entradas reales
+  WASD/Space y joystick/Dash. Error de predicción 0 en muestras; atlas cargado 1024 PC/512 móvil.
+- Desconexión del dueño durante Abordaje hacia su balsa rescata al visitante incluso si está en vuelo sobre agua;
+  no se usan destinos de salto obsoletos mientras otra habilidad está activa.
+- No se reinició/publicó el host activo ni se alteró una partida online. Plano QA aislado de 17 piezas;
+  starter sigue 2×2 + vela + caja. Móvil físico/FPS y sensación humana pendientes.
+- Límites: amarres remotos berth 2+ sin pasarela, puerta aún cerrada sin interacción, escalas/muebles/combate
+  entre alturas y plataformas móviles fuera del corte. No afirmar navegación ni editor por estas capturas.
+- Assets Unreal revisados: caja ya usada en balsa; banco candidato D06, hut prefab M8 y Blueprint de martillo
+  como referencia UX. No apareció un kit modular listo, no hubo nueva importación ni modificación de fuentes.
+- **[Siguiente D05 / M6 P3](briefs/d05-raft-editor.md)**: editor con fantasma/rotación y comandos autoritativos, costes reales/propiedad/
+  revisión/soporte/ocupantes seguros, teclado/táctil y persistencia. Después D06 y
+  [bahía D08 propuesta](briefs/d08-navigation-feel.md); reglas finales de carga/tier/viento siguen abiertas.
 
 ### M4.7 terminado (lo que queda abierto)
 

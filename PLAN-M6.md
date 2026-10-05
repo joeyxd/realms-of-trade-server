@@ -2,13 +2,14 @@
 
 Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04–D06/D08 y mar D10–D12.
 
-Checkpoint 2026-10-05: **P1 implementado localmente**, versión `0.6.0-alpha.1`, protocolo 13.
-Identidad/migración, amarre, snapshot completo y renderer por piezas; [informe D04 P1](docs/delivery/d04p1-raft.md).
-P2 cubierta transitable, editor y bodega siguen pendientes. No es aceptación de mar/pérdidas ni publicación.
+Checkpoint 2026-10-05: **P1–P2 implementados y aceptados localmente en software**, versión `0.6.0-alpha.1`, protocolo 13.
+Identidad/migración, amarre, snapshot y renderer; [P1](docs/delivery/d04p1-raft.md).
+Pasarela/cubierta, bloqueos y escaleras compartidos; [P2](docs/delivery/d04p2-raft-walk.md), 383/383 y PC/móvil emulado.
+Editor y bodega siguen pendientes. No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
 
 Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
 atlas original de cuatro superficies y derivados WebP para escritorio/móvil. Se integra sobre P1;
-su aceptación visual no completa P2 ni la importación de un kit FAB modular.
+P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a importar un kit FAB modular.
 
 > Idea del autor (referencia: *Raft*): **empiezas con cuatro tablones y una vela** y la vas haciendo crecer, pieza a
 > pieza en una cuadrícula, hasta una fortaleza flotante. La balsa es tu casa, tu taller, tu bodega y lo que te lleva
@@ -21,7 +22,7 @@ su aceptación visual no completa P2 ni la importación de un kit FAB modular.
 
 | Pieza | Dónde | Estado |
 |---|---|---|
-| 28 piezas: cimiento, piso, pilar, pared, puerta, ventana, barandilla, techo, escalera, escala, vela, vela mayor, motor, ancla, bodega, cofre, caja, huerto, cañaveral, purificador, red, parrilla, alambique, mesa de cartas, hamaca, litera, farol, cañón giratorio, adorno | `src/data/raftparts.js` | ✅ |
+| 29 piezas: cimiento, piso, pilar, pared, puerta, ventana, barandilla, techo, escalera, escala, vela, vela mayor, motor, ancla, bodega, cofre, caja, huerto, cañaveral, purificador, red, parrilla, alambique, mesa de cartas, hamaca, litera, farol, cañón giratorio, adorno | `src/data/raftparts.js` | ✅ |
 | Reglas de construcción: cimientos conectados (12 × 12 máx.), pisos con soporte (pilar o pared debajo, o un voladizo de una casilla), piezas sobre cubierta libre, bordes junto a una cubierta, la red al borde, 3 niveles | `src/sim/economy/raft.js` (`canPlace`) | ✅ |
 | Colocar pagando con una bodega, quitar devolviendo la mitad (sin tirar lo que sostiene algo ni partir la balsa) | `place` / `remove` | ✅ |
 | Lo que hace la balsa: flotación contra peso (sobrecarga = se arrastra), velocidad por velas y motores, bodega, tripulación, cañones, reaparición | `raftStats` | ✅ |
@@ -69,12 +70,15 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   entrar; en P1 lista completa para reparar entrada tardía/bajas, eventos `raftPart` al implementar el editor).
   Render: piezas en su casilla, geometría procedural agrupada por color y caja FAB con fallback, balanceo visual
   leve. Los perfiles marcados vacíos no reciben otra starter; solo la balsa primaria amarrada en Aldea es visible.
-- [ ] **P2 Caminar por ella.** `map.groundAt` y las colisiones consultan la balsa cerca del muelle: la cubierta da la
-  altura del suelo, las paredes y barandillas son colisionadores, las escaleras suben de nivel. Test: un jugador
-  camina de la playa a la cubierta.
-- [ ] **P3 Modo construcción** (tecla B / botón táctil). Menú de piezas (rejilla de iconos como la referencia:
+- [x] **P2 Caminar por ella.** `RaftDeck` aporta suelo/bloqueos a movimiento y aterrizajes compartidos.
+  Pasarela de amarres adyacentes, cubierta/pisos, puertas cerradas, paredes/barandillas y escaleras en cuatro
+  direcciones; predicción instala geometría antes del replay. PC/móvil emulado muelle→cubierta→piso→muelle,
+  14 pruebas nuevas y regresión 383/383. Amarres remotos, puertas interactuables y escalas quedan abiertos;
+  [informe y límites](docs/delivery/d04p2-raft-walk.md).
+- [ ] **P3 Modo construcción** ([brief D05](docs/briefs/d05-raft-editor.md), tecla B / botón táctil). Menú de piezas (rejilla de iconos como la referencia:
   nombre, coste, lo que hace), fantasma verde / rojo en la casilla apuntada con el motivo de `canPlace` en español,
-  rotar bordes con R, quitar con clic derecho. Comandos `raft` `{op: 'place', piece}` / `{op: 'remove', i}` →
+  rotar con R solo dentro del editor y retirada en modo explícito; fuera R sigue habilidad/clic derecho guardia.
+  Comandos `raft` `{op: 'place', piece}` / `{op: 'remove', i}` con identidad/revisión/operación del brief →
   eventos `raftPart` / `raftDenied`. Gancho de assets `part:<id>`: geometría procedural o piezas exportadas de
   un kit compatible, misma medida de casilla (`RAFT.cell` = 2 u). Selección FAB según el inventario Unreal.
 - [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaft` en `economy.step` para las balsas de los

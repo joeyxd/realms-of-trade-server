@@ -23,6 +23,7 @@ import { burnOnHit, chillOnHit, lightningOnHit, enemyChillMul, stepBurns, stepCh
 import { PEARL } from '../data/pearls.js';
 import { CLOCK, hourOfDay, nightAt } from '../data/clock.js';
 import { addInkCloud, removePredictedInkClouds, markOnHit, stepInk } from './systems/ink.js';
+import { RaftDeck } from './raftGeometry.js';
 
 const D2R = Math.PI / 180;
 
@@ -32,6 +33,7 @@ export class World {
     this.tick = 0;
     this.rng = mulberry32((seed ^ 0xabcdef) >>> 0);
     this.map = map || generateWorld(this.seed);
+    this.raftDeck = new RaftDeck(this.map);
     this.ecs = new ECS(2048);
     this.events = [];
     this.isServer = server;

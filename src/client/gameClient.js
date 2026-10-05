@@ -32,6 +32,7 @@ export class GameClient {
     this.entities = new Map(); // serverId -> record
     this.pred.rafts = [];
     this.lastRaftTick = -1;
+    this.lastSnapshotTick = -1;
     this.clock = 0;
     this.serverOffset = null;
     this.prev = { x: 0, y: 0, z: 0, f: 0 };
@@ -289,9 +290,13 @@ export class GameClient {
   }
 
   onSnapshot(s) {
+    // Never reconcile an older player state against a newer set of deck surfaces.
+    if (s.tick < this.lastSnapshotTick) return;
+    this.lastSnapshotTick = s.tick;
     if (Array.isArray(s.rafts) && s.tick >= this.lastRaftTick) {
       this.lastRaftTick = s.tick;
       this.pred.rafts = s.rafts;
+      this.pred.raftDeck.update(s.rafts);
     }
     const st = s.tick * DT;
     const off = st - this.clock;
@@ -383,7 +388,7 @@ export class GameClient {
     if (i) this.pending.splice(0, i);
     this.replay(ack);
     const dx = bx - ecs.x[e], dy = by - ecs.y[e], dz = bz - ecs.z[e];
-    const errLen = Math.hypot(dx, dz);
+    const errLen = Math.hypot(dx, dy, dz);
     this.stats.predErr = errLen;
     if (errLen > 1e-6) {
       this.stats.corrections++;
