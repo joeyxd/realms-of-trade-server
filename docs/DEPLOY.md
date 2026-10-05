@@ -3,6 +3,55 @@
 `npm start` levanta **un solo proceso** que sirve el juego y corre el mundo. Quien abre la URL juega en línea en
 la misma isla (hasta `MAX_PLAYERS`, 4 por defecto).
 
+## Desde tu PC Windows, con un doble clic
+
+Abre **`JUGAR-CON-AMIGOS.cmd`** en la raíz del proyecto (también hay un acceso en `C:\DEV\real of trade`).
+Hace falta Node.js 22 o superior e Internet. El lanzador instala las dependencias si faltan, levanta el mundo
+en **http://localhost:5173**. Si ngrok ya está instalado/configurado, usa su URL asignada; en este PC está disponible.
+En otro equipo usa Cloudflare: descarga una versión oficial de `cloudflared` y verifica su SHA256 antes de usarla.
+La opción Cloudflare no necesita cuenta ni dominio, instalación global, permisos de administrador o abrir el router.
+
+Cuando la comprobación HTTPS pasa, muestra **URL PARA LOS DOS**, abre el navegador y guarda la URL en
+`URL-PARA-AMIGOS.txt`. Compártela con tu amigo: los dos entráis a la misma isla. Mantén tu PC encendida,
+conectada a Internet y sin suspender. El túnel usa conexiones salientes; el juego escucha solo en loopback.
+
+Para apagarlo, **`DETENER-JUEGO.cmd`** cierra el túnel y espera el guardado de perfiles del host. En la ventana
+del lanzador también sirve Ctrl+C. Usa estas opciones antes de cerrar la ventana de golpe. Un segundo doble
+clic detecta el lanzador activo y muestra su URL, sin crear otra instancia.
+
+Desde terminal, en la carpeta del proyecto:
+
+```powershell
+npm.cmd run play:friends                      # servidor + URL HTTPS + navegador
+npm.cmd run play:friends -- --no-open          # sin abrir el navegador
+npm.cmd run play:friends -- --tunnel ngrok     # configuración existente de ngrok
+npm.cmd run play:friends -- --tunnel cloudflare # sin cuenta, hostname temporal
+npm.cmd run play:friends -- --port 5180        # puerto alternativo, con la otra instancia apagada
+npm.cmd run play:local                        # solo tu PC, sin túnel ni descarga
+npm.cmd run play:stop                         # cierre ordenado
+npm.cmd run play:check -- https://URL-DEL-JUEGO # canario HTTP + dos jugadores (necesita 2 plazas libres)
+```
+
+`MAX_PLAYERS` (4), `BOTS` (3) y `PC_TUNNEL` (`auto`, `ngrok` o `cloudflare`) se pueden cambiar en `.env`.
+Conserva las cuentas/Supabase configuradas allí;
+para entrar sin registro, elige **Jugar como invitado**. El lanzador fuerza DEV desactivado y permite los orígenes
+locales y el HTTPS asignado. No ejecutes otra autoridad con las mismas cuentas a la vez: las reservas de M5
+todavía son de un proceso. Si 5173 está ocupado por una vista previa antigua, ciérrala antes de iniciar.
+
+El secreto de guardado existente se conserva. Si no hay `SAVE_SECRET`, el lanzador genera uno estable en
+`.scratch/pc-host/save-secret`, privado y fuera de los archivos servidos/Git. No lo borres si quieres conservar
+las firmas de invitados. Sesión, control de apagado, binario y log del túnel viven también en `.scratch/pc-host/`;
+el control de apagado escucha en otro puerto de loopback y exige un token que nunca publica el juego.
+
+La URL deja de servir el juego al apagar el lanzador; quien tenga el enlace puede entrar mientras está encendido.
+Si ngrok muestra su aviso inicial, pulsa **Visit Site**. Su dominio de desarrollo está ligado a la cuenta y se
+reutiliza; se comprobó en dos arranques en este PC. [Dominio, aviso y cuotas de ngrok](https://ngrok.com/docs/pricing-limits/free-plan-limits).
+Cloudflare cambia el hostname con cada nuevo túnel y su DNS puede tardar: el lanzador espera hasta tres minutos.
+Las partidas de invitados se guardan por dirección de servidor en el navegador: un nuevo hostname no recupera
+automáticamente el slot anterior, aunque el secreto sea estable. Para progreso ligado a identidad usa una cuenta.
+El registro por correo exige autorizar la URL actual en Supabase Auth; para esta prueba el invitado evita ese paso.
+Para un dominio propio configura un túnel con ese dominio. [Documentación de Quick Tunnels](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
+
 ## ¿Tu PC o el servidor?
 
 - **La GPU no importa para el servidor.** El servidor solo corre la simulación (CPU: ~0.16 ms por paso a 60 Hz,

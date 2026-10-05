@@ -11,6 +11,10 @@ son los CDN de Three.js y GSAP, y Google Fonts.
 
 ## Cómo ejecutarlo
 
+**Para probar con un amigo desde tu PC Windows:** doble clic en `JUGAR-CON-AMIGOS.cmd` (o `npm.cmd run play:friends`).
+Arranca en el puerto **5173** y muestra una URL HTTPS para compartir. `DETENER-JUEGO.cmd` lo apaga
+guardando los perfiles. [Instrucciones, cuentas y límites del túnel](docs/DEPLOY.md#desde-tu-pc-windows-con-un-doble-clic).
+
 ```bash
 npm install          # ws (servidor) y three (tests de geometría)
 npm start            # servidor de juego: http://localhost:5173 → abre 2–4 pestañas o equipos y compartís la isla

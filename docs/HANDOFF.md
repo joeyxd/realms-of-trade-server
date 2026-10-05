@@ -43,6 +43,12 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 
 ## 3. Estado (2026-10-05)
 
+Prueba desde el PC: [lanzador y evidencia](delivery/pc-host-playtest.md). `JUGAR-CON-AMIGOS.cmd` levanta el
+host 5173 y un túnel HTTPS; en este equipo usa ngrok ya configurado. `DETENER-JUEGO.cmd` apaga con flush.
+15/15 pruebas pertinentes; dos invitados y movimiento compartido comprobados por HTTPS/WSS público.
+Servidor encendido al aceptar; la URL actual está en `URL-PARA-AMIGOS.txt` ignorado. Cada jugador usa su GPU;
+recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protocolo ni cerrar D04 P2.
+
 | Milestone | Estado |
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |

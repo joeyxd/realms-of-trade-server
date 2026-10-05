@@ -2,6 +2,7 @@ node_modules/
 dist/
 shots/
 .scratch/
+URL-PARA-AMIGOS.txt
 .env
 .env.*
 .DS_Store
