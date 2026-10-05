@@ -30,6 +30,8 @@ export class GameClient {
     this.seq = 0;
     this.pending = [];
     this.entities = new Map(); // serverId -> record
+    this.pred.rafts = [];
+    this.lastRaftTick = -1;
     this.clock = 0;
     this.serverOffset = null;
     this.prev = { x: 0, y: 0, z: 0, f: 0 };
@@ -286,6 +288,10 @@ export class GameClient {
   }
 
   onSnapshot(s) {
+    if (Array.isArray(s.rafts) && s.tick >= this.lastRaftTick) {
+      this.lastRaftTick = s.tick;
+      this.pred.rafts = s.rafts;
+    }
     const st = s.tick * DT;
     const off = st - this.clock;
     // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one

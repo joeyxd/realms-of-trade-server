@@ -561,7 +561,9 @@ async function boot() {
       title.boarding(false);
       if (r.k !== 'ok') {
         title.message(r.k === 'full' ? `La tripulación está completa (${r.m.max}/${r.m.max}). Prueba en un rato o juega solo.`
-          : r.k === 'error' ? 'Tu versión del juego es distinta a la del servidor: recarga la página.'
+          : r.k === 'error' ? (r.m.code === 'session' ? 'Esta partida ya está abierta. Cierra la otra sesión y vuelve a intentar.'
+            : r.m.code === 'storage' ? 'No pudimos cargar tu partida. Vuelve a intentar en un momento.'
+              : 'Tu versión del juego es distinta a la del servidor: recarga la página.')
             : 'El servidor no contesta. Prueba de nuevo o juega solo.');
         sfx.click();
         return;
@@ -1029,7 +1031,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, rafts: client.pred.rafts, you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);

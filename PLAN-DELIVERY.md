@@ -30,6 +30,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
 - Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; ningún candidato importado
   al crear este plan. Ahora el manifiesto contiene A02. No reiniciar la investigación desde cero.
+- Checkpoint posterior D04 P1 (2026-10-05): balsa propia visible y replicada, `0.6.0-alpha.1` / protocolo 13;
+  P2 transitar cubiertas sigue pendiente. [Informe](docs/delivery/d04p1-raft.md).
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
@@ -61,7 +63,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
 | D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
-| D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: probar primero el hook `crate` que ya existe en la isla; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | Pendiente |
+| D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1 local implementado ([informe](docs/delivery/d04p1-raft.md)); P2 pendiente |
 | D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | En curso: P1 local integrado ([D07a](docs/delivery/d07a-store.md)); P2/P3 y servicio real pendientes |

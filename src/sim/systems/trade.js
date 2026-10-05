@@ -12,24 +12,43 @@ import { Economy } from '../economy/economy.js';
 import { board } from '../economy/market.js';
 import { newHold, sanitizeHold, holdUsed, PACK_CAP } from '../economy/cargo.js';
 import { HULLS, MODULES } from '../../data/ships.js';
-import { sanitizeRaft } from '../economy/raft.js';
+import { newRaft, raftStats, sanitizeRaft } from '../economy/raft.js';
 
 // p.eco: id (stable owner key for plots and ships; '' until first needed), pack (what you carry on foot), ships
-// ([{ n: name, hull, mods: [ids], hold, at: town | '' at sea, hp }], or a raft you build: { kind: 'raft', n, grid
-// (sim/economy/raft.js), hold, at, hp, look }; M6), deeds ([[town, plot index]]; M8).
-export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [], deeds: [] });
+// (vessels or rafts), raftV (one-time starter migration), deeds ([[town, plot index]]; M8).
+const starterRaft = () => {
+  const grid = newRaft();
+  return { kind: 'raft', id: '', rev: 1, berth: -1, n: 'La Balsa', grid, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
+};
+export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, deeds: [] });
 export function sanitizeEco(raw) {
   const o = newEco();
   if (!raw || typeof raw !== 'object') return o;
+  const legacyRaftState = raw.raftV !== 1;
+  o.ships = [];
   if (typeof raw.id === 'string' && /^[a-z0-9]{1,24}$/.test(raw.id)) o.id = raw.id;
   o.pack = sanitizeHold(raw.pack, PACK_CAP);
   if (Array.isArray(raw.ships)) {
+    const raftIds = new Set();
     o.ships = raw.ships.slice(0, 8).filter((s) => s && (HULLS[s.hull] || s.kind === 'raft')).map((s) => {
-      if (s.kind === 'raft') return { kind: 'raft', n: String(s.n || 'La Balsa').slice(0, 24), grid: sanitizeRaft(s.grid), hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
+      if (s.kind === 'raft') {
+        const candidateId = typeof s.id === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(s.id) ? s.id : '';
+        const id = candidateId && !raftIds.has(candidateId) ? candidateId : '';
+        if (id) raftIds.add(id);
+        const hp = Number.isFinite(s.hp) ? s.hp : 1;
+        const rev = Number.isInteger(s.rev) ? Math.max(1, Math.min(2147483647, s.rev)) : 1;
+        const berth = Number.isInteger(s.berth) ? Math.max(-1, Math.min(63, s.berth)) : -1;
+        const grid = sanitizeRaft(s.grid);
+        const hold = sanitizeHold(s.hold, 1e6);
+        hold.cap = raftStats(grid).hold;
+        return { kind: 'raft', id, rev, berth, n: String(s.n || 'La Balsa').slice(0, 24), grid, hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
+      }
       const mods = (Array.isArray(s.mods) ? s.mods : []).filter((m) => MODULES[m]).slice(0, 32);
       return { n: String(s.n || HULLS[s.hull].name).slice(0, 24), hull: s.hull, mods, hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)) };
     });
   }
+  o.raftV = 1;
+  if (legacyRaftState && o.ships.length < 8 && !o.ships.some((s) => s.kind === 'raft')) o.ships.push(starterRaft());
   if (Array.isArray(raw.deeds)) o.deeds = raw.deeds.filter((d) => Array.isArray(d) && TOWNS[d[0]] && Number.isInteger(d[1]) && d[1] >= 0 && d[1] < TOWNS[d[0]].plots).slice(0, 16);
   return o;
 }

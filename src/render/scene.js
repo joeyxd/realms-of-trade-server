@@ -7,6 +7,7 @@ import { createTerrain, createHeightTexture, createSeabed } from './terrain.js';
 import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
+import { RaftLayer } from './rafts.js';
 import { CameraRig } from './camera.js';
 import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
 import { createCalaRing } from './vfx/calaring.js';
@@ -93,6 +94,7 @@ export class GameScene {
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
+    this.rafts = new RaftLayer(this.scene);
     this.effects = new Effects(this.scene, map);
     this.projectiles = new ProjectileView(this.scene, map);
     this.decals = new Decals(this.scene, map, 32);
@@ -266,6 +268,7 @@ export class GameScene {
 
   update(dt, ctx) {
     this.time += dt;
+    if (this.rafts.update(ctx.rafts || [], this.time, ctx.you || 0)) this.pipeline.markDirty();
     U.mnTime.value = this.time;
     this.pipeline.update(dt);
     this.focus.copy(ctx.focus);

@@ -8,7 +8,7 @@ export const C = {
   PLAYER: 1 << 3,
   BOT: 1 << 4,
   NPC: 1 << 5,
-  VEHICLE: 1 << 6, // reserved for the naval slice
+  VEHICLE: 1 << 6, // authoritative moored raft, replicated separately from character entities
   HEALTH: 1 << 7,
   ENEMY: 1 << 8,
 };

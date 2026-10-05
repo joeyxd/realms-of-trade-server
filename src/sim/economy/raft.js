@@ -206,5 +206,5 @@ export function sanitizeRaft(raw) {
     const q = [p[0], p[1] | 0, p[2] | 0, p[3] | 0, p[4] | 0];
     if (!canPlace(parts, q)) parts.push(q);
   }
-  return parts.length ? { parts } : newRaft();
+  return { parts };
 }

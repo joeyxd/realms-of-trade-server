@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 12; // M4.8 P5: launch element retained on shots and their delayed impacts.
+export const PROTOCOL_VERSION = 13; // M6 P1: full public raft blueprints and server-owned mooring pose.
 
 export const MSG = {
   // client -> server
@@ -11,7 +11,7 @@ export const MSG = {
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {you, tick, seed}
-  SNAPSHOT: 'snap',   // {tick, ack, ents: [ENT...], you: [MOVER_FIELDS...]}
+  SNAPSHOT: 'snap',   // {tick, ack, ents: [ENT...], you: [MOVER_FIELDS...], rafts: [public moored blueprint...]}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)

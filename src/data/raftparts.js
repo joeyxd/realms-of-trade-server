@@ -12,7 +12,7 @@
 //   roof   tops a cell (shade; rain catch with a purifier under it)
 //   stairs a tile that joins a level with the one above
 // size: [w, d] cells (tiles). cost: goods (and gold) to place; weight: units against the raft's buoyancy.
-export const RAFT = { cell: 2, levels: 3, maxCells: 12 * 12, buoyancy: 14, refund: 0.5, bareSpeed: 0.6 };
+export const RAFT = { cell: 2, levelHeight: 2.6, levels: 3, maxCells: 12 * 12, buoyancy: 14, refund: 0.5, bareSpeed: 0.6 };
 
 export const RAFT_PARTS = {
   foundation: { name: 'Cimiento', layer: 'base', cost: { madera: 4 }, weight: 4, hp: 60, floats: 1 },

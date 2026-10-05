@@ -15,3 +15,6 @@ P2 añade consultas de suelo/colisión y altura/nivel coherentes en `worldgen.js
 Aceptación P1: creación única, guardar/cargar sin perder bienes, entrada tardía/reconexión coherentes y piezas visibles en la misma pose. P2: playa→muelle→cubierta, paredes y escalera, predicción frente a autoridad.
 No afirmar persistencia pública: M5 sigue siendo puerta para bienes persistentes en riesgo. Editor D05 y bodega/UI D06 vienen después; fórmulas de navegación, pérdidas y topología conservan decisiones abiertas.
 Fuente del alcance: `PLAN-M6.md` P1–P2, `PLAN-DELIVERY.md` D04 y `docs/NAVAL-ROADMAP.md`. Assets procedurales permiten avanzar aunque A02 no se adopte.
+
+Checkpoint posterior, 2026-10-05: [D04 P1 implementado y aceptado localmente](d04p1-raft.md).
+Este documento conserva la revisión inicial; P2 sigue pendiente.

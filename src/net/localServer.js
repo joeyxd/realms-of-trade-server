@@ -20,6 +20,7 @@ import { rollItem } from '../sim/items.js';
 import { startQuests, questEvent, questWants, talkTo, acceptQuest, turnInQuest, buy, sell, setTutorial, setTier } from '../sim/systems/quests.js';
 import { DROPS } from '../data/loot.js';
 import { installTrade, marketCmd } from '../sim/systems/trade.js';
+import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
@@ -50,6 +51,7 @@ export class LocalServer {
       Array.from(crypto.getRandomValues(new Uint32Array(4)), (n) => n.toString(16).padStart(8, '0')).join('');
     installInventory(this.world, namespace);
     installTrade(this.world); // M7: the economy (markets, plots) and the market command
+    installRafts(this.world, namespace);
     // Quests (M4): quest items drop only while wanted; picking one up counts.
     this.world.questWants = (e, item) => questWants(this.world, e, item);
     this.world.onPickup = (e, d) => { if (d.kind === 'quest') questEvent(this.world, e, 'collect', { item: d.q }); };
@@ -76,12 +78,13 @@ export class LocalServer {
   connect(clientId) {
     this.clients.set(clientId, { entity: 0, queue: [], ack: 0, paused: false, starve: 0, fillPt: 0, lastPt: 0, carry: 0, last: null });
     const ecs = this.world.ecs;
-    for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e]) this.send(clientId, { t: MSG.SPAWN, e: this.world.describe(e) });
+    for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && !(ecs.mask[e] & C.VEHICLE)) this.send(clientId, { t: MSG.SPAWN, e: this.world.describe(e) });
   }
 
   disconnect(clientId) {
     const c = this.clients.get(clientId);
     if (c && c.entity) {
+      detachRafts(this.world, c.entity);
       const p = detachProfile(this.world, c.entity);
       if (p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
@@ -124,9 +127,11 @@ export class LocalServer {
           ? (typeof msg.save === 'string' && msg.save.length <= MAX_SAVE && msg.save ? this.saves.load(msg.save) : null)
           : trustedProfile;
         const prof = saved || newProfile({ weapon });
+        if (!prepareRaftProfile(this.world, prof)) { this.send(clientId, { t: MSG.ERROR, code: 'session' }); return; }
         c.serverProfile = trustedProfile !== undefined;
         c.entity = this.world.spawnPlayer({ name, skin, level: prof.lvl, clientId, facing: 2.4, weapon: weaponIndex(kitOf(prof.eq.weapon)) });
         attachProfile(this.world, c.entity, prof);
+        attachRafts(this.world, c.entity, prof);
         startQuests(this.world, c.entity);
         // The Cala's public loot already on the ground (M4.5).
         const pub = publicDrops(this.world);
@@ -399,13 +404,14 @@ export class LocalServer {
     const storm = w.hazards.stormSnapshot();
     const ink = { clouds: w.inkClouds.filter((f) => f.tEnd > w.tick).map(({ e, seq, x, z, r, t0, tEnd }) => ({ e, seq, x, z, r, t0, tEnd })), marks: [] };
     const clock = { tick: w.tick, hours: w.gameHoursAt(), daySec: CLOCK.daySec };
+    const rafts = publicRafts(w);
     for (let e = 1; e < ecs.cap; e++) {
-      if (!ecs.alive[e] || !(ecs.mask[e] & C.POS)) continue;
+      if (!ecs.alive[e] || !(ecs.mask[e] & C.POS) || (ecs.mask[e] & C.VEHICLE)) continue;
       ents.push(encodeEntity(ecs, e));
       if ((ecs.mask[e] & C.ENEMY) && ecs.dead[e] <= 0 && ecs.brain[e]?.inkEnd > w.tick) ink.marks.push({ e, tEnd: ecs.brain[e].inkEnd });
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock });
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts });
     }
   }
 }

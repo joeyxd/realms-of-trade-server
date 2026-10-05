@@ -2,6 +2,10 @@
 
 Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04–D06/D08 y mar D10–D12.
 
+Checkpoint 2026-10-05: **P1 implementado localmente**, versión `0.6.0-alpha.1`, protocolo 13.
+Identidad/migración, amarre, snapshot completo y renderer por piezas; [informe D04 P1](docs/delivery/d04p1-raft.md).
+P2 cubierta transitable, editor y bodega siguen pendientes. No es aceptación de mar/pérdidas ni publicación.
+
 > Idea del autor (referencia: *Raft*): **empiezas con cuatro tablones y una vela** y la vas haciendo crecer, pieza a
 > pieza en una cuadrícula, hasta una fortaleza flotante. La balsa es tu casa, tu taller, tu bodega y lo que te lleva
 > de pueblo en pueblo a comerciar (M7). Une las dos patas de la estructura: **construcción y barcos**. Los solares en
@@ -18,7 +22,7 @@ Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04�
 | Colocar pagando con una bodega, quitar devolviendo la mitad (sin tirar lo que sostiene algo ni partir la balsa) | `place` / `remove` | ✅ |
 | Lo que hace la balsa: flotación contra peso (sobrecarga = se arrastra), velocidad por velas y motores, bodega, tripulación, cañones, reaparición | `raftStats` | ✅ |
 | Producción en el reloj del juego: el purificador riega los huertos (más con techo), las redes pescan, la parrilla y el alambique cocinan, el motor quema madera | `stepRaft` | ✅ |
-| Guardado en el perfil (`p.eco.ships`: `{kind: 'raft', grid, hold, at, hp, look}`) | `trade.js` (`sanitizeEco`) | ✅ |
+| Guardado en el perfil (`p.eco.ships`: `{kind: 'raft', id, rev, berth, grid, hold, at, hp, look}`) | `trade.js` (`sanitizeEco`) | ✅ |
 | Viajes entre pueblos (ruta, horas por velocidad, eventos con semilla), bodegas | `voyage.js`, `cargo.js` | ✅ |
 | Barcos clásicos (balandra… galeón) para más adelante | `src/data/ships.js` | ✅ datos |
 | Modelos externos por pieza (`part:<id>` en el manifiesto) | `docs/ASSETS.md` | gancho por añadir (P2) |
@@ -56,10 +60,11 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
 
 ## 2. Pasos
 
-- [ ] **P1 La balsa en el muelle.** Al crear perfil, `p.eco.ships = [{ kind: 'raft', grid: newRaft(), … }]`.
-  Entidad `vehicle` en el ECS (reservada) con su cuadrícula; el servidor la manda en el snapshot (piezas al
-  entrar, cambios como eventos `raftPart`). Render: una pieza = una malla procedural (cajas de madera con la tinta
-  de `props.js`) colocada en su casilla, la balsa meciéndose sobre el agua (`water.js` ya mece el barco anclado).
+- [x] **P1 La balsa en el muelle.** Al crear perfil, `p.eco.ships = [{ kind: 'raft', grid: newRaft(), … }]`.
+  Entidad `vehicle` en el ECS enlazada a su cuadrícula; el servidor la manda en el snapshot (piezas al
+  entrar; en P1 lista completa para reparar entrada tardía/bajas, eventos `raftPart` al implementar el editor).
+  Render: piezas en su casilla, geometría procedural agrupada por color y caja FAB con fallback, balanceo visual
+  leve. Los perfiles marcados vacíos no reciben otra starter; solo la balsa primaria amarrada en Aldea es visible.
 - [ ] **P2 Caminar por ella.** `map.groundAt` y las colisiones consultan la balsa cerca del muelle: la cubierta da la
   altura del suelo, las paredes y barandillas son colisionadores, las escaleras suben de nivel. Test: un jugador
   camina de la playa a la cubierta.

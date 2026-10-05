@@ -106,7 +106,15 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M4.8 | «Perlas negras»: kit integrado y pulido, candidato P5 → `PLAN-M4.8.md`; aceptación física y publicación pendientes | rc.1 |
 | M5–M8 | La estructura: mundo persistente (Supabase), «La Balsa», comercio entre pueblos, construcción → `PLAN-M5.md` … `PLAN-M8.md`, `docs/HANDOFF.md` | núcleo en parte |
 
-### Entrega actual de M4.8 — candidato integrado (`0.4.8-rc.1`)
+### Balsa inicial — M6 P1 (`0.6.0-alpha.1`, protocolo 13)
+
+Cada partida nueva empieza con una balsa de cuatro cimientos, vela y caja junto al muelle. El servidor elige el amarre;
+las piezas visibles se sincronizan con todos los jugadores, mientras la bodega permanece privada. Guardar y
+volver a entrar conserva su identidad; las flotas o planos marcados vacíos no se restauran automáticamente.
+La caja usa el modelo FAB ya aceptado con fallback procedural. Caminar por la cubierta, construir y zarpar
+son los siguientes cortes. [Evidencia y límites de D04 P1](docs/delivery/d04p1-raft.md).
+
+### Entrega de M4.8 — candidato integrado (`0.4.8-rc.1`)
 
 - Las perlas raras salen de élites, HELLFIRE y cofres de Marea. Recogerlas las guarda sin tragar en **Perlas (P)**;
   puedes tragarlas, entregarlas a un pirata cercano, dejarlas en el suelo o venderlas junto a Tía Perla.

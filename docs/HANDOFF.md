@@ -41,7 +41,7 @@ docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
 
-## 3. Estado (2026-10-04)
+## 3. Estado (2026-10-05)
 
 | Milestone | Estado |
 |---|---|
@@ -49,7 +49,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1 local**: memoria/Supabase y ciclo de perfiles; cuentas/mundo/servicio real pendientes (`PLAN-M5.md`) |
-| M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
+| M6 «La Balsa» | **P1 local**: balsa amarrada visible/replicada, identidad/migración y fallback; P2 cubierta y editor pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
@@ -121,6 +121,25 @@ autor.
   Confirmar base/dueños al empezar; creación/migración única y clave estable antes de editar. Banco sin exportar.
 - GPU/teléfono/mando físicos, rendimiento y publicación siguen pendientes. Fuente/caches/proyectos no van al
   bundle; solo manifiesto y GLB final. Continuar PR #1; un commit local no actualiza servidor ni artefacto público.
+
+### D04 P1 — balsa propia amarrada (2026-10-05)
+
+- Base `da757d3`, build `0.6.0-alpha.1`, protocolo **13**: cliente/servidor deben actualizarse juntos.
+  [Informe D04 P1](delivery/d04p1-raft.md), [brief](briefs/d04p1-moored-raft.md). Rama de continuidad/PR #1 conservados.
+- `eco.raftV` concede/migra la starter una sola vez; `eco.id` y barco `id/rev/berth` sobreviven al guardado.
+  Grid explícitamente vacío y hp=0 se preservan. Capacidad derivada de las piezas sin borrar carga legacy.
+- `src/sim/systems/rafts.js`: vehículo ECS autoritativo, amarre validado dentro del mapa, primera balsa operativa
+  en Aldea por perfil conectado. Al salir se retira la vista; guardado conserva barco/carga y amarre preferido.
+- Snapshot completo público `rafts`: blueprint/pose/aspecto y entidad del propietario; sin bodega, eco.id ni cuenta.
+  Cliente ignora listas antiguas; renderer no reconstruye snapshots iguales y limpia las bajas.
+- `src/render/rafts.js`: procedural por capas/colores, caja FAB existente con fallback. `tools/look-raft.mjs`
+  comprueba Worker/guardado/reload y modelos en cámara controlada. Supabase real/GPU/dispositivos físicos pendientes.
+- Regresión aislada **304/304** (302 + 2 red); capturas inspeccionadas high/low, día/noche, recarga normal
+  y fallback sin assets. No revalida los cambios de cuentas M5 P2 en curso en el checkout principal.
+- Próximo corte exacto: **D04 P2**, superficie/colliders de cubierta y transiciones entre niveles compartidas
+  por autoridad y predicción; playa→muelle→balsa, paredes/barandillas y subir/bajar. El editor sigue en D05.
+- No navegar/producción/saqueo/recuperación habilitados. Los blobs anónimos siguen siendo replayables tras
+  desconectar/reiniciar; el cerco de clones activos es local. M5 mantiene su puerta para riesgo persistente.
 
 ### Checkpoint previo Tinta (`0.4.8-alpha.4`)
 
