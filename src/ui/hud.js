@@ -20,6 +20,7 @@ const ICONS = {
   spin: '<svg viewBox="0 0 32 32"><path d="M16 5a11 11 0 1 1-10 6" fill="none" stroke="#ffc23d" stroke-width="3.5" stroke-linecap="round"/><path d="M3 6l4 6 6-3z" fill="#ffc23d" stroke="#1a1033" stroke-width="1.5" stroke-linejoin="round"/></svg>',
   wave: '<svg viewBox="0 0 32 32"><path d="M3 20c4-6 8-6 12 0s8 6 14 0M3 13c4-6 8-6 12 0s8 6 14 0" fill="none" stroke="#36c9ff" stroke-width="3" stroke-linecap="round"/></svg>',
   storm: '<svg viewBox="0 0 32 32"><path d="M18 3L7 18h8l-2 11 12-16h-8z" fill="#ffe14d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
+  mastbolt: '<svg viewBox="0 0 32 32"><path d="M18 2L6 18h8l-1 12 14-18h-8z" fill="#ffe14d" stroke="#1a1033" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 8l4 2M24 4l2-3M26 26l3 2" stroke="#fff4ae" stroke-width="2" stroke-linecap="round"/></svg>',
   pistol: '<svg viewBox="0 0 32 32"><path d="M3 9h21l3 2v3H13l-1 2h-2l-1 9H4l2-10-3-3z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M5 25l2-9" stroke="#6a3d22" stroke-width="3" stroke-linecap="round"/><path d="M27 9l3-2" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
   lunge: '<svg viewBox="0 0 32 32"><path d="M4 28L24 8l4-4-1 5-20 21z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M14 4l-6 2M20 2l-4 5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
   crescent: '<svg viewBox="0 0 32 32"><path d="M6 24C10 12 20 6 28 6c-6 4-10 10-11 18-3-2-7-2-11 0z" fill="#9ff6ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M3 20h6M5 15h5" stroke="#3bf0ff" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -311,6 +312,7 @@ export class Hud {
     this.gSlot.classList.toggle('empty', empty);
     this.gSlot.querySelector('.lock').hidden = !empty;
     this.gSlot.querySelector('.ico').innerHTML = ICONS[id] || ICONS.comet;
+    this.gSlot.classList.toggle('storm', id === 'mastbolt');
   }
 
   setGold(n, tierName = '') {

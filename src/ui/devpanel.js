@@ -35,6 +35,10 @@ const SLIDERS = [
   ['Estocada: distancia (u)', 'skills', 'lunge.dist', 2, 8, 0.25],
   ['Hoja de viento: enfriamiento (s)', 'skills', 'wave.cd', 1, 10, 0.5],
   ['Lluvia: daño × ATK', 'skills', 'rain.mult', 0.2, 1.5, 0.05],
+  ['Rayo de mástil: carga (s)', 'skills', 'mastbolt.charge', 0.4, 2.5, 0.05],
+  ['Rayo de mástil: alcance (u)', 'skills', 'mastbolt.range', 5, 14, 0.5],
+  ['Rayo de mástil: salto (u)', 'skills', 'mastbolt.chainR', 1, 8, 0.25],
+  ['Rayo de mástil: recarga (s)', 'skills', 'mastbolt.cd', 2, 30, 1],
   ['Arquero: vel. flecha', 'enemies', 'archer.attacks.0.speed', 4, 14, 0.5],
   ['Arquero: enfriamiento (s)', 'enemies', 'archer.attacks.0.cd', 0.6, 5, 0.1],
   ['Arquero: aviso (s)', 'enemies', 'archer.attacks.0.windup', 0.15, 1, 0.05],
@@ -80,6 +84,7 @@ export class DevPanel {
         <button data-op="riposte">Riposte lleno</button>
         <button data-op="pearl">+ Perla de Brasa</button>
         <button data-op="pearl" data-kind="escarcha">+ Perla de Escarcha</button>
+        <button data-op="pearl" data-kind="tormenta">+ Perla de Tormenta</button>
         <button data-op="lvdown">Nv −</button>
         <button data-op="lvup">Nv +</button>
         <button data-op="weapon">Arma: cambiar</button>

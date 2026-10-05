@@ -2,7 +2,7 @@
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
 //      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo,
-//      sepia, pearl, escarcha),
+//      sepia, pearl, escarcha, tormenta),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
 //      MN_PLAYWRIGHT / MN_BROWSER (installed module / browser paths), MN_THREE / MN_GSAP (package directories).
@@ -67,7 +67,71 @@ const L = await page.evaluate(() => {
 });
 const tp = async (name, x, z, extra, ms = 5000) => { await page.evaluate(([x, z]) => window.__mn.teleport(x, z), [x, z]); await wait(ms); if (extra) await extra(); await shot(name); };
 const scen = (process.env.SCEN || 'spawn,village,fight,cala,caldera').split(',');
+let storeTouch;
 for (const s of scen) {
+  if (s === 'tormenta') {
+    await tp('60-tormenta-before', L.spawn.x, L.spawn.z);
+    await dev({ op: 'pearl', kind: 'tormenta' });
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.bag.some((p) => p.kind === 'tormenta'));
+    await page.keyboard.press('KeyP');
+    await page.locator('[data-pearl-op="swallow"]').first().click();
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.swallowed?.kind === 'tormenta');
+    await shot('61-tormenta-panel');
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.__mn.ps.cdG <= 0, null, { timeout: 60000 });
+    // Stationary practice targets exercise a real chain without NPC movement during software rendering.
+    for (const dist of [4, 7, 10, 13, 16]) await dev({ op: 'spawn', kind: 'dummy', ang: Math.PI / 2, dist });
+    await page.waitForFunction(() => [...window.__mn.client.entities.values()].filter((r) => r.enemy === 'dummy' && r.ready).length >= 5);
+    await page.evaluate(() => {
+      const m = window.__mn, input = m.client.tickInput.bind(m.client), event = m.client.onEvent.bind(m.client), fx = m.world.stormFx.update.bind(m.world.stormFx);
+      window.__stormChargeHeld = false; window.__stormLightning = null;
+      m.client.tickInput = (cmd) => {
+        input(cmd);
+        const ecs = m.client.pred.ecs, e = m.client.youLocal;
+        if (ecs.chg[e] && ecs.castK[e] === 3 && ecs.castT[e] >= 1.2) {
+          m.client.tickInput = () => {};
+          m.transport.send({ t: 'cmd', type: 'pause', on: true });
+          window.__stormChargeHeld = true;
+        }
+      };
+      m.client.onEvent = (ev) => {
+        event(ev);
+        if (ev.type !== 'lightning' || ev.kind !== 'mastbolt' || ev.e !== m.client.youServer) return;
+        window.__stormLightning = ev;
+        m.client.tickInput = () => {};
+        m.transport.send({ t: 'cmd', type: 'pause', on: true });
+        m.world.stormFx.update = () => fx(0);
+      };
+      window.__stormRelease = () => { m.client.tickInput = input; m.transport.send({ t: 'cmd', type: 'pause', on: false }); };
+      window.__stormRestore = () => { m.client.tickInput = input; m.client.onEvent = event; m.world.stormFx.update = fx; m.transport.send({ t: 'cmd', type: 'pause', on: false }); };
+    });
+    if (!phone) {
+      const cursor = await page.evaluate(async () => {
+        const { Vector3 } = await import('three'), m = window.__mn;
+        const v = new Vector3(m.ps.x + 4, m.ps.y, m.ps.z).project(m.world.camera);
+        return { x: (v.x + 1) * innerWidth / 2, y: (1 - v.y) * innerHeight / 2 };
+      });
+      await page.mouse.move(cursor.x, cursor.y); await page.keyboard.down('KeyG');
+    } else {
+      const button = await page.locator('.t-g').boundingBox();
+      if (!button || button.y < 0 || button.y + button.height > H || !(await page.locator('.t-g').innerText()).includes('RAYO')) throw new Error('Rayo touch control is missing or outside the viewport');
+      const cdp = await ctx.newCDPSession(page);
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: button.x + button.width / 2, y: button.y + button.height / 2, id: 1 }] });
+      // Drag in the screen direction of +x so the held charge aims at the practice line.
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: button.x + button.width / 2 + 28, y: button.y + button.height / 2 + 18, id: 1 }] });
+      storeTouch = cdp;
+    }
+    await page.waitForFunction(() => window.__stormChargeHeld && window.__mn.world.indicators.chargeRing.mesh.visible, null, { timeout: 60000 });
+    await shot('62-tormenta-charge');
+    await page.evaluate(() => window.__stormRelease());
+    if (!phone) await page.keyboard.up('KeyG');
+    else await storeTouch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForFunction(() => window.__stormLightning && window.__mn.world.stormFx.bolts.some((b) => b.mesh.visible), null, { timeout: 60000 });
+    await shot('63-tormenta-chain');
+    console.log('tormenta', JSON.stringify(await page.evaluate(() => ({ pearl: window.__mn.client.profile.pearls.swallowed.kind,
+      elem: window.__mn.ps.elem, lightning: window.__stormLightning, cd: window.__mn.ps.cdG, errors: window.__mn.errors }))));
+    await page.evaluate(() => window.__stormRestore());
+  }
   if (s === 'escarcha') {
     await tp('50-escarcha-before', L.spawn.x, L.spawn.z);
     await dev({ op: 'pearl', kind: 'escarcha' });

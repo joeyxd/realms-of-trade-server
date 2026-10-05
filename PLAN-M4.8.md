@@ -1,7 +1,7 @@
-# PLAN M4.8 — «Perlas negras» (en curso: Brasa, Escarcha y circulación)
+# PLAN M4.8 — «Perlas negras» (en curso: Brasa, Escarcha, Tormenta y circulación)
 
-> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.2`, Brasa, Escarcha
-> y la base compartida. **M4.8 no está terminado**: faltan Tormenta y Tinta, pulido y balance.
+> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.3`, Brasa, Escarcha,
+> Tormenta y la base compartida. **M4.8 no está terminado**: faltan Tinta, pulido y balance.
 > Las perlas legendarias únicas dependen de M5 (mundo persistente en el servidor): aquí solo las raras.
 
 ## 0. La idea
@@ -109,9 +109,23 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 - Panel, HUD, botón ANCLA, área azul, campo con cristales y sonidos de hielo. 14 pruebas nuevas en
   `tests/escarcha.test.mjs`; regresión completa: 247/247. La revisión visual se registra en `docs/HANDOFF.md`.
 
-### P3 — Tormenta ⏳ (siguiente)
-- Cadena de golpes con selección determinista y sin ciclos; Rayo de mástil cargable, saltos por carga.
-- Curvatura de balas para la maldición compartida por cliente/servidor; pruebas de predicción y VFX.
+### P3 — Tormenta ✅ (mecánica; VFX iniciales)
+- Golpes del kit contra NPC: un salto al vecino vivo más cercano a ≤5 u, daño bruto ×0.5; sin crítico nuevo,
+  reaplicación elemental ni salto hacia jugadores. Distancia y luego ID resuelven empates. Un golpe mortal también salta.
+- Rayo de mástil: mantener G carga (lleno a 1.2 s), soltar dispara; a los 3 s se libera automáticamente.
+  CD 15 s al soltar; dash, stagger o muerte cancelan sin gasto. Puedes moverte al 55 % durante la carga.
+  Primer objetivo en cono de 40°, alcance 10 u; luego 1–4 saltos a ≤5 u (2–5 enemigos distintos), ATK ×1.8
+  y ×0.75 por salto. Selección autoritativa con posiciones históricas de NPC, sin ciclos ni PvP.
+- Imán de tormenta: patrones hostiles cerca de un portador (18 u desde la salida de cada bala) se curvan
+  hacia su posición **al emitir el patrón**; el portador más cercano gana, con empate por ID. Giro máximo
+  0.22 rad/s y desvío total 0.45 rad, luego tangente recta. No persigue cambios posteriores de posición.
+  Balas propias/reflejadas conservan su trayectoria. Obstáculos se calculan sobre la curva real, con vida fija.
+- Curva geométrica por distancia; Escarcha se compone con pasos fijos de ¼ tick y caché independiente del
+  orden de consulta. La integración de ralentización en curvas es una aproximación determinista a 240 Hz.
+- Protocolo 10: anclas `magnets` viajan con el patrón y snapshots `storm` conservan patrones afectados y
+  sus retiradas/omisiones por capacidad para reparar eventos perdidos y entrada tardía, sin revivir balas destruidas. G usa las columnas
+  de carga/CD existentes; su eco no repite sonido ni pulso. HUD, botón RAYO, cono amarillo y arcos del servidor.
+- 12 pruebas en `tests/tormenta.test.mjs`; regresión vigente: 259/259. Capturas y límites de aceptación en `docs/HANDOFF.md`.
 
 ### P4 — Tinta ⏳
 - Marca de daño, Nube de tinta con comportamiento de enemigos y disparos a ciegas.
@@ -126,14 +140,15 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 
 ## 4. Probar esta entrega
 
-En solo: F4 → «+ Perla de Brasa» o «+ Perla de Escarcha» → P → Tragar → cerrar el panel → esperar 4 s → G.
-Con Escarcha, mantener apunta y soltar coloca el campo. En móvil, Bolsa → Perlas y botón COMETA / ANCLA;
-arrastrar ANCLA apunta y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Prueba escupir, reemplazar y cancelar,
+En solo: F4 → «+ Perla de Brasa / Escarcha / Tormenta» → P → Tragar → cerrar el panel → esperar 4 s → G.
+Con Escarcha, mantener apunta y soltar coloca el campo. Con Tormenta, mantener carga y soltar encadena.
+En móvil, Bolsa → Perlas y botón COMETA / ANCLA / RAYO; arrastrar ANCLA apunta, mantener RAYO carga
+y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Prueba escupir, reemplazar y cancelar,
 vadear sin modo dios y morir fuera de la Cala. En línea, otro pirata debe poder recoger la perla caída.
 
 Implementación: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, hueco G en `skills.js`,
 `src/ui/pearlpanel.js`. Pruebas: `tests/pearls.test.mjs` (17), `tests/escarcha.test.mjs` (14); escenarios visuales
-`SCEN=pearl` y `SCEN=escarcha` en `tools/look.mjs`.
+`SCEN=pearl`, `SCEN=escarcha` y `SCEN=tormenta` en `tools/look.mjs`.
 Los assets FAB elegidos por el autor se integrarán mediante `docs/ASSETS.md`; esta entrega conserva el arte procedural.
 
 ## 5. Extensión posterior: afinidad (plan; fuera del cierre P5 actual)

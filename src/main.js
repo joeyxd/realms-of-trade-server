@@ -17,7 +17,7 @@ import { ENEMIES } from './data/enemies.js';
 import { BTN } from './sim/systems/movement.js';
 import { rackNear, skillOf, skillNum, rainR } from './sim/systems/skills.js';
 import { canStand } from './sim/systems/movement.js';
-import { castKind, isArt, ARTS } from './data/tattoos.js';
+import { castKind, isArt, ARTS, skillId } from './data/tattoos.js';
 import { AimCast } from './client/aimcast.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/weapons.js';
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
@@ -831,8 +831,11 @@ async function boot() {
             }
           }
           view.update(simDt, s);
-          // M4.7: a Timón being charged rides at the shoulder; your blade glows while a Parpadeo's crit waits.
-          if ((s.act | 0) === ACT.CHARGE) world.skillFx.charging(rec.id, Math.min(1, (rec.id === client.youServer ? ps.castT : s.actT) / SKILLS.wheel.charge));
+          // The Timón rides at the shoulder while charging; Rayo de mástil only uses its ground aim preview.
+          const mastboltCharge = rec.id === client.youServer
+            ? ps.castK === 3 && skillId(ps.skG) === 'mastbolt'
+            : rec.chargeSkill ? rec.chargeSkill === 'mastbolt' : s.elem === 3;
+          if ((s.act | 0) === ACT.CHARGE && !mastboltCharge) world.skillFx.charging(rec.id, Math.min(1, (rec.id === client.youServer ? ps.castT : s.actT) / SKILLS.wheel.charge));
           if (rec.id === client.youServer) view.glow.value = ps.empT > 0 ? 1.6 + 0.6 * Math.sin(performance.now() / 70) : 1;
           // Wading leaves a trail of foam ripples (anyone: you, bots, NPCs).
           if ((s.wade || 0) > 0.08) {
@@ -936,9 +939,15 @@ async function boot() {
           const d = readSlots()[pv.slot], g = groundTarget(d);
           world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0, d.id === 'iceanchor' ? 0x91e8ff : undefined);
         } else if (ps.chg && ps.castK && !ps.dead) {
-          const S = slotD[ps.castK === 1 ? 'q' : 'e'].S, k = Math.min(1, ps.castT / S.charge);
-          const len = S.fast.range + (S.slow.range - S.fast.range) * k, w = S.fast.r + (S.slow.r - S.fast.r) * k + (S.rAdd || 0);
-          world.indicators.charge(ps.x, ps.z, Math.sin(ps.f), Math.cos(ps.f), len, w, k, 0);
+          const slot = ps.castK === 3 ? 'g' : ps.castK === 1 ? 'q' : 'e', S = slotD[slot].S;
+          const k = Math.min(1, ps.castT / S.charge);
+          if (slot === 'g' && slotD.g.id === 'mastbolt') {
+            // A widening yellow wedge makes the 40-degree chain cone readable without covering the fighter.
+            world.indicators.charge(ps.x, ps.z, Math.sin(ps.f), Math.cos(ps.f), S.range, 0.12, k, S.range, 0xffdf3b, (S.halfArc || 20) * 2, false);
+          } else {
+            const len = S.fast.range + (S.slow.range - S.fast.range) * k, w = S.fast.r + (S.slow.r - S.fast.r) * k + (S.rAdd || 0);
+            world.indicators.charge(ps.x, ps.z, Math.sin(ps.f), Math.cos(ps.f), len, w, k, 0);
+          }
         } else world.indicators.hide();
         const zw = input.consumeWheel();
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);

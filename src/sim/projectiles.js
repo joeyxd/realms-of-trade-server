@@ -1,7 +1,7 @@
 // Projectiles. Pure and deterministic (sim, worker, client, node tests).
 //
-// Hostile projectiles are ANALYTIC: a straight path from (x0, z0) at tick t0, slowed while it crosses
-// historical frost fields, and bounded by a fixed lifetime or its first pillar / rock / cliff.
+// Hostile projectiles follow reproducible paths from (x0, z0) at tick t0: straight or a bounded
+// Tormenta arc, slowed by historical frost, with a fixed lifetime and static obstacle clipping.
 // Their position at any tick is a formula, so:
 //   · the server never sends them one by one: it sends a PATTERN event (who, where, angle, params) and
 //     every client expands it into the same projectiles with the same ids;
@@ -15,6 +15,21 @@
 // shots too (pistol bullets, pellets). The server tests a shot against the enemies as its shooter saw
 // them: `lag` ticks in the past (lag compensation, like melee).
 import { tuning, DT } from '../data/tuning.js';
+
+// The emission anchor travels with the pattern: the mild arc can be reconstructed at any tick.
+export const STORM_CURSE = { range: 18, turn: 0.22, maxAngle: 0.45 };
+export function stormCurve(x, z, vx, vz, magnets = []) {
+  let best = null, d2 = STORM_CURSE.range ** 2;
+  for (const m of magnets) {
+    if (![m.e, m.x, m.z].every(Number.isFinite)) continue;
+    const d = (m.x - x) ** 2 + (m.z - z) ** 2;
+    if (d < d2 || (d === d2 && (!best || m.e < best.e))) { best = m; d2 = d; }
+  }
+  if (!best || d2 < 1e-9) return 0;
+  const a = Math.atan2(vx, vz), want = Math.atan2(best.x - x, best.z - z);
+  const delta = Math.atan2(Math.sin(want - a), Math.cos(want - a));
+  return Math.max(-STORM_CURSE.turn, Math.min(STORM_CURSE.turn, delta * 0.25));
+}
 
 export const PTYPE = { PARRY: 0, HEAVY: 1, UNSTOP: 2 };
 export const PTYPE_OF = { parry: PTYPE.PARRY, heavy: PTYPE.HEAVY, unstop: PTYPE.UNSTOP };
@@ -58,6 +73,11 @@ export class Hazards {
     this.r = F(); this.len = F(); this.dmg = F();
     this.fire = new Uint8Array(cap);
     this.clipD = F().fill(Infinity); // first static blocker, measured along the path
+    this.curve = F();
+    this.maps = new Array(cap);
+    this.curveCache = new Array(cap);
+    this.stormPatterns = new Map();
+    this.patternOf = new Map();
     this.dead = I().fill(NEVER); // tick it was removed (hit, destroyed, reflected…)
     this.kill = new Uint8Array(cap);
     this.killBy = I();
@@ -82,13 +102,16 @@ export class Hazards {
 
   // Returns the slot or -1 when the pool is full (oldest projectiles are not evicted: patterns are fair).
   // life: seconds, overrides the type's (curtains that must cross the whole arena).
-  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0, fire = 0) {
+  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0, fire = 0, curve = 0) {
     const s = this.freeList.pop();
     if (s === undefined) { this.dropped++; return -1; }
     const cfg = typeCfg(type);
     const speed = Math.hypot(vx, vz);
     this.id[s] = id; this.type[s] = type; this.owner[s] = owner;
     this.pathCacheTick[s] = NaN;
+    this.curveCache[s] = null;
+    this.curve[s] = Number.isFinite(curve) ? Math.max(-STORM_CURSE.turn, Math.min(STORM_CURSE.turn, curve)) : 0;
+    this.maps[s] = map;
     this.x0[s] = x; this.z0[s] = z; this.y[s] = y; this.vx[s] = vx; this.vy[s] = slope * speed; this.vz[s] = vz; this.speed[s] = speed;
     this.r[s] = cfg.radius; this.len[s] = lengthOf(type); this.dmg[s] = dmg;
     this.fire[s] = fire ? 1 : 0;
@@ -97,7 +120,7 @@ export class Hazards {
     this.maxLifeTicks = Math.max(this.maxLifeTicks, lifeT);
     if (map && speed > 1e-6) {
       const maxD = speed * L;
-      const d = clipDistance(map, x, y, z, vx / speed, vz / speed, cfg.radius, maxD, slope);
+      const d = this.curve[s] ? this._curveClip(s, maxD, slope) : clipDistance(map, x, y, z, vx / speed, vz / speed, cfg.radius, maxD, slope);
       this.clipD[s] = d;
     } else this.clipD[s] = speed > 1e-6 ? speed * L : Infinity;
     this.t0[s] = t0; this.tEnd[s] = t0 + lifeT;
@@ -114,6 +137,7 @@ export class Hazards {
     this.pathCacheTick[s] = NaN;
     this.marks[s] = null;
     this.freeList.push(s);
+    this.maps[s] = null; this.curveCache[s] = null;
     this.count--;
   }
 
@@ -151,10 +175,63 @@ export class Hazards {
     this.frostFields = this.frostFields.filter((f) => !(f.predicted && f.e === e && (!afterSeq || f.seq > afterSeq)));
     if (n !== this.frostFields.length) this.frostRev++;
   }
+  // Exact arc geometry by distance, then a straight tangent once the total bend reaches maxAngle.
+  _curvePoint(s, dist) {
+    const speed = this.speed[s], a = Math.atan2(this.vx[s], this.vz[s]), w = this.curve[s];
+    const arc = Math.min(dist, STORM_CURSE.maxAngle * speed / Math.abs(w));
+    const b = a + w * arc / speed, radius = speed / w;
+    return { x: this.x0[s] + radius * (Math.cos(a) - Math.cos(b)) + Math.sin(b) * (dist - arc),
+      z: this.z0[s] + radius * (Math.sin(b) - Math.sin(a)) + Math.cos(b) * (dist - arc), dx: Math.sin(b), dz: Math.cos(b) };
+  }
+  _curveClip(s, maxD, slope) {
+    const map = this.maps[s];
+    for (let d = 0.175; d < maxD + 0.175; d += 0.175) {
+      const at = Math.min(d, maxD), p = this._curvePoint(s, at);
+      if (map.groundAt(p.x, p.z) > this.y[s] + slope * at - 0.25) return at;
+      for (const k of map.queryColliders(p.x, p.z, this.r[s] + 1.2)) {
+        const c = map.colliders[k], r = c.r + this.r[s] * 0.5;
+        if ((p.x - c.x) ** 2 + (p.z - c.z) ** 2 < r * r) return at;
+      }
+      if (at === maxD) break;
+    }
+    return maxD;
+  }
+  _curvedPath(s, tick) {
+    const age = Math.max(0, Math.min(tick, this.tEnd[s]) - this.t0[s]), speed = this.speed[s];
+    let dist = speed * age * DT;
+    if (this.frostFields.length) {
+      // Fixed quarter-tick midpoint steps compose historical frost with the arc. Cached checkpoints
+      // make rewind independent of query order without replaying a lifetime every render.
+      let cache = this.curveCache[s];
+      if (!cache || cache.rev !== this.frostRev) cache = this.curveCache[s] = { rev: this.frostRev, d: [0] };
+      const n = Math.floor(age * 4 + 1e-9);
+      const advance = (d, start, span) => {
+        const p = this._curvePoint(s, d), mul = this._fieldSlowAt(p.x, p.z, (this.t0[s] + start) * DT, p.dx, p.dz);
+        const mid = this._curvePoint(s, d + speed * span * DT * mul / 2);
+        const m = this._fieldSlowAt(mid.x, mid.z, (this.t0[s] + start + span / 2) * DT, mid.dx, mid.dz);
+        return Math.min(this.clipD[s], d + speed * span * DT * m);
+      };
+      while (cache.d.length <= n) {
+        const i = cache.d.length - 1;
+        cache.d.push(advance(cache.d[i], i / 4, 0.25));
+      }
+      dist = cache.d[n];
+      const rest = age - n / 4;
+      if (rest > 1e-9) dist = advance(dist, n / 4, rest);
+    }
+    dist = Math.min(dist, this.clipD[s]);
+    const p = this._curvePoint(s, dist);
+    return { ...p, dist, y: this.y[s] + (this.vy[s] / speed) * dist };
+  }
   _path(s, tick) {
     if (this.pathCacheTick[s] === tick && this.pathCacheRev[s] === this.frostRev) return this.pathCache[s];
     const vx = this.vx[s], vz = this.vz[s], speed = this.speed[s], dirX = speed > 1e-9 ? vx / speed : 0, dirZ = speed > 1e-9 ? vz / speed : 0;
     const duration = Math.max(0, (tick - this.t0[s]) * DT);
+    if (this.curve[s] && speed > 1e-9) {
+      const out = this._curvedPath(s, tick);
+      this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+      return out;
+    }
     let elapsed = 0, dist = 0, x = this.x0[s], z = this.z0[s];
     if (!this.frostFields.length) {
       const moved = Math.min(speed * duration, this.clipD[s]);
@@ -205,8 +282,9 @@ export class Hazards {
   py(s, t) { return this._path(s, t).y; }
   velocityAt(s, t) {
     const p = this._path(s, t);
-    const speed = this.speed[s], mul = this._fieldSlowAt(p.x, p.z, t * DT, speed > 1e-9 ? this.vx[s] / speed : 0, speed > 1e-9 ? this.vz[s] / speed : 0);
-    return { x: this.vx[s] * mul, z: this.vz[s] * mul, speed: this.speed[s] * mul };
+    const speed = this.speed[s], dx = p.dx ?? (speed > 1e-9 ? this.vx[s] / speed : 0), dz = p.dz ?? (speed > 1e-9 ? this.vz[s] / speed : 0);
+    const mul = this._fieldSlowAt(p.x, p.z, t * DT, dx, dz);
+    return { x: dx * speed * mul, z: dz * speed * mul, speed: speed * mul };
   }
   // Exists in the world at tick t (spawned, not past its end, not removed).
   live(s, t) { return this.id[s] !== 0 && t >= this.t0[s] && t < this.tEnd[s] && this.dead[s] === NEVER && this._path(s, t).dist < this.clipD[s] - 1e-9; }
@@ -214,6 +292,9 @@ export class Hazards {
 
   remove(s, tick, kind, by = 0, seq = 0) {
     this.dead[s] = tick; this.kill[s] = kind; this.killBy[s] = by; this.killSeq[s] = seq;
+    const p = this.stormPatterns.get(this.patternOf.get(this.id[s]));
+    // Only the authority retains durable removal tombstones. Predicted kills must still roll back.
+    if (p && !this.predicting) p.removed.set(this.id[s], { pid: this.id[s], tick, kind, by, seq });
   }
 
   hasMark(s, e, k) {
@@ -257,9 +338,16 @@ export class Hazards {
     const before = this.frostFields.length;
     this.frostFields = this.frostFields.filter((f) => tick - f.tEnd <= history);
     if (before !== this.frostFields.length) this.frostRev++;
+    for (const [id, p] of this.stormPatterns) if (tick - p.end > 40) {
+      this.stormPatterns.delete(id);
+      for (let k = 0; k < patternCount(p.ev); k++) this.patternOf.delete(id + k);
+    }
     if (this.lava) this.lava.hits = this.lava.hits.filter((h) => tick - h.tick < 120);
   }
 
+  stormSnapshot() {
+    return [...this.stormPatterns.values()].map(({ ev, removed }) => ({ ...ev, removed: [...removed.values()] }));
+  }
   addAoe(a) { a.hits = []; this.aoes.push(a); return a; }
   addBeam(b) { b.hits = []; b.ghosts = []; this.beams.push(b); return b; }
   setLava(L) { this.lava = L ? { ...L, hits: [] } : null; return this.lava; }
@@ -320,6 +408,7 @@ export function emitPattern(store, ev, map) {
   const D2R = Math.PI / 180, TAU = Math.PI * 2;
   const arms = Math.max(1, ev.arms | 0), per = ev.n | 0;
   for (let k = 0; k < n; k++) {
+    if (ev.omitted?.includes(ev.pid0 + k)) continue;
     let ang = ev.ang, t0 = ev.tick, j = k;
     if (ev.pat === 'burst') t0 = ev.tick + Math.round((k * ev.gap) / DT);
     else if (ev.pat === 'fan') ang = ev.ang + (k - (n - 1) / 2) * ev.spread * D2R;
@@ -346,7 +435,20 @@ export function emitPattern(store, ev, map) {
     }
     const speed = Math.min(ev.speed, tuning.projectiles.maxSpeed);
     const t = (ev.pat === 'ring' || ev.pat === 'rings') && ev.alt ? (j % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
-    store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, Math.sin(ang) * speed, Math.cos(ang) * speed, t0, ev.dmg, map, ev.slope || 0, ev.life || 0, ev.fire);
+    if (store.slot.has(ev.pid0 + k)) continue;
+    const vx = Math.sin(ang) * speed, vz = Math.cos(ang) * speed;
+    const slot = store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, vx, vz, t0, ev.dmg, map, ev.slope || 0, ev.life || 0, ev.fire, stormCurve(x, z, vx, vz, ev.magnets));
+    // A late joiner may have more free slots than the authority had at emission. It must not
+    // create bullets the authoritative pool dropped, including future shots in a burst.
+    if (slot < 0 && !store.predicting) (ev.omitted || (ev.omitted = [])).push(ev.pid0 + k);
+  }
+  if (ev.magnets?.length) {
+    let end = ev.tick;
+    for (let k = 0; k < n; k++) { const s = store.slot.get(ev.pid0 + k); if (s !== undefined) end = Math.max(end, store.tEnd[s]); }
+    const { removed, ...pattern } = ev;
+    const old = store.stormPatterns.get(ev.pid0);
+    store.stormPatterns.set(ev.pid0, { ev: pattern, end: Math.max(end, old?.end || 0), removed: old?.removed || new Map() });
+    for (let k = 0; k < n; k++) store.patternOf.set(ev.pid0 + k, ev.pid0);
   }
   return n;
 }

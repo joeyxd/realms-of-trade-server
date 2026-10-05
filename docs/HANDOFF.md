@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (247 tests, incluyendo 17 de perlas y 14 de Escarcha)
+tests/        node --test (259 tests, incluyendo 17 de perlas, 14 de Escarcha y 12 de Tormenta)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -47,7 +47,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
-| M4.8 «Perlas negras» | **en curso**: Brasa, Escarcha y circulación jugables; faltan Tormenta, Tinta y cierre (`PLAN-M4.8.md`) |
+| M4.8 «Perlas negras» | **en curso**: Brasa, Escarcha, Tormenta y circulación jugables; faltan Tinta y cierre (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
@@ -69,7 +69,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
-### M4.8 en curso — checkpoint Escarcha (`0.4.8-alpha.2`)
+### M4.8 en curso — checkpoint Tormenta (`0.4.8-alpha.3`)
 
 - Base compartida: perfil `pirateId` / `pearls`, ledger UID en memoria, botín público, bolsa de 8, confirmación
   con UID anterior, entregar a otro pirata, vender, escupir, caída al morir en cualquier zona y retorno a playa tras 90 s.
@@ -81,12 +81,22 @@ autor.
 - Balas: trayectoria analítica con historia de campos y obstáculos; no se acelera la bala al expirar un campo.
   Snapshot `frost` completo, dedupe por pirata/secuencia, rollback del cast rechazado y recuperación de eventos
   perdidos. Estado predicho `icX/icZ/icT0/icEnd/icSeq`. El renderer usa la misma trayectoria que el combate.
-- Pestaña Perlas (P), HUD G, VFX naranja/azul iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
+- Tormenta: G / cruceta abajo / botón RAYO. Carga hasta 1.2 s, soltar o sostener 3 s dispara; 2–5 NPC distintos,
+  cono de 40° y alcance 10 u, saltos de 5 u, ATK ×1.8 con ×0.75 por salto. CD 15 s al soltar; dash/stagger/muerte
+  cancelan gratis. Golpes del kit saltan una vez al vecino más cercano, daño bruto ×0.5, sin crítico nuevo ni recursión.
+  Primer golpe mortal también encadena. ID resuelve empates; no aplica saltos contra jugadores en PvP.
+- Imán de tormenta: posición del portador fijada al emitir el patrón (`magnets`), alcance 18 u desde cada bala,
+  giro suave ≤0.22 rad/s, desvío total ≤0.45 rad, luego tangente. No sigue cambios posteriores del jugador.
+  La curva se compone con Escarcha a 240 Hz deterministas; caché por historial, clipping sobre la curva real y TTL fijo.
+  Snapshots `storm` reparan eventos perdidos/entrada tardía, incluidas retiradas tras liberar el slot de una bala
+  y omisiones por capacidad del pool autoritativo.
+  Parry, auto-aim y renderer leen esa trayectoria/velocidad. G carga/CD conserva las columnas predichas existentes.
+- Pestaña Perlas (P), HUD G, VFX naranja/azul/amarillo iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
   perla en solo para probar; cerrar el panel y esperar 4 s antes de G.
 - Archivos de entrada: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, `skills.js`,
-  `src/ui/pearlpanel.js`, `src/sim/projectiles.js`, `src/render/vfx/frostfx.js`. Próximo paso concreto:
-  **P3 Tormenta** en `PLAN-M4.8.md`; M5 sigue en plan, sin capa de almacenamiento implementada.
-- **Protocolo 9**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
+  `src/ui/pearlpanel.js`, `src/sim/projectiles.js`, `src/render/vfx/frostfx.js`, `stormfx.js`. Próximo paso concreto:
+  **P4 Tinta** en `PLAN-M4.8.md`; M5 sigue en plan, sin capa de almacenamiento implementada.
+- **Protocolo 10**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
   no sobrevive a reinicios; M5 debe cerrar los duplicados antes de introducir perlas únicas.
 - Validación: 247 tests (245 sin red + 2 de red), incluidas 14 de Escarcha. Revisión previa de Brasa: panel,
   confirmación/G en desktop y móvil emulado 844×390; Cometa con partículas detenidas por el render de software. Falta
@@ -96,6 +106,17 @@ autor.
   `shots/review/escarcha-mobile/`. El escenario detiene el campo ya aceptado por el servidor para capturarlo
   con SwiftShader; no certifica rendimiento. Sin errores JS de juego; avisos del render de software y fuentes
   Google bloqueadas durante el recorrido. Tras revisar la integración, 37/37 pruebas de Escarcha/apuntado/tatuajes.
+- Tormenta: 12 pruebas nuevas de perfil, carga/CD, selección/daño de cadenas, anclas/curvas, obstáculos/TTL,
+  Escarcha, snapshots/retiradas/capacidad, eco G, rechazo predicho y tiempos de parry. Regresión general final:
+  257/257 sin red y 2/2 de red (~100 ms RTT); integración dirigida: 61/61. Total: 259/259.
+  Logs locales `shots/review/tormenta-tests.log`, `tormenta-focused.log` y `tormenta-net.log`.
+  Escenario `SCEN=tormenta`: panel, cono/carga completa y cadena real de cinco objetivos en desktop 1280×720.
+  Cintas de rayo reforzadas tras inspeccionar el trazo sobre arena. El escenario pausa carga/efectos aceptados para
+  capturarlos con SwiftShader; no certifica rendimiento ni sustituye GPU, mando o teléfono reales.
+  Móvil emulado 844×390: panel con scroll conservado, botón RAYO dentro de pantalla, carga con contacto/arrastre
+  táctil y liberación hacia cinco objetivos. Capturas inspeccionadas en `shots/review/tormenta-desktop/` y
+  `tormenta-mobile/`. Sin errores JS de juego; fuentes Google bloqueadas y avisos de SwiftShader conocidos.
+  Checkpoint D01 y próxima misión D02: [informe de Tormenta](delivery/d01-tormenta.md).
 - `package-lock.json` corregido: Three.js 0.160 viene del registro npm, sin enlaces a carpetas temporales;
   `npm ci` comprobado en instalación limpia. `tools/look.mjs` acepta Playwright/Chrome instalados en Windows.
 - No se han seleccionado/importado assets FAB. El autor los está revisando; la mecánica conserva el arte
@@ -113,7 +134,7 @@ autor.
   confirmada: `C:\Unreal` (tres proyectos), inventario de solo lectura con Luna, contenido adicional y su portabilidad/utilidad;
   excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
 - El autor aprobó direcciones de manejo/economía/piratería, sin implementación de esos sistemas.
-  M4.8 sigue en el checkpoint Escarcha.
+  La implementación actual de M4.8 se detalla en el checkpoint de Tormenta de arriba.
 
 ### Dirección naval y productiva incorporada a los planes (2026-10-04)
 
@@ -132,7 +153,7 @@ autor.
 - Pendientes: fórmulas, nivel de barco, topología/controles, patrimonio protegido, pérdidas/rescate, legalidad
   por región, treguas/bounty, XP y población requerida para obras. No asumir que estas cifras están aprobadas.
 - Esta actualización solo cambia planificación/documentación; simulación, versión, protocolo y despliegue
-  permanecen en el checkpoint del commit `40949b2` (Escarcha).
+  permanecían en el checkpoint del commit `40949b2` (Escarcha); la entrega posterior de Tormenta se detalla arriba.
 
 ### Inventario Unreal terminado (2026-10-04)
 
@@ -162,7 +183,7 @@ autor.
   CDN). Mirar las capturas antes de dar algo por bueno.
   En Windows: `MN_PLAYWRIGHT` = ruta absoluta al `index.mjs` de Playwright; `MN_BROWSER` = ruta al Chrome/Edge
   instalado. `MN_THREE` / `MN_GSAP` = carpetas de los paquetes locales si el CDN está bloqueado. `SCEN=pearl`
-  prueba Brasa y `SCEN=escarcha` prueba esta entrega; para móvil `PHONE=1`, `VW=844`, `VH=390`.
+  prueba Brasa, `SCEN=escarcha` prueba Ancla y `SCEN=tormenta` prueba carga/cadena; para móvil `PHONE=1`, `VW=844`, `VH=390`.
 - **Artefacto** (la versión que se juega en claude.ai, modo solo): construir desde lo **commiteado**, no desde el
   árbol de trabajo:
   ```bash

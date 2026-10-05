@@ -1,5 +1,4 @@
-// Black pearls (M4.8). Brasa and Escarcha are playable; the other elements stay in PLAN-M4.8.md
-// until their skills and curses are implemented. A pearl is {uid, kind}, separate from numbered gear.
+// Black pearls (M4.8). A pearl is {uid, kind}, separate from numbered gear.
 export const PEARLS = {
   brasa: {
     name: 'Perla de Brasa', skill: 'comet', elem: 1, color: '#ff793b',
@@ -11,6 +10,11 @@ export const PEARLS = {
     passive: 'Tus golpes ralentizan durante 3 s; 3 acumulaciones congelan 0,6 s (los jefes no se congelan).',
     curse: 'El fuego y la lava te hacen un 50 % más de daño.',
   },
+  tormenta: {
+    name: 'Perla de Tormenta', skill: 'mastbolt', elem: 3, color: '#ffe45c',
+    passive: 'Tus golpes saltan a otro enemigo cercano y le hacen la mitad de daño.',
+    curse: 'Imán de tormenta: las balas enemigas cercanas se curvan suavemente hacia donde estás al dispararse.',
+  },
 };
 export const PEARL_IDS = Object.keys(PEARLS);
 export const PEARL = {
@@ -18,6 +22,7 @@ export const PEARL = {
   eliteChance: 0.025, bossChance: 0.12, chestChance: 0.08, tideBonus: 0.5,
   burnTime: 3, burnEvery: 0.5, burnMult: 0.12, waterEvery: 0.5, waterDps: 0.04,
   chillTime: 3, chillSlow: 0.7, chillHits: 3, freezeTime: 0.6,
+  lightningRange: 5, lightningMult: 0.5,
 };
 export const newPearls = () => ({ swallowed: null, bag: [] });
 export function sanitizePearl(raw) {

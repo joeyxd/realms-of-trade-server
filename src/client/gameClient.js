@@ -140,8 +140,18 @@ export class GameClient {
     const mine = this.isMe(ev.type === 'shot' ? ev.owner : ev.e) || ((ev.type === 'death' || ev.type === 'respawn') && ev.id === this.youServer);
     let show = true;
     switch (ev.type) {
+      case 'cast': {
+        const rec = this.entities.get(ev.e);
+        if (rec) rec.chargeSkill = ev.skill;
+        break;
+      }
+      case 'wheel': case 'mastbolt': {
+        const rec = this.entities.get(ev.e);
+        if (rec) rec.chargeSkill = null;
+        break;
+      }
       case 'pattern':
-        if (!H.slot.has(ev.pid0)) emitPattern(H, ev, this.map);
+        emitPattern(H, ev, this.map);
         break;
       case 'cancel': H.cancelPending(ev.src, ev.tick); break;
       case 'clear':
@@ -304,8 +314,25 @@ export class GameClient {
       // A complete authoritative list repairs lost creation events and rejected local casts.
       // Pending commands below recreate any fields that have not yet been acknowledged.
       const H = this.pred.hazards;
-      H.frostFields = []; H.frostRev++;
-      for (const f of s.frost) H.addFrostField({ ...f, predicted: false });
+      const canonical = H.frostFields.filter((f) => !f.predicted);
+      const keys = ['e', 'seq', 'x', 'z', 'r', 't0', 'tEnd', 'slow'];
+      if (canonical.length !== s.frost.length || canonical.some((f, i) => keys.some((k) => f[k] !== s.frost[i][k]))) {
+        H.frostFields = []; H.frostRev++;
+        for (const f of s.frost) H.addFrostField({ ...f, predicted: false });
+      }
+    }
+    if (s.storm && (this.lastStormTick === undefined || s.tick >= this.lastStormTick)) {
+      this.lastStormTick = s.tick;
+      const H = this.pred.hazards;
+      for (const ev of s.storm) {
+        emitPattern(H, ev, this.map);
+        for (const k of ev.removed || []) {
+          const slot = H.slot.get(k.pid);
+          if (slot === undefined) continue;
+          H.remove(slot, k.tick, k.kind, k.by === this.youServer ? this.youLocal : k.by, k.seq);
+          H.confirmed[slot] = 1;
+        }
+      }
     }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
   }

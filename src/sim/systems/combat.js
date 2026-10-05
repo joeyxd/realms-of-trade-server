@@ -180,6 +180,28 @@ export function timeToContact(world, e, s, pt) {
   const R = ecs.hurtR[e] + H.r[s] + tuning.sword.slack + H.len[s] * 0.5;
   const c = px * px + pz * pz - R * R;
   if (c <= 0) return 0;
+  if (H.curve[s]) {
+    // Search the same curved path used by contact sweeps. Each short segment solves circle
+    // entry directly, including bullets that begin turning toward the hurtbox later.
+    const end = Math.min(H.tEnd[s], pt + tuning.sword.poor.tc / DT);
+    let a = H._path(s, pt);
+    for (let ta = pt; ta < end; ta += 1) {
+      const tb = Math.min(ta + 1, end), b = H._path(s, tb);
+      const dx = b.x - a.x, dz = b.z - a.z, ox = a.x - ecs.x[e], oz = a.z - ecs.z[e];
+      const aa = dx * dx + dz * dz, bb = ox * dx + oz * dz, cc = ox * ox + oz * oz - R * R;
+      const disc = bb * bb - aa * cc;
+      if (aa > 1e-12 && disc >= 0) {
+        const u = (-bb - Math.sqrt(disc)) / aa;
+        if (u >= 0 && u <= 1) {
+          const t = ta + (tb - ta) * u;
+          return t < H.tEnd[s] && H._path(s, t).dist < H.clipD[s] - 1e-9 ? (t - pt) * DT : Infinity;
+        }
+      }
+      if (b.dist >= H.clipD[s] - 1e-9) break;
+      a = b;
+    }
+    return Infinity;
+  }
   if (!H.frostFields.length) {
     const vx = H.vx[s], vz = H.vz[s], a = vx * vx + vz * vz, b = px * vx + pz * vz;
     if (a < 1e-9 || b >= 0) return Infinity;
@@ -360,8 +382,9 @@ function contacts(world, e, prev, pt, seq) {
     let ax = H.px(s, ta), az = H.pz(s, ta), bx = H.px(s, pt), bz = H.pz(s, pt);
     const sp = H.speed[s], len = H.len[s];
     if (len > 0 && sp > 1e-6) {
-      const ux = H.vx[s] / sp, uz = H.vz[s] / sp;
-      ax -= ux * len * 0.5; az -= uz * len * 0.5; bx += ux * len * 0.5; bz += uz * len * 0.5;
+      const va = H.velocityAt(s, ta), vb = H.velocityAt(s, pt);
+      ax -= va.x / va.speed * len * 0.5; az -= va.z / va.speed * len * 0.5;
+      bx += vb.x / vb.speed * len * 0.5; bz += vb.z / vb.speed * len * 0.5;
     }
     // Distance from the player to the swept segment.
     const abx = bx - ax, abz = bz - az, l2 = abx * abx + abz * abz;

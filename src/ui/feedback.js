@@ -18,6 +18,7 @@ const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
 const VIOLET = [0.85, 0.6, 1], VIOLET1 = [0.45, 0.2, 0.9];
 const BONE = [1, 0.95, 0.85], BONE1 = [0.9, 0.7, 0.4];
 const FROST = [0.64, 0.96, 1], FROST1 = [0.2, 0.76, 1];
+const STORM = [1, 0.9, 0.28], STORM1 = [1, 0.48, 0.06];
 
 export class Feedback {
   constructor({ world, client, hud, worldUI, loop, settings, map, ps, onTutorial }) {
@@ -33,13 +34,14 @@ export class Feedback {
     };
   }
 
-  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : this.ps.elem === 3 ? 0xffdf3b : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
   // A player's accent color (yours, or another player's by their look).
   colorOf(e) {
     if (e === this.client.youServer) return this.accent;
     const rec = this.client.entities.get(e);
     if (rec?.r?.elem === 1) return 0xff793b;
     if (rec?.r?.elem === 2) return 0x72eaff;
+    if (rec?.r?.elem === 3) return 0xffdf3b;
     return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
   }
   me() { return this.world.views.get(this.client.youServer); }
@@ -130,7 +132,7 @@ export class Feedback {
         if (v) { v.flash(0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : CYAN1);
+          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : ev.elem === 3 ? STORM : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : ev.elem === 3 ? STORM1 : CYAN1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;
@@ -301,7 +303,28 @@ export class Feedback {
           W.skillFx.leap(ev.e, ev.x1, ev.z1, formed('leap', ev.form | 0).r, ev.air, this.colorOf(ev.e));
           sfx.leap(vol);
         }
-        if (me && ev.skill !== 'iceanchor') this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        if (me && ev.skill !== 'iceanchor' && ev.skill !== 'mastbolt') this.hud.pulse(ev.skill === 'comet' ? 'g' : skillId(ps.skQ) === ev.skill ? 'q' : 'e');
+        break;
+      }
+      case 'mastbolt': {
+        const vol = me ? 1 : this.vol(ev.x, ev.z);
+        sfx.mastbolt(vol);
+        if (me) this.hud.pulse('g');
+        break;
+      }
+      case 'lightning': {
+        if ((ev.kind !== 'mastbolt' && ev.kind !== 'chain') || !W.stormFx.cast(ev)) break;
+        const y0 = this.y(ev.x, ev.z);
+        W.combatFx.ring(ev.x, y0 + 0.08, ev.z, 1.35, 0xffdf3b, 0.28, 0.09, 0.8);
+        for (let i = 0; i < (ev.points || []).length && i < 5; i++) {
+          const p = ev.points[i];
+          if (!Number.isFinite(p.x) || !Number.isFinite(p.z)) continue;
+          const y = this.y(p.x, p.z), rec = this.client.entities.get(p.id), vy = rec?.ready ? rec.r.y : y;
+          const v = this.viewOf(p.id);
+          if (v) v.flash(0xffe14d, 0.72);
+          W.combatFx.ring(p.x, y + 0.08, p.z, 1.05, 0xffe14d, 0.25, 0.08, 0.8);
+          this.sparks(p.x, vy + 0.75, p.z, 3, STORM, STORM1, { up: 1.5, spread: 0.65, gravity: -0.4, life: 0.24, size: 0.13, size1: 0.05 });
+        }
         break;
       }
       case 'frostField': {

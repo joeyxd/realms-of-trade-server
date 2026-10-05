@@ -89,7 +89,8 @@ function network() {
 test('Escarcha profiles migrate and survive saves, while G stays separate from tattoo loadouts', () => {
   assert.equal(PEARLS.escarcha.elem, 2);
   assert.equal(PEARLS.escarcha.skill, 'iceanchor');
-  assert.equal(SKILL_IDS.at(-1), 'iceanchor');
+  assert.equal(SKILL_IDS[8], 'comet', 'adding pearls preserves old tattoo indices');
+  assert.equal(SKILL_IDS[9], 'iceanchor');
   assert.equal(skillIndex('comet'), 8, 'adding Escarcha preserves Brasa saves');
   assert.equal(skillId(skillIndex('iceanchor')), 'iceanchor');
   const legacy = newProfile(); delete legacy.pearls;

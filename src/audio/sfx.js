@@ -250,6 +250,14 @@ export const sfx = {
     tone(d, t, { type: 'triangle', f0: 1760, dur: 0.05, g: 0.08 });
     tone(d, t + 0.05, { type: 'triangle', f0: 2349, dur: 0.07, g: 0.06 });
   },
+  // Rayo de mástil: one dry crack followed by a short, bright falling arc on release.
+  mastbolt(vol = 1) {
+    if (!audio.ready) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'highpass', f: 2600, q: 0.8, dur: 0.075, g: 0.24 * vol });
+    tone(d, t, { type: 'triangle', f0: 1280, f1: 360, dur: 0.24, g: 0.13 * vol });
+    sweep(d, t + 0.015, { type: 'bandpass', f0: 1900, f1: 620, q: 1.4, dur: 0.2, g: 0.12 * vol });
+  },
   equip() {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;

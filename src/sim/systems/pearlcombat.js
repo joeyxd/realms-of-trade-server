@@ -4,7 +4,34 @@ import { PEARL } from '../../data/pearls.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { DT, tuning } from '../../data/tuning.js';
 import { C } from '../ecs.js';
+import { historyAt } from './enemies.js';
 import { hurtPlayer } from './combat.js';
+
+// A successful Storm hit on an NPC jumps once to the nearest other hittable NPC, without chaining again.
+export function lightningOnHit(w, target, raw, opts, sourcePos) {
+  const s = w.ecs, by = opts.by;
+  if (!(s.mask[target] & C.ENEMY) || !(by > 0) || !s.alive[by]) return;
+  const back = (opts.pt ?? w.tick) - tuning.combat.interpTicks, from = w.tmpLightningFrom || (w.tmpLightningFrom = {});
+  const to = w.tmpLightningTo || (w.tmpLightningTo = {});
+  if (sourcePos) { from.x = sourcePos.x; from.z = sourcePos.z; }
+  else historyAt(w, target, back, from);
+  let best = 0, bestD = Infinity, bx = 0, bz = 0;
+  for (let e = 1; e < s.cap; e++) {
+    if (e === target || !(s.mask[e] & C.ENEMY) || !w.canHit(by, e)) continue;
+    historyAt(w, e, back, to);
+    const d = Math.hypot(to.x - from.x, to.z - from.z);
+    if (d > PEARL.lightningRange) continue;
+    if (d < bestD || (d === bestD && (!best || e < best))) { best = e; bestD = d; bx = to.x; bz = to.z; }
+  }
+  if (!best) return;
+  const seq = opts.seq || 0;
+  w.strike(best, raw * PEARL.lightningMult, {
+    by, kind: 'chain', skill: 'lightning', seq, x: from.x, z: from.z,
+    noCrit: true, noElement: true, elem: 3, pt: opts.pt,
+  });
+  w.emit({ type: 'lightning', id: w.nextLightning++, e: by, seq, points: [{ id: target, x: from.x, z: from.z }, { id: best, x: bx, z: bz }],
+    kind: 'chain', elem: 3, x: from.x, z: from.z });
+}
 
 export function burnOnHit(w, e, by) {
   const s = w.ecs;

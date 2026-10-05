@@ -19,7 +19,7 @@ import { lootOnKill, stepDrops } from './systems/inventory.js';
 import { questKill, zoneSweep } from './systems/quests.js';
 import { stepInfighting } from './systems/lawless.js';
 import { LAWLESS } from '../data/lawless.js';
-import { burnOnHit, chillOnHit, enemyChillMul, stepBurns, stepChills } from './systems/pearlcombat.js';
+import { burnOnHit, chillOnHit, lightningOnHit, enemyChillMul, stepBurns, stepChills } from './systems/pearlcombat.js';
 
 const D2R = Math.PI / 180;
 
@@ -33,12 +33,14 @@ export class World {
     this.events = [];
     this.isServer = server;
     this.hazards = new Hazards();
+    this.hazards.predicting = !server;
     this.chills = new Map();
     this.fieldOwner = 0; // online prediction may set this to the server entity id for stable field identities
     this.shots = new Shots();
     this.nextPid = 1;
     this.nextSid = 1;
     this.nextAoe = 1;
+    this.nextLightning = 1;
     this.spawners = [];
     this.encounters = []; // server: scripted fights (populate)
     this.feelQ = new Map(); // e → {seq, hitstop, slowmo} merged per command
@@ -191,6 +193,14 @@ export class World {
 
   firePattern(ev) {
     if (ev.src && this.dmgMul(ev.src) !== 1) ev.dmg = Math.round(ev.dmg * this.dmgMul(ev.src));
+    // Anchors are chosen by the authority at emission, never from a client's interpolated pirates.
+    const magnets = [];
+    for (let e = 1; e < this.ecs.cap; e++) {
+      if (!this.ecs.alive[e] || !(this.ecs.mask[e] & C.PLAYER) || this.ecs.dead[e] > 0 || this.ecs.elem[e] !== 3) continue;
+      magnets.push({ e, x: this.ecs.x[e], z: this.ecs.z[e] });
+    }
+    if (magnets.length) ev.magnets = magnets;
+    else delete ev.magnets;
     this.nextPid += patternCount(ev);
     emitPattern(this.hazards, ev, this.map);
     this.emit(ev);
@@ -325,7 +335,7 @@ export class World {
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem: ecs.elem[owner] });
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem: ecs.elem[owner], pt: this.tick });
         if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
       }
     }
@@ -370,11 +380,14 @@ export class World {
   // A player's blow on target o: an enemy takes it, a pirate may dodge, guard or take it. opts.elem (M4.8: the
   // attacker's element, ecs.elem; 0 = none) is copied onto the damage / hurt event it emits.
   strike(o, raw, opts) {
+    const sourcePos = opts.elem === 3 && !opts.noElement && (this.ecs.mask[o] & C.ENEMY)
+      ? historyAt(this, o, (opts.pt ?? this.tick) - tuning.combat.interpTicks, {}) : null;
     const n = this.events.length;
     const dmg = this.ecs.mask[o] & C.ENEMY ? damageEnemy(this, o, raw, opts) : hurtByPlayer(this, o, raw, opts);
     if (opts.elem) for (let i = n; i < this.events.length; i++) { const ev = this.events[i]; if (ev.type === 'damage' || ev.type === 'hurt') ev.elem = opts.elem; }
     if (dmg > 0 && opts.elem === 1 && !opts.noElement) burnOnHit(this, o, opts.by);
     if (dmg > 0 && opts.elem === 2 && !opts.noElement) chillOnHit(this, o, opts.by);
+    if (dmg > 0 && opts.elem === 3 && !opts.noElement) lightningOnHit(this, o, raw, opts, sourcePos);
     return dmg;
   }
 
@@ -396,7 +409,7 @@ export class World {
       if (st.arc < 360 && d > 0.6 && (dx * fx + dz * fz) / d < half) continue;
       b.hitBy.set(e, key);
       const stage = ecs.atkStage[e], emp = ecs.empK[e]; // empowered: the first swing after a Parpadeo (× empK, a crit)
-      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e] });
+      this.strike(o, ecs.atk[e] * st.mult * (emp > 0 ? emp : 1), { by: e, kind: 'melee', seq, x: ecs.x[e], z: ecs.z[e], heavy: stage === 3, knock: M.knock, crit: emp > 0, elem: ecs.elem[e], pt });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -414,7 +427,7 @@ export class World {
       historyAt(this, o, back, tmp);
       if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > L.width + ecs.hurtR[o]) continue;
       b.hitBy.set(e, key);
-      this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock, elem: ecs.elem[e] });
+      this.strike(o, ecs.atk[e] * L.mult, { by: e, kind: 'skill', skill: 'lunge', seq, x: x0, z: z0, heavy: true, knock: tuning.melee.knock, elem: ecs.elem[e], pt });
       this.feel(e, seq, tuning.feel.hitstopMelee, 0);
     }
   }
@@ -434,7 +447,7 @@ export class World {
       const a = rx * dx + rz * dz, l = Math.abs(rx * dz - rz * dx);
       if (a < f0 - W.depth - hr || a > f1 + hr || l > W.half + hr) continue;
       b.waveBy.set(e, id);
-      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6, elem: ecs.elem[e] });
+      this.strike(o, ecs.atk[e] * W.mult, { by: e, kind: 'skill', skill: 'wave', seq, x: tmp.x - dx, z: tmp.z - dz, knock: 6, elem: ecs.elem[e], pt });
     }
   }
 
@@ -446,16 +459,58 @@ export class World {
       if (!this.canHit(e, o)) continue;
       historyAt(this, o, T - tuning.combat.interpTicks, tmp);
       if (Math.hypot(tmp.x - cx, tmp.z - cz) > rr + ecs.hurtR[o]) continue;
-      this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true, elem: ecs.elem[e] });
+      this.strike(o, ecs.atk[e] * R.mult, { by: e, kind: 'skill', skill: 'rain', seq, x: cx, z: cz, pierce: true, knock: 0.6, above: true, elem: ecs.elem[e], pt: T });
     }
+  }
+
+  // The Mastbolt selects its first target in the charged aim cone, then chains to the nearest live NPC each hop.
+  lightningHits(e, k, pt, seq) {
+    const ecs = this.ecs, S = SKILLS.mastbolt, back = pt - tuning.combat.interpTicks;
+    const origin = this.tmpMastOrigin || (this.tmpMastOrigin = {}), target = this.tmpMastTarget || (this.tmpMastTarget = {});
+    origin.x = ecs.x[e]; origin.z = ecs.z[e];
+    const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]), cone = Math.cos(S.halfArc * D2R);
+    let first = 0, firstD = Infinity, firstX = 0, firstZ = 0;
+    for (let t = 1; t < ecs.cap; t++) {
+      if (!(ecs.mask[t] & C.ENEMY) || !this.canHit(e, t)) continue;
+      historyAt(this, t, back, target);
+      const dx = target.x - origin.x, dz = target.z - origin.z, d = Math.hypot(dx, dz);
+      if (d > S.range + ecs.hurtR[t] || (d > 0.05 && (dx * fx + dz * fz) / d < cone)) continue;
+      if (d < firstD || (d === firstD && (!first || t < first))) { first = t; firstD = d; firstX = target.x; firstZ = target.z; }
+    }
+    if (!first) return 0;
+    const jumps = 1 + Math.floor(Math.min(1, k) * S.jumps), points = [{ id: first, x: firstX, z: firstZ }], visited = new Set([first]);
+    let current = first, cx = firstX, cz = firstZ, mult = S.mult, hits = 0;
+    for (let hop = 0; hop <= jumps; hop++) {
+      if (!ecs.alive[current] || ecs.dead[current] > 0) break;
+      this.strike(current, ecs.atk[e] * mult, {
+        by: e, kind: 'skill', skill: 'mastbolt', seq, x: hop === 0 ? origin.x : points[hop - 1].x,
+        z: hop === 0 ? origin.z : points[hop - 1].z, noCrit: true, noElement: true, elem: 3, pt,
+      });
+      hits++;
+      if (hop >= jumps) break;
+      let next = 0, nextD = Infinity, nx = 0, nz = 0;
+      for (let t = 1; t < ecs.cap; t++) {
+        if (visited.has(t) || !(ecs.mask[t] & C.ENEMY) || !this.canHit(e, t)) continue;
+        historyAt(this, t, back, target);
+        const d = Math.hypot(target.x - cx, target.z - cz);
+        if (d > S.chainR) continue;
+        if (d < nextD || (d === nextD && (!next || t < next))) { next = t; nextD = d; nx = target.x; nz = target.z; }
+      }
+      if (!next) break;
+      visited.add(next); current = next; cx = nx; cz = nz;
+      points.push({ id: next, x: nx, z: nz });
+      mult *= S.falloff;
+    }
+    this.emit({ type: 'lightning', id: this.nextLightning++, e, seq, points, kind: 'mastbolt', elem: 3, x: ecs.x[e], z: ecs.z[e] });
+    return hits;
   }
 
   // ---- Tattoo hits (M4.7 P3, server only) ---------------------------------------------------------------
   // One blow of a tattoo (ATK × mult) on target t: the strike (elem: the attacker's), then o.stun s of stagger.
   // o: {skill, knock, stun, heavy, kind}.
-  skillStrike(e, t, mult, o, x, z, seq) {
+  skillStrike(e, t, mult, o, x, z, seq, pt) {
     const ecs = this.ecs;
-    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e], fire: o.fire });
+    const dmg = this.strike(t, ecs.atk[e] * mult, { by: e, kind: o.kind || 'skill', skill: o.skill, seq, x, z, knock: o.knock, heavy: o.heavy, elem: ecs.elem[e], fire: o.fire, pt });
     if (o.stun > 0) this.stun(e, t, o.stun, seq, dmg);
     return dmg;
   }
@@ -469,7 +524,7 @@ export class World {
       if (!this.canHit(e, t)) continue;
       historyAt(this, t, back, tmp);
       if (Math.hypot(tmp.x - x, tmp.z - z) > r + ecs.hurtR[t]) continue;
-      this.skillStrike(e, t, mult, o, x, z, seq);
+      this.skillStrike(e, t, mult, o, x, z, seq, pt);
       n++;
     }
     return n;
@@ -488,7 +543,7 @@ export class World {
       historyAt(this, t, back, tmp);
       if (skillSegDist(tmp.x, tmp.z, x0, z0, x1, z1) > r + ecs.hurtR[t]) continue;
       b.pathBy.set(e, key);
-      this.skillStrike(e, t, mult, o, x0, z0, seq);
+      this.skillStrike(e, t, mult, o, x0, z0, seq, pt);
       n++;
     }
     return n;
@@ -533,7 +588,7 @@ export class World {
     for (let o = 1; o < ecs.cap; o++) {
       if (!this.canHit(e, o)) continue;
       if (Math.hypot(ecs.x[o] - ecs.x[e], ecs.z[o] - ecs.z[e]) > stormRadius(ecs, e) + ecs.hurtR[o]) continue;
-      this.strike(o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true, elem: ecs.elem[e] });
+      this.strike(o, ecs.atk[e] * RP.dmgMult, { by: e, kind: 'wave', seq, x: ecs.x[e], z: ecs.z[e], heavy: true, knock: RP.knock, pierce: true, elem: ecs.elem[e], pt: this.tick });
     }
   }
 

@@ -23,6 +23,7 @@ import { WeaponFx } from './vfx/weaponfx.js';
 import { Indicators } from './vfx/indicators.js';
 import { SkillFx } from './vfx/skillfx.js';
 import { FrostFx } from './vfx/frostfx.js';
+import { StormFx } from './vfx/stormfx.js';
 import { LootLayer } from './loot.js';
 import { Ambient } from './ambient.js';
 import { LocalLights } from './lights.js';
@@ -119,6 +120,7 @@ export class GameScene {
     this.indicators = new Indicators(this.scene, map);
     this.skillFx = new SkillFx(this.scene, this.effects, this.combatFx, this.after, map, (e) => this.views.get(e) || null);
     this.frostFx = new FrostFx(this.scene, map);
+    this.stormFx = new StormFx(this.scene, map);
     this.time = 0;
     this.focus = new THREE.Vector3();
     this.tmpV = new THREE.Vector3();
@@ -210,7 +212,7 @@ export class GameScene {
     // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
-    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m, this.indicators.marker.mesh, this.indicators.range.mesh, this.indicators.arrow.mesh, this.indicators.chargeRing.mesh, this.indicators.arc.mesh, this.skillFx.spouts[0].m, this.skillFx.vortices[0].m, this.skillFx.shadows[0].m, this.skillFx.wheels[0].m]) { m.visible = true; temp.push(m); }
+    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m, this.indicators.marker.mesh, this.indicators.range.mesh, this.indicators.arrow.mesh, this.indicators.chargeRing.mesh, this.indicators.arc.mesh, this.skillFx.spouts[0].m, this.skillFx.vortices[0].m, this.skillFx.shadows[0].m, this.skillFx.wheels[0].m, this.stormFx.bolts[0].mesh]) { m.visible = true; temp.push(m); }
     // A legendary drop (its model, beam and disc) so the first loot does not hitch either.
     const lv = this.loot.add({ id: -1, kind: 'item', x: this.focus.x, z: this.focus.z, item: { u: 0, b: 'sable', r: 4, l: 1, a: [] } });
     lootProbe = lv;
@@ -300,6 +302,7 @@ export class GameScene {
       this.indicators.update(dt, ctx.combat.tick);
       this.skillFx.update(sim, ctx.combat.tick);
       this.frostFx.update(ctx.combat.hazards.frostFields, ctx.combat.tick);
+      this.stormFx.update(sim);
     }
     this.combatFx.update(sim);
     if (this.calaRing) this.calaRing.update(dt, !!ctx.lawless);

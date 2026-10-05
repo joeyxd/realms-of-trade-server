@@ -6,7 +6,7 @@
 //   SLOTS      the equippable slots; SLOT_COLS the ECS columns of each (a third slot G, M4.8, is one entry here)
 //   cast       how the client aims it: dir (arrow) · self · ground (area mark) · charge (hold and release)
 
-export const SKILL_IDS = ['lunge', 'wave', 'blast', 'blink', 'tromba', 'leap', 'wheel', 'none', 'comet', 'iceanchor'];
+export const SKILL_IDS = ['lunge', 'wave', 'blast', 'blink', 'tromba', 'leap', 'wheel', 'none', 'comet', 'iceanchor', 'mastbolt'];
 export const skillIndex = (id) => Math.max(0, SKILL_IDS.indexOf(id));
 export const skillId = (i) => SKILL_IDS[i | 0] || SKILL_IDS[0];
 
@@ -68,7 +68,7 @@ export const SLOT_COLS = {
 
 export const isArt = (id) => Object.prototype.hasOwnProperty.call(ARTS, id);
 export const isTattoo = (id) => Object.prototype.hasOwnProperty.call(TATTOOS, id);
-export const castKind = (id) => (id === 'none' ? 'self' : id === 'iceanchor' ? 'ground' : isArt(id) ? ARTS[id].cast : isTattoo(id) ? TATTOOS[id].cast : 'dir');
+export const castKind = (id) => (id === 'none' ? 'self' : id === 'iceanchor' ? 'ground' : id === 'mastbolt' ? 'charge' : isArt(id) ? ARTS[id].cast : isTattoo(id) ? TATTOOS[id].cast : 'dir');
 // The rank a form asks for (the base asks none).
 export const formRank = (id, form) => (isTattoo(id) && TATTOOS[id].forms[form] ? TATTOOS[id].forms[form].rank || 1 : Infinity);
 // The id held by `slot` ('q' | 'e') of entity e, read from the ECS columns.

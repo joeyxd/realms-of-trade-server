@@ -92,6 +92,7 @@ function phases(id, S = SKILLS[id]) {
   if (id === 'blink') return [0, 0, S.recover];
   if (id === 'tromba') return [S.windup, 0, S.recover];
   if (id === 'iceanchor') return [S.windup, 0, S.recover];
+  if (id === 'mastbolt') return [0, 0, 0];
   if (id === 'leap') return [S.windup, S.blink ? 0 : S.air, S.recover];
   return [0, 0, 0]; // the wheel's charge has no fixed phases: it lasts as long as you hold
 }
@@ -191,11 +192,12 @@ export function castPose(ecs, e) {
   if (id === 'lunge' || id === 'comet') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };
-  if (id === 'tromba' || id === 'iceanchor' || id === 'leap' || id === 'wheel') {
+  if (id === 'tromba' || id === 'iceanchor' || id === 'leap' || id === 'wheel' || id === 'mastbolt') {
     const S = skillNum(ecs, e, slot);
     if (id === 'tromba') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
     if (id === 'iceanchor') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
     if (id === 'wheel') return { move: S.move, act: ACT.CHARGE };
+    if (id === 'mastbolt') return { move: S.move, act: ACT.CHARGE };
     if (S.blink) return { move: 1, act: ACT.CAST };
     return { move: ecs.castT[e] < S.windup + S.air ? 0 : 0.5, act: ACT.LEAP };
   }
@@ -542,9 +544,24 @@ function stepCharge(world, e, cmd, dt, pt, seq, slot, S) {
   const ecs = world.ecs;
   faceAim(ecs, e, cmd);
   ecs.castX[e] = Math.sin(ecs.facing[e]); ecs.castZ[e] = Math.cos(ecs.facing[e]);
-  if ((cmd.btn & SLOT_BTN[slot]) && ecs.castT[e] < S.maxHold) { ecs.castT[e] += dt; return; }
-  throwWheel(world, e, slot, S, Math.min(1, ecs.castT[e] / S.charge), pt, seq);
+  const mastbolt = skillOf(ecs, e, slot) === 'mastbolt';
+  if ((cmd.btn & SLOT_BTN[slot]) && ecs.castT[e] < S.maxHold) {
+    ecs.castT[e] = mastbolt ? Math.min(S.maxHold, ecs.castT[e] + dt) : ecs.castT[e] + dt;
+    if (!mastbolt || ecs.castT[e] < S.maxHold) return;
+  }
+  const k = Math.min(1, ecs.castT[e] / S.charge);
+  if (mastbolt) throwMastbolt(world, e, S, k, pt, seq);
+  else throwWheel(world, e, slot, S, k, pt, seq);
   cancelCast(ecs, e);
+}
+
+// The charged release predicts its own visual; the server independently resolves and broadcasts its hit chain.
+function throwMastbolt(world, e, S, k, pt, seq) {
+  const ecs = world.ecs, dx = ecs.castX[e], dz = ecs.castZ[e];
+  const jumps = 1 + Math.floor(k * S.jumps);
+  ecs.cdG[e] = S.cd * (1 - ecs.cdr[e]);
+  world.emit({ type: 'mastbolt', e, seq, x: ecs.x[e], z: ecs.z[e], dx, dz, k, jumps, tick: pt });
+  if (world.isServer) world.lightningHits(e, k, pt, seq);
 }
 
 // The throw: k = 0 fast and short … 1 slow, long and heavy (form B: wider, heavier, slower). A wall ahead shortens

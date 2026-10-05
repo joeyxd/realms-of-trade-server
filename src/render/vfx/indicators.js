@@ -12,7 +12,7 @@ import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { DT } from '../../data/tuning.js';
 
-export const AIM_COLOR = { mine: 0xa77bff, other: 0xffb347, frost: 0x71eaff, ink: 0x1a1033 };
+export const AIM_COLOR = { mine: 0xa77bff, other: 0xffb347, frost: 0x71eaff, mastbolt: 0xffdf3b, ink: 0x1a1033 };
 const RINGS = 6, SEGS = 64;
 
 const BLEND = {
@@ -207,17 +207,20 @@ export class Indicators {
   }
 
   // The charge: arrow from (px, pz) along (dx, dz), `len` long, `w` wide; ring at your feet filled to k (0..1).
-  charge(px, pz, dx, dz, len, w, k, range) {
-    this.chargeRing.mat.uniforms.uColor.value.set(AIM_COLOR.mine);
-    this.arrow.mat.uniforms.uColor.value.set(AIM_COLOR.mine);
+  charge(px, pz, dx, dz, len, w, k, range, color = AIM_COLOR.mine, coneAngle = 0, fullCue = true) {
+    this.chargeRing.mat.uniforms.uColor.value.set(color);
+    this.arrow.mat.uniforms.uColor.value.set(color);
+    this.arrow.mat.uniforms.uAlpha.value = coneAngle ? 0.65 : 1;
+    this.range.mat.uniforms.uColor.value.set(color);
     const U = this.chargeRing.mat.uniforms;
     this.lay(this.chargeRing, px, pz, 0.95, 0.06);
     this.chargeRing.key = ''; // follows you every frame
     U.uFill.value = k;
-    if (k >= 1 && !this.full) { this.full = true; U.uFlash.value = 1; if (this.onFull) this.onFull(); }
+    if (k >= 1 && !this.full) { this.full = true; U.uFlash.value = 1; if (fullCue && this.onFull) this.onFull(); }
     if (k < 1) this.full = false;
     this.chargeRing.mesh.visible = true;
-    this.layArrow(px + dx * 0.6, pz + dz * 0.6, dx, dz, len, w, k);
+    const spread = Math.tan(coneAngle * Math.PI / 360);
+    this.layArrow(px + (spread ? 0 : dx * 0.6), pz + (spread ? 0 : dz * 0.6), dx, dz, len, w, k, spread);
     if (range > 0) { this.lay(this.range, px, pz, range); this.range.key = ''; this.range.mesh.visible = true; } else this.range.mesh.visible = false;
     this.marker.mesh.visible = false; this.arc.mesh.visible = false;
   }
@@ -227,14 +230,16 @@ export class Indicators {
     this.full = false;
   }
 
-  layArrow(x0, z0, dx, dz, len, w, k) {
+  layArrow(x0, z0, dx, dz, len, w, k, spread = 0) {
     const g = this.arrow.geo, pos = g.attributes.position.array, n = pos.length / 6 - 1, map = this.map;
     const head = Math.min(1.1, len * 0.3), tip = Math.max(0.5, 1 - head / Math.max(len, 0.1));
     for (let i = 0; i <= n; i++) {
       const u = i / n, s = u * len, cx = x0 + dx * s, cz = z0 + dz * s;
-      const half = w * (u > tip ? 1.7 * (1 - (u - tip) / (1 - tip)) : 1);
+      const half = spread
+        ? Math.max(0.08, s * spread)
+        : w * (u > tip ? 1.7 * (1 - (u - tip) / (1 - tip)) : 1);
       for (let side = 0; side < 2; side++) {
-        const sg = side ? 1 : -1, px = cx + dz * half * sg * 1.25, pz = cz - dx * half * sg * 1.25, q = (i * 2 + side) * 3;
+        const sg = side ? 1 : -1, scale = spread ? 1 : 1.25, px = cx + dz * half * sg * scale, pz = cz - dx * half * sg * scale, q = (i * 2 + side) * 3;
         pos[q] = px; pos[q + 1] = map.groundAt(px, pz) + 0.09; pos[q + 2] = pz;
       }
     }

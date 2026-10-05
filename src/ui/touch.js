@@ -14,6 +14,7 @@ const ico = (p) => `<svg viewBox="0 0 24 24" aria-hidden="true"><g class="u">${p
 export const ICONS = {
   comet: ico('<circle cx="16" cy="16" r="6"/><path d="M2 3l12 5M3 8l6 4M8 2l6 6"/><circle cx="16" cy="16" r="2"/>'),
   iceanchor: ico('<path d="M12 2.5v19M4 7l16 11M20 7L4 18"/><path d="M5 18l-2 3 5-.5M19 18l2 3-5-.5M12 2.5L9.5 6h5z"/>'),
+  mastbolt: ico('<path d="M14.5 2.5L5.5 14h6l-1 8 8-12h-6z"/><path d="M3 6l2 1M20 4l1-2M20 20l2 1"/>'),
   sword: ico('<path d="M20 4L11 13"/><path d="M7.5 11.5l5 5"/><path d="M10 14L5.5 18.5"/><path d="M4.5 19.5h.01"/>'),
   pistol: ico('<path d="M3 8h17v4h-7.5L11 19H7l1.5-7H3z"/><path d="M4.5 8V5.5H7"/>'),
   shield: ico('<path d="M12 3l8 3v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M12 7.5v9"/>'),
@@ -235,14 +236,14 @@ export class TouchControls {
   // A quick ring pulse when something comes off cooldown.
   setPearl(id, cd01) {
     this.gBtn.hidden = id === 'none';
-    this.kinds.g = id === 'iceanchor' ? 'ground' : 'dir';
+    this.kinds.g = id === 'iceanchor' ? 'ground' : id === 'mastbolt' ? 'charge' : 'dir';
     if (this.pearlFace !== id) {
       this.pearlFace = id;
-      const icon = id === 'iceanchor' ? 'iceanchor' : 'comet';
-      const label = id === 'iceanchor' ? 'ANCLA' : 'COMETA';
+      const icon = id === 'iceanchor' ? 'iceanchor' : id === 'mastbolt' ? 'mastbolt' : 'comet';
+      const label = id === 'iceanchor' ? 'ANCLA' : id === 'mastbolt' ? 'RAYO' : 'COMETA';
       this.gBtn.querySelector('.ico').innerHTML = ICONS[icon];
       this.gBtn.querySelector('.lbl').textContent = label;
-      this.gBtn.setAttribute('aria-label', id === 'iceanchor' ? 'Ancla de hielo' : 'Cometa');
+      this.gBtn.setAttribute('aria-label', id === 'iceanchor' ? 'Ancla de hielo' : id === 'mastbolt' ? 'Rayo de mástil' : 'Cometa');
     }
     const k = Math.round(Math.max(0, Math.min(1, cd01)) * 40);
     if (this.gBtn.dataset.k === String(k)) return;

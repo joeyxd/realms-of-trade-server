@@ -9,7 +9,9 @@ export function pearlHtml(p, confirmation, nearby = []) {
     const P = PEARLS[pearl.kind], S = SKILLS[P.skill], uid = esc(pearl.uid);
     const numbers = P.skill === 'iceanchor'
       ? `Alcance ${S.range} u · radio ${S.r} u · ${S.dur} s · ralentiza ${Math.round((1 - S.slow) * 100)} % · recarga ${S.cd} s`
-      : `${S.dist} u · ATK × ${S.mult} · recarga ${S.cd} s`;
+      : P.skill === 'mastbolt'
+        ? `Mantén ${S.charge} s para cargar · 2–${2 + S.jumps} objetivos · recarga ${S.cd} s · alcance ${S.range} u · salto ${S.chainR} u`
+        : `${S.dist} u · ATK × ${S.mult} · recarga ${S.cd} s`;
     const confirming = confirmation?.uid === pearl.uid && confirmation.replaceUid === ps.swallowed?.uid;
     const actions = swallowed ? '<button class="btn secondary" data-pearl-op="spit">Escupir al suelo</button>' :
       `<button class="btn" data-pearl-op="swallow" data-pearl-uid="${uid}">${confirming ? 'Confirmar: soltar la anterior y tragar' : 'Tragar'}</button>
