@@ -212,6 +212,9 @@ sin intentar fabricar todas las eras ni las naves aéreas en la primera entrega.
 
 ## 8. Orden y aceptación por rebanada
 
+Orden operativo junto a assets y misiones de agentes: [PLAN-DELIVERY.md](../PLAN-DELIVERY.md).
+Esta sección conserva los hitos de diseño; el plan de ejecución concreta sus entregas/checkpoints.
+
 El orden de abajo es recomendación de entrega, con dependencias explícitas. No renumera M5–M8 ni marca
 checklists anteriores como terminadas. Los prototipos pueden vivir en memoria; economía pública persistente
 requiere primero las transacciones de M5.

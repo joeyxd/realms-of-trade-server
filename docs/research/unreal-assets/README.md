@@ -7,6 +7,8 @@ Autorizada por el autor el 2026-10-04 en paralelo a la discusión naval.
 - Ruta de origen confirmada por el autor: `C:\Unreal`.
 - Inventario de contenido fuente terminado: un agente GPT-6 Luna por proyecto, con revisión e integración del principal.
 - **Leer primero [SUMMARY.md](SUMMARY.md)**: dictamen, prioridades, pruebas propuestas y huecos de contenido.
+- Para ejecutar estas pruebas junto a los milestones y agentes, seguir [PLAN-DELIVERY.md](../../../PLAN-DELIVERY.md).
+  El inventario está terminado; exportación, importación y aceptación se registran por candidato y entrega.
 - 7.406 archivos inventariados / 6.934.252.744 bytes (6,458 GiB), contando repeticiones entre proyectos;
   7.113 registros de Content y 293 del plugin/editor de MyProject. El suplemento de contexto no es parte de esa suma.
   Reconciliación de los tres CSV/JSON y 18 muestras SHA-256 documentadas en [DUPLICATES.md](DUPLICATES.md).

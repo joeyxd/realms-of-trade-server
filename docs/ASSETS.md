@@ -17,6 +17,10 @@ cómic, bloom de lo que emite), así que un modelo de Meshy no desentona.
 
 ## Flujo rápido
 
+Pruebas incrementales de la colección FAB/Unreal junto a gameplay: [PLAN-DELIVERY.md](../PLAN-DELIVERY.md).
+El primer brief es [A01, textura en un efecto aislado](briefs/assets-a01-texture-canary.md). El inventario no
+demuestra exportabilidad; las fuentes permanecen intactas y el principal integra el manifiesto compartido.
+
 ```bash
 # 1. Importar (copia a assets/, revisa huesos, tamaño y triángulos, escribe el manifiesto)
 node tools/import-asset.mjs ~/Descargas/corsaria.glb --id=char:corsaria --looks=Exploradora

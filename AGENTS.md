@@ -2,7 +2,9 @@
 
 ## Continuidad
 
-- Leer `docs/HANDOFF.md`, `DESIGN.md` y el plan del milestone activo antes de trabajar.
+- Leer `docs/HANDOFF.md`, `PLAN-DELIVERY.md`, `DESIGN.md` y el plan del milestone activo antes de trabajar.
+- `PLAN-DELIVERY.md` organiza entregas jugables y pruebas de assets; seguir su cola/dependencias y registrar
+  checkpoint/evidencia al aceptar cada misión. Los briefs están en `docs/briefs/`.
 - La rama de continuidad es `claude/loving-lovelace-ptbif7`; usar el PR existente #1.
 - Conservar trabajo ajeno y distinguir implementación, propuesta, pruebas y despliegue.
 - Interfaz y comunicación con el autor en español; comentarios de código en inglés.
@@ -19,6 +21,8 @@
   lectura/escritura y verificación. Agrupar tareas relacionadas; evitar delegación repetida sin utilidad.
 - Separar archivos de trabajo cuando haya ediciones paralelas. Inventarios e investigaciones son de solo lectura
   salvo autorización expresa para exportar o modificar.
+- Cuatro slots incluyen al principal: como máximo tres workers. Un escritor por archivo; reservar manifiesto,
+  protocolo y entrypoints al principal o a un dueño exclusivo. Una revisión de navegador/GPU a la vez.
 - Si GPT-6 Luna no está disponible, comunicarlo antes de sustituirlo por otro modelo.
 
 ## Prioridades y límites actuales

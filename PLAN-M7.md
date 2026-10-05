@@ -1,5 +1,7 @@
 # PLAN M7 — «Mercaderes»: comercio entre pueblos
 
+Entregas/UI/recursos y dependencias: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D06, D10–D11 y D13–D14.
+
 > El corazón de la estructura (DESIGN, «El chiste del juego»). El **motor ya existe y está probado**
 > (`tests/economy.test.mjs`). Lo que falta es lo que se ve y se juega: la UI del mercado, los mercaderes, la mochila
 > y la bodega, y el contenido.

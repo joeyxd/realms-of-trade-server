@@ -1,5 +1,7 @@
 # PLAN M5 — «Mundo persistente»
 
+Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09; base antes de riesgo persistente.
+
 > Hoy cada partida va **firmada en el navegador** del jugador y el mundo (mercados, solares) dura lo que la sesión.
 > M5 lo pasa a una base de datos en el servidor: cuentas, personajes, inventario, economía, y lo que necesita ser
 > único (perlas legendarias, solares) sin duplicados.

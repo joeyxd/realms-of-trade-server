@@ -1,5 +1,7 @@
 # PLAN M8 — «Ladrillo y brea»: construcción
 
+Orden de talleres/vivienda/ciudad y assets: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D06 y D13–D14.
+
 > Comprar un solar en un pueblo, levantar un edificio, y que trabaje para ti: un taller que convierte mercancías
 > (caña → ron), un almacén, un puesto que vende solo, una casa. Se apoya en M7 (mercancías) y M6 (traerlas).
 
