@@ -188,6 +188,19 @@ export const sfx = {
     noiseBurst(d, t, { type: 'highpass', f: 4300, q: 2.6, dur: 0.045, g: 0.075 * vol });
     tone(d, t, { type: 'triangle', f0: 1174.66, f1: 784, dur: 0.12, g: 0.055 * vol });
   },
+  inkCloud(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'lowpass', f: 680, q: 0.75, dur: 0.48, g: 0.2 * vol });
+    sweep(d, t + 0.02, { type: 'bandpass', f0: 320, f1: 1050, q: 1.7, dur: 0.38, g: 0.11 * vol });
+    tone(d, t + 0.08, { type: 'sine', f0: 180, f1: 92, dur: 0.42, g: 0.16 * vol });
+  },
+  inkHit(vol = 1) {
+    if (!audio.ready || vol < 0.03) return;
+    const t = audio.now, d = audio.sfx;
+    noiseBurst(d, t, { type: 'bandpass', f: 1550, q: 2.4, dur: 0.055, g: 0.07 * vol });
+    tone(d, t, { type: 'triangle', f0: 660, f1: 990, dur: 0.12, g: 0.045 * vol });
+  },
   freeze(vol = 1) {
     if (!audio.ready) return;
     const t = audio.now, d = audio.sfx;

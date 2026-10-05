@@ -36,7 +36,7 @@ export class PauseMenu {
           ${['auto', 'low', 'medium', 'high', 'ultra'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta', ultra: 'Ultra · cómic dramático' }[q]}</option>`).join('')}
         </select></div>
         <div class="row-note" id="set-gpu">GPU: ${esc(gpu.name || '—')} · ${GPU_TIER[gpu.tier] || GPU_TIER.mid}</div>
-        <div class="row"><label for="set-tod">Hora del día</label><select id="set-tod">
+        <div class="row"><label for="set-tod">Luz del escenario</label><select id="set-tod">
           ${['cycle', 'day', 'dusk', 'night'].map((q) => `<option value="${q}" ${s.timeOfDay === q ? 'selected' : ''}>${{ cycle: 'Ciclo día y noche', day: 'Día', dusk: 'Atardecer', night: 'Noche' }[q]}</option>`).join('')}
         </select></div>
         ${range('set-shake', 'Sacudida de cámara', s.shake)}

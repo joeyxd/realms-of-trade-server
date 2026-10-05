@@ -75,7 +75,7 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Guardia (mantener): bloquea de frente; alzada justo a tiempo ATRAPA la bala y tu siguiente ataque la devuelve | RMB / K / LT | botón GUARDIA (mantener) |
 | Tus dos huecos: las artes del arma (sable: Estocada / Hoja de viento; pistolas: Descarga / Paso de humo) o tus tatuajes. Un área (Tromba, Abordaje) se apunta manteniendo y sale al soltar (RMB / ESC / B cancelan); el Timón se carga manteniendo | Q / E · RB / LB | botones Q / E (arrastrar apunta; mantener carga) |
 | R con el RIPOSTE lleno. Sable: Tormenta. Pistolas: Lluvia de plomo | R / Y | botón R |
-| Poder de la perla tragada: Brasa → Cometa; Escarcha → Ancla de hielo (apuntar/soltar); Tormenta → Rayo de mástil (cargar/soltar) | G · cruceta ↓ | botón COMETA / ANCLA / RAYO |
+| Poder de la perla tragada: Brasa → Cometa; Escarcha → Ancla de hielo; Tormenta → Rayo de mástil; Tinta → Nube de tinta | G · cruceta ↓ | botón COMETA / ANCLA / RAYO / NUBE |
 | Pausa y ajustes (ESC cierra antes el diálogo, el panel o el mapa) | ESC / Start | botón ⚙ |
 | Rendimiento | F3 | — |
 | Panel de pruebas (tuning en vivo, spawns, modo dios, cambiar de arma, hitboxes) | F4 | — |
@@ -99,10 +99,10 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 | M4.5 | «Sin ley»: los detalles de M4 (aviso del cofre, palmeras sobre el cofre, cofres de Marea para el oro) y la **Cala Calavera**, un fuerte donde hay fuego amigo, los mobs se pelean entre ellos, los Desalmados cazan a todos y si caes lo pierdes todo → `PLAN-M4.5.md` | ✅ |
 | M4.6 | «Tinta»: el móvil siempre en horizontal (el juego se dibuja girado si el teléfono está de pie), botones táctiles de cristal por colores en arco, y el pase de cómic: contornos de tinta con peso, sombras duras teñidas con trama, superficies pintadas → `PLAN-M4.6.md` | ✅ |
 | M4.7 | «Tatuajes»: Q / E libres (artes del arma o tatuajes), tres tatuajes con rangos y formas (Tromba, Abordaje, Timón), apuntado tipo MOBA, Doña Sepia y la pestaña Tatuajes; el cómic Ultra para GPU potentes → `PLAN-M4.7.md` | ✅ |
-| M4.8 | «Perlas negras»: Brasa, Escarcha, Tormenta, poder G, pasivas, maldiciones y circulación → `PLAN-M4.8.md`; falta Tinta y cierre | en curso |
+| M4.8 | «Perlas negras»: las cuatro perlas, poder G, pasivas, maldiciones y circulación → `PLAN-M4.8.md`; falta cierre P5 | en curso |
 | M5–M8 | La estructura: mundo persistente (Supabase), «La Balsa», comercio entre pueblos, construcción → `PLAN-M5.md` … `PLAN-M8.md`, `docs/HANDOFF.md` | núcleo en parte |
 
-### Entrega actual de M4.8 — Brasa, Escarcha y Tormenta (`0.4.8-alpha.3`)
+### Entrega actual de M4.8 — las cuatro perlas (`0.4.8-alpha.4`)
 
 - Las perlas raras salen de élites, HELLFIRE y cofres de Marea. Recogerlas las guarda sin tragar en **Perlas (P)**;
   puedes tragarlas, entregarlas a un pirata cercano, dejarlas en el suelo o venderlas junto a Tía Perla.
@@ -113,12 +113,18 @@ maestrías, misiones, Marea) se guarda en el navegador, una por servidor; «Nuev
 - Tormenta da **Rayo de mástil (G)**: mantener carga (1.2 s), soltar alcanza 2–5 enemigos en cadena; CD 15 s.
   Los golpes del kit saltan una vez a otro NPC cercano a mitad de daño bruto. Las balas hostiles se curvan
   suavemente hacia tu posición al emitirse el patrón, hasta 18 u; los disparos propios y reflejados conservan su trayectoria.
+- Tinta da **Nube de tinta (G)**: apunta y suelta para ocultar a los piratas cubiertos durante 5 s, radio 3 u,
+  alcance 10 u y CD 18 s. Los enemigos disparan hacia donde vieron por última vez a su objetivo; la nube no
+  borra balas ni protege del daño. Tus golpes marcan NPC durante 4 s para que reciban +10 % en golpes posteriores.
+  De día las pociones curan al 70 %; de noche haces +10 % de daño. El HUD muestra hora y efecto vigente.
 - Al morir caen **todas** tus perlas, incluso fuera de la Cala, con un pilar del color de la perla. Cualquiera puede recogerlas;
   después de 90 s sin recoger vuelven a una playa. Cambiar la tragada requiere confirmación y calma.
-- Para probar sin esperar botín: en solo, **F4 → + Perla de Brasa / Escarcha / Tormenta → P → Tragar**; cierra el panel y espera 4 s antes de G.
-- **M4.8 sigue en curso:** Tinta está pendiente, junto con el pulido y balance final.
+- Para probar sin esperar botín: en solo, **F4 → + Perla → P → Tragar**; cierra el panel y espera 4 s antes de G.
+  ANCLA y NUBE se apuntan manteniendo/arrastrando y se lanzan al soltar; RAYO se carga manteniendo.
+  F4 permite cambiar la hora del mundo para probar Tinta. «Luz del escenario» solo cambia la presentación.
+- **M4.8 sigue en curso:** quedan pulido, balance y aceptación con dispositivos reales en P5.
   El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
-  tras reinicios corresponde a M5. Protocolo **10**: cliente y servidor en línea deben actualizarse juntos.
+  tras reinicios corresponde a M5. Protocolo **11**: cliente y servidor en línea deben actualizarse juntos.
 
 ### Qué incluye M1
 

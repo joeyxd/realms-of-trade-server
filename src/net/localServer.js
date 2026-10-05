@@ -4,6 +4,7 @@
 // decided here and slow the whole world down; clients apply the same 'time' events to their loop.
 // An open-world server would set instanceTime: false and leave hitstop cosmetic on the client.
 import { DT, SNAPSHOT_EVERY, tuning } from '../data/tuning.js';
+import { CLOCK } from '../data/clock.js';
 import { ENEMIES } from '../data/enemies.js';
 import { applyLevel } from '../sim/systems/combat.js';
 import { setWeapon } from '../sim/systems/skills.js';
@@ -237,6 +238,9 @@ export class LocalServer {
       case 'god': ecs.god[e] = msg.on ? 1 : 0; break;
       case 'weapon': setWeapon(w, e, Math.max(0, Math.min(WEAPON_KINDS.length - 1, f(msg.weapon) | 0))); break;
       case 'heal': ecs.hp[e] = ecs.maxHp[e]; break;
+      case 'clock':
+        if (Number.isFinite(msg.hours)) { w.economy.hours = Math.max(0, msg.hours); w.economy.acc = 0; }
+        break;
       case 'riposte': ecs.riposte[e] = tuning.parry.riposte.max; break;
       case 'level': applyLevel(w, e, Math.max(1, Math.min(tuning.stats.maxLevel, f(msg.level, 1) | 0))); ecs.hp[e] = ecs.maxHp[e]; ecs.xp[e] = 0; w.profileDirty.add(e); break;
       case 'mastery': setMastery(w, e, f(msg.level, 1)); break;
@@ -380,12 +384,15 @@ export class LocalServer {
     // Sending only active fields would make a late joiner move that bullet too far ahead.
     const frost = w.hazards.frostFields.map(({ e, seq, x, z, r, t0, tEnd, slow }) => ({ e, seq, x, z, r, t0, tEnd, slow }));
     const storm = w.hazards.stormSnapshot();
+    const ink = { clouds: w.inkClouds.filter((f) => f.tEnd > w.tick).map(({ e, seq, x, z, r, t0, tEnd }) => ({ e, seq, x, z, r, t0, tEnd })), marks: [] };
+    const clock = { tick: w.tick, hours: w.gameHoursAt(), daySec: CLOCK.daySec };
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e] || !(ecs.mask[e] & C.POS)) continue;
       ents.push(encodeEntity(ecs, e));
+      if ((ecs.mask[e] & C.ENEMY) && ecs.dead[e] <= 0 && ecs.brain[e]?.inkEnd > w.tick) ink.marks.push({ e, tEnd: ecs.brain[e].inkEnd });
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm });
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock });
     }
   }
 }

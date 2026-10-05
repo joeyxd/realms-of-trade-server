@@ -14,6 +14,7 @@ export const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V'];
 const ICONS = {
   comet: '<svg viewBox="0 0 32 32"><path d="M4 5l12 3L7 2l20 11-8-2 9 9" fill="none" stroke="#ff793b" stroke-width="3" stroke-linejoin="round"/><circle cx="20" cy="21" r="8" fill="#ff793b" stroke="#1a1033" stroke-width="2"/><circle cx="21" cy="22" r="4" fill="#ffe09b"/></svg>',
   iceanchor: '<svg viewBox="0 0 32 32"><path d="M16 3v26M5 9l22 14M27 9L5 23" stroke="#1a1033" stroke-width="5" stroke-linecap="round"/><path d="M16 3v26M5 9l22 14M27 9L5 23" stroke="#a9f6ff" stroke-width="2.5" stroke-linecap="round"/><path d="M7 24l-3 4 7-1M25 24l3 4-7-1" fill="none" stroke="#e9fdff" stroke-width="2" stroke-linejoin="round"/><path d="M16 3l-3 4h6z" fill="#fff"/></svg>',
+  inkcloud: '<svg viewBox="0 0 32 32"><path d="M8 23a5 5 0 0 1-.5-10A7.5 7.5 0 0 1 22 11a5.5 5.5 0 0 1 1 11H8z" fill="#aa70ed" stroke="#1a1033" stroke-width="2.4"/><path d="M9 18c2-2 3 2 5 0s3 2 5 0 3 1 5-1" fill="none" stroke="#f1ddff" stroke-width="1.6" stroke-linecap="round"/></svg>',
   sword: '<svg viewBox="0 0 32 32"><path d="M24 3l5 0 0 5-13 13-3-2-2-3z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8 18l6 6-2 2-2-1-3 3-3-3 3-3-1-2z" fill="#ffc23d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   shield: '<svg viewBox="0 0 32 32"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 8v16M10 14h12" stroke="#1a1033" stroke-width="2" stroke-linecap="round"/></svg>',
   dash: '<svg viewBox="0 0 32 32"><path d="M6 10h11M3 16h14M6 22h11" stroke="#fff6e2" stroke-width="3" stroke-linecap="round"/><path d="M18 7l10 9-10 9z" fill="#3bf0ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
@@ -123,6 +124,16 @@ export class Hud {
     if (onBag) root.querySelector('#hud-bag').addEventListener('click', onBag);
     if (onMap) root.querySelector('#hud-map').addEventListener('click', onMap);
     this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip'); this.lawChip = root.querySelector('.law-chip');
+    this.clockEl = document.createElement('div');
+    this.clockEl.className = 'world-clock outlined';
+    this.clockEl.setAttribute('aria-label', 'Hora del mundo');
+    this.clockEl.style.cssText = 'display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:3px 8px;border:1px solid rgba(170,112,237,.65);border-radius:999px;background:rgba(20,12,36,.82);color:#f1ddff;font:800 10px/1.2 var(--font-ui);font-variant-numeric:tabular-nums';
+    this.clockTime = document.createElement('span');
+    this.clockPeriod = document.createElement('span');
+    this.clockCurse = document.createElement('b');
+    this.clockCurse.hidden = true;
+    this.clockEl.append(this.clockTime, this.clockPeriod, this.clockCurse);
+    root.querySelector('.bars').append(this.clockEl);
     // Red at the edges of the screen while you stand in the Cala Calavera (M4.5).
     this.lawVig = document.createElement('div');
     this.lawVig.className = 'law-vig';
@@ -313,6 +324,24 @@ export class Hud {
     this.gSlot.querySelector('.lock').hidden = !empty;
     this.gSlot.querySelector('.ico').innerHTML = ICONS[id] || ICONS.comet;
     this.gSlot.classList.toggle('storm', id === 'mastbolt');
+    this.gSlot.style.borderColor = id === 'inkcloud' ? '#aa70ed' : id === 'mastbolt' ? '#ffe14d' : id === 'iceanchor' ? '#83ddff' : id === 'none' ? '' : '#ff793b';
+  }
+
+  // Show the authoritative world hour and the active daylight curse in the HUD.
+  setWorldClock(hour, night, elem) {
+    if (!Number.isFinite(hour)) return;
+    const minuteOfDay = ((Math.floor(hour * 60) % 1440) + 1440) % 1440;
+    const time = `${String(Math.floor(minuteOfDay / 60)).padStart(2, '0')}:${String(minuteOfDay % 60).padStart(2, '0')}`;
+    const period = night ? 'Noche' : 'Día';
+    const curse = elem === 4 ? (night ? 'Daño +10 %' : 'Pociones 70 %') : '';
+    if (this.clockEl.dataset.time !== time) { this.clockTime.textContent = time; this.clockEl.dataset.time = time; }
+    if (this.clockEl.dataset.period !== period) { this.clockPeriod.textContent = period; this.clockEl.dataset.period = period; }
+    if (this.clockEl.dataset.curse !== curse) {
+      this.clockCurse.hidden = !curse;
+      this.clockCurse.textContent = curse;
+      this.clockCurse.style.color = curse ? '#d7b4ff' : '';
+      this.clockEl.dataset.curse = curse;
+    }
   }
 
   setGold(n, tierName = '') {

@@ -6,12 +6,15 @@ import { esc } from './itemui.js';
 export function pearlHtml(p, confirmation, nearby = []) {
   const ps = p.pearls || { swallowed: null, bag: [] }, power = ps.swallowed && PEARLS[ps.swallowed.kind];
   const card = (pearl, swallowed = false) => {
-    const P = PEARLS[pearl.kind], S = SKILLS[P.skill], uid = esc(pearl.uid);
-    const numbers = P.skill === 'iceanchor'
-      ? `Alcance ${S.range} u · radio ${S.r} u · ${S.dur} s · ralentiza ${Math.round((1 - S.slow) * 100)} % · recarga ${S.cd} s`
-      : P.skill === 'mastbolt'
-        ? `Mantén ${S.charge} s para cargar · 2–${2 + S.jumps} objetivos · recarga ${S.cd} s · alcance ${S.range} u · salto ${S.chainR} u`
-        : `${S.dist} u · ATK × ${S.mult} · recarga ${S.cd} s`;
+    const P = PEARLS[pearl.kind] || { name: 'Perla negra', skill: '', color: '#aa70ed', passive: '', curse: '' }, S = SKILLS[P.skill] || {}, uid = esc(pearl.uid);
+    const n = (v, unit = '') => Number.isFinite(v) ? `${v}${unit}` : '—';
+    const numbers = P.skill === 'inkcloud'
+      ? `Alcance ${n(S.range, ' u')} · radio ${n(S.r, ' u')} · duración ${n(S.dur, ' s')} · recarga ${n(S.cd, ' s')}`
+      : P.skill === 'iceanchor'
+        ? `Alcance ${n(S.range, ' u')} · radio ${n(S.r, ' u')} · ${n(S.dur, ' s')} · ralentiza ${Number.isFinite(S.slow) ? `${Math.round((1 - S.slow) * 100)} %` : '—'} · recarga ${n(S.cd, ' s')}`
+        : P.skill === 'mastbolt'
+          ? `Mantén ${n(S.charge, ' s')} para cargar · 2–${Number.isFinite(S.jumps) ? 2 + S.jumps : '—'} objetivos · recarga ${n(S.cd, ' s')} · alcance ${n(S.range, ' u')} · salto ${n(S.chainR, ' u')}`
+          : `${n(S.dist, ' u')} · ATK × ${n(S.mult)} · recarga ${n(S.cd, ' s')}`;
     const confirming = confirmation?.uid === pearl.uid && confirmation.replaceUid === ps.swallowed?.uid;
     const actions = swallowed ? '<button class="btn secondary" data-pearl-op="spit">Escupir al suelo</button>' :
       `<button class="btn" data-pearl-op="swallow" data-pearl-uid="${uid}">${confirming ? 'Confirmar: soltar la anterior y tragar' : 'Tragar'}</button>
@@ -20,7 +23,7 @@ export function pearlHtml(p, confirmation, nearby = []) {
        ${nearby.length ? `<label class="pearl-give">Entregar a <select data-pearl-target="${uid}">${nearby.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join('')}</select><button class="btn secondary" data-pearl-op="give" data-pearl-uid="${uid}">Entregar</button></label>` : ''}`;
     return `<article class="pearl-card${swallowed ? ' swallowed' : ''}" style="--pearl:${P.color}">
       <div class="tt-head"><span class="tt-ico">${skillIcon(P.skill)}</span><div><b>${esc(P.name)}</b><small>${swallowed ? 'Tragada · poder en G' : 'Rara · sin tragar'}</small></div></div>
-      <p><b>G · ${esc(S.name)}</b> — ${esc(S.hint)}. ${numbers}.</p>
+      <p><b>G · ${esc(S.name || P.name)}</b>${S.hint ? ` — ${esc(S.hint)}` : ''}. ${numbers}.</p>
       <p><b>Pasiva:</b> ${esc(P.passive)}</p><p class="pearl-curse"><b>Maldición:</b> ${esc(P.curse)}</p>
       ${confirming ? '<p class="pearl-confirm" role="alert">La perla que llevas dentro caerá al suelo y cualquiera podrá recogerla. Pulsa de nuevo para confirmar.</p><button class="btn secondary" data-pearl-op="cancel">Cancelar</button>' : ''}
       <div class="pearl-actions">${actions}</div></article>`;

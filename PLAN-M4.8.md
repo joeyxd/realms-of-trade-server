@@ -1,7 +1,7 @@
-# PLAN M4.8 — «Perlas negras» (en curso: Brasa, Escarcha, Tormenta y circulación)
+# PLAN M4.8 — «Perlas negras» (en curso: cuatro perlas y circulación; cierre P5 pendiente)
 
-> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.3`, Brasa, Escarcha,
-> Tormenta y la base compartida. **M4.8 no está terminado**: faltan Tinta, pulido y balance.
+> Acordado con el autor durante M4.7 (2026-10-04). Entrega actual: `0.4.8-alpha.4`, las cuatro perlas
+> y la base compartida. **M4.8 no está terminado**: faltan pulido, balance y aceptación real en P5.
 > Las perlas legendarias únicas dependen de M5 (mundo persistente en el servidor): aquí solo las raras.
 
 ## 0. La idea
@@ -61,7 +61,7 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 
 ### 2.4 Lo técnico
 - Hueco G: `SLOTS` gana `g`; `LOADOUT_SLOTS` conserva Q/E para que las perlas no se puedan equipar como tatuajes.
-  `BTN.G`, `KeyG`, botón táctil del poder (COMETA / ANCLA) y cruceta abajo en mando. Panel Perlas en P.
+  `BTN.G`, `KeyG`, botón táctil del poder (COMETA / ANCLA / RAYO / NUBE) y cruceta abajo en mando. Panel Perlas en P.
 - La perla es un objeto con `uid` único.
 - **Duplicados**: hoy la partida vive firmada en el navegador del jugador, así que alguien puede guardar una copia
   de antes de morir y recuperar la perla. En M4.8, mitigación en memoria (el servidor recuerda qué `uid` salió de
@@ -127,9 +127,24 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
   de carga/CD existentes; su eco no repite sonido ni pulso. HUD, botón RAYO, cono amarillo y arcos del servidor.
 - 12 pruebas en `tests/tormenta.test.mjs`; regresión vigente: 259/259. Capturas y límites de aceptación en `docs/HANDOFF.md`.
 
-### P4 — Tinta ⏳
-- Marca de daño, Nube de tinta con comportamiento de enemigos y disparos a ciegas.
-- Maldición de poción de día y daño nocturno; fuente autoritativa de hora, tests y VFX.
+### P4 — Tinta ✅ (mecánica; VFX iniciales)
+- Golpes válidos del kit marcan NPC vivos durante 4 s. El primer golpe no recibe la bonificación; los siguientes,
+  de cualquier atacante, hacen daño bruto ×1.1. No se acumula; un golpe de Tinta renueva. Sin marcas PvP,
+  sobre daño rechazado o después de muerte/reutilización del slot.
+- Nube de tinta: mantener/arrastrar G apunta, soltar coloca; alcance 10 u, radio 3 u, duración 5 s, CD 18 s.
+  Preparación 0.22 s y recuperación 0.18 s, movimiento al 45 % durante la preparación. Cancelar el apuntado no gasta CD.
+  Oculta a todos los piratas vivos cubiertos. Un NPC no adquiere un pirata oculto nunca visto; conserva su última
+  posición visible para moverse/disparar a ciegas, o cambia a otro visible. Cañones, morteros y jefe comparten esa regla.
+  Balas y ataques de área ya comprometidos continúan; la nube no da invulnerabilidad ni borra proyectiles.
+- Hora autoritativa compartida con la economía: día de 16 min, inicio 08:00, noche 20:00–06:00. Pociones ×0.7
+  de día, daño saliente ×1.1 de noche, compuesto una vez con marcas. El ciclo visual sigue al servidor;
+  los presets de «Luz del escenario» son cosméticos. HUD muestra hora, período y maldición vigente.
+- Protocolo 11: snapshot `ink` con nubes y marcas, ancla `clock` y columnas predichas
+  `inkX/inkZ/inkT0/inkEnd/inkSeq`. Eco por pirata/secuencia sin doble feedback, rollback del rechazo,
+  recuperación de eventos perdidos y entrada tardía. Un cast aceptado sigue hasta su vencimiento aunque cambie la perla.
+- Panel, icono G, botón NUBE, área morada, humo procedural de suelo y anillo de marca. Se corrigió el solapamiento
+  del tutorial con la hora en móvil. 12 pruebas en `tests/tinta.test.mjs`; evidencia y límites en
+  [informe D02](docs/delivery/d02-tinta.md). P5 conserva aceptación con GPU y dispositivos reales.
 
 ### P5 — Cierre ⏳
 - Pulido de elementos en todos los ataques, sonido y balance de daño/probabilidad/valor.
@@ -140,15 +155,16 @@ una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
 
 ## 4. Probar esta entrega
 
-En solo: F4 → «+ Perla de Brasa / Escarcha / Tormenta» → P → Tragar → cerrar el panel → esperar 4 s → G.
-Con Escarcha, mantener apunta y soltar coloca el campo. Con Tormenta, mantener carga y soltar encadena.
-En móvil, Bolsa → Perlas y botón COMETA / ANCLA / RAYO; arrastrar ANCLA apunta, mantener RAYO carga
+En solo: F4 → «+ Perla de Brasa / Escarcha / Tormenta / Tinta» → P → Tragar → cerrar el panel → esperar 4 s → G.
+Con Escarcha/Tinta, mantener apunta y soltar coloca el campo. Con Tormenta, mantener carga y soltar encadena.
+F4 → «Hora del mundo: día/noche» permite comprobar Tinta; cambiar el preset de luz no cambia su maldición.
+En móvil, Bolsa → Perlas y botón COMETA / ANCLA / RAYO / NUBE; arrastrar ANCLA/NUBE apunta, mantener RAYO carga
 y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Prueba escupir, reemplazar y cancelar,
 vadear sin modo dios y morir fuera de la Cala. En línea, otro pirata debe poder recoger la perla caída.
 
 Implementación: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, hueco G en `skills.js`,
 `src/ui/pearlpanel.js`. Pruebas: `tests/pearls.test.mjs` (17), `tests/escarcha.test.mjs` (14); escenarios visuales
-`SCEN=pearl`, `SCEN=escarcha` y `SCEN=tormenta` en `tools/look.mjs`.
+`SCEN=pearl`, `SCEN=escarcha`, `SCEN=tormenta` y `SCEN=tinta` en `tools/look.mjs`; Tinta tiene 12 pruebas nuevas.
 Los assets FAB elegidos por el autor se integrarán mediante `docs/ASSETS.md`; esta entrega conserva el arte procedural.
 
 ## 5. Extensión posterior: afinidad (plan; fuera del cierre P5 actual)

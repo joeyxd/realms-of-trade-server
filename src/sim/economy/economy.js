@@ -11,13 +11,14 @@ import { newMarket, stepMarket, quote, settle, board } from './market.js';
 import { newPlots, stepPlot } from './plots.js';
 import { load, unload, roomFor } from './cargo.js';
 import { BUILDINGS } from '../../data/buildings.js';
+import { CLOCK } from '../../data/clock.js';
 
 const upkeepOf = (p) => (BUILDINGS[p.b] ? BUILDINGS[p.b].upkeep : 0);
 
 export const ECON = {
-  daySec: 960, // one game day in sim seconds (16 min, the day–night cycle's length)
+  daySec: CLOCK.daySec, // one game day in sim seconds (16 min, the day–night cycle's length)
   tickSec: 5, // how often markets and plots advance
-  startHour: 8,
+  startHour: CLOCK.startHour,
 };
 
 export class Economy {

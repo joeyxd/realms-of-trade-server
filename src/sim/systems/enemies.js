@@ -10,6 +10,8 @@ import { patternSpan } from '../projectiles.js';
 import { bossBrain, stepBoss, summonMinions, bossFire } from './boss.js';
 import { dampAngle, angleDelta } from '../../core/math.js';
 import { LAWLESS } from '../../data/lawless.js';
+import { inkHidden, inkTargetPoint } from './ink.js';
+import { PEARL } from '../../data/pearls.js';
 
 export const defOf = (ecs, e) => ENEMIES[ENEMY_KINDS[ecs.enemy[e]]];
 
@@ -61,14 +63,23 @@ export function pickTarget(world, e, def, b) {
   }
   // A Desalmado would rather hunt a pirate (their distance counts less).
   const pw = def.renegade ? LAWLESS.preferPirates : 1;
+  let hiddenKeep = 0, hiddenD = Infinity;
   for (let p = 1; p < ecs.cap; p++) {
     if (!ecs.alive[p] || !(ecs.mask[p] & C.PLAYER) || (ecs.mask[p] & C.BOT) || ecs.dead[p] > 0) continue;
-    const d = Math.hypot(ecs.x[p] - ax, ecs.z[p] - az);
+    const hidden = inkHidden(world, p);
+    if (hidden && p !== b.target) continue;
+    const seen = hidden ? inkTargetPoint(world, b, p) : null;
+    if (hidden && !seen) continue;
+    const px = hidden ? seen.x : ecs.x[p], pz = hidden ? seen.z : ecs.z[p];
+    const d = Math.hypot(px - ax, pz - az);
     const keep = p === b.target ? reach * 1.35 : reach; // hysteresis: a target is kept a bit longer
     if (d > keep) continue;
-    if (!def.fixed && Math.hypot(ecs.x[p] - b.homeX, ecs.z[p] - b.homeZ) > leash) continue;
+    if (!def.fixed && Math.hypot(px - b.homeX, pz - b.homeZ) > leash) continue;
+    if (hidden) { hiddenKeep = p; hiddenD = d * pw; continue; }
     if (d * pw < bd) { bd = d * pw; best = p; }
   }
+  // A covered current target stays available for blind fire only when no visible pirate can replace it.
+  if (!best && hiddenKeep) { best = hiddenKeep; bd = hiddenD; }
   // …and, with no pirate in reach, the mobs of the Cala (never another Desalmado), while a pirate is around to see it.
   if (def.renegade && world.calaAwake && !best) {
     for (let o = 1; o < ecs.cap; o++) {
@@ -80,7 +91,16 @@ export function pickTarget(world, e, def, b) {
       if (d < bd) { bd = d; best = o; }
     }
   }
+  if (best) inkTargetPoint(world, b, best);
   return best;
+}
+
+export function targetPoint(world, b, target, out = {}) {
+  const ecs = world.ecs;
+  if (!target || !ecs.alive[target]) return null;
+  if (ecs.mask[target] & C.PLAYER) return inkTargetPoint(world, b, target, out);
+  out.x = ecs.x[target]; out.y = ecs.y[target]; out.z = ecs.z[target];
+  return out;
 }
 
 // Turn toward ang: damped, or at most def.turn rad/s for slow turners (the crab: flank it).
@@ -176,8 +196,10 @@ export function stepEnemy(world, e, dt) {
     if (t !== b.target) b.target = t;
     if (!t && !def.fixed && b.state !== 'idle') { b.state = 'return'; b.t = 0; }
   }
-  const tgt = b.target;
-  const tx = tgt ? ecs.x[tgt] : b.homeX, tz = tgt ? ecs.z[tgt] : b.homeZ;
+  let tgt = b.target;
+  const target = targetPoint(world, b, tgt, {});
+  if (tgt && !target) { b.target = 0; tgt = 0; }
+  const tx = target ? target.x : b.homeX, tz = target ? target.z : b.homeZ;
   const dx = tx - ecs.x[e], dz = tz - ecs.z[e], d = Math.hypot(dx, dz);
 
   if (def.fixed) {
@@ -293,9 +315,10 @@ export function fire(world, e, def, b, a) {
   // Aim the height too: shots from a ledge dip toward the target's chest.
   let slope = 0;
   const t = b.target;
-  if (t && ecs.alive[t] && !a.omni) {
-    const hd = Math.hypot(ecs.x[t] - mx, ecs.z[t] - mz);
-    if (hd > 1) slope = Math.max(-0.35, Math.min(0.35, (ecs.y[t] + 1.1 - my) / hd));
+  const target = !a.omni ? targetPoint(world, b, t, {}) : null;
+  if (target) {
+    const hd = Math.hypot(target.x - mx, target.z - mz);
+    if (hd > 1) slope = Math.max(-0.35, Math.min(0.35, (target.y + 1.1 - my) / hd));
   }
   const ev = {
     type: 'pattern', pid0: world.nextPid, tick: world.tick, src: e, atk: a.id, pat: a.pat, ptype: a.type,
@@ -314,8 +337,9 @@ export function fire(world, e, def, b, a) {
 // Mortar: one shell on the target, the others beside it (across the line of fire), a little apart in time.
 function mortar(world, e, a, b) {
   const ecs = world.ecs, t = b.target;
-  if (!t || !ecs.alive[t]) return;
-  const tx = ecs.x[t], tz = ecs.z[t];
+  const target = targetPoint(world, b, t, {});
+  if (!target) return;
+  const tx = target.x, tz = target.z;
   const ang = Math.atan2(tx - ecs.x[e], tz - ecs.z[e]), px = Math.cos(ang), pz = -Math.sin(ang);
   const f = ecs.facing[e], m = a.muzzle;
   const fx = ecs.x[e] + Math.sin(f) * m[2], fz = ecs.z[e] + Math.cos(f) * m[2], fy = ecs.y[e] + m[1];
@@ -342,6 +366,7 @@ export function damageEnemy(world, e, raw, o) {
     world.emit({ type: 'damage', id: e, dmg: 0, by: o.by, kind: o.kind, seq: o.seq || 0, x: ecs.x[e], z: ecs.z[e], immune: 1 });
     return 0;
   }
+  if (b.inkEnd > world.tick) raw *= PEARL.inkMarkMult;
   if (o.kind === 'shot') {
     const K = tuning.parry.reflect.stack;
     if (world.tick - (b.shotTick ?? -1e9) > K.window / DT) b.shotN = 0;

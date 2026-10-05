@@ -187,8 +187,11 @@ export class Lighting {
     this.inv.copy(this.basis).invert();
   }
 
-  update(dt, focus) {
-    if (this.tod === 'cycle') this.phase = (this.phase + dt / this.cycleSeconds) % 1;
+  update(dt, focus, clockPhase) {
+    if (this.tod === 'cycle') {
+      if (Number.isFinite(clockPhase)) this.setPhase(clockPhase);
+      else this.phase = (this.phase + dt / this.cycleSeconds) % 1;
+    }
     const target = this.baseTarget();
     if (this.snapT < 1) {
       this.snapT = Math.min(1, this.snapT + dt * this.snapSpeed);

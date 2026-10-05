@@ -23,6 +23,7 @@ import { WeaponFx } from './vfx/weaponfx.js';
 import { Indicators } from './vfx/indicators.js';
 import { SkillFx } from './vfx/skillfx.js';
 import { FrostFx } from './vfx/frostfx.js';
+import { InkFx } from './vfx/inkfx.js';
 import { StormFx } from './vfx/stormfx.js';
 import { LootLayer } from './loot.js';
 import { Ambient } from './ambient.js';
@@ -120,6 +121,7 @@ export class GameScene {
     this.indicators = new Indicators(this.scene, map);
     this.skillFx = new SkillFx(this.scene, this.effects, this.combatFx, this.after, map, (e) => this.views.get(e) || null);
     this.frostFx = new FrostFx(this.scene, map);
+    this.inkFx = new InkFx(this.scene, map);
     this.stormFx = new StormFx(this.scene, map);
     this.time = 0;
     this.focus = new THREE.Vector3();
@@ -212,6 +214,7 @@ export class GameScene {
     // Combat FX start hidden; the non-skinned toon variant (practice props, death debris) has no
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
+    for (const m of [this.inkFx.clouds[0].disk, this.inkFx.clouds[0].rim, this.inkFx.marks[0].mesh]) { m.visible = true; temp.push(m); }
     for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m, this.indicators.marker.mesh, this.indicators.range.mesh, this.indicators.arrow.mesh, this.indicators.chargeRing.mesh, this.indicators.arc.mesh, this.skillFx.spouts[0].m, this.skillFx.vortices[0].m, this.skillFx.shadows[0].m, this.skillFx.wheels[0].m, this.stormFx.bolts[0].mesh]) { m.visible = true; temp.push(m); }
     // A legendary drop (its model, beam and disc) so the first loot does not hitch either.
     const lv = this.loot.add({ id: -1, kind: 'item', x: this.focus.x, z: this.focus.z, item: { u: 0, b: 'sable', r: 4, l: 1, a: [] } });
@@ -269,7 +272,7 @@ export class GameScene {
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
     U.mnOccOn.value = ctx.playing ? 1 : 0;
     if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
-    this.lighting.update(dt, ctx.shadowFocus || ctx.focus);
+    this.lighting.update(dt, ctx.shadowFocus || ctx.focus, ctx.clockPhase);
     this.applyPreset(this.lighting.cur);
     this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);
     this.sky.position.copy(this.camera.position);
@@ -302,6 +305,7 @@ export class GameScene {
       this.indicators.update(dt, ctx.combat.tick);
       this.skillFx.update(sim, ctx.combat.tick);
       this.frostFx.update(ctx.combat.hazards.frostFields, ctx.combat.tick);
+      this.inkFx.update(ctx.combat.inkClouds, ctx.combat.tick, ctx.combat.inkMarks, this.views);
       this.stormFx.update(sim);
     }
     this.combatFx.update(sim);

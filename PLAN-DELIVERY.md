@@ -13,9 +13,12 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   si Tormenta ya está aceptada, pasar a Tinta. No pisar ni reasignar archivos activos sin identificar al dueño.
 - Checkpoint posterior D01: Tormenta integrada en `66e6e67`, `0.4.8-alpha.3`, protocolo 10. Mecánica y recorrido
   visual en escritorio/móvil emulado aceptados; GPU, teléfono/mando reales y publicación pendientes.
-  Evidencia: [informe D01](docs/delivery/d01-tormenta.md). Próxima entrega: D02 Tinta, con implementación concurrente
-  en el checkout compartido, todavía sin aceptación aquí. A01 probado en aislamiento y aplazado para humo de
+  Evidencia: [informe D01](docs/delivery/d01-tormenta.md). Al preparar A01, D02 Tinta se implementaba en paralelo
+  en el checkout compartido; su aceptación se registra debajo. A01 probado en aislamiento y aplazado para humo de
   fogatas: [resultado](docs/delivery/a01-noise00.md); código/PNG experimentales no incorporados al runtime principal.
+- Checkpoint posterior D02: Tinta integrada, `0.4.8-alpha.4`, protocolo 11; marca/nube/IA y reloj autoritativo.
+  Regresión 271/271 y capturas inspeccionadas en escritorio/móvil emulado. GPU y dispositivos reales pendientes.
+  Evidencia: [informe D02](docs/delivery/d02-tinta.md). Próxima entrega: D03 / P5 cierre; M5 conserva su plan.
 - Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; **ningún candidato importado**
   al crear este plan. `assets/manifest.json` está vacío. No reiniciar la investigación desde cero.
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
@@ -47,7 +50,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 |---|---|---|---|---|
 | D00 | Inventario y dirección naval | A00: catálogo, miniaturas y candidatos | CSV/JSON reconciliados, límites de evidencia registrados | Hecho |
 | D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
-| D02 | M4.8 P4: Tinta | Seleccionar un recurso de humo/tinta desde catálogo, sin incorporarlo aún | D01 integrado; marca/nube/IA y maldición día-noche probadas | En curso en otra sesión; aceptación pendiente, no revalidada en A01 |
+| D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Cierre pendiente; A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: probar primero el hook `crate` que ya existe en la isla; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | Pendiente |
 | D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |

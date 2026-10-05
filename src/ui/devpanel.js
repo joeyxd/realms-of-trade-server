@@ -39,6 +39,10 @@ const SLIDERS = [
   ['Rayo de mástil: alcance (u)', 'skills', 'mastbolt.range', 5, 14, 0.5],
   ['Rayo de mástil: salto (u)', 'skills', 'mastbolt.chainR', 1, 8, 0.25],
   ['Rayo de mástil: recarga (s)', 'skills', 'mastbolt.cd', 2, 30, 1],
+  ['Nube de tinta: alcance (u)', 'skills', 'inkcloud.range', 5, 14, 0.5],
+  ['Nube de tinta: radio (u)', 'skills', 'inkcloud.r', 1, 5, 0.25],
+  ['Nube de tinta: duración (s)', 'skills', 'inkcloud.dur', 2, 8, 0.5],
+  ['Nube de tinta: recarga (s)', 'skills', 'inkcloud.cd', 2, 30, 1],
   ['Arquero: vel. flecha', 'enemies', 'archer.attacks.0.speed', 4, 14, 0.5],
   ['Arquero: enfriamiento (s)', 'enemies', 'archer.attacks.0.cd', 0.6, 5, 0.1],
   ['Arquero: aviso (s)', 'enemies', 'archer.attacks.0.windup', 0.15, 1, 0.05],
@@ -85,6 +89,9 @@ export class DevPanel {
         <button data-op="pearl">+ Perla de Brasa</button>
         <button data-op="pearl" data-kind="escarcha">+ Perla de Escarcha</button>
         <button data-op="pearl" data-kind="tormenta">+ Perla de Tormenta</button>
+        <button data-op="pearl" data-kind="tinta">+ Perla de Tinta</button>
+        <button data-op="clock" data-hours="12">Hora del mundo: día</button>
+        <button data-op="clock" data-hours="22">Hora del mundo: noche</button>
         <button data-op="lvdown">Nv −</button>
         <button data-op="lvup">Nv +</button>
         <button data-op="weapon">Arma: cambiar</button>
@@ -128,6 +135,7 @@ export class DevPanel {
       case 'heal': this.send('heal'); break;
       case 'riposte': this.send('riposte'); break;
       case 'pearl': this.send('pearl', { kind: d.kind || 'brasa' }); break;
+      case 'clock': this.send('clock', { hours: +d.hours }); break;
       case 'lvup': this.send('level', { level: (ps.level[e] || 1) + 1 }); break;
       case 'lvdown': this.send('level', { level: Math.max(1, (ps.level[e] || 1) - 1) }); break;
       case 'weapon': this.send('weapon', { weapon: ((ps.weapon[e] | 0) + 1) % WEAPON_KINDS.length }); break;

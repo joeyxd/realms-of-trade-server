@@ -34,7 +34,7 @@ export class Feedback {
     };
   }
 
-  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : this.ps.elem === 3 ? 0xffdf3b : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
+  get accent() { return this.ps.elem === 1 ? 0xff793b : this.ps.elem === 2 ? 0x72eaff : this.ps.elem === 3 ? 0xffdf3b : this.ps.elem === 4 ? 0xaa70ed : SKINS[this.settings.skin]?.accent ?? 0x3bf0ff; }
   // A player's accent color (yours, or another player's by their look).
   colorOf(e) {
     if (e === this.client.youServer) return this.accent;
@@ -42,6 +42,7 @@ export class Feedback {
     if (rec?.r?.elem === 1) return 0xff793b;
     if (rec?.r?.elem === 2) return 0x72eaff;
     if (rec?.r?.elem === 3) return 0xffdf3b;
+    if (rec?.r?.elem === 4) return 0xaa70ed;
     return (rec && SKINS[rec.skin]?.accent) ?? 0x3bf0ff;
   }
   me() { return this.world.views.get(this.client.youServer); }
@@ -129,10 +130,11 @@ export class Feedback {
           sfx.armor(this.vol(x, z));
           if (ev.by === this.client.youServer) this.teach('crabArmor', '<b>Cangrejo blindado:</b> de frente apenas le haces daño. Rodéalo con un dash y golpéale por detrás, o <b>devuélvele las balas</b>: los reflejos atraviesan la placa.', 6500);
         }
-        if (v) { v.flash(0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
+        if (v) { v.flash(ev.elem === 4 ? 0xaa70ed : 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
         if (!ev.predictedHit) {
           sfx.hit(this.material(rec), !!ev.crit, this.vol(x, z));
-          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : ev.elem === 3 ? STORM : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : ev.elem === 3 ? STORM1 : CYAN1);
+          if (ev.elem === 4) sfx.inkHit(this.vol(x, z));
+          if (ev.kind !== 'melee') this.sparks(x, (rec ? rec.r.y : 0) + 1.1, z, ev.kind === 'burn' ? 3 : 8, ev.elem === 1 ? AMBER : ev.elem === 2 ? FROST : ev.elem === 3 ? STORM : ev.elem === 4 ? VIOLET : CYAN, ev.elem === 1 ? AMBER1 : ev.elem === 2 ? FROST1 : ev.elem === 3 ? STORM1 : ev.elem === 4 ? VIOLET1 : CYAN1);
         } else if (ev.crit) sfx.hit(this.material(rec), true);
         if (rec && rec.enemy === 'dummy' && ev.by === this.client.youServer && ev.kind === 'melee') this.onTutorial('dummy', ev);
         break;
@@ -332,6 +334,12 @@ export class Feedback {
         // The field itself is drawn from the live hazard snapshot; this event is only its one-shot onset.
         sfx.iceAnchor(vol);
         if (me) { this.hud.pulse('g'); this.shake(0.12); }
+        break;
+      }
+      case 'inkCloud': {
+        const vol = me ? 1 : this.vol(ev.x, ev.z);
+        sfx.inkCloud(vol);
+        if (me) { this.hud.pulse('g'); this.screen(0.09, [0.6, 0.38, 0.82]); }
         break;
       }
       case 'chill': {

@@ -2,7 +2,7 @@
 // quality, desktop or phone viewport, then the console errors. Headless Chromium + SwiftShader (slow but honest).
 // env: OUT (dir), Q (high | ultra | medium | low), VW / VH (viewport), DPR, PHONE=1 (touch + mobile), TOD (day |
 //      night | ...), SCEN (comma list: spawn, close, village, fight, cala, caldera, path, impact, vclose, pause, tattoo,
-//      sepia, pearl, escarcha, tormenta),
+//      sepia, pearl, escarcha, tormenta, tinta),
 //      PERF=1 (print the perf line), MN_LIBS (a dir with three-0.160.0/package and gsap-3.12.5/package unpacked from
 //      npm, served instead of the CDN when the network blocks it), ROOT (the repo; default: this one).
 //      MN_PLAYWRIGHT / MN_BROWSER (installed module / browser paths), MN_THREE / MN_GSAP (package directories).
@@ -68,7 +68,115 @@ const L = await page.evaluate(() => {
 const tp = async (name, x, z, extra, ms = 5000) => { await page.evaluate(([x, z]) => window.__mn.teleport(x, z), [x, z]); await wait(ms); if (extra) await extra(); await shot(name); };
 const scen = (process.env.SCEN || 'spawn,village,fight,cala,caldera').split(',');
 let storeTouch;
+try {
 for (const s of scen) {
+  if (s === 'tinta') {
+    await tp('70-tinta-before', L.spawn.x, L.spawn.z);
+    await dev({ op: 'clock', hours: 12 });
+    await dev({ op: 'pearl', kind: 'tinta' });
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.bag.some((q) => q.kind === 'tinta'));
+    await page.keyboard.press('KeyP');
+    await page.locator('[data-pearl-op="swallow"]').first().click();
+    await page.waitForFunction(() => window.__mn.client.profile?.pearls?.swallowed?.kind === 'tinta');
+    await shot('71-tinta-panel');
+    await page.locator('.cp-body').evaluate((el) => { el.scrollTop = 0; });
+    await shot('71b-tinta-panel-top');
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => window.__mn.ps.cdG <= 0, null, { timeout: 60000 });
+    await page.evaluate(() => {
+      const m = window.__mn, onEvent = m.client.onEvent.bind(m.client), tickInput = m.client.tickInput.bind(m.client), viewTick = m.client.viewTick.bind(m.client);
+      window.__inkHeld = false;
+      m.client.onEvent = (ev) => {
+        onEvent(ev);
+        if (ev.type !== 'inkCloud' || ev.e !== m.client.youServer) return;
+        m.client.tickInput = () => {};
+        m.client.viewTick = () => ev.t0 + 20;
+        m.transport.send({ t: 'cmd', type: 'pause', on: true });
+        window.__inkHeld = true;
+      };
+      window.__inkRestore = () => {
+        m.client.onEvent = onEvent; m.client.tickInput = tickInput; m.client.viewTick = viewTick;
+        m.transport.send({ t: 'cmd', type: 'pause', on: false });
+      };
+    });
+    let inkTouch;
+    if (!phone) {
+      await page.mouse.move(W * 0.5, H * 0.54);
+      await page.keyboard.down('KeyG');
+      await page.waitForFunction(() => window.__mn.aimCtl.preview?.slot === 'g' && window.__mn.world.indicators.marker.mesh.visible);
+      await shot('72-tinta-aim');
+      await page.keyboard.press('Escape'); await page.keyboard.up('KeyG');
+      await page.waitForFunction(() => !window.__mn.aimCtl.preview);
+      const canceled = await page.evaluate(() => ({ cd: window.__mn.ps.cdG, fields: window.__mn.client.pred.inkClouds.length }));
+      if (canceled.cd > 0 || canceled.fields) throw new Error('Cancelling Nube spent cooldown or created a cloud');
+      await page.keyboard.down('KeyG'); await page.keyboard.up('KeyG');
+    } else {
+      const button = await page.locator('.t-g').boundingBox();
+      if (!button || button.y < 0 || button.y + button.height > H) throw new Error('Nube touch button is outside the viewport');
+      if (!(await page.locator('.t-g').innerText()).includes('NUBE')) throw new Error('Touch G still names another pearl');
+      inkTouch = await ctx.newCDPSession(page);
+      const x = button.x + button.width / 2, y = button.y + button.height / 2;
+      await inkTouch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+      await inkTouch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + 10, y: y - 6 }] });
+      await page.waitForFunction(() => window.__mn.aimCtl.preview?.slot === 'g');
+      await shot('72-tinta-aim');
+      await inkTouch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    }
+    await page.waitForFunction(() => {
+      const m = window.__mn, t = m.client.viewTick(m.loop.alpha);
+      return window.__inkHeld && m.client.pred.inkClouds.some((f) => !f.predicted && t >= f.t0 && t < f.tEnd)
+        && m.world.inkFx.clouds.some((s) => s.live);
+    }, null, { timeout: 60000 });
+    await wait(800); await shot('73-tinta-cloud');
+    console.log('tinta', JSON.stringify(await page.evaluate(() => ({ pearl: window.__mn.client.profile.pearls.swallowed.kind,
+      fields: window.__mn.client.pred.inkClouds, hour: window.__mn.client.pred.hourAt(window.__mn.client.viewTick(0)),
+      cd: window.__mn.ps.cdG, errors: window.__mn.errors }))));
+    await page.evaluate(() => window.__inkRestore());
+    await dev({ op: 'clock', hours: 22 });
+    await page.waitForFunction(() => window.__mn.client.pred.isNightAt(window.__mn.client.viewTick(0)), null, { timeout: 30000 });
+    await page.evaluate(() => window.__mn.tod('night'));
+    await wait(1000); await shot('74-tinta-night');
+    // Put the marked target above the feet prompt so the tutorial does not obscure its ring in the capture.
+    await dev({ op: 'spawn', kind: 'dummy', dist: 1.8, ang: -Math.PI / 2 });
+    await page.waitForFunction(() => [...window.__mn.client.entities.values()].some((r) => r.enemy === 'dummy'
+      && Math.hypot(r.r.x - window.__mn.ps.x, r.r.z - window.__mn.ps.z) < 2.5));
+    await page.evaluate(() => {
+      const m = window.__mn, onSnapshot = m.client.onSnapshot.bind(m.client);
+      const tickInput = m.client.tickInput.bind(m.client), viewTick = m.client.viewTick.bind(m.client);
+      window.__markHeld = false;
+      m.client.onSnapshot = (snapshot) => {
+        onSnapshot(snapshot);
+        if (!snapshot.ink?.marks?.length) return;
+        m.client.tickInput = () => {};
+        m.client.viewTick = () => snapshot.tick + 4;
+        m.transport.send({ t: 'cmd', type: 'pause', on: true });
+        window.__markHeld = true;
+      };
+      window.__markRestore = () => {
+        m.client.onSnapshot = onSnapshot; m.client.tickInput = tickInput; m.client.viewTick = viewTick;
+        m.transport.send({ t: 'cmd', type: 'pause', on: false });
+      };
+    });
+    if (!phone) {
+      const targetScreen = await page.evaluate(async () => {
+        const m = window.__mn, { Vector3 } = await import('three');
+        const p = new Vector3(m.ps.x - 1.8, m.ps.y, m.ps.z).project(m.world.camera);
+        return { x: (p.x + 1) * innerWidth / 2, y: (1 - p.y) * innerHeight / 2 };
+      });
+      await page.mouse.move(targetScreen.x, targetScreen.y); await page.mouse.down();
+    } else {
+      const attack = await page.locator('.t-atk').boundingBox();
+      if (!attack) throw new Error('Attack touch button is missing');
+      await inkTouch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: attack.x + attack.width / 2, y: attack.y + attack.height / 2 }] });
+    }
+    await page.waitForFunction(() => window.__markHeld && window.__mn.world.inkFx.marks.some((m) => m.live), null, { timeout: 45000 });
+    if (!phone) await page.mouse.up();
+    else await inkTouch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await shot('75-tinta-mark');
+    console.log('tinta-mark', JSON.stringify(await page.evaluate(() => ({ marks: window.__mn.client.pred.inkMarks, errors: window.__mn.errors }))));
+    await page.evaluate(() => window.__markRestore());
+    if (inkTouch) await inkTouch.detach();
+  }
   if (s === 'tormenta') {
     await tp('60-tormenta-before', L.spawn.x, L.spawn.z);
     await dev({ op: 'pearl', kind: 'tormenta' });
@@ -379,4 +487,12 @@ for (const s of scen) {
 }
 if (process.env.PERF) console.log(await page.evaluate(() => document.querySelector('#perf')?.textContent));
 console.log([...logs].join('\n') || '(clean)');
-await browser.close(); server.close();
+} catch (err) {
+  console.error('Look check failed:', [...logs].join('\n'), await page.evaluate(() => ({
+    state: window.__mn?.st, errors: window.__mn?.errors, marks: window.__mn?.client.pred.inkMarks,
+    elem: window.__mn?.ps.elem, facing: window.__mn?.ps.f, cast: window.__mn?.ps.castK,
+  })).catch(() => null));
+  throw err;
+} finally {
+  await browser.close(); server.close();
+}

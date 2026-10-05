@@ -36,7 +36,7 @@ src/render    escena, pipeline (tinta, bloom, agua), toon, personajes, props, ve
 src/ui        HUD, paneles, diálogo, mapa, cómic, táctil, título, pausa
 server/       servidor Node (estáticos + WebSocket + partidas firmadas)
 tools/        build-artifact, look (capturas), import-asset, playtest, nettest, progress, botbrain…
-tests/        node --test (259 tests, incluyendo 17 de perlas, 14 de Escarcha y 12 de Tormenta)
+tests/        node --test (271 tests, incluyendo 17 de perlas, 14 de Escarcha, 12 de Tormenta y 12 de Tinta)
 docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
@@ -47,7 +47,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 |---|---|
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
-| M4.8 «Perlas negras» | **en curso**: Brasa, Escarcha, Tormenta y circulación jugables; faltan Tinta y cierre (`PLAN-M4.8.md`) |
+| M4.8 «Perlas negras» | **en curso**: las cuatro perlas y circulación jugables; falta cierre P5 (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | plan (`PLAN-M5.md`) |
 | M6 «La Balsa» | **núcleo hecho** (piezas, reglas, estadísticas, producción, guardado + tests); falta todo lo visible (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
@@ -69,7 +69,7 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
-### M4.8 en curso — checkpoint Tormenta (`0.4.8-alpha.3`)
+### M4.8 en curso — checkpoint Tinta (`0.4.8-alpha.4`)
 
 - Base compartida: perfil `pirateId` / `pearls`, ledger UID en memoria, botín público, bolsa de 8, confirmación
   con UID anterior, entregar a otro pirata, vender, escupir, caída al morir en cualquier zona y retorno a playa tras 90 s.
@@ -91,14 +91,15 @@ autor.
   Snapshots `storm` reparan eventos perdidos/entrada tardía, incluidas retiradas tras liberar el slot de una bala
   y omisiones por capacidad del pool autoritativo.
   Parry, auto-aim y renderer leen esa trayectoria/velocidad. G carga/CD conserva las columnas predichas existentes.
-- Pestaña Perlas (P), HUD G, VFX naranja/azul/amarillo iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
+- Pestaña Perlas (P), HUD G, VFX naranja/azul/amarillo/morado iniciales y pilar de luz. Cambios fuera de combate. F4 permite dar una
   perla en solo para probar; cerrar el panel y esperar 4 s antes de G.
 - Archivos de entrada: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, `skills.js`,
-  `src/ui/pearlpanel.js`, `src/sim/projectiles.js`, `src/render/vfx/frostfx.js`, `stormfx.js`. Próximo paso concreto:
-  **P4 Tinta** en `PLAN-M4.8.md`; M5 sigue en plan, sin capa de almacenamiento implementada.
-- **Protocolo 10**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
+  `src/ui/pearlpanel.js`, `src/sim/projectiles.js`, `src/sim/systems/ink.js`, `src/data/clock.js`,
+  `src/render/vfx/frostfx.js`, `stormfx.js`, `inkfx.js`. Próximo paso concreto: **P5 cierre** en `PLAN-M4.8.md`;
+  M5 sigue en plan, sin capa de almacenamiento implementada.
+- **Protocolo 11**: actualiza cliente y servidor juntos. Partidas anteriores migran con bolsa vacía. El ledger
   no sobrevive a reinicios; M5 debe cerrar los duplicados antes de introducir perlas únicas.
-- Validación: 247 tests (245 sin red + 2 de red), incluidas 14 de Escarcha. Revisión previa de Brasa: panel,
+- Validación previa de Escarcha: 247 tests (245 sin red + 2 de red), incluidas 14 de Escarcha. Revisión previa de Brasa: panel,
   confirmación/G en desktop y móvil emulado 844×390; Cometa con partículas detenidas por el render de software. Falta
   aceptación a 60 fps con GPU y dispositivos reales. `shots/review/` contiene evidencia local, ignorada por Git.
 - Escarcha: panel y apuntado/cancelación en desktop 1280×720; panel, botón ANCLA dentro de pantalla y lanzamiento
@@ -117,6 +118,21 @@ autor.
   táctil y liberación hacia cinco objetivos. Capturas inspeccionadas en `shots/review/tormenta-desktop/` y
   `tormenta-mobile/`. Sin errores JS de juego; fuentes Google bloqueadas y avisos de SwiftShader conocidos.
   Checkpoint D01 y próxima misión D02: [informe de Tormenta](delivery/d01-tormenta.md).
+- Tinta / D02, base `f9ddb17`: marca de 4 s, +10 % en golpes posteriores de cualquier atacante, sin acumulación
+  ni marca PvP. Nube G apuntada: alcance 10 u, radio 3 u, 5 s, CD 18 s; todos los piratas cubiertos quedan ocultos
+  para NPC. Disparan/marchan a su última posición visible; no adquieren objetivos ocultos nuevos. Cañones,
+  morteros y HELLFIRE comparten la regla; ataques comprometidos y daño recibido siguen activos.
+  Hora del servidor/economía: noche 20:00–06:00, día de 16 min. De día pociones ×0.7; de noche daño ×1.1.
+  El ciclo visual sigue el servidor; los presets de «Luz del escenario» son cosméticos. F4 cambia hora en solo.
+  Snapshot `ink` (nubes/marcas) y `clock`, campos predichos `inkX/inkZ/inkT0/inkEnd/inkSeq`; eco deduplicado,
+  rechazo revertido y reparación de eventos perdidos/entrada tardía.
+  Validación vigente: **269/269 sin red + 2/2 red = 271/271**. 12 casos nuevos de Tinta; sintaxis de 29 archivos
+  y diff limpios. Logs `shots/review/tinta-tests.log`, `tinta-net.log`, `tinta-focused.log`.
+  `SCEN=tinta`: panel con scroll, apuntado/cancelación desktop, nube canónica, marca real y HUD día/noche;
+  desktop 1280×720 y móvil emulado 844×390 con contactos/arrastre táctiles. Se corrigió el tutorial sobre la hora.
+  Capturas inspeccionadas en `shots/review/tinta-desktop/` y `tinta-mobile/`, sin errores JS del juego; avisos de
+  SwiftShader y fuentes Google bloqueadas. El escenario congela efectos aceptados para fotografiarlos;
+  no acredita FPS ni controles físicos. Informe durable y siguiente tarea: [D02 Tinta](delivery/d02-tinta.md).
 - `package-lock.json` corregido: Three.js 0.160 viene del registro npm, sin enlaces a carpetas temporales;
   `npm ci` comprobado en instalación limpia. `tools/look.mjs` acepta Playwright/Chrome instalados en Windows.
 - No se han seleccionado/importado assets FAB. El autor los está revisando; la mecánica conserva el arte
@@ -134,7 +150,7 @@ autor.
   confirmada: `C:\Unreal` (tres proyectos), inventario de solo lectura con Luna, contenido adicional y su portabilidad/utilidad;
   excluir módulos base de Unreal. El autor gestiona las licencias. Seguimiento: `docs/research/unreal-assets/README.md`.
 - El autor aprobó direcciones de manejo/economía/piratería, sin implementación de esos sistemas.
-  La implementación actual de M4.8 se detalla en el checkpoint de Tormenta de arriba.
+  La implementación actual de M4.8 se detalla en el checkpoint de Tinta de arriba.
 
 ### Dirección naval y productiva incorporada a los planes (2026-10-04)
 
@@ -183,7 +199,8 @@ autor.
   CDN). Mirar las capturas antes de dar algo por bueno.
   En Windows: `MN_PLAYWRIGHT` = ruta absoluta al `index.mjs` de Playwright; `MN_BROWSER` = ruta al Chrome/Edge
   instalado. `MN_THREE` / `MN_GSAP` = carpetas de los paquetes locales si el CDN está bloqueado. `SCEN=pearl`
-  prueba Brasa, `SCEN=escarcha` prueba Ancla y `SCEN=tormenta` prueba carga/cadena; para móvil `PHONE=1`, `VW=844`, `VH=390`.
+  prueba Brasa, `SCEN=escarcha` prueba Ancla, `SCEN=tormenta` prueba carga/cadena y `SCEN=tinta` nube/marca/reloj;
+  para móvil `PHONE=1`, `VW=844`, `VH=390`.
 - **Artefacto** (la versión que se juega en claude.ai, modo solo): construir desde lo **commiteado**, no desde el
   árbol de trabajo:
   ```bash

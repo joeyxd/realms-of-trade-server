@@ -17,6 +17,7 @@
 //   Dash i-frames: projectiles pass through; dashing through an unstoppable spike = FANTASMA.
 //   Graze: a projectile passing within 0.35 u of your hurtbox without touching = ROCE.
 import { tuning, DT } from '../../data/tuning.js';
+import { PEARL } from '../../data/pearls.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
@@ -569,7 +570,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   }
   if (world.isServer && world.checkpoint) world.checkpoint(e);
   if (cmd.w) stepEquip(world, e, cmd);
-  if (cmd.prs & BTN.POTION) usePotion(world, e, seq);
+  if (cmd.prs & BTN.POTION) usePotion(world, e, seq, pt);
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const pistol = skillOf(ecs, e, 'basic') === 'pistol';
@@ -716,11 +717,12 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 }
 
 // A ron-coco potion (BTN.POTION): heals a share of max HP at once, then a short cooldown. Predicted.
-export function usePotion(world, e, seq) {
+export function usePotion(world, e, seq, pt = world.tick) {
   const ecs = world.ecs, Pn = CONSUMABLES.potion;
   const why = ecs.potions[e] < 1 ? 'empty' : ecs.potCd[e] > 0 ? 'cd' : ecs.hp[e] >= ecs.maxHp[e] ? 'full' : '';
   if (why) { world.emit({ type: 'potion', e, seq, denied: why }); return false; }
-  const heal = Math.min(ecs.maxHp[e] - ecs.hp[e], Math.round(ecs.maxHp[e] * Pn.heal * ecs.potHeal[e]));
+  const curse = ecs.elem[e] === 4 && !world.isNightAt(pt) ? PEARL.inkDayHeal : 1;
+  const heal = Math.min(ecs.maxHp[e] - ecs.hp[e], Math.round(ecs.maxHp[e] * Pn.heal * ecs.potHeal[e] * curse));
   ecs.hp[e] += heal;
   ecs.potions[e] -= 1;
   ecs.potCd[e] = Pn.cd;

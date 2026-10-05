@@ -15,6 +15,11 @@ export const PEARLS = {
     passive: 'Tus golpes saltan a otro enemigo cercano y le hacen la mitad de daño.',
     curse: 'Imán de tormenta: las balas enemigas cercanas se curvan suavemente hacia donde estás al dispararse.',
   },
+  tinta: {
+    name: 'Perla de Tinta', skill: 'inkcloud', elem: 4, color: '#a77bff',
+    passive: 'Tus golpes marcan a los enemigos de la isla durante 4 s: los golpes posteriores les hacen un 10 % más de daño. No se acumula.',
+    curse: 'La luz te quema: de día las pociones curan al 70 %; de noche haces un 10 % más de daño.',
+  },
 };
 export const PEARL_IDS = Object.keys(PEARLS);
 export const PEARL = {
@@ -23,6 +28,7 @@ export const PEARL = {
   burnTime: 3, burnEvery: 0.5, burnMult: 0.12, waterEvery: 0.5, waterDps: 0.04,
   chillTime: 3, chillSlow: 0.7, chillHits: 3, freezeTime: 0.6,
   lightningRange: 5, lightningMult: 0.5,
+  inkMarkTime: 4, inkMarkMult: 1.1, inkDayHeal: 0.7, inkNightMult: 1.1,
 };
 export const newPearls = () => ({ swallowed: null, bag: [] });
 export function sanitizePearl(raw) {

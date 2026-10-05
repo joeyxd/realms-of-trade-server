@@ -20,6 +20,9 @@ import { questKill, zoneSweep } from './systems/quests.js';
 import { stepInfighting } from './systems/lawless.js';
 import { LAWLESS } from '../data/lawless.js';
 import { burnOnHit, chillOnHit, lightningOnHit, enemyChillMul, stepBurns, stepChills } from './systems/pearlcombat.js';
+import { PEARL } from '../data/pearls.js';
+import { CLOCK, hourOfDay, nightAt } from '../data/clock.js';
+import { addInkCloud, removePredictedInkClouds, markOnHit, stepInk } from './systems/ink.js';
 
 const D2R = Math.PI / 180;
 
@@ -35,6 +38,9 @@ export class World {
     this.hazards = new Hazards();
     this.hazards.predicting = !server;
     this.chills = new Map();
+    this.inkClouds = [];
+    this.inkMarks = [];
+    this.clock = null;
     this.fieldOwner = 0; // online prediction may set this to the server entity id for stable field identities
     this.shots = new Shots();
     this.nextPid = 1;
@@ -183,6 +189,18 @@ export class World {
   }
   flushAllFeel() { for (const e of [...this.feelQ.keys()]) this.flushFeel(e); }
 
+  // ---- Shared game clock and pearl fields ------------------------------------------------------------
+  // The authority uses the economic clock, including its uncommitted low-rate accumulator.
+  // Prediction extrapolates the last snapshot anchor at the command's projectile tick.
+  gameHoursAt(tick = this.tick) {
+    if (this.isServer && this.economy) return this.economy.hours + (this.economy.acc + (tick - this.tick) * DT) * 24 / CLOCK.daySec;
+    if (this.clock) return this.clock.hours + (tick - this.clock.tick) * DT * 24 / this.clock.daySec;
+    return CLOCK.startHour + tick * DT * 24 / CLOCK.daySec;
+  }
+  hourAt(tick = this.tick) { return hourOfDay(this.gameHoursAt(tick)); }
+  isNightAt(tick = this.tick) { return nightAt(this.gameHoursAt(tick)); }
+  addInkCloud(field) { return addInkCloud(this, field); }
+  removePredictedInkClouds(e) { removePredictedInkClouds(this, e); }
   // ---- Projectiles ------------------------------------------------------------------------------------
   // How hard enemy e hits (its Marea, M4): every hostile pattern, circle, beam and the lava go through here.
   dmgMul(e) { const b = e ? this.ecs.brain[e] : null; return b && b.tier ? b.tier.dmg : 1; }
@@ -380,6 +398,8 @@ export class World {
   // A player's blow on target o: an enemy takes it, a pirate may dodge, guard or take it. opts.elem (M4.8: the
   // attacker's element, ecs.elem; 0 = none) is copied onto the damage / hurt event it emits.
   strike(o, raw, opts) {
+    const by = opts.by || 0;
+    if ((this.ecs.mask[by] & C.PLAYER) && this.ecs.elem[by] === 4 && this.isNightAt(opts.pt ?? this.tick)) raw *= PEARL.inkNightMult;
     const sourcePos = opts.elem === 3 && !opts.noElement && (this.ecs.mask[o] & C.ENEMY)
       ? historyAt(this, o, (opts.pt ?? this.tick) - tuning.combat.interpTicks, {}) : null;
     const n = this.events.length;
@@ -388,6 +408,7 @@ export class World {
     if (dmg > 0 && opts.elem === 1 && !opts.noElement) burnOnHit(this, o, opts.by);
     if (dmg > 0 && opts.elem === 2 && !opts.noElement) chillOnHit(this, o, opts.by);
     if (dmg > 0 && opts.elem === 3 && !opts.noElement) lightningOnHit(this, o, raw, opts, sourcePos);
+    if (dmg > 0 && opts.elem === 4 && !opts.noElement) markOnHit(this, o, { ...opts, dmg });
     return dmg;
   }
 
@@ -655,6 +676,7 @@ export class World {
   stepWorld() {
     const ecs = this.ecs;
     stepChills(this);
+    stepInk(this);
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e]) continue;
       const m = ecs.mask[e];

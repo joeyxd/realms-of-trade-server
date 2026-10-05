@@ -41,6 +41,7 @@ import { BTN, moveWithCollision, canStand } from './movement.js';
 import { ACT } from '../ecs.js';
 import { kitUnlocked, passive, applyLoadout } from './stats.js';
 import { SLOTS, SLOT_COLS, TATTOO, slotSkill } from '../../data/tattoos.js';
+import { addInkCloud } from './ink.js';
 
 export const CAST = { NONE: 0, Q: 1, E: 2, G: 3 };
 const dashCurve = (t) => 1 - Math.pow(1 - t, tuning.dash.curvePow);
@@ -92,6 +93,7 @@ function phases(id, S = SKILLS[id]) {
   if (id === 'blink') return [0, 0, S.recover];
   if (id === 'tromba') return [S.windup, 0, S.recover];
   if (id === 'iceanchor') return [S.windup, 0, S.recover];
+  if (id === 'inkcloud') return [S.windup, 0, S.recover];
   if (id === 'mastbolt') return [0, 0, 0];
   if (id === 'leap') return [S.windup, S.blink ? 0 : S.air, S.recover];
   return [0, 0, 0]; // the wheel's charge has no fixed phases: it lasts as long as you hold
@@ -180,6 +182,7 @@ export function stepCast(world, e, cmd, dt, pt, seq) {
     else if (id === 'blink') blink(world, e, cmd, seq);
     else if (id === 'tromba') castTromba(world, e, cmd, S, ecs[SLOT_COLS[slot].fm][e], pt, seq);
     else if (id === 'iceanchor') castIceanchor(world, e, cmd, S, pt, seq);
+    else if (id === 'inkcloud') castInkcloud(world, e, cmd, S, pt, seq);
     else if (id === 'leap' && S.blink) leapBlink(world, e, cmd, S, seq);
   }
   if (t1 >= w + a + r) cancelCast(ecs, e);
@@ -192,10 +195,11 @@ export function castPose(ecs, e) {
   if (id === 'lunge' || id === 'comet') return { move: 0, act: ACT.LUNGE };
   if (id === 'wave') return { move: ecs.castT[e] < SKILLS.wave.windup ? 0.3 : 0.6, act: ACT.THROW };
   if (id === 'blast') return { move: 0, act: ACT.BLAST };
-  if (id === 'tromba' || id === 'iceanchor' || id === 'leap' || id === 'wheel' || id === 'mastbolt') {
+  if (id === 'tromba' || id === 'iceanchor' || id === 'inkcloud' || id === 'leap' || id === 'wheel' || id === 'mastbolt') {
     const S = skillNum(ecs, e, slot);
     if (id === 'tromba') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
     if (id === 'iceanchor') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
+    if (id === 'inkcloud') return { move: ecs.castT[e] < S.windup ? S.move : 1, act: ACT.CAST };
     if (id === 'wheel') return { move: S.move, act: ACT.CHARGE };
     if (id === 'mastbolt') return { move: S.move, act: ACT.CHARGE };
     if (S.blink) return { move: 1, act: ACT.CAST };
@@ -431,6 +435,15 @@ function castIceanchor(world, e, cmd, S, pt, seq) {
   ecs.icX[e] = x; ecs.icZ[e] = z; ecs.icT0[e] = t0; ecs.icEnd[e] = tEnd; ecs.icSeq[e] = seq;
   const field = { type: 'frostField', e: owner, seq, x, z, r: S.r, t0, tEnd, slow: S.slow, predicted: !world.isServer };
   world.hazards.addFrostField(field);
+  world.emit(field);
+}
+
+function castInkcloud(world, e, cmd, S, pt, seq) {
+  const ecs = world.ecs, [x, z] = aimAt(ecs, e, cmd, 0, S.range);
+  const owner = world.fieldOwner || e, t0 = pt, tEnd = pt + ticks(S.dur);
+  ecs.inkX[e] = x; ecs.inkZ[e] = z; ecs.inkT0[e] = t0; ecs.inkEnd[e] = tEnd; ecs.inkSeq[e] = seq;
+  const field = { type: 'inkCloud', e: owner, seq, x, z, r: S.r, t0, tEnd, predicted: !world.isServer };
+  addInkCloud(world, field);
   world.emit(field);
 }
 

@@ -18,6 +18,7 @@ export const SKILLS = {
   comet: { name: 'Cometa', hint: 'Embestida de fuego que quema y abre paso entre balas', windup: 0.1, time: 0.32, recover: 0.18, dist: 8, width: 0.95, mult: 2.8, cd: 14 },
   iceanchor: { name: 'Ancla de hielo', hint: 'Un campo helado frena a los enemigos y sus balas', range: 10, r: 3, windup: 0.22, recover: 0.18, move: 0.45, dur: 4, slow: 0.5, cd: 16 },
   mastbolt: { name: 'Rayo de mástil', hint: 'Carga un rayo que salta de enemigo en enemigo', charge: 1.2, maxHold: 3, move: 0.55, range: 10, halfArc: 20, chainR: 5, jumps: 3, mult: 1.8, falloff: 0.75, cd: 15 },
+  inkcloud: { name: 'Nube de tinta', hint: 'Crea una nube donde los piratas quedan ocultos', range: 10, r: 3, dur: 5, windup: 0.22, recover: 0.18, move: 0.45, cd: 18 },
   combo: { name: 'Combo', hint: 'Tres tajos · refleja a tiempo' }, // tuning.melee + tuning.sword
   // Q: a lunge at the cursor along the dash curve; hits once what is within `width` of its path.
   lunge: { name: 'Estocada', hint: 'Embestida que atraviesa', windup: 0.08, dist: 4.5, time: 0.16, recover: 0.22, mult: 1.8, width: 1.0, cd: 7 },

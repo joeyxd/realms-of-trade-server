@@ -6,7 +6,7 @@ import { ACT, C } from '../ecs.js';
 import { DT } from '../../data/tuning.js';
 import { dampAngle } from '../../core/math.js';
 import { clipDistance, beamSeg, lavaR } from '../projectiles.js';
-import { pickTarget, steer, startWindup, fire, setAct } from './enemies.js';
+import { pickTarget, steer, startWindup, fire, setAct, targetPoint } from './enemies.js';
 
 const D2R = Math.PI / 180;
 
@@ -63,8 +63,10 @@ export function stepBoss(world, e, def, b, dt) {
   }
 
   if (b.state !== 'windup' && b.state !== 'fire') b.target = pickTarget(world, e, def, b);
-  const tgt = b.target;
-  const tx = tgt ? ecs.x[tgt] : b.homeX, tz = tgt ? ecs.z[tgt] : b.homeZ;
+  let tgt = b.target;
+  const target = targetPoint(world, b, tgt, {});
+  if (tgt && !target) { b.target = 0; tgt = 0; }
+  const tx = target ? target.x : b.homeX, tz = target ? target.z : b.homeZ;
   const dx = tx - ecs.x[e], dz = tz - ecs.z[e], d = Math.hypot(dx, dz);
 
   switch (b.state) {
@@ -185,10 +187,10 @@ export function bossFire(world, e, def, b, a) {
   if (a.kind === 'laser') { b.fireDur = a.dur + a.recover; return true; }
   if (a.kind === 'lanes') { b.fireDur = a.recover + 0.4; return true; }
   if (a.kind === 'meteors') {
-    const c = arenaOf(world, e, b), R = safeR(world, c), t = b.target;
+    const c = arenaOf(world, e, b), R = safeR(world, c), t = b.target, target = targetPoint(world, b, t, {});
     for (let i = 0; i < a.n; i++) {
       let x, z;
-      if (t && ecs.alive[t] && i % a.aimEvery === 0) { x = ecs.x[t]; z = ecs.z[t]; }
+      if (target && i % a.aimEvery === 0) { x = target.x; z = target.z; }
       else {
         const r = Math.sqrt(world.rng()) * R, an = world.rng.range(0, Math.PI * 2);
         x = c.x + Math.sin(an) * r; z = c.z + Math.cos(an) * r;
@@ -200,8 +202,8 @@ export function bossFire(world, e, def, b, a) {
   }
   if (a.pat === 'rows') {
     // A curtain from the far side of the arena, sweeping toward the target, one hole per row.
-    const c = arenaOf(world, e, b), t = b.target;
-    const tx = t ? ecs.x[t] : ecs.x[e], tz = t ? ecs.z[t] : ecs.z[e];
+    const c = arenaOf(world, e, b), target = targetPoint(world, b, b.target, {});
+    const tx = target ? target.x : ecs.x[e], tz = target ? target.z : ecs.z[e];
     let ang = Math.atan2(tx - c.x, tz - c.z);
     if (Math.hypot(tx - c.x, tz - c.z) < 1) ang = ecs.facing[e];
     const x = c.x - Math.sin(ang) * a.from, z = c.z - Math.cos(ang) * a.from;

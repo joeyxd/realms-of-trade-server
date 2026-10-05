@@ -161,6 +161,9 @@ export class GameClient {
       case 'frostField':
         H.addFrostField({ ...ev, predicted: false });
         break;
+      case 'inkCloud':
+        this.pred.addInkCloud({ ...ev, predicted: false });
+        break;
       case 'aoe':
         if (!H.aoes.some((a) => a.id === ev.id)) {
           const a = { id: ev.id, owner: ev.src, x: ev.x, z: ev.z, r: ev.r, t0: ev.tick, tAct: ev.tAct, dmg: ev.dmg, keep: ev.keep || 0, fire: ev.fire || 0 };
@@ -334,6 +337,14 @@ export class GameClient {
         }
       }
     }
+    if (s.clock && Number.isFinite(s.clock.hours) && Number.isFinite(s.clock.tick) && Number.isFinite(s.clock.daySec) && s.clock.daySec > 0 &&
+        (!this.pred.clock || s.tick >= this.pred.clock.tick)) this.pred.clock = { ...s.clock };
+    if (s.ink && (this.lastInkTick === undefined || s.tick >= this.lastInkTick)) {
+      this.lastInkTick = s.tick;
+      this.pred.inkClouds = [];
+      for (const f of s.ink.clouds || []) this.pred.addInkCloud({ ...f, predicted: false });
+      this.pred.inkMarks = s.ink.marks || [];
+    }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
   }
 
@@ -378,6 +389,9 @@ export class GameClient {
     const H = this.pred.hazards, me = this.youLocal;
     H.removePredictedFrostFields(this.youServer);
     const ecs = this.pred.ecs;
+    this.pred.removePredictedInkClouds(this.youServer);
+    if (ecs.inkEnd[me] > this.ptCur) this.pred.addInkCloud({ e: this.youServer, seq: ecs.inkSeq[me],
+      x: ecs.inkX[me], z: ecs.inkZ[me], t0: ecs.inkT0[me], tEnd: ecs.inkEnd[me], r: SKILLS.inkcloud.r, predicted: false });
     // The restored player state also names its last deployed field. Pending commands may start
     // after its activation, so they cannot recreate it by crossing the cast's windup again.
     if (ecs.icEnd[me] > ecs.icT0[me] && this.ptCur - ecs.icEnd[me] <= H.maxLifeTicks + tuning.combat.rewind) H.addFrostField({ e: this.youServer, seq: ecs.icSeq[me],

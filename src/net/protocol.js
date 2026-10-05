@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 10; // M4.8 P3: Tormenta anchors and retained curved patterns.
+export const PROTOCOL_VERSION = 11; // M4.8 P4: predicted ink clouds, marks and the authoritative game clock.
 
 export const MSG = {
   // client -> server

@@ -43,6 +43,7 @@ import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
 import { CONSUMABLES } from './data/items.js';
+import { phaseAt } from './data/clock.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
 import { Ambience } from './audio/ambience.js';
@@ -937,7 +938,7 @@ async function boot() {
         const pv = aimCtl.preview;
         if (pv && pv.kind === 'ground' && !ps.dead) {
           const d = readSlots()[pv.slot], g = groundTarget(d);
-          world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0, d.id === 'iceanchor' ? 0x91e8ff : undefined);
+          world.indicators.area(ps.x, ps.z, d.range, g.x, g.z, d.r, d.id === 'leap' && d.S && !d.S.blink ? d.S.h * 0.7 : 0, d.id === 'iceanchor' ? 0x91e8ff : d.id === 'inkcloud' ? 0xb48aff : undefined);
         } else if (ps.chg && ps.castK && !ps.dead) {
           const slot = ps.castK === 3 ? 'g' : ps.castK === 1 ? 'q' : 'e', S = slotD[slot].S;
           const k = Math.min(1, ps.castT / S.charge);
@@ -959,6 +960,7 @@ async function boot() {
         // M4: gold, potions, the weapon's mastery and what it has not opened yet.
         hud.setGold(prof ? prof.gold : 0, st.encTier > 1 ? TIERS[st.encTier - 1].name : '');
         hud.setPotions(ps.potions | 0, ps.potCd || 0, CONSUMABLES.potion.cd);
+        hud.setWorldClock(client.pred.hourAt(viewTick), client.pred.isNightAt(viewTick), ps.elem);
         const mLvl = Math.floor((ps.mastery || 0) / 16 ** ps.weapon) % 16, kitW = weaponOf(ps.weapon);
         // Q / E lock only an art the weapon's mastery has not opened (a tattoo never locks); R as before.
         const need = (slot) => (mLvl && mLvl < MASTERY.unlock[slot] ? MASTERY.unlock[slot] : 0);
@@ -1025,7 +1027,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, shadowFocus, simDt, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);
