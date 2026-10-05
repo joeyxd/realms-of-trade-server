@@ -1,7 +1,8 @@
 # D03 — Kit elemental integrado (M4.8 P5)
 
 Fecha: 2026-10-04. Base: `9a76925` (Tinta aceptada). Candidato: `0.4.8-rc.1`, protocolo 12.
-Commit: el que incorpora este informe; consultar `git log -- docs/delivery/d03-pearlkit.md`.
+Commit de implementación: `626beb74797e5c8158ef82ed8d6726e5e319c8c2`. La evidencia del artefacto se añade
+después en un commit documental; consultar `git log -- docs/delivery/d03-pearlkit.md`.
 Workers GPT-6 Luna: VFX, feedback/audio y pruebas/balance, con rutas exclusivas. Integración, revisión de código,
 capturas y aceptación por el principal. No se integraron assets Unreal ni se alteró el manifiesto.
 
@@ -71,6 +72,22 @@ ocultación intentando igualar solo el daño de un golpe. Dos ejecuciones dieron
   127 archivos, 1.442.627 bytes, cero discrepancias de hash. El candidato se construye después de su commit;
   la carpeta `dist/` y el staging temporal quedan ignorados. Prueba de Worker del artefacto: `MODE=artifact`,
   `MN_RELEASE=dist/<versión>-<SHA>` en la herramienta de revisión. No se publica el servidor.
+
+## Artefacto verificado
+
+- Construido desde **`626beb74797e5c8158ef82ed8d6726e5e319c8c2`**, `0.4.8-rc.1`, protocolo 12, mediante
+  `node tools/build-release.mjs 626beb7`. Carpeta local: `dist/0.4.8-rc.1-626beb74797e/`.
+- Payload: **128 archivos, 1.448.656 bytes**; 129 archivos contando `release.json`. Revisión independiente:
+  cero discrepancias de bytes/hashes, ningún archivo inesperado y cuatro archivos críticos idénticos a Git.
+  Registro local: `shots/review/p5-artifact-check.json`.
+- ZIP: `dist/marea-negra-0.4.8-rc.1-626beb74797e.zip`, **510.576 bytes**. SHA256:
+  `03bcfb6f306798843532620ebe1d5b9c0f863bfdbe2153993e1c500218e1dca3`.
+- Smoke de esa carpeta por HTTP en Chrome, 1280×720 low/SwiftShader: título → jugar → autoridad de su
+  Web Worker, `online:false`, versión rc.1/protocolo 12 y sin errores JS/shader. Captura `95-artifact-solo.png`
+  inspeccionada; log `shots/review/p5-artifact.log`. Bibliotecas CDN servidas desde copias locales para QA,
+  fuentes Google bloqueadas. El paquete conserva los imports CDN del juego y se prueba sirviéndolo por HTTP.
+- Cliente y servidor del código quedan compatibles; el paquete es un artefacto de cliente para modo solo,
+  sin backend, pruebas, documentación, herramientas o datos secretos. La construcción no hace publicación.
 
 ## Límites y siguiente tarea
 
