@@ -11,6 +11,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - Tormenta tiene cambios y evidencia de pruebas locales en el checkout, aún sin commit al redactar este plan.
   Esta entrega documental no los revalida ni acepta. Al retomar, comprobar HEAD/HANDOFF y actualizar D01/D02;
   si Tormenta ya está aceptada, pasar a Tinta. No pisar ni reasignar archivos activos sin identificar al dueño.
+- Checkpoint posterior D01: Tormenta integrada en `66e6e67`, `0.4.8-alpha.3`, protocolo 10. Mecánica y recorrido
+  visual en escritorio/móvil emulado aceptados; GPU, teléfono/mando reales y publicación pendientes.
+  Evidencia: [informe D01](docs/delivery/d01-tormenta.md). Próxima entrega: D02 Tinta; A01 sigue sin integrar.
 - Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; **ningún candidato importado**
   al crear este plan. `assets/manifest.json` está vacío. No reiniciar la investigación desde cero.
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
@@ -38,10 +41,10 @@ aceptación. Una integración con rendimiento/dispositivos pendientes debe nombr
 
 Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y evidencias al cerrar cada una.
 
-| ID | Mecánica o resultado | Prueba/mejora de assets asociada | Depende de / aceptación principal | Estado inicial |
+| ID | Mecánica o resultado | Prueba/mejora de assets asociada | Depende de / aceptación principal | Estado actual |
 |---|---|---|---|---|
 | D00 | Inventario y dirección naval | A00: catálogo, miniaturas y candidatos | CSV/JSON reconciliados, límites de evidencia registrados | Hecho |
-| D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | En curso, sin aceptación final |
+| D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
 | D02 | M4.8 P4: Tinta | Seleccionar un recurso de humo/tinta desde catálogo, sin incorporarlo aún | D01 integrado; marca/nube/IA y maldición día-noche probadas | Pendiente |
 | D03 | M4.8 P5: cierre integrado | A01 fase B en un efecto; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Pendiente |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: probar primero el hook `crate` que ya existe en la isla; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | Pendiente |

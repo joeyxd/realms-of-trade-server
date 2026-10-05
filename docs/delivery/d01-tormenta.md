@@ -1,8 +1,9 @@
 # D01 — Tormenta (M4.8 P3)
 
 Fecha: 2026-10-04. Responsable de integración y aceptación: agente principal.
-Base: `20d8ee6`, con Escarcha aceptada en `40949b2`. Checkpoint: `0.4.8-alpha.3`, protocolo 10.
-Commit final: el commit que incorpora este informe; consultar `git log -1 -- docs/delivery/d01-tormenta.md`.
+Base mecánica: Escarcha `40949b2`; dirección naval `20d8ee6`. Base de integración: `590d5b4`
+(plan de entregas incorporado en paralelo). Checkpoint: `0.4.8-alpha.3`, protocolo 10.
+Commit de implementación y aceptación: `66e6e67`.
 
 ## Resultado y estado
 
