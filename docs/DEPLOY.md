@@ -148,12 +148,16 @@ formato o semilla incompatible impide arrancar sin sobrescribir. Error/conflicto
 y admisiones, devuelve `/health` 503 y el cierre informa fallo. Reiniciar solo después de resolver la causa.
 `/status.storage.world` expone readiness, generación y errores fijos. No hay nueva migración para P3.
 
-D09a añade `server/migrations/003_pearl_operations.sql`, para aplicar después de 001/002. Se revisó y probó
-localmente; todavía no está aplicada al proyecto real y ningún comando del juego usa esa RPC. Crea recibos
+D09a añade `server/migrations/003_pearl_operations.sql`, después de 001/002. El autor confirmó que aplicó
+las tres; D09b verificó RPC/RLS y operaciones SDK reales con fixtures temporales limpiados. Ningún comando
+del juego usa todavía esa RPC. Crea recibos
 idempotentes y protege los UIDs gestionados al guardar/importar perfiles; no adopta las perlas raras existentes.
 No requiere nuevas variables ni reiniciar el host para completar este corte de almacenamiento. Antes de conectar
-el juego, aplicar/verificar 003, cerrar backfill/reconciliación y probar concurrencia real de conexiones.
-[Resultado y límites D09a](delivery/d09a-pearl-operations.md).
+el juego, cerrar adopción/backfill y conectar staging/ack y suelo durable; verificar además solapamiento de
+conexiones PostgreSQL independientes. D09b reserva cuentas/UID frente a autosaves y valida UIDs registrados
+antes de WELCOME. Tras dos respuestas ambiguas sin recibo, las reservas permanecen incluso después de close;
+`ProfileSessions.reconcilePearl(operationId)` solo lee recibo/perfiles/UID. No hay reintento mutante ilimitado,
+endpoint público de recuperación ni lease entre procesos. [Resultado y límites D09b](delivery/d09b-pearl-sessions.md).
 
 El mundo guarda un sobre `{v:1, seed, economy}`; la economía usa formato v2 con RNG. El formato previo v1
 sin RNG no se acepta silenciosamente como mundo persistente. El tiempo apagado no se simula. Mantenimiento

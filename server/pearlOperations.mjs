@@ -15,13 +15,19 @@ export function canonicalText(value) {
   return JSON.stringify(value, (_key, v) => object(v) ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, v[k]])) : v);
 }
 
-export function pearlOperation(raw) {
+export function pearlIntent(raw) {
   if (!object(raw)) throw new StoreError('operation');
   const operationId = playerKey(raw.operationId);
   const pearl = sanitizePearl(raw);
   if (!pearl || !generation(raw.expectedVersion)) throw new StoreError('operation');
   const from = raw.from === null ? null : playerKey(raw.from), to = raw.to === null ? null : playerKey(raw.to);
   if (from === to || (raw.expectedVersion === 0 && from !== null)) throw new StoreError('operation');
+  return { operationId, ...pearl, from, to, expectedVersion: raw.expectedVersion };
+}
+
+export function pearlOperation(raw) {
+  const { operationId, ...intent } = pearlIntent(raw);
+  const { from, to } = intent;
   const endpoints = [from, to].filter(Boolean).sort(order);
   if (!Array.isArray(raw.profiles) || raw.profiles.length !== endpoints.length) throw new StoreError('operation');
   const profiles = raw.profiles.map((p) => {
@@ -36,7 +42,21 @@ export function pearlOperation(raw) {
     return { id: playerKey(p.id), expectedVersion: p.expectedVersion, data };
   }).sort((a, b) => order(a.id, b.id));
   if (profiles.some((p, i) => p.id !== endpoints[i])) throw new StoreError('operation');
-  return { operationId, request: { ...pearl, from, to, expectedVersion: raw.expectedVersion, profiles } };
+  return { operationId, request: { ...intent, profiles } };
+}
+
+// A receipt is a server-only recovery read. Its payload must be valid before callers compare it to
+// their frozen request; a matching operation ID alone says nothing about what was committed.
+export function checkedPearlReceipt(raw, operationId) {
+  if (raw === null) return null;
+  if (!object(raw) || !object(raw.request)) throw new StoreError('response');
+  try {
+    const { request } = pearlOperation({ ...raw.request, operationId });
+    if (canonicalText(request) !== canonicalText(raw.request)) throw new StoreError('response');
+    const result = checkedPearlResult(raw.result, request);
+    if (!result.ok || result.replay) throw new StoreError('response');
+    return { request, result };
+  } catch { throw new StoreError('response'); }
 }
 
 export function profilePearls(data) {

@@ -19,7 +19,11 @@ y al cerrar, reloj/RNG/mercados/solares restaurados. Mundo temporal real reinici
 [Contrato, evidencia y límites](docs/delivery/d07d-world.md). Correo humano, publicación y P4–P6 pendientes.
 Checkpoint D09a, base `6402462`: **base atómica de propiedad de perlas aceptada localmente**. `commitPearl`
 confirma perfiles, ledger y recibo juntos; reintentos, CAS y guardados/importaciones contradictorios protegidos.
-SQL 003 pendiente de aplicar en Supabase; el juego aún usa su circulación actual. [Contrato y límites](docs/delivery/d09a-pearl-operations.md).
+SQL 003 estaba pendiente al aceptar ese corte; el juego aún usa su circulación actual. [Contrato y límites](docs/delivery/d09a-pearl-operations.md).
+Checkpoint D09b, integrado sobre `15bfb44`: **003 aplicada por el autor y verificada en Supabase**. Cola de
+sesiones para operaciones/guardados, recibos ambiguos y validación de UIDs registrados antes de entrar.
+Canarios reales temporales limpiados; falta staging/ack del juego, suelo durable y adopción de raras.
+[Contrato y evidencia](docs/delivery/d09b-pearl-sessions.md). P4/P6 siguen parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -61,7 +65,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 ## 3. Pasos
 
 - [x] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
-  saveWorld, claimUnique, releaseUnique }`, ampliada por D09a con `loadUnique`/`commitPearl`, con dos implementaciones:
+  saveWorld, claimUnique, releaseUnique }`, ampliada por D09a/b con `loadUnique`/`commitPearl`/`loadPearlOperation`, con dos implementaciones:
   `memory` (tests/host sin DB) y `supabase`
   (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
   servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
@@ -79,23 +83,31 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   económico v2 con RNG, tendencia de mercados y solares. Fallos de carga no fabrican un reemplazo; conflictos
   o errores de escritura detienen ese host y dejan health 503. Memoria no sobrevive al proceso; Supabase sí.
   No hay avance offline ni transacción atómica entre mundo/perfil; un proceso por ID hasta P5/P6. [D07d](docs/delivery/d07d-world.md).
-- [ ] **P4 Únicos — base de almacenamiento D09a local.** `commitPearl` mueve una perla de UID conocido junto
+- [ ] **P4 Únicos — base D09a/b de almacenamiento y sesión.** `commitPearl` mueve una perla de UID conocido junto
   con los snapshots CAS de sus cuentas y un recibo idempotente. Ledger `kind=pearl:<kind>`; guardados/importaciones
   no pueden contradecir un UID gestionado. `claimUnique`/`releaseUnique` independientes quedan para otros tipos.
-  Migración 003 revisada/probada, pendiente de aplicar. Falta conectar la cola/ack autoritativa del juego,
-  reconciliar al entrar y definir adopción/backfill de perlas raras existentes, colisiones, invitados y suelo
+  Migración 003 aplicada/verificada. `ProfileSessions.commitPearl` reserva cuentas/UID, ordena CAS y rebasa
+  snapshots posteriores; valida al entrar los UIDs registrados. Falta conectar staging/ack del juego y
+  definir adopción/backfill de perlas raras existentes, colisiones, invitados y suelo
   durable. Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
 - [ ] **P6 Movimientos y recuperación durables.** Transacciones/reintentos y fallos parciales de bienes/barcos;
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
-  D09a acepta localmente una primera operación de perla/perfiles/recibo; aún no cubre mundo, suelo ni barcos.
+  D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
+  aún no cubre mundo, suelo ni barcos, ni publica efectos en la simulación.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas
 
 - Los tests usan `memory`: ninguna prueba necesita red.
 - La suite SQL usa PGlite y el SDK con un transporte local; no necesita credenciales ni red externa.
+- D09b comprobó RPC/RLS y operaciones del SDK en el proyecto configurado con UUIDs temporales exactos,
+  limpieza verificada y sin consultar jugadores existentes. Contendientes HTTP reales no prueban un
+  solapamiento forzado de backends PostgreSQL independientes; leases siguen pendientes.
+- Si ambas respuestas de perla quedan ambiguas y no aparece el recibo, la cola reserva UID/cuentas incluso
+  tras close. `reconcilePearl` solo lee recibo/perfiles/UID; no reenvía otra mutación. Errores/flush permanecen
+  cercados hasta resolver la causa; las reservas locales no sobreviven al proceso.
 - P1 impide dos autoridades de un perfil dentro del host y rechaza escrituras con versión atrasada. Las
   reservas de sesión todavía no son leases entre procesos; P5 debe resolverlos antes de varias zonas.
 - Los métodos de propiedad única aún no sustituyen el ledger de perlas del juego. P4/P6 deben integrar

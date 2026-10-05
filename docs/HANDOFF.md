@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a local**: cuentas/economía y operación atómica de perlas; SQL 003/juego, correo humano/publicación pendientes (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a/b**: 003 verificada real, perlas atómicas y cola de sesión; staging/juego/suelo/leases, correo humano/publicación pendientes (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P2 local**: balsa visible y transitable, pasarela/bloqueos/escaleras compartidos; editor/bodega y dispositivos/publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -96,6 +96,28 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
+### M5 P4/P6 — cola y reconciliación D09b (2026-10-05)
+
+- Base D09a `d028a42`, integrada sobre cubierta `15bfb44`; `0.6.0-alpha.1`, protocolo 13 conservados.
+  [Brief](briefs/m5-pearl-session-queue.md), [contrato y evidencia](delivery/d09b-pearl-sessions.md).
+- Autor aplicó 001/002/003. Probe real 5/5 + canario SQL/SDK 9/9 + coordinador 6/6: contendientes HTTP,
+  transferencia, venta con dos replies perdidas, progreso posterior preservado y reconexión. Solo fixtures
+  temporales nuevos; todos eliminados y ausencia verificada. Sin leer/modificar jugadores existentes.
+- `ProfileSessions.commitPearl(meta, build)` ordena save→operación→save y reserva UID/cuentas; builder puro
+  ejecutado una vez, request congelado/reintento exacto. No emite ack ni modifica la simulación viva.
+  Join valida kind/dueño de UIDs registrados; ausentes siguen sin adoptar. Error de lectura bloquea WELCOME.
+- Doble respuesta ambigua sin recibo mantiene las reservas incluso tras close. `reconcilePearl` hace lecturas
+  acotadas, compara payload/perfiles/UID y no reenvía mutaciones ni reaplica recibos viejos. Leer solo el recibo
+  no libera una reserva si las lecturas de estado fallan. Errores/flush
+  permanecen cercados; leases y recuperación entre procesos aún pendientes.
+- Próximo corte M5: seam de staging/ack previo a la mutación de sim, adopción/cuarentena de raras existentes,
+  invitados, pickups/death y suelo/expiración durables. No activar circulación gestionada con esta base sola.
+  Legendarias, retorno por inactividad/cartel y transacciones navales pendientes; P4/P6 siguen parciales.
+- **109/109 pruebas pertinentes**, 18 nuevas; subconjunto 45/45 en base confirmada `15bfb44` aislada + misión,
+  sin depender de cambios del editor ajenos. Logs `shots/review/m5-pearl-sessions-*.log`; revisión Luna cerrada.
+- Host actual consultado solo por HTTP: health/status/página 200, mundo ready y cero errores. Sin reinicio/push/
+  despliegue. Otro responsable sigue con editor D05; sus archivos y cambios se conservan.
+
 ### M5 P4/P6 — base atómica de perlas D09a (2026-10-05)
 
 - Base `6402462`, versión `0.6.0-alpha.1` y protocolo 13 conservados. [Contrato y evidencia](delivery/d09a-pearl-operations.md).
@@ -105,12 +127,12 @@ autor.
 - SQL 003 añade recibos RLS, locks ordenados por filas/UID y guardia de propiedad diferida. Perfil guardado o
   importado no puede contradecir una perla registrada; los locks por UID cubren su primera creación.
   Memoria conserva el contrato, sin durabilidad. Primitivas únicas P1 independientes no alteran `pearl:*`.
-- **003 pendiente de aplicar en Supabase**: [archivo](../server/migrations/003_pearl_operations.sql). No hay canal
-  SQL administrativo configurado; no se ejecutó ni se reinició el host. El juego aún no llama a esta operación.
+- Al aceptar D09a, **003 estaba pendiente**. El autor la aplicó y D09b la verificó arriba; el juego aún no
+  llama a esta operación. [Archivo](../server/migrations/003_pearl_operations.sql). Host no reiniciado.
 - **91/91 pruebas pertinentes**: 77 de cuentas/store/SQL/mundo/economía y 14 nuevas de perlas, incluyendo
   respuesta perdida y rollback después de mutar un perfil. Host activo health 200 y cero errores. PGlite no
   acredita conexiones independientes reales; SQL exige `READ COMMITTED`. Logs `shots/review/m5-pearl-*.log`.
-- Próximo corte: aplicar/verificar 003 y preparar cola/ack + reconciliación al entrar, con política explícita de
+- Pendientes al aceptar D09a: aplicar/verificar 003 y preparar cola/ack + reconciliación al entrar, con política explícita de
   backfill/adopción/collisiones de raras existentes e invitados. Suelo/expiración durable, legendarias, regreso
   por inactividad, cartel, leases y transacciones navales siguen abiertos. P4/P6 no se marcan terminados.
 - Trabajo ajeno de cubierta/navegación/host del PC preservado; pruebas y límites detallados en el informe.

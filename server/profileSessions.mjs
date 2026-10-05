@@ -2,6 +2,8 @@
 // optimistic conflicts fence the session rather than reloading and overwriting a newer owner's state.
 import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { playerKey, StoreError } from './store.mjs';
+import { pearlKind, profilePearls, canonicalText } from './pearlOperations.mjs';
+import { PearlQueue } from './pearlQueue.mjs';
 
 export class ProfileSessions {
   constructor(store, onFailure) {
@@ -11,12 +13,14 @@ export class ProfileSessions {
     this.clients = new Map();
     this.tasks = new Set();
     this.errors = 0;
+    this.pearls = new PearlQueue(this);
   }
 
   async open(id, key, weapon = 0, initialize = null) {
     key = playerKey(key);
     if (this.accounts.has(key)) throw new StoreError('session');
-    const s = { id, key, version: 0, pending: null, running: null, last: null, failed: false, closed: false };
+    const s = { id, key, version: 0, confirmed: null, pending: null, running: null, pearlBusy: null,
+      last: null, failed: false, closed: false };
     this.accounts.set(key, s); this.clients.set(id, s);
     try {
       let row = await this.store.loadProfile(key);
@@ -31,7 +35,16 @@ export class ProfileSessions {
       const p = row ? sanitizeProfile(row.data) : newProfile({ weapon });
       if (!p) throw new StoreError('profile');
       if (row && (!Number.isSafeInteger(row.version) || row.version < 1 || row.version > 2147483647)) throw new StoreError('response');
+      await Promise.all(profilePearls(p).map(async (q) => {
+        const registered = await this.store.loadUnique(q.uid);
+        if (registered && (registered.kind !== pearlKind(q.kind) || registered.holder !== key ||
+          !Number.isSafeInteger(registered.version) || registered.version < 1 || registered.version > 2147483647)) {
+          throw new StoreError('ownership');
+        }
+      }));
+      if (s.closed) throw new StoreError('cancelled');
       s.version = row?.version ?? 0;
+      s.confirmed = structuredClone(p); s.last = row ? JSON.stringify(p) : null;
       return p;
     } catch (err) {
       this.release(s);
@@ -45,31 +58,47 @@ export class ProfileSessions {
     // LocalServer profiles are mutable; no reference to their later state crosses an await.
     const p = sanitizeProfile(raw);
     if (!p) { this.fail(s, 'profile'); return; }
+    if (s.pearlBusy && canonicalText(raw.pearls) !== canonicalText(p.pearls)) { this.fail(s, 'ownership'); return; }
     s.pending = { data: p, text: JSON.stringify(p) };
-    if (s.running) return;
+    this.kick(s);
+  }
+
+  kick(s) {
+    if (!s.pending || s.running || s.pearlBusy || s.failed) { this.maybeRelease(s); return; }
     const task = Promise.resolve().then(() => this.write(s));
     s.running = task; this.tasks.add(task);
-    task.finally(() => {
+    const done = () => {
       s.running = null; this.tasks.delete(task);
-      if (s.closed) this.release(s);
-    });
+      this.kick(s);
+    };
+    task.then(done, done);
   }
 
   async write(s) {
-    while (s.pending && !s.failed) {
+    while (s.pending && !s.failed && !s.pearlBusy) {
       const next = s.pending; s.pending = null;
       if (next.text === s.last) continue;
       try {
-        const result = await this.store.saveProfile(s.key, next.data, s.version);
-        if (!result?.ok) { this.fail(s, 'conflict'); return; }
-        s.version = result.version; s.last = next.text;
-      } catch { this.fail(s, 'unavailable'); return; }
+        await this.writeOne(s, next);
+      } catch (err) { this.fail(s, err instanceof StoreError ? err.code : 'unavailable'); return; }
     }
   }
 
+  async writeOne(s, next) {
+    if (next.text === s.last) return;
+    const result = await this.store.saveProfile(s.key, next.data, s.version);
+    if (result?.ok === false) throw new StoreError('conflict');
+    if (result?.ok !== true || result.version !== s.version + 1) throw new StoreError('response');
+    s.version = result.version; s.last = next.text; s.confirmed = structuredClone(next.data);
+  }
+
+  commitPearl(meta, build) { return this.pearls.commit(meta, build); }
+  reconcilePearl(operationId) { return this.pearls.reconcile(operationId); }
+
   fail(s, code) {
+    if (s.failed) return;
     s.failed = true; s.pending = null; this.errors++;
-    this.onFailure(s.id, code);
+    this.onFailure?.(s.id, code);
   }
 
   close(id) {
@@ -77,8 +106,10 @@ export class ProfileSessions {
     if (!s) return;
     s.closed = true;
     // Keep the account reserved until the final write ends, including a previous in-flight save.
-    if (!s.running) this.release(s);
+    this.maybeRelease(s);
   }
+
+  maybeRelease(s) { if (s.closed && !s.running && !s.pearlBusy && !s.pending) this.release(s); }
 
   release(s) {
     if (this.accounts.get(s.key) === s) this.accounts.delete(s.key);
@@ -86,7 +117,7 @@ export class ProfileSessions {
   }
 
   async flush() {
-    while (this.tasks.size) await Promise.all([...this.tasks]);
+    while (this.tasks.size) await Promise.allSettled([...this.tasks]);
     if (this.errors) throw new StoreError('flush');
   }
 }

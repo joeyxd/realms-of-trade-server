@@ -168,8 +168,10 @@ y solares. `WORLD_ID` (por defecto `marea-negra`) debe mantenerse estable y tene
 controla el intervalo en `npm start`. Un conflicto/fallo de guardado detiene ese host y devuelve health 503;
 memoria no conserva datos al terminar el proceso. [Resultado y límites D07d](docs/delivery/d07d-world.md).
 La base D09a añade `commitPearl`: perfiles, dueño del UID y recibo se confirman juntos; un reintento idéntico
-no repite el efecto. SQL 003 se entrega para Supabase, todavía sin aplicar ni conectar al juego.
-[Contrato y límites](docs/delivery/d09a-pearl-operations.md).
+no repite el efecto. SQL 003 ya fue aplicada y verificada en el proyecto real con fixtures temporales limpiados.
+D09b coordina esa operación con los guardados de cuenta y valida UIDs registrados al entrar. Si pierde ambas
+respuestas, consulta el recibo y cerca las cuentas mientras el resultado siga incierto. Todavía falta conectar
+intents/ack de la simulación, adoptar raras y guardar el suelo. [Contrato y límites](docs/delivery/d09b-pearl-sessions.md).
 Google/Discord, recuperación de contraseña, leases e integración de transferencias durables siguen pendientes. El Worker
 mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 

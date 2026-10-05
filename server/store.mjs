@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove, assertManagedPearls,
-  pearlResult, checkedPearlResult } from './pearlOperations.mjs';
+  pearlResult, checkedPearlResult, checkedPearlReceipt } from './pearlOperations.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -78,6 +78,11 @@ export function createMemoryStore() {
     async loadWorld(id) { return load(worlds, key(id)); },
     async saveWorld(id, data, expected) { return save(worlds, key(id), json(data), version(expected, 0, MAX_VERSION - 1)); },
     async loadUnique(uid) { return load(uniques, key(uid, 160)); },
+    async loadPearlOperation(operationId) {
+      operationId = playerKey(operationId);
+      const receipt = pearlReceipts.get(operationId);
+      return receipt ? checkedPearlReceipt({ request: JSON.parse(receipt.text), result: receipt.result }, operationId) : null;
+    },
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
       const receipt = pearlReceipts.get(operationId);
@@ -184,6 +189,17 @@ export function createSupabaseStore(client) {
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw);
       return checkedPearlResult(await rpc('mn_commit_pearl', { p_operation_id: operationId, p_request: request }), request);
+    },
+    async loadPearlOperation(operationId) {
+      operationId = playerKey(operationId);
+      let raw;
+      try {
+        // SQL 003 already restricts this table to service_role; no user JWT reaches this client.
+        const reply = await client.from('mn_pearl_operations').select('request,result').eq('operation_id', operationId).maybeSingle();
+        if (!reply || reply.error) throw new Error('read');
+        raw = reply.data;
+      } catch { throw new StoreError('unavailable'); }
+      return checkedPearlReceipt(raw, operationId);
     },
     async claimUnique(uid, kind, holder) {
       if (managedPearl(kind)) throw new StoreError('operation');
