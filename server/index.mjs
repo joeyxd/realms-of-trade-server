@@ -10,6 +10,7 @@ import { GameHost } from './host.mjs';
 import { hmacSaves, saveSecret } from './saves.mjs';
 import { storeFromEnv } from './store.mjs';
 import { accountAuthFromEnv, publicAuthConfig } from './auth.mjs';
+import { worldConfigFromEnv } from './worldState.mjs';
 import { GAME } from '../src/data/meta.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,16 +25,17 @@ const MIME = {
 const PUBLIC = ['src', 'styles', 'assets'];
 
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
-  store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth } = {}) {
+  store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
+  worldId = 'marea-negra', worldSaveMs = 60000 } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
   if (authConfig.enabled && !resolvePlayer) throw new Error('Account verifier is required');
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts });
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs });
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
-    if (p === '/health') { res.writeHead(200, { 'content-type': 'text/plain' }).end('ok'); return; }
+    if (p === '/health') { const ready = game.healthy(); res.writeHead(ready ? 200 : 503, { 'content-type': 'text/plain' }).end(ready ? 'ok' : 'storage unavailable'); return; }
     if (p === '/status') {
       res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store', 'access-control-allow-origin': '*' });
       res.end(JSON.stringify({ game: GAME.title, version: GAME.version, ...game.status() }));
@@ -76,10 +78,25 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     });
   });
   game.attach(server, '/ws');
+  let listening;
   return {
     game, server,
     listen() {
-      return new Promise((resolve) => server.listen(port, host, () => { game.start(); resolve(server.address().port); }));
+      if (listening) return listening;
+      listening = (async () => {
+        await game.prepare();
+        if (game.closing) throw new Error('Server is closing');
+        return new Promise((resolve, reject) => {
+          const failed = (err) => { server.removeListener('error', failed); reject(err); };
+          server.once('error', failed);
+          server.listen(port, host, () => {
+            server.removeListener('error', failed);
+            if (game.closing) { reject(new Error('Server is closing')); return; }
+            game.start(); resolve(server.address().port);
+          });
+        });
+      })();
+      return listening;
     },
     async close() {
       const transport = new Promise((resolve) => server.close(() => resolve()));
@@ -100,10 +117,21 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
     store: storeFromEnv(env), resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig,
     initializeAccounts: auth.publicConfig.enabled,
+    ...worldConfigFromEnv(env),
   });
-  const port = await gs.listen();
+  let port;
+  try { port = await gs.listen(); }
+  catch {
+    console.error('[srv] startup failed: world storage or listener unavailable');
+    try { await gs.close(); } catch { /* failed authority */ }
+    process.exit(1);
+  }
   console.log(`${GAME.title} v${GAME.version} · http://localhost:${port} · máx ${gs.game.maxPlayers} jugadores${env.DEV === '1' ? ' · DEV' : ''}${gs.game.lag.ms ? ` · lag ${gs.game.lag.ms}±${gs.game.lag.jitter} ms` : ''}`);
-  const stop = async (sig) => { console.log(`[srv] ${sig}: closing`); await gs.close(); process.exit(0); };
+  const stop = async (sig) => {
+    console.log(`[srv] ${sig}: closing`);
+    try { await gs.close(); process.exit(0); }
+    catch { console.error('[srv] shutdown failed: storage'); process.exit(1); }
+  };
   process.on('SIGTERM', () => stop('SIGTERM'));
   process.on('SIGINT', () => stop('SIGINT'));
 }

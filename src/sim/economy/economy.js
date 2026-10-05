@@ -10,7 +10,8 @@ import { mulberry32 } from '../../core/rng.js';
 import { newMarket, stepMarket, quote, settle, board } from './market.js';
 import { newPlots, stepPlot } from './plots.js';
 import { load, unload, roomFor } from './cargo.js';
-import { BUILDINGS } from '../../data/buildings.js';
+import { BUILDINGS, RECIPES } from '../../data/buildings.js';
+import { GOOD_IDS } from '../../data/goods.js';
 import { CLOCK } from '../../data/clock.js';
 
 const upkeepOf = (p) => (BUILDINGS[p.b] ? BUILDINGS[p.b].upkeep : 0);
@@ -91,17 +92,36 @@ export class Economy {
   board(town) { const T = TOWNS[town]; return T ? board(this.markets[town], T) : []; }
 
   serialize() {
-    return { v: 1, hours: this.hours, acc: this.acc, markets: this.markets, plots: this.plots };
+    return { v: 2, hours: this.hours, acc: this.acc, rng: this.rng.state(), markets: this.markets, plots: this.plots };
   }
   static from(json, seed = 1) {
     const e = new Economy(seed);
-    if (!json || json.v !== 1) return e;
-    e.hours = +json.hours || ECON.startHour; e.acc = +json.acc || 0;
+    if (!json || ![1, 2].includes(json.v)) return e;
+    e.hours = Number.isFinite(json.hours) && json.hours >= 0 ? json.hours : ECON.startHour;
+    e.acc = Number.isFinite(json.acc) && json.acc >= 0 && json.acc < ECON.tickSec ? json.acc : 0;
+    if (json.v === 2 && Number.isInteger(json.rng) && json.rng >= 0 && json.rng <= 0xffffffff) e.rng = mulberry32(json.rng);
     for (const id of TOWN_IDS) {
       const m = json.markets && json.markets[id];
       if (m && m.stock) for (const g of Object.keys(e.markets[id].stock)) if (Number.isFinite(m.stock[g])) e.markets[id].stock[g] = Math.max(0, m.stock[g]);
+      if (m && m.last) for (const g of Object.keys(e.markets[id].stock)) {
+        if (Object.hasOwn(m.last, g) && [-1, 0, 1].includes(m.last[g])) e.markets[id].last[g] = m.last[g];
+      }
       const ps = json.plots && json.plots[id];
-      if (Array.isArray(ps)) ps.forEach((p, i) => { if (e.plots[id][i] && p && typeof p === 'object') Object.assign(e.plots[id][i], p, { town: id, i }); });
+      if (Array.isArray(ps)) ps.forEach((p, i) => {
+        const out = e.plots[id][i];
+        if (!out || !p || typeof p !== 'object') return;
+        out.owner = typeof p.owner === 'string' && /^[a-z0-9]{1,24}$/.test(p.owner) ? p.owner : '';
+        out.b = Object.hasOwn(BUILDINGS, p.b) ? p.b : '';
+        out.state = out.b && ['building', 'ready'].includes(p.state) ? p.state : 'empty';
+        out.recipe = (BUILDINGS[out.b]?.recipes || []).includes(p.recipe) ? p.recipe : '';
+        for (const k of ['done', 'debt', 'owed']) out[k] = Number.isFinite(p[k]) && p[k] >= 0 ? p[k] : 0;
+        const batchHours = RECIPES[out.recipe]?.hours || 0;
+        out.batchT = Number.isFinite(p.batchT) && p.batchT >= 0 && p.batchT < batchHours ? p.batchT : 0;
+        out.store = {};
+        if (p.store && typeof p.store === 'object') for (const g of GOOD_IDS) {
+          if (Number.isFinite(p.store[g]) && p.store[g] > 0) out.store[g] = p.store[g];
+        }
+      });
     }
     return e;
   }

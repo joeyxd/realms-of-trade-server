@@ -32,6 +32,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - Checkpoint posterior D07c: modal de cómic y selector de aspectos/nombre, 43/43 pruebas pertinentes y UI
   desktop/móvil horizontal/vertical. SQL aplicado, Auth/DB reales verificados con fixture eliminado al cerrar;
   entrega de correo, economía P3 y publicación pendientes. [Informe D07c](docs/delivery/d07c-comic-account.md).
+- Checkpoint posterior D07d: P3 economía persistente integrada localmente: carga antes de admitir,
+  snapshots CAS cada 60 s/cierre, reloj/RNG/mercados/solares. Reinicio y conflicto comprobados en un mundo
+  Supabase temporal eliminado al cerrar. P4–P6 y publicación pendientes. [Informe D07d](docs/delivery/d07d-world.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
@@ -77,7 +80,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; playa → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1 local implementado ([informe](docs/delivery/d04p1-raft.md)); P2 pendiente |
 | D05 | M6 P3: editor de construcción | A05: primera pieza modular compatible; procedural si falta kit | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Pendiente |
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente |
-| D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | En curso: P1–P2 local ([D07a](docs/delivery/d07a-store.md), [D07b](docs/delivery/d07b-accounts.md)); P3 y servicio real pendientes |
+| D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
 | D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Pendiente |
 | D10 | M6 P5–P6 inicial + M7 rutas: primer viaje/naval PvE | A07: un impacto de madera/agua; A04 un sonido si puente listo | D06,D08; D09 para riesgo persistente. Dos rutas, NPC vencible, reparar/recuperar | Pendiente |

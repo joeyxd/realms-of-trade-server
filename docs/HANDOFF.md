@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P2 local**: almacenamiento, cuentas e importación; mundo/servicio real pendientes (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 local**: almacenamiento, cuentas/importación y economía; canarios Auth/DB reales, correo humano/publicación pendientes (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1 local**: balsa amarrada visible/replicada, identidad/migración y fallback; P2 cubierta y editor pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -74,6 +74,23 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
+
+### M5 P3 — mundo económico D07d (2026-10-05)
+
+- Base `f0b74a7`, versión `0.6.0-alpha.1` y protocolo 13 conservados. [Contrato y evidencia](delivery/d07d-world.md).
+- `server/worldState.mjs` carga/crea antes de escuchar o simular; snapshot económico CAS cada 60 s/cierre.
+  Reloj, acumulador, RNG, stocks/tendencia y solares se restauran. Conserva callback de upkeep del host.
+- `WORLD_ID=marea-negra` y `WORLD_SAVE_SECONDS=60` en el entrypoint. Memoria conserva el mismo contrato,
+  pero no es durable. Un registro incompatible no se reemplaza. Conflicto/error de guardado detiene ticks
+  y admisiones, health 503, cierre fallido; nunca recarga para sobrescribir el estado de otra autoridad.
+- Canario real con ID temporal: creación, snapshot final, reinicio exacto, siguiente paso determinista,
+  conflicto CAS y limpieza verificados. No se tocaron cuentas/mundos existentes ni servidores ya abiertos.
+- **79/79 pruebas pertinentes**: 43 cuentas/store/SQL + 34 mundo/economía + 2 red. Host activo consultado:
+  Supabase durable, mundo ready y sin errores; logs `shots/review/m5-p3-*.log`. No es regresión de toda la suite.
+- Una autoridad por ID. P3 no guarda ECS/combate ni avanza durante downtime; cobro offline, leases y
+  atomicidad mundo/perfil permanecen P5/P6. Correo humano y publicación pendientes; P4 únicos es el próximo
+  corte de M5, sujeto al contrato duradero de perlas/perfiles antes de activar riesgo público.
+- Trabajo ajeno de balsas/assets/host del PC preservado. Preview existente no reiniciado por esta entrega.
 
 ### M5 P2 — cuentas e importación D07b (2026-10-05)
 

@@ -1,6 +1,6 @@
 // GameHost: one LocalServer (the same authoritative server the Web Worker runs for solo play) behind
 // WebSockets. Gameplay stays in LocalServer; transport and optional account persistence live here,
-// outside the fixed-step simulation. P2 will supply a real identity verifier to the account path.
+// outside the fixed-step simulation.
 import { WebSocketServer } from 'ws';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
@@ -9,6 +9,7 @@ import { C } from '../src/sim/ecs.js';
 import { createMemoryStore, StoreError } from './store.mjs';
 import { ProfileSessions } from './profileSessions.mjs';
 import { legacyKey } from './legacy.mjs';
+import { WorldState } from './worldState.mjs';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -21,10 +22,12 @@ const LIMITS = {
 
 export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
-    store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false } = {}) {
+    store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
+    worldId = null, worldSaveMs = 60000 } = {}) {
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
     if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
+    if (!Number.isFinite(worldSaveMs) || worldSaveMs <= 0 || worldSaveMs > 2147483647) throw new StoreError('configuration');
     this.log = log;
     this.maxPlayers = maxPlayers;
     this.origins = origins;
@@ -49,6 +52,9 @@ export class GameHost {
       send: (id, msg) => this.sendTo(id, msg),
       onSave: (id, p) => this.profiles.save(id, p),
     });
+    this.worldSaveMs = worldSaveMs;
+    this.worldState = worldId === null ? null : new WorldState(store, { id: worldId, seed: this.server.world.seed,
+      onFailure: (code) => this.fenceWorld(code) });
     this.started = performance.now();
   }
 
@@ -71,6 +77,8 @@ export class GameHost {
   }
 
   start() {
+    if (this.closing || (this.worldState && !this.worldState.ready)) throw new StoreError('world_not_ready');
+    if (this.timer) return this;
     // Drive the server's fixed-step pump ourselves: one bad tick is logged, it never takes the process down.
     this.server.last = performance.now();
     this.timer = setInterval(() => {
@@ -82,7 +90,29 @@ export class GameHost {
       const n = this.server.world.tick - tick0;
       if (n > 0) { this.stats.steps += n; this.stats.stepMs += (performance.now() - t0 - this.stats.stepMs) * 0.05; }
     }, 4);
+    if (this.worldState) this.worldTimer = setInterval(() => this.worldState.save(this.server.world.economy), this.worldSaveMs);
     return this;
+  }
+
+  async prepare() {
+    if (!this.worldState) return;
+    const economy = await this.worldState.open(this.server.world.economy);
+    if (this.closing) throw new StoreError('cancelled');
+    // The database stores plain state; the host's owner-profile callback stays attached to the restored economy.
+    economy.payUpkeep = this.server.world.economy.payUpkeep;
+    this.server.world.economy = economy;
+  }
+
+  healthy() { return !this.closing && (!this.worldState || this.worldState.ready); }
+
+  fenceWorld(code) {
+    this.log(`[store] world failed: ${code}`);
+    this.closing = true;
+    clearInterval(this.timer); clearInterval(this.worldTimer);
+    for (const sock of [...this.sockets.values()]) {
+      try { sock.ws.close(1011, 'storage'); } catch { /* gone */ }
+      this.onClose(sock);
+    }
   }
 
   // Bytes actually written to the sockets (after permessage-deflate), per open socket.
@@ -94,12 +124,14 @@ export class GameHost {
       players: s.humans, max: this.maxPlayers, sockets: this.sockets.size, tick: s.world.tick,
       uptime: Math.round((performance.now() - this.started) / 1000), stepMs: +this.stats.stepMs.toFixed(3),
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
-      storage: { kind: this.store.kind, accounts: !!this.resolvePlayer, errors: this.profiles.errors },
+      storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
+        errors: this.profiles.errors + (this.worldState?.errors || 0), world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
   }
 
   onConnection(ws, req) {
+    if (!this.healthy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
     const id = this.nextId++;
     const now = performance.now();
     const sock = {
@@ -262,12 +294,16 @@ export class GameHost {
   close() {
     if (this.closePromise) return this.closePromise;
     this.closing = true;
-    clearInterval(this.timer); clearInterval(this.beat);
+    clearInterval(this.timer); clearInterval(this.beat); clearInterval(this.worldTimer);
+    this.worldState?.cancelLoad();
     for (const sock of [...this.sockets.values()]) { try { sock.ws.close(1001, 'server restart'); } catch { /* gone */ } this.onClose(sock); }
     if (this.wss) this.wss.close();
+    this.worldState?.save(this.server.world.economy);
     this.closePromise = (async () => {
       await Promise.all([...this.joins]);
-      await this.profiles.flush();
+      // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
+      const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
+      if (results.some((r) => r.status === 'rejected')) throw new StoreError('flush');
     })();
     return this.closePromise;
   }

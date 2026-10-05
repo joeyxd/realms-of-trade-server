@@ -163,8 +163,12 @@ Las migraciones y Auth fueron probados localmente con un proveedor simulado. No 
 Migraciones aplicadas y canario real de confirmación/login, permisos y perfil tras reiniciar
 aprobado. El acceso ahora usa un dossier de cómic y selector de cinco aspectos; correo humano/publicación
 pendientes. [Resultado D07c](docs/delivery/d07c-comic-account.md).
-El mundo persistente, Google/Discord, recuperación de contraseña, leases y transferencias durables siguen
-pendientes. El Worker mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
+La economía del mundo ya se carga antes de escuchar y se guarda cada 60 s y al cerrar: reloj, RNG, mercados
+y solares. `WORLD_ID` (por defecto `marea-negra`) debe mantenerse estable y tener un solo proceso; `WORLD_SAVE_SECONDS`
+controla el intervalo en `npm start`. Un conflicto/fallo de guardado detiene ese host y devuelve health 503;
+memoria no conserva datos al terminar el proceso. [Resultado y límites D07d](docs/delivery/d07d-world.md).
+Google/Discord, recuperación de contraseña, leases y transferencias durables siguen pendientes. El Worker
+mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 
 ### Qué incluye M1
 

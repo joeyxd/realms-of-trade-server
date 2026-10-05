@@ -109,11 +109,13 @@ reinicia y muestra `/status`). Las partidas guardadas viven en el navegador de c
 | `SAVE_SECRET` | aleatorio (aviso) | Firma las partidas guardadas |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` | sin configurar | Adaptador durable; ambos juntos, clave de servicio privada |
 | `SUPABASE_PUBLIC_KEY` | sin configurar | Activa cuentas; solo publishable o JWT anon, publicado en `/auth/config` |
+| `WORLD_ID` | marea-negra | ID estable de la economía; una autoridad por ID, no cambiar entre reinicios |
+| `WORLD_SAVE_SECONDS` | 60 | Intervalo de snapshot económico del entrypoint `npm start`; cierre guarda también |
 | `ORIGINS` | (cualquiera) | Lista de orígenes permitidos para el socket del juego |
 | `DEV` | 0 | `1` habilita F4 y el teletransporte de `?debug`: **nunca** en un servidor público |
 | `LAG_MS` / `JITTER_MS` | 0 | Latencia artificial para pruebas |
 
-## Cuentas y almacenamiento (M5 P1–P2)
+## Cuentas y almacenamiento (M5 P1–P3)
 
 El entrypoint carga el `.env` local de la raíz del repo si existe; las variables del proceso tienen prioridad.
 Ese archivo y `.env.*` están ignorados por Git. Los nombres de este servidor son `SUPABASE_URL`,
@@ -139,8 +141,17 @@ Antes de activar un proyecto real:
 
 La importación registra una identidad legacy única en la misma transacción que crea el perfil. Todas las versiones
 firmadas de ese pirata quedan retiradas del flujo invitado del servidor con cuentas activas. La reserva de invitados
-y cuentas cubre un solo proceso: no ejecutar varios hosts hasta implementar leases P5. El JSON de economía y el
-ledger de perlas todavía no están conectados a persistencia; P3/P4/P6 siguen pendientes.
+y cuentas cubre un solo proceso: no ejecutar varios hosts hasta implementar leases P5. P3 carga el mundo
+antes de abrir el listener y guarda snapshots CAS aislados cada 60 s y al cerrar. Reloj, RNG, mercados y solares
+se restauran con la misma semilla; registro ausente se crea antes de aceptar jugadores. Error de carga,
+formato o semilla incompatible impide arrancar sin sobrescribir. Error/conflicto de escritura detiene ticks
+y admisiones, devuelve `/health` 503 y el cierre informa fallo. Reiniciar solo después de resolver la causa.
+`/status.storage.world` expone readiness, generación y errores fijos. No hay nueva migración para P3.
+
+El mundo guarda un sobre `{v:1, seed, economy}`; la economía usa formato v2 con RNG. El formato previo v1
+sin RNG no se acepta silenciosamente como mundo persistente. El tiempo apagado no se simula. Mantenimiento
+solo cobra a perfiles conectados; guardados de perfil/mundo aún son independientes, sin atomicidad P6.
+El ledger de perlas, leases y movimientos durables P4–P6 siguen pendientes. [Evidencia D07d](delivery/d07d-world.md).
 
 Las migraciones ya se aplicaron al proyecto local configurado por el autor. Un canario aislado comprobó
 confirmación Auth, login por contraseña, permisos y perfil tras reiniciar; entrega de correo y despliegue

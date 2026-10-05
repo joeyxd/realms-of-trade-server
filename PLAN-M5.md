@@ -2,18 +2,21 @@
 
 Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09; base antes de riesgo persistente.
 
-> Hoy cada partida va **firmada en el navegador** del jugador y el mundo (mercados, solares) dura lo que la sesión.
+> Punto de partida: cada partida iba **firmada en el navegador** del jugador y el mundo (mercados, solares) duraba lo que la sesión.
 > M5 lo pasa a una base de datos en el servidor: cuentas, personajes, inventario, economía, y lo que necesita ser
 > único (perlas legendarias, solares) sin duplicados.
 
 Checkpoint D07a, base `61a34a5`: **P1 implementado y probado localmente**. Memoria, adaptador Supabase,
 migración SQL y ciclo de perfiles del host. [Evidencia y contrato](docs/delivery/d07a-store.md).
 Checkpoint D07b, base inicial `da757d3`, integrado sobre `a01294c`: **P2 cuentas e importación aceptados
-localmente**. Credenciales configuradas y API real consultada; migraciones/aceptación del proyecto y P3
-siguen pendientes. [Contrato y evidencia](docs/delivery/d07b-accounts.md).
+localmente**. Credenciales configuradas y API real consultada; al cerrar D07b aún faltaban migraciones y P3.
+[Contrato y evidencia](docs/delivery/d07b-accounts.md); D07c/D07d actualizan ese checkpoint debajo.
 Checkpoint D07c: acceso de cómic, registro/confirmación y selector de cinco aspectos implementados.
 Migraciones aplicadas; Auth, permisos y perfil tras reiniciar comprobados con un canario real aislado.
 Correo humano y economía P3 pendientes. [UI y pruebas](docs/delivery/d07c-comic-account.md).
+Checkpoint D07d: **P3 economía persistente implementada**: carga antes de escuchar, snapshots CAS cada 60 s
+y al cerrar, reloj/RNG/mercados/solares restaurados. Mundo temporal real reiniciado y conflicto CAS comprobados.
+[Contrato, evidencia y límites](docs/delivery/d07d-world.md). Correo humano, publicación y P4–P6 pendientes.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -67,7 +70,11 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   explícitos. Importación voluntaria de una partida firmada con `pirateId`, RPC atómica `002_accounts.sql` y
   recibo único entre versiones; cuenta existente prevalece e invitado importado queda retirado. D07b aceptado
   localmente. Google/Discord, recuperación de contraseña y aceptación del proyecto real pendientes.
-- [ ] **P3 Economía persistente.** `world_state` cada 60 s y al apagar; al arrancar, `Economy.from()`.
+- [x] **P3 Economía persistente.** `mn_worlds` cada 60 s y al apagar; carga antes de abrir el listener y
+  arrancar la simulación mediante `Economy.from()`. `WORLD_ID` estable, CAS serializado/coalescido, snapshot
+  económico v2 con RNG, tendencia de mercados y solares. Fallos de carga no fabrican un reemplazo; conflictos
+  o errores de escritura detienen ese host y dejan health 503. Memoria no sobrevive al proceso; Supabase sí.
+  No hay avance offline ni transacción atómica entre mundo/perfil; un proceso por ID hasta P5/P6. [D07d](docs/delivery/d07d-world.md).
 - [ ] **P4 Únicos.** Perlas legendarias (`PLAN-M4.8.md`): `claimUnique` al tragar o recoger, `releaseUnique` al
   morir; si el portador no entra en X días, vuelve al mar (tarea programada). Cartel de SE BUSCA con el portador.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
