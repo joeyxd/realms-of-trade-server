@@ -17,6 +17,9 @@ Correo humano y economía P3 pendientes. [UI y pruebas](docs/delivery/d07c-comic
 Checkpoint D07d: **P3 economía persistente implementada**: carga antes de escuchar, snapshots CAS cada 60 s
 y al cerrar, reloj/RNG/mercados/solares restaurados. Mundo temporal real reiniciado y conflicto CAS comprobados.
 [Contrato, evidencia y límites](docs/delivery/d07d-world.md). Correo humano, publicación y P4–P6 pendientes.
+Checkpoint D09a, base `6402462`: **base atómica de propiedad de perlas aceptada localmente**. `commitPearl`
+confirma perfiles, ledger y recibo juntos; reintentos, CAS y guardados/importaciones contradictorios protegidos.
+SQL 003 pendiente de aplicar en Supabase; el juego aún usa su circulación actual. [Contrato y límites](docs/delivery/d09a-pearl-operations.md).
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -58,7 +61,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 ## 3. Pasos
 
 - [x] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
-  saveWorld, claimUnique, releaseUnique }` con dos implementaciones: `memory` (tests/host sin DB) y `supabase`
+  saveWorld, claimUnique, releaseUnique }`, ampliada por D09a con `loadUnique`/`commitPearl`, con dos implementaciones:
+  `memory` (tests/host sin DB) y `supabase`
   (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
   servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
   `storeFromEnv` selecciona memoria sin credenciales y rechaza configuración incompleta. El entrypoint lo usa,
@@ -75,12 +79,17 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   económico v2 con RNG, tendencia de mercados y solares. Fallos de carga no fabrican un reemplazo; conflictos
   o errores de escritura detienen ese host y dejan health 503. Memoria no sobrevive al proceso; Supabase sí.
   No hay avance offline ni transacción atómica entre mundo/perfil; un proceso por ID hasta P5/P6. [D07d](docs/delivery/d07d-world.md).
-- [ ] **P4 Únicos.** Perlas legendarias (`PLAN-M4.8.md`): `claimUnique` al tragar o recoger, `releaseUnique` al
-  morir; si el portador no entra en X días, vuelve al mar (tarea programada). Cartel de SE BUSCA con el portador.
+- [ ] **P4 Únicos — base de almacenamiento D09a local.** `commitPearl` mueve una perla de UID conocido junto
+  con los snapshots CAS de sus cuentas y un recibo idempotente. Ledger `kind=pearl:<kind>`; guardados/importaciones
+  no pueden contradecir un UID gestionado. `claimUnique`/`releaseUnique` independientes quedan para otros tipos.
+  Migración 003 revisada/probada, pendiente de aplicar. Falta conectar la cola/ack autoritativa del juego,
+  reconciliar al entrar y definir adopción/backfill de perlas raras existentes, colisiones, invitados y suelo
+  durable. Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
 - [ ] **P6 Movimientos y recuperación durables.** Transacciones/reintentos y fallos parciales de bienes/barcos;
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
+  D09a acepta localmente una primera operación de perla/perfiles/recibo; aún no cubre mundo, suelo ni barcos.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas
@@ -90,5 +99,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 - P1 impide dos autoridades de un perfil dentro del host y rechaza escrituras con versión atrasada. Las
   reservas de sesión todavía no son leases entre procesos; P5 debe resolverlos antes de varias zonas.
 - Los métodos de propiedad única aún no sustituyen el ledger de perlas del juego. P4/P6 deben integrar
-  operaciones durables de perfiles, suelo y propietarios; no activar legendarias ni riesgo persistente con P1.
+  la nueva operación durable con perfiles, suelo y propietarios; no activar legendarias ni riesgo persistente
+  con esta base sola. Los UIDs raros sin registro gestionado conservan el flujo previo; no se reclama unicidad
+  global ni adopción de esos registros. PGlite no acredita concurrencia entre conexiones independientes reales.
 - Respaldo diario de la base (Supabase lo hace en los planes de pago; si no, `pg_dump` programado).

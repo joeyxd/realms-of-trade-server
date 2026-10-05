@@ -2,6 +2,8 @@
 // it does not survive a process restart. Account identity must come from a trusted host resolver.
 import { createClient } from '@supabase/supabase-js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
+import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove, assertManagedPearls,
+  pearlResult, checkedPearlResult } from './pearlOperations.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -41,11 +43,15 @@ function legacyKey(value) {
 const conflict = () => ({ ok: false, why: 'conflict' });
 
 export function createMemoryStore() {
-  const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map();
+  const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
     const current = map.get(id);
     if ((current?.version ?? 0) !== expected) return conflict();
+    if (map === profiles) {
+      const candidate = new Map(profiles); candidate.set(id, { data });
+      assertManagedPearls(candidate, uniques);
+    }
     map.set(id, { data, version: expected + 1 });
     return { ok: true, version: expected + 1 };
   };
@@ -62,6 +68,8 @@ export function createMemoryStore() {
       if (importedKey !== null && legacyImports.has(importedKey) && legacyImports.get(importedKey) !== id) {
         throw new StoreError('legacy_used');
       }
+      const candidate = new Map(profiles); candidate.set(id, { data });
+      assertManagedPearls(candidate, uniques);
       profiles.set(id, { data, version: 1 });
       if (importedKey !== null) legacyImports.set(importedKey, id);
       return { data: structuredClone(data), version: 1 };
@@ -69,8 +77,31 @@ export function createMemoryStore() {
     async legacyClaimed(importedKey) { return legacyImports.has(legacyKey(importedKey)); },
     async loadWorld(id) { return load(worlds, key(id)); },
     async saveWorld(id, data, expected) { return save(worlds, key(id), json(data), version(expected, 0, MAX_VERSION - 1)); },
+    async loadUnique(uid) { return load(uniques, key(uid, 160)); },
+    async commitPearl(raw) {
+      const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
+      const receipt = pearlReceipts.get(operationId);
+      if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
+      for (const p of request.profiles) if (profiles.get(p.id)?.version !== p.expectedVersion) return conflict();
+      const current = uniques.get(request.uid);
+      if (current && current.kind !== pearlKind(request.kind)) return { ok: false, why: 'kind' };
+      if ((current?.version ?? 0) !== request.expectedVersion || (current?.holder ?? null) !== request.from) return conflict();
+      if (!validPearlMove(request, profiles)) return { ok: false, why: 'ownership' };
+      const nextProfiles = new Map(profiles), nextUniques = new Map(uniques);
+      for (const p of request.profiles) nextProfiles.set(p.id, { data: p.data, version: p.expectedVersion + 1 });
+      const unique = { kind: pearlKind(request.kind), holder: request.to, version: request.expectedVersion + 1 };
+      nextUniques.set(request.uid, unique);
+      try { assertManagedPearls(nextProfiles, nextUniques); }
+      catch { return { ok: false, why: 'ownership' }; }
+      const result = pearlResult(request);
+      // No await or fallible validation follows the first mutation: all three maps commit as one JS turn.
+      for (const p of request.profiles) profiles.set(p.id, nextProfiles.get(p.id));
+      uniques.set(request.uid, unique); pearlReceipts.set(operationId, { text, result });
+      return structuredClone(result);
+    },
     async claimUnique(uid, kind, holder) {
       key(uid, 160); key(kind); holder = playerKey(holder);
+      if (managedPearl(kind)) throw new StoreError('operation');
       const current = uniques.get(uid);
       if (current && current.kind !== kind) return { ok: false, why: 'kind' };
       if (current?.holder && current.holder !== holder) return { ok: false, why: 'occupied' };
@@ -83,6 +114,7 @@ export function createMemoryStore() {
     async releaseUnique(uid, holder, generation) {
       key(uid, 160); holder = playerKey(holder); version(generation, 1);
       const current = uniques.get(uid);
+      if (current && managedPearl(current.kind)) throw new StoreError('operation');
       if (!current || current.holder !== holder || current.version !== generation) return conflict();
       version(current.version + 1);
       current.holder = null; current.version++;
@@ -98,6 +130,8 @@ export function createSupabaseStore(client) {
       const result = await client.rpc(name, args);
       if (!result || result.error) {
         if (duplicateCode && result?.error?.code === duplicateCode) throw new StoreError('legacy_used');
+        if (result?.error?.code === 'MNP01') throw new StoreError('ownership');
+        if (result?.error?.code === 'MNP02') throw new StoreError('operation');
         throw new Error('rpc');
       }
       return result.data;
@@ -139,7 +173,20 @@ export function createSupabaseStore(client) {
     async saveWorld(id, data, expected) {
       return written(await rpc('mn_save_world', { p_world: key(id), p_data: json(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
     },
+    async loadUnique(uid) {
+      const raw = await rpc('mn_load_unique', { p_uid: key(uid, 160) });
+      if (raw === null) return null;
+      try {
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('record');
+        return { kind: key(raw.kind), holder: raw.holder === null ? null : playerKey(raw.holder), version: version(raw.version, 1) };
+      } catch { throw new StoreError('response'); }
+    },
+    async commitPearl(raw) {
+      const { operationId, request } = pearlOperation(raw);
+      return checkedPearlResult(await rpc('mn_commit_pearl', { p_operation_id: operationId, p_request: request }), request);
+    },
     async claimUnique(uid, kind, holder) {
+      if (managedPearl(kind)) throw new StoreError('operation');
       return written(await rpc('mn_claim_unique', { p_uid: key(uid, 160), p_kind: key(kind), p_holder: playerKey(holder) }), ['kind', 'occupied']);
     },
     async releaseUnique(uid, holder, generation) {

@@ -147,7 +147,7 @@ son los siguientes cortes. [Evidencia y límites de D04 P1](docs/delivery/d04p1-
   El registro de propiedad evita duplicados de partidas viejas durante la sesión del servidor; la persistencia
   tras reinicios corresponde a M5. Protocolo **12**: cliente y servidor en línea deben actualizarse juntos.
 
-### Base de M5 — almacenamiento y cuentas P1–P2
+### Base de M5 — cuentas y persistencia
 
 Memoria y Supabase comparten carga/guardado de perfiles y mundo, versiones optimistas y reclamación/liberación
 de objetos únicos. El host carga una cuenta verificada antes de crear el personaje, evita sesiones simultáneas
@@ -167,7 +167,10 @@ La economía del mundo ya se carga antes de escuchar y se guarda cada 60 s y al 
 y solares. `WORLD_ID` (por defecto `marea-negra`) debe mantenerse estable y tener un solo proceso; `WORLD_SAVE_SECONDS`
 controla el intervalo en `npm start`. Un conflicto/fallo de guardado detiene ese host y devuelve health 503;
 memoria no conserva datos al terminar el proceso. [Resultado y límites D07d](docs/delivery/d07d-world.md).
-Google/Discord, recuperación de contraseña, leases y transferencias durables siguen pendientes. El Worker
+La base D09a añade `commitPearl`: perfiles, dueño del UID y recibo se confirman juntos; un reintento idéntico
+no repite el efecto. SQL 003 se entrega para Supabase, todavía sin aplicar ni conectar al juego.
+[Contrato y límites](docs/delivery/d09a-pearl-operations.md).
+Google/Discord, recuperación de contraseña, leases e integración de transferencias durables siguen pendientes. El Worker
 mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 
 ### Qué incluye M1

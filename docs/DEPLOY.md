@@ -148,6 +148,13 @@ formato o semilla incompatible impide arrancar sin sobrescribir. Error/conflicto
 y admisiones, devuelve `/health` 503 y el cierre informa fallo. Reiniciar solo después de resolver la causa.
 `/status.storage.world` expone readiness, generación y errores fijos. No hay nueva migración para P3.
 
+D09a añade `server/migrations/003_pearl_operations.sql`, para aplicar después de 001/002. Se revisó y probó
+localmente; todavía no está aplicada al proyecto real y ningún comando del juego usa esa RPC. Crea recibos
+idempotentes y protege los UIDs gestionados al guardar/importar perfiles; no adopta las perlas raras existentes.
+No requiere nuevas variables ni reiniciar el host para completar este corte de almacenamiento. Antes de conectar
+el juego, aplicar/verificar 003, cerrar backfill/reconciliación y probar concurrencia real de conexiones.
+[Resultado y límites D09a](delivery/d09a-pearl-operations.md).
+
 El mundo guarda un sobre `{v:1, seed, economy}`; la economía usa formato v2 con RNG. El formato previo v1
 sin RNG no se acepta silenciosamente como mundo persistente. El tiempo apagado no se simula. Mantenimiento
 solo cobra a perfiles conectados; guardados de perfil/mundo aún son independientes, sin atomicidad P6.

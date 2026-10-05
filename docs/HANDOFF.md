@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 local**: almacenamiento, cuentas/importación y economía; canarios Auth/DB reales, correo humano/publicación pendientes (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a local**: cuentas/economía y operación atómica de perlas; SQL 003/juego, correo humano/publicación pendientes (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1 local**: balsa amarrada visible/replicada, identidad/migración y fallback; P2 cubierta y editor pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -74,6 +74,25 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
+
+### M5 P4/P6 — base atómica de perlas D09a (2026-10-05)
+
+- Base `6402462`, versión `0.6.0-alpha.1` y protocolo 13 conservados. [Contrato y evidencia](delivery/d09a-pearl-operations.md).
+- `server/pearlOperations.mjs` + `store.commitPearl`: CAS de perfiles y UID, conservación de otras perlas,
+  perfil/ledger/recibo confirmados juntos. Repetir mismo UUID/payload devuelve el recibo sin repetir oro;
+  UUID reutilizado con otro contenido falla. `loadUnique` consulta dueño/generación. Solo servidor.
+- SQL 003 añade recibos RLS, locks ordenados por filas/UID y guardia de propiedad diferida. Perfil guardado o
+  importado no puede contradecir una perla registrada; los locks por UID cubren su primera creación.
+  Memoria conserva el contrato, sin durabilidad. Primitivas únicas P1 independientes no alteran `pearl:*`.
+- **003 pendiente de aplicar en Supabase**: [archivo](../server/migrations/003_pearl_operations.sql). No hay canal
+  SQL administrativo configurado; no se ejecutó ni se reinició el host. El juego aún no llama a esta operación.
+- **91/91 pruebas pertinentes**: 77 de cuentas/store/SQL/mundo/economía y 14 nuevas de perlas, incluyendo
+  respuesta perdida y rollback después de mutar un perfil. Host activo health 200 y cero errores. PGlite no
+  acredita conexiones independientes reales; SQL exige `READ COMMITTED`. Logs `shots/review/m5-pearl-*.log`.
+- Próximo corte: aplicar/verificar 003 y preparar cola/ack + reconciliación al entrar, con política explícita de
+  backfill/adopción/collisiones de raras existentes e invitados. Suelo/expiración durable, legendarias, regreso
+  por inactividad, cartel, leases y transacciones navales siguen abiertos. P4/P6 no se marcan terminados.
+- Trabajo ajeno de cubierta/navegación/host del PC preservado; pruebas y límites detallados en el informe.
 
 ### M5 P3 — mundo económico D07d (2026-10-05)
 
