@@ -1,0 +1,1789 @@
+{
+  "delivery": "A02 crate",
+  "date": "2026-10-04",
+  "preparationBase": "9a76925",
+  "gameBase": "626beb7",
+  "version": "0.4.8-rc.1",
+  "protocol": 12,
+  "decision": "Accept static island crate visual replacement locally; physical GPU/device performance and publication pending",
+  "sourceRoot": "C:/Unreal/survival project/SimpleMultiplayerSurvival/Content",
+  "sources": [
+    {
+      "Relative": "Dreamrise_SMSK\\Assets\\Meshes\\SM_StoragePart_03.uasset",
+      "Bytes": 24248,
+      "Sha256": "BD7CE7B0CDDCA5C2F3E7472C79605ABB1CF7B1EB3E25C6D8411DB0739976B966",
+      "ModifiedUtc": "2026-06-30T00:32:55.0320325Z"
+    },
+    {
+      "Relative": "Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+      "Bytes": 8027,
+      "Sha256": "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189",
+      "ModifiedUtc": "2026-06-30T00:32:55.0248820Z"
+    },
+    {
+      "Relative": "Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+      "Bytes": 16009,
+      "Sha256": "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F",
+      "ModifiedUtc": "2026-06-30T00:32:55.0300295Z"
+    },
+    {
+      "Relative": "Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+      "Bytes": 25415,
+      "Sha256": "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D",
+      "ModifiedUtc": "2026-06-30T00:32:55.0038201Z"
+    }
+  ],
+  "sourceBytes": 73699,
+  "sourceHashesMatchPinnedLauncher": true,
+  "sourceProjectOpened": false,
+  "sourcePackagesSaved": false,
+  "sourceScriptsOrPluginsExecuted": false,
+  "unreal": {
+    "executable": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe",
+    "fileVersion": "++UE5+Release-5.8-CL-55116800",
+    "gltfExporterVersion": "1.3.1",
+    "stage": "C:/DEV/real of trade/asset-staging/a02-export/project",
+    "exitCode": 0,
+    "resolvedRhi": "D3D12 / PCD3D_SM5",
+    "logSpanSeconds": 1712.053,
+    "cache": "A02Local=(EnginePak,Local); writable filesystem DDC and ShaderWorkingDir inside isolated staging",
+    "launch": "Full canonical .uproject path; forward-slash Python path; -run=pythonscript -unattended -AllowCommandletRendering -ShaderWorkingDir=<local short path> -DDC=A02Local -NoSplash -NoSound -NoLiveCoding -nop4 -stdout -FullStdOutLogOutput",
+    "report": {
+      "dependencies": {
+        "dependencyGraph": {
+          "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal": [
+            "/Game/Dreamrise_SMSK/Assets/Materials/M_Base",
+            "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+          ],
+          "/Game/Dreamrise_SMSK/Assets/Materials/M_Base": [
+            "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+          ],
+          "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03": [
+            "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal",
+            "/Script/NavigationSystem"
+          ],
+          "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette": [
+            "/Script/InterchangeEngine"
+          ]
+        },
+        "gameAssetCount": 4,
+        "gameAssets": [
+          {
+            "class": "MaterialInstanceConstant",
+            "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+            "package": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal"
+          },
+          {
+            "class": "Material",
+            "objectPath": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base.M_Base",
+            "package": "/Game/Dreamrise_SMSK/Assets/Materials/M_Base"
+          },
+          {
+            "class": "StaticMesh",
+            "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03.SM_StoragePart_03",
+            "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03"
+          },
+          {
+            "class": "Texture2D",
+            "objectPath": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette.T_ColorPalette",
+            "package": "/Game/Dreamrise_SMSK/Assets/Textures/T_ColorPalette"
+          }
+        ],
+        "missingGameReferences": [],
+        "nonGameDependencies": [
+          "/Script/InterchangeEngine",
+          "/Script/NavigationSystem"
+        ],
+        "rootPackage": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03"
+      },
+      "engine": "UE 5.8 project commandlet",
+      "exportErrors": [],
+      "exportOptions": {
+        "bakeMaterialInputs": "simple",
+        "bakeMode": "simple",
+        "bakeSize": {
+          "autoDetect": false,
+          "x": 512,
+          "y": 512
+        },
+        "defaultLod": 0,
+        "globalMaximumTextureDimension": "unsupported by installed GLTFExportOptions API",
+        "sourceModel": false,
+        "textureImageFormat": "PNG",
+        "uniformScale": 0.01,
+        "vertexColors": true
+      },
+      "glbBytes": 51684,
+      "mesh": {
+        "asset": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03.SM_StoragePart_03",
+        "bounds": {
+          "dimensionsAtExportScaleMeters": {
+            "x": 0.8292401504516602,
+            "y": 1.243119583129883,
+            "z": 0.7454809260368347
+          },
+          "dimensionsCm": {
+            "x": 82.92401504516602,
+            "y": 124.31195831298828,
+            "z": 74.54809260368347
+          },
+          "extentCm": {
+            "x": 41.46200752258301,
+            "y": 62.15597915649414,
+            "z": 37.274046301841736
+          },
+          "originCm": {
+            "x": -0.1640148162841797,
+            "y": -0.000003814697265625,
+            "z": 36.695314049720764
+          }
+        },
+        "class": "StaticMesh",
+        "lod0": {
+          "sectionCount": 1
+        },
+        "materials": [
+          {
+            "index": 0,
+            "material": "/Game/Dreamrise_SMSK/Assets/Materials/MI_Base_Normal.MI_Base_Normal",
+            "slot": "MI_Base_Normal"
+          }
+        ],
+        "package": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03",
+        "sourceScale": "Unreal centimeters"
+      },
+      "objectPath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03.SM_StoragePart_03",
+      "outputGlb": "C:\\DEV\\real of trade\\asset-staging\\a02-export\\project\\out-material\\SM_StoragePart_03.glb",
+      "packagePath": "/Game/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03",
+      "projectFile": "C:\\DEV\\real of trade\\asset-staging\\a02-export\\project\\A02Export.uproject",
+      "status": "exported"
+    },
+    "stdout": "C:/DEV/real of trade/asset-staging/a02-export/project/Saved/Logs/stdout-material-localshader.log",
+    "warnings": [
+      "Disabled ACL skeletal compression defaults (not used by this static mesh)",
+      "AssetRegistry get_asset_by_object_path deprecated",
+      "Unreal attempted to read the not-yet-created GLB before successful write",
+      "Sandbox root certificate store unavailable"
+    ],
+    "summary": "0 errors, 7 warnings",
+    "geometryOnlyRejected": {
+      "bytes": 28740,
+      "sha256": "6adfff74b67c7ae0d976a8f9eee7b5d306f3863ac824acdc4baac86f3f40c645",
+      "reason": "No valid material resource under NullRHI: white material, no image"
+    },
+    "startupCorrections": [
+      "Use forward slashes for Python commandlet script path to avoid Python escape handling",
+      "Keep original .uproject extension and canonical content paths; stage outside dot directories",
+      "Use explicit writable local DDC and ShaderWorkingDir"
+    ],
+    "reproduction": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/stage-a02-crate.ps1 -StageRoot <fresh workspace child outside dot directories> -Export -RenderMaterials",
+    "reproductionLimit": "Launcher preparation-only was executed; the successful rendered export used the equivalent manual launch. Final metadata-only additions were syntax checked."
+  },
+  "derived": {
+    "runtimePath": "assets/models/prop-storage-crate.glb",
+    "summary": {
+      "file": "C:/DEV/real of trade/asset-staging/a02-export/project/out-material/SM_StoragePart_03.glb",
+      "bytes": 51684,
+      "sha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273",
+      "generator": "Unreal Engine 5.8.0",
+      "meshes": 1,
+      "materials": [
+        "MI_Base_Normal"
+      ],
+      "tris": 204,
+      "verts": 408,
+      "min": [
+        -0.416260213,
+        -0.0057873223,
+        -0.621559799
+      ],
+      "max": [
+        0.412979931,
+        0.739693582,
+        0.621559739
+      ],
+      "skins": [],
+      "images": [
+        {
+          "name": "T_ColorPalette",
+          "mimeType": "image/png",
+          "bufferView": 7,
+          "bytes": 22526,
+          "width": 1024,
+          "height": 1024,
+          "colorType": 6,
+          "sha256": "9e53ec6c95a471436220a7b91a76e57eade4402b18b507d0fbfbdffead045b20",
+          "decodedRgbaWithMipBytes": 5592406,
+          "preview": "shots/a02-metadata/image-0.png"
+        }
+      ],
+      "animations": [],
+      "extensions": [
+        "KHR_materials_specular"
+      ],
+      "binBytes": 49864,
+      "materialDefinitions": [
+        {
+          "name": "MI_Base_Normal",
+          "pbrMetallicRoughness": {
+            "baseColorTexture": {
+              "index": 0
+            },
+            "metallicFactor": 0
+          },
+          "extensions": {
+            "KHR_materials_specular": {
+              "specularFactor": 0
+            }
+          }
+        }
+      ],
+      "samplers": [
+        {
+          "minFilter": 9987,
+          "magFilter": 9729
+        }
+      ],
+      "textureDefinitions": [
+        {
+          "name": "T_ColorPalette",
+          "sampler": 0,
+          "source": 0
+        }
+      ]
+    },
+    "decodedRgbaBytes": 4194304,
+    "mipRgbaBytesEstimate": 5592404,
+    "textureCostBasis": "One 1024x1024 RGBA8 palette; exact full 2D mip chain estimate. Runtime GPU allocation not directly measured. 512 bake option is not a global texture cap; this supported texture exported directly.",
+    "runtimeBytesMatchExport": true
+  },
+  "runtime": {
+    "consumer": "existing createProps/propId(crate)/instanced; map static crates only",
+    "simOrColliderChange": false,
+    "floatersChanged": false,
+    "storageGameplayAdded": false,
+    "realGpuPerformanceVerified": false,
+    "frameTimeMeasured": false,
+    "physicalPhoneOrControllerVerified": false,
+    "capturesFrozen": true,
+    "loadDurationMeasured": false,
+    "tests": {
+      "importDry": true,
+      "manifestCheck": "1 asset OK",
+      "assetsTests": "8/8"
+    },
+    "uiOnlyQa": "Tutorial prompts hidden for comparison; runtime UI unchanged",
+    "costNotes": "A/B renderer.info uses one frozen full-scene render; high delta +4 calls/+4848 triangles, low delta +2/+2424. Registry has 204 triangles and one part shared by 7 instances. QA rebuild memory figures are descriptive, not isolated asset deltas.",
+    "cases": [
+      {
+        "case": "success",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "ok",
+          "error": "",
+          "errors": [],
+          "model": {
+            "tris": 204,
+            "parts": 1
+          }
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": {
+              "min": [
+                -0.4162602126598358,
+                -0.005787322297692299,
+                -0.6215597987174988
+              ],
+              "max": [
+                0.41297993063926697,
+                0.7396935820579529,
+                0.621559739112854
+              ]
+            },
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            }
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "high",
+        "tod": "day",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "phone": false
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 111,
+            "textures": 51,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.583500000000004,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 855862,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/high-day-clean/01-procedural.png",
+            "sha256": "3fe1293d4c77ba4343638c81a51fef399890f8ad7772979bb3ef315b672aa43d"
+          },
+          {
+            "variant": "imported",
+            "assetMapped": true,
+            "crateInstances": 7,
+            "renderedPropChildren": 1,
+            "importedParts": [
+              {
+                "name": "MI_Base_Normal",
+                "instanced": true,
+                "count": 7
+              }
+            ],
+            "selectedCrateBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            },
+            "drawcalls": 142,
+            "triangles": 316680,
+            "points": 1800,
+            "geometries": 122,
+            "textures": 52,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.583500000000004,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 861036,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/high-day-clean/02-storage-crate.png",
+            "sha256": "9885fd1b144df8d69b96eb33033a29fd12e0fd0747087774bfb7802cfb2ae78b"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/high-day-clean/evidence.json",
+        "frozenPairPixelIdentical": false
+      },
+      {
+        "case": "success",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "ok",
+          "error": "",
+          "errors": [],
+          "model": {
+            "tris": 204,
+            "parts": 1
+          }
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": {
+              "min": [
+                -0.4162602126598358,
+                -0.005787322297692299,
+                -0.6215597987174988
+              ],
+              "max": [
+                0.41297993063926697,
+                0.7396935820579529,
+                0.621559739112854
+              ]
+            },
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            }
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "high",
+        "tod": "night",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "phone": false
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 139,
+            "triangles": 320688,
+            "points": 1800,
+            "geometries": 114,
+            "textures": 51,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.5794999999999995,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 698510,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/high-night/01-procedural.png",
+            "sha256": "b364cd750ebea3f955128de944da9b134e2b8f495f35954ba99ca6be2e0dad1a"
+          },
+          {
+            "variant": "imported",
+            "assetMapped": true,
+            "crateInstances": 7,
+            "renderedPropChildren": 1,
+            "importedParts": [
+              {
+                "name": "MI_Base_Normal",
+                "instanced": true,
+                "count": 7
+              }
+            ],
+            "selectedCrateBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            },
+            "drawcalls": 143,
+            "triangles": 325536,
+            "points": 1800,
+            "geometries": 126,
+            "textures": 52,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.5794999999999995,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 706717,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/high-night/02-storage-crate.png",
+            "sha256": "26b8ae26d6954cfd0c0d8c7e682cb097e2d524986814e786ba84a6057240db98"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/high-night/evidence.json",
+        "frozenPairPixelIdentical": false
+      },
+      {
+        "case": "success",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "ok",
+          "error": "",
+          "errors": [],
+          "model": {
+            "tris": 204,
+            "parts": 1
+          }
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": {
+              "min": [
+                -0.4162602126598358,
+                -0.005787322297692299,
+                -0.6215597987174988
+              ],
+              "max": [
+                0.41297993063926697,
+                0.7396935820579529,
+                0.621559739112854
+              ]
+            },
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            }
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "low",
+        "tod": "day",
+        "viewport": {
+          "width": 844,
+          "height": 390,
+          "dpr": 1,
+          "phone": true
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 70,
+            "triangles": 162544,
+            "points": 1800,
+            "geometries": 107,
+            "textures": 43,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 6.154299999999997,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 218397,
+            "pngSize": {
+              "width": 844,
+              "height": 390
+            },
+            "path": "shots/asset-a02/low-phone-day/01-procedural.png",
+            "sha256": "0d972b84d4bd67240782f94fc8d2e27e51491d561951543cf61da81215a8fbb6"
+          },
+          {
+            "variant": "imported",
+            "assetMapped": true,
+            "crateInstances": 7,
+            "renderedPropChildren": 1,
+            "importedParts": [
+              {
+                "name": "MI_Base_Normal",
+                "instanced": true,
+                "count": 7
+              }
+            ],
+            "selectedCrateBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            },
+            "drawcalls": 72,
+            "triangles": 164968,
+            "points": 1800,
+            "geometries": 118,
+            "textures": 44,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 6.154299999999997,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 221148,
+            "pngSize": {
+              "width": 844,
+              "height": 390
+            },
+            "path": "shots/asset-a02/low-phone-day/02-storage-crate.png",
+            "sha256": "0edcf3e90f8752eed12362bbcf296154103c8c273bb9b712f2df9bbba5f503d7"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/low-phone-day/evidence.json",
+        "frozenPairPixelIdentical": false
+      },
+      {
+        "case": "success",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "ok",
+          "error": "",
+          "errors": [],
+          "model": {
+            "tris": 204,
+            "parts": 1
+          }
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": {
+              "min": [
+                -0.4162602126598358,
+                -0.005787322297692299,
+                -0.6215597987174988
+              ],
+              "max": [
+                0.41297993063926697,
+                0.7396935820579529,
+                0.621559739112854
+              ]
+            },
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            }
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "low",
+        "tod": "night",
+        "viewport": {
+          "width": 844,
+          "height": 390,
+          "dpr": 1,
+          "phone": true
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 71,
+            "triangles": 166900,
+            "points": 1800,
+            "geometries": 110,
+            "textures": 43,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 6.458700000000002,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 182310,
+            "pngSize": {
+              "width": 844,
+              "height": 390
+            },
+            "path": "shots/asset-a02/low-phone-night/01-procedural.png",
+            "sha256": "da3b506fc3cfebe12a279450ad5ebd4951dff205e9f161442c914d6a5829f058"
+          },
+          {
+            "variant": "imported",
+            "assetMapped": true,
+            "crateInstances": 7,
+            "renderedPropChildren": 1,
+            "importedParts": [
+              {
+                "name": "MI_Base_Normal",
+                "instanced": true,
+                "count": 7
+              }
+            ],
+            "selectedCrateBounds": {
+              "min": [
+                64.71376780829085,
+                2.401368713781747,
+                81.07895232621746
+              ],
+              "max": [
+                66.1009831181263,
+                3.104799917634871,
+                82.26271963272396
+              ],
+              "size": [
+                1.3872153098354403,
+                0.7034312038531239,
+                1.1837673065064962
+              ]
+            },
+            "drawcalls": 73,
+            "triangles": 169324,
+            "points": 1800,
+            "geometries": 122,
+            "textures": 44,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 6.458700000000002,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 184812,
+            "pngSize": {
+              "width": 844,
+              "height": 390
+            },
+            "path": "shots/asset-a02/low-phone-night/02-storage-crate.png",
+            "sha256": "40e1dfabfd39da7bec9014345ed5ec8dce044059ffeb0ddd064c9f07bc82f7ec"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/low-phone-night/evidence.json",
+        "frozenPairPixelIdentical": false
+      },
+      {
+        "case": "disabled",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "disabled",
+          "error": "",
+          "errors": [],
+          "model": null
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": null,
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": null
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "high",
+        "tod": "day",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "phone": false
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 110,
+            "textures": 50,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.567,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 854244,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/disabled/01-procedural.png",
+            "sha256": "6c393b69d90156dfcd19d36178d1cb1e0f502f3ce44a9e4c352305abb2448d5f"
+          },
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 121,
+            "textures": 51,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.567,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 854244,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/disabled/02-storage-crate.png",
+            "sha256": "6c393b69d90156dfcd19d36178d1cb1e0f502f3ce44a9e4c352305abb2448d5f"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/disabled/evidence.json",
+        "frozenPairPixelIdentical": true
+      },
+      {
+        "case": "missing",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "error",
+          "error": "prop:storage-crate: fetch for \"http://127.0.0.1:54313/assets/models/prop-storage-crate.glb\" responded with 404: Not Found",
+          "errors": [
+            "prop:storage-crate: fetch for \"http://127.0.0.1:54313/assets/models/prop-storage-crate.glb\" responded with 404: Not Found"
+          ],
+          "model": null
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": null,
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": null
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "high",
+        "tod": "day",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "phone": false
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 110,
+            "textures": 50,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.612799999999999,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 854361,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/missing/01-procedural.png",
+            "sha256": "9c4a5cd00338a17359e4d63259e11c5863e5da587a26cdb8f6806e9139ba6753"
+          },
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 121,
+            "textures": 51,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.612799999999999,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 854361,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/missing/02-storage-crate.png",
+            "sha256": "9c4a5cd00338a17359e4d63259e11c5863e5da587a26cdb8f6806e9139ba6753"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED",
+          "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        ],
+        "evidencePath": "shots/asset-a02/missing/evidence.json",
+        "frozenPairPixelIdentical": true
+      },
+      {
+        "case": "bad",
+        "candidateId": "prop:storage-crate",
+        "candidateSrc": "/assets/models/prop-storage-crate.glb",
+        "asset": {
+          "state": "error",
+          "error": "prop:storage-crate: Unexpected token 'o', \"not-a-glb\" is not valid JSON",
+          "errors": [
+            "prop:storage-crate: Unexpected token 'o', \"not-a-glb\" is not valid JSON"
+          ],
+          "model": null
+        },
+        "scene": {
+          "authoredQaPlacement": false,
+          "originalMapPropsUnchanged": true,
+          "originalMapPropsCount": 1259,
+          "crateCount": 7,
+          "selectedCrate": {
+            "kind": "crate",
+            "x": 65.40737725975566,
+            "z": 81.67083322704624,
+            "y": 2.4013686782895722,
+            "rot": 4.304241589099006,
+            "scale": 1,
+            "r": 0.6,
+            "v": 0.8054795863572508,
+            "h": 0
+          },
+          "fit": {
+            "fit": "proc",
+            "sourceBounds": null,
+            "proceduralTargetBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "importedFittedBounds": null
+          },
+          "fitBasis": "World-space visual bounding boxes compared with the procedural render target; this is not an independent gameplay collider test.",
+          "fullWorldContext": "Full scene retained; createProps rebuilt with only crate registry mapping toggled. QA reconstruction allocates procedural geometries/materials; renderer memory counts are descriptive and not isolated asset deltas."
+        },
+        "qaHiddenUi": "Tutorial prompts (.prompt) hidden only for the visual comparison.",
+        "quality": "high",
+        "tod": "day",
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "phone": false
+        },
+        "browser": {
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+          "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+          "swiftshader": true
+        },
+        "captures": [
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 110,
+            "textures": 50,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.5295999999999985,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "01-procedural.png",
+            "pngBytes": 854326,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/bad/01-procedural.png",
+            "sha256": "e5522d723573779d234e90ac55d0f1d9fdce6c827a48af224cb08079d9801ed9"
+          },
+          {
+            "variant": "procedural-fallback",
+            "assetMapped": false,
+            "crateInstances": 7,
+            "renderedPropChildren": 8,
+            "importedParts": [],
+            "selectedCrateBounds": {
+              "min": [
+                64.77310180664062,
+                2.4013686180114746,
+                81.03655242919922
+              ],
+              "max": [
+                66.04165649414062,
+                3.4013686180114746,
+                82.30511474609375
+              ],
+              "size": [
+                1.2685546875,
+                1,
+                1.2685623168945312
+              ]
+            },
+            "drawcalls": 138,
+            "triangles": 311832,
+            "points": 1800,
+            "geometries": 121,
+            "textures": 51,
+            "camera": {
+              "p": [
+                68.71940478454637,
+                8.953382456631331,
+                84.98286075183695
+              ],
+              "q": [
+                -0.37577565966008014,
+                0.3495987113522072,
+                0.15565137464090156,
+                0.8440059503346558
+              ],
+              "target": [
+                65.40737725975566,
+                2.9513686782895725,
+                81.67083322704624
+              ],
+              "dist": 7
+            },
+            "worldTime": 5.5295999999999985,
+            "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+            "originalMapPropsUnchanged": true,
+            "png": "02-storage-crate.png",
+            "pngBytes": 854326,
+            "pngSize": {
+              "width": 1280,
+              "height": 720
+            },
+            "path": "shots/asset-a02/bad/02-storage-crate.png",
+            "sha256": "e5522d723573779d234e90ac55d0f1d9fdce6c827a48af224cb08079d9801ed9"
+          }
+        ],
+        "pageErrors": [],
+        "gameErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: net::ERR_FAILED"
+        ],
+        "evidencePath": "shots/asset-a02/bad/evidence.json",
+        "frozenPairPixelIdentical": true
+      }
+    ],
+    "lightingControl": "URL ?tod=day|night overrides render lighting only; HUD/gameplay authoritative hour is not changed or tested here."
+  },
+  "acceptance": {
+    "reviewer": "principal",
+    "allFourSuccessPairsAndThreeFallbackPairsInspected": true,
+    "sourcePaletteImageInspected": true,
+    "reason": "Open interior and separate wooden planks replace the low-detail cube, including low mobile; compatible with existing toon/shadows. Footprint stays near the procedural target and existing 15-percent fitting allowance; visual height is lower (~0.703 versus 1). Night remains dark like surrounding props.",
+    "limits": "Visual bounding boxes are not an independent gameplay collider test. No storage, ownership, cargo safety, blueprint behavior, publishing or deployment claims."
+  },
+  "next": "D04 P1: authoritative player raft at dock, snapshot and procedural renderer; then P2 walkable deck. Repair bench export remains pending."
+}

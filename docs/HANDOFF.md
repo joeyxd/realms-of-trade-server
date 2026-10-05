@@ -19,7 +19,7 @@ Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primer
 - **Perfil** (lo que se guarda, firmado en el navegador): `newProfile` / `sanitizeProfile` en
   `src/sim/systems/inventory.js`. Todo campo nuevo necesita su valor por defecto y su saneado.
 - `PROTOCOL_VERSION` (`src/net/protocol.js`) sube cuando cambia lo que se manda en el snapshot o en `you`.
-- **Procedural + assets**: todo se dibuja por código; cualquier pieza se puede cambiar por un `.glb`
+- **Procedural + assets**: base procedural con fallback; cajas estáticas ya usan un modelo Dreamrise. Las piezas compatibles se pueden cambiar por un `.glb`
   (`docs/ASSETS.md`).
 
 ## 2. Mapa del repo
@@ -86,6 +86,22 @@ autor.
 - Próximo cierre P5: GPU/teléfono/mando físicos y audición del conjunto, después republicar cliente y servidor
   compatibles. El artefacto local se construye desde el commit; no es despliegue. D04 sigue en la cola de entrega;
   M5, afinidad y decisiones navales mantienen su alcance pendiente.
+
+### A02 — primera caja Dreamrise (2026-10-04)
+
+- Aceptación visual local sobre `626beb7` (rc.1/protocolo 12): modelo para los `crate` estáticos mediante el
+  consumidor existente. [Informe A02](delivery/a02-crate.md) y JSON con hashes, exportación, capturas y coste.
+- Copia de cuatro paquetes, 73.699 B, exportada en proyecto mínimo aislado con UE 5.8/glTF Exporter 1.3.1;
+  fuente `C:\Unreal` sin abrir ni guardar. GLB 51.684 B/204 triángulos/una parte, paleta 1024² (~5,33 MiB mipmaps).
+- 8/8 tests de assets y `--check` pasaron. Siete pares A/B inspeccionados día/noche/high/low móvil,
+  `?noassets`, 404 y archivo roto: fallback intacto, 0 errores de página/juego. Chrome SwiftShader congelado,
+  sin acreditar FPS/GPU o dispositivos físicos. No hay nuevos sistemas de bodega ni cambios de colisión.
+- Tooling: `stage-a02-crate.ps1` (copia/launcher), `export-a02-crate.py`, `look-prop-canary.mjs`; staging real
+  fuera de `.claude` para rutas Unreal. Caché fría SM5 tardó ~28,5 min; registrar RHI explícito en futuras pruebas.
+- Próximo corte: [D04 P1 balsa del jugador amarrada, snapshot y renderer; después P2 cubierta](delivery/d04-raft-readiness.md).
+  Confirmar base/dueños al empezar; creación/migración única y clave estable antes de editar. Banco sin exportar.
+- GPU/teléfono/mando físicos, rendimiento y publicación siguen pendientes. Fuente/caches/proyectos no van al
+  bundle; solo manifiesto y GLB final. Continuar PR #1; un commit local no actualiza servidor ni artefacto público.
 
 ### Checkpoint previo Tinta (`0.4.8-alpha.4`)
 

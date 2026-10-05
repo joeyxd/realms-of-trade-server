@@ -1,6 +1,6 @@
 # A02 — preparación de la primera caja
 
-Fecha: 2026-10-04. Estado: fuente y herramientas localizadas; **sin exportación ni integración**. Investigación Luna, verificación del principal.
+Fecha: 2026-10-04. Estado histórico al preparar: fuente y herramientas localizadas, sin exportación ni integración. Resultado posterior: [A02 exportada e integrada localmente](a02-crate.md). Investigación Luna, verificación del principal.
 Fuente solo lectura: `C:\Unreal\survival project\SimpleMultiplayerSurvival\Content\Dreamrise_SMSK\Assets\Meshes\SM_StoragePart_03.uasset`, 24.248 bytes.
 SHA-256: `BD7CE7B0CDDCA5C2F3E7472C79605ABB1CF7B1EB3E25C6D8411DB0739976B966`.
 `SimpleMultiplayerSurvival.uproject` declara EngineAssociation `5.8`. No se abrió el proyecto fuente ni se ejecutaron sus scripts/plugins.

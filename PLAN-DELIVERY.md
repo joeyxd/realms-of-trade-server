@@ -22,8 +22,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - Checkpoint posterior D03: kit integrado y pulido, `0.4.8-rc.1`, protocolo 12. Regresión 278/278, balance
   reproducible sin cambiar cifras y paletas revisadas en escritorio/móvil emulado. Es un candidato: GPU,
   teléfono/mando físicos, audición en juego y publicación pendientes. [Informe D03](docs/delivery/d03-pearlkit.md).
-- Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; **ningún candidato importado**
-  al crear este plan. `assets/manifest.json` está vacío. No reiniciar la investigación desde cero.
+- Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
+  siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
+  [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
+- Inventario Unreal terminado: tres proyectos, 7.406 archivos contando copias; ningún candidato importado
+  al crear este plan. Ahora el manifiesto contiene A02. No reiniciar la investigación desde cero.
 - [HANDOFF](docs/HANDOFF.md): checkpoint real, pruebas y siguiente tarea. [DESIGN](DESIGN.md): diseño general.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
@@ -87,7 +90,7 @@ exportación Unreal. Una miniatura, un `--dry` exitoso o un manifiesto correcto 
 |---|---|---|
 | A00 | Inventario existente | Completado; conservar rutas y confianza, sin deduplicar/borrar fuentes |
 | A01 | `Noise00.png` (sA, Survival), ruido de un VFX actual | Aplazado para humo de fogatas: comparación día/noche high y low móvil sin mejora clara frente a procedural por 287 KB/~5,33 MiB. [Resultado](docs/delivery/a01-noise00.md); experimento aislado, sin entrada en manifiesto principal. [Brief](docs/briefs/assets-a01-texture-canary.md) |
-| A02 | `SM_StoragePart_03` y `SM_RepairBench` (Dreamrise) | [Fuente y UE 5.8/glTF Exporter localizados](docs/delivery/a02-crate-readiness.md); exportación en copia aislada pendiente. Una caja primero por `prop:storage-crate`/`crate`; banco requiere hook propio |
+| A02 | `SM_StoragePart_03` y `SM_RepairBench` (Dreamrise) | Caja exportada y aceptada localmente por `prop:storage-crate`/`crate`: [resultado](docs/delivery/a02-crate.md), 51,7 KB/204 tri, siete pares visuales/fallback. GPU/dispositivos/publicación pendientes; banco sin exportar, requiere hook propio |
 | A03 | SlashTrailElemental/SwordTrail/ArrowTrail | Un efecto y un recurso por prueba; Niagara se recrea, no se ejecuta en Three.js |
 | A04 | `SW_Water_Slash_01` u otro sonido corto seleccionado | Audición/exportación pendientes; nuevo puente de audio y publicación. Conservar SFX sintetizado |
 | A05 | Piezas para construcción/tierra/naval | No identificado kit completo en C:\Unreal; geometría procedural primero, probar medidas/pivotes/uniones al traer uno |

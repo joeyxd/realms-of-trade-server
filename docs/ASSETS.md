@@ -1,6 +1,7 @@
 # Modelos y texturas externos (Meshy, Sketchfab, Blender…)
 
-El juego dibuja todo de forma procedural. Cualquier pieza puede cambiarse por un **modelo real** (`.glb`) sin
+El juego parte de geometría procedural; las cajas estáticas ya usan un [primer modelo FAB](delivery/a02-crate.md)
+con fallback. Cualquier pieza compatible puede cambiarse por un **modelo real** (`.glb`) sin
 tocar código: se copia a `assets/`, se escribe su línea en `assets/manifest.json` y el juego la usa al cargar.
 Si falta, está rota o tarda demasiado, esa pieza sigue procedural; el motivo aparece en la consola y en
 `__mn.assets.errors`.
