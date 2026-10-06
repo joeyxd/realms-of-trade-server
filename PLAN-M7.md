@@ -60,7 +60,7 @@ legalidad por zona y pérdidas finales siguen por decidir. La UI inicial P1–P6
   nombre, stock, precios, tendencia y contrabando; selector 1/5/10/máx y **total/medio cotizados por servidor**.
   Oro y espacio de mochila, errores en español y confirmación al precio vigente. La UI espera acuse+perfil,
   conserva pendiente al cerrar y reintenta con el mismo ID sin repetir cobro dentro de los recibos de sesión.
-  Regresión 453/453 del checkout compartido, 8 pruebas nuevas y 45 capturas PC/móvil horizontal/vertical.
+  Regresión 493/493 sobre commit `bcd0886`, 8 pruebas nuevas y 45 capturas PC/móvil horizontal/vertical.
   P1/P2 aceptados localmente en software; animación de monedas adicional y publicación pendientes.
 - [ ] **P3 Iconos de mercancías.** Procedurales (canvas, como los de objetos en `itemui.js`), o `tex:good-<id>` en
   el manifiesto de assets si el autor los trae.

@@ -142,7 +142,7 @@ las cajas comparten capacidad por peso. **G** sigue siendo la perla y **B** cons
 
 El servidor valida recursos, ubicación, calma y capacidad antes de cambiar bienes. El panel conserva una
 petición pendiente al cerrar y permite reintentar con el mismo identificador dentro de los recibos de sesión.
-Guardado/reentrada y controles PC/móvil emulado comprobados; **453/453** en checkout compartido y 45 capturas.
+Guardado/reentrada y controles PC/móvil emulado comprobados; **493/493** sobre commit `bcd0886` y 45 capturas.
 [Resultado, evidencia y límites](docs/delivery/d06a-cargo-market.md). Producción es el siguiente corte D06b;
 velocidad mostrada todavía teórica, sin zarpar ni reservas seguras de puerto. No se publicó ni reinició el host:
 cliente y servidor deben actualizarse juntos a **protocolo 15** para este corte.

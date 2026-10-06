@@ -63,7 +63,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 
 ### D06a — bodega y mercados caminables (2026-10-05)
 
-- Base D05 `991db89`, integrada sobre M5 `c6bc368`; **`0.6.0-alpha.3`, protocolo 15**.
+- Base D05 `991db89`, integrada sobre M5 `cfb494b`; fuente aceptada `bcd0886`; **`0.6.0-alpha.3`, protocolo 15**.
   [Informe](delivery/d06a-cargo-market.md), [evidencia durable](delivery/d06a-evidence.json).
 - Don Bacalao en Aldea y La Tuerta en Cala: hablar → Comerciar mercancías → lista/cotización/compra/venta.
   Total y stock reales del servidor, oro/mochila visibles. H/botón Bodega junto a balsa propia amarrada
@@ -71,7 +71,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 - Propiedad, ubicación, vida/calma, revisión, stock/oro/capacidad y save candidato se validan antes de mutar.
   Acuse privado + perfil confirmado; cierre/reapertura conserva pendiente. Recibos exitosos acotados de sesión
   permiten reenvío exacto sin otro cobro. No son transacción durable mercado/perfil ni reserva de puerto D09.
-- **8 pruebas nuevas**, **453/453** en checkout compartido (incluye M5 ajeno en curso, sin aceptarlo aquí);
+- **8 pruebas nuevas**, **493/493** sobre árbol commiteado `bcd0886` aislado;
   **45 capturas inspeccionadas** PC/táctil horizontal/vertical. Compras/venta/transferencias por controles,
   bodega llena bloqueada, save/reentrada exactos y primera respuesta de compra perdida/reintentada en PC.
   Atlas realmente cargado 1024 escritorio/512 móvil; sin textura/modelo nuevo ni errores JS de juego.

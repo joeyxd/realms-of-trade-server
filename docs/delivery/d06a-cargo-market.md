@@ -1,6 +1,7 @@
 # D06a — bodega y mercados caminables
 
-Fecha: 2026-10-05. Base de integración `018a177`; D05 `991db89`.
+Fecha: 2026-10-05. Base de trabajo `018a177`; D05 `991db89`.
+Integración final sobre M5 `cfb494b`; código aceptado `bcd0886`.
 Versión `0.6.0-alpha.3`, protocolo 15. Estado: aceptado localmente en software.
 [Brief](../briefs/d06a-cargo-market.md). D06b producción sigue separado.
 
@@ -48,7 +49,10 @@ viento, zarpar, daño naval, pérdida de mochila al morir, hamaca ni luces de vi
 
 - **8/8 pruebas nuevas** de comercio: entradas estrictas, cotización compartida, recibos/reintentos,
   conservación, peso, propiedad/ubicación/calma/revisión, privacidad, guardado firmado y reentrada.
-- Regresión completa del checkout compartido: **453/453**, concurrencia 2 y timeout de 60 s por archivo.
+- Regresión final del árbol commiteado `bcd0886` en copia aislada: **493/493**, 60 archivos, sin fallos ni skips,
+  96,15 s; dependencias locales compartidas por junction y red de tests temporal.
+  Registro `.scratch/d06a-regression-pinned.log`, SHA-256 en evidencia.
+- Regresión anterior del checkout compartido: **453/453**, concurrencia 2 y timeout de 60 s por archivo.
   Incluye pruebas M5 ajenas en curso al ejecutar; no equivale a aceptar ni incorporar esa misión.
   Registro `.scratch/d06a-regression-final.log`, SHA-256 y resultado en el [registro durable](d06a-evidence.json).
 - Tres recorridos reales en Worker local: escritorio 1280×720, táctil 844×390 y teléfono vertical 390×844
@@ -67,6 +71,8 @@ viento, zarpar, daño naval, pérdida de mochila al morir, hamaca ni luces de vi
 - Textura cargada realmente: atlas 1024² escritorio, solo variante 512² móvil. Este corte no añade arte ni
   descargas. Navegador/GPU en software y móvil emulado no acreditan FPS o sensación en dispositivo físico.
 
-Build local desde árbol commiteado y verificación de hashes se registran junto al commit en la evidencia.
+Build local **`dist/0.6.0-alpha.3-bcd0886831b1`**, desde fuente `bcd0886`: 142 archivos, 2.106.643 B.
+Verificados independientemente los SHA-256/bytes de todos los archivos, módulos nuevos iguales al commit y
+CSS de comercio embebido. Manifiesto `release.json` y hash en evidencia; docs posteriores no cambian runtime.
 No se reinicia host ni se publica desde este corte. Cliente y servidor deben actualizarse juntos a protocolo 15
 cuando se autorice actualizar el host.

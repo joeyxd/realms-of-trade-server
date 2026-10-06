@@ -4,7 +4,7 @@
   "status": "accepted-local-software",
   "version": "0.6.0-alpha.3",
   "protocol": 15,
-  "integrationBase": "c6bc368",
+  "integrationBase": "cfb494b90c01a114b64b4eadacf8c84109e370db",
   "previousRaftEditor": "991db89",
   "sourceHashes": [
     {
@@ -146,6 +146,22 @@
       },
       "includesConcurrentM5Work": true,
       "doesNotAcceptOtherMission": true
+    },
+    "committedRegression": {
+      "sourceSha": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+      "isolatedCommittedTree": true,
+      "sharedNodeModulesJunction": true,
+      "testFiles": 60,
+      "command": "node --test --test-concurrency=2 --test-timeout=60000 [60 committed test files]",
+      "pass": 493,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 96151.5615,
+      "rawLog": {
+        "path": ".scratch/d06a-regression-pinned.log",
+        "bytes": 49589,
+        "sha256": "38116c01594574a76c957df91399e8734383b10a4e90921daec2e83e8a90d51b"
+      }
     }
   },
   "browser": [
@@ -931,6 +947,24 @@
   "pushed": false,
   "published": false,
   "release": {
-    "status": "pending-commit-build"
-  }
+    "status": "verified-local",
+    "path": "dist/0.6.0-alpha.3-bcd0886831b1",
+    "sourceSha": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+    "version": "0.6.0-alpha.3",
+    "protocolVersion": 15,
+    "fileCount": 142,
+    "bytes": 2106643,
+    "allFileHashesVerified": true,
+    "commerceModulesMatchCommittedSource": true,
+    "commerceCssEmbedded": true,
+    "manifest": {
+      "path": "dist/0.6.0-alpha.3-bcd0886831b1/release.json",
+      "bytes": 22404,
+      "sha256": "b7e75db0d619f630097ecbbbae5f6ae9ce91354849954c2eedbe1bda7b3f9214"
+    },
+    "published": false
+  },
+  "workBase": "c6bc368",
+  "sourceCommit": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+  "sourceHashesCommit": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687"
 }

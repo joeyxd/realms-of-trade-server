@@ -9,7 +9,7 @@ Editor con siete piezas, compras de materiales en Aldea y retirada segura; [P3](
 413/413 y 24 capturas PC/móvil emulado.
 Checkpoint D06a: **bodega interactiva aceptada localmente**, `0.6.0-alpha.3`, protocolo 15; H/botón táctil,
 transferencias por peso con propiedad/revisión/preflight, mochila y estadísticas; mercados de Aldea/Cala.
-[Informe](docs/delivery/d06a-cargo-market.md): 8 pruebas nuevas, 453/453 en checkout compartido y 45 capturas
+[Informe](docs/delivery/d06a-cargo-market.md): 8 pruebas nuevas, 493/493 sobre commit `bcd0886` y 45 capturas
 PC/móvil horizontal/vertical. Producción sigue en [D06b](docs/briefs/d06b-production.md); P4 permanece parcial.
 No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
 
