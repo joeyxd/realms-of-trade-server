@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101e28">
+  <title>Marea Negra · Bahía de manejo</title>
+  <link rel="stylesheet" href="/tools/naval-lab/style.css">
+  <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+  <header>
+    <div><span class="eyebrow">MAREA NEGRA / D08</span><h1>Bahía de manejo</h1></div>
+    <span class="stamp">PROTOTIPO · SIN GUARDADO</span>
+  </header>
+  <main>
+    <section class="bay" aria-label="Bahía de navegación de prueba">
+      <canvas id="bay" tabindex="0" aria-label="Balsa de prueba en el mar"></canvas>
+      <div class="readout"><strong id="speed">0.00</strong><span>u/s</span><div id="heading">Rumbo 000°</div></div>
+      <div class="weather"><span id="wind-arrow">↓</span><div id="sail">Viento a favor</div></div>
+      <p id="message" role="status">Cargando la bahía…</p>
+      <nav class="pilot" aria-label="Controles de pilotaje">
+        <button data-pilot="left" aria-label="Timón a babor">◀<small>A</small></button>
+        <button data-pilot="throttle" aria-label="Dar propulsión">AVANZAR<small>W / RT</small></button>
+        <button data-pilot="brake" aria-label="Frenar">FRENAR<small>S / LT</small></button>
+        <button data-pilot="right" aria-label="Timón a estribor">▶<small>D</small></button>
+      </nav>
+    </section>
+    <aside>
+      <div class="section-title"><span>01</span> Prepara la prueba</div>
+      <label for="fixture">Balsa y acomodo</label><select id="fixture"></select>
+      <p id="fixture-detail" class="muted"></p>
+      <label for="wind">Viento constante</label><select id="wind"></select>
+      <div class="actions"><button id="pause">Pausar</button><button id="reset">Reiniciar <kbd>R</kbd></button></div>
+      <button id="jettison" class="yellow">Soltar lastre de prueba <kbd>J</kbd></button>
+      <p class="muted">El lastre representa peso situado en puntos concretos. Aquí no hay mercancías ni costes.</p>
+      <div class="section-title"><span>02</span> Qué lleva esta balsa</div>
+      <dl class="stats">
+        <div><dt>Piezas / lastre</dt><dd id="mass"></dd></div>
+        <div><dt>Peso / flotación</dt><dd id="load"></dd></div>
+        <div><dt>Resistencia al giro</dt><dd id="inertia"></dd></div>
+        <div><dt>Equilibrio / altura</dt><dd id="balance"></dd></div>
+      </dl>
+      <p id="warning" class="warning"></p>
+      <details open><summary>03 · Comparación automática</summary>
+        <p class="muted">6 s de avance desde parado. Frenado y giro empiezan a 2 u/s. Mismo viento y órdenes para todas.</p>
+        <div class="table-scroll"><table><thead><tr><th>Balsa</th><th>Vel. 6 s</th><th>Freno</th><th>Giro 90°</th></tr></thead><tbody id="compare"></tbody></table></div>
+        <p class="muted">Cifras experimentales; el viento permanece fijo mientras giras. u = unidades del mundo.</p>
+      </details>
+      <details><summary>Controles y lectura</summary>
+        <p>Mantén W para avanzar, A/D para girar y S para frenar. Suelta para seguir con inercia. No hay marcha atrás instantánea.</p>
+        <p>En mando: stick izquierdo para timón, RT para avanzar, LT para frenar. Los botones en pantalla aceptan dos dedos.</p>
+        <p>La línea dorada registra tu trayectoria; las figuras amarillas marcan el lastre. El aro muestra el centro de masa.</p>
+      </details>
+      <div class="display-options"><label><input id="references" type="checkbox" checked> Referencias de prueba</label><label><input id="light" type="checkbox"> Render ligero</label></div>
+      <p id="texture" class="muted"></p>
+      <p class="footnote">Esta bahía es independiente de tu partida. El pilotaje online, la cubierta móvil, los niveles de navegación y el viento cambiante vienen después.</p>
+    </aside>
+  </main>
+  <noscript>Activa JavaScript para abrir la bahía.</noscript>
+  <script type="module" src="/tools/naval-lab/main.js"></script>
+</body>
+</html>
