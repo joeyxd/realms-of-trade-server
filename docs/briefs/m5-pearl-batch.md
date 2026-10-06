@@ -31,6 +31,10 @@ El nuevo lote **no entra todavía** en `ProfileSessions`, su cola/diario ni el c
 ## SQL y afinidad
 
 Aplicar [007_pearl_batch.sql](../../server/migrations/007_pearl_batch.sql) después de 001–006.
+Actualización 2026-10-06: aplicada por el autor y **verificada en Supabase, 31/31**;
+cuatro procesos SDK nuevos, fixtures exactas limpiadas y una auditoría terminal retenida.
+[Evidencia y límites](../delivery/d09f-pearl-batch-live.md). Sigue
+[diario/cola del lote](m5-pearl-batch-journal.md); host/gameplay aún sin conexión.
 READ COMMITTED; UUID → fila de perfil → todos los UIDs old/new/lote ordenados, siguiendo
 003/raw save → ledger/ubicaciones. Los guards existentes permanecen y el RPC usa un único
 bloque de excepción para rollback completo, incluido el recibo provisional. Servicio únicamente.
