@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-06",
+  "sourceCommit": "32a866ea6bf711b0dd05cd54c0c7376ceba1fe53",
+  "scope": "isolated naval lab B1: chase camera, cold ocean/sky and rocky horizon",
+  "url": "http://127.0.0.1:5180/",
+  "tests": {
+    "node": "v24.14.0",
+    "files": 10,
+    "total": 60,
+    "pass": 60,
+    "fail": 0,
+    "exitCode": 0,
+    "testedSourcePathsVerifiedUnchangedAfterCommit": true,
+    "tap": ".scratch/naval-reference-tests-32a866e.tap",
+    "summary": ".scratch/naval-reference-tests-32a866e.json",
+    "globalSuiteRepeated": false
+  },
+  "scenery": { "meshes": 1, "formations": 9, "vertices": 2835, "triangles": 945, "newTextures": 0 },
+  "browserReview": {
+    "surface": "Chrome",
+    "viewports": [[1280, 800], [390, 844], [844, 390]],
+    "fixtures": ["empty", "house"],
+    "checked": ["hull and sail framing", "skyline and water palette", "HUD separation", "mobile atlas URL", "no horizontal overflow", "zero console errors"],
+    "finalCommitScreenshotsPersisted": false,
+    "finalCommitVisualAcceptance": "pending",
+    "reason": "Chrome disconnected during final capture; tab recovery failed and browser list was empty",
+    "lastTemporaryViewport": [844, 390],
+    "viewportResetConfirmed": false,
+    "unreviewedFinalDeltas": ["header line height", "spray projected size tracks actual FOV"]
+  },
+  "humanAcceptance": { "priorHandlingAndWeight": "confirmed by author", "newLook": "pending", "physicalMobilePerformance": "pending" },
+  "next": "Reconnect Chrome, persist final source captures and reset viewport; then B2 raft wood and sail"
+}

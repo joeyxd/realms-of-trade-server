@@ -119,6 +119,8 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   **Tacto confirmado por el autor, 2026-10-06:** el control funciona y se siente el peso; no implica balance,
   audio ni rendimiento físico aceptados. **D08b.1 — primer corte de la nueva referencia:** cámara trasera 3/4,
   paleta fría del mar/cielo, crestas y horizonte rocoso en la misma bahía. [Guía y fases B1–B5](docs/briefs/d08b-reference-look.md).
+  [Fuente, pruebas y límite de captura final](docs/delivery/d08b-reference-look.md): 60/60 pertinentes;
+  Chrome se desconectó al guardar los PNG, falta revalidar el commit final y restablecer viewport.
   La madera/lona, espuma/corriente/tinta y HUD de la imagen siguen por capas. Fidelidad visual final,
   móvil físico, pilotaje autoritativo y cubierta móvil siguen abiertos.
   Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
