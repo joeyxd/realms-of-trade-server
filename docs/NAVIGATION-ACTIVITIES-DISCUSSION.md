@@ -1,6 +1,6 @@
 # Navegación activa — discusión de actividades y travesías
 
-2026-10-06. **Brainstorm solicitado por el autor; propuestas sin aprobar ni implementar.**
+2026-10-06. **Brainstorm solicitado por el autor; preferencias y propuestas sin implementar.**
 Continúa [la dirección naval](NAVAL-ROADMAP.md) y [D08](briefs/d08-navigation-feel.md).
 No cambia la cola de entregas, las puertas móviles/visuales ni las decisiones abiertas de PvP y pérdidas.
 
@@ -246,6 +246,66 @@ escape, si el pirata nunca puede responder o si solo gana el barco más pequeño
 No imponer tasas de éxito ni pérdida definitiva por este brainstorm. Continúan las puertas
 móviles/visuales de D08, autoridad/predicción, D09 para riesgo y D11 para PvP público.
 
+## Lista corta — navegación arcade y comedia física
+
+2026-10-06, tercera ronda. **Preferencias expresadas por el autor:** manejo más arcade,
+corrientes, capturar viento con la vela para un boost, expulsar carga con un pequeño impulso
+y remolinos. Aporta además ancla-drift, lastre humano, wheelie de ráfaga, slingshot de remolino,
+cajas con reacción/efectos y rebotes ambientales. Pide priorizar diversión con poco trabajo.
+Estas preferencias orientan las pruebas; controles, costes, potencia y pérdidas siguen abiertos.
+No autoriza implementar todas las variantes ni convierte el catálogo anterior en una entrega.
+
+El principal agrupa las ideas con revisión Luna de comportamiento y esfuerzo sobre `85f2010`.
+Las estimaciones siguientes son **relativas, para un laboratorio aislado**, no para el juego online.
+
+| Familia | Versión mínima que vale la pena probar | Esfuerzo relativo / dependencia |
+|---|---|---|
+| **1. Manejo arcade con peso** | Aceleración satisfactoria, timón más inmediato, deriva controlable y recuperación clara. El ligero responde antes; una casa cargada necesita anticiparse | Bajo–medio: ajustar el modelo/controles actuales y comprobar tacto humano; no eliminar masa/inercia/distribución |
+| **2. Corrientes visibles** | Entrar/salir de corredores que empujan, curvan o bifurcan una ruta. Mismo mar y señales para perseguidor/perseguido | Bajo–medio: campo local determinista y señales; base reutilizable por remolinos |
+| **3. Capturar vela + wheelie visual** | Ajuste oportuno ante una racha anunciada produce empuje fuerte breve; vela y proa exageran el acierto. Cámara conserva lectura del rumbo/obstáculos | Bajo–medio para empuje/ventana; animación adicional después. Sin tela física, ceguera obligatoria ni crew que deba gritar para poder pilotar |
+| **4. Expulsar carga con pequeño impulso** | Consumir un bulto sintético, mantener continuidad del casco y añadir un impulso de recoil explícito y acotado; después mejora el manejo por menor masa | Bajo con lastre de prueba. Carga real exige D09/identidad/retiro único; cajas explosivas, cangrejos o daño al rival van después |
+| **5. Remolino-slingshot** | Campo circular visible: seguir el borde, elegir la tangente de salida y conservar empuje para salir lanzado. Centro más lento/desfavorable y con escape | Medio después de corrientes. Sin aparecer bajo el barco, hundimiento instantáneo ni multiplicador 300% cerrado |
+| **6. Ancla-drift** | Frenar y pivotar para doblar una esquina; quedar de lado y perder avance si se usa mal. Recuperación visible | Medio: maniobra plana con fuerza/torque limitada. Sin cuerda rígida, fondo marino, enganches, vuelco o daño persistente inicial |
+| **7. «Todos a un lado»** | Mover un contrapeso sintético y balancear visualmente la balsa para probar ayuda de giro y vuelta al equilibrio | Medio como aproximación; tripulantes físicos, 45° reales, cubierta móvil y carga que resbala son otro corte mayor |
+| **8. Rebote ambiental** | Un obstáculo circular de prueba y una respuesta de rebote legible; después evaluar medusa/kelp/ballena y animaciones cómicas | Medio–alto: hoy no hay colisiones navales en la bahía. Sin invertir controles obligatoriamente; sacudida/tambaleo visual primero |
+
+El wheelie queda integrado en la ráfaga; la salida tangencial en el remolino; recoil/cajas en
+expulsar carga. Así se conservan las seis nuevas fantasías sin crear seis sistemas completos.
+Las otras propuestas del catálogo —boga, amago, ola, marea, niebla/humo, gancho, vela auxiliar,
+motor/vapor y reparación— quedan en reserva; no desaparecen del plan ni entran todas al primer ensayo.
+
+### Tres tandas pequeñas recomendadas
+
+1. **Tacto arcade + una corriente.** Misma ruta con balsa ligera/casa cargada, viento conocido,
+   entrar/salir y frenar/girar. Verificar que el barco se siente bien sin activar un minijuego.
+2. **Capturar ráfaga + expulsar un bulto.** Probar cada maniobra por separado y después juntas;
+   señales anticipadas, una ventana amplia y acción contextual sin soltar el timón en móvil.
+3. **Remolino; después ancla-drift.** Reutilizar el campo de corrientes y comparar entradas/salidas;
+   añadir drift solo cuando su trayectoria/recuperación se entiendan. Lastre humano/rebote quedan después.
+
+La lista sirve para preparar cortes, no renumera D08 ni salta móvil D06b/aceptación visual-humana
+de la bahía. La implementación se hace por una maniobra cada vez, con autoría del principal,
+Luna en tareas acotadas y comparación visual/controles/determinismo antes de sumar otra.
+Autoridad/predicción/cubierta móvil siguen siendo trabajo de integración; D09 precede carga real
+expuesta y D11 el PvP. No hace falta esperar esos sistemas para un ensayo local de lastre ficticio.
+
+### Límites que mantienen la fantasía jugable
+
+- El boost cambia posición y permite una maniobra útil; no es escape automático. Peso y reparto
+  siguen afectando respuesta y todas las ayudas comparten un límite de potencia/velocidad por probar.
+- Corrientes/remolinos usan un campo de agua conocido y un tiempo de simulación común. Derivar
+  respuesta/drag del movimiento respecto al agua; no sumar velocidad ilimitada cada tick ni elegir
+  potencia según render/FPS. Las señales visuales siguen ese mismo estado.
+- `jettisonLabCargo` actual **no añade impulso**: conserva pose/velocidad del casco al cambiar
+  centro de masa. El recoil solicitado sería una nueva acción separada, después de esa transformación,
+  proporcional al bulto realmente retirado y con tope; no convertir un cambio de coordenadas en boost.
+  Una caja vacía, reset de input o repetición sin bulto no produce otro impulso.
+- Un whirlpool de aprendizaje tiene salida y fallo recuperable; hundimiento/pérdidas durables
+  requieren sus reglas propias. Evitar RNG que lo haga surgir debajo de una nave.
+- La comedia puede venir de lona, proa, balanceo, caja lanzada y trayectoria. Conservar cámara,
+  dirección de controles y señales alternativas al color ayuda a solo/táctil/accesibilidad.
+  No demostrar ventaja en PvP con un rival de prueba ni asumir diversión por una captura bonita.
+
 ## Assets y límites de esta misión
 
 Revisada [la evaluación D08 de Unreal/FAB](research/unreal-assets/D08-REUSE.md): existen candidatos
@@ -254,5 +314,5 @@ reutiliza balsa, atlas y agua actuales. Antes de implementar una nueva señal/ef
 candidato concreto y registrar encaje/exportación/presupuesto; no repetir el inventario completo.
 
 Esta misión solo registra discusión y enlaces. No modifica controles, simulación, activos Unreal,
-Supabase, demo ni estado de aceptación. Los próximos agentes deben distinguir esta recomendación
-de las decisiones que el autor apruebe después.
+Supabase, demo ni estado de aceptación. Los próximos agentes deben conservar las preferencias del
+autor y distinguirlas de las variantes/recomendaciones/cifras que todavía requieren elección y prueba.
