@@ -116,7 +116,11 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
 - [ ] **P6 (fase B) El mar.** Movimiento por timón/propulsión, proyectiles, daño por pieza y reparación.
   **D08a.1 implementado en bahía aislada:** manejo arcade, corrientes y captura de vela con timing,
   espuma anclada al mundo, estela/spray, cómic/cámara y audio acotados. [Entrega y límites](docs/delivery/d08a-arcade-navigation.md).
-  Prueba humana, captura horizontal sin anomalía, móvil físico, pilotaje autoritativo y cubierta móvil siguen abiertos.
+  **Tacto confirmado por el autor, 2026-10-06:** el control funciona y se siente el peso; no implica balance,
+  audio ni rendimiento físico aceptados. **D08b.1 — primer corte de la nueva referencia:** cámara trasera 3/4,
+  paleta fría del mar/cielo, crestas y horizonte rocoso en la misma bahía. [Guía y fases B1–B5](docs/briefs/d08b-reference-look.md).
+  La madera/lona, espuma/corriente/tinta y HUD de la imagen siguen por capas. Fidelidad visual final,
+  móvil físico, pilotaje autoritativo y cubierta móvil siguen abiertos.
   Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
   → patrulla/notoriedad → abordaje de dos cubiertas. Topología y costes pendientes; M5 es puerta de persistencia.
 - [ ] **P7 Progresión y aspecto.** Mesa de cartas: investigar piezas (vela mayor, motor, alambique) con muestras

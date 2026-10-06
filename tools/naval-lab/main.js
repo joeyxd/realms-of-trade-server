@@ -16,16 +16,19 @@ import { NAVAL_NAVIGATION } from '../../src/data/navalNavigation.js';
 import { NavalLabEffects } from './effects.js';
 import { NavalLabAudio } from './audio.js';
 import { NavalSpeedFeel } from './speed-feel.js';
+import { NavalLabCamera } from './camera.js';
+import { configureNavalReferenceLook } from './look.js';
+import { NavalLabScenery } from './scenery.js';
 
 const $ = (id) => document.getElementById(id);
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new NavalLabClock();
-let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0;
+let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0, bayHeight = 1;
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
-let effects, sound, feel, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
+let effects, sound, feel, framing, scenery, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
 let lastGustPhase = 'idle', lastGustId = -1;
-const samples = [], target = new THREE.Vector3(), desired = new THREE.Vector3();
+const samples = [];
 const trailArray = new Float32Array(256 * 3), trailGeometry = new THREE.BufferGeometry();
 trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailArray, 3));
 trailGeometry.setDrawRange(0, 0);
@@ -80,7 +83,7 @@ function reset() {
   if (!scene) return;
   clearInputs(); clock.clear(); samples.length = 0; trailGeometry.setDrawRange(0, 0);
   fixture = labFixture($('fixture').value); rig = buildNavalRig(fixture.parts, fixture.cargo);
-  state = newNavalState(); previous = { ...state }; target.set(0, 0, 0);
+  state = newNavalState(); previous = { ...state }; framing?.reset(); scenery?.reset();
   activity = newSailingActivity(); lastGustPhase = 'idle'; lastGustId = -1; effects?.reset(); feel?.reset();
   $('fixture-detail').textContent = fixture.detail; rebuildCargo(); stats(); comparisons();
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Entra en las flechas de agua. Cuando llegue la ráfaga, cázala con ESPACIO.');
@@ -135,16 +138,12 @@ function drawFrame(dt) {
   cargoGroup.visible = references.visible;
   marker.position.set(visual.x, pose.y + 0.1, visual.z);
   grid.position.x = Math.round(visual.x / 20) * 20; grid.position.z = Math.round(visual.z / 20) * 20;
-  const damping = 1 - Math.exp(-8 * dt);
   const speed = Math.hypot(visual.vx, visual.vz);
-  const lead = Math.min(mobile ? 0.18 : 0.3, (mobile ? 1.4 : 2.5) / Math.max(1, speed));
-  desired.set(visual.x + visual.vx * lead, 0, visual.z + visual.vz * lead); target.lerp(desired, damping);
-  const distance = fixture.id === 'house' ? (mobile ? 24 : 30) : (mobile ? 14 : 18);
-  camera.position.set(target.x + distance, distance * 1.1, target.z + distance);
   const cinematic = feel.update(dt, { speed, omega: visual.omega, boosting, enabled: $('drama').checked, paused });
-  if (Math.abs(camera.fov - cinematic.fov) > 0.01) { camera.fov = cinematic.fov; camera.updateProjectionMatrix(); }
-  camera.lookAt(target.x, 0, target.z);
-  camera.rotateZ(cinematic.roll);
+  framing.update(dt, { state: visual, rig, pose, mode: $('camera').value,
+    fovOffset: cinematic.fov - 35, roll: cinematic.roll, paused });
+  effects.setViewport(bayHeight, camera.fov);
+  scenery.update({ x: visual.x, z: visual.z, paused });
   // Keep the flat laboratory ocean under the camera, without changing simulated world coordinates.
   sea.position.x = bottom.position.x = visual.x; sea.position.z = bottom.position.z = visual.z;
   sun.position.set(visual.x - 25, 45, visual.z + 15); sun.target.position.set(visual.x, 0, visual.z);
@@ -196,7 +195,7 @@ function fixed() {
 }
 function resize() {
   const rect = $('bay').getBoundingClientRect(); pipeline.resize(Math.max(1, rect.width), Math.max(1, rect.height));
-  effects?.setViewport(Math.max(1, rect.height), camera.fov);
+  bayHeight = Math.max(1, rect.height); effects?.setViewport(bayHeight, camera.fov);
 }
 
 async function start() {
@@ -209,7 +208,7 @@ async function start() {
   renderer.shadowMap.type = THREE.PCFShadowMap; renderer.shadowMap.autoUpdate = false;
   scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x9ad8e3, 110, 260);
   camera = new THREE.PerspectiveCamera(35, 1, 0.5, 1400);
-  scene.add(new THREE.HemisphereLight(0xe2f6ff, 0x546784, 2));
+  const hemisphere = new THREE.HemisphereLight(0xe2f6ff, 0x546784, 2); scene.add(hemisphere);
   sun = new THREE.DirectionalLight(0xffedc8, 2.4); sun.position.set(-25, 45, 15);
   sun.shadow.mapSize.set(mobile ? 512 : 1024, mobile ? 512 : 1024);
   Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -18, near: 1, far: 120 });
@@ -223,6 +222,9 @@ async function start() {
   bottom.rotation.x = -Math.PI / 2; bottom.position.y = -8; bottom.layers.set(LAYER.WORLD); scene.add(bottom);
   pipeline = new Pipeline(renderer, scene, camera); pipeline.water = { setMode: (ssr) => sea.userData.setMode(ssr) };
   pipeline.grading.contrast = 0.1; pipeline.grading.sat = 1.13;
+  configureNavalReferenceLook({ scene, sky, sea, bottom, hemisphere, sun, pipeline });
+  framing = new NavalLabCamera(camera, { reducedMotion });
+  scenery = new NavalLabScenery(scene, { mobile }); pipeline.markDirty();
   U.mnOccOn.value = 0; U.mnNearFade.value = 0; U.mnCloud.value = 0.15;
   $('light').checked = mobile;
   const quality = () => {
@@ -236,6 +238,7 @@ async function start() {
   references.visible = trail.visible = $('references').checked;
   input = new NavalLabInput(document, { onReset: reset, onJettison: jettison, onGesture: unlockSound, onCancel: () => setPaused(true) });
   $('fixture').addEventListener('change', reset);
+  $('camera').addEventListener('change', () => { framing.reset(); $('bay').focus({ preventScroll: true }); });
   $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
   $('reset').addEventListener('click', reset); $('jettison').addEventListener('click', jettison);
   $('pause').addEventListener('click', () => setPaused(!paused));
@@ -255,7 +258,8 @@ async function start() {
   // Read-only snapshots and explicit laboratory actions aid repeatable local acceptance.
   window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind },
     activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked), current: currentAt(state.x, state.z, $('currents').checked),
-    effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
+    effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(),
+    scenery: scenery.diagnostics(), mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();
   const frame = (now) => {
     const dt = Math.max(0, (now - last) / 1000); last = now;
@@ -264,6 +268,6 @@ async function start() {
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); layer.dispose(); renderer.dispose(); });
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); renderer.dispose(); });
 }
 start().catch((error) => { showMessage(`No se pudo abrir la bahía: ${error.message}`); console.error(error); });
