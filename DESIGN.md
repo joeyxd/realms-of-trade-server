@@ -490,6 +490,9 @@ Marinero de agua dulce (hablar con el capitán).
   [Contrato D09c](docs/delivery/d09c-pearl-ground.md), [cola D09d](docs/delivery/d09d-pearl-ground-queue.md).
   [Diario D09e](docs/delivery/d09e-pearl-journal.md): admisión tras scan completo, recibos/estado actuales,
   reanudación explícita del request guardado; no publica resultado histórico ni sustituye leases P5.
+  [D09f-1](docs/delivery/d09f-pearl-staging.md) prueba un coordinador dormant para give entre cuentas:
+  elegibilidad actual sobre perfiles separados, reserva hasta apply/fence y aplicación síncrona en tick.
+  184/184 pertinentes en aislamiento; gate común de mutaciones/snapshots/lifecycle e integración pendientes.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.

@@ -51,7 +51,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   actual aceptados localmente. Reanudación explícita sin builder; **005 aplicada/verificada real**, 21/21 checks,
   procesos nuevos de ProfileSessions y fixtures de juego limpiadas; cuatro auditorías terminales conservadas.
   Host/juego sin conexión al diario. [Verificación](docs/delivery/d09e-journal-live.md),
-  [D09f preparado](docs/briefs/m5-pearl-game-staging.md) para transferencia de un UID antes de mutar, en aislamiento.
+  [Brief D09f](docs/briefs/m5-pearl-game-staging.md) para transferencia de un UID antes de mutar, en aislamiento.
+- Checkpoint posterior D09f-1, base `1b5c2fa`: coordinador server-only dormant give → commit → apply en tick,
+  sin efectos/éxito previo, con reserva hasta apply/fence y guardados diferidos. **184/184** pertinentes en
+  árbol aislado, incluidas 38 nuevas. Reutiliza `transferPearl` sobre vista separada, no edita archivos D06b
+  ni conecta host/LocalServer. [Informe](docs/delivery/d09f-pearl-staging.md). Sigue gate común de rutas/lifecycle.
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
@@ -113,7 +117,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D06 | M6 P4 parcial + M7 P1–P2: carga/comercio, luego producción | Caja A02 existente; banco candidato D06b, iconos A06 pendientes | D05; bodega, mercader/quote/compra/venta; producción D06b, reservas de puerto D09 | D06a local aceptado en software, alpha.3/protocolo 15; 493/493 sobre commit y 45 capturas ([informe](docs/delivery/d06a-cargo-market.md)). D06b preparado; P3 iconos/hamaca/luces pendientes |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
-| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–d: perla/perfiles/suelo/recibo y cola ([informe](docs/delivery/d09d-pearl-ground-queue.md)); 003/004 reales. Diario de intenciones/staging/juego/adopción y operaciones navales pendientes |
+| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–e, 003/004/005 reales; D09f-1 coordinador give dormant, 184/184 en aislamiento ([informe](docs/delivery/d09f-pearl-staging.md)). Gate común/host/juego/restauración/adopción y operaciones navales pendientes |
 | D10 | M6 P5–P6 inicial + M7 rutas: primer viaje/naval PvE | A07: un impacto de madera/agua; A04 un sonido si puente listo | D06,D08; D09 para riesgo persistente. Dos rutas, NPC vencible, reparar/recuperar | Pendiente |
 | D11 | Dos jugadores: huida, rendición, saqueo, notoriedad/patrulla | Señales/banderas legibles, efectos pequeños | D09–D10 y reglas legales/de pérdidas definidas; dos clientes y liquidación única | Pendiente |
 | D12 | Abordaje inicial, formato por definir | A05 cobertura/pasarela; reutilizar personajes actuales | D11 y formato decidido; solo/cooperativo, colisiones y latencia. Recomendación: cubiertas enganchadas | Pendiente |

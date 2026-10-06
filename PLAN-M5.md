@@ -38,8 +38,12 @@ request persistido sin builder nuevo. **SQL 005 aplicada/verificada real**: 21/2
 de ProfileSessions en procesos independientes; cuatro auditorías terminales retenidas, fixtures de juego
 limpiadas. Host/juego aún sin conexión. [Verificación](docs/delivery/d09e-journal-live.md).
 [Contrato y evidencia](docs/delivery/d09e-pearl-journal.md). P4/P6 siguen parciales.
-Siguiente preparado: [D09f staging antes de mutación](docs/briefs/m5-pearl-game-staging.md), primera
-transferencia de un UID entre cuentas en aislamiento y coordinada con D06b. No activa circulación pública.
+Checkpoint D09f-1, base `1b5c2fa`: **coordinador de staging dormant aceptado en aislamiento**, entrega de
+un UID gestionado entre cuentas. Reutiliza elegibilidad actual en una vista separada; reserva hasta apply
+en tick/fence, conserva progreso y no publica éxito anticipado. **184/184** pruebas pertinentes, incluidas
+38 nuevas; host/LocalServer sin conexión. [Contrato y siguiente corte](docs/delivery/d09f-pearl-staging.md).
+Siguiente D09f-2: diseñar/conectar una reserva común para comandos, snapshots y lifecycle con el dueño
+D06b; resolver CAS same-holder/lotes de varios UIDs antes de activación. P4/P6 siguen parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -109,7 +113,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 real verificada.
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
-  falta conectarlo al host y restauración/publicación del suelo en juego. Legendarias (`PLAN-M4.8.md`),
+  D09f-1 prueba staging de give fuera del host; falta integración común y restauración/publicación del suelo.
+  Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
@@ -117,8 +122,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
   D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
-  D09e añade diario opcional y recuperación tras restart (005 real verificada). No está conectado al host/juego;
-  mundo/barcos siguen separados.
+  D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
+  dormant give/commit/apply en tick. No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas

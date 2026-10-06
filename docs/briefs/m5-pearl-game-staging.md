@@ -1,8 +1,9 @@
-# D09f — staging de perlas antes de mutar el juego (preparado)
+# D09f — staging de perlas antes de mutar el juego (primer corte aislado)
 
 Base de gameplay `bcd0886`, documentación `68fdcec`, D09e `cfb494b`.
 005 aplicada por el autor y verificada en Supabase: [aceptación real](../delivery/d09e-journal-live.md).
-Este brief prepara el siguiente corte; no afirma implementación ni habilita circulación durable.
+D09f-1 implementa el coordinador dormant de una entrega entre cuentas, aceptado sobre `1b5c2fa`:
+[contrato y evidencia](../delivery/d09f-pearl-staging.md). No habilita circulación durable en host/juego.
 
 ## Dueños y reutilización
 
@@ -37,9 +38,12 @@ No requiere decidir adopción de raras, invitados, envejecimiento offline ni pé
 6. Crash entre commit y apply: startup recupera el diario y reconstruye estado desde perfiles/ledger/ubicación
    actuales. Un recibo antiguo por sí solo no autoriza otra aplicación ni otro crédito.
 
-API final por diseñar en el corte: plan reservado → commit async → finalización pendiente → apply en tick
-o fence. Un coordinador dormant probado en aislamiento es un avance de integración; habilitarlo en el
-juego exige cubrir todas las rutas siguientes, restauración y políticas pendientes.
+API del primer corte: `PearlStaging.give` reserva plan → commit async → finalización pendiente;
+`drain()` aplica síncronamente en tick o cerca. `assertAvailable` guarda rutas de mutación,
+`save` difiere snapshots y `invalidate` conserva transiciones de lifecycle. Reutiliza `transferPearl`
+sin editarlo sobre perfiles/ledger/dirty/eventos separados; no duplica elegibilidad. El coordinador
+probado en aislamiento es un avance de integración; habilitarlo exige cubrir todas las rutas siguientes,
+restauración y políticas pendientes. D06b conserva archivos compartidos y no recibió parche de activación.
 
 ## Mapa que debe cubrir la integración completa
 

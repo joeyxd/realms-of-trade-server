@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e**: 003/004/005 reales, perla/suelo atómicos, cola y diario opcional; conexión host/staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-1 dormant**: 003/004/005 reales, diario y coordinador give/apply en tick aislado; gate común/host/juego/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega local**: editor y transferencias privadas por peso; producción/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -168,6 +168,23 @@ autor.
   cuentas en aislamiento, staging antes de mutación/ack coordinado con dueño D06b. Slot swap y death/reemplazo
   de varios UIDs requieren otro contrato; startup/restauración/reloj/adopción/invitados preceden activación.
   P4/P6 siguen parciales.
+
+### M5 P4/P6 — primer coordinador de staging D09f-1 (2026-10-05)
+
+- Base de aceptación `1b5c2fa`; solo `server/pearlStaging.mjs` y pruebas nuevos, archivos D06b intactos.
+  [Brief](briefs/m5-pearl-game-staging.md), [contrato/evidencia](delivery/d09f-pearl-staging.md).
+- Una entrega give entre cuentas/UID ya gestionado: reglas actuales en vista separada, UUID server-only,
+  CAS/diario fuera del tick y cero efectos de juego antes de confirmar. Reserva propia persiste después
+  de liberar cola de storage; snapshots diferidos, delta de perla aplicado al progreso actual una vez.
+- `drain()` síncrono antes de eventos/snapshots; identidad de sesión/perfil/ECS.clientId, vida y versión
+  confirmada verificadas. Close/death/recycle/bypass/error cercan cuentas/UID; reconcile no dispara apply tardío.
+- **184/184** pruebas pertinentes en archivo de Git aislado, incluidas **38 nuevas**. Revisión Luna de solo
+  lectura aceptada por principal. Reinicio probado con nuevas sesiones sobre memoria, sin proceso de host real.
+- No SQL nueva, env, Supabase live adicional, inicio/reinicio/publicación de host ni cambio de protocolo/UI.
+  Coordinador sin importación en host/LocalServer; full gate aún pendiente y P4/P6 parciales.
+- **Siguiente D09f-2**: acordar parche con dueño de LocalServer/sim para puerta común de mutaciones,
+  snapshots y lifecycle; CAS same-holder/lotes death/reemplazo, hidratación/reloj/adopción antes de activar.
+  Nunca activar solo give mientras las otras rutas sigan saltándose la reserva.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 
