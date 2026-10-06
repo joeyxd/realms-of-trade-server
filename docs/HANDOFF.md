@@ -61,7 +61,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003–006 reales; same-holder commit/recuperación 21/21, validadores 6/6; staging 356/356 aisladas. Efecto común sim/staging 745/745 aisladas; afinidad, lotes, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f server-only**: 003–006 reales; same-holder commit/recuperación 21/21. Efecto común sim/staging 745/745 aisladas; lote death/reemplazo storage 481/481 pertinentes, 007 pendiente real. Afinidad, diario/cola/staging de lote, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -297,6 +297,22 @@ autor.
   Sin arte, SQL/env, host/reinicio/publicación, activación de staging ni cambios alpha.4/protocolo 16.
 - Siguiente lote atómico multi-UID, hooks completos y restauración/scope/reloj/adopción; afinidad aparte.
   Cola visual/móvil naval conservada. Trabajo concurrente de lote fuera de esta aceptación.
+
+### M5 P4/P6 — lote de perlas en storage D09f-2b.4 (2026-10-06)
+
+- Base `4414665`; [brief](briefs/m5-pearl-batch.md), [entrega/evidencia](delivery/d09f-pearl-batch.md).
+  Una cuenta y todas las perlas de muerte (1–9 UIDs) o los dos UIDs de reemplazo; perfil CAS,
+  ledger/ubicaciones y un recibo atómicos. Memoria y SDK, sin commits parciales por UID.
+- Delta exacto del inventario; oro/XP/maestrías/slots restantes conservados. Replay histórico no
+  revierte progreso ni una recogida posterior. UUID compartido protegido SQL con 003/004/005.
+- **481/481** pertinentes sobre archive aislado + nueve archivos propios, **125 nuevas**;
+  cuatro procesos Node con PGlite persistido. Permisos, CAS, límites, rollback tardío, respuesta
+  perdida, recibos/lectura/replay; no demuestra backends PostgreSQL concurrentes ni GameHost restart.
+- **007 nueva lista, pendiente de aplicar/verificar real.** Sin env/red remota/jugadores/host/deploy;
+  trabajo paralelo de efecto común/naval conservado. No cambia sim/LocalServer/cliente/protocolo.
+- Siguiente: 007 real, diario/cola/reservas y recuperación de intención sin recibo para lotes,
+  staging/tick y hooks/restauración con dueño de sim. Afinidad runtime pendiente; conserva el requisito.
+  Solo resuelve perlas de muerte, no vuelve atómicas las otras pérdidas ni el mundo. P4/P6 parciales.
 
 ### M5 — commit same-holder 006 aceptado real (2026-10-06)
 

@@ -65,7 +65,12 @@ Checkpoint D09f-2b.3, fuente `26ef249`: **efecto ECS común extraído**. Sim y s
 usan una regla de G/cooldown/agua/stats; dirty/eventos y draft/rollback mantienen sus dueños.
 **745/745** regresión completa en 74 archivos de commit aislado, 68/68 smoke; sin reglas nuevas,
 SQL/host/activación ni protocolo nuevo. [Contrato y evidencia](docs/delivery/d09f-common-effect.md).
-Siguiente: lote atómico de varios UIDs; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
+Checkpoint D09f-2b.4, base `4414665`: **lote atómico de perlas en storage** para muerte
+(todas, 1–9 UIDs) y reemplazo (dos UIDs). Perfil CAS/ledger/ubicaciones/recibo únicos;
+**481/481** pertinentes aisladas, **125 nuevas**, cuatro procesos Node de lectura/replay.
+**007 nueva pendiente de aplicar/verificar real**; no conecta diario/cola/staging ni activa gameplay.
+Progreso externo a `pearls` conservado; afinidad runtime pendiente. [Contrato/evidencia](docs/delivery/d09f-pearl-batch.md).
+Siguiente: verificar 007 y diario/cola/reservas del lote; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
 con dueño de LocalServer/sim, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
@@ -112,7 +117,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
 
 - [x] **P1 Capa de almacenamiento** (`server/store.mjs`): interfaz `{ loadProfile, saveProfile, loadWorld,
   saveWorld, claimUnique, releaseUnique }`, ampliada por D09a/b con `loadUnique`/`commitPearl`/`loadPearlOperation`
-  y por D09c con `commitPearlGround`/`loadPearlLocation`/`listPearlGround`/`loadPearlGroundOperation`, con dos implementaciones:
+  y por D09c con `commitPearlGround`/`loadPearlLocation`/`listPearlGround`/`loadPearlGroundOperation`;
+  D09f-2b.4 suma `commitPearlBatch`/`loadPearlBatchOperation` en storage, sin cola/host, con dos implementaciones:
   `memory` (tests/host sin DB) y `supabase`
   (`@supabase/supabase-js`). `GameHost` usa la interfaz mediante un verificador de identidad inyectado por el
   servidor. Sin verificador, sigue el flujo anónimo firmado; el Worker solo conserva su flujo actual.
@@ -143,6 +149,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 aplicada; validadores 6/6 y
   commit/recuperación reales 21/21);
   D09f-2b.2 prueba staging swallow/efecto ECS actual en tick; D09f-2b.3 comparte su regla con sim.
+  D09f-2b.4 agrega storage de lote muerte/reemplazo (007 local, 481/481; real y diario/cola/staging pendientes).
   Faltan hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
@@ -158,6 +165,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   commit/recuperación de ProfileSessions en cuatro procesos reales 21/21.
   D09f-2b.2 agrega staging swallow y efecto ECS actual en tick, con rollback/fence y progreso conservado;
   D09f-2b.3 extrae la regla común con sim, sin cambios de comportamiento.
+  D09f-2b.4 confirma varios UIDs/perfil/suelo en un recibo de storage; SQL007 real y recuperación
+  de intención pendiente en diario/cola no están aceptadas aún.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

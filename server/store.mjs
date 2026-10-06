@@ -6,6 +6,7 @@ import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove,
   pearlResult, checkedPearlResult, checkedPearlReceipt } from './pearlOperations.mjs';
 import { groundOperation, groundResult, checkedGroundResult, checkedGroundReceipt, checkedLocation,
   groundKey, groundPage, checkedGroundPage, assertGroundLocations } from './pearlGround.mjs';
+import { batchOperation, batchResult, checkedBatchResult, checkedBatchReceipt, validBatchDelta } from './pearlBatch.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -46,7 +47,7 @@ const conflict = () => ({ ok: false, why: 'conflict' });
 
 export function createMemoryStore() {
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
-  const locations = new Map(), groundReceipts = new Map();
+  const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
     const current = map.get(id);
@@ -106,7 +107,7 @@ export function createMemoryStore() {
     },
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
-      if (groundReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (groundReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = pearlReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       const candidate = preparePearl(request);
@@ -132,7 +133,7 @@ export function createMemoryStore() {
       const { operationId, request } = groundOperation(raw), text = canonicalText(request);
       const receipt = groundReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const nextLocations = new Map(locations);
       const location = { world: request.world, ground: request.ground, version: request.expectedVersion + 1 };
       nextLocations.set(request.uid, location);
@@ -151,6 +152,39 @@ export function createMemoryStore() {
       if (baseReceipt) pearlReceipts.set(operationId, baseReceipt);
       groundReceipts.set(operationId, { text, result });
       return structuredClone(result);
+    },
+    async loadPearlBatchOperation(operationId) {
+      operationId = playerKey(operationId);
+      const receipt = batchReceipts.get(operationId);
+      return receipt ? checkedBatchReceipt({ request: JSON.parse(receipt.text), result: receipt.result }, operationId) : null;
+    },
+    async commitPearlBatch(raw) {
+      const { operationId, request } = batchOperation(raw), text = canonicalText(request);
+      const receipt = batchReceipts.get(operationId);
+      if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      const p = request.profile, old = profiles.get(p.id);
+      if (old?.version !== p.expectedVersion) return conflict();
+      const nextProfiles = new Map(profiles), nextUniques = new Map(uniques), nextLocations = new Map(locations);
+      for (const q of request.items) {
+        const current = uniques.get(q.uid), location = locations.get(q.uid);
+        if (current && current.kind !== pearlKind(q.kind)) return { ok: false, why: 'kind' };
+        if (!current || current.holder !== p.id || current.version !== q.expectedVersion) return conflict();
+        if (location && (location.world !== request.world || location.version !== q.expectedVersion ||
+          location.ground !== null)) return { ok: false, why: 'ownership' };
+        nextUniques.set(q.uid, { kind: pearlKind(q.kind), holder: q.ground === null ? p.id : null, version: q.expectedVersion + 1 });
+        nextLocations.set(q.uid, { world: request.world, ground: q.ground, version: q.expectedVersion + 1 });
+      }
+      if (!validBatchDelta(request, old.data)) return { ok: false, why: 'ownership' };
+      nextProfiles.set(p.id, { data: p.data, version: p.expectedVersion + 1 });
+      try { assertManagedPearls(nextProfiles, nextUniques); assertGroundLocations(nextUniques, nextLocations); }
+      catch { return { ok: false, why: 'ownership' }; }
+      const result = batchResult(request), stored = { text, result }, reply = structuredClone(result);
+      // All checks and clones precede the first write; all UIDs, the profile and receipt commit in one turn.
+      profiles.set(p.id, nextProfiles.get(p.id));
+      for (const q of request.items) { uniques.set(q.uid, nextUniques.get(q.uid)); locations.set(q.uid, nextLocations.get(q.uid)); }
+      batchReceipts.set(operationId, stored);
+      return reply;
     },
     async claimUnique(uid, kind, holder) {
       key(uid, 160); key(kind); holder = playerKey(holder);
@@ -264,6 +298,14 @@ export function createSupabaseStore(client) {
     async commitPearlGround(raw) {
       const { operationId, request } = groundOperation(raw);
       return checkedGroundResult(await rpc('mn_commit_pearl_ground', { p_operation_id: operationId, p_request: request }), request);
+    },
+    async loadPearlBatchOperation(operationId) {
+      operationId = playerKey(operationId);
+      return checkedBatchReceipt(await rpc('mn_load_pearl_batch_operation', { p_operation_id: operationId }), operationId);
+    },
+    async commitPearlBatch(raw) {
+      const { operationId, request } = batchOperation(raw);
+      return checkedBatchResult(await rpc('mn_commit_pearl_batch', { p_operation_id: operationId, p_request: request }), request);
     },
     async claimUnique(uid, kind, holder) {
       if (managedPearl(kind)) throw new StoreError('operation');

@@ -508,6 +508,9 @@ Marinero de agua dulce (hablar con el capitán).
   sim, lotes, hooks y restauración/políticas pendientes al aceptar ese corte. Host/juego sin conexión.
   [D09f-2b.3](docs/delivery/d09f-common-effect.md) extrae la regla ECS común sim/staging sin cambiar
   comportamiento; 745/745 regresión aislada sobre `26ef249`. Lotes/hooks/restauración siguen abiertos.
+  [D09f-2b.4](docs/delivery/d09f-pearl-batch.md) agrega lote de storage para perlas de muerte/reemplazo,
+  una cuenta y hasta nueve UIDs, con perfil/ledger/suelo/recibo atómicos y progreso externo conservado.
+  481/481 pertinentes aisladas; 007 real, diario/cola/staging de lote y hooks/restauración pendientes.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.

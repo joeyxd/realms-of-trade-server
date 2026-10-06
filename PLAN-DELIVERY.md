@@ -84,6 +84,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   G/cooldown/agua/stats conservados. **745/745** en 74 archivos de commit aislado, 68/68 smoke;
   sin nueva mecánica, SQL/host/activación o protocolo. [Informe](docs/delivery/d09f-common-effect.md).
   Lotes, hooks completos, restauración/adopción/leases y afinidad siguen abiertos.
+- Checkpoint posterior D09f-2b.4 (2026-10-06), base `4414665`: lote atómico de storage para perlas
+  de muerte/reemplazo, perfil CAS + todos los UIDs/suelo + un recibo. **481/481** pertinentes aisladas,
+  **125 nuevas**, cuatro procesos Node de lectura/replay. **007 pendiente real**, diario/cola/staging
+  de lote y hooks/restauración abiertos; afinidad no implementada. [Entrega](docs/delivery/d09f-pearl-batch.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
