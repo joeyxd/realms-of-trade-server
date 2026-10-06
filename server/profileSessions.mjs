@@ -4,6 +4,7 @@ import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { playerKey, StoreError } from './store.mjs';
 import { pearlKind, profilePearls, canonicalText } from './pearlOperations.mjs';
 import { PearlQueue } from './pearlQueue.mjs';
+import { pearlMutationGate } from './pearlMutationGate.mjs';
 
 export class ProfileSessions {
   constructor(store, onFailure, { journal = null } = {}) {
@@ -19,7 +20,7 @@ export class ProfileSessions {
   async open(id, key, weapon = 0, initialize = null) {
     key = playerKey(key);
     if (this.accounts.has(key)) throw new StoreError('session');
-    this.pearls.assertOpen(key);
+    pearlMutationGate(this).assertAvailable({ accounts: [key] });
     const s = { id, key, version: 0, confirmed: null, pending: null, running: null, pearlBusy: null,
       last: null, failed: false, closed: false };
     this.accounts.set(key, s); this.clients.set(id, s);
@@ -36,6 +37,7 @@ export class ProfileSessions {
       const p = row ? sanitizeProfile(row.data) : newProfile({ weapon });
       if (!p) throw new StoreError('profile');
       if (row && (!Number.isSafeInteger(row.version) || row.version < 1 || row.version > 2147483647)) throw new StoreError('response');
+      pearlMutationGate(this).assertAvailable({ uids: profilePearls(p).map((q) => q.uid) });
       await Promise.all(profilePearls(p).map(async (q) => {
         const registered = await this.store.loadUnique(q.uid);
         if (registered && (registered.kind !== pearlKind(q.kind) || registered.holder !== key ||
@@ -44,6 +46,7 @@ export class ProfileSessions {
         }
       }));
       if (s.closed) throw new StoreError('cancelled');
+      pearlMutationGate(this).assertAvailable({ accounts: [key], uids: profilePearls(p).map((q) => q.uid) });
       s.version = row?.version ?? 0;
       s.confirmed = structuredClone(p); s.last = row ? JSON.stringify(p) : null;
       return p;
@@ -53,12 +56,13 @@ export class ProfileSessions {
     }
   }
 
-  save(id, raw) {
+  save(id, raw, reservation = null) {
     const s = this.clients.get(id);
     if (!s || s.closed || s.failed) return;
     // LocalServer profiles are mutable; no reference to their later state crosses an await.
     const p = sanitizeProfile(raw);
     if (!p) { this.fail(s, 'profile'); return; }
+    pearlMutationGate(this).assertSnapshotAvailable({ accounts: [s.key], uids: profilePearls(p).map((q) => q.uid) }, reservation);
     if (s.pearlBusy && canonicalText(raw.pearls) !== canonicalText(p.pearls)) { this.fail(s, 'ownership'); return; }
     s.pending = { data: p, text: JSON.stringify(p) };
     this.kick(s);
@@ -93,9 +97,9 @@ export class ProfileSessions {
     s.version = result.version; s.last = next.text; s.confirmed = structuredClone(next.data);
   }
 
-  commitPearl(meta, build) { return this.pearls.commit(meta, build); }
+  commitPearl(meta, build, reservation = null) { return this.pearls.commit(meta, build, 'pearl', reservation); }
   reconcilePearl(operationId) { return this.pearls.reconcile(operationId); }
-  commitPearlGround(meta, build) { return this.pearls.commit(meta, build, 'ground'); }
+  commitPearlGround(meta, build, reservation = null) { return this.pearls.commit(meta, build, 'ground', reservation); }
   reconcilePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground'); }
   recoverPearls() { return this.pearls.recover(); }
   resumePearl(operationId) { return this.pearls.reconcile(operationId, 'pearl', true); }
@@ -103,6 +107,7 @@ export class ProfileSessions {
 
   fail(s, code) {
     if (s.failed) return;
+    pearlMutationGate(this).invalidate({ accounts: [s.key] });
     s.failed = true; s.pending = null; this.errors++;
     this.onFailure?.(s.id, code);
   }
@@ -110,6 +115,7 @@ export class ProfileSessions {
   close(id) {
     const s = this.clients.get(id);
     if (!s) return;
+    pearlMutationGate(this).invalidate({ accounts: [s.key] });
     s.closed = true;
     // Keep the account reserved until the final write ends, including a previous in-flight save.
     this.maybeRelease(s);
@@ -118,7 +124,10 @@ export class ProfileSessions {
   maybeRelease(s) { if (s.closed && !s.running && !s.pearlBusy && !s.pending) this.release(s); }
 
   release(s) {
-    if (this.accounts.get(s.key) === s) this.accounts.delete(s.key);
+    if (this.accounts.get(s.key) === s) {
+      pearlMutationGate(this).invalidate({ accounts: [s.key] });
+      this.accounts.delete(s.key);
+    }
     if (this.clients.get(s.id) === s) this.clients.delete(s.id);
   }
 

@@ -6,6 +6,7 @@ import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { StoreError, playerKey } from './store.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { groundKey, groundOperation, checkedGroundResult } from './pearlGround.mjs';
+import { pearlMutationGate } from './pearlMutationGate.mjs';
 
 const clone = (value) => structuredClone(value);
 const frozen = (value) => {
@@ -25,18 +26,13 @@ export class PearlStaging {
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
     this.limit = limit; this.accounts = new Map(); this.uids = new Map(); this.operations = new Map();
+    this.gate = pearlMutationGate(sessions);
     this.tasks = new Set(); this.completed = []; this.sequence = 0;
   }
 
   // Trusted adapters pass account keys/UIDs before commerce, death, mint, join or any other mutation.
   assertAvailable({ accounts = [], uids = [] } = {}) {
-    this.sessions.pearls.requireReady();
-    for (const account of accounts) {
-      const key = playerKey(account);
-      if (this.accounts.has(key)) throw new StoreError('busy');
-      this.sessions.pearls.assertOpen(key);
-    }
-    for (const uid of uids) if (this.uids.has(uid) || this.sessions.pearls.uids.has(uid)) throw new StoreError('busy');
+    this.gate.assertAvailable({ accounts, uids });
   }
 
   endpoint({ clientId, entity } = {}) {
@@ -69,7 +65,8 @@ export class PearlStaging {
       from: from.key, to: to.key, expectedVersion, world: this.scope, ground: null },
     profiles: endpoints.map((e) => ({ id: e.key, before: clone(e.profile.pearls), after: clone(view.profiles.get(e.entity).pearls) })),
     ledger: { owner: to.profile.pirateId, entity: to.entity, place: 'profile' }, events: view.events });
-    const ctx = { plan, endpoints, ledger: clone(ledger), state: 'pending', sequence: ++this.sequence, invalid: false };
+    const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids: [uid] });
+    const ctx = { plan, endpoints, reservation, ledger: clone(ledger), state: 'pending', sequence: ++this.sequence };
     this.operations.set(plan.meta.operationId, ctx); this.uids.set(uid, ctx);
     for (const e of endpoints) this.accounts.set(e.key, ctx);
 
@@ -78,7 +75,7 @@ export class PearlStaging {
     const task = Promise.resolve().then(async () => {
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
-        for (const e of endpoints) this.sessions.save(e.clientId, clone(e.profile));
+        for (const e of endpoints) this.sessions.save(e.clientId, clone(e.profile), ctx.reservation);
         const result = await this.sessions.commitPearlGround(plan.meta, (rows) => {
           if (!this.current(ctx)) throw new StoreError('cancelled');
           const built = rows.map(({ id, data }) => {
@@ -89,7 +86,7 @@ export class PearlStaging {
           ctx.request = groundOperation({ ...plan.meta, profiles: built.map((p) => ({ ...p,
             expectedVersion: rows.find((row) => row.id === p.id).version })) }).request;
           return built;
-        });
+        }, ctx.reservation);
         if (!ctx.request || !checkedGroundResult(result?.receipt, ctx.request).ok) throw new StoreError('response');
         ctx.receipt = clone(result.receipt);
         ctx.state = 'ready';
@@ -101,7 +98,7 @@ export class PearlStaging {
   }
 
   current(ctx) {
-    if (ctx.invalid) return false;
+    if (!this.gate.active(ctx.reservation)) return false;
     const w = this.world;
     return ctx.endpoints.every((e) => this.sessions.clients.get(e.clientId) === e.session &&
       this.sessions.accounts.get(e.key) === e.session && !e.session.closed && !e.session.failed &&
@@ -112,13 +109,23 @@ export class PearlStaging {
   // Lifecycle callers must invalidate before close/death/despawn, including death followed by revival
   // before the next drain. This does not cancel an in-flight SQL transaction or release its fence.
   invalidate(account) {
-    const ctx = this.accounts.get(playerKey(account));
-    if (ctx) ctx.invalid = true;
+    this.gate.invalidate({ accounts: [playerKey(account)] });
+  }
+
+  // A live profile can still contain the pre-commit UID while storage has already moved it. Adapters
+  // must guard before syncProfile/send, leaving dirty/save scheduling intact when publication waits.
+  assertPublishable(clientId) {
+    const session = this.sessions.clients.get(clientId);
+    if (!session || session.closed || session.failed) throw new StoreError('session');
+    this.gate.assertAvailable({ accounts: [session.key] });
   }
 
   save(clientId, raw) {
     const session = this.sessions.clients.get(clientId), ctx = session && this.accounts.get(session.key);
-    if (!ctx) { this.sessions.save(clientId, raw); return; }
+    if (!ctx) {
+      if (session) this.gate.assertAvailable({ accounts: [session.key] });
+      this.sessions.save(clientId, raw); return;
+    }
     if (ctx.state === 'fenced' || !this.current(ctx)) throw new StoreError('busy');
     const data = normalized(raw), delta = ctx.plan.profiles.find((p) => p.id === session.key);
     if (data.pirateId !== `account:${session.key}` || canonicalText(data.pearls) !== canonicalText(delta.before)) throw new StoreError('ownership');
@@ -129,6 +136,7 @@ export class PearlStaging {
   }
 
   fence(ctx, code) {
+    this.gate.fence(ctx.reservation);
     ctx.state = 'fenced'; ctx.code = code;
     for (const e of ctx.endpoints) {
       // Mark both authorities even when a notification callback closes another connection or throws.
@@ -166,13 +174,16 @@ export class PearlStaging {
       } catch (error) { outcomes.push(this.fence(ctx, codeOf(error))); continue; }
       const eventCount = w.events.length;
       try {
+        if (!this.current(ctx)) throw new StoreError('cancelled');
         for (const change of writes) { change.e.profile.pearls = change.after; w.profileDirty.add(change.e.entity); }
         w.pearlLedger.set(plan.meta.uid, clone(plan.ledger));
         // ProfileSessions.save only enqueues microtasks. If either enqueue fails, fence clears both
         // pending snapshots synchronously before any write can start; drain never yields here.
-        for (const change of writes) this.sessions.save(change.e.clientId, change.save);
+        for (const change of writes) this.sessions.save(change.e.clientId, change.save, ctx.reservation);
         if (endpoints.some((e) => e.session.failed || e.session.closed)) throw new StoreError('session');
+        if (!this.gate.active(ctx.reservation)) throw new StoreError('cancelled');
         w.events.push(...publication.events);
+        this.gate.release(ctx.reservation);
       } catch (error) {
         // Undo only this tentative local apply, never the durable commit. Fence rather than retry.
         try {

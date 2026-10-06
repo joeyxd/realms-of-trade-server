@@ -56,6 +56,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   sin efectos/éxito previo, con reserva hasta apply/fence y guardados diferidos. **184/184** pertinentes en
   árbol aislado, incluidas 38 nuevas. Reutiliza `transferPearl` sobre vista separada, no edita archivos D06b
   ni conecta host/LocalServer. [Informe](docs/delivery/d09f-pearl-staging.md). Sigue gate común de rutas/lifecycle.
+- Checkpoint posterior D09f-2a, base `0e82162`: reserva común server-only para staging, admisión/guardados
+  y ambas familias de la cola; **226/226**, 42 nuevas. Permisos internos y lifecycle invalidation, sin hooks/activación de sim.
+  [Contrato/evidencia](docs/delivery/d09f-mutation-gate.md); [parche siguiente D09f-2b](docs/briefs/m5-pearl-common-gate.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
@@ -122,7 +125,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D06 | M6 P4 parcial + M7 P1–P2: carga/comercio y primera producción | Caja A02 y atlas/modelos existentes; red/parrilla sin export útil; iconos A06 pendientes | D05; autoridad, lotes completos, fracciones guardadas; reservas de puerto D09 | D06a aceptado; D06b local alpha.4/protocolo 16, 547/547 y escritorio con 12 capturas ([producción](docs/delivery/d06b-production.md)); móvil D06b pendiente. Agua/hamaca/luces/iconos abiertos |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
-| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–e, 003/004/005 reales; D09f-1 coordinador give dormant, 184/184 en aislamiento ([informe](docs/delivery/d09f-pearl-staging.md)). Gate común/host/juego/restauración/adopción y operaciones navales pendientes |
+| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–e, 003/004/005 reales; D09f-2a reserva común de sesiones/cola/staging, 226/226 en aislamiento ([informe](docs/delivery/d09f-mutation-gate.md)). Hooks de juego/restauración/adopción y operaciones navales pendientes |
 | D10 | M6 P5–P6 inicial + M7 rutas: primer viaje/naval PvE | A07: un impacto de madera/agua; A04 un sonido si puente listo | D06,D08; D09 para riesgo persistente. Dos rutas, NPC vencible, reparar/recuperar | Pendiente |
 | D11 | Dos jugadores: huida, rendición, saqueo, notoriedad/patrulla | Señales/banderas legibles, efectos pequeños | D09–D10 y reglas legales/de pérdidas definidas; dos clientes y liquidación única | Pendiente |
 | D12 | Abordaje inicial, formato por definir | A05 cobertura/pasarela; reutilizar personajes actuales | D11 y formato decidido; solo/cooperativo, colisiones y latencia. Recomendación: cubiertas enganchadas | Pendiente |

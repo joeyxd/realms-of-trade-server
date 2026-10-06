@@ -42,8 +42,12 @@ Checkpoint D09f-1, base `1b5c2fa`: **coordinador de staging dormant aceptado en 
 un UID gestionado entre cuentas. Reutiliza elegibilidad actual en una vista separada; reserva hasta apply
 en tick/fence, conserva progreso y no publica éxito anticipado. **184/184** pruebas pertinentes, incluidas
 38 nuevas; host/LocalServer sin conexión. [Contrato y siguiente corte](docs/delivery/d09f-pearl-staging.md).
-Siguiente D09f-2: diseñar/conectar una reserva común para comandos, snapshots y lifecycle con el dueño
-D06b; resolver CAS same-holder/lotes de varios UIDs antes de activación. P4/P6 siguen parciales.
+Checkpoint D09f-2a, base `0e82162`: **reserva común server-only**, compartida por staging, admisión/guardados
+de sesiones y ambas familias de la cola. Permiso opaco interno; rechaza saves/commits que saltan una reserva,
+invalida close/fail/release y protege publicación previa a apply. **226/226** pertinentes, **42 nuevas**.
+[Contrato y evidencia](docs/delivery/d09f-mutation-gate.md).
+Siguiente D09f-2b: [hooks concretos](docs/briefs/m5-pearl-common-gate.md) con dueño de LocalServer/sim;
+CAS same-holder/lotes de varios UIDs, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -113,7 +117,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 real verificada.
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
-  D09f-1 prueba staging de give fuera del host; falta integración común y restauración/publicación del suelo.
+  D09f-1 prueba staging de give fuera del host y D09f-2a añade reserva común de autoridad/cola/guardados;
+  faltan hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
@@ -123,7 +128,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
   D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
-  dormant give/commit/apply en tick. No están conectados al host/juego; mundo/barcos siguen separados.
+  dormant give/commit/apply en tick; D09f-2a comparte reservas con admisión/guardados/commits de sesiones.
+  No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas

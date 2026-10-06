@@ -7,6 +7,7 @@ import { pearlIntent, pearlOperation, canonicalText, profilePearls, pearlKind, v
   checkedPearlResult, checkedPearlReceipt } from './pearlOperations.mjs';
 import { groundIntent, groundOperation, checkedGroundResult, checkedGroundReceipt, checkedLocation } from './pearlGround.mjs';
 import { checkedJournalEntry, journalEntry } from './pearlJournal.mjs';
+import { pearlMutationGate } from './pearlMutationGate.mjs';
 
 // Both families share all reservations. A separate ground queue would allow an unresolved legacy
 // request to race a new ground intent for the same UID, account or operation UUID.
@@ -158,12 +159,15 @@ export class PearlQueue {
     ctx.uncertain = false;
   }
 
-  commit(raw, build, family = 'pearl') {
+  commit(raw, build, family = 'pearl', reservation = null) {
     let intent, lanes;
     try {
       this.requireReady();
       intent = frozen(families[family].intent(raw));
       if (typeof build !== 'function') throw new StoreError('operation');
+      pearlMutationGate(this.sessions).assertStorageAvailable({
+        accounts: [intent.from, intent.to].filter(Boolean), uids: [intent.uid],
+      }, reservation);
       if (this.uids.has(intent.uid) || this.operationIds.has(intent.operationId)) throw new StoreError('busy');
       lanes = [intent.from, intent.to].filter(Boolean).sort().map((id) => {
         if (this.accountIds.has(id)) throw new StoreError('busy');
@@ -173,7 +177,7 @@ export class PearlQueue {
         return s;
       });
     } catch (err) { return Promise.reject(storageError(err)); }
-    const ctx = { intent, family, lanes, before: new Map(), prior: [], uncertain: false, receiptSeen: false, concrete: null };
+    const ctx = { intent, family, lanes, reservation, before: new Map(), prior: [], uncertain: false, receiptSeen: false, concrete: null };
     // Reserve every lane before the first await. Capture pending pre-intent saves separately from
     // snapshots that arrive during the RPC, including LocalServer's final disconnect snapshot.
     for (const s of lanes) {
@@ -193,6 +197,9 @@ export class PearlQueue {
   }
 
   ready(ctx) {
+    pearlMutationGate(this.sessions).assertStorageAuthorized({
+      accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+    }, ctx.reservation);
     if (ctx.lanes.some((s) => s.failed)) throw new StoreError('conflict');
     if (ctx.lanes.some((s) => s.closed)) throw new StoreError('cancelled');
   }
@@ -382,7 +389,13 @@ export class PearlQueue {
         catch (err) {
           // Only an authoritative null receipt permits an explicit single exact-request retry.
           if (!resume || !this.journal || !ctx.receiptAbsent || ctx.receiptSeen || ctx.settledOutcome) throw err;
+          pearlMutationGate(this.sessions).assertStorageAuthorized({
+            accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+          }, ctx.reservation ?? null);
           await this.prepare(ctx);
+          pearlMutationGate(this.sessions).assertStorageAuthorized({
+            accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+          }, ctx.reservation ?? null);
           const api = families[ctx.family], { operationId: _id, ...request } = ctx.concrete;
           ctx.uncertain = true;
           try { receipt = api.check(await this.sessions.store[api.commit](ctx.concrete), request); }

@@ -4,6 +4,9 @@ Base de gameplay `bcd0886`, documentación `68fdcec`, D09e `cfb494b`.
 005 aplicada por el autor y verificada en Supabase: [aceptación real](../delivery/d09e-journal-live.md).
 D09f-1 implementa el coordinador dormant de una entrega entre cuentas, aceptado sobre `1b5c2fa`:
 [contrato y evidencia](../delivery/d09f-pearl-staging.md). No habilita circulación durable en host/juego.
+D09f-2a añade la [reserva común de autoridad](../delivery/d09f-mutation-gate.md), con gates en sesiones/
+cola/guardados y permiso interno; los [hooks concretos de integración](m5-pearl-common-gate.md) siguen
+pendientes con el dueño gameplay. No activa ninguna ruta de circulación.
 
 ## Dueños y reutilización
 

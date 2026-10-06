@@ -493,6 +493,9 @@ Marinero de agua dulce (hablar con el capitán).
   [D09f-1](docs/delivery/d09f-pearl-staging.md) prueba un coordinador dormant para give entre cuentas:
   elegibilidad actual sobre perfiles separados, reserva hasta apply/fence y aplicación síncrona en tick.
   184/184 pertinentes en aislamiento; gate común de mutaciones/snapshots/lifecycle e integración pendientes.
+  [D09f-2a](docs/delivery/d09f-mutation-gate.md) comparte reservas entre staging y admisión/guardados/commits
+  de sesiones; los permisos quedan en servidor y close/fail/release invalidan antes de liberar identidad.
+  Hooks de sim/LocalServer y restauración/políticas siguen pendientes; juego no activado.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.

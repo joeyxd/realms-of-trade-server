@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-1 dormant**: 003/004/005 reales, diario y coordinador give/apply en tick aislado; gate común/host/juego/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2a server-only**: 003/004/005 reales, diario, staging y reserva común de sesiones/cola/guardados, 226/226 aisladas; hooks de juego/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -203,6 +203,21 @@ autor.
 - **Siguiente D09f-2**: acordar parche con dueño de LocalServer/sim para puerta común de mutaciones,
   snapshots y lifecycle; CAS same-holder/lotes death/reemplazo, hidratación/reloj/adopción antes de activar.
   Nunca activar solo give mientras las otras rutas sigan saltándose la reserva.
+
+### M5 P4/P6 — reserva común de autoridad D09f-2a (2026-10-05)
+
+- Base `0e82162`; [contrato/evidencia](delivery/d09f-mutation-gate.md),
+  [hooks concretos del siguiente parche](briefs/m5-pearl-common-gate.md).
+- Un gate por ProfileSessions reserva conjuntos completos de cuentas/UIDs con handles opacos. Staging,
+  admisión/guardados y ambos commits de sesiones lo consultan; bypass se rechaza antes del dispatch.
+  Close/fail/release invalidan antes de identidad/callbacks; prepare y resume revalidan permiso antes de envío.
+- Snapshot directo durante apply gap ya no despacha escritura. Perfil publicado espera mediante
+  `assertPublishable`; progreso propio diferido y apply en tick siguen conservados.
+- **80/80** pruebas enfocadas y **226/226** pertinentes, **42 nuevas**; árbol Git aislado sin env.
+  No SQL/env nueva, live adicional, inicio/reinicio/publicación del host ni cambio de protocolo/UI.
+  LocalServer/sim/host sin hooks ni activación; trabajo gameplay del otro dueño intacto.
+- **Siguiente D09f-2b:** único escritor de hooks, CAS same-holder/lotes death/reemplazo y restauración de
+  World/reloj/adopción/invitados. Una reserva multi-UID no es transacción SQL de lote. P4/P6 siguen parciales.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 
