@@ -114,6 +114,9 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   recoger con un gancho por el camino (madera, lona, barriles); llegar a puerto abre su mercado (M7).
   Este viaje abstracto es fase A; sus pérdidas aleatorias no sustituyen el combate naval interactivo de fase B.
 - [ ] **P6 (fase B) El mar.** Movimiento por timón/propulsión, proyectiles, daño por pieza y reparación.
+  **D08a.1 implementado en bahía aislada:** manejo arcade, corrientes y captura de vela con timing,
+  espuma anclada al mundo, estela/spray, cómic/cámara y audio acotados. [Entrega y límites](docs/delivery/d08a-arcade-navigation.md).
+  Prueba humana, captura horizontal sin anomalía, móvil físico, pilotaje autoritativo y cubierta móvil siguen abiertos.
   Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
   → patrulla/notoriedad → abordaje de dos cubiertas. Topología y costes pendientes; M5 es puerta de persistencia.
 - [ ] **P7 Progresión y aspecto.** Mesa de cartas: investigar piezas (vela mayor, motor, alambique) con muestras
