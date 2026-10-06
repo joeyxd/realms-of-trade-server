@@ -2,13 +2,25 @@ import * as THREE from 'three';
 import { CURRENT_LANES, currentAt } from '../../src/sim/naval/navigation.js';
 import { navalPose } from '../../src/sim/naval/handling.js';
 import { ParticlePool } from '../../src/render/vfx/particles.js';
-import { LAYER } from '../../src/render/pipeline.js';
+import { LAYER, FXU, GLSL_FX_DEPTH } from '../../src/render/pipeline.js';
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(n) ? n : lo));
 const FOAM_CELL_SIZE = 4;
 const FOAM_CELL_RADIUS = Object.freeze({ mobile: 6, desktop: 9 });
 const FOAM_FLECK_CAP = Object.freeze({ mobile: 338, desktop: 722 });
 const FOAM_VERTICES_PER_FLECK = 6;
+
+function depthAware(material) {
+  // The outlined FX target has no hardware depth. Reuse the game's opaque-depth test so
+  // surface accents remain behind the hull and sail in both rendering quality modes.
+  material.onBeforeCompile = (shader) => {
+    Object.assign(shader.uniforms, FXU);
+    shader.fragmentShader = GLSL_FX_DEPTH + shader.fragmentShader.replace(
+      '#include <opaque_fragment>', 'diffuseColor.a *= fxDepthFade(0.06);\n#include <opaque_fragment>');
+  };
+  material.customProgramCacheKey = () => 'naval-lab-surface-depth-v1';
+  return material;
+}
 
 function hashCell(x, z, salt = 0) {
   let h = Math.imul(x | 0, 0x45d9f3b) ^ Math.imul(z | 0, 0x119de1f3) ^ Math.imul(salt + 1, 0x3449);
@@ -262,6 +274,7 @@ export class NavalLabEffects {
       scene.add(ribbon.mesh);
       this.trails.push(ribbon);
     }
+    for (const mesh of [this.foam.mesh, this.currentBand, this.chevrons.mesh, ...this.trails.map((t) => t.mesh)]) depthAware(mesh.material);
     this.reset();
   }
 
