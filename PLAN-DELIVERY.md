@@ -94,6 +94,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   547/547 sobre commit aislado; escritorio aceptado (12 capturas), móvil pendiente en [entrega](docs/delivery/d06b-production.md).
   [Unreal/FAB](docs/research/unreal-assets/D06B-REUSE.md): reutilizar atlas/modelos, banco aplazado.
   Cerrar aceptación móvil D06b y seguir D08; P4 agua/hamaca/luces y publicación siguen pendientes.
+- Checkpoint D08a (2026-10-05): bahía aislada implementada, fuente `eab3e5c`; 26 pruebas propias,
+  regresión 695/695 en 72 archivos fijados. Carga/acomodo/viento constante y medidas repetibles;
+  UI/controles preparados, **aceptación visual pendiente** por revisión automática de Chrome/límite de uso.
+  [Entrega](docs/delivery/d08a-handling-lab.md), [Unreal/FAB previo](docs/research/unreal-assets/D08-REUSE.md).
+  No activa pilotaje/carga real; cerrar móvil D06b y revisar bahía antes de integración naval.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),
@@ -128,7 +133,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D05 | M6 P3: editor de construcción | Renderer/atlas existentes y caja A02; no nuevo kit A05 | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Local aceptado en software, 413/413 y 24 capturas ([informe](docs/delivery/d05-raft-editor.md)); dispositivos/publicación pendientes |
 | D06 | M6 P4 parcial + M7 P1–P2: carga/comercio y primera producción | Caja A02 y atlas/modelos existentes; red/parrilla sin export útil; iconos A06 pendientes | D05; autoridad, lotes completos, fracciones guardadas; reservas de puerto D09 | D06a aceptado; D06b local alpha.4/protocolo 16, 547/547 y escritorio con 12 capturas ([producción](docs/delivery/d06b-production.md)); móvil D06b pendiente. Agua/hamaca/luces/iconos abiertos |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
-| D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
+| D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | D08a laboratorio local implementado; 26 propias y 695/695 fijadas ([informe](docs/delivery/d08a-handling-lab.md)); visual pendiente. Autoridad/cubierta móvil/progresión sin integrar |
 | D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–e, 003/004/005 reales; D09f-2a reserva común y D09f-2b.1 CAS same-holder de un UID, 306/306 aisladas ([informe](docs/delivery/d09f-same-holder.md)). 006 real, staging ECS/lotes, hooks/restauración/adopción y operaciones navales pendientes |
 | D10 | M6 P5–P6 inicial + M7 rutas: primer viaje/naval PvE | A07: un impacto de madera/agua; A04 un sonido si puente listo | D06,D08; D09 para riesgo persistente. Dos rutas, NPC vencible, reparar/recuperar | Pendiente |
 | D11 | Dos jugadores: huida, rendición, saqueo, notoriedad/patrulla | Señales/banderas legibles, efectos pequeños | D09–D10 y reglas legales/de pérdidas definidas; dos clientes y liquidación única | Pendiente |

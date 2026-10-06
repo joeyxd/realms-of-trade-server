@@ -1,6 +1,8 @@
 # D08 — prueba de manejo naval, carga y viento
 
-Estado: **propuesta de prototipo, sin implementar ni aceptar**. Fecha: 2026-10-05.
+Estado: **D08a bahía aislada implementada; aceptación visual e integración naval pendientes**.
+Fecha: 2026-10-05. [Brief del corte](d08a-handling-lab.md) y [resultado](../delivery/d08a-handling-lab.md).
+Este documento conserva la dirección de D08 completo; no confundir el laboratorio con navegación activa.
 Continúa `docs/NAVAL-ROADMAP.md` y la prioridad del autor: una casa modular que también
 sea un vehículo agradable de pilotar. No fija el formato definitivo del mar ni del abordaje.
 
@@ -22,8 +24,10 @@ sea un vehículo agradable de pilotar. No fija el formato definitivo del mar ni 
 ## Lugar en las entregas
 
 [D04 P2, cubierta transitable](d04p2-walkable-raft.md), D05 y D06a ya están aceptados localmente.
-El siguiente corte jugable es cerrar móvil D06b y después implementar una bahía de prueba sin pérdidas
-persistentes para comparar manejo. La persistencia D09 puede avanzar en paralelo con su dueño respectivo.
+La bahía D08a ya está implementada de forma aislada, con simulación y medidas comprobadas;
+su preparación avanzó mientras la revisión automática de Chrome estaba bloqueada por límite de uso.
+El siguiente corte de aceptación es cerrar móvil D06b y revisar visualmente la bahía para comparar manejo,
+sin pérdidas persistentes. La persistencia D09 puede avanzar en paralelo con su dueño respectivo.
 Es una prueba acotada de D08: no reemplaza las dependencias de D10 para un viaje real con
 comercio, enemigos y carga persistente. No esperar a terminar PvP para evaluar el movimiento.
 
@@ -68,6 +72,10 @@ quitar bienes reales y producir botín o pérdida una sola vez, según la regla 
 retorno automático a puerto ni duplicación al reconectar.
 
 ## Controles propuestos para probar
+
+W/S/A/D, botones táctiles y mando estándar ya tienen adaptador en D08a; su aceptación por dispositivo
+sigue pendiente. Los controles descritos aquí para entrar/salir del puesto y combatir son propuestas
+para la integración futura, no acciones activadas en la partida.
 
 - Interacción en el puesto de mando cambia de caminar a pilotar con estado explícito.
   Al salir se limpian entradas pendientes; el barco no se detiene por arte de magia.

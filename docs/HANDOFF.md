@@ -72,6 +72,22 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   La propuesta de diferenciación/ingresos es una hipótesis con precedentes y métricas de piloto en el plan.
   Próximo paso propio: L00 al asignarlo; la siguiente entrega principal conserva su estado actual.
 
+### D08a — bahía de manejo aislada (2026-10-05)
+
+- Fuente `eab3e5c`; laboratorio local independiente en `PROBAR-NAVEGACION.cmd` / puerto 5180.
+  [Brief](briefs/d08a-handling-lab.md), [entrega y evidencia](delivery/d08a-handling-lab.md).
+  No activa pilotaje en partida ni accede a perfiles/bienes; versión/protocolo alpha.4/16 conservados.
+- Cuerpo agregado determinista a 60 Hz, inercia/drag/freno/timón, lastre centrado/periférico/alto y casa 4 × 4;
+  cuatro vientos constantes, ayuda de remo en calma. Soltar lastre conserva pose/movimiento del casco.
+  W/S/A/D, controles táctiles y mando estándar; pausa/blur limpian entradas. Coeficientes experimentales.
+- **26/26 propias; 695/695 regresión** en 72 archivos fijados al commit. 20 comparaciones;
+  el mismo peso en extremos alarga el giro frente al centro. 30/60/120 FPS dan los mismos ticks/resultados
+  dentro del presupuesto, sin afirmar FPS físicos. Fuente Unreal intacta; atlas/crate/agua reutilizados.
+- **Aceptación visual pendiente:** Chrome seguía bloqueado por revisión automática/límite de uso; sin
+  nuevas capturas, sin eludir bloqueo. Selección real de atlas y desktop/táctil/GPU físicos no aceptados.
+- **Siguiente:** resolver revisión y cerrar móvil D06b; revisar bahía y sensación humana, ajustar valores;
+  después corte de autoridad/predicción/cubierta móvil. D09 antes de riesgo persistente; D08 completo abierto.
+
 ### D06b — primera producción de la balsa (2026-10-05)
 
 - Fuente `5b253a4`; **0.6.0-alpha.4 / protocolo 16**. Red/parrilla en editor de nueve piezas;

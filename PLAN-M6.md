@@ -19,6 +19,12 @@ Nueve piezas en editor; H/Bodega → Producción. Fuente `5b253a4`, 16 pruebas n
 agua/huertos, hamaca/reaparición y luces abiertos. Cerrar móvil y seguir D08; fuentes Unreal intactas,
 atlas existente 1024/512 y build local verificado, sin publicación.
 
+Checkpoint D08a: [bahía de manejo aislada](docs/delivery/d08a-handling-lab.md), fuente `eab3e5c`.
+Simulación/medidas e inputs comprobados: 26 propias, 695/695 regresión fijada. Peso/acomodo/inercia,
+viento constante y lastre expulsable de prueba; renderer/atlas/agua reutilizados. **Visual pendiente**
+por revisión automática de Chrome/límite de uso; D06b móvil sigue abierto. No activa pilotaje en partida,
+no cambia bienes/perfiles/protocolo, ni cierra P5/P6. Primero aceptación móvil/bahía, luego integración.
+
 Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
 atlas original de cuatro superficies y derivados WebP para escritorio/móvil. Se integra sobre P1;
 P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a importar un kit FAB modular.

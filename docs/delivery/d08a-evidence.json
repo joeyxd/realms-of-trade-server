@@ -1,0 +1,951 @@
+{
+  "schema": 1,
+  "sourceSha": "eab3e5c64f80984d3fcad1e9224d1c3cd628ff98",
+  "implementationStatus": "local experimental lab; visual acceptance pending",
+  "gameVersion": "0.6.0-alpha.4",
+  "protocolVersion": 16,
+  "versionChanged": false,
+  "gamePilotActivated": false,
+  "published": false,
+  "regression": {
+    "tests": 695,
+    "passed": 695,
+    "failed": 0,
+    "skipped": 0,
+    "testFiles": 72,
+    "durationMs": 158801.8116,
+    "concurrency": 2,
+    "perFileTimeoutMs": 60000,
+    "logPath": ".scratch/d08a-regression-pinned.log",
+    "logSha256": "4244c1ce547d35a6cd06e3f842073e6e481fae7fb9e22883c577e4d8f711e7c4",
+    "isolatedTree": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\d08a-checked-eab3e5c64f80",
+    "dependencyIsolation": "Three.js copied inside isolated tree for static containment checks; other Node packages shared by directory junction"
+  },
+  "scopedTests": 26,
+  "sourceFiles": [
+    {
+      "path": "PROBAR-NAVEGACION.cmd",
+      "bytes": 239,
+      "sha256": "e89585b09977816cf465839e639a5a6e8345d73af8fbc375b2044d40cc6cd3d3"
+    },
+    {
+      "path": "docs/briefs/d08a-handling-lab.md",
+      "bytes": 3588,
+      "sha256": "e3b6e0c54fa572b9995a800c0461d29d517880ea0deb4fd17d4ae3d7ef8eddb8"
+    },
+    {
+      "path": "docs/research/unreal-assets/D08-REUSE.md",
+      "bytes": 8057,
+      "sha256": "f2422c4b93128eca8d39fbedb4e962e67cff3ef7599db48d4e14abaa4e1439cf"
+    },
+    {
+      "path": "src/data/navalHandling.js",
+      "bytes": 511,
+      "sha256": "f0b1d623c103c0c26b6d72f8eff996e8e0f8366acb905d5e07716d0338d5c450"
+    },
+    {
+      "path": "src/sim/naval/handling.js",
+      "bytes": 7570,
+      "sha256": "ffe206645fbfb45ea91a55815d5da79c9a693e7554e25bf9ea0cbb36b40aeaf1"
+    },
+    {
+      "path": "tests/naval-handling.test.mjs",
+      "bytes": 10184,
+      "sha256": "feaeb161b8ff3040359deb03a9213e42db40f35d070612fbf8d681d985ac1cde"
+    },
+    {
+      "path": "tests/naval-lab-clock.test.mjs",
+      "bytes": 1306,
+      "sha256": "ffe8a30009022204d99ba3a30a93be2ebac170702ffc7241efe83148909e97a2"
+    },
+    {
+      "path": "tests/naval-lab-input.test.mjs",
+      "bytes": 6738,
+      "sha256": "dbdb9f49af7c84a37cc73b7a81abc2c09083d9a4bc89711ba40468230fb2e4ac"
+    },
+    {
+      "path": "tests/naval-lab-server.test.mjs",
+      "bytes": 4931,
+      "sha256": "60da270982cf7f9fc5b743638d6446974331a7d9222e31d6bb95c13adfc1d6e5"
+    },
+    {
+      "path": "tools/check-naval-handling.mjs",
+      "bytes": 2000,
+      "sha256": "07510dfc9bebd63464d6fb4258c91bb8f11f1c065e2669eadbb43a373f6316c7"
+    },
+    {
+      "path": "tools/naval-lab.mjs",
+      "bytes": 6146,
+      "sha256": "625ef6f96cd44cd4070b4f7ccdbba66ad1e13f1a9c0a58492f3a460b9ef710a9"
+    },
+    {
+      "path": "tools/naval-lab/clock.js",
+      "bytes": 781,
+      "sha256": "dbb42918329e7f690a7489644d4b9c3f1c53da5bd610fa452a658db516706432"
+    },
+    {
+      "path": "tools/naval-lab/fixtures.js",
+      "bytes": 2195,
+      "sha256": "e0741c3ce1aa29361081be90fcd94d4ed637eed40baa255f9b6041e8583b5f04"
+    },
+    {
+      "path": "tools/naval-lab/index.html",
+      "bytes": 4152,
+      "sha256": "52093ad48bc43dc397e61e434fd273c19a6418698c54a618608b9c37427cdd0f"
+    },
+    {
+      "path": "tools/naval-lab/input.js",
+      "bytes": 5850,
+      "sha256": "6748f02a68f2e42856fefdc8f46c306cf532b3a30ccf0f7211fcb9add9f3bee9"
+    },
+    {
+      "path": "tools/naval-lab/main.js",
+      "bytes": 13759,
+      "sha256": "0751320ba319b34d3baa1203e65affae14f03ce2c5e5851d2366f9817e80298d"
+    },
+    {
+      "path": "tools/naval-lab/measure.js",
+      "bytes": 1621,
+      "sha256": "9d45d5bdde8ef9e7c49281cc1c076e85f81635f14864383eb1835fa34de452d6"
+    },
+    {
+      "path": "tools/naval-lab/style.css",
+      "bytes": 5052,
+      "sha256": "87fd6c034887821ce93fe6f3878f22b6b4dbc54be29a01c403cc9153480315a1"
+    }
+  ],
+  "measurements": [
+    {
+      "fixture": "empty",
+      "wind": "tail",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 0,
+        "mass": 21,
+        "buoyancy": 56,
+        "load": 0.375,
+        "cx": 1.8571428571428572,
+        "cz": 1.8571428571428572,
+        "height": 0,
+        "inertia": 55.142857142857146,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.10101525445522104,
+        "stability": 0.9339591174686888,
+        "flotation": 1,
+        "wetted": 1.0984375,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 4.840142118397407,
+        "distance": 22.845815456648392
+      },
+      "braking": {
+        "seconds": 1.0333333333333332,
+        "distance": 1.0028691622341577,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 3.9166666666666665,
+        "distance": 14.788181644582679,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "center",
+      "wind": "tail",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 71.6,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.744953754591787,
+        "distance": 15.147736349670904
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 5.016666666666667,
+        "distance": 15.247054956000664,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "rim",
+      "wind": "tail",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 186.91999999999996,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.744953754591787,
+        "distance": 15.147736349670904
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 11.9,
+        "distance": 41.533005199770116,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "side",
+      "wind": "tail",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 2.76,
+        "cz": 1.9333333333333333,
+        "height": 1.706666666666667,
+        "inertia": 103.468,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.381459186691199,
+        "stability": 0.6352346502903353,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.744953754591787,
+        "distance": 15.147736349670904
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 9.816666666666666,
+        "distance": 33.51418271788157,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "house",
+      "wind": "tail",
+      "rig": {
+        "dryMass": 95,
+        "cargoMass": 48,
+        "mass": 143,
+        "buoyancy": 224,
+        "load": 0.6383928571428571,
+        "cx": 3.993006993006993,
+        "cz": 3.979020979020979,
+        "height": 0.3342657342657343,
+        "inertia": 951.2634032634035,
+        "beam": 8,
+        "length": 8,
+        "imbalance": 0.005528457447846788,
+        "stability": 0.9398162779111849,
+        "flotation": 1,
+        "wetted": 3.391879026551227,
+        "sail": 2,
+        "cells": 16
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 2.836694138959915,
+        "distance": 10.465127105123894
+      },
+      "braking": {
+        "seconds": 2.2666666666666666,
+        "distance": 2.2138427983216435,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 8.083333333333334,
+        "distance": 22.41652776524033,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "empty",
+      "wind": "cross",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 0,
+        "mass": 21,
+        "buoyancy": 56,
+        "load": 0.375,
+        "cx": 1.8571428571428572,
+        "cz": 1.8571428571428572,
+        "height": 0,
+        "inertia": 55.142857142857146,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.10101525445522104,
+        "stability": 0.9339591174686888,
+        "flotation": 1,
+        "wetted": 1.0984375,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 4.05169932967053,
+        "distance": 18.6818368455878
+      },
+      "braking": {
+        "seconds": 1.0333333333333332,
+        "distance": 1.0028691622341577,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 3.9499999999999997,
+        "distance": 14.106071089750277,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "center",
+      "wind": "cross",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 71.6,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.0589630267057775,
+        "distance": 12.107233722319313
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 5.133333333333333,
+        "distance": 14.85226281351717,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "rim",
+      "wind": "cross",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 186.91999999999996,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.0589630267057775,
+        "distance": 12.107233722319313
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 12.016666666666666,
+        "distance": 40.480367111866514,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "side",
+      "wind": "cross",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 2.76,
+        "cz": 1.9333333333333333,
+        "height": 1.706666666666667,
+        "inertia": 103.468,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.381459186691199,
+        "stability": 0.6352346502903353,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 3.0589630267057775,
+        "distance": 12.107233722319313
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 9.933333333333334,
+        "distance": 32.591094925676465,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "house",
+      "wind": "cross",
+      "rig": {
+        "dryMass": 95,
+        "cargoMass": 48,
+        "mass": 143,
+        "buoyancy": 224,
+        "load": 0.6383928571428571,
+        "cx": 3.993006993006993,
+        "cz": 3.979020979020979,
+        "height": 0.3342657342657343,
+        "inertia": 951.2634032634035,
+        "beam": 8,
+        "length": 8,
+        "imbalance": 0.005528457447846788,
+        "stability": 0.9398162779111849,
+        "flotation": 1,
+        "wetted": 3.391879026551227,
+        "sail": 2,
+        "cells": 16
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 2.2319892316543837,
+        "distance": 8.10457543586473
+      },
+      "braking": {
+        "seconds": 2.2666666666666666,
+        "distance": 2.2138427983216435,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 8.4,
+        "distance": 22.272653057940257,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "empty",
+      "wind": "head",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 0,
+        "mass": 21,
+        "buoyancy": 56,
+        "load": 0.375,
+        "cx": 1.8571428571428572,
+        "cz": 1.8571428571428572,
+        "height": 0,
+        "inertia": 55.142857142857146,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.10101525445522104,
+        "stability": 0.9339591174686888,
+        "flotation": 1,
+        "wetted": 1.0984375,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 1.5777396876926293,
+        "distance": 6.617556637047909
+      },
+      "braking": {
+        "seconds": 1.0333333333333332,
+        "distance": 1.0028691622341577,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 4.666666666666667,
+        "distance": 10.887312243299606,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "center",
+      "wind": "head",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 71.6,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 1.0650376113542157,
+        "distance": 3.94342107726959
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 6.383333333333333,
+        "distance": 12.917588305726621,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "rim",
+      "wind": "head",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 186.91999999999996,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 1.0650376113542157,
+        "distance": 3.94342107726959
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 14.933333333333334,
+        "distance": 32.433182364965276,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "side",
+      "wind": "head",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 2.76,
+        "cz": 1.9333333333333333,
+        "height": 1.706666666666667,
+        "inertia": 103.468,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.381459186691199,
+        "stability": 0.6352346502903353,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 1.0650376113542157,
+        "distance": 3.94342107726959
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 12.383333333333333,
+        "distance": 26.536438796935265,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "house",
+      "wind": "head",
+      "rig": {
+        "dryMass": 95,
+        "cargoMass": 48,
+        "mass": 143,
+        "buoyancy": 224,
+        "load": 0.6383928571428571,
+        "cx": 3.993006993006993,
+        "cz": 3.979020979020979,
+        "height": 0.3342657342657343,
+        "inertia": 951.2634032634035,
+        "beam": 8,
+        "length": 8,
+        "imbalance": 0.005528457447846788,
+        "stability": 0.9398162779111849,
+        "flotation": 1,
+        "wetted": 3.391879026551227,
+        "sail": 2,
+        "cells": 16
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.5798728011123714,
+        "distance": 2.0151909664224723
+      },
+      "braking": {
+        "seconds": 2.2666666666666666,
+        "distance": 2.2138427983216435,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 10.933333333333334,
+        "distance": 19.578145212389625,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "empty",
+      "wind": "calm",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 0,
+        "mass": 21,
+        "buoyancy": 56,
+        "load": 0.375,
+        "cx": 1.8571428571428572,
+        "cz": 1.8571428571428572,
+        "height": 0,
+        "inertia": 55.142857142857146,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.10101525445522104,
+        "stability": 0.9339591174686888,
+        "flotation": 1,
+        "wetted": 1.0984375,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.9296085817004344,
+        "distance": 3.784595685168432
+      },
+      "braking": {
+        "seconds": 1.0333333333333332,
+        "distance": 1.0028691622341577,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 6.45,
+        "distance": 8.24951372132673,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "center",
+      "wind": "calm",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 71.6,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.6041435263067019,
+        "distance": 2.2015435721476244
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 8.466666666666667,
+        "distance": 10.26936836577463,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "rim",
+      "wind": "calm",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 1.9333333333333333,
+        "cz": 1.9333333333333333,
+        "height": 0.21333333333333337,
+        "inertia": 186.91999999999996,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.04714045207910316,
+        "stability": 0.9333596895208989,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.6041435263067019,
+        "distance": 2.2015435721476244
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 24.166666666666668,
+        "distance": 23.382982123766816,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "side",
+      "wind": "calm",
+      "rig": {
+        "dryMass": 21,
+        "cargoMass": 24,
+        "mass": 45,
+        "buoyancy": 56,
+        "load": 0.8035714285714286,
+        "cx": 2.76,
+        "cz": 1.9333333333333333,
+        "height": 1.706666666666667,
+        "inertia": 103.468,
+        "beam": 4,
+        "length": 4,
+        "imbalance": 0.381459186691199,
+        "stability": 0.6352346502903353,
+        "flotation": 1,
+        "wetted": 1.4520089285714286,
+        "sail": 1,
+        "cells": 4
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.6041435263067019,
+        "distance": 2.2015435721476244
+      },
+      "braking": {
+        "seconds": 1.6666666666666667,
+        "distance": 1.6266982140071051,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 19.316666666666666,
+        "distance": 19.477406008231007,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    },
+    {
+      "fixture": "house",
+      "wind": "calm",
+      "rig": {
+        "dryMass": 95,
+        "cargoMass": 48,
+        "mass": 143,
+        "buoyancy": 224,
+        "load": 0.6383928571428571,
+        "cx": 3.993006993006993,
+        "cz": 3.979020979020979,
+        "height": 0.3342657342657343,
+        "inertia": 951.2634032634035,
+        "beam": 8,
+        "length": 8,
+        "imbalance": 0.005528457447846788,
+        "stability": 0.9398162779111849,
+        "flotation": 1,
+        "wetted": 3.391879026551227,
+        "sail": 2,
+        "cells": 16
+      },
+      "acceleration": {
+        "seconds": 6,
+        "speed": 0.2232208912061516,
+        "distance": 0.7683937386401433
+      },
+      "braking": {
+        "seconds": 2.2666666666666666,
+        "distance": 2.2138427983216435,
+        "reached": true
+      },
+      "turning": {
+        "seconds": 16.35,
+        "distance": 13.991019122886556,
+        "reached": true
+      },
+      "initialSpeed": 2,
+      "step": 0.016666666666666666
+    }
+  ],
+  "measurementConditions": "Fixed 60Hz. Six seconds full thrust from rest; brake and 90-degree turn from speed2. 60s timeout. Wind blows toward heading, held constant in world space. Synthetic ballast only.",
+  "visual": {
+    "accepted": false,
+    "screenshots": [],
+    "reason": "Chrome launch remained blocked by automatic approval review usage limit from D06b. No bypass or new launch attempted.",
+    "desktopPending": true,
+    "mobileLandscapePending": true,
+    "mobilePortraitPending": true,
+    "physicalDevicePending": true,
+    "fpsClaim": false
+  },
+  "assets": {
+    "review": "docs/research/unreal-assets/D08-REUSE.md",
+    "sourceProjectsTouched": false,
+    "newTextures": 0,
+    "newModels": 0,
+    "newAudio": 0,
+    "reused": [
+      "RaftLayer",
+      "water shader and pipeline",
+      "accepted Dreamrise crate",
+      "comic atlas1024/512 with procedural fallback"
+    ],
+    "atlasSelectionVerifiedThisCut": false
+  },
+  "limitations": [
+    "lab-only explicit ballast, no persistent hold layout",
+    "experimental coefficients and constant wind, no tiers/XP/skills",
+    "no authority/prediction/network/collision/crew on moving deck",
+    "no real cargo loss or salvage",
+    "no final controls/balance/visual/device acceptance"
+  ]
+}

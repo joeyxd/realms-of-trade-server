@@ -30,6 +30,14 @@ Para un paquete ligado a un commit: `node tools/build-release.mjs HEAD`. Lee el 
 versión/protocolo e imports y crea `dist/<versión>-<SHA>/` con la página, módulos y assets. `release.json` registra
 origen, bytes y SHA256 de cada archivo; cambios locales sin commit no entran. Servir por HTTP para probarlo.
 
+### Bahía experimental de navegación (D08a)
+
+Doble clic en [PROBAR-NAVEGACION.cmd](PROBAR-NAVEGACION.cmd), o `node tools/naval-lab.mjs`;
+abre http://127.0.0.1:5180/ manualmente. Prueba vacío/cargado/acomodo/casa 4 × 4 y cuatro vientos.
+W/S: propulsión/freno, A/D: timón, J: soltar lastre, R: reiniciar; botones táctiles y mando estándar.
+Es independiente de tu partida, sin guardado ni mercancías reales. Simulación/pruebas comprobadas;
+**revisión visual pendiente**. [Resultado y siguientes pasos](docs/delivery/d08a-handling-lab.md).
+
 ### Jugar en línea (M3.6)
 
 `npm start` levanta **un solo proceso** que sirve el cliente y corre el mundo: el mismo `LocalServer` que en solo
