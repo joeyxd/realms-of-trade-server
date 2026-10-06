@@ -17,3 +17,7 @@ siguen siendo evidencia local aislada, no una aceptación live de gameplay.
 La [afinidad por personaje/tipo](../briefs/m48-pearl-affinity.md) está confirmada como requisito:
 aprendizaje conservado tras perder/recuperar la perla. Su campo/progresión/escalado/UI siguen pendientes.
 006 no añade ese sistema. No se reinició ni publicó el host; trabajo naval concurrente intacto.
+
+Aceptación posterior del mismo día: [commit/recuperación real, 21/21](d09f-same-holder-live.md), con
+fixtures sintéticas limpiadas y dos auditorías terminales retenidas. Amplía esta comprobación;
+integración del host/juego y afinidad siguen pendientes.

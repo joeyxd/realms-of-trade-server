@@ -61,7 +61,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003/004/005 reales; 006 aplicada/validadores reales 6/6, staging 356/356 aisladas. Commit 006 live, afinidad, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003–006 reales; same-holder commit/recuperación 21/21, validadores 6/6; staging 356/356 aisladas. Afinidad, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -273,6 +273,19 @@ autor.
   para cuatro kinds; extraer efecto común con dueño sim al integrar, antes de cambiar sus reglas.
 - Siguiente lote real multi-UID death/reemplazo y hooks completos/hidratación/scope/reloj/adopción/invitados;
   leases/naval separados. P4/P6 parciales; no activar solo give/swallow.
+
+### M5 — commit same-holder 006 aceptado real (2026-10-06)
+
+- Base `532691a`. **21/21 SDK/Supabase/ProfileSessions**, cuatro procesos Node independientes;
+  [informe/evidencia](delivery/d09f-same-holder-live.md), [brief](briefs/m5-pearl-same-holder-live.md).
+- Bag→swallowed vacío conserva dueño/`since`/progreso/orden, un endpoint y una generación; UID con
+  tombstone previo o 003 gestionado sin ubicación. Rechazos sin efectos/recibos y replay histórico
+  sin retroceder XP; cliente público denegado. Recuperación de commit sin envío y unsent reanudado
+  exactamente una vez. No es reinicio de GameHost ni conexión de staging al juego.
+- Dos perfiles/cuatro UIDs/recibos sintéticos limpiados y ausencia verificada; dos diarios committed
+  retenidos. 21 fuentes runtime/SQL intactas; sin cambios env/sim/LocalServer/host/protocolo ni despliegue.
+- Sigue afinidad confirmada pero no implementada; lotes multi-UID muerte/reemplazo, efecto común y
+  hooks/restauración/scope/reloj/adopción antes de activar. P4/P6 parciales; trabajo naval conservado.
 
 ### M5 — SQL 006 aplicada y afinidad confirmada (2026-10-06)
 

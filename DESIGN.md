@@ -295,7 +295,9 @@ stinger musical, luz más roja, nueva pose.
 
 Extensiones acordadas, aún sin implementación: navegación para operar barcos mayores y mejorar su manejo;
 especialidades de comercio/oficio para mercancías, cantidades y recetas; afinidad por uso de poderes de perla.
-Propuesta de afinidad por personaje/tipo de poder, separada del UID que cae/circula; techo/mejoras pendientes.
+Afinidad confirmada por personaje/tipo de poder, separada del UID que cae/circula: aprendizaje conservado
+tras pérdida/death/venta y reutilizado al recuperar una del mismo tipo. Implementación/techo/mejoras pendientes;
+ver [contrato](docs/briefs/m48-pearl-affinity.md).
 Ver `docs/NAVAL-ROADMAP.md` §§2 y 6; no modifica los números actuales de esta sección.
 
 **Stats por nivel:** HP `100 + 12·(Lv−1)` · ATK `10 + 2·(Lv−1)` · DEF `2 + (Lv−1)` · SPD 6.5 (solo equipo) ·
@@ -498,7 +500,9 @@ Marinero de agua dulce (hablar con el capitán).
   Hooks de sim/LocalServer y restauración/políticas siguen pendientes; juego no activado.
   [D09f-2b.1](docs/delivery/d09f-same-holder.md) agrega a ground el CAS/recibo/diario de un UID bag→swallowed
   vacío con una cuenta: dueño/progreso/orden restantes conservados, generaciones de perfil/ledger/tombstone
-  avanzan juntas. 006 local, aplicación real pendiente; no activa el juego.
+  avanzan juntas. 006 aplicada/verificada real: 21/21 de commit/CAS/rollback/replay y recuperación en cuatro
+  procesos ProfileSessions, fixtures limpiadas y dos auditorías retenidas; no activa el juego.
+  [Aceptación live](docs/delivery/d09f-same-holder-live.md).
   [D09f-2b.2](docs/delivery/d09f-swallow-staging.md) agrega staging swallow/efecto ECS actual en tick,
   conserva progreso/HP/cooldowns y revierte solo apply local al cercar. 356/356 aisladas; efecto común con
   sim, lotes, hooks y restauración/políticas siguen pendientes. Host/juego sin conexión al coordinador.

@@ -57,6 +57,10 @@ conservado y rollback local/fence. **356/356**, **50 nuevas**, memoria y SDK/SQL
 Actualización 2026-10-06: el autor confirma **006 aplicada**; sus validadores y denegación pública
 comprobados en Supabase con **6/6 probes de solo lectura**. No se verificó el commit nuevo con un canario
 real ni se conectó staging al host. [Alcance de la comprobación](docs/delivery/d09f-sql006-readonly.md).
+Aceptación posterior 2026-10-06: **commit same-holder 006 verificado en Supabase, 21/21**. Cuatro procesos
+Node de SDK/ProfileSessions: CAS/conservación/rollback/replay, recuperación sin envío y request pendiente
+reanudado una vez. Fixtures de juego limpiadas; dos auditorías terminales retenidas. No conecta host/juego
+ni implementa afinidad. [Evidencia y límites](docs/delivery/d09f-same-holder-live.md).
 Siguiente: lote atómico de varios UIDs y efecto común con sim; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
 con dueño de LocalServer/sim, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
@@ -132,8 +136,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
   D09f-1 prueba staging de give fuera del host y D09f-2a añade reserva común de autoridad/cola/guardados;
-  D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 aplicada; validadores reales,
-  commit nuevo live pendiente);
+  D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 aplicada; validadores 6/6 y
+  commit/recuperación reales 21/21);
   D09f-2b.2 prueba staging swallow/efecto ECS actual en tick sin modificar sim; faltan efecto común,
   hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
@@ -146,8 +150,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
   D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
   dormant give/commit/apply en tick; D09f-2a comparte reservas con admisión/guardados/commits de sesiones.
-  D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID en aislamiento; 006 aplicada y validadores
-  reales comprobados, commit nuevo live pendiente.
+  D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID; 006 aplicada, validadores reales 6/6 y
+  commit/recuperación de ProfileSessions en cuatro procesos reales 21/21.
   D09f-2b.2 agrega staging swallow y efecto ECS actual en tick, con rollback/fence y progreso conservado.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
