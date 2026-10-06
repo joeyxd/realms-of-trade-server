@@ -55,11 +55,35 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e**: 003/004 reales, perla/suelo atómicos, cola y diario opcional local (005 pendiente); conexión host/staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
-| M6 «La Balsa» | **P1–P3 local**: balsa visible/transitable y editor autoritativo con materiales reales; bodega/producción, dispositivos y publicación pendientes (`PLAN-M6.md`) |
-| M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
+| M6 «La Balsa» | **P1–P3 + P4 bodega local**: editor y transferencias privadas por peso; producción/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
+| M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
+
+### D06a — bodega y mercados caminables (2026-10-05)
+
+- Base D05 `991db89`, integrada sobre M5 `c6bc368`; **`0.6.0-alpha.3`, protocolo 15**.
+  [Informe](delivery/d06a-cargo-market.md), [evidencia durable](delivery/d06a-evidence.json).
+- Don Bacalao en Aldea y La Tuerta en Cala: hablar → Comerciar mercancías → lista/cotización/compra/venta.
+  Total y stock reales del servidor, oro/mochila visibles. H/botón Bodega junto a balsa propia amarrada
+  transfiere mochila↔bodega por peso; G conserva perla, B construcción, I inventario, Esc cerrar.
+- Propiedad, ubicación, vida/calma, revisión, stock/oro/capacidad y save candidato se validan antes de mutar.
+  Acuse privado + perfil confirmado; cierre/reapertura conserva pendiente. Recibos exitosos acotados de sesión
+  permiten reenvío exacto sin otro cobro. No son transacción durable mercado/perfil ni reserva de puerto D09.
+- **8 pruebas nuevas**, **453/453** en checkout compartido (incluye M5 ajeno en curso, sin aceptarlo aquí);
+  **45 capturas inspeccionadas** PC/táctil horizontal/vertical. Compras/venta/transferencias por controles,
+  bodega llena bloqueada, save/reentrada exactos y primera respuesta de compra perdida/reintentada en PC.
+  Atlas realmente cargado 1024 escritorio/512 móvil; sin textura/modelo nuevo ni errores JS de juego.
+- Revisión previa Unreal/FAB con Luna: [D06-REUSE](research/unreal-assets/D06-REUSE.md). Caja Dreamrise
+  existente reutilizada; mercaderes con looks actuales. Iconos/UMG/audio empaquetados, no exportados.
+  Fuentes intactas; regla de comprobar candidatos antes de cada nueva parte persistida en AGENTS.md.
+- **Siguiente exacto: [D06b producción](briefs/d06b-production.md)**. Revisar/exportar mínimamente
+  `SM_RepairBench` si encaja; una cadena pequeña, progreso fraccionario/identidad de piezas y lote atómico
+  con bodega llena antes de activar reloj. Después D08 manejo. M6 P4 sigue parcial; per-good icons, hamaca,
+  luces, viento/zarpar/combate/pérdidas y reservas durables siguen abiertos.
+- Build desde commit y hashes en evidencia; host/publicación sin actualizar. Para jugar online actualizar
+  cliente y servidor juntos a **15**. GPU/teléfono/mando físicos, FPS y sensación humana pendientes.
 
 ### D05 / M6 P3 — construir la balsa (2026-10-05)
 

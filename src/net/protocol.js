@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 14; // D05: authoritative raft edit/supply intents and private acknowledgements.
+export const PROTOCOL_VERSION = 15; // D06a: private cargo/market acknowledgements and trade profile revision.
 
 export const MSG = {
   // client -> server

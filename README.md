@@ -2,7 +2,7 @@
 
 Action-RPG isométrico para navegador (Three.js 0.160), con arquitectura preparada para MMO.
 **Rebanada vertical 1:** isla tropical + arena volcánica «La Caldera».
-Todo es procedural: geometría, texturas (canvas), shaders y audio sintetizado. Las únicas dependencias externas
+La base usa geometría, texturas, shaders y audio procedural; la balsa incorpora un atlas cómic y una caja FAB. Las únicas dependencias externas
 son los CDN de Three.js y GSAP, y Google Fonts.
 
 - Diseño completo (números, jefe, progresión, protocolo): [`DESIGN.md`](DESIGN.md)
@@ -75,7 +75,9 @@ list })`, la hora `__mn.tod('night')` / `__mn.tod('cycle', 0.75)` y las vistas d
 | Apuntar (el cuerpo mira al cursor; las piernas siguen la marcha) | ratón · stick derecho | auto-apuntado · arrastrar Q/E/R/G |
 | Hablar / interactuar · junto a un armero: cambiar de arma · abrir tu cofre · en las runas: cambiar de Marea | F | botón de acción (aparece con su verbo: Hablar, Abrir, Cambiar, Marea, Zarpar) |
 | Poción de ron-coco (cura el 40 %, 2 s de espera, máx. 5) | 1 · cruceta ↑ | botón de poción |
-| Personaje: Equipo / Atributos / Misiones / Tatuajes / Perlas | I o B / C / L / T / P · Select | botón Bolsa |
+| Personaje: Equipo / Atributos / Misiones / Tatuajes / Perlas | I / C / L / T / P · Select | botón Bolsa |
+| Construir tu balsa amarrada; girar pieza dentro del editor | B; R contextual | botón Construir |
+| Bodega junto a tu balsa propia amarrada | H | botón Bodega |
 | Mapa de la isla | M | botón Mapa |
 | Zoom (3 niveles: 15 / 20 / 27 u, cámara a 48°) | rueda | — |
 | Rotar cámara 90° (activar en Ajustes) | Z / X | — |
@@ -130,6 +132,20 @@ La construcción protege soporte, ocupantes y salida al muelle. Máximos técnic
 niveles y 600 piezas; todavía no son un límite de rendimiento móvil medido. Regresión **413/413** y recorrido
 PC/móvil emulado aceptados. [Evidencia y límites D05](docs/delivery/d05-raft-editor.md).
 Para jugar online, cliente y servidor deben actualizarse juntos a protocolo 14; este corte no reinició ni publicó el host.
+
+### Bodega y mercados — D06a (`0.6.0-alpha.3`, protocolo 15)
+
+Habla con **Don Bacalao** en Aldea o **La Tuerta** en Cala y elige **Comerciar mercancías**. Selecciona
+bien/cantidad, revisa el total cotizado y confirma compra o venta. El precio y stock son compartidos.
+Junto a tu balsa propia amarrada, **H** o **Bodega** en móvil abre transferencias mochila↔bodega;
+las cajas comparten capacidad por peso. **G** sigue siendo la perla y **B** construcción.
+
+El servidor valida recursos, ubicación, calma y capacidad antes de cambiar bienes. El panel conserva una
+petición pendiente al cerrar y permite reintentar con el mismo identificador dentro de los recibos de sesión.
+Guardado/reentrada y controles PC/móvil emulado comprobados; **453/453** en checkout compartido y 45 capturas.
+[Resultado, evidencia y límites](docs/delivery/d06a-cargo-market.md). Producción es el siguiente corte D06b;
+velocidad mostrada todavía teórica, sin zarpar ni reservas seguras de puerto. No se publicó ni reinició el host:
+cliente y servidor deben actualizarse juntos a **protocolo 15** para este corte.
 
 ### Entrega de M4.8 — candidato integrado (`0.4.8-rc.1`)
 

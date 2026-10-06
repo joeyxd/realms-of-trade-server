@@ -8,8 +8,9 @@
 //          private {type: 'tradeDenied', to, why: 'town' | 'far' | 'combat' | 'good' | 'n' | 'law' | 'stock' | 'gold' |
 //                   'room' | 'have'}
 import { TOWNS, TOWN_IDS } from '../../data/towns.js';
+import { GOODS } from '../../data/goods.js';
 import { Economy } from '../economy/economy.js';
-import { board } from '../economy/market.js';
+import { board, MARKET } from '../economy/market.js';
 import { newHold, sanitizeHold, holdUsed, PACK_CAP } from '../economy/cargo.js';
 import { HULLS, MODULES } from '../../data/ships.js';
 import { newRaft, raftStats, sanitizeRaft } from '../economy/raft.js';
@@ -20,11 +21,12 @@ const starterRaft = () => {
   const grid = newRaft();
   return { kind: 'raft', id: '', rev: 1, berth: -1, berthBasis: null, n: 'La Balsa', grid, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
 };
-export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, deeds: [] });
+export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, tradeRev: 0, deeds: [] });
 export function sanitizeEco(raw) {
   const o = newEco();
   if (!raw || typeof raw !== 'object') return o;
   const legacyRaftState = raw.raftV !== 1;
+  o.tradeRev = Number.isSafeInteger(raw.tradeRev) ? Math.max(0, Math.min(2147483647, raw.tradeRev)) : 0;
   o.ships = [];
   if (typeof raw.id === 'string' && /^[a-z0-9]{1,24}$/.test(raw.id)) o.id = raw.id;
   o.pack = sanitizeHold(raw.pack, PACK_CAP);
@@ -85,12 +87,12 @@ export const TRADE = { calm: 3 }; // s without damage before you can trade
 
 const deny = (world, e, why) => { world.emit({ type: 'tradeDenied', to: e, why }); return false; };
 
-export function marketCmd(world, e, msg) {
+export function marketCmd(world, e, msg, saveFits = () => true) {
   const p = world.profiles && world.profiles.get(e), eco = world.economy;
   if (!p || !eco) return false;
   if (!p.eco) p.eco = newEco();
-  const town = String(msg.town || '');
-  if (!TOWNS[town]) return deny(world, e, 'town');
+  const town = msg.town;
+  if (typeof town !== 'string' || !Object.hasOwn(TOWNS, town)) return deny(world, e, 'town');
   if (townAt(world, e) !== town) return deny(world, e, 'far');
   const op = String(msg.op || 'list');
   if (op === 'list') {
@@ -100,9 +102,27 @@ export function marketCmd(world, e, msg) {
   if (op !== 'buy' && op !== 'sell') return deny(world, e, 'n');
   const ecs = world.ecs;
   if (ecs.dead[e] > 0 || ecs.regenT[e] < TRADE.calm) return deny(world, e, 'combat'); // no shopping mid-fight
-  const wallet = { gold: p.gold, hold: p.eco.pack };
-  const r = eco.trade(town, String(msg.g || ''), msg.n | 0, op, wallet);
+  if (!Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > MARKET.maxTrade) return deny(world, e, 'n');
+  const rev = p.eco.tradeRev || 0;
+  if (rev >= 2147483647) return deny(world, e, 'revisionLimit');
+  const g = msg.g;
+  if (typeof g !== 'string' || !Object.hasOwn(GOODS, g)) return deny(world, e, 'good');
+  const q = eco.quote(town, g, msg.n, op);
+  if (!q.ok) return deny(world, e, q.why);
+  const hold = { cap: p.eco.pack.cap, goods: { ...p.eco.pack.goods } };
+  const stock = { ...eco.markets[town].stock }, last = { ...eco.markets[town].last };
+  // Use the existing settlement engine on a cloned market so save preflight precedes real stock changes.
+  const staged = Object.create(eco);
+  staged.markets = { ...eco.markets, [town]: { ...eco.markets[town], stock, last } };
+  const wallet = { gold: p.gold, hold };
+  const r = staged.trade(town, g, msg.n, op, wallet);
   if (!r.ok) return deny(world, e, r.why);
+  if (!Number.isSafeInteger(wallet.gold) || wallet.gold < 0 || wallet.gold > 1e9) return deny(world, e, 'gold');
+  const candidate = { ...p, gold: wallet.gold, eco: { ...p.eco, pack: hold, tradeRev: rev + 1 } };
+  try { if (saveFits(candidate) !== true) return deny(world, e, 'saveSize'); }
+  catch { return deny(world, e, 'saveSize'); }
+  eco.markets[town].stock = stock; eco.markets[town].last = last;
+  p.eco.pack = hold; p.eco.tradeRev = rev + 1;
   p.gold = wallet.gold;
   if (world.profileDirty) world.profileDirty.add(e);
   world.emit({ type: 'traded', to: e, e, town, g: String(msg.g), n: r.n, side: op, total: r.total, gold: p.gold, pack: { ...p.eco.pack.goods } });

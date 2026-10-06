@@ -42,6 +42,7 @@ import { CharPanel } from './ui/charpanel.js';
 import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
 import { RaftEditor } from './ui/raftEditor.js';
+import { CommercePanel } from './ui/commerce.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -161,8 +162,8 @@ async function boot() {
   const hud = new Hud($('#hud'), {
     onSettings: () => openPause('settings'),
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
-    onBag: () => { raftEditor.close(); charPanel.toggle('gear'); },
-    onMap: () => { raftEditor.close(); mapView.toggle(); },
+    onBag: () => { commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
+    onMap: () => { commercePanel.close(); raftEditor.close(); mapView.toggle(); },
   });
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
@@ -182,7 +183,7 @@ async function boot() {
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
   });
-  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }) });
+  const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
   const mapView = new MapView($('#mapview'), map);
   const raftEditor = new RaftEditor({
     parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
@@ -191,16 +192,35 @@ async function boot() {
     player: () => ps, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead,
     onContext: (active) => {
-      input.setBuildContext(active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) commercePanel.close();
+      input.setBuildContext(active || commercePanel.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('building-raft', active);
       if (active) { charPanel.close(); dialog.hide(); mapView.close(); }
       canvas.focus({ preventScroll: true });
     },
   });
   bus.on('raftEdit', (ev) => safe('raftEdit', () => raftEditor.onResult(ev)));
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { raftEditor.close(); fn(); } };
+  const commercePanel = new CommercePanel({
+    parent: $('#ui'), profile: () => client?.profile, rafts: () => client?.pred.rafts,
+    raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer, player: () => ps,
+    map, send: sendCmd,
+    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead,
+    onContext: (active) => {
+      if (active) { raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      input.setBuildContext(active || raftEditor.active); aimCtl.reset(); st.wantWeapon = 0;
+      document.body.classList.toggle('trading-goods', active);
+      canvas.focus({ preventScroll: true });
+    },
+  });
+  bus.on('commerce', (ev) => safe('commerce', () => commercePanel.onResult(ev)));
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
+  input.onHotkey('KeyH', () => {
+    if (st.mode !== 'playing' || pause.open) return false;
+    if (!(commercePanel.active && commercePanel.view === 'cargo') && !commercePanel.context()) return false;
+    commercePanel.toggleCargo(); return true;
+  });
   input.onHotkey('KeyR', () => { if (!raftEditor.active) return false; raftEditor.rotate(); return true; });
   input.onHotkey('KeyC', panelKey(() => charPanel.toggle('stats')));
   input.onHotkey('KeyL', panelKey(() => charPanel.toggle('quests')));
@@ -228,6 +248,7 @@ async function boot() {
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    commercePanel.close();
     raftEditor.close();
     // Online the world never waits: the menu opens, your input goes neutral and the island carries on.
     st.paused = !st.online;
@@ -247,6 +268,7 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (commercePanel.active) { commercePanel.close(); return; }
     if (raftEditor.active) { raftEditor.close(); return; }
     if (aimCtl.preview && aimCtl.preview.kind === 'ground' && !pause.open) { input.cancelAim(); return; } // ESC drops an area being aimed
     if (pause.open) closePause();
@@ -317,6 +339,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost() {
+    commercePanel.close();
     raftEditor.close();
     if (document.querySelector('.net-lost')) return;
     const el = document.createElement('div');
@@ -799,7 +822,7 @@ async function boot() {
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
-      if (raftEditor.active) {
+      if (raftEditor.active || commercePanel.active) {
         client.tickInput({ mx: move.x, mz: move.z, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
         return;
       }
@@ -976,7 +999,8 @@ async function boot() {
           if (act) act = act.replace('<span class="kbd">F</span> ', '');
         }
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
-        if (input.consumeInteract()) {
+        const interact = input.consumeInteract();
+        if (!commercePanel.active && interact) {
           if (npc) {
             const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
             const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
@@ -1106,6 +1130,7 @@ async function boot() {
         worldUI.update(anchors, screenP);
       });
       safe('raftEditor', () => raftEditor.update());
+      safe('commerce', () => commercePanel.update());
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));
       st.fps = st.fps * 0.9 + (1 / Math.max(loop.rawDt, 1e-3)) * 0.1;
@@ -1139,7 +1164,7 @@ async function boot() {
   title.ready();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView, raftEditor } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView, raftEditor, commercePanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

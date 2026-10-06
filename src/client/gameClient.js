@@ -139,6 +139,10 @@ export class GameClient {
   isMe(e) { return e !== undefined && e === this.youServer; }
 
   onEvent(ev) {
+    if (ev.type === 'commerce') {
+      if (ev.to === this.youServer) this.bus.emit('commerce', ev);
+      return;
+    }
     if (ev.type === 'raftEdit') {
       if (ev.to === this.youServer) this.bus.emit('raftEdit', ev);
       return;

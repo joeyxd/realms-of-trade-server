@@ -1,0 +1,433 @@
+// Private cargo and market UI. Every mutation is an intent; server acknowledgements and profile revisions confirm it.
+import { GOODS, GOOD_CATS } from '../data/goods.js';
+import { TOWNS } from '../data/towns.js';
+import { EDITOR_RADIUS } from '../data/raftEditor.js';
+import { raftStats } from '../sim/economy/raft.js';
+import { holdUsed, roomFor } from '../sim/economy/cargo.js';
+import { raftGangplank } from '../sim/raftGeometry.js';
+
+const MAX_QTY = 500;
+const MAX_READS = 12;
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const opId = () => globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const num = (n) => Math.max(0, Number.isFinite(+n) ? +n : 0).toLocaleString('es-MX');
+const CAT_MARK = { food: '✦', drink: '◉', material: '◆', arms: '⬟', luxury: '✧' };
+const REASONS = {
+  town: 'No hay un mercado aquí.', far: 'Acércate al mercado.', calm: 'Espera tres segundos en calma antes de comerciar.',
+  good: 'Esa mercancía no se ofrece aquí.', n: 'Elige una cantidad válida.', law: 'La ley del pueblo prohíbe esa mercancía.',
+  stock: 'El mercado no tiene esa cantidad.', gold: 'No tienes oro suficiente.', room: 'No cabe toda la mercancía.',
+  have: 'No llevas esa cantidad.', owner: 'Esa bodega no es tuya.', raft: 'Tu balsa no está disponible en Aldea.',
+  revision: 'El plano cambió; actualiza la bodega.', busy: 'Detente antes de transferir.', dead: 'No puedes comerciar mientras estás fuera de combate.',
+  price: 'El precio cambió; revisa la nueva cotización.', saveSize: 'La partida supera el límite de guardado.', command: 'Solicitud no válida.',
+  duplicate: 'Ese identificador ya se usó con otra solicitud.', revisionLimit: 'La revisión llegó a su límite; vuelve a entrar.', market: 'El mercado no pudo completar la solicitud.',
+};
+const reason = (why) => REASONS[why] || 'El servidor rechazó la operación.';
+const goodName = (id) => GOODS[id]?.name || id;
+const goodWeight = (id) => GOODS[id]?.w || 1;
+const clampQty = (n) => Math.max(1, Math.min(MAX_QTY, Math.floor(Number(n) || 1)));
+
+export class CommercePanel {
+  constructor(opts) {
+    Object.assign(this, opts);
+    this.active = false; this.view = 'cargo'; this.town = ''; this.selected = ''; this.side = 'buy'; this.qty = 1;
+    this.rows = []; this.market = null; this.quote = null; this.quoteErrorSignature = ''; this.cargoSnapshot = null;
+    this.pending = null; this.reads = new Map(); this.readByKind = new Map(); this.lastResult = '';
+    this.panelToken = 0; this.renderKey = '';
+
+    this.launcher = document.createElement('button');
+    this.launcher.type = 'button'; this.launcher.className = 'commerce-cargo-launcher';
+    this.launcher.textContent = 'Bodega · H'; this.launcher.setAttribute('aria-label', 'Abrir bodega de la balsa (H)');
+    this.launcher.hidden = true; this.parent.appendChild(this.launcher);
+
+    this.root = document.createElement('section'); this.root.className = 'commerce-panel'; this.root.hidden = true;
+    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-label', 'Bodega y mercado');
+    this.root.innerHTML = `<header class="commerce-head"><div><small class="commerce-kicker">MERCANCÍAS Y RUMBO</small><b class="commerce-title">Bodega</b></div><button class="commerce-close" type="button" aria-label="Cerrar">×</button></header>
+      <nav class="commerce-tabs"><button type="button" data-view="cargo">Bodega</button><button type="button" data-view="market">Mercado</button></nav>
+      <div class="commerce-body"></div>
+      <div class="commerce-feedback" aria-live="polite"></div>
+      <footer class="commerce-foot"><small class="commerce-footnote"></small><button type="button" class="commerce-confirm">Confirmar</button></footer>`;
+    this.parent.appendChild(this.root);
+    this.$ = (selector) => this.root.querySelector(selector);
+    this.bind();
+    this.render();
+  }
+
+  bind() {
+    this.launcher.addEventListener('click', () => this.toggleCargo());
+    this.$('.commerce-close').addEventListener('click', () => this.close());
+    this.$('.commerce-confirm').addEventListener('click', () => this.confirm());
+    this.root.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
+      if (button.dataset.view === 'cargo') this.toggleCargo(true);
+      else if (this.town) this.openMarket(this.town);
+    }));
+    this.$('.commerce-body').addEventListener('click', (event) => this.onBodyClick(event));
+    this.$('.commerce-body').addEventListener('change', (event) => this.onBodyChange(event));
+    this.$('.commerce-body').addEventListener('input', (event) => this.onBodyInput(event));
+  }
+
+  context() {
+    const profile = this.profile?.(), player = this.player?.();
+    const record = (this.rafts?.() || []).find((r) => r.owner === this.youServer?.());
+    const ship = record && profile?.eco?.ships?.find((s) => s.kind === 'raft' && s.id === record.id);
+    if (!record || !ship || ship.at !== 'aldea' || !(ship.hp > 0) || !player || player.dead
+      || ![player.x, player.y, player.z].every(Number.isFinite)) return null;
+    const deck = this.raftDeck?.()?.surface(player.x, player.z, player.y);
+    const plank = raftGangplank(record, this.map?.dock), dock = this.map?.dock;
+    const dockDistance = dock ? Math.hypot(player.x - dock.base.x - dock.dir.x * Math.max(0, dock.len - 10),
+      player.z - dock.base.z - dock.dir.z * Math.max(0, dock.len - 10)) : Infinity;
+    const nearPlank = !!plank && dockDistance <= EDITOR_RADIUS && Math.hypot(player.x - plank.x, player.z - plank.z) <= 2.5;
+    if (deck?.id !== record.id && !nearPlank) return null;
+    return { profile, player, record, ship };
+  }
+
+  toggleCargo(force = false) {
+    if (this.active && this.view === 'cargo' && !force) { this.close(); return; }
+    if (this.enabled && !this.enabled()) return;
+    const c = this.context(); if (!c) return;
+    this.activate('cargo');
+    this.cargoSnapshot = null; this.lastResult = '';
+    this.request('cargo', { id: c.record.id }, { raftId: c.record.id, rev: c.ship.rev });
+    this.render();
+  }
+
+  openMarket(town) {
+    if (this.enabled && !this.enabled()) return;
+    if (!TOWNS[town]) { this.lastResult = 'Mercado desconocido.'; return; }
+    this.town = town; this.activate('market'); this.lastResult = ''; this.quote = null; this.quoteErrorSignature = ''; this.rows = [];
+    this.market = null; this.selected = ''; this.qty = 1;
+    this.request('list', { town }, { town }); this.render();
+  }
+
+  activate(view) {
+    const wasActive = this.active;
+    this.panelToken++;
+    this.active = true; this.view = view; this.root.hidden = false;
+    this.onContext?.(true);
+    if (!wasActive) this.renderKey = '';
+  }
+
+  close() {
+    if (!this.active) return;
+    this.active = false; this.panelToken++; this.root.hidden = true;
+    this.onContext?.(false);
+  }
+
+  request(op, payload, meta = {}) {
+    const id = opId();
+    const message = { type: 'commerce', op, ...payload, opId: id };
+    const read = { id, op, message, meta, panelToken: this.panelToken, sentAt: performance.now() };
+    this.rememberRead(read); this.readByKind.set(op, id); this.send(message);
+    this.renderKey = ''; this.render();
+    return read;
+  }
+
+  rememberRead(read) {
+    this.reads.set(read.id, read);
+    while (this.reads.size > MAX_READS) {
+      const oldest = this.reads.keys().next().value;
+      this.reads.delete(oldest);
+      for (const [kind, id] of this.readByKind) if (id === oldest) this.readByKind.delete(kind);
+    }
+  }
+
+  requestQuote() {
+    if (!this.active || this.view !== 'market' || !this.town || !this.selected) return;
+    const signature = JSON.stringify([this.town, this.selected, this.qty, this.side]);
+    if (this.quote?.signature === signature || this.quoteErrorSignature === signature) return;
+    const currentId = this.readByKind.get('quote'), previous = this.reads.get(currentId);
+    if (previous?.meta.signature === signature && previous.panelToken === this.panelToken) return;
+    const id = opId(), message = { type: 'commerce', op: 'quote', town: this.town, g: this.selected, n: this.qty, side: this.side, opId: id };
+    const read = { id, op: 'quote', message, meta: { signature, town: this.town, g: this.selected, n: this.qty, side: this.side }, panelToken: this.panelToken, sentAt: performance.now() };
+    this.rememberRead(read); this.readByKind.set('quote', id); this.send(message);
+  }
+
+  onResult(ev) {
+    if (!ev || ev.type !== 'commerce' || typeof ev.opId !== 'string') return;
+    const read = this.reads.get(ev.opId);
+    if (read) {
+      if (ev.op !== read.op) return;
+      this.reads.delete(ev.opId);
+      if (this.readByKind.get(read.op) !== ev.opId) return;
+      if (this.readByKind.get(read.op) === ev.opId) this.readByKind.delete(read.op);
+      if (!read.meta || read.panelToken !== this.panelToken || !this.active) return;
+      if (!ev.ok) {
+        this.lastResult = reason(ev.why);
+        if (read.op === 'quote') this.quoteErrorSignature = read.meta.signature;
+        this.render(); return;
+      }
+      if (read.op === 'list') {
+        if (ev.town !== read.meta.town) return;
+        if (!Array.isArray(ev.rows) || !ev.pack || !Number.isSafeInteger(ev.gold)) return;
+        this.market = ev; this.rows = ev.rows;
+        if (!this.rows.some((r) => r.g === this.selected)) this.selected = this.rows[0]?.g || '';
+        this.lastResult = '';
+        this.render(); this.requestQuote(); return;
+      }
+      if (read.op === 'cargo') {
+        if (ev.id !== read.meta.raftId || !ev.hold || !ev.pack || !Number.isSafeInteger(ev.raftRev)) return;
+        this.cargoSnapshot = ev; this.lastResult = ''; this.render(); return;
+      }
+      if (read.op === 'quote') {
+        const now = JSON.stringify([this.town, this.selected, this.qty, this.side]);
+        if (read.meta.signature !== now || ev.town !== read.meta.town || ev.g !== read.meta.g
+          || ev.n !== read.meta.n || ev.side !== read.meta.side || !Number.isSafeInteger(ev.total)
+          || !Number.isFinite(ev.avg) || ev.avg < 0 || typeof ev.law !== 'string') return;
+        this.quote = { ...ev, signature: read.meta.signature }; this.quoteErrorSignature = ''; this.lastResult = ''; this.render(); return;
+      }
+      return;
+    }
+
+    const pending = this.pending;
+    if (!pending || ev.opId !== pending.id || ev.op !== pending.op) return;
+    if (ev.ok === false || ev.why) {
+      this.pending = null; this.lastResult = reason(ev.why);
+      if (ev.why === 'price' && pending.op !== 'transfer' && this.active && this.view === 'market') {
+        this.quote = null; this.quoteErrorSignature = ''; this.requestQuote();
+      }
+      this.render(); return;
+    }
+    if (!Number.isSafeInteger(ev.rev) || ev.rev < 0) return;
+    if (pending.op === 'transfer' && !Number.isSafeInteger(ev.raftRev)) return;
+    pending.ack = true; pending.resultRev = ev.rev;
+    pending.raftRev = pending.op === 'transfer' ? ev.raftRev : null;
+    this.lastResult = pending.op === 'transfer' ? 'Transferencia aceptada; esperando el perfil actualizado…' : 'Operación aceptada; esperando el perfil actualizado…';
+    this.render();
+  }
+
+  profileReady(pending, profile) {
+    const eco = profile?.eco;
+    if (!pending.ack || !eco || !Number.isSafeInteger(eco.tradeRev) || eco.tradeRev < pending.resultRev) return false;
+    if (pending.op !== 'transfer') return true;
+    const ship = eco.ships?.find((s) => s.kind === 'raft' && s.id === pending.raftId);
+    return !!ship && Number.isSafeInteger(ship.rev) && ship.rev >= pending.raftRev;
+  }
+
+  update() {
+    const near = !!this.context() && (!this.enabled || this.enabled());
+    this.launcher.hidden = this.active || !near;
+    const profile = this.profile?.();
+    if (this.pending && this.profileReady(this.pending, profile)) {
+      const pending = this.pending; this.pending = null; this.lastResult = pending.op === 'transfer' ? 'Transferencia confirmada.' : 'Comercio confirmado.';
+      if (this.active) {
+        if (this.view === 'cargo') this.fetchCargo();
+        else this.refreshMarket();
+      }
+    }
+    if (this.active) {
+      if (this.enabled && !this.enabled()) { this.close(); return; }
+      if (this.view === 'cargo' && !this.context()) { this.close(); return; }
+      for (const [kind, id] of this.readByKind) {
+        const read = this.reads.get(id);
+        if (read && performance.now() - read.sentAt > 6000) read.timedOut = true;
+      }
+      if (this.pending && !this.pending.timedOut && performance.now() - this.pending.sentAt >= 5000) {
+        this.pending.timedOut = true;
+        this.renderKey = '';
+      }
+      this.requestQuote();
+      const key = this.signature(); if (key !== this.renderKey) this.render();
+    }
+  }
+
+  fetchCargo() {
+    const c = this.context(); if (!c) return;
+    this.cargoSnapshot = null;
+    this.request('cargo', { id: c.record.id }, { raftId: c.record.id, rev: c.ship.rev });
+  }
+
+  refreshMarket() { if (this.town) { this.quote = null; this.quoteErrorSignature = ''; this.request('list', { town: this.town }, { town: this.town }); } }
+
+  confirm() {
+    if (!this.active || this.pending) return;
+    if (this.view === 'cargo') this.confirmTransfer(); else this.confirmTrade();
+  }
+
+  confirmTransfer() {
+    const c = this.context(), row = this.selectedCargoRow();
+    if (!c || !row || c.record.rev !== c.ship.rev) { this.lastResult = 'Sincronizando bodega y plano; espera un momento.'; this.render(); return; }
+    const from = this.cargoSide === 'deposit' ? c.profile.eco.pack : c.ship.hold;
+    const to = this.cargoSide === 'deposit' ? c.ship.hold : c.profile.eco.pack;
+    const n = this.transferMax(this.selected, from, to);
+    if (n < 1) { this.lastResult = 'No hay cantidad que quepa en el destino.'; this.render(); return; }
+    const id = opId(), message = { type: 'commerce', op: 'transfer', id: c.record.id, expectedRev: c.record.rev,
+      g: this.selected, n: this.transferQty === 'max' ? n : Math.min(n, clampQty(this.transferQty)), side: this.cargoSide, opId: id };
+    this.beginMutation(id, 'transfer', message, { raftId: c.record.id, expectedRev: c.record.rev });
+  }
+
+  confirmTrade() {
+    const q = this.quote, signature = JSON.stringify([this.town, this.selected, this.qty, this.side]);
+    if (!q || q.signature !== signature || !Number.isSafeInteger(q.total) || !this.market) return;
+    const id = opId(), message = { type: 'commerce', op: this.side, town: this.town, g: this.selected, n: this.qty, expectedTotal: q.total, opId: id };
+    this.beginMutation(id, this.side, message, { town: this.town, g: this.selected, n: this.qty, side: this.side });
+  }
+
+  beginMutation(id, op, message, meta) {
+    this.pending = { id, op, message, ...meta, sentAt: performance.now(), ack: false };
+    this.lastResult = 'Enviando solicitud…'; this.send(message); this.render();
+  }
+
+  retryPending() {
+    if (!this.pending?.message || !this.pending.timedOut) return;
+    this.pending.sentAt = performance.now(); this.pending.timedOut = false; this.send(this.pending.message); this.lastResult = 'Solicitud reenviada con el mismo identificador.'; this.render();
+  }
+
+  onBodyClick(event) {
+    const target = event.target.closest('[data-good],[data-side],[data-qty],[data-read-retry]');
+    if (!target) return;
+    if (target.dataset.good) {
+      const g = target.dataset.good;
+      if (this.view === 'cargo') { this.selected = g; this.quote = null; }
+      else { this.selected = g; this.quote = null; this.quoteErrorSignature = ''; this.qty = 1; this.requestQuote(); }
+      this.lastResult = ''; this.render();
+    } else if (target.dataset.side) {
+      this.side = target.dataset.side; this.quote = null; this.quoteErrorSignature = ''; this.requestQuote(); this.render();
+    } else if (target.dataset.qty) {
+      const q = target.dataset.qty;
+      if (this.view === 'cargo') this.transferQty = q === 'max' ? 'max' : clampQty(q);
+      else { this.qty = q === 'max' ? this.marketMax() : clampQty(q); this.quote = null; this.requestQuote(); }
+      this.render();
+    } else if (target.dataset.readRetry) {
+      const read = this.reads.get(target.dataset.readRetry); if (read) { read.sentAt = performance.now(); read.timedOut = false; this.send(read.message); this.render(); }
+    }
+  }
+
+  onBodyChange(event) {
+    const select = event.target.closest('[data-cargo-side]');
+    if (select) { this.cargoSide = select.value; this.transferQty = 1; this.lastResult = ''; this.render(); }
+    const side = event.target.closest('[data-market-side]');
+    if (side) { this.side = side.value; this.quote = null; this.quoteErrorSignature = ''; this.requestQuote(); this.render(); }
+  }
+
+  onBodyInput(event) {
+    const amount = event.target.closest('[data-amount]'); if (!amount) return;
+    const max = this.view === 'cargo' ? this.currentTransferMax() : this.marketMax();
+    const n = Math.max(1, Math.min(max || MAX_QTY, clampQty(amount.value)));
+    amount.value = String(n);
+    if (this.view === 'cargo') this.transferQty = n;
+    else { this.qty = n; this.quote = null; this.quoteErrorSignature = ''; this.requestQuote(); }
+    this.renderKey = '';
+  }
+
+  selectedCargoRow() { return this.cargoRows().find((r) => r.g === this.selected) || null; }
+
+  cargoState() {
+    const c = this.context(), p = c?.profile, hold = c?.ship?.hold, pack = p?.eco?.pack;
+    const snapshot = this.cargoSnapshot || {};
+    return {
+      hold: hold || snapshot.hold || { cap: 0, goods: {} },
+      pack: pack || snapshot.pack || { cap: 0, goods: {} },
+      profile: p, ship: c?.ship, record: c?.record,
+    };
+  }
+
+  cargoRows() {
+    const { hold, pack } = this.cargoState();
+    const ids = [...new Set([...Object.keys(hold.goods || {}), ...Object.keys(pack.goods || {})])];
+    return ids.map((g) => ({ g, hold: hold.goods?.[g] || 0, pack: pack.goods?.[g] || 0 })).filter((r) => GOODS[r.g]);
+  }
+
+  transferMax(g, from, to) { return Math.max(0, Math.min(from?.goods?.[g] || 0, roomFor(to || { cap: 0, goods: {} }, g), MAX_QTY)); }
+  currentTransferMax() {
+    const c = this.context(), g = this.selected; if (!c || !g) return 0;
+    return this.cargoSide === 'deposit' ? this.transferMax(g, c.profile.eco.pack, c.ship.hold) : this.transferMax(g, c.ship.hold, c.profile.eco.pack);
+  }
+
+  marketMax() {
+    const row = this.rows.find((r) => r.g === this.selected); if (!row) return 1;
+    const p = this.profile?.()?.eco?.pack || { cap: 0, goods: {} };
+    if (this.side === 'buy') return Math.max(0, Math.min(MAX_QTY, Math.floor(Math.max(0, +row.stock || 0)), roomFor(p, this.selected)));
+    return Math.max(0, Math.min(MAX_QTY, p.goods?.[this.selected] || 0));
+  }
+
+  render() {
+    if (!this.root || this.root.hidden && !this.active) return;
+    const c = this.context(), cargo = this.cargoState(), pending = this.pending;
+    this.root.classList.toggle('is-cargo', this.view === 'cargo');
+    this.root.classList.toggle('is-market', this.view === 'market');
+    this.root.querySelectorAll('[data-view]').forEach((b) => b.classList.toggle('on', b.dataset.view === this.view));
+    this.$('.commerce-title').textContent = this.view === 'cargo' ? 'Bodega de la balsa' : `Mercado · ${TOWNS[this.town]?.name || this.town}`;
+    this.$('.commerce-body').innerHTML = this.view === 'cargo' ? this.cargoHtml(cargo) : this.marketHtml();
+    this.$('.commerce-feedback').textContent = this.statusText();
+    this.$('.commerce-footnote').textContent = this.view === 'cargo'
+      ? 'Transferencia directa entre la bodega y tu mochila. La bodega se comparte entre las cajas.'
+      : 'Precios, stock y total cotizados por el servidor. El comercio requiere calma.';
+    const confirm = this.$('.commerce-confirm');
+    confirm.textContent = this.view === 'cargo' ? 'Confirmar transferencia' : this.side === 'buy' ? 'Confirmar compra' : 'Confirmar venta';
+    confirm.disabled = !!pending || (this.view === 'cargo' ? !c || !this.cargoSnapshot || this.cargoSnapshot.id !== c.record.id
+      || this.cargoSnapshot.raftRev !== c.ship.rev || !this.selectedCargoRow() || !this.currentTransferMax() || c.record.rev !== c.ship.rev
+      : !this.quote || this.quote.signature !== JSON.stringify([this.town, this.selected, this.qty, this.side]) || !Number.isSafeInteger(this.quote.total)
+        || !this.profile?.()?.eco?.pack || this.side === 'buy' && (this.quote.total > (this.profile?.()?.gold || 0) || this.qty > roomFor(this.profile?.()?.eco?.pack || { cap: 0, goods: {} }, this.selected))
+        || this.side === 'sell' && this.qty > (this.profile?.()?.eco?.pack?.goods?.[this.selected] || 0));
+    this.$('.commerce-confirm').hidden = !!this.pending?.ack;
+    this.renderRetry();
+    this.renderKey = this.signature();
+  }
+
+  cargoHtml(cargo) {
+    const { hold, pack, ship } = cargo, rows = this.cargoRows();
+    const selected = this.selectedCargoRow();
+    const stats = this.cargoSnapshot?.stats || (ship?.grid ? raftStats(ship.grid, ship.hold) : null);
+    const options = rows.map((r) => `<button type="button" class="commerce-good${r.g === this.selected ? ' on' : ''}" data-good="${esc(r.g)}"><i class="good-mark cat-${esc(GOODS[r.g].cat)}">${CAT_MARK[GOODS[r.g].cat] || '•'}</i><span><b>${esc(goodName(r.g))}</b><small>En bodega <strong>${num(r.hold)}</strong> · mochila <strong>${num(r.pack)}</strong></small></span></button>`).join('');
+    const from = this.cargoSide === 'deposit' ? pack : hold, to = this.cargoSide === 'deposit' ? hold : pack;
+    const max = selected ? this.transferMax(selected.g, from, to) : 0;
+    const amount = this.transferQty === 'max' ? max : Math.min(max || 1, clampQty(this.transferQty || 1));
+    return `<div class="cargo-summary"><div><small>ESPACIO · BODEGA</small><b>${num(holdUsed(hold))}<i>/</i>${num(hold.cap || 0)}</b></div><div><small>ESPACIO · MOCHILA</small><b>${num(holdUsed(pack))}<i>/</i>${num(pack.cap || 0)}</b></div></div>
+      <div class="cargo-stats">${stats ? `<span>${num(stats.cells)} cimientos</span><span>${num(stats.weight)} peso</span><span>${num(stats.buoyancy)} flotación</span><span>Velocidad teórica ${stats.speed.toFixed(1)}</span>` : '<span>Estadísticas no disponibles</span>'}</div>
+      <div class="commerce-good-list">${options || '<p class="commerce-empty">No hay mercancías en tus almacenes.</p>'}</div>
+      <div class="cargo-transfer"><label>Dirección<select data-cargo-side><option value="deposit" ${this.cargoSide !== 'withdraw' ? 'selected' : ''}>Mochila → bodega</option><option value="withdraw" ${this.cargoSide === 'withdraw' ? 'selected' : ''}>Bodega → mochila</option></select></label>
+      <div class="commerce-qty">${[1,5,10].map((n) => `<button type="button" data-qty="${n}" class="${this.transferQty === n ? 'on' : ''}" ${max < n ? 'disabled' : ''}>${n}</button>`).join('')}<button type="button" data-qty="max" class="${this.transferQty === 'max' ? 'on' : ''}" ${max < 1 ? 'disabled' : ''}>Máx.</button>
+      <input type="number" min="1" max="${max}" value="${amount}" data-amount aria-label="Cantidad a transferir" ${max < 1 ? 'disabled' : ''}></div>
+      <p class="commerce-transfer-note">${selected ? `${esc(goodName(selected.g))}: ${num(selected.pack)} en mochila y ${num(selected.hold)} en bodega. Caben hasta ${num(max)} por este movimiento.` : 'Selecciona una mercancía.'}</p></div>`;
+  }
+
+  marketHtml() {
+    const pack = this.market?.pack?.goods || this.profile?.()?.eco?.pack?.goods || {};
+    const packCap = this.market?.pack?.cap ?? this.profile?.()?.eco?.pack?.cap ?? 0;
+    const used = this.market?.used ?? holdUsed(this.profile?.()?.eco?.pack || { cap: 0, goods: {} });
+    const rows = this.rows.map((r) => {
+      const good = GOODS[r.g]; if (!good) return '';
+      const trend = r.trend > 0 ? '↑ sube' : r.trend < 0 ? '↓ baja' : '→ estable';
+      return `<button type="button" data-good="${esc(r.g)}" class="market-row${r.g === this.selected ? ' on' : ''}"><i class="good-mark cat-${esc(good.cat)}">${CAT_MARK[good.cat] || '•'}</i><span class="market-name"><b>${esc(good.name)}</b><small>${esc(GOOD_CATS[good.cat] || good.cat)}${r.illegal ? ' · CONTRABANDO' : ''}</small></span><span class="market-stock">${num(r.stock)}<small>stock</small></span><span class="market-prices"><b>Compra ${num(r.buy)}</b><b>Venta ${num(r.sell)}</b><small>${trend}</small></span></button>`;
+    }).join('');
+    const row = this.rows.find((r) => r.g === this.selected), q = this.quote;
+    const max = this.marketMax(), gold = this.market?.gold ?? this.profile?.()?.gold ?? 0;
+    return `<div class="market-wallet"><b>${num(gold)} oro</b><span>Mochila ${num(used)}/${num(packCap)} espacio</span></div>
+      <div class="market-list">${rows || '<p class="commerce-empty">Pide la lista del mercado para ver las mercancías.</p>'}</div>
+      <div class="market-order"><div class="market-selected"><span class="good-mark cat-${esc(GOODS[this.selected]?.cat || 'material')}">${CAT_MARK[GOODS[this.selected]?.cat] || '•'}</span><b>${esc(goodName(this.selected))}</b><small>${row?.illegal ? 'Mercancía ilegal aquí' : 'Precio dinámico según stock'}</small></div>
+      <label>Operación<select data-market-side><option value="buy" ${this.side === 'buy' ? 'selected' : ''}>Comprar</option><option value="sell" ${this.side === 'sell' ? 'selected' : ''}>Vender</option></select></label>
+      <div class="commerce-qty">${[1,5,10].map((n) => `<button type="button" data-qty="${n}" class="${this.qty === n ? 'on' : ''}" ${max < n ? 'disabled' : ''}>${n}</button>`).join('')}<button type="button" data-qty="max" class="${this.qty === max ? 'on' : ''}" ${max < 1 ? 'disabled' : ''}>Máx.</button><input type="number" min="1" max="${max}" value="${this.qty}" data-amount aria-label="Cantidad" ${max < 1 ? 'disabled' : ''}></div>
+      <div class="market-quote"><span>Total cotizado</span><b>${q?.signature === JSON.stringify([this.town, this.selected, this.qty, this.side]) ? `${num(q.total)} oro` : 'Solicitando al servidor…'}</b>${q?.avg ? `<small>Media ${num(q.avg)} oro por unidad</small>` : ''}</div>
+      <small class="market-hold">En mochila: ${num(pack[this.selected] || 0)} unidades · artículo de ${num(goodWeight(this.selected))} espacio</small></div>`;
+  }
+
+  statusText() {
+    if (this.pending) {
+      if (this.pending.timedOut) return `${this.lastResult || 'Aún no llegó respuesta.'} Puedes reenviar la misma solicitud.`;
+      return this.lastResult || 'Esperando respuesta del servidor…';
+    }
+    const read = this.reads.get(this.readByKind.get(this.view === 'cargo' ? 'cargo' : this.market ? 'quote' : 'list'));
+    if (read?.timedOut) return `${this.lastResult || 'El servidor aún no respondió.'} Puedes reintentar la lectura.`;
+    return this.lastResult || (this.view === 'cargo' ? 'Bodega privada de tu balsa.' : 'Cotiza el total antes de confirmar.');
+  }
+
+  renderRetry() {
+    const timedOut = !!this.pending?.timedOut;
+    const readId = this.readByKind.get(this.view === 'cargo' ? 'cargo' : this.market ? 'quote' : 'list');
+    const read = this.reads.get(readId), readTimedOut = !!read?.timedOut;
+    let button = this.root.querySelector('.commerce-retry');
+    if (!button) { button = document.createElement('button'); button.className = 'commerce-retry'; button.type = 'button'; this.$('.commerce-feedback').after(button); }
+    button.hidden = !timedOut && !readTimedOut;
+    button.textContent = timedOut ? 'Reenviar misma operación' : 'Reintentar lectura';
+    button.onclick = () => timedOut ? this.retryPending() : read && this.retryRead(read);
+  }
+
+  retryRead(read) { read.sentAt = performance.now(); read.timedOut = false; this.send(read.message); this.render(); }
+
+  signature() {
+    const c = this.context(), p = this.profile?.();
+    return JSON.stringify([this.active, this.view, this.town, this.selected, this.side, this.qty, this.transferQty, this.cargoSide,
+      this.rows, this.quote, this.market?.gold, this.market?.pack, p?.gold, p?.eco?.tradeRev, p?.eco?.pack?.goods,
+      c?.ship?.rev, c?.ship?.hold?.goods, c?.record?.rev, this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt],
+      this.lastResult, [...this.readByKind.entries()].map(([k,id]) => [k,this.reads.get(id)?.timedOut,this.reads.get(id)?.sentAt])]);
+  }
+}

@@ -1,0 +1,111 @@
+.commerce-cargo-launcher[hidden], .commerce-panel[hidden], .commerce-retry[hidden] { display: none; }
+.trading-goods #touch .t-cluster, .trading-goods #touch .joy-rest { display: none; }
+.trading-goods #touch .joy-zone { top: auto; bottom: 0; height: 20%; width: 30%; }
+.trading-goods .actionbar, .trading-goods .tracker, .trading-goods .prompt { visibility: hidden; }
+.commerce-cargo-launcher {
+  position: absolute; z-index: 41; right: 18px; bottom: 18px; min-height: 46px; padding: 0 15px;
+  border: 2px solid #dbb76b; border-radius: 7px; background: linear-gradient(#79552f, #493321);
+  color: #fff0c6; font: 800 14px system-ui, sans-serif; text-shadow: 0 1px #000;
+  box-shadow: 0 4px 0 #241912, 0 8px 20px #0008; touch-action: manipulation;
+}
+.commerce-panel {
+  position: absolute; z-index: 45; right: max(14px, var(--safe-r, 0px)); bottom: max(18px, var(--safe-b, 0px));
+  width: min(470px, calc(100cqw - 28px)); max-height: min(760px, calc(100cqh - 28px));
+  display: flex; flex-direction: column; overflow: hidden; pointer-events: auto;
+  color: #f7e7c1; border: 2px solid #a77c42; border-radius: 10px;
+  background: linear-gradient(145deg, #211b20f5, #13131af7 72%); box-shadow: 0 18px 55px #000b, inset 0 0 0 1px #f0c9751c;
+  font: 14px/1.35 system-ui, sans-serif; text-shadow: 0 1px #0008;
+}
+.commerce-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px 10px; border-bottom: 1px solid #c79a533d; }
+.commerce-head > div { display: grid; gap: 2px; }
+.commerce-kicker { color: #d8aa5f; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+.commerce-title { color: #fff1cb; font: 900 20px/1.15 Georgia, serif; }
+.commerce-close { width: 36px; height: 36px; border: 1px solid #c79a5370; border-radius: 6px; background: #332820; color: #ffe7b5; font-size: 23px; }
+.commerce-tabs { display: flex; gap: 6px; padding: 8px 12px 0; }
+.commerce-tabs button, .commerce-qty button, .commerce-retry, .commerce-confirm {
+  min-height: 36px; border: 1px solid #997041; border-radius: 6px; background: #30271f; color: #ecd6ad;
+  font: 750 12px system-ui, sans-serif; touch-action: manipulation;
+}
+.commerce-tabs button { flex: 1; }
+.commerce-tabs button.on, .commerce-good.on, .market-row.on, .commerce-qty button.on { border-color: #f0c56c; background: linear-gradient(#75542d, #49361f); color: #fff4d3; }
+.commerce-body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 11px 13px; scrollbar-color: #886539 #17151a; }
+.commerce-feedback { min-height: 20px; padding: 3px 14px 7px; color: #e8c889; font-size: 12px; }
+.commerce-retry { align-self: flex-start; margin: 0 14px 8px; padding: 0 11px; }
+.commerce-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 13px; border-top: 1px solid #c79a533d; background: #17151bea; }
+.commerce-footnote { max-width: 55%; color: #b6a68a; font-size: 10px; }
+.commerce-confirm { min-height: 42px; padding: 0 14px; border-color: #e2b45c; background: linear-gradient(#a47536, #66421f); color: #fff3d2; font-size: 13px; font-weight: 900; }
+.commerce-panel button:disabled, .commerce-panel input:disabled, .commerce-panel select:disabled { opacity: .42; }
+.cargo-summary, .market-wallet { display: flex; justify-content: space-between; gap: 10px; padding: 10px; border: 1px solid #ad804b4d; border-radius: 7px; background: #33271c80; }
+.cargo-summary > div { display: grid; gap: 3px; }
+.cargo-summary small { color: #d8ae6c; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+.cargo-summary b { font: 800 18px Georgia, serif; }
+.cargo-summary i { padding: 0 4px; color: #9d8665; font-style: normal; }
+.cargo-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 9px 2px; color: #c8b99c; font-size: 11px; }
+.commerce-good-list, .market-list { display: grid; gap: 5px; }
+.commerce-good, .market-row { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 47px; padding: 7px 9px; text-align: left; border: 1px solid #83704f55; border-radius: 6px; background: #1a1a1f; color: #eee0c2; }
+.commerce-good > span, .market-name { display: grid; flex: 1; gap: 2px; }
+.commerce-good b, .market-name b { font-size: 13px; }
+.commerce-good small, .market-name small { color: #b0a18a; font-size: 10px; }
+.good-mark { display: grid; flex: 0 0 29px; width: 29px; height: 29px; place-items: center; border: 1px solid #d9b46b66; border-radius: 50%; color: #f1cd81; font-style: normal; }
+.cat-food { color: #a5d18c; }.cat-drink { color: #8fd9dc; }.cat-material { color: #e2b36c; }.cat-arms { color: #e88770; }.cat-luxury { color: #d59ee4; }
+.cargo-transfer, .market-order { display: grid; gap: 9px; margin-top: 10px; padding: 10px; border: 1px solid #ad804b4d; border-radius: 7px; background: #19181d; }
+.cargo-transfer label, .market-order label { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #d7c6a6; font-size: 12px; }
+.commerce-panel select, .commerce-panel input { min-height: 36px; min-width: 0; padding: 5px 8px; border: 1px solid #947247; border-radius: 5px; background: #242126; color: #f7e7c1; font: 13px system-ui, sans-serif; }
+.commerce-qty { display: flex; align-items: center; gap: 5px; }
+.commerce-qty button { min-width: 40px; }
+.commerce-qty input { flex: 1; width: 60px; }
+.commerce-transfer-note, .commerce-empty { margin: 0; color: #bdae92; font-size: 11px; }
+.market-wallet { align-items: center; margin-bottom: 8px; }
+.market-wallet b { color: #f3cb78; font: 900 17px Georgia, serif; }
+.market-wallet span { color: #bdae92; font-size: 11px; }
+.market-stock { display: grid; min-width: 36px; text-align: center; font-weight: 800; }
+.market-stock small, .market-prices small { color: #9f927d; font-size: 9px; font-weight: 500; }
+.market-prices { display: grid; min-width: 88px; gap: 2px; text-align: right; font-size: 10px; }
+.market-selected { display: grid; grid-template-columns: 30px 1fr; align-items: center; column-gap: 8px; }
+.market-selected .good-mark { grid-row: span 2; }
+.market-selected small { color: #ad9f86; font-size: 10px; }
+.market-quote { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; padding-top: 7px; border-top: 1px solid #a6814b45; }
+.market-quote span { color: #bdae92; }
+.market-quote b { color: #f2ca75; font: 900 17px Georgia, serif; }
+.market-quote small { grid-column: 1 / -1; color: #bdae92; font-size: 10px; }
+.market-hold { color: #a99a80; font-size: 10px; }
+.is-market .commerce-body { display: flex; flex-direction: column; gap: 8px; }
+.is-market .market-wallet, .is-market .market-order { flex-shrink: 0; margin: 0; }
+.is-market .market-list { min-height: 65px; max-height: 200px; overflow: auto; flex: 1; }
+.commerce-panel button:not(:disabled):hover { filter: brightness(1.16); }
+
+@container stage (max-height: 470px) {
+  .is-market .commerce-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 6px; }
+  .is-market .market-wallet { grid-column: 1 / -1; padding: 6px 8px; }
+  .is-market .market-list { max-height: none; min-height: 0; }
+  .is-market .market-order { margin: 0; padding: 6px; gap: 5px; }
+  .is-market .market-row { display: grid; grid-template-columns: 23px minmax(0, 1fr) 30px; gap: 3px 5px; padding: 5px; }
+  .is-market .market-name b { font-size: 11px; }
+  .is-market .market-name small { font-size: 8px; }
+  .is-market .market-prices { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 4px; text-align: left; min-width: 0; font-size: 9px; }
+  .is-market .good-mark { width: 23px; height: 23px; min-width: 23px; }
+  .is-market .market-selected { grid-template-columns: 24px minmax(0, 1fr); column-gap: 5px; font-size: 11px; }
+  .is-market .market-selected small { font-size: 9px; }
+  .is-market .commerce-qty { gap: 3px; flex-wrap: wrap; }
+  .is-market .commerce-qty button { min-width: 30px; min-height: 30px; }
+  .is-market .commerce-qty input { flex-basis: 100%; min-height: 30px; }
+  .is-market select { max-width: 110px; min-height: 30px; padding: 3px; font-size: 11px; }
+  .is-market .market-order label, .is-market .market-quote { font-size: 11px; }
+  .is-market .market-quote b { font-size: 14px; }
+}
+
+@container stage (max-width: 700px) {
+  .commerce-cargo-launcher { right: 7px; bottom: 58px; min-height: 44px; padding: 0 11px; font-size: 12px; }
+  .commerce-panel { right: max(7px, var(--safe-r, 0px)); bottom: max(7px, var(--safe-b, 0px)); width: min(440px, calc(100cqw - 14px)); max-height: calc(100cqh - 14px); }
+  .commerce-head { padding: 9px 11px 7px; }.commerce-title { font-size: 17px; }
+  .commerce-tabs { padding: 6px 9px 0; }.commerce-body { padding: 8px 9px; }
+  .commerce-foot { padding: 7px 9px; }.commerce-footnote { font-size: 9px; }
+}
+@container stage (max-height: 470px) {
+  .commerce-cargo-launcher { right: 7px; bottom: 58px; min-height: 44px; padding: 0 11px; font-size: 12px; }
+  .commerce-panel { max-height: calc(100cqh - 8px); bottom: max(4px, var(--safe-b, 0px)); }
+  .commerce-head { padding-top: 6px; padding-bottom: 5px; }.commerce-title { font-size: 16px; }
+  .commerce-tabs { padding-top: 4px; }.commerce-tabs button { min-height: 30px; }
+  .commerce-body { padding-top: 6px; padding-bottom: 6px; }.commerce-foot { padding-top: 5px; padding-bottom: 5px; }
+  .commerce-confirm { min-height: 36px; }
+}

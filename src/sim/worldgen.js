@@ -592,6 +592,8 @@ export function generateWorld(seed) {
   }
 
   const npcs = [
+    { id: 'merchant', name: 'Don Bacalao', title: 'Mercader de mercancías', skin: 2, ...P([L.vendor[0] - 8, L.vendor[1] + 3]), facing: 2.2 },
+    { id: 'calaMerchant', name: 'La Tuerta', title: 'Mercader de la Cala', skin: 3, ...P([L.cala[0] - 5, L.cala[1] + 6]), facing: 1.1 },
     { id: 'captain', name: 'Capitana Brea', title: 'Capitana del puerto', skin: 5, ...P(L.captain), facing: Math.atan2(-dockDir.x, -dockDir.z) },
     { id: 'vendor', name: 'Tía Perla', title: 'Vendedora', skin: 6, ...P([L.vendor[0] - 2.2, L.vendor[1] - 1.2]), facing: 2.2 },
     // No look of her own yet: she wears the vendor's (no spare NPC skin). Facing the walk up from the beach.

@@ -22,6 +22,7 @@ import { DROPS } from '../data/loot.js';
 import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
 import { raftCmd } from '../sim/systems/raftEditor.js';
+import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
@@ -85,6 +86,7 @@ export class LocalServer {
   disconnect(clientId) {
     const c = this.clients.get(clientId);
     if (c && c.entity) {
+      clearCommerceReceipts(this.world, c.entity);
       detachRafts(this.world, c.entity);
       const p = detachProfile(this.world, c.entity);
       if (p && this.onSave) this.onSave(clientId, p);
@@ -208,7 +210,8 @@ export class LocalServer {
         break;
       }
       // Trade (M7): a town's board, buying and selling goods into your pack.
-      case 'market': marketCmd(w, e, msg); break;
+      case 'market': marketCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
+      case 'commerce': commerceCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       case 'raft': raftCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       default: break;
     }
@@ -364,7 +367,8 @@ export class LocalServer {
         const id = this.clientOf(ev.to);
         if (id !== undefined) {
           this.send(id, { t: MSG.EVENT, ev });
-          if (SAVE_NOW.has(ev.type) || (ev.type === 'raftEdit' && ev.ok && ev.op !== 'quote')) this.saveSoon(this.clients.get(id), 0);
+          if (SAVE_NOW.has(ev.type) || (ev.type === 'raftEdit' && ev.ok && ev.op !== 'quote')
+              || (ev.type === 'commerce' && ev.ok && ['buy', 'sell', 'transfer'].includes(ev.op))) this.saveSoon(this.clients.get(id), 0);
         }
         continue;
       }

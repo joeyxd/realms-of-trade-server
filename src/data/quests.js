@@ -44,6 +44,16 @@ export const goalCount = (q) => q.goal.n || 1;
 
 // The people of the island: their lines (one per talk, in turn) and what they say about their quests.
 export const NPC_TALK = {
+  merchant: {
+    name: 'Don Bacalao', market: 'aldea', quests: {},
+    lines: ['Madera, lona y víveres. El precio depende de lo que queda en el puerto.',
+      'Lleva la compra a tu bodega y haz sitio en la mochila para el siguiente viaje.'],
+  },
+  calaMerchant: {
+    name: 'La Tuerta', market: 'cala', quests: {},
+    lines: ['Aquí compro lo que otros puertos no quieren ver. Mira el precio antes de cerrar el trato.',
+      'La Cala paga bien, pero sal de la pelea antes de venir a comerciar.'],
+  },
   captain: {
     name: 'Capitana Brea',
     lines: [

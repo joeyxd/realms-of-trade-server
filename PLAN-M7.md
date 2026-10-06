@@ -3,19 +3,21 @@
 Entregas/UI/recursos y dependencias: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D06, D10–D11 y D13–D14.
 
 > El corazón de la estructura (DESIGN, «El chiste del juego»). El **motor ya existe y está probado**
-> (`tests/economy.test.mjs`). Lo que falta es lo que se ve y se juega: la UI del mercado, los mercaderes, la mochila
-> y la bodega, y el contenido.
+> (`tests/economy.test.mjs`). D06a conecta mercaderes, cotización, compra/venta y bodega:
+> **aceptado localmente en software**, `0.6.0-alpha.3` / protocolo 15. Iconos por bien, muerte, rumores,
+> balance regional y publicación siguen pendientes. [Informe](docs/delivery/d06a-cargo-market.md).
 
 ## 0. Qué hay ya en el código
 
 | Pieza | Dónde | Estado |
 |---|---|---|
-| Mercancías, leyes, impuestos, contrabando | `src/data/goods.js` | ✅ 17 mercancías, 4 leyes |
+| Mercancías, leyes, impuestos, contrabando | `src/data/goods.js` | ✅ 18 mercancías, 4 leyes |
 | Pueblos, islas, rutas | `src/data/towns.js` | ✅ 6 pueblos (Aldea y Cala caminables), 9 rutas |
 | Mercado: precio por escasez, deslizamiento, margen, impuesto, equilibrio por pueblo, recuperación | `src/sim/economy/market.js` | ✅ |
 | Bodegas por peso, pudrición | `src/sim/economy/cargo.js` | ✅ |
 | Reloj y economía del mundo (serializable) | `src/sim/economy/economy.js` | ✅ 1 día = 960 s |
 | Comando `market` (`list` / `buy` / `sell`) y eventos `market` / `traded` / `tradeDenied` | `src/sim/systems/trade.js`, `localServer.js` | ✅ |
+| Mercaderes y panel privado `commerce`: list/quote/buy/sell/cargo/transfer, correlación, total vigente y recibos exitosos de sesión | `src/ui/commerce.js`, `src/sim/systems/commerce.js` | ✅ D06a local |
 | Mochila en el perfil (`p.eco.pack`, 10 de espacio) | `inventory.js` (`newProfile` / `sanitizeProfile`) | ✅ |
 
 La regla que hace divertido el comercio: cada pueblo **asienta** su stock donde produce o consume
@@ -51,21 +53,23 @@ legalidad por zona y pérdidas finales siguen por decidir. La UI inicial P1–P6
 
 ## 2. Pasos
 
-- [ ] **P1 Mercaderes en el mundo.** Un NPC mercader por pueblo caminable (`worldgen.js`: `npcs`, como la
-  Vendedora). En la Aldea, «Don Bacalao» junto a los puestos; en la Cala, «La Tuerta». Hablarle abre el mercado
-  (`dialog.js` → botón «Comerciar» → `{type:'market', op:'list', town}`). Test: `talk` + `market list` desde
-  `TOWNS[t].r`.
-- [ ] **P2 Panel del mercado** (`src/ui/market.js`, estilo de `charpanel.js` / `vendor`). Una fila por
-  mercancía: icono, nombre, stock, precio de compra y venta, flecha de tendencia (`trend`), insignia de
-  contrabando. Selector de cantidad (1 / 5 / 10 / máx) con el **total cotizado** antes de confirmar (pedir `quote`:
-  añadir `op: 'quote'` al comando, que devuelve `{type:'quote', total, avg}`). Muestra la mochila (`pack`, `used` /
-  `cap`) y el oro. Responde a `traded` (monedas por Bézier al HUD, como el botín) y a `tradeDenied` (texto en
-  español por `why`: «No te alcanza», «No cabe en la mochila», «Aquí no se vende eso», «La Corona lo prohíbe»,
-  «Acércate al mercado», «No en plena pelea»).
+- [x] **P1 Mercaderes en el mundo.** Don Bacalao en Aldea y La Tuerta en Cala, looks existentes y botón
+  «Comerciar mercancías» en diálogo → panel `commerce`. Posiciones comprobadas fuera de agua/colliders
+  y dentro del radio real del mercado; habla y controles táctiles probados en Worker local.
+- [x] **P2 Panel del mercado** (`src/ui/commerce.js`, `styles/commerce.css`). Lista con marcador de categoría,
+  nombre, stock, precios, tendencia y contrabando; selector 1/5/10/máx y **total/medio cotizados por servidor**.
+  Oro y espacio de mochila, errores en español y confirmación al precio vigente. La UI espera acuse+perfil,
+  conserva pendiente al cerrar y reintenta con el mismo ID sin repetir cobro dentro de los recibos de sesión.
+  Regresión 453/453 del checkout compartido, 8 pruebas nuevas y 45 capturas PC/móvil horizontal/vertical.
+  P1/P2 aceptados localmente en software; animación de monedas adicional y publicación pendientes.
 - [ ] **P3 Iconos de mercancías.** Procedurales (canvas, como los de objetos en `itemui.js`), o `tex:good-<id>` en
   el manifiesto de assets si el autor los trae.
+  D06a usa marcadores por categoría; no entrega un icono propio por mercancía. Inventario Unreal/FAB revisado
+  antes de implementar: iconos empaquetados, sin export listo; no hay nueva textura/descarga en este corte.
 - [ ] **P4 La mochila en el HUD y la muerte.** Contador pequeño junto al oro. Morir en la Cala tira la mochila al
   suelo (`spillPlayer` en `inventory.js` ya lo hace con el botín: añadir la mochila como `kind: 'goods'`).
+  Esa pérdida es propuesta pendiente de política, no comportamiento activado por D06a. El panel muestra
+  capacidad de mochila/bodega; no añade contador permanente ni decide pérdidas personales.
 - [ ] **P5 Rumores.** La taberna (M8) o el mercader cuenta un rumor por día: «Falta ron en Puerto Sol». Eventos de
   mercado: `Economy` elige uno al cambiar de día, mueve el equilibrio de un pueblo × 0.4 (escasez) o × 2.5 (exceso)
   durante 1–2 días y lo anuncia (evento público `rumor`). Test determinista con semilla.

@@ -51,3 +51,7 @@
 - Texturas nuevas deben tener presupuesto móvil: conservar originales fuera del bundle, comprimir los derivados
   y ofrecer menor resolución cuando aporte ahorro. Cargar una variante por dispositivo; verificar la URL/resolución
   realmente cargada y la lectura visual en móvil emulado. Bytes/estimaciones de texels no prueban FPS en teléfono real.
+- Antes de implementar cada nueva parte, cruzar su necesidad con el inventario Unreal/FAB existente y verificar
+  los candidatos concretos que puedan ahorrar trabajo. Registrar la decisión de reutilización o descarte en el
+  brief/informe del corte; no repetir el inventario completo ni recrear arte disponible sin revisar su encaje.
+  Mantener las fuentes Unreal intactas y comprobar portabilidad, estilo y presupuesto móvil antes de integrar.

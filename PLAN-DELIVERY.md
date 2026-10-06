@@ -70,6 +70,12 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   retirada segura y guardado exacto; `0.6.0-alpha.2`, protocolo 14. Regresión 413/413 y 24 capturas inspeccionadas
   PC/móvil horizontal/vertical; atlas 1024/512. [Informe](docs/delivery/d05-raft-editor.md).
   Sigue D06 (bodega/producción/mercaderes), luego prototipo D08. Host/dispositivos físicos sin aceptar.
+- Checkpoint posterior D06a (2026-10-05): bodega mochila↔balsa y mercados de Aldea/Cala aceptados
+  localmente en software; **0.6.0-alpha.3 / protocolo 15**, H/botón táctil, cotización y recibos exitosos de sesión.
+  8 pruebas nuevas, regresión 453/453 del checkout compartido y 45 capturas PC/móvil inspeccionadas, atlas 1024/512.
+  [Informe](docs/delivery/d06a-cargo-market.md), [reutilización FAB](docs/research/unreal-assets/D06-REUSE.md).
+  Sigue [D06b producción](docs/briefs/d06b-production.md), candidato banco Dreamrise; después D08.
+  Reservas seguras de puerto/movimientos con riesgo durable requieren D09; producción/hamaca/luces pendientes.
 - [Hoja naval](docs/NAVAL-ROADMAP.md): dirección acordada y decisiones pendientes. Este plan organiza su
   entrega; no convierte automáticamente recomendaciones de topología, pérdidas o abordaje en acuerdos.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),
@@ -102,7 +108,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; muelle → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1–P2 local aceptado en software ([P2](docs/delivery/d04p2-raft-walk.md)); dispositivos/publicación pendientes |
 | D05 | M6 P3: editor de construcción | Renderer/atlas existentes y caja A02; no nuevo kit A05 | D04; fantasma/motivo/rotación/colocar/quitar con servidor como autoridad | Local aceptado en software, 413/413 y 24 capturas ([informe](docs/delivery/d05-raft-editor.md)); dispositivos/publicación pendientes |
-| D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente; D05 solo añade compra acotada de materiales del editor |
+| D06 | M6 P4 parcial + M7 P1–P2: carga/comercio, luego producción | Caja A02 existente; banco candidato D06b, iconos A06 pendientes | D05; bodega, mercader/quote/compra/venta; producción D06b, reservas de puerto D09 | D06a local aceptado en software, alpha.3/protocolo 15; 453/453 compartido y 45 capturas ([informe](docs/delivery/d06a-cargo-market.md)). D06b preparado; P3 iconos/hamaca/luces pendientes |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
 | D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–d: perla/perfiles/suelo/recibo y cola ([informe](docs/delivery/d09d-pearl-ground-queue.md)); 003/004 reales. Diario de intenciones/staging/juego/adopción y operaciones navales pendientes |

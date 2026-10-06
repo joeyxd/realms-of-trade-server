@@ -6,7 +6,11 @@ Checkpoint 2026-10-05: **P1–P3 implementados y aceptados localmente en softwar
 Identidad/migración, amarre, snapshot y renderer; [P1](docs/delivery/d04p1-raft.md).
 Pasarela/cubierta, bloqueos y escaleras compartidos; [P2](docs/delivery/d04p2-raft-walk.md), 383/383 y PC/móvil emulado.
 Editor con siete piezas, compras de materiales en Aldea y retirada segura; [P3](docs/delivery/d05-raft-editor.md),
-413/413 y 24 capturas PC/móvil emulado. Bodega interactiva y producción siguen pendientes.
+413/413 y 24 capturas PC/móvil emulado.
+Checkpoint D06a: **bodega interactiva aceptada localmente**, `0.6.0-alpha.3`, protocolo 15; H/botón táctil,
+transferencias por peso con propiedad/revisión/preflight, mochila y estadísticas; mercados de Aldea/Cala.
+[Informe](docs/delivery/d06a-cargo-market.md): 8 pruebas nuevas, 453/453 en checkout compartido y 45 capturas
+PC/móvil horizontal/vertical. Producción sigue en [D06b](docs/briefs/d06b-production.md); P4 permanece parcial.
 No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
 
 Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
@@ -28,7 +32,7 @@ P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a imp
 | Reglas de construcción: cimientos conectados (12 × 12 máx.), pisos con soporte (pilar o pared debajo, o un voladizo de una casilla), piezas sobre cubierta libre, bordes junto a una cubierta, la red al borde, 3 niveles | `src/sim/economy/raft.js` (`canPlace`) | ✅ |
 | Colocar pagando con una bodega, quitar devolviendo la mitad (sin tirar lo que sostiene algo ni partir la balsa) | `place` / `remove` | ✅ |
 | Lo que hace la balsa: flotación contra peso (sobrecarga = se arrastra), velocidad por velas y motores, bodega, tripulación, cañones, reaparición | `raftStats` | ✅ |
-| Producción en el reloj del juego: el purificador riega los huertos (más con techo), las redes pescan, la parrilla y el alambique cocinan, el motor quema madera | `stepRaft` | ✅ |
+| Motor de producción: purificador/huertos, redes, parrilla/alambique y motor; todavía sin conectar al reloj jugable ni conservar acumuladores al guardar | `stepRaft` | núcleo; D06b pendiente |
 | Guardado en el perfil (`p.eco.ships`: identidad, revisión, amarre, base privada de amarre, plano, bodega, puerto, HP y aspecto) | `trade.js` (`sanitizeEco`) | ✅ |
 | Viajes entre pueblos (ruta, horas por velocidad, eventos con semilla), bodegas | `voyage.js`, `cargo.js` | ✅ |
 | Barcos clásicos (balandra… galeón) para más adelante | `src/data/ships.js` | ✅ datos |
@@ -90,6 +94,8 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
 - [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaft` en `economy.step` para las balsas de los
   jugadores conectados), panel de la balsa (bodega, agua, lo que produce, peso / flotación, velocidad), cofres,
   hamaca como punto de reaparición, faroles de noche (luces locales).
+  **D06a aceptado:** bodega compartida por cajas, transferencia privada mochila↔balsa y panel de capacidad,
+  peso/flotación/velocidad teórica. Producción, agua, hamaca y luces pendientes; no marcar P4 completo.
 - [ ] **P5 Zarpar.** El timón abre la carta; travesía (`planVoyage` + `stepRaft` acelerado); restos flotantes que
   recoger con un gancho por el camino (madera, lona, barriles); llegar a puerto abre su mercado (M7).
   Este viaje abstracto es fase A; sus pérdidas aleatorias no sustituyen el combate naval interactivo de fase B.
