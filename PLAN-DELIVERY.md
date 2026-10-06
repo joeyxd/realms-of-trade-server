@@ -130,6 +130,15 @@ Afinidad no se añade silenciosamente al cierre de M4.8: definir mejoras/llave/X
 Navegación y nivel propio de barco, legalidad, pérdidas/rescate y topología se concretan al preparar sus fases;
 las decisiones abiertas no bloquean texturas, el kit actual o la cubierta/editor básicos.
 
+### 3.1. Línea extra de baja prioridad — personajes con LLM
+
+[PLAN-EXTRA-LLM](PLAN-EXTRA-LLM.md), solicitado el 2026-10-05: explorar cerebro LLM, cuerpo programado,
+acciones directas, percepción textual dinámica, memoria y tokens propios del dueño. Cola separada **L00–L06**,
+por cortes pequeños en paralelo; no cambia la prioridad/dependencias de D00–D15 ni bloquea la ruta naval.
+Estado: plan documentado, implementación pendiente. Primero contrato/cliente textual en aislamiento;
+BYOK, mundo compartido, balance y monetización requieren pilotos y decisiones posteriores. Próximo L00
+cuando se le asigne capacidad; sin activar agentes, proveedores ni cobros al redactar este plan.
+
 ## 4. Cola de assets: progresión comprobable
 
 **Candidato → preparado → conversión verificada (si aplica) → importador revisado → integrado en un consumidor

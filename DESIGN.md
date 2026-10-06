@@ -19,6 +19,11 @@ juego; barcos aéreos más adelante. Acuerdos de manejo por materiales/navegaci�
 oficios regionales y ciudades en `docs/NAVAL-ROADMAP.md`. Topología naval/abordaje, fórmulas y detalles de
 pérdidas/recuperación siguen abiertos. La discusión inicial vive en `docs/NAVAL-HOUSING-DISCUSSION.md`.
 
+**Línea extra de baja prioridad (2026-10-05):** [personajes con LLM, cuerpo y memoria](PLAN-EXTRA-LLM.md).
+Exploración incremental en paralelo de agentes que reciben el juego por texto y actúan con controles normales,
+con posible modelo/tokens propios de su dueño. Plan documentado; implementación, balance y negocio pendientes.
+La construcción, barcos y comercio conservan su prioridad; esta línea no bloquea sus entregas.
+
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
 NPCs, pasados por `patchToon` para que compartan bandas de luz, contornos, luces locales y bloom; traen su propio

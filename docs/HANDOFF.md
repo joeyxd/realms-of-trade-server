@@ -61,6 +61,17 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
 
+### Línea extra de baja prioridad — personajes con LLM (2026-10-05)
+
+- Dirección del autor documentada en [PLAN-EXTRA-LLM](../PLAN-EXTRA-LLM.md): LLM para objetivos/táctica,
+  cuerpo programado con modos y acciones directas, feedback textual, memoria y exploración de tokens propios.
+- Cola aparte **L00–L06**, incremental/en paralelo cuando haya capacidad; no desplaza D06/D08/D09.
+  Primero contrato y cliente sin gráficos en instancia aislada; BYOK, convivencia económica/PvP y
+  servicio comercial son fases posteriores. Reglas numéricas, autonomía offline y cobros siguen abiertos.
+- Solo planificación y enlaces revisados; implementación/pruebas de juego/publicación pendientes.
+  La propuesta de diferenciación/ingresos es una hipótesis con precedentes y métricas de piloto en el plan.
+  Próximo paso propio: L00 al asignarlo; la siguiente entrega principal conserva su estado actual.
+
 ### D06a — bodega y mercados caminables (2026-10-05)
 
 - Base D05 `991db89`, integrada sobre M5 `cfb494b`; fuente aceptada `bcd0886`; **`0.6.0-alpha.3`, protocolo 15**.
