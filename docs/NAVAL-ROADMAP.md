@@ -2,6 +2,9 @@
 
 Fecha: 2026-10-04. Estado: **dirección del autor registrada; implementación pendiente**.
 Esta hoja incorpora su respuesta a [la discusión inicial](NAVAL-HOUSING-DISCUSSION.md).
+Discusión adicional solicitada el 2026-10-06: [navegación activa y actividades de travesía](NAVIGATION-ACTIVITIES-DISCUSSION.md).
+Solo propuestas; no modifica acuerdos, estado de implementación ni orden de entregas.
+
 Las filas acordadas orientan los milestones. Las fórmulas, formatos de combate y ejemplos marcados como
 recomendación siguen abiertos; este documento no anuncia sistemas ya jugables.
 

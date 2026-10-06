@@ -79,6 +79,17 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   La propuesta de diferenciación/ingresos es una hipótesis con precedentes y métricas de piloto en el plan.
   Próximo paso propio: L00 al asignarlo; la siguiente entrega principal conserva su estado actual.
 
+### Discusión de navegación activa (2026-10-06)
+
+- El autor pidió brainstorm para que viajar sea entretenido: actividades de navegación y posibles ventajas
+  de velocidad. [Propuesta y camino de prueba](NAVIGATION-ACTIVITIES-DISCUSSION.md), síntesis del principal
+  con análisis Luna: crucero viable, ajuste de vela/ráfagas y olas/corrientes; alternativas a bordo.
+- Ampliación solicitada: impulsos fuertes de varios segundos, oportunidades de escape/combate y rutas
+  cambiantes. Catálogo de 18 opciones con costes/respuesta rival; geografía/legalidad estables y entorno
+  compartido anunciado. Ráfaga/virada/corriente es recomendación de prueba, no selección aprobada.
+- **Solo discusión, sin aprobar ni implementar.** Preservar masa/distribución, solo/táctil viable y límites
+  por barco; sin porcentajes de balance cerrados. No altera demo, cola D06b/D08a ni puertas M5/D09.
+
 ### D08a — bahía de manejo aislada (2026-10-05)
 
 - Fuente `eab3e5c`; laboratorio local independiente en `PROBAR-NAVEGACION.cmd` / puerto 5180.
