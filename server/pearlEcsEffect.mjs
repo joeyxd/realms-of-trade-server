@@ -1,7 +1,6 @@
 // One detached numeric row for pearl helpers. Reads of other entities remain read-only; writes
 // outside this row fail closed. Typed single-cell buffers preserve the live column's conversion.
-import { PEARL } from '../src/data/pearls.js';
-import { refreshStats } from '../src/sim/systems/stats.js';
+import { applyPearlChange } from '../src/sim/systems/pearlEffect.js';
 import { StoreError } from './store.mjs';
 
 export function pearlEcsDraft(live, entity) {
@@ -53,14 +52,10 @@ export function pearlEcsDraft(live, entity) {
   };
 }
 
-// Eligibility belongs to the accepted swallowPearl preflight. Recompute its three resets and
-// derived stats from current state, without re-running calm after a durable commit. Until the
-// gameplay owner extracts changed(), helper parity is verified for every pearl kind.
+// Eligibility belongs to the accepted swallowPearl preflight. Apply the shared pearl-change
+// rule to current state without re-running calm after a durable commit.
 export function pearlSwallowEffect(world, entity, profile) {
-  const draft = pearlEcsDraft(world.ecs, entity), s = draft.ecs;
-  s.gBuf[entity] = 0;
-  s.cdG[entity] = Math.max(s.cdG[entity], PEARL.swapCd);
-  s.waterT[entity] = 0;
-  refreshStats({ ecs: s, profiles: new Map([[entity, structuredClone(profile)]]) }, entity);
+  const draft = pearlEcsDraft(world.ecs, entity);
+  applyPearlChange({ ecs: draft.ecs, profiles: new Map([[entity, structuredClone(profile)]]) }, entity);
   return draft;
 }

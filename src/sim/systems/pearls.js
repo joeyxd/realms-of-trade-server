@@ -3,7 +3,7 @@
 // This is deliberately not durable across restarts; M5 moves these claims into the database.
 import { PEARLS, PEARL_IDS, PEARL, newPearls } from '../../data/pearls.js';
 import { DT, tuning } from '../../data/tuning.js';
-import { refreshStats } from './stats.js';
+import { applyPearlChange } from './pearlEffect.js';
 import { canStand } from './movement.js';
 
 export function installPearls(world, namespace = `solo-${world.seed}`) {
@@ -112,9 +112,7 @@ export function returnPearl(w, d) {
   return fresh;
 }
 function changed(w, e, op, pearl) {
-  const s = w.ecs;
-  s.gBuf[e] = 0; s.cdG[e] = Math.max(s.cdG[e], PEARL.swapCd); s.waterT[e] = 0;
-  refreshStats(w, e); mark(w, e);
+  applyPearlChange(w, e); mark(w, e);
   w.emit({ type: 'pearlChanged', to: e, e, op, pearl });
 }
 export function swallowPearl(w, e, uid, replaceUid) {
