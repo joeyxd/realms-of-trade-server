@@ -32,9 +32,9 @@ Inventario `actionrpg/FINDINGS.md`: `BP_InventoryComponent` (`EquipItemBySlot`, 
 lógica Node/CAS portable. Se reutilizan el helper real, `refreshStats`, tuning `PEARL`, staging, gate,
 cola y diario actuales. Sin exportaciones, assets nuevos ni cambios a fuentes Unreal.
 
-Los tres resets de `changed()` se reproducen en el adaptador server-only y se comparan con el helper
-real para los cuatro kinds. Al integrar, el dueño de sim debe extraer el efecto común antes de cambiar
-sus reglas; esta limitación explícita permite conservar un escritor por archivo durante D08.
+Al aceptar D09f-2b.2 los tres resets de `changed()` se reproducían en el adaptador server-only y
+se comparaban con el helper real para los cuatro kinds. [D09f-2b.3](../delivery/d09f-common-effect.md)
+extrae esa regla común con sim antes de cambiar sus reglas, manteniendo un escritor por archivo.
 
 ## Aceptación y siguiente paso
 
@@ -44,5 +44,6 @@ enqueue/release y rollback ECS completo. Autoridad SQL nueva carga estado actual
 Regresión aislada y hashes; no sustituye restart real de GameHost, pruebas multi-host ni recorrido visual.
 
 Después: contrato SQL/DTO/diario de lote para death/reemplazo; [hooks completos](m5-pearl-common-gate.md)
-con dueño gameplay y efecto compartido; hidratación/scope/reloj/adopción/invitados antes de activación.
-006 sigue pendiente de confirmación/verificación Supabase. P4/P6 parciales; no activar solo give/swallow.
+con dueño gameplay; efecto compartido extraído en D09f-2b.3. Hidratación/scope/reloj/adopción/invitados
+antes de activación. [006 aceptada real posteriormente](../delivery/d09f-same-holder-live.md): 21/21.
+P4/P6 parciales; no activar solo give/swallow.

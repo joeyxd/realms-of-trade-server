@@ -61,7 +61,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003–006 reales; same-holder commit/recuperación 21/21, validadores 6/6; staging 356/356 aisladas. Afinidad, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003–006 reales; same-holder commit/recuperación 21/21, validadores 6/6; staging 356/356 aisladas. Efecto común sim/staging 745/745 aisladas; afinidad, lotes, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -284,6 +284,19 @@ autor.
   para cuatro kinds; extraer efecto común con dueño sim al integrar, antes de cambiar sus reglas.
 - Siguiente lote real multi-UID death/reemplazo y hooks completos/hidratación/scope/reloj/adopción/invitados;
   leases/naval separados. P4/P6 parciales; no activar solo give/swallow.
+
+### M5 P4/P6 — efecto común sim/staging D09f-2b.3 (2026-10-06)
+
+- Fuente `26ef249`, base `60a4773`; [contrato](briefs/m5-pearl-common-effect.md),
+  [entrega/evidencia](delivery/d09f-common-effect.md).
+- `applyPearlChange` reúne G/cooldown/agua/stats. Sim conserva dirty/eventos; staging conserva
+  fila separada/perfil actual/verificación/rollback. Misma regla para ambos, sin balance nuevo.
+- **745/745** regresión en 74 archivos del commit aislado, **68/68** smoke; revisión Luna y hashes.
+  Pruebas existentes de cuatro kinds/progreso/fences/rollback/predicción; sin tests espejo nuevos.
+- Unreal/FAB consultado: referencias empaquetadas sin lógica JS portable, se reutiliza código propio.
+  Sin arte, SQL/env, host/reinicio/publicación, activación de staging ni cambios alpha.4/protocolo 16.
+- Siguiente lote atómico multi-UID, hooks completos y restauración/scope/reloj/adopción; afinidad aparte.
+  Cola visual/móvil naval conservada. Trabajo concurrente de lote fuera de esta aceptación.
 
 ### M5 — commit same-holder 006 aceptado real (2026-10-06)
 
