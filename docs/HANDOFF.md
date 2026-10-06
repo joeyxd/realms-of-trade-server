@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e**: 003/004 reales, perla/suelo atómicos, cola y diario opcional local (005 pendiente); conexión host/staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e**: 003/004/005 reales, perla/suelo atómicos, cola y diario opcional; conexión host/staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega local**: editor y transferencias privadas por peso; producción/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -146,12 +146,17 @@ autor.
 - Startup/reconcile leen recibo y perfiles/ledger/ubicación actuales; exacto cierra committed, avance conflict
   sin publicar historia, desconocido mantiene reserva. Reanudación explícita manda una sola solicitud guardada,
   nunca builder/UUID nuevo. Fallo de cierre del diario retiene reserva; snapshots perdidos no se reproducen.
-- **005 nueva pendiente de aplicar/verificar**. No cambia env ni activa el diario/operaciones en host/juego,
+- **005 aplicada por el autor y verificada real: 21/21 checks**; procesos independientes de ProfileSessions,
+  venta recuperada sin otro envío y request pendiente reanudado una vez con UUID original. Fixtures de juego
+  limpiadas; cuatro filas terminales de auditoría retenidas. [Verificación](delivery/d09e-journal-live.md).
+  No cambia env ni activa el diario/operaciones en host/juego,
   sim/cliente/protocolo/editor/comercio permanecen con D06; no inicio/reinicio/publicación del host.
 - Prueba de cuatro procesos Node/PGlite independientes: venta confirmada recuperada sin envío y mint preparado
   reanudado una vez. Regresión/evidencia consolidada en informe; no demuestra leases/concurrencia multi-host.
-- Siguiente: verificar 005 cuando el autor la aplique, coordinar staging antes de mutación/ack con LocalServer,
-  conectar diario al startup, reloj/restauración y políticas de adopción/invitados. P4/P6 siguen parciales.
+- Siguiente preparado: [D09f](briefs/m5-pearl-game-staging.md), transferencia de un UID gestionado entre
+  cuentas en aislamiento, staging antes de mutación/ack coordinado con dueño D06b. Slot swap y death/reemplazo
+  de varios UIDs requieren otro contrato; startup/restauración/reloj/adopción/invitados preceden activación.
+  P4/P6 siguen parciales.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 

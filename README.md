@@ -204,10 +204,12 @@ intents/ack de la simulación, adoptar raras y restaurar el suelo en juego. [Con
 D09c agrega `commitPearlGround`: posición, tiempos de suelo y dueño se confirman con los perfiles y recibos,
 incluyendo mint/relocación sin cuentas. **SQL 004 aplicada y verificada en Supabase** con fixtures limpiados.
 D09d conecta esa API a la cola de sesiones: reservas compartidas, un reintento exacto y recuperación que
-compara también la ubicación actual. D09e añade diario opcional y recuperación tras restart, aceptados
-localmente; SQL 005 pendiente de aplicar/verificar. Falta restauración/staging
+compara también la ubicación actual. D09e añade diario opcional y recuperación tras restart; **SQL 005
+aplicada/verificada real**, 21/21 checks y procesos independientes de ProfileSessions. Cuatro auditorías
+terminales retenidas; fixtures de juego limpiadas. Falta restauración/staging
 del juego. [Contrato de suelo](docs/delivery/d09c-pearl-ground.md), [cola y verificación D09d](docs/delivery/d09d-pearl-ground-queue.md).
 [Diario y recuperación D09e](docs/delivery/d09e-pearl-journal.md).
+[Verificación Supabase](docs/delivery/d09e-journal-live.md), [siguiente D09f preparado](docs/briefs/m5-pearl-game-staging.md).
 Google/Discord, recuperación de contraseña, leases e integración de transferencias durables siguen pendientes. El Worker
 mantiene su flujo solo. No se activan perlas legendarias ni pérdidas navales persistentes.
 

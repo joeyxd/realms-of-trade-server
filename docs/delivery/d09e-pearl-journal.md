@@ -85,8 +85,10 @@ con un UUID ya terminal se rechazan; resume actúa solo sobre contextos pendient
 
 ## Límites y siguiente corte
 
-**005 pendiente de aplicar y verificar en Supabase.** Ninguna red/proyecto real se consultó o modificó en
-este corte; no hubo cambios de credenciales/Auth ni nuevas variables. Tampoco inicio/reinicio de host,
+**Al aceptar este corte local, 005 estaba pendiente de aplicar/verificar.** El seguimiento posterior
+confirmó aplicación del autor y **21/21 checks reales**: [verificación Supabase](d09e-journal-live.md).
+Ninguna red/proyecto real se consultó o modificó durante la implementación local original;
+no hubo cambios de credenciales/Auth ni nuevas variables. Tampoco inicio/reinicio de host,
 push/publicación, cambio de sim/cliente/protocolo/comercio ni prueba de URL pública.
 
 El diario es opt-in y aún **no está inyectado en el host ni ligado a comandos de juego**. Memoria solo modela
@@ -102,7 +104,7 @@ Se cruzó la necesidad con [SUMMARY](../research/unreal-assets/SUMMARY.md),
 portable a Node. `SM_StoragePart_03` solo aporta apariencia. Se reutilizaron DTOs/recibos/cola 003–004; no hubo
 importación de arte, nuevo inventario ni escritura de fuentes Unreal.
 
-Siguiente: verificar 005 tras aplicación del autor; coordinar con dueño de LocalServer staging previo a
-mutación/ack y conectar journal/recover al startup. Resolver reloj/restauración de ground y adopción/cuarentena/
+Siguiente preparado tras verificar 005: [D09f](../briefs/m5-pearl-game-staging.md), coordinar con dueño de
+LocalServer staging previo a mutación/ack y conectar journal/recover al startup. Resolver reloj/restauración de ground y adopción/cuarentena/
 invitados antes de activar circulación gestionada. Offline aging, legendarias/cartel/retorno, reglas navales,
 leases y transacción general mundo/barcos/perfiles permanecen abiertos. P4/P6 no se marcan completos.

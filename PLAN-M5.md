@@ -34,8 +34,12 @@ Canarios SDK/cola reales limpiados; contexto de intenciones aún en memoria, dia
 juego pendientes. [Contrato y evidencia](docs/delivery/d09d-pearl-ground-queue.md). P4/P6 siguen parciales.
 Checkpoint D09e, base `c6bc368`: **diario opcional de request/UUID y recuperación tras restart aceptados
 localmente**. Recarga reservas antes de admitir, compara recibos/estado actuales y permite reanudar el
-request persistido sin builder nuevo. **SQL 005 pendiente de aplicar/verificar**; host/juego aún sin conexión.
+request persistido sin builder nuevo. **SQL 005 aplicada/verificada real**: 21/21 checks y recuperación
+de ProfileSessions en procesos independientes; cuatro auditorías terminales retenidas, fixtures de juego
+limpiadas. Host/juego aún sin conexión. [Verificación](docs/delivery/d09e-journal-live.md).
 [Contrato y evidencia](docs/delivery/d09e-pearl-journal.md). P4/P6 siguen parciales.
+Siguiente preparado: [D09f staging antes de mutación](docs/briefs/m5-pearl-game-staging.md), primera
+transferencia de un UID entre cuentas en aislamiento y coordinada con D06b. No activa circulación pública.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -104,7 +108,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   definir adopción/backfill de perlas raras existentes, colisiones e invitados. D09c agrega posición durable
   con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 real verificada.
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
-  D09e añade diario opcional de intenciones/UUIDs tras restart (005 pendiente) y recuperación de reservas;
+  D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
   falta conectarlo al host y restauración/publicación del suelo en juego. Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
@@ -113,7 +117,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
   D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
-  D09e añade diario opcional y recuperación tras restart (005 pendiente). No está conectado al host/juego;
+  D09e añade diario opcional y recuperación tras restart (005 real verificada). No está conectado al host/juego;
   mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

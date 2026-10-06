@@ -48,8 +48,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   perfiles/UID/ubicación al recuperar respuestas perdidas. Canarios temporales limpiados; diario durable de
   intenciones, restauración/staging y adopción pendientes. [Informe](docs/delivery/d09d-pearl-ground-queue.md).
 - Checkpoint posterior D09e: diario opcional de request/UUID, reservas recargadas y recuperación de recibo/estado
-  actual aceptados localmente. Reanudación explícita sin builder; 005 pendiente de aplicar/verificar y host/juego
-  sin conexión al diario. [Informe](docs/delivery/d09e-pearl-journal.md).
+  actual aceptados localmente. Reanudación explícita sin builder; **005 aplicada/verificada real**, 21/21 checks,
+  procesos nuevos de ProfileSessions y fixtures de juego limpiadas; cuatro auditorías terminales conservadas.
+  Host/juego sin conexión al diario. [Verificación](docs/delivery/d09e-journal-live.md),
+  [D09f preparado](docs/briefs/m5-pearl-game-staging.md) para transferencia de un UID antes de mutar, en aislamiento.
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
