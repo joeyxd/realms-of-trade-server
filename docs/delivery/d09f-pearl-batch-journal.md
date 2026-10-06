@@ -1,7 +1,8 @@
 # D09f-2b.5 — diario y cola compartida para lotes
 
 2026-10-06. Base `64b9956`. Corte server-only después de la aceptación real de SQL007.
-La aceptación de este corte es local; **SQL008 sigue pendiente de aplicar/verificar en Supabase**.
+La aceptación de este checkpoint fue local. **Aceptación posterior: SQL008 aplicada y verificada real,
+18/18 con ProfileSessions y cuatro procesos nuevos**: [evidencia 2b.6](d09f-pearl-batch-journal-live.md).
 No cambia host, LocalServer, cliente, protocolo, reglas de pérdida, reloj, RNG o afinidad.
 
 ## Comportamiento

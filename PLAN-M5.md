@@ -91,6 +91,16 @@ doce procesos SDK/SQL008 nuevos; 003–007/staging conservados y 22 fuentes comu
 Sigue canario real008, luego staging/tick de lote y hooks/restauración. No activa host/juego ni afinidad;
 la muerte completa aún necesita resolver sus otros efectos de equipo/oro/mundo. P4/P6 parciales.
 
+Checkpoint D09f-2b.6, base `b2b2b1`: **SQL008 aplicada por el autor y diario/cola batch verificados reales,
+18/18** en cuatro procesos nuevos SDK/Supabase. ProfileSessions confirma reemplazo con respuestas
+descartadas, recupera el recibo sin dispatch y reanuda una muerte preparada con un solo request exacto.
+Todos los UIDs/cuenta reservados; progreso y recogida posterior conservados ante replay histórico.
+Dos perfiles/seis UIDs sintéticos limpiados; tres terminales retenidos. **8/8** pruebas del canario
+aisladas; cuatro procesos locales nuevos, cuatro fuentes propias y 28 fuentes seleccionadas intactas.
+[Contrato/evidencia](docs/delivery/d09f-pearl-batch-journal-live.md). No requiere SQL nueva.
+Sigue [staging de reemplazo de dos UIDs](docs/briefs/m5-pearl-batch-staging.md), después hooks/restauración;
+host/juego todavía sin conexión durable del lote. Afinidad permanente y P4/P6 siguen pendientes.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
@@ -169,7 +179,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.2 prueba staging swallow/efecto ECS actual en tick; D09f-2b.3 comparte su regla con sim.
   D09f-2b.4 agrega storage de lote muerte/reemplazo (481/481 locales y 007 real 31/31).
   D09f-2b.5 integra diario/cola/reservas y recuperación batch (579/579 aisladas, 12 procesos;
-  SQL008 pendiente real, staging/tick batch pendiente).
+  SQL008 real aceptada después en D09f-2b.6: 18/18 y cuatro procesos; staging/tick batch pendiente).
   Faltan hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
@@ -187,7 +197,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.3 extrae la regla común con sim, sin cambios de comportamiento.
   D09f-2b.4 confirma varios UIDs/perfil/suelo en un recibo de storage; SQL007 real 31/31 aceptada.
   D09f-2b.5 acepta recuperación de intención batch en diario/cola con todos los UIDs y reanudación exacta;
-  SQL008 real y staging/tick de lote todavía pendientes.
+  D09f-2b.6 verifica SQL008/cola reales: 18/18 en cuatro procesos; staging/tick de lote pendiente.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

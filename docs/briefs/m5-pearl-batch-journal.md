@@ -61,3 +61,11 @@ compartida en memoria al enlazar `createMemoryPearlJournals(store)`. Inventario/
 se reutilizó infraestructura Node propia. SQL001–007 y host/LocalServer/sim/protocolo sin cambios.
 **SQL008 nueva pendiente de aplicar/verificar real**; este checkpoint no cierra la aceptación Supabase
 ni activa staging/tick/gameplay batch. Sigue canario aislado real y después integración con sim/host.
+
+## Aceptación real posterior — 2026-10-06
+
+SQL008 aplicada por el autor y **18/18 comprobaciones reales** en cuatro procesos SDK/Supabase,
+con ProfileSessions, respuesta perdida, startup sin dispatch y reanudación exacta de todo el lote.
+Dos perfiles/seis UIDs de prueba limpiados; tres terminales conservados. **8/8** pruebas aisladas
+del runner; runtime/SQL/host sin cambios. [Evidencia 2b.6](../delivery/d09f-pearl-batch-journal-live.md).
+Sigue [staging de reemplazo](m5-pearl-batch-staging.md); P4/P6 y afinidad permanecen pendientes.
