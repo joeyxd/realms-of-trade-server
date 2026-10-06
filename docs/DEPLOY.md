@@ -1,4 +1,4 @@
-# Jugar en línea con amigos (tu servidor por SSH)
+# Jugar en línea con amigos (tu PC o servidor)
 
 `npm start` levanta **un solo proceso** que sirve el juego y corre el mundo. Quien abre la URL juega en línea en
 la misma isla (hasta `MAX_PLAYERS`, 4 por defecto).

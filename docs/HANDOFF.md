@@ -1,7 +1,7 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `DESIGN.md` (el diseño entero) y el
-`PLAN-*.md` del milestone en curso.
+Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
+(orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
 
 ## 1. Qué es y sus reglas
 
@@ -588,6 +588,16 @@ Entrega de correo humano, P3 economía y publicación pendientes. Vista previa l
 
 ## 4. Cómo trabajar
 
+- **Plan unificado**: `PLAN-DELIVERY.md` enlaza entregas D00–D15 con pruebas de assets A00–A09, dependencias
+  y aceptación. Primera ola: respetar dueño de Tormenta → A01 preparación aislada → preparar/revisar Tinta.
+  `docs/briefs/assets-a01-texture-canary.md` y `delivery-template.md` fijan scope/rutas/evidencia; no ejecutados
+  al crear el plan. Mantener la base aceptada separada del trabajo que esté cambiando en el checkout.
+- Estado al redactar el plan (2026-10-04): HEAD `20d8ee6`; cambios y pruebas de Tormenta corresponden al árbol
+  local aún sin commit. Esta entrega documental no los revalida ni acepta. Comprobar HEAD al retomar;
+  si Tormenta ya está aceptada, registrar D01 y seguir con D02 Tinta, sin repetir la implementación.
+- Al aceptar cada misión, actualizar plan + handoff y reporte durable en `docs/delivery/`: Dxx/Axx, commit,
+  pruebas/capturas/limitaciones, decisión del asset y próxima tarea exacta. Arte nuevo entra con fallback y
+  comparación; no frena el gameplay si no mejora o no exporta. M5 precede todo riesgo público persistente.
 - **Tests**: `npm test`. Si el equipo va cargado (otro navegador corriendo), la suite entera puede pasar de 10 min:
   correr `ls tests/*.test.mjs | grep -v net.test | xargs node --test` y `node --test tests/net.test.mjs` aparte.
   En PowerShell, limitar concurrencia y separar red:
