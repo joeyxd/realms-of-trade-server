@@ -7,6 +7,8 @@ import { raftStats } from '../economy/raft.js';
 import { raftGangplank } from '../raftGeometry.js';
 import { publicRafts } from './rafts.js';
 import { townAt, TRADE } from './trade.js';
+import { CLOCK } from '../../data/clock.js';
+import { productionRows } from '../economy/raftProduction.js';
 
 const MAX_REV = 2147483647;
 const MAX_OPS = 64;
@@ -107,7 +109,9 @@ function cargoState(profile, active) {
   const ship = active.ship;
   return { id: ship.id, hold: { cap: ship.hold.cap, goods: { ...ship.hold.goods } },
     pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
-    gold: profile.gold, stats: raftStats(ship.grid, ship.hold), raftRev: ship.rev };
+    gold: profile.gold, stats: raftStats(ship.grid, ship.hold), raftRev: ship.rev,
+    production: productionRows(ship.grid, ship.hold, { blocked: active.productionBlocked || '' }),
+    productionBlocked: active.productionBlocked || '', daySec: CLOCK.daySec };
 }
 
 function saveCandidate(saveFits, profile, eco, gold) {

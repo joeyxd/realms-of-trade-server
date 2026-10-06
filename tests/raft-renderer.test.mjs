@@ -135,8 +135,12 @@ test('RaftLayer skins and owns atlas geometry while preserving shared registry a
 
     const previousGeometries = [...view.ownedGeometries];
     const previousGeometryDisposals = previousGeometries.map(disposalCount);
-    const changed = { ...raft, rev: raft.rev + 1 };
-    assert.equal(layer.update([changed], 0, 6), true, 'revision change rebuilds the view');
+    const cargoRevision = { ...raft, rev: raft.rev + 1 };
+    assert.equal(layer.update([cargoRevision], 0, 6), false, 'private cargo/work revisions reuse GPU geometry');
+    assert.equal(layer.views.get(raft.id).root, rootBefore);
+    assert.ok(previousGeometryDisposals.every((getCount) => getCount() === 0));
+    const changed = { ...cargoRevision, parts: [...raft.parts, ['grill', 1, 0, 0, 0]] };
+    assert.equal(layer.update([changed], 0, 6), true, 'blueprint change rebuilds the view');
     assert.notEqual(layer.views.get(raft.id).root, rootBefore);
     assert.ok(previousGeometryDisposals.every((getCount) => getCount() === 1), 'replaced view geometries are disposed');
 

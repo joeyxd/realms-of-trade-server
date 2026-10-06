@@ -26,7 +26,8 @@ const cleanNum = (n, fallback = 0) => Number.isFinite(+n) ? +n : fallback;
 const colorHex = (n) => Math.max(0, Math.min(0xffffff, n | 0));
 
 function keyOf(record) {
-  return `${String(record.rev ?? '')}|${JSON.stringify(record.parts || [])}|${JSON.stringify(record.look || null)}`;
+  // Cargo/work revisions change private state without changing the silhouette or its mobile GPU buffers.
+  return `${JSON.stringify(record.parts || [])}|${JSON.stringify(record.look || null)}`;
 }
 
 function paintColor(look) {

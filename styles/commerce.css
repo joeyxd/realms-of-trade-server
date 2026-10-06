@@ -69,6 +69,26 @@
 .market-quote b { color: #f2ca75; font: 900 17px Georgia, serif; }
 .market-quote small { grid-column: 1 / -1; color: #bdae92; font-size: 10px; }
 .market-hold { color: #a99a80; font-size: 10px; }
+.is-production .commerce-body { display: flex; flex-direction: column; gap: 9px; overflow: auto; }
+.production-intro, .production-empty { display: grid; gap: 5px; padding: 11px; border: 1px solid #ad804b4d; border-radius: 7px; background: #33271c80; }
+.production-intro b, .production-empty b { color: #f1d08c; font: 800 15px Georgia, serif; }
+.production-intro span, .production-empty p, .production-empty small { margin: 0; color: #c5b69a; font-size: 11px; }
+.production-empty kbd { padding: 1px 5px; border: 1px solid #947247; border-radius: 4px; background: #211d1c; color: #f6dfa7; }
+.production-list { display: grid; gap: 8px; }
+.production-card { display: grid; gap: 8px; padding: 11px; border: 1px solid #a77c4266; border-radius: 8px; background: linear-gradient(145deg, #28211d, #18191e); }
+.production-card > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.production-part { color: #f0cf8b; font: 800 16px Georgia, serif; }
+.production-card > header b { color: #c8b58f; font-size: 10px; text-align: right; }
+.production-recipe, .production-rate, .production-progress > div { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.production-recipe span, .production-rate span, .production-progress span { flex: 0 0 auto; color: #a99b83; font-size: 10px; }
+.production-recipe b, .production-rate b, .production-progress b { color: #e9dcc0; font-size: 11px; text-align: right; }
+.production-recipe i { padding: 0 4px; color: #d7ad61; font-style: normal; }
+.production-progress { display: grid; gap: 4px; }
+.production-progress progress { display: block; width: 100%; height: 9px; overflow: hidden; border: 1px solid #8f6c3e; border-radius: 6px; background: #0e1115; accent-color: #dcaa55; }
+.production-progress progress::-webkit-progress-bar { background: #0e1115; }
+.production-progress progress::-webkit-progress-value { border-radius: 6px; background: linear-gradient(90deg, #96703a, #f0ce7a); }
+.production-progress progress::-moz-progress-bar { border-radius: 6px; background: linear-gradient(90deg, #96703a, #f0ce7a); }
+.production-next { color: #d3b779; font-size: 10px; text-align: right; }
 .is-market .commerce-body { display: flex; flex-direction: column; gap: 8px; }
 .is-market .market-wallet, .is-market .market-order { flex-shrink: 0; margin: 0; }
 .is-market .market-list { min-height: 65px; max-height: 200px; overflow: auto; flex: 1; }
@@ -92,6 +112,12 @@
   .is-market select { max-width: 110px; min-height: 30px; padding: 3px; font-size: 11px; }
   .is-market .market-order label, .is-market .market-quote { font-size: 11px; }
   .is-market .market-quote b { font-size: 14px; }
+  .is-production .commerce-body { gap: 5px; }
+  .is-production .production-intro { gap: 3px; padding: 7px; }
+  .is-production .production-card { gap: 5px; padding: 7px; }
+  .is-production .production-part { font-size: 14px; }
+  .is-production .production-recipe b, .is-production .production-rate b { font-size: 10px; }
+  .is-production .production-progress progress { height: 7px; }
 }
 
 @container stage (max-width: 700px) {

@@ -32,6 +32,7 @@ export class Economy {
     for (const id of TOWN_IDS) { this.markets[id] = newMarket(id, TOWNS[id]); this.plots[id] = newPlots(id); }
     // Upkeep of owned buildings: (ownerKey, gold) → true when paid. The world wires it to the owners' profiles.
     this.payUpkeep = () => true;
+    this.onAdvance = () => {}; // Connected private workshops are installed by the authority, never serialized.
   }
 
   get day() { return Math.floor(this.hours / 24); }
@@ -62,6 +63,7 @@ export class Economy {
       }
     }
     this.hours = to;
+    this.onAdvance(sec);
   }
 
   quote(town, g, n, side) {

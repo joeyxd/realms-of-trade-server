@@ -7,6 +7,7 @@
 // A piece: [id, x, z, level, dir]. dir: edges only, 0 north (−z side of the cell), 1 east (+x), 2 south, 3 west.
 import { RAFT, RAFT_PARTS, STARTER_RAFT } from '../../data/raftparts.js';
 import { load, unload, holdUsed } from './cargo.js';
+import { sanitizeProduction } from './raftProduction.js';
 
 const key = (x, z, l) => `${x},${z},${l}`;
 // An edge's canonical key: the north or west side of some cell.
@@ -51,6 +52,7 @@ export function canPlace(parts, piece, ix = indexRaft(parts)) {
   const [id, x, z, l = 0, d = 0] = piece, P = RAFT_PARTS[id];
   if (!P) return 'unknown';
   if (!(l >= 0 && l < RAFT.levels) || !Number.isInteger(x) || !Number.isInteger(z) || !Number.isInteger(l)) return 'level';
+  if (id === 'net' && l !== 0) return 'level';
   if (P.layer === 'base') {
     if (l !== 0) return 'level';
     if (ix.base.has(key(x, z, 0))) return 'overlap';
@@ -93,7 +95,7 @@ export function canPlace(parts, piece, ix = indexRaft(parts)) {
 export function newRaft(pieces = STARTER_RAFT) {
   const parts = [];
   for (const p of pieces) if (!canPlace(parts, p)) parts.push([p[0], p[1] | 0, p[2] | 0, p[3] | 0, p[4] | 0]);
-  return { parts };
+  return { parts, work: {} };
 }
 
 // Place a piece paying its cost from `store` (a hold: the raft's own, or your pack). Returns '' or why ('goods',
@@ -206,5 +208,5 @@ export function sanitizeRaft(raw) {
     const q = [p[0], p[1] | 0, p[2] | 0, p[3] | 0, p[4] | 0];
     if (!canPlace(parts, q)) parts.push(q);
   }
-  return { parts };
+  return { parts, work: sanitizeProduction(parts, raw.work) };
 }

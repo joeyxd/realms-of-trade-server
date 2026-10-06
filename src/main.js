@@ -213,12 +213,13 @@ async function boot() {
     },
   });
   bus.on('commerce', (ev) => safe('commerce', () => commercePanel.onResult(ev)));
+  bus.on('raftProduction', (ev) => safe('production', () => commercePanel.onProductionResult(ev)));
   const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
     if (st.mode !== 'playing' || pause.open) return false;
-    if (!(commercePanel.active && commercePanel.view === 'cargo') && !commercePanel.context()) return false;
+    if (!(commercePanel.active && ['cargo', 'production'].includes(commercePanel.view)) && !commercePanel.context()) return false;
     commercePanel.toggleCargo(); return true;
   });
   input.onHotkey('KeyR', () => { if (!raftEditor.active) return false; raftEditor.rotate(); return true; });

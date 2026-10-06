@@ -8,6 +8,7 @@ import { load, unload, holdUsed, roomFor, newHold } from '../economy/cargo.js';
 import { place, remove, raftStats } from '../economy/raft.js';
 import { publicRafts } from './rafts.js';
 import { raftGangplank } from '../raftGeometry.js';
+import { sanitizeProduction, productionKey } from '../economy/raftProduction.js';
 
 const allowed = new Set(EDITOR_PARTS);
 const MAX_REV = 2147483647;
@@ -318,7 +319,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     while (cache.size > RECEIPTS_PER_OWNER) cache.delete(cache.keys().next().value);
     return ack;
   }
-  const grid = { parts: ship.grid.parts.map(copyTuple) };
+  const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
   let why = '';
   if (msg.op === 'place') {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
@@ -339,11 +340,13 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !allowed.has(msg.piece[0])
         || !sameTuple(ship.grid.parts[msg.index], msg.piece)) return reject(w, e, msg, 'piece', ship);
     const removed = grid.parts[msg.index];
+    delete grid.work[productionKey(removed)];
     why = remove(grid, msg.index, null);
     if (why) return reject(w, e, msg, why, ship);
     const cap = raftStats(grid).hold;
     if (!creditAfterRemoval(hold, pack, cap, RAFT_PARTS[removed[0]].cost)) return reject(w, e, msg, 'room', ship);
   }
+  grid.work = sanitizeProduction(grid.parts, grid.work);
   const priorPublic = publicRafts(w).find((q) => q.id === ship.id);
   if (priorPublic && raftGangplank(priorPublic, w.map.dock) && !raftGangplank({ ...priorPublic, parts: grid.parts }, w.map.dock))
     return reject(w, e, msg, 'layout', ship);

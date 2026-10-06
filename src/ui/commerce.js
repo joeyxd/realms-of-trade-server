@@ -3,6 +3,7 @@ import { GOODS, GOOD_CATS } from '../data/goods.js';
 import { TOWNS } from '../data/towns.js';
 import { EDITOR_RADIUS } from '../data/raftEditor.js';
 import { raftStats } from '../sim/economy/raft.js';
+import { productionRows } from '../sim/economy/raftProduction.js';
 import { holdUsed, roomFor } from '../sim/economy/cargo.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
 
@@ -25,12 +26,14 @@ const reason = (why) => REASONS[why] || 'El servidor rechazó la operación.';
 const goodName = (id) => GOODS[id]?.name || id;
 const goodWeight = (id) => GOODS[id]?.w || 1;
 const clampQty = (n) => Math.max(1, Math.min(MAX_QTY, Math.floor(Number(n) || 1)));
+const formatRecipe = (counts) => Object.entries(counts || {}).map(([g, n]) => `${num(n)} ${goodName(g)}`).join(' + ') || 'sin insumos';
 
 export class CommercePanel {
   constructor(opts) {
     Object.assign(this, opts);
     this.active = false; this.view = 'cargo'; this.town = ''; this.selected = ''; this.side = 'buy'; this.qty = 1;
     this.rows = []; this.market = null; this.quote = null; this.quoteErrorSignature = ''; this.cargoSnapshot = null;
+    this.productionStatus = null;
     this.pending = null; this.reads = new Map(); this.readByKind = new Map(); this.lastResult = '';
     this.panelToken = 0; this.renderKey = '';
 
@@ -42,7 +45,7 @@ export class CommercePanel {
     this.root = document.createElement('section'); this.root.className = 'commerce-panel'; this.root.hidden = true;
     this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-label', 'Bodega y mercado');
     this.root.innerHTML = `<header class="commerce-head"><div><small class="commerce-kicker">MERCANCÍAS Y RUMBO</small><b class="commerce-title">Bodega</b></div><button class="commerce-close" type="button" aria-label="Cerrar">×</button></header>
-      <nav class="commerce-tabs"><button type="button" data-view="cargo">Bodega</button><button type="button" data-view="market">Mercado</button></nav>
+      <nav class="commerce-tabs"><button type="button" data-view="cargo">Bodega</button><button type="button" data-view="market">Mercado</button><button type="button" data-view="production" hidden>Producción</button></nav>
       <div class="commerce-body"></div>
       <div class="commerce-feedback" aria-live="polite"></div>
       <footer class="commerce-foot"><small class="commerce-footnote"></small><button type="button" class="commerce-confirm">Confirmar</button></footer>`;
@@ -58,7 +61,8 @@ export class CommercePanel {
     this.$('.commerce-confirm').addEventListener('click', () => this.confirm());
     this.root.querySelectorAll('[data-view]').forEach((button) => button.addEventListener('click', () => {
       if (button.dataset.view === 'cargo') this.toggleCargo(true);
-      else if (this.town) this.openMarket(this.town);
+      else if (button.dataset.view === 'market' && this.town) this.openMarket(this.town);
+      else if (button.dataset.view === 'production') this.openProduction();
     }));
     this.$('.commerce-body').addEventListener('click', (event) => this.onBodyClick(event));
     this.$('.commerce-body').addEventListener('change', (event) => this.onBodyChange(event));
@@ -81,13 +85,39 @@ export class CommercePanel {
   }
 
   toggleCargo(force = false) {
-    if (this.active && this.view === 'cargo' && !force) { this.close(); return; }
+    if (this.active && ['cargo', 'production'].includes(this.view) && !force) { this.close(); return; }
     if (this.enabled && !this.enabled()) return;
     const c = this.context(); if (!c) return;
     this.activate('cargo');
     this.cargoSnapshot = null; this.lastResult = '';
     this.request('cargo', { id: c.record.id }, { raftId: c.record.id, rev: c.ship.rev });
     this.render();
+  }
+
+  openProduction() {
+    if (this.enabled && !this.enabled()) return;
+    const c = this.context(); if (!c) return;
+    this.activate('production');
+    if (this.cargoSnapshot?.id !== c.record.id) this.fetchCargo();
+    this.render();
+  }
+
+  onProductionResult(ev) {
+    if (!ev || ev.type !== 'raftProduction' || typeof ev.id !== 'string'
+      || !Number.isSafeInteger(ev.rev) || !Number.isSafeInteger(ev.raftRev)
+      || !Number.isSafeInteger(ev.daySec) || !Array.isArray(ev.production)
+      || !['', 'saveSize', 'revisionLimit'].includes(ev.productionBlocked)) return;
+    const c = this.context();
+    if (!c || ev.id !== c.record.id) return;
+    this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
+    if (this.active && this.view === 'production') this.render();
+  }
+
+  rememberProductionStatus(id, daySec, rev, raftRev, blocked, rows) {
+    const previous = this.productionStatus;
+    if (previous?.id === id && (daySec < previous.daySec
+      || daySec === previous.daySec && (raftRev < previous.raftRev || rev < previous.rev))) return;
+    this.productionStatus = { id, daySec, rev, raftRev, blocked, rows };
   }
 
   openMarket(town) {
@@ -164,8 +194,12 @@ export class CommercePanel {
         this.render(); this.requestQuote(); return;
       }
       if (read.op === 'cargo') {
-        if (ev.id !== read.meta.raftId || !ev.hold || !ev.pack || !Number.isSafeInteger(ev.raftRev)) return;
-        this.cargoSnapshot = ev; this.lastResult = ''; this.render(); return;
+        if (ev.id !== read.meta.raftId || !ev.hold || !ev.pack || !Number.isSafeInteger(ev.raftRev)
+          || !Array.isArray(ev.production) || !Number.isSafeInteger(ev.daySec) || !Number.isSafeInteger(ev.rev)
+          || !['', 'saveSize', 'revisionLimit'].includes(ev.productionBlocked)) return;
+        this.cargoSnapshot = ev;
+        this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
+        this.lastResult = ''; this.render(); return;
       }
       if (read.op === 'quote') {
         const now = JSON.stringify([this.town, this.selected, this.qty, this.side]);
@@ -210,12 +244,13 @@ export class CommercePanel {
       const pending = this.pending; this.pending = null; this.lastResult = pending.op === 'transfer' ? 'Transferencia confirmada.' : 'Comercio confirmado.';
       if (this.active) {
         if (this.view === 'cargo') this.fetchCargo();
-        else this.refreshMarket();
+        else if (this.view === 'market') this.refreshMarket();
+        else this.fetchCargo();
       }
     }
     if (this.active) {
       if (this.enabled && !this.enabled()) { this.close(); return; }
-      if (this.view === 'cargo' && !this.context()) { this.close(); return; }
+      if (['cargo', 'production'].includes(this.view) && !this.context()) { this.close(); return; }
       for (const [kind, id] of this.readByKind) {
         const read = this.reads.get(id);
         if (read && performance.now() - read.sentAt > 6000) read.timedOut = true;
@@ -238,7 +273,7 @@ export class CommercePanel {
   refreshMarket() { if (this.town) { this.quote = null; this.quoteErrorSignature = ''; this.request('list', { town: this.town }, { town: this.town }); } }
 
   confirm() {
-    if (!this.active || this.pending) return;
+    if (!this.active || this.pending || this.view === 'production') return;
     if (this.view === 'cargo') this.confirmTransfer(); else this.confirmTrade();
   }
 
@@ -344,21 +379,26 @@ export class CommercePanel {
     const c = this.context(), cargo = this.cargoState(), pending = this.pending;
     this.root.classList.toggle('is-cargo', this.view === 'cargo');
     this.root.classList.toggle('is-market', this.view === 'market');
+    this.root.classList.toggle('is-production', this.view === 'production');
     this.root.querySelectorAll('[data-view]').forEach((b) => b.classList.toggle('on', b.dataset.view === this.view));
+    this.$('[data-view="production"]').hidden = !c;
     this.$('.commerce-title').textContent = this.view === 'cargo' ? 'Bodega de la balsa' : `Mercado · ${TOWNS[this.town]?.name || this.town}`;
-    this.$('.commerce-body').innerHTML = this.view === 'cargo' ? this.cargoHtml(cargo) : this.marketHtml();
+    if (this.view === 'production') this.$('.commerce-title').textContent = 'Producción de la balsa';
+    this.$('.commerce-body').innerHTML = this.view === 'cargo' ? this.cargoHtml(cargo)
+      : this.view === 'market' ? this.marketHtml() : this.productionHtml();
     this.$('.commerce-feedback').textContent = this.statusText();
     this.$('.commerce-footnote').textContent = this.view === 'cargo'
       ? 'Transferencia directa entre la bodega y tu mochila. La bodega se comparte entre las cajas.'
-      : 'Precios, stock y total cotizados por el servidor. El comercio requiere calma.';
+      : this.view === 'market' ? 'Precios, stock y total cotizados por el servidor. El comercio requiere calma.' : 'La producción solo avanza mientras estás conectado; no hay producción offline.';
     const confirm = this.$('.commerce-confirm');
     confirm.textContent = this.view === 'cargo' ? 'Confirmar transferencia' : this.side === 'buy' ? 'Confirmar compra' : 'Confirmar venta';
-    confirm.disabled = !!pending || (this.view === 'cargo' ? !c || !this.cargoSnapshot || this.cargoSnapshot.id !== c.record.id
+    confirm.hidden = this.view === 'production' || !!this.pending?.ack;
+    this.$('.commerce-foot').hidden = this.view === 'production';
+    confirm.disabled = this.view === 'production' || !!pending || (this.view === 'cargo' ? !c || !this.cargoSnapshot || this.cargoSnapshot.id !== c.record.id
       || this.cargoSnapshot.raftRev !== c.ship.rev || !this.selectedCargoRow() || !this.currentTransferMax() || c.record.rev !== c.ship.rev
       : !this.quote || this.quote.signature !== JSON.stringify([this.town, this.selected, this.qty, this.side]) || !Number.isSafeInteger(this.quote.total)
         || !this.profile?.()?.eco?.pack || this.side === 'buy' && (this.quote.total > (this.profile?.()?.gold || 0) || this.qty > roomFor(this.profile?.()?.eco?.pack || { cap: 0, goods: {} }, this.selected))
         || this.side === 'sell' && this.qty > (this.profile?.()?.eco?.pack?.goods?.[this.selected] || 0));
-    this.$('.commerce-confirm').hidden = !!this.pending?.ack;
     this.renderRetry();
     this.renderKey = this.signature();
   }
@@ -400,19 +440,67 @@ export class CommercePanel {
       <small class="market-hold">En mochila: ${num(pack[this.selected] || 0)} unidades · artículo de ${num(goodWeight(this.selected))} espacio</small></div>`;
   }
 
+  productionData() {
+    const c = this.context();
+    if (!c?.ship?.grid || !c.ship.hold) return { rows: [], daySec: null, blocked: '' };
+    const status = this.productionStatus?.id === c.record.id ? this.productionStatus : null;
+    const snapshot = this.cargoSnapshot?.id === c.record.id ? this.cargoSnapshot : null;
+    const source = status || (snapshot && {
+      rev: snapshot.rev, raftRev: snapshot.raftRev, daySec: snapshot.daySec,
+      blocked: snapshot.productionBlocked, rows: snapshot.production,
+    });
+    const blocked = source?.blocked || '';
+    const profileIsCurrent = !source || Number.isSafeInteger(c.profile?.eco?.tradeRev)
+      && c.profile.eco.tradeRev >= source.rev && Number.isSafeInteger(c.ship.rev) && c.ship.rev >= source.raftRev;
+    return {
+      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked }) : source.rows,
+      daySec: source?.daySec ?? null,
+      blocked,
+      hold: c.ship.hold,
+      profileIsCurrent,
+    };
+  }
+
+  productionHtml() {
+    const { rows, hold, daySec, profileIsCurrent } = this.productionData();
+    const secondsPerDay = Number.isSafeInteger(daySec) && daySec > 0 ? daySec : 960;
+    if (!rows.length) return `<div class="production-empty"><b>No hay producción instalada.</b><p>Añade una red o una parrilla desde el editor de la balsa con <kbd>B</kbd>.</p><small>La producción solo avanza mientras sigues conectado; no se acumula offline.</small></div>`;
+    const cards = rows.map((row) => {
+      const progress = Math.max(0, Math.min(0.999999, Number(row.progress) || 0));
+      const pct = Math.floor(progress * 100);
+      const nextSeconds = row.remainingDays === null ? null : Math.ceil(row.remainingDays * secondsPerDay);
+      const statusText = row.status === 'working' ? 'En marcha'
+        : row.status === 'inputs' ? (profileIsCurrent ? `Faltan ${Object.entries(row.inputs || {}).filter(([g, n]) => n > (hold?.goods?.[g] || 0)).map(([g, n]) => `${num(n - (hold?.goods?.[g] || 0))} ${goodName(g)}`).join(', ')}` : 'Esperando ingredientes')
+        : row.status === 'room' ? 'Bodega llena: no cabe el lote completo'
+        : row.status === 'saveSize' ? 'Detenida: el guardado alcanzó su límite'
+        : row.status === 'revisionLimit' ? 'Detenida: se alcanzó el límite de revisión' : 'Detenida';
+      return `<article class="production-card" data-production-key="${esc(row.key)}">
+        <header><span class="production-part">${esc(row.name)}</span><b>${esc(statusText)}</b></header>
+        <div class="production-recipe"><span>Por lote</span><b>${esc(formatRecipe(row.inputs))} <i>→</i> ${esc(formatRecipe(row.outputs))}</b></div>
+        <div class="production-rate"><span>Ritmo</span><b>${num(row.rate)} lotes por día de juego · ${Math.round(secondsPerDay / row.rate)} s simulados por lote</b></div>
+        <div class="production-progress"><div><span>Progreso</span><b>${pct}%</b></div><progress max="1" value="${progress}" aria-label="Progreso del lote"></progress></div>
+        <small class="production-next">${nextSeconds === null ? 'Próximo lote: detenido' : `Próximo lote: ${num(nextSeconds)} s simulados`}</small>
+      </article>`;
+    }).join('');
+    return `<div class="production-intro"><b>Producción a bordo</b><span>Solo funciona con tu sesión conectada. No hay producción offline.</span></div><div class="production-list">${cards}</div>`;
+  }
+
   statusText() {
     if (this.pending) {
       if (this.pending.timedOut) return `${this.lastResult || 'Aún no llegó respuesta.'} Puedes reenviar la misma solicitud.`;
       return this.lastResult || 'Esperando respuesta del servidor…';
     }
-    const read = this.reads.get(this.readByKind.get(this.view === 'cargo' ? 'cargo' : this.market ? 'quote' : 'list'));
+    const readKind = this.view === 'cargo' || this.view === 'production' ? 'cargo' : this.market ? 'quote' : 'list';
+    const read = this.reads.get(this.readByKind.get(readKind));
     if (read?.timedOut) return `${this.lastResult || 'El servidor aún no respondió.'} Puedes reintentar la lectura.`;
-    return this.lastResult || (this.view === 'cargo' ? 'Bodega privada de tu balsa.' : 'Cotiza el total antes de confirmar.');
+    return this.lastResult || (this.view === 'cargo' ? 'Bodega privada de tu balsa.'
+      : this.view === 'production' ? 'La producción avanza solo con tu sesión conectada.'
+        : 'Cotiza el total antes de confirmar.');
   }
 
   renderRetry() {
     const timedOut = !!this.pending?.timedOut;
-    const readId = this.readByKind.get(this.view === 'cargo' ? 'cargo' : this.market ? 'quote' : 'list');
+    const readId = this.readByKind.get(this.view === 'cargo' || this.view === 'production' ? 'cargo' : this.market ? 'quote' : 'list');
     const read = this.reads.get(readId), readTimedOut = !!read?.timedOut;
     let button = this.root.querySelector('.commerce-retry');
     if (!button) { button = document.createElement('button'); button.className = 'commerce-retry'; button.type = 'button'; this.$('.commerce-feedback').after(button); }
@@ -425,9 +513,11 @@ export class CommercePanel {
 
   signature() {
     const c = this.context(), p = this.profile?.();
+    const production = this.view === 'production' ? this.productionData() : null;
     return JSON.stringify([this.active, this.view, this.town, this.selected, this.side, this.qty, this.transferQty, this.cargoSide,
       this.rows, this.quote, this.market?.gold, this.market?.pack, p?.gold, p?.eco?.tradeRev, p?.eco?.pack?.goods,
       c?.ship?.rev, c?.ship?.hold?.goods, c?.record?.rev, this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt],
+      production?.rows, production?.blocked, production?.daySec, production?.profileIsCurrent,
       this.lastResult, [...this.readByKind.entries()].map(([k,id]) => [k,this.reads.get(id)?.timedOut,this.reads.get(id)?.sentAt])]);
   }
 }

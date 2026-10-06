@@ -7,7 +7,7 @@ import { holdUsed, roomFor } from '../sim/economy/cargo.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
 import { stage } from './stage.js';
 
-const IDS = ['foundation', 'floor', 'pillar', 'wall', 'railing', 'stairs', 'crate'];
+const IDS = EDITOR_PARTS;
 const DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const direction = (id, dir) => (id === 'stairs' ? ['Sur', 'Este', 'Norte', 'Oeste'] : ['Norte', 'Este', 'Sur', 'Oeste'])[dir];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -62,8 +62,8 @@ export class RaftEditor {
 
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
-    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(partMeta(id).name)}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', railing: '⌁', stairs: '▧', crate: '▣' })[id]}</i><span>${esc(partMeta(id).name)}</span></button>`).join('');
-    this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (this.selected === 'floor' && this.level === 0) this.level = 1; if (this.selected === 'foundation') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
+    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(partMeta(id).name)}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', railing: '⌁', stairs: '▧', crate: '▣', net: '▩', grill: '♨' })[id]}</i><span>${esc(partMeta(id).name)}</span></button>`).join('');
+    this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (this.selected === 'floor' && this.level === 0) this.level = 1; if (this.selected === 'foundation' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
 
   toggle() { if (this.active) this.close(); else { if (this.enabled && !this.enabled()) return; this.active = true; this.root.hidden = false; this.lastResult = ''; this.target = null; this.quote = null; this.onContext?.(true); this.render(); this.requestQuote(); } }

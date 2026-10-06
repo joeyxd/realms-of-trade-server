@@ -98,8 +98,9 @@ export class GameHost {
     if (!this.worldState) return;
     const economy = await this.worldState.open(this.server.world.economy);
     if (this.closing) throw new StoreError('cancelled');
-    // The database stores plain state; the host's owner-profile callback stays attached to the restored economy.
+    // The database stores plain state; keep the server's owner-profile and production callbacks attached.
     economy.payUpkeep = this.server.world.economy.payUpkeep;
+    economy.onAdvance = this.server.world.economy.onAdvance;
     this.server.world.economy = economy;
   }
 

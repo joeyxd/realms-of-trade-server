@@ -23,6 +23,7 @@ import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
 import { raftCmd } from '../sim/systems/raftEditor.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
+import { stepRaftWork } from '../sim/systems/raftProduction.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 
@@ -60,6 +61,11 @@ export class LocalServer {
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
+    this.world.economy.onAdvance = (sec) => stepRaftWork(this.world, sec / CLOCK.daySec,
+      (owner, p) => {
+        const c = this.clients.get(this.clientOf(owner));
+        return !!c && (c.serverProfile === true || this.saves.store(p).length <= MAX_SAVE);
+      });
     this.acc = 0;
     this.last = 0;
     this.timer = null;
@@ -368,7 +374,8 @@ export class LocalServer {
         if (id !== undefined) {
           this.send(id, { t: MSG.EVENT, ev });
           if (SAVE_NOW.has(ev.type) || (ev.type === 'raftEdit' && ev.ok && ev.op !== 'quote')
-              || (ev.type === 'commerce' && ev.ok && ['buy', 'sell', 'transfer'].includes(ev.op))) this.saveSoon(this.clients.get(id), 0);
+              || (ev.type === 'commerce' && ev.ok && ['buy', 'sell', 'transfer'].includes(ev.op))
+              || (ev.type === 'raftProduction' && Object.keys(ev.made).length)) this.saveSoon(this.clients.get(id), 0);
         }
         continue;
       }

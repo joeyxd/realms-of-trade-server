@@ -4,6 +4,11 @@ import { Economy } from '../src/sim/economy/economy.js';
 import { WorldState, worldConfigFromEnv } from '../server/worldState.mjs';
 import { createMemoryStore, StoreError } from '../server/store.mjs';
 import { GameHost } from '../server/host.mjs';
+import { newProfile } from '../src/sim/systems/inventory.js';
+import { newRaft, raftStats } from '../src/sim/economy/raft.js';
+import { STARTER_RAFT } from '../src/data/raftparts.js';
+import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
+import { productionKey } from '../src/sim/economy/raftProduction.js';
 
 const seed = 42;
 const turn = () => new Promise((resolve) => setImmediate(resolve));
@@ -79,6 +84,41 @@ test('GameHost.prepare preserves the live owner-profile upkeep callback after re
     host.server.world.economy.advance(40); // Persisted owed upkeep plus one game hour reaches two coins.
     assert.equal(profile.gold, 8);
     assert.ok(host.server.world.economy.plots.aldea[0].owed > 0 && host.server.world.economy.plots.aldea[0].owed < 1);
+  } finally { await host.close(); }
+});
+
+test('GameHost.prepare restores economy time with active raft production still connected', async () => {
+  const store = createMemoryStore(), source = new Economy(seed, { startHour: 0 });
+  source.hours = 0;
+  await store.saveWorld('production-restore', { v: 1, seed, economy: source.serialize() }, 0);
+  const host = new GameHost({ seed, bots: 0, log: () => {}, store, worldId: 'production-restore' });
+  try {
+    await host.prepare();
+    const profile = newProfile();
+    const ship = profile.eco.ships.find((item) => item.kind === 'raft');
+    ship.grid = newRaft([...STARTER_RAFT, ['net', 1, 0, 0, 0]]);
+    ship.hold.cap = raftStats(ship.grid).hold;
+    ship.hold.goods = {};
+
+    host.server.connect(901);
+    host.server.receive(901, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'Restored production',
+      skin: 0, weapon: 0, save: '' }, profile);
+    const owner = host.server.clients.get(901).entity;
+    assert.ok(owner, 'the local authoritative server accepted the connected test player');
+    const connectedShip = host.server.world.profiles.get(owner).eco.ships.find((item) => item.kind === 'raft');
+    assert.ok([...host.server.world.rafts.values()].some((active) => active.owner === owner && active.ship === connectedShip),
+      'the production raft is active in the restored host world');
+
+    const key = productionKey(['net', 1, 0, 0, 0]);
+    assert.equal(connectedShip.hold.goods.pescado, undefined);
+    assert.equal(host.server.world.economy.hours, 0);
+    host.server.world.economy.advance(160); // One actual net interval through Economy.onAdvance.
+
+    assert.equal(host.server.world.economy.hours, 4);
+    assert.equal(connectedShip.hold.goods.pescado, 1,
+      'the restored Economy invokes LocalServer production for its connected raft');
+    assert.equal(connectedShip.grid.work[key] ?? 0, 0);
+    assert.equal(connectedShip.rev, 2);
   } finally { await host.close(); }
 });
 
