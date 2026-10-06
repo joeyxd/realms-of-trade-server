@@ -147,6 +147,20 @@ Guardado/reentrada y controles PC/móvil emulado comprobados; **493/493** sobre 
 velocidad mostrada todavía teórica, sin zarpar ni reservas seguras de puerto. No se publicó ni reinició el host:
 cliente y servidor deben actualizarse juntos a **protocolo 15** para este corte.
 
+### Producción de la balsa — D06b (0.6.0-alpha.4, protocolo 16)
+
+**B / Construir** añade red o parrilla. La red va en el borde del nivel 0; ambas pagan materiales reales.
+**H / Bodega → Producción** muestra receta, progreso, tiempo simulado y motivo de espera. La red produce
+pescado; la parrilla convierte dos pescados en dos galletas de barco según los datos del prototipo.
+Si faltan ingredientes/espacio, conserva la fracción y se detiene sin consumir ni acumular lotes escondidos.
+Guardar/reentrar conserva trabajo; solo funciona con el dueño conectado. No hay producción offline.
+
+16 pruebas nuevas; regresión **547/547 sobre `5b253a4` aislado** y escritorio con 12 capturas;
+[evidencia y límites](docs/delivery/d06b-production.md). Móvil D06b pendiente por límite de revisión automática
+al lanzar Chrome. Atlas existente 1024/512, sin nuevo peso de texturas. Build local verificado; host sin actualizar:
+cliente y servidor deben subir juntos a **protocolo 16**. Cerrar móvil y seguir D08 manejo.
+Agua/huertos, hamaca y luces siguen abiertos.
+
 ### Entrega de M4.8 — candidato integrado (`0.4.8-rc.1`)
 
 - Las perlas raras salen de élites, HELLFIRE y cofres de Marea. Recogerlas las guarda sin tragar en **Perlas (P)**;

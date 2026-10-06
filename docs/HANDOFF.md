@@ -55,7 +55,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-1 dormant**: 003/004/005 reales, diario y coordinador give/apply en tick aislado; gate común/host/juego/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
-| M6 «La Balsa» | **P1–P3 + P4 bodega local**: editor y transferencias privadas por peso; producción/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
+| M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
@@ -71,6 +71,24 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 - Solo planificación y enlaces revisados; implementación/pruebas de juego/publicación pendientes.
   La propuesta de diferenciación/ingresos es una hipótesis con precedentes y métricas de piloto en el plan.
   Próximo paso propio: L00 al asignarlo; la siguiente entrega principal conserva su estado actual.
+
+### D06b — primera producción de la balsa (2026-10-05)
+
+- Fuente `5b253a4`; **0.6.0-alpha.4 / protocolo 16**. Red/parrilla en editor de nueve piezas;
+  H/Bodega → Producción. Trabajo por módulo, reloj autoritativo, espera de ingredientes/espacio y lote completo.
+  Fracciones guardadas; retirar no traslada progreso a otra pieza. Preflight de todo el tick antes de mutar.
+  Restaurar el mundo en GameHost conserva tanto producción como cobro de mantenimiento.
+- [Contrato](briefs/d06b-production.md), [entrega/evidencia](delivery/d06b-production.md).
+  16 pruebas nuevas; regresión **547/547 sobre commit aislado**. Escritorio aceptado en software con
+  12 capturas inspeccionadas; móvil horizontal/vertical pendiente por límite de revisión automática de Chrome.
+- [Revisión Unreal/FAB previa](research/unreal-assets/D06B-REUSE.md): modelos/atlas existentes; banco
+  Dreamrise aplazado. Sin nuevas texturas ni cambios en fuentes. Revisiones privadas conservan mallas GPU.
+  Atlas 1024 escritorio / 512 móvil; aceptación visual móvil D06b, FPS y dispositivos físicos pendientes.
+- Solo red/parrilla en balsas primarias conectadas y amarradas en Aldea. Motor antiguo inactivo;
+  agua/huertos, hamaca/reaparición y luces abiertos. Sin producción offline ni custodia durable de carga.
+- **Siguiente: cerrar móvil D06b**, luego [D08 bahía de manejo](briefs/d08-navigation-feel.md), Unreal primero;
+  aceleración, frenado/giro y comparaciones de peso/carga. Tier/skill/viento/balance aún por prototipar y decidir.
+  Build local verificado desde el commit; host/publicación sin actualizar. Cliente/servidor deben subir juntos a 16.
 
 ### D06a — bodega y mercados caminables (2026-10-05)
 

@@ -21,8 +21,9 @@ sea un vehículo agradable de pilotar. No fija el formato definitivo del mar ni 
 
 ## Lugar en las entregas
 
-Primero [D04 P2, cubierta transitable](d04p2-walkable-raft.md), después D05. Preparar entonces una bahía de prueba sin pérdidas persistentes
-para comparar manejo, mientras D06 y la persistencia avanzan con sus dueños respectivos.
+[D04 P2, cubierta transitable](d04p2-walkable-raft.md), D05 y D06a ya están aceptados localmente.
+El siguiente corte jugable es cerrar móvil D06b y después implementar una bahía de prueba sin pérdidas
+persistentes para comparar manejo. La persistencia D09 puede avanzar en paralelo con su dueño respectivo.
 Es una prueba acotada de D08: no reemplaza las dependencias de D10 para un viaje real con
 comercio, enemigos y carga persistente. No esperar a terminar PvP para evaluar el movimiento.
 
@@ -78,7 +79,7 @@ retorno automático a puerto ni duplicación al reconectar.
   Conservar las acciones de combate existentes fuera del contexto naval.
 - Construcción: B o botón de construir; R rota únicamente dentro del editor, donde no lanza
   el arte R. Demolición explícita con devolución visible; evitar que cancelar una habilidad
-  quite una pieza. Estos controles son propuestas de D05, no controles activos actuales.
+  quite una pieza. Estos controles de construcción ya están activos en D05; pilotaje sigue propuesto.
 - Ancla y soltar carga tendrán acciones deliberadas. Anclar no debe ser un freno instantáneo
   a cualquier velocidad. No decidir aún costes o límites definitivos de maniobras.
 

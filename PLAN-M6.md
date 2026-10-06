@@ -13,6 +13,12 @@ transferencias por peso con propiedad/revisión/preflight, mochila y estadístic
 PC/móvil horizontal/vertical. Producción sigue en [D06b](docs/briefs/d06b-production.md); P4 permanece parcial.
 No es aceptación de mar/pérdidas, rendimiento físico ni publicación.
 
+Checkpoint D06b: **red/parrilla y fracciones guardadas implementadas localmente**, alpha.4/protocolo 16.
+Nueve piezas en editor; H/Bodega → Producción. Fuente `5b253a4`, 16 pruebas nuevas y 547/547 sobre commit aislado;
+[entrega](docs/delivery/d06b-production.md). Escritorio aceptado; móvil D06b pendiente. P4 sigue parcial:
+agua/huertos, hamaca/reaparición y luces abiertos. Cerrar móvil y seguir D08; fuentes Unreal intactas,
+atlas existente 1024/512 y build local verificado, sin publicación.
+
 Prueba de arte solicitada por el autor (2026-10-05): [material cómic de la balsa](docs/delivery/raft-comic-material.md),
 atlas original de cuatro superficies y derivados WebP para escritorio/móvil. Se integra sobre P1;
 P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a importar un kit FAB modular.
@@ -32,7 +38,7 @@ P2 se acepta por separado mediante recorrido/pruebas. El atlas no equivale a imp
 | Reglas de construcción: cimientos conectados (12 × 12 máx.), pisos con soporte (pilar o pared debajo, o un voladizo de una casilla), piezas sobre cubierta libre, bordes junto a una cubierta, la red al borde, 3 niveles | `src/sim/economy/raft.js` (`canPlace`) | ✅ |
 | Colocar pagando con una bodega, quitar devolviendo la mitad (sin tirar lo que sostiene algo ni partir la balsa) | `place` / `remove` | ✅ |
 | Lo que hace la balsa: flotación contra peso (sobrecarga = se arrastra), velocidad por velas y motores, bodega, tripulación, cañones, reaparición | `raftStats` | ✅ |
-| Motor de producción: purificador/huertos, redes, parrilla/alambique y motor; todavía sin conectar al reloj jugable ni conservar acumuladores al guardar | `stepRaft` | núcleo; D06b pendiente |
+| Producción por módulo: red/parrilla, lote completo, fracciones guardadas y espera de materiales/espacio | `raftProduction.js` + reloj económico | D06b vivo; agua/cultivos/alambique/combustible antiguos siguen laboratorio inactivo |
 | Guardado en el perfil (`p.eco.ships`: identidad, revisión, amarre, base privada de amarre, plano, bodega, puerto, HP y aspecto) | `trade.js` (`sanitizeEco`) | ✅ |
 | Viajes entre pueblos (ruta, horas por velocidad, eventos con semilla), bodegas | `voyage.js`, `cargo.js` | ✅ |
 | Barcos clásicos (balandra… galeón) para más adelante | `src/data/ships.js` | ✅ datos |
@@ -91,11 +97,13 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   Máximos técnicos: base 12×12, tres niveles y 600 piezas para no superar el saneado de persistencia;
   no son un presupuesto móvil medido. Renderer/atlas existentes y caja FAB con fallback; sin nuevo kit exportado.
   12 pruebas nuevas, regresión 413/413 y escritorio/móvil horizontal/vertical aceptados en software.
-- [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaft` en `economy.step` para las balsas de los
+- [ ] **P4 Vivir en ella.** La producción en el reloj (`stepRaftWork` en `Economy.onAdvance` para las balsas de los
   jugadores conectados), panel de la balsa (bodega, agua, lo que produce, peso / flotación, velocidad), cofres,
   hamaca como punto de reaparición, faroles de noche (luces locales).
   **D06a aceptado:** bodega compartida por cajas, transferencia privada mochila↔balsa y panel de capacidad,
-  peso/flotación/velocidad teórica. Producción, agua, hamaca y luces pendientes; no marcar P4 completo.
+  peso/flotación/velocidad teórica. **D06b implementado, escritorio aceptado/móvil pendiente:** red/parrilla,
+  receta/progreso, motivos de espera y guardado/reentrada de fracciones. Agua/huertos, hamaca y luces
+  pendientes; no marcar P4 completo.
 - [ ] **P5 Zarpar.** El timón abre la carta; travesía (`planVoyage` + `stepRaft` acelerado); restos flotantes que
   recoger con un gancho por el camino (madera, lona, barriles); llegar a puerto abre su mercado (M7).
   Este viaje abstracto es fase A; sus pérdidas aleatorias no sustituyen el combate naval interactivo de fase B.
