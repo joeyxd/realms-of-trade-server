@@ -1,0 +1,37 @@
+{
+  "clientDate": "2026-10-06",
+  "scope": "SQL006 read-only IMMUTABLE validators and public-role denial; no table reads or writes; does not verify commit RPC, queue, host, restart or gameplay integration",
+  "checks": [
+    {
+      "check": "003-family-still-rejects-same-holder",
+      "ok": true,
+      "code": null
+    },
+    {
+      "check": "exact-swallow-delta",
+      "ok": true,
+      "code": null
+    },
+    {
+      "check": "ground-same-holder-one-endpoint",
+      "ok": true,
+      "code": null
+    },
+    {
+      "check": "progress-change-rejected",
+      "ok": true,
+      "code": null
+    },
+    {
+      "check": "public-intent-validator-denied",
+      "ok": true,
+      "code": "42501"
+    },
+    {
+      "check": "public-swallow-validator-denied",
+      "ok": true,
+      "code": "42501"
+    }
+  ],
+  "passed": true
+}

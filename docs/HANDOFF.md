@@ -61,7 +61,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003/004/005 reales; diario, gate común, CAS same-holder y staging give/swallow/ECS en tick, 356/356 aisladas. 006 real, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003/004/005 reales; 006 aplicada/validadores reales 6/6, staging 356/356 aisladas. Commit 006 live, afinidad, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -273,6 +273,18 @@ autor.
   para cuatro kinds; extraer efecto común con dueño sim al integrar, antes de cambiar sus reglas.
 - Siguiente lote real multi-UID death/reemplazo y hooks completos/hidratación/scope/reloj/adopción/invitados;
   leases/naval separados. P4/P6 parciales; no activar solo give/swallow.
+
+### M5 — SQL 006 aplicada y afinidad confirmada (2026-10-06)
+
+- El autor confirma 006 ejecutada. **6/6 probes Supabase de solo lectura** comprueban los validadores
+  same-holder/swallow y su denegación pública; sin consultar jugadores/tablas ni escribir fixtures.
+  [Alcance/evidencia](delivery/d09f-sql006-readonly.md). Commit nuevo live e integración del host pendientes.
+- [Afinidad confirmada](briefs/m48-pearl-affinity.md): aprendizaje del personaje por tipo, independiente
+  del UID; mejora el dominio y permanece tras pérdida/death/venta. Recuperar una del mismo tipo usa
+  el aprendizaje conservado; otro dueño usa el suyo. Perfil/XP/escalado/UI aún no implementados.
+- Curva/techo/acciones/mejoras por definir. Guardar aprendizaje fuera de `profile.pearls`, acreditar en
+  servidor y conservarlo al limpiar inventario/transferir/restaurar; no duplicar XP por replay. Registrar
+  esta regla al continuar M4.8/M5, con escritor único para sim/perfil/protocolo y sin pisar trabajo naval.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 

@@ -72,6 +72,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   sin publicación anticipada ni rollback SQL. **356/356**, **50 nuevas**; memoria y SDK/SQL006, progreso
   y cuatro poderes conservados. [Contrato/evidencia](docs/delivery/d09f-swallow-staging.md). Sin nueva SQL/env;
   006 real, lotes, efecto común con sim, hooks/hidratación/políticas pendientes; host sin conexión/activación.
+- Actualización D09f 2026-10-06: 006 aplicada por el autor; **6/6 probes Supabase de solo lectura**
+  verifican validadores/denegación pública ([alcance](docs/delivery/d09f-sql006-readonly.md)). Commit nuevo
+  live y hooks del juego aún pendientes. Afinidad del personaje por tipo, conservada tras perder/recuperar
+  perla, confirmada como requisito; [implementación pendiente](docs/briefs/m48-pearl-affinity.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).

@@ -179,8 +179,12 @@ Los assets FAB elegidos por el autor se integrarán mediante `docs/ASSETS.md`; e
 
 ## 5. Extensión posterior: afinidad (plan; fuera del cierre P5 actual)
 
-- [ ] Definir llave, curva/techo de XP y mejoras por aprendizaje. Recomendación: personaje + tipo de poder,
-  independiente del UID; aprender queda al perder la perla y no se transfiere al prestar el objeto.
+- [x] **Regla confirmada por el autor, 2026-10-06:** afinidad/nivel del personaje por tipo de poder,
+  independiente del UID físico. El uso válido mejora el dominio y la eficacia del poder. Perder, soltar,
+  vender, prestar o morir con la perla no borra ese aprendizaje. Recuperar una perla del mismo tipo
+  vuelve a aprovechar la afinidad alcanzada; otro jugador usa su propio aprendizaje, no el del objeto.
+- [ ] Definir curva/techo de XP, acciones acreditables y mejoras concretas. La identidad/conservación
+  anterior ya es requisito; cifras, ritmo y balance siguen abiertos. [Contrato](docs/briefs/m48-pearl-affinity.md).
 - [ ] Acreditar uso válido en servidor; defaults/migración/saneado y persistencia M5. Bloquear progresión por
   pulsar en puerto o repetir acciones sin desafío. Revisar protocolo/UI al exponer el aprendizaje.
 - [ ] Mostrar nivel y siguiente mejora, conservar maldición/circulación y comparar novato/experto sin una brecha

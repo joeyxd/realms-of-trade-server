@@ -54,6 +54,9 @@ Checkpoint D09f-2b.2, base `d7398d8`: **staging swallow server-only aceptado en 
 sobre ECS/perfil separados; efecto actual de stats/cooldown/agua aplicado una vez en tick, con progreso
 conservado y rollback local/fence. **356/356**, **50 nuevas**, memoria y SDK/SQL006. Sin nueva SQL/env;
 006 real sigue pendiente. [Contrato y evidencia](docs/delivery/d09f-swallow-staging.md).
+Actualización 2026-10-06: el autor confirma **006 aplicada**; sus validadores y denegación pública
+comprobados en Supabase con **6/6 probes de solo lectura**. No se verificó el commit nuevo con un canario
+real ni se conectó staging al host. [Alcance de la comprobación](docs/delivery/d09f-sql006-readonly.md).
 Siguiente: lote atómico de varios UIDs y efecto común con sim; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
 con dueño de LocalServer/sim, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
@@ -87,6 +90,9 @@ de riesgo antes de una economía naval pública persistente:
   Recibos idempotentes por operación/lote; no hace falta un UID por unidad de materia prima.
 - Reparación/recuperación: coste + retiro de instancia anterior + activación reparada, sin copias en pecio.
 - Skills de navegación/comercio/oficios, afinidad por poder y notoriedad con defaults, migración y saneado.
+  Afinidad de perla confirmada: aprendizaje del personaje por tipo, separado del UID y del inventario
+  `pearls`. Persiste tras pérdida/death/venta y vuelve a potenciar ese tipo al recuperarlo; no se transmite
+  al nuevo dueño. Falta implementarla en perfil/progresión/poderes/UI. [Contrato](docs/briefs/m48-pearl-affinity.md).
 - Pedidos/proyectos de ciudad, caravanas y aportes como estado de mundo; una remesa no se acredita dos veces.
 - Transferencia entre regiones y reconexión: un solo dueño autoritativo por barco; liquidación de combate,
   rendición y saqueo conserva resultado. Bounty exige fuente y límites de pago antes de activarse.
@@ -126,7 +132,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
   D09f-1 prueba staging de give fuera del host y D09f-2a añade reserva común de autoridad/cola/guardados;
-  D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 local, aplicación real pendiente);
+  D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 aplicada; validadores reales,
+  commit nuevo live pendiente);
   D09f-2b.2 prueba staging swallow/efecto ECS actual en tick sin modificar sim; faltan efecto común,
   hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
@@ -139,7 +146,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
   D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
   dormant give/commit/apply en tick; D09f-2a comparte reservas con admisión/guardados/commits de sesiones.
-  D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID en aislamiento; 006 real pendiente.
+  D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID en aislamiento; 006 aplicada y validadores
+  reales comprobados, commit nuevo live pendiente.
   D09f-2b.2 agrega staging swallow y efecto ECS actual en tick, con rollback/fence y progreso conservado.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
