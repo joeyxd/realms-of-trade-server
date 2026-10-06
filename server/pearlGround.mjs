@@ -2,7 +2,7 @@
 // conserves one UID across profiles and ground, without deleting expired or historical records.
 import { sanitizePearl } from '../src/data/pearls.js';
 import { StoreError, playerKey } from './store.mjs';
-import { canonicalText, pearlOperation, pearlResult, managedPearl } from './pearlOperations.mjs';
+import { canonicalText, pearlIntent, pearlOperation, pearlResult, managedPearl } from './pearlOperations.mjs';
 
 const MAX_VERSION = 2147483647;
 const object = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
@@ -27,19 +27,27 @@ export function groundPage(world, options = {}) {
   return { world, afterUid, limit };
 }
 
-export function groundOperation(raw) {
+export function groundIntent(raw) {
   if (!object(raw)) throw new StoreError('operation');
-  let operationId, base;
+  let base;
   if (raw.from === null && raw.to === null) {
-    operationId = playerKey(raw.operationId);
+    const operationId = playerKey(raw.operationId);
     const pearl = sanitizePearl(raw);
-    if (!pearl || !generation(raw.expectedVersion) || !Array.isArray(raw.profiles) || raw.profiles.length) {
-      throw new StoreError('operation');
-    }
-    base = { ...pearl, from: null, to: null, expectedVersion: raw.expectedVersion, profiles: [] };
-  } else ({ operationId, request: base } = pearlOperation(raw));
+    if (!pearl || !generation(raw.expectedVersion)) throw new StoreError('operation');
+    base = { operationId, ...pearl, from: null, to: null, expectedVersion: raw.expectedVersion };
+  } else base = pearlIntent(raw);
   const world = groundKey(raw.world), ground = raw.ground === null ? null : groundData(raw.ground);
   if ((base.to === null) !== (ground !== null)) throw new StoreError('operation');
+  return { ...base, world, ground };
+}
+
+export function groundOperation(raw) {
+  const { operationId, world, ground, ...intent } = groundIntent(raw);
+  let base;
+  if (intent.from === null && intent.to === null) {
+    if (!Array.isArray(raw.profiles) || raw.profiles.length) throw new StoreError('operation');
+    base = { ...intent, profiles: [] };
+  } else ({ request: base } = pearlOperation({ ...raw, operationId }));
   return { operationId, request: { ...base, world, ground } };
 }
 

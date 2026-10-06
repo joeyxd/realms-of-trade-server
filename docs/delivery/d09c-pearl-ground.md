@@ -83,7 +83,9 @@ no verifica un proceso público ni atribuye la causa a un cambio. Código nuevo 
 
 ## Aplicación y próximo corte
 
-**004 es nueva y queda pendiente de aplicar/verificar en Supabase.** Copiar el archivo completo en el SQL Editor,
+**Al aceptar D09c, 004 era nueva y quedaba pendiente de aplicar/verificar en Supabase.**
+Checkpoint posterior: [D09d](d09d-pearl-ground-queue.md) verifica su aplicación real y conecta la cola.
+La instrucción de aplicación del corte original era copiar el archivo completo en el SQL Editor,
 después de las tres migraciones ya aplicadas por el autor, y ejecutar. No necesita variables nuevas ni activar
 gameplay/reiniciar host. Después: probe RPC/RLS y canario con UUIDs temporales exactos, limpieza verificada.
 Las pruebas locales no acreditan disponibilidad PostgREST ni solapamiento forzado de transacciones en conexiones

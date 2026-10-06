@@ -42,8 +42,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   sesiones ordena perfiles/operación/guardados posteriores y resuelve recibos; join valida UIDs registrados.
   Staging/ack de simulación, adopción y suelo durable pendientes; P4/P6 parciales. [Informe](docs/delivery/d09b-pearl-sessions.md).
 - Checkpoint posterior D09c: transacción de perfiles/UID/ubicación/recibos aceptada localmente, con mint y
-  relocación de suelo. SQL 004 nueva pendiente de aplicar/verificar; cola/restauración/staging del juego y
-  adopción siguen abiertos. [Informe](docs/delivery/d09c-pearl-ground.md).
+  relocación de suelo. SQL 004 estaba pendiente al aceptar ese corte; cola/restauración/staging del juego y
+  adopción seguían abiertos. [Informe](docs/delivery/d09c-pearl-ground.md).
+- Checkpoint posterior D09d: SQL 004 aplicada/verificada real; cola de suelo comparte reservas y compara
+  perfiles/UID/ubicación al recuperar respuestas perdidas. Canarios temporales limpiados; diario durable de
+  intenciones, restauración/staging y adopción pendientes. [Informe](docs/delivery/d09d-pearl-ground-queue.md).
 - Checkpoint posterior A02: primera caja Dreamrise integrada en los `crate` estáticos, 51,7 KB/204 triángulos;
   siete casos visuales/fallback aceptados en software, GPU/dispositivos físicos y publicación pendientes.
   [Resultado A02](docs/delivery/a02-crate.md); [punto de partida D04](docs/delivery/d04-raft-readiness.md).
@@ -99,7 +102,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | D06 | M6 P4 + M7 P1–P3: vivir y comerciar | A02 banco en un taller/renderer ya disponible; A06 uno o dos iconos | D05; bodega/producción, mercader/quote/compra/venta y reserva local en prototipo | Pendiente; D05 solo añade compra acotada de materiales del editor |
 | D07 | M5 P1–P3: almacenamiento/cuentas/mundo | Medir carga total de los pocos assets aceptados | Contratos del principal; memoria y persistencia distinguidas. Puede comenzar junto a D04–D06 | P1–P3 local; Auth/perfil y mundo reales comprobados con fixtures aislados ([D07c](docs/delivery/d07c-comic-account.md), [D07d](docs/delivery/d07d-world.md)); correo humano/publicación pendientes |
 | D08 | M6 manejo: materiales, navegación, distribución y carga | Piezas de A05 y feedback visual de sobrecarga | D05; una familia/tier inicial, comparar vacío/cargado/giro, datos explicables | Pendiente |
-| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a/b/c: perla/perfiles/recibo, cola y ubicación durable local ([informe](docs/delivery/d09c-pearl-ground.md)); 003 real, 004 pendiente. Staging/juego/adopción y operaciones navales pendientes |
+| D09 | M5 P6: movimientos/recuperación sin duplicados | Arte de daño como visual; plano y estado operativo separados | D07 y contratos de D04–D08; depósito/retirada/jettison/reintentos/recuperación conservan bienes | Base D09a–d: perla/perfiles/suelo/recibo y cola ([informe](docs/delivery/d09d-pearl-ground-queue.md)); 003/004 reales. Diario de intenciones/staging/juego/adopción y operaciones navales pendientes |
 | D10 | M6 P5–P6 inicial + M7 rutas: primer viaje/naval PvE | A07: un impacto de madera/agua; A04 un sonido si puente listo | D06,D08; D09 para riesgo persistente. Dos rutas, NPC vencible, reparar/recuperar | Pendiente |
 | D11 | Dos jugadores: huida, rendición, saqueo, notoriedad/patrulla | Señales/banderas legibles, efectos pequeños | D09–D10 y reglas legales/de pérdidas definidas; dos clientes y liquidación única | Pendiente |
 | D12 | Abordaje inicial, formato por definir | A05 cobertura/pasarela; reutilizar personajes actuales | D11 y formato decidido; solo/cooperativo, colisiones y latencia. Recomendación: cubiertas enganchadas | Pendiente |

@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a/b/c**: 003 real, perlas atómicas, cola y ubicación local; 004 pendiente, staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–d**: 003/004 reales, perla/suelo atómicos y cola; diario de intenciones/staging/juego/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 local**: balsa visible/transitable y editor autoritativo con materiales reales; bodega/producción, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **motor hecho** (mercados, comando `market` + tests); falta la UI y los mercaderes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -114,6 +114,22 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 Después: M4.8 (perlas), y la estructura (M6 balsa → M7 comercio → M5 persistencia → M8), en el orden que decida el
 autor.
 
+### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
+
+- Base `018a177`. [Brief](briefs/m5-pearl-ground-queue.md), [informe](delivery/d09d-pearl-ground-queue.md).
+- **159/159** pruebas pertinentes en árbol confirmado `018a177` más cuatro archivos propios; diez nuevas
+  también pasaron en checkout compartido. Aísla cambios D06 activos, sin aceptar su regresión/visual.
+- Autor confirmó 004 aplicada; probe RPC/RLS real **5/5**, canario SQL/SDK **10/10**, cola SDK real **7/7**.
+  Perfiles/UIDs/recibos temporales limpiados y ausencia verificada; no consultas a jugadores existentes.
+- `commitPearlGround(meta,build)` comparte cuentas/UID/UUID con familia 003 y congela mundo/ground antes de
+  awaits. Builder una vez, máximo dos envíos idénticos, fuente validada y saves posteriores rebasados.
+- `reconcilePearlGround(UUID)` solo lee su recibo/perfiles/UID/ubicación. Recibo ausente/diferente/malformado o
+  lectura fallida conserva reservas; estado posterior rechaza el resultado histórico. Ground-only participa
+  en flush y sus errores permanecen contabilizados durante la instancia, incluso después de reconciliar.
+- No nueva SQL/env ni cambios de sim/cliente/protocolo/editor, host reiniciado o publicación. D06 conserva
+  sus archivos. Reservas/intenciones siguen en memoria: diario durable tras restart es el siguiente corte,
+  seguido de staging previo a efectos/acks, reloj/restauración y política de adopción/invitados. P4/P6 parciales.
+
 ### M5 P4/P6 — ubicación durable D09c (2026-10-05)
 
 - Base M5 `12a6854`, integrada sobre editor D05 `991db89`; `0.6.0-alpha.2`, protocolo 14 conservados.
@@ -125,7 +141,8 @@ autor.
 - **149/149** pruebas pertinentes (132 previas + 17 nuevas), PostgreSQL/SDK locales y revisión Luna aceptada
   por el principal. RLS, rollback de perfiles/ledger/suelo/recibos, replay histórico y guardias raw verificados.
   **70/70** del subconjunto sobre fuentes M5 `12a6854` más este corte prueban independencia del editor D05.
-- **004 nueva pendiente de aplicar/verificar en Supabase**, después de 001/002/003. No se reinició/publicó el host
+- Al aceptar D09c, **004 nueva pendiente de aplicar/verificar en Supabase**; D09d registra su verificación arriba.
+  No se reinició/publicó el host
   ni se cambió cliente/sim/editor. Este corte es almacenamiento local, no acepta persistencia de suelo en juego.
 - Próximo corte: aplicar/verificar 004 con fixtures, ampliar cola/reconciliación para ubicación y acordar seam
   previo a mutación/ack con dueño de LocalServer. Retener UUIDs tras restart, restaurar suelo y cerrar adopción/

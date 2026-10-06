@@ -4,6 +4,16 @@ import { PEARL } from '../src/data/pearls.js';
 import { StoreError, playerKey } from './store.mjs';
 import { pearlIntent, pearlOperation, canonicalText, profilePearls, pearlKind, validPearlMove,
   checkedPearlResult, checkedPearlReceipt } from './pearlOperations.mjs';
+import { groundIntent, groundOperation, checkedGroundResult, checkedGroundReceipt, checkedLocation } from './pearlGround.mjs';
+
+// Both families share all reservations. A separate ground queue would allow an unresolved legacy
+// request to race a new ground intent for the same UID, account or operation UUID.
+const families = {
+  pearl: { intent: pearlIntent, operation: pearlOperation, check: checkedPearlResult,
+    receipt: checkedPearlReceipt, commit: 'commitPearl', read: 'loadPearlOperation' },
+  ground: { intent: groundIntent, operation: groundOperation, check: checkedGroundResult,
+    receipt: checkedGroundReceipt, commit: 'commitPearlGround', read: 'loadPearlGroundOperation' },
+};
 
 const clone = (v) => structuredClone(v);
 const snapshot = (data) => ({ data: clone(data), text: JSON.stringify(data) });
@@ -26,10 +36,10 @@ export class PearlQueue {
     this.sessions = sessions; this.uids = new Map(); this.operationIds = new Map(); this.unresolved = new Map();
   }
 
-  commit(raw, build) {
+  commit(raw, build, family = 'pearl') {
     let intent, lanes;
     try {
-      intent = pearlIntent(raw);
+      intent = frozen(families[family].intent(raw));
       if (typeof build !== 'function') throw new StoreError('operation');
       if (this.uids.has(intent.uid) || this.operationIds.has(intent.operationId)) throw new StoreError('busy');
       lanes = [intent.from, intent.to].filter(Boolean).sort().map((id) => {
@@ -39,7 +49,7 @@ export class PearlQueue {
         return s;
       });
     } catch (err) { return Promise.reject(storageError(err)); }
-    const ctx = { intent, lanes, before: new Map(), prior: [], uncertain: false, receiptSeen: false, concrete: null };
+    const ctx = { intent, family, lanes, before: new Map(), prior: [], uncertain: false, receiptSeen: false, concrete: null };
     // Reserve every lane before the first await. Capture pending pre-intent saves separately from
     // snapshots that arrive during the RPC, including LocalServer's final disconnect snapshot.
     for (const s of lanes) {
@@ -65,7 +75,7 @@ export class PearlQueue {
   }
 
   async run(ctx, build) {
-    const owner = this.sessions, store = owner.store;
+    const owner = this.sessions, store = owner.store, api = families[ctx.family];
     try {
       this.ready(ctx);
       await Promise.all(ctx.prior);
@@ -75,18 +85,27 @@ export class PearlQueue {
         if (next) { await owner.writeOne(s, next); ctx.before.set(s, null); }
         this.ready(ctx);
       }
-      const registered = await store.loadUnique(ctx.intent.uid);
+      const [registered, groundLocation] = await Promise.all([
+        store.loadUnique(ctx.intent.uid),
+        ctx.family === 'ground' ? store.loadPearlLocation(ctx.intent.uid).then(checkedLocation) : null,
+      ]);
       this.ready(ctx);
       const { uid, kind, from, to, expectedVersion, operationId } = ctx.intent;
       if (registered && registered.kind !== pearlKind(kind)) throw new StoreError('kind');
       if ((registered?.version ?? 0) !== expectedVersion || (registered?.holder ?? null) !== from) {
         throw new StoreError('conflict');
       }
+      if (ctx.family === 'ground') {
+        if (groundLocation) {
+          if (!registered || groundLocation.world !== ctx.intent.world || groundLocation.version !== registered.version ||
+            (registered.holder === null) !== (groundLocation.ground !== null)) throw new StoreError('ownership');
+        } else if (from === null && expectedVersion > 0) throw new StoreError('ownership');
+      }
       const rows = ctx.lanes.map((s) => ({ id: s.key, version: s.version, data: clone(s.confirmed) }));
       const baseline = new Map(rows.map((p) => [p.id, clone(p)]));
       const built = build(clone(rows));
       if (!Array.isArray(built)) throw new StoreError('operation');
-      const { request } = pearlOperation({ ...ctx.intent, profiles: built.map((p) => ({ ...p,
+      const { request } = api.operation({ ...ctx.intent, profiles: built.map((p) => ({ ...p,
         expectedVersion: baseline.get(p?.id)?.version })) });
       if (!validPearlMove(request, baseline)) throw new StoreError('ownership');
       ctx.deltas = new Map(); ctx.baseline = baseline;
@@ -106,7 +125,7 @@ export class PearlQueue {
       let receipt;
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
-          receipt = checkedPearlResult(await store.commitPearl(ctx.concrete), request);
+          receipt = api.check(await store[api.commit](ctx.concrete), request);
           break;
         } catch (err) {
           const failure = storageError(err);
@@ -141,6 +160,8 @@ export class PearlQueue {
       } else {
         // Notify once per affected account. A closed socket cannot release an uncertain lane.
         for (const s of ctx.lanes) owner.fail(s, failure.code);
+        // Ground-only mint/relocation has no account lane to carry the failure into flush().
+        if (!ctx.lanes.length) owner.errors++;
       }
       throw failure;
     }
@@ -170,8 +191,9 @@ export class PearlQueue {
   }
 
   async readReceipt(ctx) {
-    const raw = await this.sessions.store.loadPearlOperation(ctx.intent.operationId);
-    const stored = checkedPearlReceipt(raw, ctx.intent.operationId);
+    const api = families[ctx.family];
+    const raw = await this.sessions.store[api.read](ctx.intent.operationId);
+    const stored = api.receipt(raw, ctx.intent.operationId);
     if (!stored) throw new StoreError('unavailable');
     const { operationId: _id, ...request } = ctx.concrete;
     if (canonicalText(stored.request) !== canonicalText(request)) throw new StoreError('operation');
@@ -181,15 +203,20 @@ export class PearlQueue {
 
   async verifyCurrent(ctx, receipt) {
     const store = this.sessions.store;
-    const [rows, unique] = await Promise.all([
+    const [rows, unique, groundLocation] = await Promise.all([
       Promise.all(ctx.concrete.profiles.map(async (p) => ({ id: p.id, row: await store.loadProfile(p.id) }))),
       store.loadUnique(ctx.intent.uid),
+      ctx.family === 'ground' ? store.loadPearlLocation(ctx.intent.uid).then(checkedLocation) : null,
     ]);
     // Only completed authoritative reads settle the fence. Advanced state is a definitive conflict;
     // a provider/read failure leaves recovery pending even when the matching receipt is visible.
     ctx.reconciled = true; ctx.uncertain = false;
     const { uid: _uid, ...expectedUnique } = receipt.unique;
     if (canonicalText(unique) !== canonicalText(expectedUnique)) throw new StoreError('conflict');
+    if (ctx.family === 'ground') {
+      const { uid: _locationUid, ...expectedLocation } = receipt.location;
+      if (canonicalText(groundLocation) !== canonicalText(expectedLocation)) throw new StoreError('conflict');
+    }
     for (const { id, row } of rows) {
       if (row?.version !== receipt.profiles.find((p) => p.id === id)?.version ||
         canonicalText(row?.data) !== canonicalText(ctx.concrete.profiles.find((p) => p.id === id).data)) {
@@ -198,11 +225,11 @@ export class PearlQueue {
     }
   }
 
-  reconcile(rawId) {
+  reconcile(rawId, family = 'pearl') {
     let ctx;
     try {
       ctx = this.unresolved.get(playerKey(rawId));
-      if (!ctx) throw new StoreError('operation');
+      if (!ctx || ctx.family !== family) throw new StoreError('operation');
       if (ctx.recovering) throw new StoreError('busy');
     } catch (err) { return Promise.reject(storageError(err)); }
     const task = (async () => {

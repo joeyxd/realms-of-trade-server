@@ -94,6 +94,8 @@ export class ProfileSessions {
 
   commitPearl(meta, build) { return this.pearls.commit(meta, build); }
   reconcilePearl(operationId) { return this.pearls.reconcile(operationId); }
+  commitPearlGround(meta, build) { return this.pearls.commit(meta, build, 'ground'); }
+  reconcilePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground'); }
 
   fail(s, code) {
     if (s.failed) return;

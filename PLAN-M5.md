@@ -26,8 +26,12 @@ Canarios reales temporales limpiados; falta staging/ack del juego, suelo durable
 [Contrato y evidencia](docs/delivery/d09b-pearl-sessions.md). P4/P6 siguen parciales.
 Checkpoint D09c, integrado sobre `991db89`: **ubicación durable de perlas aceptada localmente**. Una operación
 confirma perfiles, ledger, posición/relojes de suelo y recibos juntos; también cubre mint/relocación sin cuentas.
-SQL **004 nueva, pendiente de aplicar/verificar en Supabase**. No conecta todavía cola ni circulación de juego.
+Al aceptar D09c, SQL **004 nueva, pendiente de aplicar/verificar en Supabase**. No conectaba cola ni juego.
 [Contrato y evidencia](docs/delivery/d09c-pearl-ground.md). P4/P6 siguen parciales.
+Checkpoint D09d, base `018a177`: **004 aplicada por el autor y verificada en Supabase**. Cola de suelo comparte
+reservas con la familia anterior, confirma snapshots y compara perfiles/ledger/ubicación al recuperar recibos.
+Canarios SDK/cola reales limpiados; contexto de intenciones aún en memoria, diario tras restart y staging del
+juego pendientes. [Contrato y evidencia](docs/delivery/d09d-pearl-ground-queue.md). P4/P6 siguen parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -94,15 +98,17 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   Migración 003 aplicada/verificada. `ProfileSessions.commitPearl` reserva cuentas/UID, ordena CAS y rebasa
   snapshots posteriores; valida al entrar los UIDs registrados. Falta conectar staging/ack del juego y
   definir adopción/backfill de perlas raras existentes, colisiones e invitados. D09c agrega posición durable
-  con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 pendiente.
-  Falta restauración/publicación del suelo en juego. Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
+  con la misma generación del UID, tombstone al estar en perfil y listado por mundo/UID; SQL 004 real verificada.
+  D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas. Falta diario durable de
+  intenciones/UUIDs tras restart y restauración/publicación del suelo en juego. Legendarias (`PLAN-M4.8.md`),
+  regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
 - [ ] **P6 Movimientos y recuperación durables.** Transacciones/reintentos y fallos parciales de bienes/barcos;
   desarrollar esta base junto a P1–P3 y antes del PvP económico persistente, aunque conserve el número P6.
   D09a/b acepta una primera operación de perla/perfiles/recibo y su cola de sesión, con SDK/Supabase reales;
-  D09c suma el suelo a esa transacción mediante una API nueva, probada con PostgreSQL/SDK locales.
-  No está conectada a la cola ni al juego y 004 aún no se verifica real; mundo/barcos siguen separados.
+  D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
+  No está conectada al juego ni conserva intenciones pendientes tras restart; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 
 ## 4. Notas
@@ -114,12 +120,13 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   al moverse legítimamente; no adopta UIDs ausentes ni recupera un holder:null sin posición conocida.
   Recibos 003/004 comparten exclusión por UUID. Un replay entrega el resultado histórico sin revertir una ubicación
   posterior; el caller debe comparar versiones antes de publicar. Todas las lecturas/escrituras son service-only.
-- D09b comprobó RPC/RLS y operaciones del SDK en el proyecto configurado con UUIDs temporales exactos,
+- D09b/d comprobó RPC/RLS y operaciones del SDK en el proyecto configurado con UUIDs temporales exactos,
   limpieza verificada y sin consultar jugadores existentes. Contendientes HTTP reales no prueban un
   solapamiento forzado de backends PostgreSQL independientes; leases siguen pendientes.
 - Si ambas respuestas de perla quedan ambiguas y no aparece el recibo, la cola reserva UID/cuentas incluso
-  tras close. `reconcilePearl` solo lee recibo/perfiles/UID; no reenvía otra mutación. Errores/flush permanecen
-  cercados hasta resolver la causa; las reservas locales no sobreviven al proceso.
+  tras close. `reconcilePearl` lee recibo/perfiles/UID y `reconcilePearlGround` agrega ubicación; no envían
+  otra mutación ni cruzan familias de recibo. Errores de flush permanecen contabilizados durante esa instancia,
+  también los de operaciones sin cuentas y después de reconciliar; las reservas no sobreviven al proceso.
 - P1 impide dos autoridades de un perfil dentro del host y rechaza escrituras con versión atrasada. Las
   reservas de sesión todavía no son leases entre procesos; P5 debe resolverlos antes de varias zonas.
 - Los métodos de propiedad única aún no sustituyen el ledger de perlas del juego. P4/P6 deben integrar
