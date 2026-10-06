@@ -6,19 +6,20 @@ import { pearlKind, profilePearls, canonicalText } from './pearlOperations.mjs';
 import { PearlQueue } from './pearlQueue.mjs';
 
 export class ProfileSessions {
-  constructor(store, onFailure) {
+  constructor(store, onFailure, { journal = null } = {}) {
     this.store = store;
     this.onFailure = onFailure;
     this.accounts = new Map();
     this.clients = new Map();
     this.tasks = new Set();
     this.errors = 0;
-    this.pearls = new PearlQueue(this);
+    this.pearls = new PearlQueue(this, journal);
   }
 
   async open(id, key, weapon = 0, initialize = null) {
     key = playerKey(key);
     if (this.accounts.has(key)) throw new StoreError('session');
+    this.pearls.assertOpen(key);
     const s = { id, key, version: 0, confirmed: null, pending: null, running: null, pearlBusy: null,
       last: null, failed: false, closed: false };
     this.accounts.set(key, s); this.clients.set(id, s);
@@ -96,6 +97,9 @@ export class ProfileSessions {
   reconcilePearl(operationId) { return this.pearls.reconcile(operationId); }
   commitPearlGround(meta, build) { return this.pearls.commit(meta, build, 'ground'); }
   reconcilePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground'); }
+  recoverPearls() { return this.pearls.recover(); }
+  resumePearl(operationId) { return this.pearls.reconcile(operationId, 'pearl', true); }
+  resumePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground', true); }
 
   fail(s, code) {
     if (s.failed) return;
@@ -120,6 +124,6 @@ export class ProfileSessions {
 
   async flush() {
     while (this.tasks.size) await Promise.allSettled([...this.tasks]);
-    if (this.errors) throw new StoreError('flush');
+    if (this.errors || !this.pearls.admitting || (this.pearls.journal && this.pearls.unresolved.size)) throw new StoreError('flush');
   }
 }

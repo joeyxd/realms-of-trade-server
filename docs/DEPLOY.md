@@ -169,6 +169,16 @@ No requiere SQL adicional. Antes de activar circulación, completar diario durab
 restauración/staging y política de adopción. Las reservas/contexto siguen en memoria del proceso.
 [Resultado D09c](delivery/d09c-pearl-ground.md), [verificación y límites D09d](delivery/d09d-pearl-ground-queue.md).
 
+D09e añade **[005_pearl_journal.sql](../server/migrations/005_pearl_journal.sql)**, después de 001–004:
+**pendiente de aplicar/verificar en Supabase**. Conserva request/UUID/familia/scope y resultado terminal,
+solo para el servicio; reaplicación no borra filas. `createSupabasePearlJournal(client,WORLD_ID)` se inyecta
+en `ProfileSessions(...,{journal})`; exige `recoverPearls()` antes de admitir. Startup/reconcile son de lectura
+de recibo/estado más cierre del diario; `resumePearl`/`resumePearlGround` reenvían una vez el request exacto
+solo si falta recibo. No ejecutar con scopes diferentes para la misma autoridad ni varios hosts: no son leases.
+Este corte no configura ni activa el diario en `npm start`, no necesita variables nuevas ni reiniciar host.
+Su aplicación prepara almacenamiento; staging/ack, reloj/restauración y adopción del juego siguen pendientes.
+[Contrato, prueba de restart y límites](delivery/d09e-pearl-journal.md).
+
 El mundo guarda un sobre `{v:1, seed, economy}`; la economía usa formato v2 con RNG. El formato previo v1
 sin RNG no se acepta silenciosamente como mundo persistente. El tiempo apagado no se simula. Mantenimiento
 solo cobra a perfiles conectados; guardados de perfil/mundo aún son independientes, sin atomicidad P6.
