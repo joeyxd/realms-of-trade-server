@@ -101,6 +101,16 @@ aisladas; cuatro procesos locales nuevos, cuatro fuentes propias y 28 fuentes se
 Sigue [staging de reemplazo de dos UIDs](docs/briefs/m5-pearl-batch-staging.md), después hooks/restauración;
 host/juego todavía sin conexión durable del lote. Afinidad permanente y P4/P6 siguen pendientes.
 
+Checkpoint D09f-2b.7, base `621dc98`: **staging dormant del reemplazo aceptado en aislamiento**.
+Reserva cuenta/ambos UIDs antes del await, reutiliza `swallowPearl` en draft y confirma un solo lote
+SQL007/008. `drain()` aplica perfil/ambos ledgers/drop/ECS/eventos juntos, conserva progreso vivo y
+asigna el ID local desde el contador actual; fallo local revierte sus escrituras y conserva fence.
+**681/681** pertinentes en 36 archivos, **94 nuevas**; contratos memoria/SQL008 y paridad del helper
+en los cuatro tipos. Seis fuentes propias y 67 seleccionadas intactas antes/después de la regresión.
+[Contrato/evidencia](docs/delivery/d09f-replace-staging.md). Sin SQL/env nueva ni canario live en este corte.
+Siguen hooks completos/restauración del host y revisión de la muerte completa (equipo/oro/mundo).
+Afinidad permanente aún requiere su propio corte; P4/P6 parciales, sin activación del juego.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
@@ -179,7 +189,9 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.2 prueba staging swallow/efecto ECS actual en tick; D09f-2b.3 comparte su regla con sim.
   D09f-2b.4 agrega storage de lote muerte/reemplazo (481/481 locales y 007 real 31/31).
   D09f-2b.5 integra diario/cola/reservas y recuperación batch (579/579 aisladas, 12 procesos;
-  SQL008 real aceptada después en D09f-2b.6: 18/18 y cuatro procesos; staging/tick batch pendiente).
+  SQL008 real aceptada después en D09f-2b.6: 18/18 y cuatro procesos).
+  D09f-2b.7 agrega staging/tick dormant de reemplazo: 681/681, ambos UIDs/drop/ECS/eventos,
+  progreso conservado y rollback local/fence. Staging de muerte completa permanece pendiente.
   Faltan hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
@@ -197,7 +209,9 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.3 extrae la regla común con sim, sin cambios de comportamiento.
   D09f-2b.4 confirma varios UIDs/perfil/suelo en un recibo de storage; SQL007 real 31/31 aceptada.
   D09f-2b.5 acepta recuperación de intención batch en diario/cola con todos los UIDs y reanudación exacta;
-  D09f-2b.6 verifica SQL008/cola reales: 18/18 en cuatro procesos; staging/tick de lote pendiente.
+  D09f-2b.6 verifica SQL008/cola reales: 18/18 en cuatro procesos.
+  D09f-2b.7 acepta staging/tick dormant de reemplazo con dos UIDs y drop: 681/681;
+  los otros efectos de la muerte completa requieren integración antes del spill durable.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

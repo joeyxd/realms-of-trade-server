@@ -1,14 +1,16 @@
 # D09f-2b.7 — staging de reemplazo con dos UIDs
 
 2026-10-06. Siguiente corte después de [SQL008 y cola verificadas reales](../delivery/d09f-pearl-batch-journal-live.md).
-Implementación pendiente. Principal: arquitectura/integración/aceptación; Luna: revisión y pruebas acotadas.
+Implementado en `server/pearlStaging.mjs`; **681/681** pruebas aisladas, **94 nuevas**.
+[Resultado y límites](../delivery/d09f-replace-staging.md). Principal:
+arquitectura/integración/aceptación; Luna: revisión y pruebas acotadas.
 Un escritor por archivo; conservar el trabajo paralelo de sim/LocalServer/host y arte.
 
 ## Frontera
 
-`PearlStaging` hoy aplica give y bag→swallowed vacío; su bookkeeping y drain trabajan con un UID.
-SQL007/008 y `ProfileSessions.commitPearlBatch` ya confirman/recuperan el reemplazo atómico. Extender
-el coordinador dormant para reservar y aplicar los dos UIDs del reemplazo confirmado por el caller.
+`PearlStaging` conserva give y bag→swallowed vacío; el bookkeeping/drain compartidos ahora admiten
+ambos UIDs del reemplazo. SQL007/008 y `ProfileSessions.commitPearlBatch` confirman/recuperan el lote.
+El método dormant `replace` reserva y aplica los dos UIDs del reemplazo confirmado por el caller.
 Conservar la regla actual de `swallowPearl`: el UID confirmado debe ser exactamente el swallowed
 actual, con las comprobaciones de calma, bolsa y propiedad del servidor.
 
@@ -45,6 +47,25 @@ recuperación histórica no produce loot ni efecto. Revisar hashes y regresión 
 Reutilización: diario/cola/gate, drafts/ECS effect y helper de swallow/drop propios. Candidatos ActionRPG
 inventory/save verificados en 2b.6 son Blueprints; no exportarlos ni añadir arte para este corte.
 Verificar cualquier candidato nuevo por ruta exacta si aparece una necesidad concreta.
+
+Verificación exacta repetida antes de implementar 2b.7: en
+`C:\Unreal\ActionRPGMultiplayerStart\Content\ActionRPGStarterSystem\InventorySystem`,
+`Components\BP_InventoryComponent.uasset` (24,878,603 bytes) y
+`SaveSystem\BP_JigServerSave.uasset` (580,554 bytes). No ofrecen autoridad Node portable;
+se reutilizan los módulos propios existentes, sin cambios en las fuentes Unreal ni exportación.
+
+## Implementación
+
+`replace({ uid, replaceUid, source: { clientId, entity }, expectedVersion, replaceExpectedVersion })`
+es una frontera interna del servidor. Los dos números de generación proceden de lecturas gestionadas
+del caller autorizado; cola/SQL los contrastan antes de confirmar. No hay ruta de cliente nueva.
+
+El draft llama `swallowPearl`, congela posición/ticks del drop y manda un solo batch replace por la
+cola existente. En `drain()` asigna el ID desde el contador vivo, aplica ambos ledgers/perfil/drop/ECS
+y publica los dos eventos actuales. El progreso vivo fuera de slots de perlas se conserva; las
+comprobaciones posteriores al enqueue de save detectan mutaciones de ledger sin compartir sus clones.
+Un fallo local restaura sus escrituras y conserva la reserva cercada, incluso con SQL confirmado.
+Recuperar un recibo histórico no vuelve a crear ese drop ni publica otro evento.
 
 ## Gates siguientes
 

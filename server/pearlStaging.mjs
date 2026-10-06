@@ -1,4 +1,4 @@
-// Dormant server-side give/swallow staging. Storage completion only queues work; the caller drains it at a
+// Dormant server-side give/swallow/replacement staging. Storage completion only queues work; the caller drains it at a
 // tick boundary before events/snapshots. Every profile mutation route must honor this gate to enable it.
 import { randomUUID } from 'node:crypto';
 import { transferPearl, swallowPearl } from '../src/sim/systems/pearls.js';
@@ -6,6 +6,7 @@ import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { StoreError, playerKey } from './store.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { groundKey, groundOperation, checkedGroundResult } from './pearlGround.mjs';
+import { batchIntent, batchOperation, checkedBatchResult } from './pearlBatch.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
 import { pearlEcsDraft, pearlSwallowEffect } from './pearlEcsEffect.mjs';
 
@@ -20,6 +21,39 @@ const normalized = (raw) => {
   return data;
 };
 const codeOf = (error) => error instanceof StoreError ? error.code : 'unavailable';
+const version = (n) => Number.isSafeInteger(n) && n >= 1 && n < 2147483647;
+
+// The persistent ground record has no local drop ID. Assign it only at the synchronous apply,
+// preserving the helper's frozen geometry/time while other actors may have created drops during IO.
+function replacementDrop(world, planned) {
+  const drops = world.drops, id = world.nextDrop;
+  if (!(drops instanceof Map) || !Number.isSafeInteger(id) || id < 1 || id >= Number.MAX_SAFE_INTEGER || drops.has(id)) {
+    throw new StoreError('busy');
+  }
+  const drop = { ...clone(planned), id };
+  let applied = false;
+  return {
+    drop,
+    assertCurrent() {
+      if (world.drops !== drops || world.nextDrop !== id || drops.has(id)) throw new StoreError('busy');
+    },
+    apply() {
+      this.assertCurrent(); applied = true;
+      drops.set(id, drop); world.nextDrop = id + 1;
+    },
+    assertApplied() {
+      if (world.drops !== drops || world.nextDrop !== id + 1 ||
+          canonicalText(drops.get(id)) !== canonicalText({ ...planned, id })) throw new StoreError('ownership');
+    },
+    rollback() {
+      if (!applied) return;
+      // Undo this insertion only. A broken callback cannot make us delete another actor's drop.
+      if (drops.get(id) === drop) drops.delete(id);
+      if (world.nextDrop === id + 1) world.nextDrop = id;
+      applied = false;
+    },
+  };
+}
 
 export class PearlStaging {
   constructor(sessions, world, scope, { limit = 64 } = {}) {
@@ -66,7 +100,7 @@ export class PearlStaging {
       from: from.key, to: to.key, expectedVersion, world: this.scope, ground: null },
     profiles: endpoints.map((e) => ({ id: e.key, before: clone(e.profile.pearls), after: clone(view.profiles.get(e.entity).pearls) })),
     ledger: { owner: to.profile.pirateId, entity: to.entity, place: 'profile' }, events: view.events });
-    return this.enqueue(plan, endpoints, ledger);
+    return this.enqueue(plan, endpoints, new Map([[uid, ledger]]));
   }
 
   swallow({ uid, source, expectedVersion, replaceUid } = {}) {
@@ -90,13 +124,50 @@ export class PearlStaging {
       from: from.key, to: from.key, expectedVersion, world: this.scope, ground: null },
     profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
     ledger: clone(ledger), events: view.events });
-    return this.enqueue(plan, [from], ledger);
+    return this.enqueue(plan, [from], new Map([[uid, ledger]]));
   }
 
-  enqueue(plan, endpoints, ledger) {
-    const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids: [plan.meta.uid] });
-    const ctx = { plan, endpoints, reservation, ledger: clone(ledger), state: 'pending', sequence: ++this.sequence };
-    this.operations.set(plan.meta.operationId, ctx); this.uids.set(plan.meta.uid, ctx);
+  replace({ uid, replaceUid, source, expectedVersion, replaceExpectedVersion } = {}) {
+    if (!version(expectedVersion) || !version(replaceExpectedVersion)) throw new StoreError('operation');
+    const from = this.endpoint(source), w = this.world, old = from.profile.pearls.swallowed;
+    if (!old || replaceUid !== old.uid) throw new StoreError('confirm');
+    const uids = [groundKey(uid), groundKey(replaceUid)];
+    if (uids[0] === uids[1]) throw new StoreError('operation');
+    this.assertAvailable({ accounts: [from.key], uids });
+    if (this.operations.size >= this.limit) throw new StoreError('busy');
+    const ledgers = new Map(uids.map((key) => [key, clone(w.pearlLedger.get(key))]));
+    for (const ledger of ledgers.values()) if (ledger?.place !== 'profile' ||
+        ledger.owner !== from.profile.pirateId || ledger.entity !== from.entity) throw new StoreError('ownership');
+
+    const draft = pearlEcsDraft(w.ecs, from.entity);
+    // canStand reads the existing map/deck. All helper writes, including names/drop counter, are detached.
+    const view = { ecs: { ...draft.ecs, names: clone(w.ecs.names) }, map: w.map, raftDeck: w.raftDeck,
+      tick: w.tick, nextDrop: 1, drops: new Map(), profiles: new Map([[from.entity, clone(from.profile)]]),
+      pearlLedger: new Map(), profileDirty: new Set(), events: [], emit(event) { this.events.push(clone(event)); } };
+    if (!swallowPearl(view, from.entity, uid, replaceUid)) throw new StoreError(view.events.at(-1)?.why ?? 'operation');
+    const after = normalized(view.profiles.get(from.entity)), incoming = after.pearls.swallowed, drop = view.drops.get(1);
+    if (view.drops.size !== 1 || view.nextDrop !== 2 || drop?.pearl.uid !== old.uid ||
+        view.pearlLedger.size !== 1 || view.pearlLedger.get(old.uid)?.drop !== 1 ||
+        view.events.length !== 2 || view.events[0].type !== 'loot' || view.events[1].type !== 'pearlChanged' ||
+        view.events[1].op !== 'swallow') throw new StoreError('effect');
+    const meta = batchIntent({ operationId: randomUUID(), actor: from.key, world: this.scope, mode: 'replace',
+      items: [{ ...incoming, expectedVersion, ground: null }, { ...old, expectedVersion: replaceExpectedVersion,
+        ground: { x: drop.x, z: drop.z, availableAt: drop.pickAt, returnAt: drop.t } }]
+        .sort((a, b) => a.uid < b.uid ? -1 : 1) });
+    const plan = frozen({ effect: 'replace', meta,
+      profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
+      ledgers: [{ uid: incoming.uid, data: clone(ledgers.get(incoming.uid)) },
+        { uid: old.uid, data: clone(view.pearlLedger.get(old.uid)) }], drop: clone(drop), events: view.events });
+    return this.enqueue(plan, [from], ledgers);
+  }
+
+  enqueue(plan, endpoints, ledgers) {
+    const uids = plan.meta.items ? plan.meta.items.map((q) => q.uid) : [plan.meta.uid];
+    const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids });
+    const ctx = { plan, endpoints, uids, reservation, ledgers: new Map([...ledgers].map(([uid, row]) => [uid, clone(row)])),
+      state: 'pending', sequence: ++this.sequence };
+    this.operations.set(plan.meta.operationId, ctx);
+    for (const uid of uids) this.uids.set(uid, ctx);
     for (const e of endpoints) this.accounts.set(e.key, ctx);
 
     // Save current pre-command progress into the CAS baseline. Later saves stay in this gate even
@@ -105,18 +176,24 @@ export class PearlStaging {
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         for (const e of endpoints) this.sessions.save(e.clientId, clone(e.profile), ctx.reservation);
-        const result = await this.sessions.commitPearlGround(plan.meta, (rows) => {
+        const batch = plan.effect === 'replace';
+        const result = await this.sessions[batch ? 'commitPearlBatch' : 'commitPearlGround'](plan.meta, (rows) => {
           if (!this.current(ctx)) throw new StoreError('cancelled');
           const built = rows.map(({ id, data }) => {
             const delta = plan.profiles.find((p) => p.id === id);
             if (!delta || canonicalText(data.pearls) !== canonicalText(delta.before)) throw new StoreError('ownership');
             return { id, data: { ...data, pearls: clone(delta.after) } };
           });
-          ctx.request = groundOperation({ ...plan.meta, profiles: built.map((p) => ({ ...p,
-            expectedVersion: rows.find((row) => row.id === p.id).version })) }).request;
+          const profiles = built.map((p) => ({ ...p, expectedVersion: rows.find((row) => row.id === p.id).version }));
+          if (batch) {
+            const { actor: _actor, ...intent } = plan.meta;
+            ctx.request = batchOperation({ ...intent, profile: profiles[0] }).request;
+          } else ctx.request = groundOperation({ ...plan.meta, profiles }).request;
           return built;
         }, ctx.reservation);
-        if (!ctx.request || !checkedGroundResult(result?.receipt, ctx.request).ok) throw new StoreError('response');
+        if (!ctx.request || !(batch ? checkedBatchResult : checkedGroundResult)(result?.receipt, ctx.request).ok) {
+          throw new StoreError('response');
+        }
         ctx.receipt = clone(result.receipt);
         ctx.state = 'ready';
       } catch (error) { ctx.state = 'failed'; ctx.code = codeOf(error); }
@@ -133,6 +210,12 @@ export class PearlStaging {
       this.sessions.accounts.get(e.key) === e.session && !e.session.closed && !e.session.failed &&
       w.profiles.get(e.entity) === e.profile && e.profile.pirateId === `account:${e.key}` &&
       w.ecs.clientId[e.entity] === e.clientId && w.ecs.alive[e.entity] && !(w.ecs.dead[e.entity] > 0));
+  }
+
+  assertLedgers(ctx) {
+    for (const [uid, row] of ctx.ledgers) if (canonicalText(this.world.pearlLedger.get(uid)) !== canonicalText(row)) {
+      throw new StoreError('ownership');
+    }
   }
 
   // Lifecycle callers must invalidate before close/death/despawn, including death followed by revival
@@ -181,10 +264,10 @@ export class PearlStaging {
     for (const ctx of completed) {
       if (ctx.state !== 'ready') { outcomes.push(this.fence(ctx, ctx.code ?? 'cancelled')); continue; }
       const w = this.world, { plan, endpoints } = ctx;
-      let publication, writes, effect;
+      let publication, writes, effect, dropEffect, ledgers;
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
-        if (canonicalText(w.pearlLedger.get(plan.meta.uid)) !== canonicalText(ctx.ledger)) throw new StoreError('ownership');
+        this.assertLedgers(ctx);
         writes = endpoints.map((e) => {
           const delta = plan.profiles.find((p) => p.id === e.key), live = normalized(e.profile);
           // Correctly routed snapshots are buffered above. Any storage work in the apply gap is a
@@ -199,26 +282,38 @@ export class PearlStaging {
         });
         // Run event decoration against a detached buffer before changing live state. A publication
         // failure cannot leak one endpoint's success event or make a later drain retry this operation.
-        if (plan.effect === 'swallow') effect = pearlSwallowEffect(w, endpoints[0].entity, writes[0].save);
+        if (plan.effect === 'swallow' || plan.effect === 'replace') effect = pearlSwallowEffect(w, endpoints[0].entity, writes[0].save);
+        if (plan.effect === 'replace') dropEffect = replacementDrop(w, plan.drop);
+        ledgers = plan.ledgers ? plan.ledgers.map(({ uid, data }) => ({ uid,
+          data: data.place === 'ground' ? { ...clone(data), drop: dropEffect.drop.id } : clone(data) })) :
+          [{ uid: plan.meta.uid, data: clone(plan.ledger) }];
         publication = { ecs: effect?.ecs ?? w.ecs, events: [] };
-        for (const event of plan.events) w.emit.call(publication, clone(event));
+        for (const event of plan.events) {
+          const next = clone(event);
+          if (dropEffect && next.type === 'loot') next.drops[0].id = dropEffect.drop.id;
+          w.emit.call(publication, next);
+        }
       } catch (error) { outcomes.push(this.fence(ctx, codeOf(error))); continue; }
       const eventCount = w.events.length;
       let localStarted = false;
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
-        if (canonicalText(w.pearlLedger.get(plan.meta.uid)) !== canonicalText(ctx.ledger) ||
-            writes.some((change) => canonicalText(normalized(change.e.profile)) !== change.beforeText)) throw new StoreError('ownership');
+        this.assertLedgers(ctx);
+        if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== change.beforeText)) throw new StoreError('ownership');
         effect?.assertCurrent(w.ecs);
+        dropEffect?.assertCurrent();
         localStarted = true;
         for (const change of writes) { change.e.profile.pearls = change.after; w.profileDirty.add(change.e.entity); }
-        w.pearlLedger.set(plan.meta.uid, clone(plan.ledger));
+        for (const { uid, data } of ledgers) w.pearlLedger.set(uid, clone(data));
+        dropEffect?.apply();
         effect?.apply(w.ecs);
         // ProfileSessions.save only enqueues microtasks. If either enqueue fails, fence clears both
         // pending snapshots synchronously before any write can start; drain never yields here.
         for (const change of writes) this.sessions.save(change.e.clientId, change.save, ctx.reservation);
         if (endpoints.some((e) => e.session.failed || e.session.closed)) throw new StoreError('session');
         if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== canonicalText(change.save))) throw new StoreError('ownership');
+        for (const { uid, data } of ledgers) if (canonicalText(w.pearlLedger.get(uid)) !== canonicalText(data)) throw new StoreError('ownership');
+        dropEffect?.assertApplied();
         if (!this.gate.active(ctx.reservation)) throw new StoreError('cancelled');
         w.events.push(...publication.events);
         this.gate.release(ctx.reservation);
@@ -228,14 +323,16 @@ export class PearlStaging {
           if (localStarted) {
             w.events.length = eventCount;
             effect?.rollback();
+            dropEffect?.rollback();
             for (const change of writes) { change.e.profile.pearls = change.before; if (!change.dirty) w.profileDirty.delete(change.e.entity); }
-            w.pearlLedger.set(plan.meta.uid, clone(ctx.ledger));
+            for (const [uid, row] of ctx.ledgers) w.pearlLedger.set(uid, clone(row));
           }
         } catch { /* A broken live container still cannot release the fence or retry SQL. */ }
         outcomes.push(this.fence(ctx, codeOf(error))); continue;
       }
       ctx.state = 'applied';
-      this.operations.delete(plan.meta.operationId); this.uids.delete(plan.meta.uid);
+      this.operations.delete(plan.meta.operationId);
+      for (const uid of ctx.uids) this.uids.delete(uid);
       for (const e of endpoints) this.accounts.delete(e.key);
       outcomes.push({ operationId: plan.meta.operationId, state: 'applied' });
     }

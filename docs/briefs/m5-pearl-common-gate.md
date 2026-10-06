@@ -8,9 +8,10 @@ La base server-only D09f-2a no activa el juego: [resultado](../delivery/d09f-mut
 ## Base compartida
 
 `pearlMutationGate(profileSessions)` devuelve una sola autoridad de reservas por instancia de sesiones.
-Staging, entradas a sesiones, guardados y commits de ambas familias consultan esa misma puerta.
+Staging, entradas a sesiones, guardados y commits pearl/ground/batch consultan esa misma puerta.
 Un handle opaco autoriza al dueño a entrar a sus propias lanes; no es dato del cliente, RPC ni diario.
-Se pueden reservar varios UIDs/cuentas de una vez; eso todavía no hace una transacción SQL de lote.
+Se pueden reservar varios UIDs/cuentas de una vez. El gate no realiza la transacción;
+SQL007/008 y la cola batch existente aportan commit/recibo/diario atómicos del lote.
 
 Antes de activar hay que conectar **todas** las rutas del mapa siguiente. Guardar después de mutar no
 sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, consumo de RNG o drop.
@@ -31,9 +32,12 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
   dentro de la familia ground, con 006. [D09f-2b.2](../delivery/d09f-swallow-staging.md) añade staging
   dormant de sus efectos ECS/apply en tick; [D09f-2b.3](../delivery/d09f-common-effect.md) comparte
   la regla ECS con sim. Los hooks completos siguen pendientes.
-  003 rechaza from=to. Reemplazo no cabe en este contrato de un UID.
-- Reemplazo y death pueden mover varios UIDs. La reserva común toma todo el conjunto, pero hace falta
-  diseñar y probar SQL/DTO/diario de lote antes de afirmar atomicidad del efecto completo.
+  003 rechaza from=to. Reemplazo usa la familia batch de dos UIDs.
+- D09f-2b.4/5 aporta SQL007 y DTO/cola/diario SQL008 para muerte pearl-only y reemplazo;
+  verificaciones reales 31/31 y 18/18 en 2b.4/6. [D09f-2b.7](m5-pearl-batch-staging.md)
+  implementa staging dormant del reemplazo y apply de ambos UIDs/drop/ECS en tick.
+  La muerte completa aún necesita integrar equipo/oro/mundo junto al spill de perlas;
+  el lote pearl-only no acredita atomicidad de esos otros efectos.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas
   ni repetir rolls. El gate no crea esa cola ni elige silenciosamente qué recompensas se descartan.
 - Scope/namespace estables, cuentas/invitados/adopción de raras y mapping del reloj de suelo se resuelven
