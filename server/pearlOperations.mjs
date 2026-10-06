@@ -29,8 +29,14 @@ export function pearlOperation(raw) {
   const { operationId, ...intent } = pearlIntent(raw);
   const { from, to } = intent;
   const endpoints = [from, to].filter(Boolean).sort(order);
-  if (!Array.isArray(raw.profiles) || raw.profiles.length !== endpoints.length) throw new StoreError('operation');
-  const profiles = raw.profiles.map((p) => {
+  return { operationId, request: { ...intent, profiles: pearlProfiles(raw.profiles, endpoints) } };
+}
+
+// Ground transitions can also name one unchanged holder. Normalize its single endpoint with the
+// same detached profile boundary; the legacy ownership-transfer intent remains unchanged.
+export function pearlProfiles(raw, endpoints) {
+  if (!Array.isArray(raw) || raw.length !== endpoints.length) throw new StoreError('operation');
+  const profiles = Array.from(raw, (p) => {
     if (!object(p) || !generation(p.expectedVersion, 1) || !object(p.data)) throw new StoreError('operation');
     let data;
     try {
@@ -42,7 +48,7 @@ export function pearlOperation(raw) {
     return { id: playerKey(p.id), expectedVersion: p.expectedVersion, data };
   }).sort((a, b) => order(a.id, b.id));
   if (profiles.some((p, i) => p.id !== endpoints[i])) throw new StoreError('operation');
-  return { operationId, request: { ...intent, profiles } };
+  return profiles;
 }
 
 // A receipt is a server-only recovery read. Its payload must be valid before callers compare it to
@@ -64,6 +70,17 @@ export function profilePearls(data) {
 }
 
 export function validPearlMove(request, profiles) {
+  if (request.from !== null && request.from === request.to) {
+    if (request.profiles.length !== 1) return false;
+    const p = request.profiles[0], old = profiles.get(p.id)?.data;
+    if (p.id !== request.from || old?.pearls?.swallowed !== null || !Array.isArray(old?.pearls?.bag)) return false;
+    const copies = old.pearls.bag.filter((q) => q.uid === request.uid);
+    if (copies.length !== 1 || copies[0].kind !== request.kind) return false;
+    const expected = { ...old, pearls: { ...old.pearls,
+      bag: old.pearls.bag.filter((q) => q.uid !== request.uid), swallowed: copies[0] } };
+    // This operation has no gold/progress/drop side effect and preserves every other slot's order.
+    return canonicalText(expected) === canonicalText(p.data);
+  }
   for (const p of request.profiles) {
     const old = profiles.get(p.id)?.data;
     if (!old) return false;

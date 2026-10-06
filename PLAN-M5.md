@@ -46,8 +46,12 @@ Checkpoint D09f-2a, base `0e82162`: **reserva común server-only**, compartida p
 de sesiones y ambas familias de la cola. Permiso opaco interno; rechaza saves/commits que saltan una reserva,
 invalida close/fail/release y protege publicación previa a apply. **226/226** pertinentes, **42 nuevas**.
 [Contrato y evidencia](docs/delivery/d09f-mutation-gate.md).
-Siguiente D09f-2b: [hooks concretos](docs/briefs/m5-pearl-common-gate.md) con dueño de LocalServer/sim;
-CAS same-holder/lotes de varios UIDs, restauración/reloj/adopción antes de activación. P4/P6 parciales.
+Checkpoint D09f-2b.1, base `0ec0b9d`: **CAS same-holder de un UID aceptado en aislamiento**. Bag→swallowed
+vacío conserva dueño/otros slots/progreso; perfil/ledger/tombstone/recibo juntos, cola con una cuenta y
+diario ground existentes. **306/306**, **80 nuevas**, seis procesos independientes de SQL/sesiones.
+**006 nueva, pendiente de aplicar/verificar en Supabase**. [Contrato y evidencia](docs/delivery/d09f-same-holder.md).
+Siguiente: staging del efecto ECS y contrato atómico de varios UIDs; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
+con dueño de LocalServer/sim, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
@@ -118,6 +122,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09d amplía cola/reconciliación a ubicación, incluyendo mint/relocación sin cuentas.
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
   D09f-1 prueba staging de give fuera del host y D09f-2a añade reserva común de autoridad/cola/guardados;
+  D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 local, aplicación real pendiente);
   faltan hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
@@ -129,6 +134,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09c suma el suelo a esa transacción; D09d verifica 004/SDK real y conecta su cola/reconciliación.
   D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
   dormant give/commit/apply en tick; D09f-2a comparte reservas con admisión/guardados/commits de sesiones.
+  D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID en aislamiento; 006 real pendiente.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

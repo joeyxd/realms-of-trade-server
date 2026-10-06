@@ -145,7 +145,8 @@ export function createMemoryStore() {
       const result = groundResult(request);
       const base = { ...request }; delete base.world; delete base.ground;
       // Prepare every receipt/snapshot before changing maps; ground/profile/ledger have one commit point.
-      const baseReceipt = request.profiles.length ? { text: canonicalText(base), result: pearlResult(base) } : null;
+      const baseReceipt = request.profiles.length && request.from !== request.to ?
+        { text: canonicalText(base), result: pearlResult(base) } : null;
       applyPearl(request, candidate); locations.set(request.uid, location);
       if (baseReceipt) pearlReceipts.set(operationId, baseReceipt);
       groundReceipts.set(operationId, { text, result });

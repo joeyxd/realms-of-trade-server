@@ -16,6 +16,7 @@ const WORLD = 'island:coral';
 const op = (n) => `20000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const migrations = await Promise.all([
   '001_store.sql', '002_accounts.sql', '003_pearl_operations.sql', '004_pearl_ground.sql',
+  '005_pearl_journal.sql', '006_pearl_same_holder.sql',
 ].map((name) => readFile(new URL(`../server/migrations/${name}`, import.meta.url), 'utf8')));
 const profile = (gold = 0, pearl = false) => {
   const value = newProfile();

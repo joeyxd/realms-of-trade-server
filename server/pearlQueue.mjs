@@ -19,6 +19,7 @@ const families = {
 };
 
 const clone = (v) => structuredClone(v);
+const accountKeys = (intent) => [...new Set([intent.from, intent.to].filter(Boolean))].sort();
 const snapshot = (data) => ({ data: clone(data), text: JSON.stringify(data) });
 const frozen = (v) => {
   if (v && typeof v === 'object') { Object.values(v).forEach(frozen); Object.freeze(v); }
@@ -77,7 +78,7 @@ export class PearlQueue {
         if (!Array.isArray(raw) || raw.length > 64) throw new StoreError('response');
         for (const value of raw) {
           const entry = checkedJournalEntry(value, this.journal.scope);
-          const keys = [entry.request.from, entry.request.to].filter(Boolean);
+          const keys = accountKeys(entry.request);
           if (entry.state !== 'pending' || (afterId !== null && entry.operationId <= afterId) ||
             ids.has(entry.operationId) || uids.has(entry.request.uid) || keys.some((id) => accounts.has(id))) {
             throw new StoreError('response');
@@ -115,7 +116,7 @@ export class PearlQueue {
 
   reserve(ctx) {
     this.uids.set(ctx.intent.uid, ctx); this.operationIds.set(ctx.intent.operationId, ctx);
-    for (const id of [ctx.intent.from, ctx.intent.to].filter(Boolean)) this.accountIds.set(id, ctx);
+    for (const id of accountKeys(ctx.intent)) this.accountIds.set(id, ctx);
   }
 
   async prepare(ctx) {
@@ -166,10 +167,10 @@ export class PearlQueue {
       intent = frozen(families[family].intent(raw));
       if (typeof build !== 'function') throw new StoreError('operation');
       pearlMutationGate(this.sessions).assertStorageAvailable({
-        accounts: [intent.from, intent.to].filter(Boolean), uids: [intent.uid],
+        accounts: accountKeys(intent), uids: [intent.uid],
       }, reservation);
       if (this.uids.has(intent.uid) || this.operationIds.has(intent.operationId)) throw new StoreError('busy');
-      lanes = [intent.from, intent.to].filter(Boolean).sort().map((id) => {
+      lanes = accountKeys(intent).map((id) => {
         if (this.accountIds.has(id)) throw new StoreError('busy');
         const s = this.sessions.accounts.get(id);
         if (!s || s.closed || s.failed) throw new StoreError('session');
@@ -198,7 +199,7 @@ export class PearlQueue {
 
   ready(ctx) {
     pearlMutationGate(this.sessions).assertStorageAuthorized({
-      accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+      accounts: accountKeys(ctx.intent), uids: [ctx.intent.uid],
     }, ctx.reservation);
     if (ctx.lanes.some((s) => s.failed)) throw new StoreError('conflict');
     if (ctx.lanes.some((s) => s.closed)) throw new StoreError('cancelled');
@@ -390,11 +391,11 @@ export class PearlQueue {
           // Only an authoritative null receipt permits an explicit single exact-request retry.
           if (!resume || !this.journal || !ctx.receiptAbsent || ctx.receiptSeen || ctx.settledOutcome) throw err;
           pearlMutationGate(this.sessions).assertStorageAuthorized({
-            accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+            accounts: accountKeys(ctx.intent), uids: [ctx.intent.uid],
           }, ctx.reservation ?? null);
           await this.prepare(ctx);
           pearlMutationGate(this.sessions).assertStorageAuthorized({
-            accounts: [ctx.intent.from, ctx.intent.to].filter(Boolean), uids: [ctx.intent.uid],
+            accounts: accountKeys(ctx.intent), uids: [ctx.intent.uid],
           }, ctx.reservation ?? null);
           const api = families[ctx.family], { operationId: _id, ...request } = ctx.concrete;
           ctx.uncertain = true;
@@ -435,7 +436,7 @@ export class PearlQueue {
   release(ctx) {
     if (this.uids.get(ctx.intent.uid) === ctx) this.uids.delete(ctx.intent.uid);
     if (this.operationIds.get(ctx.intent.operationId) === ctx) this.operationIds.delete(ctx.intent.operationId);
-    for (const id of [ctx.intent.from, ctx.intent.to].filter(Boolean)) {
+    for (const id of accountKeys(ctx.intent)) {
       if (this.accountIds.get(id) === ctx) this.accountIds.delete(id);
     }
     for (const s of ctx.lanes) {

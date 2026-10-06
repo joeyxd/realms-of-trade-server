@@ -496,6 +496,9 @@ Marinero de agua dulce (hablar con el capitán).
   [D09f-2a](docs/delivery/d09f-mutation-gate.md) comparte reservas entre staging y admisión/guardados/commits
   de sesiones; los permisos quedan en servidor y close/fail/release invalidan antes de liberar identidad.
   Hooks de sim/LocalServer y restauración/políticas siguen pendientes; juego no activado.
+  [D09f-2b.1](docs/delivery/d09f-same-holder.md) agrega a ground el CAS/recibo/diario de un UID bag→swallowed
+  vacío con una cuenta: dueño/progreso/orden restantes conservados, generaciones de perfil/ledger/tombstone
+  avanzan juntas. 006 local, aplicación real y staging ECS/lotes/hooks pendientes; no activa el juego.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.

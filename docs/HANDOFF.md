@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2a server-only**: 003/004/005 reales, diario, staging y reserva común de sesiones/cola/guardados, 226/226 aisladas; hooks de juego/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.1 server-only**: 003/004/005 reales; diario, staging give, reserva común y CAS same-holder de un UID, 306/306 aisladas. 006 real, staging ECS/lotes, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -218,6 +218,21 @@ autor.
   LocalServer/sim/host sin hooks ni activación; trabajo gameplay del otro dueño intacto.
 - **Siguiente D09f-2b:** único escritor de hooks, CAS same-holder/lotes death/reemplazo y restauración de
   World/reloj/adopción/invitados. Una reserva multi-UID no es transacción SQL de lote. P4/P6 siguen parciales.
+
+### M5 P4/P6 — CAS same-holder de un UID D09f-2b.1 (2026-10-05)
+
+- Base `0ec0b9d`; [brief](briefs/m5-pearl-same-holder.md), [contrato/evidencia](delivery/d09f-same-holder.md).
+- Ground admite from=to para un UID bag→swallowed vacío; un perfil CAS, conservación exacta del resto,
+  generaciones de perfil/ledger/tombstone y recibo juntos, mismo dueño/since/mundo. Sin 003 child receipt.
+- Cola deduplica cuenta en admisión/reserva/recuperación; permiso común, requests congelados, diario y
+  rebase de progreso reutilizados. Recibo histórico no revierte estado ni habilita apply tardío.
+- **306/306** pertinentes, **80 nuevas**, Git archive aislado; seis procesos Node/PGlite prueban recibo
+  confirmado recuperado sin send y request preparado reanudado una vez con UUID/payload original.
+- **006 nueva: aplicar después de 005; verificación Supabase pendiente.** No nuevo env ni cambio a SQL
+  003/004/005 aplicadas. Pruebas de SDK/SQL locales, sin credenciales, host, browser ni publicación.
+- D08/sim/LocalServer/entrypoints/UI/protocolo del otro dueño intactos. Storage no aplica cooldowns/stats
+  ni elegibilidad de combate. Siguiente staging ECS, lote real death/reemplazo y hooks/hidratación/políticas
+  del brief común con un escritor por archivo. P4/P6 siguen parciales; no activar give o swallow aislados.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 
