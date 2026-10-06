@@ -54,7 +54,7 @@ restauración y políticas pendientes. D06b conserva archivos compartidos y no r
 |---|---|
 | `LocalServer.playerCommand`, case pearl | Antes de llamar helpers síncronos; hoy mutan y emiten al recibir comando |
 | `transferPearl`, `leavePearl`, `spitPearl` | UID y cuentas, ubicación exacta; mantener cercado hasta apply |
-| `swallowPearl` | Bag→swallowed conserva holder: la API de movimiento rechaza from=to; necesita CAS de perfil y staging propio. Reemplazo además expulsa otro UID |
+| `swallowPearl` | Bag→swallowed vacío: CAS 006 y staging dormant D09f-2b.2 listos; conectar efecto común y hooks. Reemplazo expulsa otro UID y exige lote pendiente |
 | `spillPearls` vía `world.onDeath` | Puede quitar varios UIDs del mismo perfil; 003/004 son de un UID y conservan los demás. Diseñar lote atómico antes de tratarlo como una sola operación durable |
 | `pickPearl` vía `inventory.pickDrop`/`stepDrops` | Una reserva determina ganador; no borrar drop ni otorgar UID antes de commit |
 | `rollPearl`/`dropPearl`, kill/chest/dev mint | UID nuevo y valores RNG exactos; no recomputar destino al reintentar |

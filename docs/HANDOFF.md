@@ -54,7 +54,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | M1 … M4.6 | ✅ (ver `DESIGN.md` §16) |
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
-| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.1 server-only**: 003/004/005 reales; diario, staging give, reserva común y CAS same-holder de un UID, 306/306 aisladas. 006 real, staging ECS/lotes, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
+| M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f-2b.2 server-only**: 003/004/005 reales; diario, gate común, CAS same-holder y staging give/swallow/ECS en tick, 356/356 aisladas. 006 real, lotes, efecto común/hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
 | M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
@@ -249,6 +249,23 @@ autor.
 - D08/sim/LocalServer/entrypoints/UI/protocolo del otro dueño intactos. Storage no aplica cooldowns/stats
   ni elegibilidad de combate. Siguiente staging ECS, lote real death/reemplazo y hooks/hidratación/políticas
   del brief común con un escritor por archivo. P4/P6 siguen parciales; no activar give o swallow aislados.
+
+### M5 P4/P6 — staging swallow/ECS en tick D09f-2b.2 (2026-10-05)
+
+- Base `d7398d8`; [brief](briefs/m5-pearl-swallow-staging.md), [contrato/evidencia](delivery/d09f-swallow-staging.md).
+- Preflight usa `swallowPearl` real sobre perfil/fila ECS separados, un UID gestionado y swallowed vacío.
+  Cola/diario ground confirman fuera del tick; reserva común persiste hasta apply/fence. Sin nueva SQL/env.
+- `drain()` aplica solo delta pearls al progreso vivo y efecto actual G/cooldown/agua/`refreshStats`; no
+  copia ECS preflight. HP/gear/mastery/movimiento/combate actuales conservados, evento privado postelem una vez.
+- Error de apply/enqueue/publicación revierte solo cambios locales tentativos y cerca; SQL se conserva.
+  Close/death/revival/recycle y bypass invalidan; reconciliación no aplica ni publica historia.
+- **356/356** pertinentes, **50 nuevas**, 23 archivos aislados. Memoria y SDK/SQL006; autoridad nueva
+  carga swallowed/elem sin evento ni send. Es reconstrucción de test, no restart real de GameHost.
+- **006 aún pendiente de confirmación/verificación Supabase**; no live, host/reinicio/publicación ni
+  cambios sim/LocalServer/naval/cliente/protocolo del otro dueño. Reset/refresh comparados con helper real
+  para cuatro kinds; extraer efecto común con dueño sim al integrar, antes de cambiar sus reglas.
+- Siguiente lote real multi-UID death/reemplazo y hooks completos/hidratación/scope/reloj/adopción/invitados;
+  leases/naval separados. P4/P6 parciales; no activar solo give/swallow.
 
 ### M5 P4/P6 — cola de suelo y SQL real D09d (2026-10-05)
 

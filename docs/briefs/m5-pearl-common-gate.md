@@ -28,8 +28,9 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 ## Contratos que preceden la activación
 
 - [D09f-2b.1](../delivery/d09f-same-holder.md) agrega CAS/recibo/diario para bag→swallowed vacío
-  dentro de la familia ground, con 006. Falta staging de sus efectos ECS y apply en tick; 003 sigue
-  rechazando from=to. Reemplazo no cabe en este contrato de un UID.
+  dentro de la familia ground, con 006. [D09f-2b.2](../delivery/d09f-swallow-staging.md) añade staging
+  dormant de sus efectos ECS/apply en tick; hooks y efecto compartido con sim siguen pendientes.
+  003 rechaza from=to. Reemplazo no cabe en este contrato de un UID.
 - Reemplazo y death pueden mover varios UIDs. La reserva común toma todo el conjunto, pero hace falta
   diseñar y probar SQL/DTO/diario de lote antes de afirmar atomicidad del efecto completo.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas

@@ -498,7 +498,10 @@ Marinero de agua dulce (hablar con el capitán).
   Hooks de sim/LocalServer y restauración/políticas siguen pendientes; juego no activado.
   [D09f-2b.1](docs/delivery/d09f-same-holder.md) agrega a ground el CAS/recibo/diario de un UID bag→swallowed
   vacío con una cuenta: dueño/progreso/orden restantes conservados, generaciones de perfil/ledger/tombstone
-  avanzan juntas. 006 local, aplicación real y staging ECS/lotes/hooks pendientes; no activa el juego.
+  avanzan juntas. 006 local, aplicación real pendiente; no activa el juego.
+  [D09f-2b.2](docs/delivery/d09f-swallow-staging.md) agrega staging swallow/efecto ECS actual en tick,
+  conserva progreso/HP/cooldowns y revierte solo apply local al cercar. 356/356 aisladas; efecto común con
+  sim, lotes, hooks y restauración/políticas siguen pendientes. Host/juego sin conexión al coordinador.
 - **Ancho de banda (M3.6):** las entidades remotas viajan cuantizadas (posición y frente a 1/1000, velocidades a
   1/100); `you` va a precisión completa. Medido con 4 jugadores en la oleada 1: **8 KB/s por cliente** en el cable
   (41 KB/s de JSON antes de comprimir); el binario de abajo queda para > 8 jugadores por instancia.

@@ -50,7 +50,11 @@ Checkpoint D09f-2b.1, base `0ec0b9d`: **CAS same-holder de un UID aceptado en ai
 vacío conserva dueño/otros slots/progreso; perfil/ledger/tombstone/recibo juntos, cola con una cuenta y
 diario ground existentes. **306/306**, **80 nuevas**, seis procesos independientes de SQL/sesiones.
 **006 nueva, pendiente de aplicar/verificar en Supabase**. [Contrato y evidencia](docs/delivery/d09f-same-holder.md).
-Siguiente: staging del efecto ECS y contrato atómico de varios UIDs; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
+Checkpoint D09f-2b.2, base `d7398d8`: **staging swallow server-only aceptado en aislamiento**. Helper real
+sobre ECS/perfil separados; efecto actual de stats/cooldown/agua aplicado una vez en tick, con progreso
+conservado y rollback local/fence. **356/356**, **50 nuevas**, memoria y SDK/SQL006. Sin nueva SQL/env;
+006 real sigue pendiente. [Contrato y evidencia](docs/delivery/d09f-swallow-staging.md).
+Siguiente: lote atómico de varios UIDs y efecto común con sim; [hooks concretos](docs/briefs/m5-pearl-common-gate.md)
 con dueño de LocalServer/sim, restauración/reloj/adopción antes de activación. P4/P6 parciales.
 
 ## 1. Decisión: Supabase (propuesta del autor)
@@ -123,7 +127,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09e añade diario opcional de intenciones/UUIDs tras restart (005 real verificada) y recuperación de reservas;
   D09f-1 prueba staging de give fuera del host y D09f-2a añade reserva común de autoridad/cola/guardados;
   D09f-2b.1 agrega bag→swallowed vacío de un UID a la familia ground (006 local, aplicación real pendiente);
-  faltan hooks de sim/LocalServer y restauración/publicación del suelo.
+  D09f-2b.2 prueba staging swallow/efecto ECS actual en tick sin modificar sim; faltan efecto común,
+  hooks de sim/LocalServer y restauración/publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
@@ -135,6 +140,7 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09e añade diario opcional y recuperación tras restart (005 real verificada); D09f-1 agrega coordinador
   dormant give/commit/apply en tick; D09f-2a comparte reservas con admisión/guardados/commits de sesiones.
   D09f-2b.1 acepta CAS/recibo/cola/diario same-holder de un UID en aislamiento; 006 real pendiente.
+  D09f-2b.2 agrega staging swallow y efecto ECS actual en tick, con rollback/fence y progreso conservado.
   No están conectados al host/juego; mundo/barcos siguen separados.
   Aceptación: restaurar/reconectar/repetir petición no crea oro, mercancías ni módulos adicionales.
 

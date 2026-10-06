@@ -1,12 +1,13 @@
-// Dormant server-side give staging. Storage completion only queues work; the caller drains it at a
+// Dormant server-side give/swallow staging. Storage completion only queues work; the caller drains it at a
 // tick boundary before events/snapshots. Every profile mutation route must honor this gate to enable it.
 import { randomUUID } from 'node:crypto';
-import { transferPearl } from '../src/sim/systems/pearls.js';
+import { transferPearl, swallowPearl } from '../src/sim/systems/pearls.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { StoreError, playerKey } from './store.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { groundKey, groundOperation, checkedGroundResult } from './pearlGround.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { pearlEcsDraft, pearlSwallowEffect } from './pearlEcsEffect.mjs';
 
 const clone = (value) => structuredClone(value);
 const frozen = (value) => {
@@ -61,13 +62,41 @@ export class PearlStaging {
       pearlLedger: new Map(), profileDirty: new Set(), events: [], emit(event) { this.events.push(clone(event)); } };
     if (!transferPearl(view, from.entity, uid, to.entity)) throw new StoreError(view.events.at(-1)?.why ?? 'operation');
     const pearl = view.profiles.get(to.entity).pearls.bag.at(-1);
-    const plan = frozen({ meta: { operationId: randomUUID(), uid: pearl.uid, kind: pearl.kind,
+    const plan = frozen({ effect: 'give', meta: { operationId: randomUUID(), uid: pearl.uid, kind: pearl.kind,
       from: from.key, to: to.key, expectedVersion, world: this.scope, ground: null },
     profiles: endpoints.map((e) => ({ id: e.key, before: clone(e.profile.pearls), after: clone(view.profiles.get(e.entity).pearls) })),
     ledger: { owner: to.profile.pirateId, entity: to.entity, place: 'profile' }, events: view.events });
-    const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids: [uid] });
+    return this.enqueue(plan, endpoints, ledger);
+  }
+
+  swallow({ uid, source, expectedVersion, replaceUid } = {}) {
+    if (replaceUid !== undefined || !Number.isSafeInteger(expectedVersion) || expectedVersion < 1 ||
+        expectedVersion >= 2147483647) throw new StoreError('operation');
+    const from = this.endpoint(source), w = this.world;
+    this.assertAvailable({ accounts: [from.key], uids: [uid] });
+    if (this.operations.size >= this.limit) throw new StoreError('busy');
+    const ledger = w.pearlLedger.get(uid);
+    if (ledger?.place !== 'profile' || ledger.owner !== from.profile.pirateId || ledger.entity !== from.entity) throw new StoreError('ownership');
+    if (from.profile.pearls.swallowed !== null) throw new StoreError('confirm');
+
+    const draft = pearlEcsDraft(w.ecs, from.entity);
+    const view = { ecs: draft.ecs, profiles: new Map([[from.entity, clone(from.profile)]]),
+      pearlLedger: new Map(), profileDirty: new Set(), events: [], emit(event) { this.events.push(clone(event)); } };
+    if (!swallowPearl(view, from.entity, uid)) throw new StoreError(view.events.at(-1)?.why ?? 'operation');
+    const after = normalized(view.profiles.get(from.entity)), pearl = after.pearls.swallowed;
+    if (view.events.length !== 1 || view.events[0].type !== 'pearlChanged' || view.events[0].op !== 'swallow' ||
+        view.pearlLedger.size !== 0) throw new StoreError('effect');
+    const plan = frozen({ effect: 'swallow', meta: { operationId: randomUUID(), uid: pearl.uid, kind: pearl.kind,
+      from: from.key, to: from.key, expectedVersion, world: this.scope, ground: null },
+    profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
+    ledger: clone(ledger), events: view.events });
+    return this.enqueue(plan, [from], ledger);
+  }
+
+  enqueue(plan, endpoints, ledger) {
+    const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids: [plan.meta.uid] });
     const ctx = { plan, endpoints, reservation, ledger: clone(ledger), state: 'pending', sequence: ++this.sequence };
-    this.operations.set(plan.meta.operationId, ctx); this.uids.set(uid, ctx);
+    this.operations.set(plan.meta.operationId, ctx); this.uids.set(plan.meta.uid, ctx);
     for (const e of endpoints) this.accounts.set(e.key, ctx);
 
     // Save current pre-command progress into the CAS baseline. Later saves stay in this gate even
@@ -152,7 +181,7 @@ export class PearlStaging {
     for (const ctx of completed) {
       if (ctx.state !== 'ready') { outcomes.push(this.fence(ctx, ctx.code ?? 'cancelled')); continue; }
       const w = this.world, { plan, endpoints } = ctx;
-      let publication, writes;
+      let publication, writes, effect;
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         if (canonicalText(w.pearlLedger.get(plan.meta.uid)) !== canonicalText(ctx.ledger)) throw new StoreError('ownership');
@@ -165,31 +194,43 @@ export class PearlStaging {
           if (canonicalText(live.pearls) !== canonicalText(delta.before) ||
               canonicalText(e.session.confirmed?.pearls) !== canonicalText(delta.after)) throw new StoreError('ownership');
           return { e, before: e.profile.pearls, after: clone(delta.after), dirty: w.profileDirty.has(e.entity),
+            beforeText: canonicalText(live),
             save: normalized({ ...live, pearls: clone(delta.after) }) };
         });
         // Run event decoration against a detached buffer before changing live state. A publication
         // failure cannot leak one endpoint's success event or make a later drain retry this operation.
-        publication = { ecs: w.ecs, events: [] };
+        if (plan.effect === 'swallow') effect = pearlSwallowEffect(w, endpoints[0].entity, writes[0].save);
+        publication = { ecs: effect?.ecs ?? w.ecs, events: [] };
         for (const event of plan.events) w.emit.call(publication, clone(event));
       } catch (error) { outcomes.push(this.fence(ctx, codeOf(error))); continue; }
       const eventCount = w.events.length;
+      let localStarted = false;
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
+        if (canonicalText(w.pearlLedger.get(plan.meta.uid)) !== canonicalText(ctx.ledger) ||
+            writes.some((change) => canonicalText(normalized(change.e.profile)) !== change.beforeText)) throw new StoreError('ownership');
+        effect?.assertCurrent(w.ecs);
+        localStarted = true;
         for (const change of writes) { change.e.profile.pearls = change.after; w.profileDirty.add(change.e.entity); }
         w.pearlLedger.set(plan.meta.uid, clone(plan.ledger));
+        effect?.apply(w.ecs);
         // ProfileSessions.save only enqueues microtasks. If either enqueue fails, fence clears both
         // pending snapshots synchronously before any write can start; drain never yields here.
         for (const change of writes) this.sessions.save(change.e.clientId, change.save, ctx.reservation);
         if (endpoints.some((e) => e.session.failed || e.session.closed)) throw new StoreError('session');
+        if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== canonicalText(change.save))) throw new StoreError('ownership');
         if (!this.gate.active(ctx.reservation)) throw new StoreError('cancelled');
         w.events.push(...publication.events);
         this.gate.release(ctx.reservation);
       } catch (error) {
         // Undo only this tentative local apply, never the durable commit. Fence rather than retry.
         try {
-          w.events.length = eventCount;
-          for (const change of writes) { change.e.profile.pearls = change.before; if (!change.dirty) w.profileDirty.delete(change.e.entity); }
-          w.pearlLedger.set(plan.meta.uid, clone(ctx.ledger));
+          if (localStarted) {
+            w.events.length = eventCount;
+            effect?.rollback();
+            for (const change of writes) { change.e.profile.pearls = change.before; if (!change.dirty) w.profileDirty.delete(change.e.entity); }
+            w.pearlLedger.set(plan.meta.uid, clone(ctx.ledger));
+          }
         } catch { /* A broken live container still cannot release the fence or retry SQL. */ }
         outcomes.push(this.fence(ctx, codeOf(error))); continue;
       }
