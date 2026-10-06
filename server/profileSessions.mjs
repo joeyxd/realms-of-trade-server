@@ -101,9 +101,12 @@ export class ProfileSessions {
   reconcilePearl(operationId) { return this.pearls.reconcile(operationId); }
   commitPearlGround(meta, build, reservation = null) { return this.pearls.commit(meta, build, 'ground', reservation); }
   reconcilePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground'); }
+  commitPearlBatch(meta, build, reservation = null) { return this.pearls.commit(meta, build, 'batch', reservation); }
+  reconcilePearlBatch(operationId) { return this.pearls.reconcile(operationId, 'batch'); }
   recoverPearls() { return this.pearls.recover(); }
   resumePearl(operationId) { return this.pearls.reconcile(operationId, 'pearl', true); }
   resumePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground', true); }
+  resumePearlBatch(operationId) { return this.pearls.reconcile(operationId, 'batch', true); }
 
   fail(s, code) {
     if (s.failed) return;

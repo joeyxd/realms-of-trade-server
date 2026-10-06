@@ -9,14 +9,11 @@ const object = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
 const keys = (v, expected) => object(v) && Object.keys(v).sort().join(',') === expected;
 const version = (v) => Number.isSafeInteger(v) && v >= 1 && v < 2147483647;
 
-export function batchOperation(raw) {
-  if (!keys(raw, 'items,mode,operationId,profile,world') || !['death', 'replace'].includes(raw.mode) ||
-    !keys(raw.profile, 'data,expectedVersion,id') || !Array.isArray(raw.items) ||
+// A command freezes its actor and all item generations before the queue builds the CAS profile.
+export function batchIntent(raw) {
+  if (!keys(raw, 'actor,items,mode,operationId,world') || !['death', 'replace'].includes(raw.mode) || !Array.isArray(raw.items) ||
     raw.items.length < 1 || raw.items.length > PEARL.bag + 1) throw new StoreError('operation');
-  const operationId = playerKey(raw.operationId), world = groundKey(raw.world);
-  const profile = pearlProfiles([raw.profile], [playerKey(raw.profile.id)])[0];
-  // Sanitizing away any requested field would turn an invalid delta into a different operation.
-  if (canonicalText(profile.data) !== canonicalText(raw.profile.data)) throw new StoreError('profile');
+  const operationId = playerKey(raw.operationId), world = groundKey(raw.world), actor = playerKey(raw.actor);
   let previous = null;
   const items = Array.from(raw.items, (q) => {
     const pearl = sanitizePearl(q);
@@ -28,7 +25,19 @@ export function batchOperation(raw) {
   });
   if (raw.mode === 'death' ? items.some((q) => q.ground === null) :
     items.length !== 2 || items.filter((q) => q.ground === null).length !== 1) throw new StoreError('operation');
-  return { operationId, request: { world, mode: raw.mode, profile, items } };
+  return { operationId, world, mode: raw.mode, actor, items };
+}
+
+export function batchOperation(raw) {
+  if (!keys(raw, 'items,mode,operationId,profile,world') || !keys(raw.profile, 'data,expectedVersion,id')) {
+    throw new StoreError('operation');
+  }
+  const { operationId, actor, ...intent } = batchIntent({ operationId: raw.operationId, world: raw.world,
+    mode: raw.mode, actor: raw.profile.id, items: raw.items });
+  const profile = pearlProfiles([raw.profile], [actor])[0];
+  // Sanitizing away any requested field would turn an invalid delta into a different operation.
+  if (canonicalText(profile.data) !== canonicalText(raw.profile.data)) throw new StoreError('profile');
+  return { operationId, request: { world: intent.world, mode: intent.mode, profile, items: intent.items } };
 }
 
 export function validBatchDelta(request, before) {

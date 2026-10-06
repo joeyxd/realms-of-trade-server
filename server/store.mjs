@@ -7,6 +7,7 @@ import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove,
 import { groundOperation, groundResult, checkedGroundResult, checkedGroundReceipt, checkedLocation,
   groundKey, groundPage, checkedGroundPage, assertGroundLocations } from './pearlGround.mjs';
 import { batchOperation, batchResult, checkedBatchResult, checkedBatchReceipt, validBatchDelta } from './pearlBatch.mjs';
+import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -48,6 +49,7 @@ const conflict = () => ({ ok: false, why: 'conflict' });
 export function createMemoryStore() {
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
+  const intents = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
     const current = map.get(id);
@@ -77,7 +79,7 @@ export function createMemoryStore() {
     for (const p of request.profiles) profiles.set(p.id, candidate.nextProfiles.get(p.id));
     uniques.set(request.uid, candidate.unique);
   };
-  return {
+  const store = {
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
     async saveProfile(id, data, expected) { return save(profiles, playerKey(id), profile(data), version(expected, 0, MAX_VERSION - 1)); },
@@ -107,6 +109,7 @@ export function createMemoryStore() {
     },
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
+      if (!permitsMemoryPearlReceipt(intents, operationId, 'pearl', request)) return { ok: false, why: 'operation' };
       if (groundReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = pearlReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
@@ -131,6 +134,7 @@ export function createMemoryStore() {
     },
     async commitPearlGround(raw) {
       const { operationId, request } = groundOperation(raw), text = canonicalText(request);
+      if (!permitsMemoryPearlReceipt(intents, operationId, 'ground', request)) return { ok: false, why: 'operation' };
       const receipt = groundReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
@@ -162,6 +166,7 @@ export function createMemoryStore() {
       const { operationId, request } = batchOperation(raw), text = canonicalText(request);
       const receipt = batchReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
+      if (!permitsMemoryPearlReceipt(intents, operationId, 'batch', request)) return { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || groundReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const p = request.profile, old = profiles.get(p.id);
       if (old?.version !== p.expectedVersion) return conflict();
@@ -208,6 +213,8 @@ export function createMemoryStore() {
       return { ok: true, version: current.version };
     },
   };
+  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts }, intents);
+  return store;
 }
 
 export function createSupabaseStore(client) {

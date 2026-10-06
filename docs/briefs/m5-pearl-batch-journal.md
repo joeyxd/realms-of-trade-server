@@ -50,3 +50,14 @@ verificó candidatos Blueprint sin código Node portable; no necesita exportaci�
 No toca afinidad runtime, RNG, balance, precios, adopción/invitados, reloj offline o leases.
 Al aceptar esta base, continuar staging/tick y hooks completos/restauración con sim/host;
 no habilitar la ruta parcialmente durable de muerte o reemplazo.
+
+## Implementación local aceptada — 2026-10-06
+
+D09f-2b.5, base `64b9956`: [contrato y evidencia](../delivery/d09f-pearl-batch-journal.md).
+**579/579** pertinentes aisladas, **91 nuevas**, 32 archivos y doce procesos Node nuevos para los dos
+modos committed/unsent. Request/recibo/diario batch y reservas/reconciliación de todos los UIDs en la
+cola común; CAS anterior, progreso posterior, fallos/cancelación/overlaps cubiertos. Identidad namespace
+compartida en memoria al enlazar `createMemoryPearlJournals(store)`. Inventario/save ActionRPG intactos;
+se reutilizó infraestructura Node propia. SQL001–007 y host/LocalServer/sim/protocolo sin cambios.
+**SQL008 nueva pendiente de aplicar/verificar real**; este checkpoint no cierra la aceptación Supabase
+ni activa staging/tick/gameplay batch. Sigue canario aislado real y después integración con sim/host.
