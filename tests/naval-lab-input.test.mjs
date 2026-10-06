@@ -19,7 +19,10 @@ class FakeTarget extends EventTarget {
     this.defaultView = new EventTarget();
   }
 
-  querySelectorAll() { return this.pilotButtons || []; }
+  querySelectorAll(selector) {
+    if (selector === '[data-capture]') return this.captureButtons || [];
+    return this.pilotButtons || [];
+  }
   send(type, properties = {}) { this.dispatchEvent(new FakeEvent(type, properties)); }
 }
 
@@ -30,6 +33,12 @@ class FakeButton extends EventTarget {
     this.captured = [];
   }
 
+  setPointerCapture(pointerId) { this.captured.push(pointerId); }
+  send(type, properties = {}) { this.dispatchEvent(new FakeEvent(type, properties)); }
+}
+
+class FakeCaptureButton extends EventTarget {
+  constructor() { super(); this.captured = []; }
   setPointerCapture(pointerId) { this.captured.push(pointerId); }
   send(type, properties = {}) { this.dispatchEvent(new FakeEvent(type, properties)); }
 }
@@ -170,4 +179,145 @@ test('dispose removes handlers and clears all state', () => {
   key(root, 'keydown', 'w');
   button.send('pointerdown', { pointerId: 9, pointerType: 'touch' });
   assert.deepEqual(input.poll(), { throttle: 0, brake: 0, steer: 0 });
+});
+
+test('Space capture is one-shot, ignores repeats and form fields, and unlock callback is synchronous', () => {
+  const root = new FakeTarget();
+  let gestures = 0;
+  const input = new NavalLabInput(root, { onGesture: () => gestures++ });
+  const space = (properties = {}) => root.send('keydown', { key: ' ', code: 'Space', ...properties });
+
+  const event = new FakeEvent('keydown', { key: ' ', code: 'Space' });
+  root.dispatchEvent(event);
+  assert.equal(event.defaultPrevented, true);
+  assert.equal(gestures, 1);
+  assert.equal(input.consumeCapture(), true);
+  assert.equal(input.consumeCapture(), false);
+  space({ repeat: true });
+  assert.equal(input.consumeCapture(), false);
+  space({ target: { tagName: 'INPUT' } });
+  assert.equal(input.consumeCapture(), false);
+  assert.equal(gestures, 1);
+  input.dispose();
+});
+
+test('focused capture button uses its native Space activation without double-queueing', () => {
+  const root = new FakeTarget();
+  const capture = new FakeCaptureButton();
+  capture.closest = () => capture;
+  root.captureButtons = [capture];
+  let gestures = 0;
+  const input = new NavalLabInput(root, { onGesture: () => gestures++ });
+  const space = new FakeEvent('keydown', { key: ' ', code: 'Space', target: capture });
+  root.dispatchEvent(space);
+  assert.equal(space.defaultPrevented, false);
+  assert.equal(input.consumeCapture(), false);
+  capture.send('click', { detail: 0 });
+  assert.equal(input.consumeCapture(), true);
+  assert.equal(input.consumeCapture(), false);
+  assert.equal(gestures, 1);
+  input.dispose();
+});
+
+test('pilot gestures unlock audio once per keyboard press or accepted pointer and Escape cancels', () => {
+  const root = new FakeTarget();
+  const throttle = new FakeButton('throttle');
+  root.pilotButtons = [throttle];
+  const calls = [];
+  const input = new NavalLabInput(root, {
+    onGesture: () => calls.push('gesture'),
+    onReset: () => calls.push('reset'),
+    onJettison: () => calls.push('jettison'),
+    onCancel: () => calls.push('cancel'),
+  });
+
+  key(root, 'keydown', 'w');
+  key(root, 'keydown', 'w', { repeat: true });
+  key(root, 'keyup', 'w');
+  key(root, 'keydown', 'w');
+  key(root, 'keydown', 'r');
+  key(root, 'keydown', 'j');
+  throttle.send('pointerdown', { pointerId: 4, pointerType: 'touch', isPrimary: true });
+  key(root, 'keydown', 'Escape');
+  key(root, 'keydown', 'Escape', { repeat: true });
+
+  assert.deepEqual(calls, ['gesture', 'gesture', 'gesture', 'reset', 'gesture', 'jettison', 'gesture', 'cancel']);
+  input.dispose();
+});
+
+test('capture pointer queues while two pilot pointers remain held', () => {
+  const root = new FakeTarget();
+  const throttle = new FakeButton('throttle');
+  const left = new FakeButton('left');
+  const capture = new FakeCaptureButton();
+  root.pilotButtons = [throttle, left];
+  root.captureButtons = [capture];
+  const input = new NavalLabInput(root);
+
+  throttle.send('pointerdown', { pointerId: 1, pointerType: 'touch', isPrimary: true });
+  left.send('pointerdown', { pointerId: 2, pointerType: 'touch', isPrimary: false });
+  capture.send('pointerdown', { pointerId: 3, pointerType: 'touch', isPrimary: false });
+  assert.deepEqual(input.poll(), { throttle: 1, brake: 0, steer: -1 });
+  assert.equal(input.consumeCapture(), true);
+  assert.equal(input.consumeCapture(), false);
+  root.send('pointerup', { pointerId: 3 });
+  assert.deepEqual(input.poll(), { throttle: 1, brake: 0, steer: -1 });
+  input.dispose();
+});
+
+test('cancelled capture pointers discard only their own action; pointerup keeps a fast tap', () => {
+  const root = new FakeTarget();
+  const capture = new FakeCaptureButton();
+  root.captureButtons = [capture];
+  const input = new NavalLabInput(root);
+  key(root, 'keydown', 'a');
+
+  capture.send('pointerdown', { pointerId: 20, pointerType: 'touch' });
+  root.send('pointercancel', { pointerId: 20 });
+  assert.equal(input.consumeCapture(), false);
+  assert.deepEqual(input.poll(), { throttle: 0, brake: 0, steer: -1 });
+
+  capture.send('pointerdown', { pointerId: 21, pointerType: 'touch' });
+  root.send('lostpointercapture', { pointerId: 21 });
+  assert.equal(input.consumeCapture(), false);
+  assert.deepEqual(input.poll(), { throttle: 0, brake: 0, steer: -1 });
+
+  key(root, 'keydown', ' ', { code: 'Space' });
+  capture.send('pointerdown', { pointerId: 22, pointerType: 'touch' });
+  root.send('pointercancel', { pointerId: 22 });
+  assert.equal(input.consumeCapture(), true);
+
+  capture.disabled = true;
+  capture.send('pointerdown', { pointerId: 23, pointerType: 'touch' });
+  capture.send('click', { detail: 0 });
+  assert.equal(input.consumeCapture(), false);
+  capture.disabled = false;
+  capture.send('pointerdown', { pointerId: 24, pointerType: 'touch' });
+  root.send('pointerup', { pointerId: 24 });
+  root.send('lostpointercapture', { pointerId: 24 });
+  assert.equal(input.consumeCapture(), true);
+  input.dispose();
+});
+
+test('gamepad capture uses rising edges and stays suppressed after clear until release', () => {
+  const root = new FakeTarget();
+  const pad = { connected: true, mapping: 'standard', axes: [0], buttons: Array.from({ length: 8 }, () => ({ value: 0 })) };
+  const input = new NavalLabInput(root, { getGamepads: () => [pad] });
+  assert.equal(input.consumeCapture(), false);
+
+  pad.buttons[0].value = 1;
+  input.poll();
+  assert.equal(input.consumeCapture(), true);
+  input.poll();
+  assert.equal(input.consumeCapture(), false);
+
+  input.clear();
+  input.poll();
+  assert.equal(input.consumeCapture(), false);
+  pad.buttons[0].value = 0;
+  input.poll();
+  pad.buttons[0].value = 1;
+  input.poll();
+  assert.equal(input.consumeCapture(), true);
+  input.dispose();
 });

@@ -2,6 +2,7 @@
 // changes goods, or attaches a raft to the live world. Fixed ticks are independent of render FPS.
 import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
 import { NAVAL_HANDLING as H, NAVAL_STEP } from '../../data/navalHandling.js';
+import { NAVAL_NAVIGATION as N } from '../../data/navalNavigation.js';
 export { NAVAL_STEP };
 
 const clamp = (n, a, b) => Math.max(a, Math.min(b, Number.isFinite(n) ? n : 0));
@@ -53,7 +54,8 @@ export function buildNavalRig(parts, cargo = []) {
   const flotation = 1 / (1 + 3 * Math.max(0, load - 1) ** 2);
   const wetted = (bases.length / 4) ** 0.7 * (1 + 0.7 * load ** 2);
   return Object.freeze({ dryMass, cargoMass, mass, buoyancy, load, cx, cz, height, inertia,
-    beam, length, imbalance, stability, flotation, wetted, sail, cells: bases.length });
+    beam, length, hullCx: (minX + maxX) / 2, hullCz: (minZ + maxZ) / 2,
+    imbalance, stability, flotation, wetted, sail, cells: bases.length });
 }
 
 export function newNavalState() { return { tick: 0, x: 0, z: 0, yaw: 0, vx: 0, vz: 0, omega: 0 }; }
@@ -64,7 +66,7 @@ export function windEfficiency(yaw, wind) {
   return strength * (H.headwindEfficiency + (1 - H.headwindEfficiency) * Math.sqrt(Math.max(0, (alignment + 1) / 2)));
 }
 
-export function stepNaval(state, input, rig, wind) {
+export function stepNaval(state, input, rig, wind, environment = {}) {
   if (!state || !['x', 'z', 'yaw', 'vx', 'vz', 'omega'].every((k) => finite(state[k])) ||
     !Number.isSafeInteger(state.tick) || state.tick < 0 || state.tick >= Number.MAX_SAFE_INTEGER ||
     Math.abs(state.x) > 1e9 || Math.abs(state.z) > 1e9 || Math.hypot(state.vx, state.vz) > 100 || Math.abs(state.omega) > 10 ||
@@ -73,14 +75,20 @@ export function stepNaval(state, input, rig, wind) {
     throw new TypeError('Invalid naval body');
   const throttle = clamp(input?.throttle, 0, 1), brake = clamp(input?.brake, 0, 1), steer = clamp(input?.steer, -1, 1);
   const s = Math.sin(state.yaw), c = Math.cos(state.yaw);
-  const forward = state.vx * s + state.vz * c, side = state.vx * c - state.vz * s;
-  const force = (H.paddleForce + H.sailForce * rig.sail * windEfficiency(state.yaw, wind)) * throttle * (1 - brake) * rig.flotation;
+  let waterX = clamp(environment.current?.x, -N.maxCurrentSpeed, N.maxCurrentSpeed), waterZ = clamp(environment.current?.z, -N.maxCurrentSpeed, N.maxCurrentSpeed);
+  const waterSpeed = Math.hypot(waterX, waterZ);
+  if (waterSpeed > N.maxCurrentSpeed) { waterX *= N.maxCurrentSpeed / waterSpeed; waterZ *= N.maxCurrentSpeed / waterSpeed; }
+  const relativeX = state.vx - waterX, relativeZ = state.vz - waterZ;
+  const forward = relativeX * s + relativeZ * c, side = relativeX * c - relativeZ * s;
+  const multiplier = clamp(environment.sailMultiplier ?? 1, 1, N.perfectMultiplier);
+  const maxSpeed = clamp(environment.maxSpeed ?? H.maxSpeed, H.maxSpeed, N.boostMaxSpeed);
+  const force = (H.paddleForce + H.sailForce * rig.sail * windEfficiency(state.yaw, wind) * multiplier) * throttle * (1 - brake) * rig.flotation;
   // Exponential drag cannot overshoot through zero; braking removes momentum, never reverses a sail.
   const dragRate = rig.wetted * (H.forwardDrag + H.quadraticDrag * Math.abs(forward)) / rig.mass;
   let nextForward = forward * Math.exp(-dragRate * NAVAL_STEP) + force / rig.mass * NAVAL_STEP;
   const removed = H.brakeForce * rig.wetted / rig.mass * brake * NAVAL_STEP;
   nextForward = Math.sign(nextForward) * Math.max(0, Math.abs(nextForward) - removed);
-  nextForward = clamp(nextForward, -H.maxSpeed, H.maxSpeed);
+  nextForward = clamp(nextForward, -maxSpeed, maxSpeed);
   const nextSide = side * Math.exp(-H.lateralDamping * NAVAL_STEP);
   const flow = H.lowSpeedHelm + (1 - H.lowSpeedHelm) * Math.min(1, Math.abs(forward) / 3);
   // A larger hull has more control surface and leverage, while its much larger yaw inertia
@@ -88,9 +96,9 @@ export function stepNaval(state, input, rig, wind) {
   const torque = steer * H.rudderTorque * (rig.cells / 4) ** 1.5 * flow * rig.stability * rig.flotation;
   const omega = clamp(state.omega * Math.exp(-H.yawDamping * NAVAL_STEP) + torque / rig.inertia * NAVAL_STEP,
     -H.maxTurnRate, H.maxTurnRate);
-  let vx = nextForward * s + nextSide * c, vz = nextForward * c - nextSide * s;
+  let vx = nextForward * s + nextSide * c + waterX, vz = nextForward * c - nextSide * s + waterZ;
   const speed = Math.hypot(vx, vz);
-  if (speed > H.maxSpeed) { vx *= H.maxSpeed / speed; vz *= H.maxSpeed / speed; }
+  if (speed > maxSpeed) { vx *= maxSpeed / speed; vz *= maxSpeed / speed; }
   return { tick: state.tick + 1, x: state.x + (state.vx + vx) * NAVAL_STEP / 2,
     z: state.z + (state.vz + vz) * NAVAL_STEP / 2, yaw: wrap(state.yaw + omega * NAVAL_STEP), vx, vz, omega };
 }

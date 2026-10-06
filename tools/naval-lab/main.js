@@ -11,6 +11,11 @@ import { LAB_FIXTURES, LAB_WINDS, labFixture } from './fixtures.js';
 import { measureHandling } from './measure.js';
 import { NavalLabInput } from './input.js';
 import { NavalLabClock } from './clock.js';
+import { currentAt, gustAt, newSailingActivity, stepSailingActivity, sailingEnvironment } from '../../src/sim/naval/navigation.js';
+import { NAVAL_NAVIGATION } from '../../src/data/navalNavigation.js';
+import { NavalLabEffects } from './effects.js';
+import { NavalLabAudio } from './audio.js';
+import { NavalSpeedFeel } from './speed-feel.js';
 
 const $ = (id) => document.getElementById(id);
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
@@ -18,6 +23,8 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new NavalLabClock();
 let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0;
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
+let effects, sound, feel, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
+let lastGustPhase = 'idle', lastGustId = -1;
 const samples = [], target = new THREE.Vector3(), desired = new THREE.Vector3();
 const trailArray = new Float32Array(256 * 3), trailGeometry = new THREE.BufferGeometry();
 trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailArray, 3));
@@ -74,8 +81,9 @@ function reset() {
   clearInputs(); clock.clear(); samples.length = 0; trailGeometry.setDrawRange(0, 0);
   fixture = labFixture($('fixture').value); rig = buildNavalRig(fixture.parts, fixture.cargo);
   state = newNavalState(); previous = { ...state }; target.set(0, 0, 0);
+  activity = newSailingActivity(); lastGustPhase = 'idle'; lastGustId = -1; effects?.reset(); feel?.reset();
   $('fixture-detail').textContent = fixture.detail; rebuildCargo(); stats(); comparisons();
-  showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Mantén AVANZAR y prueba el giro. Suelta para sentir la inercia.');
+  showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Entra en las flechas de agua. Cuando llegue la ráfaga, cázala con ESPACIO.');
   $('bay').focus({ preventScroll: true });
 }
 function jettison() {
@@ -87,7 +95,17 @@ function jettison() {
 function setPaused(value) {
   paused = value; clock.clear(); clearInputs(); previous = { ...state };
   $('pause').textContent = paused ? 'Continuar' : 'Pausar';
+  sound?.update({ state, rig, paused: true });
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Timón listo. Mantén AVANZAR.');
+}
+function unlockSound() {
+  if (soundOptOut || soundEnabled) return;
+  soundEnabled = true; sound.setEnabled(true);
+  Promise.resolve(sound.unlock()).then((ready) => {
+    if (ready === false) { soundEnabled = false; sound.setEnabled(false); $('sound').textContent = 'Activar sonido'; $('sound').setAttribute('aria-pressed', 'false'); }
+  }).catch(() => { soundEnabled = false; sound.setEnabled(false); $('sound').textContent = 'Activar sonido'; $('sound').setAttribute('aria-pressed', 'false'); });
+  $('sound').textContent = 'Silenciar sonido';
+  $('sound').setAttribute('aria-pressed', 'true');
 }
 function drawFrame(dt) {
   const a = paused ? 1 : clock.alpha;
@@ -97,32 +115,78 @@ function drawFrame(dt) {
   if (layer.update([{ id: 'lab-raft', owner: 1, entity: 1, rev: 1, parts: fixture.parts, look: { banner: 'franjas', paint: 0 }, ...pose }], Math.max(0, t), 1)) pipeline.markDirty();
   const view = layer.views.get('lab-raft');
   // Only the visual skin heels; there is no walking collider or crew in this lab.
-  if (view && !reducedMotion) view.visual.rotation.z += THREE.MathUtils.clamp(-state.omega * Math.hypot(state.vx, state.vz) * 0.014, -0.05, 0.05);
+  const boosting = state.tick < activity.boostUntil;
+  if (view && !reducedMotion) {
+    view.visual.rotation.z += THREE.MathUtils.clamp(-state.omega * Math.hypot(state.vx, state.vz) * 0.035, -0.2, 0.2);
+    view.visual.rotation.x += boosting ? -Math.sin(Math.min(1, (activity.boostUntil - state.tick) / 30) * Math.PI / 2) * 0.065 : 0;
+  }
+  if (view) for (const mesh of view.visual.children) {
+    if (mesh.userData.raftSurface !== 'cloth') continue;
+    const positions = mesh.geometry.attributes.position;
+    const base = mesh.userData.labClothBase ||= positions.array.slice();
+    const fullness = boosting ? 0.23 : 0.065;
+    for (let i = 0; i < positions.count; i++) {
+      const y = base[i * 3 + 1];
+      positions.array[i * 3 + 2] = base[i * 3 + 2] + Math.sin(y * 1.6 + (reducedMotion ? 0 : t * 4)) * fullness * Math.min(1, Math.max(0, y - 0.5));
+    }
+    positions.needsUpdate = true;
+  }
   cargoGroup.position.set(pose.x, pose.y - 0.72, pose.z); cargoGroup.rotation.y = pose.yaw;
   cargoGroup.visible = references.visible;
   marker.position.set(visual.x, pose.y + 0.1, visual.z);
   grid.position.x = Math.round(visual.x / 20) * 20; grid.position.z = Math.round(visual.z / 20) * 20;
   const damping = 1 - Math.exp(-8 * dt);
-  desired.set(visual.x + visual.vx * 0.65, 0, visual.z + visual.vz * 0.65); target.lerp(desired, damping);
-  const distance = fixture.id === 'house' ? 35 : 24;
+  const speed = Math.hypot(visual.vx, visual.vz);
+  const lead = Math.min(mobile ? 0.18 : 0.3, (mobile ? 1.4 : 2.5) / Math.max(1, speed));
+  desired.set(visual.x + visual.vx * lead, 0, visual.z + visual.vz * lead); target.lerp(desired, damping);
+  const distance = fixture.id === 'house' ? (mobile ? 24 : 30) : (mobile ? 14 : 18);
   camera.position.set(target.x + distance, distance * 1.1, target.z + distance);
+  const cinematic = feel.update(dt, { speed, omega: visual.omega, boosting, enabled: $('drama').checked, paused });
+  if (Math.abs(camera.fov - cinematic.fov) > 0.01) { camera.fov = cinematic.fov; camera.updateProjectionMatrix(); }
   camera.lookAt(target.x, 0, target.z);
+  camera.rotateZ(cinematic.roll);
   // Keep the flat laboratory ocean under the camera, without changing simulated world coordinates.
   sea.position.x = bottom.position.x = visual.x; sea.position.z = bottom.position.z = visual.z;
   sun.position.set(visual.x - 25, 45, visual.z + 15); sun.target.position.set(visual.x, 0, visual.z);
   const sky = scene.getObjectByName('lab-sky'); sky.position.copy(camera.position);
   U.mnTime.value = Math.max(0, t); U.mnWind.value.set(Math.sin(wind.yaw) * wind.strength, Math.cos(wind.yaw) * wind.strength);
+  const gust = gustAt(state.tick, wind, $('gusts').checked), current = currentAt(visual.x, visual.z, $('currents').checked);
+  const context = { state: visual, rig, wind, gust, activity, current, currents: $('currents').checked, paused };
+  effects.update(paused ? 0 : dt, context); sound.update(context);
   pipeline.update(dt); pipeline.render();
   $('speed').textContent = Math.hypot(state.vx, state.vz).toFixed(2);
   $('heading').textContent = `Rumbo ${String(Math.round((state.yaw * 180 / Math.PI + 360) % 360)).padStart(3, '0')}° · giro ${(state.omega * 180 / Math.PI).toFixed(1)}°/s`;
   $('sail').textContent = wind.strength ? `Empuje de vela ${(windEfficiency(state.yaw, wind) * 100).toFixed(0)}%` : 'Calma · remo asistido';
   $('wind-arrow').textContent = wind.id === 'calm' ? '○' : wind.id === 'tail' ? '↓' : wind.id === 'head' ? '↑' : '→';
+  const attempted = activity.lastAttempt === gust.id;
+  $('gust-label').textContent = boosting ? `¡VELA CARGADA! ${((activity.boostUntil - state.tick) * NAVAL_STEP).toFixed(1)} s` :
+    !$('gusts').checked || !wind.strength ? 'Sin ráfagas' : gust.phase === 'window' ? (attempted ? 'Ráfaga resuelta' : '¡AHORA! CAZA LA RÁFAGA') :
+    gust.phase === 'approach' ? `Prepara la vela · ${gust.remaining.toFixed(1)} s` : `Próxima ráfaga · ${Math.ceil(gust.remaining)} s`;
+  $('gust-progress').value = boosting ? Math.max(0, (activity.boostUntil - state.tick) / NAVAL_NAVIGATION.boostTicks) : gust.progress;
+  $('capture').classList.toggle('ready', !attempted && gust.phase === 'window');
+  $('capture').classList.toggle('boosting', boosting);
+  $('capture').disabled = paused || !$('gusts').checked || !wind.strength || attempted;
+  const feedback = { perfect: '¡PERFECTO! La vela ruge.', capture: '¡Ráfaga atrapada! Sigue dando vela.', early: 'Demasiado pronto. Espera la siguiente.', angle: 'Orienta la proa a favor del viento.', miss: 'Abre la vela y suelta el freno.' };
+  $('capture-status').textContent = feedback[activity.result] || 'ESPACIO / A · una pulsación al entrar en la ventana';
+  $('flow-label').textContent = !$('currents').checked ? 'Corrientes apagadas' : current.strength > 0.15 ? `CORRIENTE · ${current.strength.toFixed(1)} u/s` : 'Busca las flechas de agua';
 }
 function fixed() {
-  previous = state; const control = input.poll(); state = stepNaval(state, control, rig, wind);
+  previous = state;
+  const control = input.poll();
+  if ($('cruise').checked && control.brake === 0) control.throttle = Math.max(control.throttle, 0.85);
+  control.capture = input.consumeCapture();
+  const gust = gustAt(state.tick, wind, $('gusts').checked);
+  if (gust.phase !== lastGustPhase || gust.id !== lastGustId) {
+    if (gust.phase === 'approach' || gust.phase === 'window') sound.event(gust.phase);
+    lastGustPhase = gust.phase; lastGustId = gust.id;
+  }
+  const action = stepSailingActivity(activity, state, control, rig, wind, $('gusts').checked);
+  activity = action.activity;
+  if (action.event) { effects.event(action.event, state, rig); sound.event(action.event); }
+  state = stepNaval(state, control, rig, wind, sailingEnvironment(activity, state, $('currents').checked));
   for (const button of document.querySelectorAll('[data-pilot]')) {
     const action = button.dataset.pilot;
-    button.classList.toggle('active', action === 'throttle' ? control.throttle > 0 : action === 'brake' ? control.brake > 0 : action === 'left' ? control.steer < 0 : control.steer > 0);
+    button.classList.toggle('active', action === 'throttle' ? control.throttle > 0 : action === 'brake' ? control.brake > 0 : action === 'left' ? control.steer < 0 : action === 'right' ? control.steer > 0 : false);
   }
   if (state.tick % 6 === 0) {
     samples.push([state.x, 0.045, state.z]); if (samples.length > 256) samples.shift();
@@ -130,7 +194,10 @@ function fixed() {
     trailGeometry.attributes.position.needsUpdate = true; trailGeometry.setDrawRange(0, samples.length);
   }
 }
-function resize() { const rect = $('bay').getBoundingClientRect(); pipeline.resize(Math.max(1, rect.width), Math.max(1, rect.height)); }
+function resize() {
+  const rect = $('bay').getBoundingClientRect(); pipeline.resize(Math.max(1, rect.width), Math.max(1, rect.height));
+  effects?.setViewport(Math.max(1, rect.height), camera.fov);
+}
 
 async function start() {
   for (const f of LAB_FIXTURES) $('fixture').add(new Option(f.name, f.id));
@@ -163,14 +230,22 @@ async function start() {
     pipeline.setQuality({ outlines: !$('light').checked, comic: 0, pixelRatio: Math.min(devicePixelRatio || 1, mobile ? 1 : 1.5), ss: 1, fxaa: true });
   };
   quality(); layer = new RaftLayer(scene, { dock: null });
+  effects = new NavalLabEffects(scene, { mobile, reducedMotion }); sound = new NavalLabAudio({ mobile });
+  feel = new NavalSpeedFeel($('bay').parentElement, { mobile, reducedMotion });
   scene.add(references, trail);
-  input = new NavalLabInput(document, { onReset: reset, onJettison: jettison });
+  references.visible = trail.visible = $('references').checked;
+  input = new NavalLabInput(document, { onReset: reset, onJettison: jettison, onGesture: unlockSound, onCancel: () => setPaused(true) });
   $('fixture').addEventListener('change', reset);
-  $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); comparisons(); clearInputs(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
+  $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
   $('reset').addEventListener('click', reset); $('jettison').addEventListener('click', jettison);
   $('pause').addEventListener('click', () => setPaused(!paused));
   $('references').addEventListener('change', () => { references.visible = trail.visible = $('references').checked; });
   $('light').addEventListener('change', quality);
+  $('gusts').addEventListener('change', () => { activity = newSailingActivity(); clearInputs(); });
+  $('sound').addEventListener('click', () => {
+    if (soundEnabled) { soundEnabled = false; soundOptOut = true; sound.setEnabled(false); $('sound').textContent = 'Activar sonido'; $('sound').setAttribute('aria-pressed', 'false'); }
+    else { soundOptOut = false; unlockSound(); }
+  });
   window.addEventListener('blur', () => setPaused(true));
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
   window.addEventListener('resize', resize); reset(); resize();
@@ -178,7 +253,9 @@ async function start() {
   const image = assets.texture('tex:raft-comic-v1')?.image;
   $('texture').textContent = tex?.state === 'ok' ? `Atlas ${image?.width || '?'} × ${image?.height || '?'} · ${tex.selectedSrc}` : 'Atlas no disponible: material procedural activo.';
   // Read-only snapshots and explicit laboratory actions aid repeatable local acceptance.
-  window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind }, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
+  window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind },
+    activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked), current: currentAt(state.x, state.z, $('currents').checked),
+    effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();
   const frame = (now) => {
     const dt = Math.max(0, (now - last) / 1000); last = now;
@@ -187,6 +264,6 @@ async function start() {
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); layer.dispose(); renderer.dispose(); });
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); layer.dispose(); renderer.dispose(); });
 }
 start().catch((error) => { showMessage(`No se pudo abrir la bahía: ${error.message}`); console.error(error); });

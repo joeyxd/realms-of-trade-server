@@ -18,7 +18,14 @@
       <canvas id="bay" tabindex="0" aria-label="Balsa de prueba en el mar"></canvas>
       <div class="readout"><strong id="speed">0.00</strong><span>u/s</span><div id="heading">Rumbo 000°</div></div>
       <div class="weather"><span id="wind-arrow">↓</span><div id="sail">Viento a favor</div></div>
-      <p id="message" role="status">Cargando la bahía…</p>
+      <div class="sea-hud">
+        <div class="sea-readout"><span id="flow-label">Corriente tranquila</span><span id="gust-label">Vela en reposo</span></div>
+        <progress id="gust-progress" max="1" value="0" aria-label="Ventana de ráfaga"></progress>
+      </div>
+      <div class="capture-dock">
+        <button id="capture" data-capture type="button" aria-keyshortcuts="Space">CAZAR RÁFAGA <small>ESPACIO / MANDO A</small></button>
+        <p id="capture-status" role="status" aria-live="polite">Espera una ráfaga</p>
+      </div>
       <nav class="pilot" aria-label="Controles de pilotaje">
         <button data-pilot="left" aria-label="Timón a babor">◀<small>A</small></button>
         <button data-pilot="throttle" aria-label="Dar propulsión">AVANZAR<small>W / RT</small></button>
@@ -28,9 +35,17 @@
     </section>
     <aside>
       <div class="section-title"><span>01</span> Prepara la prueba</div>
+      <p id="message" class="lab-message" role="status">Cargando la bahía…</p>
       <label for="fixture">Balsa y acomodo</label><select id="fixture"></select>
       <p id="fixture-detail" class="muted"></p>
       <label for="wind">Viento constante</label><select id="wind"></select>
+      <div class="activity-options" aria-label="Actividades de navegación">
+        <label><input id="currents" type="checkbox" checked> Corrientes</label>
+        <label><input id="gusts" type="checkbox" checked> Ráfagas</label>
+        <label><input id="drama" type="checkbox" checked> Efectos de cómic</label>
+        <label><input id="cruise" type="checkbox" checked> Crucero asistido (desactívalo para dejarte llevar)</label>
+      </div>
+      <button id="sound" type="button" aria-pressed="false">Activar sonido</button>
       <div class="actions"><button id="pause">Pausar</button><button id="reset">Reiniciar <kbd>R</kbd></button></div>
       <button id="jettison" class="yellow">Soltar lastre de prueba <kbd>J</kbd></button>
       <p class="muted">El lastre representa peso situado en puntos concretos. Aquí no hay mercancías ni costes.</p>
@@ -48,11 +63,11 @@
         <p class="muted">Cifras experimentales; el viento permanece fijo mientras giras. u = unidades del mundo.</p>
       </details>
       <details><summary>Controles y lectura</summary>
-        <p>Mantén W para avanzar, A/D para girar y S para frenar. Suelta para seguir con inercia. No hay marcha atrás instantánea.</p>
-        <p>En mando: stick izquierdo para timón, RT para avanzar, LT para frenar. Los botones en pantalla aceptan dos dedos.</p>
+        <p>Mantén W para avanzar, A/D para girar y S para frenar. Pulsa Espacio para cazar una ráfaga. El crucero asistido mantiene un avance básico; desactívalo para dejar que el barco pierda velocidad al soltar. No hay marcha atrás instantánea.</p>
+        <p>En mando: stick izquierdo para timón, RT para avanzar, LT para frenar y A para la ráfaga. En móvil, los controles aceptan varios dedos.</p>
         <p>La línea dorada registra tu trayectoria; las figuras amarillas marcan el lastre. El aro muestra el centro de masa.</p>
       </details>
-      <div class="display-options"><label><input id="references" type="checkbox" checked> Referencias de prueba</label><label><input id="light" type="checkbox"> Render ligero</label></div>
+      <div class="display-options"><label><input id="references" type="checkbox"> Referencias de prueba</label><label><input id="light" type="checkbox"> Render ligero</label></div>
       <p id="texture" class="muted"></p>
       <p class="footnote">Esta bahía es independiente de tu partida. El pilotaje online, la cubierta móvil, los niveles de navegación y el viento cambiante vienen después.</p>
     </aside>
