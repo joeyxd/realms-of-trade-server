@@ -1,0 +1,1268 @@
+{
+  "date": "2026-10-06",
+  "sourceSha": "f89bec5fdd89cf1f0ceb04cb4e131832052bfee5",
+  "publishedSourceRef": "origin/claude/loving-lovelace-ptbif7",
+  "sourcePushVerified": true,
+  "regression": {
+    "commit": "f89bec5fdd89cf1f0ceb04cb4e131832052bfee5",
+    "target": ".scratch/demo-update-20261006-pinned",
+    "testFiles": [
+      "tests/account-auth.test.mjs",
+      "tests/account-import.test.mjs",
+      "tests/accounts-server.test.mjs",
+      "tests/aimcast.test.mjs",
+      "tests/assets.test.mjs",
+      "tests/characters.test.mjs",
+      "tests/combat.test.mjs",
+      "tests/commerce.test.mjs",
+      "tests/coop.test.mjs",
+      "tests/economy.test.mjs",
+      "tests/escarcha.test.mjs",
+      "tests/fx.test.mjs",
+      "tests/gpu.test.mjs",
+      "tests/items.test.mjs",
+      "tests/lawless.test.mjs",
+      "tests/lights.test.mjs",
+      "tests/loot.test.mjs",
+      "tests/m25.test.mjs",
+      "tests/m3.test.mjs",
+      "tests/m35.test.mjs",
+      "tests/mastery.test.mjs",
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/net.test.mjs",
+      "tests/pc-host.test.mjs",
+      "tests/pearl-ground-sessions.test.mjs",
+      "tests/pearl-ground-sql.test.mjs",
+      "tests/pearl-ground.test.mjs",
+      "tests/pearl-journal-sessions.test.mjs",
+      "tests/pearl-journal-sql.test.mjs",
+      "tests/pearl-journal.test.mjs",
+      "tests/pearl-mutation-gate.test.mjs",
+      "tests/pearl-operations-sql.test.mjs",
+      "tests/pearl-operations.test.mjs",
+      "tests/pearl-same-holder-process.test.mjs",
+      "tests/pearl-same-holder-sessions.test.mjs",
+      "tests/pearl-same-holder-sql.test.mjs",
+      "tests/pearl-same-holder.test.mjs",
+      "tests/pearl-sessions-host.test.mjs",
+      "tests/pearl-sessions.test.mjs",
+      "tests/pearl-staging.test.mjs",
+      "tests/pearl-swallow-staging-sql.test.mjs",
+      "tests/pearl-swallow-staging.test.mjs",
+      "tests/pearlkit.test.mjs",
+      "tests/pearls.test.mjs",
+      "tests/pistolas.test.mjs",
+      "tests/quests.test.mjs",
+      "tests/raft-editor.test.mjs",
+      "tests/raft-input.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/raft-movement.test.mjs",
+      "tests/raft-production-server.test.mjs",
+      "tests/raft-production.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/rafts-store.test.mjs",
+      "tests/rafts.test.mjs",
+      "tests/sable.test.mjs",
+      "tests/save.test.mjs",
+      "tests/server.test.mjs",
+      "tests/sim.test.mjs",
+      "tests/stage.test.mjs",
+      "tests/store-host.test.mjs",
+      "tests/store-sql.test.mjs",
+      "tests/store.test.mjs",
+      "tests/tattoos.test.mjs",
+      "tests/tattoos2.test.mjs",
+      "tests/tiers.test.mjs",
+      "tests/tinta.test.mjs",
+      "tests/tormenta.test.mjs",
+      "tests/weapons.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/world-state.test.mjs"
+    ],
+    "testFileCount": 74,
+    "tests": 745,
+    "pass": 745,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "durationMs": 181673,
+    "exitCode": 0,
+    "log": ".scratch/demo-update-20261006-test.log",
+    "logSha256": "824e6b42c31ec81647e65027d53b110d16a7854385c0147df93c209922da7faf"
+  },
+  "build": {
+    "sourceSha": "f89bec5fdd89cf1f0ceb04cb4e131832052bfee5",
+    "version": "0.6.0-alpha.4",
+    "protocol": 16,
+    "files": 146,
+    "bytes": 2133583,
+    "allHashesVerified": true,
+    "output": "dist/0.6.0-alpha.4-f89bec5fdd89",
+    "manifestSha256": "742440335fe96fdf75c8d767194150f6355b4dc0a35c651a90c8e7a0fab44fd9"
+  },
+  "public": {
+    "sourceSha": "f89bec5fdd89cf1f0ceb04cb4e131832052bfee5",
+    "version": "0.6.0-alpha.4",
+    "protocol": 16,
+    "files": [
+      {
+        "path": "assets/manifest.json",
+        "servedBytes": 546,
+        "servedSha256": "af387fa68f2c57ae8053be41e8341ebde0950e15650397579b937c80e25b77a8",
+        "committedSha256": "2595f7f1c9b28bdce34cdda5759bfc20409414fd66f6b705282b48b0a97c341f",
+        "normalizedText": true
+      },
+      {
+        "path": "assets/models/prop-storage-crate.glb",
+        "servedBytes": 51684,
+        "servedSha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273",
+        "committedSha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273",
+        "normalizedText": false
+      },
+      {
+        "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+        "servedBytes": 82878,
+        "servedSha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719",
+        "committedSha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719",
+        "normalizedText": false
+      },
+      {
+        "path": "assets/textures/raft/comic-materials-v1.webp",
+        "servedBytes": 308536,
+        "servedSha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54",
+        "committedSha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54",
+        "normalizedText": false
+      },
+      {
+        "path": "src/audio/ambience.js",
+        "servedBytes": 4586,
+        "servedSha256": "4d67992d51e9b380d86ec87820707860a31ed87c9aede9336ed90c97a1f65d9f",
+        "committedSha256": "92db24e77af244dd6499548eb7e9d98905d1235ca2388215d749813909a73f08",
+        "normalizedText": true
+      },
+      {
+        "path": "src/audio/engine.js",
+        "servedBytes": 2974,
+        "servedSha256": "e729e211097abb189a30b2f376384afa12688255dacf44a03bd95ab0f9a6d478",
+        "committedSha256": "0cb0c2c49066c2865d5bca9e56e0d4e656c4895338f8c82e348025ba98a43df3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/audio/music.js",
+        "servedBytes": 6509,
+        "servedSha256": "4d6276d1f9c3875bd3c8255cf6a564cff2b437074b9bfefa8ab6b5e060fed1f1",
+        "committedSha256": "7871ae2357b9928e9d1b4c6041966372796c361dd0a3150ec7daa0206b6af588",
+        "normalizedText": true
+      },
+      {
+        "path": "src/audio/sfx.js",
+        "servedBytes": 29020,
+        "servedSha256": "df89d2fff4fb5e51b465dfa3a4d3000ca1eb5cc0af1702ec362332eeb03d9889",
+        "committedSha256": "5f9dc52688f06bd47df90295b8c1a0205913b4dac458c24fa2e0e26fd8474e66",
+        "normalizedText": true
+      },
+      {
+        "path": "src/client/accountAuth.js",
+        "servedBytes": 10212,
+        "servedSha256": "64ca4a5f442b71b0295fa5e38da577c5584791b1d8ad5a426baa12fe897db4bf",
+        "committedSha256": "64ca4a5f442b71b0295fa5e38da577c5584791b1d8ad5a426baa12fe897db4bf",
+        "normalizedText": true
+      },
+      {
+        "path": "src/client/aimcast.js",
+        "servedBytes": 2687,
+        "servedSha256": "66bf189182a2fd24a5a51098d1e1b501679cae94830f65b5342050e00cf3ebcd",
+        "committedSha256": "1827adc0ef379e60c939973b0242915ebb2887bdf322222392db083bec2ab54a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/client/gameClient.js",
+        "servedBytes": 32445,
+        "servedSha256": "c1429ee241140dc6b02cac9164a8ee6ff931d209722195a0c505f632c7614cf3",
+        "committedSha256": "c1429ee241140dc6b02cac9164a8ee6ff931d209722195a0c505f632c7614cf3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/events.js",
+        "servedBytes": 446,
+        "servedSha256": "fb074f2f134c9a1c68f4fd60c30a6185e10525ebecae9f1883e0cd1d3bacc73a",
+        "committedSha256": "b2d0c49e8a073177a74c7f34530d47fd27c1e09f922d5020006403254397ea05",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/input.js",
+        "servedBytes": 11603,
+        "servedSha256": "127c60542b0710b79168b8102f82cc25322bc2525fe728aa67b33b670e67269e",
+        "committedSha256": "0b248754af18fe35a496290c1c2818470f06e0007a04035376d5ba435a04bcef",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/loop.js",
+        "servedBytes": 2226,
+        "servedSha256": "e9db5f26df91d11e2b1421b621c8b24bdbd66292dbcaab8ba644c2cf4f169ecd",
+        "committedSha256": "407a4b5e4e51ac0430656fd8e5b68606fe53a5ecb62bdb612dfab86c060b74db",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/math.js",
+        "servedBytes": 2132,
+        "servedSha256": "a5294fc7424a2c58cc684f560970d589d70e0aadff46f45e7b9f91e3771d99cc",
+        "committedSha256": "1612f441996e987778e9792f366e3467153a9c7f0f58d711e76673efa5c396bc",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/rng.js",
+        "servedBytes": 1270,
+        "servedSha256": "46790fe186af23809e8be35ab41294160b30e12d6f70ee162616b1a61e9267b7",
+        "committedSha256": "4b1e6ed62d6284a18f3d15d19130af8f729f28a4c5c6a276de0707f0814aa757",
+        "normalizedText": true
+      },
+      {
+        "path": "src/core/settings.js",
+        "servedBytes": 2275,
+        "servedSha256": "219edfbc71d4ebc4a72a1e304223d6616647e7d1be7e9bb5e45a4f40a1eb55e2",
+        "committedSha256": "92354fb21d0d563e094e1f82e48c0706db9f8ec4ed05daea6fe752fa5b88927e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/buildings.js",
+        "servedBytes": 2425,
+        "servedSha256": "85aa98d7de925d805830a72a57b310578deb833255c5db64d927e63abdf7e9ed",
+        "committedSha256": "61d7461faf66ccbf8f331b4a4e5ad43912433dbd4a35bd7bef16c5a01f5a2ebe",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/clock.js",
+        "servedBytes": 435,
+        "servedSha256": "3c187a86066b2d4081b6adc2fc571b4de923ea6af680c251d8ed20e2197ac882",
+        "committedSha256": "3c187a86066b2d4081b6adc2fc571b4de923ea6af680c251d8ed20e2197ac882",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/elements.js",
+        "servedBytes": 677,
+        "servedSha256": "1e297ad9f038018f6a6b69ef1f6554ba22cacce38e9aecccfcbde68a2fd1067f",
+        "committedSha256": "1e297ad9f038018f6a6b69ef1f6554ba22cacce38e9aecccfcbde68a2fd1067f",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/encounters.js",
+        "servedBytes": 2319,
+        "servedSha256": "6511ae9474c5c8eff796dc3d649aaa794cc38d7364e3522995bac0acecbf4030",
+        "committedSha256": "39e550a47cd6c2afb623a1c480177ad50ff6a0cdb97fe5de27aeacd2d0656ffe",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/enemies.js",
+        "servedBytes": 11991,
+        "servedSha256": "b3e32f2f03d0f9af64e13c56195b6654eb2dc7154950a13a342cbeef26800a48",
+        "committedSha256": "ed2e5201bf6d995f1abdf23bf1f6416061326984d89847e952c9aa869eb8138b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/goods.js",
+        "servedBytes": 2184,
+        "servedSha256": "0e2656b3c311e5a99c1b4cb65bdadaf0e49361426eee6059ed747ba12db4c4a6",
+        "committedSha256": "ea5c425fc05177ad5a8a8aea805c86509e8000d081b1bbd1d0552aae741c2cc1",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/items.js",
+        "servedBytes": 7336,
+        "servedSha256": "abf0ffc274f64198881ed29789dc0218717b2a94e1998dd7dea1c86c9ff4beec",
+        "committedSha256": "ef9e9365bd7c44754a3e0f04e19e713ff80aa530d75e34e8f53a335b88039067",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/lawless.js",
+        "servedBytes": 2418,
+        "servedSha256": "06d91dd3e0bd78eb68f28d55a56c531d9bb483bd6277ba0316c18f6409b860df",
+        "committedSha256": "ce6094c4ee1627afb527d307a8b6f106e0d0d1616205f58de1388bd69feae95b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/loot.js",
+        "servedBytes": 1790,
+        "servedSha256": "f301ac983d42180445c86f8e5d01fb39a992488f3745289119131dbe762e017d",
+        "committedSha256": "f007c84b03e3628a86d5ca4a21505a285eb7fdaa2c12b60d6c13e5a0ac589433",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/meta.js",
+        "servedBytes": 252,
+        "servedSha256": "1cbd4d6be8a7a0751162fdee7189c1fae22720e35f40e573b57e6cf5e7116709",
+        "committedSha256": "1cbd4d6be8a7a0751162fdee7189c1fae22720e35f40e573b57e6cf5e7116709",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/navalHandling.js",
+        "servedBytes": 511,
+        "servedSha256": "f0b1d623c103c0c26b6d72f8eff996e8e0f8366acb905d5e07716d0338d5c450",
+        "committedSha256": "f0b1d623c103c0c26b6d72f8eff996e8e0f8366acb905d5e07716d0338d5c450",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/pearls.js",
+        "servedBytes": 2413,
+        "servedSha256": "8ad387abbe06a2e15776a8b7b1e4a67bb12f12becb508dc4420b8f38a97c8412",
+        "committedSha256": "8ad387abbe06a2e15776a8b7b1e4a67bb12f12becb508dc4420b8f38a97c8412",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/quests.js",
+        "servedBytes": 5757,
+        "servedSha256": "d9186cf9bc38368d07d6224646f9b627a2b5c24e26a775fa70c84c499bf135f1",
+        "committedSha256": "031df4dc297d0c6e84ce28abe28c9596cc61a3c5836bd17d9dc5e4d38012992b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/raftEditor.js",
+        "servedBytes": 1799,
+        "servedSha256": "6324aca3778a2acca14f4385e96cfae1d762764c65ed000204c7cbf25ba16c16",
+        "committedSha256": "6324aca3778a2acca14f4385e96cfae1d762764c65ed000204c7cbf25ba16c16",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/raftparts.js",
+        "servedBytes": 5464,
+        "servedSha256": "5dd464c64a3393be5118c3c44c940e651c4a8676d5fa58b2cfd38e85f1d53581",
+        "committedSha256": "5dd464c64a3393be5118c3c44c940e651c4a8676d5fa58b2cfd38e85f1d53581",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/ship_modules.js",
+        "servedBytes": 179,
+        "servedSha256": "0fdaf15e300bd5a4947e6407259518e6d36e8833b43eea3d3862a8ba025a5d2f",
+        "committedSha256": "8f67939bcc153b0d5868e596c138afb5ee65a66debd769b331a38cd8725570f3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/ships.js",
+        "servedBytes": 3461,
+        "servedSha256": "4a51299af728bbfc18497c3ed015098803e95c4a8cb1fd964bceb3eb61db45b9",
+        "committedSha256": "deab7a74e7029b03031630d710c2f77c73994f29c2780b50d9c76828f41bf93c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/tattoos.js",
+        "servedBytes": 4736,
+        "servedSha256": "6f2f09612339e5d4068c5109312c7c10922d600774dbb4877b3422fe5b3cb646",
+        "committedSha256": "5bbc7276f0ebbf705c8852d8449ee860d1669217e980a339293eb3a005175c0a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/towns.js",
+        "servedBytes": 3914,
+        "servedSha256": "fa467505246de93b3025e93d783e9f384b72100a276bc64b2c16825e2fc25c77",
+        "committedSha256": "54dbd4b5bcc4e280554a0381fef34a88e06ab7849f9ee3c79496b0dcf8e1951b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/tuning.js",
+        "servedBytes": 7654,
+        "servedSha256": "d8c84d4131b8239bbc49f63ab6d84ce4593ec7a355931043b368aa4343d3e623",
+        "committedSha256": "818c9aa5cd328bc2bb9a34fa277ce5879a919c36ff6829ec25f05ffba14c7c34",
+        "normalizedText": true
+      },
+      {
+        "path": "src/data/weapons.js",
+        "servedBytes": 7790,
+        "servedSha256": "28a6a1e96053e324e442e5cfb7647b0c06f48cdf84555115aa58e7a30f5558e7",
+        "committedSha256": "673af804a6792a0f417ad36e2d857bf70d4812397ce8f2b972c99a580e0b5a92",
+        "normalizedText": true
+      },
+      {
+        "path": "src/main.js",
+        "servedBytes": 74868,
+        "servedSha256": "70e9aed6be2d8ebd5e5a87a060828af14bbddb38b1c3fc0012e4cb19bd8a5a60",
+        "committedSha256": "70e9aed6be2d8ebd5e5a87a060828af14bbddb38b1c3fc0012e4cb19bd8a5a60",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/lagLink.js",
+        "servedBytes": 1445,
+        "servedSha256": "311d7e4f8a7a8c72e1a73945d5e5458da5738a9eaa6adffd852b4c0e435e17bb",
+        "committedSha256": "6a01209b91b8229c867c8668298382c82eddbcc84cb19b7619ba8112cea7c7b5",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/localServer.js",
+        "servedBytes": 24489,
+        "servedSha256": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825",
+        "committedSha256": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/protocol.js",
+        "servedBytes": 3820,
+        "servedSha256": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f",
+        "committedSha256": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/saves.js",
+        "servedBytes": 1429,
+        "servedSha256": "07bfb309814c5a6bafa948d86e7b1c9e567eb451253f663db9f385eb25a34bf4",
+        "committedSha256": "432e5c5ae1887cdcb68a5672ac04174240d42cec0129b71cfec97c36623d0809",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/transport.js",
+        "servedBytes": 5919,
+        "servedSha256": "d33b33c4c04f0f309a4ca837a1891ce2a100498da94c3c3a1f6bf3b04ebb1527",
+        "committedSha256": "9f9741e9f606af09e660de050e51849bac8ec928c9763259edc6e73a25f8c76c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/worker.js",
+        "servedBytes": 578,
+        "servedSha256": "3fe909e8977074b21f3f93fa21f71002ab30827cf92c8aa375d029a940aff13c",
+        "committedSha256": "bcf5041699823057aa8ab0331b4ead421f579cf79ad6ecc22467608da3428581",
+        "normalizedText": true
+      },
+      {
+        "path": "src/net/wsTransport.js",
+        "servedBytes": 3247,
+        "servedSha256": "ab71cf2a0dd0e8387f91ce8b23da6c2cd6e2190bf09c5ecfa26ec61b32742f3b",
+        "committedSha256": "cae3b3495131503d527010fcb755849ab2ac6998ccb1d3a1cd2d9c4471ee0c99",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/ambient.js",
+        "servedBytes": 8252,
+        "servedSha256": "3205d2d884da165539293b1003aa863fd5a6c494545c0ad5c720960f21fe45a3",
+        "committedSha256": "879569df54f36f923e3a6b8727b87e4307c2c9c1fed17f9e527ef35c44a4ab45",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/assets/bonemap.js",
+        "servedBytes": 8447,
+        "servedSha256": "b805f0690030cb0432bba5d14fbf0c32592467d4ae2555429c2bce0d55b278ff",
+        "committedSha256": "a83ab469623cb482ac8de5c7079f6c0c11335df492b43bc0e787169fe7a9c37d",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/assets/manifest.js",
+        "servedBytes": 10186,
+        "servedSha256": "4a60e49ac2f0b0647502d8af5f928c56dc0bc152ee1fc983ab7434ca866c6226",
+        "committedSha256": "2b1a0dfe50aa3fce82b79924409299f6fda05d7d11edfe8fa810e90cf55c2315",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/assets/rebind.js",
+        "servedBytes": 15161,
+        "servedSha256": "f3c7dad0db65df8224bfc80f31ef99f37682387a638d70618167c1c97b794825",
+        "committedSha256": "d97a237ce9344aa9495d4f85a642e850527eeeec440b26e478e482fac74d1a41",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/assets/registry.js",
+        "servedBytes": 11270,
+        "servedSha256": "9d78f4bbe4e924fd2618a5ab30291d55fd03a349aed2b45588591067d4c77ca5",
+        "committedSha256": "05ed3204668c03ca9cce784551c3f2d941954e71e7a3e75072a3c32296caa17a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/assets/toonmat.js",
+        "servedBytes": 4367,
+        "servedSha256": "82f9377cc7785b392f2aab4589657e462a4b1bc335d8f133a47932b88c8e2ad0",
+        "committedSha256": "b66b9be2736f32f02d0406ffa2a9f69c7fe498b7726bb2ed2ed133875a68d1f1",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/camera.js",
+        "servedBytes": 5523,
+        "servedSha256": "4a4e66310b2f8c1ea60747aacf175615d25e87762f7c4aa1c4158ebcecd11483",
+        "committedSha256": "7ddf987b25a3e20030d4fcaeb6102cfc49b951a4ab78eb5975a6d850c37c8309",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/characters.js",
+        "servedBytes": 30452,
+        "servedSha256": "c2798cae466dc92b031b22e77b0c401d96cc1d6b973cad4d3e8dea4ee0e980a0",
+        "committedSha256": "7b6c3cb007ebfa03b6e6d592a91218faffd367576ee87687f261f62f9eebf723",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/charkit.js",
+        "servedBytes": 12761,
+        "servedSha256": "6c2ece38710e28fe52975a900c509aaf5416c5ca67ae35c178b303bba8f576f1",
+        "committedSha256": "3421a399d2196e58b7473ab6aae801c71093883d0bd4d7a023c235ebff204898",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/charlooks.js",
+        "servedBytes": 66602,
+        "servedSha256": "4e2b1441fc7a62a253ae2a3953bbc2e35f054eafb7f3cffc945bbf30ef0f6b91",
+        "committedSha256": "fe38c35a60ba90c8c33ac8e2105333d2cb9ff6dcf40031ce05dae29aabfd5506",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/crab.js",
+        "servedBytes": 7927,
+        "servedSha256": "9e7500b8cb8a1503ae0293dadf56cdc66089779df20852713a39361e7d7b7a36",
+        "committedSha256": "65afba867e4afd1a3e272458bb892f49712dd5580e8d56549c273f0ac9874adb",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/debugdraw.js",
+        "servedBytes": 2423,
+        "servedSha256": "a03013fab7093dcc70ebc4f685fdc5f88f63934f4c27d770af715e809ad826e0",
+        "committedSha256": "81eadeb1fc3947decd0e7bb0c16e890ceb3d0ecf88b69aae41b056630d8e597b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/geo.js",
+        "servedBytes": 3968,
+        "servedSha256": "d9f38876b51d095969a16bb1872c6e498b007e99a89ba4322cc6c89f28ab26a6",
+        "committedSha256": "017f6771c35223e3695d713716fb31e5245f887a6491cfd9c67885ecea81212e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/gpu.js",
+        "servedBytes": 2295,
+        "servedSha256": "a28f56af1481fec7f0273f02aa124a49e99c77876fed20d804bd54aadac4d76c",
+        "committedSha256": "54c30c0c3b8f7a185f1dfeb9f326a1c0eef3946181229a0c2ec3e26d445edbda",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/inkGlsl.js",
+        "servedBytes": 4595,
+        "servedSha256": "901b34d32899b24734f9d51fe66d508df1c1ef3a4f97dcca9fc63748cc5d50a0",
+        "committedSha256": "78b2a0742b89387b1a7b32371ef8f541ba1825110c7edf6ceae3c6cbc0c85b7c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/lighting.js",
+        "servedBytes": 9816,
+        "servedSha256": "14a16da88c21a9da72bf1938e739f95a0927720d925024f05cd6a7b8bb140c51",
+        "committedSha256": "0c9a76e808873351b4194f61954f082767caeda4198a072d8e21d3b2877b19c8",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/lights.js",
+        "servedBytes": 7078,
+        "servedSha256": "22218127085c129b8e19d0def24fc510e10279651875f41f4a6809f51877446d",
+        "committedSha256": "0e1e799d111e5c0ef3780c03e1bde6a761bf1ae96e1945483209b80d2491fb86",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/loot.js",
+        "servedBytes": 15386,
+        "servedSha256": "c1ea73dabf3592fa0afe7a202f9b7c7a0e8acea5027b3ae67f5bab5c22bac967",
+        "committedSha256": "edee4ea38c72421232aa5d92f7903a54861cb9e0155cbf9c68381a31c895c5b3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/noiseTex.js",
+        "servedBytes": 4941,
+        "servedSha256": "8cbb2ccf6b56101cb5532c705cf86a88b364cbaba4c42d7fb9707b0ca08e944a",
+        "committedSha256": "5dd91d627f9cbaa938167ee88f9417f095dcbf8d551866d48c8c4a7bc6afc075",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/pipeline.js",
+        "servedBytes": 27983,
+        "servedSha256": "703e8753c5911b071613bef95fed22e7e143d075172f538fb9bb419c888ff187",
+        "committedSha256": "0129b15c77440cbd0c24e50b8bdee263c0d41960d612a2d9d808fbf8cf409719",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/practice.js",
+        "servedBytes": 7016,
+        "servedSha256": "40851f5b39842eb7faf824636e727a2b13344d0e760b758ddefbcc22c37ea743",
+        "committedSha256": "103787184d17db7d59e58ac9e6a26aff39751c67ca4ba2694a6612434f224850",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/props.js",
+        "servedBytes": 33913,
+        "servedSha256": "4f47d66ce40536d456dad85b75650a5c506e9cdd20d32bdaac38af404fcf5592",
+        "committedSha256": "a73cae134e523e92bd7cb7d689429aca733a25367ff9a60d401b30073d748e62",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/quality.js",
+        "servedBytes": 2454,
+        "servedSha256": "a98bd2bd1082b0b01b96762a6864f87228f940a426884c59bd0f40b5a26a2773",
+        "committedSha256": "c33dd0857d344a6147ae36974148db07566a3fa45ccc2eb8311d4b81c10d419c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/raftMaterials.js",
+        "servedBytes": 4894,
+        "servedSha256": "ffb10b5481df7412c035c7dd6ca52476ad076f4b14a93e51272eb65fb2006c60",
+        "committedSha256": "ffb10b5481df7412c035c7dd6ca52476ad076f4b14a93e51272eb65fb2006c60",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/rafts.js",
+        "servedBytes": 30013,
+        "servedSha256": "221868009ed962a55ea6cc23df4b55ccfed15a846f76476261785324edc96a0e",
+        "committedSha256": "221868009ed962a55ea6cc23df4b55ccfed15a846f76476261785324edc96a0e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/scene.js",
+        "servedBytes": 19117,
+        "servedSha256": "71ec5503a9161e226de7dc3deb0262ec7af9de8e577f07be01b320b9fb318fec",
+        "committedSha256": "71ec5503a9161e226de7dc3deb0262ec7af9de8e577f07be01b320b9fb318fec",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/sky.js",
+        "servedBytes": 3652,
+        "servedSha256": "2ef7870bd4a8d03667df01547190d8847407b3d246f4c563b7c3bc22429ca143",
+        "committedSha256": "8127da09489a88cca679f523c8d4b4c51048faea03c011c8276b54e4eb2f0db0",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/terrain.js",
+        "servedBytes": 14985,
+        "servedSha256": "cb08f82ca7e0b10d4f7d37c1623870f27e323b3a1c016e2bdcaa1142ed172872",
+        "committedSha256": "417b98af38a37696538dbd6923be456ab53312ad38c05c84b6dcec386693a307",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/toon.js",
+        "servedBytes": 25950,
+        "servedSha256": "8a2ff5060f4fe2b6a97593a8f679ebb6c229ab1ae45cdc77ccf0f3100c7a0f96",
+        "committedSha256": "8f0f117e47c2c890b040aa6ebf9cf8945aaf16ae7723c67941ad7b1d8295529b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vegetation.js",
+        "servedBytes": 15126,
+        "servedSha256": "79d046a8d13cd625467166ff3c0babac1416eb5e38860aa681a3b2bef54e682d",
+        "committedSha256": "d9e9bfe2af7781550c70f88d1a285e36fbc97c9849288b004496326dd748fb92",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/afterimage.js",
+        "servedBytes": 4226,
+        "servedSha256": "83464f59c37e88c33ad5060a01a44889bca066964f1c0bfa918e9a811fce5f56",
+        "committedSha256": "e8db7dfe5eeee878ed383be05eacc086ec2acc12ecbb0132680eb74972c1317a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/calaring.js",
+        "servedBytes": 3298,
+        "servedSha256": "d375f7bd726a3728e474afc76f1cb4f296de42529ae8e7c79aa01ac3aba162cd",
+        "committedSha256": "0056ff703b3482b32c329d6bbfcd67c8531f1f728dae44ad02e5d9aac6571cbf",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/combatfx.js",
+        "servedBytes": 9164,
+        "servedSha256": "11703cd41a6f0f3083f0dbef2fa63b087a5d5bea61022f700cc8125df400b819",
+        "committedSha256": "c9c054f3c27537170ddf191d88788f2e2065b134c8fdcd5768d773151a4c6842",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/debris.js",
+        "servedBytes": 4783,
+        "servedSha256": "667b843a3bc76cc4c07d39c44cb44ec7c2e98620bdb4977b5568049058815195",
+        "committedSha256": "db8807c91d61f22ac2a00d55ca6c3239f2648e9be1a5d0468d18aa0c64854f22",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/decals.js",
+        "servedBytes": 8307,
+        "servedSha256": "47675cc729dca0ad390c7c118728e461ce81d1c50b7b6c0b7680ee35daff796e",
+        "committedSha256": "e6f57779607058c4663a805c7c943cda1e8355d643de92986b31a43862836b1e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/effects.js",
+        "servedBytes": 13460,
+        "servedSha256": "2e74dd01b2b371c53371d6a15cca5191340a80cddd04fd8c43f5a005a6fcc236",
+        "committedSha256": "261f80205a96a34f99c3cc6cc2242370d76772807ee9efcc9c13a888adb37ee7",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/frostfx.js",
+        "servedBytes": 6150,
+        "servedSha256": "b6918f889a87f66494e05522cd6271dc0f842e588943c2162fe6bcb3262e9bf3",
+        "committedSha256": "b6918f889a87f66494e05522cd6271dc0f842e588943c2162fe6bcb3262e9bf3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/hazardfx.js",
+        "servedBytes": 11748,
+        "servedSha256": "7afd7546b5460610fbafa3c186cf6034427b4253464195084a6a0d9b4db3c566",
+        "committedSha256": "578921403e367ae3d8390747e1ec8d11a46e4ccdb3818a75051ecadf4bb10b73",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/indicators.js",
+        "servedBytes": 15908,
+        "servedSha256": "c6a15aa34612c7d1d8a2588119cbf0f942af9bf717829ac017f5a7d2cc0ffe0d",
+        "committedSha256": "046139320c4625bc9b027cb47112cd1ac25fb8ccd255e9316fdaf6c19837cf1f",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/inkfx.js",
+        "servedBytes": 8710,
+        "servedSha256": "575c5777b9ae81d704346025995ade1e5ffb1fcbb83cd870f6a75621ae4afbd0",
+        "committedSha256": "575c5777b9ae81d704346025995ade1e5ffb1fcbb83cd870f6a75621ae4afbd0",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/particles.js",
+        "servedBytes": 9387,
+        "servedSha256": "64e032b3ef6c89674bb5833714aea214ffff31f0bd5fa14257df5aabc176b3dc",
+        "committedSha256": "9bc327fcd79aee9fb7b3ab489fb607dd60fe83cc3b3d35b3cdc45224cee530f6",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/projectiles.js",
+        "servedBytes": 12308,
+        "servedSha256": "abfa515ff278c6bf84fa69543585421c263fceae6409e21477bcf588520e2809",
+        "committedSha256": "500668e6e815fd928da8c63fbb81f9b5f5084693b4a4882676708f5bcead911c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/skillfx.js",
+        "servedBytes": 25130,
+        "servedSha256": "e1783dc04ae0b2f93c8637b472931d5b2ccebb88dd8f01a2aa1ab6bbbe5db88c",
+        "committedSha256": "470f54807cfded6ec86b9f264099c707b64ede9eeb89b58ce818697fd699744b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/stormfx.js",
+        "servedBytes": 5495,
+        "servedSha256": "0ce5613f7a927a795e60fba030bb97ec1a58f0bacd3b95174ba8552e8a6abcf5",
+        "committedSha256": "0ce5613f7a927a795e60fba030bb97ec1a58f0bacd3b95174ba8552e8a6abcf5",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/streaks.js",
+        "servedBytes": 7020,
+        "servedSha256": "4d9c017f0c5b4088d561b4341802eb84500691e6d6b96a894a94385ef14ba099",
+        "committedSha256": "0576371a54ddbaf28958b47246651576122812668a9a303dd263d245fa73cf3e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/vfx/weaponfx.js",
+        "servedBytes": 9610,
+        "servedSha256": "c114347e0740806ee1f0e359566de607807a185ceb057de4c1c4a1ea6094ab67",
+        "committedSha256": "832a8ef0dafd5317b3f93207aac4b52b6f367edc65527211c9704ea592a89c6a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/render/water.js",
+        "servedBytes": 11651,
+        "servedSha256": "e06f80bed046807b0448e75f8061d2543ab57ab761a763a50f855fa562b73704",
+        "committedSha256": "63e23603e17249c04ad17dc21a8598c39d1a84c5d66e313ede0ce610ce785bcf",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/cargo.js",
+        "servedBytes": 1915,
+        "servedSha256": "6a7dd2f255c078a168ba3d8b8fd05be6e58d3e59f1ffeeef8e77716715dcb9f0",
+        "committedSha256": "9dae2857c875959fca20fbfb47eab6f01fdac53107d9904e7d24fb95de1b67d6",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/economy.js",
+        "servedBytes": 6311,
+        "servedSha256": "eae1b18d77501fac1d61c19e0fa2cc847bc96a47521fe77edb11dcf08b8535e7",
+        "committedSha256": "1f180f36e99301189874a80fb83c799821623e17096dbbfb6256170edfa8a14c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/market.js",
+        "servedBytes": 5367,
+        "servedSha256": "be514778fddf60b9c95bc48580894d81861fd34a6654fbb5268c64f232c4233e",
+        "committedSha256": "6fc4968f4e749dadd27e385e83756b352c59f1a46be422bdf7bf3a3b4b47bb96",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/plots.js",
+        "servedBytes": 4234,
+        "servedSha256": "7a345387f9f37debaed7b6e888e172640a586baaee4c0c8dee48a1f25e582dfa",
+        "committedSha256": "9d776b0cb9cd19cb9b655c801a4135c8edcd9286048c205b8b621863c7339108",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/raft.js",
+        "servedBytes": 11738,
+        "servedSha256": "4129a14aa5d7a0551792169e4be1bba647bb0db9d9ec2f24c88a24b569d8d580",
+        "committedSha256": "4129a14aa5d7a0551792169e4be1bba647bb0db9d9ec2f24c88a24b569d8d580",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/raftProduction.js",
+        "servedBytes": 6187,
+        "servedSha256": "1eb5e03dd99d78c5538a03216bcc88dcc4c955d0800da3fed4f412bc38c0564a",
+        "committedSha256": "1eb5e03dd99d78c5538a03216bcc88dcc4c955d0800da3fed4f412bc38c0564a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/economy/voyage.js",
+        "servedBytes": 4805,
+        "servedSha256": "a71a43f837cb8af36a4c02c51eac094f85b77fd901ecfa63698dd6d82f5bb864",
+        "committedSha256": "24a607c2afe8fe0b678e376de4ca71610c6507bac177ddbf44a313a2b1afc7e2",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/ecs.js",
+        "servedBytes": 12422,
+        "servedSha256": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+        "committedSha256": "8c91a0cb70da533421644c06ac9a684639d7a9aa311ef32f334c6db1e2ceba11",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/items.js",
+        "servedBytes": 5680,
+        "servedSha256": "3152271e4c16f9955572c20873eae70910815074c6132a009787ddf491b7f1a9",
+        "committedSha256": "24e3de94fc62d7829dde02b9fc8bcee7c75f851691470eb560ef15c83c2a2e9a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/naval/handling.js",
+        "servedBytes": 7570,
+        "servedSha256": "ffe206645fbfb45ea91a55815d5da79c9a693e7554e25bf9ea0cbb36b40aeaf1",
+        "committedSha256": "ffe206645fbfb45ea91a55815d5da79c9a693e7554e25bf9ea0cbb36b40aeaf1",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/noise.js",
+        "servedBytes": 1755,
+        "servedSha256": "0498bef98336ce6414602d7ae8a5e2a23e54aefef370973699ff2e8a9679316b",
+        "committedSha256": "48a681a6dc1b919cb4bff10a3179bb7b375f6ba4bd36c2a35b66a85bd299944c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/projectiles.js",
+        "servedBytes": 29463,
+        "servedSha256": "ceaaf227fda6083df519ae9c60656bd357b2f0ef7ec3ce051e6834f69e7ea5a8",
+        "committedSha256": "b9484687e09dbd32e0c284d518ae83dd886bcf55e96084a6672da29db6c2de1c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/raftGeometry.js",
+        "servedBytes": 7611,
+        "servedSha256": "a5b3c395fb50534feeef5e498d563768a0525eba1faf6c7749848ebf22d0341a",
+        "committedSha256": "a5b3c395fb50534feeef5e498d563768a0525eba1faf6c7749848ebf22d0341a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/boss.js",
+        "servedBytes": 11862,
+        "servedSha256": "c3d34159172e8f9bde526a17cfc585bddb13a60f02f5c4297069b948c7d89f77",
+        "committedSha256": "717c2be0d18a60fed49ea7992e22cedb32b2e6a984a142ee8c0451ccf12346fe",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/bots.js",
+        "servedBytes": 1622,
+        "servedSha256": "d2cfcd9539d95073b6660b7e2c925d2b96435208c6b14979911f50278c5ac4f0",
+        "committedSha256": "1bf58501cfcd7921ac11fc8b5b4b75d08c65f34a3e8fdb8fe6958edb7cbddc62",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/combat.js",
+        "servedBytes": 38064,
+        "servedSha256": "fa1cce6ad19132b89d7909c6363697237d3f531d3e74f25851f0dd6356f4bb89",
+        "committedSha256": "a730e1bf66935d0f83bdff0b079b4d6cd16546a0aee39d78902eaeeedd6eb6e2",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/commerce.js",
+        "servedBytes": 12706,
+        "servedSha256": "015be87531cd58bb40b7a9880a38935706ee04d7b83405469ac11897aa0b9fc3",
+        "committedSha256": "015be87531cd58bb40b7a9880a38935706ee04d7b83405469ac11897aa0b9fc3",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/encounter.js",
+        "servedBytes": 10607,
+        "servedSha256": "3593434eca80f83192e04e06b010cbe8047b0b8777920ce8391b0414d5d0f35b",
+        "committedSha256": "2b2482a8113eb8ed8fcde93d6d1590dae0af9f0a893df992162184afd6e6f5c8",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/enemies.js",
+        "servedBytes": 20719,
+        "servedSha256": "08bfe7bb1c8d5df68946d176e85e41a53cb0bc9b84eb8ed684572e8dcbe3760f",
+        "committedSha256": "a6b08a3fee24d6697522b93ec9e47e53a2dbb3c13023148d55b6afef4a6db59a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/ink.js",
+        "servedBytes": 2959,
+        "servedSha256": "ef66deacb7f1e312a8ded62af544bd61e0c10dbe13fc02ca2bffa58f00369586",
+        "committedSha256": "ef66deacb7f1e312a8ded62af544bd61e0c10dbe13fc02ca2bffa58f00369586",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/inventory.js",
+        "servedBytes": 33552,
+        "servedSha256": "2c60931bd2ecd78bd0d128643191c485b41ca5eff8959b6ee0c0aa3694339fee",
+        "committedSha256": "da34e995584bba4e4f5bf81297ae01b4470be629e8882959054d3f490bbb0bb6",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/lawless.js",
+        "servedBytes": 3059,
+        "servedSha256": "12ed94ec4b6da4a02b7aa6e911237d9d258f2e25e3c8042082104496b2d90358",
+        "committedSha256": "ceb1c95f2394bb00a5631de03915c2d7be0110c45d7c96c3fde2c4d9c5f01d94",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/movement.js",
+        "servedBytes": 9524,
+        "servedSha256": "360d0b6bf66cbbf0d858a0a9a29797bcf57f1488d79d69331d4276ea6c6b61af",
+        "committedSha256": "9bb06765c871f57acd0908edbcc4c6b4ebb4ef262d388e1219cfc7fa8e970b60",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/pearlcombat.js",
+        "servedBytes": 5585,
+        "servedSha256": "8da98b9977286f1b0ce7573e4251f46f9111b79427a56ece48c94a78d7c7f73f",
+        "committedSha256": "8da98b9977286f1b0ce7573e4251f46f9111b79427a56ece48c94a78d7c7f73f",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/pearls.js",
+        "servedBytes": 9502,
+        "servedSha256": "4f64f717570d1dd2ecedf5501b5730169dfa1c6ab308a7db15172ed746566452",
+        "committedSha256": "4f64f717570d1dd2ecedf5501b5730169dfa1c6ab308a7db15172ed746566452",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/quests.js",
+        "servedBytes": 9544,
+        "servedSha256": "da9516c0a4fab77cb4c2cd3260321a1808c6b34016c33cfedf493ee24e75584d",
+        "committedSha256": "79805669d4fdf7bb39097f0b6bfa9ad8aad7bc292c950e3c9ab9d311e6d82846",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/raftEditor.js",
+        "servedBytes": 19915,
+        "servedSha256": "fc4803a2ddc7083c4d51390187b28892f2ab574d0d38ddc6da20db17ea4a2ade",
+        "committedSha256": "fc4803a2ddc7083c4d51390187b28892f2ab574d0d38ddc6da20db17ea4a2ade",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/raftProduction.js",
+        "servedBytes": 2229,
+        "servedSha256": "264a49835eb6a2aa650e9b1f1cf33ec3b5324272679e341e79e561a7c07fc39a",
+        "committedSha256": "264a49835eb6a2aa650e9b1f1cf33ec3b5324272679e341e79e561a7c07fc39a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/rafts.js",
+        "servedBytes": 6705,
+        "servedSha256": "775eb512be626b1a537a0d4e5af92e8316bf3a9b7f637846d11b42272a379db7",
+        "committedSha256": "775eb512be626b1a537a0d4e5af92e8316bf3a9b7f637846d11b42272a379db7",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/skills.js",
+        "servedBytes": 39108,
+        "servedSha256": "e5bc6f8d4bbf66df69eb73a4116b98451a6b8cd5b70b8b0c95991453805956b4",
+        "committedSha256": "fe639556d6971a03dd349aaa70744780e1a0893b1eb1a5029259c2a8aacaa3a7",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/stats.js",
+        "servedBytes": 5671,
+        "servedSha256": "57d604813ce445f1357db380acb0c0524fe5dfd57dff5e0b8ba01375925a0b87",
+        "committedSha256": "2d6df7c144d01e9f5b66f259ede516d82b14bff48430536ba0dbe824a1e0b8e6",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/systems/trade.js",
+        "servedBytes": 7867,
+        "servedSha256": "2aedcc76719dba40eee2e3c93e125fcbe38cb5cffa170533be525307c3129f43",
+        "committedSha256": "2aedcc76719dba40eee2e3c93e125fcbe38cb5cffa170533be525307c3129f43",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/world.js",
+        "servedBytes": 38700,
+        "servedSha256": "6e9ea8681544e58aa444231fbadaaacaa9bc18ba5c98ea64b6843f915b0c38d2",
+        "committedSha256": "8c0ed2843caf13df16aa584e194fe4bba9b61091c4c46fbbfbd8d8c63a97d0d1",
+        "normalizedText": true
+      },
+      {
+        "path": "src/sim/worldgen.js",
+        "servedBytes": 32168,
+        "servedSha256": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a",
+        "committedSha256": "7c937834ba124b01dc29e1ef04d77f8e4cf60a58da7e0e048becf817fee3174e",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/account.js",
+        "servedBytes": 20117,
+        "servedSha256": "3ee041ab7b00205d9021e57b583be048087aa6dbb8fc5d6ccad7251b18f25517",
+        "committedSha256": "3ee041ab7b00205d9021e57b583be048087aa6dbb8fc5d6ccad7251b18f25517",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/charpanel.js",
+        "servedBytes": 27956,
+        "servedSha256": "1094d81c37fd011070b21b9650b408dcac6b59ef3f6111c648044ad4955e5d91",
+        "committedSha256": "0be72e004cf566e38971644331634f180d33e6587cc5403ae4c4826675b0c871",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/comic.js",
+        "servedBytes": 3391,
+        "servedSha256": "b54fcd8965e532ec333bfbae5eec20ad2c2a6f774404d68d2a041814bdcdcfb9",
+        "committedSha256": "c410ae5de7a5af47c20cd92e817b942d1a0f00a18868553261a04b792aacc489",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/commerce.js",
+        "servedBytes": 34656,
+        "servedSha256": "9683482752c049165208ab436472b79590f1d4dfc27b0da0b7ba1911c169b77b",
+        "committedSha256": "9683482752c049165208ab436472b79590f1d4dfc27b0da0b7ba1911c169b77b",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/devpanel.js",
+        "servedBytes": 8813,
+        "servedSha256": "5ee670c381a0d1728dbb1f87e05760200d56493999488c6652b0cbf9b00d69c3",
+        "committedSha256": "978bce3c9bdbd44177dca881f0836eee12d8b9770da33fb5a310fa149456aaed",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/dialog.js",
+        "servedBytes": 4327,
+        "servedSha256": "918c01d10551163720ccc35d5f2ad5a970b58127247662a44939c949876e727b",
+        "committedSha256": "2aacfe7d7a12235a10c2df2717a5d5896ab64f12f7b532edccb68129d521fb1c",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/feedback.js",
+        "servedBytes": 45568,
+        "servedSha256": "e9e14f1e6985619d78a8eccc14f5df5ea288363319e055d7615d9301a7e2580e",
+        "committedSha256": "3f7754702996edfe936ddca7f5e8a13f3e18736ff71ff5a43bb1406abaadb6cf",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/hud.js",
+        "servedBytes": 39582,
+        "servedSha256": "e5e4f31f4ea98c7a96c32c8682759860e67b9f02d39fc0633a68a12a18b01054",
+        "committedSha256": "fd1ad6abe2930c4d7bcf94ffec6fd6abf61c0d8837f7bdc51e4ab3421183208a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/itemui.js",
+        "servedBytes": 5892,
+        "servedSha256": "61c412e73589a6274f07c4fe21da71f13db69e4607891b394257c94e8d30400d",
+        "committedSha256": "8bda33366973263d9399233bcd58c73a2394b108cdb89a4b1b0b75d24db09d0a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/mapview.js",
+        "servedBytes": 8093,
+        "servedSha256": "67b0a0eabf95d7056635f926a0b7320bec5708bd1a15c1a76d02fdd3975302ea",
+        "committedSha256": "ad4afc5b02e6c1f9c6ebd21caad2b31e73dc7956e85edb2f226184317334f3e5",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/pause.js",
+        "servedBytes": 9270,
+        "servedSha256": "8c05ce2185b5369c53ba3bc3883d36f6fc0a43602abc29bb1d63abd5c22f19ca",
+        "committedSha256": "b8fcd3ade9ab44d391b235bacc2e7c7354154be3037bcc39d67eac8585590def",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/pearlpanel.js",
+        "servedBytes": 3898,
+        "servedSha256": "9cfc86095fafd8674d52a2ba545bbe751d9a3ffe742e068e2922677f0108f6c9",
+        "committedSha256": "9cfc86095fafd8674d52a2ba545bbe751d9a3ffe742e068e2922677f0108f6c9",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/raftEditor.js",
+        "servedBytes": 22786,
+        "servedSha256": "daa07035276dac2e7bf7090c778e11825d499aa0f29cf5e5559a8f5d19030e43",
+        "committedSha256": "daa07035276dac2e7bf7090c778e11825d499aa0f29cf5e5559a8f5d19030e43",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/rewards.js",
+        "servedBytes": 16254,
+        "servedSha256": "aff8a13fac497fa972c31fdf7f3cde6e2734aad519abb8f8c352ded398589216",
+        "committedSha256": "d32967d6dd791abd559bd728b50cc412f0ebc1994ce9306ec0016493c3c578d1",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/stage.js",
+        "servedBytes": 2624,
+        "servedSha256": "91c61667878d1d0b9c871b93c8ae0147bd764a13ad420cdc5db3e96c9b4cdc31",
+        "committedSha256": "e44e2f2f6093b244efcd8de0e94808f9cb5a72b7407db2912e3aae5df6f845f4",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/title.js",
+        "servedBytes": 8617,
+        "servedSha256": "f80d6b1352326ffe982eed8284ec15d00e78dd14f39f89d8599764954d810e5e",
+        "committedSha256": "fb865d0bee9b9fa0294531a1b3b731f4028b4f2822a11ac1cec5fac8c556b92a",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/touch.js",
+        "servedBytes": 19894,
+        "servedSha256": "c8aa5306e0c49b0cfa88ba8e837fdc7c4a1f383ed983c2328687b76ae078aef6",
+        "committedSha256": "27e9c936536eb6e386565354ba95934c8f5952e3ee725a7c056482ca1232fc3f",
+        "normalizedText": true
+      },
+      {
+        "path": "src/ui/worldui.js",
+        "servedBytes": 11337,
+        "servedSha256": "c5d2f7efc270d7e6ec60aef560aabb40c178fe56136d94ec15a59eb4133f4e12",
+        "committedSha256": "5cd9c5a2ee882e21e08520ecf042e8ce2c517627f7b3019aff1543e2beff4e87",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/account.css",
+        "servedBytes": 16948,
+        "servedSha256": "e79d36741e56e0e921ba257dd08bcdb893412412d8c61f987131dbf2fb566458",
+        "committedSha256": "e79d36741e56e0e921ba257dd08bcdb893412412d8c61f987131dbf2fb566458",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/commerce.css",
+        "servedBytes": 11888,
+        "servedSha256": "ee35b88fcefe41dd15002ed2847ae810d31bd519fa1ce0ff85b6e86b11240a8b",
+        "committedSha256": "ee35b88fcefe41dd15002ed2847ae810d31bd519fa1ce0ff85b6e86b11240a8b",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/hud.css",
+        "servedBytes": 38545,
+        "servedSha256": "8f657d94574916bcde796e7b931a4bb570b45e4d9edf663c0103c8b3df352b82",
+        "committedSha256": "ef920eb9afe86901901ec48fc1376982d04bf542a75227f2df228e93d2a1fe13",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/panels.css",
+        "servedBytes": 22851,
+        "servedSha256": "6974bc12202abddf35417f6322c5a740c49fa392866584c926c4186f8703b0a4",
+        "committedSha256": "c1abf82aae89cdb7c6fdcbe71acc8a12ad639d87c569ab3ae32ef6f11e825f77",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/raft-editor.css",
+        "servedBytes": 5027,
+        "servedSha256": "a9e855d1a3a6825e912c6b893e90a7e49fba16c69edae3dc43a92318d752eacb",
+        "committedSha256": "a9e855d1a3a6825e912c6b893e90a7e49fba16c69edae3dc43a92318d752eacb",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/title.css",
+        "servedBytes": 5978,
+        "servedSha256": "c437065d5de9f8fede7de2d7ae5ee37ce68f214b9601de48c192553b22220248",
+        "committedSha256": "21fa60ae161812f00ba3084909a87e238c5661037917bcd91fac6c7e8a2777a4",
+        "normalizedText": true
+      },
+      {
+        "path": "styles/vars.css",
+        "servedBytes": 6191,
+        "servedSha256": "89e19270c9c8cd59f51051f1edac919eb966e72135a3684181a1ef9b5b6ec462",
+        "committedSha256": "974f2afc9eebf01a3fc9d56df02638370f2dd004846edb1bf36751c75a0ae1e8",
+        "normalizedText": true
+      }
+    ],
+    "bytes": 2133583,
+    "allHashesVerified": true,
+    "verifiedAt": "2026-10-06T13:41:58.412Z",
+    "url": "https://glennie-uninferable-bitingly.ngrok-free.dev",
+    "servedFiles": 153,
+    "allServedFilesMatchCommit": true,
+    "status": {
+      "game": "MAREA NEGRA",
+      "version": "0.6.0-alpha.4",
+      "players": 0,
+      "max": 4,
+      "sockets": 0,
+      "tick": 2260,
+      "uptime": 40,
+      "stepMs": 0.619,
+      "bots": 3,
+      "names": [],
+      "errors": 0,
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "world": {
+          "id": "marea-negra",
+          "ready": true,
+          "failed": false,
+          "version": 141,
+          "errors": 0
+        }
+      },
+      "net": {
+        "fill": 68,
+        "late": 0,
+        "trimmed": 0,
+        "clamped": 0,
+        "kbOut": 190.5,
+        "kbIn": 4.9,
+        "dropped": 0
+      }
+    }
+  },
+  "multiplayer": {
+    "localUrl": "http://127.0.0.1:5173",
+    "publicUrl": "https://glennie-uninferable-bitingly.ngrok-free.dev",
+    "canary": "tools/check-friends.mjs",
+    "localPassed": true,
+    "publicPassed": true,
+    "protocol": 16,
+    "guests": 2,
+    "distinctIdentities": true,
+    "sharedMovement": true,
+    "despawn": true,
+    "privateFilesReturn404": true
+  },
+  "observedAfterCanaries": {
+    "version": "0.6.0-alpha.4",
+    "players": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 145,
+        "errors": 0
+      }
+    }
+  },
+  "navalLab": {
+    "url": "http://127.0.0.1:5180/",
+    "entryHttp": 200,
+    "separateFromGame": true,
+    "persistentGameMutation": false,
+    "visualAcceptance": false
+  },
+  "limits": {
+    "hosting": "PC checkout plus existing ngrok tunnel",
+    "frozenVpsDeployment": false,
+    "browserRunThisCut": false,
+    "newMigrationApplied": false,
+    "durablePearlGameplayActivated": false,
+    "navalPilotingActivatedInGame": false,
+    "d06bMobileAcceptancePending": true,
+    "d08aVisualAcceptancePending": true,
+    "physicalDeviceFpsMeasured": false
+  }
+}

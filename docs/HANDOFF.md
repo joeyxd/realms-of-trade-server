@@ -41,9 +41,16 @@ docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
 
-## 3. Estado (2026-10-05)
+## 3. Estado (2026-10-06)
 
-Prueba desde el PC: [lanzador y evidencia](delivery/pc-host-playtest.md). `JUGAR-CON-AMIGOS.cmd` levanta el
+**Demo actualizada y fuente subida:** [entrega del 2026-10-06](delivery/demo-update-20261006.md),
+fuente `f89bec5`, alpha.4/protocolo 16. **745/745** sobre commit aislado, paquete/hash verificados;
+153 archivos públicos coincidentes y canario de dos invitados por HTTPS/WSS aceptado.
+Host PC/ngrok encendido al verificar, Auth configurado/mundo cargado y cero errores; URL actual en
+`URL-PARA-AMIGOS.txt`. Bahía D08a aparte en 5180. No activa staging durable de perlas ni pilotaje;
+móvil D06b, visual D08a y dispositivos físicos siguen pendientes. No se aplicó SQL ni se abrió navegador.
+
+Prueba inicial desde el PC (histórica, 2026-10-05): [lanzador y evidencia](delivery/pc-host-playtest.md). `JUGAR-CON-AMIGOS.cmd` levanta el
 host 5173 y un túnel HTTPS; en este equipo usa ngrok ya configurado. `DETENER-JUEGO.cmd` apaga con flush.
 15/15 pruebas pertinentes; dos invitados y movimiento compartido comprobados por HTTPS/WSS público.
 Servidor encendido al aceptar; la URL actual está en `URL-PARA-AMIGOS.txt` ignorado. Cada jugador usa su GPU;

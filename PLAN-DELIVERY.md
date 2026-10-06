@@ -6,6 +6,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Actualización conjunta 2026-10-06: [demo PC/ngrok](docs/delivery/demo-update-20261006.md), fuente
+  `f89bec5` subida a la rama de continuidad. **745/745**, 146 archivos de paquete y 153 archivos HTTP
+  verificados; dos invitados por HTTPS/WSS. Alpha.4/protocolo 16, balsa/editor/bodega/producción activos;
+  D08a sigue laboratorio aparte. Móvil D06b, visual D08a y activación durable M5 mantienen sus gates.
+
 - Fotografía al redactar este plan: base de mecánicas commiteada Escarcha, `40949b2`, `0.4.8-alpha.2`, protocolo 9;
   Brasa y circulación también hechas. HEAD `20d8ee6` incorpora dirección naval.
 - Tormenta tiene cambios y evidencia de pruebas locales en el checkout, aún sin commit al redactar este plan.
