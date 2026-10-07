@@ -19,6 +19,7 @@ export function permitsMemoryPearlReceipt(intents, operationId, family, request)
 }
 export function assertMemoryPearlIntent(namespace, entry) {
   const { receipts } = namespace;
+  if (receipts.death?.has(entry.operationId)) throw new StoreError('operation');
   const batch = receipts.batch.get(entry.operationId);
   if (entry.family === 'batch') {
     if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||

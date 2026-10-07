@@ -7,6 +7,8 @@ import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove,
 import { groundOperation, groundResult, checkedGroundResult, checkedGroundReceipt, checkedLocation,
   groundKey, groundPage, checkedGroundPage, assertGroundLocations } from './pearlGround.mjs';
 import { batchOperation, batchResult, checkedBatchResult, checkedBatchReceipt, validBatchDelta } from './pearlBatch.mjs';
+import { deathOperation, deathResult, checkedDeathResult, checkedDeathReceipt,
+  deathDropPage, checkedDeathDropPage } from './deathOperation.mjs';
 import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -49,6 +51,7 @@ const conflict = () => ({ ok: false, why: 'conflict' });
 export function createMemoryStore() {
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
+  const deathReceipts = new Map(), deathDrops = new Map();
   const intents = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
@@ -110,7 +113,7 @@ export function createMemoryStore() {
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
       if (!permitsMemoryPearlReceipt(intents, operationId, 'pearl', request)) return { ok: false, why: 'operation' };
-      if (groundReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (groundReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = pearlReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       const candidate = preparePearl(request);
@@ -137,7 +140,7 @@ export function createMemoryStore() {
       if (!permitsMemoryPearlReceipt(intents, operationId, 'ground', request)) return { ok: false, why: 'operation' };
       const receipt = groundReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || batchReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const nextLocations = new Map(locations);
       const location = { world: request.world, ground: request.ground, version: request.expectedVersion + 1 };
       nextLocations.set(request.uid, location);
@@ -167,7 +170,7 @@ export function createMemoryStore() {
       const receipt = batchReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'batch', request)) return { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || deathReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const p = request.profile, old = profiles.get(p.id);
       if (old?.version !== p.expectedVersion) return conflict();
       const nextProfiles = new Map(profiles), nextUniques = new Map(uniques), nextLocations = new Map(locations);
@@ -189,6 +192,51 @@ export function createMemoryStore() {
       profiles.set(p.id, nextProfiles.get(p.id));
       for (const q of request.items) { uniques.set(q.uid, nextUniques.get(q.uid)); locations.set(q.uid, nextLocations.get(q.uid)); }
       batchReceipts.set(operationId, stored);
+      return reply;
+    },
+    async loadDeathOperation(operationId) {
+      operationId = playerKey(operationId);
+      const receipt = deathReceipts.get(operationId);
+      return receipt ? checkedDeathReceipt({ request: JSON.parse(receipt.text), result: receipt.result }, operationId) : null;
+    },
+    async listDeathDrops(world, options = {}) {
+      const page = deathDropPage(world, options);
+      const rows = [...deathDrops.values()].filter((d) => d.world === page.world && (!page.after ||
+        d.operationId > page.after.operationId || (d.operationId === page.after.operationId && d.ordinal > page.after.ordinal)))
+        .sort((a,b) => a.operationId < b.operationId ? -1 : a.operationId > b.operationId ? 1 : a.ordinal - b.ordinal);
+      return checkedDeathDropPage(structuredClone(rows.slice(0, page.limit)), page);
+    },
+    async commitDeath(raw) {
+      const { operationId, request } = deathOperation(raw), text = canonicalText(request);
+      const receipt = deathReceipts.get(operationId);
+      if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) ||
+          intents.has(operationId)) return { ok: false, why: 'operation' };
+      for (const p of request.profiles) {
+        const old = profiles.get(p.id);
+        if (old?.version !== p.expectedVersion || canonicalText(old.data) !== canonicalText(p.before)) return conflict();
+      }
+      const nextProfiles = new Map(profiles), nextUniques = new Map(uniques), nextLocations = new Map(locations);
+      for (const p of request.profiles) nextProfiles.set(p.id, { data: p.data, version: p.expectedVersion + 1 });
+      for (const q of request.pearls) {
+        const current = uniques.get(q.uid), location = locations.get(q.uid);
+        if (current && current.kind !== pearlKind(q.kind)) return { ok: false, why: 'kind' };
+        if (!current || current.holder !== request.victim || current.version !== q.expectedVersion) return conflict();
+        if (location && (location.world !== request.world || location.version !== q.expectedVersion || location.ground !== null)) {
+          return { ok: false, why: 'ownership' };
+        }
+        nextUniques.set(q.uid, { kind: pearlKind(q.kind), holder: null, version: q.expectedVersion + 1 });
+        nextLocations.set(q.uid, { world: request.world, ground: q.ground, version: q.expectedVersion + 1 });
+      }
+      try { assertManagedPearls(nextProfiles, nextUniques); assertGroundLocations(nextUniques, nextLocations); }
+      catch { return { ok: false, why: 'ownership' }; }
+      const result = deathResult(request, operationId), reply = structuredClone(result), stored = { text, result };
+      // No await or fallible preparation after this point. Both profiles, all pearl rows, ordinary
+      // drops and the receipt become visible together in this JS turn.
+      for (const p of request.profiles) profiles.set(p.id, nextProfiles.get(p.id));
+      for (const q of request.pearls) { uniques.set(q.uid, nextUniques.get(q.uid)); locations.set(q.uid, nextLocations.get(q.uid)); }
+      for (const d of result.drops) deathDrops.set(`${operationId}:${d.ordinal}`, d);
+      deathReceipts.set(operationId, stored);
       return reply;
     },
     async claimUnique(uid, kind, holder) {
@@ -213,7 +261,7 @@ export function createMemoryStore() {
       return { ok: true, version: current.version };
     },
   };
-  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts }, intents);
+  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts, death: deathReceipts }, intents);
   return store;
 }
 
@@ -313,6 +361,20 @@ export function createSupabaseStore(client) {
     async commitPearlBatch(raw) {
       const { operationId, request } = batchOperation(raw);
       return checkedBatchResult(await rpc('mn_commit_pearl_batch', { p_operation_id: operationId, p_request: request }), request);
+    },
+    async commitDeath(raw) {
+      const { operationId, request } = deathOperation(raw);
+      return checkedDeathResult(await rpc('mn_commit_death', { p_operation_id: operationId, p_request: request }), request, operationId);
+    },
+    async loadDeathOperation(operationId) {
+      operationId = playerKey(operationId);
+      return checkedDeathReceipt(await rpc('mn_load_death_operation', { p_operation_id: operationId }), operationId);
+    },
+    async listDeathDrops(world, options = {}) {
+      const page = deathDropPage(world, options);
+      const raw = await rpc('mn_list_death_drops', { p_world: page.world,
+        p_after_operation_id: page.after?.operationId ?? null, p_after_ordinal: page.after?.ordinal ?? null, p_limit: page.limit });
+      return checkedDeathDropPage(raw, page);
     },
     async claimUnique(uid, kind, holder) {
       if (managedPearl(kind)) throw new StoreError('operation');

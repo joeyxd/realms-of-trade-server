@@ -256,6 +256,21 @@ preparación, no recibo ni garantía durable. Sigue una nueva operación complet
 suelo de objetos/pociones, con recuperación y apply síncrono; el batch pearl-only histórico no cambia.
 P4/P6, políticas/epoch/leases, finalizador y afinidad permanecen abiertos. Sin publicación/reinicio del PC.
 
+Checkpoint D09f-2b.21, base `2af53b8`: **storage atómico de muerte completa**.
+Nueva operación service-only `commitDeath` en SQL009/memoria: perfiles CAS con baseline completo de víctima/PK,
+todas las perlas/ubicaciones y creación persistente de objetos/pociones, incluso con cero perlas/botín.
+Recibo histórico exacto, UUID reservado contra familias/journal existentes, rollback de cualquier escritura
+parcial y guards para recibo/drops completos. EXP cruda Float64 reproduce el helper real; nivel/oro/maestría
+conservados, perla ligada hasta muerte, 10 % de EXP provisional y equipo/pociones extra de Cala intactos.
+[Contrato](docs/briefs/m5-death-storage.md) y [evidencia/límites](docs/delivery/d09f-death-storage.md).
+Regresión **1227/1227**, 97 archivos/333 fuentes fijas; 61 checks nuevos, tres procesos con respuesta perdida
+y replay, nueve generaciones de perla y fallos parciales. SQL001–009 + reapply009 en PGlite local;
+**aplicar SQL009 después de 001–008 y verificar Supabase real**: no ejecutado contra el proveedor.
+No activa muerte durable en la partida: siguen diario/cola, reserva de muerte/PK/UID con progreso asentado,
+apply/publicación, respawn, hidratación y pickup/consumo/expiry del botín. La página lista creación histórica,
+no suelo actual recogible. Epoch/leases/políticas, finalizador, afinidad y P4/P6 siguen abiertos.
+Sin env/protocolo, push, deploy ni reinicio del host del PC.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
