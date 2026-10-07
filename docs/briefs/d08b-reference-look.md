@@ -63,8 +63,10 @@ B1 reutiliza agua, cielo, ruido, pipeline, geometría de roca y balsa/atlas exis
 descargas nuevas. Rocas decorativas de geometría pequeña y presupuesto explícito, sin colliders.
 Los ajustes del agua/cámara viven en `tools/naval-lab/`, no cambian el render de la isla principal.
 El corte [B2 de madera aportada por el autor](d08b2-author-raft-material.md) añade un perfil optativo
-por instancia a `RaftLayer`, con UV/materiales propios solo en la bahía. Preparación/integración y 73/73
-pertinentes verificadas; captura y aceptación visual aún pendientes por fallo del controlador de Chrome.
+por instancia a `RaftLayer`, con UV/materiales propios solo en la bahía. Preparación y 73/73 iniciales;
+revisión posterior de escritorio/móvil, URLs/resoluciones y cambio de acabado documentada en su entrega.
+[B3 espuma/corriente/tinta](../delivery/d08b3-foam-current-ink.md) está implementado y revisado en la misma
+bahía, con 80/80 pertinentes. Normal/mipmaps, aprobación visual humana y FPS físicos conservan sus gates.
 Conservar control, fuerzas, viento, carga, timing, audio y contratos actuales. M5/D09, SQL008 y la ruta
 visual del puerto son trabajo separado y conservan sus gates; no modificar sus archivos concurrentes.
 

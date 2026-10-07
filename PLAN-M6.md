@@ -119,16 +119,20 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   **Tacto confirmado por el autor, 2026-10-06:** el control funciona y se siente el peso; no implica balance,
   audio ni rendimiento físico aceptados. **D08b.1 — primer corte de la nueva referencia:** cámara trasera 3/4,
   paleta fría del mar/cielo, crestas y horizonte rocoso en la misma bahía. [Guía y fases B1–B5](docs/briefs/d08b-reference-look.md).
-  [Fuente, pruebas y límite de captura final](docs/delivery/d08b-reference-look.md): 60/60 pertinentes;
-  Chrome se desconectó al guardar los PNG, falta revalidar el commit final y restablecer viewport.
-  La espuma/corriente/tinta y HUD de la imagen siguen por capas. Fidelidad visual final,
+  [Fuente y pruebas B1](docs/delivery/d08b-reference-look.md): 60/60 iniciales; conexión recuperada y
+  capturas de la composición actual guardadas durante B2/B3, viewport restablecido.
+  La espuma/corriente/tinta ya tienen primer corte B3; el HUD sigue por capas. Fidelidad visual final,
   móvil físico, pilotaje autoritativo y cubierta móvil siguen abiertos.
   **D08b.2 — material del autor preparado e integrado como candidato:** tablones marrón/gris de la lámina
   aportada, UV por pieza, normal suave de escritorio y lona gris verdosa; comparación con atlas anterior.
   [Brief](docs/briefs/d08b2-author-raft-material.md) y [entrega con gates abiertos](docs/delivery/d08b2-author-raft-material.md).
   Color 1024/512, móvil 79.054 B sin petición de normal; 73/73 pertinentes y fuentes/derivados verificados.
-  Capturas en juego, normal soft/invertido, bordes con mipmaps y lectura móvil real siguen pendientes:
-  el controlador de Chrome agotó el tiempo al recuperar la pestaña; no hay navegador integrado disponible.
+  Capturas en juego, carga real 1024/512 y lectura en móvil emulado revisadas durante B3. Signo del normal,
+  bordes con mipmaps a varias distancias y rendimiento móvil físico siguen abiertos.
+  **D08b.3 — estela blanca histórica de 4 s, abanicos/spray de proa, corriente cyan fragmentada y tinta negra**
+  periférica con centro libre; ruido compartido sin nueva descarga de textura. [Entrega y evidencia](docs/delivery/d08b3-foam-current-ink.md).
+  80/80 pertinentes; boost/giro/escritorio/móvil revisados. Fixture casa corregido: paredes en nivel 1
+  junto a su suelo/techo; masa/inercia iguales, altura y estabilidad recalculadas. Sigue B4 HUD real.
   Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
   → patrulla/notoriedad → abordaje de dos cubiertas. Topología y costes pendientes; M5 es puerta de persistencia.
 - [ ] **P7 Progresión y aspecto.** Mesa de cartas: investigar piezas (vela mayor, motor, alambique) con muestras

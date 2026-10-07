@@ -3,22 +3,243 @@
   "sourceCommit": "b2bd366579465a4892552d51627eed416b49dac7",
   "scope": "isolated naval lab B2 author wood candidate, board UVs and weathered cloth",
   "url": "http://127.0.0.1:5180/",
-  "status": "prepared and integrated; visual acceptance pending",
+  "status": "integrated and browser-reviewed in B3; normal/mipmap calibration, human approval and physical phone FPS pending",
   "optimizationReceipt": "docs/art/raft-wood-boards-v2.json",
-  "tests": { "files": 13, "total": 73, "pass": 73, "fail": 0, "exitCode": 0, "globalSuiteRepeated": false },
+  "tests": {
+    "files": 13,
+    "total": 73,
+    "pass": 73,
+    "fail": 0,
+    "exitCode": 0,
+    "globalSuiteRepeated": false
+  },
   "sourceAndDerivativeHashesChecked": true,
   "derivativeImageInspected": "assets/textures/raft/wood-boards-v2-mobile.webp",
-  "http": { "mobileAlbedo": 200 },
-  "mobile": { "selectedAlbedoByLoaderTest": "wood-boards-v2-mobile.webp", "normalRequestByLoaderTest": false, "actualBrowserRequestsVerified": false, "physicalPerformanceVerified": false },
+  "http": {
+    "mobileAlbedo": 200
+  },
+  "mobile": {
+    "selectedAlbedoByLoaderTest": "wood-boards-v2-mobile.webp",
+    "normalRequestByLoaderTest": false,
+    "actualBrowserRequestsVerified": true,
+    "physicalPerformanceVerified": false,
+    "actualBrowserAlbedo": [
+      "http://127.0.0.1:5180/assets/textures/raft/wood-boards-v2-mobile.webp"
+    ],
+    "actualBrowserResolution": [
+      512,
+      512
+    ],
+    "actualBrowserNormal": null
+  },
   "browserReview": {
-    "screenshotsPersisted": false,
-    "newMaterialInGameInspected": false,
-    "reason": "Chrome getTab and browser recovery timed out; iab unavailable; reconnection requested",
-    "lastKnownTemporaryViewport": [844, 390],
-    "viewportResetConfirmed": false,
-    "pending": ["shader compilation", "desktop and mobile loaded textures", "starter and house framing", "material switch continuity", "normal green-channel sign", "cloth readability", "atlas gutter bleed at distance"]
+    "screenshotsPersisted": true,
+    "newMaterialInGameInspected": true,
+    "historicalFirstReviewFailure": "Chrome recovery timed out during initial B2 work; now recovered",
+    "viewports": [
+      [
+        1280,
+        800
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "screenshots": [
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-soft-paused.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111178,
+        "sha256": "aae57802daf35028983d6ca075582eddd878dde8b97f64bcf1dba7ba18917f89",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-original.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 114145,
+        "sha256": "647be4a94a7577d139c21869fd28e92b6179323613ac5f1bfd0da98e2a31522b",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-flat.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111351,
+        "sha256": "0e33d8a5247293e7af340924961b5e7aac083de983e5f67c9fee5669eadda271",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-flipped.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 111612,
+        "sha256": "8ac49d07430f86f4e7ef3d5113c9abff863ae57679e62ab3bc66457d7be6f385",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-isometric.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 109974,
+        "sha256": "8e0e4301c78c54f4d034419ed5d5155469bd40adcfdbff86d739faf3322fa56c",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-desktop-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 800,
+        "bytes": 114218,
+        "sha256": "f91c05f7d16d2775c06dc0d4dd5f4651a12d9588fb60ae870328d2ee78216314",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-portrait-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 390,
+        "height": 844,
+        "bytes": 49758,
+        "sha256": "c8cea81ac85725284bda1baec1cf9133c602b5a33cb22acba6741d936c4fe030",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b2-mobile-landscape-house-corrected.jpg",
+        "format": "jpeg",
+        "width": 844,
+        "height": 390,
+        "bytes": 54281,
+        "sha256": "36a3766367d57ac7db40a8f02738a6bbb028277700734a476965d1a4d70b9344",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-mobile-landscape-boost.jpg",
+        "format": "jpeg",
+        "width": 844,
+        "height": 390,
+        "bytes": 59316,
+        "sha256": "9f0fb8b709181d086c21eee86be1aa8155508f6d43c9b589a542b21aae65ea65",
+        "inspected": true
+      },
+      {
+        "path": "shots/naval-reference-20261006/b3-mobile-portrait-boost.jpg",
+        "format": "jpeg",
+        "width": 390,
+        "height": 844,
+        "bytes": 54166,
+        "sha256": "e945ee9041622a608fc0a9c22a08ed1b92196b31c6cf84e1cee267ed673a956e",
+        "inspected": true
+      }
+    ],
+    "checked": [
+      "desktop color and normal 1024 loaded",
+      "mobile color 512 loaded without normal request",
+      "starter and corrected house framing in three formats",
+      "material switch preserves exact simulation state while paused",
+      "flat/soft/flipped normal comparison",
+      "cloth seams and wood grain readable",
+      "isometric comparison",
+      "empty error logs"
+    ],
+    "normalGreenSign": "inconclusive; soft retained as candidate",
+    "mipGutterReview": "no obvious artifact at inspected isometric view; broader distances and angles remain pending",
+    "fixtureCorrection": {
+      "fixture": "house",
+      "wallsFromLevel": 0,
+      "wallsToLevel": 1,
+      "acceptedParts": 29,
+      "mass": 143,
+      "inertia": 951.2634032634035,
+      "beforeHeight": 0.3342657342657343,
+      "afterHeight": 0.44335664335664343,
+      "beforeStability": 0.9398162779111849,
+      "afterStability": 0.9227866433451634,
+      "formulasChanged": false,
+      "mainGameBlueprintsChanged": false,
+      "screenshots": [
+        {
+          "path": "shots/naval-reference-20261006/b2-desktop-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 1280,
+          "height": 800,
+          "bytes": 114218,
+          "sha256": "f91c05f7d16d2775c06dc0d4dd5f4651a12d9588fb60ae870328d2ee78216314",
+          "inspected": true
+        },
+        {
+          "path": "shots/naval-reference-20261006/b2-mobile-portrait-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 390,
+          "height": 844,
+          "bytes": 49758,
+          "sha256": "c8cea81ac85725284bda1baec1cf9133c602b5a33cb22acba6741d936c4fe030",
+          "inspected": true
+        },
+        {
+          "path": "shots/naval-reference-20261006/b2-mobile-landscape-house-corrected.jpg",
+          "format": "jpeg",
+          "width": 844,
+          "height": 390,
+          "bytes": 54281,
+          "sha256": "36a3766367d57ac7db40a8f02738a6bbb028277700734a476965d1a4d70b9344",
+          "inspected": true
+        }
+      ]
+    },
+    "viewportResetConfirmed": true,
+    "finalNativeViewport": {
+      "width": 824,
+      "height": 742,
+      "dpr": 1.5
+    },
+    "captureScope": "B2 materials with B3 effects, not an isolated historical B2 commit",
+    "pending": [
+      "normal green-channel sign",
+      "atlas gutters across more distances",
+      "human visual approval",
+      "physical mobile performance"
+    ]
   },
   "mainGameManifestChanged": false,
   "simulationChanged": false,
-  "publicDeployment": false
+  "publicDeployment": false,
+  "reviewSourceCommit": "f6da8dc8b0d044c0cd85beb938c3bf8239ba5a60",
+  "followupTests": {
+    "node": "v24.14.0",
+    "files": 14,
+    "total": 80,
+    "pass": 80,
+    "fail": 0,
+    "exitCode": 0,
+    "durationMs": 962.8967,
+    "afterHouseCorrection": true,
+    "globalSuiteRepeated": false,
+    "paths": [
+      "tests/naval-handling.test.mjs",
+      "tests/naval-lab-clock.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-lab-server.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-lab-speed-feel.test.mjs",
+      "tests/naval-lab-scenery.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/naval-lab-look.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/naval-lab-raft-skin.test.mjs",
+      "tests/naval-lab-reference-fx.test.mjs"
+    ]
+  }
 }

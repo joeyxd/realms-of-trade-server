@@ -63,5 +63,15 @@ confirmarse después de la desconexión. Se solicitó reconexión al autor; al r
 recargar la fuente y guardar desktop/vertical/horizontal, casa y un giro/boost; restablecer viewport.
 No presentar la emulación, capacidades del pool o bytes del atlas como FPS de un teléfono físico.
 
-Aceptación humana del nuevo look y rendimiento físico pendientes. Siguiente corte **B2**: madera
-envejecida más neutra, vela gris verdosa remendada y aparejo/accesorios revisando FAB antes de añadir arte.
+Aceptación humana del nuevo look y rendimiento físico pendientes.
+
+### Continuación verificada durante B2/B3, 2026-10-06
+
+Chrome se recuperó. Se guardaron e inspeccionaron capturas de la composición actual en escritorio,
+retrato y paisaje, incluyendo casa, giro y boost; encabezado y tamaño proyectado del spray revisados.
+El viewport se restableció y se dejó la pestaña entregable. Es evidencia de B1 integrado con el material
+B2 y efectos B3, no una captura aislada de `32a866e`. La revisión encontró un nivel incorrecto de
+las paredes del fixture de casa, corregido en B3 y revalidado en los tres formatos.
+Fuente, hashes, pruebas y límites en [la entrega B3](d08b3-foam-current-ink.md).
+El siguiente corte es **B4**, HUD con datos y acciones reales; los accesorios de la referencia,
+calibración del material, aprobación humana y teléfono físico siguen pendientes.

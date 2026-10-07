@@ -1,6 +1,6 @@
 # D08b.2 — material de madera del autor
 
-2026-10-06. **Candidato preparado e integrado en la bahía local; aceptación visual pendiente.**
+2026-10-06. **Candidato integrado y revisado en la bahía local; calibración y aceptación humana pendientes.**
 Fuente guardada en `b2bd366579465a4892552d51627eed416b49dac7`.
 Destino: <http://127.0.0.1:5180/>. Selector «Acabado de la balsa»: madera del autor / atlas anterior.
 El cambio de acabado conserva el estado de movimiento y carga. El normal de escritorio permite comparar
@@ -52,16 +52,23 @@ carga ni se decodifica automáticamente. Los originales no se sirven desde el se
   desde el servidor local. Esto no demuestra que la textura se cargue o se lea bien dentro del render.
 - Luna revisó defaults, UV, caché/ownership y aislamiento; el principal revisó código, láminas y pruebas.
 
-**No hay captura en juego del material nuevo.** Chrome aparece en el inventario, pero `getTab` y recuperación
-del navegador agotaron el tiempo. Se pidió reconexión al autor mientras se completaba la preparación.
-El navegador integrado tampoco está disponible. No se usaron otras tecnologías de automatización como
-fallback. La última dimensión temporal conocida de Chrome sigue siendo 844 × 390; reset no confirmado.
+La primera sesión perdió la conexión de Chrome. **Revisión posterior completada durante B3**, con
+capturas guardadas e inspeccionadas: escritorio 1280×800, retrato 390×844 y paisaje 844×390; balsa inicial,
+casa 4×4, comparación del atlas y relieve plano/suave/invertido. Escritorio carga color/normal 1024²;
+móvil carga efectivamente `wood-boards-v2-mobile.webp` 512² sin solicitar normal. La lona remendada
+y la veta se leen en las vistas revisadas. Los registros de error de la pestaña quedaron vacíos.
+Cambiar autor/atlas anterior en pausa conservó exactamente el estado de pilotaje, no solo su velocidad.
 
-Queda revisar escritorio, retrato y paisaje (starter y casa 4 × 4), consola/compilación de shaders,
-URL/resolución realmente cargadas, cambio de acabado sin salto, orientación del normal, lectura de lona
-y posible mezcla de bordes/gutters con mipmaps a distancia. Las regiones tienen márgenes, pero no un
-padding dedicado por nivel de mip. No cerrar estos gates con tests o con inspección de la imagen plana.
+El relieve es sutil bajo esta luz difusa: no se determinó con certeza el signo del canal verde;
+«suave» sigue como candidato comparable. En la vista isométrica no apareció un borde negro evidente,
+pero falta revisar una gama amplia de distancias/ángulos para cerrar mezcla de gutters con mipmaps.
+Las regiones tienen márgenes, sin padding dedicado por nivel de mip.
 
-Luego: ajustar el material según capturas; accesorios en otro corte; B3 estela blanca/spray, corriente
-cyan fragmentada y tinta periférica. B4 HUD real y B5 persecución conservan sus dependencias.
-Sin push, despliegue público, aceptación humana del nuevo look ni FPS físicos en esta misión.
+La casa tenía techo separado por paredes en otro nivel. B3 corrigió el fixture y revalidó su encuadre
+en los tres formatos; el cambio de altura/estabilidad se documenta en [la entrega B3](d08b3-foam-current-ink.md).
+Ahí constan 80/80 pruebas posteriores, capturas/hashes, peticiones reales y reset del viewport confirmado.
+Las capturas revisan el material B2 con los efectos B3; no son una captura pura del commit B2 anterior.
+
+B3 implementa estela/spray, corriente cyan fragmentada y tinta periférica. B4 HUD real y B5 persecución
+conservan sus dependencias. Accesorios, normal/mipmaps, aceptación humana y FPS físicos siguen abiertos.
+Sin despliegue público en estos cortes.
