@@ -13,13 +13,22 @@ export function memoryPearlJournal(store) {
 export function permitsMemoryPearlReceipt(intents, operationId, family, request) {
   const entry = intents.get(operationId);
   if (!entry) return true;
+  if (family === 'death') return entry.family === 'death' && entry.scope === request.world &&
+    entry.state === 'pending' && canonicalText(entry.request) === canonicalText(request);
+  if (entry.family === 'death') return false;
   if (family !== 'batch') return entry.family !== 'batch';
   return entry.family === 'batch' && entry.scope === request.world && entry.state === 'pending' &&
     canonicalText(entry.request) === canonicalText(request);
 }
 export function assertMemoryPearlIntent(namespace, entry) {
   const { receipts } = namespace;
-  if (receipts.death?.has(entry.operationId)) throw new StoreError('operation');
+  const death = receipts.death?.get(entry.operationId);
+  if (entry.family === 'death') {
+    if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||
+      receipts.batch.has(entry.operationId) || (death && death.text !== canonicalText(entry.request))) throw new StoreError('operation');
+    return;
+  }
+  if (death) throw new StoreError('operation');
   const batch = receipts.batch.get(entry.operationId);
   if (entry.family === 'batch') {
     if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||

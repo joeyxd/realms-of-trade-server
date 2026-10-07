@@ -211,7 +211,7 @@ export function createMemoryStore() {
       const receipt = deathReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) ||
-          intents.has(operationId)) return { ok: false, why: 'operation' };
+          !permitsMemoryPearlReceipt(intents, operationId, 'death', request)) return { ok: false, why: 'operation' };
       for (const p of request.profiles) {
         const old = profiles.get(p.id);
         if (old?.version !== p.expectedVersion || canonicalText(old.data) !== canonicalText(p.before)) return conflict();

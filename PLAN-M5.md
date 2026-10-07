@@ -271,6 +271,22 @@ apply/publicación, respawn, hidratación y pickup/consumo/expiry del botín. La
 no suelo actual recogible. Epoch/leases/políticas, finalizador, afinidad y P4/P6 siguen abiertos.
 Sin env/protocolo, push, deploy ni reinicio del host del PC.
 
+Checkpoint D09f-2b.22, base a762dac: **diario/cola de muerte completa en la autoridad común**.
+ProfileSessions commitDeath/reconcileDeath/resumeDeath usan familia death en journal/PearlQueue; reservas
+síncronas de víctima/PK y UIDs anteriores/posteriores, incluidas perlas conservadas del atacante.
+Baseline/versión completos tras guardados previos; ningún builder/recapture ni rebase de progreso distinto
+sobre una muerte. Startup solo lee; resume explícito reenvía UUID/request exactos después de recibo null.
+Respuestas prepare/commit/terminal perdidas y estado avanzado conservan reservas/audit o cierran conflicto;
+capability del caller sigue hasta apply/fence. [Contrato](docs/briefs/m5-death-recovery.md) y
+[evidencia/límites](docs/delivery/d09f-death-recovery.md). **1286/1286**, 102 archivos/342 fuentes aisladas,
+59 checks nuevos y tres procesos independientes. SQL001–010 + reapply010 en PostgreSQL local por SDK.
+El autor confirmó SQL009 aplicada el 2026-10-07; no hubo canario real en este corte. **Aplicar SQL010 después
+de 001–009 y verificar Supabase real**; namespace admite solo death intent/recibo coincidentes.
+No activa muerte durable en la partida: siguen staging/captura bajo reserva, apply/publicación en tick,
+respawn/recycle y lifecycle de botín (hidratación/pickup/consumo/expiry); listDeathDrops es creación histórica.
+Siguiente: staging/apply de muerte completa. Afinidad permanente, epoch/reloj/políticas, leases/finalizador
+y P4/P6 abiertos. Sin env/protocolo/push/deploy/reinicio del PC; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

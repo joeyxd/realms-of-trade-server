@@ -1,5 +1,6 @@
 // Server-only coordination. The simulation must stage an intent before publishing its effects;
 // this queue never mutates a live profile or accepts a client-selected price/ownership request.
+import { deathOperation, checkedDeathResult, checkedDeathReceipt } from './deathOperation.mjs';
 import { PEARL } from '../src/data/pearls.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { StoreError, playerKey } from './store.mjs';
@@ -13,6 +14,9 @@ import { batchIntent, batchOperation, validBatchDelta, checkedBatchResult, check
 // All families share reservations; a second queue would let an unresolved single-UID operation
 // overlap one item of a batch, its account, or its operation UUID.
 const families = {
+  death: { intent: (raw) => { const { operationId, request } = deathOperation(raw); return { operationId, ...request }; },
+    operation: deathOperation, check: (raw, request, id) => checkedDeathResult(raw, request, id),
+    receipt: checkedDeathReceipt, commit: 'commitDeath', read: 'loadDeathOperation' },
   pearl: { intent: pearlIntent, operation: pearlOperation, check: checkedPearlResult,
     receipt: checkedPearlReceipt, commit: 'commitPearl', read: 'loadPearlOperation' },
   ground: { intent: groundIntent, operation: groundOperation, check: checkedGroundResult,
@@ -22,9 +26,10 @@ const families = {
 };
 
 const clone = (v) => structuredClone(v);
-const accountKeys = (intent) => intent.items ? [intent.actor ?? intent.profile.id] :
+const accountKeys = (intent) => intent.victim ? intent.profiles.map((p) => p.id) : intent.items ? [intent.actor ?? intent.profile.id] :
   [...new Set([intent.from, intent.to].filter(Boolean))].sort();
-const uidKeys = (intent) => intent.items ? intent.items.map((q) => q.uid) : [intent.uid];
+const uidKeys = (intent) => intent.victim ? [...new Set(intent.profiles.flatMap((p) =>
+  [...profilePearls(p.before), ...profilePearls(p.data)].map((q) => q.uid)))].sort() : intent.items ? intent.items.map((q) => q.uid) : [intent.uid];
 const requestProfiles = (request) => request.items ? [request.profile] : request.profiles;
 const recoveredIntent = (family, concrete) => family === 'batch' ? batchIntent({
   operationId: concrete.operationId, actor: concrete.profile.id, world: concrete.world,
@@ -176,7 +181,7 @@ export class PearlQueue {
     try {
       this.requireReady();
       intent = frozen(families[family].intent(raw));
-      if (typeof build !== 'function') throw new StoreError('operation');
+      if (family !== 'death' && typeof build !== 'function') throw new StoreError('operation');
       pearlMutationGate(this.sessions).assertStorageAvailable({
         accounts: accountKeys(intent), uids: uidKeys(intent),
       }, reservation);
@@ -227,7 +232,7 @@ export class PearlQueue {
         if (next) { await owner.writeOne(s, next); ctx.before.set(s, null); }
         this.ready(ctx);
       }
-      const items = ctx.family === 'batch' ? ctx.intent.items : [ctx.intent];
+      const items = ctx.family === 'death' ? ctx.intent.pearls : ctx.family === 'batch' ? ctx.intent.items : [ctx.intent];
       const current = await Promise.all(items.map(async (q) => {
         const [registered, groundLocation] = await Promise.all([
           store.loadUnique(q.uid).then(checkedCurrentUnique),
@@ -238,7 +243,7 @@ export class PearlQueue {
       this.ready(ctx);
       const { uid, kind, from, to, expectedVersion, operationId } = ctx.intent;
       for (const { q, registered, groundLocation } of current) {
-        const source = ctx.family === 'batch' ? ctx.intent.actor : from;
+        const source = ctx.family === 'death' ? ctx.intent.victim : ctx.family === 'batch' ? ctx.intent.actor : from;
         if (registered && registered.kind !== pearlKind(q.kind)) throw new StoreError('kind');
         if ((registered?.version ?? 0) !== q.expectedVersion || (registered?.holder ?? null) !== source) {
           throw new StoreError('conflict');
@@ -252,28 +257,42 @@ export class PearlQueue {
       }
       const rows = ctx.lanes.map((s) => ({ id: s.key, version: s.version, data: clone(s.confirmed) }));
       const baseline = new Map(rows.map((p) => [p.id, clone(p)]));
-      const built = build(clone(rows));
-      if (!Array.isArray(built) || (ctx.family === 'batch' && (built.length !== 1 || built[0]?.id !== ctx.intent.actor))) {
-        throw new StoreError('operation');
-      }
-      const profiles = built.map((p) => ({ ...p, expectedVersion: baseline.get(p?.id)?.version }));
-      const { request } = api.operation(ctx.family === 'batch' ? {
-        operationId, world: ctx.intent.world, mode: ctx.intent.mode, items: ctx.intent.items, profile: profiles[0],
-      } : { ...ctx.intent, profiles });
-      if (ctx.family === 'batch' ? !validBatchDelta(request, baseline.get(ctx.intent.actor).data) :
-        !validPearlMove(request, baseline)) throw new StoreError('ownership');
-      ctx.deltas = new Map(); ctx.baseline = baseline;
-      for (const p of requestProfiles(request)) {
-        if (ctx.family === 'batch') { ctx.deltas.set(p.id, 0); continue; }
-        const rawProfile = built.find((b) => b.id === p.id)?.data, before = baseline.get(p.id).data;
-        // Reject clamping, duplicate UIDs and truncated bags at this command boundary. Ordinary
-        // legacy profile loading continues to use the existing sanitizer.
-        if (rawProfile?.gold !== p.data.gold || canonicalText(rawProfile?.pearls) !== canonicalText(p.data.pearls) ||
-          stripped(before, uid) !== stripped(p.data, uid)) throw new StoreError('operation');
-        const delta = p.data.gold - before.gold;
-        if (!Number.isSafeInteger(delta) || delta < 0 || delta > 1e9 ||
-          (delta !== 0 && !(p.id === from && to === null))) throw new StoreError('operation');
-        ctx.deltas.set(p.id, delta);
+      let request;
+      if (ctx.family === 'death') {
+        // Never recapture/rebase a death after waiting for saves. The authority must settle
+        // progress before capture; every endpoint must still match the exact frozen baseline.
+        for (const p of ctx.intent.profiles) {
+          const row = baseline.get(p.id);
+          if (row?.version !== p.expectedVersion || canonicalText(row.data) !== canonicalText(p.before)) {
+            throw new StoreError('conflict');
+          }
+        }
+        request = api.operation(ctx.intent).request;
+        ctx.baseline = baseline;
+      } else {
+        const built = build(clone(rows));
+        if (!Array.isArray(built) || (ctx.family === 'batch' && (built.length !== 1 || built[0]?.id !== ctx.intent.actor))) {
+          throw new StoreError('operation');
+        }
+        const profiles = built.map((p) => ({ ...p, expectedVersion: baseline.get(p?.id)?.version }));
+        ({ request } = api.operation(ctx.family === 'batch' ? {
+          operationId, world: ctx.intent.world, mode: ctx.intent.mode, items: ctx.intent.items, profile: profiles[0],
+        } : { ...ctx.intent, profiles }));
+        if (ctx.family === 'batch' ? !validBatchDelta(request, baseline.get(ctx.intent.actor).data) :
+          !validPearlMove(request, baseline)) throw new StoreError('ownership');
+        ctx.deltas = new Map(); ctx.baseline = baseline;
+        for (const p of requestProfiles(request)) {
+          if (ctx.family === 'batch') { ctx.deltas.set(p.id, 0); continue; }
+          const rawProfile = built.find((b) => b.id === p.id)?.data, before = baseline.get(p.id).data;
+          // Reject clamping, duplicate UIDs and truncated bags at this command boundary. Ordinary
+          // legacy profile loading continues to use the existing sanitizer.
+          if (rawProfile?.gold !== p.data.gold || canonicalText(rawProfile?.pearls) !== canonicalText(p.data.pearls) ||
+            stripped(before, uid) !== stripped(p.data, uid)) throw new StoreError('operation');
+          const delta = p.data.gold - before.gold;
+          if (!Number.isSafeInteger(delta) || delta < 0 || delta > 1e9 ||
+            (delta !== 0 && !(p.id === from && to === null))) throw new StoreError('operation');
+          ctx.deltas.set(p.id, delta);
+        }
       }
       ctx.concrete = frozen({ operationId, ...request });
       this.ready(ctx);
@@ -284,7 +303,7 @@ export class PearlQueue {
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
           if (this.journal) ctx.uncertain = true;
-          receipt = api.check(await store[api.commit](ctx.concrete), request);
+          receipt = api.check(await store[api.commit](ctx.concrete), request, operationId);
           break;
         } catch (err) {
           const failure = storageError(err);
@@ -337,6 +356,13 @@ export class PearlQueue {
   }
 
   rebase(ctx, after, pending) {
+    if (ctx.family === 'death') {
+      // A late snapshot cannot restore bag/XP or rewrite unrelated progress onto a historical
+      // death. Only the unchanged pre-death snapshot can be replaced by its exact post-state.
+      const before = ctx.baseline.get(after.id).data;
+      if (canonicalText(pending) !== canonicalText(before)) throw new StoreError('conflict');
+      return clone(after.data);
+    }
     if (ctx.family === 'batch') {
       // Whole-slot equality prevents a mixed old/new death or replacement from being accepted.
       // Ordinary progress remains current; no per-item mutation is published during this check.
@@ -383,7 +409,7 @@ export class PearlQueue {
     const store = this.sessions.store;
     const [rows, items] = await Promise.all([
       Promise.all(requestProfiles(ctx.concrete).map(async (p) => ({ id: p.id, row: checkedCurrentProfile(await store.loadProfile(p.id)) }))),
-      Promise.all(uidKeys(ctx.intent).map(async (uid) => {
+      Promise.all((ctx.family === 'death' ? ctx.intent.pearls.map((q) => q.uid) : uidKeys(ctx.intent)).map(async (uid) => {
         const [unique, groundLocation] = await Promise.all([
           store.loadUnique(uid).then(checkedCurrentUnique),
           ctx.family !== 'pearl' ? store.loadPearlLocation(uid).then(checkedLocation) : null,
@@ -396,11 +422,11 @@ export class PearlQueue {
     ctx.reconciled = true; ctx.uncertain = false;
     ctx.settledOutcome = 'conflict';
     for (const { uid, unique, groundLocation } of items) {
-      const { uid: _uid, ...expectedUnique } = ctx.family === 'batch' ?
+      const { uid: _uid, ...expectedUnique } = ['batch', 'death'].includes(ctx.family) ?
         receipt.uniques.find((q) => q.uid === uid) : receipt.unique;
       if (canonicalText(unique) !== canonicalText(expectedUnique)) throw new StoreError('conflict');
       if (ctx.family !== 'pearl') {
-        const { uid: _locationUid, ...expectedLocation } = ctx.family === 'batch' ?
+        const { uid: _locationUid, ...expectedLocation } = ['batch', 'death'].includes(ctx.family) ?
           receipt.locations.find((q) => q.uid === uid) : receipt.location;
         if (canonicalText(groundLocation) !== canonicalText(expectedLocation)) throw new StoreError('conflict');
       }
@@ -443,7 +469,7 @@ export class PearlQueue {
           }, ctx.reservation ?? null);
           const api = families[ctx.family], { operationId: _id, ...request } = ctx.concrete;
           ctx.uncertain = true;
-          try { receipt = api.check(await this.sessions.store[api.commit](ctx.concrete), request); }
+          try { receipt = api.check(await this.sessions.store[api.commit](ctx.concrete), request, ctx.intent.operationId); }
           catch (err) {
             if (err instanceof StoreError && !['unavailable', 'response'].includes(err.code)) {
               await this.finish(ctx, 'rejected'); ctx.reconciled = true;

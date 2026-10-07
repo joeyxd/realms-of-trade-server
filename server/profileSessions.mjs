@@ -103,6 +103,10 @@ export class ProfileSessions {
   reconcilePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground'); }
   commitPearlBatch(meta, build, reservation = null) { return this.pearls.commit(meta, build, 'batch', reservation); }
   reconcilePearlBatch(operationId) { return this.pearls.reconcile(operationId, 'batch'); }
+  // Exact whole-death payload: baseline progress must be settled before its capture.
+  commitDeath(concrete, reservation = null) { return this.pearls.commit(concrete, null, 'death', reservation); }
+  reconcileDeath(operationId) { return this.pearls.reconcile(operationId, 'death'); }
+  resumeDeath(operationId) { return this.pearls.reconcile(operationId, 'death', true); }
   recoverPearls() { return this.pearls.recover(); }
   resumePearl(operationId) { return this.pearls.reconcile(operationId, 'pearl', true); }
   resumePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground', true); }

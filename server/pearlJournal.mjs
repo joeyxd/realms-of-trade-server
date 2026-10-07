@@ -3,10 +3,11 @@ import { StoreError, playerKey } from './store.mjs';
 import { pearlOperation, canonicalText } from './pearlOperations.mjs';
 import { groundOperation, groundKey } from './pearlGround.mjs';
 import { batchOperation } from './pearlBatch.mjs';
+import { deathOperation } from './deathOperation.mjs';
 import { memoryPearlJournal, assertMemoryPearlIntent } from './pearlMemoryIdentity.mjs';
 
 const states = ['pending', 'committed', 'conflict', 'rejected'];
-const operations = { pearl: pearlOperation, ground: groundOperation, batch: batchOperation };
+const operations = { pearl: pearlOperation, ground: groundOperation, batch: batchOperation, death: deathOperation };
 export function journalEntry(scope, family, concrete, state = 'pending') {
   scope = groundKey(scope);
   if (!Object.hasOwn(operations, family) || !states.includes(state)) throw new StoreError('operation');
