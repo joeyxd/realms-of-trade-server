@@ -69,7 +69,11 @@ revisión posterior de escritorio/móvil, URLs/resoluciones y cambio de acabado 
 [B3 espuma/corriente/tinta](../delivery/d08b3-foam-current-ink.md) está implementado y revisado en la misma
 bahía, con 80/80 pertinentes. Reacción favorable del autor al look B3; normal/mipmaps y FPS físicos
 conservan sus gates. [B4 HUD naval](../delivery/d08b4-navigation-hud.md) añade datos/acciones reales,
-88/88 pertinentes y revisión responsive. Su aceptación humana y dispositivos físicos siguen pendientes.
+88/88 pertinentes y revisión responsive. El autor acepta ese aspecto y aporta una nueva referencia
+de paneles oscuros/iconos blancos. [B4a HUD de referencia y vista de navegación](../delivery/d08b4a-reference-hud.md)
+refina tarjetas, brújula, dial y avisos; añade mar a pantalla completa con Ajustes plegables y foco seguro.
+89/89 pertinentes, cinco tamaños revisados y scroll del panel móvil comprobado. Reacción humana a esta
+nueva pasada y dispositivos físicos pendientes. Arte en SVG/CSS fijo, sin nueva descarga raster.
 Conservar control, fuerzas, viento, carga, timing, audio y contratos actuales. M5/D09, SQL008 y la ruta
 visual del puerto son trabajo separado y conservan sus gates; no modificar sus archivos concurrentes.
 

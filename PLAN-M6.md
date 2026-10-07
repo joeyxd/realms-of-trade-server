@@ -138,7 +138,12 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   ventana de ráfaga con banda de perfecto, tarjetas de ráfaga/lastre y avisos de cómic.
   [Entrega y evidencia](docs/delivery/d08b4-navigation-hud.md), fuente `a58ed80`, 88/88 pertinentes.
   Escritorio y móvil emulado revisados; espacio propio para controles en vistas estrechas/cortas.
-  Sin textura nueva ni cambio de manejo. Aceptación humana del HUD y dispositivos físicos pendientes.
+  Sin textura nueva ni cambio de manejo. El autor acepta su aspecto y pide acercarlo a una nueva referencia.
+  **D08b.4a — vista de navegación y refinamiento de HUD:** mar a pantalla completa, Ajustes plegables,
+  tarjetas oscuras/iconos blancos, brújula sobria y dial segmentado con llama durante boost real.
+  [Entrega y evidencia](docs/delivery/d08b4a-reference-hud.md), fuente `825e96e`, 89/89 pertinentes.
+  Cinco tamaños revisados, controles ≥44 px sin solapes medidos y Ajustes móvil visible; foco/teclado
+  corregidos. Sin raster nuevo ni cambios de simulación. Reacción a B4a y dispositivos físicos pendientes.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.
