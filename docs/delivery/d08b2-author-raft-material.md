@@ -1,6 +1,7 @@
 # D08b.2 — material de madera del autor
 
 2026-10-06. **Candidato preparado e integrado en la bahía local; aceptación visual pendiente.**
+Fuente guardada en `b2bd366579465a4892552d51627eed416b49dac7`.
 Destino: <http://127.0.0.1:5180/>. Selector «Acabado de la balsa»: madera del autor / atlas anterior.
 El cambio de acabado conserva el estado de movimiento y carga. El normal de escritorio permite comparar
 plano, suave y suave invertido. La simulación, timing, corrientes y audio no se modifican.
