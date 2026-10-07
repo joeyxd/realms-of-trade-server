@@ -159,6 +159,13 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   [Contrato y siguiente estructura](docs/briefs/d08c0-modular-damage.md), [entrega](docs/delivery/d08c0-modular-damage.md).
   114/114 pertinentes; no activa navegación/daño en World ni pérdidas/recuperación persistentes.
   El autor reserva su playtest conjunto para después de estructura/features; no bloquear cada corte por él.
+  **D08c.1 — cuerpo de prueba en el tick del World:** copia del plano propio con HP/IDs efímeros,
+  control de sesión mediante handle opaco, ejes/secuencias validados, timeout y baja inmediata en detach.
+  Daño interno aplicado en tick; plano/bodega/HP guardados intactos. Opción server-only apagada por defecto;
+  pose pública y cubierta siguen amarradas hasta conectar piloto/soporte/predicción juntos.
+  [Contrato](docs/briefs/d08c1-naval-authority.md), [entrega](docs/delivery/d08c1-naval-authority.md).
+  259/259 pertinentes aisladas sobre `5068d77`, incluidas 18/18 nuevas; límites de la pasada general en la entrega.
+  Próximo corte: puesto de mando + cubierta móvil + ACK/predicción, sin poner bienes persistentes en riesgo.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

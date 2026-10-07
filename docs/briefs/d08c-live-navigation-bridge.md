@@ -1,6 +1,6 @@
 # D08c — del laboratorio a la balsa del jugador
 
-2026-10-06. **Puente de autoridad propuesto, sin activación.** La base previa
+2026-10-06. **Puente de autoridad en desarrollo, sin activación pública.** La base previa
 [D08c.0 de daño modular/contacto](d08c0-modular-damage.md) está implementada en la bahía aislada;
 no equivale a conectar el World. El autor confirma
 que el manejo se siente bien y acepta el HUD B4a. Ahora pide seguir y conocer lo pendiente. Este puente
@@ -23,7 +23,11 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
    deriva el cuerpo de piezas vivas y rebasa el centro de masa; `contact.js` resuelve costa y genera daño
    localizado. La bahía consume estos módulos. En autoridad, asignar IDs de instancia desde el servidor
    sobre un plano validado; no persistir los IDs de fixture `lab:*` ni reconstruir identidad desde índices.
-1. **Cuerpo naval en autoridad, pruebas aisladas.** Adaptar el plano a `buildNavalRig` y mantener
+1. **Cuerpo naval en autoridad, ensayo interno implementado.** [D08c.1](d08c1-naval-authority.md)
+   conecta una copia transitoria del plano a `World.stepWorld()` con handles de control y daño en tick.
+   La opción es server-only y apagada por defecto; el barco ECS/deck públicos permanecen amarrados hasta
+   poder mover piloto y cubierta juntos. La copia no crea inventario ni expone bienes.
+   Adaptar el plano a `buildNavalRig` y mantener
    estado transitorio por balsa; avanzar `stepNaval` desde el tick del World. Resolver piloto/propiedad
    desde la sesión del servidor. Entorno constante y lastre de prueba; no escribir pose marítima en el
    perfil. Validar entradas, neutralizar al perder control y limpiar al destruir/desconectar.
@@ -54,9 +58,9 @@ automáticas y revisiones de integración continúan; su aceptación de manejo/b
 
 ## Persistencia y orden mayor
 
-M5 D09f-2b.9 ya tiene arranque común dormant con 814/814 pertinentes aisladas. Sigue integrar host y
-**todos** los hooks del gate, con scope/reloj/adopción explícitos, admisión/sim detenidas hasta ready
-y cierre que espere startup. SQL007/008 ya tienen verificación real; no son el paso pendiente.
+M5 conserva su propia cola de guards y efectos/startup del host; seguir su checkpoint actual en
+`PLAN-M5.md`. El arranque durable requiere scope/reloj/adopción explícitos, admisión/sim detenidas hasta
+ready y cierre que espere startup. SQL007/008 ya tienen verificación real; no son el paso pendiente.
 Muerte completa (equipo/oro/mundo), afinidad y leases permanecen abiertos.
 
 La navegación efímera puede evaluarse sin custodia nueva. Jettison de mercancías, pérdidas, botín,

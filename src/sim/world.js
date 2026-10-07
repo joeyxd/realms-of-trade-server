@@ -24,11 +24,12 @@ import { PEARL } from '../data/pearls.js';
 import { CLOCK, hourOfDay, nightAt } from '../data/clock.js';
 import { addInkCloud, removePredictedInkClouds, markOnHit, stepInk } from './systems/ink.js';
 import { RaftDeck } from './raftGeometry.js';
+import { NavalTrial } from './naval/trial.js';
 
 const D2R = Math.PI / 180;
 
 export class World {
-  constructor(seed, { map, server = false } = {}) {
+  constructor(seed, { map, server = false, navalTrial = false } = {}) {
     this.seed = seed >>> 0;
     this.tick = 0;
     this.rng = mulberry32((seed ^ 0xabcdef) >>> 0);
@@ -37,6 +38,8 @@ export class World {
     this.ecs = new ECS(2048);
     this.events = [];
     this.isServer = server;
+    if (typeof navalTrial !== 'boolean' || (navalTrial && !server)) throw new TypeError('Naval trials are server-only opt-in');
+    this.navalTrial = navalTrial === true ? new NavalTrial(this) : null;
     this.hazards = new Hazards();
     this.hazards.predicting = !server;
     this.chills = new Map();
@@ -678,6 +681,8 @@ export class World {
   // World systems that are not driven by player commands.
   stepWorld() {
     const ecs = this.ecs;
+    // Trial preparation can fail before any World system consumes this fixed tick.
+    if (this.isServer) this.navalTrial?.step();
     stepChills(this);
     stepInk(this);
     for (let e = 1; e < ecs.cap; e++) {

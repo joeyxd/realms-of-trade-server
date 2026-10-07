@@ -90,6 +90,7 @@ export function attachRafts(w, owner, p) {
 }
 
 export function detachRafts(w, owner) {
+  w.navalTrial?.removeOwner(owner);
   w.raftEditReceipts?.delete(owner);
   const removed = new Set([...w.rafts.values()].filter((r) => r.owner === owner).map((r) => r.ship.id));
   // A guest must not remain hovering over deep water after the owner's logout removes the moored deck.
