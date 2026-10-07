@@ -190,7 +190,8 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   ACK/replay no duplica HP ni efectos, y soporte perdido rescata a los ocupantes vivos. Protocolo 19,
   feedback privado de splash/audio y casco/HP públicos durante el ensayo.
   [Contrato](docs/briefs/d08c4-coastal-hull.md), [entrega](docs/delivery/d08c4-coastal-hull.md).
-  437/437 pertinentes aisladas sobre `155390a` + montaje M5 `14ede6d`; cuatro recorridos de navegador
+  437/437 pertinentes aisladas sobre `155390a` + montaje M5 `14ede6d`, más 67/67 de compatibilidad
+  con recuperación antes de admisión `6a56b3f`; cuatro recorridos de navegador
   en escritorio/móvil vertical/horizontal emulado y caseta, con perfiles/pose fuente conservados.
   Ocho capturas revisadas; sin nuevas texturas, navegación pública ni pérdidas durables.
   El terreno dibujado es una fixture acotada, no la pasada de arte del puerto; dispositivos/FPS/audio

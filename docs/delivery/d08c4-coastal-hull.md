@@ -30,8 +30,13 @@ ambos perfiles, plano y bodega. No se persiste daño, ni se concede reparación 
 
 **437/437 pruebas pertinentes, 52 archivos**, cero fallos/cancelaciones/skips, Node v24.14.0,
 concurrencia 1, 213,8 s. Archivo fijo `155390a` más runtime/test del montaje M5 `14ede6d` y
-23 fuentes propias con SHA256 normalizados iguales al entorno aislado. Las ediciones posteriores
-del host y el arte/puerto del checkout compartido quedan fuera de esta aceptación.
+23 fuentes propias con SHA256 normalizados iguales al entorno aislado. El arte/puerto y cambios
+no enumerados del checkout compartido quedan fuera de esta aceptación.
+
+**Compatibilidad posterior: 67/67**, 45,9 s. El arranque M5 `6a56b3f` entró durante el cierre;
+se instaló su delta commiteado en la copia aislada y se verificaron autoridad costera, montaje
+del host y recuperación antes de admisión. Este gate adicional no cambia la procedencia de la
+regresión ni del navegador anteriores; sus cuatro overlays y hashes se registran por separado.
 
 Cubren franjas de costa atravesadas en un tick, giro, roce y rebote/deslizamiento, muelle/borde,
 IDs/HP/rebase, seam sin daño duplicado, destrucción durante ACK/replay, snapshots atómicos,

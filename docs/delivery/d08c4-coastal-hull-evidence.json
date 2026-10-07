@@ -631,5 +631,42 @@
     "No hardware FPS, phone, WAN or physical audio acceptance.",
     "No public naval activation or durable damage/cargo loss.",
     "Conservative rotation/terrain envelopes and temporary tuning; coast mesh is an untextured fixture."
-  ]
+  ],
+  "startupCompatibility": {
+    "commit": "6a56b3fb9bcc2a4ed2d864c13badf57c827ce304",
+    "tests": 67,
+    "pass": 67,
+    "fail": 0,
+    "durationMs": 45911.0962,
+    "concurrency": 1,
+    "files": [
+      "tests/naval-coast-authority.test.mjs",
+      "tests/pearl-host-mount.test.mjs",
+      "tests/pearl-host-startup.test.mjs"
+    ],
+    "overlays": [
+      {
+        "file": "server/host.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "bc5669d57516d8473e9ad09801cbb6c12196e116ca433b07346661535773815e"
+      },
+      {
+        "file": "server/index.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "35a19ecfe7df7a5be7540944085ceb1870c5a226b8f9b38625903b2e66a36022"
+      },
+      {
+        "file": "tests/helpers/pearl-batch-journal-sql.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "11c0e0aa8af594b2ed904648f4cfb42116ed7cc83ad757e84a93f495315e49bc"
+      },
+      {
+        "file": "tests/pearl-host-startup.test.mjs",
+        "commit": "6a56b3f",
+        "normalizedSha256": "75ed20701cafabdb0a9a335fd520be69f6d02fb41e9163b4322f00e7627031ca"
+      }
+    ],
+    "logSha256": "7ef4c6570f972de750da2e2c20e46e8406d437d80e7f3825c3d06d5002b146b0",
+    "note": "Separate final gate after the committed M5 startup arrived; the 437-test regression and browser run retain their original 14ede6d provenance."
+  }
 }

@@ -73,9 +73,11 @@ automáticas y revisiones de integración continúan; su aceptación de manejo/b
 ## Persistencia y orden mayor
 
 M5 conserva su propia cola de guards y efectos/startup del host; seguir su checkpoint actual en
-`PLAN-M5.md`. El montaje trusted del host está aceptado en `14ede6d`; la activación pública y recuperación
-de diario/suelo todavía requieren scope/reloj/adopción explícitos, admisión/sim detenidas hasta ready y
-cierre que espere startup. SQL007/008 ya tienen verificación real; no son el paso pendiente.
+`PLAN-M5.md`. Montaje trusted `14ede6d` y recuperación antes de admisión `6a56b3f` están aceptados;
+el puente naval pasó además 67/67 de compatibilidad con ese arranque. Los callers eligen scope/reloj/
+adopción explícitos y mantienen admisión/sim detenidas hasta ready y cierre que espere startup.
+La activación pública, circulación/muerte completas y operaciones durables de progreso siguen sus
+cortes M5. SQL007/008 ya tienen verificación real; no son el paso pendiente.
 Muerte completa (equipo/oro/mundo), afinidad y leases permanecen abiertos.
 
 La navegación efímera puede evaluarse sin custodia nueva. Jettison de mercancías, pérdidas, botín,
