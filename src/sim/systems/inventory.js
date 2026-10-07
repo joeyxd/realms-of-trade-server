@@ -399,13 +399,14 @@ export function lootOnKill(world, enemy, by, players) {
   }
 }
 
-// A pirate fell inside the Cala Calavera (M4.5): everything they wear (a starter weapon aside) and carry, and
-// their potions, spill around the body for whoever gets there first. The gold is safe. Returns how many drops.
+// Every death spills the bag. Inside the Cala, worn equipment (starter weapon aside) and potions spill too.
+// Gold, earned levels and mastery stay with the pirate. Returns how many public drops.
 export function spillOnDeath(world, e, by = 0) {
   const p = profileOf(world, e), ecs = world.ecs;
-  if (!p || !lawlessAt(world, ecs.x[e], ecs.z[e])) return 0;
+  if (!p) return 0;
+  const lawless = lawlessAt(world, ecs.x[e], ecs.z[e]);
   const x = ecs.x[e], z = ecs.z[e], kit = kitOf(p.eq.weapon), items = [];
-  for (const s of SLOTS) {
+  for (const s of lawless ? SLOTS : []) {
     const it = p.eq[s];
     if (!it || (s === 'weapon' && it.s)) continue;
     items.push(it);
@@ -414,15 +415,16 @@ export function spillOnDeath(world, e, by = 0) {
   items.push(...p.bag);
   p.bag = [];
   if (!p.eq.weapon) p.eq.weapon = starterItem(p, kit); // same kit: the mastery you earned stays usable
-  const pots = Math.max(0, ecs.potions[e] | 0);
-  ecs.potions[e] = 0;
+  const pots = lawless ? Math.max(0, ecs.potions[e] | 0) : 0;
+  if (lawless) ecs.potions[e] = 0;
   const list = [], o = { scatter: LAWLESS.spill.scatter, life: LAWLESS.spill.life }, from = { fromName: ecs.names[e], from: e };
   for (const it of items) addDrop(world, 0, 'item', x, z, { item: it, ...from }, list, o);
   for (let k = 0; k < pots; k++) addDrop(world, 0, 'potion', x, z, { ...from }, list, o);
   p.stats.deaths++;
   const pk = by && by !== e ? profileOf(world, by) : null;
-  if (pk) { pk.stats.pk++; dirty(world, by); }
+  if (pk && lawless) { pk.stats.pk++; dirty(world, by); }
   refreshStats(world, e);
+  syncProfile(world, e);
   world.emit({ type: 'spill', to: e, e, n: items.length, pot: pots, x, z, by });
   announcePublic(world, list, x, z, { spill: e });
   dirty(world, e);

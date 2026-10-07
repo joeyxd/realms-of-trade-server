@@ -21,6 +21,8 @@ const deferred = () => { let resolve; const promise = new Promise((r) => { resol
 const command = (seq, pt = seq) => sanitizeCmd({ seq, pt, mx: 1, mz: 0, ax: 1, az: 0,
   btn: PEARL_ACTION_BITS | BTN.AIM, prs: PEARL_ACTION_BITS });
 const progress = (p) => ({ lvl: p.lvl, xp: p.xp, pot: p.pot, cp: p.cp });
+const ecsState = (ecs) => Object.fromEntries(Object.entries(ecs).map(([key, value]) =>
+  [key, ArrayBuffer.isView(value) ? Array.from(value) : structuredClone(value)]));
 const output = (f, type) => f.sockets.flatMap((ws) => ws.messages).filter((m) => m.t === MSG.EVENT && m.ev.type === type);
 
 class Socket extends EventEmitter {
@@ -132,22 +134,30 @@ test('mounted give drains through the host without filtering either endpoint or 
 });
 
 for (const [name, backend] of [['memory', undefined], ['SDK/SQL008 local', sql]]) {
-  test(`${name}: mounted replacement drains both managed UIDs and publishes the frozen drop exactly once`, async () => {
-    const f = await fixture({ backend });
+  test(`${name}: mounted host rejects replacement before storage or input changes`, async () => {
+    let reads = 0, saves = 0, batches = 0;
+    const f = await fixture({ backend, wrap: (base) => ({ ...base,
+      async loadUnique(...args) { reads++; return base.loadUnique(...args); },
+      async saveProfile(...args) { saves++; return base.saveProfile(...args); },
+      async commitPearlBatch(...args) { batches++; return base.commitPearlBatch(...args); },
+    }) });
     try {
       f.staging.swallow({ uid, source: f.source, expectedVersion: 1 }); await f.staging.settle();
       f.host.server.pausable = true; for (const c of f.host.server.clients.values()) c.paused = true;
       f.host.server.pump(); await f.host.profiles.flush();
-      const incoming = pearls[0]; f.c.queue.push(command(7)); const rng = f.w.rng.state();
-      f.staging.replace({ uid: incoming.uid, replaceUid: uid, source: f.source, expectedVersion: 1, replaceExpectedVersion: 2 });
-      await f.staging.settle(); f.host.server.pump(); await f.host.profiles.flush();
-      assert.equal(f.p.pearls.swallowed.uid, incoming.uid); assert.equal(f.w.drops.size, 1);
-      const drop = [...f.w.drops.values()][0]; assert.equal(drop.pearl.uid, uid);
-      assert.equal(f.w.pearlLedger.get(uid).drop, drop.id); assert.equal(f.w.rng.state(), rng);
-      assert.equal((f.c.queue[0].btn | f.c.queue[0].prs) & PEARL_ACTION_BITS, 0);
-      assert.equal((await f.base.loadUnique(uid)).holder, null); assert.equal((await f.base.loadUnique(uid)).version, 3);
-      assert.equal((await f.base.loadUnique(incoming.uid)).version, 2);
-      f.host.server.pump(); assert.equal(f.w.drops.size, 1);
+      reads = saves = batches = 0;
+      f.c.queue.push(command(7)); f.c.carry = PEARL_ACTION_BITS;
+      const queued = structuredClone(f.c.queue), carry = f.c.carry, before = structuredClone({ profiles: [...f.w.profiles],
+        ecs: ecsState(f.w.ecs), drops: [...f.w.drops], events: f.w.events, ledger: [...f.w.pearlLedger], nextDrop: f.w.nextDrop });
+      assert.throws(() => f.staging.replace({ uid: pearls[0].uid, replaceUid: uid, source: f.source,
+        expectedVersion: 1, replaceExpectedVersion: 2 }), { code: 'bound' });
+      await f.staging.settle();
+      assert.deepEqual([reads, saves, batches], [0, 0, 0]);
+      assert.deepEqual(f.c.queue, queued); assert.equal(f.c.carry, carry);
+      assert.deepEqual({ profiles: [...f.w.profiles], ecs: ecsState(f.w.ecs), drops: [...f.w.drops], events: f.w.events,
+        ledger: [...f.w.pearlLedger], nextDrop: f.w.nextDrop }, before);
+      assert.equal(f.p.pearls.swallowed.uid, uid); assert.equal(f.w.drops.size, 0);
+      assert.equal(f.staging.operations.size, 0); pearlMutationGate(f.host.profiles).assertWorldAvailable();
     } finally { await f.close(); }
   });
 }

@@ -10,7 +10,7 @@ import { StoreError } from '../server/store.mjs';
 import { pearlMutationGate } from '../server/pearlMutationGate.mjs';
 import { capturePearlProfile } from '../server/pearlProfileSnapshot.mjs';
 import { fixture, accounts, scope, uid, deferred, state } from './helpers/pearl-swallow-staging.mjs';
-import { fixture as replacementFixture, incomingUid, outgoingUid, WORLD } from './helpers/pearl-replace-staging.mjs';
+import { fixture as replacementFixture, WORLD } from './helpers/pearl-replace-staging.mjs';
 import { database as swallowSql } from './helpers/pearl-same-holder-sql.mjs';
 import { database as batchSql } from './helpers/pearl-batch-journal-sql.mjs';
 
@@ -82,22 +82,23 @@ for (const [name, backend] of [['memory', undefined], ['SDK/SQL006', swallowSql]
 }
 
 for (const [name, backend] of [['memory', undefined], ['SDK/SQL008', batchSql]]) {
-  test(`${name}: replacement filters only its owner, keeps frozen drop and preserves new progress`, async () => {
+  test(`${name}: retired replacement leaves inputs and owner progress untouched`, async () => {
     const f = await replacementFixture({ backend }), { s, c, prepares } = install(f), e = f.entities[0];
     try {
       c.queue.push(command(1)); c.carry = PEARL_ACTION_BITS; const other = s.clients.get(2);
       other.queue.push(command(9)); other.carry = PEARL_ACTION_BITS; const beforeOther = transport(other);
       for (const column of PEARL_ACTION_BUFFERS) f.w.ecs[column][e] = 0.13;
-      const h = f.staging.replace(f.command()), rng = f.w.rng.state(); await f.staging.settle();
+      const beforeOwner = transport(c), beforeWorld = state(f.w), beforeProfile = structuredClone(f.w.profiles.get(e));
+      const rng = f.w.rng.state();
+      assert.throws(() => f.staging.replace(f.command()), { code: 'bound' }); await f.staging.settle();
       f.w.profiles.get(e).gold += 5; f.w.ecs.xp[e] = 33;
       for (const client of s.clients.values()) client.paused = true;
-      s.pump(); assert.equal(f.staging.operations.has(h.operationId), false); assert.equal(prepares(), 1);
-      assert.deepEqual(transport(other), beforeOther); assert.equal(c.queue[0].seq, 1); assert.equal(c.queue[0].prs, kept);
-      assert.equal(f.w.profiles.get(e).pearls.swallowed.uid, incomingUid); assert.equal(f.w.profiles.get(e).gold, 42);
-      assert.equal(f.w.profiles.get(e).xp, 33); assert.equal(f.w.drops.size, 1);
-      assert.equal([...f.w.drops.values()][0].pearl.uid, outgoingUid); assert.equal(f.w.rng.state(), rng);
-      await f.sessions.flush(); assert.equal((await f.base.loadUnique(incomingUid)).version, 2);
-      assert.equal((await f.base.loadUnique(outgoingUid)).version, 2);
+      assert.equal(f.staging.operations.size, 0); assert.equal(prepares(), 0);
+      assert.deepEqual(transport(c), beforeOwner); assert.deepEqual(transport(other), beforeOther);
+      assert.deepEqual(f.w.profiles.get(e).pearls, beforeProfile.pearls); assert.equal(f.w.profiles.get(e).gold, 42);
+      assert.equal(f.w.profiles.get(e).xp, beforeProfile.xp); assert.equal(f.w.ecs.xp[e], 33); assert.equal(f.w.drops.size, 0);
+      assert.deepEqual(f.w.events, beforeWorld.events); assert.equal(f.w.rng.state(), rng);
+      pearlMutationGate(f.sessions).assertWorldAvailable();
     } finally { await f.close(); }
   });
 }

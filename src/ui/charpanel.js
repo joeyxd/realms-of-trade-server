@@ -56,7 +56,6 @@ export class CharPanel {
     if (!this.isOpen) return;
     this.isOpen = false; this.shop = false; this.learn = false;
     this.root.hidden = true;
-    this.pearlConfirm = null;
     const p = this.profile();
     if (p) for (const it of p.bag) this.seen.add(it.u);
     if (this.onClose) this.onClose();
@@ -105,7 +104,7 @@ export class CharPanel {
     const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${name} <span class="kbd">${key}</span></button>`).join('');
     const html = `<div class="cp frame interactive" role="dialog" aria-label="Personaje">
       <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="Cerrar">✕</button></div>
-      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, this.pearlConfirm, this.nearby?.() || []) : this.questsHtml(p)}</div>
+      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.
@@ -353,15 +352,10 @@ export class CharPanel {
   // A refused change (skillDenied): the card shakes.
   pearlClick(button) {
     const op = button.dataset.pearlOp, uid = button.dataset.pearlUid, p = this.profile();
-    if (op === 'cancel') { this.pearlConfirm = null; this.render(); return; }
-    const current = p?.pearls?.swallowed;
-    if (op === 'swallow' && current && (this.pearlConfirm?.uid !== uid || this.pearlConfirm.replaceUid !== current.uid)) {
-      this.pearlConfirm = { uid, replaceUid: current.uid }; this.render();
-      this.root.querySelector('.pearl-confirm')?.scrollIntoView({ block: 'center' }); return;
-    }
+    if (button.disabled || op === 'spit' || op === 'cancel' || (op === 'swallow' && p?.pearls?.swallowed)) return;
     const target = op === 'give' ? +this.root.querySelector(`[data-pearl-target="${uid}"]`)?.value : undefined;
-    this.send({ type: 'pearl', op, uid, ...(op === 'swallow' && current ? { replaceUid: current.uid } : {}), ...(target ? { target } : {}) });
-    this.pearlConfirm = null; sfx.click();
+    this.send({ type: 'pearl', op, uid, ...(target ? { target } : {}) });
+    sfx.click();
   }
 
   denyTattoo() {

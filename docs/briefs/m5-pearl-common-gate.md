@@ -18,7 +18,7 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 
 | Punto actual | Parche que debe aportar el dueño |
 |---|---|
-| `LocalServer.playerCommand`, `devCommand` y debug teleport | [2b.11](m5-pearl-command-access.md) conecta preflight inmediato síncrono antes de helpers; actor/receptor por sesión/entidad, UIDs actuales y guard mundial conservador para mint/RNG/estado compartido. Busy envía feedback privado sin mutación ni acuse de éxito. [2b.18](m5-pearl-managed-request.md) ofrece solicitud trusted de give/swallow/replace que consulta generaciones del store bajo la misma reserva de staging, sin dato de versión del caller. Dispatch público y demás rutas durables siguen pendientes; producción autónoma sigue en la fila siguiente |
+| `LocalServer.playerCommand`, `devCommand` y debug teleport | [2b.11](m5-pearl-command-access.md) conecta preflight inmediato síncrono antes de helpers; actor/receptor por sesión/entidad, UIDs actuales y guard mundial conservador para mint/RNG/estado compartido. Busy envía feedback privado sin mutación ni acuse de éxito. [2b.18](m5-pearl-managed-request.md) aporta generaciones consultadas bajo la reserva. [2b.19](m5-pearl-release-staging.md) liga la tragada hasta morir, retira nuevos spit/replace y admite give/swallow/leave. Leave desde bolsa usa suelo durable, geometría congelada y apply reversible, conservando elemento/acciones; muerte pierde EXP/bolsa en sim actual, su transacción durable completa sigue pendiente. Dispatch público y demás rutas durables siguen pendientes; producción autónoma sigue en la fila siguiente |
 | `world.applyCommand`, `world.stepWorld`, `economy.onAdvance` | [2b.12](m5-pearl-tick-access.md) agrega una barrera conservadora antes del tick/filler real del host: toda la simulación autoritativa espera, antes de dequeue/tiempo/daño/pickup/return/RNG/producción; snapshots/PING continúan con el último ACK aplicado. Falta captura/retención granular para mantener movimiento durante la espera, apply automático y protección de llamadas directas fuera de esas entradas |
 | `sendProfile` / perfil privado de snapshot | [2b.10](m5-pearl-profile-io.md) conecta preflight de cuenta/UID del host antes de `syncProfile`, borrar dirty o enviar; busy conserva dirty y programación. Snapshot actual separado: solo tuples ECS de movimiento/combate, sin inventario/UID/blob/recibo, continúa durante la espera |
 | `sendSave` / autosave / final disconnect | 2b.10 bloquea antes de sync y conserva `saveAt`/blob hasta aceptación. [2b.14](m5-pearl-profile-snapshot.md) aporta captura canónica opcional del baseline/apply y save reservado separado, con puente trusted del host; falta montarlo automáticamente. Final save bloqueado se retiene en memoria y close falla flush; falta finalizador durable que conserve/resuelva ese progreso |
@@ -32,11 +32,12 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
   dentro de la familia ground, con 006. [D09f-2b.2](../delivery/d09f-swallow-staging.md) añade staging
   dormant de sus efectos ECS/apply en tick; [D09f-2b.3](../delivery/d09f-common-effect.md) comparte
   la regla ECS con sim. Los hooks completos siguen pendientes.
-  003 rechaza from=to. Reemplazo usa la familia batch de dos UIDs.
+  003 rechaza from=to. Batch conserva reemplazos históricos, sin nuevas entradas de gameplay desde .19.
 - D09f-2b.4/5 aporta SQL007 y DTO/cola/diario SQL008 para muerte pearl-only y reemplazo;
   verificaciones reales 31/31 y 18/18 en 2b.4/6. [D09f-2b.7](m5-pearl-batch-staging.md)
   implementa staging dormant del reemplazo y apply de ambos UIDs/drop/ECS en tick.
-  La muerte completa aún necesita integrar equipo/oro/mundo junto al spill de perlas;
+  .19 retira nuevas creaciones de reemplazo y conserva la recuperación histórica. La muerte completa
+  aún necesita integrar EXP/bolsa/equipo/mundo junto al spill de perlas;
   el lote pearl-only no acredita atomicidad de esos otros efectos.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas
   ni repetir rolls. El gate no crea esa cola ni elige silenciosamente qué recompensas se descartan.

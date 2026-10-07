@@ -10,7 +10,6 @@ import { pearlMutationGate } from '../server/pearlMutationGate.mjs';
 import { newProfile } from '../src/sim/systems/inventory.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { fixture, accounts, scope, uid, deferred, state } from './helpers/pearl-swallow-staging.mjs';
-import { fixture as replacementFixture, incomingUid, outgoingUid } from './helpers/pearl-replace-staging.mjs';
 import { database as sql } from './helpers/pearl-batch-journal-sql.mjs';
 
 const turn = () => new Promise((resolve) => setImmediate(resolve));
@@ -62,27 +61,27 @@ for (const [name, backend] of [['memory', undefined], ['SDK/SQL008 local', sql]]
     } finally { await f.close(); }
   });
 
-  test(`${name}: replacement resolves each UID independently and keeps its frozen drop plan`, { timeout: 15000 }, async () => {
-    const commits = [];
-    const f = await replacementFixture({ backend, wrapStore: (base) => ({ ...base,
-      async commitPearlBatch(raw) { commits.push(structuredClone(raw)); return base.commitPearlBatch(raw); },
-    }) });
+  test(`${name}: replacement selectors are denied without property reads, IO, or reservations`, async () => {
+    let reads = 0, saves = 0, ground = 0, batches = 0, prepares = 0;
+    const f = await fixture({ backend: swallowBackend, wrapStore: (base) => ({ ...base,
+      async loadUnique(...args) { reads++; return base.loadUnique(...args); },
+      async saveProfile(...args) { saves++; return base.saveProfile(...args); },
+      async commitPearlGround(...args) { ground++; return base.commitPearlGround(...args); },
+      async commitPearlBatch(...args) { batches++; return base.commitPearlBatch(...args); },
+    }), wrapJournal: (base) => ({ ...base, async prepare(...args) { prepares++; return base.prepare(...args); } }) });
     try {
-      await apply(f, { action: 'give', uid: incomingUid, source: source(f), target: source(f, 1) });
-      await apply(f, { action: 'give', uid: incomingUid, source: source(f, 1), target: source(f) });
-      const before = state(f.world), first = f.staging.request({ action: 'replace', uid: incomingUid,
-        replaceUid: outgoingUid, source: source(f) }); held(f, [incomingUid, outgoingUid], [accounts[0]]);
-      const ctx = f.staging.operations.get(first.operationId), drop = structuredClone(ctx.plan.drop);
-      assert.deepEqual(ctx.plan.meta.items.map((q) => q.expectedVersion), [null, null]);
-      await f.staging.settle(); assert.deepEqual(state(f.world), before);
-      assert.deepEqual(Object.fromEntries(commits[0].items.map((q) => [q.uid, q.expectedVersion])),
-        { [incomingUid]: 3, [outgoingUid]: 1 });
-      assert.deepEqual(ctx.plan.drop, drop); assert.equal(Object.isFrozen(ctx.plan), true);
-      assert.deepEqual(f.staging.drain(), [{ operationId: first.operationId, state: 'applied' }]); await f.sessions.flush();
-      assert.equal((await f.base.loadUnique(incomingUid)).version, 4);
-      assert.equal((await f.base.loadUnique(outgoingUid)).holder, null);
-      assert.equal(f.world.profiles.get(f.entities[0]).pearls.swallowed.uid, incomingUid);
-      assert.equal(f.world.drops.size, 1); assert.equal([...f.world.drops.values()][0].pearl.uid, outgoingUid);
+      reads = saves = ground = batches = prepares = 0;
+      const before = state(f.w), raw = { action: 'replace', uid: 'replace-incoming', replaceUid: 'replace-outgoing', source: source(f) };
+      assert.throws(() => f.staging.request(raw), { code: 'bound' });
+      let getterReads = 0;
+      const getter = { action: 'replace', source: source(f), get uid() { getterReads++; return raw.uid; },
+        get replaceUid() { getterReads++; return raw.replaceUid; }, get expectedVersion() { getterReads++; return 1; } };
+      assert.throws(() => f.staging.request(getter), { code: 'operation' });
+      await f.staging.settle();
+      assert.equal(getterReads, 0); assert.deepEqual([reads, saves, ground, batches, prepares], [0, 0, 0, 0, 0]);
+      assert.deepEqual(state(f.w), before); assert.equal(f.staging.operations.size, 0); assert.equal(f.staging.tasks.size, 0);
+      pearlMutationGate(f.sessions).assertWorldAvailable();
+      for (const key of ['replace-incoming', 'replace-outgoing']) pearlMutationGate(f.sessions).assertAvailable({ uids: [key] });
     } finally { await f.close(); }
   });
 
@@ -186,27 +185,6 @@ test('managed responses fail closed without adopting or dispatching invalid uniq
       await assert.rejects(f.sessions.flush(), { code: 'flush' });
     } finally { await f.close(); }
   });
-});
-
-test('replacement settles both reads after one rejection and never writes a partial request', async () => {
-  const entered = deferred(), reply = deferred(); let armed = false, reads = 0, saves = 0, commits = 0;
-  const f = await replacementFixture({ wrapStore: (base) => ({ ...base,
-    async loadUnique(key) {
-      if (armed) { reads++; if (key === incomingUid) throw new StoreError('unavailable'); if (key === outgoingUid) { entered.resolve(); await reply.promise; } }
-      return base.loadUnique(key);
-    },
-    async saveProfile(...args) { if (armed) saves++; return base.saveProfile(...args); },
-    async commitPearlBatch(...args) { commits++; return base.commitPearlBatch(...args); },
-  }) });
-  try {
-    armed = true; const before = state(f.world), h = f.staging.request({ action: 'replace', uid: incomingUid, replaceUid: outgoingUid, source: source(f) });
-    await entered.promise; let settled = false; const waiting = f.staging.settle().then(() => { settled = true; });
-    await turn(); assert.equal(settled, false); held(f, [incomingUid, outgoingUid], [accounts[0]]);
-    assert.equal(reads, 2); assert.deepEqual([saves, commits], [0, 0]); assert.deepEqual(f.staging.drain(), []);
-    reply.resolve(); await waiting;
-    assert.deepEqual(f.staging.drain(), [{ operationId: h.operationId, state: 'fenced', code: 'unavailable' }]);
-    assert.deepEqual([saves, commits], [0, 0]); assert.deepEqual(state(f.world), before);
-  } finally { reply.resolve(); await f.close(); }
 });
 
 test('progress earned during managed IO is captured again before the CAS baseline save', async () => {

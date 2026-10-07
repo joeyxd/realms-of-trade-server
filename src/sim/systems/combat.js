@@ -112,10 +112,12 @@ function killPlayer(world, e, seq, by = 0) {
   ecs.atkStage[e] = 0; ecs.guardT[e] = -1; ecs.chain[e] = 0;
   ecs.pend0[e] = ecs.pend1[e] = 0;
   ecs.dashT[e] = -1; ecs.state[e] = 0;
+  const loss = Math.max(0, Math.min(1, tuning.combat.deathXpLoss));
+  ecs.xp[e] = Math.max(0, ecs.xp[e] * (1 - loss));
   const ev = { type: 'death', id: e, seq, x: ecs.x[e], z: ecs.z[e] };
   if (by) ev.by = by;
   world.emit(ev);
-  // The server: falling inside the Cala Calavera spills what you carry (systems/inventory.js).
+  // The server spills carried items everywhere, with additional equipment risk inside the Cala.
   if (world.onDeath) world.onDeath(e, by);
 }
 

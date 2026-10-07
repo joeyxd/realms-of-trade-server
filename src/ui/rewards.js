@@ -6,6 +6,7 @@ import { QUESTS } from '../data/quests.js';
 import { WEAPONS, WEAPON_KINDS, SKILLS, MASTERY } from '../data/weapons.js';
 import { ENCOUNTERS } from '../data/encounters.js';
 import { LAWLESS } from '../data/lawless.js';
+import { tuning } from '../data/tuning.js';
 import { itemName } from '../sim/items.js';
 import { sfx } from '../audio/sfx.js';
 import { TATTOOS, skillId } from '../data/tattoos.js';
@@ -154,10 +155,11 @@ export class Rewards {
         break;
       case 'gear': sfx.equip(); break;
       case 'spill': {
-        // You fell in the Cala Calavera: what you carried is on the ground for anyone (the map marks it).
+        // Carried loot is public after any death; the map marks where to recover it.
         this.spill = { x: ev.x, z: ev.z, until: performance.now() + LAWLESS.spill.life * 1000 };
         const what = [ev.n ? `${ev.n} ${ev.n > 1 ? 'objetos' : 'objeto'}` : '', ev.pot ? `${ev.pot} ${ev.pot > 1 ? 'pociones' : 'poción'}` : ''].filter(Boolean).join(' y ');
-        H.toast(what ? `<b class="pk">☠ Lo perdiste todo en la Cala.</b> ${what} quedan en el suelo ${Math.round(LAWLESS.spill.life / 60)} minutos para quien llegue primero: ¡vuelve a por ello! <small>(💀 en el mapa · el oro no se pierde)</small>` : '<b class="pk">☠ Caíste en la Cala.</b> No llevabas nada que perder.', 8000);
+        const xpLoss = `Pierdes el ${Math.round(tuning.combat.deathXpLoss * 100)} % de la EXP del nivel actual, sin bajar de nivel.`;
+        H.toast(what ? `<b class="pk">☠ Tu botín cayó al morir.</b> ${what} quedan en el suelo ${Math.round(LAWLESS.spill.life / 60)} minutos para quien llegue primero: ¡vuelve a por ello! ${xpLoss} <small>(💀 en el mapa · el oro no se pierde)</small>` : `<b class="pk">☠ Caíste.</b> No llevabas objetos en la bolsa. ${xpLoss}`, 8000);
         break;
       }
       case 'sold': if (ev.gold > 0) { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold', { life: 0.9 }); } break;
@@ -169,7 +171,7 @@ export class Rewards {
       case 'commandDenied':
         sfx.denied(); H.toast('<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.', 5000); break;
       case 'pearlDenied': {
-        const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', confirm: 'Confirma qué perla quieres soltar antes de reemplazarla.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', vendor: 'Acércate al puesto de Tía Perla para vender.', unknown: 'Ya no llevas esa perla.' };
+        const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', bound: 'La perla tragada permanece contigo hasta morir.', confirm: 'Ya tienes una perla tragada; permanece contigo hasta morir.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', vendor: 'Acércate al puesto de Tía Perla para vender.', unknown: 'Ya no llevas esa perla.' };
         sfx.denied(); H.toast(`<b>${why[ev.why] || why.unknown}</b>`, 5000); break;
       }
       case 'pearlChanged': {

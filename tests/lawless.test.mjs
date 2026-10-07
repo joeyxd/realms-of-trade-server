@@ -1,5 +1,5 @@
 // M4.5 P2–P3: La Cala Calavera. Inside the ring of skulls every pirate's blow lands on every other pirate in it, the
-// loot is public and a pirate who falls there drops everything they carry. Outside, nothing changed.
+// loot is public and a pirate who falls there drops everything they carry. Everywhere, death now drops the bag and costs current-level XP.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { tuning } from '../src/data/tuning.js';
@@ -220,7 +220,7 @@ test('falling inside spills everything you wear and carry (a starter weapon asid
   assert.equal([...w.drops.values()].filter((d) => !d.to).length, 0);
 });
 
-test('outside the Cala a fall costs nothing; a pirate who arrives later sees the public loot on the ground', () => {
+test('outside the Cala equipment stays; a pirate who arrives later sees public Cala loot', () => {
   const S = server();
   const a = S.join(1, A.x, A.z), pa = S.profile(1);
   const it = rollItem(S.w.lootRng, { lvl: 3, slot: 'head' }); it.u = pa.uid++; pa.eq.head = it;

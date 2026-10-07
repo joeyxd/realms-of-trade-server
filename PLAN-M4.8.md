@@ -16,6 +16,11 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
   tiñe todo tu kit** (arma, artes y tatuajes), una **pasiva** y una **maldición**.
 - **Raras pero disponibles** (con copias): botín de élites, jefes y cofres de Marea (más con la Marea alta).
 - **Se cae al morir**, para que circulen y sean algo importante.
+- **Regla vigente del autor, 2026-10-07:** una vez tragada no se puede escupir ni reemplazar;
+  permanece hasta morir. La muerte pierde EXP del nivel actual y suelta la bolsa en cualquier zona.
+  Implementación local en [D09f-2b.19](docs/delivery/d09f-pearl-bound-death.md): 10 % provisional y
+  ajustable, sin bajar niveles; cifra/balance por confirmar. Las descripciones históricas de
+  escupir/reemplazar debajo quedan retiradas; recibos y recuperación anteriores se conservan.
 - **Niveles**: las raras primero; las **legendarias** después (M5): **únicas por servidor**, todo el mundo sabe
   quién la trae y, si su portador no entra en unos días, vuelve al mar.
 - Las zonas tipo MOBA quedan aparcadas: primero la base divertida, luego la estructura (economía, construcción,
@@ -175,8 +180,9 @@ En solo: F4 → «+ Perla de Brasa / Escarcha / Tormenta / Tinta» → P → Tra
 Con Escarcha/Tinta, mantener apunta y soltar coloca el campo. Con Tormenta, mantener carga y soltar encadena.
 F4 → «Hora del mundo: día/noche» permite comprobar Tinta; cambiar el preset de luz no cambia su maldición.
 En móvil, Bolsa → Perlas y botón COMETA / ANCLA / RAYO / NUBE; arrastrar ANCLA/NUBE apunta, mantener RAYO carga
-y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Prueba escupir, reemplazar y cancelar,
-vadear sin modo dios y morir fuera de la Cala. En línea, otro pirata debe poder recoger la perla caída.
+y soltar lanza. En mando, cruceta abajo. El botín normal no requiere F4. Comprueba que no se pueda escupir
+ni reemplazar, vadea sin modo dios y muere fuera de la Cala: pierdes EXP y caen bolsa y perlas.
+En línea, otro pirata debe poder recoger la perla caída. El equipo/pociones mantienen el riesgo adicional de Cala.
 
 Implementación: `src/data/pearls.js`, `src/sim/systems/pearls.js`, `pearlcombat.js`, hueco G en `skills.js`,
 `src/ui/pearlpanel.js`. Pruebas: `tests/pearls.test.mjs` (17), `tests/escarcha.test.mjs` (14); escenarios visuales

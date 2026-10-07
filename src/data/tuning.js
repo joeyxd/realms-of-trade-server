@@ -76,6 +76,7 @@ export const tuning = {
     regenRate: 0.05, // fraction of max HP per second (M2–M3.6: 4 s and 0.1)
     respawnTime: 3,
     respawnIframes: 2,
+    deathXpLoss: 0.1, // fraction of current-level XP lost on death; earned levels stay intact
     hitKnock: 4, // u/s of knockback when hit (decays at 10/s → 0.4 u)
     rewind: 24, // max ticks (400 ms) the server rewinds to a command's projectile tick (lag compensation; M3.6: 20 clipped at 300 ms RTT)
     lead: 2, // max ticks a command may be ahead of the server

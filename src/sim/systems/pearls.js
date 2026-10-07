@@ -115,26 +115,21 @@ function changed(w, e, op, pearl) {
   applyPearlChange(w, e); mark(w, e);
   w.emit({ type: 'pearlChanged', to: e, e, op, pearl });
 }
-export function swallowPearl(w, e, uid, replaceUid) {
+export function swallowPearl(w, e, uid) {
   const p = profile(w, e);
   if (!p) return false;
+  // A swallowed pearl is bound until death; even an old confirmed replacement cannot release it.
+  if (owned(p).swallowed) return deny(w, e, 'bound');
   if (!calm(w, e)) return deny(w, e, 'combat');
   const ps = owned(p), i = ps.bag.findIndex((q) => q.uid === uid);
   if (i < 0) return deny(w, e, 'unknown');
-  // The confirmation names the currently swallowed UID; an out-of-date UI cannot eject a different pearl.
-  if (ps.swallowed && replaceUid !== ps.swallowed.uid) return deny(w, e, 'confirm');
-  const pearl = ps.bag.splice(i, 1)[0], old = ps.swallowed;
+  const pearl = ps.bag.splice(i, 1)[0];
   ps.swallowed = pearl;
-  if (old) dropPearl(w, old, w.ecs.x[e], w.ecs.z[e], e, true);
   changed(w, e, 'swallow', pearl); return true;
 }
 export function spitPearl(w, e) {
-  const p = profile(w, e);
-  if (!p || !owned(p).swallowed) return false;
-  if (!calm(w, e)) return deny(w, e, 'combat');
-  const pearl = p.pearls.swallowed; p.pearls.swallowed = null;
-  dropPearl(w, pearl, w.ecs.x[e], w.ecs.z[e], e, true);
-  changed(w, e, 'spit', pearl); return true;
+  // Reject legacy clients at the authority boundary without touching ownership or combat state.
+  return profile(w, e) ? deny(w, e, 'bound') : false;
 }
 export function leavePearl(w, e, uid) {
   const p = profile(w, e);

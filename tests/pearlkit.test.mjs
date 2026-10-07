@@ -10,7 +10,7 @@ import { SHOT } from '../src/sim/projectiles.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { setWeapon } from '../src/sim/systems/skills.js';
 import { installInventory, newProfile, attachProfile } from '../src/sim/systems/inventory.js';
-import { givePearl, swallowPearl, spitPearl } from '../src/sim/systems/pearls.js';
+import { givePearl, swallowPearl, spillPearls } from '../src/sim/systems/pearls.js';
 import { map, A } from './helpers.mjs';
 
 function pearlWorld(kind) {
@@ -91,7 +91,7 @@ test('each swallowed pearl colors damage from the live weapon and all three tatt
   }
 });
 
-test('authoritative weapon-shot hits use the launch pearl after it is spat out', () => {
+test('authoritative weapon-shot hits use the launch pearl after death releases it', () => {
   for (const [kind, spec] of Object.entries(PEARLS)) {
     for (const shotKind of [SHOT.BULLET, SHOT.REFLECT]) {
       const { w, e, p } = pearlWorld(kind);
@@ -109,8 +109,8 @@ test('authoritative weapon-shot hits use the launch pearl after it is spat out',
       const launched = w.events.find((ev) => ev.type === 'shot' && ev.sid === sid);
       assert.equal(launched.elem, spec.elem, `${kind}/${shotKind}: emitted shot packet carries launch element`);
 
-      assert.ok(spitPearl(w, e));
-      assert.equal(ecs.elem[e], 0, 'the carrier has no element after spitting');
+      assert.equal(spillPearls(w, e), 1);
+      assert.equal(ecs.elem[e], 0, 'the carrier has no element after death spill');
       const evs = [];
       for (let i = 0; i < 50; i++) {
         w.stepWorld();
@@ -119,7 +119,7 @@ test('authoritative weapon-shot hits use the launch pearl after it is spat out',
       }
       const hit = evs.find((ev) => ev.type === 'damage' && ev.id === target && ev.kind === (shotKind === SHOT.BULLET ? 'bullet' : 'shot'));
       assert.ok(hit, `${kind}/${shotKind}: actual authoritative shot hits the first dummy`);
-      assert.equal(hit.elem, spec.elem, `${kind}/${shotKind}: delayed hit keeps its launch element after spit`);
+      assert.equal(hit.elem, spec.elem, `${kind}/${shotKind}: delayed hit keeps its launch element after death spill`);
       const end = evs.find((ev) => ev.type === 'shotEnd' && ev.sid === sid);
       assert.ok(end, `${kind}/${shotKind}: server emits shot end`);
       assert.equal(end.elem, spec.elem, `${kind}/${shotKind}: shot end retains the element for clients`);

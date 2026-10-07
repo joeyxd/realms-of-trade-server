@@ -126,26 +126,31 @@ test('give captures both trusted endpoints independently and transfers no player
 });
 
 for (const [backendName, backend] of [['memory', undefined], ['SDK/SQL008', batchSql]]) {
-  test(`${backendName}: replacement keeps its frozen ground plan and newer detached progress`, async () => {
-    const sent = deferred(), reply = deferred(); let request;
+  test(`${backendName}: retired replacement is denied without reading storage or capturing newer progress`, async () => {
+    let reads = 0, saves = 0, commits = 0, prepares = 0;
     const f = await replacementFixture({ backend, wrapStore: (base) => ({ ...base,
-      async commitPearlBatch(raw) { request = structuredClone(raw); const result = await base.commitPearlBatch(raw);
-        sent.resolve(); await reply.promise; return result; },
-    }) });
-    const w = f.world, e = f.entities[0], p = w.profiles.get(e);
+      async loadUnique(...args) { reads++; return base.loadUnique(...args); },
+      async saveProfile(...args) { saves++; return base.saveProfile(...args); },
+      async commitPearlBatch(...args) { commits++; return base.commitPearlBatch(...args); },
+    }), wrapJournal: (base) => ({ ...base, async prepare(...args) { prepares++; return base.prepare(...args); } }) });
+    const w = f.world, e = f.entities[0];
     f.staging = new PearlStaging(f.sessions, w, WORLD, { captureProfile: (_id, entity) => capturePearlProfile(w, entity) });
     try {
-      const baseline = ecsProgress(w, e, 3), rng = w.lootRng.state(); f.staging.replace(f.command()); await sent.promise;
-      assert.deepEqual(progress(request.profile.data), baseline);
-      const ground = request.items.find((q) => q.uid === outgoingUid).ground;
-      const latest = ecsProgress(w, e, 5); p.gold += 7; w.tick += 10; w.ecs.x[e] += 3;
-      reply.resolve(); await f.staging.settle(); assert.equal(f.staging.drain()[0].state, 'applied');
-      assert.deepEqual(progress(p), latest); assert.equal(p.gold, 44); assert.equal(p.pearls.swallowed.uid, incomingUid);
-      const drop = [...w.drops.values()].find((d) => d.pearl?.uid === outgoingUid);
-      assert.deepEqual({ x: drop.x, z: drop.z, availableAt: drop.pickAt, returnAt: drop.t }, ground);
-      assert.equal(w.lootRng.state(), rng); await f.sessions.flush(); assert.deepEqual((await f.base.loadProfile(accounts[0])).data, p);
-      assert.equal((await f.base.loadUnique(outgoingUid)).holder, null); assert.equal(w.events.length, 2);
-    } finally { reply.resolve(); await f.staging.settle(); await f.close(); }
+      reads = saves = commits = prepares = 0;
+      const before = state(w), baseline = progress(w.profiles.get(e)), cmd = f.command();
+      assert.throws(() => f.staging.replace(cmd), { code: 'bound' });
+      const latest = ecsProgress(w, e, 5), ecsLatest = row(w.ecs, e);
+      w.profiles.get(e).gold += 7;
+      await f.staging.settle();
+      assert.deepEqual([reads, saves, commits, prepares], [0, 0, 0, 0]);
+      assert.equal(w.profiles.get(e).pearls.swallowed.uid, outgoingUid);
+      assert.deepEqual(progress(w.profiles.get(e)), baseline); assert.deepEqual(row(w.ecs, e), ecsLatest);
+      assert.deepEqual(latest, { lvl: 5, xp: 50.13, pot: 5, cp: latest.cp });
+      assert.equal(w.profiles.get(e).gold, 44); assert.equal(w.drops.size, 0);
+      assert.equal(w.events.length, 0); assert.deepEqual(w.pearlLedger.get(incomingUid), { owner: `account:${accounts[0]}`, entity: e, place: 'profile' });
+      assert.equal(f.staging.operations.size, 0); pearlMutationGate(f.sessions).assertWorldAvailable();
+      assert.deepEqual(state(w).drops, before.drops); assert.equal(w.nextDrop, before.nextDrop);
+    } finally { await f.close(); }
   });
 }
 

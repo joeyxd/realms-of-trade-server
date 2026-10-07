@@ -230,6 +230,19 @@ superiores**, más 43 checks navales aceptados incorporados a la regresión ante
 Sin nueva SQL/env/protocolo ni cambios de host/LocalServer. Dispatch completo/circulación autónoma,
 políticas definitivas, epoch/finalizador/muerte completa/afinidad y P4/P6 permanecen pendientes.
 
+Checkpoint D09f-2b.19, base `126a543`: **perla tragada ligada hasta morir y dejar desde bolsa durable**.
+Decisión del autor 2026-10-07: no escupir/reemplazar; entradas sim, UI y staging deniegan incluso comandos
+viejos confirmados. Nuevas solicitudes give/swallow/leave conservan generación elegida en el servidor,
+reserva, CAS, geometría congelada, apply reversible y progreso actual. Recibos/diario batch históricos intactos.
+La muerte local pierde EXP y suelta bolsa/perlas en toda zona; equipo/pociones conservan la regla de Cala.
+10 % del XP del nivel actual es un default provisional ajustable, sin perder nivel ni maestría; cantidad/balance
+por confirmar. Regresión **1151/1151**, 92 archivos y 322 fuentes verificadas; UI desktop/móvil emulado revisada.
+[Contrato](docs/briefs/m5-pearl-release-staging.md) y [evidencia/límites](docs/delivery/d09f-pearl-bound-death.md).
+Sustituye la creación de reemplazos de .7/.18 y la propuesta spit de .19 anterior, sin reescribir historial SQL.
+No activa dispatch durable automático ni muerte atómica completa; estos efectos siguen en el guardado actual.
+Siguen pickup/retorno/mint/venta durables, muerte completa, finalizador, políticas/epoch/leases y afinidad.
+Sin SQL nueva, env, Supabase real, push, deploy ni reinicio del host del PC; P4/P6 siguen parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

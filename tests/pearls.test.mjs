@@ -10,7 +10,7 @@ import { BTN, canStand } from '../src/sim/systems/movement.js';
 import { hurtPlayer } from '../src/sim/systems/combat.js';
 import { installInventory, newProfile, sanitizeProfile, attachProfile, detachProfile, stepDrops, lootOnKill, openChest } from '../src/sim/systems/inventory.js';
 import { refreshStats } from '../src/sim/systems/stats.js';
-import { givePearl, dropPearl, swallowPearl, spitPearl, leavePearl, transferPearl, sellPearl, rollPearl } from '../src/sim/systems/pearls.js';
+import { givePearl, dropPearl, swallowPearl, spitPearl, spillPearls, leavePearl, transferPearl, sellPearl, rollPearl } from '../src/sim/systems/pearls.js';
 import { sanitizeCmd, MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { trustSaves } from '../src/net/saves.js';
 import { LocalServer } from '../src/net/localServer.js';
@@ -62,29 +62,27 @@ test('G is a pearl-only slot: input survives sanitizing and aiming; Q/E loadouts
   assert.ok(ecs[SLOT_COLS.g.cd]);
 });
 
-test('replacing a swallowed pearl needs the exact old UID; the old pearl becomes public', () => {
+test('a swallowed pearl rejects spit and even an exact confirmed replacement until death', () => {
   const { w, e, ecs, p, equip } = fixture();
-  const first = equip(), second = givePearl(w, e);
-  assert.equal(swallowPearl(w, e, second.uid), false);
-  assert.equal(swallowPearl(w, e, second.uid, 'stale-confirmation'), false);
-  assert.equal(p.pearls.swallowed.uid, first.uid);
-  assert.ok(swallowPearl(w, e, second.uid, first.uid));
-  assert.equal(p.pearls.swallowed.uid, second.uid);
-  assert.equal([...w.drops.values()][0].pearl.uid, first.uid);
-  assert.equal([...w.drops.values()][0].to, 0);
-  assert.ok(ecs.cdG[e] >= PEARL.swapCd);
+  const first = equip(), second = givePearl(w, e), before = structuredClone(p), power = ecs.elem[e];
+  for (const confirmation of [undefined, 'stale-confirmation', first.uid]) {
+    assert.equal(swallowPearl(w, e, second.uid, confirmation), false);
+    assert.deepEqual(p, before);
+  }
+  assert.equal(spitPearl(w, e), false); assert.equal(ecs.elem[e], power);
+  assert.equal(w.drops.size, 0); assert.deepEqual(p, before);
+  assert.equal(w.events.at(-1).why, 'bound');
 });
 
-test('changes need calm, including a nearby foe targeting a pirate who has taken no damage', () => {
-  const { w, e, ecs, equip, p } = fixture(); const q = equip();
+test('leaving an unconsumed pearl needs calm, including nearby active foes', () => {
+  const { w, e, ecs, p } = fixture(); const q = givePearl(w, e);
   const foe = w.spawnEnemy('archer', ecs.x[e] + 6, ecs.z[e]);
   ecs.brain[foe].target = e; ecs.brain[foe].state = 'chase';
-  assert.equal(spitPearl(w, e), false);
-  assert.equal(p.pearls.swallowed.uid, q.uid);
+  assert.equal(leavePearl(w, e, q.uid), false);
   w.despawn(foe); ecs.regenT[e] = 1;
-  assert.equal(spitPearl(w, e), false);
+  assert.equal(leavePearl(w, e, q.uid), false);
   ecs.regenT[e] = 99;
-  assert.ok(spitPearl(w, e)); assert.equal(ecs.elem[e], 0);
+  assert.ok(leavePearl(w, e, q.uid)); assert.equal(p.pearls.bag.length, 0);
 });
 
 test('death outside the Cala drops swallowed and carried pearls; another pirate takes them without swallowing', () => {
@@ -103,7 +101,7 @@ test('death outside the Cala drops swallowed and carried pearls; another pirate 
 
 test('an expired pearl returns to reachable beach ground with the same UID and no immediate auto-pickup', () => {
   const { w, e, ecs, equip } = fixture(); const q = equip();
-  spitPearl(w, e);
+  spillPearls(w, e);
   const d = [...w.drops.values()][0]; w.tick = d.t + 3 - (d.t % 3);
   stepDrops(w);
   const next = [...w.drops.values()][0];
@@ -120,7 +118,7 @@ test('old saved holdings cannot duplicate a live pearl or restore one already dr
   const q = equip(), saved = structuredClone(p);
   const duplicate = join(structuredClone(saved), ecs.x[e] + 5, ecs.z[e]);
   assert.equal(w.profiles.get(duplicate).pearls.swallowed, null, 'live copy refused');
-  spitPearl(w, e);
+  spillPearls(w, e);
   detachProfile(w, e); w.despawn(e);
   const restored = join(saved);
   assert.equal(w.profiles.get(restored).pearls.swallowed, null, 'ground claim cannot be restored');
@@ -295,6 +293,8 @@ test('pearl commands preserve string UIDs; a late client sees and recovers a cir
   a.client.send({ t: MSG.CMD, type: 'loadout', slot: 'q', id: 'comet' });
   assert.equal(skillId(s.skQ[a.e]), oldQ, 'pearl powers cannot be assigned as tattoos');
   a.client.send({ t: MSG.CMD, type: 'pearl', op: 'spit' }); advance();
+  assert.equal(a.client.profile.pearls.swallowed.uid, pearl.uid); assert.equal(w.drops.size, 0);
+  hurtPlayer(w, a.e, 9999, { x: s.x[a.e], z: s.z[a.e], kind: 'test', seq: 1, knock: 0 }); advance();
   const d = [...w.drops.values()][0], b = join(2);
   assert.ok(b.seen.some((ev) => ev.type === 'loot' && ev.late && ev.me && ev.drops.some((q) => q.pearl?.uid === pearl.uid)), 'welcome precedes the private late-join loot event');
   s.x[b.e] = d.x; s.z[b.e] = d.z;
