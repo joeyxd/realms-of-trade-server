@@ -40,9 +40,10 @@ function makeFeel(options) {
 }
 
 function pathData(feel) { return feel.lines.map((line) => line.getAttribute('d')); }
+function pathXs(path) { return [...path.matchAll(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g)].map(([, x]) => Number(x)); }
 
-test('speed feel creates a bounded, repeatable set of mobile and desktop ink paths', () => withDocument(() => {
-  for (const [mobile, expected] of [[true, 12], [false, 20]]) {
+test('speed feel creates a bounded, repeatable set of edge ink paths', () => withDocument(() => {
+  for (const [mobile, expected] of [[true, 24], [false, 40]]) {
     const a = makeFeel({ mobile }), b = makeFeel({ mobile });
     assert.equal(a.feel.lines.length, expected);
     assert.equal(a.host.children.length, 1);
@@ -52,7 +53,34 @@ test('speed feel creates a bounded, repeatable set of mobile and desktop ink pat
     b.feel.update(0.05, { speed: 8.5, omega: 0.2 });
     assert.ok(pathData(a.feel).every((path) => typeof path === 'string' && path.startsWith('M') && path.endsWith('Z')));
     assert.deepEqual(pathData(a.feel), pathData(b.feel), 'equal phase and input produce equal paths');
+    assert.ok(a.feel.lines.length <= (mobile ? 24 : 40));
+    const edgeCounts = new Map([0, 1, 2, 3].map((edge) => [edge, 0]));
+    for (const line of a.feel.lines) edgeCounts.set(Number(line.getAttribute('data-edge')), edgeCounts.get(Number(line.getAttribute('data-edge'))) + 1);
+    assert.deepEqual([...edgeCounts.values()], mobile ? [6, 6, 6, 6] : [10, 10, 10, 10],
+      'mobile and desktop ink cover all four edges evenly');
+    for (const d of pathData(a.feel)) {
+      const values = [...d.matchAll(/(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g)]
+        .map(([, x, y]) => [Number(x), Number(y)]);
+      const xs = values.map(([x]) => x), ys = values.map(([, y]) => y);
+      // The measurable sail/raft/aim safe rectangle is x=300..700, y=140..800.
+      assert.ok(Math.max(...xs) < 300 || Math.min(...xs) > 700 || Math.max(...ys) < 140 || Math.min(...ys) > 800,
+        `ink path stays outside the raft/sail/aim safe rectangle: ${d}`);
+    }
     a.feel.dispose(); b.feel.dispose();
+  }
+}));
+
+test('boost extends the edge strokes toward, but not into, the sail-safe area', () => withDocument(() => {
+  const ordinary = makeFeel({ mobile: true }).feel;
+  const boosted = makeFeel({ mobile: true }).feel;
+  ordinary.update(0.1, { speed: 12, boosting: false });
+  boosted.update(0.1, { speed: 12, boosting: true });
+  assert.ok(Math.max(...pathXs(pathData(boosted)[0])) > Math.max(...pathXs(pathData(ordinary)[0])),
+    'boost pushes a left-edge stroke farther toward the center');
+  for (const feel of [ordinary, boosted]) {
+    const xs = pathXs(pathData(feel)[0]);
+    assert.ok(Math.max(...xs) < 300, 'the boosted stroke stays left of the safe rectangle');
+    feel.dispose();
   }
 }));
 
@@ -60,7 +88,7 @@ test('pause freezes phase, ink intensity, FOV, roll, and the rendered path set',
   const { feel } = makeFeel({ mobile: true });
   feel.update(0.1, { speed: 80, omega: 4, boosting: true });
   const before = { ...feel.diagnostics(), phase: feel.phase, paths: pathData(feel), opacity: feel.svg.style.opacity };
-  const cameraBefore = feel.update(0.1, { speed: 0, omega: -90, boosting: true, paused: true });
+  const cameraBefore = feel.update(0.1, { speed: 0, omega: -90, boosting: false, paused: true });
   assert.equal(feel.phase, before.phase);
   assert.equal(feel.intensity, before.intensity);
   assert.equal(feel.svg.style.opacity, before.opacity);
@@ -104,6 +132,8 @@ test('reset clears accumulated feedback and dispose removes the SVG host child',
   assert.deepEqual({ phase: feel.phase, intensity: feel.intensity, fov: feel.fov, roll: feel.roll },
     { phase: 0, intensity: 0, fov: 35, roll: 0 });
   assert.equal(feel.svg.style.opacity, '0');
+  assert.equal(feel.svg.style.visibility, 'hidden');
+  assert.ok(pathData(feel).every((path) => path === ''), 'reset clears every rendered ink path');
   feel.dispose();
   assert.equal(host.children.length, 0);
   assert.equal(feel.lines.length, 0);

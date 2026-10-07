@@ -3,22 +3,55 @@ import { CURRENT_LANES, currentAt } from '../../src/sim/naval/navigation.js';
 import { navalPose } from '../../src/sim/naval/handling.js';
 import { ParticlePool } from '../../src/render/vfx/particles.js';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../../src/render/pipeline.js';
+import { U } from '../../src/render/toon.js';
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(n) ? n : lo));
 const FOAM_CELL_SIZE = 4;
 const FOAM_CELL_RADIUS = Object.freeze({ mobile: 6, desktop: 9 });
 const FOAM_FLECK_CAP = Object.freeze({ mobile: 338, desktop: 722 });
 const FOAM_VERTICES_PER_FLECK = 6;
+const WAKE_SECONDS = 4;
+const WAKE_CAPACITY = Object.freeze({ mobile: 24, desktop: 40 });
 
-function depthAware(material) {
+// Surface coordinates use distance along the actual path and -1..1 across it. Break the
+// silhouette with the existing shared noise, instead of another alpha texture or decal stack.
+const FLOW_PARS = 'attribute vec2 aFlow; varying vec2 vNavFlow;';
+const FLOW_CURRENT = /* glsl */ `
+  float travel = vNavFlow.x - uNavTime * 2.6;
+  float across = vNavFlow.y;
+  vec4 n = texture2D(mnNoiseTex, vec2(travel * 0.08, across * 0.37));
+  float edge = 1.0 - smoothstep(0.66, 1.0, abs(across + (n.b - 0.5) * 0.25));
+  float weave = sin(across * 15.0 + (n.b - 0.5) * 7.0 + sin(travel * 0.42));
+  float streak = smoothstep(0.0, 0.8, weave) * (0.15 + smoothstep(0.36, 0.62, n.b) * 0.85);
+  float froth = smoothstep(0.56, 0.71, n.b) * (1.0 - smoothstep(0.25, 0.6, n.r));
+  outgoingLight = mix(outgoingLight, vec3(0.9, 1.0, 1.0), froth * 0.8);
+  diffuseColor.a *= edge * (0.1 + streak * 0.65 + froth * 0.3);
+`;
+const FLOW_WAKE = /* glsl */ `
+  float across = vNavFlow.y;
+  vec4 n = texture2D(mnNoiseTex, vec2(vNavFlow.x * 0.18, across * 0.58));
+  float edge = 1.0 - smoothstep(0.64, 1.0, abs(across + (n.b - 0.5) * 0.26));
+  float froth = smoothstep(0.38, 0.6, n.b);
+  float bubbles = (1.0 - smoothstep(0.12, 0.5, n.r)) * 0.7;
+  diffuseColor.a *= edge * (0.15 + max(bubbles, froth) * 0.85);
+`;
+
+function depthAware(material, flow = '', clock = null) {
   // The outlined FX target has no hardware depth. Reuse the game's opaque-depth test so
   // surface accents remain behind the hull and sail in both rendering quality modes.
   material.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, FXU);
+    if (flow) {
+      shader.uniforms.uNavTime = clock;
+      shader.uniforms.mnNoiseTex = U.mnNoiseTex;
+      shader.vertexShader = FLOW_PARS + '\n' + shader.vertexShader.replace(
+        '#include <begin_vertex>', '#include <begin_vertex>\nvNavFlow = aFlow;');
+      shader.fragmentShader = 'varying vec2 vNavFlow; uniform float uNavTime; uniform sampler2D mnNoiseTex;\n' + shader.fragmentShader;
+    }
     shader.fragmentShader = GLSL_FX_DEPTH + shader.fragmentShader.replace(
-      '#include <opaque_fragment>', 'diffuseColor.a *= fxDepthFade(0.06);\n#include <opaque_fragment>');
+      '#include <opaque_fragment>', flow + '\ndiffuseColor.a *= fxDepthFade(0.06);\n#include <opaque_fragment>');
   };
-  material.customProgramCacheKey = () => 'naval-lab-surface-depth-v1';
+  material.customProgramCacheKey = () => 'naval-lab-surface-depth-v2:' + (flow === FLOW_CURRENT ? 'current' : flow ? 'wake' : 'plain');
   return material;
 }
 
@@ -114,6 +147,8 @@ const lanePoint = (lane, t, side = 0) => {
 function makeCurrentBand(lanes) {
   const vertices = lanes.reduce((n, lane) => n + Math.max(2, Math.ceil(lane.length / 4)) * 6, 0);
   const positions = new Float32Array(vertices * 3);
+  const flow = new Float32Array(vertices * 2);
+  const colors = new Float32Array(vertices * 4);
   let offset = 0;
   for (const lane of lanes) {
     const steps = Math.max(2, Math.ceil(lane.length / 4));
@@ -121,11 +156,22 @@ function makeCurrentBand(lanes) {
       const t0 = i / steps, t1 = (i + 1) / steps, half = Math.max(0.5, Number(lane.halfWidth) || 1);
       const a = lanePoint(lane, t0, -half), b = lanePoint(lane, t0, half);
       const c = lanePoint(lane, t1, -half), d = lanePoint(lane, t1, half);
-      for (const p of [a, c, b, b, c, d]) { positions[offset++] = p[0]; positions[offset++] = p[1]; positions[offset++] = p[2]; }
+      const coords = [[t0, -1], [t1, -1], [t0, 1], [t0, 1], [t1, -1], [t1, 1]];
+      for (const [k, p] of [a, c, b, b, c, d].entries()) {
+        const vertex = offset / 3;
+        flow[vertex * 2] = coords[k][0] * lane.length;
+        flow[vertex * 2 + 1] = coords[k][1];
+        const t = coords[k][0];
+        colors[vertex * 4] = colors[vertex * 4 + 1] = colors[vertex * 4 + 2] = 1;
+        colors[vertex * 4 + 3] = Math.min(1, t * 12, (1 - t) * 12);
+        positions[offset++] = p[0]; positions[offset++] = p[1]; positions[offset++] = p[2];
+      }
     }
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('aFlow', new THREE.BufferAttribute(flow, 2));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4));
   return geometry;
 }
 
@@ -168,54 +214,116 @@ function writeChevrons(target, lanes, time, reducedMotion) {
   target.geometry.attributes.position.needsUpdate = true;
 }
 
-function makeRibbon(side) {
-  const positions = new Float32Array(8 * 6 * 3);
-  const colors = new Float32Array(8 * 6 * 3);
+function makeRibbon(side, capacity, clock) {
+  const positions = new Float32Array((capacity - 1) * 6 * 3);
+  const colors = new Float32Array((capacity - 1) * 6 * 4);
+  const flow = new Float32Array((capacity - 1) * 6 * 2);
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 4).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('aFlow', new THREE.BufferAttribute(flow, 2).setUsage(THREE.DynamicDrawUsage));
   geometry.setDrawRange(0, 0);
-  const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
-    color: 0xffffff, vertexColors: true, transparent: true, opacity: 0.45,
+  const mesh = new THREE.Mesh(geometry, depthAware(new THREE.MeshBasicMaterial({
+    color: 0xffffff, vertexColors: true, transparent: true, opacity: 0.94,
     depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
-  }));
+  }), FLOW_WAKE, clock));
   mesh.name = `naval-lab-wake-ribbon-${side}`;
   mesh.layers.set(LAYER.FX);
   mesh.renderOrder = 5;
-  return { mesh, positions, colors, history: [], side };
+  mesh.frustumCulled = false;
+  return { mesh, positions, colors, flow, history: [], side, capacity, distance: 0 };
 }
 
-function updateRibbon(ribbon, point, speedFactor) {
+function appendRibbon(ribbon, point) {
+  const previous = ribbon.history[0];
+  if (previous) {
+    const distance = Math.hypot(point[0] - previous[0], point[2] - previous[2]);
+    if (distance < 0.06) return false;
+    // A laboratory reset/teleport never draws a stripe across the whole sea.
+    if (distance > Math.max(8, point[7] * 2)) ribbon.history.length = 0;
+    else ribbon.distance += distance;
+  }
+  point[8] = ribbon.distance;
   ribbon.history.unshift(point);
-  if (ribbon.history.length > 9) ribbon.history.pop();
+  if (ribbon.history.length > ribbon.capacity) ribbon.history.pop();
+  return true;
+}
+
+function updateRibbon(ribbon, time) {
+  while (ribbon.history.length && time - ribbon.history.at(-1)[3] >= WAKE_SECONDS) ribbon.history.pop();
   let out = 0;
-  const widthBase = 0.075 + speedFactor * 0.12;
+  const sign = ribbon.side ? 1 : -1;
+  const section = (p) => {
+    const age = Math.max(0, time - p[3]), speed = p[6], beam = p[7];
+    const spread = age * (0.18 + speed * 0.28);
+    const width = beam * (0.055 + speed * 0.14) * (1 + age * 0.14);
+    const x = p[0] + p[4] * sign * spread, z = p[2] + p[5] * sign * spread;
+    const fade = Math.pow(Math.max(0, 1 - age / WAKE_SECONDS), 1.15);
+    return { left: [x - p[4] * width, p[1], z - p[5] * width],
+      right: [x + p[4] * width, p[1], z + p[5] * width], fade, along: p[8] };
+  };
   for (let i = 0; i < ribbon.history.length - 1; i++) {
-    const a = ribbon.history[i], b = ribbon.history[i + 1];
-    const dx = a[0] - b[0], dz = a[2] - b[2], length = Math.max(0.01, Math.hypot(dx, dz));
-    const px = -dz / length, pz = dx / length;
-    const taper = (age) => Math.pow(Math.max(0, 1 - age / Math.max(1, ribbon.history.length - 1)), 1.2);
-    const wobble = (age) => 0.88 + 0.12 * Math.sin(age * 1.7 + ribbon.side * 1.3);
-    const wa = widthBase * taper(i) * wobble(i), wb = widthBase * taper(i + 1) * wobble(i + 1);
-    const al = [a[0] + px * wa, a[1], a[2] + pz * wa];
-    const ar = [a[0] - px * wa, a[1], a[2] - pz * wa];
-    const bl = [b[0] + px * wb, b[1], b[2] + pz * wb];
-    const br = [b[0] - px * wb, b[1], b[2] - pz * wb];
-    const baseColor = ribbon.side ? [0.64, 0.92, 0.96] : [0.9, 0.99, 1];
-    const fadeA = Math.max(0.12, 1 - i / Math.max(1, ribbon.history.length - 0.5));
-    const fadeB = Math.max(0.08, 1 - (i + 1) / Math.max(1, ribbon.history.length - 0.5));
-    for (const [v, fade] of [[al, fadeA], [bl, fadeB], [ar, fadeA], [ar, fadeA], [bl, fadeB], [br, fadeB]]) {
+    const a = section(ribbon.history[i]), b = section(ribbon.history[i + 1]);
+    for (const [v, q, across] of [[a.left, a, -1], [b.left, b, -1], [a.right, a, 1],
+      [a.right, a, 1], [b.left, b, -1], [b.right, b, 1]]) {
       const vertex = out / 3;
       ribbon.positions[out++] = v[0]; ribbon.positions[out++] = v[1]; ribbon.positions[out++] = v[2];
-      ribbon.colors[vertex * 3] = baseColor[0] * fade;
-      ribbon.colors[vertex * 3 + 1] = baseColor[1] * fade;
-      ribbon.colors[vertex * 3 + 2] = baseColor[2] * fade;
+      ribbon.colors[vertex * 4] = 0.88; ribbon.colors[vertex * 4 + 1] = 0.99;
+      ribbon.colors[vertex * 4 + 2] = 1; ribbon.colors[vertex * 4 + 3] = q.fade;
+      ribbon.flow[vertex * 2] = q.along; ribbon.flow[vertex * 2 + 1] = across;
     }
   }
   ribbon.mesh.geometry.setDrawRange(0, out / 3);
-  ribbon.mesh.material.opacity = 0.32 + speedFactor * 0.13;
   ribbon.mesh.geometry.attributes.position.needsUpdate = true;
   ribbon.mesh.geometry.attributes.color.needsUpdate = true;
+  ribbon.mesh.geometry.attributes.aFlow.needsUpdate = true;
+}
+
+function makeSpraySheet(side, segments) {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(segments * 12 * 3), 3).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(segments * 12 * 4), 4).setUsage(THREE.DynamicDrawUsage));
+  const mesh = new THREE.Mesh(geometry, depthAware(new THREE.MeshBasicMaterial({
+    color: 0xffffff, vertexColors: true, transparent: true, opacity: 0.88,
+    depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+  })));
+  mesh.name = `naval-lab-bow-spray-${side}`;
+  mesh.layers.set(LAYER.FX); mesh.renderOrder = 6; mesh.frustumCulled = false;
+  mesh.visible = false;
+  return { mesh, side, segments };
+}
+
+function updateSpraySheet(sheet, x, z, yaw, length, beam, speedFactor, turn, boost, time) {
+  const fx = Math.sin(yaw), fz = Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
+  const sign = sheet.side ? 1 : -1;
+  const loading = clamp(1 + turn * sign * 0.28, 0.65, 1.35);
+  const strength = speedFactor * loading * (boost ? 1.2 : 1);
+  const positions = sheet.mesh.geometry.attributes.position.array;
+  const colors = sheet.mesh.geometry.attributes.color.array;
+  let vertex = 0;
+  const point = (t, row) => {
+    const crest = Math.pow(Math.sin(Math.PI * t), 0.7);
+    const chop = 0.84 + Math.sin(t * 25 + time * 8 + sign) * 0.12;
+    const along = length * (-0.12 + t * 0.64);
+    const spread = beam * 0.49 + row * beam * 0.12 * crest * strength;
+    const y = 0.08 + Math.sin(row * Math.PI / 3) * crest * chop * strength * 0.75;
+    return [x + fx * along + rx * sign * spread, y, z + fz * along + rz * sign * spread,
+      crest * (row === 2 ? 0 : row === 1 ? 0.92 : 0.65)];
+  };
+  for (let i = 0; i < sheet.segments; i++) {
+    const t0 = i / sheet.segments, t1 = (i + 1) / sheet.segments;
+    for (let row = 0; row < 2; row++) {
+      const a = point(t0, row), b = point(t1, row), c = point(t0, row + 1), d = point(t1, row + 1);
+      for (const p of [a, b, c, c, b, d]) {
+        positions[vertex * 3] = p[0]; positions[vertex * 3 + 1] = p[1]; positions[vertex * 3 + 2] = p[2];
+        colors[vertex * 4] = 0.9; colors[vertex * 4 + 1] = 0.99; colors[vertex * 4 + 2] = 1;
+        colors[vertex * 4 + 3] = p[3]; vertex++;
+      }
+    }
+  }
+  sheet.mesh.geometry.attributes.position.needsUpdate = true;
+  sheet.mesh.geometry.attributes.color.needsUpdate = true;
+  sheet.mesh.visible = true;
 }
 
 function hullCenter(state, rig) {
@@ -233,6 +341,8 @@ export class NavalLabEffects {
     this.reducedMotion = !!reducedMotion;
     this.disposed = false;
     this.time = 0;
+    this.flowClock = { value: 0 };
+    this.wakeCapacity = WAKE_CAPACITY[this.mobile ? 'mobile' : 'desktop'];
     this.wakeClock = 0;
     this.breezeClock = 0;
     this.wakeCount = 0;
@@ -241,17 +351,20 @@ export class NavalLabEffects {
     this.currentVisible = false;
     this.gustVisible = false;
     this.trails = [];
+    this.spraySheets = [0, 1].map((side) => makeSpraySheet(side, this.mobile ? 6 : 9));
+    for (const sheet of this.spraySheets) scene.add(sheet.mesh);
     this.pool = new ParticlePool(this.mobile ? 144 : 288, { name: 'naval-lab-spray' });
     this.pool.budget = this.mobile ? 0.75 : 1;
+    this.pool.mat.uniforms.uLit.value = 0; // White foam against the dark sea; no island lighting tint.
     this.setViewport(globalThis.innerHeight || 720, 35);
     scene.add(this.pool.points);
     this.foam = makeFoamField(this.mobile);
     scene.add(this.foam.mesh);
 
-    this.currentBand = new THREE.Mesh(makeCurrentBand(CURRENT_LANES), new THREE.MeshBasicMaterial({
-      color: 0x66ecf2, transparent: true, opacity: this.mobile ? 0.12 : 0.16,
+    this.currentBand = new THREE.Mesh(makeCurrentBand(CURRENT_LANES), depthAware(new THREE.MeshBasicMaterial({
+      color: 0x6eebed, vertexColors: true, transparent: true, opacity: this.mobile ? 0.58 : 0.66,
       depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
-    }));
+    }), FLOW_CURRENT, this.flowClock));
     this.currentBand.name = 'naval-lab-current-band';
     this.currentBand.layers.set(LAYER.FX);
     this.currentBand.visible = false;
@@ -260,7 +373,7 @@ export class NavalLabEffects {
     const chevronCount = this.mobile ? 3 : 6;
     this.chevrons = makeChevrons(CURRENT_LANES, chevronCount);
     this.chevrons.mesh = new THREE.LineSegments(this.chevrons.geometry, new THREE.LineBasicMaterial({
-      color: 0xbafcff, transparent: true, opacity: 0.78, depthWrite: false, toneMapped: false,
+      color: 0xbafcff, transparent: true, opacity: 0.45, depthWrite: false, toneMapped: false,
     }));
     this.chevrons.mesh.name = 'naval-lab-current-chevrons';
     this.chevrons.mesh.layers.set(LAYER.FX);
@@ -270,16 +383,17 @@ export class NavalLabEffects {
     writeChevrons(this.chevrons, CURRENT_LANES, 0, this.reducedMotion);
 
     for (let side = 0; side < 2; side++) {
-      const ribbon = makeRibbon(side);
+      const ribbon = makeRibbon(side, this.wakeCapacity, this.flowClock);
       scene.add(ribbon.mesh);
       this.trails.push(ribbon);
     }
-    for (const mesh of [this.foam.mesh, this.currentBand, this.chevrons.mesh, ...this.trails.map((t) => t.mesh)]) depthAware(mesh.material);
+    for (const mesh of [this.foam.mesh, this.chevrons.mesh]) depthAware(mesh.material);
     this.reset();
   }
 
   reset() {
     this.time = 0; this.wakeClock = 0; this.breezeClock = 0;
+    this.flowClock.value = 0;
     this.wakeCount = 0; this.burstCount = 0; this.lastCurrent = null;
     this.currentVisible = false; this.gustVisible = false;
     if (this.foam) {
@@ -290,9 +404,11 @@ export class NavalLabEffects {
     if (this.currentBand) this.currentBand.visible = false;
     if (this.chevrons?.mesh) this.chevrons.mesh.visible = false;
     for (const trail of this.trails) {
-      trail.history.length = 0; trail.positions.fill(0); trail.colors.fill(0); trail.mesh.geometry.setDrawRange(0, 0);
-      trail.mesh.material.opacity = 0.72; trail.mesh.geometry.attributes.position.needsUpdate = true;
+      trail.history.length = 0; trail.distance = 0; trail.positions.fill(0); trail.colors.fill(0); trail.flow.fill(0);
+      trail.mesh.geometry.setDrawRange(0, 0);
+      trail.mesh.geometry.attributes.position.needsUpdate = true;
     }
+    for (const sheet of this.spraySheets) sheet.mesh.visible = false;
     if (this.pool) {
       this.pool.alive.fill(0); this.pool.data.fill(0); this.pool.update(0);
     }
@@ -345,13 +461,15 @@ export class NavalLabEffects {
 
   pushWake(x, z, yaw, speedFactor, length = 4, beam = 2) {
     const fx = Math.sin(yaw), fz = Math.cos(yaw), rx = Math.cos(yaw), rz = -Math.sin(yaw);
-    const spread = Math.max(0.75, beam * (0.31 + speedFactor * 0.06));
+    const spread = Math.max(0.75, beam * 0.42);
+    let emitted = false;
     for (const trail of this.trails) {
       const side = trail.side ? 1 : -1;
-      const point = [x - fx * length * 0.48 + rx * spread * side, 0.08, z - fz * length * 0.48 + rz * spread * side];
-      updateRibbon(trail, point, speedFactor);
+      const point = [x - fx * length * 0.48 + rx * spread * side, 0.08,
+        z - fz * length * 0.48 + rz * spread * side, this.time, rx, rz, speedFactor, beam];
+      emitted = appendRibbon(trail, point) || emitted;
     }
-    this.wakeCount++;
+    if (emitted) this.wakeCount++;
   }
 
   update(dt, { state, rig, wind, gust, activity, current = null, currents = false, paused = false } = {}) {
@@ -359,6 +477,7 @@ export class NavalLabEffects {
     if (paused) return;
     const step = clamp(dt, 0, 0.05);
     this.time += step;
+    this.flowClock.value = this.reducedMotion ? 0 : this.time;
     const active = state && rig;
     if (active) {
       writeFoamField(this.foam, Number(state.x) || 0, Number(state.z) || 0);
@@ -380,7 +499,12 @@ export class NavalLabEffects {
       this.wakeClock += step;
       const boostActive = Number(state.tick) < Number(activity?.boostUntil);
       const emissionBoost = boostActive ? clamp(Number(activity?.multiplier) || 1, 1, 2.5) : 1;
-      if (speed > 0.4 && this.wakeClock >= (this.mobile ? 0.16 : 0.1)) {
+      for (const sheet of this.spraySheets) {
+        sheet.mesh.visible = !this.reducedMotion && speed > 1.8;
+        if (sheet.mesh.visible) updateSpraySheet(sheet, x, z, yaw, Number(rig.length) || 4, Number(rig.beam) || 2,
+          clamp((speed - 1.8) / 7, 0, 1), clamp(Number(state.omega) || 0, -1.2, 1.2), boostActive, this.time);
+      }
+      if (speed > 0.4 && this.wakeClock >= (this.mobile ? 0.17 : 0.105)) {
         this.wakeClock = 0;
         const speedFactor = Math.min(1, speed / 4), length = Number(rig.length) || 4, beam = Number(rig.beam) || 2;
         this.pushWake(x, z, yaw, speedFactor, length, beam);
@@ -393,23 +517,15 @@ export class NavalLabEffects {
           for (let i = 0; i < n; i++) {
             const bow = i % 3 === 0, originX = bow ? bowX : sternX, originZ = bow ? bowZ : sternZ;
             const sign = i % 2 === 0 ? -1 : 1, spread = beam * (0.26 + (i % 4) * 0.05);
-            const outward = 0.42 + speedFactor * 0.72;
+            const outward = 0.55 + speedFactor * 1.35 + (boostActive ? 0.4 : 0);
             this.pool.spawn(originX + side * sign * spread, 0.065, originZ + sideZ * sign * spread,
               -Math.sin(yaw) * (0.2 + speedFactor * 0.25) + side * sign * outward,
-              0.42 + speedFactor * (0.55 + emissionBoost * 0.5),
+              0.5 + speedFactor * (0.7 + emissionBoost * 0.65) + (i % 3) * 0.12,
               -Math.cos(yaw) * (0.2 + speedFactor * 0.25) + sideZ * sign * outward, {
-                life: 0.43, size: 0.18 + speedFactor * 0.1 + (boostActive ? 0.08 : 0), size1: 0.025,
-                color: bow ? [0.77, 0.98, 1] : [0.62, 0.93, 0.98], alpha: 0.86,
-                gravity: 4.2, drag: 2.2,
+                life: 0.55, size: 0.12 + speedFactor * 0.12 + (boostActive ? 0.05 : 0), size1: 0.025,
+                color: [0.9, 0.99, 1], alpha: 0.96,
+                gravity: 6.2, drag: 1.35,
               });
-          }
-        }
-      } else if (speed <= 0.4) {
-        for (const ribbon of this.trails) {
-          ribbon.mesh.material.opacity *= Math.exp(-step * 1.15);
-          if (ribbon.mesh.material.opacity < 0.025) {
-            ribbon.history.length = 0;
-            ribbon.mesh.geometry.setDrawRange(0, 0);
           }
         }
       }
@@ -429,6 +545,7 @@ export class NavalLabEffects {
       }
       // Activity may brighten this bounded visual wake but never feeds the movement simulation.
     }
+    for (const ribbon of this.trails) updateRibbon(ribbon, this.time);
     this.pool.update(step);
   }
 
@@ -437,6 +554,10 @@ export class NavalLabEffects {
     for (let i = 0; i < this.pool.alive.length; i++) activeParticles += this.pool.alive[i] ? 1 : 0;
     return { disposed: this.disposed, poolCapacity: this.pool.cap, activeParticles,
       wakeSamples: Math.max(0, ...this.trails.map((trail) => trail.history.length)), wakeEmissions: this.wakeCount,
+      wakeCapacity: this.wakeCapacity, wakeSeconds: WAKE_SECONDS,
+      wakeVertices: this.trails.reduce((n, trail) => n + trail.mesh.geometry.drawRange.count, 0),
+      currentTriangles: this.currentBand.geometry.attributes.position.count / 3, flowPhase: this.flowClock.value,
+      spraySheetTriangles: this.spraySheets.reduce((n, sheet) => n + sheet.mesh.geometry.attributes.position.count / 3, 0),
       foamFlecks: this.foam.fleckCount, foamCapacity: this.foam.capacity, foamRecycles: this.foam.recycleCount,
       foamCellOrigin: [this.foam.originX, this.foam.originZ],
       captureBursts: this.burstCount, currentVisible: this.currentVisible, gustVisible: this.gustVisible,
@@ -448,11 +569,14 @@ export class NavalLabEffects {
     this.disposed = true;
     this.scene.remove(this.pool.points, this.foam.mesh, this.currentBand, this.chevrons.mesh);
     this.scene.remove(...this.trails.map((t) => t.mesh));
+    this.scene.remove(...this.spraySheets.map((sheet) => sheet.mesh));
     this.pool.points.geometry.dispose(); this.pool.mat.dispose();
     this.foam.mesh.geometry.dispose(); this.foam.mesh.material.dispose();
     this.currentBand.geometry.dispose(); this.currentBand.material.dispose();
     this.chevrons.geometry.dispose(); this.chevrons.mesh.material.dispose();
     for (const trail of this.trails) { trail.mesh.geometry.dispose(); trail.mesh.material.dispose(); }
+    for (const sheet of this.spraySheets) { sheet.mesh.geometry.dispose(); sheet.mesh.material.dispose(); }
     this.trails.length = 0;
+    this.spraySheets.length = 0;
   }
 }

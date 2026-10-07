@@ -3,8 +3,8 @@ import { STARTER_RAFT } from '../../src/data/raftparts.js';
 const starter = () => STARTER_RAFT.map((p) => [...p]);
 const foundations = (w, d) => Array.from({ length: w * d }, (_, i) => ['foundation', i % w, Math.floor(i / w), 0]);
 const house = [...foundations(4, 4), ['sail', 0, 0, 0], ['sail', 3, 0, 0], ['crate', 0, 3, 0], ['crate', 3, 3, 0],
-  ['wall', 1, 2, 0, 0], ['wall', 2, 2, 0, 0], ['pillar', 1, 2, 0], ['pillar', 2, 2, 0],
-  ['floor', 1, 2, 1], ['floor', 2, 2, 1], ['bed', 1, 2, 1], ['roof', 1, 2, 1], ['roof', 2, 2, 1]];
+  ['pillar', 1, 2, 0], ['pillar', 2, 2, 0], ['floor', 1, 2, 1], ['floor', 2, 2, 1],
+  ['wall', 1, 2, 1, 0], ['wall', 2, 2, 1, 0], ['bed', 1, 2, 1], ['roof', 1, 2, 1], ['roof', 2, 2, 1]];
 export const LAB_FIXTURES = [
   { id: 'empty', name: 'Balsa ligera', detail: 'La balsa inicial, sin lastre.', parts: starter(), cargo: [] },
   { id: 'center', name: 'Carga centrada', detail: '24 de lastre cerca del centro.', parts: starter(), cargo: [{ mass: 24, x: 2, z: 2, height: 0.4 }] },
