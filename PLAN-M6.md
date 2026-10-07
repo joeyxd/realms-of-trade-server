@@ -153,6 +153,12 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   corregidos. Sin raster nuevo ni cambios de simulación. Aspecto B4a aceptado; dispositivos físicos pendientes.
   Preparación del [puente D08c](docs/briefs/d08c-live-navigation-bridge.md): conectar cuerpo de navegación,
   autoridad/predicción y cubierta móvil en cortes comprobables, antes del viaje/encuentro D10.
+  **D08c.0 — daño modular y choque costero en la bahía:** identidad/HP por instancia, plano conservado,
+  piezas rotas fuera del renderer/rig y recálculo de masa/flotación/vela sin salto del origen.
+  Barra de casco agregada, impacto según velocidad perpendicular, deslizamiento/rebote y audio/spray acotados.
+  [Contrato y siguiente estructura](docs/briefs/d08c0-modular-damage.md), [entrega](docs/delivery/d08c0-modular-damage.md).
+  114/114 pertinentes; no activa navegación/daño en World ni pérdidas/recuperación persistentes.
+  El autor reserva su playtest conjunto para después de estructura/features; no bloquear cada corte por él.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

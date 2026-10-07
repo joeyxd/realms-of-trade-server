@@ -6,7 +6,11 @@ import { Pipeline, LAYER } from '../../src/render/pipeline.js';
 import { createWater } from '../../src/render/water.js';
 import { createSky, SKY } from '../../src/render/sky.js';
 import { U } from '../../src/render/toon.js';
-import { buildNavalRig, newNavalState, stepNaval, navalPose, jettisonLabCargo, NAVAL_STEP } from '../../src/sim/naval/handling.js';
+import { buildNavalRig, newNavalState, stepNaval, navalPose, NAVAL_STEP } from '../../src/sim/naval/handling.js';
+import { RAFT_PARTS } from '../../src/data/raftparts.js';
+import { createNavalStructure, applyPartDamage, hullIntegrity, hitHullAt } from '../../src/sim/naval/structure.js';
+import { operationalNavalRig, rebaseNavalState } from '../../src/sim/naval/operational.js';
+import { resolveNavalContact } from '../../src/sim/naval/contact.js';
 import { LAB_FIXTURES, LAB_WINDS, labFixture } from './fixtures.js';
 import { measureHandling } from './measure.js';
 import { NavalLabInput } from './input.js';
@@ -17,7 +21,7 @@ import { NavalLabAudio } from './audio.js';
 import { NavalSpeedFeel } from './speed-feel.js';
 import { NavalLabCamera } from './camera.js';
 import { configureNavalReferenceLook } from './look.js';
-import { NavalLabScenery } from './scenery.js';
+import { NavalLabScenery, NAVAL_COAST } from './scenery.js';
 import { loadNavalRaftSkin } from './raft-skin.js';
 import { NavalLabHud } from './hud.js';
 
@@ -26,6 +30,7 @@ const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(lo
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new NavalLabClock();
 let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0, bayHeight = 1;
+let structure, body, structureGeneration = 0, lastDamage = '';
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
 let effects, sound, feel, framing, scenery, raftSkin, hud, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
 let lastGustPhase = 'idle', lastGustId = -1;
@@ -45,10 +50,66 @@ marker.rotation.x = -Math.PI / 2; marker.layers.set(LAYER.FX); references.add(ma
 function showMessage(text) { $('message').textContent = text; }
 function updateHud() {
   if (!hud || !fixture || !rig) return;
-  hud.update({ state, rig, wind, activity, paused, cargoCount: fixture.cargo.length,
-    gusts: $('gusts').checked, currents: $('currents').checked,
-    gust: gustAt(state.tick, wind, $('gusts').checked),
+  hud.update({ state, rig, wind, activity, paused: paused || body.disabled, cargoCount: fixture.cargo.length,
+    gusts: $('gusts').checked && rig.sail > 0 && !body.disabled, currents: $('currents').checked,
+    gust: gustAt(state.tick, wind, $('gusts').checked && rig.sail > 0 && !body.disabled),
     current: currentAt(state.x, state.z, $('currents').checked) });
+  if (rig.sail === 0) hud.text('sail', 'Sin vela · remo asistido');
+  if (body.disabled) {
+    hud.text('sail', 'Sin flotación');
+    hud.text('capture-status', 'Casco inutilizado · reinicia la prueba');
+    hud.text('hud-load', `Sin flotación · lastre ${fixture.cargo.reduce((n, p) => n + p.mass, 0)}`);
+    $('jettison-hud').disabled = true;
+  }
+  $('jettison').disabled = body.disabled || !fixture.cargo.length;
+  for (const button of document.querySelectorAll('[data-pilot]')) button.disabled = body.disabled;
+}
+
+function selectedBlock() {
+  return structure.entries.find((p) => p.id === $('damage-target').value);
+}
+function structureReadout() {
+  const health = hullIntegrity(structure), destroyed = structure.entries.filter((p) => p.hp === 0).length;
+  $('hull-readout').textContent = `CASCO ${health.hp.toFixed(0)} / ${health.maxHp}`;
+  $('hull-health').setAttribute('aria-valuenow', String(Math.round(health.fraction * 100)));
+  $('hull-health').setAttribute('aria-valuetext', `${health.hp.toFixed(0)} de ${health.maxHp} HP de casco`);
+  $('hull-health').dataset.critical = String(health.fraction < 0.3);
+  $('hull-fill').style.width = `${health.fraction * 100}%`;
+  $('damage-status').textContent = `${destroyed} / ${structure.entries.length} bloques destruidos. ${body.disabled ? 'Sin flotación. ' : ''}${lastDamage}`;
+  const selected = selectedBlock();
+  $('part-hit').disabled = !selected || selected.hp === 0;
+  $('block-health').textContent = selected ? `${selected.hp} / ${selected.maxHp} HP${selected.hp === 0 ? ' · destruido' : ''}` : '';
+}
+function installDamage(result) {
+  if (!result.event) return false;
+  structure = result.structure;
+  body = operationalNavalRig(structure, fixture.cargo);
+  if (body.rig) {
+    if (rig.sail > 0 && body.rig.sail === 0) activity = newSailingActivity();
+    state = rebaseNavalState(state, rig, body.rig); rig = body.rig;
+  }
+  else { state = { ...state, vx: 0, vz: 0, omega: 0 }; activity = newSailingActivity(); clearInputs(); }
+  previous = { ...state };
+  const hit = result.event;
+  lastDamage = `${RAFT_PARTS[hit.type].name}: −${hit.damage.toFixed(0)} HP${hit.destroyed ? ', destruido' : ''}.`;
+  effects.event(hit.destroyed ? 'destroy' : 'impact', state, rig);
+  sound.event('impact');
+  stats(); structureReadout(); updateHud();
+  return true;
+}
+function hitSelectedBlock() {
+  const block = selectedBlock();
+  if (block) installDamage(applyPartDamage(structure, block.id, 40));
+}
+function nearCoast() {
+  reset();
+  $('coast-collisions').checked = true;
+  const rock = NAVAL_COAST[0], radius = Math.hypot(rig.beam, rig.length) / 2;
+  state = { ...state, x: rock.x + rig.cx - rig.hullCx,
+    z: rock.z - rock.radius - radius - 8 + rig.cz - rig.hullCz };
+  previous = { ...state }; framing.reset();
+  showMessage('Roca enfrente. Avanza para probar el choque o gira para rozarla.');
+  setSailingView(true);
 }
 function clearInputs() {
   input?.clear();
@@ -101,11 +162,11 @@ function rebuildCargo() {
   $('jettison').disabled = !fixture.cargo.length;
 }
 function stats() {
-  $('mass').textContent = `${rig.dryMass} / ${rig.cargoMass}`;
-  $('load').textContent = `${rig.mass} / ${rig.buoyancy} · ${(rig.load * 100).toFixed(0)}%`;
-  $('inertia').textContent = rig.inertia.toFixed(0);
-  $('balance').textContent = `${(rig.imbalance * 100).toFixed(0)}% / ${rig.height.toFixed(1)} u`;
-  $('warning').textContent = rig.load > 1 ? 'Sobrecarga: poco empuje y peor respuesta.' : rig.height > 1 || rig.imbalance > 0.3 ? 'Lastre alto o a un lado: menor autoridad del timón.' : '';
+  $('mass').textContent = `${body.parts.reduce((n, p) => n + RAFT_PARTS[p[0]].weight, 0)} / ${fixture.cargo.reduce((n, p) => n + p.mass, 0)}`;
+  $('load').textContent = body.disabled ? 'Sin flotación' : `${rig.mass} / ${rig.buoyancy} · ${(rig.load * 100).toFixed(0)}%`;
+  $('inertia').textContent = body.disabled ? '—' : rig.inertia.toFixed(0);
+  $('balance').textContent = body.disabled ? '—' : `${(rig.imbalance * 100).toFixed(0)}% / ${rig.height.toFixed(1)} u`;
+  $('warning').textContent = body.disabled ? 'Casco inutilizado. Reinicia este ensayo para volver a navegar.' : rig.load > 1 ? 'Sobrecarga: poco empuje y peor respuesta.' : rig.height > 1 || rig.imbalance > 0.3 ? 'Lastre alto o a un lado: menor autoridad del timón.' : '';
 }
 function comparisons() {
   $('compare').replaceChildren();
@@ -123,17 +184,24 @@ function reset() {
   if (!scene) return;
   clearInputs(); clock.clear(); samples.length = 0; trailGeometry.setDrawRange(0, 0);
   fixture = labFixture($('fixture').value); rig = buildNavalRig(fixture.parts, fixture.cargo);
+  structure = createNavalStructure(fixture.parts.map((part, n) => ({ id: `lab:${structureGeneration + 1}:${n + 1}`, part })));
+  structureGeneration++; body = operationalNavalRig(structure, fixture.cargo); lastDamage = '';
+  $('damage-target').replaceChildren(...structure.entries.map((p) => new Option(
+    `${RAFT_PARTS[p.part[0]].name} · ${p.part[1]}, ${p.part[2]} · nivel ${p.part[3]}`, p.id)));
   state = newNavalState(); previous = { ...state }; framing?.reset(); scenery?.reset();
   activity = newSailingActivity(); lastGustPhase = 'idle'; lastGustId = -1; effects?.reset(); feel?.reset();
   $('fixture-detail').textContent = fixture.detail; rebuildCargo(); stats(); comparisons();
+  structureReadout();
   updateHud();
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Entra en las flechas de agua. Cuando llegue la ráfaga, cázala con ESPACIO.');
   $('bay').focus({ preventScroll: true });
 }
 function jettison() {
-  if (!fixture?.cargo.length) return;
-  const next = jettisonLabCargo(fixture, state);
-  fixture = next.fixture; state = next.state; previous = { ...state }; rig = buildNavalRig(fixture.parts, fixture.cargo);
+  if (!fixture?.cargo.length || body.disabled) return;
+  fixture = { ...fixture, cargo: [] };
+  body = operationalNavalRig(structure, fixture.cargo);
+  if (body.rig) { state = rebaseNavalState(state, rig, body.rig); rig = body.rig; }
+  previous = { ...state };
   rebuildCargo(); stats(); comparisons(); showMessage('Lastre soltado. El casco mantiene su posición y su movimiento.');
   updateHud();
 }
@@ -160,7 +228,7 @@ function drawFrame(dt) {
   const yawDelta = Math.atan2(Math.sin(state.yaw - previous.yaw), Math.cos(state.yaw - previous.yaw));
   const visual = { ...state, x: THREE.MathUtils.lerp(previous.x, state.x, a), z: THREE.MathUtils.lerp(previous.z, state.z, a), yaw: previous.yaw + yawDelta * a };
   const t = (state.tick - 1 + a) * NAVAL_STEP, pose = navalPose(visual, rig);
-  if (layer.update([{ id: 'lab-raft', owner: 1, entity: 1, rev: 1, parts: fixture.parts, look: { banner: 'franjas', paint: 0 }, ...pose }], Math.max(0, t), 1)) pipeline.markDirty();
+  if (layer.update([{ id: 'lab-raft', owner: 1, entity: 1, rev: 1, parts: body.parts, look: { banner: 'franjas', paint: 0 }, ...pose }], Math.max(0, t), 1)) pipeline.markDirty();
   const view = layer.views.get('lab-raft');
   // Only the visual skin heels; there is no walking collider or crew in this lab.
   const boosting = state.tick < activity.boostUntil;
@@ -194,26 +262,34 @@ function drawFrame(dt) {
   sun.position.set(visual.x - 25, 45, visual.z + 15); sun.target.position.set(visual.x, 0, visual.z);
   const sky = scene.getObjectByName('lab-sky'); sky.position.copy(camera.position);
   U.mnTime.value = Math.max(0, t); U.mnWind.value.set(Math.sin(wind.yaw) * wind.strength, Math.cos(wind.yaw) * wind.strength);
-  const gust = gustAt(state.tick, wind, $('gusts').checked), current = currentAt(visual.x, visual.z, $('currents').checked);
+  const gust = gustAt(state.tick, wind, $('gusts').checked && rig.sail > 0 && !body.disabled), current = currentAt(visual.x, visual.z, $('currents').checked);
   const context = { state: visual, rig, wind, gust, activity, current, currents: $('currents').checked, paused };
-  effects.update(paused ? 0 : dt, context); sound.update(context);
+  // Let the last impact particles expire, but stop navigation cues/audio after flotation is lost.
+  effects.update(paused ? 0 : dt, context); sound.update({ ...context, paused: paused || body.disabled });
   pipeline.update(dt); pipeline.render();
   updateHud();
 }
 function fixed() {
   previous = state;
   const control = input.poll();
+  if (body.disabled) { state = { ...state, tick: state.tick + 1 }; clearInputs(); return; }
   if ($('cruise').checked && control.brake === 0) control.throttle = Math.max(control.throttle, 0.85);
   control.capture = input.consumeCapture();
-  const gust = gustAt(state.tick, wind, $('gusts').checked);
+  const gusts = $('gusts').checked && rig.sail > 0;
+  const gust = gustAt(state.tick, wind, gusts);
   if (gust.phase !== lastGustPhase || gust.id !== lastGustId) {
     if (gust.phase === 'approach' || gust.phase === 'window') sound.event(gust.phase);
     lastGustPhase = gust.phase; lastGustId = gust.id;
   }
-  const action = stepSailingActivity(activity, state, control, rig, wind, $('gusts').checked);
+  const action = stepSailingActivity(activity, state, control, rig, wind, gusts);
   activity = action.activity;
   if (action.event) { effects.event(action.event, state, rig); sound.event(action.event); }
-  state = stepNaval(state, control, rig, wind, sailingEnvironment(activity, state, $('currents').checked));
+  const next = stepNaval(state, control, rig, wind, sailingEnvironment(activity, state, $('currents').checked));
+  const resolved = resolveNavalContact(state, next, rig, $('coast-collisions').checked ? NAVAL_COAST : []);
+  state = resolved.state;
+  for (const hit of resolved.contacts) if (hit.damage > 0) {
+    installDamage(hitHullAt(structure, { x: hit.localX, z: hit.localZ, damage: hit.damage }));
+  }
   for (const button of document.querySelectorAll('[data-pilot]')) {
     const action = button.dataset.pilot;
     button.classList.toggle('active', action === 'throttle' ? control.throttle > 0 : action === 'brake' ? control.brake > 0 : action === 'left' ? control.steer < 0 : action === 'right' ? control.steer > 0 : false);
@@ -284,6 +360,9 @@ async function start() {
   $('pause-nav').disabled = false;
   $('pause-nav').addEventListener('click', () => setPaused(!paused));
   $('pause').addEventListener('click', () => setPaused(!paused));
+  $('coast-start').addEventListener('click', nearCoast);
+  $('damage-target').addEventListener('change', structureReadout);
+  $('part-hit').addEventListener('click', hitSelectedBlock);
   $('references').addEventListener('change', () => { references.visible = trail.visible = $('references').checked; });
   $('light').addEventListener('change', quality);
   $('gusts').addEventListener('change', () => { activity = newSailingActivity(); clearInputs(); updateHud(); });
@@ -298,7 +377,9 @@ async function start() {
   updateSkinReadout();
   // Read-only snapshots and explicit laboratory actions aid repeatable local acceptance.
   window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind },
-    activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked), current: currentAt(state.x, state.z, $('currents').checked),
+    structure: structuredClone(structure), hull: { ...hullIntegrity(structure) }, disabled: body.disabled,
+    operationalRig: body.rig ? { ...body.rig } : null, liveParts: structuredClone(body.parts),
+    activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked && rig.sail > 0 && !body.disabled), current: currentAt(state.x, state.z, $('currents').checked),
     effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(), hud: hud.diagnostics(),
     scenery: scenery.diagnostics(), raftSkin: { ...raftSkin.diagnostics(), active: $('material').value }, mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();

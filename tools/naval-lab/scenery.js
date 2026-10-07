@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { ico, lumpy, part } from '../../src/render/geo.js';
 import { LAYER } from '../../src/render/pipeline.js';
 
-const ROCKS = Object.freeze([
+export const NAVAL_ROCKS = Object.freeze([
   { x: -108, z: 92, width: 32, depth: 26, height: 16, form: 'low', color: 0x718692, seed: 11 },
   { x: 132, z: 118, width: 42, depth: 33, height: 27, form: 'ridge', color: 0x7b8e98, seed: 17 },
   { x: -154, z: 158, width: 46, depth: 35, height: 52, form: 'spire', color: 0x657d8b, seed: 23 },
@@ -14,6 +14,11 @@ const ROCKS = Object.freeze([
   { x: 92, z: 322, width: 34, depth: 29, height: 18, form: 'low', color: 0x82939c, seed: 43 },
   { x: 226, z: 344, width: 52, depth: 43, height: 56, form: 'spire', color: 0x687f8c, seed: 47 },
 ]);
+const ROCKS = NAVAL_ROCKS;
+// Interior waterline proxies, not the full skyline or the lumpy visible silhouette.
+export const NAVAL_COAST = Object.freeze(ROCKS.map((r) => Object.freeze({
+  id: `coast:${r.seed}`, x: r.x, z: r.z, radius: Math.min(r.width, r.depth) * 0.22,
+})));
 const SKYLINE_CORRIDOR_HALF_WIDTH = 60;
 
 function colorAt(hex, y, seed, index) {

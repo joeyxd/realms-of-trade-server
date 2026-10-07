@@ -347,6 +347,7 @@ export class NavalLabEffects {
     this.breezeClock = 0;
     this.wakeCount = 0;
     this.burstCount = 0;
+    this.impactCount = 0;
     this.lastCurrent = null;
     this.currentVisible = false;
     this.gustVisible = false;
@@ -394,7 +395,7 @@ export class NavalLabEffects {
   reset() {
     this.time = 0; this.wakeClock = 0; this.breezeClock = 0;
     this.flowClock.value = 0;
-    this.wakeCount = 0; this.burstCount = 0; this.lastCurrent = null;
+    this.wakeCount = 0; this.burstCount = 0; this.impactCount = 0; this.lastCurrent = null;
     this.currentVisible = false; this.gustVisible = false;
     if (this.foam) {
       this.foam.originX = null; this.foam.originZ = null; this.foam.recycleCount = 0; this.foam.fleckCount = 0;
@@ -420,7 +421,9 @@ export class NavalLabEffects {
     if (this.disposed) return false;
     const label = String(kind || '').toLowerCase().replace(/[^a-z]/g, '');
     let strength = 0, count = 0;
-    if (label.includes('perfect')) { strength = 1; count = this.mobile ? (this.reducedMotion ? 6 : 18) : (this.reducedMotion ? 10 : 32); }
+    const impact = label.includes('impact') || label.includes('destroy');
+    if (impact) { strength = 0.95; count = this.mobile ? (this.reducedMotion ? 5 : 14) : (this.reducedMotion ? 8 : 26); }
+    else if (label.includes('perfect')) { strength = 1; count = this.mobile ? (this.reducedMotion ? 6 : 18) : (this.reducedMotion ? 10 : 32); }
     else if (label.includes('captur') || label.includes('success')) { strength = 0.8; count = this.mobile ? (this.reducedMotion ? 5 : 11) : 20; }
     else if (label.includes('miss') || label.includes('early') || label.includes('angle')) { strength = 0.3; count = this.mobile ? 4 : 7; }
     else if (label.includes('approach') || label.includes('warning')) { this.gustVisible = true; return true; }
@@ -432,7 +435,7 @@ export class NavalLabEffects {
     const length = clamp(Number(rig?.length) || 4, 2, 24);
     const beam = clamp(Number(rig?.beam) || 2, 1, 16);
     this.spray(x, z, count, strength, yaw, speed, length, beam);
-    this.burstCount++;
+    if (impact) this.impactCount++; else this.burstCount++;
     this.gustVisible = false;
     return true;
   }
@@ -560,7 +563,7 @@ export class NavalLabEffects {
       spraySheetTriangles: this.spraySheets.reduce((n, sheet) => n + sheet.mesh.geometry.attributes.position.count / 3, 0),
       foamFlecks: this.foam.fleckCount, foamCapacity: this.foam.capacity, foamRecycles: this.foam.recycleCount,
       foamCellOrigin: [this.foam.originX, this.foam.originZ],
-      captureBursts: this.burstCount, currentVisible: this.currentVisible, gustVisible: this.gustVisible,
+      captureBursts: this.burstCount, impactBursts: this.impactCount, currentVisible: this.currentVisible, gustVisible: this.gustVisible,
       currentStrength: this.lastCurrent?.strength ?? this.lastCurrent?.speed ?? 0 };
   }
 

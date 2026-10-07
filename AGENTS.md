@@ -8,6 +8,9 @@
 - La rama de continuidad es `claude/loving-lovelace-ptbif7`; usar el PR existente #1.
 - Conservar trabajo ajeno y distinguir implementación, propuesta, pruebas y despliegue.
 - Interfaz y comunicación con el autor en español; comentarios de código en inglés.
+- Decisión del autor, 2026-10-06: avanzar estructura/features antes de su playtest conjunto. Mantener
+  comprobaciones automáticas y revisión visual de los cambios, sin pedirle recorridos humanos en cada corte.
+  Balance, sensaciones y rendimiento físico no se aceptan por esa decisión.
 
 ## Delegación — decisión explícita del autor, 2026-10-04
 

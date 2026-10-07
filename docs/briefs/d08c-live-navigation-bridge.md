@@ -1,6 +1,8 @@
 # D08c — del laboratorio a la balsa del jugador
 
-2026-10-06. **Preparación y propuesta técnica, sin implementación ni activación.** El autor confirma
+2026-10-06. **Puente de autoridad propuesto, sin activación.** La base previa
+[D08c.0 de daño modular/contacto](d08c0-modular-damage.md) está implementada en la bahía aislada;
+no equivale a conectar el World. El autor confirma
 que el manejo se siente bien y acepta el HUD B4a. Ahora pide seguir y conocer lo pendiente. Este puente
 conserva D08/D10; no fija topología del mar, pérdidas, XP, progresión ni controles finales de abordaje.
 
@@ -17,6 +19,10 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
 
 ## Cortes propuestos
 
+0. **Base modular implementada en aislamiento.** `structure.js` conserva plano/IDs/HP; `operational.js`
+   deriva el cuerpo de piezas vivas y rebasa el centro de masa; `contact.js` resuelve costa y genera daño
+   localizado. La bahía consume estos módulos. En autoridad, asignar IDs de instancia desde el servidor
+   sobre un plano validado; no persistir los IDs de fixture `lab:*` ni reconstruir identidad desde índices.
 1. **Cuerpo naval en autoridad, pruebas aisladas.** Adaptar el plano a `buildNavalRig` y mantener
    estado transitorio por balsa; avanzar `stepNaval` desde el tick del World. Resolver piloto/propiedad
    desde la sesión del servidor. Entorno constante y lastre de prueba; no escribir pose marítima en el
@@ -34,6 +40,8 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
 Revisar cada corte antes de activar el conjunto. El ensayo puede usar copia del plano construido,
 sin trasladar bodega real ni conceder otro barco. Editor/producción en movimiento requieren contrato
 explícito; conectar pose no los habilita automáticamente.
+El autor pide completar estructura/features antes de su playtest conjunto (2026-10-06). Las comprobaciones
+automáticas y revisiones de integración continúan; su aceptación de manejo/balance/dispositivos queda abierta.
 
 ## Pruebas de paso
 

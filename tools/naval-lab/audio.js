@@ -4,6 +4,7 @@ const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(n) ? n : 
 
 function normalizeEvent(kind) {
   const value = String(kind || '').toLowerCase().replace(/[^a-z]/g, '');
+  if (value.includes('impact') || value.includes('destroy')) return 'impact';
   if (value.includes('perfect')) return 'perfect';
   if (value.includes('captur') || value.includes('success')) return 'capture';
   if (value.includes('miss') || value.includes('early') || value.includes('angle')) return 'miss';
@@ -24,7 +25,7 @@ export class NavalLabAudio {
     this.unlocking = null;
     this.active = new Set();
     this.lastEvent = new Map();
-    this.played = { approach: 0, window: 0, capture: 0, perfect: 0, miss: 0 };
+    this.played = { approach: 0, window: 0, capture: 0, perfect: 0, miss: 0, impact: 0 };
     this.lastMix = { wind: 0, water: 0 };
   }
 
@@ -126,6 +127,7 @@ export class NavalLabAudio {
     this.lastEvent.set(type, now);
 
     const profile = {
+      impact: { duration: 0.25, f0: 125, f1: 48, noise: 0.075, cutoff: 1250, tone: 'triangle', toneGain: 0.1 },
       approach: { duration: 0.2, f0: 420, f1: 760, noise: 0.006, cutoff: 1500, tone: 'sine', toneGain: 0.035 },
       window: { duration: 0.14, f0: 880, f1: 1320, noise: 0.003, cutoff: 2300, tone: 'sine', toneGain: 0.05 },
       capture: { duration: 0.22, f0: 170, f1: 310, noise: 0.045, cutoff: 2100, tone: 'triangle', toneGain: 0.075 },

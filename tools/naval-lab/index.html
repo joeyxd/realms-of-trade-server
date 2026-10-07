@@ -23,6 +23,9 @@
       <div class="voyage-notes">
         <div class="voyage-title"><span aria-hidden="true"></span> LEE EL MAR</div>
         <div id="hud-load">Leyendo el peso del casco…</div>
+        <div class="hull-health" id="hull-health" role="meter" aria-label="Integridad de los bloques del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+          <span id="hull-readout">CASCO</span><div><i id="hull-fill"></i></div>
+        </div>
         <div class="gust-timing">
           <span id="gust-label">Prepara la vela</span>
           <div class="gust-track" role="meter" id="gust-progress" aria-label="Recorrido de la ráfaga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="gust-window"></i><i class="gust-perfect"></i><b id="gust-marker"></b></div>
@@ -102,6 +105,7 @@
         <label><input id="gusts" type="checkbox" checked> Ráfagas</label>
         <label><input id="drama" type="checkbox" checked> Efectos de cómic</label>
         <label><input id="cruise" type="checkbox" checked> Crucero asistido (desactívalo para dejarte llevar)</label>
+        <label><input id="coast-collisions" type="checkbox" checked> Choques con las rocas de costa</label>
       </div>
       <button id="sound" type="button" aria-pressed="false">Activar sonido</button>
       <div class="actions"><button id="pause">Pausar</button><button id="reset">Reiniciar <kbd>R</kbd></button></div>
@@ -115,8 +119,16 @@
         <div><dt>Equilibrio / altura</dt><dd id="balance"></dd></div>
       </dl>
       <p id="warning" class="warning"></p>
+      <details><summary>Casco y bloques</summary>
+        <p id="damage-status" role="status">Bloques intactos.</p>
+        <button id="coast-start" data-lab-control type="button">Acercar la prueba a una roca</button>
+        <label for="damage-target">Bloque para un golpe de prueba</label><select id="damage-target"></select>
+        <p id="block-health" class="muted"></p>
+        <button id="part-hit" data-lab-control type="button">Golpe de prueba · 40 HP</button>
+        <p class="muted">Un bloque destruido deja de funcionar. Reiniciar restaura esta prueba; el plano y los bienes de tu partida no se modifican.</p>
+      </details>
       <details open><summary>03 · Comparación automática</summary>
-        <p class="muted">6 s de avance desde parado. Frenado y giro empiezan a 2 u/s. Mismo viento y órdenes para todas.</p>
+        <p class="muted">Referencia de los planos intactos: 6 s de avance desde parado. Frenado y giro empiezan a 2 u/s. Mismo viento y órdenes para todas.</p>
         <div class="table-scroll"><table><thead><tr><th>Balsa</th><th>Vel. 6 s</th><th>Freno</th><th>Giro 90°</th></tr></thead><tbody id="compare"></tbody></table></div>
         <p class="muted">Cifras experimentales; el viento permanece fijo mientras giras. u = unidades del mundo.</p>
       </details>

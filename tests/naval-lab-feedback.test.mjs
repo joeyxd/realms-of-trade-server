@@ -117,6 +117,31 @@ test('capture splash is positioned around the shifted hull centre, including neg
   fx.dispose();
 });
 
+test('impact and destruction splashes stay in the fixed particle pool and expire across display modes', () => {
+  const rig = buildNavalRig(STARTER_RAFT, []), state = labState({ vx: 0, vz: 0 });
+  for (const options of [
+    { mobile: false, reducedMotion: false },
+    { mobile: true, reducedMotion: false },
+    { mobile: false, reducedMotion: true },
+    { mobile: true, reducedMotion: true },
+  ]) {
+    const fx = new NavalLabEffects(new THREE.Scene(), options), capacity = fx.pool.cap;
+    assert.equal(fx.event('impact', state, rig), true);
+    assert.equal(fx.event('destroy', state, rig), true);
+    const spawned = fx.diagnostics();
+    assert.equal(spawned.impactBursts, 2);
+    assert.equal(spawned.captureBursts, 0, 'impact diagnostics stay separate from capture');
+    assert.ok(spawned.activeParticles > 0);
+    assert.equal(spawned.poolCapacity, capacity, 'bursts reuse the fixed-capacity pool');
+    assert.ok(spawned.activeParticles <= capacity);
+
+    for (let i = 0; i < 14; i++) fx.update(0.05, { state, rig });
+    assert.equal(fx.diagnostics().activeParticles, 0, `${JSON.stringify(options)} particles expire`);
+    assert.equal(fx.diagnostics().poolCapacity, capacity);
+    fx.dispose();
+  }
+});
+
 class FakeParam {
   constructor() { this.value = 0; }
   setValueAtTime(value) { this.value = value; }
@@ -183,6 +208,34 @@ test('naval lab audio mute and pause gate the loop bus and reject one-shots', as
   sound.update({ state, rig, paused: false });
   assert.equal(sound.graph.eventBus.gain.value, 1);
   assert.equal(sound.event('miss'), true);
+  sound.dispose();
+});
+
+test('impact and destruction audio require gesture and respect pause, mute, and overlap limits', async () => {
+  const { engine, ctx } = fakeAudioEngine();
+  const sound = new NavalLabAudio({ mobile: true, engine });
+  assert.equal(sound.event('impact'), false, 'no one-shot before the user gesture');
+  assert.equal(sound.event('destroy'), false, 'destruction is gated by the same gesture');
+  assert.equal(sound.diagnostics().played.impact, 0);
+
+  await sound.unlock();
+  const state = labState(), rig = buildNavalRig(STARTER_RAFT, []);
+  sound.update({ state, rig, paused: true });
+  assert.equal(sound.event('impact'), false, 'pause rejects impact');
+  sound.update({ state, rig, paused: false });
+  engine.vol.muted = true;
+  assert.equal(sound.event('destroy'), false, 'mute rejects destruction');
+  engine.vol.muted = false;
+
+  assert.equal(sound.event('impact'), true);
+  ctx.currentTime += 0.15;
+  assert.equal(sound.event('destroy'), true, 'destroy maps to the impact sound');
+  ctx.currentTime += 0.15;
+  assert.equal(sound.event('impact'), true);
+  ctx.currentTime += 0.15;
+  assert.equal(sound.event('destroy'), false, 'the three-one-shot overlap limit applies to impacts');
+  assert.equal(sound.diagnostics().played.impact, 3);
+  assert.equal(sound.diagnostics().activeOneShots, 3);
   sound.dispose();
 });
 
