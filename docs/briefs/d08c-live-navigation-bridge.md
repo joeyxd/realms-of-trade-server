@@ -32,10 +32,15 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
    desde la sesión del servidor. Entorno constante y lastre de prueba; no escribir pose marítima en el
    perfil. Validar entradas, neutralizar al perder control y limpiar al destruir/desconectar.
    Todavía sin activar órdenes navales públicas ni modificar el cliente.
-2. **Puesto de mando, cliente y cuerpo del piloto.** Entrada/salida explícita, ejes/ACK de nave,
+2. **Puesto de mando, cliente y cuerpo del piloto, ensayo local D08c.2 implementado.**
+   [Contrato y límites](d08c2-pilot-deck.md): servidor dedicado, posición relativa anclada y proyección
+   transitoria de cubierta/piloto en tick, sin activar Worker/GameHost ni cambiar el amarre guardado.
+   Entrada/salida explícita, ejes/ACK de nave,
    predicción/reconciliación compartidas y cámara naval. El piloto necesita posición relativa válida
    a la cubierta; no habilitar barco móvil con personaje inmóvil en coordenadas del mundo.
-   Revisar protocolo al añadir campos. Primera activación en prueba delimitada sin bienes en riesgo.
+   Protocolo 17; primera activación en prueba delimitada sin bienes en riesgo. El harness usa
+   `renderRafts(alpha)` junto al estado del personaje. El entrypoint ordinario aún requiere cableado
+   de esa vista/cámara cuando se habilite navegación pública; no presentar el ensayo como esa activación.
 3. **Cubierta móvil y pasajeros.** Mover superficies/bloqueos con la pose autoritativa, caminar/subir
    sin resbalar artificialmente y separar balanceo visual de colisión. Interpolar barcos remotos;
    salida/reentrada/cambio de entidad conservan seguridad. Revisar bajo movimiento el patrón de

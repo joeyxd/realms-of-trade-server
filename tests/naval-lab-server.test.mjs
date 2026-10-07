@@ -65,6 +65,24 @@ test('HEAD returns the same resource metadata without a body', async (t) => {
   assert.equal(head.headers['content-length'], get.headers['content-length']);
 });
 
+test('pilot harness is served through its bounded prefix with page-only mobile mode', async (t) => {
+  const port = await start(t);
+  const [page, main, style] = await Promise.all([
+    request(port, '/tools/naval-pilot/?mobile=1'),
+    request(port, '/tools/naval-pilot/main.js'),
+    request(port, '/tools/naval-pilot/style.css'),
+  ]);
+  assert.equal(page.status, 200);
+  assert.match(page.body, /naval-pilot\/main\.js/);
+  assert.equal(main.status, 200);
+  assert.match(main.body, /NavalPilotServer/);
+  assert.equal(style.status, 200);
+  assert.match(style.headers['content-type'], /css/);
+  assert.equal((await request(port, '/tools/naval-pilot/main.js?mobile=1')).status, 400);
+  assert.equal((await request(port, '/tools/naval-pilot/../../server/index.mjs')).status, 400);
+  assert.equal((await request(port, '/tools/naval-pilot/private.json')).status, 404);
+});
+
 test('only a safe cache version query is accepted', async (t) => {
   const port = await start(t);
   assert.equal((await request(port, '/tools/naval-lab/fixtures.js?v=abc-123')).status, 200);

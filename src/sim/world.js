@@ -25,11 +25,12 @@ import { CLOCK, hourOfDay, nightAt } from '../data/clock.js';
 import { addInkCloud, removePredictedInkClouds, markOnHit, stepInk } from './systems/ink.js';
 import { RaftDeck } from './raftGeometry.js';
 import { NavalTrial } from './naval/trial.js';
+import { NavalPilot } from './naval/pilot.js';
 
 const D2R = Math.PI / 180;
 
 export class World {
-  constructor(seed, { map, server = false, navalTrial = false } = {}) {
+  constructor(seed, { map, server = false, navalTrial = false, navalPilot = false } = {}) {
     this.seed = seed >>> 0;
     this.tick = 0;
     this.rng = mulberry32((seed ^ 0xabcdef) >>> 0);
@@ -38,8 +39,10 @@ export class World {
     this.ecs = new ECS(2048);
     this.events = [];
     this.isServer = server;
-    if (typeof navalTrial !== 'boolean' || (navalTrial && !server)) throw new TypeError('Naval trials are server-only opt-in');
-    this.navalTrial = navalTrial === true ? new NavalTrial(this) : null;
+    if ([navalTrial, navalPilot].some((v) => typeof v !== 'boolean') || ((navalTrial || navalPilot) && !server))
+      throw new TypeError('Naval trials are server-only opt-in');
+    this.navalTrial = navalTrial || navalPilot ? new NavalTrial(this) : null;
+    this.navalPilot = navalPilot ? new NavalPilot(this) : null;
     this.hazards = new Hazards();
     this.hazards.predicting = !server;
     this.chills = new Map();
@@ -172,6 +175,8 @@ export class World {
 
   applyCommand(e, cmd) {
     if (!this.ecs.alive[e]) return;
+    // The bounded helm parks land locomotion/combat. They cannot become a second pose authority.
+    if (this.navalPilot?.has(e)) { this.ecs.lastSeq[e] = cmd.seq >>> 0; return; }
     stepMover(this, e, cmd, DT);
     if (this.ecs.mask[e] & C.HEALTH) stepPlayerCombat(this, e, cmd, DT);
     this.flushFeel(e);
@@ -682,7 +687,9 @@ export class World {
   stepWorld() {
     const ecs = this.ecs;
     // Trial preparation can fail before any World system consumes this fixed tick.
+    this.navalPilot?.prepare();
     if (this.isServer) this.navalTrial?.step();
+    this.navalPilot?.sync();
     stepChills(this);
     stepInk(this);
     for (let e = 1; e < ecs.cap; e++) {

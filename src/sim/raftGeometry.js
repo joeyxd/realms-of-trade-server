@@ -15,7 +15,7 @@ const point = (r, x, z) => ({ x: r.x + Math.cos(r.yaw) * x + Math.sin(r.yaw) * z
 // A short, explicit dock join, not an invisible water surface or a bridge to remote prototype berths.
 // Its local +Z runs from dock to raft. Both endpoints overlap their supporting deck by 0.3 units.
 export function raftGangplank(r, dock) {
-  if (!dock || !Array.isArray(r.parts)) return null;
+  if (!dock || r.pilot || !Array.isArray(r.parts)) return null;
   const bases = r.parts.filter((p) => p[0] === 'foundation');
   if (!bases.length || Math.cos(r.yaw) * dock.dir.z + Math.sin(r.yaw) * dock.dir.x < 0.9999) return null;
   const minX = Math.min(...bases.map((p) => p[1])), maxX = Math.max(...bases.map((p) => p[1]));
@@ -80,7 +80,7 @@ export class RaftDeck {
     const next = new Map();
     for (const r of records || []) {
       if (!r || !Array.isArray(r.parts) || ![r.x, r.y, r.z, r.yaw].every(Number.isFinite)) continue;
-      const key = `${r.x}|${r.y}|${r.z}|${r.yaw}|${r.rev}|${JSON.stringify(r.parts)}`;
+      const key = `${r.x}|${r.y}|${r.z}|${r.yaw}|${r.rev}|${r.pilot?.epoch || 0}|${JSON.stringify(r.parts)}`;
       const prior = this.entries.get(r.id);
       next.set(r.id, prior?.key === key ? prior : { key, ...compile(r, this.map.dock) });
     }

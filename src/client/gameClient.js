@@ -15,6 +15,8 @@ import { emitPattern, NEVER, KILL } from '../sim/projectiles.js';
 import { ENEMIES, ENEMY_KINDS } from '../data/enemies.js';
 import { SKILLS } from '../data/weapons.js';
 import { lerp, wrapAngle } from '../core/math.js';
+import { NavalPilotPrediction } from './navalPilotPrediction.js';
+import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
 
 const BUF_MAX = 40;
 const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, guard: KILL.BLOCK };
@@ -33,6 +35,8 @@ export class GameClient {
     this.pred.rafts = [];
     this.lastRaftTick = -1;
     this.lastSnapshotTick = -1;
+    this.naval = new NavalPilotPrediction();
+    this.raftSamples = new Map();
     this.clock = 0;
     this.serverOffset = null;
     this.prev = { x: 0, y: 0, z: 0, f: 0 };
@@ -103,6 +107,8 @@ export class GameClient {
         break;
       }
       case MSG.WELCOME: {
+        this.naval = new NavalPilotPrediction();
+        this.raftSamples.clear();
         this.youServer = m.you;
         // Field keys use server entity IDs, including locally predicted casts.
         this.pred.fieldOwner = m.you;
@@ -139,6 +145,10 @@ export class GameClient {
   isMe(e) { return e !== undefined && e === this.youServer; }
 
   onEvent(ev) {
+    if (ev.type === 'navalPilot') {
+      if (ev.to === this.youServer) this.bus.emit('navalPilot', ev);
+      return;
+    }
     if (ev.type === 'raftProduction') {
       if (ev.to === this.youServer) this.bus.emit('raftProduction', ev);
       return;
@@ -304,11 +314,27 @@ export class GameClient {
   onSnapshot(s) {
     // Never reconcile an older player state against a newer set of deck surfaces.
     if (s.tick < this.lastSnapshotTick) return;
+    if (s.naval) {
+      if (s.naval.active && s.naval.body?.state?.tick !== s.tick) return;
+      if (this.naval.acceptSnapshot(s.naval) === 'rejected') return;
+      if (this.naval.active) this.pending.length = 0;
+    }
     this.lastSnapshotTick = s.tick;
     if (Array.isArray(s.rafts) && s.tick >= this.lastRaftTick) {
       this.lastRaftTick = s.tick;
       this.pred.rafts = s.rafts;
       this.pred.raftDeck.update(s.rafts);
+      const ids = new Set();
+      for (const r of s.rafts) {
+        ids.add(r.id);
+        const samples = this.raftSamples.get(r.id) || [];
+        if (!samples.length || samples[samples.length - 1].tick < s.tick) {
+          samples.push({ tick: s.tick, record: r });
+          if (samples.length > BUF_MAX) samples.shift();
+        }
+        this.raftSamples.set(r.id, samples);
+      }
+      for (const id of this.raftSamples.keys()) if (!ids.has(id)) this.raftSamples.delete(id);
     }
     const st = s.tick * DT;
     const off = st - this.clock;
@@ -376,6 +402,48 @@ export class GameClient {
       this.pred.inkMarks = s.ink.marks || [];
     }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
+    if (this.naval.active) this.syncNavalPilot();
+  }
+
+  mountNaval(shipId) { this.send({ t: MSG.CMD, type: 'navalPilot', op: 'mount', shipId }); }
+  leaveNaval() {
+    this.neutralNaval();
+    this.send({ t: MSG.CMD, type: 'navalPilot', op: 'leave', epoch: this.naval.epoch });
+  }
+  neutralNaval() {
+    const command = this.naval.neutral();
+    if (command) this.send({ t: MSG.SHIP_INPUT, ...command });
+  }
+  tickNaval(axes) {
+    if (!this.joined) return false;
+    const command = this.naval.step(axes);
+    if (!command) return false;
+    this.syncNavalPilot();
+    this.send({ t: MSG.SHIP_INPUT, ...command });
+    return true;
+  }
+  syncNavalPilot() {
+    const p = this.naval.position(), ecs = this.pred.ecs, e = this.youLocal;
+    if (!p || !e) return;
+    ecs.x[e] = this.cur.x = p.x; ecs.y[e] = this.cur.y = p.y; ecs.z[e] = this.cur.z = p.z;
+    ecs.facing[e] = this.cur.f = p.f;
+    ecs.vx[e] = ecs.vz[e] = ecs.moveMag[e] = 0;
+    this.err.x = this.err.y = this.err.z = 0;
+    this.pred.rafts = this.naval.project(this.pred.rafts);
+    this.pred.raftDeck.update(this.pred.rafts);
+  }
+  renderRafts(alpha = 1) {
+    const time = this.serverTick() - INTERP_DELAY / DT;
+    const records = this.pred.rafts.map((r) => {
+      if (!r.pilot || r.id === this.naval.shipId) return r;
+      const samples = this.raftSamples.get(r.id) || [];
+      let a = samples[0], b = a;
+      for (const sample of samples) { if (sample.tick <= time) a = sample; if (sample.tick >= time) { b = sample; break; } b = sample; }
+      if (!a || !b || a.record.pilot?.epoch !== r.pilot.epoch || b.record.pilot?.epoch !== r.pilot.epoch) return r;
+      const pose = interpolatePilotPose(a.record, b.record, a.tick === b.tick ? 1 : (time - a.tick) / (b.tick - a.tick));
+      return { ...r, ...pose };
+    });
+    return this.naval.project(records, alpha);
   }
 
   reconcile(ack, state) {
@@ -453,6 +521,7 @@ export class GameClient {
   // One fixed client tick: build the command, predict, send.
   tickInput(input) {
     if (!this.youLocal || this.awaitingFirst) return;
+    if (this.naval.active) { if (input.naval) this.tickNaval(input.naval); return; }
     const ecs = this.pred.ecs, e = this.youLocal;
     // Projectile tick for this command: one step ahead, nudged toward the server clock.
     const target = Math.max(1, Math.round(this.serverTick()));
@@ -535,6 +604,10 @@ export class GameClient {
     for (const rec of this.entities.values()) {
       if (rec.id === this.youServer || !rec.buf.length) continue;
       this.sampleRemote(rec, rt);
+    }
+    for (const raft of this.renderRafts()) if (raft.pilot?.owner !== this.youServer && raft.pilot) {
+      const rec = this.entities.get(raft.pilot.owner);
+      if (rec?.ready) Object.assign(rec.r, pilotPoint(raft, raft.pilot.anchor), { vx: 0, vz: 0, mag: 0 });
     }
     if (simDt > 0) this.stepShots(simDt);
     // A held despawn never waits long (its shot may have been cleared away).
@@ -620,6 +693,7 @@ export class GameClient {
     out.y = lerp(this.prev.y, this.cur.y, alpha) + this.err.y;
     out.z = lerp(this.prev.z, this.cur.z, alpha) + this.err.z;
     out.f = this.prev.f + wrapAngle(this.cur.f - this.prev.f) * alpha;
+    if (this.naval.active) Object.assign(out, this.naval.position(alpha));
     out.vx = ecs.vx[e]; out.vz = ecs.vz[e];
     out.st = ecs.state[e]; out.mag = ecs.moveMag[e]; out.wade = ecs.wade[e];
     out.dashT = ecs.dashT[e]; out.dashes = ecs.dashCount[e];

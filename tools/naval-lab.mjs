@@ -37,16 +37,19 @@ function resolveRequestTarget(rawUrl) {
     if (new Set(keys).size !== keys.length || keys.some((key) => key !== 'v' && key !== 'mobile') || rawQuery.includes('#'))
       return { status: 400 };
     if (params.has('v') && !/^[A-Za-z0-9._-]{1,100}$/.test(params.get('v'))) return { status: 400 };
-    const isLabPage = rawPath === '/' || rawPath === '/tools/naval-lab/' || rawPath === '/tools/naval-lab/index.html';
+    const isLabPage = rawPath === '/' || rawPath === '/tools/naval-lab/' || rawPath === '/tools/naval-lab/index.html' ||
+      rawPath === '/tools/naval-pilot/' || rawPath === '/tools/naval-pilot/index.html';
     if (params.has('mobile') && (!isLabPage || !['0', '1'].includes(params.get('mobile')))) return { status: 400 };
   }
   let pathname = rawPath;
   if (pathname === '/' || pathname === '/tools/naval-lab/') pathname = '/tools/naval-lab/index.html';
+  if (pathname === '/tools/naval-pilot/') pathname = '/tools/naval-pilot/index.html';
   return { pathname };
 }
 
 function allowedPrefix(relative, extension) {
   if (relative.startsWith('tools/naval-lab/')) return ['.html', '.css', '.js'].includes(extension);
+  if (relative.startsWith('tools/naval-pilot/')) return ['.html', '.css', '.js'].includes(extension);
   if (relative.startsWith('src/')) return extension === '.js';
   if (relative.startsWith('assets/')) return ['.json', '.glb', '.gltf', '.bin', '.ktx2', '.png', '.jpg', '.jpeg', '.webp'].includes(extension);
   if (relative === 'node_modules/three/build/three.module.js') return true;
@@ -72,7 +75,7 @@ export function createNavalLabServer() {
       if (!inside(ROOT, requested)) { res.writeHead(404).end(); return; }
       const realFile = await fs.realpath(requested);
       if (!inside(repoReal, realFile)) { res.writeHead(404).end(); return; }
-      const candidatePrefixes = ['tools/naval-lab', 'src', 'assets', 'node_modules/three/build', 'node_modules/three/examples/jsm']
+      const candidatePrefixes = ['tools/naval-lab', 'tools/naval-pilot', 'src', 'assets', 'node_modules/three/build', 'node_modules/three/examples/jsm']
         .filter((prefix) => relative === prefix || relative.startsWith(`${prefix}/`));
       let contained = false;
       for (const prefix of candidatePrefixes) {

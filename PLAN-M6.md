@@ -4,9 +4,9 @@ Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04�
 
 Checkpoint 2026-10-06: **D08b.4a HUD aceptado visualmente por el autor** («quedó muy bien»),
 fuente `825e96e`, 89/89 pertinentes y cinco tamaños revisados. [Entrega](docs/delivery/d08b4a-reference-hud.md).
-El manejo/look siguen en la bahía aislada; la balsa de partida continúa amarrada. Se preparó el
-[puente D08c de autoridad/pilotaje/cubierta móvil](docs/briefs/d08c-live-navigation-bridge.md), todavía
-propuesta técnica sin implementación. M5 D09 conserva integración completa de host/hooks pendiente;
+El manejo/look siguen en la bahía aislada; la balsa de partida continúa amarrada. El
+[puente D08c de autoridad/pilotaje/cubierta móvil](docs/briefs/d08c-live-navigation-bridge.md) ya tiene
+D08c.0–2 implementados como ensayos delimitados, sin activar viajes públicos. M5 D09 conserva su checkpoint en `PLAN-M5.md`;
 D06b móvil, dispositivos/FPS y riesgo persistente no se cierran con la aceptación del HUD.
 
 Checkpoint 2026-10-05: **P1–P3 implementados y aceptados localmente en software**, versión `0.6.0-alpha.2`, protocolo 14.
@@ -165,7 +165,17 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   pose pública y cubierta siguen amarradas hasta conectar piloto/soporte/predicción juntos.
   [Contrato](docs/briefs/d08c1-naval-authority.md), [entrega](docs/delivery/d08c1-naval-authority.md).
   259/259 pertinentes aisladas sobre `5068d77`, incluidas 18/18 nuevas; límites de la pasada general en la entrega.
-  Próximo corte: puesto de mando + cubierta móvil + ACK/predicción, sin poner bienes persistentes en riesgo.
+  **D08c.2 — puesto de mando y cubierta móvil en ensayo local:** entrada/salida de sesión,
+  piloto anclado a su propia cubierta, proyección transitoria pública, epoch/ACK naval separado y
+  predicción/reconciliación. Dos clientes comparten pose de barco/piloto; heartbeats de ticks retenidos
+  por M5 no cambian autoridad. Navegación ordinaria sigue apagada; salir restaura el amarre y conserva bienes.
+  [Contrato](docs/briefs/d08c2-pilot-deck.md), [entrega](docs/delivery/d08c2-pilot-deck.md).
+  Prueba local en `PROBAR-PILOTAJE.cmd`, con balsa/casa, cámara/agua/material/espuma/audio reutilizados.
+  301/301 pertinentes aisladas sobre `d47353b` (26 nuevas de pilotaje); 73/73 de compatibilidad
+  con M5 `39edbe8`. Navegador: escritorio y móvil vertical/horizontal emulado, controles táctiles reales del UI,
+  embarque/giro/blur/salida y conservación; casa de 29 piezas en escritorio. No es aceptación de móvil físico/FPS.
+  Sin pasajeros ni caminar a bordo; barrera de terreno no equivale a choque/daño continuo.
+  Próximo corte: locomoción relativa y pasajeros, después integrar contacto/HP a autoridad; P5/P6 abiertos.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

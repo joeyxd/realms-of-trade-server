@@ -90,6 +90,7 @@ export function attachRafts(w, owner, p) {
 }
 
 export function detachRafts(w, owner) {
+  w.navalPilot?.removeOwner(owner);
   w.navalTrial?.removeOwner(owner);
   w.raftEditReceipts?.delete(owner);
   const removed = new Set([...w.rafts.values()].filter((r) => r.owner === owner).map((r) => r.ship.id));
@@ -122,8 +123,9 @@ export function detachRafts(w, owner) {
 // profile data never enter this whitelist. Editor acknowledgements remain private; this list repairs edits.
 export function publicRafts(w) {
   const ecs = w.ecs;
-  return [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,
+  const records = [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,
     name: r.ship.n, berth: r.ship.berth, x: ecs.x[r.entity], y: ecs.y[r.entity], z: ecs.z[r.entity],
     yaw: ecs.facing[r.entity], parts: r.ship.grid.parts.map((p) => [...p]),
     look: r.ship.look ? { banner: r.ship.look.banner, paint: r.ship.look.paint } : null }));
+  return w.navalPilot ? w.navalPilot.project(records) : records;
 }
