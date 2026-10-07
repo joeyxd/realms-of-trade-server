@@ -175,6 +175,16 @@ GameHost no configura el hook ni activa operaciones durables. Scope/reloj/adopci
 montaje del host/snapshot canónico, finalizador y muerte completa/afinidad permanecen abiertos.
 Sin SQL/env/protocolo nuevo; P4/P6 parciales.
 
+Checkpoint D09f-2b.14, base `d47353b`: **captura canónica opcional del progreso ECS para staging**.
+Baseline separado antes del primer await y recaptura en apply de nivel/XP/pociones/checkpoint;
+oro/equipo/maestrías/tatuajes y referencias conservados. Save reservado separado, rollback/fence y
+puente de lectura trusted de GameHost; default anterior conservado. **884/884**, 29 checks nuevos
+en 15 pruebas superiores, regresión aislada de 67 archivos/199 fuentes.
+[Contrato y límites](docs/delivery/d09f-pearl-profile-snapshot.md).
+Sin activación automática, SQL/env ni protocolo nuevo. El progreso posterior al recibo usa save CAS
+posterior: aún puede perderse antes de completarlo. Montaje del host, scope/reloj/adopción/inputs,
+finalizador/muerte completa/afinidad y P4/P6 permanecen pendientes.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

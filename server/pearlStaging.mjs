@@ -9,6 +9,7 @@ import { groundKey, groundOperation, checkedGroundResult } from './pearlGround.m
 import { batchIntent, batchOperation, checkedBatchResult } from './pearlBatch.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
 import { pearlEcsDraft, pearlSwallowEffect } from './pearlEcsEffect.mjs';
+import { PEARL_PROFILE_ECS_FIELDS } from './pearlProfileSnapshot.mjs';
 
 const clone = (value) => structuredClone(value);
 const frozen = (value) => {
@@ -56,10 +57,14 @@ function replacementDrop(world, planned) {
 }
 
 export class PearlStaging {
-  constructor(sessions, world, scope, { limit = 64 } = {}) {
+  #captureProfile; #capturing = false; #captureViolation = false;
+
+  constructor(sessions, world, scope, { limit = 64, captureProfile = null } = {}) {
     this.sessions = sessions; this.world = world; this.scope = groundKey(scope);
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
+        (captureProfile !== null && typeof captureProfile !== 'function') ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
+    this.#captureProfile = captureProfile;
     this.limit = limit; this.accounts = new Map(); this.uids = new Map(); this.operations = new Map();
     this.gate = pearlMutationGate(sessions);
     this.tasks = new Set(); this.completed = []; this.sequence = 0;
@@ -71,12 +76,36 @@ export class PearlStaging {
   }
 
   endpoint({ clientId, entity } = {}) {
+    this.#assertCaptureEntry();
     const session = this.sessions.clients.get(clientId), profile = this.world.profiles.get(entity);
     if (!session || session.closed || session.failed || !Number.isInteger(entity) || entity < 1 ||
         entity >= this.world.ecs.cap || this.world.ecs.clientId[entity] !== clientId ||
         !profile || profile.pirateId !== `account:${session.key}`) throw new StoreError('session');
     normalized(profile);
     return { clientId, entity, session, key: session.key, profile };
+  }
+
+  #assertCaptureEntry() {
+    if (this.#capturing) { this.#captureViolation = true; throw new StoreError('effect'); }
+  }
+
+  #snapshot(endpoint) {
+    this.#assertCaptureEntry();
+    const before = normalized(endpoint.profile), beforeText = canonicalText(before);
+    if (this.#captureProfile === null) return before;
+    this.#capturing = true; this.#captureViolation = false;
+    try {
+      const raw = this.#captureProfile(endpoint.clientId, endpoint.entity);
+      if (raw && typeof raw.then === 'function') {
+        Promise.resolve(raw).catch(() => {});
+        throw new StoreError('profile');
+      }
+      const captured = normalized(raw), comparable = { ...captured };
+      for (const field of PEARL_PROFILE_ECS_FIELDS) comparable[field] = before[field];
+      if (this.#captureViolation || canonicalText(comparable) !== beforeText ||
+          canonicalText(normalized(endpoint.profile)) !== beforeText) throw new StoreError('profile');
+      return captured;
+    } finally { this.#capturing = false; }
   }
 
   // No caller-supplied holder, kind or UUID crosses this boundary. expectedVersion comes from the
@@ -162,10 +191,25 @@ export class PearlStaging {
   }
 
   enqueue(plan, endpoints, ledgers) {
+    this.#assertCaptureEntry();
     const uids = plan.meta.items ? plan.meta.items.map((q) => q.uid) : [plan.meta.uid];
     const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids });
     const ctx = { plan, endpoints, uids, reservation, ledgers: new Map([...ledgers].map(([uid, row]) => [uid, clone(row)])),
       state: 'pending', sequence: ++this.sequence };
+    // Capture before any async save/IO. The optional trusted adapter is read-only and synchronous;
+    // its selectors contain no caller account identity, capability, inventory or receipt.
+    try {
+      if (!this.current(ctx)) throw new StoreError('cancelled');
+      const before = endpoints.map((e) => canonicalText(normalized(e.profile)));
+      ctx.baselines = this.#captureProfile === null ? null : endpoints.map((e) => this.#snapshot(e));
+      if (!this.current(ctx)) throw new StoreError('cancelled');
+      if (endpoints.some((e, i) => canonicalText(normalized(e.profile)) !== before[i])) throw new StoreError('profile');
+      this.assertLedgers(ctx);
+    } catch (error) {
+      if (this.gate.active(reservation)) this.gate.release(reservation);
+      else this.gate.fence(reservation); // An invalidated authority cannot be made available again.
+      throw error;
+    }
     this.operations.set(plan.meta.operationId, ctx);
     for (const uid of uids) this.uids.set(uid, ctx);
     for (const e of endpoints) this.accounts.set(e.key, ctx);
@@ -175,7 +219,7 @@ export class PearlStaging {
     const task = Promise.resolve().then(async () => {
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
-        for (const e of endpoints) this.sessions.save(e.clientId, clone(e.profile), ctx.reservation);
+        for (const [i, e] of endpoints.entries()) this.sessions.save(e.clientId, clone(ctx.baselines?.[i] ?? e.profile), ctx.reservation);
         const batch = plan.effect === 'replace';
         const result = await this.sessions[batch ? 'commitPearlBatch' : 'commitPearlGround'](plan.meta, (rows) => {
           if (!this.current(ctx)) throw new StoreError('cancelled');
@@ -233,6 +277,7 @@ export class PearlStaging {
   }
 
   save(clientId, raw) {
+    this.#assertCaptureEntry();
     const session = this.sessions.clients.get(clientId), ctx = session && this.accounts.get(session.key);
     if (!ctx) {
       if (session) this.gate.assertAvailable({ accounts: [session.key] });
@@ -242,7 +287,7 @@ export class PearlStaging {
     const data = normalized(raw), delta = ctx.plan.profiles.find((p) => p.id === session.key);
     if (data.pirateId !== `account:${session.key}` || canonicalText(data.pearls) !== canonicalText(delta.before)) throw new StoreError('ownership');
     const endpoint = ctx.endpoints.find((e) => e.key === session.key);
-    if (canonicalText(data) !== canonicalText(normalized(endpoint.profile))) throw new StoreError('profile');
+    if (canonicalText(data) !== canonicalText(this.#snapshot(endpoint))) throw new StoreError('profile');
     // Snapshot callers use the live authoritative profile (syncProfile). Defer its write and capture
     // the latest live progress at apply, including progress earned after the most recent autosave.
   }
@@ -260,6 +305,7 @@ export class PearlStaging {
   // Synchronous only. No simulation write occurs in promise continuations. Failed contexts retain
   // their lanes for authority reload; read-only receipt reconciliation never licenses a local replay.
   drain() {
+    this.#assertCaptureEntry();
     const completed = this.completed.splice(0).sort((a, b) => a.sequence - b.sequence), outcomes = [];
     for (const ctx of completed) {
       if (ctx.state !== 'ready') { outcomes.push(this.fence(ctx, ctx.code ?? 'cancelled')); continue; }
@@ -269,7 +315,7 @@ export class PearlStaging {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         this.assertLedgers(ctx);
         writes = endpoints.map((e) => {
-          const delta = plan.profiles.find((p) => p.id === e.key), live = normalized(e.profile);
+          const delta = plan.profiles.find((p) => p.id === e.key), before = normalized(e.profile), live = this.#snapshot(e);
           // Correctly routed snapshots are buffered above. Any storage work in the apply gap is a
           // bypass and must not race this apply, even if it has not failed or changed version yet.
           if (e.session.running || e.session.pending || e.session.pearlBusy ||
@@ -277,7 +323,8 @@ export class PearlStaging {
           if (canonicalText(live.pearls) !== canonicalText(delta.before) ||
               canonicalText(e.session.confirmed?.pearls) !== canonicalText(delta.after)) throw new StoreError('ownership');
           return { e, before: e.profile.pearls, after: clone(delta.after), dirty: w.profileDirty.has(e.entity),
-            beforeText: canonicalText(live),
+            beforeText: canonicalText(before),
+            progressBefore: Object.fromEntries(PEARL_PROFILE_ECS_FIELDS.map((field) => [field, before[field]])),
             save: normalized({ ...live, pearls: clone(delta.after) }) };
         });
         // Run event decoration against a detached buffer before changing live state. A publication
@@ -303,7 +350,11 @@ export class PearlStaging {
         effect?.assertCurrent(w.ecs);
         dropEffect?.assertCurrent();
         localStarted = true;
-        for (const change of writes) { change.e.profile.pearls = change.after; w.profileDirty.add(change.e.entity); }
+        for (const change of writes) {
+          change.e.profile.pearls = change.after;
+          for (const field of PEARL_PROFILE_ECS_FIELDS) change.e.profile[field] = change.save[field];
+          w.profileDirty.add(change.e.entity);
+        }
         for (const { uid, data } of ledgers) w.pearlLedger.set(uid, clone(data));
         dropEffect?.apply();
         effect?.apply(w.ecs);
@@ -324,7 +375,11 @@ export class PearlStaging {
             w.events.length = eventCount;
             effect?.rollback();
             dropEffect?.rollback();
-            for (const change of writes) { change.e.profile.pearls = change.before; if (!change.dirty) w.profileDirty.delete(change.e.entity); }
+            for (const change of writes) {
+              change.e.profile.pearls = change.before;
+              Object.assign(change.e.profile, change.progressBefore);
+              if (!change.dirty) w.profileDirty.delete(change.e.entity);
+            }
             for (const [uid, row] of ctx.ledgers) w.pearlLedger.set(uid, clone(row));
           }
         } catch { /* A broken live container still cannot release the fence or retry SQL. */ }

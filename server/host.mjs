@@ -13,6 +13,7 @@ import { WorldState } from './worldState.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
 import { profilePearls } from './pearlOperations.mjs';
 import { syncProfile } from '../src/sim/systems/inventory.js';
+import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -274,6 +275,18 @@ export class GameHost {
       if (error instanceof StoreError) return false;
       throw error;
     }
+  }
+
+  // Trusted staging may read a reserved account without publishing or writing its old inventory.
+  // This bridge is opt-in: the host does not construct staging or dispatch durable commands yet.
+  capturePearlProfile(id, entity) {
+    this.profileLanes(id, entity);
+    const c = this.server.clients.get(id), s = this.profiles.clients.get(id), w = this.server.world;
+    if (!c.serverProfile || !s || this.profiles.accounts.get(s.key) !== s ||
+        w.ecs.clientId[entity] !== id || w.profiles.get(entity).pirateId !== `account:${s.key}`) {
+      throw new StoreError('session');
+    }
+    return capturePearlProfile(w, entity);
   }
 
   commandAvailable(id, entity, plan) {
