@@ -32,10 +32,13 @@ const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
+    if ([profileAccess, beforeDetach].some((hook) => hook !== null && typeof hook !== 'function')) throw new TypeError('profile hook');
+    this.profileAccess = profileAccess;
+    this.beforeDetach = beforeDetach;
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
@@ -92,10 +95,14 @@ export class LocalServer {
   disconnect(clientId) {
     const c = this.clients.get(clientId);
     if (c && c.entity) {
+      // Invalidate pending effects before any lifecycle mutation. A blocked final snapshot cannot be
+      // retried after detachment; the host must retain its fence and report an incomplete flush.
+      const save = this.beforeDetach ? profileDecision(this.beforeDetach(clientId, c.entity)) :
+        this.profileAllowed(clientId, c, 'save');
       clearCommerceReceipts(this.world, c.entity);
       detachRafts(this.world, c.entity);
       const p = detachProfile(this.world, c.entity);
-      if (p && this.onSave) this.onSave(clientId, p);
+      if (save && p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
     }
     this.clients.delete(clientId);
@@ -223,13 +230,20 @@ export class LocalServer {
     }
   }
 
+  profileAllowed(id, c, purpose) {
+    if (!c || this.clients.get(id) !== c || !c.entity) return false;
+    return this.profileAccess === null || profileDecision(this.profileAccess(id, c.entity, purpose));
+  }
+
   sendProfile(id, c) {
+    if (!this.profileAllowed(id, c, 'publish')) return false;
     const p = syncProfile(this.world, c.entity);
-    if (!p) return;
+    if (!p) return false;
+    this.send(id, { t: MSG.PROFILE, p });
     c.profT = this.world.tick;
     this.world.profileDirty.delete(c.entity);
-    this.send(id, { t: MSG.PROFILE, p });
     this.saveSoon(c, SAVE_TIMING.after);
+    return true;
   }
 
   saveSoon(c, secs) {
@@ -239,16 +253,19 @@ export class LocalServer {
 
   // A fresh blob for the player to keep (only when it changed).
   sendSave(id, c) {
-    c.saveAt = null;
+    if (!this.profileAllowed(id, c, 'save')) return false;
     const p = syncProfile(this.world, c.entity);
-    if (!p) return;
-    if (this.onSave) this.onSave(id, p);
+    if (!p) return false;
+    if (this.onSave && this.onSave(id, p) === false) return false;
     // An account snapshot must not become a reusable anonymous save. P2's one-time import is separate.
-    if (c.serverProfile) return;
+    if (c.serverProfile) { c.saveAt = null; return true; }
     const blob = this.saves.store(p);
-    if (blob === c.lastBlob) return;
-    c.lastBlob = blob;
-    this.send(id, { t: MSG.SAVE, blob });
+    if (blob !== c.lastBlob) {
+      this.send(id, { t: MSG.SAVE, blob });
+      c.lastBlob = blob;
+    }
+    c.saveAt = null;
+    return true;
   }
 
   // F4 panel (local server only).
@@ -409,6 +426,8 @@ export class LocalServer {
   }
 
   broadcastSnapshot() {
+    // Movement/combat tuples contain no profile inventory, pearl UID, save blob or durable receipt.
+    // Keep ACK/prediction moving while the separate PROFILE/SAVE publications wait on storage.
     const w = this.world, ecs = w.ecs;
     const ents = [], enc = w.encounters.map((q) => encounterState(w, q));
     // Keep expired field history too: a live bullet may already have lost travel time in it.
@@ -427,6 +446,13 @@ export class LocalServer {
       this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts });
     }
   }
+}
+
+function profileDecision(value) {
+  if (typeof value === 'boolean') return value;
+  // Trusted hooks must be synchronous. Consume a rejected accidental Promise before failing closed.
+  if (value && typeof value.then === 'function') Promise.resolve(value).catch(() => {});
+  throw new TypeError('profile hook must return a synchronous boolean');
 }
 
 // 'a.b.c' → obj.a.b.c = value (numbers and booleans only; arrays by index).

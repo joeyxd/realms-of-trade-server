@@ -10,6 +10,9 @@ import { createMemoryStore, StoreError } from './store.mjs';
 import { ProfileSessions } from './profileSessions.mjs';
 import { legacyKey } from './legacy.mjs';
 import { WorldState } from './worldState.mjs';
+import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { profilePearls } from './pearlOperations.mjs';
+import { syncProfile } from '../src/sim/systems/inventory.js';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -46,11 +49,16 @@ export class GameHost {
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
     });
+    // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
+    // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
+    this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
-      onSave: (id, p) => this.profiles.save(id, p),
+      profileAccess: (id, entity) => this.profileAvailable(id, entity),
+      beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
+      onSave: (id, p) => this.saveProfile(id, p),
     });
     this.worldSaveMs = worldSaveMs;
     this.worldState = worldId === null ? null : new WorldState(store, { id: worldId, seed: this.server.world.seed,
@@ -78,6 +86,7 @@ export class GameHost {
 
   start() {
     if (this.closing || (this.worldState && !this.worldState.ready)) throw new StoreError('world_not_ready');
+    if (this.unsavedProfiles.size) throw new StoreError('flush');
     if (this.timer) return this;
     // Drive the server's fixed-step pump ourselves: one bad tick is logged, it never takes the process down.
     this.server.last = performance.now();
@@ -104,7 +113,7 @@ export class GameHost {
     this.server.world.economy = economy;
   }
 
-  healthy() { return !this.closing && (!this.worldState || this.worldState.ready); }
+  healthy() { return !this.closing && !this.unsavedProfiles.size && (!this.worldState || this.worldState.ready); }
 
   fenceWorld(code) {
     this.log(`[store] world failed: ${code}`);
@@ -126,7 +135,8 @@ export class GameHost {
       uptime: Math.round((performance.now() - this.started) / 1000), stepMs: +this.stats.stepMs.toFixed(3),
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
-        errors: this.profiles.errors + (this.worldState?.errors || 0), world: this.worldState?.status() ?? null },
+        errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
+        world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
   }
@@ -241,6 +251,64 @@ export class GameHost {
     for (const [key, r] of this.legacyReservations) if (r.id === id && !r.pending) this.legacyReservations.delete(key);
   }
 
+  profileLanes(id, entity) {
+    const c = this.server.clients.get(id), p = this.server.world.profiles.get(entity), s = this.profiles.clients.get(id);
+    // The authenticated session owns the account lane. Older stored profiles may still carry a
+    // legacy pirateId; this output guard does not adopt/rewrite that gameplay identity.
+    if (!c || c.entity !== entity || !p || (c.serverProfile && (!s || s.closed || s.failed))) throw new StoreError('session');
+    const uids = new Set(profilePearls(p).map((q) => q.uid));
+    for (const [uid, at] of this.server.world.pearlLedger) if (at.entity === entity) uids.add(uid);
+    return { accounts: s ? [s.key] : [], uids: [...uids] };
+  }
+
+  profileAvailable(id, entity) {
+    try {
+      pearlMutationGate(this.profiles).assertAvailable(this.profileLanes(id, entity));
+      return true;
+    } catch (error) {
+      // Busy is expected while SQL/receipt/tick apply owns a lane. Invalid authority also denies
+      // output; neither outcome may sync the old inventory, clear scheduling or crash the pump.
+      if (error instanceof StoreError) return false;
+      throw error;
+    }
+  }
+
+  retainFinalProfile(id, entity, raw = null) {
+    const w = this.server.world, p = raw ?? w.profiles.get(entity);
+    const s = this.profiles.clients.get(id);
+    // syncProfile on a detached profile captures final ECS progress without changing live state.
+    const data = p ? syncProfile({ profiles: new Map([[entity, structuredClone(p)]]), ecs: w.ecs, map: w.map }, entity) : null;
+    this.unsavedProfiles.set(id, { key: s?.key ?? null, data });
+  }
+
+  beforeProfileDetach(id, entity) {
+    const gate = pearlMutationGate(this.profiles), s = this.profiles.clients.get(id);
+    // Account invalidation is independent of malformed UID metadata: pending effects must not
+    // survive close -> entity recycle even when the final profile cannot be validated.
+    if (s) gate.invalidate({ accounts: [s.key] });
+    try { gate.invalidate(this.profileLanes(id, entity)); }
+    catch (error) { if (!(error instanceof StoreError)) throw error; }
+    if (this.profileAvailable(id, entity)) return true;
+    this.retainFinalProfile(id, entity);
+    return false;
+  }
+
+  saveProfile(id, p) {
+    const s = this.profiles.clients.get(id);
+    if (!s) return true; // Guests keep their existing signed-save route.
+    try {
+      pearlMutationGate(this.profiles).assertAvailable({ accounts: [s.key], uids: profilePearls(p).map((q) => q.uid) });
+      this.profiles.save(id, p);
+      if (!s.failed && !s.closed) return true;
+    } catch (error) { if (!(error instanceof StoreError)) throw error; }
+    // This also protects the final onSave callback after the profile was detached. Never silently
+    // acknowledge that final snapshot or retry its old UID inventory across a committed receipt.
+    if (!this.server.world.profiles.has(this.server.clients.get(id)?.entity)) {
+      this.retainFinalProfile(id, this.server.clients.get(id)?.entity, p);
+    }
+    return false;
+  }
+
   onMessage(sock, data, isBinary) {
     const now = performance.now(), b = sock.bucket, len = data.length || data.byteLength || 0;
     const el = (now - b.t) / 1000;
@@ -270,6 +338,9 @@ export class GameHost {
     this.profiles.close(sock.id);
     this.releaseLegacy(sock.id);
     this.log(`[net] #${sock.id} left · players ${this.server.humans} · sockets ${this.sockets.size}`);
+    // A denied final snapshot has no safe automatic merge with a durable receipt. Stop this host
+    // after detachment rather than admitting a new authority around the retained recovery evidence.
+    if (this.unsavedProfiles.has(sock.id) && !this.closing) this.fenceWorld('profile_unflushed');
   }
 
   sendTo(id, msg) {
@@ -304,7 +375,7 @@ export class GameHost {
       await Promise.all([...this.joins]);
       // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
       const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
-      if (results.some((r) => r.status === 'rejected')) throw new StoreError('flush');
+      if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size) throw new StoreError('flush');
     })();
     return this.closePromise;
   }

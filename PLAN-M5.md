@@ -131,6 +131,17 @@ explícito y World detenido. **814/814** pertinentes en 38 archivos, **56 nuevas
 Siguen hooks completos e integración del host con scope/reloj/adopción definidos, muerte completa
 y afinidad permanente; P4/P6 parciales.
 
+Checkpoint D09f-2b.10, base `8f5a50a`: **guards de salida/desconexión conectados al host**.
+Cuenta trusted y UIDs de inventario/ledger antes de sync/publicar/guardar; busy conserva dirty/scheduling/blob.
+Snapshots ECS/ACK continúan sin inventario/UID/recibo. Close invalida antes del detach; final save bloqueado
+se retiene solo en memoria, detiene host y falla flush, sin reescribir inventario previo al commit.
+**786/786** pertinentes en 60 archivos, **17 nuevas**; staging real manual cubre gap
+recibo→apply y cierre con recibo tardío. Fuentes fijadas/hashes comprobados; SQL/procesos durables/live no
+repetidos. [Contrato/evidencia](docs/delivery/d09f-pearl-profile-io.md). Sin SQL/env ni activación de comandos.
+Siguen hooks de mutación/autónomos, snapshot canónico/apply/startup del host, reloj/scope/adopción,
+finalizador durable (último progreso no garantizado en cierre bloqueado), muerte completa y afinidad.
+P4/P6 parciales; protocolo 16 conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
