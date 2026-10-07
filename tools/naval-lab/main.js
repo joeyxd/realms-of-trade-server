@@ -6,13 +6,12 @@ import { Pipeline, LAYER } from '../../src/render/pipeline.js';
 import { createWater } from '../../src/render/water.js';
 import { createSky, SKY } from '../../src/render/sky.js';
 import { U } from '../../src/render/toon.js';
-import { buildNavalRig, newNavalState, stepNaval, navalPose, windEfficiency, jettisonLabCargo, NAVAL_STEP } from '../../src/sim/naval/handling.js';
+import { buildNavalRig, newNavalState, stepNaval, navalPose, jettisonLabCargo, NAVAL_STEP } from '../../src/sim/naval/handling.js';
 import { LAB_FIXTURES, LAB_WINDS, labFixture } from './fixtures.js';
 import { measureHandling } from './measure.js';
 import { NavalLabInput } from './input.js';
 import { NavalLabClock } from './clock.js';
 import { currentAt, gustAt, newSailingActivity, stepSailingActivity, sailingEnvironment } from '../../src/sim/naval/navigation.js';
-import { NAVAL_NAVIGATION } from '../../src/data/navalNavigation.js';
 import { NavalLabEffects } from './effects.js';
 import { NavalLabAudio } from './audio.js';
 import { NavalSpeedFeel } from './speed-feel.js';
@@ -20,6 +19,7 @@ import { NavalLabCamera } from './camera.js';
 import { configureNavalReferenceLook } from './look.js';
 import { NavalLabScenery } from './scenery.js';
 import { loadNavalRaftSkin } from './raft-skin.js';
+import { NavalLabHud } from './hud.js';
 
 const $ = (id) => document.getElementById(id);
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
@@ -27,7 +27,7 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new NavalLabClock();
 let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0, bayHeight = 1;
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
-let effects, sound, feel, framing, scenery, raftSkin, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
+let effects, sound, feel, framing, scenery, raftSkin, hud, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
 let lastGustPhase = 'idle', lastGustId = -1;
 const samples = [];
 const trailArray = new Float32Array(256 * 3), trailGeometry = new THREE.BufferGeometry();
@@ -43,6 +43,13 @@ const marker = new THREE.Mesh(new THREE.RingGeometry(0.28, 0.38, 20), new THREE.
 marker.rotation.x = -Math.PI / 2; marker.layers.set(LAYER.FX); references.add(marker);
 
 function showMessage(text) { $('message').textContent = text; }
+function updateHud() {
+  if (!hud || !fixture || !rig) return;
+  hud.update({ state, rig, wind, activity, paused, cargoCount: fixture.cargo.length,
+    gusts: $('gusts').checked, currents: $('currents').checked,
+    gust: gustAt(state.tick, wind, $('gusts').checked),
+    current: currentAt(state.x, state.z, $('currents').checked) });
+}
 function clearInputs() {
   input?.clear();
   for (const button of document.querySelectorAll('[data-pilot]')) button.classList.remove('active');
@@ -102,6 +109,7 @@ function reset() {
   state = newNavalState(); previous = { ...state }; framing?.reset(); scenery?.reset();
   activity = newSailingActivity(); lastGustPhase = 'idle'; lastGustId = -1; effects?.reset(); feel?.reset();
   $('fixture-detail').textContent = fixture.detail; rebuildCargo(); stats(); comparisons();
+  updateHud();
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Entra en las flechas de agua. Cuando llegue la ráfaga, cázala con ESPACIO.');
   $('bay').focus({ preventScroll: true });
 }
@@ -110,11 +118,13 @@ function jettison() {
   const next = jettisonLabCargo(fixture, state);
   fixture = next.fixture; state = next.state; previous = { ...state }; rig = buildNavalRig(fixture.parts, fixture.cargo);
   rebuildCargo(); stats(); comparisons(); showMessage('Lastre soltado. El casco mantiene su posición y su movimiento.');
+  updateHud();
 }
 function setPaused(value) {
   paused = value; clock.clear(); clearInputs(); previous = { ...state };
   $('pause').textContent = paused ? 'Continuar' : 'Pausar';
   sound?.update({ state, rig, paused: true });
+  updateHud();
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Timón listo. Mantén AVANZAR.');
 }
 function unlockSound() {
@@ -169,21 +179,7 @@ function drawFrame(dt) {
   const context = { state: visual, rig, wind, gust, activity, current, currents: $('currents').checked, paused };
   effects.update(paused ? 0 : dt, context); sound.update(context);
   pipeline.update(dt); pipeline.render();
-  $('speed').textContent = Math.hypot(state.vx, state.vz).toFixed(2);
-  $('heading').textContent = `Rumbo ${String(Math.round((state.yaw * 180 / Math.PI + 360) % 360)).padStart(3, '0')}° · giro ${(state.omega * 180 / Math.PI).toFixed(1)}°/s`;
-  $('sail').textContent = wind.strength ? `Empuje de vela ${(windEfficiency(state.yaw, wind) * 100).toFixed(0)}%` : 'Calma · remo asistido';
-  $('wind-arrow').textContent = wind.id === 'calm' ? '○' : wind.id === 'tail' ? '↓' : wind.id === 'head' ? '↑' : '→';
-  const attempted = activity.lastAttempt === gust.id;
-  $('gust-label').textContent = boosting ? `¡VELA CARGADA! ${((activity.boostUntil - state.tick) * NAVAL_STEP).toFixed(1)} s` :
-    !$('gusts').checked || !wind.strength ? 'Sin ráfagas' : gust.phase === 'window' ? (attempted ? 'Ráfaga resuelta' : '¡AHORA! CAZA LA RÁFAGA') :
-    gust.phase === 'approach' ? `Prepara la vela · ${gust.remaining.toFixed(1)} s` : `Próxima ráfaga · ${Math.ceil(gust.remaining)} s`;
-  $('gust-progress').value = boosting ? Math.max(0, (activity.boostUntil - state.tick) / NAVAL_NAVIGATION.boostTicks) : gust.progress;
-  $('capture').classList.toggle('ready', !attempted && gust.phase === 'window');
-  $('capture').classList.toggle('boosting', boosting);
-  $('capture').disabled = paused || !$('gusts').checked || !wind.strength || attempted;
-  const feedback = { perfect: '¡PERFECTO! La vela ruge.', capture: '¡Ráfaga atrapada! Sigue dando vela.', early: 'Demasiado pronto. Espera la siguiente.', angle: 'Orienta la proa a favor del viento.', miss: 'Abre la vela y suelta el freno.' };
-  $('capture-status').textContent = feedback[activity.result] || 'ESPACIO / A · una pulsación al entrar en la ventana';
-  $('flow-label').textContent = !$('currents').checked ? 'Corrientes apagadas' : current.strength > 0.15 ? `CORRIENTE · ${current.strength.toFixed(1)} u/s` : 'Busca las flechas de agua';
+  updateHud();
 }
 function fixed() {
   previous = state;
@@ -255,6 +251,7 @@ async function start() {
   quality(); layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin });
   effects = new NavalLabEffects(scene, { mobile, reducedMotion }); sound = new NavalLabAudio({ mobile });
   feel = new NavalSpeedFeel($('bay').parentElement, { mobile, reducedMotion });
+  hud = new NavalLabHud(document);
   scene.add(references, trail);
   references.visible = trail.visible = $('references').checked;
   input = new NavalLabInput(document, { onReset: reset, onJettison: jettison, onGesture: unlockSound, onCancel: () => setPaused(true) });
@@ -262,12 +259,14 @@ async function start() {
   $('camera').addEventListener('change', () => { framing.reset(); $('bay').focus({ preventScroll: true }); });
   $('material').addEventListener('change', changeSkin);
   $('relief').addEventListener('change', () => { raftSkin.setRelief($('relief').value); pipeline.markDirty(); updateSkinReadout(); $('bay').focus({ preventScroll: true }); });
-  $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
+  $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); updateHud(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
   $('reset').addEventListener('click', reset); $('jettison').addEventListener('click', jettison);
+  $('jettison-hud').addEventListener('click', jettison);
   $('pause').addEventListener('click', () => setPaused(!paused));
   $('references').addEventListener('change', () => { references.visible = trail.visible = $('references').checked; });
   $('light').addEventListener('change', quality);
-  $('gusts').addEventListener('change', () => { activity = newSailingActivity(); clearInputs(); });
+  $('gusts').addEventListener('change', () => { activity = newSailingActivity(); clearInputs(); updateHud(); });
+  $('currents').addEventListener('change', updateHud);
   $('sound').addEventListener('click', () => {
     if (soundEnabled) { soundEnabled = false; soundOptOut = true; sound.setEnabled(false); $('sound').textContent = 'Activar sonido'; $('sound').setAttribute('aria-pressed', 'false'); }
     else { soundOptOut = false; unlockSound(); }
@@ -279,7 +278,7 @@ async function start() {
   // Read-only snapshots and explicit laboratory actions aid repeatable local acceptance.
   window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind },
     activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked), current: currentAt(state.x, state.z, $('currents').checked),
-    effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(),
+    effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(), hud: hud.diagnostics(),
     scenery: scenery.diagnostics(), raftSkin: { ...raftSkin.diagnostics(), active: $('material').value }, mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();
   const frame = (now) => {
