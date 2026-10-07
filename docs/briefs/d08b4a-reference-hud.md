@@ -41,6 +41,6 @@ Capturar una ráfaga mediante la tarjeta real, soltar lastre real, abrir/cerrar 
 con teclado. Medir zonas táctiles, SVG fijos y URLs de madera 1024/512 realmente cargadas. Guardar
 snapshots y JPEG originales con hashes; declarar la versión de cada captura.
 
-Las pruebas pertinentes y la emulación no cierran teléfono/mando físicos, FPS ni aceptación humana
-de esta nueva pasada. Q1 de luz/reflejos sigue separado y propuesto. B5 espera gameplay/autoridad.
+El autor acepta visualmente esta pasada el 2026-10-06 («quedó muy bien»). Las pruebas y esa reacción
+no cierran teléfono/mando físicos ni FPS. Q1 de luz/reflejos sigue separado y propuesto. B5 espera gameplay/autoridad.
 [Entrega y evidencia](../delivery/d08b4a-reference-hud.md).

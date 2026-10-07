@@ -69,6 +69,7 @@ El checkout contiene trabajo concurrente de arena, manifest y render fuera de es
 comparan los seis paths HUD con su commit, no un árbol completo aislado. Se conservaron los cambios
 ajenos y se commiteó únicamente este corte. Sin push ni despliegue público en esta pasada.
 
-El autor había aprobado el aspecto de B4; su reacción al nuevo B4a queda por recibir. Teléfono/mando
-físicos, FPS y normal/mipmaps de B2 continúan pendientes. B5 requiere encuentros y autoridad reales;
+El autor acepta el aspecto de B4a en esta conversación: «es cierto quedó muy bien sigamos man que falta?»
+(2026-10-06). Cierra su revisión visual del HUD, no teléfono/mando físicos, FPS ni normal/mipmaps de B2.
+B5 requiere encuentros y autoridad reales;
 M5/D09/D10 y la ruta visual del puerto mantienen su trabajo y gates independientes.

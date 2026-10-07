@@ -1,7 +1,9 @@
 # D08 — prueba de manejo naval, carga y viento
 
-Estado: **D08a bahía aislada implementada; aceptación visual e integración naval pendientes**.
-Fecha: 2026-10-05. [Brief del corte](d08a-handling-lab.md) y [resultado](../delivery/d08a-handling-lab.md).
+Estado 2026-10-06: **bahía aislada con manejo aceptado por el autor y HUD B4a aceptado visualmente;
+integración naval pendiente**. [Manejo](../delivery/d08a-arcade-navigation.md),
+[HUD](../delivery/d08b4a-reference-hud.md) y [preparación del puente D08c](d08c-live-navigation-bridge.md).
+Brief inicial del 2026-10-05: [D08a](d08a-handling-lab.md) y [resultado](../delivery/d08a-handling-lab.md).
 Este documento conserva la dirección de D08 completo; no confundir el laboratorio con navegación activa.
 Continúa `docs/NAVAL-ROADMAP.md` y la prioridad del autor: una casa modular que también
 sea un vehículo agradable de pilotar. No fija el formato definitivo del mar ni del abordaje.
@@ -24,10 +26,10 @@ sea un vehículo agradable de pilotar. No fija el formato definitivo del mar ni 
 ## Lugar en las entregas
 
 [D04 P2, cubierta transitable](d04p2-walkable-raft.md), D05 y D06a ya están aceptados localmente.
-La bahía D08a ya está implementada de forma aislada, con simulación y medidas comprobadas;
-su preparación avanzó mientras la revisión automática de Chrome estaba bloqueada por límite de uso.
-El siguiente corte de aceptación es cerrar móvil D06b y revisar visualmente la bahía para comparar manejo,
-sin pérdidas persistentes. La persistencia D09 puede avanzar en paralelo con su dueño respectivo.
+La bahía D08a fue implementada de forma aislada, con simulación y medidas comprobadas;
+la revisión inicial de Chrome estuvo bloqueada. Después se revisaron las vistas y el autor confirmó
+manejo/look, incluido el HUD B4a. Móvil D06b sigue abierto: su recorrido de producción es independiente.
+Preparar ahora autoridad/predicción y cubierta móvil D08c; D09 mantiene su prioridad técnica y dueño.
 Es una prueba acotada de D08: no reemplaza las dependencias de D10 para un viaje real con
 comercio, enemigos y carga persistente. No esperar a terminar PvP para evaluar el movimiento.
 

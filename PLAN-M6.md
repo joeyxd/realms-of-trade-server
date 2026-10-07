@@ -2,6 +2,13 @@
 
 Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04–D06/D08 y mar D10–D12.
 
+Checkpoint 2026-10-06: **D08b.4a HUD aceptado visualmente por el autor** («quedó muy bien»),
+fuente `825e96e`, 89/89 pertinentes y cinco tamaños revisados. [Entrega](docs/delivery/d08b4a-reference-hud.md).
+El manejo/look siguen en la bahía aislada; la balsa de partida continúa amarrada. Se preparó el
+[puente D08c de autoridad/pilotaje/cubierta móvil](docs/briefs/d08c-live-navigation-bridge.md), todavía
+propuesta técnica sin implementación. M5 D09 conserva integración completa de host/hooks pendiente;
+D06b móvil, dispositivos/FPS y riesgo persistente no se cierran con la aceptación del HUD.
+
 Checkpoint 2026-10-05: **P1–P3 implementados y aceptados localmente en software**, versión `0.6.0-alpha.2`, protocolo 14.
 Identidad/migración, amarre, snapshot y renderer; [P1](docs/delivery/d04p1-raft.md).
 Pasarela/cubierta, bloqueos y escaleras compartidos; [P2](docs/delivery/d04p2-raft-walk.md), 383/383 y PC/móvil emulado.
@@ -143,7 +150,9 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   tarjetas oscuras/iconos blancos, brújula sobria y dial segmentado con llama durante boost real.
   [Entrega y evidencia](docs/delivery/d08b4a-reference-hud.md), fuente `825e96e`, 89/89 pertinentes.
   Cinco tamaños revisados, controles ≥44 px sin solapes medidos y Ajustes móvil visible; foco/teclado
-  corregidos. Sin raster nuevo ni cambios de simulación. Reacción a B4a y dispositivos físicos pendientes.
+  corregidos. Sin raster nuevo ni cambios de simulación. Aspecto B4a aceptado; dispositivos físicos pendientes.
+  Preparación del [puente D08c](docs/briefs/d08c-live-navigation-bridge.md): conectar cuerpo de navegación,
+  autoridad/predicción y cubierta móvil en cortes comprobables, antes del viaje/encuentro D10.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.
