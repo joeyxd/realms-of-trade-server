@@ -2,6 +2,7 @@
 // outside this row fail closed. Typed single-cell buffers preserve the live column's conversion.
 import { applyPearlChange } from '../src/sim/systems/pearlEffect.js';
 import { StoreError } from './store.mjs';
+import { PEARL_ACTION_BUFFERS } from '../src/net/pearlInputBoundary.js';
 
 export function pearlEcsDraft(live, entity) {
   const ecs = { cap: live.cap }, columns = new Map(), written = new Set();
@@ -54,8 +55,10 @@ export function pearlEcsDraft(live, entity) {
 
 // Eligibility belongs to the accepted swallowPearl preflight. Apply the shared pearl-change
 // rule to current state without re-running calm after a durable commit.
-export function pearlSwallowEffect(world, entity, profile) {
+export function pearlSwallowEffect(world, entity, profile, { clearInputs = false } = {}) {
   const draft = pearlEcsDraft(world.ecs, entity);
   applyPearlChange({ ecs: draft.ecs, profiles: new Map([[entity, structuredClone(profile)]]) }, entity);
+  // Compose with the same draft: independent live writes would invalidate its numeric snapshot.
+  if (clearInputs) for (const column of PEARL_ACTION_BUFFERS) draft.ecs[column][entity] = 0;
   return draft;
 }

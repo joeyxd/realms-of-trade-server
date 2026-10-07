@@ -26,6 +26,7 @@ import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
+import { preparePearlInputs } from './pearlInputBoundary.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
@@ -278,6 +279,16 @@ export class LocalServer {
   profileAllowed(id, c, purpose) {
     if (!c || this.clients.get(id) !== c || !c.entity) return false;
     return this.profileAccess === null || profileDecision(this.profileAccess(id, c.entity, purpose));
+  }
+
+  // Internal staging adapter. Neither transport messages nor a normal running tick may clear
+  // another command's actions; this reversible effect belongs to the synchronous apply phase.
+  preparePearlInputs(id, entity) {
+    return preparePearlInputs(this, id, entity, () => {
+      if (!this.#applyingTick || this.#checkingTick || this.#runningTick || this.#applyFailed) {
+        throw new TypeError('pearl inputs require tick apply');
+      }
+    });
   }
 
   sendProfile(id, c) {

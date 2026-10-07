@@ -58,13 +58,16 @@ function replacementDrop(world, planned) {
 
 export class PearlStaging {
   #captureProfile; #capturing = false; #captureViolation = false;
+  #prepareInputs; #inputCallback = false; #inputViolation = false;
 
-  constructor(sessions, world, scope, { limit = 64, captureProfile = null } = {}) {
+  constructor(sessions, world, scope, { limit = 64, captureProfile = null, prepareInputs = null } = {}) {
     this.sessions = sessions; this.world = world; this.scope = groundKey(scope);
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
         (captureProfile !== null && typeof captureProfile !== 'function') ||
+        (prepareInputs !== null && typeof prepareInputs !== 'function') ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
     this.#captureProfile = captureProfile;
+    this.#prepareInputs = prepareInputs;
     this.limit = limit; this.accounts = new Map(); this.uids = new Map(); this.operations = new Map();
     this.gate = pearlMutationGate(sessions);
     this.tasks = new Set(); this.completed = []; this.sequence = 0;
@@ -87,6 +90,24 @@ export class PearlStaging {
 
   #assertCaptureEntry() {
     if (this.#capturing) { this.#captureViolation = true; throw new StoreError('effect'); }
+    if (this.#inputCallback) { this.#inputViolation = true; throw new StoreError('effect'); }
+  }
+
+  #inputCall(callback) {
+    this.#assertCaptureEntry();
+    this.#inputCallback = true; this.#inputViolation = false;
+    try {
+      const result = callback();
+      if (result && typeof result.then === 'function') {
+        Promise.resolve(result).catch(() => {}); throw new StoreError('effect');
+      }
+      if (this.#inputViolation) throw new StoreError('effect');
+      return result;
+    } finally { this.#inputCallback = false; }
+  }
+
+  #inputEffect(method, effect) {
+    if (this.#inputCall(() => effect[method]()) !== undefined) throw new StoreError('effect');
   }
 
   #snapshot(endpoint) {
@@ -310,7 +331,7 @@ export class PearlStaging {
     for (const ctx of completed) {
       if (ctx.state !== 'ready') { outcomes.push(this.fence(ctx, ctx.code ?? 'cancelled')); continue; }
       const w = this.world, { plan, endpoints } = ctx;
-      let publication, writes, effect, dropEffect, ledgers;
+      let publication, writes, effect, dropEffect, ledgers, inputEffect;
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         this.assertLedgers(ctx);
@@ -329,7 +350,27 @@ export class PearlStaging {
         });
         // Run event decoration against a detached buffer before changing live state. A publication
         // failure cannot leak one endpoint's success event or make a later drain retry this operation.
-        if (plan.effect === 'swallow' || plan.effect === 'replace') effect = pearlSwallowEffect(w, endpoints[0].entity, writes[0].save);
+        if (plan.effect === 'swallow' || plan.effect === 'replace') {
+          if (this.#prepareInputs !== null) {
+            // Resolve even getters/proxies inside the guarded callback, then keep stable methods.
+            inputEffect = this.#inputCall(() => {
+              const raw = this.#prepareInputs(endpoints[0].clientId, endpoints[0].entity);
+              if (raw && typeof raw.then === 'function') {
+                Promise.resolve(raw).catch(() => {}); throw new StoreError('effect');
+              }
+              if (!raw) throw new StoreError('effect');
+              const methods = {};
+              for (const key of ['assertCurrent', 'apply', 'assertApplied', 'rollback']) {
+                const method = raw[key];
+                if (typeof method !== 'function') throw new StoreError('effect');
+                methods[key] = method.bind(raw);
+              }
+              return Object.freeze(methods);
+            });
+            this.#inputEffect('assertCurrent', inputEffect);
+          }
+          effect = pearlSwallowEffect(w, endpoints[0].entity, writes[0].save, { clearInputs: inputEffect !== undefined });
+        }
         if (plan.effect === 'replace') dropEffect = replacementDrop(w, plan.drop);
         ledgers = plan.ledgers ? plan.ledgers.map(({ uid, data }) => ({ uid,
           data: data.place === 'ground' ? { ...clone(data), drop: dropEffect.drop.id } : clone(data) })) :
@@ -349,6 +390,7 @@ export class PearlStaging {
         if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== change.beforeText)) throw new StoreError('ownership');
         effect?.assertCurrent(w.ecs);
         dropEffect?.assertCurrent();
+        if (inputEffect) this.#inputEffect('assertCurrent', inputEffect);
         localStarted = true;
         for (const change of writes) {
           change.e.profile.pearls = change.after;
@@ -358,6 +400,7 @@ export class PearlStaging {
         for (const { uid, data } of ledgers) w.pearlLedger.set(uid, clone(data));
         dropEffect?.apply();
         effect?.apply(w.ecs);
+        if (inputEffect) this.#inputEffect('apply', inputEffect);
         // ProfileSessions.save only enqueues microtasks. If either enqueue fails, fence clears both
         // pending snapshots synchronously before any write can start; drain never yields here.
         for (const change of writes) this.sessions.save(change.e.clientId, change.save, ctx.reservation);
@@ -365,11 +408,16 @@ export class PearlStaging {
         if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== canonicalText(change.save))) throw new StoreError('ownership');
         for (const { uid, data } of ledgers) if (canonicalText(w.pearlLedger.get(uid)) !== canonicalText(data)) throw new StoreError('ownership');
         dropEffect?.assertApplied();
+        if (inputEffect) this.#inputEffect('assertApplied', inputEffect);
         if (!this.gate.active(ctx.reservation)) throw new StoreError('cancelled');
         w.events.push(...publication.events);
         this.gate.release(ctx.reservation);
       } catch (error) {
         // Undo only this tentative local apply, never the durable commit. Fence rather than retry.
+        // A faulty input adapter cannot prevent rollback of the staging-owned profile/ECS writes.
+        if (localStarted && inputEffect) {
+          try { this.#inputEffect('rollback', inputEffect); } catch { /* Keep the fence; never retry an adapter. */ }
+        }
         try {
           if (localStarted) {
             w.events.length = eventCount;

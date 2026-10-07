@@ -185,6 +185,18 @@ Sin activación automática, SQL/env ni protocolo nuevo. El progreso posterior a
 posterior: aún puede perderse antes de completarlo. Montaje del host, scope/reloj/adopción/inputs,
 finalizador/muerte completa/afinidad y P4/P6 permanecen pendientes.
 
+Checkpoint D09f-2b.15, base `0379b2e`: **frontera opcional de acciones ya recibidas al cambiar perla**.
+Swallow/reemplazo limpian ATTACK/Q/E/R/G en cola/carry/último comando y sus buffers ECS dentro del
+apply reversible; movimiento, aim, otros botones, orden/seq/pt/ACK y cooldowns normales conservados.
+Solo durante beforeTick; give/default no cambian. Callback/getters/reentrada, rollback, pausa y
+lifecycle cubiertos con staging real de memoria y SDK/SQL006/008 local.
+**950/950** pertinentes en 73 archivos/219 fuentes aisladas; 33 checks nuevos en 14 pruebas
+superiores, más 33 checks navales ya aceptados añadidos a esta regresión.
+[Contrato y aceptación](docs/delivery/d09f-pearl-input-boundary.md).
+No identifica paquetes antiguos que lleguen después del apply ni rebasa predicción del cliente:
+epoch de extremo a extremo sigue pendiente. Sin SQL/env/protocolo nuevo ni activación durable
+automática. Montaje/startup/políticas, finalizador/muerte completa/afinidad y P4/P6 siguen abiertos.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
