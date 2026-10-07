@@ -104,8 +104,9 @@ export function hurtPlayer(world, e, raw, o) {
   return dmg;
 }
 
-function killPlayer(world, e, seq, by = 0) {
+export function killPlayer(world, e, seq, by = 0) {
   const ecs = world.ecs;
+  if (!ecs.alive[e] || ecs.dead[e] > 0) return false;
   ecs.hp[e] = 0;
   ecs.dead[e] = 1;
   ecs.deadT[e] = tuning.combat.respawnTime;
@@ -119,6 +120,7 @@ function killPlayer(world, e, seq, by = 0) {
   world.emit(ev);
   // The server spills carried items everywhere, with additional equipment risk inside the Cala.
   if (world.onDeath) world.onDeath(e, by);
+  return true;
 }
 
 // A blow from another pirate inside the Cala Calavera (M4.5; server only, between the victim's own commands, which

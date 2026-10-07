@@ -243,6 +243,19 @@ No activa dispatch durable automático ni muerte atómica completa; estos efecto
 Siguen pickup/retorno/mint/venta durables, muerte completa, finalizador, políticas/epoch/leases y afinidad.
 Sin SQL nueva, env, Supabase real, push, deploy ni reinicio del host del PC; P4/P6 siguen parciales.
 
+Checkpoint D09f-2b.20, base `5b6fd1c`: **captura completa de muerte en preparación separada**.
+Usa el helper real de muerte, perfil canónico/ECS, spills de perlas/bolsa y PK de Cala sobre un draft;
+congela perfiles anterior/posterior, pérdidas, botín ordinario/perlas, ledger, eventos, tick y geometría.
+No consume el RNG vivo ni IDs locales; detecta corrupción de actor/perfil/propiedad y UIDs huérfanos.
+El helper común ahora rechaza ejecutar otra vez la misma muerte. Nivel/maestría/oro conservados y
+10 % de EXP todavía provisional. [Contrato](docs/briefs/m5-death-plan.md) y
+[evidencia/límites](docs/delivery/d09f-death-plan.md).
+Regresión **1166/1166**, 93 archivos y 324 fuentes verificadas en dos cohortes (red temporal separada).
+No añade SQL ni conecta storage/cola/hooks/apply al host: el plan es
+preparación, no recibo ni garantía durable. Sigue una nueva operación completa que confirme también
+suelo de objetos/pociones, con recuperación y apply síncrono; el batch pearl-only histórico no cambia.
+P4/P6, políticas/epoch/leases, finalizador y afinidad permanecen abiertos. Sin publicación/reinicio del PC.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
