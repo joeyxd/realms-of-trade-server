@@ -54,6 +54,22 @@ function clearInputs() {
   input?.clear();
   for (const button of document.querySelectorAll('[data-pilot]')) button.classList.remove('active');
 }
+function setSailingView(sailing) {
+  clearInputs();
+  document.body.classList.toggle('sailing-view', sailing);
+  $('lab-settings').inert = sailing;
+  $('lab-toggle').textContent = sailing ? 'Ajustes' : 'Volver al mar';
+  $('lab-toggle').setAttribute('aria-expanded', String(!sailing));
+  if (pipeline && camera) resize();
+  if (sailing) {
+    window.scrollTo(0, 0);
+    $('bay').focus({ preventScroll: true });
+  } else {
+    const exit = $('return-to-sea');
+    exit.focus({ preventScroll: true });
+    if (exit.getBoundingClientRect().top >= innerHeight) exit.scrollIntoView({ block: 'start' });
+  }
+}
 function updateSkinReadout() {
   const skin = raftSkin.diagnostics(), active = $('material').value === 'author';
   const tex = assets.list().find((e) => e.id === 'tex:raft-comic-v1');
@@ -123,9 +139,11 @@ function jettison() {
 function setPaused(value) {
   paused = value; clock.clear(); clearInputs(); previous = { ...state };
   $('pause').textContent = paused ? 'Continuar' : 'Pausar';
+  $('pause-nav').textContent = paused ? 'Continuar' : 'Pausar';
   sound?.update({ state, rig, paused: true });
   updateHud();
   showMessage(paused ? 'En pausa. Pulsa Continuar para pilotar.' : 'Timón listo. Mantén AVANZAR.');
+  if (!paused) $('bay').focus({ preventScroll: true });
 }
 function unlockSound() {
   if (soundOptOut || soundEnabled) return;
@@ -262,6 +280,8 @@ async function start() {
   $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); updateHud(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
   $('reset').addEventListener('click', reset); $('jettison').addEventListener('click', jettison);
   $('jettison-hud').addEventListener('click', jettison);
+  $('pause-nav').disabled = false;
+  $('pause-nav').addEventListener('click', () => setPaused(!paused));
   $('pause').addEventListener('click', () => setPaused(!paused));
   $('references').addEventListener('change', () => { references.visible = trail.visible = $('references').checked; });
   $('light').addEventListener('change', quality);
@@ -284,10 +304,12 @@ async function start() {
   const frame = (now) => {
     const dt = Math.max(0, (now - last) / 1000); last = now;
     try { if (!paused && !document.hidden) clock.advance(dt, fixed); drawFrame(Math.min(dt, 0.25)); }
-    catch (error) { setPaused(true); showMessage(`Prueba detenida: ${error.message}`); console.error(error); return; }
+    catch (error) { setPaused(true); setSailingView(false); showMessage(`Prueba detenida: ${error.message}`); console.error(error); return; }
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
   window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); raftSkin.dispose(); renderer.dispose(); });
 }
-start().catch((error) => { showMessage(`No se pudo abrir la bahía: ${error.message}`); console.error(error); });
+$('lab-toggle').addEventListener('click', () => setSailingView(!document.body.classList.contains('sailing-view')));
+$('return-to-sea').addEventListener('click', () => setSailingView(true));
+start().catch((error) => { setSailingView(false); showMessage(`No se pudo abrir la bahía: ${error.message}`); console.error(error); });

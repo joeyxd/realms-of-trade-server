@@ -42,7 +42,7 @@ export class NavalLabHud {
     this.attribute('nav-chart', 'aria-label', `Rumbo ${h.headingText} grados. ${h.windDegrees === null ? 'Calma' : `Viento hacia ${Math.round(h.windDegrees) % 360} grados`}. ${h.currentDegrees === null ? 'Sin corriente activa' : `Corriente hacia ${Math.round(h.currentDegrees) % 360} grados`}.`);
     this.text('sail', context.wind.strength ? `Empuje de vela ${(windEfficiency(context.state.yaw, context.wind) * 100).toFixed(0)}%` : 'Calma · remo asistido');
     this.text('flow-label', h.flowText);
-    this.text('hud-load', `Lastre ${h.cargoMass ?? '—'} · carga del casco ${h.loadPercent ?? '—'}%`);
+    this.text('hud-load', `Carga ${h.loadPercent ?? '—'}% · lastre ${h.cargoMass ?? '—'}`);
     this.text('gust-label', h.gustText);
     this.attribute('gust-progress', 'aria-valuenow', Math.round(h.gustProgress * 100));
     this.attribute('gust-progress', 'aria-valuetext', h.gustText);

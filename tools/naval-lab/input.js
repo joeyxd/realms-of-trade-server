@@ -9,6 +9,7 @@ const KEY_ACTIONS = new Map([
 
 function isFormTarget(target) {
   if (!target) return false;
+  if (target.closest?.('[data-lab-control]') || target.hasAttribute?.('data-lab-control')) return true;
   if (target.isContentEditable) return true;
   const tag = String(target.tagName || '').toLowerCase();
   return tag === 'input' || tag === 'textarea' || tag === 'select' || target.contentEditable === 'true';

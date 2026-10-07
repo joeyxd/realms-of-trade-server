@@ -204,7 +204,7 @@ test('Space capture is one-shot, ignores repeats and form fields, and unlock cal
 test('focused capture button uses its native Space activation without double-queueing', () => {
   const root = new FakeTarget();
   const capture = new FakeCaptureButton();
-  capture.closest = () => capture;
+  capture.closest = (selector) => selector === '[data-capture]' ? capture : null;
   root.captureButtons = [capture];
   let gestures = 0;
   const input = new NavalLabInput(root, { onGesture: () => gestures++ });
@@ -216,6 +216,54 @@ test('focused capture button uses its native Space activation without double-que
   assert.equal(input.consumeCapture(), true);
   assert.equal(input.consumeCapture(), false);
   assert.equal(gestures, 1);
+  input.dispose();
+});
+
+test('marked lab controls suppress game keys while keyup and native capture activation remain available', () => {
+  const root = new FakeTarget();
+  const capture = new FakeCaptureButton();
+  capture.closest = (selector) => selector === '[data-capture]' ? capture : null;
+  root.captureButtons = [capture];
+  let resets = 0;
+  let jettisons = 0;
+  let cancels = 0;
+  const input = new NavalLabInput(root, {
+    onReset: () => resets++,
+    onJettison: () => jettisons++,
+    onCancel: () => cancels++,
+  });
+  const control = { hasAttribute: (name) => name === 'data-lab-control' };
+  const child = { closest: (selector) => selector === '[data-lab-control]' ? control : null };
+
+  key(root, 'keydown', 'w');
+  assert.equal(input.poll().throttle, 1);
+  key(root, 'keyup', 'w', { target: child });
+  assert.equal(input.poll().throttle, 0);
+
+  for (const target of [control, child]) {
+    key(root, 'keydown', 'w', { target });
+    key(root, 'keydown', 'r', { target });
+    key(root, 'keydown', 'j', { target });
+    const space = new FakeEvent('keydown', { key: ' ', code: 'Space', target });
+    root.dispatchEvent(space);
+    assert.equal(space.defaultPrevented, false);
+  }
+  assert.equal(input.poll().throttle, 0);
+  assert.equal(resets, 0);
+  assert.equal(jettisons, 0);
+  const escape = new FakeEvent('keydown', { key: 'Escape', code: 'Escape', target: child });
+  root.dispatchEvent(escape);
+  assert.equal(cancels, 1);
+  assert.equal(escape.defaultPrevented, true);
+  assert.equal(input.consumeCapture(), false);
+
+  const captureSpace = new FakeEvent('keydown', { key: ' ', code: 'Space', target: capture });
+  root.dispatchEvent(captureSpace);
+  assert.equal(captureSpace.defaultPrevented, false);
+  assert.equal(input.consumeCapture(), false);
+  capture.send('click', { detail: 0 });
+  assert.equal(input.consumeCapture(), true);
+  assert.equal(input.consumeCapture(), false);
   input.dispose();
 });
 
