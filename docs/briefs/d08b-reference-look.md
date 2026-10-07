@@ -62,6 +62,9 @@ auditoría de licencias. Registrar los candidatos exactos y su portabilidad en l
 B1 reutiliza agua, cielo, ruido, pipeline, geometría de roca y balsa/atlas existentes. Sin texturas ni
 descargas nuevas. Rocas decorativas de geometría pequeña y presupuesto explícito, sin colliders.
 Los ajustes del agua/cámara viven en `tools/naval-lab/`, no cambian el render de la isla principal.
+El corte [B2 de madera aportada por el autor](d08b2-author-raft-material.md) añade un perfil optativo
+por instancia a `RaftLayer`, con UV/materiales propios solo en la bahía. Preparación/integración y 73/73
+pertinentes verificadas; captura y aceptación visual aún pendientes por fallo del controlador de Chrome.
 Conservar control, fuerzas, viento, carga, timing, audio y contratos actuales. M5/D09, SQL008 y la ruta
 visual del puerto son trabajo separado y conservan sus gates; no modificar sus archivos concurrentes.
 

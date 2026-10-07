@@ -19,6 +19,7 @@ import { NavalSpeedFeel } from './speed-feel.js';
 import { NavalLabCamera } from './camera.js';
 import { configureNavalReferenceLook } from './look.js';
 import { NavalLabScenery } from './scenery.js';
+import { loadNavalRaftSkin } from './raft-skin.js';
 
 const $ = (id) => document.getElementById(id);
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
@@ -26,7 +27,7 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clock = new NavalLabClock();
 let fixture, rig, state = newNavalState(), previous = state, wind = LAB_WINDS[0], paused = false, raf = 0, bayHeight = 1;
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
-let effects, sound, feel, framing, scenery, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
+let effects, sound, feel, framing, scenery, raftSkin, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
 let lastGustPhase = 'idle', lastGustId = -1;
 const samples = [];
 const trailArray = new Float32Array(256 * 3), trailGeometry = new THREE.BufferGeometry();
@@ -45,6 +46,21 @@ function showMessage(text) { $('message').textContent = text; }
 function clearInputs() {
   input?.clear();
   for (const button of document.querySelectorAll('[data-pilot]')) button.classList.remove('active');
+}
+function updateSkinReadout() {
+  const skin = raftSkin.diagnostics(), active = $('material').value === 'author';
+  const tex = assets.list().find((e) => e.id === 'tex:raft-comic-v1');
+  const image = assets.texture('tex:raft-comic-v1')?.image;
+  const base = tex?.state === 'ok' ? `Atlas base ${image?.width} × ${image?.height}` : 'Atlas base no disponible';
+  $('texture').textContent = active && skin.albedo
+    ? `Madera del autor ${skin.albedo.width} × ${skin.albedo.height} · ${skin.relief === 'flat' ? 'acabado pintado' : 'relieve suave'}. ${base} para cuerda, hierro y lona.`
+    : `${base} · ${active ? 'madera del autor no disponible; material anterior activo' : 'comparación original'}.`;
+  $('relief').disabled = !active || !skin.normal;
+}
+function changeSkin() {
+  clearInputs(); layer.dispose();
+  layer = new RaftLayer(scene, { dock: null, surfaceSkin: $('material').value === 'author' ? raftSkin : null });
+  pipeline.markDirty(); updateSkinReadout(); $('bay').focus({ preventScroll: true });
 }
 function rebuildCargo() {
   if (cargoGroup) {
@@ -202,7 +218,12 @@ async function start() {
   for (const f of LAB_FIXTURES) $('fixture').add(new Option(f.name, f.id));
   for (const w of LAB_WINDS) $('wind').add(new Option(w.name, w.id));
   // Existing manifest selects exactly one 1024/512 atlas. Failed loads keep procedural materials.
-  await assets.load('/assets/manifest.json', { mobileTextures: mobile, timeoutMs: 8000 });
+  const [, loadedSkin] = await Promise.all([
+    assets.load('/assets/manifest.json', { mobileTextures: mobile, timeoutMs: 8000 }),
+    loadNavalRaftSkin({ mobile }),
+  ]);
+  raftSkin = loadedSkin;
+  $('relief').value = raftSkin.diagnostics().relief;
   renderer = new THREE.WebGLRenderer({ canvas: $('bay'), antialias: false, powerPreference: mobile ? 'low-power' : 'high-performance', stencil: false });
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NoToneMapping;
   renderer.shadowMap.type = THREE.PCFShadowMap; renderer.shadowMap.autoUpdate = false;
@@ -231,7 +252,7 @@ async function start() {
     renderer.shadowMap.enabled = sun.castShadow = !$('light').checked;
     pipeline.setQuality({ outlines: !$('light').checked, comic: 0, pixelRatio: Math.min(devicePixelRatio || 1, mobile ? 1 : 1.5), ss: 1, fxaa: true });
   };
-  quality(); layer = new RaftLayer(scene, { dock: null });
+  quality(); layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin });
   effects = new NavalLabEffects(scene, { mobile, reducedMotion }); sound = new NavalLabAudio({ mobile });
   feel = new NavalSpeedFeel($('bay').parentElement, { mobile, reducedMotion });
   scene.add(references, trail);
@@ -239,6 +260,8 @@ async function start() {
   input = new NavalLabInput(document, { onReset: reset, onJettison: jettison, onGesture: unlockSound, onCancel: () => setPaused(true) });
   $('fixture').addEventListener('change', reset);
   $('camera').addEventListener('change', () => { framing.reset(); $('bay').focus({ preventScroll: true }); });
+  $('material').addEventListener('change', changeSkin);
+  $('relief').addEventListener('change', () => { raftSkin.setRelief($('relief').value); pipeline.markDirty(); updateSkinReadout(); $('bay').focus({ preventScroll: true }); });
   $('wind').addEventListener('change', () => { wind = LAB_WINDS.find((w) => w.id === $('wind').value); activity = newSailingActivity(); comparisons(); clearInputs(); $('bay').focus({ preventScroll: true }); showMessage('Viento cambiado; tu velocidad se conserva.'); });
   $('reset').addEventListener('click', reset); $('jettison').addEventListener('click', jettison);
   $('pause').addEventListener('click', () => setPaused(!paused));
@@ -252,14 +275,12 @@ async function start() {
   window.addEventListener('blur', () => setPaused(true));
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPaused(true); });
   window.addEventListener('resize', resize); reset(); resize();
-  const tex = assets.list().find((e) => e.id === 'tex:raft-comic-v1');
-  const image = assets.texture('tex:raft-comic-v1')?.image;
-  $('texture').textContent = tex?.state === 'ok' ? `Atlas ${image?.width || '?'} × ${image?.height || '?'} · ${tex.selectedSrc}` : 'Atlas no disponible: material procedural activo.';
+  updateSkinReadout();
   // Read-only snapshots and explicit laboratory actions aid repeatable local acceptance.
   window.__navalLab = { snapshot: () => ({ fixture: structuredClone(fixture), rig: { ...rig }, state: { ...state }, wind: { ...wind },
     activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked), current: currentAt(state.x, state.z, $('currents').checked),
     effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(),
-    scenery: scenery.diagnostics(), mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
+    scenery: scenery.diagnostics(), raftSkin: { ...raftSkin.diagnostics(), active: $('material').value }, mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();
   const frame = (now) => {
     const dt = Math.max(0, (now - last) / 1000); last = now;
@@ -268,6 +289,6 @@ async function start() {
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); renderer.dispose(); });
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); raftSkin.dispose(); renderer.dispose(); });
 }
 start().catch((error) => { showMessage(`No se pudo abrir la bahía: ${error.message}`); console.error(error); });

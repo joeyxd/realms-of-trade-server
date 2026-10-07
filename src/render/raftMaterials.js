@@ -70,11 +70,13 @@ function faceUv(positions, normals, bounds, i, rawU, rawV) {
  * For wood, `grain: 'box'` aligns U with the longest local face axis and `'cylinder'`
  * puts cylinder length on U while preserving cap UVs. Return false for unsupported or
  * missing-UV geometry; malformed UV/normals safely fall back to finite raw coordinates.
+ * An instance art study can supply a different inset rect and disable the original wood strip crop.
  */
-export function mapRaftUV(geometry, kind, { grain = 'raw', variant = 0 } = {}) {
-  const rect = RAFT_ATLAS_RECTS[kind];
+export function mapRaftUV(geometry, kind, { grain = 'raw', variant = 0, rect = RAFT_ATLAS_RECTS[kind], woodSlice = true } = {}) {
   const uv = geometry?.getAttribute?.('uv');
   if (!rect || !uv || uv.count === 0 || typeof uv.getX !== 'function' || typeof uv.setXY !== 'function') return false;
+  if (![rect.u0, rect.v0, rect.u1, rect.v1].every(Number.isFinite) ||
+    rect.u0 < 0 || rect.v0 < 0 || rect.u1 > 1 || rect.v1 > 1 || rect.u1 <= rect.u0 || rect.v1 <= rect.v0) return false;
 
   const isWood = kind === 'wood';
   const positions = geometry.getAttribute?.('position');
@@ -93,7 +95,7 @@ export function mapRaftUV(geometry, kind, { grain = 'raw', variant = 0 } = {}) {
 
     u = clamp01(u);
     v = clamp01(v);
-    if (isWood) v = woodOffset + v * woodCrop;
+    if (isWood && woodSlice) v = woodOffset + v * woodCrop;
     uv.setXY(i, rect.u0 + clamp01(u) * width, rect.v0 + clamp01(v) * height);
   }
   uv.needsUpdate = true;

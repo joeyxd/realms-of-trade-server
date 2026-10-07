@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-06",
+  "scope": "isolated naval lab B2 author wood candidate, board UVs and weathered cloth",
+  "url": "http://127.0.0.1:5180/",
+  "status": "prepared and integrated; visual acceptance pending",
+  "optimizationReceipt": "docs/art/raft-wood-boards-v2.json",
+  "tests": { "files": 13, "total": 73, "pass": 73, "fail": 0, "exitCode": 0, "globalSuiteRepeated": false },
+  "sourceAndDerivativeHashesChecked": true,
+  "derivativeImageInspected": "assets/textures/raft/wood-boards-v2-mobile.webp",
+  "http": { "mobileAlbedo": 200 },
+  "mobile": { "selectedAlbedoByLoaderTest": "wood-boards-v2-mobile.webp", "normalRequestByLoaderTest": false, "actualBrowserRequestsVerified": false, "physicalPerformanceVerified": false },
+  "browserReview": {
+    "screenshotsPersisted": false,
+    "newMaterialInGameInspected": false,
+    "reason": "Chrome getTab and browser recovery timed out; iab unavailable; reconnection requested",
+    "lastKnownTemporaryViewport": [844, 390],
+    "viewportResetConfirmed": false,
+    "pending": ["shader compilation", "desktop and mobile loaded textures", "starter and house framing", "material switch continuity", "normal green-channel sign", "cloth readability", "atlas gutter bleed at distance"]
+  },
+  "mainGameManifestChanged": false,
+  "simulationChanged": false,
+  "publicDeployment": false
+}

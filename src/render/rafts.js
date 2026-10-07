@@ -48,13 +48,15 @@ function hashPhase(id) {
 }
 
 export class RaftLayer {
-  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null } = {}) {
+  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null, surfaceSkin = null } = {}) {
     this.scene = scene;
     this.dock = dock;
     this.views = new Map(); // id -> { root, visual, revKey, record, ownedGeometries, ... }
     this.materials = new Map();
     this.shapes = new Map();
     this.skinEnabled = skin;
+    // Optional, instance-owned art study. The main game keeps its original atlas and UV contract.
+    this.surfaceSkin = skin ? surfaceSkin : null;
     this.atlas = skin ? assets.texture(RAFT_ATLAS_ID) : null;
     this.nm = normalMatFor({ occluder: true, lineW: 0.65 });
     this.clothNm = normalMatFor({ occluder: true, lineW: 0.65 }, THREE.DoubleSide);
@@ -69,6 +71,12 @@ export class RaftLayer {
     const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
     const key = materialKey(spec);
     if (!this.materials.has(key)) {
+      const override = this.surfaceSkin?.material?.(spec, { atlas: this.atlas });
+      if (override) {
+        override.userData.raftSurface = spec.kind;
+        this.materials.set(key, override);
+        return override;
+      }
       const mapped = this.atlas && spec.kind !== 'solid';
       const mat = toon({ color: mapped ? spec.tint : spec.color, map: mapped ? this.atlas : null,
         side: spec.kind === 'cloth' ? THREE.DoubleSide : THREE.FrontSide }, { occluder: true,
@@ -79,6 +87,11 @@ export class RaftLayer {
       this.materials.set(key, mat);
     }
     return this.materials.get(key);
+  }
+
+  mapSurfaceUV(geometry, kind, options) {
+    if (this.surfaceSkin?.mapUV?.(geometry, kind, options)) return true;
+    return this.atlas ? mapRaftUV(geometry, kind, options) : false;
   }
 
   shape(key, make) {
@@ -107,7 +120,7 @@ export class RaftLayer {
     if (!view.gangplank || view.gangplank.userData.sizeKey !== sizeKey) {
       const oldGeometry = view.gangplank?.geometry;
       const geometry = this.boxShape(pose.width, 0.14, plankDepth).clone();
-      if (this.atlas) mapRaftUV(geometry, 'wood', { grain: 'box', variant: 0 });
+      this.mapSurfaceUV(geometry, 'wood', { grain: 'box', variant: 0 });
       if (oldGeometry) {
         view.ownedGeometries = view.ownedGeometries.filter((owned) => owned !== oldGeometry);
         oldGeometry.dispose();
@@ -178,7 +191,7 @@ export class RaftLayer {
       const key = materialKey(spec);
       if (!batches.has(key)) batches.set(key, { spec, pieces: [] });
       const g = shape.clone();
-      if (this.atlas && spec.kind !== 'solid') mapRaftUV(g, spec.kind, {
+      if (spec.kind !== 'solid') this.mapSurfaceUV(g, spec.kind, {
         grain: shape.type === 'BoxGeometry' ? 'box' : shape.type === 'CylinderGeometry' ? 'cylinder' : 'raw',
         variant: Math.abs(Math.round(x * 19 + z * 31 + y * 11)) });
       this.tmpEuler.set(rx, ry, rz, order);
@@ -337,11 +350,11 @@ export class RaftLayer {
             const fitSize = fitBounds.getSize(new THREE.Vector3());
             crateWidth = fitSize.x; crateDepth = fitSize.z;
             crateBottom = fitBounds.min.y; crateTop = fitBounds.max.y;
-            if (this.atlas) model.traverse((o) => {
+            if (this.atlas || this.surfaceSkin) model.traverse((o) => {
               if (!o.isMesh) return;
               // Reskin this fitted instance, leaving the island's registry source and shared resources intact.
               o.geometry = o.geometry.clone();
-              mapRaftUV(o.geometry, 'wood', { grain: 'box', variant: x + z * 3 });
+              this.mapSurfaceUV(o.geometry, 'wood', { grain: 'box', variant: x + z * 3 });
               ownedGeometries.push(o.geometry);
               o.material = this.material(WOOD); o.userData.nm = this.nm; o.userData.raftSurface = 'wood';
             });
