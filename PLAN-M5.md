@@ -121,6 +121,16 @@ hashes/exclusiones detallados. [Contrato/evidencia](docs/delivery/d09f-ground-hy
 Sin SQL/env ni host/activación. Siguen hooks/startup/publicación, scope/reloj/adopción, muerte completa
 y afinidad permanente; P4/P6 parciales.
 
+Checkpoint D09f-2b.9, base `0a485e3`: **arranque común dormant aceptado en aislamiento**.
+Una barrera desde el primer await del diario hasta drain del suelo, sin hueco de admisión al cambiar
+la queue a disponible. Pendiente sin recibo conserva reservas/request exacto y cerca startup; no auto-resume.
+Cancelación conserva fence y no instala resultados tardíos. Solo drain síncrono marca ready; reloj puro
+explícito y World detenido. **814/814** pertinentes en 38 archivos, **56 nuevas**
+(23 memoria/23 SDK-SQL008/10 gate); hashes de siete fuentes propias y 77 seleccionadas intactos.
+[Contrato/evidencia](docs/delivery/d09f-pearl-startup.md). Sin SQL/env ni host/activación.
+Siguen hooks completos e integración del host con scope/reloj/adopción definidos, muerte completa
+y afinidad permanente; P4/P6 parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
@@ -205,6 +215,8 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.8 agrega reconstrucción dormant del suelo actual: barrera previa a admisión, scan validado
   y drain síncrono con reloj explícito, sin repetir efectos ni mint. Faltan hooks de sim/LocalServer,
   integración de startup y publicación del suelo.
+  D09f-2b.9 compone diario/suelo en un arranque dormant con barrera continua, cancelación sticky
+  y readiness solo tras drain; no conecta ni habilita el host.
   Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
   Dirección de contenido confirmada el 2026-10-06: legendarias de cuerpo elemental y perlas de
   transformación animal para después; [familias de poder](docs/briefs/m48-pearl-power-families.md).

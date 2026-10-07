@@ -24,7 +24,7 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 | `sendSave` / autosave / final disconnect | Snapshot canónico de perfil vivo por `staging.save`; este difiere el snapshot propio pendiente y conserva progreso. `ProfileSessions.save` ya rechaza bypass directo durante una reserva, pero el adaptador debe manejar busy antes de limpiar `saveAt` o publicar blobs |
 | Close / death / despawn / detach / cambio de entidad | Invalidar cuentas y todos sus UIDs antes del cambio. Sesiones ya invalidan en close/fail/release; sim death/detach todavía necesitan hooks. Invalidation es sticky incluso con revival en el mismo tick |
 | Frontera de tick | `staging.drain()` síncrono antes de `flushEvents` y snapshots. Nunca await RPC en sim. Apply/fence usa identidades y estado actuales; una finalización Promise solo encola trabajo |
-| HELLO / startup | Diario completo recuperado antes de admitir; hidratar autoridad de ledger/suelo antes de `attachPearls`. [Adaptador dormant de suelo](m5-pearl-ground-hydration.md) aporta scan/validación/barrera global e instalación síncrona. Falta invocarlo desde el host con política explícita de reloj y mantener simulación/admisión detenidas hasta drain |
+| HELLO / startup | Diario completo recuperado antes de admitir; hidratar autoridad de ledger/suelo antes de `attachPearls`. [Arranque común dormant](m5-pearl-startup.md) compone diario y [suelo](m5-pearl-ground-hydration.md) con una sola barrera desde el primer await hasta drain. Falta invocarlo desde el host con política explícita de reloj y mantener simulación/admisión detenidas hasta ready |
 
 ## Contratos que preceden la activación
 
@@ -40,7 +40,8 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
   el lote pearl-only no acredita atomicidad de esos otros efectos.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas
   ni repetir rolls. El gate no crea esa cola ni elige silenciosamente qué recompensas se descartan.
-- La barrera de hidratación de suelo impide nuevas lanes durante la paginación y exige cero sesiones,
+- La barrera común de startup impide nuevas lanes desde la recuperación del diario hasta la instalación
+  de suelo, incluso cuando la queue ya marca admisión disponible. Hidratación exige cero sesiones,
   tasks y operaciones pendientes después de recuperar el diario. No sustituye los hooks de gameplay,
   no publica suelo al cliente ni restaura perfiles/efectos históricos; el host sigue sin conectarla.
 - Scope/namespace estables, cuentas/invitados/adopción de raras y mapping del reloj de suelo se resuelven

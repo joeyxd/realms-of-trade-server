@@ -42,25 +42,43 @@ class PearlMutationGate {
   assertAvailable(raw) { this.#check(resources(raw)); }
 
   // Startup restoration needs a barrier across every lane, including UIDs not yet discovered by
-  // pagination. It is available only after journal recovery and before any account is admitted.
-  #assertIdle() {
+  // pagination. Recovery starts before admission; hydration requires the queue recovered and idle.
+  #assertIdle(requireReady = true) {
     const s = this.#sessions;
-    s.pearls.requireReady();
+    if (requireReady) s.pearls.requireReady();
     if (s.accounts.size || s.clients.size || s.tasks.size || this.#held.size ||
         s.pearls.uids.size || s.pearls.operationIds.size || s.pearls.unresolved.size ||
         s.pearls.accountIds.size) throw new StoreError('busy');
   }
 
-  beginHydration() {
+  // Recovery may begin before the journal is ready. It owns the same global barrier used by
+  // hydration, so the queue becoming admitting cannot expose a gap before ground installation.
+  beginRecovery() {
     if (this.#hydration) throw new StoreError('busy');
-    this.#assertIdle();
+    this.#assertIdle(false);
     const handle = Object.freeze({});
-    this.#hydration = { handle, state: 'held' };
+    this.#hydration = { handle, state: 'held', phase: 'recovery' };
+    return handle;
+  }
+
+  assertRecovery(handle) {
+    if (!handle || this.#hydration?.handle !== handle || this.#hydration.phase !== 'recovery') {
+      throw new StoreError('operation');
+    }
+    if (this.#hydration.state !== 'held') throw new StoreError('cancelled');
+  }
+
+  beginHydration(recovery = null) {
+    if (recovery !== null) this.assertRecovery(recovery);
+    else if (this.#hydration) throw new StoreError('busy');
+    this.#assertIdle();
+    const handle = recovery ?? Object.freeze({});
+    this.#hydration = { handle, state: 'held', phase: 'hydration' };
     return handle;
   }
 
   assertHydration(handle) {
-    if (!handle || this.#hydration?.handle !== handle) throw new StoreError('operation');
+    if (!handle || this.#hydration?.handle !== handle || this.#hydration.phase !== 'hydration') throw new StoreError('operation');
     if (this.#hydration.state !== 'held') throw new StoreError('cancelled');
     this.#assertIdle();
   }

@@ -51,16 +51,23 @@ export class PearlGroundHydration {
     }
   }
 
-  start() {
+  start(recovery = null) {
     if (this.#state !== 'idle') throw new StoreError('operation');
     this.#before = this.#capture();
-    this.#handle = this.#gate.beginHydration(); // Block all lanes before the first read/await.
+    this.#handle = this.#gate.beginHydration(recovery); // Transfer startup's barrier without releasing it.
     this.#state = 'pending';
     this.#task = this.#read().catch((e) => {
       this.#state = 'fenced'; this.#gate.fenceHydration(this.#handle);
       throw error(e);
     });
     return this.#task;
+  }
+
+  // Stop preparation immediately; already-issued storage reads settle without installing World.
+  cancel() {
+    if (this.#state === 'idle' || this.#state === 'applied') throw new StoreError('operation');
+    this.#gate.fenceHydration(this.#handle); this.#state = 'fenced';
+    return { state: 'fenced' };
   }
 
   async #scan() {
