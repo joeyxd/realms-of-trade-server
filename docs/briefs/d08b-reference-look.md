@@ -48,6 +48,7 @@ Los valores se calibran en capturas; no tratar estas aproximaciones como una ext
 | B3 — espuma, corriente y tinta | Estela blanca ancha y curva, spray lateral, corriente cyan menos plana, líneas negras periféricas | Sin sobrepintar casco/vela; pools/emisión acotados; contraste de día/boost; reduced motion y pausa; medir en teléfono real |
 | B4 — HUD de navegación | Dial, tarjetas, llamada de corriente/ráfaga, carta/rumbo y jerarquía cercanos a la referencia | Solo datos y acciones reales; interfaz española; teclas/mando/táctil; sin tapar vela, cielo o trayecto en horizontal/vertical |
 | B5 — persecución real | Rival visible, barra/objetivo y contexto de combate de la imagen | Requiere encuentro naval NPC, daño/huida y autoridad de servidor. No se entrega solo con arte |
+| Q1 — acabado posterior en gráficos altos | Luz de ambiente/recorte, reflejos de cielo/agua y bloom suave según el feedback del autor | Ensayo A/B del pipeline existente, legibilidad de tinta/espuma, opción alta explícita y coste medido; perfil ligero independiente |
 
 Una sola capa principal por corte. Capturar antes/después con viewport/cámara/fixture/tier anotados.
 La referencia define el destino; **B1 no pretende tener ya su balsa, spray, HUD o persecución completa**.
@@ -66,7 +67,9 @@ El corte [B2 de madera aportada por el autor](d08b2-author-raft-material.md) añ
 por instancia a `RaftLayer`, con UV/materiales propios solo en la bahía. Preparación y 73/73 iniciales;
 revisión posterior de escritorio/móvil, URLs/resoluciones y cambio de acabado documentada en su entrega.
 [B3 espuma/corriente/tinta](../delivery/d08b3-foam-current-ink.md) está implementado y revisado en la misma
-bahía, con 80/80 pertinentes. Normal/mipmaps, aprobación visual humana y FPS físicos conservan sus gates.
+bahía, con 80/80 pertinentes. Reacción favorable del autor al look B3; normal/mipmaps y FPS físicos
+conservan sus gates. [B4 HUD naval](../delivery/d08b4-navigation-hud.md) añade datos/acciones reales,
+88/88 pertinentes y revisión responsive. Su aceptación humana y dispositivos físicos siguen pendientes.
 Conservar control, fuerzas, viento, carga, timing, audio y contratos actuales. M5/D09, SQL008 y la ruta
 visual del puerto son trabajo separado y conservan sus gates; no modificar sus archivos concurrentes.
 
@@ -78,3 +81,8 @@ Nueve formaciones fijas en un mesh, 945 triángulos; el corredor inicial permane
 colisión. Es una bahía finita de prueba, no generación de islas a lo largo de una ruta infinita.
 El atlas existente sigue en 308.536 B escritorio / 82.878 B móvil; la caja GLB de 51.684 B y aparejo
 procedural siguen disponibles para B2. No hay un candidato de llanta naval útil ya validado.
+
+Q1 recoge la petición del autor del 2026-10-06 de pulir después luz general y reflejos en gráficos altos.
+El renderer ya contiene agua SSR y composición de bloom/grading; comprobar qué responde realmente en
+la bahía antes de extender materiales. No se ha modificado iluminación ni posprocesado en B4. Q1 puede
+probarse aparte mientras B5 espera gameplay/autoridad, sin desplazar M5 ni dar por medido el móvil.

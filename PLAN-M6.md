@@ -132,7 +132,16 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   **D08b.3 — estela blanca histórica de 4 s, abanicos/spray de proa, corriente cyan fragmentada y tinta negra**
   periférica con centro libre; ruido compartido sin nueva descarga de textura. [Entrega y evidencia](docs/delivery/d08b3-foam-current-ink.md).
   80/80 pertinentes; boost/giro/escritorio/móvil revisados. Fixture casa corregido: paredes en nivel 1
-  junto a su suelo/techo; masa/inercia iguales, altura y estabilidad recalculadas. Sigue B4 HUD real.
+  junto a su suelo/techo; masa/inercia iguales, altura y estabilidad recalculadas. El autor reaccionó
+  favorablemente al look B3 («se ve fantástico»); no cierra rendimiento físico ni calibración del normal.
+  **D08b.4 — HUD naval con datos reales:** dial naranja en u/s y aro de boost, brújula de proa/viento/flujo,
+  ventana de ráfaga con banda de perfecto, tarjetas de ráfaga/lastre y avisos de cómic.
+  [Entrega y evidencia](docs/delivery/d08b4-navigation-hud.md), fuente `a58ed80`, 88/88 pertinentes.
+  Escritorio y móvil emulado revisados; espacio propio para controles en vistas estrechas/cortas.
+  Sin textura nueva ni cambio de manejo. Aceptación humana del HUD y dispositivos físicos pendientes.
+  El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
+  con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
+  B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.
   Dividir en rebanadas: estadísticas de carga/giro y jettison → encuentro NPC → dos jugadores con huida/rendición
   → patrulla/notoriedad → abordaje de dos cubiertas. Topología y costes pendientes; M5 es puerta de persistencia.
 - [ ] **P7 Progresión y aspecto.** Mesa de cartas: investigar piezas (vela mayor, motor, alambique) con muestras
