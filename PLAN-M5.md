@@ -197,6 +197,17 @@ No identifica paquetes antiguos que lleguen después del apply ni rebasa predicc
 epoch de extremo a extremo sigue pendiente. Sin SQL/env/protocolo nuevo ni activación durable
 automática. Montaje/startup/políticas, finalizador/muerte completa/afinidad y P4/P6 siguen abiertos.
 
+Checkpoint D09f-2b.16, base `155390a`: **montaje trusted opcional de staging en GameHost**.
+Scope explícito y montaje único antes de attach/admisión/start; captura ECS, inputs y beforeTick propios
+del host. Fallo de apply detiene timers/admisión y difiere desconexión hasta terminar rollback. Close
+espera tasks de staging sin aplicar, conserva fence y rechaza progreso/contextos sin resolver.
+API createGameServer explícita; entrypoint/default siguen sin activación de circulación durable.
+**992/992** pertinentes en 78 archivos/226 fuentes aisladas, **21 checks nuevos en 12 pruebas
+superiores**, más 21 checks del ensayo naval de pasajeros ya aceptado añadidos a esta regresión.
+[Contrato](docs/briefs/m5-pearl-host-mount.md) y [aceptación](docs/delivery/d09f-pearl-host-mount.md).
+No agrega diario/startup, SQL/env/protocolo ni afinidad. Recuperación automática/políticas, dispatch
+durable/hooks completos, epoch, finalizador y muerte completa siguen pendientes; P4/P6 parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
