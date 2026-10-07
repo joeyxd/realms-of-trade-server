@@ -23,6 +23,10 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
 - **Afinidad por uso** (dirección del autor, 2026-10-04): guardar aprendizaje del poder y desarrollar sus niveles.
   Extensión posterior al kit actual; propuesta de personaje + tipo de poder, independiente del UID circulante,
   en `docs/NAVAL-ROADMAP.md` §6. Curvas, mejoras y límites todavía abiertos; no está implementada.
+- **Transformaciones posteriores** (confirmación del autor, 2026-10-06): perlas que convierten al pirata en
+  animal y legendarias que transforman su cuerpo en elemento. Inspiración One Piece con identidad propia.
+  Quedan después del trabajo activo de persistencia/afinidad; formas, activación, costes y respuesta rival
+  pendientes. [Dirección y alcance del kit actual](docs/briefs/m48-pearl-power-families.md).
 
 ## 2. Propuesta (por afinar al empezar)
 
@@ -48,8 +52,10 @@ Las G reutilizan los tipos de lanzamiento de M4.7 (`ground`, `dir`, `charge`) co
 | Tormenta | «Rayo de mástil» (`charge`): cuanto más cargas, más saltos | encadenar | «Imán de tormenta»: las balas enemigas se curvan un poco hacia ti |
 | Tinta | «Nube de tinta» (`ground`): dentro no te ven y disparan a ciegas | marcar | «La luz te quema»: de día las pociones curan × 0.7; de noche +10 % de daño |
 
-Legendarias (M5): versiones únicas con nombre propio («Corazón del Kraken», «Ojo del Huracán»…): la misma base,
-una G más fuerte, aspecto propio y cartel de **SE BUSCA**.
+Legendarias (M5, contenido posterior): únicas con nombre propio y cartel de **SE BUSCA**. La ampliación
+del autor del 2026-10-06 incluye **transformar el cuerpo en elemento**, además del kit elemental;
+su diseño va más allá de una G más fuerte y un aspecto distinto. Formas animales también acordadas
+para después, con rareza y reglas por definir. [Contrato de dirección](docs/briefs/m48-pearl-power-families.md).
 
 ### 2.3 Al morir
 - La perla (y las que lleves sin tragar) sale de tu cuerpo y queda en el suelo con un pilar de luz visible desde

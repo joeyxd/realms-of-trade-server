@@ -205,8 +205,10 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   D09f-2b.8 agrega reconstrucción dormant del suelo actual: barrera previa a admisión, scan validado
   y drain síncrono con reloj explícito, sin repetir efectos ni mint. Faltan hooks de sim/LocalServer,
   integración de startup y publicación del suelo.
-  Legendarias (`PLAN-M4.8.md`),
-  regreso por inactividad y cartel de SE BUSCA siguen pendientes.
+  Legendarias (`PLAN-M4.8.md`), regreso por inactividad y cartel de SE BUSCA siguen pendientes.
+  Dirección de contenido confirmada el 2026-10-06: legendarias de cuerpo elemental y perlas de
+  transformación animal para después; [familias de poder](docs/briefs/m48-pearl-power-families.md).
+  Estas ampliaciones no cambian el orden de cierre de hooks/restauración ni implementan afinidad.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja
   por la base de datos al cruzar un portal.
 - [ ] **P6 Movimientos y recuperación durables.** Transacciones/reintentos y fallos parciales de bienes/barcos;
