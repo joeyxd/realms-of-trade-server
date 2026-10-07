@@ -67,7 +67,8 @@ function setSailingView(sailing) {
   } else {
     const exit = $('return-to-sea');
     exit.focus({ preventScroll: true });
-    if (exit.getBoundingClientRect().top >= innerHeight) exit.scrollIntoView({ block: 'start' });
+    const stacked = $('lab-settings').getBoundingClientRect().top >= $('bay').parentElement.getBoundingClientRect().bottom - 1;
+    if (stacked || exit.getBoundingClientRect().top >= innerHeight) exit.scrollIntoView({ block: 'start' });
   }
 }
 function updateSkinReadout() {
