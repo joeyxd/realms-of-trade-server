@@ -111,6 +111,16 @@ en los cuatro tipos. Seis fuentes propias y 67 seleccionadas intactas antes/desp
 Siguen hooks completos/restauración del host y revisión de la muerte completa (equipo/oro/mundo).
 Afinidad permanente aún requiere su propio corte; P4/P6 parciales, sin activación del juego.
 
+Checkpoint D09f-2b.8, base `e1aa918`: **adaptador dormant de reconstrucción de suelo aceptado**.
+Barrera global antes de paginar, después de recuperar diario y sin sesiones/operaciones pendientes.
+Scan/unique/location/segundo scan validados; reloj explícito del caller. `drain()` instala ledger/drop
+sin eventos históricos/RNG/mint y revierte escrituras propias ante fallo, conservando fence.
+**758/758** pertinentes, **95 nuevas**; 46 memoria/46 SQL008 y seis procesos frescos
+con imágenes SQL. Cuatro runners NodeFS anteriores no repetidos por límite de inicialización local;
+hashes/exclusiones detallados. [Contrato/evidencia](docs/delivery/d09f-ground-hydration.md).
+Sin SQL/env ni host/activación. Siguen hooks/startup/publicación, scope/reloj/adopción, muerte completa
+y afinidad permanente; P4/P6 parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
@@ -192,7 +202,9 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   SQL008 real aceptada después en D09f-2b.6: 18/18 y cuatro procesos).
   D09f-2b.7 agrega staging/tick dormant de reemplazo: 681/681, ambos UIDs/drop/ECS/eventos,
   progreso conservado y rollback local/fence. Staging de muerte completa permanece pendiente.
-  Faltan hooks de sim/LocalServer y restauración/publicación del suelo.
+  D09f-2b.8 agrega reconstrucción dormant del suelo actual: barrera previa a admisión, scan validado
+  y drain síncrono con reloj explícito, sin repetir efectos ni mint. Faltan hooks de sim/LocalServer,
+  integración de startup y publicación del suelo.
   Legendarias (`PLAN-M4.8.md`),
   regreso por inactividad y cartel de SE BUSCA siguen pendientes.
 - [ ] **P5 Varias zonas** (cuando haya islas): gateway + un proceso por zona (`DESIGN.md` §16), el perfil viaja

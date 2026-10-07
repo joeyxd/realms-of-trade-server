@@ -17,11 +17,12 @@ const resources = (raw = {}) => {
 };
 
 class PearlMutationGate {
-  #sessions; #accounts = new Map(); #uids = new Map(); #held = new Set(); #handles = new WeakMap();
+  #sessions; #accounts = new Map(); #uids = new Map(); #held = new Set(); #handles = new WeakMap(); #hydration = null;
 
   constructor(sessions) { this.#sessions = sessions; }
 
   #checkGameplay({ accounts, uids }, allowed = null) {
+    if (this.#hydration) throw new StoreError('busy');
     for (const key of accounts) if (this.#accounts.has(key) && this.#accounts.get(key) !== allowed) throw new StoreError('busy');
     for (const uid of uids) if (this.#uids.has(uid) && this.#uids.get(uid) !== allowed) throw new StoreError('busy');
   }
@@ -39,6 +40,40 @@ class PearlMutationGate {
   }
 
   assertAvailable(raw) { this.#check(resources(raw)); }
+
+  // Startup restoration needs a barrier across every lane, including UIDs not yet discovered by
+  // pagination. It is available only after journal recovery and before any account is admitted.
+  #assertIdle() {
+    const s = this.#sessions;
+    s.pearls.requireReady();
+    if (s.accounts.size || s.clients.size || s.tasks.size || this.#held.size ||
+        s.pearls.uids.size || s.pearls.operationIds.size || s.pearls.unresolved.size ||
+        s.pearls.accountIds.size) throw new StoreError('busy');
+  }
+
+  beginHydration() {
+    if (this.#hydration) throw new StoreError('busy');
+    this.#assertIdle();
+    const handle = Object.freeze({});
+    this.#hydration = { handle, state: 'held' };
+    return handle;
+  }
+
+  assertHydration(handle) {
+    if (!handle || this.#hydration?.handle !== handle) throw new StoreError('operation');
+    if (this.#hydration.state !== 'held') throw new StoreError('cancelled');
+    this.#assertIdle();
+  }
+
+  releaseHydration(handle) {
+    this.assertHydration(handle);
+    this.#hydration = null;
+  }
+
+  fenceHydration(handle) {
+    if (!handle || this.#hydration?.handle !== handle) throw new StoreError('operation');
+    this.#hydration.state = 'fenced';
+  }
 
   #authorization(lanes, handle) {
     if (handle === null) return null;
