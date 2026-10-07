@@ -417,7 +417,7 @@ export class NavalLabEffects {
 
   setViewport(heightPx, fovDeg) { this.pool.setViewport(heightPx, fovDeg); }
 
-  event(kind, state, rig) {
+  event(kind, state, rig, location = null) {
     if (this.disposed) return false;
     const label = String(kind || '').toLowerCase().replace(/[^a-z]/g, '');
     let strength = 0, count = 0;
@@ -428,7 +428,8 @@ export class NavalLabEffects {
     else if (label.includes('miss') || label.includes('early') || label.includes('angle')) { strength = 0.3; count = this.mobile ? 4 : 7; }
     else if (label.includes('approach') || label.includes('warning')) { this.gustVisible = true; return true; }
     else return false;
-    const pose = state && rig ? hullCenter(state, rig) : state;
+    const pose = location && Number.isFinite(location.x) && Number.isFinite(location.z) ? location :
+      state && rig ? hullCenter(state, rig) : state;
     const yaw = Number(state?.yaw) || 0;
     const x = Number(pose?.x) || 0, z = Number(pose?.z) || 0;
     const speed = Math.hypot(Number(state?.vx) || 0, Number(state?.vz) || 0);

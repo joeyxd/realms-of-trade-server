@@ -183,7 +183,19 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   384/384 pertinentes aisladas integrando M5 `2651957`, incluidas 21 nuevas; escritorio y móvil vertical/horizontal
   emulado con entrada táctil, invitado y conservación, más caseta en escritorio. Sin textura nueva ni
   activación del juego ordinario; no incluye PvP/editor/producción/lastre humano ni red o móvil físico.
-  Próximo corte: integrar contacto/HP a autoridad y soporte tras romper piezas; P5/P6 abiertos.
+  El contacto/HP pendiente de D08c.3 se cierra en D08c.4; P5/P6 siguen abiertos.
+  **D08c.4 — contacto costero y HP por pieza en el ensayo local:** barrido por cimientos vivos contra
+  costa/muelle/borde del mapa, envolvente conservadora de giro, rebote/deslizamiento y daño localizado
+  confirmado en tick. Rig/cubierta/predicción eliminan piezas rotas y conservan el origen del plano;
+  ACK/replay no duplica HP ni efectos, y soporte perdido rescata a los ocupantes vivos. Protocolo 19,
+  feedback privado de splash/audio y casco/HP públicos durante el ensayo.
+  [Contrato](docs/briefs/d08c4-coastal-hull.md), [entrega](docs/delivery/d08c4-coastal-hull.md).
+  437/437 pertinentes aisladas sobre `155390a` + montaje M5 `14ede6d`; cuatro recorridos de navegador
+  en escritorio/móvil vertical/horizontal emulado y caseta, con perfiles/pose fuente conservados.
+  Ocho capturas revisadas; sin nuevas texturas, navegación pública ni pérdidas durables.
+  El terreno dibujado es una fixture acotada, no la pasada de arte del puerto; dispositivos/FPS/audio
+  físicos y balance permanecen abiertos. Sigue delimitar D10, primera travesía/encuentro NPC y rutas,
+  con cableado público y operaciones de bienes/recuperación M5/D09 separados.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

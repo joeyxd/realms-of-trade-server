@@ -15,7 +15,7 @@ export class NavalPilotServer extends LocalServer {
           deck: server.world.navalPilot.deckSnapshot(server.clients.get(id)?.entity) } : msg) });
     server = this;
     this.navalFault = null;
-    this.world.navalTrial = new NavalTrial(this.world);
+    this.world.navalTrial = new NavalTrial(this.world, { coast: true });
     this.world.navalPilot = new NavalPilot(this.world);
     const step = this.world.stepWorld.bind(this.world);
     this.world.stepWorld = () => {

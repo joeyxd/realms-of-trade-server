@@ -47,9 +47,13 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
    de caminata separados; nave y tripulación usan la misma pose renderizada. Alternar timón/caminata
    cancela empuje previo; desconexión, cambio de fuente y pérdida de soporte conservan rescate local.
    El ensayo admite propietario y tres invitados; no activa PvP, producción ni editor durante navegación.
-4. **Contacto/HP en el puente.** Llevar el contacto costero y daño modular ya existentes al tick del
-   World, predicción y feedback. La barrera discreta del piloto todavía retorna al muelle; no representa
-   un choque continuo con daño. Cubierta tras pérdida de piezas y recuperación deben conservar autoridad.
+4. **Contacto/HP en el puente, ensayo local D08c.4 aceptado.**
+   [Contrato](d08c4-coastal-hull.md) y [entrega](../delivery/d08c4-coastal-hull.md): geometría costera/muelle
+   compartida, barrido por cimiento con envolvente de giro, HP localizado y rig/cubierta de piezas vivas.
+   Sustituye la barrera discreta por contacto, rebote/deslizamiento y daño confirmado en tick.
+   ACK/replay comparte el contacto y no duplica daño/feedback; soporte perdido rescata ocupantes vivos.
+   Protocolo 19; 437/437 pertinentes y cuatro recorridos de navegador con conservación. Continúa como
+   ensayo efímero sin navegación pública ni destrucción durable.
 
 Revisar cada corte antes de activar el conjunto. El ensayo puede usar copia del plano construido,
 sin trasladar bodega real ni conceder otro barco. Editor/producción en movimiento requieren contrato
@@ -69,8 +73,9 @@ automáticas y revisiones de integración continúan; su aceptación de manejo/b
 ## Persistencia y orden mayor
 
 M5 conserva su propia cola de guards y efectos/startup del host; seguir su checkpoint actual en
-`PLAN-M5.md`. El arranque durable requiere scope/reloj/adopción explícitos, admisión/sim detenidas hasta
-ready y cierre que espere startup. SQL007/008 ya tienen verificación real; no son el paso pendiente.
+`PLAN-M5.md`. El montaje trusted del host está aceptado en `14ede6d`; la activación pública y recuperación
+de diario/suelo todavía requieren scope/reloj/adopción explícitos, admisión/sim detenidas hasta ready y
+cierre que espere startup. SQL007/008 ya tienen verificación real; no son el paso pendiente.
 Muerte completa (equipo/oro/mundo), afinidad y leases permanecen abiertos.
 
 La navegación efímera puede evaluarse sin custodia nueva. Jettison de mercancías, pérdidas, botín,

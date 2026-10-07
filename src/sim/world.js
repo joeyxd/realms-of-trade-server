@@ -41,7 +41,7 @@ export class World {
     this.isServer = server;
     if ([navalTrial, navalPilot].some((v) => typeof v !== 'boolean') || ((navalTrial || navalPilot) && !server))
       throw new TypeError('Naval trials are server-only opt-in');
-    this.navalTrial = navalTrial || navalPilot ? new NavalTrial(this) : null;
+    this.navalTrial = navalTrial || navalPilot ? new NavalTrial(this, { coast: navalPilot }) : null;
     this.navalPilot = navalPilot ? new NavalPilot(this) : null;
     this.hazards = new Hazards();
     this.hazards.predicting = !server;

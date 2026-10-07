@@ -44,6 +44,30 @@ test('outward motion escapes initial penetration without an artificial bounce', 
   assert.ok(result.state.x < -3);
 });
 
+test('initial penetration recognizes outward motion along +Z and a diagonal normal', () => {
+  const alongZ = resolveNavalContact(state(0, 0, 0.4, 0, 0.8), state(1, 0, 0.9, 0, 0.8), rig, [rock]);
+  assert.equal(alongZ.contacts.length, 1);
+  assert.equal(alongZ.contacts[0].damage, 0);
+  assert.equal(alongZ.state.vz, 0.8, 'outward Z velocity is not bounced back');
+  assert.ok(alongZ.state.z > 3.1, 'outward Z movement retains its unblocked remainder');
+
+  const diagonal = resolveNavalContact(state(0, -0.8, 0.8, 0, 0.8), state(1, -0.8, 1.2, 0, 0.8), rig, [rock]);
+  assert.equal(diagonal.contacts.length, 1);
+  assert.ok(diagonal.contacts[0].normalX < 0 && diagonal.contacts[0].normalZ > 0,
+    'the initial penetration has a diagonal outward normal');
+  assert.equal(diagonal.contacts[0].damage, 0);
+  assert.equal(diagonal.state.vz, 0.8, 'the positive-Z component moves outward on this diagonal');
+  assert.ok(diagonal.state.z > 2.25, 'diagonal outward motion retains its swept remainder');
+});
+
+test('tangential motion from initial penetration preserves velocity without impact damage', () => {
+  const tangent = resolveNavalContact(state(0, -0.8, 0.8, 0.6, 0.6), state(1, -0.5, 1.1, 0.6, 0.6), rig, [rock]);
+  assert.equal(tangent.contacts.length, 1);
+  assert.equal(tangent.contacts[0].damage, 0);
+  assert.equal(tangent.state.vx, 0.6);
+  assert.equal(tangent.state.vz, 0.6);
+});
+
 test('hull offset follows angular pose and local contact coordinates use corrected pose', () => {
   const offsetRig = { ...rig, cx: 1, cz: 0, hullCx: 3, hullCz: 0 };
   const before = state(0, -4, 0, 5, 0, Math.PI / 2);

@@ -11,6 +11,11 @@
 .crew-readout span { font-size: 8px; color: #9eaaa4; letter-spacing: .13em; }
 .crew-readout b { font-size: 10px; font-weight: 600; color: #d6d9cf; }
 .crew-readout small { font-size: 9px; color: #9daaa3; }
+.readouts .hull-readout { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 5px 9px; }
+.hull-readout i { grid-column: 1 / -1; display: block; height: 4px; border-radius: 4px; background: #ffffff20; overflow: hidden; }
+.hull-readout em { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #91b7a8, #e5c37a); transition: width .18s; }
+.crew-readout #impact-readout { flex-basis: 100%; min-height: 12px; color: #d0b983; }
+.actions #impact-test { border-color: #a26a54; background: #50352d; color: #f0d2bd; }
 .touch-helm .helm {
   position: absolute; right: 16px; bottom: 52px; z-index: 2;
   padding: 9px; border: 1px solid #d9dfd040; border-radius: 5px;

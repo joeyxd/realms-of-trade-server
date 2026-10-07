@@ -6,6 +6,7 @@ import { NAVAL_TRIAL } from '../../data/navalTrial.js';
 import { pilotLocal, pilotPoint } from './pilotGeometry.js';
 import { publicRafts } from '../systems/rafts.js';
 import { DeckWalkEngine } from './deckWalk.js';
+import { hullIntegrity } from './structure.js';
 
 export class NavalPilot {
   #world;
@@ -29,6 +30,11 @@ export class NavalPilot {
   has(owner) { return this.#records.has(owner); }
   aboard(e) { return this.has(e) || this.#walkers.has(e); }
   walking(e) { return this.#walkers.has(e); }
+  recipients(shipId) {
+    const members = [...this.#walkers.values()].filter((c) => c.shipId === shipId).map((c) => c.e);
+    for (const r of this.#records.values()) if (r.shipId === shipId) members.push(r.owner);
+    return [...new Set(members)];
+  }
 
   #live(e) {
     const ecs = this.#world.ecs;
@@ -171,7 +177,7 @@ export class NavalPilot {
     // never from the transport's snapshot callback; publish only the last committed pilot anchor.
     const r = this.#records.get(owner);
     return r ? Object.freeze({ epoch: r.epoch, active: true, shipId: r.shipId, ack: r.ack,
-      body: r.body, anchor: r.anchor, wind: NAVAL_TRIAL.wind }) :
+      body: r.body, anchor: r.anchor, wind: NAVAL_TRIAL.wind, coast: this.#world.navalTrial.coast }) :
       Object.freeze({ epoch: this.#epochs.get(owner) || 0, active: false });
   }
 
@@ -183,6 +189,8 @@ export class NavalPilot {
       if (!r || r.shipId !== record.id) return crew.length ? { ...record, crew } : record;
       if (r.helm) crew.push({ entity: r.owner, epoch: r.epoch, mode: 'helm', anchor: { ...r.anchor }, mag: 0 });
       return { ...record, ...r.body.pose, parts: r.body.operational.parts.map((p) => [...p]), crew,
+        hull: { ...hullIntegrity(r.body.structure) }, partHealth: r.body.structure.entries.map((p) =>
+          ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })),
         pilot: { owner: r.owner, epoch: r.epoch, anchor: { ...r.anchor } } };
     });
   }
@@ -225,22 +233,11 @@ export class NavalPilot {
     this.#walkTick = w.tick;
   }
 
-  #allowed(body) {
-    const w = this.#world, limit = w.map.half - 2;
-    for (const part of body.operational.parts) if (part[0] === 'foundation') {
-      for (const dx of [0, RAFT.cell]) for (const dz of [0, RAFT.cell]) {
-        const p = pilotPoint(body.pose, { x: part[1] * RAFT.cell + dx, y: 0, z: part[2] * RAFT.cell + dz, f: 0 });
-        if (Math.abs(p.x) > limit || Math.abs(p.z) > limit || w.map.groundAt(p.x, p.z) > 0.15) return false;
-      }
-    }
-    return true;
-  }
-
   sync() {
     const w = this.#world, ecs = w.ecs;
     for (const r of [...this.#records.values()]) {
       const s = w.navalTrial.snapshot(r.handle);
-      if (!s || s.body.operational.disabled || !this.#allowed(s.body)) { this.#release(r, 'boundary'); continue; }
+      if (!s || s.body.operational.disabled) { this.#release(r, 'flotation'); continue; }
       r.body = s.body;
       r.ack = s.ack;
       const p = pilotPoint(r.body.pose, r.anchor);

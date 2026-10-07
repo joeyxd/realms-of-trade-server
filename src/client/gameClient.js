@@ -36,7 +36,7 @@ export class GameClient {
     this.pred.rafts = [];
     this.lastRaftTick = -1;
     this.lastSnapshotTick = -1;
-    this.naval = new NavalPilotPrediction();
+    this.naval = new NavalPilotPrediction(map);
     this.deck = new NavalDeckPrediction();
     this.raftSamples = new Map();
     this.clock = 0;
@@ -109,7 +109,7 @@ export class GameClient {
         break;
       }
       case MSG.WELCOME: {
-        this.naval = new NavalPilotPrediction();
+        this.naval = new NavalPilotPrediction(this.map);
         this.deck = new NavalDeckPrediction();
         this.raftSamples.clear();
         this.youServer = m.you;
@@ -148,7 +148,7 @@ export class GameClient {
   isMe(e) { return e !== undefined && e === this.youServer; }
 
   onEvent(ev) {
-    if (ev.type === 'navalDeck' || ev.type === 'navalInvite') {
+    if (ev.type === 'navalDeck' || ev.type === 'navalInvite' || ev.type === 'navalImpact') {
       if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
       return;
     }
@@ -329,7 +329,7 @@ export class GameClient {
     }
     if (s.naval) {
       if (s.naval.active && s.naval.body?.state?.tick !== s.tick) return;
-      naval = Object.assign(new NavalPilotPrediction(), this.naval);
+      naval = Object.assign(new NavalPilotPrediction(this.map), this.naval);
       if (naval.acceptSnapshot(s.naval) === 'rejected') return;
     }
     if (naval.active && deck.active && naval.shipId !== deck.shipId) return;

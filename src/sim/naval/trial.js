@@ -6,6 +6,8 @@ import { NAVAL_STEP } from './handling.js';
 import { NAVAL_TRIAL as T } from '../../data/navalTrial.js';
 import { createTrialBody, stepTrialBody, damageTrialBody } from './trialBody.js';
 import { canPlace } from '../economy/raft.js';
+import { hullIntegrity } from './structure.js';
+import { createNavalCoast } from './coastGeometry.js';
 
 const NEUTRAL = Object.freeze({ throttle: 0, brake: 1, steer: 0 });
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
@@ -39,13 +41,17 @@ export class NavalTrial {
   #nextInstance = 1;
   #lastTick = -1;
   #closed = false;
+  #coast;
 
-  constructor(world) {
+  constructor(world, { coast = false } = {}) {
     if (!world?.isServer || DT !== NAVAL_STEP) throw new TypeError('Naval trials require server fixed ticks');
+    if (typeof coast !== 'boolean') throw new TypeError('Invalid naval coast option');
     this.#world = world;
+    this.#coast = coast ? createNavalCoast(world.map) : null;
   }
 
   get size() { return this.#bodies.size; }
+  get coast() { return this.#coast ? Object.freeze({ version: 1, seed: this.#coast.seed }) : null; }
 
   // The caller resolves owner from its server session, never from a packet's owner field. The returned
   // capability is an object identity that cannot survive serialization and is invalidated on teardown.
@@ -149,7 +155,7 @@ export class NavalTrial {
       for (const damage of r.pendingDamage) body = damageTrialBody(body, damage.partId, damage.amount).body;
       const controlActive = !body.operational.disabled && tick - r.inputTick < T.inputTimeoutTicks;
       const input = controlActive ? r.input : NEUTRAL;
-      body = stepTrialBody(body, input, T.wind);
+      body = stepTrialBody(body, input, T.wind, this.#coast);
       next.push({ record: r, body, controlActive, input, ack: controlActive ? r.lastSeq : r.ack });
     }
     // Commit only after every body has a valid next step. A failed calculation must not consume
@@ -161,6 +167,14 @@ export class NavalTrial {
       r.pendingDamage.length = 0;
     }
     this.#lastTick = tick;
+    // Feedback follows the all-body commit. Prediction computes the same physics but emits nothing.
+    for (const n of next) for (const impact of n.body.impacts) if (impact.damage > 0) {
+      const recipients = this.#world.navalPilot?.recipients(n.record.shipId) || [n.record.owner];
+      const piece = n.body.structure.entries.find((p) => p.id === impact.partId);
+      for (const to of recipients) this.#world.emit({ type: 'navalImpact', to, shipId: n.record.shipId, ...impact,
+        partType: piece?.part[0] || null, partHp: piece?.hp ?? null, partMaxHp: piece?.maxHp ?? null,
+        hull: { ...hullIntegrity(n.body.structure) } });
+    }
   }
 
   stop(handle) {

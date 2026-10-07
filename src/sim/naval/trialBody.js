@@ -2,6 +2,7 @@
 import { navalPose, newNavalState, stepNaval } from './handling.js';
 import { operationalNavalRig, rebaseNavalState } from './operational.js';
 import { applyPartDamage, createNavalStructure, hullIntegrity } from './structure.js';
+import { resolveNavalCoast } from './coastContact.js';
 
 const MAX_PARTS = 600;
 const MAX_TICK = Number.MAX_SAFE_INTEGER - 1;
@@ -28,13 +29,21 @@ function validateBody(body) {
       Math.hypot(body.state.vx, body.state.vz) > 100 || Math.abs(body.state.omega) > 10 ||
       body.operational.disabled !== hullIntegrity(body.structure).disabled)
     fail('Invalid trial state or flotation status');
+  if (body.impacts !== undefined && (!Array.isArray(body.impacts) || body.impacts.length > 4 || body.impacts.some((p) =>
+    !p || typeof p.id !== 'string' || !['terrain', 'dock', 'boundary'].includes(p.kind) ||
+    !['x', 'z', 'normalX', 'normalZ', 'speed', 'damage', 'localX', 'localZ'].every((k) => finite(p[k])) ||
+    p.speed < 0 || p.speed > 1000 || p.damage < 0 || p.damage > 1e6 || p.tick !== body.state.tick ||
+    !Number.isSafeInteger(p.cell) || p.cell < 0 || p.cell >= 600 ||
+    (p.partId !== null && typeof p.partId !== 'string') || typeof p.destroyed !== 'boolean')))
+    fail('Invalid trial impact feedback');
 }
 
 function freezeState(state) { return freeze({ ...state }); }
 function freezePose(pose) { return freeze({ x: pose.x, y: pose.y, z: pose.z, yaw: pose.yaw }); }
 
-function makeBody(structure, operational, state, poseOffsetY, pose) {
-  const body = freeze({ structure, operational, state: freezeState(state), pose: freezePose(pose), poseOffsetY });
+function makeBody(structure, operational, state, poseOffsetY, pose, impacts = []) {
+  const body = freeze({ structure, operational, state: freezeState(state), pose: freezePose(pose), poseOffsetY,
+    impacts: freeze(impacts.map((impact) => freeze({ ...impact }))) });
   validateBody(body);
   return body;
 }
@@ -68,16 +77,36 @@ export function createTrialBody(parts, pose, instanceNamespace, tick = 0) {
   return makeBody(structure, operational, state, poseOffsetY, pose);
 }
 
-export function stepTrialBody(body, input, wind) {
+export function stepTrialBody(body, input, wind, coast = null) {
   validateBody(body);
   if (body.state.tick >= MAX_TICK) fail('Trial tick exhausted');
   if (body.operational.disabled || !body.operational.rig) {
     const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0 };
     return makeBody(body.structure, body.operational, state, body.poseOffsetY, body.pose);
   }
-  const state = stepNaval(body.state, input, body.operational.rig, wind);
+  let state = stepNaval(body.state, input, body.operational.rig, wind);
+  const contact = coast ? resolveNavalCoast(body.state, state, body.operational.rig, body.operational.parts, coast) : null;
+  if (contact) state = contact.state;
   const pose = poseAt(state, body.operational.rig, body.poseOffsetY);
-  return makeBody(body.structure, body.operational, state, body.poseOffsetY, pose);
+  let candidate = makeBody(body.structure, body.operational, state, body.poseOffsetY, pose);
+  const impacts = [];
+  const struck = new Set();
+  for (const hit of contact?.contacts || []) {
+    // A terrain seam is not a second damaging impact. Bind the swept cell to its original instance
+    // before any rig rebuild changes operational indices; never transfer its excess damage to a neighbor.
+    const tuple = body.operational.parts[hit.cell];
+    const entry = body.structure.entries.find((p) => p.part.length === tuple?.length &&
+      p.part.every((value, i) => value === tuple[i]));
+    let event = null;
+    if (entry && !struck.has(entry.id) && hit.damage > 0) {
+      struck.add(entry.id);
+      const result = damageTrialBody(candidate, entry.id, hit.damage);
+      candidate = result.body; event = result.event;
+    }
+    impacts.push({ ...hit, tick: state.tick, partId: event?.partId || null,
+      damage: event?.damage || 0, destroyed: event?.destroyed || false });
+  }
+  return makeBody(candidate.structure, candidate.operational, candidate.state, candidate.poseOffsetY, candidate.pose, impacts);
 }
 
 export function damageTrialBody(body, partId, amount) {

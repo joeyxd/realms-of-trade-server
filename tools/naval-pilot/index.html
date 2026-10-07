@@ -37,6 +37,7 @@
           <button class="secondary" id="walk" type="button" disabled>Caminar en cubierta</button>
           <button class="secondary" id="passenger" type="button" disabled>Crear pasajero</button>
           <button class="secondary" id="leave" type="button" disabled>Terminar trial</button>
+          <button class="secondary" id="impact-test" type="button" disabled>Ensayo de choque</button>
           <button class="sound" id="sound" type="button" aria-pressed="false">♪ <span>Activar ambiente</span></button>
         </div>
         <p class="notice" id="notice" aria-live="polite">La autoridad y la vista funcionan dentro de esta sesión local.</p>
@@ -52,10 +53,10 @@
       </div>
       <div class="readouts">
         <div><span>ESTADO</span><b id="readout-state">Conectando</b></div>
-        <div><span>CASCO</span><b id="hull">—</b></div>
+        <div class="hull-readout"><span>CASCO</span><b id="hull">—</b><i id="hull-meter" role="meter" aria-label="Integridad del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-valuetext="Casco intacto"><em id="hull-fill"></em></i></div>
         <div><span>OCUPANTES</span><b id="occupants">0</b></div>
       </div>
-      <div class="crew-readout"><span>TRIPULACIÓN Y CUBIERTA</span><b id="crew">Sin tripulación</b><small id="deck-position">Posición relativa · —</small></div>
+      <div class="crew-readout"><span>TRIPULACIÓN Y CUBIERTA</span><b id="crew">Sin tripulación</b><small id="deck-position">Posición relativa · —</small><small id="impact-readout" aria-live="polite">Sin daño registrado</small></div>
     </section>
     <footer><span>ENSAYO TÉCNICO D08c · SIMULACIÓN AUTORITATIVA</span><span>ESPACIO AISLADO · SIN PERSISTENCIA</span></footer>
   </main>

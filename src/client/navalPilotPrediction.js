@@ -2,6 +2,8 @@
 import { NAVAL_TRIAL } from '../data/navalTrial.js';
 import { stepTrialBody } from '../sim/naval/trialBody.js';
 import { angleDelta, wrapAngle } from '../core/math.js';
+import { createNavalCoast } from '../sim/naval/coastGeometry.js';
+import { hullIntegrity } from '../sim/naval/structure.js';
 
 const MAX_PENDING = 240;
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
@@ -42,7 +44,9 @@ function wrapPose(pose) {
 }
 
 export class NavalPilotPrediction {
-  constructor() {
+  constructor(map = null) {
+    this.map = map;
+    this.coast = null;
     this.epoch = 0;
     this.active = false;
     this.seq = 0;
@@ -72,6 +76,7 @@ export class NavalPilotPrediction {
       this.anchor = null;
       this.shipId = null;
       this.wind = null;
+      this.coast = null;
       this.authorityTick = -1;
       this.pending = [];
       this.prevPose = null;
@@ -86,15 +91,21 @@ export class NavalPilotPrediction {
         !state.wind || !finite(state.wind.yaw) || !finite(state.wind.strength) || state.wind.strength < 0 || state.wind.strength > 1) return 'rejected';
     if (state.epoch === this.epoch) {
       if (!this.active || state.ack < this.ack || state.body.state.tick < this.authorityTick) return 'rejected';
+      if (!!this.coast !== (state.coast != null)) return 'rejected';
     }
 
-    let body, anchor, wind;
+    let body, anchor, wind, coast = null;
     try {
+      if (state.coast != null) {
+        if (state.coast.version !== 1 || !this.map || state.coast.seed !== this.map.seed ||
+          Object.keys(state.coast).length !== 2) return 'rejected';
+        coast = createNavalCoast(this.map);
+      }
       body = deepFreeze(clone(state.body));
       anchor = deepFreeze({ x: state.anchor.x, y: state.anchor.y, z: state.anchor.z, f: state.anchor.f });
       wind = deepFreeze({ yaw: state.wind.yaw, strength: state.wind.strength });
       // Validate nested rig/structure data with the real deterministic step without committing it.
-      stepTrialBody(body, neutralAxes, wind);
+      stepTrialBody(body, neutralAxes, wind, coast);
     } catch { return 'rejected'; }
 
     // A duplicate body anchor is a valid heartbeat. Validate its complete nested body above, then
@@ -106,7 +117,7 @@ export class NavalPilotPrediction {
     const previous = !newEpoch && this.body ? wrapPose(this.body.pose) : wrapPose(body.pose);
     let pending = newEpoch ? [] : this.pending.filter((command) => command.seq > state.ack);
     try {
-      for (const command of pending) if (command.advance) body = stepTrialBody(body, command, wind);
+      for (const command of pending) if (command.advance) body = stepTrialBody(body, command, wind, coast);
     } catch { return 'rejected'; }
 
     this.epoch = state.epoch;
@@ -117,6 +128,7 @@ export class NavalPilotPrediction {
     this.anchor = anchor;
     this.shipId = state.shipId;
     this.wind = wind;
+    this.coast = coast;
     this.pending = pending;
     this.seq = newEpoch ? state.ack : Math.max(this.seq, state.ack);
     this.prevPose = previous;
@@ -128,7 +140,7 @@ export class NavalPilotPrediction {
     const command = Object.freeze({ epoch: this.epoch, seq: this.seq + 1,
       throttle: axes.throttle, brake: axes.brake, steer: axes.steer });
     let next;
-    try { next = stepTrialBody(this.body, command, this.wind); } catch { return null; }
+    try { next = stepTrialBody(this.body, command, this.wind, this.coast); } catch { return null; }
     this.prevPose = wrapPose(this.body.pose);
     this.body = next;
     this.seq = command.seq;
@@ -166,7 +178,9 @@ export class NavalPilotPrediction {
     if (!this.active || !this.body) return records.slice();
     const pose = this.pose(alpha);
     return records.map((record) => record && record.id === this.shipId
-      ? { ...record, x: pose.x, y: pose.y, z: pose.z, yaw: pose.yaw }
+      ? { ...record, x: pose.x, y: pose.y, z: pose.z, yaw: pose.yaw,
+        parts: this.body.operational.parts.map((p) => [...p]), hull: { ...hullIntegrity(this.body.structure) },
+        partHealth: this.body.structure.entries.map((p) => ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })) }
       : record);
   }
 }

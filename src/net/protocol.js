@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 18; // D08c.3: relative walking ACK/state and public crew anchors.
+export const PROTOCOL_VERSION = 19; // D08c.4: shared coastal contact, public hull/part HP and impact feedback.
 
 export const MSG = {
   // client -> server

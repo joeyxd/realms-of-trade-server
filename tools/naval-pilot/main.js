@@ -24,6 +24,7 @@ import { NavalLabEffects } from '../naval-lab/effects.js';
 import { hullIntegrity } from '../../src/sim/naval/structure.js';
 import { RAFT, RAFT_PARTS } from '../../src/data/raftparts.js';
 import { pilotPoint } from '../../src/sim/naval/pilotGeometry.js';
+import { NavalPilotCoastView, findCoastApproach } from './coastView.js';
 
 const $ = (id) => document.getElementById(id);
 const SEED = 20261006;
@@ -39,8 +40,9 @@ const lab = { client: null, guest: null, server: null, transport: null, ready: P
   walk: () => toggleWalk(), guestToggle: () => toggleGuest() };
 window.__navalPilotLab = lab;
 
-let renderer, scene, camera, pipeline, sea, bottom, sun, sky, layer, character, guestCharacter, framing, sound, effects, raftSkin;
-let client, guest = null, server, transport, guestTransport = null, transports = new Map(), serverMap, shipId = null, raftProfileBaseline = null, guestProfileBaseline = null, raf = 0, lastFrame = 0, accumulator = 0;
+let renderer, scene, camera, pipeline, sea, bottom, sun, sky, layer, character, guestCharacter, framing, sound, effects, raftSkin, coastView;
+let client, guest = null, server, transport, guestTransport = null, transports = new Map(), serverMap, shipId = null, raftProfileBaseline = null, guestProfileBaseline = null, raftPoseBaseline = null, impactFixture = null, lastImpact = null, impactCount = 0, visualImpactCount = 0, audioImpactCount = 0, raf = 0, lastFrame = 0, accumulator = 0;
+const impactReceipts = new Set();
 let running = true, bootNumber = 0, readyResolve = null, latestError = '', lastPilotEvent = null;
 
 class MemoryTransport {
@@ -72,8 +74,7 @@ class MemoryTransport {
 
 function fixtureProfile(profile, kind) {
   const ship = profile.eco.ships.find((item) => item.kind === 'raft' && item.at === 'aldea');
-  // Use the outer test berth. The dock-adjacent berth intentionally trips the terrain fence
-  // when a turn puts a corner on the dock; coast contact/HP is a later authority slice.
+  // Use the outer test berth so the coast approach starts clear of the dock.
   if (ship) ship.berth = 2;
   if (kind === 'house' && ship) {
     const fixture = LAB_FIXTURES.find((item) => item.id === 'house');
@@ -224,6 +225,7 @@ function toggleGuest() {
   transports.set(GUEST_ID, guestTransport);
   guest = new GameClient(guestTransport, serverMap, { emit(type, event) {
     if (type === 'net:error') recordError(new Error(`El invitado perdió conexión: ${event.code}`));
+    if (type === 'navalImpact') handleNavalImpact(event);
   } });
   lab.guest = guest;
   server.connect(GUEST_ID);
@@ -312,6 +314,12 @@ function diagnostics() {
       serverPosition: guestEntity && server ? { x: server.world.ecs.x[guestEntity], y: server.world.ecs.y[guestEntity], z: server.world.ecs.z[guestEntity], f: server.world.ecs.facing[guestEntity] } : null,
       profileBaseline: !!guestEntity && !!server && JSON.stringify(server.world.profiles.get(guestEntity)) === guestProfileBaseline,
     } : null,
+    lastImpact: lastImpact ? structuredClone(lastImpact) : null,
+    impactCount, visualImpactCount, audioImpactCount,
+    effects: effects?.diagnostics() || null,
+    sound: sound?.diagnostics() || null,
+    coast: coastView ? structuredClone(coastView.diagnostics) : null,
+    impactFixture: impactFixture ? structuredClone(impactFixture) : null,
     errors: [...faults, ...(latestError ? [latestError] : [])],
     connected: !!client?.joined, ready: !!client?.joined && !!server,
     controls: { ...currentAxes(), ...(client?.deck?.active ? { brake: coastBrake } : {}) }, glError: renderer?.getContext().getError() ?? null,
@@ -329,7 +337,55 @@ function recordError(error) {
   console.error(error);
 }
 
-async function bootSession() {
+function handleNavalImpact(event) {
+  if (!event || event.shipId !== shipId || !Number.isFinite(event.damage) || event.damage <= 0) return false;
+  const v = getVisualState();
+  if (!v) return false;
+  const receipt = [event.shipId, event.tick, event.x, event.z, event.partId, event.damage, !!event.destroyed].join(':');
+  if (impactReceipts.has(receipt)) return false;
+  impactReceipts.add(receipt);
+  if (impactReceipts.size > 64) impactReceipts.delete(impactReceipts.values().next().value);
+  const kind = event.destroyed ? 'destroy' : 'impact';
+  const visualPlayed = effects?.event(kind, v.state, v.rig, event) || false;
+  const audioPlayed = sound?.event('impact') || false;
+  impactCount++;
+  if (visualPlayed) visualImpactCount++;
+  if (audioPlayed) audioImpactCount++;
+  lastImpact = { ...event, visualPlayed, audioPlayed };
+  const partName = event.partType ? (RAFT_PARTS[event.partType]?.name || event.partType) : null;
+  const partHp = Number.isFinite(event.partHp) && Number.isFinite(event.partMaxHp)
+    ? `${Math.round(event.partHp)} / ${Math.round(event.partMaxHp)} HP` : null;
+  const hullHp = event.hull && Number.isFinite(event.hull.hp)
+    ? `${Math.round(event.hull.hp)} / ${Math.round(event.hull.maxHp)} HP` : null;
+  $('impact-readout').textContent = event.partType
+    ? `${event.destroyed ? 'Pieza destruida' : 'Daño en pieza'} · ${partName}: −${event.damage.toFixed(0)} HP${partHp ? ` · ${partHp}` : ''}`
+    : `${event.destroyed ? 'Casco inutilizado' : 'Daño de casco'} · −${event.damage.toFixed(0)} HP${hullHp ? ` · ${hullHp}` : ''}`;
+  say($('impact-readout').textContent);
+  return true;
+}
+
+function setupImpactFixture(world) {
+  const source = world.rafts.get(shipId);
+  if (!source) throw new Error('La balsa de prueba no está conectada al mundo local.');
+  const ship = world.profiles.get(source.owner)?.eco?.ships?.find((item) => item.id === shipId);
+  const rig = ship && buildNavalRig(ship.grid.parts);
+  if (!rig) throw new Error('No se pudo leer el rig real de la fixture.');
+  const approach = findCoastApproach(world.map, rig);
+  const ecs = world.ecs, entity = source.entity;
+  raftPoseBaseline = { x: ecs.x[entity], y: ecs.y[entity], z: ecs.z[entity], yaw: ecs.facing[entity] };
+  ecs.x[entity] = approach.pose.x; ecs.y[entity] = approach.pose.y;
+  ecs.z[entity] = approach.pose.z; ecs.facing[entity] = approach.pose.yaw;
+  ecs.vx[entity] = ecs.vz[entity] = ecs.kbx[entity] = ecs.kbz[entity] = 0;
+  world.raftDeck.update(publicRafts(world));
+  const owner = server.clients.get(CLIENT_ID)?.entity || 0;
+  const raft = publicRafts(world).find((item) => item.id === shipId);
+  if (!owner || !raft) throw new Error('No se encontró dueño o cubierta para preparar la prueba de choque.');
+  findDeckPosition(world, owner, raft);
+  impactFixture = { ...approach, baselinePose: { ...raftPoseBaseline }, rig: { beam: rig.beam, length: rig.length } };
+  return impactFixture;
+}
+
+async function bootSession({ impact = false } = {}) {
   const serial = ++bootNumber;
   if (server) {
     clearControls(false);
@@ -341,8 +397,16 @@ async function bootSession() {
   client = null; guest = null; transport = null; guestTransport = null; server = null; shipId = null; transports = new Map();
   lab.client = null; lab.guest = null; lab.server = null; lab.transport = null;
   latestError = ''; $('error').hidden = true;
+  lastImpact = null; impactCount = visualImpactCount = audioImpactCount = 0;
+  impactReceipts.clear();
+  impactFixture = null; raftPoseBaseline = null;
+  $('impact-readout').textContent = 'Sin daño registrado';
+  $('hull-fill').style.width = '100%';
+  $('hull-meter').setAttribute('aria-valuenow', '100');
+  $('hull-meter').setAttribute('aria-valuetext', 'Casco intacto');
+  effects?.reset();
   setConnection(false, 'Abriendo instancia aislada…');
-  $('mount').disabled = $('leave').disabled = $('walk').disabled = $('passenger').disabled = true;
+  $('mount').disabled = $('leave').disabled = $('walk').disabled = $('passenger').disabled = $('impact-test').disabled = true;
   $('passenger').textContent = 'Crear pasajero';
   guestProfileBaseline = null;
   const promise = new Promise((resolve) => { readyResolve = resolve; });
@@ -350,6 +414,7 @@ async function bootSession() {
 
   const serverSeed = SEED;
   serverMap = generateWorld(serverSeed);
+  coastView?.update(serverMap);
   const clientId = CLIENT_ID;
   server = new NavalPilotServer({ seed: serverSeed, saves: trustSaves, send: (id, message) => {
     const target = transports.get(id);
@@ -360,6 +425,7 @@ async function bootSession() {
   lastPilotEvent = null;
   const bus = { emit(type, event) {
     if (type === 'net:error') { recordError(new Error(`El servidor detuvo el ensayo: ${event.code}`)); return; }
+    if (type === 'navalImpact') { handleNavalImpact(event); return; }
     if (type !== 'navalPilot') return;
     lastPilotEvent = { active: event.active, ok: event.ok, epoch: event.epoch, why: event.why, op: event.op };
     if (event.why === 'boundary') say('Llegaste al límite del ensayo. El servidor te devolvió al muelle.');
@@ -386,6 +452,12 @@ async function bootSession() {
   findDeckPosition(server.world, session.entity, publicRaft);
   raftProfileBaseline = JSON.stringify(server.world.profiles.get(session.entity));
   layer.dock = server.world.map.dock;
+  if (impact) {
+    setupImpactFixture(server.world);
+    server.broadcastSnapshot(); flush();
+    client.mountNaval(shipId); flush();
+    say('Fixture de choque lista: navega con W hacia la costa del mapa.');
+  }
   server.broadcastSnapshot();
   flush();
   if (serial !== bootNumber) { resolveReady(false); return false; }
@@ -393,7 +465,8 @@ async function bootSession() {
   setConnection(true, 'Sesión local · conectada');
   $('readout-state').textContent = 'En cubierta';
   $('pilot-state').textContent = 'A pie en cubierta · puesto libre';
-  say('El mundo local replica el plano y mantiene la balsa guardada en su amarre.');
+  say(impact ? 'Ensayo de choque listo: navega con W hacia la costa del mapa.' :
+    'El mundo local replica el plano y mantiene la balsa guardada en su amarre.');
   readyResolve?.(true); readyResolve = null;
   pipeline.markDirty();
   return true;
@@ -433,6 +506,7 @@ function updateHud() {
     if (button) button.setAttribute('aria-label', label);
   }
   $('passenger').disabled = !client?.joined;
+  $('impact-test').disabled = !client?.joined;
   $('pilot-badge').textContent = walking ? 'CAMINANDO' : active ? 'AL TIMÓN' : 'A PIE';
   $('pilot-badge').classList.toggle('active', active || walking);
   $('pilot-state').textContent = walking ? 'A pie en cubierta móvil · sin empuje' : active ? 'Piloto unido a la cubierta móvil' : client?.joined ?
@@ -453,7 +527,20 @@ function updateHud() {
   $('speed').textContent = speed.toFixed(1);
   $('speed-fill').style.width = `${Math.min(100, speed / 12 * 100)}%`;
   $('heading').textContent = v ? `${String(Math.round(((v.pose.yaw * 180 / Math.PI) % 360 + 360) % 360)).padStart(3, '0')}°` : '—°';
-  $('hull').textContent = d.hull;
+  const integrity = v?.raft?.hull;
+  if (integrity && Number.isFinite(integrity.fraction)) {
+    $('hull').textContent = `${Math.round(integrity.fraction * 100)}% · ${Math.round(integrity.hp)} / ${Math.round(integrity.maxHp)} HP`;
+    $('hull-fill').style.width = `${Math.max(0, Math.min(1, integrity.fraction)) * 100}%`;
+    $('hull-meter').setAttribute('aria-valuenow', String(Math.round(integrity.fraction * 100)));
+    $('hull-meter').setAttribute('aria-valuetext', `${Math.round(integrity.hp)} de ${Math.round(integrity.maxHp)} HP`);
+  } else {
+    $('hull').textContent = d.hull;
+    $('hull-fill').style.width = '100%';
+    $('hull-meter').setAttribute('aria-valuenow', '100');
+    $('hull-meter').setAttribute('aria-valuetext', 'Casco intacto');
+  }
+  const damagedPart = (v?.raft?.partHealth || []).find((part) => part.hp < part.maxHp);
+  if (damagedPart && !lastImpact) $('impact-readout').textContent = `${damagedPart.part}: ${Math.round(damagedPart.hp)} / ${Math.round(damagedPart.maxHp)} HP`;
   const wind = client?.naval.wind;
   if (wind) $('wind-arrow').style.transform = `rotate(${wind.yaw * 180 / Math.PI}deg)`;
 }
@@ -558,6 +645,7 @@ async function initializeScene() {
   guestCharacter = new CharacterView(0, { sword: false });
   guestCharacter.root.visible = false;
   scene.add(guestCharacter.root);
+  coastView = new NavalPilotCoastView(scene, { mobile });
   sound = new NavalLabAudio({ mobile }); sound.setEnabled(false);
   $('sound').addEventListener('click', async () => {
     const enabled = $('sound').getAttribute('aria-pressed') !== 'true';
@@ -597,6 +685,7 @@ async function start() {
   $('leave').addEventListener('click', leave);
   $('walk').addEventListener('click', toggleWalk);
   $('passenger').addEventListener('click', toggleGuest);
+  $('impact-test').addEventListener('click', () => { bootSession({ impact: true }).catch(recordError); });
   $('fixture').addEventListener('change', () => { bootSession().catch(recordError); });
   await bootSession();
   raf = requestAnimationFrame(frame);
@@ -604,8 +693,8 @@ async function start() {
 
 window.addEventListener('pagehide', () => {
   running = false; cancelAnimationFrame(raf); clearControls(false);
-  try { if (server) { server.disconnect(CLIENT_ID); server.stop(); } } catch (error) { recordError(error); }
-  sound?.dispose(); effects?.dispose(); layer?.dispose(); raftSkin?.dispose(); renderer?.dispose();
+  try { if (server) { server.disconnect(GUEST_ID); server.disconnect(CLIENT_ID); server.stop(); } } catch (error) { recordError(error); }
+  sound?.dispose(); effects?.dispose(); layer?.dispose(); coastView?.dispose(); raftSkin?.dispose(); renderer?.dispose();
 });
 
 start().catch((error) => { recordError(error); setConnection(false, 'No se pudo iniciar'); resolveReady(false); });

@@ -47,9 +47,9 @@ function circleHit(start, end, obstacle, radius) {
   const d0 = Math.hypot(ox, oz);
   if (d0 < radius - EPSILON) {
     const nx = d0 > EPSILON ? ox / d0 : (Math.hypot(dx, dz) > EPSILON ? -dx / Math.hypot(dx, dz) : 1);
-    // A body already inside an obstacle may continue outward without acquiring a bounce.
-    if (dx * nx + dz * nx > EPSILON) return { t: 0, nx, nz: d0 > EPSILON ? oz / d0 : -dz / Math.max(EPSILON, Math.hypot(dx, dz)), penetration: true, outward: true };
     const nz = d0 > EPSILON ? oz / d0 : (Math.hypot(dx, dz) > EPSILON ? -dz / Math.hypot(dx, dz) : 0);
+    // A body already inside an obstacle may continue outward without acquiring a bounce.
+    if (dx * nx + dz * nz > EPSILON) return { t: 0, nx, nz, penetration: true, outward: true };
     return { t: 0, nx, nz, penetration: true, outward: false };
   }
   const a = dx * dx + dz * dz;
