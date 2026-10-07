@@ -8,12 +8,23 @@ export class NavalLabCamera {
     this.camera = camera; this.reducedMotion = reducedMotion;
     this.anchor = new THREE.Vector3(); this.aim = new THREE.Vector3(); this.desired = new THREE.Vector3();
     this.yaw = 0; this.ready = false; this.mode = 'chase';
+    this.orbitYaw = 0; this.orbitPitch = 0; this.look = { x: 0, y: 0 };
   }
 
-  reset() { this.ready = false; }
+  reset() { this.ready = false; this.recenter(); }
+
+  setLook({ x = 0, y = 0 } = {}) {
+    this.look.x = Number.isFinite(x) ? Math.max(-1, Math.min(1, x)) : 0;
+    this.look.y = Number.isFinite(y) ? Math.max(-1, Math.min(1, y)) : 0;
+  }
+
+  recenter() { this.orbitYaw = this.orbitPitch = 0; this.setLook(); }
 
   update(dt, { state, rig, pose, mode = 'chase', fovOffset = 0, roll = 0, paused = false }) {
-    const step = paused ? 0 : Math.min(0.1, Math.max(0, dt));
+    const step = paused || !Number.isFinite(dt) ? 0 : Math.min(0.1, Math.max(0, dt));
+    // Camera-only orbit. The helm remains in the ship's frame, including when looking astern.
+    this.orbitYaw = angleDelta(this.orbitYaw + this.look.x * step * 1.9, 0);
+    this.orbitPitch = THREE.MathUtils.clamp(this.orbitPitch + this.look.y * step * 0.85, -0.18, 0.68);
     const follow = step === 0 ? 0 : this.reducedMotion ? 1 : 1 - Math.exp(-step * 8);
     const heading = step === 0 ? 0 : this.reducedMotion ? 1 : 1 - Math.exp(-step * 5);
     const c = Math.cos(state.yaw), s = Math.sin(state.yaw);
@@ -40,12 +51,13 @@ export class NavalLabCamera {
       this.camera.position.set(this.anchor.x + distance, distance * 1.1, this.anchor.z + distance);
       this.aim.set(this.anchor.x, 0, this.anchor.z);
     } else {
-      const forwardX = Math.sin(this.yaw), forwardZ = Math.cos(this.yaw);
-      const rightX = Math.cos(this.yaw), rightZ = -Math.sin(this.yaw);
+      const forwardX = Math.sin(this.yaw + this.orbitYaw), forwardZ = Math.cos(this.yaw + this.orbitYaw);
+      const rightX = Math.cos(this.yaw + this.orbitYaw), rightZ = -Math.sin(this.yaw + this.orbitYaw);
       // Rear three-quarter view: the deck stays low, the whole sail and forward sea remain visible.
-      const behind = 7.5, side = 3.9, ahead = 4.7;
+      const behind = 7.5 * Math.cos(this.orbitPitch), side = 3.9 * Math.cos(this.orbitPitch), ahead = 4.7;
       this.camera.position.set(this.anchor.x - forwardX * behind * frame + rightX * side * frame,
-        this.anchor.y + 2.8 * frame, this.anchor.z - forwardZ * behind * frame + rightZ * side * frame);
+        this.anchor.y + (2.8 + Math.sin(this.orbitPitch) * 7.5) * frame,
+        this.anchor.z - forwardZ * behind * frame + rightZ * side * frame);
       // Extend the camera-to-hull axis: looking straight ahead would push the raft off-screen sideways.
       this.aim.set(this.anchor.x + (forwardX - rightX * side / behind) * ahead * frame,
         this.anchor.y - 0.35 * frame, this.anchor.z + (forwardZ - rightZ * side / behind) * ahead * frame);
@@ -57,7 +69,8 @@ export class NavalLabCamera {
   }
 
   diagnostics() {
-    return { mode: this.mode, yaw: this.yaw, fov: this.camera.fov,
+    return { mode: this.mode, yaw: this.yaw, orbitYaw: this.orbitYaw, orbitPitch: this.orbitPitch,
+      look: { ...this.look }, fov: this.camera.fov,
       position: this.camera.position.toArray(), target: this.aim.toArray() };
   }
 }

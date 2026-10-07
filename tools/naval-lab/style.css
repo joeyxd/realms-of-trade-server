@@ -52,5 +52,21 @@ details{border-top:1px solid var(--line);padding:14px 0;font-size:12px}summary{c
 @media(max-width:760px) and (min-height:501px){.sailing-view .bay canvas{height:calc(100% - 165px)}}
 @media(max-height:500px) and (min-width:600px){header{min-height:60px;padding:7px 14px}h1{font-size:21px}.eyebrow{font-size:9px}main{height:auto;grid-template-columns:1fr}.bay{height:calc(100dvh - 60px);min-height:280px}.bay canvas,.sailing-view .bay canvas{height:calc(100% - 100px)}aside{padding:12px;border-left:0;border-top:3px solid #080d13}.voyage-notes{top:9px;left:12px;width:206px}.voyage-title{font-size:15px;padding:6px 9px 3px}.voyage-title span{width:10px;height:10px;flex-basis:10px}#hud-load{font-size:10px;padding:2px 9px 5px 32px}.gust-timing{margin-top:4px;width:194px;padding:4px 7px}#gust-label{font-size:9px;min-height:11px}.timing-key{font-size:7px}.gust-track{margin-top:5px;margin-bottom:3px}.nav-chart{top:5px;right:10px;width:100px}.nav-chart svg{width:86px}.nav-chart>span{display:none}.nav-chart b{font-size:9px}.nav-callout{top:140px;right:12px;left:auto;max-width:235px;text-align:right}.nav-callout strong{font-size:16px;padding:6px 13px}.nav-callout span{font-size:11px;margin-top:3px}.view-tools{top:9px;left:50%;right:auto;transform:translateX(-50%);display:flex}.view-tools button{padding:5px 9px;font-size:10px}.speed-dial{width:100px;height:100px;right:10px;bottom:5px}.speed-dial svg{width:100px;height:100px}.dial-number{top:32px;left:10px;right:10px}.dial-number strong{font-size:26px}.dial-number span{font-size:8px}.speed-dial>b{bottom:3px;font-size:8px}.pilot{left:12px;bottom:max(11px,env(safe-area-inset-bottom));display:flex;gap:4px}.pilot button{min-width:45px;min-height:44px;padding:5px;font-size:9px}.maneuvers{left:50%;bottom:10px;width:206px}.action-cards{gap:12px}.action-card{width:86px;height:74px;padding:15px 4px 4px}.action-card svg{width:30px;height:30px}.card-title{font-size:10px;margin-top:3px}.action-card small:not(.card-key){font-size:7px;margin:1px 0}#capture-status{max-width:206px;font-size:8px;margin-top:5px}}
 @media(max-width:370px){.view-tools{right:98px}.view-tools button{min-width:55px}.nav-chart{width:85px}.nav-chart svg{width:82px}.voyage-notes{width:154px}.voyage-title{font-size:14px}.gust-timing{width:153px}.speed-dial{right:2px;width:102px;height:102px}.speed-dial svg{width:102px;height:102px}.dial-number{top:33px}.dial-number strong{font-size:26px}.maneuvers{left:97px;width:175px}.action-card{width:74px}.card-title{font-size:9px}.pilot button{min-width:44px;padding:4px;font-size:9px}}
+
+/* Touch controls live over the sea; camera and propulsion have separate thumb zones. */
+.touch-navigation .pilot,.touch-navigation .action-cards{display:none}
+.touch-navigation .bay canvas,.touch-navigation.sailing-view .bay canvas{height:100%}
+.touch-navigation .maneuvers{left:18px;bottom:142px;width:160px;transform:none;pointer-events:none}
+.touch-navigation #capture-status{text-align:left;max-width:150px;line-height:1.4;text-shadow:0 1px 5px #000}
+.touch-navigation .speed-dial{bottom:218px;right:18px}
+.touch-navigation:not(.sailing-view) .naval-touch{display:none}
+@media(orientation:landscape){
+  .touch-navigation .speed-dial{bottom:18px;left:calc(50% - 50px);right:auto;width:100px;height:100px}
+  .touch-navigation .speed-dial svg{width:100px;height:100px}
+  .touch-navigation .dial-number{top:32px}
+  .touch-navigation .dial-number strong{font-size:26px}
+  .touch-navigation .maneuvers{bottom:148px;left:24px;width:155px}
+  .touch-navigation .nav-callout{top:108px;right:24px}
+}
 @media(prefers-reduced-motion:reduce){.stamp{transform:none}.speed-ink{display:none}.speed-dial.boosting #speed-arc{filter:none}.hull-health i{transition:none}}
 @media(max-width:760px) and (min-height:501px){.nav-callout{top:180px}}

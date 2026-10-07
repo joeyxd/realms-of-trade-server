@@ -197,6 +197,16 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   El terreno dibujado es una fixture acotada, no la pasada de arte del puerto; dispositivos/FPS/audio
   físicos y balance permanecen abiertos. Sigue delimitar D10, primera travesía/encuentro NPC y rutas,
   con cableado público y operaciones de bienes/recuperación M5/D09 separados.
+  **D08c.5 — timón articulado, vela y doble stick en los ensayos locales:** palanca con agarre de
+  ambas manos y pala en el agua; vela/vergas/cabos/ojales giran con el viento relativo y la lona se
+  curva durante el boost. Stick izquierdo para movimiento, derecho para cámara independiente;
+  controles circulares translúcidos con acciones cercanas y cancelación segura de contactos.
+  [Contrato y cruce FAB](docs/briefs/d08c5-helm-touch.md), [entrega](docs/delivery/d08c5-helm-touch.md).
+  78/78 pertinentes aisladas sobre `9bf5826`, cuatro recorridos de navegador pasados y siete
+  composiciones revisadas en escritorio/móvil vertical/horizontal emulado; 15 fuentes con hashes.
+  El avance paralelo M5 `c72a78f` no modifica las rutas del harness. Sin texturas descargables
+  nuevas ni activación pública; el timón visual aún no es un módulo económico colocable.
+  P5/P6, dispositivos reales y la puerta M5/D09 permanecen abiertos; continúa delimitar D10.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

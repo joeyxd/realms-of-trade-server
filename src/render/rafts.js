@@ -22,8 +22,11 @@ const ATLAS_ALBEDO = `{
 const GREEN = 0x56844b, GREEN_LIGHT = 0x91b65c, FIRE = 0xe88835;
 const LEVEL_H = RAFT.levelHeight || 2.6;
 const CELL = RAFT.cell;
+const TAU = Math.PI * 2;
 const cleanNum = (n, fallback = 0) => Number.isFinite(+n) ? +n : fallback;
 const colorHex = (n) => Math.max(0, Math.min(0xffffff, n | 0));
+const wrapAngle = (angle) => ((angle + Math.PI) % TAU + TAU) % TAU - Math.PI;
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function keyOf(record) {
   // Cargo/work revisions change private state without changing the silhouette or its mobile GPU buffers.
@@ -48,7 +51,7 @@ function hashPhase(id) {
 }
 
 export class RaftLayer {
-  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null, surfaceSkin = null } = {}) {
+  constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null, surfaceSkin = null, sailingRig = false } = {}) {
     this.scene = scene;
     this.dock = dock;
     this.views = new Map(); // id -> { root, visual, revKey, record, ownedGeometries, ... }
@@ -57,6 +60,7 @@ export class RaftLayer {
     this.skinEnabled = skin;
     // Optional, instance-owned art study. The main game keeps its original atlas and UV contract.
     this.surfaceSkin = skin ? surfaceSkin : null;
+    this.sailingRig = !!sailingRig;
     this.atlas = skin ? assets.texture(RAFT_ATLAS_ID) : null;
     this.nm = normalMatFor({ occluder: true, lineW: 0.65 });
     this.clothNm = normalMatFor({ occluder: true, lineW: 0.65 }, THREE.DoubleSide);
@@ -166,6 +170,119 @@ export class RaftLayer {
     return this.shape(key, () => new THREE.BoxGeometry(+a[0], +a[1], +a[2]));
   }
 
+  buildHelmRig() {
+    const group = new THREE.Group();
+    group.name = 'raft:naval-helm';
+    group.visible = false;
+    const mesh = (geometry, color, name) => {
+      const result = new THREE.Mesh(geometry, this.material(color));
+      result.name = name;
+      result.castShadow = true;
+      result.receiveShadow = true;
+      result.userData.nm = this.nm;
+      result.userData.raftSurface = color?.kind || 'wood';
+      return result;
+    };
+
+    const mergeParts = (key, entries) => this.shape(key, () => {
+      const pieces = entries.map(({ geometry, position, quaternion = null, kind = null, mapOptions = null }) => {
+        const piece = geometry.clone();
+        if (kind) this.mapSurfaceUV(piece, kind, mapOptions || {});
+        const q = quaternion || new THREE.Quaternion();
+        piece.applyMatrix4(new THREE.Matrix4().compose(position, q, new THREE.Vector3(1, 1, 1)));
+        return piece;
+      });
+      const result = mergeGeometries(pieces, false);
+      for (const piece of pieces) piece.dispose();
+      if (!result) throw new Error(`Could not build ${key}`);
+      return result;
+    });
+    const woodBase = mergeParts('helm:wood-base', [
+      { geometry: this.boxShape(0.42, 0.11, 0.38), kind: 'wood', mapOptions: { grain: 'box', variant: 0 }, position: new THREE.Vector3(0, 0.07, 0) },
+      { geometry: this.cylinderShape(0.085, 0.12, 1.02, 8), kind: 'wood', mapOptions: { grain: 'cylinder', variant: 1 }, position: new THREE.Vector3(0, 0.58, 0) },
+    ]);
+    group.add(mesh(woodBase, WOOD_DARK, 'raft:helm-post'));
+    const bearingGeometry = this.shape('helm:iron-bearing', () => {
+      const geometry = this.cylinderShape(0.16, 0.16, 0.12, 8).clone();
+      this.mapSurfaceUV(geometry, 'iron', { grain: 'cylinder', variant: 0 });
+      return geometry;
+    });
+    const bearing = mesh(bearingGeometry, IRON, 'raft:helm-bearing');
+    bearing.position.set(0, 1.1, 0);
+    group.add(bearing);
+
+    const tiller = new THREE.Group();
+    tiller.name = 'raft:helm-tiller';
+    tiller.position.set(0, 1.16, 0);
+    group.add(tiller);
+    const shaftDirection = new THREE.Vector3(0, -1.2, -0.5).normalize();
+    const shaftQuaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), shaftDirection);
+    const bladeQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.24, 0, 0));
+    const movingWood = mergeParts('helm:wood-tiller', [
+      { geometry: this.boxShape(0.075, 0.075, 0.42), kind: 'wood', mapOptions: { grain: 'box', variant: 1 }, position: new THREE.Vector3(0, 0.015, -0.18) },
+      { geometry: this.boxShape(0.34, 0.06, 0.08), kind: 'wood', mapOptions: { grain: 'box', variant: 2 }, position: new THREE.Vector3(0, 0.04, -0.12) },
+      { geometry: this.cylinderShape(0.045, 0.065, 2.2, 7), kind: 'wood', mapOptions: { grain: 'cylinder', variant: 3 }, position: shaftDirection.clone().multiplyScalar(1.1), quaternion: shaftQuaternion },
+      { geometry: this.boxShape(0.42, 0.62, 0.11), kind: 'wood', mapOptions: { grain: 'box', variant: 0 }, position: new THREE.Vector3(0, -2.02, -0.84), quaternion: bladeQuaternion },
+    ]);
+    tiller.add(mesh(movingWood, WOOD_DARK, 'raft:helm-lever-and-rudder'));
+    group.userData.tiller = tiller;
+    return group;
+  }
+
+  applySailing(view, state) {
+    if (!this.sailingRig || !state) return null;
+    const active = !!state.active;
+    const dt = clamp(Math.abs(cleanNum(state.dt)), 0, 0.1);
+    for (const sail of view.sails) {
+      const target = active ? wrapAngle(cleanNum(state.windYaw) - view.root.rotation.y) : 0;
+      const alpha = dt > 0 ? 1 - Math.exp(-8 * dt) : 0;
+      sail.pivot.rotation.y = wrapAngle(sail.pivot.rotation.y + wrapAngle(target - sail.pivot.rotation.y) * alpha);
+      sail.cloth.scale.z = 1 + (active ? 0.34 * clamp(cleanNum(state.boost), 0, 1) : 0);
+    }
+
+    const helm = view.helm;
+    let handleWorld = null, gripWorld = null, steerAngle = 0;
+    if (helm) {
+      helm.visible = active && !!state.pilot && ['x', 'y', 'z', 'f'].every((key) => Number.isFinite(state.pilot[key]));
+      if (helm.visible) {
+        view.visual.updateMatrixWorld(true);
+        const footWorld = new THREE.Vector3(state.pilot.x, state.pilot.y, state.pilot.z);
+        const foot = view.visual.worldToLocal(footWorld.clone());
+        const aheadWorld = new THREE.Vector3(state.pilot.x + Math.sin(state.pilot.f), state.pilot.y,
+          state.pilot.z + Math.cos(state.pilot.f));
+        const ahead = view.visual.worldToLocal(aheadWorld).sub(foot).setY(0).normalize();
+        const heading = Math.atan2(ahead.x, ahead.z);
+        helm.position.set(foot.x + ahead.x * 0.45, foot.y, foot.z + ahead.z * 0.45);
+        helm.rotation.y = heading;
+        const tiller = helm.userData.tiller;
+        tiller.rotation.y = clamp(cleanNum(state.steer), -1, 1) * 0.42;
+        steerAngle = tiller.rotation.y;
+        view.visual.updateMatrixWorld(true);
+        const toWorld = (point) => {
+          const world = tiller.localToWorld(point);
+          return { x: world.x, y: world.y, z: world.z };
+        };
+        handleWorld = toWorld(new THREE.Vector3(0, 0.04, -0.12));
+        gripWorld = {
+          left: toWorld(new THREE.Vector3(0.04, 0.04, -0.12)),
+          right: toWorld(new THREE.Vector3(-0.04, 0.04, -0.12)),
+        };
+      }
+    }
+    const sailAngles = view.sails.map((sail) => wrapAngle(view.root.rotation.y + sail.pivot.rotation.y));
+    return { handleWorld, gripWorld, sailAngles, steerAngle };
+  }
+
+  setSailing(id, { active = false, steer = 0, windYaw = 0, boost = 0, dt = 0, pilot = null } = {}) {
+    if (!this.sailingRig) return null;
+    const view = this.views.get(String(id));
+    if (!view) return null;
+    const state = { active: !!active, steer: clamp(cleanNum(steer), -1, 1),
+      windYaw: cleanNum(windYaw), boost: clamp(cleanNum(boost), 0, 1), dt: clamp(Math.abs(cleanNum(dt)), 0, 0.1),
+      pilot: pilot && ['x', 'y', 'z', 'f'].every((key) => Number.isFinite(pilot[key])) ? { ...pilot } : null };
+    return this.applySailing(view, state);
+  }
+
   cylinderShape(rt, rb, h, segments = 8) {
     const a = [rt, rb, h].map((v) => Math.max(0.025, +v).toFixed(3));
     const key = `c:${a.join(':')}:${segments}`;
@@ -186,6 +303,7 @@ export class RaftLayer {
     const batches = new Map();
     const external = [];
     const ownedGeometries = [];
+    const sails = [];
     const add = (color, shape, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') => {
       const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
       const key = materialKey(spec);
@@ -321,24 +439,99 @@ export class RaftLayer {
           const mastX = cx - w * 0.2;
           cyl(WOOD_DARK, 0.075, 0.12, mastH, mastX, y + mastH / 2, cz, 8);
           const sailX = mastX + sailW * 0.48, sailY = y + mastH * 0.59;
-          const sail = this.shape(`sail:${sailW}:${sailH}`, () => {
+          const sailShape = () => {
             const g = new THREE.PlaneGeometry(sailW, sailH, 8, 10), p = g.attributes.position, uv = g.attributes.uv;
             for (let i = 0; i < p.count; i++) p.setZ(i, 0.22 * Math.sin(uv.getX(i) * Math.PI) * Math.sin(uv.getY(i) * Math.PI));
             g.computeVertexNormals(); return g;
-          });
-          add(CLOTH, sail, sailX, sailY, cz);
-          for (const sy of [-1, 1]) {
-            box(WOOD_LIGHT, sailW + 0.18, 0.09, 0.10, sailX, sailY + sy * sailH / 2, cz);
-            line(ROPE, [sailX - sailW / 2, sailY + sy * sailH / 2, cz + 0.02], [sailX + sailW / 2, sailY + sy * sailH / 2, cz + 0.02], 0.025);
+          };
+          const sail = this.shape(`sail:${sailW}:${sailH}`, sailShape);
+          if (!this.sailingRig) {
+            add(CLOTH, sail, sailX, sailY, cz);
+            for (const sy of [-1, 1]) {
+              box(WOOD_LIGHT, sailW + 0.18, 0.09, 0.10, sailX, sailY + sy * sailH / 2, cz);
+              line(ROPE, [sailX - sailW / 2, sailY + sy * sailH / 2, cz + 0.02], [sailX + sailW / 2, sailY + sy * sailH / 2, cz + 0.02], 0.025);
+            }
+            for (const sx of [-1, 1]) line(ROPE, [sailX + sx * sailW / 2, sailY - sailH / 2, cz + 0.02], [sailX + sx * sailW / 2, sailY + sailH / 2, cz + 0.02], 0.023);
+          } else {
+            const pivot = new THREE.Group();
+            pivot.name = `raft:sail-yaw:${x}:${z}:${level}`;
+            pivot.position.set(mastX, sailY, cz);
+            const clothGeometry = sail.clone();
+            this.mapSurfaceUV(clothGeometry, 'cloth', { grain: 'raw', variant: Math.round(x + z * 11) });
+            ownedGeometries.push(clothGeometry);
+            const cloth = new THREE.Mesh(clothGeometry, this.material(CLOTH));
+            cloth.name = 'raft:sail-cloth-moving';
+            cloth.position.set(sailW * 0.48, 0, 0.02);
+            cloth.castShadow = true; cloth.receiveShadow = true;
+            cloth.userData.nm = this.clothNm; cloth.userData.raftSurface = 'cloth';
+            pivot.add(cloth);
+            const yardGeometry = this.shape(`sail-yard:${sailW}:${sailH}`, () => {
+              const source = this.boxShape(sailW + 0.18, 0.09, 0.10), pieces = [-1, 1].map((sy) => {
+                const piece = source.clone();
+                this.mapSurfaceUV(piece, 'wood', { grain: 'box', variant: Math.round(x + z * 7) });
+                piece.translate(0, sy * sailH / 2, 0);
+                return piece;
+              });
+              const result = mergeGeometries(pieces, false);
+              for (const piece of pieces) piece.dispose();
+              return result;
+            });
+            const yard = new THREE.Mesh(yardGeometry, this.material(WOOD_LIGHT));
+            yard.name = 'raft:sail-yards'; yard.position.x = sailW * 0.48;
+            yard.castShadow = true; yard.receiveShadow = true; yard.userData.nm = this.nm; yard.userData.raftSurface = 'wood';
+            pivot.add(yard);
+
+            const ropeGeometry = this.shape(`sail-moving-ropes:${sailW}:${sailH}`, () => {
+              const cx = sailW * 0.48, z = 0.02;
+              const segments = [
+                [[cx - sailW / 2, -sailH / 2, z], [cx + sailW / 2, -sailH / 2, z]],
+                [[cx - sailW / 2, sailH / 2, z], [cx + sailW / 2, sailH / 2, z]],
+                [[cx - sailW / 2, -sailH / 2, z], [cx - sailW / 2, sailH / 2, z]],
+                [[cx + sailW / 2, -sailH / 2, z], [cx + sailW / 2, sailH / 2, z]],
+              ];
+              const pieces = segments.map(([from, to]) => {
+                const curve = new THREE.LineCurve3(new THREE.Vector3(...from), new THREE.Vector3(...to));
+                const piece = new THREE.TubeGeometry(curve, 1, 0.023, 5, false);
+                this.mapSurfaceUV(piece, 'rope', { grain: 'raw' });
+                return piece;
+              });
+              const result = mergeGeometries(pieces, false);
+              for (const piece of pieces) piece.dispose();
+              return result;
+            });
+            const ropeMesh = new THREE.Mesh(ropeGeometry, this.material(ROPE));
+            ropeMesh.name = 'raft:sail-moving-ropes'; ropeMesh.castShadow = true; ropeMesh.receiveShadow = true;
+            ropeMesh.userData.nm = this.nm; ropeMesh.userData.raftSurface = 'rope';
+            pivot.add(ropeMesh);
+
+            const eyelets = this.shape(`sail-moving-eyelets:${sailW}:${sailH}`, () => {
+              const source = this.shape('sail-eyelet-ring', () => new THREE.TorusGeometry(0.027, 0.009, 4, 12));
+              const pieces = [];
+              for (let i = 0; i < 5; i++) {
+                const piece = source.clone();
+                this.mapSurfaceUV(piece, 'iron', { grain: 'raw' });
+                piece.translate(sailW * 0.48 - sailW * 0.42 + i * sailW * 0.21, sailH * 0.45, 0.018);
+                pieces.push(piece);
+              }
+              const result = mergeGeometries(pieces, false);
+              for (const piece of pieces) piece.dispose();
+              return result;
+            });
+            const eyeletMesh = new THREE.Mesh(eyelets, this.material(IRON));
+            eyeletMesh.name = 'raft:sail-moving-eyelets'; eyeletMesh.castShadow = true; eyeletMesh.receiveShadow = true;
+            eyeletMesh.userData.nm = this.nm; eyeletMesh.userData.raftSurface = 'iron';
+            pivot.add(eyeletMesh);
+            visual.add(pivot);
+            sails.push({ pivot, cloth });
           }
-          for (const sx of [-1, 1]) line(ROPE, [sailX + sx * sailW / 2, sailY - sailH / 2, cz + 0.02], [sailX + sx * sailW / 2, sailY + sailH / 2, cz + 0.02], 0.023);
           for (const yy of [0.26, mastH * 0.61, mastH - 0.1]) {
             for (const off of [-0.035, 0.035]) ring(ROPE, 0.115, 0.025, mastX, y + yy + off, cz, 0, Math.PI / 2);
           }
           // Rigging and fittings are visual only: they do not change the authoritative blueprint or deck.
           line(ROPE, [mastX, y + mastH - 0.07, cz], [cx + w * 0.40, y + 0.1, cz + depth * 0.41], 0.026);
           line(ROPE, [mastX, y + mastH - 0.07, cz], [cx - w * 0.40, y + 0.1, cz - depth * 0.41], 0.026);
-          for (let i = 0; i < 5; i++) ring(IRON, 0.027, 0.009, sailX - sailW * 0.42 + i * sailW * 0.21, sailY + sailH * 0.45, cz + 0.018);
+          if (!this.sailingRig) for (let i = 0; i < 5; i++)
+            ring(IRON, 0.027, 0.009, sailX - sailW * 0.42 + i * sailW * 0.21, sailY + sailH * 0.45, cz + 0.018);
           box(bannerColor(record.look?.banner), Math.min(0.68, sailW * 0.46), 0.38, 0.07,
             mastX + sailW * 0.52, y + mastH + 0.15, cz);
         } else if (id === 'crate') {
@@ -497,9 +690,10 @@ export class RaftLayer {
     const view = {
       id: String(record.id), root, visual, revKey: keyOf(record), record,
       ownedGeometries, external, phase: hashPhase(record.id), isLocal: false,
-      gangplank: null, gangplankPoseKey: '',
+      gangplank: null, gangplankPoseKey: '', sails,
       x: NaN, y: NaN, z: NaN, yaw: NaN,
     };
+    if (this.sailingRig) { view.helm = this.buildHelmRig(); visual.add(view.helm); }
     this.updateGangplank(view, record);
     return view;
   }

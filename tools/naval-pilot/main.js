@@ -25,6 +25,8 @@ import { hullIntegrity } from '../../src/sim/naval/structure.js';
 import { RAFT, RAFT_PARTS } from '../../src/data/raftparts.js';
 import { pilotPoint } from '../../src/sim/naval/pilotGeometry.js';
 import { NavalPilotCoastView, findCoastApproach } from './coastView.js';
+import { TouchHelm } from '../naval-lab/touch-helm.js';
+import { poseNavalHelm } from '../../src/render/navalHelmPose.js';
 
 const $ = (id) => document.getElementById(id);
 const SEED = 20261006;
@@ -34,6 +36,7 @@ const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(lo
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const axes = { throttle: 0, brake: 0, steer: 0, x: 0, z: 0 };
 let coastBrake = 0;
+let touchHelm, helmVisual = null, touchMove = { x: 0, y: 0 };
 const held = new Set();
 const faults = [];
 const lab = { client: null, guest: null, server: null, transport: null, ready: Promise.resolve(false), mount, leave, setAxes, diagnostics,
@@ -124,6 +127,7 @@ function say(text) { $('notice').textContent = text; }
 
 function clearControls(sendNeutral = true) {
   held.clear();
+  touchHelm?.clear(); touchMove = { x: 0, y: 0 }; framing?.setLook();
   axes.throttle = axes.steer = axes.x = axes.z = 0;
   axes.brake = sendNeutral ? 1 : 0;
   coastBrake = sendNeutral ? 1 : 0;
@@ -138,7 +142,10 @@ function clearControls(sendNeutral = true) {
   }
 }
 
-function currentAxes() { return client?.deck?.active ? { mx: axes.x, mz: axes.z } : { throttle: axes.throttle, brake: axes.brake, steer: axes.steer }; }
+function currentAxes() {
+  return client?.deck?.active ? { mx: touchMove.x || axes.x, mz: -touchMove.y || axes.z } :
+    { throttle: Math.max(axes.throttle, -touchMove.y), brake: Math.max(axes.brake, touchMove.y), steer: touchMove.x || axes.steer };
+}
 
 function setAxes(value = {}) {
   axes.throttle = Math.max(0, Math.min(1, Number(value.throttle) || 0));
@@ -318,6 +325,7 @@ function diagnostics() {
     impactCount, visualImpactCount, audioImpactCount,
     effects: effects?.diagnostics() || null,
     sound: sound?.diagnostics() || null,
+    camera: framing?.diagnostics() || null, helm: helmVisual, touch: touchHelm?.diagnostics() || null,
     coast: coastView ? structuredClone(coastView.diagnostics) : null,
     impactFixture: impactFixture ? structuredClone(impactFixture) : null,
     errors: [...faults, ...(latestError ? [latestError] : [])],
@@ -492,6 +500,8 @@ function updateHud() {
   const surface = owner && ecs ? server.world.raftDeck.surface(ecs.x[owner], ecs.z[owner], ecs.y[owner]) : null;
   const onDeck = surface?.id === shipId && surface.kind === 'deck';
   const walking = !!client?.deck?.active, passengerActive = !!guest?.deck?.active;
+  touchHelm?.setEnabled(active || walking);
+  touchHelm?.setActionState('walk', { label: walking ? 'Timón' : 'Cubierta' });
   $('mount').disabled = !client?.joined || active || walking || !shipId;
   $('mount').querySelector('span').textContent = onDeck ? '⇢' : '↻';
   $('mount').lastChild.textContent = onDeck ? ' Subir al timón' : ' Preparar otro ensayo';
@@ -560,6 +570,11 @@ function draw(dt, alpha) {
     }
     const local = client.localState(alpha, {});
     character.update(dt, local);
+    // The station stays bolted to the trial's helm anchor while the character walks away.
+    helmVisual = layer.setSailing(shipId, { active: client.naval.active,
+      pilot: client.naval.position(alpha) || local, steer: client.deck?.active ? 0 : currentAxes().steer || 0,
+      windYaw: client.naval.wind?.yaw || 0, boost: false, dt });
+    helmVisual = { ...helmVisual, ...poseNavalHelm(character, { ...helmVisual, active: client.naval.active && !client.deck?.active, dt }) };
     if (guestCharacter) {
       guestCharacter.root.visible = !!guest?.deck?.active;
       if (guest?.deck?.active) {
@@ -593,7 +608,7 @@ function fixedTick() {
     if (client.naval.active && !client.deck?.active) client.tickNaval(currentAxes());
     if (client.deck?.active) {
       client.tickNaval({ throttle: 0, brake: coastBrake, steer: 0 });
-      client.tickDeck({ mx: axes.x, mz: axes.z });
+      client.tickDeck(currentAxes());
     }
     if (guest?.deck?.active) guest.tickDeck({ mx: 0, mz: 0 });
     client.update(NAVAL_STEP, NAVAL_STEP);
@@ -639,7 +654,7 @@ async function initializeScene() {
   U.mnOccOn.value = 0; U.mnNearFade.value = 0; U.mnCloud.value = 0.15;
   framing = new NavalLabCamera(camera, { reducedMotion });
   effects = new NavalLabEffects(scene, { mobile, reducedMotion });
-  layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin || null });
+  layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin || null, sailingRig: true });
   character = new CharacterView(0, { sword: false });
   scene.add(character.root);
   guestCharacter = new CharacterView(0, { sword: false });
@@ -657,8 +672,11 @@ async function initializeScene() {
     $('sound').querySelector('span').textContent = ready ? 'Silenciar ambiente' : 'Audio no disponible';
   });
   if (mobile) {
-    document.querySelector('.stage').appendChild(document.querySelector('.helm'));
-    document.querySelector('.stage').classList.add('touch-helm');
+    document.body.classList.add('touch-navigation');
+    touchHelm = new TouchHelm(document.querySelector('.stage'), { enabled: false,
+      onMove: (value) => { touchMove = value; if (value.x || value.y) coastBrake = 0; }, onLook: (value) => framing.setLook(value),
+      onAction: (action) => { if (action === 'walk') toggleWalk(); else framing.recenter(); },
+      actions: [{ id: 'walk', label: 'Cubierta', icon: 'crew' }, { id: 'center', label: 'Centrar', icon: 'center' }] });
   }
   resize();
   window.addEventListener('resize', resize);
@@ -695,6 +713,7 @@ window.addEventListener('pagehide', () => {
   running = false; cancelAnimationFrame(raf); clearControls(false);
   try { if (server) { server.disconnect(GUEST_ID); server.disconnect(CLIENT_ID); server.stop(); } } catch (error) { recordError(error); }
   sound?.dispose(); effects?.dispose(); layer?.dispose(); coastView?.dispose(); raftSkin?.dispose(); renderer?.dispose();
+  touchHelm?.dispose();
 });
 
 start().catch((error) => { recordError(error); setConnection(false, 'No se pudo iniciar'); resolveReady(false); });

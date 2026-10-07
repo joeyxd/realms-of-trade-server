@@ -24,6 +24,10 @@ import { configureNavalReferenceLook } from './look.js';
 import { NavalLabScenery, NAVAL_COAST } from './scenery.js';
 import { loadNavalRaftSkin } from './raft-skin.js';
 import { NavalLabHud } from './hud.js';
+import { TouchHelm } from './touch-helm.js';
+import { CharacterView } from '../../src/render/characters.js';
+import { poseNavalHelm } from '../../src/render/navalHelmPose.js';
+import { RAFT } from '../../src/data/raftparts.js';
 
 const $ = (id) => document.getElementById(id);
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
@@ -34,6 +38,8 @@ let structure, body, structureGeneration = 0, lastDamage = '';
 let layer, renderer, pipeline, input, scene, camera, cargoGroup, sun, sea, bottom;
 let effects, sound, feel, framing, scenery, raftSkin, hud, activity = newSailingActivity(), soundEnabled = false, soundOptOut = false;
 let lastGustPhase = 'idle', lastGustId = -1;
+let touchHelm, pilotCharacter, helmVisual = null, lastControl = { steer: 0 };
+let touchMove = { x: 0, y: 0 };
 const samples = [];
 const trailArray = new Float32Array(256 * 3), trailGeometry = new THREE.BufferGeometry();
 trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailArray, 3));
@@ -63,6 +69,9 @@ function updateHud() {
   }
   $('jettison').disabled = body.disabled || !fixture.cargo.length;
   for (const button of document.querySelectorAll('[data-pilot]')) button.disabled = body.disabled;
+  touchHelm?.setEnabled(!paused && !body.disabled && document.body.classList.contains('sailing-view'));
+  touchHelm?.setActionState('capture', { disabled: $('capture').disabled });
+  touchHelm?.setActionState('jettison', { disabled: $('jettison').disabled });
 }
 
 function selectedBlock() {
@@ -113,6 +122,7 @@ function nearCoast() {
 }
 function clearInputs() {
   input?.clear();
+  touchHelm?.clear(); touchMove = { x: 0, y: 0 }; framing?.setLook(); lastControl = { steer: 0 };
   for (const button of document.querySelectorAll('[data-pilot]')) button.classList.remove('active');
 }
 function setSailingView(sailing) {
@@ -144,7 +154,7 @@ function updateSkinReadout() {
 }
 function changeSkin() {
   clearInputs(); layer.dispose();
-  layer = new RaftLayer(scene, { dock: null, surfaceSkin: $('material').value === 'author' ? raftSkin : null });
+  layer = new RaftLayer(scene, { dock: null, surfaceSkin: $('material').value === 'author' ? raftSkin : null, sailingRig: true });
   pipeline.markDirty(); updateSkinReadout(); $('bay').focus({ preventScroll: true });
 }
 function rebuildCargo() {
@@ -236,16 +246,22 @@ function drawFrame(dt) {
     view.visual.rotation.z += THREE.MathUtils.clamp(-state.omega * Math.hypot(state.vx, state.vz) * 0.035, -0.2, 0.2);
     view.visual.rotation.x += boosting ? -Math.sin(Math.min(1, (activity.boostUntil - state.tick) / 30) * Math.PI / 2) * 0.065 : 0;
   }
-  if (view) for (const mesh of view.visual.children) {
-    if (mesh.userData.raftSurface !== 'cloth') continue;
-    const positions = mesh.geometry.attributes.position;
-    const base = mesh.userData.labClothBase ||= positions.array.slice();
-    const fullness = boosting ? 0.23 : 0.065;
-    for (let i = 0; i < positions.count; i++) {
-      const y = base[i * 3 + 1];
-      positions.array[i * 3 + 2] = base[i * 3 + 2] + Math.sin(y * 1.6 + (reducedMotion ? 0 : t * 4)) * fullness * Math.min(1, Math.max(0, y - 0.5));
-    }
-    positions.needsUpdate = true;
+  if (view && pilotCharacter) {
+    // Synthetic pilot for the handling bay; it never enters the gameplay profile or collision model.
+    const tiles = body.parts.filter((p) => p[0] === 'foundation' && !body.parts.some((q) =>
+      q[0] !== 'foundation' && q[1] === p[1] && q[2] === p[2] && q[3] === 0 && ['tile', 'pillar'].includes(RAFT_PARTS[q[0]]?.layer)))
+      .sort((a, b) => a[2] - b[2] || Math.abs((a[1] + .5) * RAFT.cell - rig.hullCx) - Math.abs((b[1] + .5) * RAFT.cell - rig.hullCx));
+    pilotCharacter.root.visible = !!tiles.length && !body.disabled;
+    if (pilotCharacter.root.visible) {
+    const tile = tiles[0]; view.visual.updateWorldMatrix(true, false);
+      const foot = view.visual.localToWorld(new THREE.Vector3((tile[1] + .5) * RAFT.cell, 0, (tile[2] + .5) * RAFT.cell));
+      const pilot = { x: foot.x, y: foot.y, z: foot.z, f: pose.yaw, vx: 0, vz: 0, hp: 100 };
+      pilotCharacter.update(paused ? 0 : dt, pilot);
+      pilotCharacter.root.quaternion.copy(view.visual.getWorldQuaternion(new THREE.Quaternion()));
+      helmVisual = layer.setSailing('lab-raft', { active: true, pilot, steer: lastControl.steer,
+        windYaw: wind.yaw, boost: boosting, dt: paused ? 0 : dt });
+      helmVisual = { ...helmVisual, ...poseNavalHelm(pilotCharacter, { ...helmVisual, active: true, dt }) };
+    } else helmVisual = layer.setSailing('lab-raft', { active: false, dt });
   }
   cargoGroup.position.set(pose.x, pose.y - 0.72, pose.z); cargoGroup.rotation.y = pose.yaw;
   cargoGroup.visible = references.visible;
@@ -272,8 +288,12 @@ function drawFrame(dt) {
 function fixed() {
   previous = state;
   const control = input.poll();
+  control.throttle = Math.max(control.throttle, -touchMove.y);
+  control.brake = Math.max(control.brake, touchMove.y);
+  if (touchMove.x) control.steer = touchMove.x;
   if (body.disabled) { state = { ...state, tick: state.tick + 1 }; clearInputs(); return; }
   if ($('cruise').checked && control.brake === 0) control.throttle = Math.max(control.throttle, 0.85);
+  lastControl = { ...control };
   control.capture = input.consumeCapture();
   const gusts = $('gusts').checked && rig.sail > 0;
   const gust = gustAt(state.tick, wind, gusts);
@@ -343,13 +363,21 @@ async function start() {
     renderer.shadowMap.enabled = sun.castShadow = !$('light').checked;
     pipeline.setQuality({ outlines: !$('light').checked, comic: 0, pixelRatio: Math.min(devicePixelRatio || 1, mobile ? 1 : 1.5), ss: 1, fxaa: true });
   };
-  quality(); layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin });
+  quality(); layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin, sailingRig: true });
+  pilotCharacter = new CharacterView(0, { sword: false }); scene.add(pilotCharacter.root);
   effects = new NavalLabEffects(scene, { mobile, reducedMotion }); sound = new NavalLabAudio({ mobile });
   feel = new NavalSpeedFeel($('bay').parentElement, { mobile, reducedMotion });
   hud = new NavalLabHud(document);
   scene.add(references, trail);
   references.visible = trail.visible = $('references').checked;
   input = new NavalLabInput(document, { onReset: reset, onJettison: jettison, onGesture: unlockSound, onCancel: () => setPaused(true) });
+  if (mobile) {
+    document.body.classList.add('touch-navigation');
+    touchHelm = new TouchHelm($('bay').parentElement, { onMove: (value) => { touchMove = value; },
+      onLook: (value) => framing.setLook(value), onGesture: unlockSound,
+      onAction: (action) => { if (action === 'capture') input.queueCapture(); else if (action === 'jettison') jettison(); else framing.recenter(); },
+      actions: [{ id: 'capture', label: 'Ráfaga', icon: 'wind' }, { id: 'jettison', label: 'Lastre', icon: 'cargo' }, { id: 'center', label: 'Centrar', icon: 'center' }] });
+  }
   $('fixture').addEventListener('change', reset);
   $('camera').addEventListener('change', () => { framing.reset(); $('bay').focus({ preventScroll: true }); });
   $('material').addEventListener('change', changeSkin);
@@ -381,7 +409,8 @@ async function start() {
     operationalRig: body.rig ? { ...body.rig } : null, liveParts: structuredClone(body.parts),
     activity: { ...activity }, gust: gustAt(state.tick, wind, $('gusts').checked && rig.sail > 0 && !body.disabled), current: currentAt(state.x, state.z, $('currents').checked),
     effects: effects.diagnostics(), audio: sound.diagnostics(), feel: feel.diagnostics(), camera: framing.diagnostics(), hud: hud.diagnostics(),
-    scenery: scenery.diagnostics(), raftSkin: { ...raftSkin.diagnostics(), active: $('material').value }, mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
+    scenery: scenery.diagnostics(), helm: helmVisual, touch: touchHelm?.diagnostics(), controls: { ...lastControl },
+    raftSkin: { ...raftSkin.diagnostics(), active: $('material').value }, mobile, paused, droppedSeconds: clock.dropped, textures: assets.list(), samples: samples.length }), reset, jettison, setPaused };
   let last = performance.now();
   const frame = (now) => {
     const dt = Math.max(0, (now - last) / 1000); last = now;
@@ -390,7 +419,7 @@ async function start() {
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); raftSkin.dispose(); renderer.dispose(); });
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); touchHelm?.dispose(); input.dispose(); effects.dispose(); sound.dispose(); feel.dispose(); scenery.dispose(); layer.dispose(); raftSkin.dispose(); renderer.dispose(); });
 }
 $('lab-toggle').addEventListener('click', () => setSailingView(!document.body.classList.contains('sailing-view')));
 $('return-to-sea').addEventListener('click', () => setSailingView(true));

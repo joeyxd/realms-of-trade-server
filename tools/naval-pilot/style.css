@@ -22,6 +22,18 @@
   background: #142328d9; backdrop-filter: blur(8px);
 }
 .touch-helm .helm-copy { display: none; }
+.touch-navigation .helm{display:none}
+.touch-navigation .stage-bottom{min-height:30px;font-size:8px}
+.touch-navigation .speed-card{bottom:218px;left:18px;width:105px;padding:8px 10px}
+.touch-navigation .speed-card b{font-size:32px}
+.touch-navigation .stage .naval-touch-stick{bottom:calc(45px + env(safe-area-inset-bottom,0px))}
+.touch-navigation .stage .naval-touch-actions{bottom:calc(163px + env(safe-area-inset-bottom,0px))}
+@media(orientation:landscape){
+  .touch-navigation .speed-card{top:14px;bottom:auto;left:calc(50% - 53px)}
+  .touch-navigation .stage-title h1{font-size:32px}
+  .touch-navigation .stage-title p{display:none}
+  .touch-navigation .stage .naval-touch-actions{bottom:calc(174px + env(safe-area-inset-bottom,0px))}
+}
 @media (pointer: coarse), (max-width: 560px) {
   .actions button, .fixture-select select { min-height: 44px; }
 }
