@@ -16,6 +16,7 @@ import { ENEMIES, ENEMY_KINDS } from '../data/enemies.js';
 import { SKILLS } from '../data/weapons.js';
 import { lerp, wrapAngle } from '../core/math.js';
 import { NavalPilotPrediction } from './navalPilotPrediction.js';
+import { NavalDeckPrediction } from './navalDeckPrediction.js';
 import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
 
 const BUF_MAX = 40;
@@ -36,6 +37,7 @@ export class GameClient {
     this.lastRaftTick = -1;
     this.lastSnapshotTick = -1;
     this.naval = new NavalPilotPrediction();
+    this.deck = new NavalDeckPrediction();
     this.raftSamples = new Map();
     this.clock = 0;
     this.serverOffset = null;
@@ -108,6 +110,7 @@ export class GameClient {
       }
       case MSG.WELCOME: {
         this.naval = new NavalPilotPrediction();
+        this.deck = new NavalDeckPrediction();
         this.raftSamples.clear();
         this.youServer = m.you;
         // Field keys use server entity IDs, including locally predicted casts.
@@ -145,6 +148,10 @@ export class GameClient {
   isMe(e) { return e !== undefined && e === this.youServer; }
 
   onEvent(ev) {
+    if (ev.type === 'navalDeck' || ev.type === 'navalInvite') {
+      if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
+      return;
+    }
     if (ev.type === 'navalPilot') {
       if (ev.to === this.youServer) this.bus.emit('navalPilot', ev);
       return;
@@ -314,11 +321,21 @@ export class GameClient {
   onSnapshot(s) {
     // Never reconcile an older player state against a newer set of deck surfaces.
     if (s.tick < this.lastSnapshotTick) return;
+    let naval = this.naval, deck = this.deck;
+    if (s.deck) {
+      if (s.deck.active && s.deck.tick !== s.tick) return;
+      deck = Object.assign(new NavalDeckPrediction(this.deck.engine), this.deck);
+      if (deck.acceptSnapshot(s.deck) === 'rejected') return;
+    }
     if (s.naval) {
       if (s.naval.active && s.naval.body?.state?.tick !== s.tick) return;
-      if (this.naval.acceptSnapshot(s.naval) === 'rejected') return;
-      if (this.naval.active) this.pending.length = 0;
+      naval = Object.assign(new NavalPilotPrediction(), this.naval);
+      if (naval.acceptSnapshot(s.naval) === 'rejected') return;
     }
+    if (naval.active && deck.active && naval.shipId !== deck.shipId) return;
+    // Validate both private streams before committing either cursor or the shared snapshot.
+    this.naval = naval; this.deck = deck;
+    if (this.naval.active || this.deck.active) this.pending.length = 0;
     this.lastSnapshotTick = s.tick;
     if (Array.isArray(s.rafts) && s.tick >= this.lastRaftTick) {
       this.lastRaftTick = s.tick;
@@ -403,9 +420,36 @@ export class GameClient {
     }
     if (s.you && this.youLocal) this.reconcile(s.ack, s.you);
     if (this.naval.active) this.syncNavalPilot();
+    else if (this.deck.active) this.syncNavalDeck();
   }
 
   mountNaval(shipId) { this.send({ t: MSG.CMD, type: 'navalPilot', op: 'mount', shipId }); }
+  inviteNaval(shipId, target) { this.send({ t: MSG.CMD, type: 'navalPilot', op: 'invite', shipId, target }); }
+  boardNaval(shipId) { this.send({ t: MSG.CMD, type: 'navalPilot', op: 'board', shipId }); }
+  walkNaval() {
+    this.neutralNaval();
+    this.send({ t: MSG.CMD, type: 'navalPilot', op: 'walk', epoch: this.naval.epoch });
+  }
+  helmNaval() {
+    this.neutralDeck();
+    this.send({ t: MSG.CMD, type: 'navalPilot', op: 'helm', epoch: this.naval.epoch });
+  }
+  leaveDeck() {
+    this.neutralDeck();
+    this.send({ t: MSG.CMD, type: 'navalPilot', op: 'deckleave', epoch: this.deck.epoch });
+  }
+  neutralDeck() {
+    const command = this.deck.neutral();
+    if (command) this.send({ t: MSG.DECK_INPUT, ...command });
+  }
+  tickDeck(axes) {
+    if (!this.joined) return false;
+    const command = this.deck.step(axes);
+    if (!command) return false;
+    this.syncNavalDeck();
+    this.send({ t: MSG.DECK_INPUT, ...command });
+    return true;
+  }
   leaveNaval() {
     this.neutralNaval();
     this.send({ t: MSG.CMD, type: 'navalPilot', op: 'leave', epoch: this.naval.epoch });
@@ -416,6 +460,7 @@ export class GameClient {
   }
   tickNaval(axes) {
     if (!this.joined) return false;
+    if (this.deck.active) axes = { throttle: 0, brake: axes?.brake || 0, steer: 0 };
     const command = this.naval.step(axes);
     if (!command) return false;
     this.syncNavalPilot();
@@ -423,6 +468,7 @@ export class GameClient {
     return true;
   }
   syncNavalPilot() {
+    if (this.deck.active) { this.pred.rafts = this.naval.project(this.pred.rafts); this.syncNavalDeck(); return; }
     const p = this.naval.position(), ecs = this.pred.ecs, e = this.youLocal;
     if (!p || !e) return;
     ecs.x[e] = this.cur.x = p.x; ecs.y[e] = this.cur.y = p.y; ecs.z[e] = this.cur.z = p.z;
@@ -432,16 +478,34 @@ export class GameClient {
     this.pred.rafts = this.naval.project(this.pred.rafts);
     this.pred.raftDeck.update(this.pred.rafts);
   }
+  syncNavalDeck() {
+    const raft = this.renderRafts().find((r) => r.id === this.deck.shipId), p = raft && this.deck.position(raft);
+    const ecs = this.pred.ecs, e = this.youLocal;
+    if (!p || !e) return;
+    ecs.x[e] = this.cur.x = p.x; ecs.y[e] = this.cur.y = p.y; ecs.z[e] = this.cur.z = p.z; ecs.facing[e] = this.cur.f = p.f;
+    ecs.vx[e] = ecs.vz[e] = 0; ecs.moveMag[e] = this.deck.state.mag;
+    this.err.x = this.err.y = this.err.z = 0;
+    this.pred.raftDeck.update(this.pred.rafts);
+  }
   renderRafts(alpha = 1) {
     const time = this.serverTick() - INTERP_DELAY / DT;
     const records = this.pred.rafts.map((r) => {
-      if (!r.pilot || r.id === this.naval.shipId) return r;
+      if (!r.pilot && !r.crew?.length) return r;
       const samples = this.raftSamples.get(r.id) || [];
       let a = samples[0], b = a;
       for (const sample of samples) { if (sample.tick <= time) a = sample; if (sample.tick >= time) { b = sample; break; } b = sample; }
-      if (!a || !b || a.record.pilot?.epoch !== r.pilot.epoch || b.record.pilot?.epoch !== r.pilot.epoch) return r;
-      const pose = interpolatePilotPose(a.record, b.record, a.tick === b.tick ? 1 : (time - a.tick) / (b.tick - a.tick));
-      return { ...r, ...pose };
+      if (!a || !b || a.record.pilot?.epoch !== r.pilot?.epoch || b.record.pilot?.epoch !== r.pilot?.epoch) return r;
+      const t = a.tick === b.tick ? 1 : Math.max(0, Math.min(1, (time - a.tick) / (b.tick - a.tick)));
+      const pose = r.id === this.naval.shipId ? r : interpolatePilotPose(a.record, b.record, t);
+      const crew = r.crew?.map((member) => {
+        const ca = a.record.crew?.find((c) => c.entity === member.entity && c.epoch === member.epoch);
+        const cb = b.record.crew?.find((c) => c.entity === member.entity && c.epoch === member.epoch);
+        if (!ca || !cb) return member;
+        const anchor = { x: lerp(ca.anchor.x, cb.anchor.x, t), y: lerp(ca.anchor.y, cb.anchor.y, t),
+          z: lerp(ca.anchor.z, cb.anchor.z, t), f: ca.anchor.f + wrapAngle(cb.anchor.f - ca.anchor.f) * t };
+        return { ...member, anchor, mag: lerp(ca.mag, cb.mag, t) };
+      });
+      return { ...r, ...pose, ...(crew ? { crew } : {}) };
     });
     return this.naval.project(records, alpha);
   }
@@ -521,6 +585,11 @@ export class GameClient {
   // One fixed client tick: build the command, predict, send.
   tickInput(input) {
     if (!this.youLocal || this.awaitingFirst) return;
+    if (this.deck.active) {
+      if (this.naval.active) this.tickNaval(input.naval || { throttle: 0, brake: 0, steer: 0 });
+      this.tickDeck(input.deck || { mx: 0, mz: 0 });
+      return;
+    }
     if (this.naval.active) { if (input.naval) this.tickNaval(input.naval); return; }
     const ecs = this.pred.ecs, e = this.youLocal;
     // Projectile tick for this command: one step ahead, nudged toward the server clock.
@@ -605,9 +674,12 @@ export class GameClient {
       if (rec.id === this.youServer || !rec.buf.length) continue;
       this.sampleRemote(rec, rt);
     }
-    for (const raft of this.renderRafts()) if (raft.pilot?.owner !== this.youServer && raft.pilot) {
-      const rec = this.entities.get(raft.pilot.owner);
-      if (rec?.ready) Object.assign(rec.r, pilotPoint(raft, raft.pilot.anchor), { vx: 0, vz: 0, mag: 0 });
+    for (const raft of this.renderRafts()) {
+      const crew = raft.crew || (raft.pilot ? [{ entity: raft.pilot.owner, anchor: raft.pilot.anchor, mag: 0 }] : []);
+      for (const member of crew) if (member.entity !== this.youServer) {
+        const rec = this.entities.get(member.entity);
+        if (rec?.ready) Object.assign(rec.r, pilotPoint(raft, member.anchor), { vx: 0, vz: 0, mag: member.mag });
+      }
     }
     if (simDt > 0) this.stepShots(simDt);
     // A held despawn never waits long (its shot may have been cleared away).
@@ -693,9 +765,12 @@ export class GameClient {
     out.y = lerp(this.prev.y, this.cur.y, alpha) + this.err.y;
     out.z = lerp(this.prev.z, this.cur.z, alpha) + this.err.z;
     out.f = this.prev.f + wrapAngle(this.cur.f - this.prev.f) * alpha;
-    if (this.naval.active) Object.assign(out, this.naval.position(alpha));
+    if (this.deck.active) {
+      const raft = this.renderRafts(alpha).find((r) => r.id === this.deck.shipId);
+      if (raft) Object.assign(out, this.deck.position(raft, alpha));
+    } else if (this.naval.active) Object.assign(out, this.naval.position(alpha));
     out.vx = ecs.vx[e]; out.vz = ecs.vz[e];
-    out.st = ecs.state[e]; out.mag = ecs.moveMag[e]; out.wade = ecs.wade[e];
+    out.st = ecs.state[e]; out.mag = this.deck.active ? this.deck.state.mag : ecs.moveMag[e]; out.wade = ecs.wade[e];
     out.dashT = ecs.dashT[e]; out.dashes = ecs.dashCount[e];
     out.charges = ecs.dashCharges[e]; out.maxCharges = ecs.dashMax[e]; out.recharge = ecs.dashRecharge[e];
     out.iframes = ecs.iframes[e];

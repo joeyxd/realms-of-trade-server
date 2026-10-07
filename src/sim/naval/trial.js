@@ -112,6 +112,15 @@ export class NavalTrial {
     return true;
   }
 
+  // Releasing the helm must cancel even a previously queued thrust command. This changes neither
+  // sequence nor ACK; the next admitted tick applies braking unless a new valid coast input arrives.
+  releaseControl(handle) {
+    const r = this.#resolve(handle);
+    if (!r) return false;
+    r.input = NEUTRAL; r.inputTick = -Infinity;
+    return true;
+  }
+
   // Internal damage is staged until the World boundary, just like axes. It never changes profile HP,
   // the saved blueprint, holds or production. Real combat and durable loss are separate later cuts.
   queueDamage(handle, partId, amount) {

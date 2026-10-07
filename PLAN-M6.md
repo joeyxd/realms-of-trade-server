@@ -174,8 +174,16 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   301/301 pertinentes aisladas sobre `d47353b` (26 nuevas de pilotaje); 73/73 de compatibilidad
   con M5 `39edbe8`. Navegador: escritorio y móvil vertical/horizontal emulado, controles táctiles reales del UI,
   embarque/giro/blur/salida y conservación; casa de 29 piezas en escritorio. No es aceptación de móvil físico/FPS.
-  Sin pasajeros ni caminar a bordo; barrera de terreno no equivale a choque/daño continuo.
-  Próximo corte: locomoción relativa y pasajeros, después integrar contacto/HP a autoridad; P5/P6 abiertos.
+  En D08c.2 aún no había pasajeros ni caminata; la barrera de terreno no equivale a choque/daño continuo.
+  **D08c.3 — locomoción relativa y pasajeros en el mismo ensayo local:** alternar timón/caminata sin
+  empuje pendiente, suelo/paredes/escaleras con el movimiento existente en marco local, invitación y
+  aceptación por sesiones separadas, ACK/epoch de caminata y anclas públicas. Protocolo 18; máximo técnico
+  propietario + tres pasajeros. Nave/ocupantes usan la misma pose renderizada; blur frena también al caminar.
+  [Contrato](docs/briefs/d08c3-relative-crew.md), [entrega](docs/delivery/d08c3-relative-crew.md).
+  384/384 pertinentes aisladas integrando M5 `2651957`, incluidas 21 nuevas; escritorio y móvil vertical/horizontal
+  emulado con entrada táctil, invitado y conservación, más caseta en escritorio. Sin textura nueva ni
+  activación del juego ordinario; no incluye PvP/editor/producción/lastre humano ni red o móvil físico.
+  Próximo corte: integrar contacto/HP a autoridad y soporte tras romper piezas; P5/P6 abiertos.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

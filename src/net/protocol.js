@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 17; // D08c.2: opt-in pilot state, epoch/ACK and public moving-deck projection.
+export const PROTOCOL_VERSION = 18; // D08c.3: relative walking ACK/state and public crew anchors.
 
 export const MSG = {
   // client -> server
@@ -11,7 +11,7 @@ export const MSG = {
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {you, tick, seed}
-  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts: [public blueprint/pose...], naval?: private trial state}
+  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts: [public blueprint/pose/crew...], naval?, deck?: private trial states}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)
@@ -20,9 +20,10 @@ export const MSG = {
   ERROR: 'error',     // {code: 'version' | 'name' ...}
   PROFILE: 'profile', // {p}: your profile (bag, equipment, gold, masteries, quests…), private (M4)
   SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
-  // Only SHIP_INPUT is used by the dedicated pilot trial; the other naval/trade messages remain reserved.
+  // SHIP_INPUT and DECK_INPUT are used only by the dedicated pilot trial; other naval/trade messages remain reserved.
   SHIP_SPAWN: 'ship_spawn',
   SHIP_INPUT: 'ship_input', // private pilot harness: {epoch, seq, throttle, brake, steer}; session owns pilot
+  DECK_INPUT: 'deck_input', // private local crew: {epoch, seq, mx, mz}; axes in the raft's local frame
   SHIP_STATE: 'ship_state',
   BOARD: 'board',
   DOCK: 'dock',

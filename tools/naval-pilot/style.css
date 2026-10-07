@@ -6,6 +6,11 @@
 /* Keep helm input on the actual sea view on touch devices, even with the console below the fold. */
 .helm-key { touch-action: none; }
 .notice { height: auto; min-height: 14px; line-height: 1.5; }
+.actions { flex-wrap: wrap; }
+.crew-readout { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; padding: 10px 23px; border-top: 1px solid var(--line); background: #101b1f45; }
+.crew-readout span { font-size: 8px; color: #9eaaa4; letter-spacing: .13em; }
+.crew-readout b { font-size: 10px; font-weight: 600; color: #d6d9cf; }
+.crew-readout small { font-size: 9px; color: #9daaa3; }
 .touch-helm .helm {
   position: absolute; right: 16px; bottom: 52px; z-index: 2;
   padding: 9px; border: 1px solid #d9dfd040; border-radius: 5px;
@@ -15,6 +20,7 @@
 @media (pointer: coarse), (max-width: 560px) {
   .actions button, .fixture-select select { min-height: 44px; }
 }
+.crew-readout { padding: 10px 15px; gap: 7px 10px; }
 @media (max-width: 900px) and (max-height: 550px) and (orientation: landscape) {
   .topbar { height: 44px; }
   main { padding: 8px 12px 12px; }

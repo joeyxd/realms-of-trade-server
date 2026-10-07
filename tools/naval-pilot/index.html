@@ -34,13 +34,15 @@
         <div class="actions">
           <label class="fixture-select"><span>EMBARCACIÓN</span><select id="fixture"><option value="raft">Balsa de prueba</option><option value="house">Balsa con caseta</option></select></label>
           <button class="primary" id="mount" type="button" disabled><span>⇢</span> Subir al timón</button>
-          <button class="secondary" id="leave" type="button" disabled>Bajar al muelle</button>
+          <button class="secondary" id="walk" type="button" disabled>Caminar en cubierta</button>
+          <button class="secondary" id="passenger" type="button" disabled>Crear pasajero</button>
+          <button class="secondary" id="leave" type="button" disabled>Terminar trial</button>
           <button class="sound" id="sound" type="button" aria-pressed="false">♪ <span>Activar ambiente</span></button>
         </div>
         <p class="notice" id="notice" aria-live="polite">La autoridad y la vista funcionan dentro de esta sesión local.</p>
       </div>
       <div class="helm" aria-label="Controles de navegación">
-        <div class="helm-copy"><span class="eyebrow">TIMÓN</span><b>W / S · A / D</b><small>Avanzar · frenar · girar</small></div>
+        <div class="helm-copy"><span class="eyebrow" id="control-mode">TIMÓN</span><b>W / S · A / D</b><small id="control-help">Avanzar · frenar · girar</small></div>
         <div class="helm-pad">
           <button class="helm-key turn" data-axis="left" type="button" aria-label="Girar a babor">↶<small>A</small></button>
           <button class="helm-key throttle" data-axis="throttle" type="button" aria-label="Avanzar">▲<small>W</small></button>
@@ -53,6 +55,7 @@
         <div><span>CASCO</span><b id="hull">—</b></div>
         <div><span>OCUPANTES</span><b id="occupants">0</b></div>
       </div>
+      <div class="crew-readout"><span>TRIPULACIÓN Y CUBIERTA</span><b id="crew">Sin tripulación</b><small id="deck-position">Posición relativa · —</small></div>
     </section>
     <footer><span>ENSAYO TÉCNICO D08c · SIMULACIÓN AUTORITATIVA</span><span>ESPACIO AISLADO · SIN PERSISTENCIA</span></footer>
   </main>

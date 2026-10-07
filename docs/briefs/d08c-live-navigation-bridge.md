@@ -41,10 +41,15 @@ conservar al personaje a bordo y ver a otro cliente observar el movimiento corre
    Protocolo 17; primera activación en prueba delimitada sin bienes en riesgo. El harness usa
    `renderRafts(alpha)` junto al estado del personaje. El entrypoint ordinario aún requiere cableado
    de esa vista/cámara cuando se habilite navegación pública; no presentar el ensayo como esa activación.
-3. **Cubierta móvil y pasajeros.** Mover superficies/bloqueos con la pose autoritativa, caminar/subir
-   sin resbalar artificialmente y separar balanceo visual de colisión. Interpolar barcos remotos;
-   salida/reentrada/cambio de entidad conservan seguridad. Revisar bajo movimiento el patrón de
-   `detachRafts`, que devuelve al muelle a ocupantes cuando desaparece su soporte.
+3. **Cubierta móvil y pasajeros, ensayo local D08c.3 implementado.**
+   [Contrato](d08c3-relative-crew.md): caminar en coordenadas locales sobre suelo/bloqueos/escaleras,
+   invitación del propietario y aceptación del pasajero en soporte real. Protocolo 18 con ACK/epoch
+   de caminata separados; nave y tripulación usan la misma pose renderizada. Alternar timón/caminata
+   cancela empuje previo; desconexión, cambio de fuente y pérdida de soporte conservan rescate local.
+   El ensayo admite propietario y tres invitados; no activa PvP, producción ni editor durante navegación.
+4. **Contacto/HP en el puente.** Llevar el contacto costero y daño modular ya existentes al tick del
+   World, predicción y feedback. La barrera discreta del piloto todavía retorna al muelle; no representa
+   un choque continuo con daño. Cubierta tras pérdida de piezas y recuperación deben conservar autoridad.
 
 Revisar cada corte antes de activar el conjunto. El ensayo puede usar copia del plano construido,
 sin trasladar bodega real ni conceder otro barco. Editor/producción en movimiento requieren contrato

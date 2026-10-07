@@ -28,16 +28,19 @@ import { pilotPoint } from '../../src/sim/naval/pilotGeometry.js';
 const $ = (id) => document.getElementById(id);
 const SEED = 20261006;
 const CLIENT_ID = 'naval-pilot-lab';
+const GUEST_ID = 'naval-pilot-guest';
 const mobile = matchMedia('(pointer: coarse)').matches || new URLSearchParams(location.search).get('mobile') === '1';
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const axes = { throttle: 0, brake: 0, steer: 0 };
+const axes = { throttle: 0, brake: 0, steer: 0, x: 0, z: 0 };
+let coastBrake = 0;
 const held = new Set();
 const faults = [];
-const lab = { client: null, server: null, transport: null, ready: Promise.resolve(false), mount, leave, setAxes, diagnostics };
+const lab = { client: null, guest: null, server: null, transport: null, ready: Promise.resolve(false), mount, leave, setAxes, diagnostics,
+  walk: () => toggleWalk(), guestToggle: () => toggleGuest() };
 window.__navalPilotLab = lab;
 
-let renderer, scene, camera, pipeline, sea, bottom, sun, sky, layer, character, framing, sound, effects, raftSkin;
-let client, server, transport, serverMap, shipId = null, raf = 0, lastFrame = 0, accumulator = 0;
+let renderer, scene, camera, pipeline, sea, bottom, sun, sky, layer, character, guestCharacter, framing, sound, effects, raftSkin;
+let client, guest = null, server, transport, guestTransport = null, transports = new Map(), serverMap, shipId = null, raftProfileBaseline = null, guestProfileBaseline = null, raf = 0, lastFrame = 0, accumulator = 0;
 let running = true, bootNumber = 0, readyResolve = null, latestError = '', lastPilotEvent = null;
 
 class MemoryTransport {
@@ -86,7 +89,7 @@ function fixtureProfile(profile, kind) {
   return profile;
 }
 
-function findDeckPosition(world, owner, raft) {
+function findDeckPosition(world, owner, raft, avoidEntity = 0) {
   const ecs = world.ecs;
   world.raftDeck.update(publicRafts(world));
   // Put the fixture's pilot in an open tile, with both feet inside the deck rather than on its rim.
@@ -100,6 +103,7 @@ function findDeckPosition(world, owner, raft) {
     });
     if (occupied) continue;
     const p = pilotPoint(raft, { x: (tile[1] + 0.5) * RAFT.cell, y: 0, z: (tile[2] + 0.5) * RAFT.cell, f: 0 });
+    if (avoidEntity && Math.hypot(p.x - ecs.x[avoidEntity], p.z - ecs.z[avoidEntity]) < 1.6) continue;
     const surface = world.raftDeck.surface(p.x, p.z, p.y);
     if (surface?.id !== raft.id || surface.kind !== 'deck' || world.raftDeck.blocked(p.x, p.z, surface.y, 0.3)) continue;
     ecs.x[owner] = p.x; ecs.y[owner] = surface.y; ecs.z[owner] = p.z;
@@ -119,33 +123,43 @@ function say(text) { $('notice').textContent = text; }
 
 function clearControls(sendNeutral = true) {
   held.clear();
-  axes.throttle = axes.steer = 0;
+  axes.throttle = axes.steer = axes.x = axes.z = 0;
   axes.brake = sendNeutral ? 1 : 0;
+  coastBrake = sendNeutral ? 1 : 0;
   document.querySelectorAll('.helm-key').forEach((button) => button.classList.remove('active'));
-  if (sendNeutral && client?.naval.active) {
-    client.neutralNaval();
-    try { transport.drain(); } catch (error) { recordError(error); }
+  if (sendNeutral && (client?.naval.active || client?.deck?.active)) {
+    if (client.deck?.active) {
+      client.neutralDeck();
+      client.neutralNaval();
+    } else client.neutralNaval();
+    guest?.neutralDeck();
+    try { flush(); } catch (error) { recordError(error); }
   }
 }
 
-function currentAxes() { return { throttle: axes.throttle, brake: axes.brake, steer: axes.steer }; }
+function currentAxes() { return client?.deck?.active ? { mx: axes.x, mz: axes.z } : { throttle: axes.throttle, brake: axes.brake, steer: axes.steer }; }
 
 function setAxes(value = {}) {
   axes.throttle = Math.max(0, Math.min(1, Number(value.throttle) || 0));
   axes.brake = Math.max(0, Math.min(1, Number(value.brake) || 0));
   axes.steer = Math.max(-1, Math.min(1, Number(value.steer) || 0));
+  axes.x = Math.max(-1, Math.min(1, Number(value.mx ?? value.x) || 0));
+  axes.z = Math.max(-1, Math.min(1, Number(value.mz ?? value.z) || 0));
   return currentAxes();
 }
 
 function mapKey(event, down) {
   const key = event.key.toLowerCase();
   const axis = ({ w: 'throttle', arrowup: 'throttle', s: 'brake', arrowdown: 'brake', a: 'left', arrowleft: 'left', d: 'right', arrowright: 'right' })[key];
-  if (!axis || !client?.naval.active) return;
+  if (!axis || !(client?.naval.active || client?.deck?.active)) return;
+  coastBrake = 0;
   event.preventDefault();
   if (down) held.add(axis); else held.delete(axis);
   axes.throttle = held.has('throttle') ? 1 : 0;
   axes.brake = held.has('brake') ? 1 : 0;
   axes.steer = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
+  axes.x = axes.steer;
+  axes.z = (held.has('throttle') ? 1 : 0) - (held.has('brake') ? 1 : 0);
   document.querySelectorAll('.helm-key').forEach((button) => button.classList.toggle('active', held.has(button.dataset.axis)));
 }
 
@@ -153,7 +167,7 @@ function bindInputs() {
   window.addEventListener('keydown', (event) => mapKey(event, true));
   window.addEventListener('keyup', (event) => mapKey(event, false));
   for (const button of document.querySelectorAll('.helm-key')) {
-    const press = (event) => { event.preventDefault(); if (!client?.naval.active) return; button.setPointerCapture?.(event.pointerId); held.add(button.dataset.axis); mapButtonAxes(); button.classList.add('active'); };
+    const press = (event) => { event.preventDefault(); if (!(client?.naval.active || client?.deck?.active)) return; button.setPointerCapture?.(event.pointerId); held.add(button.dataset.axis); mapButtonAxes(); button.classList.add('active'); };
     const release = (event) => { event.preventDefault(); held.delete(button.dataset.axis); mapButtonAxes(); button.classList.remove('active'); };
     button.addEventListener('pointerdown', press);
     for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(type, release);
@@ -163,15 +177,78 @@ function bindInputs() {
 }
 
 function mapButtonAxes() {
+  coastBrake = 0;
   axes.throttle = held.has('throttle') ? 1 : 0;
   axes.brake = held.has('brake') ? 1 : 0;
   axes.steer = (held.has('right') ? 1 : 0) - (held.has('left') ? 1 : 0);
+  axes.x = axes.steer;
+  axes.z = (held.has('throttle') ? 1 : 0) - (held.has('brake') ? 1 : 0);
 }
 
-function flush() { transport?.drain(); }
+function flush() {
+  for (let pass = 0; pass < 8; pass++) {
+    for (const current of transports.values()) current.drain();
+    if ([...transports.values()].every((current) => !current.outbound.length && !current.inbound.length)) return;
+  }
+  throw new Error('Las colas clonadas no llegaron a estado neutral.');
+}
+
+function toggleWalk() {
+  if (!client?.joined || !shipId) return false;
+  clearControls(false);
+  if (client.deck?.active) {
+    client.helmNaval();
+    say('Regresaste al timón; la cubierta sigue bajo el mismo trial.');
+  } else if (client.naval.active) {
+    client.walkNaval();
+    say('Caminas sobre cubierta; el timón queda neutral mientras la balsa avanza por inercia.');
+  } else return false;
+  flush();
+  return true;
+}
+
+function stopGuest() {
+  if (!guest) return false;
+  try { if (guest.deck?.active) guest.leaveDeck(); flush(); } catch {}
+  try { server?.disconnect(GUEST_ID); } catch {}
+  transports.delete(GUEST_ID); guest = null; guestTransport = null; lab.guest = null;
+  $('passenger').textContent = 'Crear pasajero';
+  say('Pasajero de prueba retirado.');
+  return true;
+}
+
+function toggleGuest() {
+  if (guest) return stopGuest();
+  if (!client?.joined || !shipId) return false;
+  guestTransport = new MemoryTransport((message) => server.receive(GUEST_ID, message));
+  transports.set(GUEST_ID, guestTransport);
+  guest = new GameClient(guestTransport, serverMap, { emit(type, event) {
+    if (type === 'net:error') recordError(new Error(`El invitado perdió conexión: ${event.code}`));
+  } });
+  lab.guest = guest;
+  server.connect(GUEST_ID);
+  guest.start();
+  const profile = newProfile();
+  guestProfileBaseline = JSON.stringify(profile);
+  guest.join('Pasajero de prueba', 0, 0, guestProfileBaseline);
+  flush();
+  const guestEntity = server.clients.get(GUEST_ID)?.entity || 0;
+  const ownerEntity = server.clients.get(CLIENT_ID)?.entity || 0;
+  const raft = shipId && publicRafts(server.world).find((item) => item.id === shipId);
+  if (!guestEntity || !ownerEntity || !raft) throw new Error('No se pudo crear el cliente invitado de cubierta.');
+  findDeckPosition(server.world, guestEntity, raft, ownerEntity);
+  server.broadcastSnapshot(); flush(); guest.update(0, 0);
+  guestProfileBaseline = JSON.stringify(server.world.profiles.get(guestEntity));
+  client.inviteNaval(shipId, guestEntity); flush();
+  guest.boardNaval(shipId); flush();
+  if (!client.naval.active && !client.deck?.active) { client.mountNaval(shipId); flush(); }
+  $('passenger').textContent = 'Quitar pasajero';
+  say('Invitación y aceptación de cubierta enviadas por ambos clientes.');
+  return true;
+}
 
 function mount() {
-  if (!client?.joined || client.naval.active || !shipId) return false;
+  if (!client?.joined || client.naval.active || client.deck?.active || !shipId) return false;
   const owner = server.clients.get(CLIENT_ID)?.entity || 0, ecs = server.world.ecs;
   const surface = server.world.raftDeck.surface(ecs.x[owner], ecs.z[owner], ecs.y[owner]);
   if (!owner || surface?.id !== shipId || surface.kind !== 'deck') {
@@ -187,11 +264,11 @@ function mount() {
 }
 
 function leave() {
-  if (!client?.naval.active) return false;
+  if (!client?.naval.active && !client?.deck?.active) return false;
   clearControls(false);
   client.leaveNaval();
   flush();
-  say('Salida del puesto solicitada; el servidor devolverá al piloto al muelle.');
+  say('Salida del trial solicitada; el servidor devolverá al piloto y sus invitados al muelle.');
   return true;
 }
 
@@ -217,15 +294,27 @@ function sessionSnapshot() {
 
 function diagnostics() {
   const s = sessionSnapshot();
+  const guestEntity = guest?.youServer || 0;
   return {
     tick: s?.tick ?? 0, active: !!s?.active, epoch: s?.epoch ?? 0, ack: s?.ack ?? 0,
     shipId: s?.shipId ?? null, hull: s?.hull ?? '—',
     shipPose: s?.shipPose ? structuredClone(s.shipPose) : null,
     pilotPose: s?.pilotPose ? structuredClone(s.pilotPose) : null,
     rig: s?.rig ? structuredClone(s.rig) : null,
+    deckMode: client?.deck?.mode || (client?.deck?.active ? 'walking' : client?.naval.active ? 'helm' : 'none'),
+    deckActive: !!client?.deck?.active, deckEpoch: client?.deck?.epoch || 0,
+    deckAck: client?.deck?.ack || 0,
+    deckState: client?.deck?.state ? structuredClone(client.deck.state) : null,
+    deckShipId: client?.deck?.shipId || null,
+    profileBaseline: !!s?.profile && JSON.stringify(s.profile) === raftProfileBaseline,
+    guest: guest ? { clientId: GUEST_ID, entity: guestEntity, active: !!guest.deck?.active,
+      shipId: guest.deck?.shipId || null, epoch: guest.deck?.epoch || 0,
+      serverPosition: guestEntity && server ? { x: server.world.ecs.x[guestEntity], y: server.world.ecs.y[guestEntity], z: server.world.ecs.z[guestEntity], f: server.world.ecs.facing[guestEntity] } : null,
+      profileBaseline: !!guestEntity && !!server && JSON.stringify(server.world.profiles.get(guestEntity)) === guestProfileBaseline,
+    } : null,
     errors: [...faults, ...(latestError ? [latestError] : [])],
     connected: !!client?.joined, ready: !!client?.joined && !!server,
-    controls: currentAxes(), glError: renderer?.getContext().getError() ?? null,
+    controls: { ...currentAxes(), ...(client?.deck?.active ? { brake: coastBrake } : {}) }, glError: renderer?.getContext().getError() ?? null,
     assetErrors: [...assets.errors], mobile, lastPilotEvent,
     sourceEcsPose: s?.shipId && server?.world.rafts.get(s.shipId) ? (() => { const r = server.world.rafts.get(s.shipId), e = r.entity, ecs = server.world.ecs; return { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e], yaw: ecs.facing[e] }; })() : null,
   };
@@ -244,15 +333,18 @@ async function bootSession() {
   const serial = ++bootNumber;
   if (server) {
     clearControls(false);
-    try { if (client?.naval.active) client.leaveNaval(); flush(); } catch {}
+    try { if (client?.naval.active || client?.deck?.active) client.leaveNaval(); if (guest?.deck?.active) guest.leaveDeck(); flush(); } catch {}
+    try { server.disconnect(GUEST_ID); } catch {}
     server.disconnect(CLIENT_ID);
     server.stop();
   }
-  client = null; transport = null; server = null; shipId = null;
-  lab.client = null; lab.server = null; lab.transport = null;
+  client = null; guest = null; transport = null; guestTransport = null; server = null; shipId = null; transports = new Map();
+  lab.client = null; lab.guest = null; lab.server = null; lab.transport = null;
   latestError = ''; $('error').hidden = true;
   setConnection(false, 'Abriendo instancia aislada…');
-  $('mount').disabled = $('leave').disabled = true;
+  $('mount').disabled = $('leave').disabled = $('walk').disabled = $('passenger').disabled = true;
+  $('passenger').textContent = 'Crear pasajero';
+  guestProfileBaseline = null;
   const promise = new Promise((resolve) => { readyResolve = resolve; });
   lab.ready = promise;
 
@@ -260,9 +352,11 @@ async function bootSession() {
   serverMap = generateWorld(serverSeed);
   const clientId = CLIENT_ID;
   server = new NavalPilotServer({ seed: serverSeed, saves: trustSaves, send: (id, message) => {
-    if (id === clientId && transport) transport.inbound.push(structuredClone(message));
+    const target = transports.get(id);
+    if (target) target.inbound.push(structuredClone(message));
   } });
   transport = new MemoryTransport((message) => server.receive(clientId, message));
+  transports.set(clientId, transport);
   lastPilotEvent = null;
   const bus = { emit(type, event) {
     if (type === 'net:error') { recordError(new Error(`El servidor detuvo el ensayo: ${event.code}`)); return; }
@@ -280,6 +374,7 @@ async function bootSession() {
   if (!prepareRaftProfile(server.world, profile)) throw new Error('No se pudo preparar la balsa de prueba.');
   fixtureProfile(profile, $('fixture').value);
   const saved = JSON.stringify(profile);
+  raftProfileBaseline = saved;
   client.join('Piloto de prueba', 0, 0, saved);
   flush();
   const session = server.clients.get(clientId);
@@ -289,6 +384,7 @@ async function bootSession() {
   const publicRaft = shipId && publicRafts(server.world).find((item) => item.id === shipId);
   if (!publicRaft) throw new Error('La balsa de prueba no llegó a la cubierta pública.');
   findDeckPosition(server.world, session.entity, publicRaft);
+  raftProfileBaseline = JSON.stringify(server.world.profiles.get(session.entity));
   layer.dock = server.world.map.dock;
   server.broadcastSnapshot();
   flush();
@@ -307,7 +403,8 @@ function resolveReady(value) { readyResolve?.(value); readyResolve = null; }
 
 function getVisualState() {
   if (!client) return null;
-  const raft = client.pred.rafts.find((item) => item.id === shipId);
+  const visualShipId = client.deck?.shipId || shipId;
+  const raft = client.pred.rafts.find((item) => item.id === visualShipId);
   const body = client.naval.active ? client.naval.body : null;
   const rig = body?.operational?.rig || (raft ? buildNavalRig(raft.parts) : null);
   if (!rig) return null;
@@ -321,16 +418,35 @@ function updateHud() {
   const owner = server?.clients.get(CLIENT_ID)?.entity || 0, ecs = server?.world.ecs;
   const surface = owner && ecs ? server.world.raftDeck.surface(ecs.x[owner], ecs.z[owner], ecs.y[owner]) : null;
   const onDeck = surface?.id === shipId && surface.kind === 'deck';
-  $('mount').disabled = !client?.joined || active || !shipId;
+  const walking = !!client?.deck?.active, passengerActive = !!guest?.deck?.active;
+  $('mount').disabled = !client?.joined || active || walking || !shipId;
   $('mount').querySelector('span').textContent = onDeck ? '⇢' : '↻';
   $('mount').lastChild.textContent = onDeck ? ' Subir al timón' : ' Preparar otro ensayo';
-  $('leave').disabled = !active;
-  $('pilot-badge').textContent = active ? 'AL TIMÓN' : 'A PIE';
-  $('pilot-badge').classList.toggle('active', active);
-  $('pilot-state').textContent = active ? 'Piloto unido a la cubierta móvil' : client?.joined ?
+  $('leave').disabled = !(active || walking);
+  $('walk').disabled = !(active || walking);
+  $('walk').textContent = walking ? 'Tomar el timón' : 'Caminar en cubierta';
+  $('control-mode').textContent = walking ? 'CUBIERTA' : 'TIMÓN';
+  $('control-help').textContent = walking ? 'A / D eje local X · W / S eje Z' : 'Avanzar · frenar · girar';
+  for (const [axis, label] of Object.entries(walking ? { left: 'Caminar a la izquierda', right: 'Caminar a la derecha', throttle: 'Caminar hacia delante', brake: 'Caminar hacia atrás' } :
+    { left: 'Girar a babor', right: 'Girar a estribor', throttle: 'Avanzar', brake: 'Frenar' })) {
+    const button = document.querySelector(`.helm-key[data-axis="${axis}"]`);
+    if (button) button.setAttribute('aria-label', label);
+  }
+  $('passenger').disabled = !client?.joined;
+  $('pilot-badge').textContent = walking ? 'CAMINANDO' : active ? 'AL TIMÓN' : 'A PIE';
+  $('pilot-badge').classList.toggle('active', active || walking);
+  $('pilot-state').textContent = walking ? 'A pie en cubierta móvil · sin empuje' : active ? 'Piloto unido a la cubierta móvil' : client?.joined ?
     onDeck ? 'Balsa amarrada · lista para embarcar' : 'Piloto en el muelle · prepara otro ensayo' : 'Conectando con la sesión local';
-  $('readout-state').textContent = active ? 'Navegando' : client?.joined ? onDeck ? 'En cubierta' : 'En muelle' : 'Conectando';
-  $('occupants').textContent = active ? '1 / 1' : '0 / 1';
+  $('readout-state').textContent = walking ? 'Caminando' : active ? 'Navegando' : client?.joined ? onDeck ? 'En cubierta' : 'En muelle' : 'Conectando';
+  const occupants = [owner, guest?.youServer].filter((e) => e && ecs?.alive[e] &&
+    server.world.raftDeck.surface(ecs.x[e], ecs.z[e], ecs.y[e])?.id === shipId).length;
+  $('occupants').textContent = String(occupants);
+  const crew = [];
+  if (client?.joined) crew.push(`Piloto · ${walking ? 'a pie' : active ? 'timón' : 'muelle'}`);
+  if (guest) crew.push(`Invitado ${passengerActive ? '· pasajero' : '· en espera'}`);
+  $('crew').textContent = crew.length ? crew.join('  /  ') : 'Sin tripulación';
+  $('deck-position').textContent = walking && d.deckState ? `Cubierta · x ${Number(d.deckState.x || 0).toFixed(1)} / z ${Number(d.deckState.z || 0).toFixed(1)}` :
+    passengerActive && guest.deck.state ? `Pasajero · x ${Number(guest.deck.state.x || 0).toFixed(1)} / z ${Number(guest.deck.state.z || 0).toFixed(1)}` : 'Posición relativa · —';
   $('tick').textContent = String(d.tick);
   $('ack').textContent = String(d.ack);
   const speed = v ? Math.hypot(v.state.vx || 0, v.state.vz || 0) : 0;
@@ -357,6 +473,17 @@ function draw(dt, alpha) {
     }
     const local = client.localState(alpha, {});
     character.update(dt, local);
+    if (guestCharacter) {
+      guestCharacter.root.visible = !!guest?.deck?.active;
+      if (guest?.deck?.active) {
+        const guestState = guest.localState(alpha, {});
+        const renderedRaft = records.find((item) => item.id === shipId);
+        const sharedPose = renderedRaft ? { x: renderedRaft.x, y: renderedRaft.y, z: renderedRaft.z, yaw: renderedRaft.yaw } : v.pose;
+        const attached = guest.deck.position(sharedPose, alpha);
+        if (attached) Object.assign(guestState, attached);
+        guestCharacter.update(dt, guestState);
+      }
+    }
     const cameraState = { ...v.state, yaw: v.state.yaw ?? v.pose.yaw, vx: v.state.vx || 0, vz: v.state.vz || 0, omega: v.state.omega || 0 };
     framing.update(dt, { state: cameraState, rig: v.rig, pose: v.pose, mode: 'chase', paused: document.hidden });
     sea.position.set(v.pose.x, 0, v.pose.z); bottom.position.set(v.pose.x, -8, v.pose.z);
@@ -376,8 +503,14 @@ function draw(dt, alpha) {
 function fixedTick() {
   if (!client || !server || !client.joined || server.navalFault) return;
   try {
-    if (client.naval.active) client.tickNaval(currentAxes());
+    if (client.naval.active && !client.deck?.active) client.tickNaval(currentAxes());
+    if (client.deck?.active) {
+      client.tickNaval({ throttle: 0, brake: coastBrake, steer: 0 });
+      client.tickDeck({ mx: axes.x, mz: axes.z });
+    }
+    if (guest?.deck?.active) guest.tickDeck({ mx: 0, mz: 0 });
     client.update(NAVAL_STEP, NAVAL_STEP);
+    guest?.update(NAVAL_STEP, NAVAL_STEP);
     flush();
     server.step();
     flush();
@@ -422,6 +555,9 @@ async function initializeScene() {
   layer = new RaftLayer(scene, { dock: null, surfaceSkin: raftSkin || null });
   character = new CharacterView(0, { sword: false });
   scene.add(character.root);
+  guestCharacter = new CharacterView(0, { sword: false });
+  guestCharacter.root.visible = false;
+  scene.add(guestCharacter.root);
   sound = new NavalLabAudio({ mobile }); sound.setEnabled(false);
   $('sound').addEventListener('click', async () => {
     const enabled = $('sound').getAttribute('aria-pressed') !== 'true';
@@ -459,6 +595,8 @@ async function start() {
   await initializeScene();
   $('mount').addEventListener('click', mount);
   $('leave').addEventListener('click', leave);
+  $('walk').addEventListener('click', toggleWalk);
+  $('passenger').addEventListener('click', toggleGuest);
   $('fixture').addEventListener('change', () => { bootSession().catch(recordError); });
   await bootSession();
   raf = requestAnimationFrame(frame);

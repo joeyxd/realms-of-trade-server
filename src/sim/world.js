@@ -176,7 +176,7 @@ export class World {
   applyCommand(e, cmd) {
     if (!this.ecs.alive[e]) return;
     // The bounded helm parks land locomotion/combat. They cannot become a second pose authority.
-    if (this.navalPilot?.has(e)) { this.ecs.lastSeq[e] = cmd.seq >>> 0; return; }
+    if (this.navalPilot?.aboard(e)) { this.ecs.lastSeq[e] = cmd.seq >>> 0; return; }
     stepMover(this, e, cmd, DT);
     if (this.ecs.mask[e] & C.HEALTH) stepPlayerCombat(this, e, cmd, DT);
     this.flushFeel(e);

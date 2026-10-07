@@ -11,7 +11,8 @@ export class NavalPilotServer extends LocalServer {
     const send = options.send;
     super({ ...options, bots: 0, enemies: false, debug: false, dev: false, instanceTime: false, pausable: false,
       maxPlayers: 4, send: (id, msg) => send(id, msg.t === MSG.SNAPSHOT && server
-        ? { ...msg, naval: server.world.navalPilot.snapshot(server.clients.get(id)?.entity) } : msg) });
+        ? { ...msg, naval: server.world.navalPilot.snapshot(server.clients.get(id)?.entity),
+          deck: server.world.navalPilot.deckSnapshot(server.clients.get(id)?.entity) } : msg) });
     server = this;
     this.navalFault = null;
     this.world.navalTrial = new NavalTrial(this.world);
@@ -31,9 +32,14 @@ export class NavalPilotServer extends LocalServer {
   }
 
   receive(id, msg) {
-    if (msg?.t !== MSG.SHIP_INPUT) return super.receive(id, msg);
+    if (msg?.t !== MSG.SHIP_INPUT && msg?.t !== MSG.DECK_INPUT) return super.receive(id, msg);
     const c = this.clients.get(id);
     if (!c?.entity || this.navalFault) return;
+    if (msg.t === MSG.DECK_INPUT) {
+      const { epoch, seq, mx, mz } = msg;
+      this.world.navalPilot.deckInput(c.entity, { epoch, seq, mx, mz });
+      return;
+    }
     const { epoch, seq, throttle, brake, steer } = msg;
     this.world.navalPilot.input(c.entity, { epoch, seq, throttle, brake, steer });
   }
@@ -44,12 +50,17 @@ export class NavalPilotServer extends LocalServer {
     if (msg?.type === 'navalPilot') {
       if (!this.commandAllowed(c, { world: true, target: null })) return false;
       const ok = msg.op === 'mount' ? pilot.mount(c.entity, msg.shipId) :
-        msg.op === 'leave' ? pilot.leave(c.entity, msg.epoch) : false;
+        msg.op === 'leave' ? pilot.leave(c.entity, msg.epoch) :
+        msg.op === 'invite' ? pilot.invite(c.entity, msg.shipId, msg.target) :
+        msg.op === 'board' ? pilot.board(c.entity, msg.shipId) :
+        msg.op === 'walk' ? pilot.walk(c.entity, msg.epoch) :
+        msg.op === 'helm' ? pilot.helm(c.entity, msg.epoch) :
+        msg.op === 'deckleave' ? pilot.leaveDeck(c.entity, msg.epoch) : false;
       if (ok) { c.queue.length = 0; c.carry = 0; c.last = null; c.fillPt = 0; }
       this.world.emit({ type: 'navalPilot', to: c.entity, op: msg.op, ok, ...pilot.snapshot(c.entity) });
       return ok;
     }
-    if (pilot.has(c.entity)) return false;
+    if (pilot.aboard(c.entity)) return false;
     return super.playerCommand(c, msg);
   }
 
