@@ -57,6 +57,7 @@ export class GameHost {
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
+      commandAccess: (id, entity, plan) => this.commandAvailable(id, entity, plan),
       beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
       onSave: (id, p) => this.saveProfile(id, p),
     });
@@ -268,6 +269,26 @@ export class GameHost {
     } catch (error) {
       // Busy is expected while SQL/receipt/tick apply owns a lane. Invalid authority also denies
       // output; neither outcome may sync the old inventory, clear scheduling or crash the pump.
+      if (error instanceof StoreError) return false;
+      throw error;
+    }
+  }
+
+  commandAvailable(id, entity, plan) {
+    try {
+      const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
+      if (plan.target !== null) {
+        // The target is an entity selector, never an account identity. Resolve the current client
+        // and authenticated session, including all its inventory/ledger lanes, before transfer.
+        const targetId = this.server.clientOf(plan.target);
+        if (!this.server.world.ecs.alive[plan.target]) throw new StoreError('session');
+        const target = this.profileLanes(targetId, plan.target);
+        lanes.accounts.push(...target.accounts); lanes.uids.push(...target.uids);
+      }
+      gate.assertAvailable(lanes);
+      if (plan.world) gate.assertWorldAvailable();
+      return true;
+    } catch (error) {
       if (error instanceof StoreError) return false;
       throw error;
     }

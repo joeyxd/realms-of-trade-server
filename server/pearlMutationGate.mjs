@@ -41,6 +41,20 @@ class PearlMutationGate {
 
   assertAvailable(raw) { this.#check(resources(raw)); }
 
+  // Immediate commands that mint unknown UIDs or affect shared world state need every pearl lane
+  // available. Ordinary connected accounts and autosave tasks are allowed; startup's idle barrier
+  // below is deliberately stricter. This check does not reserve, await or make a command durable.
+  assertWorldAvailable() {
+    const s = this.#sessions;
+    s.pearls.requireReady();
+    if (this.#hydration || this.#held.size || s.pearls.uids.size || s.pearls.operationIds.size ||
+        s.pearls.unresolved.size || s.pearls.accountIds.size) throw new StoreError('busy');
+    for (const session of s.accounts.values()) {
+      if (session.pearlBusy) throw new StoreError('busy');
+      if (session.closed || session.failed) throw new StoreError('session');
+    }
+  }
+
   // Startup restoration needs a barrier across every lane, including UIDs not yet discovered by
   // pagination. Recovery starts before admission; hydration requires the queue recovered and idle.
   #assertIdle(requireReady = true) {

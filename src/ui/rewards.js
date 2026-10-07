@@ -166,6 +166,8 @@ export class Rewards {
         else { sfx.buy(); if (ev.what === 'potion') this.over('+1 poción', 'heal'); }
         break;
       // ---- Tattoos (M4.7) ----
+      case 'commandDenied':
+        sfx.denied(); H.toast('<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.', 5000); break;
       case 'pearlDenied': {
         const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', confirm: 'Confirma qué perla quieres soltar antes de reemplazarla.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', vendor: 'Acércate al puesto de Tía Perla para vender.', unknown: 'Ya no llevas esa perla.' };
         sfx.denied(); H.toast(`<b>${why[ev.why] || why.unknown}</b>`, 5000); break;

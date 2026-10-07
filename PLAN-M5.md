@@ -142,6 +142,18 @@ Siguen hooks de mutación/autónomos, snapshot canónico/apply/startup del host,
 finalizador durable (último progreso no garantizado en cierre bloqueado), muerte completa y afinidad.
 P4/P6 parciales; protocolo 16 conservado.
 
+Checkpoint D09f-2b.11, base `88f8cdd`: **preflight inmediato de comandos conectado al host**.
+Player/dev/debug consultan cuenta trusted y UIDs actuales antes de helpers; give incluye receptor.
+Mint/RNG/mercado/deck/encuentro consultan todas las reservas de perlas del mundo; cuentas y autosaves
+ordinarios siguen disponibles. Busy devuelve aviso privado sin eventos World, dirty/saveAt ni éxito
+del helper; no encola reintentos. **809/809** pertinentes en 61 archivos, **23 nuevas**;
+182 fuentes comprobadas antes/después. Staging real manual cubre espera de RPC y gap receipt→drain;
+comandos válidos de equipo/misión/cofre/mint/caches conservan estado y funcionan al reintentar.
+Aviso GameClient→Rewards y capturas aisladas 1280×720/390×844 inspeccionadas (layout, con shim de animación).
+[Contrato/evidencia](docs/delivery/d09f-pearl-command-access.md). Sin SQL/env, durabilidad de comandos
+ni activación automática. Siguen efectos autónomos, snapshot/apply/startup del host, finalizador durable,
+muerte completa, scope/reloj/adopción y afinidad permanente. P4/P6 parciales; protocolo 16 conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

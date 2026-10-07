@@ -31,14 +31,24 @@ const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
+const PLAYER_COMMANDS = new Set(['equip', 'unequip', 'salvage', 'open', 'talk', 'quest', 'buy', 'sell',
+  'tut', 'tier', 'loadout', 'form', 'learn', 'pearl', 'market', 'commerce', 'raft']);
+const PEARL_COMMANDS = new Set(['swallow', 'spit', 'leave', 'give', 'sell']);
+const WORLD_COMMANDS = new Set(['open', 'talk', 'quest', 'buy', 'market', 'commerce', 'raft']);
+const DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'god', 'weapon', 'heal', 'clock', 'riposte',
+  'level', 'mastery', 'tattoos', 'pearl', 'tattoo', 'loadout', 'tier', 'gold', 'drop', 'potions', 'item']);
+const WORLD_DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'clock', 'pearl', 'drop', 'item']);
+
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
     if ([profileAccess, beforeDetach].some((hook) => hook !== null && typeof hook !== 'function')) throw new TypeError('profile hook');
     this.profileAccess = profileAccess;
     this.beforeDetach = beforeDetach;
+    if (commandAccess !== null && typeof commandAccess !== 'function') throw new TypeError('command hook');
+    this.commandAccess = commandAccess;
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
@@ -178,11 +188,7 @@ export class LocalServer {
       case MSG.CMD: {
         if (msg.type === 'pause') { c.paused = this.pausable && !!msg.on; break; }
         // Local-only debug teleport (used by tools/shot.mjs). A real server never implements this.
-        if (this.debug && msg.type === 'debug_teleport' && c.entity && Number.isFinite(msg.x) && Number.isFinite(msg.z)) {
-          const ecs = this.world.ecs;
-          ecs.x[c.entity] = msg.x; ecs.z[c.entity] = msg.z; ecs.y[c.entity] = this.world.map.groundAt(msg.x, msg.z);
-          ecs.vx[c.entity] = 0; ecs.vz[c.entity] = 0;
-        }
+        if (msg.type === 'debug_teleport') { this.debugTeleport(c, msg); break; }
         if (this.dev && msg.type === 'dev' && c.entity) this.devCommand(c, msg);
         else if (c.entity) this.playerCommand(c, msg);
         break;
@@ -197,6 +203,13 @@ export class LocalServer {
 
   // What a player asks for with what they own (M4): the bag, the equipment, a chest.
   playerCommand(c, msg) {
+    if (!msg || !PLAYER_COMMANDS.has(msg.type) ||
+        (msg.type === 'pearl' && !PEARL_COMMANDS.has(msg.op))) return false;
+    // Classify without calling a helper: even talk/list/quote can change progress or receipt caches.
+    // Unknown mint UIDs and shared RNG/markets/decks require the conservative world preflight.
+    const pearl = msg.type === 'pearl';
+    if (!this.commandAllowed(c, { world: WORLD_COMMANDS.has(msg.type) || (pearl && msg.op !== 'give'),
+      target: pearl && msg.op === 'give' ? msg.target | 0 : null })) return false;
     const w = this.world, e = c.entity, uid = msg.uid | 0;
     switch (msg.type) {
       case 'equip': equipItem(w, e, uid, typeof msg.slot === 'string' ? msg.slot : undefined); break;
@@ -228,6 +241,26 @@ export class LocalServer {
       case 'raft': raftCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       default: break;
     }
+    return true; // Dispatched, not an acknowledgement of helper success or durable storage.
+  }
+
+  commandAllowed(c, plan) {
+    const id = c && this.clientOf(c.entity);
+    if (!c?.entity || this.clients.get(id) !== c || !this.world.ecs.alive[c.entity] ||
+        !this.world.profiles.has(c.entity)) return false;
+    if (this.commandAccess === null || profileDecision(this.commandAccess(id, c.entity, Object.freeze(plan)), 'command')) return true;
+    // Send feedback directly: a denied command must not touch world events, dirty flags or saveAt.
+    this.send(id, { t: MSG.EVENT, ev: { type: 'commandDenied', to: c.entity, e: c.entity, why: 'busy' } });
+    return false;
+  }
+
+  debugTeleport(c, msg) {
+    if (!this.debug || !msg || !Number.isFinite(msg.x) || !Number.isFinite(msg.z) ||
+        !this.commandAllowed(c, { world: false, target: null })) return false;
+    const ecs = this.world.ecs;
+    ecs.x[c.entity] = msg.x; ecs.z[c.entity] = msg.z; ecs.y[c.entity] = this.world.map.groundAt(msg.x, msg.z);
+    ecs.vx[c.entity] = 0; ecs.vz[c.entity] = 0;
+    return true;
   }
 
   profileAllowed(id, c, purpose) {
@@ -270,6 +303,8 @@ export class LocalServer {
 
   // F4 panel (local server only).
   devCommand(c, msg) {
+    if (!this.dev || !msg || !DEV_COMMANDS.has(msg.op) ||
+        !this.commandAllowed(c, { world: WORLD_DEV_COMMANDS.has(msg.op), target: null })) return false;
     const w = this.world, ecs = w.ecs, e = c.entity;
     const f = (v, d = 0) => (Number.isFinite(v) ? v : d);
     switch (msg.op) {
@@ -307,6 +342,7 @@ export class LocalServer {
       case 'item': giveItem(w, e, rollItem(w.lootRng, { lvl: f(msg.lvl, ecs.level[e]), rarity: msg.rarity === undefined ? undefined : Math.max(0, Math.min(4, f(msg.rarity) | 0)), slot: typeof msg.slot === 'string' ? msg.slot : undefined })); break;
       default: break;
     }
+    return true;
   }
 
   start() {
@@ -448,11 +484,11 @@ export class LocalServer {
   }
 }
 
-function profileDecision(value) {
+function profileDecision(value, kind = 'profile') {
   if (typeof value === 'boolean') return value;
   // Trusted hooks must be synchronous. Consume a rejected accidental Promise before failing closed.
   if (value && typeof value.then === 'function') Promise.resolve(value).catch(() => {});
-  throw new TypeError('profile hook must return a synchronous boolean');
+  throw new TypeError(`${kind} hook must return a synchronous boolean`);
 }
 
 // 'a.b.c' → obj.a.b.c = value (numbers and booleans only; arrays by index).
