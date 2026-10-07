@@ -208,6 +208,17 @@ superiores**, más 21 checks del ensayo naval de pasajeros ya aceptado añadidos
 No agrega diario/startup, SQL/env/protocolo ni afinidad. Recuperación automática/políticas, dispatch
 durable/hooks completos, epoch, finalizador y muerte completa siguen pendientes; P4/P6 parciales.
 
+Checkpoint D09f-2b.17, base `14ede6d`: **recuperación de perlas integrada al arranque trusted del host**.
+Diario inyectado desde construcción, ID/reloj/piloto solo cuentas explícitos y bots cero. Barrera global
+antes del primer await; recuperación/suelo y economía preparadas antes del drain inicial/listener/sim.
+Health/upgrade/comandos/perfiles/tick cerrados hasta ready. Primer fallo cancela la otra autoridad;
+close espera preparación sin aplicar ni reenviar requests. Invitados firmados/importación no se adoptan.
+**1030/1030** pertinentes en 79 archivos/227 fuentes aisladas, **38 checks nuevos en 23 pruebas superiores**.
+[Contrato](docs/briefs/m5-pearl-host-startup.md) y [aceptación](docs/delivery/d09f-pearl-host-startup.md).
+API explícita; entrypoint/configuración productiva y comandos durables todavía no activados. Sin SQL/env/
+protocolo nuevo. Políticas definitivas, dispatch/hooks completos, epoch, finalizador/muerte completa,
+afinidad permanente y P4/P6 siguen pendientes; una autoridad por mundo hasta leases.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

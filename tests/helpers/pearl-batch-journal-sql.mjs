@@ -11,6 +11,8 @@ export const batchJournalSql = await readFile(
   new URL('../../server/migrations/008_pearl_batch_journal.sql', import.meta.url), 'utf8');
 
 const routes = {
+  mn_load_world: ['public.mn_load_world($1)', ['p_world']],
+  mn_save_world: ['public.mn_save_world($1,$2::jsonb,$3::integer)', ['p_world','p_data','p_expected_version']],
   mn_load_profile: ['public.mn_load_profile($1::uuid)', ['p_player_id']],
   mn_save_profile: ['public.mn_save_profile($1::uuid,$2::jsonb,$3::integer)', ['p_player_id','p_data','p_expected_version']],
   mn_load_unique: ['public.mn_load_unique($1)', ['p_uid']],

@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GameHost } from './host.mjs';
 import { hmacSaves, saveSecret } from './saves.mjs';
-import { storeFromEnv } from './store.mjs';
+import { storeFromEnv, StoreError } from './store.mjs';
 import { accountAuthFromEnv, publicAuthConfig } from './auth.mjs';
 import { worldConfigFromEnv } from './worldState.mjs';
 import { GAME } from '../src/data/meta.js';
@@ -26,14 +26,23 @@ const PUBLIC = ['src', 'styles', 'assets'];
 
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
-  worldId = 'marea-negra', worldSaveMs = 60000, pearlStaging = null } = {}) {
+  worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
   if (authConfig.enabled && !resolvePlayer) throw new Error('Account verifier is required');
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs });
+  if (pearlStartup !== null && (!pearlStartup || typeof pearlStartup !== 'object' || Array.isArray(pearlStartup) ||
+      !pearlStartup.journal || pearlStaging === null || worldId === undefined ||
+      Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
+  if (worldId === undefined) worldId = 'marea-negra';
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs,
+    pearlJournal: pearlStartup?.journal ?? null });
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
+  if (pearlStartup !== null) {
+    const { journal, ...startupOptions } = pearlStartup;
+    game.mountPearlStartup(startupOptions);
+  }
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }

@@ -15,6 +15,8 @@ import { profilePearls } from './pearlOperations.mjs';
 import { syncProfile } from '../src/sim/systems/inventory.js';
 import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 import { PearlStaging } from './pearlStaging.mjs';
+import { PearlStartup } from './pearlStartup.mjs';
+import { groundKey } from './pearlGround.mjs';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -27,14 +29,19 @@ const LIMITS = {
 
 export class GameHost {
   #pearlStaging = null; #drainingPearls = false; #pearlFailed = false;
+  #pearlStartup = null; #prepareTask = null; #requiresPearlStartup = false;
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
-    worldId = null, worldSaveMs = 60000 } = {}) {
+    worldId = null, worldSaveMs = 60000, pearlJournal = null } = {}) {
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
     if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
     if (!Number.isFinite(worldSaveMs) || worldSaveMs <= 0 || worldSaveMs > 2147483647) throw new StoreError('configuration');
+    // Recovery owns an empty player authority. Bots and guest adoption need their own later policy.
+    if (pearlJournal !== null && (!resolvePlayer || bots !== 0 || worldId === null ||
+        groundKey(worldId) !== pearlJournal.scope)) throw new StoreError('configuration');
+    this.#requiresPearlStartup = pearlJournal !== null;
     this.log = log;
     this.maxPlayers = maxPlayers;
     this.origins = origins;
@@ -55,7 +62,7 @@ export class GameHost {
       if (this.#drainingPearls) { this.#stopPearls(); return; }
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
-    });
+    }, { journal: pearlJournal });
     // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
@@ -76,6 +83,7 @@ export class GameHost {
   }
 
   get pearlStaging() { return this.#pearlStaging; }
+  get pearlStartup() { return this.#pearlStartup; }
 
   // Explicit, server-owned assembly only. It does not dispatch player commands or recover startup.
   // Install before transport/admission; no caller callbacks may replace the three trusted adapters.
@@ -97,6 +105,27 @@ export class GameHost {
     return staging;
   }
 
+  // Journal identity belongs to ProfileSessions from construction; never replace its live queue.
+  // mapClock is explicit and synchronous. This seam chooses no offline ageing or guest adoption.
+  mountPearlStartup(options = {}) {
+    if (!options || typeof options !== 'object' || Array.isArray(options) ||
+        Object.keys(options).some((key) => !['accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)) ||
+        options.accountPolicy !== 'accounts-only' ||
+        !this.#pearlStaging || !this.profiles.pearls.journal || !this.worldState ||
+        this.profiles.pearls.journal.scope !== this.worldState.id || this.#pearlStaging.scope !== this.worldState.id ||
+        this.#pearlStartup || this.#prepareTask || this.closing || this.wss || this.timer || this.nextId !== 1 ||
+        this.sockets.size || this.joins.size || this.pendingJoins || this.server.clients.size ||
+        this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
+        this.server.world.profiles.size || this.server.world.tick !== 0) throw new StoreError('configuration');
+    this.#pearlStartup = new PearlStartup({ ...options, sessions: this.profiles,
+      world: this.server.world, worldId: this.worldState.id });
+    return this.#pearlStartup;
+  }
+
+  #pearlsReady() {
+    return !this.#requiresPearlStartup || this.#pearlStartup?.ready === true;
+  }
+
   #stopPearls() {
     if (this.#pearlFailed) return;
     this.#pearlFailed = true; this.closing = true;
@@ -107,7 +136,7 @@ export class GameHost {
   }
 
   #drainPearls() {
-    if (this.closing || this.#pearlFailed) return false;
+    if (this.closing || this.#pearlFailed || !this.#pearlsReady()) return false;
     this.#drainingPearls = true;
     try {
       const outcomes = this.#pearlStaging.drain();
@@ -124,7 +153,7 @@ export class GameHost {
       server: http, path, maxPayload: LIMITS.maxPayload, clientTracking: false,
       perMessageDeflate: { threshold: 256, zlibDeflateOptions: { level: 6 }, concurrencyLimit: 4 },
       verifyClient: (info, cb) => {
-        if (this.closing) return cb(false, 503, 'closing');
+        if (!this.healthy()) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
         if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
         cb(true);
@@ -137,7 +166,7 @@ export class GameHost {
   }
 
   start() {
-    if (this.closing || (this.worldState && !this.worldState.ready)) throw new StoreError('world_not_ready');
+    if (this.closing || !this.#pearlsReady() || (this.worldState && !this.worldState.ready)) throw new StoreError('world_not_ready');
     if (this.unsavedProfiles.size) throw new StoreError('flush');
     if (this.timer) return this;
     // Drive the server's fixed-step pump ourselves: one bad tick is logged, it never takes the process down.
@@ -155,20 +184,53 @@ export class GameHost {
     return this;
   }
 
-  async prepare() {
-    if (!this.worldState) return;
-    const economy = await this.worldState.open(this.server.world.economy);
-    if (this.closing) throw new StoreError('cancelled');
-    // The database stores plain state; keep the server's owner-profile and production callbacks attached.
-    economy.payUpkeep = this.server.world.economy.payUpkeep;
-    economy.onAdvance = this.server.world.economy.onAdvance;
-    this.server.world.economy = economy;
+  prepare() {
+    if (this.#prepareTask) return this.#prepareTask;
+    this.#prepareTask = this.#prepare().catch((err) => {
+      if (this.#requiresPearlStartup) this.#stopPearls();
+      throw err;
+    });
+    return this.#prepareTask;
   }
 
-  healthy() { return !this.closing && !this.unsavedProfiles.size && (!this.worldState || this.worldState.ready); }
+  async #prepare() {
+    if (this.closing) throw new StoreError('cancelled');
+    if (!this.#pearlsReady() && !this.#pearlStartup) throw new StoreError('configuration');
+    // Acquire recovery's global barrier synchronously, before either storage authority awaits.
+    // Mapping consumes only its explicit frozen inputs; it must not read a loading World by closure.
+    const recovery = this.#pearlStartup?.start();
+    let failure = null;
+    const observe = (task) => Promise.resolve(task).catch((error) => {
+      failure ??= { error };
+      // Stop on the first rejection, but still settle both authorities before teardown/flush.
+      if (this.#requiresPearlStartup) this.#stopPearls();
+      throw error;
+    });
+    await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery)]);
+    if (failure) throw failure.error;
+    if (this.closing) throw new StoreError('cancelled');
+    if (!this.#pearlStartup) return;
+    // No player or simulation exists yet. Install current ground once before opening transport.
+    const result = this.#pearlStartup.drain();
+    if (result.state !== 'ready' || !this.#pearlStartup.ready) throw new StoreError('recovery');
+  }
+
+  async #prepareEconomy() {
+    if (this.worldState) {
+      const economy = await this.worldState.open(this.server.world.economy);
+      if (this.closing) throw new StoreError('cancelled');
+      // Preserve the current authority's callbacks while restoring its economic clock/RNG first.
+      economy.payUpkeep = this.server.world.economy.payUpkeep;
+      economy.onAdvance = this.server.world.economy.onAdvance;
+      this.server.world.economy = economy;
+    }
+  }
+
+  healthy() { return !this.closing && this.#pearlsReady() && !this.unsavedProfiles.size && (!this.worldState || this.worldState.ready); }
 
   fenceWorld(code) {
     this.log(`[store] world failed: ${code}`);
+    if (this.#requiresPearlStartup) { this.#stopPearls(); return; }
     this.closing = true;
     clearInterval(this.timer); clearInterval(this.worldTimer);
     for (const sock of [...this.sockets.values()]) {
@@ -192,6 +254,7 @@ export class GameHost {
         staging: this.#pearlStaging ? { enabled: true, failed: this.#pearlFailed,
           pending: this.#pearlStaging.tasks.size, completed: this.#pearlStaging.completed.length,
           reserved: this.#pearlStaging.operations.size } : null,
+        startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -244,6 +307,9 @@ export class GameHost {
     try {
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
+      // This explicitly mounted recovery pilot has no guest/backfill authority.
+      if (this.#requiresPearlStartup && identity === null) throw new StoreError('auth');
+      if (this.#requiresPearlStartup && msg.importSave === true) throw new StoreError('legacy');
       let profile;
       if (identity !== null) {
         const initialize = this.initializeAccounts ? (key, fresh) => this.initializeProfile(sock, msg, key, fresh) : null;
@@ -318,7 +384,7 @@ export class GameHost {
   }
 
   profileAvailable(id, entity) {
-    if (this.#pearlFailed) return false;
+    if (this.#pearlFailed || !this.#pearlsReady()) return false;
     try {
       pearlMutationGate(this.profiles).assertAvailable(this.profileLanes(id, entity));
       return true;
@@ -344,7 +410,7 @@ export class GameHost {
   }
 
   commandAvailable(id, entity, plan) {
-    if (this.closing) return false;
+    if (this.closing || !this.#pearlsReady()) return false;
     try {
       const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
       if (plan.target !== null) {
@@ -365,7 +431,7 @@ export class GameHost {
   }
 
   tickAvailable() {
-    if (this.closing) return false;
+    if (this.closing || !this.#pearlsReady()) return false;
     try {
       const gate = pearlMutationGate(this.profiles);
       // Autonomous effects can mint unknown UIDs and touch any connected owner or shared RNG.
@@ -477,19 +543,22 @@ export class GameHost {
     if (this.closePromise) return this.closePromise;
     this.closing = true;
     clearInterval(this.timer); clearInterval(this.beat); clearInterval(this.worldTimer);
+    if (this.#pearlStartup && !['idle', 'ready', 'fenced'].includes(this.#pearlStartup.state)) this.#pearlStartup.cancel();
     this.worldState?.cancelLoad();
     for (const sock of [...this.sockets.values()]) { try { sock.ws.close(1001, 'server restart'); } catch { /* gone */ } this.onClose(sock); }
     if (this.wss) this.wss.close();
     this.worldState?.save(this.server.world.economy);
     this.closePromise = (async () => {
       await Promise.all([...this.joins]);
+      // Cancelled reads may reconcile receipts, but never install ground or admit after close.
+      if (this.#prepareTask) await this.#prepareTask.catch(() => {});
       // Storage continuations may finish after close invalidated and detached their actor. Wait for
       // them, but never drain/apply from shutdown or release an unresolved staging reservation.
       await this.#pearlStaging?.settle();
       // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
       const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
       if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size ||
-          this.#pearlFailed || this.#pearlStaging?.operations.size) throw new StoreError('flush');
+          this.#pearlFailed || !this.#pearlsReady() || this.#pearlStaging?.operations.size) throw new StoreError('flush');
     })();
     return this.closePromise;
   }

@@ -24,7 +24,7 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 | `sendSave` / autosave / final disconnect | 2b.10 bloquea antes de sync y conserva `saveAt`/blob hasta aceptación. [2b.14](m5-pearl-profile-snapshot.md) aporta captura canónica opcional del baseline/apply y save reservado separado, con puente trusted del host; falta montarlo automáticamente. Final save bloqueado se retiene en memoria y close falla flush; falta finalizador durable que conserve/resuelva ese progreso |
 | Close / death / despawn / detach / cambio de entidad | 2b.10 invalida cuenta/UID antes del detach real del host; respuesta tardía no autoriza apply. Sesiones ya invalidan en close/fail/release. Sim death/despawn y otros cambios de entidad todavía necesitan hooks. Invalidation es sticky incluso con revival en el mismo tick |
 | Frontera de tick | [2b.13](m5-pearl-tick-apply.md) aporta `beforeTick` opcional síncrono antes del permiso/pausa, una vez por entrada exterior pump/step/filler. Eventos de apply retenidos hasta tick admitido, sin flush externo de HELLO/disconnect; errores/reentrada sticky. [2b.15](m5-pearl-input-boundary.md) limpia acciones de combate ya recibidas y buffers ECS al confirmar swallow/reemplazo, con rollback y movimiento/ACK conservados. [2b.16](m5-pearl-host-mount.md) permite montaje trusted explícito del host con sus tres adapters; fallo detiene host y teardown espera rollback, close espera IO sin apply. Entry point no lo habilita ni despacha comandos durables; startup/políticas/epoch de extremo a extremo pendientes. Nunca await RPC en sim |
-| HELLO / startup | Diario completo recuperado antes de admitir; hidratar autoridad de ledger/suelo antes de `attachPearls`. [Arranque común dormant](m5-pearl-startup.md) compone diario y [suelo](m5-pearl-ground-hydration.md) con una sola barrera desde el primer await hasta drain. Falta invocarlo desde el host con política explícita de reloj y mantener simulación/admisión detenidas hasta ready |
+| HELLO / startup | [Arranque común](m5-pearl-startup.md) compone diario y [suelo](m5-pearl-ground-hydration.md) con una sola barrera desde el primer await hasta drain. [2b.17](m5-pearl-host-startup.md) lo monta en el host mediante API trusted con diario/ID/reloj/piloto solo cuentas explícitos y bots cero: economía/recuperación asentadas antes de drain/listener/sim/admisión; fallo/cancelación no aplica ni resume. Invitados/importación rechazados en ese piloto; entrypoint/dispatch completo/políticas definitivas siguen pendientes |
 
 ## Contratos que preceden la activación
 
@@ -46,7 +46,8 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 - La barrera común de startup impide nuevas lanes desde la recuperación del diario hasta la instalación
   de suelo, incluso cuando la queue ya marca admisión disponible. Hidratación exige cero sesiones,
   tasks y operaciones pendientes después de recuperar el diario. No sustituye los hooks de gameplay,
-  no publica suelo al cliente ni restaura perfiles/efectos históricos; el host sigue sin conectarla.
+  no restaura perfiles/efectos históricos. 2b.17 conecta esa barrera al host explícito y el suelo instalado
+  entra en sus snapshots ordinarios tras admisión; no habilita la circulación durable ni recupera todo World.
 - Scope/namespace estables, cuentas/invitados/adopción de raras y mapping del reloj de suelo se resuelven
   explícitamente antes de habilitar restauración. SQL conserva números; no escoge envejecimiento offline.
 - Un solo host por mundo hasta leases P5. Movimientos generales barco/puerto/mercado siguen como otros cortes.
