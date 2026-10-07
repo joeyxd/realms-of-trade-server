@@ -23,7 +23,7 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 | `sendProfile` / perfil privado de snapshot | [2b.10](m5-pearl-profile-io.md) conecta preflight de cuenta/UID del host antes de `syncProfile`, borrar dirty o enviar; busy conserva dirty y programación. Snapshot actual separado: solo tuples ECS de movimiento/combate, sin inventario/UID/blob/recibo, continúa durante la espera |
 | `sendSave` / autosave / final disconnect | 2b.10 bloquea antes de sync y conserva `saveAt`/blob hasta aceptación. No envía snapshots viejos durante reserva. Falta integrar `staging.save` y snapshot canónico en el futuro apply del tick. Final save bloqueado se retiene en memoria y close falla flush; falta finalizador durable que conserve/resuelva ese progreso |
 | Close / death / despawn / detach / cambio de entidad | 2b.10 invalida cuenta/UID antes del detach real del host; respuesta tardía no autoriza apply. Sesiones ya invalidan en close/fail/release. Sim death/despawn y otros cambios de entidad todavía necesitan hooks. Invalidation es sticky incluso con revival en el mismo tick |
-| Frontera de tick | `staging.drain()` síncrono antes de `flushEvents` y snapshots. Nunca await RPC en sim. Apply/fence usa identidades y estado actuales; una finalización Promise solo encola trabajo |
+| Frontera de tick | [2b.13](m5-pearl-tick-apply.md) aporta `beforeTick` opcional síncrono antes del permiso/pausa, una vez por entrada exterior pump/step/filler. Eventos de apply retenidos hasta tick admitido, sin flush externo de HELLO/disconnect; errores/reentrada sticky. GameHost aún no configura el adapter ni despacha operaciones durables. Nunca await RPC en sim |
 | HELLO / startup | Diario completo recuperado antes de admitir; hidratar autoridad de ledger/suelo antes de `attachPearls`. [Arranque común dormant](m5-pearl-startup.md) compone diario y [suelo](m5-pearl-ground-hydration.md) con una sola barrera desde el primer await hasta drain. Falta invocarlo desde el host con política explícita de reloj y mantener simulación/admisión detenidas hasta ready |
 
 ## Contratos que preceden la activación
@@ -40,8 +40,8 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
   el lote pearl-only no acredita atomicidad de esos otros efectos.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas
   ni repetir rolls. El gate no crea esa cola ni elige silenciosamente qué recompensas se descartan.
-  2b.12 evita evaluar el tick entero mientras hay reserva; no ofrece esa cola granular. El futuro drain
-  debe progresar antes del preflight de sim y también durante pausa, para no esperar su propia reserva.
+  2b.12 evita evaluar el tick entero mientras hay reserva; no ofrece esa cola granular. 2b.13 aporta
+  la frontera de apply previa al permiso, también durante pausa; falta configurar el adapter del host.
 - La barrera común de startup impide nuevas lanes desde la recuperación del diario hasta la instalación
   de suelo, incluso cuando la queue ya marca admisión disponible. Hidratación exige cero sesiones,
   tasks y operaciones pendientes después de recuperar el diario. No sustituye los hooks de gameplay,

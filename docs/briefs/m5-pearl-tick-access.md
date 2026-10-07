@@ -38,8 +38,9 @@ antes de simular; el indicador queda bloqueado. El Worker sin hook conserva su c
   tras cambiar loadout requiere su propio contrato antes de la integración automática.
 - Los comandos inmediatos conservan sus guards de [2b.11](m5-pearl-command-access.md); un comando
   disjunto que ya estaba autorizado no se vuelve durable ni queda encolado por esta barrera.
-- `storage.tickBlocked` informa la última preflight. Si todos están pausados, `pump` retorna antes
-  de actualizarla; no es una prueba de readiness ni sustituye health/admisión/startup.
+- `storage.tickBlocked` informa la última preflight. En este corte la pausa retornaba antes de
+  actualizarla; [2b.13](m5-pearl-tick-apply.md) lleva la frontera antes de la pausa y refresca el dato.
+  No es una prueba de readiness ni sustituye health/admisión/startup.
 
 No cambia perfil, snapshots, `you`, EVENT ni PROTOCOL_VERSION 16. El cliente sigue con su predicción
 actual; no se implementa un estado visual de espera ni se acepta su sensación/rendimiento por estas pruebas.
@@ -49,7 +50,8 @@ actual; no se implementa un estado visual de espera ni se acepta su sensación/r
 No conectar `staging.drain()` detrás de esta barrera: su propia reserva impediría avanzar.
 La futura frontera de apply debe progresar incluso si hay pausa/hold, validar identidades actuales,
 aplicar/fence de manera síncrona y después consultar disponibilidad antes de simular/publicar.
-La integración real de PearlStartup/PearlStaging sigue pendiente.
+La integración real de PearlStartup/PearlStaging sigue pendiente. [2b.13](m5-pearl-tick-apply.md)
+implementa la frontera opcional previa al permiso/pausa, sin configurar automáticamente el host.
 
 La barrera cubre `LocalServer.step → applyCommand/stepWorld → economy.step/onAdvance` y fillers.
 Llamadas directas a helpers sim o `economy.advance` fuera de esas entradas siguen fuera del contrato;

@@ -40,7 +40,13 @@ const DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'god', 'weapon', 
 const WORLD_DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'clock', 'pearl', 'drop', 'item']);
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, tickAccess = null, now = () => performance.now() }) {
+  #applyingTick = false;
+  #checkingTick = false;
+  #runningTick = false;
+  #applyFailed = false;
+  #ownsTickPublication = false;
+
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, tickAccess = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -49,6 +55,9 @@ export class LocalServer {
     this.beforeDetach = beforeDetach;
     if (commandAccess !== null && typeof commandAccess !== 'function') throw new TypeError('command hook');
     this.commandAccess = commandAccess;
+    if (beforeTick !== null && typeof beforeTick !== 'function') throw new TypeError('tick apply hook');
+    this.beforeTick = beforeTick; // Trusted synchronous apply adapter; never dispatch or await storage here.
+    this.#ownsTickPublication = beforeTick !== null;
     if (tickAccess !== null && typeof tickAccess !== 'function') throw new TypeError('tick hook');
     this.tickAccess = tickAccess;
     this.tickBlocked = false; this.holdAcc = 0;
@@ -356,30 +365,70 @@ export class LocalServer {
   stop() { clearInterval(this.timer); this.timer = null; }
 
   pump() {
+    this.#assertTickEntry();
     const t = this.now();
     let dt = (t - this.last) / 1000;
     this.last = t;
     if (dt > 0.25) dt = 0.25; // tab stall: don't spiral
+    // Ready effects must be able to release their own reservation, even while paused or blocked.
+    // Drain once per outer entry, never again from a filler inside an already admitted tick.
+    if (!this.#prepareTick()) {
+      if (!this.#applyFailed) this.waitForTick(dt);
+      return;
+    }
     // Everyone in the instance paused (single player: the pause menu): the world waits.
     let anyone = false, allPaused = true;
     for (const c of this.clients.values()) if (c.entity) { anyone = true; if (!c.paused) allPaused = false; }
     if (anyone && allPaused) return;
     // The current tick mixes movement, combat, loot and production. Wait before any of it changes,
     // rather than skip individual effects after their winner, clock or RNG was already consumed.
-    if (!this.tickAllowed()) { this.waitForTick(dt); return; }
     if (this.freeze > 0) { const h = Math.min(this.freeze, dt); this.freeze -= h; dt -= h; }
     if (this.slowT > 0) { const h = Math.min(this.slowT, dt); this.slowT -= h; dt += h * (this.slowScale - 1); }
     this.acc += dt;
     while (this.acc >= DT) {
       this.acc -= DT;
-      if (!this.step()) { this.waitForTick(dt); break; }
+      if (!this.tickAllowed()) { if (!this.#applyFailed) this.waitForTick(dt); break; }
+      this.#step();
     }
   }
 
+  #assertTickEntry() {
+    if (!this.#applyingTick && !this.#checkingTick && !this.#runningTick) return;
+    this.#applyFailed = true; this.tickBlocked = true; this.acc = 0;
+    throw new TypeError('reentrant tick boundary');
+  }
+
+  #prepareTick() {
+    this.#assertTickEntry();
+    let applied = false;
+    try {
+      if (this.#applyFailed) return false;
+      if (this.beforeTick !== null) this.#ownsTickPublication = true;
+      this.#applyingTick = true;
+      applied = this.beforeTick === null || profileDecision(this.beforeTick(), 'tick apply');
+      if (this.#applyFailed) applied = false; // A swallowed reentrancy error still cannot authorize simulation.
+    } catch (error) {
+      // A faulty apply may have changed local state. Never poll it again or resume merely because
+      // a later callback returns true; its owner must reconcile/fence and replace this server.
+      this.#applyFailed = true;
+      throw error;
+    } finally {
+      this.#applyingTick = false;
+      if (!applied) { this.tickBlocked = true; this.acc = 0; }
+    }
+    return applied && this.tickAllowed();
+  }
+
   tickAllowed() {
+    if (this.#checkingTick) this.#assertTickEntry();
     let allowed = false;
-    try { allowed = this.tickAccess === null || profileDecision(this.tickAccess(), 'tick'); }
+    this.#checkingTick = true;
+    try {
+      allowed = this.tickAccess === null || profileDecision(this.tickAccess(), 'tick');
+      if (this.#applyFailed) allowed = false;
+    }
     finally {
+      this.#checkingTick = false;
       this.tickBlocked = !allowed;
       if (allowed) this.holdAcc = 0;
       else this.acc = 0; // Storage latency never becomes simulation catch-up debt.
@@ -396,7 +445,17 @@ export class LocalServer {
   }
 
   step() {
-    if (!this.tickAllowed()) return false;
+    if (!this.#prepareTick()) return false;
+    return this.#step();
+  }
+
+  #step() {
+    this.#runningTick = true;
+    try { return this.#stepWorld(); }
+    finally { this.#runningTick = false; }
+  }
+
+  #stepWorld() {
     const w = this.world;
     for (const c of this.clients.values()) {
       if (!c.entity) continue;
@@ -407,7 +466,7 @@ export class LocalServer {
         c.carry |= cmd.prs; c.ack = cmd.seq; this.stats.late++;
       }
       if (!c.queue.length) {
-        if (this.fill && ++c.starve > tuning.combat.starveTicks) this.applyFiller(c);
+        if (this.fill && ++c.starve > tuning.combat.starveTicks) this.#applyFiller(c);
         continue;
       }
       c.starve = 0; c.fillPt = 0;
@@ -419,10 +478,12 @@ export class LocalServer {
         if (c.carry) { cmd.prs |= c.carry; c.carry = 0; }
         if (cmd.pt < w.tick - tuning.combat.rewind) this.stats.clamped++;
         w.applyCommand(c.entity, cmd);
+        if (this.#applyFailed) throw new TypeError('failed tick boundary');
         c.ack = cmd.seq; c.lastPt = cmd.pt; c.last = cmd;
       }
     }
     w.stepWorld();
+    if (this.#applyFailed) throw new TypeError('failed tick boundary');
     this.flushEvents();
     if (w.tick % SNAPSHOT_EVERY === 0) this.broadcastSnapshot();
     // Saves: the ones due, and a look at everyone every SAVE_TIMING.every s (sent only if it changed).
@@ -438,16 +499,26 @@ export class LocalServer {
   // One neutral tick for a silent client: no movement, no buttons, aim kept, projectile time moving on
   // (the world clamps it to the rewind window). The ack does not move: the client reconciles from it.
   applyFiller(c) {
-    if (!this.tickAllowed()) return false;
+    if (!this.#prepareTick()) return false;
+    this.#runningTick = true;
+    try { return this.#applyFiller(c); }
+    finally { this.#runningTick = false; }
+  }
+
+  #applyFiller(c) {
     const pt = Math.max(c.lastPt + 1, this.world.tick - tuning.combat.rewind);
     c.lastPt = c.fillPt = pt;
     const l = c.last;
     this.world.applyCommand(c.entity, { seq: c.ack, mx: 0, mz: 0, ax: l ? l.ax : 0, az: l ? l.az : 0, btn: l ? l.btn & BTN.AIM : 0, prs: 0, pt, w: 0 });
+    if (this.#applyFailed) throw new TypeError('failed tick boundary');
     this.stats.fill++;
     return true;
   }
 
   flushEvents() {
+    // Once an apply adapter owns this boundary, HELLO/disconnect cannot flush its retained events.
+    // Only an admitted tick publishes them; a faulty adapter remains closed even if removed later.
+    if (this.#applyFailed || (this.#ownsTickPublication && !this.#runningTick)) return;
     const w = this.world;
     for (const ev of w.events) {
       // Private (M4): loot, pickups, masteries… only for the player it is about.

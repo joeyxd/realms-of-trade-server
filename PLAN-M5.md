@@ -165,6 +165,16 @@ Sin SQL/env/activación durable automática ni cambio de protocolo 16. Siguen ca
 durante espera, política de inputs tras apply, startup/drain/snapshot canónico del host, finalizador durable,
 muerte durable completa, scope/reloj/adopción y afinidad permanente. P4/P6 parciales.
 
+Checkpoint D09f-2b.13, base `9846df4`: **frontera opcional de apply síncrono en LocalServer**.
+`beforeTick` progresa antes del permiso/pausa, una vez por entrada exterior pump/step/filler; el filler
+interno no redrena. Errores/Promise/reentrada conservan fallo sticky; eventos de apply esperan al tick
+admitido incluso ante flush de HELLO/disconnect. Staging/startup reales comprobados con adapters
+inyectados, incluido receipt lento y prepared→ready; **855/855, 15 pruebas nuevas**. Regresión aislada
+de 66 archivos/197 fuentes, [resultado y límites](docs/delivery/d09f-pearl-tick-apply.md).
+GameHost no configura el hook ni activa operaciones durables. Scope/reloj/adopción, epoch de inputs,
+montaje del host/snapshot canónico, finalizador y muerte completa/afinidad permanecen abiertos.
+Sin SQL/env/protocolo nuevo; P4/P6 parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
