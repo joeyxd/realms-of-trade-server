@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { transferPearl, swallowPearl } from '../src/sim/systems/pearls.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { StoreError, playerKey } from './store.mjs';
-import { canonicalText } from './pearlOperations.mjs';
+import { canonicalText, pearlKind } from './pearlOperations.mjs';
 import { groundKey, groundOperation, checkedGroundResult } from './pearlGround.mjs';
 import { batchIntent, batchOperation, checkedBatchResult } from './pearlBatch.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
@@ -23,6 +23,20 @@ const normalized = (raw) => {
 };
 const codeOf = (error) => error instanceof StoreError ? error.code : 'unavailable';
 const version = (n) => Number.isSafeInteger(n) && n >= 1 && n < 2147483647;
+const requestData = (raw) => {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw) ||
+      ![Object.prototype, null].includes(Object.getPrototypeOf(raw))) throw new StoreError('operation');
+  const fields = Object.getOwnPropertyDescriptors(raw);
+  if (Reflect.ownKeys(fields).some((key) => typeof key !== 'string' || !Object.hasOwn(fields[key], 'value'))) {
+    throw new StoreError('operation');
+  }
+  return Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value]));
+};
+const requestEndpoint = (raw) => {
+  const data = requestData(raw);
+  if (Object.keys(data).sort().join(',') !== 'clientId,entity') throw new StoreError('operation');
+  return data;
+};
 
 // The persistent ground record has no local drop ID. Assign it only at the synchronous apply,
 // preserving the helper's frozen geometry/time while other actors may have created drops during IO.
@@ -129,10 +143,25 @@ export class PearlStaging {
     } finally { this.#capturing = false; }
   }
 
-  // No caller-supplied holder, kind or UUID crosses this boundary. expectedVersion comes from the
-  // authority's managed ledger read; the storage queue rechecks it before dispatch.
-  give({ uid, source, target, expectedVersion } = {}) {
-    if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 1 || expectedVersion >= 2147483647) throw new StoreError('operation');
+  // Trusted selector-only entry. Eligibility, capture and the reservation are synchronous; the
+  // returned UUID identifies pending work, not a receipt. Generations come from this session store.
+  request(raw) {
+    this.#assertCaptureEntry();
+    const data = requestData(raw), { action, uid } = data;
+    const keys = { give: 'action,source,target,uid', swallow: 'action,source,uid', replace: 'action,replaceUid,source,uid' };
+    if (typeof action !== 'string' || !Object.hasOwn(keys, action) || Object.keys(data).sort().join(',') !== keys[action]) throw new StoreError('operation');
+    const source = requestEndpoint(data.source);
+    if (action === 'give') return this.#give({ uid, source, target: requestEndpoint(data.target) }, true);
+    if (action === 'swallow') return this.#swallow({ uid, source }, true);
+    return this.#replace({ uid, source, replaceUid: data.replaceUid }, true);
+  }
+
+  // Existing trusted callers may still supply a managed generation. The storage queue rechecks
+  // either entry's generation before dispatch; neither entry accepts holder, kind or operation UUID.
+  give(raw = {}) { return this.#give(raw); }
+
+  #give({ uid, source, target, expectedVersion } = {}, managed = false) {
+    if (!managed && !version(expectedVersion)) throw new StoreError('operation');
     const endpoints = [this.endpoint(source), this.endpoint(target)], [from, to] = endpoints, w = this.world;
     if (from.key === to.key || from.entity === to.entity) throw new StoreError('operation');
     this.assertAvailable({ accounts: endpoints.map((e) => e.key), uids: [uid] });
@@ -147,15 +176,16 @@ export class PearlStaging {
     if (!transferPearl(view, from.entity, uid, to.entity)) throw new StoreError(view.events.at(-1)?.why ?? 'operation');
     const pearl = view.profiles.get(to.entity).pearls.bag.at(-1);
     const plan = frozen({ effect: 'give', meta: { operationId: randomUUID(), uid: pearl.uid, kind: pearl.kind,
-      from: from.key, to: to.key, expectedVersion, world: this.scope, ground: null },
+      from: from.key, to: to.key, expectedVersion: managed ? null : expectedVersion, world: this.scope, ground: null },
     profiles: endpoints.map((e) => ({ id: e.key, before: clone(e.profile.pearls), after: clone(view.profiles.get(e.entity).pearls) })),
     ledger: { owner: to.profile.pirateId, entity: to.entity, place: 'profile' }, events: view.events });
-    return this.enqueue(plan, endpoints, new Map([[uid, ledger]]));
+    return this.enqueue(plan, endpoints, new Map([[uid, ledger]]), managed);
   }
 
-  swallow({ uid, source, expectedVersion, replaceUid } = {}) {
-    if (replaceUid !== undefined || !Number.isSafeInteger(expectedVersion) || expectedVersion < 1 ||
-        expectedVersion >= 2147483647) throw new StoreError('operation');
+  swallow(raw = {}) { return this.#swallow(raw); }
+
+  #swallow({ uid, source, expectedVersion, replaceUid } = {}, managed = false) {
+    if (replaceUid !== undefined || (!managed && !version(expectedVersion))) throw new StoreError('operation');
     const from = this.endpoint(source), w = this.world;
     this.assertAvailable({ accounts: [from.key], uids: [uid] });
     if (this.operations.size >= this.limit) throw new StoreError('busy');
@@ -171,14 +201,16 @@ export class PearlStaging {
     if (view.events.length !== 1 || view.events[0].type !== 'pearlChanged' || view.events[0].op !== 'swallow' ||
         view.pearlLedger.size !== 0) throw new StoreError('effect');
     const plan = frozen({ effect: 'swallow', meta: { operationId: randomUUID(), uid: pearl.uid, kind: pearl.kind,
-      from: from.key, to: from.key, expectedVersion, world: this.scope, ground: null },
+      from: from.key, to: from.key, expectedVersion: managed ? null : expectedVersion, world: this.scope, ground: null },
     profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
     ledger: clone(ledger), events: view.events });
-    return this.enqueue(plan, [from], new Map([[uid, ledger]]));
+    return this.enqueue(plan, [from], new Map([[uid, ledger]]), managed);
   }
 
-  replace({ uid, replaceUid, source, expectedVersion, replaceExpectedVersion } = {}) {
-    if (!version(expectedVersion) || !version(replaceExpectedVersion)) throw new StoreError('operation');
+  replace(raw = {}) { return this.#replace(raw); }
+
+  #replace({ uid, replaceUid, source, expectedVersion, replaceExpectedVersion } = {}, managed = false) {
+    if (!managed && (!version(expectedVersion) || !version(replaceExpectedVersion))) throw new StoreError('operation');
     const from = this.endpoint(source), w = this.world, old = from.profile.pearls.swallowed;
     if (!old || replaceUid !== old.uid) throw new StoreError('confirm');
     const uids = [groundKey(uid), groundKey(replaceUid)];
@@ -201,17 +233,60 @@ export class PearlStaging {
         view.events.length !== 2 || view.events[0].type !== 'loot' || view.events[1].type !== 'pearlChanged' ||
         view.events[1].op !== 'swallow') throw new StoreError('effect');
     const meta = batchIntent({ operationId: randomUUID(), actor: from.key, world: this.scope, mode: 'replace',
-      items: [{ ...incoming, expectedVersion, ground: null }, { ...old, expectedVersion: replaceExpectedVersion,
+      items: [{ ...incoming, expectedVersion: managed ? 1 : expectedVersion, ground: null }, { ...old, expectedVersion: managed ? 1 : replaceExpectedVersion,
         ground: { x: drop.x, z: drop.z, availableAt: drop.pickAt, returnAt: drop.t } }]
         .sort((a, b) => a.uid < b.uid ? -1 : 1) });
+    // Validate the detached geometry/schema now; unresolved generations never reach the queue.
+    if (managed) for (const item of meta.items) item.expectedVersion = null;
     const plan = frozen({ effect: 'replace', meta,
       profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
       ledgers: [{ uid: incoming.uid, data: clone(ledgers.get(incoming.uid)) },
         { uid: old.uid, data: clone(view.pearlLedger.get(old.uid)) }], drop: clone(drop), events: view.events });
-    return this.enqueue(plan, [from], ledgers);
+    return this.enqueue(plan, [from], ledgers, managed);
   }
 
-  enqueue(plan, endpoints, ledgers) {
+  async #resolveManaged(ctx) {
+    const { plan, endpoints } = ctx, items = plan.meta.items ?? [plan.meta], owner = endpoints[0].key;
+    // Observe and settle every read, including a second replacement UID when the first fails.
+    const results = await Promise.allSettled(items.map((q) => Promise.resolve().then(() => this.sessions.store.loadUnique(q.uid))));
+    if (!this.current(ctx)) throw new StoreError('cancelled');
+    this.assertLedgers(ctx);
+    const before = endpoints.map((e) => canonicalText(normalized(e.profile)));
+    const snapshots = endpoints.map((e) => {
+      const delta = plan.profiles.find((p) => p.id === e.key);
+      if (canonicalText(e.profile.pearls) !== canonicalText(delta.before)) throw new StoreError('ownership');
+      return this.#snapshot(e);
+    });
+    if (!this.current(ctx)) throw new StoreError('cancelled');
+    this.assertLedgers(ctx);
+    if (endpoints.some((e, i) => canonicalText(normalized(e.profile)) !== before[i])) throw new StoreError('profile');
+    const generations = results.map((result, i) => {
+      if (result.status === 'rejected') throw result.reason;
+      if (result.value === null) throw new StoreError('ownership');
+      let row;
+      try { row = requestData(result.value); } catch { throw new StoreError('response'); }
+      if (Object.keys(row).sort().join(',') !== 'holder,kind,version' ||
+          typeof row.kind !== 'string' || !Number.isSafeInteger(row.version) || row.version < 1 || row.version > 2147483647) {
+        throw new StoreError('response');
+      }
+      try { if (row.holder !== null && playerKey(row.holder) !== row.holder) throw new Error('holder'); }
+      catch { throw new StoreError('response'); }
+      if (row.kind !== pearlKind(items[i].kind)) throw new StoreError('kind');
+      if (row.holder !== owner) throw new StoreError('ownership');
+      if (!version(row.version)) throw new StoreError('operation');
+      return row.version;
+    });
+    const resolved = clone(plan);
+    if (resolved.meta.items) resolved.meta.items.forEach((q, i) => { q.expectedVersion = generations[i]; });
+    else resolved.meta.expectedVersion = generations[0];
+    // Managed reads add an IO wait before the existing queue. Refresh the validated pre-command
+    // progress now, so an older initial ECS capture cannot overwrite progress earned in that wait.
+    ctx.baselines = snapshots;
+    ctx.plan = frozen(resolved);
+    return ctx.plan;
+  }
+
+  enqueue(plan, endpoints, ledgers, managed = false) {
     this.#assertCaptureEntry();
     const uids = plan.meta.items ? plan.meta.items.map((q) => q.uid) : [plan.meta.uid];
     const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids });
@@ -239,6 +314,8 @@ export class PearlStaging {
     // after PearlQueue releases its lanes, so an old live UID snapshot cannot bypass tick apply.
     const task = Promise.resolve().then(async () => {
       try {
+        if (!this.current(ctx)) throw new StoreError('cancelled');
+        if (managed) plan = await this.#resolveManaged(ctx);
         if (!this.current(ctx)) throw new StoreError('cancelled');
         for (const [i, e] of endpoints.entries()) this.sessions.save(e.clientId, clone(ctx.baselines?.[i] ?? e.profile), ctx.reservation);
         const batch = plan.effect === 'replace';

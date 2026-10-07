@@ -219,6 +219,17 @@ API explícita; entrypoint/configuración productiva y comandos durables todaví
 protocolo nuevo. Políticas definitivas, dispatch/hooks completos, epoch, finalizador/muerte completa,
 afinidad permanente y P4/P6 siguen pendientes; una autoridad por mundo hasta leases.
 
+Checkpoint D09f-2b.18, base `9bf5826`: **solicitudes trusted con generaciones elegidas por el servidor**.
+PearlStaging.request recibe solo acción/UID/selectores y consulta loadUnique bajo la misma reserva
+síncrona de cuentas/UIDs. Revalida tras IO, refresca progreso antes de save y conserva límite/tasks
+hasta apply/fence. Reemplazo usa ambas generaciones independientes; cola y SQL mantienen verificación
+y CAS, sin replan al cambiar generación. Métodos trusted anteriores conservados; sin dispatch público.
+**1131/1131** pertinentes en 87 archivos/250 fuentes aisladas: **58 checks nuevos en 18 pruebas
+superiores**, más 43 checks navales aceptados incorporados a la regresión anterior de 1030.
+[Contrato](docs/briefs/m5-pearl-managed-request.md) y [aceptación](docs/delivery/d09f-pearl-managed-request.md).
+Sin nueva SQL/env/protocolo ni cambios de host/LocalServer. Dispatch completo/circulación autónoma,
+políticas definitivas, epoch/finalizador/muerte completa/afinidad y P4/P6 permanecen pendientes.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
