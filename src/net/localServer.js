@@ -40,7 +40,7 @@ const DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'god', 'weapon', 
 const WORLD_DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'clock', 'pearl', 'drop', 'item']);
 
 export class LocalServer {
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, tickAccess = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -49,6 +49,9 @@ export class LocalServer {
     this.beforeDetach = beforeDetach;
     if (commandAccess !== null && typeof commandAccess !== 'function') throw new TypeError('command hook');
     this.commandAccess = commandAccess;
+    if (tickAccess !== null && typeof tickAccess !== 'function') throw new TypeError('tick hook');
+    this.tickAccess = tickAccess;
+    this.tickBlocked = false; this.holdAcc = 0;
     this.debug = debug;
     this.dev = dev; // F4 panel: live tuning, spawns, god mode (a public server never enables this)
     this.instanceTime = instanceTime;
@@ -361,16 +364,39 @@ export class LocalServer {
     let anyone = false, allPaused = true;
     for (const c of this.clients.values()) if (c.entity) { anyone = true; if (!c.paused) allPaused = false; }
     if (anyone && allPaused) return;
+    // The current tick mixes movement, combat, loot and production. Wait before any of it changes,
+    // rather than skip individual effects after their winner, clock or RNG was already consumed.
+    if (!this.tickAllowed()) { this.waitForTick(dt); return; }
     if (this.freeze > 0) { const h = Math.min(this.freeze, dt); this.freeze -= h; dt -= h; }
     if (this.slowT > 0) { const h = Math.min(this.slowT, dt); this.slowT -= h; dt += h * (this.slowScale - 1); }
     this.acc += dt;
     while (this.acc >= DT) {
       this.acc -= DT;
-      this.step();
+      if (!this.step()) { this.waitForTick(dt); break; }
     }
   }
 
+  tickAllowed() {
+    let allowed = false;
+    try { allowed = this.tickAccess === null || profileDecision(this.tickAccess(), 'tick'); }
+    finally {
+      this.tickBlocked = !allowed;
+      if (allowed) this.holdAcc = 0;
+      else this.acc = 0; // Storage latency never becomes simulation catch-up debt.
+    }
+    return allowed;
+  }
+
+  waitForTick(dt) {
+    // Keep read-only state/ACK heartbeats on their usual cadence, including spectators. No events,
+    // profile sync or save scheduling are flushed while a reservation owns the simulation boundary.
+    this.holdAcc += Math.max(0, dt);
+    const every = DT * SNAPSHOT_EVERY;
+    if (this.holdAcc >= every) { this.holdAcc %= every; this.broadcastSnapshot(); }
+  }
+
   step() {
+    if (!this.tickAllowed()) return false;
     const w = this.world;
     for (const c of this.clients.values()) {
       if (!c.entity) continue;
@@ -406,16 +432,19 @@ export class LocalServer {
       if (sweep && c.saveAt == null) c.saveAt = w.tick;
       if (c.saveAt != null && w.tick >= c.saveAt) this.sendSave(id, c);
     }
+    return true;
   }
 
   // One neutral tick for a silent client: no movement, no buttons, aim kept, projectile time moving on
   // (the world clamps it to the rewind window). The ack does not move: the client reconciles from it.
   applyFiller(c) {
+    if (!this.tickAllowed()) return false;
     const pt = Math.max(c.lastPt + 1, this.world.tick - tuning.combat.rewind);
     c.lastPt = c.fillPt = pt;
     const l = c.last;
     this.world.applyCommand(c.entity, { seq: c.ack, mx: 0, mz: 0, ax: l ? l.ax : 0, az: l ? l.az : 0, btn: l ? l.btn & BTN.AIM : 0, prs: 0, pt, w: 0 });
     this.stats.fill++;
+    return true;
   }
 
   flushEvents() {
@@ -463,7 +492,8 @@ export class LocalServer {
 
   broadcastSnapshot() {
     // Movement/combat tuples contain no profile inventory, pearl UID, save blob or durable receipt.
-    // Keep ACK/prediction moving while the separate PROFILE/SAVE publications wait on storage.
+    // Transport stays live while PROFILE/SAVE waits. During a tick hold, ACK remains the last
+    // command actually applied; a snapshot heartbeat never acknowledges merely buffered input.
     const w = this.world, ecs = w.ecs;
     const ents = [], enc = w.encounters.map((q) => encounterState(w, q));
     // Keep expired field history too: a live bullet may already have lost travel time in it.

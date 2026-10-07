@@ -19,7 +19,7 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
 | Punto actual | Parche que debe aportar el dueño |
 |---|---|
 | `LocalServer.playerCommand`, `devCommand` y debug teleport | [2b.11](m5-pearl-command-access.md) conecta preflight inmediato síncrono antes de helpers; actor/receptor por sesión/entidad, UIDs actuales y guard mundial conservador para mint/RNG/estado compartido. Busy envía feedback privado sin mutación ni acuse de éxito. Falta plan/reserva/commit durable y apply; producción autónoma sigue en la fila siguiente |
-| `world.applyCommand`, `world.stepWorld`, `economy.onAdvance` | Interceptar efectos autónomos en sus helpers: pickup/return, combate/death, rewards, chest/kill mint y producción. Un guard solo alrededor de comandos deja estos bypasses abiertos |
+| `world.applyCommand`, `world.stepWorld`, `economy.onAdvance` | [2b.12](m5-pearl-tick-access.md) agrega una barrera conservadora antes del tick/filler real del host: toda la simulación autoritativa espera, antes de dequeue/tiempo/daño/pickup/return/RNG/producción; snapshots/PING continúan con el último ACK aplicado. Falta captura/retención granular para mantener movimiento durante la espera, apply automático y protección de llamadas directas fuera de esas entradas |
 | `sendProfile` / perfil privado de snapshot | [2b.10](m5-pearl-profile-io.md) conecta preflight de cuenta/UID del host antes de `syncProfile`, borrar dirty o enviar; busy conserva dirty y programación. Snapshot actual separado: solo tuples ECS de movimiento/combate, sin inventario/UID/blob/recibo, continúa durante la espera |
 | `sendSave` / autosave / final disconnect | 2b.10 bloquea antes de sync y conserva `saveAt`/blob hasta aceptación. No envía snapshots viejos durante reserva. Falta integrar `staging.save` y snapshot canónico en el futuro apply del tick. Final save bloqueado se retiene en memoria y close falla flush; falta finalizador durable que conserve/resuelva ese progreso |
 | Close / death / despawn / detach / cambio de entidad | 2b.10 invalida cuenta/UID antes del detach real del host; respuesta tardía no autoriza apply. Sesiones ya invalidan en close/fail/release. Sim death/despawn y otros cambios de entidad todavía necesitan hooks. Invalidation es sticky incluso con revival en el mismo tick |
@@ -40,6 +40,8 @@ sirve como preflight: el bloqueo debe ocurrir antes del primer cambio, evento, c
   el lote pearl-only no acredita atomicidad de esos otros efectos.
 - Efectos autónomos retenidos deben conservar ganadores, geometría y RNG capturados sin perder recompensas
   ni repetir rolls. El gate no crea esa cola ni elige silenciosamente qué recompensas se descartan.
+  2b.12 evita evaluar el tick entero mientras hay reserva; no ofrece esa cola granular. El futuro drain
+  debe progresar antes del preflight de sim y también durante pausa, para no esperar su propia reserva.
 - La barrera común de startup impide nuevas lanes desde la recuperación del diario hasta la instalación
   de suelo, incluso cuando la queue ya marca admisión disponible. Hidratación exige cero sesiones,
   tasks y operaciones pendientes después de recuperar el diario. No sustituye los hooks de gameplay,

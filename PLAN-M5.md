@@ -154,6 +154,17 @@ Aviso GameClient→Rewards y capturas aisladas 1280×720/390×844 inspeccionadas
 ni activación automática. Siguen efectos autónomos, snapshot/apply/startup del host, finalizador durable,
 muerte completa, scope/reloj/adopción y afinidad permanente. P4/P6 parciales; protocolo 16 conservado.
 
+Checkpoint D09f-2b.12, base `ac47564`: **barrera conservadora del tick conectada al host**.
+Reserva/queue/fence/recovery cierra antes de dequeue, movimiento, combate, loot/RNG y producción;
+todo el tick autoritativo espera, incluyendo movimiento. PING/inputs y snapshots actuales continúan,
+sin ACK anticipado, flush de eventos/saves ni deuda de catch-up. Cola acotada/carry existentes conservados.
+**822/822** pertinentes en 63 archivos, **13 casos nuevos**, 191 hashes fijados; cuatro overlays propios,
+trabajo naval/visual paralelo excluido. Controles positivos de pickup/retorno, lote red/parrilla,
+death/spill y kill/rewards, staging real manual y gap receipt→drain. [Contrato/evidencia](docs/delivery/d09f-pearl-tick-access.md).
+Sin SQL/env/activación durable automática ni cambio de protocolo 16. Siguen captura granular para mover
+durante espera, política de inputs tras apply, startup/drain/snapshot canónico del host, finalizador durable,
+muerte durable completa, scope/reloj/adopción y afinidad permanente. P4/P6 parciales.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

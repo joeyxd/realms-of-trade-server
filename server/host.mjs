@@ -58,6 +58,7 @@ export class GameHost {
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
       commandAccess: (id, entity, plan) => this.commandAvailable(id, entity, plan),
+      tickAccess: () => this.tickAvailable(),
       beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
       onSave: (id, p) => this.saveProfile(id, p),
     });
@@ -137,6 +138,7 @@ export class GameHost {
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
+        tickBlocked: s.tickBlocked,
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -287,6 +289,24 @@ export class GameHost {
       }
       gate.assertAvailable(lanes);
       if (plan.world) gate.assertWorldAvailable();
+      return true;
+    } catch (error) {
+      if (error instanceof StoreError) return false;
+      throw error;
+    }
+  }
+
+  tickAvailable() {
+    try {
+      const gate = pearlMutationGate(this.profiles);
+      // Autonomous effects can mint unknown UIDs and touch any connected owner or shared RNG.
+      // The global check also covers reservations for disconnected owners and ground-only items.
+      gate.assertWorldAvailable();
+      for (const [id, c] of this.server.clients) {
+        if (!c.entity) continue;
+        if (!this.server.world.ecs.alive[c.entity]) throw new StoreError('session');
+        gate.assertAvailable(this.profileLanes(id, c.entity));
+      }
       return true;
     } catch (error) {
       if (error instanceof StoreError) return false;
