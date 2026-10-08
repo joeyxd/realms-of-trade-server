@@ -64,13 +64,13 @@ export class DeathStaging {
     if (this.#inputCall(() => effect[method]()) !== undefined) throw new StoreError('effect');
   }
 
-  endpoint(raw) {
+  endpoint(raw, allowDead = false) {
     this.#assertInputEntry();
     const { clientId, entity } = record(raw, 'clientId,entity'), w = this.world, session = this.sessions.clients.get(clientId);
     const profile = w.profiles.get(entity), ecs = w.ecs;
     if (!Number.isSafeInteger(clientId) || clientId < 0 || !Number.isInteger(entity) || entity < 1 || entity >= ecs.cap ||
         !session || session.closed || session.failed || session.id !== clientId || ecs.clientId[entity] !== clientId ||
-        !ecs.alive[entity] || ecs.dead[entity] > 0 || ecs.kind[entity] !== KIND.PLAYER || !(ecs.mask[entity] & C.PLAYER) ||
+        !ecs.alive[entity] || (!allowDead && ecs.dead[entity] > 0) || ecs.kind[entity] !== KIND.PLAYER || !(ecs.mask[entity] & C.PLAYER) ||
         !profile || profile.pirateId !== 'account:' + session.key) throw new StoreError('session');
     normalized(profile);
     return { clientId, entity, key: session.key, session, profile, text: canonicalText(profile),
@@ -91,7 +91,7 @@ export class DeathStaging {
     const data = record(raw, keys);
     if (!Number.isSafeInteger(data.seq) || data.seq < 0 || data.seq > 2147483647) throw new StoreError('operation');
     if (this.operations.size >= this.limit) throw new StoreError('busy');
-    const victim = this.endpoint(data.victim), killer = data.killer === undefined || data.killer === null ? null : this.endpoint(data.killer);
+    const victim = this.endpoint(data.victim), killer = data.killer === undefined || data.killer === null ? null : this.endpoint(data.killer, true); // A causal killer may have died earlier in the same terminal tick.
     if (killer && (killer.entity === victim.entity || killer.key === victim.key)) throw new StoreError('operation');
     const bindings = [victim, ...(killer ? [killer] : [])], w = this.world;
     // Determine the existing Cala PK participant, then reserve every affected baseline UID before

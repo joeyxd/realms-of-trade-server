@@ -107,6 +107,14 @@ export function hurtPlayer(world, e, raw, o) {
 export function killPlayer(world, e, seq, by = 0) {
   const ecs = world.ecs;
   if (!ecs.alive[e] || ecs.dead[e] > 0) return false;
+  if (world.deferPlayerDeath) {
+    const deferred = world.deferPlayerDeath(e, seq, by);
+    if (typeof deferred !== 'boolean') {
+      if (deferred && typeof deferred.then === 'function') Promise.resolve(deferred).catch(() => {});
+      throw new TypeError('death hook must return a synchronous boolean');
+    }
+    if (deferred) return true;
+  }
   ecs.hp[e] = 0;
   ecs.dead[e] = 1;
   ecs.deadT[e] = tuning.combat.respawnTime;
@@ -559,8 +567,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     ecs.moveMul[e] = 0;
     ecs.guardT[e] = -1;
     cancelCast(ecs, e);
-    ecs.deadT[e] -= dt;
-    if (ecs.deadT[e] <= 0) respawnPlayer(world, e, seq);
+    // Provisional deaths finish the current tick without starting respawn before their receipt.
+    if (!world.isPlayerDeathPending?.(e)) {
+      ecs.deadT[e] -= dt;
+      if (ecs.deadT[e] <= 0) respawnPlayer(world, e, seq);
+    }
     setAct(ecs, e, ecs.dead[e] > 0 ? ACT.DEAD : ACT.IDLE);
     return;
   }

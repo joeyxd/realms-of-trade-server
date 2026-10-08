@@ -16,6 +16,7 @@ import { syncProfile } from '../src/sim/systems/inventory.js';
 import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 import { PearlStaging } from './pearlStaging.mjs';
 import { DeathStaging } from './deathStaging.mjs';
+import { CombatDeath } from './combatDeath.mjs';
 import { PearlStartup } from './pearlStartup.mjs';
 import { groundKey } from './pearlGround.mjs';
 
@@ -31,6 +32,7 @@ const LIMITS = {
 export class GameHost {
   #pearlStaging = null; #deathStaging = null; #drainingPearls = false; #pearlFailed = false;
   #stagingBoundary = null;
+  #combatDeaths = null; #combatBoundary = null; #fatalHook = null; #pendingDeathHook = null;
   #pearlStartup = null; #prepareTask = null; #requiresPearlStartup = false;
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
@@ -87,6 +89,7 @@ export class GameHost {
   get pearlStaging() { return this.#pearlStaging; }
   get deathStaging() { return this.#deathStaging; }
   get pearlStartup() { return this.#pearlStartup; }
+  get combatDeaths() { return this.#combatDeaths; }
 
   // Explicit, server-owned assembly only. It does not dispatch player commands or recover startup.
   // Install before transport/admission; no caller callbacks may replace the three trusted adapters.
@@ -128,10 +131,47 @@ export class GameHost {
     return staging;
   }
 
+  // Explicit pilot assembly. CLI/default hosts retain their existing immediate death behavior.
+  // A terminal tick finishes once; publication and the next tick wait for every ordered receipt.
+  mountCombatDeaths() {
+    const s = this.server, w = s.world;
+    if (arguments.length || !this.#deathStaging || this.#combatDeaths || this.#prepareTask || this.closing || this.wss || this.timer ||
+        this.nextId !== 1 || this.sockets.size || this.joins.size || this.pendingJoins || s.clients.size ||
+        this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
+        s.beforeTick !== this.#stagingBoundary || s.afterTick !== null ||
+        w.deferPlayerDeath != null || w.isPlayerDeathPending != null || w.profiles.size ||
+        w.tick !== 0 || countBots(w) !== 0) throw new StoreError('configuration');
+    const combat = new CombatDeath(s, this.#deathStaging);
+    this.#fatalHook = (e, seq, by) => combat.intercept(e, seq, by);
+    this.#pendingDeathHook = (e) => combat.has(e);
+    this.#combatBoundary = (complete) => {
+      this.#drainingPearls = true;
+      try {
+        if (!complete) throw new StoreError('effect');
+        this.#assertCombatOwner();
+        combat.completeTick();
+        return !combat.pending;
+      } catch {
+        this.errors++; combat.fail(); this.#stopPearls(); return false;
+      } finally { this.#drainingPearls = false; }
+    };
+    this.#combatDeaths = combat;
+    w.deferPlayerDeath = this.#fatalHook; w.isPlayerDeathPending = this.#pendingDeathHook;
+    s.afterTick = this.#combatBoundary;
+    return combat;
+  }
+
+  #assertCombatOwner() {
+    if (this.#combatDeaths && (this.server.beforeTick !== this.#stagingBoundary ||
+        this.server.afterTick !== this.#combatBoundary || this.server.world.deferPlayerDeath !== this.#fatalHook ||
+        this.server.world.isPlayerDeathPending !== this.#pendingDeathHook || this.#combatDeaths.failed)) {
+      this.#combatDeaths.fail(); this.#stopPearls(); throw new StoreError('effect');
+    }
+  }
+
   // Only server-owned selectors, between ticks. The returned handle means pending work.
-  // Automatic combat dispatch needs a separate partial-tick continuation contract.
   requestDeath(raw) {
-    if (!this.#deathStaging || this.closing || this.#pearlFailed || !this.#pearlsReady()) throw new StoreError('unavailable');
+    if (!this.#deathStaging || this.closing || this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending) throw new StoreError('unavailable');
     try { this.server.assertTickIdle(); } catch { throw new StoreError('busy'); }
     const plain = (value) => value && typeof value === 'object' && !Array.isArray(value) &&
       [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -186,13 +226,17 @@ export class GameHost {
     this.#drainingPearls = true;
     try {
       // Death and pearl effects share reservations and the same deferred-teardown window.
-      for (const staging of [this.#deathStaging, this.#pearlStaging]) {
-        if (staging?.drain().some((result) => result.state === 'fenced')) this.#stopPearls();
-        if (this.closing || this.#pearlFailed) break;
+      this.#assertCombatOwner();
+      this.#combatDeaths?.assertWaiting();
+      const deaths = this.#deathStaging?.drain() ?? [];
+      if (deaths.some((result) => result.state === 'fenced')) this.#stopPearls();
+      if (!this.closing && !this.#pearlFailed) {
+        this.#combatDeaths?.advance(deaths);
+        if (this.#pearlStaging?.drain().some((result) => result.state === 'fenced')) this.#stopPearls();
       }
       return !this.closing && !this.#pearlFailed;
     } catch {
-      this.errors++; this.#stopPearls(); return false;
+      this.errors++; this.#combatDeaths?.fail(); this.#stopPearls(); return false;
     } finally { this.#drainingPearls = false; }
   }
 
@@ -202,7 +246,7 @@ export class GameHost {
       server: http, path, maxPayload: LIMITS.maxPayload, clientTracking: false,
       perMessageDeflate: { threshold: 256, zlibDeflateOptions: { level: 6 }, concurrencyLimit: 4 },
       verifyClient: (info, cb) => {
-        if (!this.healthy()) return cb(false, 503, 'storage');
+        if (!this.healthy() || this.#combatDeaths?.pending) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
         if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
         cb(true);
@@ -306,6 +350,8 @@ export class GameHost {
         deathStaging: this.#deathStaging ? { enabled: true, failed: this.#pearlFailed,
           pending: this.#deathStaging.tasks.size, completed: this.#deathStaging.completed.length,
           reserved: this.#deathStaging.operations.size } : null,
+        combatDeaths: this.#combatDeaths ? { enabled: true, failed: this.#combatDeaths.failed,
+          pending: this.#combatDeaths.count } : null,
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
@@ -313,7 +359,7 @@ export class GameHost {
   }
 
   onConnection(ws, req) {
-    if (!this.healthy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
+    if (!this.healthy() || this.#combatDeaths?.pending) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
     const id = this.nextId++;
     const now = performance.now();
     const sock = {
@@ -360,7 +406,7 @@ export class GameHost {
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       // This explicitly mounted recovery pilot has no guest/backfill authority.
-      if (this.#requiresPearlStartup && identity === null) throw new StoreError('auth');
+      if ((this.#requiresPearlStartup || this.#combatDeaths) && identity === null) throw new StoreError('auth');
       if (this.#requiresPearlStartup && msg.importSave === true) throw new StoreError('legacy');
       let profile;
       if (identity !== null) {
@@ -377,6 +423,7 @@ export class GameHost {
         }
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
+      if (this.closing || this.#combatDeaths?.pending) throw new StoreError('busy');
       this.server.receive(sock.id, msg, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
         this.profiles.close(sock.id);
@@ -436,7 +483,7 @@ export class GameHost {
   }
 
   profileAvailable(id, entity) {
-    if (this.#pearlFailed || !this.#pearlsReady()) return false;
+    if (this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed) return false;
     try {
       pearlMutationGate(this.profiles).assertAvailable(this.profileLanes(id, entity));
       return true;
@@ -462,7 +509,7 @@ export class GameHost {
   }
 
   commandAvailable(id, entity, plan) {
-    if (this.closing || !this.#pearlsReady()) return false;
+    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed) return false;
     try {
       const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
       if (plan.target !== null) {
@@ -483,7 +530,8 @@ export class GameHost {
   }
 
   tickAvailable() {
-    if (this.closing || !this.#pearlsReady()) return false;
+    this.#assertCombatOwner();
+    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed) return false;
     try {
       const gate = pearlMutationGate(this.profiles);
       // Autonomous effects can mint unknown UIDs and touch any connected owner or shared RNG.
@@ -510,6 +558,7 @@ export class GameHost {
   }
 
   beforeProfileDetach(id, entity) {
+    if (this.#combatDeaths?.invalidate(id, entity)) this.#stopPearls();
     const gate = pearlMutationGate(this.profiles), s = this.profiles.clients.get(id);
     // Account invalidation is independent of malformed UID metadata: pending effects must not
     // survive close -> entity recycle even when the final profile cannot be validated.
@@ -522,6 +571,7 @@ export class GameHost {
   }
 
   saveProfile(id, p) {
+    if (this.#combatDeaths?.pending || this.#combatDeaths?.failed) return false;
     const s = this.profiles.clients.get(id);
     if (!s) return true; // Guests keep their existing signed-save route.
     try {
@@ -610,7 +660,8 @@ export class GameHost {
       // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
       const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
       if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size ||
-          this.#pearlFailed || !this.#pearlsReady() || this.#pearlStaging?.operations.size || this.#deathStaging?.operations.size) throw new StoreError('flush');
+          this.#pearlFailed || !this.#pearlsReady() || this.#pearlStaging?.operations.size || this.#deathStaging?.operations.size ||
+          this.#combatDeaths?.pending || this.#combatDeaths?.failed) throw new StoreError('flush');
     })();
     return this.closePromise;
   }

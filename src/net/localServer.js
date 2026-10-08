@@ -47,8 +47,9 @@ export class LocalServer {
   #runningTick = false;
   #applyFailed = false;
   #ownsTickPublication = false;
+  #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, tickAccess = null, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, now = () => performance.now() }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -60,6 +61,8 @@ export class LocalServer {
     if (beforeTick !== null && typeof beforeTick !== 'function') throw new TypeError('tick apply hook');
     this.beforeTick = beforeTick; // Trusted synchronous apply adapter; never dispatch or await storage here.
     this.#ownsTickPublication = beforeTick !== null;
+    if (afterTick !== null && typeof afterTick !== 'function') throw new TypeError('tick completion hook');
+    this.afterTick = afterTick; // Synchronous post-world capture, before any terminal tick publication.
     if (tickAccess !== null && typeof tickAccess !== 'function') throw new TypeError('tick hook');
     this.tickAccess = tickAccess;
     this.tickBlocked = false; this.holdAcc = 0;
@@ -300,6 +303,23 @@ export class LocalServer {
     }
   }
 
+  assertCombatTick() {
+    if (!this.#runningTick || this.#afterWorld || this.#applyingTick || this.#checkingTick || this.#applyFailed) {
+      throw new TypeError('fatal combat requires a full simulation tick');
+    }
+  }
+
+  holdCombatPublication() {
+    this.assertCombatTick();
+    this.#holdingPublication = true;
+  }
+
+  assertDeathCaptureBoundary() {
+    if ((!this.#afterWorld && !this.#applyingTick) || this.#checkingTick || this.#applyFailed) {
+      throw new TypeError('death capture requires a trusted tick boundary');
+    }
+  }
+
   prepareDeathInputs(id, entity) {
     return prepareDeathInputs(this, id, entity, () => {
       if (!this.#applyingTick || this.#checkingTick || this.#runningTick || this.#applyFailed) {
@@ -309,7 +329,7 @@ export class LocalServer {
   }
 
   sendProfile(id, c) {
-    if (!this.profileAllowed(id, c, 'publish')) return false;
+    if (this.#holdingPublication || !this.profileAllowed(id, c, 'publish')) return false;
     const p = syncProfile(this.world, c.entity);
     if (!p) return false;
     this.send(id, { t: MSG.PROFILE, p });
@@ -326,7 +346,7 @@ export class LocalServer {
 
   // A fresh blob for the player to keep (only when it changed).
   sendSave(id, c) {
-    if (!this.profileAllowed(id, c, 'save')) return false;
+    if (this.#holdingPublication || !this.profileAllowed(id, c, 'save')) return false;
     const p = syncProfile(this.world, c.entity);
     if (!p) return false;
     if (this.onSave && this.onSave(id, p) === false) return false;
@@ -444,7 +464,9 @@ export class LocalServer {
       this.#applyingTick = false;
       if (!applied) { this.tickBlocked = true; this.acc = 0; }
     }
-    return applied && this.tickAllowed();
+    const allowed = applied && this.tickAllowed();
+    if (allowed) this.#holdingPublication = false;
+    return allowed;
   }
 
   tickAllowed() {
@@ -465,6 +487,7 @@ export class LocalServer {
   }
 
   waitForTick(dt) {
+    if (this.#holdingPublication) return;
     // Keep read-only state/ACK heartbeats on their usual cadence, including spectators. No events,
     // profile sync or save scheduling are flushed while a reservation owns the simulation boundary.
     this.holdAcc += Math.max(0, dt);
@@ -480,7 +503,14 @@ export class LocalServer {
   #step() {
     this.#runningTick = true;
     try { return this.#stepWorld(); }
-    finally { this.#runningTick = false; }
+    catch (error) {
+      if (this.afterTick !== null) {
+        // A partial tick cannot be replayed or captured as a completed death baseline.
+        this.#applyFailed = true; this.#holdingPublication = true; this.tickBlocked = true; this.acc = 0;
+        try { profileDecision(this.afterTick(false), 'tick completion'); } catch { /* Preserve the original fault. */ }
+      }
+      throw error;
+    } finally { this.#afterWorld = false; this.#runningTick = false; }
   }
 
   #stepWorld() {
@@ -512,6 +542,16 @@ export class LocalServer {
     }
     w.stepWorld();
     if (this.#applyFailed) throw new TypeError('failed tick boundary');
+    if (this.afterTick !== null) {
+      this.#afterWorld = true;
+      // Block direct publication during capture, including synchronous callback reentry.
+      this.#holdingPublication = true;
+      const complete = profileDecision(this.afterTick(true), 'tick completion');
+      this.#afterWorld = false;
+      if (this.#applyFailed) throw new TypeError('failed tick boundary');
+      if (!complete) { this.tickBlocked = true; this.acc = 0; return true; }
+      this.#holdingPublication = false;
+    }
     this.flushEvents();
     if (w.tick % SNAPSHOT_EVERY === 0) this.broadcastSnapshot();
     // Saves: the ones due, and a look at everyone every SAVE_TIMING.every s (sent only if it changed).
@@ -527,6 +567,7 @@ export class LocalServer {
   // One neutral tick for a silent client: no movement, no buttons, aim kept, projectile time moving on
   // (the world clamps it to the rewind window). The ack does not move: the client reconciles from it.
   applyFiller(c) {
+    if (this.afterTick !== null) throw new TypeError('standalone filler has no completed world boundary');
     if (!this.#prepareTick()) return false;
     this.#runningTick = true;
     try { return this.#applyFiller(c); }
@@ -546,7 +587,7 @@ export class LocalServer {
   flushEvents() {
     // Once an apply adapter owns this boundary, HELLO/disconnect cannot flush its retained events.
     // Only an admitted tick publishes them; a faulty adapter remains closed even if removed later.
-    if (this.#applyFailed || (this.#ownsTickPublication && !this.#runningTick)) return;
+    if (this.#holdingPublication || this.#applyFailed || (this.#ownsTickPublication && !this.#runningTick)) return;
     const w = this.world;
     for (const ev of w.events) {
       // Private (M4): loot, pickups, masteries… only for the player it is about.
@@ -590,6 +631,7 @@ export class LocalServer {
   }
 
   broadcastSnapshot() {
+    if (this.#holdingPublication || this.#applyFailed) return;
     // Movement/combat tuples contain no profile inventory, pearl UID, save blob or durable receipt.
     // Transport stays live while PROFILE/SAVE waits. During a tick hold, ACK remains the last
     // command actually applied; a snapshot heartbeat never acknowledges merely buffered input.

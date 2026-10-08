@@ -319,6 +319,14 @@ Afinidad permanente, epoch/reloj/políticas/finalizador/leases y RNG definitivos
 P4/P6 parciales. Hunks propios aislados de host/LocalServer ya dirty, trabajo naval/arte/chat/LLM
 conservado. Sin push/deploy/reinicio; no se afirma partida completa durable ni deploy listo.
 
+Checkpoint D09f-2b.25, base `bb25e57`: **combate fatal automático en montaje opcional del host**.
+Tick terminal ejecutado una vez y publicación retenida; recibos de muertes del mismo tick en orden,
+baselines completos, versiones confirmadas y prefijo aplicado conservado ante fallo posterior.
+**1376/1376** en 107 archivos/353 fuentes fijas; **22 nuevas**, memoria y SDK/SQL010 local.
+Sin SQL/env/CLI nueva ni activación por defecto; SQL010 aplicada según el autor, sin canario live de este
+corte. Pickup/expiry/restauración durable de drops comunes, afinidad y aceptación restart/WAN pendientes.
+[Contrato y evidencia](docs/delivery/d09f-fatal-combat.md).
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
