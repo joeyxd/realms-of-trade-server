@@ -1,6 +1,7 @@
 // M5's server-only storage contract. Memory exercises the same optimistic writes as Postgres;
 // it does not survive a process restart. Account identity must come from a trusted host resolver.
 import { createClient } from '@supabase/supabase-js';
+import { groundClockOperation, groundClockResult, checkedGroundClock, checkedGroundClockResult, checkedGroundClockReceipt } from './groundClockOperation.mjs';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { pearlOperation, canonicalText, managedPearl, pearlKind, validPearlMove, assertManagedPearls,
   pearlResult, checkedPearlResult, checkedPearlReceipt } from './pearlOperations.mjs';
@@ -54,6 +55,7 @@ export function createMemoryStore() {
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
   const deathReceipts = new Map(), deathDrops = new Map(), dropReceipts = new Map(), deathDropStates = new Map();
+  const groundClocks = new Map(), clockReceipts = new Map();
   const intents = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
@@ -106,6 +108,26 @@ export function createMemoryStore() {
     async legacyClaimed(importedKey) { return legacyImports.has(legacyKey(importedKey)); },
     async loadWorld(id) { return load(worlds, key(id)); },
     async saveWorld(id, data, expected) { return save(worlds, key(id), json(data), version(expected, 0, MAX_VERSION - 1)); },
+    async loadGroundClock(world) { world = groundKey(world); return structuredClone(groundClocks.get(world) ?? null); },
+    async loadGroundClockOperation(operationId) {
+      operationId = playerKey(operationId);
+      const receipt = clockReceipts.get(operationId);
+      return receipt ? checkedGroundClockReceipt({ request: JSON.parse(receipt.text), result: receipt.result }, operationId) : null;
+    },
+    async commitGroundClock(raw) {
+      const { operationId, request } = groundClockOperation(raw), text = canonicalText(request);
+      const receipt = clockReceipts.get(operationId);
+      if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
+      if (intents.has(operationId) || [pearlReceipts,groundReceipts,batchReceipts,deathReceipts,dropReceipts].some(r => r.has(operationId))) {
+        return { ok: false, why: 'operation' };
+      }
+      const current = groundClocks.get(request.world);
+      if ((current?.version ?? 0) !== request.expectedVersion || (current?.tick ?? 0) !== request.expectedTick) return conflict();
+      const result = groundClockResult(request, operationId), clock = structuredClone(result.clock), stored = { text, result }, reply = structuredClone(result);
+      // No await or fallible preparation follows the first write: checkpoint and receipt commit together.
+      groundClocks.set(request.world, clock); clockReceipts.set(operationId, stored);
+      return reply;
+    },
     async loadUnique(uid) { return load(uniques, key(uid, 160)); },
     async loadPearlOperation(operationId) {
       operationId = playerKey(operationId);
@@ -114,6 +136,7 @@ export function createMemoryStore() {
     },
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
+      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'pearl', request)) return { ok: false, why: 'operation' };
       if (groundReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = pearlReceipts.get(operationId);
@@ -139,6 +162,7 @@ export function createMemoryStore() {
     },
     async commitPearlGround(raw) {
       const { operationId, request } = groundOperation(raw), text = canonicalText(request);
+      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'ground', request)) return { ok: false, why: 'operation' };
       const receipt = groundReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
@@ -169,6 +193,7 @@ export function createMemoryStore() {
     },
     async commitPearlBatch(raw) {
       const { operationId, request } = batchOperation(raw), text = canonicalText(request);
+      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = batchReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'batch', request)) return { ok: false, why: 'operation' };
@@ -210,6 +235,7 @@ export function createMemoryStore() {
     },
     async commitDeath(raw) {
       const { operationId, request } = deathOperation(raw), text = canonicalText(request);
+      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = deathReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) || dropReceipts.has(operationId) ||
@@ -261,6 +287,7 @@ export function createMemoryStore() {
     },
     async commitDeathDrop(raw) {
       const { operationId, request } = deathDropOperation(raw), text = canonicalText(request);
+      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = dropReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) ||
@@ -309,7 +336,7 @@ export function createMemoryStore() {
       return { ok: true, version: current.version };
     },
   };
-  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts, death: deathReceipts, drop: dropReceipts }, intents);
+  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts, death: deathReceipts, drop: dropReceipts, clock: clockReceipts }, intents);
   return store;
 }
 
@@ -362,6 +389,19 @@ export function createSupabaseStore(client) {
     async loadWorld(id) { return record(await rpc('mn_load_world', { p_world: key(id) }), json); },
     async saveWorld(id, data, expected) {
       return written(await rpc('mn_save_world', { p_world: key(id), p_data: json(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
+    },
+    async loadGroundClock(world) {
+      world = groundKey(world);
+      const raw = await rpc('mn_load_ground_clock', { p_world: world });
+      return raw === null ? null : checkedGroundClock(raw, world);
+    },
+    async commitGroundClock(raw) {
+      const { operationId, request } = groundClockOperation(raw);
+      return checkedGroundClockResult(await rpc('mn_commit_ground_clock', { p_operation_id: operationId, p_request: request }), request, operationId);
+    },
+    async loadGroundClockOperation(operationId) {
+      operationId = playerKey(operationId);
+      return checkedGroundClockReceipt(await rpc('mn_load_ground_clock_operation', { p_operation_id: operationId }), operationId);
     },
     async loadUnique(uid) {
       const raw = await rpc('mn_load_unique', { p_uid: key(uid, 160) });

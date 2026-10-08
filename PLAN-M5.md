@@ -391,6 +391,21 @@ reloj/epoch y conectar startup al host, luego piloto real restart/reconexión/WA
 por personaje/tipo, transacciones navales y P4/P6 abiertos. SQL010 confirmada; SQL011/012 real pendientes
 de confirmación/canario adicional. Sin migración/env/protocolo nuevos, push/deploy ni reinicio.
 
+
+Checkpoint D09f-2b.31, base 15ccf1c: **storage del checkpoint durable de tiempo de suelo**.
+loadGroundClock/commitGroundClock/loadGroundClockOperation conservan tick seguro, CAS de versión y tick,
+y recibo UUID inmutable. Replay no retrocede el presente; namespace exclusivo en ambos sentidos con
+las cinco familias de gameplay y sus intenciones. SQL013 RLS, tablas SELECT-only para service_role y
+RPC de escritura schema-qualified de search_path vacío. **SQL011 y SQL012 confirmadas aplicadas por el
+autor el 2026-10-08**; no se atribuye un canario live. SQL013 nueva pendiente de aplicar/verificar real.
+**145/145** pertinentes aisladas en diez archivos, **37 nuevas**; 469 fuentes y 954 archivos Three
+verificados antes/después. SDK/SQL001–013 local, reapply013 y base PGlite file-backed cerrada/reabierta.
+Pruebas locales y límites en [contrato/evidencia](docs/delivery/d09f-ground-clock.md).
+Storage no elige fuente/tasa/offline ni restaura World.tick: sigue definir reloj, epoch y ventana de caída,
+conectar carga/recuperación/drain antes de admisión del host, y aceptar restart/reconexión/WAN real.
+Afinidad permanente por personaje/tipo, finalizador/leases, transacciones navales y P4/P6 abiertos.
+Sin activación host/CLI, env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

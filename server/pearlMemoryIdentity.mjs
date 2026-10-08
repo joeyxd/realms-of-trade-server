@@ -25,6 +25,7 @@ export function permitsMemoryPearlReceipt(intents, operationId, family, request)
 }
 export function assertMemoryPearlIntent(namespace, entry) {
   const { receipts } = namespace;
+  if (receipts.clock?.has(entry.operationId)) throw new StoreError('operation');
   const drop = receipts.drop?.get(entry.operationId);
   if (entry.family === 'drop') {
     if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||
