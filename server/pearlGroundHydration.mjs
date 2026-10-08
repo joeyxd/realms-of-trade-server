@@ -1,10 +1,13 @@
 // Dormant startup adapter. Async reads prepare current ground authority; only a synchronous drain
-// installs drops. The caller must provide the clock mapping and keep simulation/admission stopped.
+// installs drops. The caller must provide the pearl clock mapping and keep simulation/admission stopped.
+// Optional ordinary death ground preserves persisted deadlines: its logical tick must already be stable.
 import { isDeepStrictEqual } from 'node:util';
 import { StoreError } from './store.mjs';
 import { groundKey, groundData, groundPage, checkedGroundPage, checkedLocation } from './pearlGround.mjs';
 import { canonicalText, pearlKind } from './pearlOperations.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { CurrentDeathDropHydration } from './currentDeathDropHydration.mjs';
+import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 
 const clone = (v) => structuredClone(v);
 const error = (e) => e instanceof StoreError ? e : new StoreError('unavailable');
@@ -13,10 +16,10 @@ const sameMap = (a, b) => isDeepStrictEqual([...Map.prototype.entries.call(a)], 
 
 export class PearlGroundHydration {
   #sessions; #world; #worldId; #clock; #pageSize; #maxRows; #gate; #handle; #before; #rows;
-  #state = 'idle'; #task = null; #result = null;
+  #state = 'idle'; #task = null; #result = null; #deathDrops = null; #deathRows = [];
 
-  constructor({ sessions, world, worldId, mapClock, pageSize = 64, maxRows = 4096 } = {}) {
-    if (!sessions || !world || typeof mapClock !== 'function' ||
+  constructor({ sessions, world, worldId, mapClock, pageSize = 64, maxRows = 4096, deathDrops = false } = {}) {
+    if (!sessions || !world || typeof mapClock !== 'function' || typeof deathDrops !== 'boolean' ||
         !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 256 ||
         !Number.isSafeInteger(maxRows) || maxRows < 1 || maxRows > 65536 ||
         ['listPearlGround', 'loadUnique', 'loadPearlLocation'].some((k) => typeof sessions.store?.[k] !== 'function')) {
@@ -26,24 +29,28 @@ export class PearlGroundHydration {
     if (sessions.pearls?.journal && sessions.pearls.journal.scope !== this.#worldId) throw new StoreError('configuration');
     this.#sessions = sessions; this.#world = world; this.#clock = mapClock;
     this.#pageSize = pageSize; this.#maxRows = maxRows; this.#gate = pearlMutationGate(sessions);
+    if (deathDrops) this.#deathDrops = new CurrentDeathDropHydration(sessions.store, this.#worldId, pageSize, maxRows, () => this.#assertCurrent());
   }
 
   get state() { return this.#state; }
 
   #capture() {
     const w = this.#world;
+    if (this.#deathDrops) assertDropContainers(w);
     if (!tick(w.tick) || !(w.profiles instanceof Map) || w.profiles.size ||
         !(w.drops instanceof Map) || !(w.pearlLedger instanceof Map) ||
         !Number.isSafeInteger(w.nextDrop) || w.nextDrop < 1 || w.nextDrop >= Number.MAX_SAFE_INTEGER) {
       throw new StoreError('operation');
     }
     return { tick: w.tick, profiles: w.profiles, drops: w.drops, ledger: w.pearlLedger,
-      dropData: clone(w.drops), ledgerData: clone(w.pearlLedger), nextDrop: w.nextDrop };
+      dropData: this.#deathDrops ? new Map(snapshotDropData([...Map.prototype.entries.call(w.drops)])) : clone(w.drops),
+      ledgerData: clone(w.pearlLedger), nextDrop: w.nextDrop };
   }
 
   #assertCurrent() {
     this.#gate.assertHydration(this.#handle);
     const w = this.#world, b = this.#before;
+    if (this.#deathDrops) assertDropContainers(w);
     if (w.tick !== b.tick || w.profiles !== b.profiles || w.profiles.size ||
         w.drops !== b.drops || w.pearlLedger !== b.ledger || w.nextDrop !== b.nextDrop ||
         !sameMap(w.drops, b.dropData) || !sameMap(w.pearlLedger, b.ledgerData)) {
@@ -102,9 +109,12 @@ export class PearlGroundHydration {
         throw new StoreError('ownership');
       }
     }
+    // Both families prepare under this same barrier and install in one reversible drain.
+    if (this.#deathDrops) this.#deathRows = await this.#deathDrops.read();
     // The barrier protects this authority. A second scan also detects persistent changes behind a
     // pagination cursor from a service bypass. This is deliberately not a cross-process lease.
     if (canonicalText(await this.#scan()) !== canonicalText(rows)) throw new StoreError('conflict');
+    if (this.#deathDrops) await this.#deathDrops.verify();
     this.#assertCurrent();
     this.#rows = rows.map((row) => {
       const mapped = this.#clock(Object.freeze(clone(row.ground)), Object.freeze({ worldId: this.#worldId, tick: this.#before.tick }));
@@ -120,7 +130,7 @@ export class PearlGroundHydration {
     });
     this.#assertCurrent();
     this.#state = 'ready';
-    return { state: 'ready', count: rows.length };
+    return { state: 'ready', count: rows.length + this.#deathRows.length };
   }
 
   // No awaits, emit, RNG, expiry, terrain search, mint or profile save occurs during installation.
@@ -131,7 +141,8 @@ export class PearlGroundHydration {
     const w = this.#world, b = this.#before, installed = [];
     try {
       this.#assertCurrent();
-      if (!Number.isSafeInteger(b.nextDrop + this.#rows.length) || b.nextDrop + this.#rows.length >= Number.MAX_SAFE_INTEGER) {
+      const count = this.#rows.length + this.#deathRows.length;
+      if (!Number.isSafeInteger(b.nextDrop + count) || b.nextDrop + count >= Number.MAX_SAFE_INTEGER) {
         throw new StoreError('capacity');
       }
       const existingUids = new Set([...w.drops.values()].map((d) => d?.pearl?.uid));
@@ -144,13 +155,14 @@ export class PearlGroundHydration {
           x: row.ground.x, z: row.ground.z, pickAt: row.ground.availableAt, t: row.ground.returnAt },
         ledger: { owner: '', entity: 0, place: 'ground', drop: id } };
       });
+      if (this.#deathDrops) plan.push(...this.#deathDrops.plan(b.nextDrop + this.#rows.length, w.drops));
       const expectedDrops = new Map(b.dropData), expectedLedger = new Map(b.ledgerData);
-      for (const entry of plan) { expectedDrops.set(entry.drop.id, clone(entry.drop)); expectedLedger.set(entry.uid, clone(entry.ledger)); }
+      for (const entry of plan) { expectedDrops.set(entry.drop.id, clone(entry.drop)); if (entry.ledger) expectedLedger.set(entry.uid, clone(entry.ledger)); }
       this.#assertCurrent();
       for (const entry of plan) {
         // Record first so rollback also covers a Map implementation that inserts and then throws.
         installed.push(entry);
-        w.drops.set(entry.drop.id, entry.drop); w.pearlLedger.set(entry.uid, entry.ledger);
+        w.drops.set(entry.drop.id, entry.drop); if (entry.ledger) w.pearlLedger.set(entry.uid, entry.ledger);
       }
       w.nextDrop = b.nextDrop + plan.length;
       this.#gate.assertHydration(this.#handle);
@@ -162,8 +174,8 @@ export class PearlGroundHydration {
       return clone(this.#result);
     } catch (e) {
       for (const entry of installed.reverse()) {
-        if (b.drops.get(entry.drop.id) === entry.drop) Map.prototype.delete.call(b.drops, entry.drop.id);
-        if (b.ledger.get(entry.uid) === entry.ledger) Map.prototype.delete.call(b.ledger, entry.uid);
+        if (Map.prototype.get.call(b.drops, entry.drop.id) === entry.drop) Map.prototype.delete.call(b.drops, entry.drop.id);
+        if (entry.ledger && Map.prototype.get.call(b.ledger, entry.uid) === entry.ledger) Map.prototype.delete.call(b.ledger, entry.uid);
       }
       if (w.nextDrop === b.nextDrop + installed.length) w.nextDrop = b.nextDrop;
       this.#state = 'fenced'; this.#gate.fenceHydration(this.#handle);

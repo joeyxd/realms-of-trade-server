@@ -1,22 +1,25 @@
 // Dormant composition boundary: recover exact intents, then prepare current ground under one gate.
 // The host must keep simulation/listening stopped, supply a pure clock mapper, and drain synchronously.
+// deathDrops:true is dormant composition only; it does not persist or choose the logical ground clock.
 import { isDeepStrictEqual } from 'node:util';
 import { StoreError } from './store.mjs';
 import { PearlGroundHydration } from './pearlGroundHydration.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 
 const error = (e) => e instanceof StoreError ? e : new StoreError('unavailable');
 const sameMap = (a, b) => isDeepStrictEqual([...Map.prototype.entries.call(a)], [...Map.prototype.entries.call(b)]);
 
 export class PearlStartup {
   #sessions; #world; #gate; #hydration; #handle; #before; #task = null; #result = null;
-  #state = 'idle';
+  #state = 'idle'; #deathDrops = false;
 
   constructor(options = {}) {
     const { sessions, world } = options;
     // A configured journal is required even for memory fixtures: absence is not recovered startup.
     if (typeof sessions?.recoverPearls !== 'function' || !sessions.pearls?.journal) throw new StoreError('configuration');
     this.#hydration = new PearlGroundHydration(options);
+    this.#deathDrops = options.deathDrops === true;
     this.#sessions = sessions; this.#world = world; this.#gate = pearlMutationGate(sessions);
   }
 
@@ -25,18 +28,21 @@ export class PearlStartup {
 
   #capture() {
     const w = this.#world;
+    if (this.#deathDrops) assertDropContainers(w);
     if (!Number.isSafeInteger(w.tick) || w.tick < 0 || !(w.profiles instanceof Map) || w.profiles.size ||
         !(w.drops instanceof Map) || !(w.pearlLedger instanceof Map) ||
         !Number.isSafeInteger(w.nextDrop) || w.nextDrop < 1 || w.nextDrop >= Number.MAX_SAFE_INTEGER) {
       throw new StoreError('operation');
     }
     return { tick: w.tick, profiles: w.profiles, drops: w.drops, ledger: w.pearlLedger,
-      dropData: structuredClone(w.drops), ledgerData: structuredClone(w.pearlLedger), nextDrop: w.nextDrop };
+      dropData: this.#deathDrops ? new Map(snapshotDropData([...Map.prototype.entries.call(w.drops)])) : structuredClone(w.drops),
+      ledgerData: structuredClone(w.pearlLedger), nextDrop: w.nextDrop };
   }
 
   #assertCurrent() {
     this.#gate.assertRecovery(this.#handle);
     const w = this.#world, b = this.#before;
+    if (this.#deathDrops) assertDropContainers(w);
     if (w.tick !== b.tick || w.profiles !== b.profiles || w.profiles.size || w.drops !== b.drops ||
         w.pearlLedger !== b.ledger || w.nextDrop !== b.nextDrop ||
         !sameMap(w.drops, b.dropData) || !sameMap(w.pearlLedger, b.ledgerData)) throw new StoreError('conflict');

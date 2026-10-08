@@ -378,6 +378,19 @@ CLI por defecto. SQL010 confirmada; SQL011/012 sin confirmación/canario live ad
 del botín actual con reloj estable, piloto restart/reconexión/WAN y afinidad permanente; P4/P6 y políticas
 operativas abiertos. Trabajo ajeno conservado; sin push/deploy ni reinicio.
 
+Checkpoint D09f-2b.30, base `342c026`: **restauración conjunta dormant de suelo actual**.
+PearlGroundHydration/PearlStartup admiten deathDrops:true opcional, con recuperación y ambas lecturas
+bajo una sola barrera y drain síncrono reversible. Estado actual + recibo de muerte por UUID/ordinal;
+picked/expired no reaparecen, plazos intactos, rollback total y contenedores hostiles rechazados.
+**120/120** pertinentes en cinco archivos, **51 nuevas**: memoria 102 y SDK/SQL001–012 18. Vigilancia
+pre/post de 484 fuentes y 954 archivos de Three privado. Integración compartida **33/33**, 765 fuentes
+sin drift; intento previo con edición ajena y cohortes extendida/SQL incompletas quedan documentados,
+sin aceptarlas como regresión completa. [Contrato/evidencia](docs/delivery/d09f-death-drop-hydration.md).
+No activa GameHost: WorldState conserva reloj económico, no tick durable de fuentes. Sigue cerrar
+reloj/epoch y conectar startup al host, luego piloto real restart/reconexión/WAN. Afinidad permanente
+por personaje/tipo, transacciones navales y P4/P6 abiertos. SQL010 confirmada; SQL011/012 real pendientes
+de confirmación/canario adicional. Sin migración/env/protocolo nuevos, push/deploy ni reinicio.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
