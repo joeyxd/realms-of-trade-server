@@ -280,12 +280,28 @@ Respuestas prepare/commit/terminal perdidas y estado avanzado conservan reservas
 capability del caller sigue hasta apply/fence. [Contrato](docs/briefs/m5-death-recovery.md) y
 [evidencia/límites](docs/delivery/d09f-death-recovery.md). **1286/1286**, 102 archivos/342 fuentes aisladas,
 59 checks nuevos y tres procesos independientes. SQL001–010 + reapply010 en PostgreSQL local por SDK.
-El autor confirmó SQL009 aplicada el 2026-10-07; no hubo canario real en este corte. **Aplicar SQL010 después
-de 001–009 y verificar Supabase real**; namespace admite solo death intent/recibo coincidentes.
+El autor confirmó SQL009 y SQL010 aplicadas sin error el 2026-10-07; no hubo canario independiente real.
+Verificar Supabase real sigue pendiente; namespace admite solo death intent/recibo coincidentes.
 No activa muerte durable en la partida: siguen staging/captura bajo reserva, apply/publicación en tick,
 respawn/recycle y lifecycle de botín (hidratación/pickup/consumo/expiry); listDeathDrops es creación histórica.
 Siguiente: staging/apply de muerte completa. Afinidad permanente, epoch/reloj/políticas, leases/finalizador
 y P4/P6 abiertos. Sin env/protocolo/push/deploy/reinicio del PC; trabajo paralelo conservado.
+
+Checkpoint D09f-2b.23, base 7cd3e27: **staging/apply dormant de muerte completa**.
+DeathStaging recibe selectors trusted de conexión/personaje, reserva víctima/PK y todos sus UIDs antes
+del capture gameplay, asienta EXP/progreso y autosaves previos, elige generaciones/versions server-side
+y envía el DTO exacto por journal/cola existentes. Solo drain síncrono aplica perfil/ECS, perlas,
+drops ordinarios con operationId/ordinal, dirty marks y eventos; IDs remapeados desde allocator vivo.
+La reserva dura hasta apply o fence; close/recycle/respawn/drift y fallos posteriores no publican una
+muerte histórica ni revierten SQL confirmado. Captura privada no toca RNG vivo ni el de otros actores.
+[Contrato](docs/briefs/m5-death-staging.md) y [evidencia/límites](docs/delivery/d09f-death-staging.md).
+**1336/1336**, 105 archivos/348 fuentes aisladas, 50 checks nuevos; seis overlays propios.
+Memoria y SDK/SQL001–010 local; salida normal, sin fails/cancelled/skipped/todo.
+SQL010 confirmada por el autor, sin canario real; no hay migración/env/protocolo nuevo ni activación host.
+Sigue conectar muerte/freeze/publicación/lifecycle en GameHost y respawn; suelo ordinario durable actual
+(pickup/consumo/expiry), epoch/reloj/políticas/finalizador/leases y afinidad permanente permanecen abiertos.
+P4/P6 parciales. El host actual sigue su ruta local; este corte verifica la obligación de freeze de filas,
+no la instala. Trabajo naval/arte/chat/LLM ajeno conservado, sin push/deploy/reinicio.
 
 ## 1. Decisión: Supabase (propuesta del autor)
 
