@@ -350,6 +350,21 @@ Sigue staging/apply en tick, hooks/hidratación con reloj estable y piloto resta
 Afinidad permanente, epoch/políticas/leases/finalizador y P4/P6 abiertos. Sin env/protocolo/push/deploy
 ni reinicio del servidor; trabajo paralelo conservado.
 
+Checkpoint D09f-2b.28, base `60a88ca`: **staging/apply dormant de botín ordinario en tick**.
+DeathDropStaging captura selectors trusted, fuente durable, receptor/capacidad/distancia y progreso ECS
+actual; reserva cuenta, todas sus perlas y UUID/ordinal, asienta saves previos y confirma por journal/cola.
+El tick completo permanece retenido hasta drain; actor/perfil/source/ledger/tick distintos producen fence.
+Solo apply síncrono retira el objeto original, cambia inventario/pociones y publica pickup/unloot;
+rollback local conserva SQL confirmado y no repite efectos históricos. Expiry solo ocupa la fuente.
+**1531/1531**, 120 archivos/378 fuentes fijas, **45 nuevas**; contrato completo memoria/SDK+SQL001–012
+y prueba real DeathStaging→DeathDropStaging en ambos backends. Copia física privada Three verificada
+954/954; primer intento falló exclusivamente por el enlace exterior de esa dependencia, ya corregido.
+[Contrato/evidencia](docs/delivery/d09f-death-drop-staging.md). Sin migración/env/protocolo nueva ni
+activación host/CLI. SQL011/012 siguen sin confirmación/canario live adicional; SQL010 confirmada.
+Sigue montaje de pickup/expiry con pausa/publicación del tick, hidratación con reloj estable y piloto
+restart/reconexión/WAN. Afinidad permanente, epoch/políticas/leases/finalizador y P4/P6 abiertos.
+Trabajo paralelo conservado; sin push/deploy ni reinicio.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
