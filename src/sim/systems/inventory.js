@@ -474,6 +474,11 @@ export function stepDrops(world) {
   if (!world.drops || !world.drops.size || world.tick % 3) return;
   const ecs = world.ecs, gone = new Map(), pubGone = [];
   for (const [id, d] of world.drops) {
+    if (world.isDeathDropManaged != null) {
+      const managed = world.isDeathDropManaged(d);
+      if (typeof managed !== 'boolean') throw new TypeError('managed drop decision');
+      if (managed) continue; // The mounted completed-tick owner handles pickup and expiry.
+    }
     if (d.to && (!ecs.alive[d.to] || !(ecs.mask[d.to] & C.PLAYER))) { world.drops.delete(id); continue; }
     if (world.tick > d.t) {
       if (d.kind === 'pearl') { returnPearl(world, d); continue; }

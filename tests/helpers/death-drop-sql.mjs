@@ -9,6 +9,9 @@ import { readFile } from 'node:fs/promises';
 export const deathDropSql = await readFile(new URL('../../server/migrations/011_death_drop_lifecycle.sql', import.meta.url), 'utf8');
 
 const routes = {
+  mn_load_world: ['public.mn_load_world($1)', ['p_world']],
+  mn_save_world: ['public.mn_save_world($1,$2::jsonb,$3::integer)', ['p_world','p_data','p_expected_version']],
+  mn_list_pearl_ground: ['public.mn_list_pearl_ground($1,$2,$3::integer)', ['p_world','p_after_uid','p_limit']],
   mn_resolve_pearl_intent: ['public.mn_resolve_pearl_intent($1,$2,$3::uuid,$4::jsonb,$5)', ['p_scope','p_family','p_operation_id','p_request','p_state']],
   mn_list_pearl_intents: ['public.mn_list_pearl_intents($1,$2::uuid,$3::integer)', ['p_scope','p_after_id','p_limit']],
   mn_load_pearl_operation: ['public.mn_load_pearl_operation($1::uuid)', ['p_operation_id']],

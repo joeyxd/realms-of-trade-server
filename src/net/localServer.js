@@ -314,6 +314,17 @@ export class LocalServer {
     this.#holdingPublication = true;
   }
 
+  assertDropApplyBoundary() {
+    if (!this.#applyingTick || this.#runningTick || this.#checkingTick || this.#applyFailed) {
+      throw new TypeError('drop lifecycle requires tick apply');
+    }
+  }
+
+  holdDropPublication() {
+    this.assertDropApplyBoundary();
+    this.#holdingPublication = true;
+  }
+
   assertDeathCaptureBoundary() {
     if ((!this.#afterWorld && !this.#applyingTick) || this.#checkingTick || this.#applyFailed) {
       throw new TypeError('death capture requires a trusted tick boundary');

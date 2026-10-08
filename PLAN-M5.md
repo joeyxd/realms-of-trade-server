@@ -365,6 +365,19 @@ Sigue montaje de pickup/expiry con pausa/publicación del tick, hidratación con
 restart/reconexión/WAN. Afinidad permanente, epoch/políticas/leases/finalizador y P4/P6 abiertos.
 Trabajo paralelo conservado; sin push/deploy ni reinicio.
 
+Checkpoint D09f-2b.29, base `4a23e6f`: **montaje opcional de pickup/expiry en GameHost**.
+Un único beforeTick elige fuentes ordinarias UUID/ordinal desde el tick completo y retiene paso/publicación
+hasta cada recibo aplicado. Orden de inserción, fallback por capacidad y aplicación serial con inventario/UID
+frescos; hooks/actor/source/tick alterados conservan fence. Cierre espera IO sin aplicar continuaciones.
+**2026/2026**, 167 archivos, **20 nuevas**; 383 fuentes vigiladas antes/después de las cohortes y 80 fuentes
+base suplementarias comprobadas durante/después. Three privado 954/954. Memoria y SDK/SQL001–012 con journal
+y arranque reales, incluyendo múltiples fuentes al mismo receptor en un tick retenido y respuesta perdida.
+Integración compartida **20/20**, 541 fuentes vigiladas sin drift durante la comprobación enfocada.
+[Contrato/evidencia](docs/delivery/d09f-death-drop-host.md). Sin migración/env/protocolo nuevos ni activación
+CLI por defecto. SQL010 confirmada; SQL011/012 sin confirmación/canario live adicional. Sigue hidratación
+del botín actual con reloj estable, piloto restart/reconexión/WAN y afinidad permanente; P4/P6 y políticas
+operativas abiertos. Trabajo ajeno conservado; sin push/deploy ni reinicio.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
