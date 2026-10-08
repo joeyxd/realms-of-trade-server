@@ -406,6 +406,18 @@ conectar carga/recuperación/drain antes de admisión del host, y aceptar restar
 Afinidad permanente por personaje/tipo, finalizador/leases, transacciones navales y P4/P6 abiertos.
 Sin activación host/CLI, env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
 
+Checkpoint D09f-2b.32, base da98c6b: **coordinador server-only y ancla del reloj del suelo**.
+GroundClockSession verifica checkpoint/recibo/presente, prepara CAS exacto, resuelve respuestas perdidas
+por lectura y reenvía solo mediante resume explícito. drain síncrono exige el tick local capturado;
+GroundClockEpoch conserva World.tick efímero y plazos pasados, sin modificarlos ni recortarlos a cero.
+**SQL013 confirmada aplicada por el autor el 2026-10-08**, sin canario live en este corte. No SQL nueva.
+**157/157** pertinentes aisladas en nueve archivos, **25 nuevas**; 472 fuentes y 954 archivos Three
+verificados antes/después. SDK/SQL001–013 local con reapertura del storage/coordinador.
+[Contrato y evidencia](docs/delivery/d09f-ground-clock-session.md). Política offline sigue consultada;
+montaje host, dominio/versionado de plazos legacy, atomicidad reloj/operación y ventana de crash,
+reinicio/reconexión reales, afinidad permanente, finalizador/leases y P4/P6 permanecen abiertos.
+Sin cambios host/CLI/env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
