@@ -327,6 +327,16 @@ Sin SQL/env/CLI nueva ni activación por defecto; SQL010 aplicada según el auto
 corte. Pickup/expiry/restauración durable de drops comunes, afinidad y aceptación restart/WAN pendientes.
 [Contrato y evidencia](docs/delivery/d09f-fatal-combat.md).
 
+Checkpoint D09f-2b.26, base `14510ff`: **storage de recogida/expiry y estado actual de botín ordinario**.
+SQL011 confirma perfil receptor + estado terminal + recibo exacto, UUIDs exclusivos, CAS/baseline,
+ventanas y rollback completo. UID nuevo al recuperar objeto público, capacidad 24/5 y progreso conservado.
+Suelo actual separado del historial SQL009; sin backfill de filas anteriores, replay/reapply no resucitan
+botín. **1430/1430**, 111 archivos/362 fuentes fijas, **54 nuevas**, SDK/PostgreSQL local y dos procesos
+independientes con respuesta perdida/restart. SQL011 pendiente de aplicar y verificar en Supabase real.
+[Contrato y evidencia](docs/delivery/d09f-death-drop-lifecycle.md). Sin journal/cola/host/hidratación/epoch
+activados; siguen reservas/reconciliación/staging/tick y reconstrucción del suelo con reloj estable.
+Afinidad permanente y P4/P6 abiertos; sin env/protocolo/push/deploy/reinicio, trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
