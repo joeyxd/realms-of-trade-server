@@ -264,7 +264,7 @@ export function createMemoryStore() {
       const receipt = dropReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) ||
-          deathReceipts.has(operationId) || intents.has(operationId)) return { ok: false, why: 'operation' };
+          deathReceipts.has(operationId) || !permitsMemoryPearlReceipt(intents, operationId, 'drop', request)) return { ok: false, why: 'operation' };
       const p = request.profile, old = p && profiles.get(p.id);
       if (p && (old?.version !== p.expectedVersion || canonicalText(old.data) !== canonicalText(p.before))) return conflict();
       const sourceKey = `${request.drop.operationId}:${request.drop.ordinal}`, current = deathDropStates.get(sourceKey);

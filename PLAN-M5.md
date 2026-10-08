@@ -337,6 +337,19 @@ independientes con respuesta perdida/restart. SQL011 pendiente de aplicar y veri
 activados; siguen reservas/reconciliación/staging/tick y reconstrucción del suelo con reloj estable.
 Afinidad permanente y P4/P6 abiertos; sin env/protocolo/push/deploy/reinicio, trabajo paralelo conservado.
 
+Checkpoint D09f-2b.27, base `5ddb299`: **diario/cola y recuperación de botín ordinario**.
+ProfileSessions commitDeathDrop/reconcileDeathDrop/resumeDeathDrop comparten journal y reservas de
+cuenta, perlas conservadas y fuente UUID/ordinal. Baseline exacto tras saves previos; sin recaptura
+ni rebase de progreso cambiado. Startup solo inspecciona; resume explícito reenvía la petición exacta.
+SQL012 admite solo intent/recibo drop coincidentes y conserva namespace/identidad en ambos sentidos.
+**1486/1486**, 116 archivos/371 fuentes fijas, **56 nuevas**; tres procesos prueban respuesta perdida,
+recuperación sin envío y resume/avance posterior sin duplicar botín. SQL001–012 + reapply012 local por
+SDK/PostgreSQL. SQL011/012 pendientes de aplicar/verificar en Supabase real; SQL010 confirmada por el autor.
+[Contrato y evidencia](docs/delivery/d09f-death-drop-recovery.md). Sin efectos World ni hooks/activación.
+Sigue staging/apply en tick, hooks/hidratación con reloj estable y piloto restart/reconexión/WAN.
+Afinidad permanente, epoch/políticas/leases/finalizador y P4/P6 abiertos. Sin env/protocolo/push/deploy
+ni reinicio del servidor; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

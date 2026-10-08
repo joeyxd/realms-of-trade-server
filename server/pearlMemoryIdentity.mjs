@@ -13,6 +13,9 @@ export function memoryPearlJournal(store) {
 export function permitsMemoryPearlReceipt(intents, operationId, family, request) {
   const entry = intents.get(operationId);
   if (!entry) return true;
+  if (family === 'drop') return entry.family === 'drop' && entry.scope === request.world &&
+    entry.state === 'pending' && canonicalText(entry.request) === canonicalText(request);
+  if (entry.family === 'drop') return false;
   if (family === 'death') return entry.family === 'death' && entry.scope === request.world &&
     entry.state === 'pending' && canonicalText(entry.request) === canonicalText(request);
   if (entry.family === 'death') return false;
@@ -22,7 +25,14 @@ export function permitsMemoryPearlReceipt(intents, operationId, family, request)
 }
 export function assertMemoryPearlIntent(namespace, entry) {
   const { receipts } = namespace;
-  if (receipts.drop?.has(entry.operationId)) throw new StoreError('operation');
+  const drop = receipts.drop?.get(entry.operationId);
+  if (entry.family === 'drop') {
+    if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||
+      receipts.batch.has(entry.operationId) || receipts.death?.has(entry.operationId) ||
+      (drop && drop.text !== canonicalText(entry.request))) throw new StoreError('operation');
+    return;
+  }
+  if (drop) throw new StoreError('operation');
   const death = receipts.death?.get(entry.operationId);
   if (entry.family === 'death') {
     if (receipts.pearl.has(entry.operationId) || receipts.ground.has(entry.operationId) ||

@@ -5,30 +5,38 @@ import { groundKey } from './pearlGround.mjs';
 
 const gates = new WeakMap();
 const MAX_LANES = 256, MAX_RESERVATIONS = 256;
+const dropLane = (raw) => {
+  if (typeof raw !== 'string') throw new StoreError('operation');
+  const parts = raw.split(':'), ordinal = Number(parts[1]);
+  if (parts.length !== 2 || playerKey(parts[0]) !== parts[0] || !Number.isInteger(ordinal) ||
+      ordinal < 1 || ordinal > 35 || String(ordinal) !== parts[1]) throw new StoreError('operation');
+  return raw;
+};
 const resources = (raw = {}) => {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw) ||
-      Object.keys(raw).some((key) => key !== 'accounts' && key !== 'uids')) throw new StoreError('operation');
-  const { accounts: accountList = [], uids: uidList = [] } = raw;
-  const lists = [accountList, uidList];
+      Object.keys(raw).some((key) => key !== 'accounts' && key !== 'uids' && key !== 'drops')) throw new StoreError('operation');
+  const { accounts: accountList = [], uids: uidList = [], drops: dropList = [] } = raw;
+  const lists = [accountList, uidList, dropList];
   if (lists.some((list) => !Array.isArray(list) || list.length > MAX_LANES)) throw new StoreError('operation');
   // Array.from visits holes as undefined: a malformed list cannot silently omit a lane.
   const accounts = [...new Set(Array.from(lists[0], playerKey))], uids = [...new Set(Array.from(lists[1], groundKey))];
-  return { accounts, uids };
+  return { accounts, uids, drops: [...new Set(Array.from(dropList, dropLane))] };
 };
 
 class PearlMutationGate {
-  #sessions; #accounts = new Map(); #uids = new Map(); #held = new Set(); #handles = new WeakMap(); #hydration = null;
+  #sessions; #accounts = new Map(); #uids = new Map(); #drops = new Map(); #held = new Set(); #handles = new WeakMap(); #hydration = null;
 
   constructor(sessions) { this.#sessions = sessions; }
 
-  #checkGameplay({ accounts, uids }, allowed = null) {
+  #checkGameplay({ accounts, uids, drops }, allowed = null) {
     if (this.#hydration) throw new StoreError('busy');
     for (const key of accounts) if (this.#accounts.has(key) && this.#accounts.get(key) !== allowed) throw new StoreError('busy');
     for (const uid of uids) if (this.#uids.has(uid) && this.#uids.get(uid) !== allowed) throw new StoreError('busy');
+    for (const key of drops) if (this.#drops.has(key) && this.#drops.get(key) !== allowed) throw new StoreError('busy');
   }
 
   #check(lanes, allowed = null) {
-    const sessions = this.#sessions, { accounts, uids } = lanes;
+    const sessions = this.#sessions, { accounts, uids, drops } = lanes;
     sessions.pearls.requireReady(); this.#checkGameplay(lanes, allowed);
     for (const key of accounts) {
       sessions.pearls.assertOpen(key);
@@ -37,6 +45,7 @@ class PearlMutationGate {
       if (session?.closed || session?.failed) throw new StoreError('session');
     }
     for (const uid of uids) if (sessions.pearls.uids.has(uid)) throw new StoreError('busy');
+    for (const key of drops) if (sessions.pearls.drops.has(key)) throw new StoreError('busy');
   }
 
   assertAvailable(raw) { this.#check(resources(raw)); }
@@ -47,7 +56,7 @@ class PearlMutationGate {
   assertWorldAvailable() {
     const s = this.#sessions;
     s.pearls.requireReady();
-    if (this.#hydration || this.#held.size || s.pearls.uids.size || s.pearls.operationIds.size ||
+    if (this.#hydration || this.#held.size || s.pearls.uids.size || s.pearls.drops.size || s.pearls.operationIds.size ||
         s.pearls.unresolved.size || s.pearls.accountIds.size) throw new StoreError('busy');
     for (const session of s.accounts.values()) {
       if (session.pearlBusy) throw new StoreError('busy');
@@ -61,7 +70,7 @@ class PearlMutationGate {
     const s = this.#sessions;
     if (requireReady) s.pearls.requireReady();
     if (s.accounts.size || s.clients.size || s.tasks.size || this.#held.size ||
-        s.pearls.uids.size || s.pearls.operationIds.size || s.pearls.unresolved.size ||
+        s.pearls.uids.size || s.pearls.drops.size || s.pearls.operationIds.size || s.pearls.unresolved.size ||
         s.pearls.accountIds.size) throw new StoreError('busy');
   }
 
@@ -111,7 +120,7 @@ class PearlMutationGate {
     if (handle === null) return null;
     const entry = this.#entry(handle);
     if (entry.state !== 'held' || entry.invalid) throw new StoreError('cancelled');
-    for (const kind of ['accounts', 'uids']) if (lanes[kind].length !== entry[kind].length ||
+    for (const kind of ['accounts', 'uids', 'drops']) if (lanes[kind].length !== entry[kind].length ||
         lanes[kind].some((key) => !entry[kind].includes(key))) throw new StoreError('operation');
     return entry;
   }
@@ -143,7 +152,7 @@ class PearlMutationGate {
 
   reserve(raw) {
     const lanes = resources(raw);
-    if (!lanes.accounts.length && !lanes.uids.length) throw new StoreError('operation');
+    if (!lanes.accounts.length && !lanes.uids.length && !lanes.drops.length) throw new StoreError('operation');
     this.#check(lanes);
     if (this.#held.size >= MAX_RESERVATIONS) throw new StoreError('busy');
     // Validate/check the entire set before installing anything. Opaque capabilities prevent a
@@ -152,6 +161,7 @@ class PearlMutationGate {
     this.#handles.set(handle, entry); this.#held.add(entry);
     for (const key of lanes.accounts) this.#accounts.set(key, entry);
     for (const uid of lanes.uids) this.#uids.set(uid, entry);
+    for (const key of lanes.drops) this.#drops.set(key, entry);
     return handle;
   }
 
@@ -172,6 +182,7 @@ class PearlMutationGate {
     entry.state = 'released'; this.#held.delete(entry);
     for (const key of entry.accounts) this.#accounts.delete(key);
     for (const uid of entry.uids) this.#uids.delete(uid);
+    for (const key of entry.drops) this.#drops.delete(key);
   }
 
   // Sticky across death -> revival or detach -> reattach. Invalid/fenced reservations never become
@@ -180,6 +191,7 @@ class PearlMutationGate {
     const lanes = resources(raw), entries = new Set();
     for (const key of lanes.accounts) { const entry = this.#accounts.get(key); if (entry) entries.add(entry); }
     for (const uid of lanes.uids) { const entry = this.#uids.get(uid); if (entry) entries.add(entry); }
+    for (const key of lanes.drops) { const entry = this.#drops.get(key); if (entry) entries.add(entry); }
     for (const entry of entries) entry.invalid = true;
   }
 

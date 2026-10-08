@@ -107,6 +107,10 @@ export class ProfileSessions {
   commitDeath(concrete, reservation = null) { return this.pearls.commit(concrete, null, 'death', reservation); }
   reconcileDeath(operationId) { return this.pearls.reconcile(operationId, 'death'); }
   resumeDeath(operationId) { return this.pearls.reconcile(operationId, 'death', true); }
+  // Exact ordinary-drop transition: capture only after settling receiver progress.
+  commitDeathDrop(concrete, reservation = null) { return this.pearls.commit(concrete, null, 'drop', reservation); }
+  reconcileDeathDrop(operationId) { return this.pearls.reconcile(operationId, 'drop'); }
+  resumeDeathDrop(operationId) { return this.pearls.reconcile(operationId, 'drop', true); }
   recoverPearls() { return this.pearls.recover(); }
   resumePearl(operationId) { return this.pearls.reconcile(operationId, 'pearl', true); }
   resumePearlGround(operationId) { return this.pearls.reconcile(operationId, 'ground', true); }
