@@ -27,6 +27,7 @@ import { stepRaftWork } from '../sim/systems/raftProduction.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 import { preparePearlInputs } from './pearlInputBoundary.js';
+import { prepareDeathInputs } from './deathInputBoundary.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
@@ -287,6 +288,22 @@ export class LocalServer {
     return preparePearlInputs(this, id, entity, () => {
       if (!this.#applyingTick || this.#checkingTick || this.#runningTick || this.#applyFailed) {
         throw new TypeError('pearl inputs require tick apply');
+      }
+    });
+  }
+
+  // Trusted death requests may capture only between complete outer tick entries.
+  // An expected rejected request does not poison the ordinary simulation.
+  assertTickIdle() {
+    if (this.#applyingTick || this.#checkingTick || this.#runningTick || this.#applyFailed) {
+      throw new TypeError('death request requires idle tick');
+    }
+  }
+
+  prepareDeathInputs(id, entity) {
+    return prepareDeathInputs(this, id, entity, () => {
+      if (!this.#applyingTick || this.#checkingTick || this.#runningTick || this.#applyFailed) {
+        throw new TypeError('death inputs require tick apply');
       }
     });
   }

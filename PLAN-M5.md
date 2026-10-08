@@ -303,6 +303,22 @@ Sigue conectar muerte/freeze/publicación/lifecycle en GameHost y respawn; suelo
 P4/P6 parciales. El host actual sigue su ruta local; este corte verifica la obligación de freeze de filas,
 no la instala. Trabajo naval/arte/chat/LLM ajeno conservado, sin push/deploy/reinicio.
 
+Checkpoint D09f-2b.24, base 78b49a8: **montaje opcional de muerte completa en GameHost**.
+mountDeathStaging exige PearlStaging, scope/owner beforeTick, autoridad vacía autenticada y cero bots.
+requestDeath acepta selectors trusted únicamente entre ticks completos. La reserva común detiene el
+mundo durante IO; beforeTick aplica muerte e inputs reversibles antes de eventos/perfiles. Conserva
+secuencia/tiempo/ACK, neutraliza inputs recibidos y usa el respawn existente sin repetir pérdidas/PK.
+Rollback precede teardown; close espera ambos coordinadores sin aplicar desde shutdown y falla flush
+si quedan operaciones. [Contrato](docs/briefs/m5-death-host-mount.md) y
+[evidencia/límites](docs/delivery/d09f-death-host-mount.md). **1354/1354**, 106 archivos/350 fuentes
+fijas, 18 checks nuevos; cinco overlays propios. Memoria y SDK/SQL001–010 local, salida normal.
+SQL010 confirmada por el autor, sin canario real ni migración nueva. Sin CLI/index/env/protocolo nuevo.
+No hay trigger automático de combate: una muerte dentro del tick exige conservar sus efectos parciales,
+RNG y comandos. Sigue ese contrato, luego suelo ordinario durable actual (pickup/consumo/expiry).
+Afinidad permanente, epoch/reloj/políticas/finalizador/leases y RNG definitivos permanecen pendientes;
+P4/P6 parciales. Hunks propios aislados de host/LocalServer ya dirty, trabajo naval/arte/chat/LLM
+conservado. Sin push/deploy/reinicio; no se afirma partida completa durable ni deploy listo.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

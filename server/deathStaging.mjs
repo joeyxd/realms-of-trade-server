@@ -33,17 +33,39 @@ const codeOf = (e) => e instanceof StoreError ? e.code : 'unavailable';
 
 export class DeathStaging {
   #capturing = false; #captureViolation = false;
-  constructor(sessions, world, scope, { limit = 64 } = {}) {
+  #prepareInputs; #inputCallback = false; #inputViolation = false;
+  constructor(sessions, world, scope, { limit = 64, prepareInputs = null } = {}) {
     this.scope = groundKey(scope);
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
+        (prepareInputs !== null && typeof prepareInputs !== 'function') ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
+    this.#prepareInputs = prepareInputs;
     this.sessions = sessions; this.world = world; this.limit = limit;
     this.gate = pearlMutationGate(sessions);
     this.operations = new Map(); this.accounts = new Map(); this.tasks = new Set(); this.completed = [];
     this.sequence = 0; this.draining = false;
   }
 
+  #assertInputEntry() {
+    if (this.#inputCallback) { this.#inputViolation = true; throw new StoreError('effect'); }
+  }
+  #inputCall(callback) {
+    this.#assertInputEntry(); this.#inputCallback = true; this.#inputViolation = false;
+    try {
+      const result = callback();
+      if (result && typeof result.then === 'function') {
+        Promise.resolve(result).catch(() => {}); throw new StoreError('effect');
+      }
+      if (this.#inputViolation) throw new StoreError('effect');
+      return result;
+    } finally { this.#inputCallback = false; }
+  }
+  #inputEffect(method, effect) {
+    if (this.#inputCall(() => effect[method]()) !== undefined) throw new StoreError('effect');
+  }
+
   endpoint(raw) {
+    this.#assertInputEntry();
     const { clientId, entity } = record(raw, 'clientId,entity'), w = this.world, session = this.sessions.clients.get(clientId);
     const profile = w.profiles.get(entity), ecs = w.ecs;
     if (!Number.isSafeInteger(clientId) || clientId < 0 || !Number.isInteger(entity) || entity < 1 || entity >= ecs.cap ||
@@ -57,6 +79,7 @@ export class DeathStaging {
 
   // Trusted selector-only request. Its UUID acknowledges pending work, never a completed death.
   request(raw) {
+    this.#assertInputEntry();
     if (this.#capturing) { this.#captureViolation = true; throw new StoreError('busy'); }
     this.#capturing = true; this.#captureViolation = false;
     try { return this.#request(raw); } finally { this.#capturing = false; }
@@ -180,6 +203,7 @@ export class DeathStaging {
     this.gate.assertAvailable({ accounts: [s.key] });
   }
   save(clientId, raw) {
+    this.#assertInputEntry();
     if (this.#capturing) { this.#captureViolation = true; throw new StoreError('busy'); }
     if (this.draining) throw new StoreError('busy');
     const s = this.sessions.clients.get(clientId), ctx = s && this.accounts.get(s.key);
@@ -197,6 +221,7 @@ export class DeathStaging {
   }
 
   drain() {
+    this.#assertInputEntry();
     if (this.#capturing) { this.#captureViolation = true; throw new StoreError('busy'); }
     if (this.draining) throw new StoreError('busy');
     this.draining = true;
@@ -204,7 +229,7 @@ export class DeathStaging {
       const results = [];
       for (const ctx of this.completed.splice(0).sort((a, b) => a.sequence - b.sequence)) {
         if (ctx.state !== 'ready') { results.push(this.fence(ctx, ctx.code ?? 'cancelled')); continue; }
-        let effect;
+        let effect, inputEffect;
         try {
           this.assertBaseline(ctx);
           for (const e of ctx.endpoints) {
@@ -213,14 +238,35 @@ export class DeathStaging {
                 e.session.version !== p.expectedVersion + 1 || !same(e.session.confirmed, p.data)) throw new StoreError('conflict');
           }
           effect = prepareDeathApply(this.world, ctx.plan, ctx.operationId);
-          this.assertBaseline(ctx); effect.assertCurrent(); effect.apply(); effect.assertApplied();
+          if (this.#prepareInputs !== null) {
+            const victim = ctx.bindings[0];
+            inputEffect = this.#inputCall(() => {
+              const raw = this.#prepareInputs(victim.clientId, victim.entity);
+              if (raw && typeof raw.then === 'function') {
+                Promise.resolve(raw).catch(() => {}); throw new StoreError('effect');
+              }
+              if (!raw || typeof raw !== 'object') throw new StoreError('effect');
+              const descriptors = Object.getOwnPropertyDescriptors(raw), checked = {};
+              for (const key of ['assertCurrent','apply','assertApplied','rollback']) {
+                if (!Object.hasOwn(descriptors, key) || typeof descriptors[key].value !== 'function') throw new StoreError('effect');
+                checked[key] = descriptors[key].value.bind(raw);
+              }
+              return Object.freeze(checked);
+            });
+            this.#inputEffect('assertCurrent', inputEffect);
+          }
+          this.assertBaseline(ctx); effect.assertCurrent(); effect.apply();
+          if (inputEffect) { this.#inputEffect('apply', inputEffect); this.#inputEffect('assertApplied', inputEffect); }
+          effect.assertApplied();
           this.assertIdentity(ctx);
           // Any synchronous container callback that invalidated authority makes this a local rollback.
           if (ctx.endpoints.some((e) => e.session.running || e.session.pending || e.session.pearlBusy ||
               !same(e.session.confirmed, ctx.request.profiles.find((p) => p.id === e.key).data))) throw new StoreError('conflict');
           effect.publish(); this.assertIdentity(ctx); effect.assertApplied();
+          if (inputEffect) this.#inputEffect('assertApplied', inputEffect);
           this.gate.release(ctx.reservation);
         } catch (error) {
+          if (inputEffect) { try { this.#inputEffect('rollback', inputEffect); } catch { /* Keep the fence. */ } }
           try { effect?.rollback(); } catch { /* Durable state stays committed; never retry local effects. */ }
           results.push(this.fence(ctx, codeOf(error))); continue;
         }
