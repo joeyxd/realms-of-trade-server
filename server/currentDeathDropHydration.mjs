@@ -1,5 +1,5 @@
 // Read-only current-state preparation for the shared startup hydrator. It never installs World,
-// maps deadlines, consumes drops, emits historical events or grants a cross-process lease.
+// consumes drops, emits historical events or grants a cross-process lease. Explicit projection is local only.
 import { StoreError } from './store.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { checkedDeathReceipt } from './deathOperation.mjs';
@@ -9,14 +9,14 @@ import { snapshotDropData } from './deathDropApply.mjs';
 const same = (a, b) => canonicalText(a) === canonicalText(b);
 
 export class CurrentDeathDropHydration {
-  #store; #worldId; #pageSize; #maxRows; #assertCurrent; #rows = null;
+  #store; #worldId; #pageSize; #maxRows; #assertCurrent; #deadlineClock; #rows = null;
 
-  constructor(store, worldId, pageSize, maxRows, assertCurrent) {
+  constructor(store, worldId, pageSize, maxRows, assertCurrent, deadlineClock = null) {
     if (['listCurrentDeathDrops','loadDeathDrop','loadDeathOperation'].some(k => typeof store?.[k] !== 'function')) {
       throw new StoreError('configuration');
     }
     this.#store = store; this.#worldId = worldId; this.#pageSize = pageSize; this.#maxRows = maxRows;
-    this.#assertCurrent = assertCurrent;
+    this.#assertCurrent = assertCurrent; this.#deadlineClock = deadlineClock;
   }
 
   async #scan() {
@@ -75,7 +75,9 @@ export class CurrentDeathDropHydration {
       const id = startId + i;
       if (drops.has(id)) throw new StoreError('ownership');
       const drop = { id, to: 0, kind: row.kind, operationId: row.operationId, ordinal: row.ordinal,
-        x: row.ground.x, z: row.ground.z, pickAt: row.ground.availableAt, t: row.ground.expiresAt };
+        x: row.ground.x, z: row.ground.z,
+        ...(this.#deadlineClock ? this.#deadlineClock.project(row.ground,'drop') :
+          {pickAt:row.ground.availableAt,t:row.ground.expiresAt}) };
       if (row.kind === 'item') drop.item = structuredClone(row.item);
       return { drop };
     });

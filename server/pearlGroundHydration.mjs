@@ -1,11 +1,12 @@
 // Dormant startup adapter. Async reads prepare current ground authority; only a synchronous drain
 // installs drops. The caller must provide the pearl clock mapping and keep simulation/admission stopped.
-// Optional ordinary death ground preserves persisted deadlines: its logical tick must already be stable.
+// Optional deadlineClock projects explicitly declared durable records; legacy mapping remains unchanged.
 import { isDeepStrictEqual } from 'node:util';
 import { StoreError } from './store.mjs';
 import { groundKey, groundData, groundPage, checkedGroundPage, checkedLocation } from './pearlGround.mjs';
 import { canonicalText, pearlKind } from './pearlOperations.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { CurrentDeathDropHydration } from './currentDeathDropHydration.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 
@@ -16,20 +17,22 @@ const sameMap = (a, b) => isDeepStrictEqual([...Map.prototype.entries.call(a)], 
 
 export class PearlGroundHydration {
   #sessions; #world; #worldId; #clock; #pageSize; #maxRows; #gate; #handle; #before; #rows;
+  #deadlineClock = null;
   #state = 'idle'; #task = null; #result = null; #deathDrops = null; #deathRows = [];
 
-  constructor({ sessions, world, worldId, mapClock, pageSize = 64, maxRows = 4096, deathDrops = false } = {}) {
-    if (!sessions || !world || typeof mapClock !== 'function' || typeof deathDrops !== 'boolean' ||
+  constructor({ sessions, world, worldId, mapClock, pageSize = 64, maxRows = 4096, deathDrops = false, deadlineClock = null } = {}) {
+    if (!sessions || !world || (deadlineClock === null ? typeof mapClock !== 'function' : mapClock !== undefined) || typeof deathDrops !== 'boolean' ||
         !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 256 ||
         !Number.isSafeInteger(maxRows) || maxRows < 1 || maxRows > 65536 ||
         ['listPearlGround', 'loadUnique', 'loadPearlLocation'].some((k) => typeof sessions.store?.[k] !== 'function')) {
       throw new StoreError('configuration');
     }
     this.#worldId = groundKey(worldId);
+    if (deadlineClock !== null) this.#deadlineClock = assertGroundDeadlineClock(deadlineClock,this.#worldId);
     if (sessions.pearls?.journal && sessions.pearls.journal.scope !== this.#worldId) throw new StoreError('configuration');
     this.#sessions = sessions; this.#world = world; this.#clock = mapClock;
     this.#pageSize = pageSize; this.#maxRows = maxRows; this.#gate = pearlMutationGate(sessions);
-    if (deathDrops) this.#deathDrops = new CurrentDeathDropHydration(sessions.store, this.#worldId, pageSize, maxRows, () => this.#assertCurrent());
+    if (deathDrops) this.#deathDrops = new CurrentDeathDropHydration(sessions.store, this.#worldId, pageSize, maxRows, () => this.#assertCurrent(), this.#deadlineClock);
   }
 
   get state() { return this.#state; }
@@ -61,6 +64,7 @@ export class PearlGroundHydration {
   start(recovery = null) {
     if (this.#state !== 'idle') throw new StoreError('operation');
     this.#before = this.#capture();
+    this.#deadlineClock?.at(this.#before.tick);
     this.#handle = this.#gate.beginHydration(recovery); // Transfer startup's barrier without releasing it.
     this.#state = 'pending';
     this.#task = this.#read().catch((e) => {
@@ -117,6 +121,7 @@ export class PearlGroundHydration {
     if (this.#deathDrops) await this.#deathDrops.verify();
     this.#assertCurrent();
     this.#rows = rows.map((row) => {
+      if (this.#deadlineClock) return { ...row, projection: this.#deadlineClock.project(row.ground,'pearl') };
       const mapped = this.#clock(Object.freeze(clone(row.ground)), Object.freeze({ worldId: this.#worldId, tick: this.#before.tick }));
       if (mapped && typeof mapped.then === 'function') {
         // Decline async mapping without leaving a rejected promise able to terminate startup.
@@ -126,7 +131,7 @@ export class PearlGroundHydration {
       if (!mapped || typeof mapped !== 'object' || Array.isArray(mapped) ||
           Object.keys(mapped).sort().join(',') !== 'availableAt,returnAt') throw new StoreError('operation');
       const ground = groundData({ x: row.ground.x, z: row.ground.z, availableAt: mapped.availableAt, returnAt: mapped.returnAt });
-      return { ...row, ground };
+      return { ...row, projection: { pickAt: ground.availableAt, t: ground.returnAt } };
     });
     this.#assertCurrent();
     this.#state = 'ready';
@@ -152,7 +157,7 @@ export class PearlGroundHydration {
           throw new StoreError('ownership');
         }
         return { uid: row.uid, drop: { id, to: 0, kind: 'pearl', pearl: { uid: row.uid, kind: row.kind },
-          x: row.ground.x, z: row.ground.z, pickAt: row.ground.availableAt, t: row.ground.returnAt },
+          x: row.ground.x, z: row.ground.z, ...clone(row.projection) },
         ledger: { owner: '', entity: 0, place: 'ground', drop: id } };
       });
       if (this.#deathDrops) plan.push(...this.#deathDrops.plan(b.nextDrop + this.#rows.length, w.drops));

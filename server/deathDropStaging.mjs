@@ -1,5 +1,6 @@
 // Dormant ordinary death-drop coordinator. The trusted host freezes the actor/source and
 // calls drain only at a completed tick boundary, before publication. settle never applies.
+import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { randomUUID } from 'node:crypto';
 import { StoreError, playerKey } from './store.mjs';
 import { C, KIND } from '../src/sim/ecs.js';
@@ -19,9 +20,10 @@ const record=(raw,keys)=>{const value=snapshotDropData(raw);if(!value || Array.i
 const numeric=(ecs,e)=>Object.entries(ecs).filter(([,c])=>ArrayBuffer.isView(c)&&!(c instanceof DataView)).map(([key,column])=>({key,column,value:column[e]}));
 
 export class DeathDropStaging {
-  #entering=false; #violation=false;
-  constructor(sessions,world,scope,{limit=64}={}) {
+  #entering=false; #violation=false; #deadlineClock=null;
+  constructor(sessions,world,scope,{limit=64,deadlineClock=null}={}) {
     this.scope=groundKey(scope);
+    if(deadlineClock!==null)this.#deadlineClock=assertGroundDeadlineClock(deadlineClock,this.scope);
     if(!Number.isInteger(limit)||limit<1||limit>256||(sessions.pearls.journal && sessions.pearls.journal.scope!==this.scope))throw new StoreError('configuration');
     this.sessions=sessions;this.world=world;this.limit=limit;this.gate=pearlMutationGate(sessions);
     this.operations=new Map();this.accounts=new Map();this.tasks=new Set();this.completed=[];this.sequence=0;
@@ -39,6 +41,13 @@ export class DeathDropStaging {
     const live=snapshotDropData(p);if(!same(live,sanitizeProfile(live)))throw new StoreError('profile');
     return {clientId,entity,key:s.key,session:s,profile:p,live,name:ecs.names[entity],columns:numeric(ecs,entity)};
   }
+  assertDeadline(raw) {
+    const snap=snapshotDropData(raw);
+    if(this.#deadlineClock)return this.#deadlineClock.assertDrop(snap,'drop');
+    if(Object.hasOwn(snap,'groundClock'))throw new StoreError('configuration');
+    if(!Number.isSafeInteger(snap.t)||snap.t<0)throw new StoreError('operation');
+    return null;
+  }
   pickup(raw){return this.#entry(()=>this.#request(raw,'pickup'));}
   expire(raw){return this.#entry(()=>this.#request(raw,'expire'));}
   #request(raw,mode) {
@@ -48,7 +57,9 @@ export class DeathDropStaging {
     if(!Number.isSafeInteger(w.tick)||w.tick<0||!Number.isSafeInteger(data.dropId)||data.dropId<1)throw new StoreError('operation');
     const drop=w.drops.get(data.dropId),snap=snapshotDropData(drop);
     if(snap.id!==data.dropId||snap.to!==0||!['item','potion'].includes(snap.kind)||!Number.isFinite(snap.x)||!Number.isFinite(snap.z)||
-        !Number.isSafeInteger(snap.t)||snap.t<0)throw new StoreError('operation');
+        !Number.isSafeInteger(snap.t)||(!this.#deadlineClock && snap.t<0))throw new StoreError('operation');
+    const sourceGround=this.assertDeadline(snap);
+    const durableAt=this.#deadlineClock?this.#deadlineClock.at(w.tick):w.tick;
     const source=deathDropKey(snap.operationId,snap.ordinal),lane=source.operationId+':'+source.ordinal;
     const endpoint=mode==='pickup'?this.#endpoint(data.receiver):null;
     if(mode==='expire'?w.tick<=snap.t:w.tick>snap.t || (snap.pickAt!==undefined && w.tick<snap.pickAt))throw new StoreError('ownership');
@@ -62,7 +73,7 @@ export class DeathDropStaging {
     freeze(before);freeze(after);if(endpoint)freeze(endpoint.live);freeze(snap);
     const uids=before?profilePearls(before).map(q=>q.uid):[];
     const reservation=this.gate.reserve({accounts:endpoint?[endpoint.key]:[],uids,drops:[lane]}),operationId=randomUUID();
-    const ctx={operationId,mode,source,lane,reservation,endpoint,before,after,at:w.tick,drop,dropId:data.dropId,dropText:canonicalText(snap),
+    const ctx={operationId,mode,source,lane,reservation,endpoint,before,after,at:w.tick,durableAt,sourceGround,drop,dropId:data.dropId,dropText:canonicalText(snap),
       ecs:w.ecs,names:w.ecs.names,profiles:w.profiles,ledger:w.pearlLedger,drops:w.drops,ledgers:new Map(),state:'pending',sequence:++this.sequence};
     try{
       for(const uid of uids)ctx.ledgers.set(uid,clone(w.pearlLedger.get(uid)));
@@ -81,11 +92,12 @@ export class DeathDropStaging {
         const row=checkedCurrentDeathDrop(await this.sessions.store.loadDeathDrop(source.operationId,source.ordinal),source);
         this.assertBaseline(ctx);
         if(!row||row.state!=='ground'||row.world!==this.scope||row.kind!==snap.kind||!same(row.item,snap.item??null)||
-            row.ground.x!==snap.x||row.ground.z!==snap.z||row.ground.expiresAt!==snap.t||
-            (snap.pickAt!==undefined && snap.pickAt!==row.ground.availableAt))throw new StoreError('ownership');
+            row.ground.x!==snap.x||row.ground.z!==snap.z||
+            (ctx.sourceGround ? !same(row.ground,ctx.sourceGround) :
+              row.ground.expiresAt!==snap.t||(snap.pickAt!==undefined && snap.pickAt!==row.ground.availableAt)))throw new StoreError('ownership');
         const {state,version,holder,transitionOperationId,...creation}=row,s=endpoint?.session;
         if(s && (s.running||s.pending||s.pearlBusy||!same(s.confirmed,before)))throw new StoreError('conflict');
-        const concrete={operationId,world:this.scope,mode,at:ctx.at,drop:{...creation,expectedVersion:version},
+        const concrete={operationId,world:this.scope,mode,at:ctx.durableAt,drop:{...creation,expectedVersion:version},
           profile:endpoint?{id:endpoint.key,expectedVersion:s.version,before:clone(before),data:clone(after)}:null};
         ctx.request=freeze(deathDropOperation(concrete).request);
         if(!deathDropInWindow(ctx.request))throw new StoreError('ownership');

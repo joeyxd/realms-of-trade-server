@@ -7,14 +7,14 @@ import { C, KIND } from '../src/sim/ecs.js';
 import { deathDropKey } from './deathDropOperation.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 
-// Presence of either durable marker claims the ordinary source, including malformed metadata.
+// Presence of source or clock provenance claims authority, including malformed metadata.
 // The mounted owner validates it; legacy pickup/expiry must never silently consume it instead.
 export function managedDeathDrop(raw) {
   if (!raw || typeof raw !== 'object') return false;
   if (types.isProxy(raw)) throw new StoreError('effect');
   const proto=Object.getPrototypeOf(raw);
   if (proto!==Object.prototype && proto!==null) throw new StoreError('effect');
-  return 'operationId' in raw || 'ordinal' in raw;
+  return 'operationId' in raw || 'ordinal' in raw || 'groundClock' in raw;
 }
 
 export class DeathDropLifecycle {
@@ -78,7 +78,8 @@ export class DeathDropLifecycle {
       const d=snapshotDropData(raw);
       deathDropKey(d.operationId,d.ordinal);
       if (!['item','potion'].includes(d.kind) || d.id!==id || d.to!==0 || !Number.isSafeInteger(id) || id<1 ||
-          !Number.isSafeInteger(d.t) || d.t<0 || !Number.isFinite(d.x) || !Number.isFinite(d.z)) throw new StoreError('operation');
+          !Number.isSafeInteger(d.t) || !Number.isFinite(d.x) || !Number.isFinite(d.z)) throw new StoreError('operation');
+      this.staging.assertDeadline(d);
       if (w.tick>d.t) {
         this.server.holdDropPublication();
         this.#current=this.staging.expire({dropId:id});

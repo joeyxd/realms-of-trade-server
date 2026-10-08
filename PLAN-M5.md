@@ -418,6 +418,20 @@ montaje host, dominio/versionado de plazos legacy, atomicidad reloj/operación y
 reinicio/reconexión reales, afinidad permanente, finalizador/leases y P4/P6 permanecen abiertos.
 Sin cambios host/CLI/env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
 
+Checkpoint D09f-2b.33, base 95fc291: **proyección explícita de plazos y consumo ordinario**.
+GroundDeadlineClock proyecta deadlines durables a ticks locales con signo y conserva marker/ground
+original. Hydration/Startup opt-in restauran ambas familias sin recortar pasado; DeathDropStaging
+valida presente y envía at durable con el ground canónico, Lifecycle acepta expiración local negativa.
+Legacy conserva su flujo y rechaza fuentes proyectadas; marker de reloj evita fallback de consumo nativo.
+**185/185** pertinentes aisladas en trece archivos, **22 nuevas**; 476 fuentes y 954 archivos Three
+sin cambios. **37/37** compartidas focales con 122 fuentes estables; pase más amplio con cambios ajenos
+excluido. SDK/SQL001–013 y World/coordinadores nuevos sobre el mismo storage; no restart de host.
+[Contrato/evidencia](docs/delivery/d09f-ground-deadline-clock.md). No SQL nueva ni canario live.
+La autoridad declara dominio de fixture; no hay descubrimiento/backfill legacy. Sigue convertir nuevos
+spills/retorno de perlas antes del montaje host, cerrar política offline/cadencia/atomicidad reloj-operación,
+y aceptar restart/reconexión real. Afinidad permanente, finalizador/leases y P4/P6 abiertos.
+Sin activación host/CLI/env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para
