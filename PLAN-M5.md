@@ -432,6 +432,18 @@ spills/retorno de perlas antes del montaje host, cerrar política offline/cadenc
 y aceptar restart/reconexión real. Afinidad permanente, finalizador/leases y P4/P6 abiertos.
 Sin activación host/CLI/env/protocolo, push/deploy ni reinicio; trabajo paralelo conservado.
 
+Checkpoint D09f-2b.34, base bc566af: **plazos durables para muertes nuevas**.
+DeathStaging opt-in captura antes de I/O grounds durables y plan local detached con markers; conserva
+plan/XP/pérdidas/PK/eventos/RNG originales y valida receipt/request/source antes de drain reversible.
+Legacy conserva su shape; overflow/ancla futura liberan reserva sin dispatch. **216/216** pertinentes
+aisladas, quince archivos y **16 nuevas**, 478 fuentes + 954 archivos Three estables; **75/75** focales
+compartidas con 121 fuentes estables. SDK/SQL001–013: muerte nueva, replay, Worlds tick cero,
+recogida ordinaria, checkpoint y restauración sin fuente terminal ni eventos históricos adicionales.
+[Contrato/evidencia](docs/delivery/d09f-death-ground-clock.md). Sin SQL nueva ni canario live, reopen
+file-backed o restart real de GameHost. Sigue convertir PearlStaging/returnPearl y cerrar dominio legacy,
+atomicidad reloj/gameplay, política offline/cadencia/startup/autoridad entre procesos y aceptación real.
+Afinidad permanente, finalizador/leases y P4/P6 abiertos; sin host/CLI/env/protocolo/defaults/publicación.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

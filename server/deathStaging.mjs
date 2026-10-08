@@ -11,6 +11,7 @@ import { canonicalText, profilePearls, pearlKind } from './pearlOperations.mjs';
 import { groundKey } from './pearlGround.mjs';
 import { deathOperation, checkedDeathResult } from './deathOperation.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 
 const clone = structuredClone;
 const same = (a, b) => canonicalText(a) === canonicalText(b);
@@ -34,16 +35,55 @@ const codeOf = (e) => e instanceof StoreError ? e.code : 'unavailable';
 export class DeathStaging {
   #capturing = false; #captureViolation = false;
   #prepareInputs; #inputCallback = false; #inputViolation = false;
-  constructor(sessions, world, scope, { limit = 64, prepareInputs = null } = {}) {
+  #deadlineClock; #groundPlans = new WeakMap();
+  constructor(sessions, world, scope, { limit = 64, prepareInputs = null, deadlineClock = null } = {}) {
     this.scope = groundKey(scope);
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
         (prepareInputs !== null && typeof prepareInputs !== 'function') ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
+    this.#deadlineClock = deadlineClock === null ? null : assertGroundDeadlineClock(deadlineClock,this.scope);
     this.#prepareInputs = prepareInputs;
     this.sessions = sessions; this.world = world; this.limit = limit;
     this.gate = pearlMutationGate(sessions);
     this.operations = new Map(); this.accounts = new Map(); this.tasks = new Set(); this.completed = [];
     this.sequence = 0; this.draining = false;
+  }
+
+  // New death sources share one captured instant. Storage gets durable deadlines; gameplay
+  // retains its local plan. Both derive from this private binding before any save or commit.
+  #groundPlan(plan) {
+    const clock = this.#deadlineClock;
+    if (clock) clock.at(plan.tick);
+    const grounds = plan.drops.map(d => {
+      const pearl = d.kind === 'pearl', available = pearl ? d.pickAt : plan.tick;
+      if (clock && (!['pearl','item','potion'].includes(d.kind) || Object.hasOwn(d,'groundClock'))) throw new StoreError('operation');
+      return { x:d.x, z:d.z, availableAt:clock ? clock.at(available) : available,
+        [pearl ? 'returnAt' : 'expiresAt']:clock ? clock.at(d.t) : d.t };
+    });
+    const applyPlan = clock ? freeze({ ...plan, drops:plan.drops.map((d,i) => {
+      const projection = clock.project(grounds[i],d.kind === 'pearl' ? 'pearl' : 'drop');
+      if (projection.t !== d.t || projection.pickAt !== (d.kind === 'pearl' ? d.pickAt : plan.tick)) throw new StoreError('operation');
+      return { ...clone(d), ...projection };
+    }) }) : plan;
+    return { plan, applyPlan, grounds:freeze(grounds), request:null };
+  }
+
+  #assertGroundPlan(ctx) {
+    if (!this.#deadlineClock) return;
+    const binding = this.#groundPlans.get(ctx), clock = this.#deadlineClock;
+    if (!binding || ctx.plan !== binding.plan || ctx.request !== binding.request ||
+        this.world.tick < binding.plan.tick) throw new StoreError('cancelled');
+    clock.at(this.world.tick);
+    if (!checkedDeathResult(ctx.receipt,binding.request,ctx.operationId).ok) throw new StoreError('response');
+    let ordinal = 0;
+    for (const [i,d] of binding.applyPlan.drops.entries()) {
+      const pearl = d.kind === 'pearl', source = pearl
+        ? binding.request.pearls.find(q => q.uid === d.pearl.uid && q.kind === d.pearl.kind)
+        : binding.request.drops[ordinal++];
+      if (!source || (!pearl && (source.ordinal !== ordinal || source.kind !== d.kind || !same(source.item,d.item ?? null)))) throw new StoreError('response');
+      clock.assertDrop(d,pearl ? 'pearl' : 'drop',source.ground);
+      if (!same(source.ground,binding.grounds[i])) throw new StoreError('response');
+    }
   }
 
   #assertInputEntry() {
@@ -102,7 +142,7 @@ export class DeathStaging {
     const uids = [...new Set(endpoints.flatMap((e) => profilePearls(normalized(e.profile)).map((q) => q.uid)))];
     const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids });
     const operationId = randomUUID();
-    let plan;
+    let plan, groundPlan;
     const ctx = { operationId, endpoints, bindings, uids, reservation, state: 'pending', sequence: ++this.sequence,
       ecs: w.ecs, names: w.ecs.names, profiles: w.profiles, ledger: w.pearlLedger, ledgers: new Map() };
     try {
@@ -110,6 +150,8 @@ export class DeathStaging {
       if (this.#captureViolation || plan.rules.lawless !== lawless || plan.profiles.length !== endpoints.length ||
           plan.profiles.some((p) => !endpoints.some((e) => e.entity === p.entity))) throw new StoreError('effect');
       ctx.plan = plan;
+      groundPlan = this.#groundPlan(plan);
+      this.#groundPlans.set(ctx,groundPlan);
       for (const p of plan.profiles) for (const q of profilePearls(p.before)) ctx.ledgers.set(q.uid, clone(w.pearlLedger.get(q.uid)));
       this.assertBaseline(ctx);
     } catch (error) {
@@ -138,7 +180,7 @@ export class DeathStaging {
           if (checked.holder !== victim.key) throw new StoreError('ownership');
           if (!Number.isSafeInteger(checked.version) || checked.version < 1 || checked.version >= 2147483647) throw new StoreError('response');
           return { ...clone(d.pearl), expectedVersion: checked.version,
-            ground: { x: d.x, z: d.z, availableAt: d.pickAt, returnAt: d.t } };
+            ground: clone(groundPlan.grounds[plan.drops.indexOf(d)]) };
         }));
         this.assertBaseline(ctx);
         const pearls = generations.map((r) => { if (r.status === 'rejected') throw r.reason; return r.value; })
@@ -153,8 +195,9 @@ export class DeathStaging {
           rules: { lawless: plan.rules.lawless, xpLossFraction: plan.rules.xpLossFraction, xpBefore: plan.ecs.before.xp },
           profiles, pearls, drops: plan.drops.filter((d) => d.kind !== 'pearl').map((d, i) => ({ ordinal: i + 1,
             kind: d.kind, item: d.item ? clone(d.item) : null,
-            ground: { x: d.x, z: d.z, availableAt: plan.tick, expiresAt: d.t } })) };
+            ground: clone(groundPlan.grounds[plan.drops.indexOf(d)]) })) };
         ctx.request = freeze(deathOperation(concrete).request);
+        groundPlan.request = ctx.request;
         const result = await this.sessions.commitDeath(concrete, reservation);
         const receipt = checkedDeathResult(result?.receipt, ctx.request, operationId);
         if (!receipt.ok) throw new StoreError('response');
@@ -179,6 +222,11 @@ export class DeathStaging {
   assertBaseline(ctx) {
     this.assertIdentity(ctx);
     const w = this.world;
+    if (this.#deadlineClock) {
+      const binding = this.#groundPlans.get(ctx);
+      if (!binding || ctx.plan !== binding.plan || w.tick < binding.plan.tick) throw new StoreError('cancelled');
+      this.#deadlineClock.at(w.tick);
+    }
     for (const e of ctx.bindings) if (canonicalText(e.profile) !== e.text ||
         numeric(w.ecs, e.entity).length !== e.columns.length ||
         e.columns.some((q) => w.ecs[q.key] !== q.column || q.column[e.entity] !== q.value)) throw new StoreError('cancelled');
@@ -237,7 +285,8 @@ export class DeathStaging {
             if (e.session.running || e.session.pending || e.session.pearlBusy ||
                 e.session.version !== p.expectedVersion + 1 || !same(e.session.confirmed, p.data)) throw new StoreError('conflict');
           }
-          effect = prepareDeathApply(this.world, ctx.plan, ctx.operationId);
+          this.#assertGroundPlan(ctx);
+          effect = prepareDeathApply(this.world, this.#groundPlans.get(ctx).applyPlan, ctx.operationId);
           if (this.#prepareInputs !== null) {
             const victim = ctx.bindings[0];
             inputEffect = this.#inputCall(() => {
