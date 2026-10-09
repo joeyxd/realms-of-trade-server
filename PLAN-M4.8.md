@@ -15,6 +15,12 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
 - **Una perla tragada por pirata.** Da cuatro cosas: una **habilidad propia en la tecla G**, un **elemento que
   tiñe todo tu kit** (arma, artes y tatuajes), una **pasiva** y una **maldición**.
 - **Raras pero disponibles** (con copias): botín de élites, jefes y cofres de Marea (más con la Marea alta).
+- **Corrección del autor, 2026-10-09:** las perlas se encuentran, sin compra ni venta a NPC.
+  Se retira la venta durable prevista en M5. La venta antigua a Tía Perla todavía existe en código/UI;
+  retirarla requiere un corte de implementación y pruebas, no queda resuelta por este cambio de plan.
+  Pesca, salvamento desde la balsa y buceo se están considerando como fuentes marinas; el autor todavía
+  no eligió una mecánica. Las redes actuales producen pescado, sin perlas ni minijuego; no hay nado/buceo.
+  Las referencias históricas a venta debajo quedan supersedidas por esta regla.
 - **Se cae al morir**, para que circulen y sean algo importante.
 - **Regla vigente del autor, 2026-10-07:** una vez tragada no se puede escupir ni reemplazar;
   permanece hasta morir. La muerte pierde EXP del nivel actual y suelta la bolsa en cualquier zona.
@@ -67,8 +73,9 @@ para después, con rareza y reglas por definir. [Contrato de dirección](docs/br
   lejos. Cualquiera puede tomarla; tú también, si vuelves corriendo.
 - Si nadie la toma en 90 s (afinable), **vuelve a la marea**: reaparece en una playa al azar con aviso («Una
   perla negra volvió al mar cerca de…»). Siempre sigue en circulación.
-- Tomarla la guarda **sin tragar** en la bolsa: un objeto que se vende y se cambia (la mercancía más valiosa del
-  juego). Tragarla con otra ya dentro: la vieja sale (con confirmación). Escupirla: fuera de combate.
+- Tomarla la guarda **sin tragar** en la bolsa. La entrega a otro pirata conserva su flujo actual;
+  la corrección sobre venta a NPC no define un mercado entre jugadores. Una perla tragada permanece
+  hasta morir; no se puede escupir ni reemplazar.
 
 ### 2.4 Lo técnico
 - Hueco G: `SLOTS` gana `g`; `LOADOUT_SLOTS` conserva Q/E para que las perlas no se puedan equipar como tatuajes.

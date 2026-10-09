@@ -2,6 +2,16 @@
 
 Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09; base antes de riesgo persistente.
 
+**Corrección de dirección del autor, 2026-10-09:** las perlas se encuentran mediante botín/cofres;
+sin compra ni venta a NPC. Queda retirado el siguiente corte de venta/oro durable anunciado en .37
+y en su informe histórico. Primero retirar la venta legacy de gameplay/UI con pruebas; después
+continuar la composición del lifecycle/startup y los gates de persistencia existentes.
+Obtención marina por pesca/salvamento/buceo está en discusión, sin mecánica aprobada o implementada.
+Recomendación pendiente de decisión: descubrir restos/bancos marinos navegando y recuperarlos con
+una interacción corta desde la balsa; recompensas comunes útiles y perlas raras. Nado/buceo ampliaría
+movimiento y riesgo; no se activa silenciosamente ni se convierte la red pasiva en generador de perlas.
+Ver [dirección de M4.8](PLAN-M4.8.md#1-decisiones-del-autor). Los checkpoints debajo conservan su evidencia histórica.
+
 > Punto de partida: cada partida iba **firmada en el navegador** del jugador y el mundo (mercados, solares) duraba lo que la sesión.
 > M5 lo pasa a una base de datos en el servidor: cuentas, personajes, inventario, economía, y lo que necesita ser
 > único (perlas legendarias, solares) sin duplicados.
@@ -616,5 +626,6 @@ revalidados; drain reversible conserva source/marker/orden/RNG original si falla
 reply perdido + apply fallido recuperan destino único sin RNG/eventos históricos. Misma instancia
 PGlite, sin proceso/reopen/live. [Contrato/evidencia](docs/delivery/d09f-pearl-return-staging.md).
 Sin migración/host/defaults/env/protocolo/publicación. Caller retiene tick; no lease/pausa automática
-ni RNG crash-continuo. Sigue venta/oro durable y montaje lifecycle/startup, legacy/clock-gameplay/crash,
+ni RNG crash-continuo. La venta/oro durable queda retirada por la corrección del autor arriba; siguen
+retirar venta legacy y montaje lifecycle/startup, legacy/clock-gameplay/crash,
 política offline/cadencia/leases, afinidad, finalizador y P4/P6. Ediciones ajenas conservadas.
