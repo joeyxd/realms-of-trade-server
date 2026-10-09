@@ -1,10 +1,13 @@
 // Optional A1b2a authority seam: ordinary saves and contributions use the same scoped row.
 // This is not mounted in GameHost. A future owner must stop gameplay mutations while busy,
 // provide authenticated admission, and publish staged state synchronously at its tick boundary.
+// BoundProfileSessions can supply a journal to replace direct writes and unreceipted recovery.
 import {
   ContributionError, canonical, contributionCharacter, contributionProject, contributionRequest,
   contributionScopeKey,
 } from './contributionContract.mjs';
+import { randomUUID } from 'node:crypto';
+import { operationEntry, operationIntent } from './operationJournalContract.mjs';
 
 const copy = value => structuredClone(value);
 const fail = code => { throw new ContributionError(code); };
@@ -46,19 +49,25 @@ function outcome(raw, request) {
 }
 
 export class ScopedProfileSessions {
-  constructor(store, { resolveBinding } = {}) {
+  constructor(store, { resolveBinding, journal = null, uuid = randomUUID } = {}) {
     if (['loadCharacter', 'saveCharacter', 'commitContribution', 'loadContributionReceipt', 'loadProject']
-      .some(name => typeof store?.[name] !== 'function') || typeof resolveBinding !== 'function') fail('configuration');
+      .some(name => typeof store?.[name] !== 'function') || typeof resolveBinding !== 'function'
+      || typeof uuid !== 'function' || (journal !== null && ['execute', 'loadOperation', 'canAdmit', 'invalidate']
+        .some(name => typeof journal?.[name] !== 'function'))) fail('configuration');
     this.store = store;
     this.resolveBinding = resolveBinding;
     this.clients = new Map();
     this.accounts = new Map();
     this.characters = new Map();
     this.draining = false;
+    this.journal = journal; this.uuid = uuid;
   }
+
+  requireReady() { if (this.journal && !this.journal.canAdmit()) fail('startup'); }
 
   // The resolver is trusted host code, not a client-supplied account or scope claim.
   async open(clientId) {
+    this.requireReady();
     if (typeof clientId !== 'string' || !clientId.length || clientId.length > 100 || this.clients.has(clientId)) fail('session');
     const identity = binding(this.resolveBinding(clientId));
     const key = contributionScopeKey(identity, identity.characterId);
@@ -69,6 +78,7 @@ export class ScopedProfileSessions {
     try {
       const row = await this.current(s);
       if (s.closed || !this.live(s)) fail('identity');
+      this.requireReady();
       s.row = row; s.phase = 'ready'; s.token = Object.freeze({ revision: row.version });
       return this.view(clientId);
     } catch (err) { this.release(s); throw err; }
@@ -85,16 +95,17 @@ export class ScopedProfileSessions {
   }
   canMutate(clientId) {
     const s = this.clients.get(clientId);
-    return !!s && s.phase === 'ready' && this.live(s);
+    return !!s && (!this.journal || this.journal.canAdmit()) && s.phase === 'ready' && this.live(s);
   }
   view(clientId) {
     const s = this.session(clientId);
     return { phase: s.closed ? 'closed' : s.phase, binding: copy(s.identity), character: copy(s.row),
-      token: s.phase === 'ready' && this.live(s) ? s.token : null, reason: s.reason,
+      token: this.canMutate(clientId) ? s.token : null, reason: s.reason,
       pending: s.operation ? copy(s.operation) : null };
   }
   authorize(s, token) {
     if (!this.live(s)) { this.fence(s, 'identity'); fail('identity'); }
+    this.requireReady();
     if (s.phase !== 'ready') fail('busy');
     if (token !== s.token) fail('stale');
   }
@@ -147,13 +158,39 @@ export class ScopedProfileSessions {
     } finally { s.running = false; }
   }
 
+  async journalRun(s, replay = false) {
+    if (!this.live(s)) {
+      delete s.operation.journal; s.operation.settled = true;
+      if (s.closed) this.release(s);
+      fail('identity');
+    }
+    let entry;
+    try { entry = await this.journal.execute(copy(s.operation.journal), () => this.live(s)); }
+    catch (err) {
+      // The owner refused execution before prepare. There is no local write to retry;
+      // retain the session for a read-only refresh once the scope barrier is ready.
+      if (['startup', 'busy'].includes(err?.code)) delete s.operation.journal;
+      throw err;
+    }
+    if (entry?.state !== 'complete') fail(entry?.why ?? 'response');
+    const checked = operationEntry(entry, s.operation.journal);
+    const result = copy(checked.result);
+    if (s.operation.kind === 'contribution' && replay) result.replay = true;
+    await this.stage(s, result);
+    return result;
+  }
+
   save(clientId, token, data) {
     const s = this.session(clientId); this.authorize(s, token);
     const row = contributionCharacter({ ...s.row, data });
     if (row.version === 2147483647) fail('input');
-    s.operation = { kind: 'save', row, settled: false };
+    const operation = { kind: 'save', row, settled: false };
+    if (this.journal) operation.journal = operationIntent({ operationId: this.uuid(),
+      binding: s.identity, kind: 'save', request: row });
+    s.operation = operation;
     s.phase = 'saving'; s.token = null;
     return this.run(s, async () => {
+      if (this.journal) return this.journalRun(s);
       const result = await this.store.saveCharacter(row);
       if (result?.ok !== true) {
         if (!['missing', 'conflict'].includes(result?.why)) fail('response');
@@ -175,6 +212,35 @@ export class ScopedProfileSessions {
     s.operation = { kind: 'contribution', request, settled: false };
     s.phase = 'contributing'; s.token = null;
     return this.run(s, async () => {
+      if (this.journal) {
+        // A repeated contribution keeps its original CAS baseline. A UUID belonging to
+        // another request is rejected without exposing or executing its journal entry.
+        const raw = await this.journal.loadOperation(request.operationId);
+        let previous = null;
+        if (raw !== null) {
+          previous = operationEntry(raw);
+          const original = previous.intent;
+          const fields = Object.keys(request).filter(k => k !== 'expectedCharacterVersion');
+          if (original.kind !== 'contribution' || canonical(original.binding) !== canonical(s.identity)
+            || fields.some(k => original.request[k] !== request[k])) {
+            const rejected = { ok: false, why: 'operation', replay: false };
+            await this.stage(s, rejected); return rejected;
+          }
+          s.operation.request = original.request;
+        } else {
+          // Compatibility with a pre-journal receipt is read-only; prepare verifies its
+          // exact identity before adopting the original terminal evidence.
+          try { await this.receipt(s); }
+          catch (err) {
+            if (err?.code !== 'operation') throw err;
+            const rejected = { ok: false, why: 'operation', replay: false };
+            await this.stage(s, rejected); return rejected;
+          }
+        }
+        s.operation.journal = operationIntent({ operationId: request.operationId,
+          binding: s.identity, kind: 'contribution', request: s.operation.request });
+        return this.journalRun(s, previous?.state === 'complete');
+      }
       let prior;
       try { prior = await this.receipt(s); }
       catch (err) {
@@ -213,8 +279,35 @@ export class ScopedProfileSessions {
   // Explicit retry uses the frozen request or original save CAS, never a fresh UUID/revision.
   recover(clientId, { retry = false } = {}) {
     const s = this.session(clientId);
+    if (this.journal && retry === true) fail('input');
     if (typeof retry !== 'boolean' || s.running || s.phase !== 'fenced' || !s.operation) fail('session');
     if (!s.closed && !this.live(s)) fail('identity');
+    if (this.journal) {
+      this.requireReady();
+      return this.run(s, async () => {
+        // A lookup failure before any journal write still needs a current-row refresh,
+        // but cannot justify replaying a mutation that was never prepared.
+        if (!s.operation.journal) {
+          await this.stage(s, { ok: false, why: 'operation', replay: false });
+          return { ok: false, why: 'operation', replay: false };
+        }
+        let entry;
+        try {
+          const raw = await this.journal.loadOperation(s.operation.journal.operationId);
+          if (raw === null) fail('pending');
+          entry = operationEntry(raw, s.operation.journal);
+          if (entry.state !== 'complete') fail('pending');
+        } catch (err) {
+          this.journal.invalidate(['pending', 'response'].includes(err?.code) ? err.code : 'unavailable',
+            s.operation.journal);
+          throw err;
+        }
+        const result = copy(entry.result);
+        if (s.operation.kind === 'contribution') result.replay = true;
+        await this.stage(s, result);
+        return result;
+      });
+    }
     if (s.operation.settled && s.operation.kind === 'save') {
       if (!s.closed) fail('conflict');
       return this.run(s, async () => { await this.current(s); this.release(s); return { ok: true, recovered: true }; });
@@ -250,6 +343,7 @@ export class ScopedProfileSessions {
   drain(publish) {
     if (typeof publish !== 'function' || publish.constructor?.name === 'AsyncFunction') fail('configuration');
     if (this.draining) fail('busy');
+    if (this.journal && !this.journal.canAdmit()) return [];
     this.draining = true;
     const emitted = [];
     try {

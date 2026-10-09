@@ -6,6 +6,19 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Revisión A1/M5 del autor (2026-10-09): continuidad tiene otro dueño. **M5 mantiene la única
+  autoridad de guardado de GameHost**; no continuar desde A1 un segundo montaje de sesiones/mochila.
+  A1b1–A1b2b4 quedan como banco de contratos/regresión; aportes se integran en la mochila M5.
+  [Frontera, cobertura real y aceptación del servidor con amigos](docs/briefs/a1-m5-authority-boundary.md).
+  Esta línea vuelve después a receptor/tablero/artesano/recetas. Sin activación ni despliegue por este registro.
+
+- Checkpoint A1b2b4 (2026-10-09): sesiones autenticadas opcionales conectadas al diario;
+  admisión/mutación/tokens/drain bloqueados durante incertidumbre, recuperación exacta y filas actuales.
+  Close/revocación detienen el siguiente envío tras prepare y ocultan respuestas tardías.
+  **34 nuevos y 165 casos pertinentes únicos** locales; [entrega](docs/delivery/a1b2b4-journal-sessions.md).
+  Sin montaje GameHost/M5, SQL live, lease o cambio visual; integración de autoridad a cargo de M5
+  según la frontera anterior, antes de receptor/tablero/artesano/aprendizaje.
+
 - Checkpoint A1b2b3 (2026-10-09): diario opcional de guardados/aportes con petición exacta previa,
   cierre transaccional y barrera local de recuperación por mundo/época. **27 nuevos y 131 casos
   pertinentes únicos** locales; rollback, respuesta perdida, reapply y reapertura con pendiente.

@@ -22,6 +22,13 @@ export class CommunityOperationRecovery {
   canAdmit() { return this.#phase === 'ready'; }
   view() { return { phase: this.#phase, ready: this.canAdmit(), unresolved: this.#known.size,
     active: this.#active, reason: this.#reason }; }
+  // A session may discover unreadable/missing evidence after execution or publication.
+  // Only a complete recovery scan may reopen this single-owner barrier.
+  invalidate(reason = 'response', raw = null) {
+    if (!['response', 'unavailable', 'pending'].includes(reason)) fail('input');
+    if (raw !== null) this.#remember(this.#intent(raw));
+    this.#fence(new ContributionError(reason));
+  }
   #intent(raw) {
     const intent = operationIntent(raw), b = intent.binding;
     if (b.worldId !== this.#scope.worldId || b.worldEpoch !== this.#scope.worldEpoch) fail('scope');
@@ -53,16 +60,22 @@ export class CommunityOperationRecovery {
       after = rows.at(-1).intent.operationId;
     }
   }
-  async execute(raw) {
+  async execute(raw, { canContinue = () => true } = {}) {
     const intent = this.#intent(raw);
+    if (typeof canContinue !== 'function' || canContinue.constructor?.name === 'AsyncFunction') fail('configuration');
     if (!this.canAdmit()) fail('startup');
     const key = intent.binding.characterId;
     if (this.#characters.has(key)) fail('busy');
     this.#remember(intent); this.#characters.add(key); this.#active++;
     try {
+      if (canContinue() !== true) fail('identity');
       let entry = operationEntry(await this.#store.prepareOperation(structuredClone(intent)), intent);
-      if (entry.state === 'pending') entry = operationEntry(
-        await this.#store.commitOperation(structuredClone(intent)), intent);
+      if (entry.state === 'pending') {
+        // Revocation cannot undo a dispatched write. It can prevent dispatching the
+        // next phase after prepare; that durable pending request then needs recovery.
+        if (canContinue() !== true) fail('identity');
+        entry = operationEntry(await this.#store.commitOperation(structuredClone(intent)), intent);
+      }
       if (entry.state !== 'complete') fail('response');
       this.#known.delete(intent.operationId);
       return entry;
