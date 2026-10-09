@@ -605,3 +605,16 @@ restauración sin suelo/cuenta reabierta con un solo UID y receptor con otras pe
 protocolo/publicación. Siguen retorno/venta durables, montaje pickup/startup, dominio legacy, atomicidad
 reloj/gameplay/crash, política offline/cadencia/leases, afinidad permanente, finalizador y P4/P6.
 Trabajo paralelo conservado; pruebas preparatorias fallidas/corregidas documentadas, no sumadas.
+
+Checkpoint D09f-2b.37, base 7a6be45: **retorno persistente dormant de perlas a playa**.
+PearlReturnStaging deriva fuente/generación, exige clock/marker y plazo estrictamente vencido;
+reserva UID exacto y claim local World antes de callbacks. Helper/RNG detached elige destino una
+sola vez; async no escribe World. Tick/RNG/allocator/source/ledger/drop order/terreno/request/receipt
+revalidados; drain reversible conserva source/marker/orden/RNG original si falla, con fence sticky.
+**300/300** aisladas, 14 archivos, **65 nuevas**, 635 fuentes estables; **140/140** focales compartidas,
+145 fuentes estables/equivalentes. SDK SQL001–013: leave/return/replay/checkpoint/World0/startup/pickup;
+reply perdido + apply fallido recuperan destino único sin RNG/eventos históricos. Misma instancia
+PGlite, sin proceso/reopen/live. [Contrato/evidencia](docs/delivery/d09f-pearl-return-staging.md).
+Sin migración/host/defaults/env/protocolo/publicación. Caller retiene tick; no lease/pausa automática
+ni RNG crash-continuo. Sigue venta/oro durable y montaje lifecycle/startup, legacy/clock-gameplay/crash,
+política offline/cadencia/leases, afinidad, finalizador y P4/P6. Ediciones ajenas conservadas.
