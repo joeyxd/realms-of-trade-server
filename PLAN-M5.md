@@ -591,3 +591,17 @@ entre dos dueños. Las operaciones críticas se confirman duraderamente al ocurr
   con esta base sola. Los UIDs raros sin registro gestionado conservan el flujo previo; no se reclama unicidad
   global ni adopción de esos registros. PGlite no acredita concurrencia entre conexiones independientes reales.
 - Respaldo diario de la base (Supabase lo hace en los planes de pago; si no, `pg_dump` programado).
+
+Checkpoint D09f-2b.36, base 1a3ef18: **recogida persistente dormant de perlas**.
+PearlPickupStaging valida selector trusted, radio/capacidad/plazos, fuente proyectada y holder/kind/world/
+ground/versión de storage. Reserva exacta cuenta + UID, todos los ledgers del receptor comprobados;
+request/receipt/fuente privados y tick/ECS/perfil retenidos hasta apply síncrono reversible. Async sin
+writes World; errores fence conservan evidencia. Native pickPearl/returnPearl bloquean markers,
+fuentes sin marker conservan gameplay. **566/566** aisladas, 26 archivos y **60 nuevas**, 620 fuentes +
+954 archivos Three estables; **97/97** focales compartidas, 130 fuentes estables/equivalentes al aislamiento.
+SDK/SQL001–013: leave, checkpoint disponibilidad, World0/startup antes de admisión, pickup/replay,
+restauración sin suelo/cuenta reabierta con un solo UID y receptor con otras perlas/tragada.
+[Contrato/evidencia](docs/delivery/d09f-pearl-pickup-staging.md). Sin SQL nueva/canario live/host/defaults/
+protocolo/publicación. Siguen retorno/venta durables, montaje pickup/startup, dominio legacy, atomicidad
+reloj/gameplay/crash, política offline/cadencia/leases, afinidad permanente, finalizador y P4/P6.
+Trabajo paralelo conservado; pruebas preparatorias fallidas/corregidas documentadas, no sumadas.

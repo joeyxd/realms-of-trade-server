@@ -81,6 +81,8 @@ export function dropPearl(w, pearl, x, z, from = 0, scatter = false) {
 }
 export const pearlDropView = (d) => ({ id: d.id, kind: 'pearl', pearl: d.pearl, x: d.x, z: d.z, pub: 1, ...(d.fromName ? { from: d.fromName } : {}) });
 export function pickPearl(w, d, e) {
+  // Projected persistent sources belong to their receipted tick owner. Never consume them locally.
+  if (Object.hasOwn(d, 'groundClock')) return false;
   const p = profile(w, e), at = w.pearlLedger.get(d.pearl.uid);
   if (!p || w.tick < d.pickAt || at?.place !== 'ground' || at.drop !== d.id) return false;
   if (owned(p).bag.length >= PEARL.bag) {
@@ -96,6 +98,8 @@ export function pickPearl(w, d, e) {
   return true;
 }
 export function returnPearl(w, d) {
+  // Projected persistent sources belong to their receipted tick owner. Never consume them locally.
+  if (Object.hasOwn(d, 'groundClock')) return false;
   // Deterministic coastal search. Only accept standable beach points, never the dock or deep water.
   const map = w.map, spawn = map.landmarks.spawn;
   let x = spawn.x, z = spawn.z;
