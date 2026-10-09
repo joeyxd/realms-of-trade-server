@@ -296,7 +296,7 @@ async function run(spec) {
         naval:Object.fromEntries(['epoch','active','seq','ack','shipId','authorityTick'].filter(k=>k in naval).map(k=>[k,naval[k]]))};});
     check(result.mountAccepted.event?.ok&&result.mountAccepted.capacity?.status==='ready'&&result.mountAccepted.capacity?.structuralLimit===44,
       `mount did not succeed with the reinforced, under-limit raft: ${JSON.stringify(result.mountAccepted)}`);
-    await page.waitForFunction(touch=>{const root=window.__mn.navigation.root,load=root.querySelector(touch?'[data-touch-load]':'[data-load]'),r=load?.getBoundingClientRect();return !root.hidden&&r?.width>0&&/Porte libre/.test(load.textContent);},spec.touch,{timeout:15000});
+    await page.waitForFunction(()=>{const root=window.__mn.navigation.root,load=root.querySelector('[data-touch-load]'),r=load?.getBoundingClientRect();return !root.hidden&&r?.width>0&&/Porte libre/.test(load.textContent);},null,{timeout:15000});
     await snap(page,result,'04-sailing-after-refit');
     check(result.errors.length===0&&result.consoleErrors.length===0,`browser errors: ${JSON.stringify({errors:result.errors,console:result.consoleErrors})}`);
     result.status='passed'; await context.close(); context=null;

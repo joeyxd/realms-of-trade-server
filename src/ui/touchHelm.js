@@ -124,13 +124,14 @@ export class TouchHelm {
       button.setAttribute('aria-label', `Habilidad ${index + 1}: vacía`);
       const glyph = makeElement(this.doc, 'span', 'naval-touch-slot-icon'); glyph.setAttribute('aria-hidden', 'true'); button.appendChild(glyph);
       const label = makeElement(this.doc, 'span', 'naval-touch-slot-label'); label.textContent = '—'; button.appendChild(label);
+      const shortcut = makeElement(this.doc, 'kbd', 'naval-touch-slot-key'); shortcut.setAttribute('aria-hidden', 'true'); button.appendChild(shortcut);
       const down = (event) => this.startSlot(event, index, button);
       const click = (event) => {
         if (this.ignoreLongPressCompatibilityClick(event)) return;
         if (this.enabled && !this.disposed && event.detail === 0) this.activateSlot(index);
       };
       button.addEventListener('pointerdown', down); button.addEventListener('click', click);
-      this.slotButtons.push({ button, glyph, label, listeners: [['pointerdown', down], ['click', click]] }); slots.appendChild(button);
+      this.slotButtons.push({ button, glyph, label, shortcut, listeners: [['pointerdown', down], ['click', click]] }); slots.appendChild(button);
     }
     this.instrument.appendChild(slots);
     const picker = makeElement(this.doc, 'div', 'naval-touch-picker'); picker.hidden = true; picker.setAttribute('aria-label', 'Elegir habilidad');
@@ -156,7 +157,7 @@ export class TouchHelm {
 
   renderBindings() {
     if (!this.instrument) return;
-    this.slotButtons.forEach(({ button, glyph, label }, slot) => {
+    this.slotButtons.forEach(({ button, glyph, label, shortcut }, slot) => {
       const action = this.catalog.get(this.bindings[slot]);
       button.setAttribute('aria-disabled', action && action.disabled ? 'true' : 'false');
       button.setAttribute('data-unavailable', action && (action.disabled || action.available === false || action.unavailable === true) ? 'true' : 'false');
@@ -164,6 +165,9 @@ export class TouchHelm {
       else { delete button.dataset.action; button.removeAttribute?.('data-action'); }
       button.setAttribute('aria-label', action ? `Habilidad ${slot + 1}: ${action.label}` : `Habilidad ${slot + 1}: vacía`);
       label.textContent = action?.label || '—'; glyph.replaceChildren?.();
+      shortcut.textContent = action?.shortcut || '';
+      if (action?.shortcut) button.setAttribute('aria-keyshortcuts', action.shortcut);
+      else button.removeAttribute?.('aria-keyshortcuts');
       if (action) glyph.appendChild(createIcon(this.doc, action.icon || action.id));
     });
   }
@@ -262,7 +266,7 @@ export class TouchHelm {
       const next = new Map();
       for (const action of clean) if (action && typeof action.id === 'string' && action.id && typeof action.label === 'string' && !next.has(action.id))
         next.set(action.id, { ...action });
-      const signature = JSON.stringify([...next].map(([id, action]) => [id, action.label, action.icon || '', action.kind || '', !!action.disabled, action.available !== false, action.unavailable === true]));
+      const signature = JSON.stringify([...next].map(([id, action]) => [id, action.label, action.icon || '', action.kind || '', action.shortcut || '', !!action.disabled, action.available !== false, action.unavailable === true]));
       if (signature === this.catalogSignature) return;
       const idsSignature = JSON.stringify([...next.keys()].sort());
       const structuralChange = idsSignature !== this.catalogIdsSignature;

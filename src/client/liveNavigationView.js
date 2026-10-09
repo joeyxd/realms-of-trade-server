@@ -18,6 +18,8 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : 
 const finite = (v, fallback = 0) => Number.isFinite(v) ? v : fallback;
 const distance = (a, b) => Math.hypot((a?.x || 0) - (b?.x || 0), (a?.z || 0) - (b?.z || 0));
 const axesNeutral = Object.freeze({ x: 0, y: 0 });
+export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E', center: 'V', map: 'M',
+  land: 'G', dock: 'G', recall: 'G', reboard: 'F', mount: 'F', leave: 'E' });
 
 export function shoreRouteTarget(voyage, raft, dock) {
   if (voyage?.recovery) {
@@ -44,7 +46,7 @@ export class LiveNavigationView {
     this.lastNotice = ''; this.disposed = false; this.paused = false; this.effectsWasActive = false;
 
     this.root = document.createElement('section');
-    this.root.className = `live-navigation${isTouch ? ' is-touch' : ''}`; this.root.hidden = true;
+    this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
     this.root.setAttribute('aria-label', 'Navegación de la balsa');
     this.root.innerHTML = `<div class="ln-strip">
       <div class="ln-brand"><span class="ln-mark">MN</span><span><b>TRAVESÍA</b><small class="ln-phase">LISTA PARA ZARPAR</small></span></div>
@@ -58,11 +60,11 @@ export class LiveNavigationView {
     <div class="ln-route-trial" hidden aria-live="polite"><span><b data-route-title>Práctica opcional</b><small data-route-score></small><small class="ln-route-rules">Sin botín ni XP · hasta 24 HP reparables · tu carga se conserva</small></span><button type="button" data-route-action>Probar ruta</button></div>
     <div class="ln-prompt" aria-live="polite" hidden><kbd data-key>F</kbd><span data-prompt>Preparar timón</span><button type="button" data-run>Usar</button></div>
     <div class="ln-notice" aria-live="polite" hidden></div>
-    ${isTouch ? `<div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>EXPLORA LA COSTA</span></b><span data-touch-load>Carga 0%</span></div>
+    <div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>EXPLORA LA COSTA</span></b><span data-touch-load>Carga 0%</span></div>
     <div class="ln-touch-compass" aria-label="Rumbo y destino"><div class="ln-compass-rose" data-touch-north><span class="ln-compass-n">N</span><span class="ln-compass-e">E</span><span class="ln-compass-s">S</span><span class="ln-compass-w">O</span></div><i class="ln-compass-course" data-touch-course>➤</i><b data-touch-heading>000°</b><small data-touch-distance>Puerto</small></div>
     <div class="ln-touch-wind" aria-label="Viento y ventana de ráfaga"><div class="ln-touch-wind-value"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h11c4 0 4-5 1-5-2 0-3 1-3 2M3 12h16c3 0 3 5 0 5-2 0-3-1-3-2M3 16h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b data-touch-wind>0<span>%</span></b><i data-touch-wind-direction aria-hidden="true">↑</i></div><div class="ln-gust-track" role="meter" aria-label="Ventana de ráfaga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-touch-gust-marker></b></div><small data-touch-gust-text>Vela lista</small></div>
     <div class="ln-touch-hull" aria-label="Integridad de la embarcación"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18l-4 6H7zM8 12V8h8v4M12 8V3m-3 0h6M2 21l3-1 4 1 3-1 4 1 5-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ln-touch-hull-value"><small>CASCO</small><b data-touch-hull-text>—</b></span><div class="ln-touch-hull-meter" role="meter" aria-label="Integridad del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-touch-hull></i></div></div>
-    <div class="ln-touch-callout" hidden><b data-touch-callout></b><span data-touch-detail></span></div>` : ''}`;
+    <div class="ln-touch-callout" hidden><b data-touch-callout></b><span data-touch-detail></span></div>`;
     parent.appendChild(this.root);
     this.$ = (selector) => this.root.querySelector(selector);
     this.touchHull = this.$('.ln-touch-hull');
@@ -84,25 +86,47 @@ export class LiveNavigationView {
     this.routeVisualTick = 0; this.routeServerTick = 0;
     this.speedFeel = new NavalSpeedFeel(this.root, { mobile: isTouch });
     this.sound = new NavalLabAudio({ mobile: isTouch });
-    this.touch = null;
     this.$('[data-action="center"]').addEventListener('click', () => { if (this.canAct()) this.sceneCamera.recenter(); });
     this.$('[data-run]').addEventListener('click', () => this.interaction()?.run?.());
     this.$('[data-route-action]').addEventListener('click', () => this.runRouteAction());
-    if (isTouch) {
-      this.touch = new TouchHelm(parent, { enabled: false, layout: 'reference', storageKey: 'mn:naval-touch-loadout:v1',
-        toLocal: stage?.toLocal?.bind(stage), onMove: (value) => { this.axes = { x: value.x, y: -value.y }; },
-        onLook: (value) => this.sceneCamera.setLook(value), onGesture: () => { this.sound.unlock(); onClosePanels(); },
-        onAction: (id) => this.runAction(id), actions: [] });
-      this.buildTouchGauge();
+    // Both input modes share the reference instrument, action bindings and live readings.
+    // Desktop keeps keyboard/mouse movement; only its action cards and gauge are displayed.
+    this.touch = new TouchHelm(parent, { enabled: false, layout: 'reference', storageKey: 'mn:naval-touch-loadout:v1',
+      toLocal: stage?.toLocal?.bind(stage), onMove: (value) => { this.axes = { x: value.x, y: -value.y }; },
+      onLook: (value) => this.sceneCamera.setLook(value), onGesture: () => { this.sound.unlock(); onClosePanels(); },
+      onAction: (id) => this.runAction(id), actions: [] });
+    this.touch.wrapper.classList.toggle('is-desktop', !isTouch);
+    this.touch.wrapper.setAttribute('aria-label', isTouch ? 'Controles táctiles de navegación' : 'Maniobras de navegación');
+    this.buildTouchGauge();
+    if (!isTouch) {
+      const hints = document.createElement('small'); hints.className = 'ln-desktop-controls';
+      hints.textContent = 'WASD · navegar   Q · ráfaga   E · cubierta   G · amarrar';
+      this.touch.instrument.appendChild(hints);
     }
     this.onBlur = () => this.clearInput(true);
     this.onVisibility = () => { if (document.hidden) this.clearInput(true); };
-    for (const key of ['KeyF', 'KeyE', 'KeyG']) input.onHotkey?.(key, () => {
-      if (!this.canAct()) return false;
-      const action = this.keyAction(key.slice(-1));
-      if (!action) return false;
-      action.run(); this.onGesture(); return true;
-    });
+    this.panelShortcuts = [];
+    for (const key of ['KeyF', 'KeyE', 'KeyG']) {
+      const previous = input.hotkeys?.get(key);
+      const handler = () => {
+        if (!this.canAct()) return false;
+        const action = this.keyAction(key.slice(-1));
+        if (!action) return false;
+        action.run(); this.onGesture(); return true;
+      };
+      this.panelShortcuts.push({ key, previous, handler }); input.onHotkey?.(key, handler);
+    }
+    for (const id of ['bag', 'map', 'center']) {
+      const key = `Key${NAVAL_SHORTCUTS[id]}`, previous = input.hotkeys?.get(key);
+      const handler = (event) => {
+        const c = this.client();
+        if (this.canAct() && (c?.naval?.active || c?.deck?.active)) {
+          this.runAction(id); return true;
+        }
+        return previous?.(event) || false;
+      };
+      this.panelShortcuts.push({ key, previous, handler }); input.onHotkey?.(key, handler);
+    }
     globalThis.addEventListener?.('blur', this.onBlur);
     document.addEventListener('visibilitychange', this.onVisibility);
   }
@@ -134,6 +158,7 @@ export class LiveNavigationView {
     const routeSummary = !!(route?.available && ['complete', 'aborted'].includes(route.status) && route.home &&
       c?.cur && distance(c.cur, route.home) <= 24);
     this.root.hidden = !enabled || (!voyage.active && !c?.naval?.active && !c?.deck?.active && !interaction && !routeSummary);
+    if (this.touchHull) this.touchHull.hidden = !enabled || !aboard;
     this.$('.ln-strip').hidden = !voyage.active && !aboard;
     this.touch?.setEnabled(enabled && !!(c?.naval?.active || c?.deck?.active));
     this.speedFeel.reducedMotion = !!reducedMotion;
@@ -329,7 +354,7 @@ export class LiveNavigationView {
     return this.actionSet([{ key: 'F', prompt, verb: 'Pilotar', run: () => { this.onClosePanels(); c.mountNaval(raft.id); } }]);
   }
 
-  canAct() { return !!this.isActive() && !!this.input.enabled && !this.paused; }
+  canAct() { return !this.disposed && !!this.isActive() && !!this.input.enabled && !this.paused; }
   actionSet(actions) {
     if (!actions.length) return null;
     const guarded = actions.map((action) => ({ ...action, run: () => this.canAct() ? action.run?.() : false }));
@@ -366,7 +391,7 @@ export class LiveNavigationView {
 
   updateRoute(route, tick, dt = 0) {
     const box = this.$('.ln-route-trial');
-    const helm = !!this.client()?.naval?.active;
+    const helm = !!this.client()?.naval?.active && !this.client()?.deck?.active;
     const outcome = route?.status === 'complete' || route?.status === 'aborted';
     this.root.classList.toggle('has-route-trial', !!route?.available && (helm || outcome));
     if (!route) {
@@ -418,7 +443,7 @@ export class LiveNavigationView {
   runRouteAction() {
     if (!this.canAct()) return false;
     const c = this.client(), route = c?.route;
-    if (!route?.available || !c?.naval?.active || (route.active ? !route.canAbort : !route.canStart)) return false;
+    if (!route?.available || !c?.naval?.active || c?.deck?.active || (route.active ? !route.canAbort : !route.canStart)) return false;
     const command = routeCommand(route, c.naval.epoch);
     if (!command) return false;
     c.send(command);
@@ -427,7 +452,10 @@ export class LiveNavigationView {
 
   runAction(id) {
     if (!this.canAct()) return false;
-    if (id === 'capture') { this.captureHeld = true; return true; }
+    if (id === 'capture') {
+      if (!this.client()?.naval?.active || this.client()?.deck?.active) return false;
+      this.captureHeld = true; return true;
+    }
     if (id === 'context') { this.interaction()?.run?.(); return; }
     if (id === 'land' || id === 'dock' || id === 'recall') { this.keyAction('G')?.run?.(); return; }
     if (id === 'reboard' || id === 'mount') { this.keyAction('F')?.run?.(); return; }
@@ -439,7 +467,7 @@ export class LiveNavigationView {
   updateActions() {
     if (!this.touch) return;
     const c = this.client(), i = this.interaction(), actions = [];
-    if (c?.naval?.active && c.voyage?.phase === 'sailing')
+    if (c?.naval?.active && !c?.deck?.active && c.voyage?.phase === 'sailing')
       actions.push({ id: 'capture', label: 'Ráfaga', icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
     actions.push({ id: 'bag', label: 'Mochila', icon: 'cargo', kind: 'item' });
     if (c?.naval?.active || c?.deck?.active)
@@ -448,8 +476,13 @@ export class LiveNavigationView {
     for (const action of i?.actions || []) if (action.key === 'G' || action.key === 'F')
       actions.push({ id: action.key === 'F' ? 'reboard' : action.verb === 'Amarrar' ? 'dock' : action.verb === 'Desembarcar' ? 'land' : 'recall',
         label: action.verb, icon: action.key === 'G' ? 'helm' : 'crew', kind: 'action' });
-    const signature = JSON.stringify(actions);
-    if (signature !== this.actionSignature) { this.actionSignature = signature; this.touch.setActions(actions); }
+    const keyedActions = actions.map((action) => ({ ...action, shortcut: NAVAL_SHORTCUTS[action.id] }));
+    const signature = JSON.stringify(keyedActions);
+    if (signature !== this.actionSignature) { this.actionSignature = signature; this.touch.setActions(keyedActions); }
+    const hints = this.touch.instrument.querySelector('.ln-desktop-controls');
+    if (hints) hints.textContent = c?.deck?.active
+      ? 'WASD · caminar   E · timón   G · amarrar'
+      : 'WASD · navegar   Q · ráfaga   E · cubierta   G · amarrar';
   }
 
   updateHud({ body, state, rig, wind, gust, activity, current, voyage, pose, speed }) {
@@ -502,9 +535,9 @@ export class LiveNavigationView {
     if (this.touch) {
       $('[data-touch-wind]').firstChild.textContent = String(Math.round((wind.strength || 0) * 100));
       $('[data-touch-wind-direction]').style.transform = `rotate(${((wind.yaw || 0) - yaw) * 180 / Math.PI}deg)`;
-      $('.ln-touch-wind').dataset.ready = gust?.phase === 'window' && !stateHud.captureDisabled ? 'true' : 'false';
+      $('.ln-touch-wind').dataset.ready = gust?.phase === 'window' && !stateHud.captureDisabled && !this.client()?.deck?.active ? 'true' : 'false';
       const gustText = $('[data-touch-gust-text]');
-      gustText.textContent = stateHud.boostActive ? `BOOST ${stateHud.boostSeconds.toFixed(1)} s`
+      gustText.textContent = this.client()?.deck?.active ? 'Toma el timón' : stateHud.boostActive ? `BOOST ${stateHud.boostSeconds.toFixed(1)} s`
         : !(wind.strength > 0) ? 'Sin viento' : stateHud.captureDisabled ? 'Ráfaga resuelta'
           : gust?.phase === 'window' ? '¡AHORA!'
             : `Ráfaga ${Math.ceil(gust?.remaining || 0)} s`;
@@ -526,7 +559,7 @@ export class LiveNavigationView {
         : 'EXPLORA LA COSTA';
       $('[data-touch-load]').textContent = voyage.phase === 'shore' && voyage.recovery
         ? `Posición guardada · ${label} ${metres.toFixed(0)} m`
-        : `${carryingText} · ${label} ${metres.toFixed(0)} m`;
+        : `${carryingText}${!this.isTouch && capacity ? ` · bodega ${capacity.holdVolume}/${capacity.holdCap} uV` : ''} · ${label} ${metres.toFixed(0)} m`;
       $('[data-touch-heading]').textContent = `${stateHud.headingText}°`;
       $('[data-touch-distance]').textContent = label;
       $('[data-touch-north]').style.transform = `rotate(${-yaw * 180 / Math.PI}deg)`;
@@ -594,6 +627,9 @@ export class LiveNavigationView {
   dispose() {
     if (this.disposed) return;
     this.disposed = true; this.clearInput(false); document.body.classList.remove('is-naval', 'is-naval-touch'); this.touch?.dispose(); this.effects.dispose(); this.routeRenderer.dispose(); this.sound.dispose(); this.speedFeel.dispose();
+    for (const { key, previous, handler } of this.panelShortcuts) if (this.input.hotkeys?.get(key) === handler) {
+      if (previous) this.input.hotkeys.set(key, previous); else this.input.hotkeys.delete(key);
+    }
     globalThis.removeEventListener?.('blur', this.onBlur); document.removeEventListener('visibilitychange', this.onVisibility);
     this.touchHull?.remove(); this.root.remove(); this.axes = { ...axesNeutral };
   }

@@ -189,6 +189,23 @@ test('reference catalog changes close picker and retain only available bindings'
   h.helm.dispose();
 });
 
+test('reference shortcut follows the action when a slot is rebound or its metadata changes', () => {
+  const h = harness({ layout: 'reference', actions: [{ id: 'capture', label: 'Ráfaga', shortcut: 'Q' },
+    { id: 'bag', label: 'Mochila', shortcut: 'I' }, { id: 'center', label: 'Centrar', shortcut: 'V' }] });
+  const slot = h.helm.slotButtons[0];
+  assert.equal(slot.shortcut.textContent, 'Q');
+  assert.equal(slot.button.getAttribute('aria-keyshortcuts'), 'Q');
+  h.helm.chooseBinding(0, 'center');
+  assert.equal(slot.shortcut.textContent, 'V');
+  assert.equal(slot.button.getAttribute('aria-keyshortcuts'), 'V');
+  h.helm.setActions([{ id: 'capture', label: 'Ráfaga', shortcut: 'Q' }, { id: 'bag', label: 'Mochila', shortcut: 'I' },
+    { id: 'center', label: 'Centrar' }]);
+  assert.equal(slot.shortcut.textContent, '');
+  assert.equal(slot.button.getAttribute('aria-keyshortcuts'), null);
+  assert.deepEqual(h.actions, [], 'binding and metadata changes never execute an action');
+  h.helm.dispose();
+});
+
 test('metadata-only catalog updates preserve a held slot and picker without replacing pressed options', async () => {
   const h = harness({ layout: 'reference', actions: [{ id: 'capture', label: 'Captura' }, { id: 'gust', label: 'Ráfaga' }] });
   const slot = h.helm.slotButtons[0].button;

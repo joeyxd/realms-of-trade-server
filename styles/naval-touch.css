@@ -213,6 +213,7 @@
 .naval-touch-slot-icon svg { width: 28px; height: 28px; }
 .naval-touch-slot-icon svg [stroke] { stroke-width: 2.1; }
 .naval-touch-slot-label { position: absolute; bottom: 3px; left: 2px; right: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f5e7c8; font: italic 900 8px/1 'Arial Narrow', system-ui, sans-serif; text-align: center; text-shadow: 1px 2px 0 #102127; }
+.naval-touch-slot-key { display: none; }
 .naval-touch-picker[hidden] { display: none !important; }
 .naval-touch-picker { position: absolute; z-index: 5; width: 266px; right: 0; bottom: 95px; padding: 12px; box-sizing: border-box; color: #efe4c9; border: 2px solid #ceb788; border-radius: 13px; background: linear-gradient(150deg, #28464af7, #10252cf7); box-shadow: 0 0 0 3px #102029, 0 12px 30px #0007; backdrop-filter: blur(6px); pointer-events: auto; }
 .naval-touch-picker-title { margin-bottom: 8px; font: italic 900 16px/1 Impact, 'Arial Narrow', sans-serif; letter-spacing: .03em; }

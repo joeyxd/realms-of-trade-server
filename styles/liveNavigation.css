@@ -79,6 +79,7 @@
 body.is-naval .actionbar, body.is-naval #touch, body.is-naval .tracker { display: none !important; }
 body.is-naval .hud-player { top: auto; bottom: calc(18px + var(--safe-b)); transform-origin: bottom left; }
 body.is-naval .party { top: 112px; }
+body.is-naval #zone-banner { display: none; }
 @container stage (max-height: 480px) {
   body.is-naval .hud-player { top: 88px; bottom: auto; transform-origin: top left; transform: scale(.72); }
   body.is-naval .hud-player .portrait { width: 48px; height: 48px; }
@@ -125,13 +126,13 @@ body.is-naval .party { top: 112px; }
   .ln-hull i, .ln-route-arrow { transition: none; }
 }
 
-/* Mobile composition follows the comic reference and keeps its live, truthful readings. */
-.live-navigation.is-touch:not(.is-aboard):not(.is-recovery) .ln-touch-objective,
-.live-navigation.is-touch:not(.is-aboard) .ln-touch-compass,
-.live-navigation.is-touch:not(.is-aboard) .ln-touch-wind,
-.live-navigation.is-touch:not(.is-aboard) .ln-touch-callout { display: none; }
-.live-navigation.is-touch .ln-strip { display: none; }
-.live-navigation.is-touch.is-recovery .ln-touch-objective { display: block; }
+/* Shared reference composition keeps the ordinary game and mobile readings together. */
+.live-navigation.is-reference:not(.is-aboard):not(.is-recovery) .ln-touch-objective,
+.live-navigation.is-reference:not(.is-aboard) .ln-touch-compass,
+.live-navigation.is-reference:not(.is-aboard) .ln-touch-wind,
+.live-navigation.is-reference:not(.is-aboard) .ln-touch-callout { display: none; }
+.live-navigation.is-reference .ln-strip { display: none; }
+.live-navigation.is-reference.is-recovery .ln-touch-objective { display: block; }
 .live-navigation.is-touch.is-recovery .ln-touch-objective { top: 164px; }
 .live-navigation.is-touch.has-route-trial .ln-touch-objective { top: 154px; }
 .live-navigation.is-touch.is-recovery .ln-touch-compass,
@@ -164,7 +165,8 @@ body.is-naval .party { top: 112px; }
 .ln-touch-wind[data-ready="true"] .ln-touch-wind-value > svg { filter: drop-shadow(0 0 4px #ffd685); }
 .ln-touch-wind[data-ready="true"] > small { color: #ffe0a0; font-weight: 900; }
 .ln-touch-hull { display: none; position: relative; width: 162px; height: 22px; color: #91dfd8; text-shadow: 1px 1px 0 #071e28; }
-body.is-naval-touch .ln-touch-hull { display: block; }
+body.is-naval .ln-touch-hull { display: block; }
+.ln-touch-hull[hidden] { display: none !important; }
 .ln-touch-hull > svg { position: absolute; width: 15px; height: 15px; bottom: 0; left: 0; }
 .ln-touch-hull-value { position: absolute; top: 0; left: 19px; right: 0; display: flex; justify-content: space-between; align-items: baseline; }
 .ln-touch-hull-value > small { font: 900 8px/1 'Arial Narrow', system-ui, sans-serif; letter-spacing: .08em; }
@@ -199,6 +201,8 @@ body.is-naval-touch .hud-top-right .net-chip { display: none; }
 /* Lift only the closed chat launcher; the expanded composer keeps its short-screen layout. */
 body.is-naval-touch .mn-chat:has(.mn-chat-toggle[aria-expanded="false"]) { bottom: calc(150px + var(--safe-b)); }
 body.is-naval-touch .mn-chat-toggle { min-height: 44px; }
+body.is-naval-touch #toasts { left: 256px; top: 150px; width: clamp(130px, calc(100cqw - 480px), 240px); }
+body.is-naval-touch #toasts .toast { font-size: 10px; padding: 6px 8px; }
 @container stage (max-width: 700px) {
   .ln-touch-objective { left: 12px; max-width: 180px; top: 100px; }
   .ln-touch-objective b { font-size: 11px; }
@@ -211,4 +215,71 @@ body.is-naval-touch .mn-chat-toggle { min-height: 44px; }
   .ln-touch-callout b { font-size: 14px; }
   body.is-naval-touch .hud-player { transform: scale(.72); }
   body.is-naval-touch .hud-top-right { top: 12px; right: 100px; }
+  body.is-naval-touch #toasts { left: 192px; width: min(210px, calc(100cqw - 204px)); }
+}
+
+/* Desktop uses the same artwork with reference-sized instruments and bottom action cards. */
+.live-navigation.is-desktop .ln-touch-objective {
+  top: 26px; left: 28px; max-width: 340px; padding: 9px 14px 10px;
+  background: linear-gradient(100deg, #080e12df, #080e1280);
+  border-top: 1px solid #aa9b735e;
+}
+.live-navigation.is-desktop .ln-touch-objective b { font-size: 20px; }
+.live-navigation.is-desktop .ln-touch-objective > span { margin-left: 22px; font-size: 11px; line-height: 1.45; white-space: normal; }
+.live-navigation.is-desktop .ln-touch-compass { right: 30px; top: 28px; width: 126px; height: 126px; }
+.live-navigation.is-desktop .ln-touch-compass > b { bottom: 26px; font-size: 11px; }
+.live-navigation.is-desktop .ln-touch-compass > small { bottom: -26px; font-size: 11px; }
+.live-navigation.is-desktop .ln-compass-rose > span { font-size: 13px; }
+.live-navigation.is-desktop .ln-compass-course { font-size: 34px; }
+.live-navigation.is-desktop .ln-touch-wind { right: 184px; top: 92px; width: 110px; }
+.live-navigation.is-desktop .ln-touch-callout { top: 32%; right: 32px; max-width: 310px; }
+.live-navigation.is-desktop .ln-touch-callout b {
+  padding: 9px 16px; font-size: 23px; background: linear-gradient(100deg, #080e1270, #080e12dc);
+  border-block: 1px solid #a798705c; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+}
+.live-navigation.is-desktop .ln-touch-callout > span { display: inline-block; margin-top: 5px; padding: 5px 14px; font-size: 16px; background: #080e12ba; }
+.live-navigation.is-desktop .ln-prompt { bottom: 144px; border-radius: 3px; background: #080e12bf; }
+.live-navigation.is-desktop .ln-route-trial { top: 24px; border-radius: 3px; max-width: 320px; }
+.live-navigation.is-desktop .ln-notice { top: 126px; }
+.live-navigation.is-desktop.is-recovery .ln-touch-objective { top: 26px; }
+body.is-naval:not(.is-naval-touch) .hud-top-right { right: 190px; top: 24px; }
+body.is-naval:not(.is-naval-touch) .mn-chat:has(.mn-chat-toggle[aria-expanded="false"]) { bottom: calc(188px + var(--safe-b)); }
+body.is-naval:not(.is-naval-touch) .ln-touch-hull { width: 210px; height: 25px; }
+body.is-naval:not(.is-naval-touch) .ln-touch-hull-value > small { font-size: 9px; }
+body.is-naval:not(.is-naval-touch) .ln-touch-hull-value > b { font-size: 12px; }
+.naval-touch.is-desktop[data-layout="reference"] { --nt-gauge: 166px; --nt-right: 24px; --nt-bottom: 25px; }
+.naval-touch.is-desktop[data-layout="reference"] .naval-touch-stick { display: none; }
+.naval-touch.is-desktop .naval-touch-instrument { inset: 0; width: auto; height: auto; }
+.naval-touch.is-desktop .naval-touch-slots { inset: auto auto 50px 50%; transform: translateX(-50%); display: flex; gap: 12px; }
+.naval-touch.is-desktop .naval-touch-slot {
+  position: relative; inset: auto; width: 86px; height: 90px; border-radius: 3px;
+  border: 1px solid #b8ad8b9c; background: linear-gradient(150deg, #15292ce3, #080e12d9);
+  box-shadow: 0 0 0 2px #081117, inset 0 1px #e5d4ac30, 3px 4px 0 #080e1266;
+}
+.naval-touch.is-desktop .naval-touch-slot-icon { top: 9px; left: 15px; width: 54px; height: 54px; }
+.naval-touch.is-desktop .naval-touch-slot-icon svg { width: 48px; height: 48px; }
+.naval-touch.is-desktop .naval-touch-slot-label { bottom: 9px; font-size: 13px; }
+.naval-touch.is-desktop .naval-touch-slot-key {
+  position: absolute; display: grid; place-items: center; top: 3px; left: 4px;
+  min-width: 20px; height: 20px; padding: 0 3px; border: 1px solid #c4b59180;
+  background: #080e12d9; color: #fff2cf; box-shadow: 1px 2px 0 #04090d;
+  font: 800 12px/1 'Arial Narrow', system-ui, sans-serif;
+}
+.naval-touch.is-desktop .naval-touch-picker { right: auto; left: 50%; bottom: 152px; transform: translateX(-50%); }
+.naval-touch.is-desktop .nt-dial-number strong { font-size: 41px; }
+.naval-touch.is-desktop .nt-dial-state { font-size: 14px; bottom: 4px; }
+.ln-desktop-controls { position: absolute; left: 50%; bottom: 23px; transform: translateX(-50%); color: #e5e3d6; font-size: 10px; white-space: nowrap; text-shadow: 0 2px 3px #000; }
+@container stage (max-height: 480px) {
+  .live-navigation.is-desktop .ln-touch-objective { top: 18px; left: 18px; max-width: 225px; }
+  .live-navigation.is-desktop .ln-touch-objective b { font-size: 14px; }
+  .live-navigation.is-desktop .ln-touch-compass { width: 84px; height: 84px; right: 18px; top: 18px; }
+  .live-navigation.is-desktop .ln-touch-wind { right: 120px; top: 70px; }
+  .live-navigation.is-desktop .ln-prompt { bottom: 110px; }
+  .naval-touch.is-desktop[data-layout="reference"] { --nt-gauge: 118px; --nt-bottom: 14px; }
+  .naval-touch.is-desktop .naval-touch-slot { width: 68px; height: 68px; }
+  .naval-touch.is-desktop .naval-touch-slot-icon { top: 5px; left: 14px; width: 40px; height: 40px; }
+  .naval-touch.is-desktop .naval-touch-slot-icon svg { width: 34px; height: 34px; }
+  .naval-touch.is-desktop .naval-touch-slot-label { font-size: 10px; bottom: 6px; }
+  .naval-touch.is-desktop .naval-touch-slots { bottom: 30px; }
+  .ln-desktop-controls { bottom: 10px; }
 }

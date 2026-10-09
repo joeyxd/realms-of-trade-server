@@ -380,11 +380,11 @@ async function run(spec) {
     await page.waitForFunction(() => window.__mn?.client?.naval?.active && window.__mn?.client?.voyage?.active, null, { timeout: 25000 });
     await page.waitForFunction(() => window.__mn.client.capacity?.mode === 'sailing', null, { timeout: 15000 });
     await page.waitForFunction((touch) => { const root = window.__mn.navigation.root;
-      const load = root.querySelector(touch ? '[data-touch-load]' : '[data-load]'), r = load?.getBoundingClientRect();
+      const load = root.querySelector('[data-touch-load]'), r = load?.getBoundingClientRect();
       return !root.hidden && load && r?.width > 0 && r.height > 0 && /Porte libre|Exceso/.test(load.textContent); }, spec.touch, { timeout: 15000 });
     const sailingCapacity = await page.evaluate((touch) => { const m = window.__mn, root = m.navigation.root;
-      const load = root.querySelector(touch ? '[data-touch-load]' : '[data-load]'), rect = load?.getBoundingClientRect();
-      const gauge = touch ? document.querySelector('.naval-touch-gauge') : root.querySelector('.ln-dial');
+      const load = root.querySelector('[data-touch-load]'), rect = load?.getBoundingClientRect();
+      const gauge = document.querySelector('.naval-touch-gauge');
       return { capacity: m.client.capacity ? { ...m.client.capacity } : null, loadText: load?.textContent || '', mode: m.client.capacity?.mode,
         loadRect: rect && { x: rect.x, y: rect.y, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height },
         hudVisible: !root.hidden && !!gauge?.getBoundingClientRect().width, viewportTouch: touch }; }, spec.touch);
