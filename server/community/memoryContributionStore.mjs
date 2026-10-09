@@ -58,6 +58,42 @@ export function createMemoryContributionStore({ characters = [], projects = [] }
     kind: 'community-memory',
     durable: false,
 
+    async initializeCharacter(raw) {
+      const row = contributionCharacter(raw);
+      const key = scopeId(row.worldId, row.worldEpoch, row.characterId, checkedUuid);
+      const previous = characterRows.get(key);
+      if (previous) return canonical(previous) === canonical(row)
+        ? { ok: true, character: copy(row) } : { ok: false, why: 'conflict' };
+      const stored = copy(row), reply = { ok: true, character: copy(row) };
+      characterRows.set(key, stored);
+      return reply;
+    },
+
+    async initializeProject(raw) {
+      const row = contributionProject(raw);
+      const key = scopeId(row.worldId, row.worldEpoch, row.projectId, checkedKey);
+      const previous = projectRows.get(key);
+      if (previous) return canonical(previous) === canonical(row)
+        ? { ok: true, project: copy(row) } : { ok: false, why: 'conflict' };
+      const stored = copy(row), reply = { ok: true, project: copy(row) };
+      projectRows.set(key, stored);
+      return reply;
+    },
+
+    async saveCharacter(raw) {
+      const row = contributionCharacter(raw);
+      if (row.version > 2147483646) failInput();
+      const key = scopeId(row.worldId, row.worldEpoch, row.characterId, checkedUuid);
+      const previous = characterRows.get(key);
+      if (!previous) return { ok: false, why: 'missing' };
+      if (previous.version !== row.version) return { ok: false, why: 'conflict' };
+      const next = { ...copy(row), version: row.version + 1 };
+      const reply = { ok: true, character: copy(next) };
+      const stored = copy(next);
+      characterRows.set(key, stored);
+      return reply;
+    },
+
     async commitContribution(raw) {
       const request = contributionRequest(raw);
       const requestText = canonical(request);

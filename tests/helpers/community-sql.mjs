@@ -5,10 +5,13 @@ import { createSupabaseContributionStore } from '../../server/community/supabase
 
 export const communitySql = (await readFile(
   new URL('../../server/migrations/community/001_contributions.sql', import.meta.url), 'utf8')).replace(/^\uFEFF/, '');
+export const communitySessionSql = (await readFile(
+  new URL('../../server/migrations/community/002_character_saves.sql', import.meta.url), 'utf8')).replace(/^\uFEFF/, '');
 
 const routes = {
   mn_comm_initialize_character: ['public.mn_comm_initialize_character($1::jsonb)', ['p_character']],
   mn_comm_initialize_project: ['public.mn_comm_initialize_project($1::jsonb)', ['p_project']],
+  mn_comm_save_character: ['public.mn_comm_save_character($1::jsonb)', ['p_character']],
   mn_comm_commit_contribution: ['public.mn_comm_commit_contribution($1::jsonb)', ['p_request']],
   mn_comm_load_character: ['public.mn_comm_load_character($1::text,$2::uuid,$3::uuid)',
     ['p_world_id', 'p_world_epoch', 'p_character_id']],
@@ -44,7 +47,7 @@ export function adapters(db, calls = [], options = {}) {
   return { client, store: createSupabaseContributionStore(client), calls };
 }
 
-export async function database(path = undefined, { reapply = false, adapterOptions = {} } = {}) {
+export async function database(path = undefined, { reapply = false, sessionSaves = false, adapterOptions = {} } = {}) {
   const db = new PGlite(path);
   await db.exec(`DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon; END IF;
@@ -53,6 +56,10 @@ export async function database(path = undefined, { reapply = false, adapterOptio
   END $$; GRANT USAGE ON SCHEMA public TO PUBLIC;`);
   await db.exec(communitySql);
   if (reapply) await db.exec(communitySql);
+  if (sessionSaves) {
+    await db.exec(communitySessionSql);
+    if (reapply) await db.exec(communitySessionSql);
+  }
   await db.exec('SET ROLE service_role');
   return { db, ...adapters(db, [], adapterOptions), close: () => db.close() };
 }

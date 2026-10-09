@@ -69,10 +69,29 @@ export function createSupabaseContributionStore(client, { timeoutMs = 10000 } = 
       return structuredClone(result);
     } catch { fail('response'); }
   };
+  const saveCharacter = async raw => {
+    const character = contributionCharacter(raw);
+    if (character.version > 2147483646) fail('input');
+    const result = await rpc('mn_comm_save_character', { p_character: character });
+    try {
+      if (result?.ok === false) {
+        exact(result, ['ok', 'why']);
+        if (!['missing', 'conflict'].includes(result.why)) fail('response');
+      } else {
+        exact(result, ['ok', 'character']);
+        const stored = scoped(contributionCharacter(result.character), character.worldId, character.worldEpoch,
+          character.characterId, 'characterId');
+        if (result.ok !== true || stored.version !== character.version + 1
+          || canonical(stored.data) !== canonical(character.data)) fail('response');
+      }
+      return structuredClone(result);
+    } catch { fail('response'); }
+  };
   return {
     kind: 'community-supabase', durable: true,
     initializeCharacter: raw => initialize('character', raw, contributionCharacter),
     initializeProject: raw => initialize('project', raw, contributionProject),
+    saveCharacter,
     async commitContribution(raw) {
       const request = contributionRequest(raw);
       return checkedOutcome(await rpc('mn_comm_commit_contribution', { p_request: request }), request);
