@@ -1,0 +1,86 @@
+{
+  "schema": "mn.vps.persistence.v1",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "checks": [
+    {
+      "check": "disposable account confirmation without email delivery",
+      "pass": true,
+      "at": "2026-10-09T22:42:31.494Z"
+    },
+    {
+      "check": "real public-key password login",
+      "pass": true,
+      "at": "2026-10-09T22:42:31.774Z",
+      "phase": "before"
+    },
+    {
+      "check": "authenticated browser profile RPC denied",
+      "pass": true,
+      "at": "2026-10-09T22:42:32.138Z",
+      "phase": "before"
+    },
+    {
+      "check": "real token admitted through public TLS WebSocket",
+      "pass": true,
+      "at": "2026-10-09T22:42:34.369Z",
+      "phase": "before"
+    },
+    {
+      "check": "material gathered through normal gameplay",
+      "pass": true,
+      "at": "2026-10-09T22:42:39.293Z",
+      "kind": "wood",
+      "count": 1
+    },
+    {
+      "check": "material gathered through normal gameplay",
+      "pass": true,
+      "at": "2026-10-09T22:42:42.379Z",
+      "kind": "stone",
+      "count": 1
+    },
+    {
+      "check": "stone axe crafted through normal gameplay",
+      "pass": true,
+      "at": "2026-10-09T22:42:47.827Z"
+    },
+    {
+      "check": "gameplay result persisted in Supabase",
+      "pass": true,
+      "at": "2026-10-09T22:42:48.421Z",
+      "profileVersion": 6
+    },
+    {
+      "check": "real public-key password login",
+      "pass": true,
+      "at": "2026-10-09T22:44:05.237Z",
+      "phase": "after"
+    },
+    {
+      "check": "authenticated browser profile RPC denied",
+      "pass": true,
+      "at": "2026-10-09T22:44:05.594Z",
+      "phase": "after"
+    },
+    {
+      "check": "real token admitted through public TLS WebSocket",
+      "pass": true,
+      "at": "2026-10-09T22:44:06.821Z",
+      "phase": "after"
+    },
+    {
+      "check": "crafted tool and material inventory restored after real container restart",
+      "pass": true,
+      "at": "2026-10-09T22:44:06.822Z"
+    },
+    {
+      "check": "only disposable profile and Auth user removed",
+      "pass": true,
+      "at": "2026-10-09T22:44:17.314Z"
+    }
+  ],
+  "worldBeforeRestart": {
+    "version": 384,
+    "hash": "692420ee2b9bf14a354b9e770863486eeab1294304b353850b96d450b3bc7060"
+  }
+}
