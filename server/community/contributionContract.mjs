@@ -104,6 +104,9 @@ export function contributionDelta(rawRequest, rawCharacter, rawProject) {
     integer(c.data.eco.tradeRev, 0, MAX_VERSION - 1);
     c.data.eco.tradeRev++;
   }
+  // Crossing a revision digit can grow a profile already at the byte ceiling. Keep the
+  // resulting snapshot loadable and reject before the store's atomic write boundary.
+  if (Buffer.byteLength(JSON.stringify(c.data)) > 131072) return denied('conflict');
   c.version++; p.version++; p.contributed[r.good] += accepted;
   return { ok: true, accepted, character: c, project: p };
 }

@@ -10,8 +10,11 @@ ERC-1155 por holder/tipo/bloque. W02g prueba ambos lectores y CLIs contra byteco
 ejecutado en EVM local: 49/49 seleccionadas (7 nuevas + 42 W02d/e/f). W02h añade diagnóstico
 RPC Amoy por hash: 58/58 seleccionadas locales y consulta pública real satisfactoria, sin gas.
 W02i prepara un contrato ERC-721 experimental restringido a Amoy y un artefacto reproducible;
-68/68 seleccionadas locales (10 nuevas + 58 anteriores). Supabase live, extensión, NFT público
-y despliegue siguen pendientes.**
+68/68 seleccionadas locales (10 nuevas + 58 anteriores). W02j-a prepara datos de creación sin firma
+y runtime esperado para revisión: 78/78 seleccionadas locales (10 nuevas + 68 previas).
+W02j-b añade la herramienta de simulación de creación/estimación read-only: 97/97 locales
+(19 nuevas + 78 previas); corrida pública pendiente de direcciones y endpoint explícitos.
+Supabase live, extensión, simulación/envío público y NFT público siguen pendientes.**
 **Red elegida por el autor, 2026-10-08: Polygon PoS; piloto en Amoy.** Selección documentada y
 plantilla alineada; origen/proveedor operativo y piloto NFT público siguen pendientes. Web3 conserva
 su carácter opcional para el juego ordinario. Véase §5.1.
@@ -25,6 +28,7 @@ Continuidad: [PLAN-DELIVERY](PLAN-DELIVERY.md), [M5](PLAN-M5.md), [M7](PLAN-M7.m
 | Añadir una capa Web3 con tierra, equipo premium y contenido creado por jugadores que pueda tokenizarse y comerciarse | Solicitada por el autor |
 | Primer piloto centrado en **equipo premium y tierra** | Confirmado por el autor: opciones 2 y 3 |
 | Equipo premium con **apariencias coleccionables y piezas funcionales comerciables**, ambos con reglas claras | Confirmado por el autor el 2026-10-07 |
+| Creación de equipo ingame: primero editor por piezas con diferencias de stats de catálogo, plano/receta/instancia; después GLB/IA/escultura | Camino aprobado por el autor el 2026-10-08; implementación futura W05, sin adelantarlo al piloto actual |
 | Iniciar el desarrollo de la base Web3 | Autorizado por el autor el 2026-10-07; primer corte W01 de almacenamiento aislado |
 | Red de la capa Web3 | Polygon PoS elegida por el autor el 2026-10-08; Amoy para el piloto de pruebas |
 | Wallet, medio de pago, precios, tiradas, comisiones y prioridad en la cola general | Pendientes; USDC nativo y gas patrocinado son la dirección propuesta para pagos futuros |
@@ -69,12 +73,24 @@ Alquileres y permisos compartidos son una expansión, no parte de la primera tra
 
 ### 1.3 Creaciones de jugadores, después del primer piloto
 
-Ruta: editor de diseños/planos → validación del servidor → catálogo aprobado → edición tokenizada → venta.
-Empezar con formatos acotados: apariencias, velas, decoración o planos hechos con piezas reconocidas.
-El creador escoge una tirada dentro de límites; autoría, licencia de uso, versión y reglas de copia
-acompañan el contenido. Poseer una copia y poseer los derechos sobre el diseño son relaciones distintas.
-El servidor define recetas/atributos y valida geometría, colisión, peso y presupuesto visual.
-Una creación no puede inventar recursos, daño, capacidad de carga ni permisos de otra parcela.
+**Camino aprobado por el autor, 2026-10-08:** crear equipo ingame empezando por un editor modular;
+hojas, mangos/empuñaduras, guardas y otras piezas del catálogo podrán aportar diferencias de stats.
+Primer piloto: una familia de sable y pocas piezas compatibles; ampliar después a importación GLB,
+generación por texto/imagen y escultura/pintura. Armaduras requieren primero rig/cuerpo y deformación
+aceptados. [Dirección, fases y reutilización W05](docs/briefs/w05-modular-equipment-direction.md).
+
+Separar **diseño/plano**, **receta/materiales/oficio** e **instancia fabricada**. El servidor resuelve
+atributos/probabilidades con componentes reconocidos y presupuesto de equipo normal; una geometría
+subida/generada no declara stats, alcance o permisos. Consumir materiales y crear el resultado una
+sola vez, sin repetir el roll por reintento/reventa. Materiales raros pueden especializar el objeto;
+valores, recetas, garantías/probabilidades, fallos, licencias y cantidades siguen por concretar.
+El contrato W00 actual no implementa composición modular ni acredita fabricación legítima.
+
+Ruta futura: editor → validación/versión aprobada → plano → fabricación/uso/comercio ingame;
+publicación/licencia/edición tokenizada son opciones posteriores. Crear y jugar no exige wallet.
+Tirada, autoría, licencia de uso y reglas de copia acompañan lo publicado; poseer una copia no
+transfiere automáticamente derechos de autor ni crea materiales/equipo. Velas, decoración y planos
+de construcción siguen como ampliaciones. Esta dirección no sustituye la cola W02–W04 actual.
 
 ## 2. Base real revisada y brechas
 
@@ -223,9 +239,16 @@ W02i prepara un [contrato experimental ERC-721](docs/briefs/w02i-amoy-erc721-pil
 los fixtures W02g: constructor/mint solo Amoy, operador explícito inmutable y metadata constante
 sin derechos de juego. Artefacto reproducible y ensayo contra bytecode local; simular 80002
 para CHAINID no acredita Amoy real. [Entrega W02i](docs/delivery/w02i-amoy-erc721-pilot.md).
-Próximo paso W02j: despliegue experimental firmado por la wallet del operador, verificar código y
-lectores contra NFT público en Amoy, con evidencia de transacciones/bloques; además de origen/servicios
-y Supabase/wallet reales. Véase la secuencia siguiente. Sin desplegar automáticamente desde el build.
+[W02j-a](docs/delivery/w02ja-amoy-deployment-review.md) prepara offline constructor/data con direcciones
+públicas explícitas, exige artefacto reproducible y calcula runtime esperado con inmutables; 78/78
+locales. Sin RPC, gas/nonce/fees, firma/envío o despliegue. Dirección/wallet del autor aún ausentes.
+[W02j-b](docs/delivery/w02jb-amoy-deployment-simulation.md): herramienta local lista, 97/97
+seleccionadas (19 nuevas + 78 previas). Creación por hash con runtime exacto, estimación por número,
+gasPrice/productos en wei orientativos y bloque/red releídos; transporte privado sin firma/envío.
+Ningún RPC externo en ese corte ni costo de producción medido. Falta ejecutar con direcciones/RPC
+explícitos; POL de prueba y presupuesto/wallet se revisan antes del envío.
+W02j-c: firma/envío y recibos, código/mint/transfer/lectores públicos. W02j sigue sin NFT público.
+Origen/servicios y Supabase/wallet reales se aceptan por separado. Véase la secuencia siguiente.
 W03/W04 conservan las decisiones abiertas de derechos, pérdidas y custodia.
 
 Reutilización revisada: [inventario Unreal/FAB](docs/research/unreal-assets/SUMMARY.md) aporta arte y
@@ -242,10 +265,12 @@ patrones de gameplay, sin dependencia aplicable a esta decisión documental o pl
 | W02g | Ensayo ERC-721/ERC-1155 ejecutado en EVM local | W02e/f; bytecode compilado, mint/transfer/historia/revert y lectores/CLIs por hash sin cambiar estado | [Verificado localmente](docs/delivery/w02g-local-evm-rehearsal.md), 7 nuevas + 42 regresión. Paquete de herramientas aislado; sin testnet, pagos o permisos jugables |
 | W02h | Diagnóstico RPC público Amoy por hash de bloque | W02d/e; cinco lecturas, identity echo y bloque estable; formato aceptado no prueba finalidad o honestidad | [58/58 locales y consulta pública satisfactoria](docs/delivery/w02h-amoy-rpc-check.md), sin gas. Sin proveedor permanente, NFT público, wallet/Supabase o gameplay |
 | W02i | Contrato ERC-721 experimental y artefacto reproducible | W02g/h; operador explícito inmutable, mint restringido, metadata experimental y transferencias estándar; ensayo local separado de Amoy real | [68/68 locales](docs/delivery/w02i-amoy-erc721-pilot.md), 10 nuevas + 58 previas; sin deploy público, pagos, custodia o derechos de juego |
-| W02j | NFT experimental público y lectura histórica en Amoy | W02i; dirección pública del operador/deployer, firma con su wallet, POL de prueba, simulación del despliegue y endpoint explícito; contrato/código/recibos y lectura por bloque contrastados | Siguiente; dirección/wallet aún no suministradas. No confundir con integración jugable o OpenSea |
+| W02j-a | Preparación offline de datos de despliegue y runtime esperado | W02i; direcciones públicas explícitas, constructor exacto, artefacto reproducible e inmutables contrastados | [78/78 locales](docs/delivery/w02ja-amoy-deployment-review.md), 10 nuevas + 68 previas. Sin RPC, estimación, firma o envío; no es NFT público |
+| W02j-b | Simulación de creación y estimación read-only | W02j-a; RPC/direcciones/límite de simulación explícitos; runtime completo, gas y bloque/red contrastados | [Herramienta local lista, 97/97](docs/delivery/w02jb-amoy-deployment-simulation.md), 19 nuevas + 78 previas. Sin corrida pública; gasPrice observado no es fee cap/cotización mainnet. Sin firma/envío |
+| W02j | NFT experimental público y lectura histórica en Amoy | W02i/j-a/b; dirección pública del operador/deployer, firma con su wallet, POL de prueba, simulación del despliegue y endpoint explícito; contrato/código/recibos y lectura por bloque contrastados | Parcial: preparación W02j-a y herramienta W02j-b listas localmente; faltan simulación/estimación públicas y W02j-c envío/recibos/lectura. Dirección/wallet aún no suministradas; sin integración jugable o OpenSea |
 | W03 | Apariencia compatible y pieza funcional en testnet, activar/usar/desactivar/vender | W00–W02; revocar vendedor, activar comprador una vez y conservar contenido/titularidad tras reinicio | Pendiente |
 | W04 | Una parcela experimental tokenizada y transferible | W00–W02 + reglas de propiedad durable acordadas y transferencia M8 por implementar/verificar; escritura/edificio/contenido/deuda coherentes, permisos antiguos revocados | Pendiente |
-| W05 | Editor/catalogación/ediciones de creadores | Piloto equipo/tierra aceptado; contenido saneado, autoría/licencia/tirada, recetas y coste visual validados | Pendiente |
+| W05 | Taller modular y publicación de creadores; diseño/receta/instancia separados | Piloto equipo/tierra aceptado; piezas de catálogo con stats acotados, consumo/roll recuperables, autoría/licencia y coste visual validados | [Camino aprobado](docs/briefs/w05-modular-equipment-direction.md): W05a piezas/editor de sable, W05b fabricación, W05c publicación/GLB/IA, W05d escultura/armaduras; sin implementar ni cambiar prioridad |
 | W06 | Preparar lanzamiento con pagos reales | Contratos y recuperación revisados; costes, soporte, términos de venta y decisiones de operación concretos; aceptación del autor sobre esa entrega | Pendiente |
 
 **Demostración inicial propuesta:** A tiene una pieza y una parcela de prueba; B compra ambas; A pierde
@@ -268,11 +293,13 @@ este plan no cambia esa cola ni degrada el pilar de agentes ya acordado.
 
 **Secuencia inmediata W02:**
 
-1. W02i prepara y prueba localmente el contrato y el artefacto. No leer claves ni enviar transacciones.
-2. W02j necesita la dirección pública del operador y wallet para firma; escoger deployer/recipient
-   de prueba explícitos. Comprobar chain 80002, código del artefacto, argumentos y simulación/estimación
-   antes del envío. Fondos de prueba y presupuesto acotado, sin dinero real o patrocinio automático.
-3. Con recibos exitosos: guardar dirección de contrato, chain, hashes de transacciones y bloques;
+1. W02i (contrato/artefacto) y W02j-a (preparación offline) aceptados localmente. No leer claves ni
+   enviar transacciones desde sus comandos. El reporte no acredita red ni configura gas/nonce/fees.
+2. Herramienta W02j-b aceptada localmente (97/97), sin corrida pública. Ejecutarla con direcciones
+   públicas de deployer/operador, RPC y límite de simulación explícitos; comprobar runtime, bloque/red
+   y estimación. Después revisar wallet de firma/recipient, fondos de prueba y presupuesto acotado
+   antes de envío W02j-c; el gasPrice observado no autoriza gasto ni cotiza mainnet/USD.
+3. W02j-c, con firma/envío y recibos exitosos: guardar dirección de contrato, chain, hashes de transacciones y bloques;
    comparar runtime usando referencias inmutables y verificar metadata/interfaz. Acuñar y transferir
    un token de prueba; leer dueño inicial/actual por hashes, incluido rechazo de hash desconocido y
    respuesta perdida. No reemitir automáticamente una transacción incierta.
@@ -297,6 +324,8 @@ implementados y verificados localmente; vínculo cuenta/wallet por firma EOA en 
 y panel de navegador con proveedor simulado; montaje normal configurable, apagado por defecto,
 con comprobación de prerrequisitos SQL antes de escuchar, diagnóstico independiente SQL/RPC del piloto
 y lectores ERC-721/ERC-1155 en bloque explícito, ensayados contra bytecode EVM local; diagnóstico
-RPC de Amoy consultado en red pública sin gas y contrato experimental preparatorio W02i.
+RPC de Amoy consultado en red pública sin gas, contrato experimental preparatorio W02i y datos
+de despliegue offline W02j-a y herramienta W02j-b de simulación/estimación verificada localmente,
+sin corrida pública/firma/envío. Dirección futura W05 modular guardada; sin editor/recetas.
 Extensión real, lectores contra NFT público, Supabase live, mercado jugable
 y pagos todavía pendientes, sin publicación.**

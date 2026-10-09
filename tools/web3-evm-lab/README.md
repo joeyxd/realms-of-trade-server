@@ -1,4 +1,4 @@
-# Laboratorio local de lectores Web3 — W02g/W02i
+# Laboratorio local de lectores Web3 — W02g/W02i/W02j-a
 
 Ejecuta bytecode Solidity de fixtures ERC-721/ERC-1155 en una EVM desechable y prueba los lectores
 y CLIs W02e/f existentes contra HTTP loopback. No requiere wallet, RPC externo, Supabase o `.env`.
@@ -13,7 +13,7 @@ npm.cmd --prefix tools/web3-evm-lab test
 
 La instalación necesita acceso al registro npm; las pruebas no necesitan red externa. Paquete y lock
 privados, dependencias de desarrollo exactas; el arranque del juego no importa este laboratorio.
-Pruebas de integración W02g y del contrato experimental W02i, más la regresión seleccionada
+Pruebas de integración W02g, del contrato experimental W02i y preparación offline W02j-a, más la regresión seleccionada
 documentada en cada entrega. La suite
 ordinaria `npm test` del root no incluye automáticamente este laboratorio: ejecutarlo explícitamente.
 
@@ -64,3 +64,45 @@ El artefacto nuevo queda preparado para revisar antes de W02j; los auxiliares de
 las pruebas no se incluyen en él. El target Cancun debe comprobarse en la simulación real del
 despliegue público. No hay herramienta de firma/envío ni wallet/RPC configurado en el build.
 [Brief W02i](../../docs/briefs/w02i-amoy-erc721-pilot.md).
+
+## Preparación de revisión W02j-a
+
+`amoyDeployment.mjs` recompila/verifica el artefacto W02i y construye datos de creación sin firma
+con deployer y operador públicos explícitos. Calcula SHA-256 del artefacto y keccak256 del código;
+prepara el runtime esperado con el operador insertado en sus inmutables. No recibe bytecode libre.
+
+```powershell
+node tools/web3-evm-lab/prepare-amoy-deployment.mjs --help
+```
+
+`--prepare`/script `prepare:amoy` requiere `MN_WEB3_WALLET_CHAIN_ID=80002`,
+`MN_WEB3_AMOY_DEPLOYER_ADDRESS` y `MN_WEB3_AMOY_MINT_OPERATOR_ADDRESS`, solo direcciones públicas.
+Emite JSON en stdout, sin archivo de salida, RPC, wallet, claves o carga de `.env`. Datos de creación
+con valor cero y sin `to`, nonce, gas/fees o firma; no son una solicitud ya lista para enviar.
+Red no verificada y simulación/gas/firma/envío/despliegue pendientes en el reporte.
+[Reproducción y entrega](../../docs/delivery/w02ja-amoy-deployment-review.md).
+
+## Simulación de creación W02j-b
+
+`amoySimulation.mjs` recrea W02j-a y consulta un RPC explícito sin firmar: chain, bloque,
+gasPrice, creación `eth_call` por hash/canonical, `eth_estimateGas` por número, bloque y chain
+releídos. Compara todo el runtime con sus inmutables, limita gas y rechaza cambio de bloque/red.
+El transporte privado no amplía los métodos de los lectores. No acepta calldata, state overrides,
+clave, firma o envío. HTTP solo loopback; HTTPS, deadlines y cuerpos de respuesta acotados.
+
+```powershell
+node tools/web3-evm-lab/simulate-amoy-deployment.mjs --help
+```
+
+`--simulate`/`simulate:amoy` requiere las tres variables públicas de W02j-a, además de
+`MN_WEB3_WALLET_RPC_URL` y `MN_WEB3_AMOY_SIMULATION_GAS_LIMIT` decimal 53000..30000000.
+No elige proveedor, direcciones ni límite por defecto y no carga `.env`. Requiere que el RPC
+acepte creación por hash y estimación por número; cualquier rechazo termina sin fallback/retry.
+Endpoint/direcciones se envían al RPC seleccionado; URL privada y errores crudos no van al reporte.
+
+Reporta gas estimado, gasPrice observado y productos exactos en wei de **POL de prueba**.
+El precio observado no está fijado al bloque, no es fee cap, importe USD ni costo de producción;
+el límite de simulación no autoriza gasto. La solicitud de despliegue sigue sin gas/nonce/fees/firma.
+`rpcSimulated`/`gasEstimated` describen consultas satisfactorias; `networkVerified`, finalidad,
+firma/envío/despliegue siguen false. Un fixture con 80002 no acredita Amoy pública.
+[Alcance y evidencia](../../docs/delivery/w02jb-amoy-deployment-simulation.md).

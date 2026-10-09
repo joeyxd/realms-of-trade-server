@@ -78,6 +78,22 @@ Siguiente W02j: dirección pública del operador/deployer y wallet de firma; sim
 recibos/código y lectores contra mint/transfer reales. Sin claves por defecto o secretos en chat.
 Origen/proveedor operativo, Supabase y extensión reales pendientes; cerrar producto antes de
 W03/W04. Fixtures W02g/receptores auxiliares no desplegables; el nuevo artefacto W02i es preparatorio.
+[W02j-a](delivery/w02ja-amoy-deployment-review.md), 2026-10-08: preparación offline con direcciones
+públicas de deployer/operador explícitas, constructor exacto, artefacto reproducible y runtime esperado
+con inmutables; 78/78 locales (10 nuevas + 68 previas). Sin RPC, gas estimado, firma/envío o NFT público.
+W02j sigue parcial: W02j-b simulación/estimación pública con wallet/direcciones y presupuesto de prueba;
+W02j-c firma/envío/recibos y lecturas históricas públicas. Dirección/wallet del autor todavía ausentes.
+[W02j-b](delivery/w02jb-amoy-deployment-simulation.md), 2026-10-09: herramienta read-only lista,
+97/97 locales (19 nuevas + 78 previas). Creación eth_call por hash exige runtime completo;
+estimateGas por número y bloque/red releídos, productos en wei con gasPrice observado.
+Límite explícito solo de simulación; no fee cap/costo mainnet ni permiso de gasto. Sin RPC externo
+en este corte/firma/envío. Falta correr con direcciones/RPC del autor; W02j-c público permanece abierto.
+Transporte de lectores/SQL013/host/juego intactos; W05 futuro y la cola general conservados.
+**Dirección W05 aprobada por el autor, 2026-10-08:** [taller modular](briefs/w05-modular-equipment-direction.md),
+sable con pocas hojas/mangos/guardas primero, componentes de catálogo con distintos atributos;
+diseño/plano, receta/materiales/oficio e instancia separados. GLB/IA/escultura/armaduras después.
+Stats solo por reglas del servidor; crear y jugar sin wallet. Dirección futura, sin piezas/recetas/editor
+nuevos ni adelantar W05 sobre el piloto actual/cola general; valores/licencias/pérdidas siguen abiertos.
 
 ## 1. Qué es y sus reglas
 
@@ -118,6 +134,13 @@ deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
 
 ## 3. Estado (2026-10-08)
+
+**Corrección del HUD ordinario, 2026-10-09:** [informe](delivery/live-hud-publication.md),
+alpha.16/protocolo 32. Escritorio usa el HUD compacto de referencia: sin barra superior ni sticks,
+con Q/I/E en tarjetas y V/M al asignar centrar/mapa. Casco junto a barras del personaje;
+viento/rumbo y carga reales. Cubierta distingue cuerpo naval retenido de control del timón.
+21/21 focales, 3/3 recorridos ordinarios emulados y 12 capturas; teclas, selector, pausa, amarre y
+limpieza comprobados. Avance previo subido en `1a3ef18` y `be1634f`; Git no prueba despliegue público.
 
 **Herramientas y minería D08c.7d:** local **alpha.16/protocolo 32**, conserva S21 y L02c.
 [Entrega](delivery/d08c7d-tools.md): madera/hacha/pico desde mochila vacía, dos ranuras fijas de
@@ -327,7 +350,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   Las 22 líneas L00a–L06e tienen dirección acordada; L00, L01a/b/c y L02a/b tienen evidencia local;
   L02c añade autoridad opt-in, L03a API/mente simulada y L03b conversación simulada verificadas localmente;
   L03c tiene metas/feedback y ciclo local simulados; L04a tiene memoria local con resúmenes simulados;
-  L04b–L06 siguen pendientes, con demostración
+  L04b tiene administración local verificada; L05–L06 siguen pendientes, con demostración
   y estado de diseño/implementación por fila.
   **D-A1 acordada:** personaje propio y plaza normal; su dueño autoriza capacidades y puede detenerlo.
   El autor añade autonomía para elegir metas/acciones dentro de límites de gasto del usuario y archivos
@@ -378,7 +401,7 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   sesiones, fuentes/vigencia, recuperación relevante y compactado trazable dentro del presupuesto del prompt.
   Journal/recuperación y reentrada locales verificados con resúmenes simulados; calidad/proveedor reales pendientes. **L04b acordada:** consulta/exportación de archivos reales,
   borrado de recuerdos con sus resúmenes/índices derivados, aislamiento por dueño y reglas de retención.
-  Gestión/detalles/pruebas pendientes. **L05a acordada:** límites del dueño y reserva antes de inferencia
+  Consulta/exportación/borrado y retención/migración explícitas verificados localmente en L04b. **L05a acordada:** límites del dueño y reserva antes de inferencia
   incluido compactado, consumo registrado, bloqueo de nuevas llamadas sin presupuesto suficiente,
   aviso y claves fuera del juego. Operación/importes/pruebas pendientes. **L05b acordada:** panel del dueño
   con modelo/estado/tarea/consumo/límites, medición/estimación/desconocido, archivos reales, ajuste de límites
@@ -423,9 +446,11 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   WebSocket/CLI locales simulados. [L03c](delivery/l03c-agent-goals.md) añade metas con feedback,
   archivo real revisado y ensayo PvE local frente al cuerpo sin modelo. [L04a](delivery/l04a-agent-memory.md)
   añade journal local persistente, recuperación y resúmenes con fuentes/incertidumbre, escritura/CLI/reentrada
-  y coste de compactado verificados con modelos simulados. Sigue L04b; proveedor, encuentro/aceptación humana y calidad pendientes.
+  y coste de compactado verificados con modelos simulados. [L04b](delivery/l04b-agent-memory-admin.md) añade
+  consulta/exportación byte exacta, borrado con derivados/pendientes y retención/migración explícitas locales.
+  Sigue L05a; proveedor, encuentro/aceptación humana y calidad pendientes.
   Provisioning/UI, percepción autoritativa, gasto real, memoria
-  administrada con borrado/retención y evaluación humana siguen pendientes. Sin publicación ni despliegue.
+  con operación remota y evaluación humana siguen pendientes. Sin publicación ni despliegue.
 
 ### Dirección visual del puerto (2026-10-06)
 

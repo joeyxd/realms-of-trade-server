@@ -227,6 +227,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   **3/3 recorridos emulados** PC/horizontal/vertical rotado, entradas reales y capturas inspeccionadas;
   fixtures y límites en la entrega. Nodos de sesión, sin receta de piedra ni tiers.
   Sigue lectura única masa/volumen y porte restante; D09/D10/dispositivos/publicación abiertos.
+- Corrección de publicación del HUD ordinario (2026-10-09): [informe](docs/delivery/live-hud-publication.md).
+  Escritorio comparte composición compacta con touch, sin barra anterior/sticks, teclas Q/I/E y V/M
+  según acción asignada; casco integrado, viento y porte reales. 21/21 focales y 3/3 recorridos con
+  capturas inspeccionadas. Avance acumulado en Git `1a3ef18`/`be1634f`; URL pública no verificada.
 - [Inventario y prioridades](docs/research/unreal-assets/SUMMARY.md),
   [candidatos](docs/research/unreal-assets/CANDIDATES.csv), [portabilidad](docs/research/unreal-assets/PORTABILITY.md)
   y [contrato de assets](docs/ASSETS.md): evidencia técnica, distinta de exportación/integración comprobada.
@@ -272,6 +276,18 @@ reproducible; operador explícito inmutable, constructor/mint solo Amoy, transfe
 y metadata sin derechos. 68/68 seleccionadas locales (10 nuevas + 58 previas), 80002 simulado;
 sin contrato público, gas, pagos o permisos. Siguiente W02j requiere dirección/wallet y evidencia
 de deploy/mint/transfer/lectura pública; conservar las decisiones de producto y esta cola.
+[W02j-a](docs/delivery/w02ja-amoy-deployment-review.md): preparación offline de constructor/datos
+de creación y runtime esperado con operador explícito; 78/78 locales (10 nuevas + 68 previas).
+Sin RPC/firma/envío; sigue simulación/estimación W02j-b y evidencia pública W02j-c con direcciones/wallet.
+[W02j-b](docs/delivery/w02jb-amoy-deployment-simulation.md), 2026-10-09: herramienta read-only de
+simulación de creación/runtime y estimación por bloque, 97/97 locales (19 nuevas + 78 previas).
+GasPrice observado y productos en wei de POL de prueba, sin cotización mainnet/permiso de gasto.
+Sin RPC externo de ese corte/firma/envío; corrida pública necesita direcciones/RPC explícitos.
+W02j-c, Supabase/pagos/permisos y esta cola conservan sus gates.
+**Dirección W05 aprobada, 2026-10-08:** [taller modular](docs/briefs/w05-modular-equipment-direction.md),
+pocas piezas de sable primero, componentes de catálogo con diferencias de stats; diseño/plano,
+receta/materiales/oficio e instancia separados. GLB/IA/escultura/armaduras después; creación y
+juego sin wallet. No implementa piezas/editor/recetas ni adelanta W05 sobre equipo/tierra o esta cola.
 
 ## 2. Regla de entrega
 
@@ -341,7 +357,7 @@ capturas en escritorio/vertical/horizontal. Local, sin nuevo protocolo de chat n
 
 Planificación acordada por el autor: [ruta por líneas de acuerdo](PLAN-EXTRA-LLM.md#4-cortes-de-desarrollo-y-aceptación),
 22 líneas L00a–L06e con dirección acordada; L00, L01a/b/c y L02a/b tienen evidencia local;
-L02c añade autoridad opt-in, L03a API/mente simulada, L03b conversación, L03c metas/feedback y L04a memoria local con resúmenes simulados verificados; L04b–L06
+L02c añade autoridad opt-in, L03a API/mente simulada, L03b conversación, L03c metas/feedback, L04a memoria local con resúmenes simulados y L04b administración local verificados; L05–L06
 siguen pendientes. Cada corte tiene demostración
 y estado separado de diseño/implementación. **Base de L00a acordada:** personaje propio/plaza normal,
 autonomía dentro de capacidades y gasto del dueño, stop y archivos de personalidad/memoria/objetivos
@@ -384,7 +400,7 @@ Metas/archivos y ensayo PvE local simulados verificados; encuentro y aceptación
 sesiones, fuentes/vigencia, recuperación relevante y compactado trazable dentro del presupuesto del prompt.
 Journal/recuperación y reentrada local verificados con resúmenes simulados; calidad/proveedor reales pendientes. **L04b acordada:** consulta/exportación de archivos reales,
 borrado de recuerdos con sus resúmenes/índices derivados, aislamiento por dueño y reglas de retención.
-Gestión/detalles/pruebas pendientes. **L05a acordada:** límites del dueño y reserva antes de inferencia
+Consulta/exportación/borrado y retención/migración explícitas verificados localmente en L04b. **L05a acordada:** límites del dueño y reserva antes de inferencia
 incluido compactado, consumo registrado, bloqueo de nuevas llamadas sin presupuesto suficiente,
 aviso y claves fuera del juego. Operación/importes/pruebas pendientes. **L05b acordada:** panel del dueño
 con modelo/estado/tarea/consumo/límites, medición/estimación/desconocido, archivos reales, ajuste de límites
@@ -428,8 +444,10 @@ audiencia fijada, contexto inspeccionable y límites contra respuestas repetidas
 [L03c](docs/delivery/l03c-agent-goals.md): metas con feedback, archivo real revisado, prioridad/fences y
 ciclo PvE local frente al cuerpo sin modelo. [L04a](docs/delivery/l04a-agent-memory.md) añade memoria
 local persistente, recuperación pertinente y resúmenes con originales/fuentes/incertidumbre; escritura,
-reentrada y presupuesto de compactado verificados con modelos simulados. Sigue L04b; proveedor/calidad/encuentro y experiencia humana pendientes.
-Los límites son de ensayo; provisioning/UI, percepción, proveedor/gasto durable, administración/retención de memoria y experiencia
+reentrada y presupuesto de compactado verificados con modelos simulados. [L04b](docs/delivery/l04b-agent-memory-admin.md)
+añade administración local, exportación byte exacta, borrado con derivados/pendientes y retención/migración explícitas.
+Sigue L05a; proveedor/calidad/encuentro y experiencia humana pendientes.
+Los límites son de ensayo; provisioning/UI, percepción, proveedor/gasto durable, operación remota de memoria y experiencia
 humana siguen pendientes. Sin publicación ni despliegue.
 
 ### 3.2. Ruta visual — puerto tropical ilustrado

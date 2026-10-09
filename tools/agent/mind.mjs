@@ -125,6 +125,7 @@ export class AgentMind {
         !same(before.grant.capabilities, current.grant.capabilities)) return 'control_mismatch';
     if (before.taskFence !== current.taskFence) return 'task_changed';
     if (!same(before.ownerFileHashes, current.ownerFileHashes)) return 'owner_files_changed';
+    if (before.memoryValidUntilMs !== null && before.memoryValidUntilMs !== undefined && nowMs >= before.memoryValidUntilMs) return 'memory_expired';
     if (nowMs - before.observation.receivedAtMs > this.#limits.maxDecisionAgeMs) return 'stale_decision';
     return null;
   }
@@ -176,10 +177,16 @@ export class AgentMind {
       limits: this.#limits, contextLimits: this.#contextLimits, nowMs: this.#now(), mode: flight.mode });
     flight.report = context.report ?? null;
     if (!context.ok) { this.#finish(flight, { ok: false, why: context.why }); return; }
+    // A selected historical source may expire while its interpretation is in flight.
+    // Recheck its deadline before any order, reply, goal change or memory publication.
+    const memoryDeadlines = [...context.document.memory, ...(flight.mode === 'compaction' ? flight.turn.sources : [])]
+      .map((record) => record.validUntilMs).filter((value) => Number.isSafeInteger(value));
+    snapshot.memoryValidUntilMs = memoryDeadlines.length ? Math.min(...memoryDeadlines) : null;
     if (flight.mode !== 'decision') flight.providerContext = copy(context.document);
     if (this.#deadline(flight)) return;
     const expired = this.#snapshotWhy(snapshot, this.#now());
     if (expired) { this.#finish(flight, { ok: false, why: expired }); return; }
+    if (snapshot.memoryValidUntilMs !== null && this.#now() >= snapshot.memoryValidUntilMs) { this.#finish(flight, { ok: false, why: 'memory_expired' }); return; }
     const reserved = this.#budget.reserve({ requestId: flight.requestId, kind: flight.mode === 'compaction' ? 'compaction' : 'decision', inputTokens: context.prepared.inputTokens,
       outputTokens: this.#limits.maxOutputTokens, maxCostUnits: context.prepared.maxCostUnits, countMode: this.#adapter.countMode });
     if (!reserved.ok) { this.#finish(flight, { ok: false, why: reserved.why }); return; }

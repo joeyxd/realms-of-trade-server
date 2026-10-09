@@ -177,9 +177,10 @@ function fileEntry(root, filename, bytes, content, extra = {}) {
 }
 
 /** Read the three owner-visible files without creating, rewriting or exporting them. */
-export async function loadOwnerFiles({ directory, scope, limits = {} } = {}) {
+export async function loadOwnerFiles({ directory, scope, limits = {}, includeRawBytes = false } = {}) {
   if (typeof directory !== 'string' || !path.isAbsolute(directory)) fail('directory_must_be_absolute');
   if (!validScope(scope)) fail('invalid_scope');
+  if (typeof includeRawBytes !== 'boolean') fail('invalid_raw_bytes_option');
   const config = validateLimits(limits);
 
   let root;
@@ -211,17 +212,19 @@ export async function loadOwnerFiles({ directory, scope, limits = {} } = {}) {
     ok: true,
     scope: { ...scope },
     files: {
-      personality: fileEntry(root, FILES.personality, personalityBytes, personalityText),
+      personality: fileEntry(root, FILES.personality, personalityBytes, personalityText, includeRawBytes ? { rawBase64: personalityBytes.toString('base64') } : {}),
       objectives: fileEntry(root, FILES.objectives, objectiveBytes, objectivesText, {
         revision: objectives.revision,
         scope: structuredClone(objectives.scope),
         goals: structuredClone(objectives.goals),
+        ...(includeRawBytes ? { rawBase64: objectiveBytes.toString('base64') } : {}),
       }),
       memory: fileEntry(root, FILES.memory, memoryBytes, memoryText, {
         records: parsedMemory.records,
         report: parsedMemory.report,
         revision: parsedMemory.journal.revision,
         journal: parsedMemory.journal,
+        ...(includeRawBytes ? { rawBase64: memoryBytes.toString('base64') } : {}),
       }),
     },
   };

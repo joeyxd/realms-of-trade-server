@@ -250,14 +250,18 @@ test('world replies are opt-in and a simulated model cannot change the selected 
   await owner.waitFor((message) => message.t === MSG.CHAT_MESSAGE && message.text === 'Saludos a todos en Mundo.');
   await until(() => witness.messages.some((message) => message.t === MSG.CHAT_MESSAGE && message.text === 'Saludos a todos en Mundo.'),
     'opt-in world reply reaches the third participant');
+  await until(() => runner.chat.messages.some((message) => message.text === 'Saludos a todos en Mundo.'),
+    'the agent receives its own earlier world reply before measuring the next turn');
 
   const beforeCount = runner.chat.messages.length;
+  const beforeRequests = runner.chat.requests.length;
   const maliciousMind = makeMind(runner, { directory }, createSimulatedMind({ decision: {
     type: 'reply', args: { text: 'Attempted channel switch.', channel: 'whisper', target: runner.chat.self },
   } }), { policy: { channels: ['world'], maxRepliesPerPeer: 8, cooldownMs: 0 } });
   const malicious = await maliciousMind.converse({ messageId: deniedInput.id });
   assert.equal(malicious.ok, false);
   assert.equal(malicious.why, 'invalid_decision');
+  assert.equal(runner.chat.requests.length, beforeRequests, 'invalid generated fields cannot create a chat request');
   assert.equal(runner.chat.messages.length, beforeCount);
   assert.equal(witness.messages.some((message) => message.t === MSG.CHAT_MESSAGE && message.text === 'Attempted channel switch.'), false);
   worldMind.close(); maliciousMind.close();

@@ -24,7 +24,8 @@ personalidad, audiencia fijada y supresión acotada, verificados con modelos sim
 [L03c](docs/agents/goals-runner.md) añade revisión explícita de metas desde feedback y escritura local
 con hashes/revisión/autoridad, verificada con modelos simulados. [L04a](docs/agents/memory-runner.md)
 añade memoria local persistente, recuperación pertinente y resúmenes con fuentes/incertidumbre.
-Sigue L04b; proveedor, tokenizer,
+[L04b](docs/agents/memory-admin.md) añade consulta/exportación byte exacta y borrado coordinado,
+retención y migración explícitas, verificados localmente. Sigue L05a; proveedor, tokenizer,
 facturación y aceptación humana PvE conservan su verificación pendiente.
 Ampliación posterior del mismo día: línea esencial y chat primero.
 
@@ -265,9 +266,9 @@ L01a/b/c tienen adaptador invitado/archivos reales/chat/reentrada verificados lo
 L02a/b añaden movimiento y PvE locales acotados verificados; L02c añade autoridad opt-in verificada
 por WebSocket local. L03a tiene API/ensayos simulados y L03b conversación simulada verificados;
 L03c tiene metas/archivos y ciclo local simulados; L04a tiene memoria local persistente y resúmenes
-simulados. L04b–L06 y aceptación humana/modelo real siguen pendientes.
+simulados. L04b tiene administración local verificada; L05–L06 y aceptación humana/modelo real siguen pendientes.
 [Contrato L00](docs/agents/interface-v1.md), [red L01a](docs/agents/network-runner.md).
-Siguiente: L04b, gestión/exportación/borrado coordinado de recuerdos y derivados, retención/migración;
+Siguiente: L05a, límites de inferencia del dueño, reserva y reconciliación durable;
 proveedor real y aceptación humana por verificar.
 [Movimiento L02a](docs/delivery/l02a-agent-movement.md), [PvE L02b](docs/delivery/l02b-agent-pve.md),
 [autoridad L02c](docs/delivery/l02c-agent-authority.md).
@@ -299,7 +300,7 @@ Las 22 filas L00a–L06e tienen su dirección acordada; **L00 tiene contrato/fix
 con L01a/b/c/red invitada, chat, reentrada y cuerpo L02a/b verificados localmente;
 L02c tiene autoridad opt-in, L03a API/mente simulada y L03b conversación simulada verificadas localmente;
 **L03c tiene software/ciclo local simulados; L04a tiene memoria local y resúmenes simulados;
-L04b–L06 y aceptación humana/modelo real siguen pendientes**;
+L04b tiene administración local verificada; L05–L06 y aceptación humana/modelo real siguen pendientes**;
 **base/principio acordado** recoge las decisiones del autor sin cerrar los detalles del contrato.
 El orden es C01 → L00a–d → L01a–c → L02a–c → L03a–c → L04a–b → L05a–b → L06a–e.
 L04 y L05 podrán prepararse en paralelo después de L03; la tabla deja un orden de conversación claro.
@@ -321,7 +322,7 @@ L04 y L05 podrán prepararse en paralelo después de L03; la tabla deja un orden
 | L03b | El agente conversa con personalidad por Mundo, Cerca y susurros dentro de sus permisos y según su política, usando solo mensajes entregados al personaje; distingue charla de órdenes autorizadas y evita bucles de respuestas entre agentes. | Contesta cerca y por susurro, usa Mundo solo según su política, no responde en bucle y el chat nunca amplía permisos; el piloto conoce qué texto sale al proveedor. | Acordado / turnos explícitos con personalidad/contexto inspeccionable, C01 y supresión por proceso verificados localmente con modelos simulados; proveedor/calidad/experiencia humana pendientes ([entrega](docs/delivery/l03b-agent-conversation.md)) |
 | L03c | La mente elige y revisa metas libremente a partir del feedback del juego dentro de permisos/presupuesto; el cuerpo continúa y los objetivos visibles reflejan sus cambios. | Un humano y el agente completan un encuentro PvE con una decisión respaldada por feedback; cambios de meta, latencia y consumo quedan comprobados frente al cuerpo sin LLM. | Acordado / revisión de metas, archivos reales, feedback, continuidad y ensayo PvE local verificados con modelos simulados; proveedor y encuentro/aceptación humana pendientes ([entrega](docs/delivery/l03c-agent-goals.md)) |
 | L04a | El personaje conserva personalidad, objetivos y memoria estructurada entre sesiones; recuerdos/resúmenes tienen fuente y vigencia, se recupera solo lo pertinente y se compactan episodios con trazabilidad sin cargar el archivo completo al prompt. | Reentrada y archivos/resúmenes mantienen dueño/mundo/fuentes/incertidumbre; historial creciente sigue dentro del presupuesto y se mide coste total de recuperación/compactado. | Acordado / journal, recuperación, escritura/reentrada y resúmenes presupuestados verificados localmente con modelos simulados; proveedor/calidad/experiencia humana pendientes ([entrega](docs/delivery/l04a-agent-memory.md)) |
-| L04b | El dueño consulta y exporta los archivos reales de personalidad, memoria y objetivos, y puede borrar recuerdos junto con sus resúmenes e índices derivados; definimos aislamiento, revisiones y reglas de retención/migración. | Archivos vigentes, revisiones y aislamiento son comprobables; exportar/borrar funciona sin recuperar recuerdos borrados desde derivados, y los datos caducados se revalidan antes de actuar. | Principio acordado; gestión/retención/pruebas por construir / pendiente |
+| L04b | El dueño consulta y exporta los archivos reales de personalidad, memoria y objetivos, y puede borrar recuerdos junto con sus resúmenes e índices derivados; definimos aislamiento, revisiones y reglas de retención/migración. | Archivos vigentes, revisiones y aislamiento son comprobables; exportar/borrar funciona sin recuperar recuerdos borrados desde derivados, y los datos caducados se revalidan antes de actuar. | Acordado / administración local, exportación byte exacta, borrado con derivados/pendientes y retención/migración explícitas verificados; panel y operación remota pendientes ([entrega](docs/delivery/l04b-agent-memory-admin.md)) |
 | L05a | El usuario fija límites de gasto de inferencia; reservamos presupuesto antes de cada operación, incluido compactado, y reconciliamos su consumo. Sin presupuesto suficiente no se inicia una nueva llamada y se avisa al dueño; las claves de inferencia permanecen fuera del juego. | Configuración, reserva/reconciliación, revocación y límite agotado se prueban en un canario consentido; se distinguen uso medido, estimaciones y coste desconocido. Una operación no se inicia si no puede acotarse su coste máximo dentro del presupuesto disponible. | Principio acordado; operación/importes/pruebas por construir / pendiente |
 | L05b | Un panel del dueño muestra modelo, estado, actividad, tarea, consumo y límites, distinguiendo consumo medido, estimado o desconocido; permite consultar los archivos reales del agente, ajustar límites y detenerlo. | El dueño lee el contenido vigente de personalidad/memoria/objetivos y distingue gasto de inferencia de bienes del juego; stop y cambios de límites muestran su estado confirmado y se comprueban con la autoridad correspondiente. | Principio acordado; panel/pruebas por construir / pendiente |
 | L06a | Abrimos un piloto social y PvE a un grupo pequeño, con agentes identificables; el servidor exige percepción y permisos del personaje y comprobamos aislamiento y carga antes de ampliar acceso. | La observabilidad tiene autoridad real, aislamiento y admisión se prueban, y carga/tick/chat se comparan con agentes deshabilitados. | Principio acordado; piloto/autoridad/pruebas por construir / pendiente |
@@ -383,7 +384,8 @@ prompt. [Journal, recuperación, escritura y reentrada verificados localmente](d
 con resúmenes simulados y coste por proceso; calidad semántica/proveedor reales pendientes.
 **L04b aceptada:** el dueño consulta/exporta los archivos reales de personalidad, memoria y objetivos,
 y borra recuerdos con sus resúmenes e índices derivados; aislamiento por dueño y reglas claras de
-retención. Gestión, detalles de retención/migración y pruebas pendientes.
+retención. Consulta/exportación/borrado local y retención/migración explícitas verificados en
+[L04b](docs/delivery/l04b-agent-memory-admin.md); panel y operación remota conservan su alcance posterior.
 **L05a aceptada:** límites de gasto de inferencia fijados por el dueño, reserva antes de cada operación
 incluido compactado, registro de consumo, bloqueo de nuevas llamadas sin presupuesto suficiente y aviso
 al dueño; claves de inferencia fuera del juego. Operación, importes/unidades/periodos y pruebas pendientes.
@@ -411,7 +413,8 @@ L03a añade mente intercambiable/ensayos simulados con poda/compactado y presupu
 L03b añade conversación explícita con personalidad y C01, verificada con modelos simulados.
 L03c añade revisión de metas con feedback y archivos reales, con evidencia local simulada.
 L04a añade journal local persistente, recuperación léxica y resúmenes con originales/fuentes e
-incertidumbre, verificados con modelos simulados. El siguiente trabajo es L04b; proveedor real y
+incertidumbre, verificados con modelos simulados. L04b añade administración local, borrado coordinado y
+retención/migración explícitas. El siguiente trabajo es L05a; proveedor real y
 encuentro/aceptación humana mantienen su evidencia propia.
 Las recomendaciones que aún figuran como propuestas son detalles por acordar; no son selecciones
 aceptadas ni activan servicios.
@@ -422,7 +425,7 @@ aceptadas ni activan servicios.
 | D-A2 · Alcance inicial (L00a) | Primera prueba: conversación, movimiento y ayuda en PvE; después ampliar a comercio, construcción y barcos. | Preparación recomendada: laboratorio aislado con dueño presente; concretar escenario, capacidades y ciclo de vida en el contrato. | Experiencia inicial acordada 2026-10-07; implementación pendiente |
 | D-A3 · Cómo lo lanzamos (L01/L05) | Runner local con CLI/JSON por líneas independiente de proveedor/framework; BYOK o modelo local como configuración posterior. | Runner alojado o adaptador de herramientas específico; requieren su propio contrato de operación/custodia. | Propuesto; por acordar |
 | D-A4 · Primera demostración LLM (L03) | Conversar con un humano y ayudarle en un encuentro PvE, explicando una decisión sin detener el cuerpo. | Concretar la explicación de decisiones y el criterio de utilidad del escenario acordado. | Conversación y escenario PvE acordados; explicación/criterios/pruebas pendientes |
-| D-A5 · Archivos visibles (L00/L01/L04) | El dueño consulta/exporta los archivos reales de personalidad, memoria y objetivos y borra recuerdos con sus derivados; el runner refleja metas/revisiones vigentes y L04 añade persistencia y aislamiento. | Concretar formato, ubicación, retención/migración y controles de edición; cerrar el contrato de exportación/borrado. | Consulta local de archivos reales/scope/hashes verificada en L01a; exportación/borrado y formatos/retención de producto pendientes |
+| D-A5 · Archivos visibles (L00/L01/L04) | El dueño consulta/exporta los archivos reales de personalidad, memoria y objetivos y borra recuerdos con sus derivados; el runner refleja metas/revisiones vigentes y L04 añade persistencia y aislamiento. | Concretar formato, ubicación, retención/migración y controles de edición; cerrar el contrato de exportación/borrado. | Consulta local verificada en L01a; exportación byte exacta, borrado con derivados y política explícita de retención/migración local verificados en L04b; panel/operación remota pendientes |
 | D-A6 · Capacidades del mundo (L06) | Social/PvE → inventario/comercio → construcción → tripulación/navegación, con permisos por capacidad. | Concretar capacidades/alcances de cada etapa; las dependencias autoritativas y durables siguen siendo obligatorias. | Progresión acordada; contratos/implementación/pruebas pendientes |
 | D-A7 · Libertad y gasto (L00/L03/L05/L06) | El agente elige metas y acciones dentro de capacidades y gasto del usuario, sin aprobación por cada acción autorizada; la inferencia reserva presupuesto, registra consumo y bloquea nuevas llamadas con aviso si no alcanza. Inventario/comercio/construcción respetan propiedad y presupuesto de bienes del juego, separados de inferencia. | Definir importes/unidades/periodos/alcance y agotamiento de los presupuestos de bienes del juego; el agente no puede elevar sus límites. | Autonomía y límites de inferencia/bienes del juego acordados 2026-10-07; cifras/semántica pendientes |
 | D-A8 · Percepción (L00b) | Estado propio, entorno observable y chat recibido con frescura y confirmado/predicho/recordado separados; contexto relevante, podado y compactado dentro de presupuesto. | Esquema, poda/compactación exacta y presupuesto de ensayo concretados; alcance/oclusiones del servidor y conteo del proveedor pendientes. | Principio acordado 2026-10-07; contrato/contexto local verificados; percepción real pendiente |
@@ -455,7 +458,7 @@ añade límites de contexto/tokens/gasto/tiempo, una consulta en curso y respues
 verificados con modelos simulados; el cuerpo continúa durante la espera. [L03b](docs/agents/conversation-runner.md)
 añade conversación explícita, audiencia fijada, personalidad/contexto inspeccionable y supresión acotada por proceso.
 [L03c](docs/agents/goals-runner.md) añade metas con feedback y revisión del archivo real.
-Sigue **L04a**. Los defaults de L00–L03c son de ensayo; no hay llamadas a proveedores, tarifas ni modalidad D-A3 cerrada.
+L04a añade memoria persistente y L04b su administración local. Sigue **L05a**. Los defaults de L00–L04 son de ensayo; no hay llamadas a proveedores, tarifas ni modalidad D-A3 cerrada.
 La revocación del control tiene prueba opt-in local en L02c. La observabilidad limitada y la
 correlación uniforme de resultados siguen por construir; no se deducen de snapshots, ACK ni epoch naval.
 

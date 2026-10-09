@@ -46,7 +46,8 @@ inspeccionable y supresión acotada por proceso, verificados con modelos simulad
 [L03c](docs/agents/goals-runner.md) añade metas revisables desde feedback, archivo real versionado y
 ensayo PvE local frente al cuerpo sin modelo. [L04a](docs/agents/memory-runner.md) añade memoria
 local persistente, recuperación de recuerdos antiguos pertinentes y resúmenes con fuentes/incertidumbre,
-verificados con modelos simulados; sigue L04b, administración/exportación/borrado y retención/migración.
+verificados con modelos simulados. [L04b](docs/agents/memory-admin.md) añade administración local,
+exportación byte exacta, borrado con derivados/pendientes y retención/migración explícitas; sigue L05a.
 Provisioning, persistencia
 del vínculo, panel, proveedor/tokenizer/facturación reales y gasto durable siguen pendientes.
 **Percepción/contexto acordados:** estado propio, entorno observable y chat entregado con frescura y
@@ -91,8 +92,21 @@ Sin proveedor permanente, permisos jugables, SQL o publicación.
 [W02i](docs/delivery/w02i-amoy-erc721-pilot.md): contrato ERC-721 experimental separado de los
 fixtures abiertos, constructor/mint solo Amoy, operador inmutable y metadata sin derechos de juego.
 Artefacto reproducible y 68/68 seleccionadas locales (10 nuevas + 58 previas); chain 80002
-simulada no acredita red pública. Siguiente W02j: wallet/operador explícitos y comprobación de
-deploy/mint/transfer/lectura en Amoy. Sin gas, contrato público, pagos o proyección jugable.
+simulada no acredita red pública. [W02j-a](docs/delivery/w02ja-amoy-deployment-review.md) prepara
+datos de creación sin firma con deployer/operador explícitos, artefacto reproducible y runtime
+esperado; 78/78 locales (10 nuevas + 68 previas). Sin RPC, gas estimado, envío o contrato público.
+[W02j-b](docs/delivery/w02jb-amoy-deployment-simulation.md) añade herramienta read-only de creación
+por hash/runtime exacto y estimación por número/bloque releído: 97/97 locales (19 nuevas + 78 previas).
+GasPrice observado/productos en wei de POL de prueba no son fee cap/cotización mainnet. Falta corrida
+pública con direcciones/RPC explícitos y W02j-c deploy/mint/transfer/lectura; Supabase, pagos y
+proyección jugable siguen aparte. Sin firma/envío o derechos nuevos.
+
+**Taller de creadores, dirección aprobada 2026-10-08:** [W05](docs/briefs/w05-modular-equipment-direction.md),
+primero sable con pocas hojas/mangos/guardas de catálogo, que podrán aportar distintos atributos
+dentro del presupuesto del servidor. Separar diseño/plano, receta/materiales/oficio e instancia;
+GLB/IA/escultura y armaduras después. Visuales libres no declaran stats o alcance; crear/fabricar
+sin wallet y tokenización opcional. Sin editor/piezas/recetas nuevos, valores/licencias abiertos;
+esta dirección futura no cambia la cola de juego ni W02 actual.
 
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
@@ -864,7 +878,7 @@ del jugador, sin SQL/publicación; D09/M5 mantienen la puerta de pérdidas públ
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |
 | M8 | Construcción en pueblos: solares, talleres con recetas, almacenes, astillero, taberna, fortín (`PLAN-M8.md`) | núcleo hecho |
-| C01/L00–L06 | Pilar de juego con agentes: chat común → interfaz textual → cuerpo → LLM → memoria/BYOK/convivencia (`PLAN-EXTRA-LLM.md`) | C01, L00, L01a/b/c, cuerpo L02a/b, autoridad opt-in L02c, mente L03a, conversación L03b, metas L03c y memoria L04a verificados localmente con modelos simulados ([memoria](docs/delivery/l04a-agent-memory.md)); sigue L04b, modelo real y aceptación humana pendientes |
+| C01/L00–L06 | Pilar de juego con agentes: chat común → interfaz textual → cuerpo → LLM → memoria/BYOK/convivencia (`PLAN-EXTRA-LLM.md`) | C01, L00, L01a/b/c, cuerpo L02a/b, autoridad opt-in L02c, mente L03a, conversación L03b, metas L03c, memoria L04a y administración L04b verificados localmente con modelos simulados ([administración](docs/delivery/l04b-agent-memory-admin.md)); sigue L05a, modelo real y aceptación humana pendientes |
 | — | Pulido continuo: highlights (level-up, cofre), música por capas, accesibilidad, bots | |
 
 Checklist de capturas por milestone: ¿el personaje queda tapado por glow/partículas/texto/vegetación? ¿algo se quema
