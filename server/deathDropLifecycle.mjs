@@ -76,6 +76,9 @@ export class DeathDropLifecycle {
     for (const [id,raw] of w.drops) {
       if (!managedDeathDrop(raw)) continue;
       const d=snapshotDropData(raw);
+      // Projected pearls share clock provenance, but have a separate UID/return owner.
+      if (d.kind==='pearl' && Object.hasOwn(d,'groundClock') &&
+          !Object.hasOwn(d,'operationId') && !Object.hasOwn(d,'ordinal')) continue;
       deathDropKey(d.operationId,d.ordinal);
       if (!['item','potion'].includes(d.kind) || d.id!==id || d.to!==0 || !Number.isSafeInteger(id) || id<1 ||
           !Number.isSafeInteger(d.t) || !Number.isFinite(d.x) || !Number.isFinite(d.z)) throw new StoreError('operation');

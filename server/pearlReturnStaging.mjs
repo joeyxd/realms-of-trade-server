@@ -184,6 +184,7 @@ export class PearlReturnStaging {
     return b;
   }
 
+  assertWaiting() { for (const ctx of this.operations.values()) this.#baseline(ctx); }
   invalidatePearl(uid) { this.gate.invalidate({ uids: [groundKey(uid)] }); }
   assertPublishable() { if (worldClaims.has(this.world)) throw new StoreError('busy'); }
   #fence(ctx, code) {

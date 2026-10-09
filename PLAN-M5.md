@@ -641,3 +641,19 @@ seis capturas inspeccionadas, acciones click/touch y cero errores. Fixture local
 salvamento desde balsa primero, pesca manual/buceo después; todavía sin nueva mecánica marina.
 Sin migración/env/protocolo/push/despliegue. Sigue composición lifecycle/startup y gates existentes;
 este cambio no cierra persistencia permanente ni P4/P6.
+
+Checkpoint D09f-2b.39, base 4cd3e56: **suelo de perlas y startup mixto montables en GameHost**.
+PearlLifecycle selecciona recogida/retorno de fuentes proyectadas, serializa un recibo y retiene
+tick/publicación/admisión/guardados/comandos hasta apply o fence. Comparte deadlineClock con leave,
+muerte, botín ordinario e hidratación; startup deathDrops:true usa la barrera continua existente.
+Perla pendiente se aplica exclusivamente antes de otros drainers; deriva de RNG/allocator/source/
+receptor/orden/contexto cerca el host, incluso durante la espera. Close espera sin apply; otro
+GameHost restaura el destino confirmado. LocalServer conserva el dueño de cierre a través del tick
+y bloquea su sustitución antes de publicar. **512/512**, 34 archivos y **35 nuevas**, 204 entradas
+de fuentes/fixtures SQL/manifiestos LF estables; subconjunto en árbol Git aislado, node_modules
+compartidos sin pin. SDK/SQL001–013: muerte, checkpoint explícito, startup mixto World0, pickup y
+reconstrucción de cuentas; retorno confirmado + close antes de apply recupera una sola playa.
+Nuevos GameHosts, misma instancia PGlite/proceso; no reapertura DB/restart real/canario Supabase.
+[Contrato/evidencia](docs/delivery/d09f-pearl-lifecycle-host.md). Sin UI/assets/SQL/env/protocolo nuevos,
+CLI/defaults/push/despliegue. Siguen autoridad/arranque/política offline y atomicidad reloj-gameplay/crash,
+creación durable loot/cofres, legacy/backfill/leases/finalizador, afinidad y aceptación real; P4/P6 parciales.

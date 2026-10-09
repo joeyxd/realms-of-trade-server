@@ -179,6 +179,7 @@ export class PearlPickupStaging {
     return b;
   }
 
+  assertWaiting() { for (const ctx of this.operations.values()) this.#baseline(ctx); }
   invalidate(account) { this.gate.invalidate({ accounts: [playerKey(account)] }); }
   invalidatePearl(uid) { this.gate.invalidate({ uids: [groundKey(uid)] }); }
   assertPublishable(clientId) {

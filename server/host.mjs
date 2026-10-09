@@ -20,9 +20,20 @@ import { CombatDeath } from './combatDeath.mjs';
 import { DeathDropStaging } from './deathDropStaging.mjs';
 import { DeathDropLifecycle, managedDeathDrop } from './deathDropLifecycle.mjs';
 import { PearlStartup } from './pearlStartup.mjs';
+import { PearlLifecycle } from './pearlLifecycle.mjs';
+import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { groundKey } from './pearlGround.mjs';
 import { AgentControl } from './agentControl.mjs';
 import { BTN } from '../src/sim/systems/movement.js';
+import { types } from 'node:util';
+
+function assemblyOptions(raw, keys) {
+  if (!raw || types.isProxy(raw) || ![Object.prototype, null].includes(Object.getPrototypeOf(raw))) throw new StoreError('configuration');
+  const fields = Object.getOwnPropertyDescriptors(raw);
+  if (Reflect.ownKeys(fields).some(key => !keys.includes(key) || !fields[key].enumerable ||
+      !Object.hasOwn(fields[key], 'value'))) throw new StoreError('configuration');
+  return Object.fromEntries(Object.entries(fields).map(([key, field]) => [key, field.value]));
+}
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -39,6 +50,7 @@ export class GameHost {
   #combatDeaths = null; #combatBoundary = null; #fatalHook = null; #pendingDeathHook = null;
   #deathDropStaging = null; #deathDrops = null; #managedDropHook = null;
   #pearlStartup = null; #prepareTask = null; #requiresPearlStartup = false;
+  #deadlineClock = null; #pearlGround = null;
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
@@ -101,23 +113,26 @@ export class GameHost {
   get combatDeaths() { return this.#combatDeaths; }
   get deathDropStaging() { return this.#deathDropStaging; }
   get deathDrops() { return this.#deathDrops; }
+  get pearlGround() { return this.#pearlGround; }
 
   // Explicit, server-owned assembly only. It does not dispatch player commands or recover startup.
   // Install before transport/admission; no caller callbacks may replace the three trusted adapters.
   mountPearlStaging(options = {}) {
-    if (!options || typeof options !== 'object' || Array.isArray(options) ||
-        Object.keys(options).some((key) => !['scope', 'limit'].includes(key)) ||
-        !this.resolvePlayer || this.#pearlStaging || this.closing || this.wss || this.timer ||
+    options = assemblyOptions(options, ['scope', 'limit', 'deadlineClock']);
+    if (!this.resolvePlayer || this.#pearlStaging || this.closing || this.wss || this.timer ||
         this.nextId !== 1 || this.sockets.size || this.joins.size || this.pendingJoins || this.server.clients.size ||
         this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
         this.server.world.tick !== 0 || this.server.beforeTick !== null ||
         (this.worldState && options.scope !== this.worldState.id)) throw new StoreError('configuration');
+    const clock = options.deadlineClock === undefined ? null : assertGroundDeadlineClock(options.deadlineClock, options.scope);
     const staging = new PearlStaging(this.profiles, this.server.world, options.scope, {
       ...(options.limit === undefined ? {} : { limit: options.limit }),
+      deadlineClock: clock,
       captureProfile: (id, entity) => this.capturePearlProfile(id, entity),
       prepareInputs: (id, entity) => this.server.preparePearlInputs(id, entity),
     });
     this.#pearlStaging = staging;
+    this.#deadlineClock = clock;
     this.#stagingBoundary = () => this.#drainPearls();
     this.server.beforeTick = this.#stagingBoundary;
     return staging;
@@ -136,6 +151,7 @@ export class GameHost {
         fields.scope?.value !== this.#pearlStaging.scope) throw new StoreError('configuration');
     const staging = new DeathStaging(this.profiles, this.server.world, fields.scope.value, {
       ...(fields.limit === undefined ? {} : { limit: fields.limit.value }),
+      deadlineClock: this.#deadlineClock,
       prepareInputs: (id, entity) => this.server.prepareDeathInputs(id, entity),
     });
     this.#deathStaging = staging;
@@ -161,6 +177,7 @@ export class GameHost {
         if (!complete) throw new StoreError('effect');
         this.#assertCombatOwner();
         this.#assertDropOwner();
+        this.#assertPearlGroundOwner();
         combat.completeTick();
         return !combat.pending;
       } catch {
@@ -181,13 +198,36 @@ export class GameHost {
         this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
         w.tick!==0 || w.profiles.size || countBots(w)!==0 || w.isDeathDropManaged!=null) throw new StoreError('configuration');
     this.#assertCombatOwner();
-    const staging=new DeathDropStaging(this.profiles,w,this.#pearlStaging.scope);
+    const staging=new DeathDropStaging(this.profiles,w,this.#pearlStaging.scope,{deadlineClock:this.#deadlineClock});
     const lifecycle=new DeathDropLifecycle(s,staging);
     this.#deathDropStaging=staging;
     this.#deathDrops=lifecycle;
     this.#managedDropHook=managedDeathDrop;
     w.isDeathDropManaged=this.#managedDropHook;
     return this.#deathDrops;
+  }
+
+  // Explicit clock-domain pilot. The caller loads/checks the epoch before assembly; no CLI activation.
+  mountPearlGround() {
+    const s = this.server, w = s.world;
+    if (arguments.length || !this.#deadlineClock || !this.#combatDeaths || !this.#deathDrops || !this.profiles.pearls.journal ||
+        !this.worldState || this.worldState.id !== this.#pearlStaging.scope || this.#pearlGround || this.#pearlStartup ||
+        this.#prepareTask || this.closing || this.wss || this.timer || this.nextId !== 1 ||
+        this.sockets.size || this.joins.size || this.pendingJoins || s.clients.size ||
+        this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
+        w.tick !== 0 || w.profiles.size || countBots(w) !== 0) throw new StoreError('configuration');
+    this.#assertCombatOwner();
+    this.#pearlGround = new PearlLifecycle(s, this.profiles, this.#pearlStaging.scope, { deadlineClock: this.#deadlineClock });
+    return this.#pearlGround;
+  }
+
+  #groundBusy() { return this.#pearlGround?.pending || this.#pearlGround?.failed; }
+
+  #assertPearlGroundOwner() {
+    if (this.#pearlGround && (this.server.world !== this.#pearlGround.world ||
+        this.server.beforeTick !== this.#stagingBoundary || this.#pearlGround.failed)) {
+      this.#pearlGround.fail(); this.#stopPearls(); throw new StoreError('effect');
+    }
   }
 
   #assertDropOwner() {
@@ -207,7 +247,7 @@ export class GameHost {
 
   // Only server-owned selectors, between ticks. The returned handle means pending work.
   requestDeath(raw) {
-    if (!this.#deathStaging || this.closing || this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#deathDrops?.pending) throw new StoreError('unavailable');
+    if (!this.#deathStaging || this.closing || this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('unavailable');
     try { this.server.assertTickIdle(); } catch { throw new StoreError('busy'); }
     const plain = (value) => value && typeof value === 'object' && !Array.isArray(value) &&
       [Object.prototype, null].includes(Object.getPrototypeOf(value));
@@ -230,9 +270,11 @@ export class GameHost {
   // Journal identity belongs to ProfileSessions from construction; never replace its live queue.
   // mapClock is explicit and synchronous. This seam chooses no offline ageing or guest adoption.
   mountPearlStartup(options = {}) {
-    if (!options || typeof options !== 'object' || Array.isArray(options) ||
-        Object.keys(options).some((key) => !['accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)) ||
-        options.accountPolicy !== 'accounts-only' ||
+    options = assemblyOptions(options, ['accountPolicy', 'mapClock', 'pageSize', 'maxRows', 'deathDrops']);
+    if (options.accountPolicy !== 'accounts-only' ||
+        (options.deathDrops !== undefined && typeof options.deathDrops !== 'boolean') ||
+        (options.deathDrops === true && (!this.#deathDrops || !this.#deadlineClock)) ||
+        (this.#deadlineClock !== null && Object.hasOwn(options, 'mapClock')) ||
         !this.#pearlStaging || !this.profiles.pearls.journal || !this.worldState ||
         this.profiles.pearls.journal.scope !== this.worldState.id || this.#pearlStaging.scope !== this.worldState.id ||
         this.#pearlStartup || this.#prepareTask || this.closing || this.wss || this.timer || this.nextId !== 1 ||
@@ -240,7 +282,8 @@ export class GameHost {
         this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
         this.server.world.profiles.size || this.server.world.tick !== 0) throw new StoreError('configuration');
     this.#pearlStartup = new PearlStartup({ ...options, sessions: this.profiles,
-      world: this.server.world, worldId: this.worldState.id });
+      world: this.server.world, worldId: this.worldState.id,
+      ...(this.#deadlineClock === null ? {} : { deadlineClock: this.#deadlineClock }) });
     return this.#pearlStartup;
   }
 
@@ -264,6 +307,10 @@ export class GameHost {
       // Death and pearl effects share reservations and the same deferred-teardown window.
       this.#assertCombatOwner();
       this.#assertDropOwner();
+      this.#assertPearlGroundOwner();
+      // A return captures global drop order, events, RNG and allocator. Finish its held operation
+      // before any other coordinator can apply, emit or start work at this same boundary.
+      if (this.#pearlGround?.pending && !this.#pearlGround.drain(false)) return false;
       this.#combatDeaths?.assertWaiting();
       const deaths = this.#deathStaging?.drain() ?? [];
       if (deaths.some((result) => result.state === 'fenced')) this.#stopPearls();
@@ -271,10 +318,11 @@ export class GameHost {
         this.#combatDeaths?.advance(deaths);
         if (this.#pearlStaging?.drain().some((result) => result.state === 'fenced')) this.#stopPearls();
         if (!this.closing && this.#deathDrops && !this.#deathDrops.drain(!this.#combatDeaths?.pending)) return false;
+        if (!this.closing && this.#pearlGround && !this.#pearlGround.drain(!this.#combatDeaths?.pending)) return false;
       }
       return !this.closing && !this.#pearlFailed;
     } catch {
-      this.errors++; this.#combatDeaths?.fail(); this.#deathDrops?.fail(); this.#stopPearls(); return false;
+      this.errors++; this.#combatDeaths?.fail(); this.#deathDrops?.fail(); this.#pearlGround?.fail(); this.#stopPearls(); return false;
     } finally { this.#drainingPearls = false; }
   }
 
@@ -284,7 +332,7 @@ export class GameHost {
       server: http, path, maxPayload: LIMITS.maxPayload, clientTracking: false,
       perMessageDeflate: { threshold: 256, zlibDeflateOptions: { level: 6 }, concurrencyLimit: 4 },
       verifyClient: (info, cb) => {
-        if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending) return cb(false, 503, 'storage');
+        if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
         if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
         cb(true);
@@ -390,6 +438,8 @@ export class GameHost {
           reserved: this.#deathStaging.operations.size } : null,
         deathDrops: this.#deathDrops ? { enabled: true, failed: this.#deathDrops.failed,
           pending: this.#deathDrops.count, reserved: this.#deathDropStaging.operations.size } : null,
+        pearlGround: this.#pearlGround ? { enabled: true, failed: this.#pearlGround.failed,
+          pending: this.#pearlGround.count, reserved: this.#pearlGround.reserved } : null,
         combatDeaths: this.#combatDeaths ? { enabled: true, failed: this.#combatDeaths.failed,
           pending: this.#combatDeaths.count } : null,
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
@@ -399,7 +449,7 @@ export class GameHost {
   }
 
   onConnection(ws, req) {
-    if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
+    if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
     const id = this.nextId++;
     const now = performance.now();
     const sock = {
@@ -594,7 +644,7 @@ export class GameHost {
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
       if (sock.agentIdentity && !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) throw new StoreError('auth');
-      if (this.closing || this.#combatDeaths?.pending || this.#deathDrops?.pending) throw new StoreError('busy');
+      if (this.closing || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('busy');
       this.server.receive(sock.id, msg, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
         this.profiles.close(sock.id);
@@ -662,7 +712,7 @@ export class GameHost {
   }
 
   profileAvailable(id, entity) {
-    if (this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed) return false;
+    if (this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
       pearlMutationGate(this.profiles).assertAvailable(this.profileLanes(id, entity));
       return true;
@@ -688,7 +738,7 @@ export class GameHost {
   }
 
   commandAvailable(id, entity, plan) {
-    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed) return false;
+    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
       const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
       if (plan.target !== null) {
@@ -712,7 +762,8 @@ export class GameHost {
     this.sweepAgentControl();
     this.#assertCombatOwner();
     this.#assertDropOwner();
-    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed) return false;
+    this.#assertPearlGroundOwner();
+    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
       const gate = pearlMutationGate(this.profiles);
       // Autonomous effects can mint unknown UIDs and touch any connected owner or shared RNG.
@@ -741,6 +792,7 @@ export class GameHost {
   beforeProfileDetach(id, entity) {
     if (this.#combatDeaths?.invalidate(id, entity)) this.#stopPearls();
     if (this.#deathDrops?.invalidate()) this.#stopPearls();
+    if (this.#pearlGround?.invalidate()) this.#stopPearls();
     const gate = pearlMutationGate(this.profiles), s = this.profiles.clients.get(id);
     // Account invalidation is independent of malformed UID metadata: pending effects must not
     // survive close -> entity recycle even when the final profile cannot be validated.
@@ -753,7 +805,7 @@ export class GameHost {
   }
 
   saveProfile(id, p) {
-    if (this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed) return false;
+    if (this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     const s = this.profiles.clients.get(id);
     if (!s) return true; // Guests keep their existing signed-save route.
     try {
@@ -832,6 +884,7 @@ export class GameHost {
     if (this.#pearlStartup && !['idle', 'ready', 'fenced'].includes(this.#pearlStartup.state)) this.#pearlStartup.cancel();
     this.worldState?.cancelLoad();
     if (this.#deathDrops?.pending) this.#deathDrops.fail();
+    if (this.#pearlGround?.pending) this.#pearlGround.fail();
     for (const sock of [...this.sockets.values()]) { try { sock.ws.close(1001, 'server restart'); } catch { /* gone */ } this.onClose(sock); }
     if (this.wss) this.wss.close();
     this.worldState?.save(this.server.world.economy);
@@ -841,12 +894,13 @@ export class GameHost {
       if (this.#prepareTask) await this.#prepareTask.catch(() => {});
       // Storage continuations may finish after close invalidated and detached their actor. Wait for
       // them, but never drain/apply from shutdown or release an unresolved staging reservation.
-      await Promise.all([this.#pearlStaging?.settle(), this.#deathStaging?.settle(), this.#deathDropStaging?.settle()]);
+      await Promise.all([this.#pearlStaging?.settle(), this.#deathStaging?.settle(), this.#deathDropStaging?.settle(), this.#pearlGround?.settle()]);
       // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
       const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
       if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size ||
           this.#pearlFailed || !this.#pearlsReady() || this.#pearlStaging?.operations.size || this.#deathStaging?.operations.size ||
-          this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#deathDropStaging?.operations.size) throw new StoreError('flush');
+          this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#deathDropStaging?.operations.size ||
+          this.#groundBusy() || this.#pearlGround?.reserved) throw new StoreError('flush');
     })();
     return this.closePromise;
   }

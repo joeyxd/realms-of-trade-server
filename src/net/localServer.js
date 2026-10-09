@@ -609,19 +609,20 @@ export class LocalServer {
   }
 
   #step() {
+    const completion = this.afterTick;
     this.#runningTick = true;
-    try { return this.#stepWorld(); }
+    try { return this.#stepWorld(completion); }
     catch (error) {
-      if (this.afterTick !== null) {
+      if (completion !== null || this.afterTick !== completion) {
         // A partial tick cannot be replayed or captured as a completed death baseline.
         this.#applyFailed = true; this.#holdingPublication = true; this.tickBlocked = true; this.acc = 0;
-        try { profileDecision(this.afterTick(false), 'tick completion'); } catch { /* Preserve the original fault. */ }
+        try { if (completion !== null) profileDecision(completion(false), 'tick completion'); } catch { /* Preserve the original fault. */ }
       }
       throw error;
     } finally { this.#afterWorld = false; this.#runningTick = false; }
   }
 
-  #stepWorld() {
+  #stepWorld(completion) {
     const w = this.world;
     for (const [id, c] of this.clients) {
       if (!c.entity) continue;
@@ -663,13 +664,17 @@ export class LocalServer {
     }
     w.stepWorld();
     if (this.#applyFailed) throw new TypeError('failed tick boundary');
-    if (this.afterTick !== null) {
+    // Retain the admitted completion owner across the whole step. A world callback cannot remove
+    // or replace it to publish around persistent capture, even when the replacement returns true.
+    if (this.afterTick !== completion) throw new TypeError('changed tick completion owner');
+    if (completion !== null) {
       this.#afterWorld = true;
       // Block direct publication during capture, including synchronous callback reentry.
       this.#holdingPublication = true;
-      const complete = profileDecision(this.afterTick(true), 'tick completion');
+      const complete = profileDecision(completion(true), 'tick completion');
       this.#afterWorld = false;
       if (this.#applyFailed) throw new TypeError('failed tick boundary');
+      if (this.afterTick !== completion) throw new TypeError('changed tick completion owner');
       if (!complete) { this.tickBlocked = true; this.acc = 0; return true; }
       this.#holdingPublication = false;
     }
