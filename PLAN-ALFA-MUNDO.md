@@ -419,6 +419,8 @@ dos pueblos, demostrar que aportar, terminar obra, aprender, construir, salir y 
 
 ### 8.1 Continuación concreta — banco de materiales y contrato de aportes
 
+2026-10-08: **A1a implementado y probado localmente**, [contrato y store de memoria](docs/delivery/a1a-community-contribution.md), 17/17 pruebas. Débito de mochila, crédito limitado al remanente y recibo exacto; rechazos terminales, CAS y claves por mundo/época. Es un ensayo aislado, no durable ni montado en partida: no completa A1. Sigue A1b, transacción durable y recuperación coordinadas con M5, antes del tablero/artesano/aprendizaje. No cambia costes finales, versión/protocolo, terreno, SQL, configuración ni permisos.
+
 2026-10-08, petición aprobada y entregada localmente: **D08c.7d, alpha.16/protocolo 32**.
 [Entrega](docs/delivery/d08c7d-tools.md): hacha/pico de piedra desde insumos recogibles a mano,
 banco de tres recetas, selección contextual y dos ranuras fijas guardadas. 24 rocas/6 vetas nuevas,
