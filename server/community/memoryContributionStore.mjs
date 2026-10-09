@@ -8,6 +8,7 @@ import {
   contributionRequest,
   contributionScopeKey,
 } from './contributionContract.mjs';
+import { bindingAccountKey, bindingCharacterKey, bindingLookup, characterBinding } from './characterBindingContract.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -33,12 +34,14 @@ function scopeId(worldId, worldEpoch, id, validateId) {
 
 function copy(value) { return structuredClone(value); }
 
-export function createMemoryContributionStore({ characters = [], projects = [] } = {}) {
-  if (!Array.isArray(characters) || !Array.isArray(projects)) failInput();
+export function createMemoryContributionStore({ characters = [], projects = [], bindings = [] } = {}) {
+  if (!Array.isArray(characters) || !Array.isArray(projects) || !Array.isArray(bindings)) failInput();
 
   const characterRows = new Map();
   const projectRows = new Map();
   const receipts = new Map();
+  const bindingRows = new Map();
+  const bindingOwners = new Map();
 
   for (const raw of characters) {
     const row = contributionCharacter(raw);
@@ -54,9 +57,37 @@ export function createMemoryContributionStore({ characters = [], projects = [] }
     projectRows.set(key, row);
   }
 
+  for (const raw of bindings) {
+    const row = characterBinding(raw), accountKey = bindingAccountKey(row), characterKey = bindingCharacterKey(row);
+    if (bindingRows.has(accountKey) || bindingOwners.has(characterKey)
+      || !characterRows.has(characterKey)) failInput();
+    bindingRows.set(accountKey, row);
+    bindingOwners.set(characterKey, accountKey);
+  }
+
   return {
     kind: 'community-memory',
     durable: false,
+
+    async initializeBinding(raw) {
+      const binding = characterBinding(raw), accountKey = bindingAccountKey(binding);
+      const characterKey = bindingCharacterKey(binding);
+      // Existence is checked for every call, including a replay, to match the durable FK boundary.
+      if (!characterRows.has(characterKey)) return { ok: false, why: 'missing' };
+      const previous = bindingRows.get(accountKey);
+      if (previous) return canonical(previous) === canonical(binding)
+        ? { ok: true, binding: copy(binding) } : { ok: false, why: 'conflict' };
+      if (bindingOwners.has(characterKey)) return { ok: false, why: 'conflict' };
+      const stored = copy(binding), reply = { ok: true, binding: copy(binding) };
+      bindingRows.set(accountKey, stored); bindingOwners.set(characterKey, accountKey);
+      return reply;
+    },
+
+    async loadBinding(accountId, worldId, worldEpoch) {
+      const scope = bindingLookup(accountId, worldId, worldEpoch);
+      const row = bindingRows.get(contributionScopeKey(scope, scope.accountId));
+      return row === undefined ? null : copy(row);
+    },
 
     async initializeCharacter(raw) {
       const row = contributionCharacter(raw);

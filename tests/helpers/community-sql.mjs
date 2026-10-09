@@ -7,6 +7,8 @@ export const communitySql = (await readFile(
   new URL('../../server/migrations/community/001_contributions.sql', import.meta.url), 'utf8')).replace(/^\uFEFF/, '');
 export const communitySessionSql = (await readFile(
   new URL('../../server/migrations/community/002_character_saves.sql', import.meta.url), 'utf8')).replace(/^\uFEFF/, '');
+export const communityBindingsSql = (await readFile(
+  new URL('../../server/migrations/community/003_character_bindings.sql', import.meta.url), 'utf8')).replace(/^\uFEFF/, '');
 
 const routes = {
   mn_comm_initialize_character: ['public.mn_comm_initialize_character($1::jsonb)', ['p_character']],
@@ -18,6 +20,9 @@ const routes = {
   mn_comm_load_project: ['public.mn_comm_load_project($1::text,$2::uuid,$3::text)',
     ['p_world_id', 'p_world_epoch', 'p_project_id']],
   mn_comm_load_receipt: ['public.mn_comm_load_receipt($1::uuid)', ['p_operation_id']],
+  mn_comm_initialize_binding: ['public.mn_comm_initialize_binding($1::jsonb)', ['p_binding']],
+  mn_comm_load_binding: ['public.mn_comm_load_binding($1::uuid,$2::text,$3::uuid)',
+    ['p_account_id', 'p_world_id', 'p_world_epoch']],
 };
 
 export function adapters(db, calls = [], options = {}) {
@@ -47,7 +52,7 @@ export function adapters(db, calls = [], options = {}) {
   return { client, store: createSupabaseContributionStore(client), calls };
 }
 
-export async function database(path = undefined, { reapply = false, sessionSaves = false, adapterOptions = {} } = {}) {
+export async function database(path = undefined, { reapply = false, sessionSaves = false, bindings = false, adapterOptions = {} } = {}) {
   const db = new PGlite(path);
   await db.exec(`DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon; END IF;
@@ -56,9 +61,13 @@ export async function database(path = undefined, { reapply = false, sessionSaves
   END $$; GRANT USAGE ON SCHEMA public TO PUBLIC;`);
   await db.exec(communitySql);
   if (reapply) await db.exec(communitySql);
-  if (sessionSaves) {
+  if (sessionSaves || bindings) {
     await db.exec(communitySessionSql);
     if (reapply) await db.exec(communitySessionSql);
+  }
+  if (bindings) {
+    await db.exec(communityBindingsSql);
+    if (reapply) await db.exec(communityBindingsSql);
   }
   await db.exec('SET ROLE service_role');
   return { db, ...adapters(db, [], adapterOptions), close: () => db.close() };

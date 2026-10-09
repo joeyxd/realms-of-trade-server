@@ -3,6 +3,7 @@
 import {
   ContributionError, canonical, contributionCharacter, contributionProject, contributionRequest,
 } from './contributionContract.mjs';
+import { bindingLookup, characterBinding } from './characterBindingContract.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const KEY = /^[a-zA-Z0-9:_-]{1,100}$/;
@@ -87,8 +88,36 @@ export function createSupabaseContributionStore(client, { timeoutMs = 10000 } = 
       return structuredClone(result);
     } catch { fail('response'); }
   };
+  const initializeBinding = async raw => {
+    const binding = characterBinding(raw);
+    const result = await rpc('mn_comm_initialize_binding', { p_binding: binding });
+    try {
+      if (result?.ok === false) {
+        exact(result, ['ok', 'why']);
+        if (!['missing', 'conflict'].includes(result.why)) fail('response');
+        return structuredClone(result);
+      }
+      exact(result, ['ok', 'binding']);
+      if (result.ok !== true || canonical(characterBinding(result.binding)) !== canonical(binding)) fail('response');
+      return { ok: true, binding: structuredClone(binding) };
+    } catch { fail('response'); }
+  };
   return {
     kind: 'community-supabase', durable: true,
+    initializeBinding,
+    async loadBinding(accountId, worldId, worldEpoch) {
+      const scope = bindingLookup(accountId, worldId, worldEpoch);
+      const raw = await rpc('mn_comm_load_binding', {
+        p_account_id: scope.accountId, p_world_id: scope.worldId, p_world_epoch: scope.worldEpoch,
+      });
+      if (raw === null) return null;
+      try {
+        const binding = characterBinding(raw);
+        if (binding.accountId !== scope.accountId || binding.worldId !== scope.worldId
+          || binding.worldEpoch !== scope.worldEpoch) fail('response');
+        return structuredClone(binding);
+      } catch { fail('response'); }
+    },
     initializeCharacter: raw => initialize('character', raw, contributionCharacter),
     initializeProject: raw => initialize('project', raw, contributionProject),
     saveCharacter,
