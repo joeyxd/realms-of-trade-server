@@ -19,7 +19,6 @@ export function pearlHtml(p, _confirmation, nearby = []) {
     const actions = swallowed ? '<p class="cp-hint"><b>Permanece contigo hasta morir.</b> No puedes escupirla ni reemplazarla.</p>' :
       `<button class="btn" data-pearl-op="swallow" data-pearl-uid="${uid}"${ps.swallowed ? ' disabled title="Ya tienes una perla tragada"' : ''}>${ps.swallowed ? 'Tragar · bloqueado' : 'Tragar · hasta morir'}</button>
        <button class="btn secondary" data-pearl-op="leave" data-pearl-uid="${uid}">Dejar en el suelo</button>
-       <button class="btn secondary" data-pearl-op="sell" data-pearl-uid="${uid}">Vender a Tía Perla · ${PEARL.value} oro</button>
        ${nearby.length ? `<label class="pearl-give">Entregar a <select data-pearl-target="${uid}">${nearby.map((n) => `<option value="${n.id}">${esc(n.name)}</option>`).join('')}</select><button class="btn secondary" data-pearl-op="give" data-pearl-uid="${uid}">Entregar</button></label>` : ''}`;
     return `<article class="pearl-card${swallowed ? ' swallowed' : ''}" style="--pearl:${P.color}">
       <div class="tt-head"><span class="tt-ico">${skillIcon(P.skill)}</span><div><b>${esc(P.name)}</b><small>${swallowed ? 'Tragada · poder en G' : 'Rara · sin tragar'}</small></div></div>
@@ -31,5 +30,5 @@ export function pearlHtml(p, _confirmation, nearby = []) {
     <h4>Tu destino</h4>${power ? card(ps.swallowed, true) : '<p class="pearl-empty">Aún no has tragado una perla. Busca botín de élites, HELLFIRE y cofres de Marea.</p>'}
     <h4>En la bolsa · ${ps.bag.length}/${PEARL.bag}</h4>
     ${ps.bag.length ? `<div class="pearl-list">${ps.bag.map((q) => card(q)).join('')}</div>` : '<p class="pearl-empty">No llevas perlas sin tragar.</p>'}
-    <p class="cp-hint">Tragar, dejar o entregar: fuera de combate. Solo puedes dejar, entregar o vender perlas sin tragar. Vender: junto al puesto de Tía Perla. <b>G</b> en teclado · cruceta abajo en mando · botón del poder en móvil.</p></div>`;
+    <p class="cp-hint">Las perlas se encuentran en botín y cofres; ningún puesto las compra ni las vende. Tragar, dejar o entregar: fuera de combate. Solo puedes dejar o entregar perlas sin tragar. <b>G</b> en teclado · cruceta abajo en mando · botón del poder en móvil.</p></div>`;
 }

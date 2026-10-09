@@ -65,7 +65,7 @@ const report = {
     scope: 'Damage is reported as simulated totals. Utility and curses are listed separately and are not converted into a score.',
   },
   circulation: {
-    priceGold: PEARL.value,
+    npcTrade: false,
     dropChance: Object.fromEntries([
       ['elite', PEARL.eliteChance], ['bossHellfire', PEARL.bossChance], ['chest', PEARL.chestChance],
     ].map(([source, base]) => [source, { tierI: chance(base, 1), tierII: chance(base, 2), tierIII: chance(base, 3) }])),

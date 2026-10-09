@@ -1,0 +1,166 @@
+{
+  "slice": "D09f-2b.38",
+  "base": "b9d13d465bf24de0a221709be99c00fc7dcf57de",
+  "date": "2026-10-09",
+  "implementation": "NPC pearl sale denied; UI and price removed; accepted salvage direction saved, not implemented",
+  "test": {
+    "code": 0,
+    "node": "v24.14.0",
+    "concurrency": 2,
+    "selectedCases": 345,
+    "newCases": 14,
+    "runnerDurationMs": 54466.6055,
+    "files": [
+      "tests/pearl-no-sale.test.mjs",
+      "tests/pearls.test.mjs",
+      "tests/pearlkit.test.mjs",
+      "tests/pearl-death-rules.test.mjs",
+      "tests/pearl-command-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/pearl-tick-apply.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-swallow-staging.test.mjs",
+      "tests/pearl-leave-clock.test.mjs",
+      "tests/pearl-return-staging.test.mjs",
+      "tests/pearl-return-staging-sql.test.mjs",
+      "tests/pearl-pickup-staging.test.mjs",
+      "tests/pearl-pickup-staging-sql.test.mjs",
+      "tests/pearl-managed-request.test.mjs",
+      "tests/quests.test.mjs"
+    ],
+    "summary": [
+      "ℹ tests 345",
+      "ℹ pass 345",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 54466.6055"
+    ],
+    "log": "shots/review/m5-pearl-no-sale/test.log",
+    "logSha256": "015c44b39bad7af2119ad0fbc26f1dffa19f012b0b805eceeba3997016829be4",
+    "fullProof": "shots/review/m5-pearl-no-sale/test-evidence.json"
+  },
+  "stability": {
+    "files": 647,
+    "algorithm": "sha256 normalized LF UTF-8",
+    "changed": [],
+    "beforeAggregateSha256": "b56f2e57623ab3106c6b00839c0097d57dd52f41a8b2537fd2ccb5bb0c9db745",
+    "afterAggregateSha256": "b56f2e57623ab3106c6b00839c0097d57dd52f41a8b2537fd2ccb5bb0c9db745",
+    "scope": "tracked server/src/tests plus selected new test, manifests and two changed tools; shared checkout; no isolated archive or dependency-byte pin"
+  },
+  "browser": {
+    "localOnly": true,
+    "fixtureOnly": true,
+    "runtimeModules": [
+      "CharPanel",
+      "pearlHtml",
+      "Rewards"
+    ],
+    "cases": [
+      {
+        "name": "desktop",
+        "width": 1280,
+        "height": 1000,
+        "touch": false,
+        "actions": [
+          "swallow",
+          "leave",
+          "give"
+        ],
+        "overflow": false,
+        "viewportOverflow": false,
+        "staleBlocked": true,
+        "boundBlocked": true,
+        "historicalIgnored": true,
+        "saleButtons": 0,
+        "runtimeErrors": [],
+        "commands": [
+          {
+            "type": "pearl",
+            "op": "swallow",
+            "uid": "found:brasa"
+          },
+          {
+            "type": "pearl",
+            "op": "leave",
+            "uid": "found:brasa"
+          },
+          {
+            "type": "pearl",
+            "op": "give",
+            "uid": "found:brasa",
+            "target": 2
+          }
+        ]
+      },
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "touch": true,
+        "actions": [
+          "swallow",
+          "leave",
+          "give"
+        ],
+        "overflow": false,
+        "viewportOverflow": false,
+        "staleBlocked": true,
+        "boundBlocked": true,
+        "historicalIgnored": true,
+        "saleButtons": 0,
+        "runtimeErrors": [],
+        "commands": [
+          {
+            "type": "pearl",
+            "op": "swallow",
+            "uid": "found:brasa"
+          },
+          {
+            "type": "pearl",
+            "op": "leave",
+            "uid": "found:brasa"
+          },
+          {
+            "type": "pearl",
+            "op": "give",
+            "uid": "found:brasa",
+            "target": 2
+          }
+        ]
+      }
+    ],
+    "inspectedScreenshots": {
+      "shots/review/m5-pearl-no-sale/desktop-empty.png": "59fe12e8788cb279e6f921abd89d44144ff91c3dc1046015628d3ccbb3048c70",
+      "shots/review/m5-pearl-no-sale/desktop-bound.png": "8691569caa156767a2acca14d85ff5a8b58824b90e5276d1ac06403ba14f7f6e",
+      "shots/review/m5-pearl-no-sale/mobile-empty.png": "2099e04bfbf412c4ac7827d0081a29a192e723163b85af541d88ff6dd676bfba",
+      "shots/review/m5-pearl-no-sale/mobile-bound.png": "e9c1b3c89c8e1ae676e7423fcd84f972eee0cd2285205abb5daef6a9c3218485",
+      "shots/review/m5-pearl-no-sale/mobile-empty-footer.png": "d74a628a69a93f82ec73548a75eee1e14acb2280e50d6a87e38b685bedbc1464",
+      "shots/review/m5-pearl-no-sale/mobile-bound-footer.png": "b71b4eb72d1e02a92c8c4aa33ff4df9dd72f5c0c9065d1b8fd108ce7e105d7d5"
+    },
+    "externalRequests": 0,
+    "preparationIssue": "first fixture omitted me:true for Rewards; assertion failed, fixture corrected; runtime not changed for that issue"
+  },
+  "balance": {
+    "npcTrade": false,
+    "report": ".scratch/pearl-no-sale-balance.json"
+  },
+  "unreal": {
+    "sourceReadOnly": true,
+    "metadataOnly": true,
+    "candidates": {
+      "BP_InventoryComponent.uasset": 24878603,
+      "BP_VendorMain.uasset": 482913,
+      "VendorItems.uasset": 7737
+    },
+    "decision": "No export/new art needed for deletion; reuse current denial/helper/panel"
+  },
+  "limits": [
+    "No salvage/fishing/diving implementation",
+    "No new SQL or Supabase live probe",
+    "No host restart/deploy/push/env change",
+    "No physical mobile performance acceptance",
+    "No complete durable lifecycle activation; M5 P4/P6 partial"
+  ]
+}

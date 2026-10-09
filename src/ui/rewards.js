@@ -171,7 +171,7 @@ export class Rewards {
       case 'commandDenied':
         sfx.denied(); H.toast('<b>Acción no disponible.</b> Espera un momento y vuelve a intentarlo.', 5000); break;
       case 'pearlDenied': {
-        const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', bound: 'La perla tragada permanece contigo hasta morir.', confirm: 'Ya tienes una perla tragada; permanece contigo hasta morir.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', vendor: 'Acércate al puesto de Tía Perla para vender.', unknown: 'Ya no llevas esa perla.' };
+        const why = { combat: 'Sal del combate antes de cambiar o entregar una perla.', stale: 'Esa perla ya circula en otra parte. Se retiró de la partida antigua.', bound: 'La perla tragada permanece contigo hasta morir.', confirm: 'Ya tienes una perla tragada; permanece contigo hasta morir.', full: 'La bolsa de perlas está llena (8).', far: 'Acércate al pirata para entregarle la perla.', notForSale: 'Las perlas se encuentran; ningún puesto las compra ni las vende.', unknown: 'Ya no llevas esa perla.' };
         sfx.denied(); H.toast(`<b>${why[ev.why] || why.unknown}</b>`, 5000); break;
       }
       case 'pearlChanged': {
@@ -181,8 +181,7 @@ export class Rewards {
           H.toast(P ? `<b>${esc(P.name)} tragada.</b> G: ${esc(SKILLS[P.skill].name)}. ${esc(P.passive)} <small>${esc(P.curse)}</small>` : '<b>Perla tragada.</b> Tu poder está en G.', 6200);
         }
         else if (ev.op === 'death') H.toast('<b>Tus perlas cayeron al suelo.</b> Vuelve por ellas: cualquiera puede tomarlas.', 6000);
-        else if (ev.op === 'sell') { sfx.coins(ev.gold); this.over(`+${ev.gold} oro`, 'gold'); }
-        else { sfx.equip(); H.toast(ev.op === 'give' ? '<b>Perla entregada.</b>' : '<b>Perla en el suelo.</b> Cualquiera puede recogerla.', 3600); }
+        else if (ev.op === 'give' || ev.op === 'leave') { sfx.equip(); H.toast(ev.op === 'give' ? '<b>Perla entregada.</b>' : '<b>Perla en el suelo.</b> Cualquiera puede recogerla.', 3600); }
         break;
       }
       case 'skillDenied': sfx.denied(); H.toast(`<b>${DENY[ev.why] || DENY.unknown}</b>`, 3000); break;

@@ -4,12 +4,13 @@ Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09
 
 **Corrección de dirección del autor, 2026-10-09:** las perlas se encuentran mediante botín/cofres;
 sin compra ni venta a NPC. Queda retirado el siguiente corte de venta/oro durable anunciado en .37
-y en su informe histórico. Primero retirar la venta legacy de gameplay/UI con pruebas; después
+y en su informe histórico. La venta legacy de gameplay/UI queda retirada localmente en .38; después
 continuar la composición del lifecycle/startup y los gates de persistencia existentes.
-Obtención marina por pesca/salvamento/buceo está en discusión, sin mecánica aprobada o implementada.
-Recomendación pendiente de decisión: descubrir restos/bancos marinos navegando y recuperarlos con
-una interacción corta desde la balsa; recompensas comunes útiles y perlas raras. Nado/buceo ampliaría
-movimiento y riesgo; no se activa silenciosamente ni se convierte la red pasiva en generador de perlas.
+**Dirección marina aprobada, 2026-10-09:** descubrir restos/bancos marinos navegando y recuperar
+tesoros desde la balsa con una interacción corta de tensión; recompensas comunes útiles y perlas raras.
+Pesca manual y buceo después. [Dirección guardada](docs/briefs/m48-sea-salvage-direction.md): diseño
+acordado, todavía sin mecánica marina implementada ni balance elegido. No adelanta la activación
+durable sobre sus gates ni convierte la red pasiva en generador de perlas.
 Ver [dirección de M4.8](PLAN-M4.8.md#1-decisiones-del-autor). Los checkpoints debajo conservan su evidencia histórica.
 
 > Punto de partida: cada partida iba **firmada en el navegador** del jugador y el mundo (mercados, solares) duraba lo que la sesión.
@@ -627,5 +628,16 @@ reply perdido + apply fallido recuperan destino único sin RNG/eventos históric
 PGlite, sin proceso/reopen/live. [Contrato/evidencia](docs/delivery/d09f-pearl-return-staging.md).
 Sin migración/host/defaults/env/protocolo/publicación. Caller retiene tick; no lease/pausa automática
 ni RNG crash-continuo. La venta/oro durable queda retirada por la corrección del autor arriba; siguen
-retirar venta legacy y montaje lifecycle/startup, legacy/clock-gameplay/crash,
+montaje lifecycle/startup, legacy/clock-gameplay/crash,
 política offline/cadencia/leases, afinidad, finalizador y P4/P6. Ediciones ajenas conservadas.
+
+Checkpoint D09f-2b.38, base b9d13d4: **venta de perlas a NPC retirada localmente**.
+Helper/comando antiguo solo deniega notForSale; conserva UID/propiedad/oro/perfil/suelo/RNG/allocator.
+Sin precio/botón/instrucciones de venta; panel whitelist swallow/leave/give y feedback antiguo sell
+ignorado. Vendor ordinario y entrega entre piratas conservados. **345/345** seleccionadas, 16 archivos,
+**14 nuevas**, 647 fuentes/manifiestos LF estables durante ejecución; **2/2** vistas Chrome de panel,
+seis capturas inspeccionadas, acciones click/touch y cero errores. Fixture local, no host/restart/live.
+[Contrato/evidencia](docs/delivery/d09f-pearl-no-sale.md). Dirección marina aprobada y guardada:
+salvamento desde balsa primero, pesca manual/buceo después; todavía sin nueva mecánica marina.
+Sin migración/env/protocolo/push/despliegue. Sigue composición lifecycle/startup y gates existentes;
+este cambio no cierra persistencia permanente ni P4/P6.

@@ -16,10 +16,13 @@ destino: rara, poderosa, con un precio, y **fluye**: se te cae al morir.
   tiñe todo tu kit** (arma, artes y tatuajes), una **pasiva** y una **maldición**.
 - **Raras pero disponibles** (con copias): botín de élites, jefes y cofres de Marea (más con la Marea alta).
 - **Corrección del autor, 2026-10-09:** las perlas se encuentran, sin compra ni venta a NPC.
-  Se retira la venta durable prevista en M5. La venta antigua a Tía Perla todavía existe en código/UI;
-  retirarla requiere un corte de implementación y pruebas, no queda resuelta por este cambio de plan.
-  Pesca, salvamento desde la balsa y buceo se están considerando como fuentes marinas; el autor todavía
-  no eligió una mecánica. Las redes actuales producen pescado, sin perlas ni minijuego; no hay nado/buceo.
+  Se retira la venta durable prevista en M5. Su retirada del gameplay/UI se verifica en D09f-2b.38;
+  el comercio ordinario de Tía Perla y la entrega entre piratas mantienen sus reglas.
+  **Dirección marina aprobada por el autor, 2026-10-09:** salvamento desde la balsa primero, con pistas
+  visibles, colocación del barco e interacción corta de tensión; botín común útil y perlas raras.
+  Pesca manual y buceo después. [Dirección y alcance pendiente](docs/briefs/m48-sea-salvage-direction.md).
+  Esto aún no implementa obtención marina. Las redes actuales producen pescado, sin perlas ni minijuego;
+  no hay nado/buceo. Probabilidades, costes, tiempos y dificultad siguen abiertos.
   Las referencias históricas a venta debajo quedan supersedidas por esta regla.
 - **Se cae al morir**, para que circulen y sean algo importante.
 - **Regla vigente del autor, 2026-10-07:** una vez tragada no se puede escupir ni reemplazar;

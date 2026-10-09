@@ -1,5 +1,5 @@
 // Server-owned pearl circulation. The in-memory ledger remembers a UID's current owner/location, so an
-// old signed browser save cannot reclaim a pearl after a death, sale or transfer in this server session.
+// old signed browser save cannot reclaim a pearl after a death, release or transfer in this server session.
 // This is deliberately not durable across restarts; M5 moves these claims into the database.
 import { PEARLS, PEARL_IDS, PEARL, newPearls } from '../../data/pearls.js';
 import { DT, tuning } from '../../data/tuning.js';
@@ -159,19 +159,9 @@ export function transferPearl(w, e, uid, target) {
   w.emit({ type: 'pearlChanged', to: e, e, op: 'give', pearl });
   w.emit({ type: 'pickup', to: target, e: target, id: 0, kind: 'pearl', pearl }); return true;
 }
-export function sellPearl(w, e, uid) {
-  const p = profile(w, e), s = w.ecs;
-  if (!p) return false;
-  if (!calm(w, e)) return deny(w, e, 'combat');
-  const vendor = w.map.npcs.find((n) => n.id === 'vendor');
-  if (!vendor || Math.hypot(s.x[e] - vendor.x, s.z[e] - vendor.z) > 4) return deny(w, e, 'vendor');
-  const i = owned(p).bag.findIndex((q) => q.uid === uid);
-  if (i < 0) return deny(w, e, 'unknown');
-  const pearl = p.pearls.bag.splice(i, 1)[0];
-  // The vendor releases it into the sea, rather than deleting a circulating UID.
-  const d = dropPearl(w, pearl, s.x[e], s.z[e]); returnPearl(w, d);
-  p.gold += PEARL.value; mark(w, e);
-  w.emit({ type: 'pearlChanged', to: e, e, op: 'sell', pearl, gold: PEARL.value }); return true;
+export function sellPearl(w, e) {
+  // Retain a harmless denial for old clients. Discovery has no NPC buyback or price.
+  return profile(w, e) ? deny(w, e, 'notForSale') : false;
 }
 export function spillPearls(w, e) {
   const p = profile(w, e);

@@ -10,7 +10,7 @@ import { BTN, canStand } from '../src/sim/systems/movement.js';
 import { hurtPlayer } from '../src/sim/systems/combat.js';
 import { installInventory, newProfile, sanitizeProfile, attachProfile, detachProfile, stepDrops, lootOnKill, openChest } from '../src/sim/systems/inventory.js';
 import { refreshStats } from '../src/sim/systems/stats.js';
-import { givePearl, dropPearl, swallowPearl, spitPearl, spillPearls, leavePearl, transferPearl, sellPearl, rollPearl } from '../src/sim/systems/pearls.js';
+import { givePearl, dropPearl, swallowPearl, spitPearl, spillPearls, leavePearl, transferPearl, rollPearl } from '../src/sim/systems/pearls.js';
 import { sanitizeCmd, MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { trustSaves } from '../src/net/saves.js';
 import { LocalServer } from '../src/net/localServer.js';
@@ -149,19 +149,13 @@ test('giving requires two live nearby calm pirates and bag space; a stale sender
   assert.equal(w.profiles.get(replay).pearls.bag[0].uid, q.uid);
 });
 
-test('a full pearl bag cannot pick up a public pearl; selling requires the vendor and pays exactly once', () => {
+test('a full pearl bag cannot pick up a public pearl', () => {
   const { w, e, ecs, p } = fixture();
   for (let i = 0; i < PEARL.bag; i++) assert.ok(givePearl(w, e));
   assert.equal(givePearl(w, e), null);
   const dropped = { uid: 'outside:1', kind: 'brasa' };
   dropPearl(w, dropped, ecs.x[e], ecs.z[e]); w.tick = 33; stepDrops(w);
   assert.equal(w.drops.size, 1); assert.equal(p.pearls.bag.length, PEARL.bag);
-  const uid = p.pearls.bag[0].uid;
-  assert.equal(sellPearl(w, e, uid), false);
-  const v = map.npcs.find((n) => n.id === 'vendor'); ecs.x[e] = v.x; ecs.z[e] = v.z;
-  assert.ok(sellPearl(w, e, uid)); assert.equal(p.gold, PEARL.value);
-  assert.equal(sellPearl(w, e, uid), false); assert.equal(p.gold, PEARL.value);
-  assert.equal(w.pearlLedger.get(uid).place, 'ground');
 });
 
 test('Cometa hits once along its path, clears parryables and leaves burning ground; cooldown prevents spam', () => {

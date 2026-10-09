@@ -23,7 +23,7 @@ export const PEARLS = {
 };
 export const PEARL_IDS = Object.keys(PEARLS);
 export const PEARL = {
-  bag: 8, calm: 3, returnAfter: 90, value: 600, transferR: 3.5, swapCd: 4,
+  bag: 8, calm: 3, returnAfter: 90, transferR: 3.5, swapCd: 4,
   eliteChance: 0.025, bossChance: 0.12, chestChance: 0.08, tideBonus: 0.5,
   burnTime: 3, burnEvery: 0.5, burnMult: 0.12, waterEvery: 0.5, waterDps: 0.04,
   chillTime: 3, chillSlow: 0.7, chillHits: 3, freezeTime: 0.6,

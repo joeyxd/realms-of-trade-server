@@ -352,7 +352,7 @@ export class CharPanel {
   // A refused change (skillDenied): the card shakes.
   pearlClick(button) {
     const op = button.dataset.pearlOp, uid = button.dataset.pearlUid, p = this.profile();
-    if (button.disabled || op === 'spit' || op === 'cancel' || (op === 'swallow' && p?.pearls?.swallowed)) return;
+    if (button.disabled || !['swallow', 'leave', 'give'].includes(op) || (op === 'swallow' && p?.pearls?.swallowed)) return;
     const target = op === 'give' ? +this.root.querySelector(`[data-pearl-target="${uid}"]`)?.value : undefined;
     this.send({ type: 'pearl', op, uid, ...(target ? { target } : {}) });
     sfx.click();
