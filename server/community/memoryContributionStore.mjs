@@ -8,6 +8,7 @@ import {
   contributionRequest,
   contributionScopeKey,
 } from './contributionContract.mjs';
+import { accountScope, characterAllocation, identityRecord } from './identityContract.mjs';
 import { bindingAccountKey, bindingCharacterKey, bindingLookup, characterBinding } from './characterBindingContract.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -68,6 +69,36 @@ export function createMemoryContributionStore({ characters = [], projects = [], 
   return {
     kind: 'community-memory',
     durable: false,
+
+    async loadIdentity(raw) {
+      const scope = accountScope(raw);
+      const binding = bindingRows.get(contributionScopeKey(scope, scope.accountId));
+      if (!binding) return null;
+      return identityRecord({ binding, character: characterRows.get(contributionScopeKey(binding, binding.characterId)) }, scope);
+    },
+
+    async allocateIdentity(raw) {
+      const allocation = characterAllocation(raw), binding = allocation.binding;
+      const { accountId, ...scope } = binding;
+      const ownerKey = contributionScopeKey(scope, accountId), characterKey = contributionScopeKey(scope, scope.characterId);
+      const previous = bindingRows.get(ownerKey);
+      if (previous) {
+        const record = identityRecord({ binding: previous,
+          character: characterRows.get(contributionScopeKey(previous, previous.characterId)) },
+        { accountId, worldId: binding.worldId, worldEpoch: binding.worldEpoch });
+        return { ok: true, ...record };
+      }
+      if (bindingOwners.has(characterKey)) return { ok: false, why: 'occupied' };
+      // Existing unowned test rows are never adopted or overwritten by an account.
+      if (characterRows.has(characterKey)) return { ok: false, why: 'occupied' };
+      const character = contributionCharacter({ ...scope, version: 1, data: allocation.data });
+      const reply = { ok: true, binding: copy(binding), character: copy(character) };
+      const storedBinding = copy(binding), storedCharacter = copy(character);
+      // All preparation precedes this synchronous atomic publication, just like contributions.
+      characterRows.set(characterKey, storedCharacter);
+      bindingRows.set(ownerKey, storedBinding); bindingOwners.set(characterKey, ownerKey);
+      return reply;
+    },
 
     async initializeBinding(raw) {
       const binding = characterBinding(raw), accountKey = bindingAccountKey(binding);

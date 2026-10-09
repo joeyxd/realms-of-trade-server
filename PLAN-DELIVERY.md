@@ -6,6 +6,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Checkpoint A1b2b2 (2026-10-09): creación inicial de personaje y vínculo por mundo/época en una
+  transacción; reentrada devuelve perfil actual, sin reiniciar materiales. **22 casos nuevos** y
+  **104 pertinentes únicos** locales; SDK/PostgreSQL, rollback, respuesta perdida y reapertura.
+  [Entrega](docs/delivery/a1b2b2-character-bootstrap.md). Reutiliza vínculos/admisión A1b2b1;
+  sigue diario/startup y una sola autoridad GameHost/M5 antes del tablero/artesano/aprendizaje.
+  Alpha.16/protocolo 32; migraciones opcionales sin aplicar live, sin cambio de UI o despliegue.
+
 - Checkpoint cartografía (2026-10-09): minimapa real en tierra/timón y panel M comparten terreno,
   proyección y marcadores del mapa activo; reemplazo/revisión de atlas y bounds/POIs declarados para
   mapas nuevos. **14/14** cartografía/terreno, **22/22** regresiones navales, **3/3** vistas de mapa y
