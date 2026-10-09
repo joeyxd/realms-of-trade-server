@@ -6,6 +6,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Checkpoint A1b2b3 (2026-10-09): diario opcional de guardados/aportes con petición exacta previa,
+  cierre transaccional y barrera local de recuperación por mundo/época. **27 nuevos y 131 casos
+  pertinentes únicos** locales; rollback, respuesta perdida, reapply y reapertura con pendiente.
+  [Entrega](docs/delivery/a1b2b3-operation-journal.md). Sigue conectar diario/barrera a sesiones y
+  cerrar una sola autoridad con GameHost/M5; sin lease, SQL live, montaje jugable o despliegue.
+  Conserva alpha.16/protocolo 32 y costes; después receptor/tablero/artesano/aprendizaje.
+
 - Checkpoint A1b2b2 (2026-10-09): creación inicial de personaje y vínculo por mundo/época en una
   transacción; reentrada devuelve perfil actual, sin reiniciar materiales. **22 casos nuevos** y
   **104 pertinentes únicos** locales; SDK/PostgreSQL, rollback, respuesta perdida y reapertura.
