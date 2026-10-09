@@ -141,6 +141,7 @@ export class LiveNavigationView {
   update(dt, alpha, ps, { paused = false, reducedMotion = false, muted = false } = {}) {
     if (this.disposed) return;
     const c = this.client(), voyage = c?.voyage || { active: false }, route = c?.route || null;
+    if (!voyage.active) this.mapTarget = null;
     const enabled = !!c?.joined && !!this.isActive() && !paused;
     this.paused = !!paused;
     const aboard = !!(c?.naval?.active || c?.deck?.active);
@@ -517,6 +518,7 @@ export class LiveNavigationView {
     const route = this.client()?.route;
     const target = voyage.phase === 'shore' ? shoreRouteTarget(voyage, this.lastRaft, this.world.map?.dock)
       : routeTarget(route, voyage);
+    this.mapTarget = target;
     const label = target?.label || (voyage.phase === 'shore' ? 'Balsa' : 'Puerto');
     const routeOrigin = voyage.phase === 'shore' ? this.client()?.cur || pose : pose;
     const metres = target ? distance(routeOrigin, target) : (voyage.distanceHome ?? 0);

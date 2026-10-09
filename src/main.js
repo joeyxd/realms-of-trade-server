@@ -42,6 +42,7 @@ import { Rewards } from './ui/rewards.js';
 import { CharPanel } from './ui/charpanel.js';
 import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
+import { MiniMap } from './ui/minimap.js';
 import { RaftEditor } from './ui/raftEditor.js';
 import { CommercePanel } from './ui/commerce.js';
 import { ResourceActions } from './ui/resourceActions.js';
@@ -196,6 +197,9 @@ async function boot() {
   });
   const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
   const mapView = new MapView($('#mapview'), map);
+  const miniMap = new MiniMap($('#hud'), map, { isTouch, onOpen: () => {
+    if (st.mode === 'playing' && input.enabled && !pause.open && !chatPanel.typing) $('#hud-map').click();
+  } });
   const raftEditor = new RaftEditor({
     parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
     profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
@@ -1195,12 +1199,16 @@ async function boot() {
         // The panel follows numbers that come with snapshots, not profiles (life, potions): a cheap look twice a second.
         if (charPanel.isOpen && (st.cpT = (st.cpT || 0) + realDt) > 0.5) { st.cpT = 0; charPanel.refresh(); }
         if (charPanel.shop && Math.hypot(vendorAt.x - ps.x, vendorAt.z - ps.z) > 5.5) { charPanel.shop = false; charPanel.refresh(); }
-        if (mapView.isOpen) {
-          const crew = [];
-          for (const r of client.entities.values()) if (r.human && r.id !== client.youServer && r.ready) crew.push(r.r);
-          mapView.spill = rewards.spillAt();
-          mapView.update(ps, crew, prof, performance.now() / 1000);
-        }
+        const crew = [];
+        for (const r of client.entities.values()) if (r.human && r.id !== client.youServer && r.ready) crew.push(r.r);
+        if (miniMap.map !== world.map) { miniMap.setMap(world.map); mapView.setMap(world.map); }
+        const aboard = client.naval?.active && !client.deck?.active;
+        const mapPlayer = aboard && navigation.lastPose ? { ...navigation.lastPose, f: navigation.lastPose.yaw } : ps;
+        const markers = { crew, rafts: [...(client.pred.rafts?.values() || [])], goal: mapView.goal(prof),
+          spill: rewards.spillAt(), target: navigation.mapTarget };
+        miniMap.update(realDt, mapPlayer, markers);
+        mapView.spill = markers.spill;
+        mapView.update(mapPlayer, crew, prof, performance.now() / 1000, markers);
         world.combatFx.setGuard(views.get(client.youServer), ps.act === ACT.GUARD, false, ps.guardSt / tuning.guard.stamina, SKINS[settings.skin].accent);
         if (isTouch) touch.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
       });
@@ -1283,7 +1291,7 @@ async function boot() {
   title.ready();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, panels: { charPanel, dialog, mapView, raftEditor, commercePanel, chatPanel, workbench } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

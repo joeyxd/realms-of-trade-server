@@ -1,0 +1,560 @@
+{
+  "generatedAt": "2026-10-09T14:59:54.677Z",
+  "localOnly": true,
+  "displayFixtureOnly": true,
+  "purpose": "Normal game minimap and M overview on foot/helm, shared atlas, and replacement shifted multi-island display metadata. No .env, SQL, live services or performance acceptance.",
+  "cases": [
+    {
+      "name": "desktop",
+      "width": 1365,
+      "height": 768,
+      "touch": false,
+      "screenshots": [
+        "desktop-01-foot.png",
+        "desktop-02-overview.png",
+        "desktop-03-helm.png",
+        "desktop-04-replacement-overview.png",
+        "desktop-05-replacement-minimap.png"
+      ],
+      "errors": [],
+      "status": "passed",
+      "foot": {
+        "visible": true,
+        "local": {
+          "left": 1209,
+          "right": 1335,
+          "top": 28,
+          "bottom": 154
+        },
+        "stage": {
+          "width": 1365,
+          "height": 768,
+          "rotated": false
+        },
+        "colors": 1987,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [],
+        "open": false,
+        "errors": [],
+        "baseSize": null
+      },
+      "overview": {
+        "visible": true,
+        "local": {
+          "left": 1209,
+          "right": 1335,
+          "top": 28,
+          "bottom": 154
+        },
+        "stage": {
+          "width": 1365,
+          "height": 768,
+          "rotated": false
+        },
+        "colors": 1984,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "sharedAtlas": true,
+      "helm": {
+        "visible": true,
+        "local": {
+          "left": 1209,
+          "right": 1335,
+          "top": 28,
+          "bottom": 154
+        },
+        "stage": {
+          "width": 1365,
+          "height": 768,
+          "rotated": false
+        },
+        "colors": 1745,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": false,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "helmOverview": {
+        "visible": true,
+        "local": {
+          "left": 1209,
+          "right": 1335,
+          "top": 28,
+          "bottom": 154
+        },
+        "stage": {
+          "width": 1365,
+          "height": 768,
+          "rotated": false
+        },
+        "colors": 1745,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ],
+        "uncovered": true
+      },
+      "replacement": {
+        "span": 777.8174593052024,
+        "playerPixel": [
+          290.9090909090909,
+          174.54545454545453
+        ],
+        "pins": [
+          [
+            290.9090909090909,
+            174.54545454545453
+          ],
+          [
+            334.54545454545445,
+            479.99999999999994
+          ]
+        ],
+        "labels": [
+          "Puerto de ensayo",
+          "Isla de ensayo"
+        ],
+        "title": "Archipiélago · fixture visual",
+        "noLegacy": true
+      },
+      "revision": {
+        "newBase": true,
+        "shared": true,
+        "title": "Revisión de ensayo",
+        "miniRevision": "qa-2",
+        "pixel": [
+          18,
+          60,
+          120,
+          255
+        ]
+      },
+      "terrainInvalidation": {
+        "terrainRevision": true,
+        "queryChange": true
+      },
+      "disposal": true
+    },
+    {
+      "name": "touch-landscape",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "screenshots": [
+        "touch-landscape-01-foot.png",
+        "touch-landscape-02-overview.png",
+        "touch-landscape-03-helm.png",
+        "touch-landscape-04-replacement-overview.png",
+        "touch-landscape-05-replacement-minimap.png"
+      ],
+      "errors": [],
+      "status": "passed",
+      "foot": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": false
+        },
+        "colors": 2086,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [],
+        "open": false,
+        "errors": [],
+        "baseSize": null
+      },
+      "overview": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": false
+        },
+        "colors": 2070,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "sharedAtlas": true,
+      "helm": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": false
+        },
+        "colors": 1702,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": false,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "helmOverview": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": false
+        },
+        "colors": 1702,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ],
+        "uncovered": true
+      },
+      "replacement": {
+        "span": 777.8174593052024,
+        "playerPixel": [
+          290.9090909090909,
+          174.54545454545453
+        ],
+        "pins": [
+          [
+            290.9090909090909,
+            174.54545454545453
+          ],
+          [
+            334.54545454545445,
+            479.99999999999994
+          ]
+        ],
+        "labels": [
+          "Puerto de ensayo",
+          "Isla de ensayo"
+        ],
+        "title": "Archipiélago · fixture visual",
+        "noLegacy": true
+      },
+      "revision": {
+        "newBase": true,
+        "shared": true,
+        "title": "Revisión de ensayo",
+        "miniRevision": "qa-2",
+        "pixel": [
+          18,
+          60,
+          120,
+          255
+        ]
+      },
+      "terrainInvalidation": {
+        "terrainRevision": true,
+        "queryChange": true
+      },
+      "disposal": true
+    },
+    {
+      "name": "touch-portrait",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "screenshots": [
+        "touch-portrait-01-foot.png",
+        "touch-portrait-02-overview.png",
+        "touch-portrait-03-helm.png",
+        "touch-portrait-04-replacement-overview.png",
+        "touch-portrait-05-replacement-minimap.png"
+      ],
+      "errors": [],
+      "status": "passed",
+      "foot": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": true
+        },
+        "colors": 2076,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [],
+        "open": false,
+        "errors": [],
+        "baseSize": null
+      },
+      "overview": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": true
+        },
+        "colors": 2066,
+        "player": {
+          "x": 102.53,
+          "z": 94.05
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "sharedAtlas": true,
+      "helm": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": true
+        },
+        "colors": 1702,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": false,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ]
+      },
+      "helmOverview": {
+        "visible": true,
+        "local": {
+          "left": 742,
+          "right": 826,
+          "top": 12,
+          "bottom": 96
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": true
+        },
+        "colors": 1702,
+        "player": {
+          "x": 124.82,
+          "z": 101.2
+        },
+        "span": 255,
+        "title": "Isla de la Caldera",
+        "labels": [
+          "Playa de la Marea",
+          "Aldea Coralina",
+          "Sendero del Humo",
+          "La Caldera",
+          "Cala Calavera"
+        ],
+        "open": true,
+        "errors": [],
+        "baseSize": [
+          640,
+          640
+        ],
+        "uncovered": true
+      },
+      "replacement": {
+        "span": 777.8174593052024,
+        "playerPixel": [
+          290.9090909090909,
+          174.54545454545453
+        ],
+        "pins": [
+          [
+            290.9090909090909,
+            174.54545454545453
+          ],
+          [
+            334.54545454545445,
+            479.99999999999994
+          ]
+        ],
+        "labels": [
+          "Puerto de ensayo",
+          "Isla de ensayo"
+        ],
+        "title": "Archipiélago · fixture visual",
+        "noLegacy": true
+      },
+      "revision": {
+        "newBase": true,
+        "shared": true,
+        "title": "Revisión de ensayo",
+        "miniRevision": "qa-2",
+        "pixel": [
+          18,
+          60,
+          120,
+          255
+        ]
+      },
+      "terrainInvalidation": {
+        "terrainRevision": true,
+        "queryChange": true
+      },
+      "disposal": true
+    }
+  ]
+}

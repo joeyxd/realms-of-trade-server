@@ -12,7 +12,7 @@ import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { publicRafts } from '../src/sim/systems/rafts.js';
 import { pilotPoint } from '../src/sim/naval/pilotGeometry.js';
 
-const out = resolve('docs/delivery/live-hud-publication');
+const out = resolve(process.env.MN_QA_OUT || 'docs/delivery/live-hud-publication');
 await mkdir(out, { recursive: true });
 const playwrightUrl = process.env.MN_PLAYWRIGHT
   ? pathToFileURL(resolve(process.env.MN_PLAYWRIGHT)).href
@@ -204,7 +204,7 @@ async function mountedHud(page, spec) {
     return { viewport: { width, height }, stage: { width: stage.w, height: stage.h, rotated: stage.rotated }, touch,
       stripDisplay: getComputedStyle(document.querySelector('.ln-strip')).display,
       root: rect('.live-navigation'), gauge: rect('.naval-touch-gauge'), hull: rect('.hud-player .bars .ln-touch-hull'),
-      wind: rect('.ln-touch-wind'), compass: rect('.ln-touch-compass'),
+      wind: rect('.ln-touch-wind'), compass: rect('.world-minimap'),
       sticks: [...document.querySelectorAll('.naval-touch-stick')].map((el) => ({ label: el.dataset.stick, box: rectFor(el) })),
       slots, actionIds: [...(m.navigation.touch?.catalog?.keys?.() || [])],
       route: { available: !!m.client.route?.available, active: !!m.client.route?.active,
@@ -250,7 +250,7 @@ async function run(spec) {
     await page.waitForFunction(() => {
       const m = window.__mn;
       return m.navigation.touch && m.navigation.touch.catalog?.has('mode') &&
-        document.querySelector('.naval-touch-gauge') && document.querySelector('.ln-touch-wind') && document.querySelector('.ln-touch-compass');
+        document.querySelector('.naval-touch-gauge') && document.querySelector('.ln-touch-wind') && document.querySelector('.world-minimap');
     }, null, { timeout: 15000 });
     result.mounted = await mountedHud(page, spec);
     check(result.mounted.stripDisplay === 'none', `legacy top strip is still rendered: ${result.mounted.stripDisplay}`);

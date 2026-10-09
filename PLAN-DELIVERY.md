@@ -6,6 +6,12 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Checkpoint cartografía (2026-10-09): minimapa real en tierra/timón y panel M comparten terreno,
+  proyección y marcadores del mapa activo; reemplazo/revisión de atlas y bounds/POIs declarados para
+  mapas nuevos. **14/14** cartografía/terreno, **22/22** regresiones navales, **3/3** vistas de mapa y
+  **3/3** flujos completos del HUD; quince capturas de mapas. [Entrega](docs/delivery/cartography.md).
+  Local, alpha.16/protocolo 32; sin geografía/pueblos/streaming nuevos ni despliegue público.
+
 - Checkpoint D08c.7d (2026-10-08), **alpha.16/protocolo 32**: hacha/pico de piedra fabricables
   desde recogida manual, dos ranuras fijas de cinturón guardadas, banco con tres recetas.
   Hacha exige propiedad para las 96 palmeras; 24 rocas grandes y 6 vetas nuevas requieren pico,
