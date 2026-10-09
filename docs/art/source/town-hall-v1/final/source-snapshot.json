@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "family": "town-hall-v1",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-hall-v1/before/props.js",
+      "bytes": 37370,
+      "sha256": "1eda117a4df586914c58161d2127884c643e170c30f679f377e390d1ef3bf242"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/props.js",
+      "bytes": 38358,
+      "sha256": "6e9cc67f99334bc4f697836a5a3b89a55d459715af6ca854368a7267757a48da"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/townHall.js",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/townHall.js",
+      "bytes": 5362,
+      "sha256": "604a686659095daf3f08894e5bd19d7df9497c4ec029f77b6e97b118e4f53105"
+    },
+    {
+      "phase": "after",
+      "source": "tests/town-hall.test.mjs",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/town-hall.test.mjs",
+      "bytes": 8566,
+      "sha256": "e8621b71edd85d228e102d2aa8f3d33b74a0cadae2d6093a9b6d66c9ab81fe3a"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-town-hall.playwright.js",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/qa-town-hall.playwright.js",
+      "bytes": 8090,
+      "sha256": "82017199fe78bf8a27e940ecaa067a06c3ae64afdfafa86807bb2a6dad380066"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-hall-sources.mjs",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/prepare-town-hall-sources.mjs",
+      "bytes": 3967,
+      "sha256": "41e84796dcfe7c2fed6e008c40167dac7de68b97507d7119a09b6d2f7d5db328"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-hall-catalog.mjs",
+      "snapshot": "docs/art/source/town-hall-v1/final/after/register-town-hall-catalog.mjs",
+      "bytes": 15576,
+      "sha256": "765b04bcf4a1cc4d706f31f148b80ee5069e8a2375c872c72724b9994a56f408"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "bytes": 578874,
+      "sha256": "60d8b81a9ebdb59d6eeb8d824747dbf98cf121d7b3a5a99ef72b5e07d0683692"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-desktop.webp",
+      "bytes": 2834816,
+      "sha256": "030905006e5140c12abb373a248be8a5d0136bbc062c330a5cc150a1e6856076"
+    },
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "bytes": 171306,
+      "sha256": "3183e1746238df62e39f271628ba6e4d5353a04d499b91e0ddcdecd928ed8daf"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-mobile.webp",
+      "bytes": 774780,
+      "sha256": "bb4b101d18c44a164a14d578a6fad321bda35ecce042915466552b52a08c4c42"
+    }
+  ]
+}

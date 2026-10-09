@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-06T22:22:06.650Z",
+  "state": "prepared-candidate",
+  "generator": "built-in image_gen",
+  "prompts": [
+    "docs/art/sand/sand-dry-v1-prompt.txt",
+    "docs/art/sand/sand-dry-v2-prompt.txt"
+  ],
+  "reference": {
+    "path": "docs/art/references/beach-sand-board-v1.png",
+    "bytes": 3153159,
+    "sha256": "5d4bb01fbcdb1ed9080f26c3f5a33431b225cf08f822c468c8dd091e0de39fe1",
+    "width": 1531,
+    "height": 1172
+  },
+  "source": {
+    "path": "docs/art/source/sand-dry-v2.png",
+    "bytes": 2248414,
+    "sha256": "0ad623600d020ba6afce15a5036a3418f0b1db2c837715c1604df2d34cd17fd6",
+    "width": 1254,
+    "height": 1254
+  },
+  "outputs": [
+    {
+      "path": "docs/art/sand/sand-dry-v2-desktop.webp",
+      "bytes": 116456,
+      "sha256": "bebaefd9afe75a53146584ffe24a220274280f7c6e42414af3561279bb269e73",
+      "width": 1024,
+      "height": 1024,
+      "role": "albedo",
+      "quality": 85
+    },
+    {
+      "path": "docs/art/sand/sand-dry-v2-mobile.webp",
+      "bytes": 29110,
+      "sha256": "3d5e94e7d3b86822f002ee1ddc18c6060a3b896e938bdec0e8ca1f3a644b65f7",
+      "width": 512,
+      "height": 512,
+      "role": "mobile",
+      "quality": 82
+    }
+  ],
+  "conversion": {
+    "tool": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "filter": "Lanczos",
+    "codec": "libwebp",
+    "compressionLevel": 6
+  },
+  "review": {
+    "colorAndStyle": "Inspected v1, v2 and both derivatives.",
+    "repeat": "v2 quieter than v1; some mark discontinuities still visible in plain 3x3 repeat. Not approved seamless.",
+    "runtime": "No consumer, manifest entry or game capture in this cut.",
+    "mobile": "512 derivative inspected only; device selection and gameplay readability pending."
+  },
+  "checks": [
+    {
+      "path": "docs/art/sand/sand-dry-v1-repeat-3x3.png",
+      "bytes": 1286292,
+      "sha256": "085fc0afcf4ac20228b20efbad5e022262a9b7ae22c1002a155870025fda2952",
+      "width": 1536,
+      "height": 1536
+    },
+    {
+      "path": "docs/art/sand/sand-dry-v2-repeat-3x3.png",
+      "bytes": 1416853,
+      "sha256": "9c549f18ecbccfbd522bc4f23940262d3f4edbf09c5e4e2403a394ddd16a4ff3",
+      "width": 1536,
+      "height": 1536
+    }
+  ]
+}

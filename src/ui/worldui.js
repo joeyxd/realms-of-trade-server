@@ -16,6 +16,7 @@ export class WorldUI {
     this.plates = new Map();
     this.prompts = new Map();
     this.bubbles = new Map();
+    this.chatBubbles = new Map();
     this.labels = new Map(); // loot on the ground (M4): its name in its rarity's colour
     this.w = stage.w; this.h = stage.h;
     this.playerRect = { x: 0, y: 0, w: 0, h: 0 };
@@ -156,6 +157,36 @@ export class WorldUI {
     return b;
   }
 
+  // Player chat uses text nodes so message content and labels are never interpreted as markup.
+  chatBubble(entity, { text = '', channel = 'world', label = '', own = false, range = 42 } = {}, lifeMs = 4500) {
+    this.removeChatBubble(entity);
+    const el = document.createElement('div');
+    el.className = 'mn-chat-bubble';
+    el.hidden = true;
+    el.dataset.channel = channel === 'local' || channel === 'whisper' ? channel : 'world';
+    if (own) el.classList.add('is-own');
+    const labelEl = document.createElement('div');
+    labelEl.className = 'mn-chat-bubble-label';
+    labelEl.textContent = String(label ?? '');
+    const textEl = document.createElement('div');
+    textEl.className = 'mn-chat-bubble-text';
+    textEl.textContent = String(text ?? '');
+    el.append(labelEl, textEl);
+    this.root.appendChild(el);
+    this.chatBubbles.set(entity, { el, p: { x: 0, y: 0, vis: false }, range: Math.max(0, Number(range) || 0), until: performance.now() + Math.max(0, Number(lifeMs) || 0), shown: false });
+    return this.chatBubbles.get(entity);
+  }
+
+  removeChatBubble(entity) {
+    const b = this.chatBubbles.get(entity);
+    if (b) { b.el.remove(); this.chatBubbles.delete(entity); }
+  }
+
+  clearChatBubbles() {
+    for (const b of this.chatBubbles.values()) b.el.remove();
+    this.chatBubbles.clear();
+  }
+
   place(el, p, scale, lift = 0, below = false) {
     el.style.transform = `translate3d(${p.x}px, ${p.y - lift}px, 0) translate(-50%, ${below ? '0' : '-100%'}) scale(${scale})`;
   }
@@ -168,13 +199,15 @@ export class WorldUI {
     for (const [id, plate] of this.plates) {
       const a = anchors.get(id);
       if (!a) { plate.el.hidden = true; continue; }
-      const talking = this.bubbles.has(id) && now < this.bubbles.get(id).until;
+      const npcTalking = this.bubbles.has(id) && now < this.bubbles.get(id).until;
+      const chatBubble = this.chatBubbles.get(id);
       this.project(a.pos, plate.p);
+      const chatTalking = !!chatBubble && now < chatBubble.until && a.dist <= chatBubble.range && !a.hide && plate.p.vis;
       const s = clamp(21 / Math.max(a.dist, 1), 0.55, 1.1);
       const covers = plate.p.x > pr.x && plate.p.x < pr.x + pr.w && plate.p.y > pr.y && plate.p.y < pr.y + pr.h + 30;
       const R = plate.range;
       // Over your character a plate steps aside, except a pirate fighting you (its life matters): faded.
-      const show = plate.p.vis && a.dist < R && (!covers || plate.hostile) && !a.hide && !talking;
+      const show = plate.p.vis && a.dist < R && (!covers || plate.hostile) && !a.hide && !npcTalking && !chatTalking;
       if (show !== plate.shown) { plate.el.hidden = !show; plate.shown = show; }
       if (show) { this.place(plate.el, plate.p, s); plate.el.style.opacity = String(clamp((R - a.dist) / 8, 0, 1) * (covers ? 0.55 : 1)); }
     }
@@ -222,6 +255,23 @@ export class WorldUI {
       this.project(a.pos, b.p);
       b.el.hidden = !b.p.vis;
       if (b.p.vis) this.place(b.el, b.p, clamp(21 / Math.max(a.dist, 1), 0.7, 1.05), 34);
+    }
+    for (const [id, b] of this.chatBubbles) {
+      const a = anchors.get(id);
+      if (now >= b.until) { this.removeChatBubble(id); continue; }
+      const visible = !!a && a.dist <= b.range && !a.hide && (this.project(a.pos, b.p), b.p.vis);
+      if (!visible) { b.el.hidden = true; b.shown = false; continue; }
+      b.el.hidden = false;
+      const scale = clamp(21 / Math.max(a.dist, 1), 0.7, 1.05);
+      const width = b.el.offsetWidth || 240, height = b.el.offsetHeight || 72;
+      const half = width * scale * 0.5;
+      const x = clamp(b.p.x, Math.min(this.w * 0.5, half + 8), Math.max(this.w * 0.5, this.w - half - 8));
+      const bottom = clamp(b.p.y - 34, height * scale + 8, Math.max(height * scale + 8, this.h - 12));
+      const lift = b.p.y - bottom;
+      const tail = clamp(50 + ((b.p.x - x) / Math.max(width * scale, 1)) * 100, 12, 88);
+      b.el.style.setProperty('--mn-chat-tail-x', tail + '%');
+      this.place(b.el, { x, y: b.p.y }, scale, lift);
+      b.shown = true;
     }
     const dt = this.lastNow ? Math.min(0.1, (now - this.lastNow) / 1000) : 0;
     this.lastNow = now;

@@ -1,0 +1,15 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs",
+  "startedAt": "2026-10-08T13:46:40.034Z",
+  "finishedAt": "2026-10-08T13:47:02.623Z",
+  "exitCode": 0,
+  "signal": null,
+  "tests": 115,
+  "pass": 114,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 1,
+  "durationMs": 22550.6994,
+  "stderr": "",
+  "log": "agent-tests.tap"
+}

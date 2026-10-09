@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "cut": "W02e",
+  "generatedAt": "2026-10-08T20:57:54.849Z",
+  "environment": {
+    "node": "v24.14.0",
+    "viem": "2.57.3",
+    "platform": "win32"
+  },
+  "status": "locally-verified",
+  "verification": {
+    "command": "node --test tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "tests": 27,
+    "pass": 27,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "durationMs": 3177.2002,
+    "newTests": {
+      "adapter": 11,
+      "cli": 3
+    },
+    "regressionTests": {
+      "walletPreflight": 13
+    },
+    "abiOracle": "viem encodeFunctionData",
+    "syntax": "passed",
+    "utf8NoBom": "passed",
+    "markdownFileLinks": "passed",
+    "externalRequests": 0,
+    "loopbackFixtures": true
+  },
+  "scope": {
+    "pilotChainId": 80002,
+    "productionChainId": 137,
+    "fixedContractPerReader": true,
+    "blockIdentity": "explicit-number-and-hash",
+    "contractQueries": "EIP-1898 requireCanonical true",
+    "maxRpcRequestsPerObservation": 8,
+    "retry": false,
+    "finalityProof": false,
+    "gameOwnershipChanged": false,
+    "liveEnvRead": false,
+    "liveSqlApplied": false,
+    "authorHostStarted": false,
+    "liveRpcTested": false,
+    "liveContractTested": false,
+    "signing": false,
+    "transactions": false,
+    "payments": false,
+    "newUi": false,
+    "deployed": false
+  },
+  "sources": [
+    {
+      "path": "server/web3/rpcTransport.mjs",
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458",
+      "bytes": 4667
+    },
+    {
+      "path": "server/web3/rpcProbe.mjs",
+      "sha256": "c4f4cb9c14cef0ab142517cf47dc77e374a23991e7acb89a2502e656ba0bd129",
+      "bytes": 630
+    },
+    {
+      "path": "server/web3/erc721Reader.mjs",
+      "sha256": "1e81265f3a4a0253267308452c51702e8213ea2e88c616a409ed31ceb733b1c9",
+      "bytes": 3875
+    },
+    {
+      "path": "tools/web3-token-read.mjs",
+      "sha256": "140aa767e133028f406dd244579624db87e3181417202b9a6ed5e616754502f3",
+      "bytes": 1556
+    },
+    {
+      "path": "tests/web3-erc721-reader.test.mjs",
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d",
+      "bytes": 16263
+    },
+    {
+      "path": "tests/web3-token-read-cli.test.mjs",
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b",
+      "bytes": 7346
+    },
+    {
+      "path": "tests/web3-wallet-preflight.test.mjs",
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d",
+      "bytes": 15733
+    },
+    {
+      "path": "deploy/marea-negra.env.example",
+      "sha256": "9f7053a0f1bf2c74a0d2e88acf32565d4a603c9c4205cac45a3a24fdf9afb75b",
+      "bytes": 2548
+    },
+    {
+      "path": "docs/briefs/w02e-erc721-reader.md",
+      "sha256": "451ea7d3379bf86e37d0e91d212098eb8a3150d1aac4221d0245a4949bb730c1",
+      "bytes": 5230
+    },
+    {
+      "path": "docs/delivery/w02e-erc721-reader.md",
+      "sha256": "21bb26befe3bb04ae00808529f5b3b62710bbab9125ba305d0837136f5e9d91e",
+      "bytes": 5764
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "sha256": "91878679611bec85bca9c6494594c66b4324e830e6dc112d95b1085a076e7e4d",
+      "bytes": 21932
+    },
+    {
+      "path": "DESIGN.md",
+      "sha256": "59c142f01e208eae4768ae98e519a4f9cf5ac7d6a1159a13cc6e9b1c025a0e6f",
+      "bytes": 75060
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "sha256": "091cc340dd5905b35beaf3a24e0030982e7f14a6c7dd0e7dbb700c1d6592c06d",
+      "bytes": 68214
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "c14016c3b4d3b31da4c4a2e9a72cf9aca5febf775da0e0b3cd3934db9f9bef38",
+      "bytes": 106819
+    }
+  ]
+}

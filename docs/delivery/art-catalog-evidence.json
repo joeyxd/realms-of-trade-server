@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-06",
+  "checks": [
+    {
+      "name": "UI",
+      "ok": true
+    },
+    {
+      "path": "PLAN-VISUAL-PORT.md",
+      "status": 200,
+      "bytes": 40232,
+      "sha256": "dd564af8b90eee483270dd05e36b9411837efb2340392a672b79ee0bfa38cb2c",
+      "ok": true
+    },
+    {
+      "path": "docs/research/unreal-assets/D06-REUSE.md",
+      "status": 200,
+      "bytes": 4975,
+      "sha256": "a7da1fa34267548332bb4fb689dfd4fde4b5f27204e35bef49d2afe59e43c84d",
+      "ok": true
+    },
+    {
+      "path": "assets/textures/raft/comic-materials-v1.webp",
+      "status": 200,
+      "bytes": 308536,
+      "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54",
+      "ok": true
+    },
+    {
+      "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+      "status": 200,
+      "bytes": 82878,
+      "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719",
+      "ok": true
+    },
+    {
+      "path": "docs/delivery/raft-comic-material.md",
+      "status": 200,
+      "bytes": 6829,
+      "sha256": "af9083d47702ffafab78a1937f0712d70502448a4015e2465f2d242973a64ec9",
+      "ok": true
+    },
+    {
+      "path": "shots/review/raft-comic/release-high-day/overview.png",
+      "status": 200,
+      "bytes": 912517,
+      "sha256": "9c567ab71d7794bb8d987248657d27f1ad0eff5f0d8a77fb88e95fafba114b02",
+      "ok": true
+    },
+    {
+      "path": "docs/delivery/raft-comic-release.json",
+      "status": 200,
+      "bytes": 5321,
+      "sha256": "5be1e7c4de8f75293b8fb8b99bd6efb252fad806f348ef597e81f8c1b268b440",
+      "ok": true
+    },
+    {
+      "path": "docs/delivery/raft-comic-evidence.json",
+      "status": 200,
+      "bytes": 30307,
+      "sha256": "2a9683593948b26d97d889d07d9824f5a0c0a839e019fc24e5eb848b5cdbb97a",
+      "ok": true
+    },
+    {
+      "path": "assets/models/prop-storage-crate.glb",
+      "status": 200,
+      "bytes": 51684,
+      "sha256": "916814feae7a2068b47b292439873d64f717cdc8b3821a6f6b2d906cf1293273",
+      "ok": true
+    },
+    {
+      "path": "docs/delivery/a02-crate.md",
+      "status": 200,
+      "bytes": 3971,
+      "sha256": "3754161442debb8215d5a3f68adeba43a2440f139c4e70a98556d43b839c3a40",
+      "ok": true
+    },
+    {
+      "path": "shots/asset-a02/artifact-low-phone-day/02-storage-crate.png",
+      "status": 200,
+      "bytes": 223536,
+      "sha256": "cb4577ad6a184ec434d8f2a41aa72097103054c46da1ca84619a8492015cd1b6",
+      "ok": true
+    },
+    {
+      "path": "shots/asset-a02/artifact-low-phone-day/evidence.json",
+      "status": 200,
+      "bytes": 5640,
+      "sha256": "2f202a0bd392dcbc45cca76302c9f451c256f29c3104e7d312207d60774108ac",
+      "ok": true
+    },
+    {
+      "path": "shots/review/raft-comic/release-high-day/hero.png",
+      "status": 200,
+      "bytes": 1157460,
+      "sha256": "3c2016ae1973621bc6ed27629f186dc73300d56e2a9cb720b9aaf9991e58af9b",
+      "ok": true
+    },
+    {
+      "path": "shots/review/raft-comic/release-low-phone/overview.png",
+      "status": 200,
+      "bytes": 219070,
+      "sha256": "b26cbcdb9119ea97c0c4d1b02e11b89870a280f3c3da573e1e66bbf589a143bc",
+      "ok": true
+    }
+  ],
+  "catalog": {
+    "revision": 1,
+    "rows": 72,
+    "categories": 9,
+    "states": {
+      "pending": 61,
+      "reference": 5,
+      "prepared": 0,
+      "applied": 6
+    }
+  },
+  "browser": {
+    "desktop": [
+      1440,
+      1000
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "desktopScreenshot": "shots/review/art-catalog/desktop.png",
+    "mobileScreenshot": "shots/review/art-catalog/mobile.png",
+    "noteSaveVerifiedInFixture": true,
+    "fileUploadVerifiedInFixture": true,
+    "loadedAppliedPreviews": 6,
+    "mobileHorizontalOverflow": false,
+    "navigationReloadDenied": "MCP tool call requires approval, but approval policy is never",
+    "changesAfterFirstNavigation": [
+      "reference counter counts visual images instead of documentation",
+      "uploaded filenames prefer original name",
+      "empty favicon prevents request",
+      "prepared state requires files"
+    ]
+  }
+}

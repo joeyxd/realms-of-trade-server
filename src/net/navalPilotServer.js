@@ -9,7 +9,7 @@ export class NavalPilotServer extends LocalServer {
   constructor(options) {
     let server;
     const send = options.send;
-    super({ ...options, bots: 0, enemies: false, debug: false, dev: false, instanceTime: false, pausable: false,
+    super({ ...options, navigation: false, bots: 0, enemies: false, debug: false, dev: false, instanceTime: false, pausable: false,
       maxPlayers: 4, send: (id, msg) => send(id, msg.t === MSG.SNAPSHOT && server
         ? { ...msg, naval: server.world.navalPilot.snapshot(server.clients.get(id)?.entity),
           deck: server.world.navalPilot.deckSnapshot(server.clients.get(id)?.entity) } : msg) });

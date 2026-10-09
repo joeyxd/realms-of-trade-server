@@ -1,0 +1,204 @@
+{
+  "schema": "l01b-agent-chat-verification/v1",
+  "status": "local_software_verified",
+  "recordedAt": "2026-10-08T06:47:34.547Z",
+  "scope": "guest agent C01 chat and bounded runner context; no provider, server owner grant, paid inference, durable memory, SQL, publish or deploy",
+  "checkout": {
+    "initialHead": "4a23e6f81a163c44be0d7143fc7143e68d540b18",
+    "finalHead": "4a23e6f81a163c44be0d7143fc7143e68d540b18",
+    "sharedDirty": true,
+    "missionCommit": null
+  },
+  "tests": {
+    "startedAt": "2026-10-08T06:42:52.992Z",
+    "finishedAt": "2026-10-08T06:43:21.443Z",
+    "command": "node --test --test-concurrency=1 --test-reporter=tap tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs",
+    "exitCode": 0,
+    "tests": 88,
+    "pass": 87,
+    "fail": 0,
+    "skipped": 1,
+    "duration_ms": 28389.7293,
+    "stderr": "",
+    "log": "docs/delivery/l01b-agent-chat/agent-tests.tap",
+    "skipReason": "Windows EPERM when creating the file symlink"
+  },
+  "regression": {
+    "command": "node --test --test-concurrency=1 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 8548.3144,
+    "recordBasis": "transcribed from root tool execution; raw TAP not stored"
+  },
+  "visual": {
+    "record": "docs/delivery/l01b-agent-chat/evidence.json",
+    "status": "passed",
+    "startedAt": "2026-10-08T06:37:42.321Z",
+    "finishedAt": "2026-10-08T06:38:04.610Z",
+    "protocolVersion": 26,
+    "playerSlots": 3,
+    "browserErrors": 0,
+    "serverStopped": true,
+    "screenshots": [
+      {
+        "file": "docs/delivery/l01b-agent-chat/chat-world-cerca.png",
+        "bytes": 1566344,
+        "sha256": "747cdf7479aa485fc507713e0b63ec6d87c269a619009eac3a9a30e4173f2bcc",
+        "rootVisualInspection": "ordinary playing scene; readable named Brisa chat, shared channel labels or private sender/target and matching bubble; inspected by root"
+      },
+      {
+        "file": "docs/delivery/l01b-agent-chat/chat-private-route.png",
+        "bytes": 1575480,
+        "sha256": "f914f3398b8620b643486c221f14ed77d77822d90d5967d987920ab61c1c0c7d",
+        "rootVisualInspection": "ordinary playing scene; readable named Brisa chat, shared channel labels or private sender/target and matching bubble; inspected by root"
+      }
+    ]
+  },
+  "sourceHashBasis": "finalization bytes, after the accepted test run; visual happy-path run preceded receipt-shape hardening that is covered by the final automated suite; not an immutable checkout snapshot",
+  "checks": {
+    "utf8Files": 27,
+    "replacementCharacters": 0,
+    "trailingWhitespace": 0,
+    "directionRows": 22,
+    "launchModeDa3": "proposed; not agreed"
+  },
+  "files": [
+    {
+      "file": "tools/agent/chat.mjs",
+      "bytes": 11282,
+      "sha256": "adef21c4ba3c5477e22b23e64fd74f923b7fdcb7cf1d8f76a1a5062268dc0cc0"
+    },
+    {
+      "file": "tools/agent/runner-context.mjs",
+      "bytes": 1633,
+      "sha256": "a76d235090a0d7b08723f9a34dfc35b90bce2593f5c6781206da6c243997552f"
+    },
+    {
+      "file": "tools/agent/network-client.mjs",
+      "bytes": 17055,
+      "sha256": "e55efec95b3343cc63a3e0be15889055c3a10e96993ecd21be1e1c852791ca50"
+    },
+    {
+      "file": "tools/agent/contract.mjs",
+      "bytes": 7751,
+      "sha256": "d692910a304e8b9cf07832383341e08002f8f9025de0b08dbbc04d30fb625606"
+    },
+    {
+      "file": "tools/agent/run.mjs",
+      "bytes": 7582,
+      "sha256": "b00777b9c6bf759b006fdae7939bd4a5cdcd7cb9496d8ed45c0a4285d51de74e"
+    },
+    {
+      "file": "tools/qa-agent-chat.mjs",
+      "bytes": 18443,
+      "sha256": "ce314bb01943da2c566b05a1c57614b380c88c46a52563f49c99e6b25dcb1aee"
+    },
+    {
+      "file": "tests/agent-interface.test.mjs",
+      "bytes": 24246,
+      "sha256": "8ad61a915ed6687997a00dd87548131b1f7283d903dce3b43176fef2127d6593"
+    },
+    {
+      "file": "tests/agent-context.test.mjs",
+      "bytes": 11391,
+      "sha256": "405a38044854bf48b50f9674a49c24701a9c1f96edeb1c88490934fc1d379d99"
+    },
+    {
+      "file": "tests/agent-lab.test.mjs",
+      "bytes": 1594,
+      "sha256": "55c65b4c42b9e23a3d03b98997ae6184cc8cdff061831d7c1f8d65f6fef415c1"
+    },
+    {
+      "file": "tests/agent-owner-files.test.mjs",
+      "bytes": 7562,
+      "sha256": "395378bb364c930eb2f80734ba24838fa560a2e56153ceba1ce8c83460f77057"
+    },
+    {
+      "file": "tests/agent-network.test.mjs",
+      "bytes": 24610,
+      "sha256": "cb400e681fa2fddc3f2e260123d2ac5eaadb3db95db09308a2b13e4b554d35d4"
+    },
+    {
+      "file": "tests/agent-runner.test.mjs",
+      "bytes": 7331,
+      "sha256": "7c600c6b475e14ee3c61ede75196d9cab6744c31958673d09467db812237b860"
+    },
+    {
+      "file": "tests/agent-chat.test.mjs",
+      "bytes": 18227,
+      "sha256": "eef88380495ca81ac6a9710fb25c5e1b59477ec1559be216a295e027a0dea86c"
+    },
+    {
+      "file": "tests/agent-runner-context.test.mjs",
+      "bytes": 5878,
+      "sha256": "39516e842c0ba7e34b38db579bd1e6075ff79fc567a2017a629d83bc0af85c68"
+    },
+    {
+      "file": "docs/agents/chat-runner.md",
+      "bytes": 4964,
+      "sha256": "f6ffb7917817153effa53839435d16d825ce2b4c20ad11db78f5475199185a00"
+    },
+    {
+      "file": "docs/agents/network-runner.md",
+      "bytes": 6521,
+      "sha256": "cb340d03563253062278a8246b100c2d7240a3f46a78d05b3683b4e0daa6721a"
+    },
+    {
+      "file": "docs/agents/interface-v1.md",
+      "bytes": 15749,
+      "sha256": "c2d4cf86f3c87c41f993129b4acd36cc9693ee0ed86945f7f51ae9c391f80d52"
+    },
+    {
+      "file": "docs/briefs/l01b-agent-chat.md",
+      "bytes": 2734,
+      "sha256": "2993925fdc46a18ab6f70d9a7dbcc2b4dcb8f0a2f3d9538c94bb384f36bdd4f8"
+    },
+    {
+      "file": "docs/delivery/l01b-agent-chat.md",
+      "bytes": 4917,
+      "sha256": "ab5f4fe0b44d688401007bbe711d4aa98aaa108b5238cabf117208124f834842"
+    },
+    {
+      "file": "PLAN-EXTRA-LLM.md",
+      "bytes": 52905,
+      "sha256": "a345925e24ce14955e9c50ec007e3a3f3d373439dba2cdec69f6490dda0359e6"
+    },
+    {
+      "file": "PLAN-DELIVERY.md",
+      "bytes": 60599,
+      "sha256": "71166539686a267429a50aa346ba94827c802b5474301f568b465b935a300c0d"
+    },
+    {
+      "file": "DESIGN.md",
+      "bytes": 72417,
+      "sha256": "9557f409ebf93c3dfbe7e167205147039e54ffc370136fb35408385996efec5f"
+    },
+    {
+      "file": "docs/HANDOFF.md",
+      "bytes": 98093,
+      "sha256": "22edbedfd05528d55743567e38218d9e2be3ba197ca5718fb6cb29865987d28e"
+    },
+    {
+      "file": "docs/delivery/l01b-agent-chat/report.md",
+      "bytes": 2493,
+      "sha256": "a7c7cf449e5117a8450675e12e89b4dca0151e0d9ad6bb0357cce0d9442a0917"
+    },
+    {
+      "file": "docs/delivery/l01b-agent-chat/evidence.json",
+      "bytes": 21383,
+      "sha256": "c2ab8fc04bbd07e41df1c268ccc7237c4012bdae1cabed9dc6b44f07cf421d06"
+    },
+    {
+      "file": "docs/delivery/l01b-agent-chat/agent-tests.json",
+      "bytes": 516,
+      "sha256": "a7b23a7b8bdb317d93901f9b6e8a32fb3bbe77d52e8442066a7a58fe72aaaaa6"
+    },
+    {
+      "file": "docs/delivery/l01b-agent-chat/agent-tests.tap",
+      "bytes": 20223,
+      "sha256": "93a537dccbc85946dee57c725a5063ae3a91a5c080fff4866351205cd920e61e"
+    }
+  ]
+}

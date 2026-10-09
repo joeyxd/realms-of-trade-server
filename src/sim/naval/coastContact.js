@@ -77,6 +77,20 @@ function validate(before, next, rig, coast) {
     throw new TypeError('Coastal step exceeds fixed-tick envelope');
 }
 
+// Recovery placement reuses the exact hull SAT without the motion solver's overlap-escape exception.
+export function navalCoastOverlaps(pose, parts, coast) {
+  if (!pose || !['x', 'z', 'yaw'].every((k) => finite(pose[k])) || typeof coast?.query !== 'function')
+    throw new TypeError('Invalid coastal placement');
+  for (const cell of floats(parts)) {
+    const center = point(pose, cell.x, cell.z), radius = Math.hypot(cell.hx, cell.hz);
+    for (const polygon of coast.query(center.x - radius, center.z - radius, center.x + radius, center.z + radius)) {
+      const hit = sweep(cell, center, center, polygon, pose.yaw, 0);
+      if (hit && hit.depth > EPS) return true;
+    }
+  }
+  return false;
+}
+
 export function resolveNavalCoast(before, next, rig, parts, coast) {
   validate(before, next, rig, coast);
   const hull = floats(parts), contacts = [];

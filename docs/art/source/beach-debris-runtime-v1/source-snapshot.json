@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "family": "beach-debris-v1",
+  "policy": "Immutable historical integration source; --check validates copies, not later live files.",
+  "files": [
+    {
+      "source": "src/render/beachDebrisGeometry.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/beachDebrisGeometry.source.js",
+      "bytes": 14732,
+      "sha256": "81895ce91222ff8e82b4f5e03158c009fbc56a9c4422831e30a4d3ba996af5f2"
+    },
+    {
+      "source": "src/render/beachDebrisPlacement.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/beachDebrisPlacement.source.js",
+      "bytes": 4123,
+      "sha256": "504ddc19d742f8e601938aa5106d1364bcd8129dbde473dc77c24c76b9112c10"
+    },
+    {
+      "source": "src/render/beachDebris.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/beachDebris.source.js",
+      "bytes": 4750,
+      "sha256": "5ae836b34a48a6e351e1a5d0c0629df6f27f79e15cdd292888fd65d12c410abe"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/vegetation.source.js",
+      "bytes": 20994,
+      "sha256": "9cbb63c1ecabf255e2fa620b26c8a18263c39683d90de90587209e1ae6dffc7a"
+    },
+    {
+      "source": "src/render/scene.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/scene.source.js",
+      "bytes": 20131,
+      "sha256": "ae17a8599aaddde5ab85cd4863ec9dc605beaa85bf50432d86f313f3c8695bc2"
+    },
+    {
+      "source": "tools/qa-beach-debris.playwright.js",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/qa-beach-debris.source.js",
+      "bytes": 7300,
+      "sha256": "6ddf14b62480c6a12841dffc759a0519adc987c6ed430509057022a32df0f901"
+    },
+    {
+      "source": "tests/beach-debris.test.mjs",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/beach-debris.test.source.mjs",
+      "bytes": 15988,
+      "sha256": "c24e286261ee03f2be65aba1df05feb9e5a9628549f5b4e7e2e024da9c6dc9f0"
+    },
+    {
+      "source": "tools/prepare-beach-debris.mjs",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/prepare-beach-debris.source.mjs",
+      "bytes": 5500,
+      "sha256": "73178753d124eca2813f27644260f43ed0412cac9c9a1e82ebbe0afc1b4212d2"
+    },
+    {
+      "source": "tools/prepare-beach-debris-sources.mjs",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/prepare-beach-debris-sources.source.mjs",
+      "bytes": 2857,
+      "sha256": "deec1009800bb865b608140710ff2abac48f296358659cbcdc1a7b136888f0c6"
+    },
+    {
+      "source": "tools/stage-s09-logs.ps1",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/stage-s09-logs.source.ps1",
+      "bytes": 9368,
+      "sha256": "8dcaca08470f94135fee2cff30e9d54fe63906529c89aff8bfb390172772904f"
+    },
+    {
+      "source": "tools/export-s09-logs.py",
+      "snapshot": "docs/art/source/beach-debris-runtime-v1/export-s09-logs.source.py",
+      "bytes": 11346,
+      "sha256": "e837b8cd06fb267a3547980779e7df3dad7c537ec4eab6738f887c65a32e68fd"
+    }
+  ]
+}

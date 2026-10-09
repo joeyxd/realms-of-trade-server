@@ -1,0 +1,262 @@
+{
+  "schema": "l01a-agent-network-qa/v1",
+  "startedAt": "2026-10-08T04:15:57.823Z",
+  "status": "passed",
+  "scope": "isolated local guest-mode client rehearsal; no real server grant, LLM, paid inference, production storage, dev commands, teleport, or gameplay authority claim",
+  "protocolVersion": 25,
+  "browser": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "headless": true,
+    "channel": "chrome",
+    "renderer": "browser-default-angle",
+    "args": [
+      "--use-gl=angle",
+      "--use-angle=default",
+      "--enable-webgl",
+      "--ignore-gpu-blocklist"
+    ],
+    "errors": [],
+    "title": "Marea Negra",
+    "screenshotViewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "dev": false,
+    "bots": 0,
+    "worldId": null,
+    "maxPlayers": 4,
+    "port": 49909,
+    "started": true,
+    "stopped": true
+  },
+  "checks": [
+    {
+      "id": "normal-browser-join",
+      "passed": true,
+      "mode": "playing",
+      "characterName": "Observador",
+      "entityId": 26
+    },
+    {
+      "id": "guest-normal-slot",
+      "passed": true,
+      "playerSlotsUsed": 2,
+      "serverAuthorization": "not asserted; guest HELLO and local adapter scope only"
+    },
+    {
+      "id": "pve-not-pulsed-near-human",
+      "passed": true,
+      "result": {
+        "ok": false,
+        "why": "pve_player_nearby"
+      },
+      "nearbyHuman": {
+        "entityId": 26,
+        "distance": 0.0005237505128923358
+      }
+    },
+    {
+      "id": "human-sees-agent-before-move",
+      "passed": true,
+      "entity": {
+        "id": 28,
+        "name": "Brisa IA",
+        "human": true,
+        "kind": 1,
+        "ready": true,
+        "position": {
+          "x": 102.53,
+          "y": 0.839,
+          "z": 94.045
+        },
+        "viewVisible": true,
+        "nameplatePresent": true,
+        "nameplateText": "Nv 1Brisa IA"
+      }
+    },
+    {
+      "id": "500ms-move-visible-to-human",
+      "passed": true,
+      "serverDisplacement": 2.67500000000004,
+      "browserInterpolatedDisplacement": 3.0450000000000017,
+      "feedbackOutcome": "partial",
+      "feedbackCode": "position_observed"
+    }
+  ],
+  "failures": [],
+  "human": {
+    "id": 26,
+    "name": "Observador",
+    "mode": "playing",
+    "position": {
+      "x": 102.53048327204941,
+      "y": 0.8388679458812505,
+      "z": 94.04520189781083
+    },
+    "normalUiMovement": {
+      "start": {
+        "x": 102.53048327204941,
+        "z": 94.04520189781083,
+        "tick": 623
+      },
+      "end": {
+        "x": 105.67424531992779,
+        "z": 90.90143984993244
+      },
+      "displacement": 4.445950924983425,
+      "zoomIdx": 0,
+      "distTarget": 15,
+      "titleOverlay": {
+        "hidden": true,
+        "display": "none",
+        "opacity": "0"
+      }
+    }
+  },
+  "agent": {
+    "identity": {
+      "entityId": 28,
+      "serverSeed": 99282957,
+      "protocol": 25,
+      "authorization": "local",
+      "mode": "guest"
+    },
+    "state": "ready",
+    "grantCapabilities": [
+      "move",
+      "attack_pve"
+    ],
+    "serverPlayers": 2,
+    "observationSource": "server"
+  },
+  "movement": {
+    "firstOrder": {
+      "actionId": "l01a-move-1-500ms",
+      "durationMs": 500,
+      "accepted": true
+    },
+    "start": {
+      "x": 102.53048327204941,
+      "y": 0.8388679458812505,
+      "z": 94.04520189781083
+    },
+    "serverObserved": {
+      "x": 105.20548327204945,
+      "y": 0.7217345245030742,
+      "z": 94.04520189781083
+    },
+    "serverDisplacement": 2.67500000000004,
+    "moves": [
+      {
+        "order": {
+          "actionId": "l01a-move-1-500ms",
+          "durationMs": 500,
+          "accepted": true
+        },
+        "serverObserved": {
+          "x": 105.20548327204945,
+          "y": 0.7217345245030742,
+          "z": 94.04520189781083
+        },
+        "cumulativeServerDisplacement": 2.67500000000004,
+        "feedback": {
+          "v": 1,
+          "actionId": "l01a-move-1-500ms",
+          "scope": {
+            "ownerId": "qa-owner",
+            "characterId": "brisa-agent",
+            "worldId": "l01a-local",
+            "sessionId": "l01a-session"
+          },
+          "controlRevision": 1,
+          "source": "server",
+          "evidenceId": "wire-1",
+          "tick": 972,
+          "outcome": "partial",
+          "code": "position_observed",
+          "effect": "Desplazamiento observado: dx=2.675, dz=0.000; sin prueba de llegada ni causalidad exclusiva.",
+          "durability": "not_applicable"
+        },
+        "actionState": "sent"
+      }
+    ],
+    "feedback": {
+      "v": 1,
+      "actionId": "l01a-move-1-500ms",
+      "scope": {
+        "ownerId": "qa-owner",
+        "characterId": "brisa-agent",
+        "worldId": "l01a-local",
+        "sessionId": "l01a-session"
+      },
+      "controlRevision": 1,
+      "source": "server",
+      "evidenceId": "wire-1",
+      "tick": 972,
+      "outcome": "partial",
+      "code": "position_observed",
+      "effect": "Desplazamiento observado: dx=2.675, dz=0.000; sin prueba de llegada ni causalidad exclusiva.",
+      "durability": "not_applicable"
+    },
+    "actionState": "sent",
+    "humanClientBefore": {
+      "id": 28,
+      "name": "Brisa IA",
+      "human": true,
+      "kind": 1,
+      "ready": true,
+      "position": {
+        "x": 102.53,
+        "y": 0.839,
+        "z": 94.045
+      },
+      "viewVisible": true,
+      "nameplatePresent": true,
+      "nameplateText": "Nv 1Brisa IA"
+    },
+    "humanClientAfter": {
+      "id": 28,
+      "name": "Brisa IA",
+      "human": true,
+      "kind": 1,
+      "ready": true,
+      "position": {
+        "x": 105.575,
+        "y": 0.707,
+        "z": 94.045
+      },
+      "viewVisible": true,
+      "nameplatePresent": true,
+      "nameplateText": "Nv 1Brisa IA",
+      "nameplateVisible": true,
+      "nameplateBox": {
+        "x": 386.53570556640625,
+        "y": 423.10528564453125,
+        "width": 84.20156860351562,
+        "height": 25.29998779296875
+      }
+    },
+    "humanClientDisplacement": 3.0450000000000017,
+    "clientServerDisplacementGap": 0.3695167831073573,
+    "feedbackInterpretation": "Each result is partial observed position change only; no arrival or exclusive causality claim."
+  },
+  "screenshots": [
+    {
+      "file": "normal-client-agent-before-move.png",
+      "bytes": 1613616,
+      "sha256": "73039f930188f089a1972c07f915fa86568f8007f884ee6d484c446c73594e1e"
+    },
+    {
+      "file": "normal-client-agent-after-move.png",
+      "bytes": 1621332,
+      "sha256": "63486515ade293176cfa2817aa9b88222548b5af0fa1ca4ce3359b8f4cbd2ced"
+    }
+  ],
+  "finishedAt": "2026-10-08T04:16:15.317Z"
+}

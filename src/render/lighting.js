@@ -78,7 +78,7 @@ function blend(out, a, b, t) {
 const ease = (t) => t * t * (3 - 2 * t);
 
 export class Lighting {
-  constructor(scene, { shadowSize = 2048, shadowHalf = 30, cycleSeconds = 960 } = {}) {
+  constructor(scene, { shadowSize = 2048, shadowHalf = 30, shadowRadius = 0.35, cycleSeconds = 960 } = {}) {
     this.scene = scene;
     this.sun = new THREE.DirectionalLight(0xffffff, 2.4);
     this.sun.castShadow = true;
@@ -88,6 +88,8 @@ export class Lighting {
     cam.near = 1; cam.far = 220;
     this.sun.shadow.bias = -0.0006;
     this.sun.shadow.normalBias = 0.035;
+    // Narrow PCF taps retain leaf holes in the painted, crisp shadow style without a larger map.
+    this.sun.shadow.radius = shadowRadius;
     this.shadowHalf = shadowHalf;
     this.target = new THREE.Object3D();
     this.sun.target = this.target;

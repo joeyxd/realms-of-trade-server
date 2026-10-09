@@ -56,7 +56,7 @@ explicarse antes de pagar materiales. Cambiar de piloto no borra piezas ni repar
 
 Primera versión: agregados deterministas, no hidrodinámica completa ni física individual de cada tablón.
 Separar volumen de bodega y peso: llenar una bodega con plumas no equivale a llenarla con mineral. Hoy
-`cargo.js` combina espacio/peso; la separación es una evolución pendiente, no un dato ya disponible.
+`cargo.js` combinaba espacio/peso; D08c.8 incorpora dimensiones independientes de catálogo y lectura nominal.
 Para que el acomodo de carga importe habrá que asignar contenido a módulos de bodega, además de un total global.
 
 El editor debe mostrar antes/después de colocar o mover una pieza: carga, flotación, velocidad, tiempo de giro
@@ -68,6 +68,78 @@ certificación/refit financiado, no un multiplicador universal por edad o por hu
 Tirar carga retira bienes reales del barco y actualiza el peso de inmediato; quedan a flote disputables o se
 pierden según su tipo. El enemigo puede elegir perseguir o recoger. Nada de recuperar automáticamente lo
 tirado al volver a puerto, convertirlo en una mejora gratuita o expulsar suministros sin consecuencias.
+
+### 2.1 Porte y mejoras del barco — revisión 2026-10-07
+
+**Enfoque aprobado por el autor el 2026-10-07:** masa y volumen separados, porte limitado por
+estructura/flotación y más capacidad mediante mejoras o ampliación del barco. La fórmula
+conceptual y los roles de las mejoras siguientes quedan como base de implementación.
+Las cifras, los márgenes de seguridad y los umbrales requieren calibración; esta aprobación
+no equivale a balance probado ni activa nuevos bloqueos de gameplay.
+
+Estado previo a D08c.8: `cargo.js` limitaba el espacio abstracto de bodega usando `GOODS.w`;
+`trial.js` emplea ese mismo `w` como masa e incluye mochila y bodega. El rig vivo suma peso de
+piezas y carga, compara con flotación y penaliza manejo al sobrecargar. No existe aún un máximo
+estructural que prohíba zarpar. `raftStats()` económico usa media unidad de masa por unidad de
+espacio, mientras el pilotaje usa una completa; unificar esa fuente antes de aplicar límites.
+Materiales por tier y skill de navegación todavía no entran en esa capacidad.
+
+**Checkpoint D08c.8 local:** `volume` conserva todos los valores de espacio anteriores; `mass`
+independiente alimenta `holdMass`, `raftStats` y el rig vivo. Snapshot privado y paneles muestran
+nave equipada, carga de bodega y mochila del dueño, espacio y porte nominal restante/exceso;
+editor anticipa colocación con materiales consumidos. [Entrega](delivery/d08c8-raft-capacity.md).
+La lectura usa flotación existente, sin límite estructural/materiales ni reserva nuevos; masa corporal/
+tripulantes y mochilas de invitados también siguen abiertas. No se presenta como implementación de
+la fórmula completa ni bloquea cargas/salida; los números de densidad son tuning inicial por calibrar.
+
+Base acordada: dar a cada bien masa y volumen independientes. Medir el porte como
+`máximo de carga = max(0, min(límite estructural, desplazamiento seguro) - masa de la nave equipada - masa de tripulación)`.
+El límite estructural depende de casco/refuerzos elegibles y materiales; el desplazamiento
+seguro depende del volumen de casco o flotadores útiles, con margen de reserva por calibrar.
+Pisos superiores, paredes, mobiliario, maquinaria, armas, velas y módulos de bodega consumen
+peso; no añaden flotación. La mochila y suministros a bordo también consumen porte.
+
+| Mejora | Lo que aumenta | Coste o límite que conserva |
+|---|---|---|
+| Bodega/cajas | Espacio para mercancía | Pesan; no crean capacidad de flotación |
+| Más casco/flotadores o diseño con mayor desplazamiento | Porte útil | Tamaño, resistencia al giro y materiales |
+| Casco/refuerzos de mejor calidad | Capacidad estructural y durabilidad | Deben mejorar la estructura real, no una pieza aislada |
+| Vela/motor | Empuje para mover la carga | Peso, espacio y requisitos; no eleva por sí solo el porte |
+| Navegación | Respuesta y aprovechamiento del barco | No multiplica la flotación ni sustituye un upgrade |
+
+Primera lectura implementada en D08c.8: masa/volumen separados y lectura autoritativa.
+**D08c.9 local** añade límite mínimo estructura/desplazamiento seguro (90% de flotación), 3 uM por persona,
+mochilas consentidas, aviso pesado al 85%, bloqueo de zarpe nuevo e ingreso de bodega que aumenta exceso.
+Refuerzo 1:1 cuesta 1 madera + 1 hierro: cimiento 10→14 uM estructurales, 4→5 uM propios, 60→90 HP,
+sin nueva flotación. Balsa inicial con piloto: 16 uM de bienes; un refuerzo 19; cuatro 22,4.
+[Contrato](briefs/d08c9-raft-load-limits.md), [entrega](delivery/d08c9-raft-load-limits.md).
+Cifras iniciales sin balance físico; tiers/skill/lastre humano dinámico siguen posteriores.
+**D08c.10 local** incorpora reparación material por instancia en puerto; conserva daño al atracar/remontar
+durante la sesión, reconstruye casilla original, refuerzo mantiene fracción HP y retiro devuelve según
+condición. Módulos destruidos dejan de producir/aportar porte; plano y mercancía se conservan.
+[Entrega](delivery/d08c10-raft-repair.md). Condición/pose durable y recuperación entre sesiones siguen
+pendientes en ese checkpoint antes de introducir amenazas con riesgo económico público.
+**D08c.11 local** conserva IDs/HP por instancia y última pose confirmada al guardar/reentrar.
+El personaje vuelve a su checkpoint y la balsa reaparece detenida, sin piloto/tripulación.
+Costa válida permite reembarque cercano; recuperar en puerto conserva daño, mercancía y plano.
+Pose incompatible/otro seed/sin flotación vuelve al amarre sin curación ni pérdida de carga.
+[Entrega](delivery/d08c11-raft-recovery.md): 617/617 pertinentes y 3/3 vistas emuladas locales.
+HMAC guest y cuenta/CAS en memoria; guardado periódico y replay guest conservados, sin exposición
+offline, Supabase live, SQL o publicación. Sigue primera ruta/amenaza PvE limitada; D09/M5 deben
+cerrar custodia/pérdidas antes del riesgo económico público permanente.
+**D08c.12 local** añade ensayo opcional: tres boyas en orden, batería anclada con salvas a marcas
+fijas/aviso de 2 s y regreso con atraque real. Daño por instancia viva en casco girado, 6 HP por
+impacto/hasta 24 por ensayo y piso del 50%; se guarda/repara sin tocar plano/carga. Sin botín/XP,
+progreso/resultados de sesión. [Entrega y evidencia](delivery/d08c12-naval-route.md):
+15/15 nuevas + 371 previas seleccionadas + 9/9 host y 3/3 vistas emuladas con capturas
+inspeccionadas; fixtures/incidencias documentadas, sin afirmar balance/dispositivos físicos.
+Fuentes Unreal revisadas/intactas y runtime reutilizado, sin nuevas texturas, SQL ni publicación.
+Siguiente: armas y rival móvil/derrotable. No cierra piratería/abordaje o riesgo económico público.
+Conservar capacidad de regresar si el daño reduce flotación durante el viaje: consecuencias
+visibles y recuperación de D09, sin borrar mercancía ni convertir un límite nuevo en pérdida
+silenciosa al cargar un perfil. Acomodo por bodega y tiers completos pueden seguir después.
+Este enfoque acordado complementa recolección/crafting; no activa pérdidas permanentes ni modifica
+la cola principal. Balance de masa, margen seguro y daño en mar quedan por fijar.
 
 ## 3. Formato del mar: alternativas y recomendación
 

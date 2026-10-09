@@ -1,0 +1,15 @@
+{
+  "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs",
+  "startedAt": "2026-10-08T13:47:02.624Z",
+  "finishedAt": "2026-10-08T13:47:11.336Z",
+  "exitCode": 0,
+  "signal": null,
+  "tests": 20,
+  "pass": 20,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "durationMs": 8667.5887,
+  "stderr": "",
+  "log": "chat-network-regression.tap"
+}

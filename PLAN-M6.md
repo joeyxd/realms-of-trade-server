@@ -2,9 +2,99 @@
 
 Entregas jugables y pruebas de arte: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D04–D06/D08 y mar D10–D12.
 
+Checkpoint 2026-10-08: **D08c.7d cierra herramientas y minería**, alpha.16/protocolo 32.
+[Entrega](docs/delivery/d08c7d-tools.md): banco con madera/hacha/pico, dos ranuras de cinturón
+guardadas y selección contextual conservando arma de combate. 24 rocas/6 vetas nuevas,
+pico/grietas/impactos/audio, mineral bruto separado del hierro. 206 nodos, conserva 176 anteriores
+y terreno S21. Recogida manual → madera → herramientas → tala/minería → materiales de balsa.
+**121 casos únicos verificados** (120/121 + 5/5 focal tras whitelist nueva), **3/3 vistas emuladas**
+desde mochila vacía, reentrada firmada y capturas inspeccionadas. Sin texturas nuevas/SQL/publicación;
+árboles y minas siguen de sesión. Mantener/timing y metalurgia/aprendizaje regional aún pendientes.
+
+Checkpoint 2026-10-08: **D08c.7c reparte recolección por la isla**, alpha.14/protocolo 30.
+[Entrega](docs/delivery/d08c7c-harvest.md): 96 palmeras cortables, 69 piedras recogibles y 11
+troncos sueltos; tres F/touch → dos troncos con hacha, audio, astillas, caída y tocón. Los materiales
+entran a la mochila y al banco existente para construir/reparar la balsa. Catálogo de estado
+en admisión/cambios, sin repetir el bosque en cada snapshot. **87/87 seleccionadas en serial +
+3/3 vistas emuladas**, capturas inspeccionadas y reentrada firmada. Reutilización S05/S02/S19/S14,
+cero texturas nuevas. Nodos/golpes/regeneración son de sesión; persistencia del bosque abierta.
+Prioridad explícita del autor antes del contrato de aportes comunitarios. Sin SQL/publicación,
+cambio de terreno o cupo; conserva L02c. Incidencias y límites en la entrega.
+
+Checkpoint 2026-10-08: **D08c.7b mejora preparación de materiales**, alpha.13/protocolo 29.
+[Entrega](docs/delivery/d08c7b-workbench.md): panel F/touch con cantidad/materiales/espacio y tandas
+de la receta actual; consumo/producción completos, una revisión y replay exacto al reabrir/reintentar.
+**61/61 seleccionadas + 3/3 vistas emuladas**, capturas inspeccionadas y reentrada firmada.
+Banco S19/S14 existente, cero assets nuevos. No crea proyecto comunal ni receta aprendida.
+La progresión de pueblos aprobada se concreta en [PLAN-ALFA-MUNDO](PLAN-ALFA-MUNDO.md#81-continuación-concreta--banco-de-materiales-y-contrato-de-aportes):
+primero commit atómico inventario/proyecto/recibo, después tablero/artesano/aprendizaje.
+Sin SQL/publicación; navegación y autoridad de agentes L02c se conservan.
+
+Checkpoint 2026-10-08: **D08c.12 da un objetivo y salvas que esquivar**, alpha.12/protocolo 27.
+[Entrega](docs/delivery/d08c12-naval-route.md): ensayo opcional desde el timón, tres boyas
+en orden y regreso con Amarrar real. Batería anclada con marca fija y aviso de dos segundos;
+daño real por instancia viva del casco girado, 6 HP/impacto, hasta 24 HP y piso del 50%.
+Plano/carga conservados, daño guardable/reparable; costa mantiene su riesgo anterior.
+Sin recompensa/XP. Progreso/salvas/resultados son de sesión; cancelar o desembarcar termina el ensayo.
+**15/15 nuevas + 371 previas seleccionadas + 9/9 host**, 395 casos únicos entre pases documentados,
+**3/3 vistas emuladas** y capturas inspeccionadas; fixtures/incidencias en la entrega.
+Unreal intacto, runtime reutilizado y cero texturas nuevas.
+Sin SQL/publicación. Sigue armamento naval y rival móvil/derrotable; D09/M5 conserva su gate de pérdidas públicas.
+
+Checkpoint 2026-10-08: **D08c.11 conserva daño y posición al reentrar**, alpha.11/protocolo 26.
+[Entrega](docs/delivery/d08c11-raft-recovery.md): condición por ID/tupla y última pose confirmada
+guardadas en perfil. La balsa reaparece estacionada sin tripulación; costa válida permite reembarcar
+y puerto permite recuperar la misma nave dañada/cargada. Pose incompatible vuelve al amarre sin sanar.
+**617/617 pertinentes + 3/3 vistas emuladas**, capturas inspeccionadas y cero errores finales.
+HMAC guest y cuenta/CAS en memoria locales, ventana periódica/replay guest conservados, sin exposición
+offline o Supabase live. Sin publicación ni SQL. Sigue primera ruta/amenaza PvE limitada, manteniendo
+D09/M5 antes del riesgo económico público permanente.
+
+Checkpoint 2026-10-07: **D08c.10 repara piezas con materiales**, alpha.10/protocolo 25.
+[Entrega](docs/delivery/d08c10-raft-repair.md): conserva daño al atracar y remontar en la sesión,
+reconstruye misma instancia, cobra una vez y mantiene refuerzos/retiros coherentes con HP.
+Stock/plano intactos, piezas destruidas dejan de producir y no aportan porte.
+**355/355 + 3/3 vistas emuladas**, capturas inspeccionadas, sin errores finales.
+Daño/pose aún no son durables entre sesiones: sigue esa conservación antes de amenaza naval.
+Sin publicación ni SQL; balance humano y dispositivos siguen pendientes.
+
+Checkpoint 2026-10-07: **D08c.9 implementa porte operativo y refuerzo del casco**, alpha.9/protocolo 24.
+[Entrega](docs/delivery/d08c9-raft-load-limits.md): estructura/desplazamiento seguro y tripulación real,
+límite de zarpe/carga, refuerzo de cimiento 1:1 con costo/HP/cinchas y recuperación excedida sin pérdida.
+**344/344 pertinentes**, **3/3 vistas emuladas** con rechazo de zarpe, refuerzo real, reentrada firmada
+y timón/HUD; capturas inspeccionadas. No publicación ni SQL, cifras para calibración.
+Sigue reparación material y luego persistencia del viaje/daño y primera amenaza; tiers/puerto posteriores.
+
+Checkpoint 2026-10-07: **D08c.8 separa masa/volumen y muestra porte nominal**, alpha.8/protocolo 23.
+[Entrega](docs/delivery/d08c8-raft-capacity.md): catálogo independiente con volumen legacy conservado,
+masa de bienes compartida economía/rig, lectura privada por dueño y previsión de colocación sobre copias.
+**208/208 focales** y **3/3 vistas emuladas** pasan: transferencia, preview/colocación real,
+guardado/reentrada y timón/HUD, con capturas inspeccionadas. La cámara no sigue aim de combate
+al construir. El porte es nominal por flotación
+actual: no implementa aún estructura por material/refuerzo, reserva, masa corporal/tripulantes,
+mochilas de invitados ni rechazo de carga/salida. Ese límite y primer refuerzo se añaden en D08c.9.
+Fuentes Unreal intactas; reutiliza UI/modelos sin texturas nuevas. No publicación ni SQL.
+
+Checkpoint 2026-10-07: **D08c.7 implementa la primera recolección/receta**, alpha.7/protocolo 22.
+Troncos/piedra de nodos compartidos → mochila → banco en puerto (1 tronco → 1 madera)
+→ editor/bodega y guardado existentes. **154/154 focales**, con construcción/reentrada
+y recogida durante exploración terrestre que refresca masa al reembarcar.
+[Entrega](docs/delivery/d08c7-resource-loop.md): **3/3 recorridos emulados** PC/móvil/vertical rotado
+pasan, con capturas inspeccionadas y fixture de posición/encuadre declarada. Nodos de sesión,
+sin tiers ni receta de piedra, crafting de nave completa, reparación o pérdidas durables.
+Sigue lectura única de masa/volumen y porte restante, con enfoque aprobado en la hoja naval.
+
+Checkpoint 2026-10-07: **D08c.6 integra el circuito costero en la partida ordinaria**, alpha.6/protocolo 21.
+Timón, cubierta móvil, corrientes/ráfaga, carga real, contacto/HP por pieza y vista naval se conectan
+a LocalServer/Worker/fallback/host. Desembarcar estaciona la misma balsa; reembarcar requiere proximidad;
+volver despacio permite atracar. [Contrato](docs/briefs/d08c6-live-coastal-loop.md) y
+[entrega](docs/delivery/d08c6-live-coastal-loop.md). Pose/daño son de sesión y el amarre/plano/bodega
+permanecen guardados. Publicación, dispositivos, recolección/crafting y P5/P6 completos siguen abiertos;
+D09 conserva la puerta de bienes/pérdidas durables y D10 la de encuentros/rutas.
+
 Checkpoint 2026-10-06: **D08b.4a HUD aceptado visualmente por el autor** («quedó muy bien»),
 fuente `825e96e`, 89/89 pertinentes y cinco tamaños revisados. [Entrega](docs/delivery/d08b4a-reference-hud.md).
-El manejo/look siguen en la bahía aislada; la balsa de partida continúa amarrada. El
+En ese checkpoint el manejo/look seguían en la bahía aislada y la balsa de partida continuaba amarrada. El
 [puente D08c de autoridad/pilotaje/cubierta móvil](docs/briefs/d08c-live-navigation-bridge.md) ya tiene
 D08c.0–2 implementados como ensayos delimitados, sin activar viajes públicos. M5 D09 conserva su checkpoint en `PLAN-M5.md`;
 D06b móvil, dispositivos/FPS y riesgo persistente no se cierran con la aceptación del HUD.
@@ -117,9 +207,11 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   peso/flotación/velocidad teórica. **D06b implementado, escritorio aceptado/móvil pendiente:** red/parrilla,
   receta/progreso, motivos de espera y guardado/reentrada de fracciones. Agua/huertos, hamaca y luces
   pendientes; no marcar P4 completo.
-- [ ] **P5 Zarpar.** El timón abre la carta; travesía (`planVoyage` + `stepRaft` acelerado); restos flotantes que
-  recoger con un gancho por el camino (madera, lona, barriles); llegar a puerto abre su mercado (M7).
-  Este viaje abstracto es fase A; sus pérdidas aleatorias no sustituyen el combate naval interactivo de fase B.
+- [ ] **P5 Zarpar.** D08c.6 conecta la travesía física por la costa de la isla actual: timón →
+  navegar → frenar/desembarcar → explorar → reembarcar → atracar. La partida usa el mismo estado naval,
+  con carga real y sin pérdidas aleatorias del viejo viaje abstracto. Recolección de madera/piedra y
+  crafting de materiales son la siguiente rebanada del loop; restos/gancho y otras regiones/mercados (M7)
+  siguen después. Riesgo persistente requiere D09 y encuentros/rutas requieren D10.
 - [ ] **P6 (fase B) El mar.** Movimiento por timón/propulsión, proyectiles, daño por pieza y reparación.
   **D08a.1 implementado en bahía aislada:** manejo arcade, corrientes y captura de vela con timing,
   espuma anclada al mundo, estela/spray, cómic/cámara y audio acotados. [Entrega y límites](docs/delivery/d08a-arcade-navigation.md).
@@ -207,6 +299,21 @@ Alternativas y criterios de aceptación: `docs/NAVAL-ROADMAP.md` §§2–5 y 8.
   El avance paralelo M5 `c72a78f` no modifica las rutas del harness. Sin texturas descargables
   nuevas ni activación pública; el timón visual aún no es un módulo económico colocable.
   P5/P6, dispositivos reales y la puerta M5/D09 permanecen abiertos; continúa delimitar D10.
+  **D08c.6 — circuito costero integrado en la partida:** los módulos aceptados de manejo,
+  cámara/audio/VFX/material/timón/vela/touch salen del harness a rutas runtime. Mochila y bodega aportan
+  masa real; no hay lastre ficticio ni expulsión de bienes. Estacionar permite explorar una costa real;
+  reembarcar renueva los epochs y refresca la mochila desde el servidor; atracar cierra la sesión.
+  Construcción/producción/transferencias quedan bloqueadas durante la travesía, incluso en tierra.
+  Muerte/desconexión/pérdida de soporte recuperan el amarre y ocupantes sin modificar el plano ni la
+  bodega. [Entrega y verificación](docs/delivery/d08c6-live-coastal-loop.md), alpha.6/protocolo 21.
+  No publica la demo ni activa daño/pérdidas durables. La primera recolección/receta continúa en D08c.7;
+  D09 y D10 siguen abiertos.
+  **D08c.7 — primera recolección y madera preparada:** nodos compartidos de tronco/piedra, mochila,
+  banco del puerto y consumo en el editor existente. 154/154 focales y 3/3 recorridos emulados con
+  guardado/reentrada; [entrega](docs/delivery/d08c7-resource-loop.md), alpha.7/protocolo 22.
+  Puede recoger durante la exploración terrestre y reembarcar con masa refrescada; preparar materiales
+  requiere haber atracado. Nodos de sesión, sin recetas de piedra/tiers ni crafting de la nave completa.
+  Sigue masa/volumen y porte restante; P5/P6 completos, pérdida/reparación durable y dispositivos abiertos.
   El autor propone una pasada posterior de luz/reflejos para gráficos altos: **Q1**, separada del HUD,
   con A/B del pipeline SSR/bloom existente y perfil ligero conservado; todavía no implementada.
   B5 requiere encuentro real y autoridad; no sustituirlo por una barra/radar de enemigo de adorno.

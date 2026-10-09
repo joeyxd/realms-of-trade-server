@@ -1,0 +1,10 @@
+Use case: stylized-concept.
+Asset type: one production candidate for a seamless square dry beach sand ALBEDO texture in a modern illustrated isometric tropical survival game.
+Primary request: create ONLY the flat diffuse color texture, filling the entire square edge to edge. Orthographic directly overhead, no perspective, no material ball, no diorama, no captions, no frame.
+Style reference: the user's tropical beach sand material board. Match its warm cream and ochre painted sand, readable stylized planes, restrained dark brown ink accents, contemporary comic/Borderlands-like illustrated sprite sensibility, without photorealistic granular noise.
+Subject: dry sand only. Broad subtle irregular ochre patches and softly broken wind ripple marks, a sparse scattering of tiny dark mineral flecks; most of the surface stays calm and pale so players and props are readable.
+Lighting: diffuse unlit base color, spatially uniform illumination. Shading marks describe shallow sand texture only, no strong directional baked light, no cast shadows, no vignette, no bright central spot.
+Palette: warm ivory #E6C98C, pale sand #F3DDB0, restrained ochre #C8A568, small brown accents #816345. Medium-low contrast.
+Tiling constraints: design as a truly seamless tile; left edge must continue naturally at right edge and top at bottom, consistent color and density at every edge, no border or visible seam. Avoid a recognisable central hero shape or big continuous ripples that create a repeating grid. Features can cross boundaries continuously.
+Avoid: shells, rocks, footprints, wood, seaweed, foam, water, vegetation, objects, text, labels, glossy specular highlights, PBR showcase sphere, panel layout, four-up sheet, black crack network.
+Deliverable: a single square image of dry sand albedo for later texture repeat testing and game shading.

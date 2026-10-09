@@ -1,0 +1,102 @@
+{
+    "case":  "S02 isolated SM_Rock geometry export",
+    "engine":  "UE 5.8",
+    "engineExecutable":  "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe",
+    "engineFileVersion":  "++UE5+Release-5.8-CL-55116800",
+    "project":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\S02RockExport.uproject",
+    "sourceContent":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content",
+    "copiedPackages":  [
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Rock.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Rock.uasset",
+                               "bytes":  22059,
+                               "sha256":  "FDF2FE0F4F42DB5CF8A23B8DF43758715C8671A89CD8D51BC6A39F2FDCD304AF"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                               "bytes":  8027,
+                               "sha256":  "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                               "bytes":  16009,
+                               "sha256":  "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F"
+                           },
+                           {
+                               "source":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                               "staged":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                               "bytes":  25415,
+                               "sha256":  "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D"
+                           }
+                       ],
+    "sourceHashesBefore":  [
+                               {
+                                   "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Rock.uasset",
+                                   "bytes":  22059,
+                                   "sha256":  "FDF2FE0F4F42DB5CF8A23B8DF43758715C8671A89CD8D51BC6A39F2FDCD304AF"
+                               },
+                               {
+                                   "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                                   "bytes":  8027,
+                                   "sha256":  "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189"
+                               },
+                               {
+                                   "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                                   "bytes":  16009,
+                                   "sha256":  "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F"
+                               },
+                               {
+                                   "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                                   "bytes":  25415,
+                                   "sha256":  "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D"
+                               }
+                           ],
+    "sourceHashesAfter":  [
+                              {
+                                  "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Meshes\\SM_Rock.uasset",
+                                  "bytes":  22059,
+                                  "sha256":  "FDF2FE0F4F42DB5CF8A23B8DF43758715C8671A89CD8D51BC6A39F2FDCD304AF"
+                              },
+                              {
+                                  "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\MI_Base_Normal.uasset",
+                                  "bytes":  8027,
+                                  "sha256":  "509E551E33A400E102C0038C9FED633179E36C767DF5186D30CC799E5057F189"
+                              },
+                              {
+                                  "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Materials\\M_Base.uasset",
+                                  "bytes":  16009,
+                                  "sha256":  "5D2B064404166A9F1052CE7FB2055CAAAF0745271430F55101952862A685121F"
+                              },
+                              {
+                                  "path":  "C:\\Unreal\\survival project\\SimpleMultiplayerSurvival\\Content\\Dreamrise_SMSK\\Assets\\Textures\\T_ColorPalette.uasset",
+                                  "bytes":  25415,
+                                  "sha256":  "EA551E2DA7ED2E026A4BDE67A83E6197EF46052462A91BF2A7F4F02F204A1B8D"
+                              }
+                          ],
+    "derivedDataCache":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\DerivedDataCache",
+    "exportRequested":  true,
+    "exportOptions":  {
+                          "bakeMode":  "disabled",
+                          "render":  "NullRHI",
+                          "shaderCompile":  "disabled"
+                      },
+    "exportExitCode":  0,
+    "outputDirectory":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\out",
+    "outputs":  [
+                    {
+                        "path":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\out\\SM_Rock.glb",
+                        "bytes":  12184,
+                        "sha256":  "9164182C23B532559B0008BD3B83974203B572081ED4DE58EB274BC24B24648C"
+                    },
+                    {
+                        "path":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\out\\SM_Rock.report.json",
+                        "bytes":  5036,
+                        "sha256":  "A16344CD62BCA7285A525B501D33F693CCCCF3143F644DE0C1B498BF05632E30"
+                    }
+                ],
+    "exportSeconds":  13.36,
+    "stdoutLog":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Saved\\Logs\\stdout.log",
+    "stderrLog":  "C:\\DEV\\real of trade\\asset-staging\\s02-rock-export\\retry-lowercase\\Saved\\Logs\\stderr.log"
+}

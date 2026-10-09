@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "recipe": "beach-details-v1",
+  "recipeSha256": "b54db599833ac8f87dd0052ce481f44bf36f58ea28c39f7bb6663a1607ab232f",
+  "source": {
+    "unrealGeometryExport": {
+      "file": "docs/art/source/coast-rock-v1/SM_Rock.geometry-export.glb",
+      "bytes": 12184,
+      "sha256": "9164182c23b532559b0008bd3b83974203b572081ed4de58eb274bc24b24648c"
+    },
+    "coastRockRuntime": {
+      "file": "assets/models/coast-rock-v1.glb",
+      "bytes": 7964,
+      "sha256": "783c9087f355ce6f8d176741a89f516b6bf30e739cfe6e7b5381922ef53aaf88"
+    }
+  },
+  "dependencies": [
+    "SM_Rock exact geometry export",
+    "coast-rock-v1 runtime vertex-painted geometry",
+    "src/render/beachDetails.js geometry recipe"
+  ],
+  "material": "POSITION + NORMAL + COLOR_0 only; no texture; geometry-only white PBR wrapper; runtime material remains unchanged",
+  "models": [
+    {
+      "style": "shell-fan",
+      "file": "assets/models/beach-shell-fan-v1.glb",
+      "bytes": 9700,
+      "sha256": "d6cc78c9e2dfb854f1141c27270ec8adfb58b79e647f559d11f23f2175ad57d4",
+      "triangles": 80,
+      "vertices": 240,
+      "bounds": {
+        "min": [
+          -0.440765380859375,
+          0,
+          -0.20000000298023224
+        ],
+        "max": [
+          0.440765380859375,
+          0.0934160053730011,
+          0.2392360419034958
+        ]
+      },
+      "images": 0
+    },
+    {
+      "style": "shell-oval",
+      "file": "assets/models/beach-shell-oval-v1.glb",
+      "bytes": 11432,
+      "sha256": "e6a85ee0d97ddd955cb62f7f9fec4d9c2a834fa8c6c91fba581551f55a55fcd1",
+      "triangles": 96,
+      "vertices": 288,
+      "bounds": {
+        "min": [
+          -0.29565000534057617,
+          0,
+          -0.5005000233650208
+        ],
+        "max": [
+          0.29565000534057617,
+          0.11073651164770126,
+          0.5005000233650208
+        ]
+      },
+      "images": 0
+    },
+    {
+      "style": "shell-chip",
+      "file": "assets/models/beach-shell-chip-v1.glb",
+      "bytes": 6248,
+      "sha256": "cfea34f4df327824fbb2f3fb29bb1646b4d5dea9dc2352f0d90aff8c7312b71d",
+      "triangles": 48,
+      "vertices": 144,
+      "bounds": {
+        "min": [
+          -0.440765380859375,
+          0,
+          -0.20000000298023224
+        ],
+        "max": [
+          0.16876880824565887,
+          0.060720402747392654,
+          0.24709588289260864
+        ]
+      },
+      "images": 0
+    },
+    {
+      "style": "pebbles",
+      "file": "assets/models/beach-pebbles-v1.glb",
+      "bytes": 21796,
+      "sha256": "aa2cb549c04439fcbb7dd859c3186998393896c5c88247f03a1dfe98d0014e7d",
+      "triangles": 192,
+      "vertices": 576,
+      "bounds": {
+        "min": [
+          -0.35035768151283264,
+          0,
+          -0.32617688179016113
+        ],
+        "max": [
+          0.2785623073577881,
+          0.19999998807907104,
+          0.24324296414852142
+        ]
+      },
+      "images": 0
+    }
+  ]
+}

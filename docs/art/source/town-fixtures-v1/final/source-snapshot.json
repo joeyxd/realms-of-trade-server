@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "family": "town-fixtures-v1",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-fixtures-v1/before/props.source.js",
+      "bytes": 36920,
+      "sha256": "074ee9fcae4ea2bca704bb44553d43cb86e814aab77fbd7133a371b83fcbd3fa"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/props.js",
+      "bytes": 36906,
+      "sha256": "5d8de83eb282d17f3b80309e476abc916a9bda407eb73a30b106d3598b071a3f"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/townFixtures.js",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/townFixtures.js",
+      "bytes": 5028,
+      "sha256": "c3323cba59e302847e50983ce04f21519be5f8cab22f9d30387b2d0e64413cda"
+    },
+    {
+      "phase": "after",
+      "source": "tests/town-fixtures.test.mjs",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/town-fixtures.test.mjs",
+      "bytes": 10168,
+      "sha256": "44308d2eafe4f5599d913b6e0726842858a51c91a8b94e1ae51a942287ae64ae"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-town-fixtures.playwright.js",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/qa-town-fixtures.playwright.js",
+      "bytes": 8336,
+      "sha256": "101823f0b7b4d677f32150b3f57d681e6119dbf41c57ffcf8a4b7f2b8a1a13f0"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-fixtures-sources.mjs",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/prepare-town-fixtures-sources.mjs",
+      "bytes": 3772,
+      "sha256": "cf8cd333c9b36f609f2854cd59fa27eb17ba7000086afc3dde66f47fc72c909b"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-fixtures-catalog.mjs",
+      "snapshot": "docs/art/source/town-fixtures-v1/final/after/register-town-fixtures-catalog.mjs",
+      "bytes": 16838,
+      "sha256": "296a8685737ec50480e7bdc48178a0c67204f2ad6776a85617944510ec5fc9af"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "bytes": 578874,
+      "sha256": "60d8b81a9ebdb59d6eeb8d824747dbf98cf121d7b3a5a99ef72b5e07d0683692"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-desktop.webp",
+      "bytes": 2834816,
+      "sha256": "030905006e5140c12abb373a248be8a5d0136bbc062c330a5cc150a1e6856076"
+    },
+    {
+      "id": "tex:town-wood-albedo-v1",
+      "path": "assets/textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "bytes": 171306,
+      "sha256": "3183e1746238df62e39f271628ba6e4d5353a04d499b91e0ddcdecd928ed8daf"
+    },
+    {
+      "id": "tex:town-wood-normal-v1",
+      "path": "assets/textures/town-wood-v1/atlas-normal-mobile.webp",
+      "bytes": 774780,
+      "sha256": "bb4b101d18c44a164a14d578a6fad321bda35ecce042915466552b52a08c4c42"
+    }
+  ]
+}

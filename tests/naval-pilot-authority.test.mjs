@@ -58,8 +58,8 @@ test('pilot control is server-only and opt-in', () => {
   assert.equal(new World(map.seed, { map }).navalPilot, null);
   assert.equal(new World(map.seed, { map, server: true }).navalPilot, null);
   assert.throws(() => new World(map.seed, { map, navalPilot: true }), TypeError);
-  const local = new LocalServer({ seed: map.seed, bots: 0, enemies: false });
-  assert.equal(local.world.navalPilot, null, 'ordinary local play does not activate the pilot experiment');
+  const local = new LocalServer({ navigation: false, seed: map.seed, bots: 0, enemies: false });
+  assert.equal(local.world.navalPilot, null, 'disabled navigation does not activate the pilot experiment');
 });
 
 test('mount requires the own deck, a live idle owner, and no guests; epochs fence mount and input', () => {

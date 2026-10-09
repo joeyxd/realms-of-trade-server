@@ -6,6 +6,7 @@ import { createMemoryStore } from '../server/store.mjs';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { STARTER_RAFT } from '../src/data/raftparts.js';
 import { newRaft } from '../src/sim/economy/raft.js';
+import { refitRaftCondition } from '../src/sim/naval/condition.js';
 
 const ACCOUNT = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const clone = (v) => JSON.parse(JSON.stringify(v));
@@ -46,6 +47,10 @@ test('memory-store account reopen preserves raft identity, berth, blueprint, hol
   assert.ok(stableOwner); assert.ok(stableShip); assert.ok(stableBerth >= 0);
 
   ship.grid = newRaft([...STARTER_RAFT, ['foundation', 2, 0, 0]]);
+  // This fixture bypasses the editor, so synchronize its operational instances as an admitted refit does.
+  const source = firstHost.server.world.rafts.get(ship.id);
+  const condition = refitRaftCondition(source, ship.grid.parts);
+  source.condition = condition.structure; source.conditionNext = condition.nextId;
   ship.hold.goods.madera = 2;
   ship.hp = 0.375;
   ship.rev = 7;

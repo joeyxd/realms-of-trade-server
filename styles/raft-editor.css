@@ -18,14 +18,26 @@
 .re-head, .re-options, .raft-editor footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .re-head { color: #f4bd65; letter-spacing: .07em; font-size: 12px; }
 .raft-editor .re-close { width: 36px; min-height: 34px; font-size: 23px; line-height: 1; }
-.re-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+.re-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin: 8px 0; }
 .raft-editor .re-tabs .on, .raft-editor [data-part].on { border-color: #f6c767; background: #674b30; box-shadow: inset 0 0 0 1px #e1ab54; }
 .re-pieces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
 .raft-editor .re-pieces button { display: flex; min-width: 0; min-height: 54px; padding: 4px 2px; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
 .re-pieces i { font-style: normal; color: #edc176; font-size: 20px; line-height: 1; }
 .re-pieces span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.re-repair-list { display: grid; gap: 4px; max-height: 156px; margin: 5px 0; overflow: auto; overscroll-behavior: contain; }
+.raft-editor .re-repair-list button { display: flex; min-width: 0; min-height: 42px; padding: 5px 7px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; border-color: #806f57; background: linear-gradient(105deg, #313b38, #292c2c); text-align: left; }
+.raft-editor .re-repair-list button[aria-pressed="true"] { border-color: #7bc8bd; background: #254544; box-shadow: inset 0 0 0 1px #69b8ad; }
+.re-repair-list button b { max-width: 100%; overflow: hidden; color: #e8d8b5; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.re-repair-list button span { max-width: 100%; overflow: hidden; color: #aebbb0; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.re-repair-empty { padding: 7px; color: #b6ac98; font-size: 10px; }
 .re-details { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; min-height: 32px; margin: 7px 0; padding: 6px 7px; border-left: 3px solid #d39a54; background: #ffffff0b; }
 .re-details small { text-align: right; color: #d6c6a5; font-size: 10px; }
+.re-capacity { display: grid; gap: 4px; margin: 5px 0 7px; padding: 7px 8px; border: 1px solid #73c4c14a; border-radius: 6px; background: linear-gradient(110deg, #18323899, #ffffff08); }
+.re-capacity > div { display: flex; justify-content: space-between; gap: 6px; color: #b9cbc4; font-size: 9px; }
+.re-capacity > div b { color: #eee2c9; font-size: 9px; text-align: right; }
+.re-capacity-kicker { color: #74cbc4; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.re-capacity-note { color: #a99f8d; font-size: 8px; }
+.re-capacity-warning { color: #ffad99; font-size: 9px; font-weight: 800; }
 .re-options { margin: 5px 0; }
 .re-options label { display: flex; align-items: center; gap: 6px; }
 .raft-editor select { min-height: 34px; background: #383332; border: 1px solid #806447; border-radius: 5px; padding: 0 7px; }
@@ -40,6 +52,10 @@
 .raft-editor footer { align-items: stretch; margin-top: 7px; }
 .re-route { max-width: 54%; align-self: center; color: #b6ac98; font-size: 9px; }
 .raft-editor .re-action { flex: 1; min-height: 42px; border-color: #ddb45e; background: linear-gradient(#79542e, #513924); color: #fff0c3; font-weight: 800; }
+.raft-editor.is-reinforce .re-action { border-color: #91b9bf; background: linear-gradient(#386168, #24444a); color: #e7ffff; }
+.raft-editor.is-reinforce .re-pieces, .raft-editor.is-reinforce .re-options { display: none; }
+.raft-editor.is-repair .re-pieces, .raft-editor.is-repair .re-options, .raft-editor.is-repair .re-supplies, .raft-editor.is-repair .re-remove-choice { display: none; }
+.raft-editor:not(.is-repair) .re-repair-list { display: none; }
 .raft-editor.is-remove .re-action { border-color: #cf8061; background: linear-gradient(#743e33, #4f2e2c); }
 @media (max-width: 700px), (max-height: 430px) {
   .raft-build-launcher { right: 7px; bottom: 7px; min-height: 44px; padding: 0 11px; font-size: 12px; }
@@ -50,10 +66,23 @@
   .raft-editor .re-pieces button { min-height: 43px; }
   .re-pieces i { font-size: 17px; }
   .re-pieces span { font-size: 9px; }
+  .re-repair-list { max-height: 128px; gap: 3px; margin: 3px 0; }
+  .raft-editor .re-repair-list button { min-height: 40px; padding: 4px 6px; }
+  .re-repair-list button b { font-size: 9px; }
+  .re-repair-list button span, .re-repair-empty { font-size: 8px; }
   .re-details { min-height: 25px; margin: 4px 0; padding: 4px; }
   .re-details small { font-size: 9px; }
   .re-status { min-height: 25px; margin: 4px 0; padding: 4px; }
   .raft-editor .re-supplies button { min-height: 29px; font-size: 9px; }
   .re-route { font-size: 8px; }
   .raft-editor .re-action { min-height: 38px; }
+}
+@media (max-height: 430px) {
+  .raft-editor { overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; }
+  .re-capacity { gap: 2px; margin: 3px 0 5px; padding: 5px 6px; }
+  .re-capacity > div { align-items: baseline; }
+  .re-capacity > div span { flex: 0 0 68px; }
+  .re-capacity > div b { max-width: 72%; line-height: 1.15; }
+  .re-capacity-kicker { font-size: 9px; }
+  .re-capacity-note { font-size: 9px; line-height: 1.15; }
 }

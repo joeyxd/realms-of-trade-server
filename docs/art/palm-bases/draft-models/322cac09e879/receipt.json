@@ -1,0 +1,303 @@
+{
+  "version": 1,
+  "recipe": "palm-bases-v1",
+  "recipeSha256": "322cac09e87990da0c5a6a6a7a0f333a6f4bac51dd417c815b19e7f5a876e036",
+  "source": {
+    "reference": {
+      "original": "materials/references/palmera tropical.png",
+      "copy": "docs/art/source/palm-bases-v1/reference.png",
+      "bytes": 2761091,
+      "sha256": "10962346ec73ab45bffe49398ad4f03629bc1051cb38b70ee5d5c1e661bd456a",
+      "copiedByteForByte": true
+    },
+    "geometry": {
+      "file": "src/render/palmBaseGeometry.js",
+      "bytes": 7623,
+      "sha256": "59465dbc448372b032c8bae3f8c636ffde6ded4269765fea1c8bbfb647d79692"
+    },
+    "tool": {
+      "file": "tools/prepare-palm-bases.mjs",
+      "bytes": 13048,
+      "sha256": "85a0ba8d00737ea45935c39f04016d940e67236589dadd3d27060bba360f5deb"
+    }
+  },
+  "geometryCodePath": "src/render/palmBaseGeometry.js:PALM_BASE_STYLES,palmBaseGeometry",
+  "format": "GLB 2.0; two transform-free meshes in roots/leaves order; POSITION,NORMAL,COLOR_0,TEXCOORD_0,_FLEX,_PAINT; no embedded images",
+  "atlasMapping": {
+    "roots": {
+      "atlas": "assets/textures/palm-family-v1/{albedo,normal}-desktop.webp",
+      "quadrant": "top-left; shares the S05 trunk tile",
+      "uvInset": [
+        0.015625,
+        0.015625
+      ],
+      "uvSpan": [
+        0.46875,
+        0.46875
+      ]
+    },
+    "leaves": {
+      "atlas": "palm-bases-v1 separate 2x1 atlas pair",
+      "layout": "two equal horizontal tiles, one per half of U; UVs inset 1/64 and span 15/32 vertically; mobile target 256x128, desktop target 512x256"
+    }
+  },
+  "materials": [
+    {
+      "part": "roots",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": false
+    },
+    {
+      "part": "leaves",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": true
+    }
+  ],
+  "budgets": {
+    "maxBytesPerModel": 81920,
+    "maxTrianglesPerModel": 600
+  },
+  "models": [
+    {
+      "style": "open",
+      "file": "assets/models/palm-base-open-v1.glb",
+      "bytes": 39912,
+      "sha256": "7da195cb31bef328bc4709613af9277152d7e7fe6f5824aec4735de178ddea22",
+      "triangles": 410,
+      "vertices": 1230,
+      "bounds": {
+        "min": [
+          -1.0224593877792358,
+          0.013115656562149525,
+          -1.11381196975708
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.9648388624191284
+        ]
+      },
+      "parts": {
+        "roots": {
+          "vertices": 750,
+          "triangles": 250,
+          "bounds": {
+            "min": [
+              -1.0224593877792358,
+              0.013115656562149525,
+              -0.8488884568214417
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.9648388624191284
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 480,
+          "triangles": 160,
+          "bounds": {
+            "min": [
+              -0.9327526688575745,
+              0.11999999731779099,
+              -1.11381196975708
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    },
+    {
+      "style": "lush",
+      "file": "assets/models/palm-base-lush-v1.glb",
+      "bytes": 51504,
+      "sha256": "f35c86788585e713ee0bf8b402bd17a499d18cb140ee78c8eb951b20a73067ff",
+      "triangles": 540,
+      "vertices": 1620,
+      "bounds": {
+        "min": [
+          -1.0727527141571045,
+          0.013115656562149525,
+          -1.1436957120895386
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.922872006893158
+        ]
+      },
+      "parts": {
+        "roots": {
+          "vertices": 900,
+          "triangles": 300,
+          "bounds": {
+            "min": [
+              -0.8056649565696716,
+              0.013115656562149525,
+              -0.922436535358429
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.922872006893158
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 720,
+          "triangles": 240,
+          "bounds": {
+            "min": [
+              -1.0727527141571045,
+              0.11999999731779099,
+              -1.1436957120895386
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    }
+  ],
+  "draft": true,
+  "outputs": [
+    {
+      "style": "open",
+      "file": "docs/art/palm-bases/draft-models/322cac09e879/palm-base-open-v1.glb",
+      "bytes": 39912,
+      "sha256": "7da195cb31bef328bc4709613af9277152d7e7fe6f5824aec4735de178ddea22",
+      "triangles": 410,
+      "vertices": 1230,
+      "bounds": {
+        "min": [
+          -1.0224593877792358,
+          0.013115656562149525,
+          -1.11381196975708
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.9648388624191284
+        ]
+      },
+      "parts": {
+        "roots": {
+          "vertices": 750,
+          "triangles": 250,
+          "bounds": {
+            "min": [
+              -1.0224593877792358,
+              0.013115656562149525,
+              -0.8488884568214417
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.9648388624191284
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 480,
+          "triangles": 160,
+          "bounds": {
+            "min": [
+              -0.9327526688575745,
+              0.11999999731779099,
+              -1.11381196975708
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    },
+    {
+      "style": "lush",
+      "file": "docs/art/palm-bases/draft-models/322cac09e879/palm-base-lush-v1.glb",
+      "bytes": 51504,
+      "sha256": "f35c86788585e713ee0bf8b402bd17a499d18cb140ee78c8eb951b20a73067ff",
+      "triangles": 540,
+      "vertices": 1620,
+      "bounds": {
+        "min": [
+          -1.0727527141571045,
+          0.013115656562149525,
+          -1.1436957120895386
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.922872006893158
+        ]
+      },
+      "parts": {
+        "roots": {
+          "vertices": 900,
+          "triangles": 300,
+          "bounds": {
+            "min": [
+              -0.8056649565696716,
+              0.013115656562149525,
+              -0.922436535358429
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.922872006893158
+            ]
+          }
+        },
+        "leaves": {
+          "vertices": 720,
+          "triangles": 240,
+          "bounds": {
+            "min": [
+              -1.0727527141571045,
+              0.11999999731779099,
+              -1.1436957120895386
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    }
+  ]
+}

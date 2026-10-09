@@ -366,6 +366,15 @@ export class RaftLayer {
           box(IRON, 0.085, 0.045, depth * 0.96, cx + sx * w * 0.33, y + 0.025, cz);
           for (const dz of [-0.34, 0, 0.34]) cyl(IRON_LIGHT, 0.035, 0.042, 0.045, cx + sx * w * 0.33, y + 0.064, cz + dz * depth, 6);
         }
+        if (id === 'reinforcedFoundation') {
+          // Cross-straps and bright bolts mark this load-bearing variant without extra textures.
+          for (const sz of [-1, 1]) {
+            const strapZ = cz + sz * depth * 0.34;
+            box(IRON, w * 0.94, 0.055, 0.13, cx, y + 0.045, strapZ);
+            for (const sx of [-1, 1]) cyl(IRON_LIGHT, 0.04, 0.045, 0.05,
+              cx + sx * w * 0.39, y + 0.085, strapZ, 6, Math.PI / 2);
+          }
+        }
       } else if (part.layer === 'pillar') {
         const ph = LEVEL_H - 0.18;
         for (const sx of [-1, 1]) for (const sz of [-1, 1])
@@ -750,10 +759,10 @@ export class RaftLayer {
       if (this.updateGangplank(view, record)) changed = true;
 
       const t = cleanNum(time);
-      const bob = Math.sin(t * 0.85 + view.phase) * 0.018;
+      const bob = record.pilot ? 0 : Math.sin(t * 0.85 + view.phase) * 0.018;
       view.visual.position.y = bob;
-      view.visual.rotation.z = Math.sin(t * 0.53 + view.phase) * 0.0025;
-      view.visual.rotation.x = Math.cos(t * 0.47 + view.phase) * 0.0018;
+      view.visual.rotation.z = record.pilot ? 0 : Math.sin(t * 0.53 + view.phase) * 0.0025;
+      view.visual.rotation.x = record.pilot ? 0 : Math.cos(t * 0.47 + view.phase) * 0.0018;
     }
 
     for (const [id, view] of this.views) {

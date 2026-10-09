@@ -53,8 +53,8 @@ test('trials are opt-in and reject client worlds', () => {
   assert.equal(new World(map.seed, { map }).navalTrial, null);
   assert.equal(new World(map.seed, { map, server: true }).navalTrial, null);
   assert.throws(() => new World(map.seed, { map, navalTrial: true }), TypeError);
-  const local = new LocalServer({ seed: map.seed, bots: 0, enemies: false });
-  assert.equal(local.world.navalTrial, null, 'the ordinary local server does not activate the trial API');
+  const local = new LocalServer({ navigation: false, seed: map.seed, bots: 0, enemies: false });
+  assert.equal(local.world.navalTrial, null, 'the disabled navigation server does not activate the trial API');
 });
 
 test('opaque handles bind owner and ship; forged handles and invalid control axes are rejected', () => {

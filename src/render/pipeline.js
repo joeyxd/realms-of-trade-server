@@ -388,6 +388,14 @@ export class Pipeline {
     const sw = Math.max(1, Math.floor(bw * this.q.ss)), sh = Math.max(1, Math.floor(bh * this.q.ss));
     this.rtMain.setSize(sw, sh);
     this.rtNormal.setSize(sw, sh);
+    // Low-mode FX can bind the depth sampler before this framebuffer is used again.
+    // Keep its storage dimensions aligned now, preserving every shared sampler binding.
+    const depth = this.rtNormal.depthTexture;
+    if (depth.image.width !== sw || depth.image.height !== sh) {
+      depth.dispose(); // A low-only session may have allocated the sampler before the FBO.
+      depth.image.width = sw; depth.image.height = sh;
+      depth.needsUpdate = true;
+    }
     this.rtPost.setSize(sw, sh);
     this.rtRefract.setSize(Math.max(1, sw >> 1), Math.max(1, sh >> 1));
     this.composite.uniforms.uTexel.value.set(1 / sw, 1 / sh);

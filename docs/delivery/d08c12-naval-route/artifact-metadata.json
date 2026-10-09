@@ -1,0 +1,11 @@
+﻿{
+    "pageBytes":  162344,
+    "sha256":  "978D50FC6ADA9854BB96517DC416F9DA0B62F7470DEAC2CA55C8E3B0EEB2DF94",
+    "companionFiles":  283,
+    "includesRoute":  true,
+    "version":  "0.6.0-alpha.12",
+    "protocol":  27,
+    "published":  false,
+    "scope":  "Current shared working tree, multi-file artifact. No isolated release or deployment."
+}
+

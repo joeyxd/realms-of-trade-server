@@ -23,20 +23,26 @@ import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
 import { raftCmd } from '../sim/systems/raftEditor.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
+import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
+import { ownerRaftCapacity } from '../sim/systems/raftCapacity.js';
 import { trustSaves, SAVE_TIMING, SAVE_NOW, MAX_SAVE } from './saves.js';
 import { MSG, PROTOCOL_VERSION, encodeEntity, sanitizeCmd, cleanName } from './protocol.js';
 import { preparePearlInputs } from './pearlInputBoundary.js';
 import { prepareDeathInputs } from './deathInputBoundary.js';
+import { ChatService } from './chatService.js';
+import { NavalTrial } from '../sim/naval/trial.js';
+import { NavalPilot } from '../sim/naval/pilot.js';
+import { NavalRoute } from '../sim/naval/route.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
 const MAX_QUEUE = 30;        // anything beyond is dropped (anti speed-hack / tab stalls)
 
 const PLAYER_COMMANDS = new Set(['equip', 'unequip', 'salvage', 'open', 'talk', 'quest', 'buy', 'sell',
-  'tut', 'tier', 'loadout', 'form', 'learn', 'pearl', 'market', 'commerce', 'raft']);
+  'tut', 'tier', 'loadout', 'form', 'learn', 'pearl', 'market', 'commerce', 'raft', 'resource']);
 const PEARL_COMMANDS = new Set(['swallow', 'spit', 'leave', 'give', 'sell']);
-const WORLD_COMMANDS = new Set(['open', 'talk', 'quest', 'buy', 'market', 'commerce', 'raft']);
+const WORLD_COMMANDS = new Set(['open', 'talk', 'quest', 'buy', 'market', 'commerce', 'raft', 'resource']);
 const DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'god', 'weapon', 'heal', 'clock', 'riposte',
   'level', 'mastery', 'tattoos', 'pearl', 'tattoo', 'loadout', 'tier', 'gold', 'drop', 'potions', 'item']);
 const WORLD_DEV_COMMANDS = new Set(['tune', 'spawn', 'clear', 'enc', 'clock', 'pearl', 'drop', 'item']);
@@ -49,7 +55,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, now = () => performance.now() }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, now = () => performance.now(), chat = {}, navigation = true }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -85,12 +91,26 @@ export class LocalServer {
     installInventory(this.world, namespace);
     installTrade(this.world); // M7: the economy (markets, plots) and the market command
     installRafts(this.world, namespace);
+    installResources(this.world);
+    if (typeof navigation !== 'boolean') throw new TypeError('navigation option');
+    if (navigation) {
+      this.world.navalTrial = new NavalTrial(this.world, { coast: true, navigation: true });
+      this.world.navalPilot = new NavalPilot(this.world, { live: true });
+      this.world.navalRoute = new NavalRoute(this.world);
+    }
     // Quests (M4): quest items drop only while wanted; picking one up counts.
     this.world.questWants = (e, item) => questWants(this.world, e, item);
     this.world.onPickup = (e, d) => { if (d.kind === 'quest') questEvent(this.world, e, 'collect', { item: d.q }); };
     this.send = send; // (clientId, msg) => void
     this.now = now;
     this.clients = new Map(); // clientId -> {entity, queue, ack}
+    this.inputAccess = null; // Optional host-owned controller gate, checked at enqueue and consumption.
+    this.chat = new ChatService({ config: chat, now, send, peers: () => {
+      const ecs = this.world.ecs;
+      return [...this.clients].filter(([, c]) => c.entity && ecs.alive[c.entity]).map(([clientId, c]) => ({
+        clientId, entity: c.entity, name: ecs.names[c.entity], x: ecs.x[c.entity], y: ecs.y[c.entity], z: ecs.z[c.entity],
+      }));
+    } });
     this.world.economy.onAdvance = (sec) => stepRaftWork(this.world, sec / CLOCK.daySec,
       (owner, p) => {
         const c = this.clients.get(this.clientOf(owner));
@@ -127,12 +147,14 @@ export class LocalServer {
       const save = this.beforeDetach ? profileDecision(this.beforeDetach(clientId, c.entity)) :
         this.profileAllowed(clientId, c, 'save');
       clearCommerceReceipts(this.world, c.entity);
+      clearResourceReceipts(this.world, c.entity);
       detachRafts(this.world, c.entity);
       const p = detachProfile(this.world, c.entity);
       if (save && p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
     }
     this.clients.delete(clientId);
+    this.chat.leave(clientId);
   }
 
   // The client of a player entity (private events and profiles go only there).
@@ -187,23 +209,50 @@ export class LocalServer {
           this.world.events.splice(birth, 1);
           this.broadcast({ t: MSG.SPAWN, e: this.world.describe(c.entity) });
         }
+        // Pre-admission snapshots may precede the browser's snapshot listener while assets load.
+        // Admission must resend the catalogue even when the world has not changed.
+        c.resourceSignature = null;
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
         this.flushEvents(); // Private events and already circulating pearls now know who "you" is.
         this.sendProfile(clientId, c);
+        this.chat.join(clientId);
         break;
       }
       case MSG.INPUTS: {
         if (!c.entity || !Array.isArray(msg.cmds)) return;
+        if (this.inputAccess && !this.inputAccess(clientId, msg.control ?? null, null)) return;
         for (const raw of msg.cmds) {
           const cmd = sanitizeCmd(raw);
-          if (cmd && cmd.seq > c.ack && (c.queue.length === 0 || cmd.seq > c.queue[c.queue.length - 1].seq)) c.queue.push(cmd);
+          if (cmd && (!this.inputAccess || this.inputAccess(clientId, msg.control ?? null, cmd)) &&
+              cmd.seq > c.ack && (c.queue.length === 0 || cmd.seq > c.queue[c.queue.length - 1].seq)) {
+            if (msg.control) cmd.control = { ...msg.control };
+            c.queue.push(cmd);
+          }
         }
         // Too many waiting: the oldest go, but what they pressed is kept for the next one played.
         if (c.queue.length > MAX_QUEUE) for (const d of c.queue.splice(0, c.queue.length - MAX_QUEUE)) { c.carry |= d.prs; this.stats.trimmed++; }
         break;
       }
+      case MSG.SHIP_INPUT:
+      case MSG.DECK_INPUT: {
+        const pilot = this.world.navalPilot;
+        if (!pilot || !c.entity || c.paused || this.tickBlocked ||
+            !this.commandAllowed(c, { world: true, target: null })) return;
+        // Identity is the authenticated connection. Reject unknown keys before projecting axes.
+        const keys = msg.t === MSG.SHIP_INPUT ? ['t', 'epoch', 'seq', 'throttle', 'brake', 'steer', 'capture'] :
+          ['t', 'epoch', 'seq', 'mx', 'mz'];
+        if (Object.keys(msg).some((key) => !keys.includes(key))) return;
+        const { t, ...command } = msg;
+        if (t === MSG.SHIP_INPUT) pilot.input(c.entity, command);
+        else pilot.deckInput(c.entity, command);
+        break;
+      }
       case MSG.CMD: {
-        if (msg.type === 'pause') { c.paused = this.pausable && !!msg.on; break; }
+        if (msg.type === 'pause') {
+          c.paused = this.pausable && !!msg.on;
+          if (msg.on) this.world.navalPilot?.neutral?.(c.entity);
+          break;
+        }
         // Local-only debug teleport (used by tools/shot.mjs). A real server never implements this.
         if (msg.type === 'debug_teleport') { this.debugTeleport(c, msg); break; }
         if (this.dev && msg.type === 'dev' && c.entity) this.devCommand(c, msg);
@@ -213,6 +262,9 @@ export class LocalServer {
       case MSG.PING:
         this.send(clientId, { t: MSG.PONG, t0: msg.t0, tick: this.world.tick });
         break;
+      case MSG.CHAT_SEND:
+        this.chat.receive(clientId, msg, this.world.tick);
+        break;
       default:
         break;
     }
@@ -220,6 +272,7 @@ export class LocalServer {
 
   // What a player asks for with what they own (M4): the bag, the equipment, a chest.
   playerCommand(c, msg) {
+    if (msg?.type === 'navalPilot') return this.navalCommand(c, msg);
     if (!msg || !PLAYER_COMMANDS.has(msg.type) ||
         (msg.type === 'pearl' && !PEARL_COMMANDS.has(msg.op))) return false;
     // Classify without calling a helper: even talk/list/quote can change progress or receipt caches.
@@ -228,6 +281,13 @@ export class LocalServer {
     if (!this.commandAllowed(c, { world: WORLD_COMMANDS.has(msg.type) || (pearl && msg.op !== 'give'),
       target: pearl && msg.op === 'give' ? msg.target | 0 : null })) return false;
     const w = this.world, e = c.entity, uid = msg.uid | 0;
+    // Cargo mass and blueprint are captured for the whole voyage, including coastal exploration.
+    // Keep economy helpers' own locks as well: trusted callers must not bypass this transport check.
+    if (w.navalPilot?.locked?.(e) && ['raft', 'commerce', 'market', 'buy', 'sell'].includes(msg.type)) {
+      w.emit({ type: 'commandDenied', to: e, e, why: 'navigation' });
+      return false;
+    }
+    if (w.navalPilot?.aboard(e)) return false;
     switch (msg.type) {
       case 'equip': equipItem(w, e, uid, typeof msg.slot === 'string' ? msg.slot : undefined); break;
       case 'unequip': unequipItem(w, e, String(msg.slot)); break;
@@ -255,10 +315,47 @@ export class LocalServer {
       // Trade (M7): a town's board, buying and selling goods into your pack.
       case 'market': marketCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       case 'commerce': commerceCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
+      case 'resource': resourceCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       case 'raft': raftCmd(w, e, msg, (p) => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); break;
       default: break;
     }
     return true; // Dispatched, not an acknowledgement of helper success or durable storage.
+  }
+
+  navalCommand(c, msg) {
+    const pilot = this.world.navalPilot;
+    if (!pilot || c?.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
+    const fields = { mount: ['shipId'], reboard: ['shipId'], invite: ['shipId', 'target'], board: ['shipId'],
+      walk: ['epoch'], helm: ['epoch'], land: ['epoch'], dock: ['epoch'], recall: [], leave: ['epoch'], deckleave: ['epoch'],
+      routeStart: ['epoch'], routeAbort: ['epoch'] };
+    if (!Object.hasOwn(fields, msg.op) || Object.keys(msg).some((key) => !['t', 'type', 'op', ...fields[msg.op]].includes(key))) return false;
+    let ok = false;
+    const e = c.entity;
+    switch (msg.op) {
+      case 'mount': ok = pilot.mount(e, msg.shipId); break;
+      case 'reboard': ok = pilot.reboard?.(e, msg.shipId) || false; break;
+      case 'invite': ok = pilot.invite(e, msg.shipId, msg.target); break;
+      case 'board': ok = pilot.board(e, msg.shipId); break;
+      case 'walk': ok = pilot.walk(e, msg.epoch); break;
+      case 'helm': ok = pilot.helm(e, msg.epoch); break;
+      case 'land': ok = pilot.land?.(e, msg.epoch) || false; break;
+      case 'dock': ok = pilot.dock?.(e, msg.epoch) || false; break;
+      case 'recall': ok = pilot.recall?.(e) || false; break;
+      case 'routeStart': ok = this.world.navalRoute?.start(e, msg.epoch) || false; break;
+      case 'routeAbort': ok = this.world.navalRoute?.abort(e, msg.epoch) || false; break;
+      // In the live game leaving is a nearby docking request, never an offshore teleport.
+      case 'leave': ok = pilot.dock?.(e, msg.epoch) || false; break;
+      case 'deckleave': ok = pilot.land?.(e, pilot.snapshot(e).epoch) || false; break;
+    }
+    if (ok) { c.queue.length = 0; c.carry = 0; c.last = null; c.fillPt = 0; }
+    const source = this.world.rafts.get(msg.shipId);
+    const load = !ok && source && (msg.op === 'mount' && source.owner === e || msg.op === 'board')
+      ? pilot.loadCapacity(msg.shipId, msg.op === 'board' ? e : null) : null;
+    this.world.emit({ type: 'navalPilot', to: e, op: msg.op, ok,
+      ...(load?.status === 'overloaded' ? { why: 'capacity' } : {}), ...pilot.snapshot(e) });
+    // Publish the transition immediately so a rapid shore/reboard cannot race an obsolete epoch.
+    this.broadcastSnapshot();
+    return ok;
   }
 
   commandAllowed(c, plan) {
@@ -526,8 +623,20 @@ export class LocalServer {
 
   #stepWorld() {
     const w = this.world;
-    for (const c of this.clients.values()) {
+    for (const [id, c] of this.clients) {
       if (!c.entity) continue;
+      // The host invalidates queues synchronously; physical neutralization remains inside a tick.
+      if (c.controlNeutral) {
+        c.controlNeutral = false;
+        const ecs = w.ecs, e = c.entity;
+        for (const field of ['atkBuf', 'dashBuffer', 'rBuf', 'qBuf', 'eBuf']) if (ecs[field]) ecs[field][e] = 0;
+        this.#applyFiller(c);
+        continue;
+      }
+      if (this.inputAccess) {
+        c.queue = c.queue.filter((cmd) => this.inputAccess(id, cmd.control ?? null, cmd));
+        if (!this.inputAccess(id, null, null, 'active')) { this.#applyFiller(c); continue; }
+      }
       // Commands the fillers already stood in for (they arrived late, from before fillPt): dropped, their
       // presses kept for the next real command.
       while (c.fillPt && c.queue.length && c.queue[0].pt <= c.fillPt) {
@@ -545,6 +654,7 @@ export class LocalServer {
       for (let i = 0; i < take; i++) {
         const cmd = c.queue.shift();
         if (c.carry) { cmd.prs |= c.carry; c.carry = 0; }
+        if (this.inputAccess && !this.inputAccess(id, cmd.control ?? null, cmd)) continue;
         if (cmd.pt < w.tick - tuning.combat.rewind) this.stats.clamped++;
         w.applyCommand(c.entity, cmd);
         if (this.#applyFailed) throw new TypeError('failed tick boundary');
@@ -607,7 +717,10 @@ export class LocalServer {
         if (id !== undefined) {
           this.send(id, { t: MSG.EVENT, ev });
           if (SAVE_NOW.has(ev.type) || (ev.type === 'raftEdit' && ev.ok && ev.op !== 'quote')
+              || (ev.type === 'navalPilot' && ev.ok !== false)
+              || (ev.type === 'navalImpact' && ev.damage > 0)
               || (ev.type === 'commerce' && ev.ok && ['buy', 'sell', 'transfer'].includes(ev.op))
+              || (ev.type === 'resource' && ev.ok)
               || (ev.type === 'raftProduction' && Object.keys(ev.made).length)) this.saveSoon(this.clients.get(id), 0);
         }
         continue;
@@ -655,13 +768,24 @@ export class LocalServer {
     const ink = { clouds: w.inkClouds.filter((f) => f.tEnd > w.tick).map(({ e, seq, x, z, r, t0, tEnd }) => ({ e, seq, x, z, r, t0, tEnd })), marks: [] };
     const clock = { tick: w.tick, hours: w.gameHoursAt(), daySec: CLOCK.daySec };
     const rafts = publicRafts(w);
+    const resources = publicResources(w);
+    // Resource positions are a catalogue, not a movement stream. Send it on admission or a
+    // state change; countdowns derive from the accompanying tick on the client.
+    const resourceSignature = JSON.stringify({ ...resources,
+      nodes: resources.nodes.map(({ wait, ...node }) => node) });
     for (let e = 1; e < ecs.cap; e++) {
       if (!ecs.alive[e] || !(ecs.mask[e] & C.POS) || (ecs.mask[e] & C.VEHICLE)) continue;
       ents.push(encodeEntity(ecs, e));
       if ((ecs.mask[e] & C.ENEMY) && ecs.dead[e] <= 0 && ecs.brain[e]?.inkEnd > w.tick) ink.marks.push({ e, tEnd: ecs.brain[e].inkEnd });
     }
     for (const [id, c] of this.clients) {
-      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts });
+      const resourceChanged = c.resourceSignature !== resourceSignature;
+      this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts,
+        ...(resourceChanged ? { resources } : {}),
+        capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
+        ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
+          voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null } : {}) });
+      c.resourceSignature = resourceSignature;
     }
   }
 }

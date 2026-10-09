@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "family": "shrub-textures-v1",
+  "generator": {
+    "script": "tools/prepare-shrub-textures.mjs",
+    "snapshot": "docs/art/source/shrub-runtime-v1/prepare-shrub-textures.source.mjs",
+    "scriptSha256": "aebdacf7d37e26d3ec47172b83d525659186417515cf04861a1763f0c9bd88ee",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; no color transform",
+    "normalResize": "renormalized XYZ vectors after resize"
+  },
+  "sources": [
+    {
+      "file": "materials/generated/tropical-shrub-v1/albedo.png",
+      "snapshot": "docs/art/source/shrub-runtime-v1/albedo.png",
+      "bytes": 947932,
+      "sha256": "c96a2edda9223de2e7cf1c263843c0b016d4ec3f48174658871a5807e0027a2c"
+    },
+    {
+      "file": "materials/generated/tropical-shrub-v1/normal.png",
+      "snapshot": "docs/art/source/shrub-runtime-v1/normal.png",
+      "bytes": 861495,
+      "sha256": "34cacaa465469d8a892851bf3a8a49f56e20fe24752aecfda6320d18e53293e8"
+    },
+    {
+      "file": "materials/generated/tropical-shrub-v1/concept.png",
+      "snapshot": "docs/art/source/shrub-runtime-v1/concept.png",
+      "bytes": 1720741,
+      "sha256": "36d847b8dbcb961cfbac2f3292ec4333cc7f62534bf5e0fef6801b8ed7f4ea6c"
+    },
+    {
+      "file": "materials/generated/tropical-shrub-v1/prompts.json",
+      "snapshot": "docs/art/source/shrub-runtime-v1/prompts.json",
+      "bytes": 5394,
+      "sha256": "fdffac4153d306f3ad52e07700db38a3be485f5e5208198fb2263a9b894e9ce9"
+    },
+    {
+      "file": "materials/generated/tropical-shrub-v1/receipt.json",
+      "snapshot": "docs/art/source/shrub-runtime-v1/receipt.json",
+      "bytes": 3036,
+      "sha256": "488d3b2e8c84b44fc00226d467d536376e2908174ef20bb399df63253807b2ce"
+    }
+  ],
+  "tiles": [
+    "leaf-a",
+    "leaf-b",
+    "leaf-c",
+    "leaf-d"
+  ],
+  "cropPixelsAtSource1254": {
+    "leaf-a": [
+      196,
+      13,
+      262,
+      612
+    ],
+    "leaf-b": [
+      743,
+      14,
+      386,
+      611
+    ],
+    "leaf-c": [
+      215,
+      639,
+      231,
+      591
+    ],
+    "leaf-d": [
+      750,
+      638,
+      386,
+      592
+    ]
+  },
+  "cropRule": "source albedo alpha >16 bounding box plus 6 px margin; same rectangle for color and normal; aspect preserved in tile",
+  "alpha": "source albedo alpha used for both maps; original normal texels below alpha 64 neutralized before color-authoritative alpha is applied; holes retained",
+  "uv": {
+    "order": "top-left, top-right, bottom-left, bottom-right",
+    "textureLoaderFlipY": true,
+    "inset": [
+      0.015625,
+      0.015625
+    ],
+    "span": [
+      0.46875,
+      0.46875
+    ]
+  },
+  "shaderAlphaThreshold": 0.35,
+  "integrity": [
+    {
+      "scale": "pc",
+      "dimensions": [
+        512,
+        512
+      ],
+      "alphaMismatches": 0,
+      "pixelsAboveAlphaCutoff": 68045,
+      "alphaCutoff": 0.34901960784313724,
+      "normalZBelow128AboveCutoff": 0,
+      "minimumNormalZAboveCutoff": 191,
+      "enclosedHolePixelsByTile": [
+        0,
+        325,
+        0,
+        136
+      ]
+    },
+    {
+      "scale": "mobile",
+      "dimensions": [
+        256,
+        256
+      ],
+      "alphaMismatches": 0,
+      "pixelsAboveAlphaCutoff": 17075,
+      "alphaCutoff": 0.34901960784313724,
+      "normalZBelow128AboveCutoff": 0,
+      "minimumNormalZAboveCutoff": 206,
+      "enclosedHolePixelsByTile": [
+        0,
+        85,
+        0,
+        30
+      ]
+    }
+  ],
+  "derivatives": [
+    {
+      "id": "albedo-pc",
+      "file": "assets/textures/shrub-v1/albedo-pc.webp",
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 40212,
+      "sha256": "22770bacc830389a3a898240219398f4fe91bd87e9dac3a3550791567b2253e4",
+      "encoding": "WebP quality 88",
+      "tileGrid": "2x2; albedo alpha authoritative; four per-tile gutters"
+    },
+    {
+      "id": "normal-pc",
+      "file": "assets/textures/shrub-v1/normal-pc.webp",
+      "dimensions": [
+        512,
+        512
+      ],
+      "bytes": 130712,
+      "sha256": "106094b74750ca8e57aa46985540f9e917e2e9822c70c8b5230e3c9c059ee6d7",
+      "encoding": "lossless WebP",
+      "tileGrid": "2x2; albedo alpha authoritative; four per-tile gutters"
+    },
+    {
+      "id": "albedo-mobile",
+      "file": "assets/textures/shrub-v1/albedo-mobile.webp",
+      "dimensions": [
+        256,
+        256
+      ],
+      "bytes": 14606,
+      "sha256": "bfb26e9a6bc4508cc645789a85c8ff0e9e3b90567784f9ad9b4b8064bb9bb676",
+      "encoding": "WebP quality 85",
+      "tileGrid": "2x2; albedo alpha authoritative; four per-tile gutters"
+    },
+    {
+      "id": "normal-mobile",
+      "file": "assets/textures/shrub-v1/normal-mobile.webp",
+      "dimensions": [
+        256,
+        256
+      ],
+      "bytes": 44414,
+      "sha256": "9542074726ab618ab483f659c37965724be85862f7b88b95926a48fceb18d134",
+      "encoding": "lossless WebP",
+      "tileGrid": "2x2; albedo alpha authoritative; four per-tile gutters"
+    }
+  ],
+  "draft": {
+    "file": "docs/art/shrubs/shrub-atlas-v1-draft.png",
+    "dimensions": [
+      512,
+      512
+    ],
+    "bytes": 154114,
+    "sha256": "c2fc7ef5971dc53ee1de697f7cd0e5703e9e6d6d98ca345e1de54d2a88ae626f"
+  },
+  "aggregateRuntimeBytes": 229944
+}

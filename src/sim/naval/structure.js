@@ -69,6 +69,38 @@ export function applyPartDamage(structure, id, amount) {
   };
 }
 
+// Restore the existing instance, never insert another blueprint piece or refund its materials.
+export function repairPart(structure, id) {
+  assertStructure(structure);
+  const index = structure.entries.findIndex((entry) => entry.id === id);
+  if (index < 0) fail('Unknown naval part ID');
+  const target = structure.entries[index];
+  if (target.hp === target.maxHp) return { structure, event: null };
+  const entries = structure.entries.slice();
+  entries[index] = { ...target, hp: target.maxHp };
+  return { structure: makeStructure(entries), event: Object.freeze({ partId: id,
+    restored: target.maxHp - target.hp, reconstructed: target.hp === 0 }) };
+}
+
+function conditionFraction(entry) {
+  const part = entry?.part || entry?.piece, def = RAFT_PARTS[part?.[0]];
+  if (!def || !finite(entry.hp) || entry.maxHp !== def.hp || entry.hp < 0 || entry.hp > entry.maxHp)
+    fail('Invalid repair condition');
+  return { def, fraction: entry.hp / entry.maxHp };
+}
+
+export function repairPartCost(entry) {
+  const { def, fraction } = conditionFraction(entry);
+  return Object.fromEntries(Object.entries(def.cost).map(([good, count]) =>
+    [good, fraction === 1 ? 0 : Math.max(1, Math.ceil(count * (1 - fraction) - 1e-10))]).filter(([, count]) => count > 0));
+}
+
+export function salvagePartCost(entry) {
+  const { def, fraction } = conditionFraction(entry);
+  return Object.fromEntries(Object.entries(def.cost).map(([good, count]) =>
+    [good, Math.floor(count * RAFT.refund * fraction + 1e-10)]).filter(([, count]) => count > 0));
+}
+
 export function hullIntegrity(structure) {
   assertStructure(structure);
   let hp = 0, maxHp = 0, total = 0, liveFloats = 0;

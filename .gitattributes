@@ -1,0 +1,3 @@
+# Preserve checksum-bound source archives and review evidence byte for byte.
+docs/art/** -text
+docs/delivery/** -text

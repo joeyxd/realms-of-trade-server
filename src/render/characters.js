@@ -12,6 +12,7 @@ import { BONES, makeBones } from './charkit.js';
 import { LOOKS, buildLook } from './charlooks.js';
 import { assets } from './assets/registry.js';
 import { charToon } from './assets/toonmat.js';
+import { stepHarvestPose } from './harvestPose.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
@@ -205,7 +206,9 @@ export class CharacterView {
     this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1) * (this.back ? -1 : 1);
     const H = Math.PI;
     if (this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
-      if (this.onStep) this.onStep(Math.floor((this.phase - H / 2) / H) & 1);
+      const foot = Math.floor((this.phase - H / 2) / H) & 1;
+      if (this.onStep) this.onStep(foot);
+      if (this.onFootprint) this.onFootprint(foot, s);
     }
     // Dormant sentinels wake up over the wake time (s.act WAKE), then stay awake.
     const act = s.act | 0;
@@ -265,6 +268,7 @@ export class CharacterView {
     this.foreR.rotation.x = k(this.foreR.rotation.x, -(fr + 0.2 * r * Math.max(0, sn)) * nd - 0.2 * d - 0.15 * dorm, 18);
 
     this.combat(dt, s);
+    stepHarvestPose(this, dt, s);
 
     // Cloth panels: the front rides the leading thigh, the back trails with speed (springs).
     const fT = clamp(Math.min(this.thighL.rotation.x, this.thighR.rotation.x) * 0.75 - 0.05 * r - 0.12 * d, -1, 0.15);

@@ -1,0 +1,229 @@
+{
+  "schema": "character-artifact-http/v1",
+  "scope": "Local catalog GET file routes; no gameplay or deployment acceptance",
+  "catalogRevision": 30,
+  "rows": [
+    "char-base-male-v3",
+    "char-base-female-v3"
+  ],
+  "checkedAt": "2026-10-08T06:58:57.131Z",
+  "artifacts": [
+    {
+      "path": "docs/art/characters-base-v3/browser-evidence-v3.json",
+      "status": 200,
+      "bytes": 27285,
+      "sha256": "647317c8f18d1163f8f8c734e98a41126df7783ddf0631f629efddda949a3dfd"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-face-v3.png",
+      "status": 200,
+      "bytes": 348607,
+      "sha256": "5b2abb9b682212226ba5ec3a0cfd99a7cc80b17899a3be02a4052582b8df3e85"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-foot-v3.png",
+      "status": 200,
+      "bytes": 332069,
+      "sha256": "57eb6f8ace965f668cf487d87c53b90dab0f45cb77c40587f29149b9385cf274"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-front-v3.png",
+      "status": 200,
+      "bytes": 356993,
+      "sha256": "e3bd347324b736a9732815f523749dd38814786d402e39a36df4815f617ab8c1"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-hand-v3.png",
+      "status": 200,
+      "bytes": 289796,
+      "sha256": "30bbccd7d36a0d8e09f7e6e63c54362f3828875589a4432041f0556087664049"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-joints-v3.png",
+      "status": 200,
+      "bytes": 352772,
+      "sha256": "41f0c35faebaf95514be2de3fceebccf04b5f2153506bc18318fcb51afdc95fe"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-female-uv-v3.png",
+      "status": 200,
+      "bytes": 332495,
+      "sha256": "6387c933c9b7a4a18bf8b3b84f0cabe49e36c69e374de6b42f4b1e0dc5a4b6a0"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-face-v3.png",
+      "status": 200,
+      "bytes": 347464,
+      "sha256": "e51c643a792e5b34d3e36196022e0167c4b4828e0172442935c6bd336add8e3f"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-foot-v3.png",
+      "status": 200,
+      "bytes": 342588,
+      "sha256": "6f1cb68532caebe58f91e02b981bc30dc3722dbbd03a4809776e05e6c77ba23d"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-front-v3.png",
+      "status": 200,
+      "bytes": 355943,
+      "sha256": "a6b80ee3e9f04fe5a63b790d5c0420e670676dd8ad3e74bb08e22bae6348db46"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-hand-v3.png",
+      "status": 200,
+      "bytes": 299363,
+      "sha256": "d973cf1fc1aa2be53d42bd6f31f5d3849be3fd6c9940bdb8c808e32f9ec51e61"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-joints-v3.png",
+      "status": 200,
+      "bytes": 354173,
+      "sha256": "08811cc4838b62ca5ec62c3e0c792f4aabf9e2ebafaa26ef8f886f629d56a55b"
+    },
+    {
+      "path": "docs/art/characters-base-v3/desktop-male-uv-v3.png",
+      "status": 200,
+      "bytes": 335521,
+      "sha256": "61f5d1e0bbe57dd9c2aaaa31ef91840b5a77a2537d66474a8a089a59b9f82d89"
+    },
+    {
+      "path": "docs/art/characters-base-v3/mobile-female-front-v3.png",
+      "status": 200,
+      "bytes": 145694,
+      "sha256": "ac0de1b16063d5e21ded976d031714af3a70b9a6d44568b8028527f86da34239"
+    },
+    {
+      "path": "docs/art/characters-base-v3/mobile-male-front-v3.png",
+      "status": 200,
+      "bytes": 146231,
+      "sha256": "013c98ce97a10f005cd910433d7b84f4469c89715e4d516d58fcc0d3efe317fb"
+    },
+    {
+      "path": "docs/art/characters-base-v3/pose-evidence-v3.json",
+      "status": 200,
+      "bytes": 361611,
+      "sha256": "ee7ebaa79ec2f58626dfa235cbdb8a376b169cb90929fe5327eff671b5d18571"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/concepts-receipt.json",
+      "status": 200,
+      "bytes": 1375,
+      "sha256": "109bdc597c646d1004474500b88074dccf1b1a17cd0d89d0f13869d14d8e2245"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/female-concept-v1.png",
+      "status": 200,
+      "bytes": 1817190,
+      "sha256": "4cca04754e693776fca0c099794fb9ffe76cc9009333259388a74a3dc58ae0a7"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/male-concept-v1.png",
+      "status": 200,
+      "bytes": 1866059,
+      "sha256": "74c602a02d35d210102c5a3848d2c0c12dfe49e9f268e60625a1f1d0f77ee268"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/prompts.json",
+      "status": 200,
+      "bytes": 5961,
+      "sha256": "b07fc97ff7e27f8f3c8d214f6199dab6e37d6b4152146e759e921b9652ab464a"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/audit-poses.mjs.txt",
+      "status": 200,
+      "bytes": 15048,
+      "sha256": "e632d9a7766216c32cd4c18bd4e8850d681bce6fe2b1e7035642cc68be9a5634"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/body.mjs.txt",
+      "status": 200,
+      "bytes": 23062,
+      "sha256": "42bb55ddd61ad7cf34d39113fbfe3ec6b6ab537a5b8a087356beb345a780393e"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/female-base-v3-mobile.glb",
+      "status": 200,
+      "bytes": 581976,
+      "sha256": "8e95dcd49e6a21141d411a20e34b81a2b9a81772fa039182365ae6c6b65ae8fd"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/female-base-v3.glb",
+      "status": 200,
+      "bytes": 780584,
+      "sha256": "285b0cb4e894bda814376088857c2f15c1624fa1af46d4db4e04fb41b9f77839"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/generate.mjs.txt",
+      "status": 200,
+      "bytes": 9470,
+      "sha256": "69864022686f7dffb8ad40a71762f93336c62aad35fcad2816cc6af165f6979a"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/guide-prompt.json",
+      "status": 200,
+      "bytes": 2099,
+      "sha256": "16ebb84a2d15b31ca439dec1d6e17ccbcc5958a6c97c6fba9d71bce58bda144f"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/guide-receipt.json",
+      "status": 200,
+      "bytes": 587,
+      "sha256": "31e03a813e5807f0c30eb37d08dad2bc5d29d25e09a80d93b6d00adea922098a"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/head-style-guide-v1.png",
+      "status": 200,
+      "bytes": 1849477,
+      "sha256": "d66a91cabfcaf6f23b841a9fb383f7a10724846cf4f92600eef5cb02a705797c"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/head.mjs.txt",
+      "status": 200,
+      "bytes": 9249,
+      "sha256": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/inspect.mjs.txt",
+      "status": 200,
+      "bytes": 6578,
+      "sha256": "0fed406324cf9039a2a86e9f9ab962cfae6713c9d109689475991a76cba19b72"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/male-base-v3-mobile.glb",
+      "status": 200,
+      "bytes": 581452,
+      "sha256": "e3e411bfb5005b7de862dea0d2888b94410858c77385c1bc9077ce705a8f20a4"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/male-base-v3.glb",
+      "status": 200,
+      "bytes": 780064,
+      "sha256": "5a5437a9af6e975ce246c7d5d424153149d122e0cec67f144d852cf935007637"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/models-receipt.json",
+      "status": 200,
+      "bytes": 16706,
+      "sha256": "9a72a18df74986a12843ad5acb1ec3e3ea7e1ccb446777b193eb52ff232beba3"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/plan-snapshot-v4.md",
+      "status": 200,
+      "bytes": 13678,
+      "sha256": "c41ed8b71dfd2cc41dcb8287624f933d382dadfa80c7ddbfe028a2a39d5cfaec"
+    },
+    {
+      "path": "docs/art/source/characters-base-v3/textures.mjs.txt",
+      "status": 200,
+      "bytes": 6364,
+      "sha256": "3a29f120c853a663d39496803755564489f46e010834e0a68d0e4c72409110a3"
+    },
+    {
+      "path": "docs/delivery/characters-base-v3.md",
+      "status": 200,
+      "bytes": 6980,
+      "sha256": "9360d46192d7b954f4053d68c52df1b078497a69ba15db11a5c485ff464ca1a7"
+    }
+  ],
+  "failures": []
+}

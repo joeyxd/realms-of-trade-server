@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-07T00:06:28.236Z",
+  "selection": "Author explicitly prefers this supplied file for dry sand.",
+  "origin": "User-supplied local bitmap; original creation method not asserted. No creative modification or image generation in this cut.",
+  "original": {
+    "path": "materials/Textura de arena dorada con guijarros y conchas.png",
+    "bytes": 3728793,
+    "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1",
+    "width": 1254,
+    "height": 1254
+  },
+  "source": {
+    "path": "docs/art/source/sand-dry-selected-v1.png",
+    "bytes": 3728793,
+    "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1",
+    "width": 1254,
+    "height": 1254
+  },
+  "outputs": [
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-desktop.webp",
+      "bytes": 441600,
+      "sha256": "acbbd2aa3ca2f66cec616a8db4f444bc7dd08280bc8d5d9c80792fb6a75e07a6",
+      "width": 1024,
+      "height": 1024,
+      "quality": 88,
+      "role": "albedo"
+    },
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-mobile.webp",
+      "bytes": 97836,
+      "sha256": "7056c7c42c7fdc431dc2a51069394497168d0b77145245bb7d73569f797926e9",
+      "width": 512,
+      "height": 512,
+      "quality": 85,
+      "role": "mobile"
+    }
+  ],
+  "conversion": {
+    "tool": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "filter": "Lanczos",
+    "codec": "libwebp",
+    "compressionLevel": 6
+  },
+  "repeatProof": {
+    "path": "docs/art/sand/sand-dry-selected-v1-repeat-3x3.png",
+    "bytes": 1922799,
+    "sha256": "eebecc97903a9ecde2b95101e2b91e1fd69c73a654e9d7a154931311c4e7c0cb",
+    "width": 1536,
+    "height": 1536
+  },
+  "review": {
+    "style": "Inspected original, desktop, mobile and 3x3 repeat. Warm ochre sand with inked pebbles/shells and clear shallow ripples; current author-selected appearance.",
+    "repeat": "No glaring hard seam observed in 3x3 preview. Recognisable repeated shell/pebble groups remain; exact periodic edge equality not claimed.",
+    "detail": "Pebbles and shells are painted into the bitmap, including shading; not geometry.",
+    "runtime": "Prepared only. No game consumer, device selection, lighting or gameplay capture verified."
+  }
+}

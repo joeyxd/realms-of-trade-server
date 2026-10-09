@@ -1,0 +1,6003 @@
+{
+  "schemaVersion": 1,
+  "cut": "S11",
+  "date": "2026-10-07",
+  "diagnostic": {
+    "offscreenAttachmentProbe": [
+      {
+        "tier": "high"
+      },
+      {
+        "tier": "low"
+      },
+      {
+        "tier": "medium"
+      },
+      {
+        "kind": "target",
+        "name": "rtNormal",
+        "w": 1280,
+        "h": 720,
+        "depthW": 1280,
+        "depthH": 720,
+        "status": 36057
+      },
+      {
+        "kind": "render",
+        "e": 1286,
+        "layers": 1,
+        "rt": "rtNormal"
+      },
+      {
+        "tier": "high"
+      }
+    ],
+    "waitProbe": [
+      {
+        "tier": "high",
+        "immediateGlError": 0,
+        "after100msGlError": 0
+      },
+      {
+        "tier": "low",
+        "immediateGlError": 0,
+        "after100msGlError": 0
+      },
+      {
+        "tier": "medium",
+        "immediateGlError": 1286,
+        "after100msGlError": 1286
+      },
+      {
+        "tier": "high",
+        "immediateGlError": 0,
+        "after100msGlError": 0
+      }
+    ],
+    "note": "Diagnostic before the final depth resize correction. The medium normal target was FRAMEBUFFER_INCOMPLETE_ATTACHMENT (36057); waiting did not clear GL1286. Final six-case transitions below pass."
+  },
+  "scope": "Local solo renderer; fixed water time 4.2, existing seeded map, three camera views per case.",
+  "before": [
+    {
+      "device": "desktop",
+      "phase": "before",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 10,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+              }
+            ],
+            "counts": {
+              "frame": 495,
+              "calls": 242,
+              "triangles": 428624,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+            "triangles": 2,
+            "materials": [
+              "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+              "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 10,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+              }
+            ],
+            "counts": {
+              "frame": 887,
+              "calls": 188,
+              "triangles": 360920,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+            "triangles": 2,
+            "materials": [
+              "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+              "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 10,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+              }
+            ],
+            "counts": {
+              "frame": 1181,
+              "calls": 242,
+              "triangles": 376686,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+            "triangles": 2,
+            "materials": [
+              "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+              "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 10,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+            }
+          ],
+          "counts": {
+            "frame": 1223,
+            "calls": 242,
+            "triangles": 376686,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+          "triangles": 2,
+          "materials": [
+            "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+            "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": false,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 10,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 0,
+            "uRefract": 0.035,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "a6f27d73-f0e5-449d-a275-5e7c0847d5d6"
+            }
+          ],
+          "counts": {
+            "frame": 1229,
+            "calls": 180,
+            "triangles": 273370,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+          "triangles": 2,
+          "materials": [
+            "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+            "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 10,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+            },
+            {
+              "name": "tRefract",
+              "width": 640,
+              "height": 360,
+              "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1280,
+              "height": 720,
+              "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+            }
+          ],
+          "counts": {
+            "frame": 1257,
+            "calls": 243,
+            "triangles": 376618,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+          "triangles": 2,
+          "materials": [
+            "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+            "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+          ],
+          "glError": 1286,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 10,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "c4d4ba2c-03b7-47ad-b5ee-2a5aba97a82e"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "50483686-fe3a-4b51-aaa7-e0b5bb2ce7e3"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "a95fc680-39b3-45f2-858c-a1c85a737049"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "b9ce1259-f862-4dff-b53b-2d4a0521ebd6"
+            }
+          ],
+          "counts": {
+            "frame": 1285,
+            "calls": 242,
+            "triangles": 376686,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "30775255-f741-4c69-9f0c-0a6ca6006dee",
+          "triangles": 2,
+          "materials": [
+            "23cfa95a-9e1c-4ea4-9b7c-c1dd53232769",
+            "84e5d7b1-9c1e-4042-8a84-b34da384723d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        }
+      ],
+      "metadataCorrection": "Historical harness reported the coastal target for every view. target now follows recorded view parameters on the submerged floor; originalReportedTarget preserves the original metadata."
+    },
+    {
+      "device": "mobile",
+      "phase": "before",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+              }
+            ],
+            "counts": {
+              "frame": 397,
+              "calls": 265,
+              "triangles": 462478,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+            "triangles": 2,
+            "materials": [
+              "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+              "ecef894d-67ca-42ae-ac84-b76827742676"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+              }
+            ],
+            "counts": {
+              "frame": 1055,
+              "calls": 190,
+              "triangles": 361344,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+            "triangles": 2,
+            "materials": [
+              "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+              "ecef894d-67ca-42ae-ac84-b76827742676"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 1,
+              "uRefract": 0.035,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+              }
+            ],
+            "counts": {
+              "frame": 1335,
+              "calls": 243,
+              "triangles": 376942,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+            "triangles": 2,
+            "materials": [
+              "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+              "ecef894d-67ca-42ae-ac84-b76827742676"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+            }
+          ],
+          "counts": {
+            "frame": 1377,
+            "calls": 243,
+            "triangles": 376942,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+          "triangles": 2,
+          "materials": [
+            "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+            "ecef894d-67ca-42ae-ac84-b76827742676"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": true,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 0,
+            "uRefract": 0.035,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "730b29d0-61f2-46cc-9bea-1abac3048828"
+            }
+          ],
+          "counts": {
+            "frame": 1383,
+            "calls": 180,
+            "triangles": 273694,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+          "triangles": 2,
+          "materials": [
+            "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+            "ecef894d-67ca-42ae-ac84-b76827742676"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+            },
+            {
+              "name": "tRefract",
+              "width": 422,
+              "height": 195,
+              "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 844,
+              "height": 390,
+              "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+            }
+          ],
+          "counts": {
+            "frame": 1411,
+            "calls": 243,
+            "triangles": 376942,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+          "triangles": 2,
+          "materials": [
+            "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+            "ecef894d-67ca-42ae-ac84-b76827742676"
+          ],
+          "glError": 1286,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "f4b8fc95-f745-4d4b-ba5e-19f48447e314"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ff8415df-2aed-4cf1-849c-9692b065742e"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "598f430e-448b-4f34-beb3-21d27449c1f6"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "4e168306-b216-4192-8391-ea630af52c30"
+            }
+          ],
+          "counts": {
+            "frame": 1439,
+            "calls": 243,
+            "triangles": 376942,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "3aa41bb4-1627-4f12-bde9-976c13caece5",
+          "triangles": 2,
+          "materials": [
+            "4ccf5dc5-33ca-4957-a9fb-597917e3fc33",
+            "ecef894d-67ca-42ae-ac84-b76827742676"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        }
+      ],
+      "metadataCorrection": "Historical harness reported the coastal target for every view. target now follows recorded view parameters on the submerged floor; originalReportedTarget preserves the original metadata."
+    },
+    {
+      "device": "low",
+      "phase": "before",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 0,
+              "uRefract": 0.035,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "82034207-437b-4450-a82a-ab07aaa3e015"
+              }
+            ],
+            "counts": {
+              "frame": 104,
+              "calls": 193,
+              "triangles": 319352,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+            "triangles": 2,
+            "materials": [
+              "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+              "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 0,
+              "uRefract": 0.035,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "82034207-437b-4450-a82a-ab07aaa3e015"
+              }
+            ],
+            "counts": {
+              "frame": 227,
+              "calls": 153,
+              "triangles": 264984,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+            "triangles": 2,
+            "materials": [
+              "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+              "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "uWaves": 0,
+              "uRefract": 0.035,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "82034207-437b-4450-a82a-ab07aaa3e015"
+              }
+            ],
+            "counts": {
+              "frame": 332,
+              "calls": 180,
+              "triangles": 273370,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+            "triangles": 2,
+            "materials": [
+              "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+              "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35,
+              "originalReportedTarget": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ]
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "6f136e64-3c66-4b25-93f1-2d79ce06fc30"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "eb942c04-e020-4429-988e-70db77796308"
+            }
+          ],
+          "counts": {
+            "frame": 349,
+            "calls": 236,
+            "triangles": 376611,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+          "triangles": 2,
+          "materials": [
+            "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+            "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": true,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 0,
+            "uRefract": 0.035,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "82034207-437b-4450-a82a-ab07aaa3e015"
+            }
+          ],
+          "counts": {
+            "frame": 355,
+            "calls": 180,
+            "triangles": 273370,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+          "triangles": 2,
+          "materials": [
+            "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+            "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+            },
+            {
+              "name": "tRefract",
+              "width": 422,
+              "height": 195,
+              "uuid": "6f136e64-3c66-4b25-93f1-2d79ce06fc30"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 844,
+              "height": 390,
+              "uuid": "eb942c04-e020-4429-988e-70db77796308"
+            }
+          ],
+          "counts": {
+            "frame": 369,
+            "calls": 236,
+            "triangles": 376611,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+          "triangles": 2,
+          "materials": [
+            "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+            "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+          ],
+          "glError": 1286,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "uWaves": 1,
+            "uRefract": 0.035,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "17c0bc45-7a82-4912-b606-a6e849836a92"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "e3ddb920-a004-48ba-8fa9-bbaf71caf444"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "6f136e64-3c66-4b25-93f1-2d79ce06fc30"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "eb942c04-e020-4429-988e-70db77796308"
+            }
+          ],
+          "counts": {
+            "frame": 383,
+            "calls": 236,
+            "triangles": 376611,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "92099937-0441-40a9-b14e-ed3a8315ff11",
+          "triangles": 2,
+          "materials": [
+            "7d3fa32a-d9d0-4453-bdd4-6fea6292a225",
+            "64d5195a-70fd-48c6-8e6b-2e9c64fdaa5c"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35,
+            "originalReportedTarget": [
+              116.89249224727973,
+              0.1,
+              95.85232692072168
+            ]
+          }
+        }
+      ],
+      "metadataCorrection": "Historical harness reported the coastal target for every view. target now follows recorded view parameters on the submerged floor; originalReportedTarget preserves the original metadata."
+    }
+  ],
+  "after": [
+    {
+      "device": "desktop",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+              }
+            ],
+            "counts": {
+              "frame": 467,
+              "calls": 242,
+              "triangles": 428624,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+            "triangles": 2,
+            "materials": [
+              "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+              "6f112dbf-246a-43e5-9120-d96de243eb1d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+              }
+            ],
+            "counts": {
+              "frame": 789,
+              "calls": 188,
+              "triangles": 360920,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+            "triangles": 2,
+            "materials": [
+              "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+              "6f112dbf-246a-43e5-9120-d96de243eb1d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+              }
+            ],
+            "counts": {
+              "frame": 1055,
+              "calls": 242,
+              "triangles": 376686,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+            "triangles": 2,
+            "materials": [
+              "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+              "6f112dbf-246a-43e5-9120-d96de243eb1d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+            }
+          ],
+          "counts": {
+            "frame": 1097,
+            "calls": 242,
+            "triangles": 376686,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+          "triangles": 2,
+          "materials": [
+            "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+            "6f112dbf-246a-43e5-9120-d96de243eb1d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": false,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "1cb98c97-8375-4e23-8fe6-803ce2b32f5f"
+            }
+          ],
+          "counts": {
+            "frame": 1103,
+            "calls": 180,
+            "triangles": 273370,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+          "triangles": 2,
+          "materials": [
+            "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+            "6f112dbf-246a-43e5-9120-d96de243eb1d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+            },
+            {
+              "name": "tRefract",
+              "width": 640,
+              "height": 360,
+              "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1280,
+              "height": 720,
+              "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+            }
+          ],
+          "counts": {
+            "frame": 1131,
+            "calls": 243,
+            "triangles": 376618,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+          "triangles": 2,
+          "materials": [
+            "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+            "6f112dbf-246a-43e5-9120-d96de243eb1d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "ae0f1947-eb15-4c5d-ad3d-5a6b984f3de8"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "46871209-6859-4221-b910-39ae79942cb8"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "e855d61b-6e9f-4127-81d4-d5f8df1a3209"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "ed2f78be-71b0-42b9-a0c6-75f121805cfb"
+            }
+          ],
+          "counts": {
+            "frame": 1159,
+            "calls": 242,
+            "triangles": 376686,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "571f13fb-75af-42ed-8532-a28e163ccc07",
+          "triangles": 2,
+          "materials": [
+            "15651eda-e4c5-4d21-9ac9-fbd1708fb4a2",
+            "6f112dbf-246a-43e5-9120-d96de243eb1d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    },
+    {
+      "device": "mobile",
+      "phase": "after",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 6,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+              }
+            ],
+            "counts": {
+              "frame": 481,
+              "calls": 264,
+              "triangles": 460098,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+            "triangles": 2,
+            "materials": [
+              "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+              "4c0aa897-9301-4f09-894c-a257c33c7f23"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 6,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+              }
+            ],
+            "counts": {
+              "frame": 859,
+              "calls": 189,
+              "triangles": 358964,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+            "triangles": 2,
+            "materials": [
+              "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+              "4c0aa897-9301-4f09-894c-a257c33c7f23"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 6,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+              }
+            ],
+            "counts": {
+              "frame": 1139,
+              "calls": 242,
+              "triangles": 374562,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+            "triangles": 2,
+            "materials": [
+              "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+              "4c0aa897-9301-4f09-894c-a257c33c7f23"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 6,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+            }
+          ],
+          "counts": {
+            "frame": 1181,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+          "triangles": 2,
+          "materials": [
+            "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+            "4c0aa897-9301-4f09-894c-a257c33c7f23"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": true,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 6,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "02b2cf85-635b-4665-84d8-a9e1c529f6cd"
+            }
+          ],
+          "counts": {
+            "frame": 1187,
+            "calls": 179,
+            "triangles": 271314,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+          "triangles": 2,
+          "materials": [
+            "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+            "4c0aa897-9301-4f09-894c-a257c33c7f23"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 6,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+            },
+            {
+              "name": "tRefract",
+              "width": 422,
+              "height": 195,
+              "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 844,
+              "height": 390,
+              "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+            }
+          ],
+          "counts": {
+            "frame": 1215,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+          "triangles": 2,
+          "materials": [
+            "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+            "4c0aa897-9301-4f09-894c-a257c33c7f23"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 6,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "84bc6fa1-501a-4898-a5c8-2434af163983"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "c1d401ce-d0fb-4d8a-94cb-665e1e81507d"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "1ac74f59-2413-4903-b74a-00353add09a3"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "fda3e251-b81d-4d12-84e1-c0bf1d0fd9d0"
+            }
+          ],
+          "counts": {
+            "frame": 1243,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "b81af884-88aa-4c03-90e5-ab2a6d6dd7ea",
+          "triangles": 2,
+          "materials": [
+            "34005e3f-9866-4c00-a9b9-60a74544ce6a",
+            "4c0aa897-9301-4f09-894c-a257c33c7f23"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    },
+    {
+      "device": "low",
+      "phase": "after",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 0,
+              "uRefract": 0.02,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "5465c0c9-1658-44fa-89d0-7a797e106a6b"
+              }
+            ],
+            "counts": {
+              "frame": 113,
+              "calls": 192,
+              "triangles": 317296,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+            "triangles": 2,
+            "materials": [
+              "bfe82aba-7e9f-415a-ad49-f080cded0169",
+              "562ceac2-72b7-4171-8966-b7a47afa137d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 0,
+              "uRefract": 0.02,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "5465c0c9-1658-44fa-89d0-7a797e106a6b"
+              }
+            ],
+            "counts": {
+              "frame": 212,
+              "calls": 152,
+              "triangles": 262928,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+            "triangles": 2,
+            "materials": [
+              "bfe82aba-7e9f-415a-ad49-f080cded0169",
+              "562ceac2-72b7-4171-8966-b7a47afa137d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "low",
+            "coarse": true,
+            "mode": "simple",
+            "time": 4.2,
+            "terrainCaustics": 1,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 4,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 0,
+              "uRefract": 0.02,
+              "uWorldHalf": 200
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+              },
+              {
+                "name": "uHeight",
+                "width": 256,
+                "height": 256,
+                "uuid": "5465c0c9-1658-44fa-89d0-7a797e106a6b"
+              }
+            ],
+            "counts": {
+              "frame": 278,
+              "calls": 179,
+              "triangles": 271314,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+            "triangles": 2,
+            "materials": [
+              "bfe82aba-7e9f-415a-ad49-f080cded0169",
+              "562ceac2-72b7-4171-8966-b7a47afa137d"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "0f7afe7a-e4f9-4ddf-a13e-965bec314081"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "66bd8a73-7347-45d2-85e7-62d2dfba456a"
+            }
+          ],
+          "counts": {
+            "frame": 295,
+            "calls": 235,
+            "triangles": 374555,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+          "triangles": 2,
+          "materials": [
+            "bfe82aba-7e9f-415a-ad49-f080cded0169",
+            "562ceac2-72b7-4171-8966-b7a47afa137d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": true,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "5465c0c9-1658-44fa-89d0-7a797e106a6b"
+            }
+          ],
+          "counts": {
+            "frame": 301,
+            "calls": 179,
+            "triangles": 271314,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+          "triangles": 2,
+          "materials": [
+            "bfe82aba-7e9f-415a-ad49-f080cded0169",
+            "562ceac2-72b7-4171-8966-b7a47afa137d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+            },
+            {
+              "name": "tRefract",
+              "width": 422,
+              "height": 195,
+              "uuid": "0f7afe7a-e4f9-4ddf-a13e-965bec314081"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 844,
+              "height": 390,
+              "uuid": "66bd8a73-7347-45d2-85e7-62d2dfba456a"
+            }
+          ],
+          "counts": {
+            "frame": 315,
+            "calls": 235,
+            "triangles": 374555,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+          "triangles": 2,
+          "materials": [
+            "bfe82aba-7e9f-415a-ad49-f080cded0169",
+            "562ceac2-72b7-4171-8966-b7a47afa137d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 4,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b3b2d824-f88c-4aad-b6d9-f55e32fcc935"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "95907255-1207-4ff2-bbe6-8ee7d2e0d27a"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "0f7afe7a-e4f9-4ddf-a13e-965bec314081"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "66bd8a73-7347-45d2-85e7-62d2dfba456a"
+            }
+          ],
+          "counts": {
+            "frame": 329,
+            "calls": 235,
+            "triangles": 374555,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "9a73afdd-ad79-4aa2-bbe7-18b32c0d7ccb",
+          "triangles": 2,
+          "materials": [
+            "bfe82aba-7e9f-415a-ad49-f080cded0169",
+            "562ceac2-72b7-4171-8966-b7a47afa137d"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    },
+    {
+      "device": "disabled",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+              }
+            ],
+            "counts": {
+              "frame": 523,
+              "calls": 237,
+              "triangles": 421840,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+            "triangles": 2,
+            "materials": [
+              "208e6e5d-c528-432d-9394-fd00d7b27076",
+              "34db4b3f-36af-4355-b48c-6574a39aacbc"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+              }
+            ],
+            "counts": {
+              "frame": 887,
+              "calls": 183,
+              "triangles": 354040,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+            "triangles": 2,
+            "materials": [
+              "208e6e5d-c528-432d-9394-fd00d7b27076",
+              "34db4b3f-36af-4355-b48c-6574a39aacbc"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 9,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+              }
+            ],
+            "counts": {
+              "frame": 1153,
+              "calls": 235,
+              "triangles": 368990,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+            "triangles": 2,
+            "materials": [
+              "208e6e5d-c528-432d-9394-fd00d7b27076",
+              "34db4b3f-36af-4355-b48c-6574a39aacbc"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+            }
+          ],
+          "counts": {
+            "frame": 1195,
+            "calls": 235,
+            "triangles": 368990,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+          "triangles": 2,
+          "materials": [
+            "208e6e5d-c528-432d-9394-fd00d7b27076",
+            "34db4b3f-36af-4355-b48c-6574a39aacbc"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": false,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "6a74ac21-617a-47df-bd71-f4433e59c61b"
+            }
+          ],
+          "counts": {
+            "frame": 1201,
+            "calls": 175,
+            "triangles": 267246,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+          "triangles": 2,
+          "materials": [
+            "208e6e5d-c528-432d-9394-fd00d7b27076",
+            "34db4b3f-36af-4355-b48c-6574a39aacbc"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+            },
+            {
+              "name": "tRefract",
+              "width": 640,
+              "height": 360,
+              "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1280,
+              "height": 720,
+              "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+            }
+          ],
+          "counts": {
+            "frame": 1229,
+            "calls": 236,
+            "triangles": 368922,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+          "triangles": 2,
+          "materials": [
+            "208e6e5d-c528-432d-9394-fd00d7b27076",
+            "34db4b3f-36af-4355-b48c-6574a39aacbc"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 9,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "5a86c1ae-4e47-42c7-8da1-b2663c736548"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "0931a2dc-0353-42b4-b1d6-d35c62816d26"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "8282a7b7-7379-4bca-810c-07552b82b0d0"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "63ba485a-3d65-4158-a19f-3aacf6f5a1ee"
+            }
+          ],
+          "counts": {
+            "frame": 1257,
+            "calls": 235,
+            "triangles": 368990,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "82a9bece-8a28-4164-9bdf-6b533d467d31",
+          "triangles": 2,
+          "materials": [
+            "208e6e5d-c528-432d-9394-fd00d7b27076",
+            "34db4b3f-36af-4355-b48c-6574a39aacbc"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    },
+    {
+      "device": "night",
+      "phase": "after",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 160,
+              "fogFar": 700,
+              "sunDisc": 0.8,
+              "skyStars": 1,
+              "mnTime": 4.2,
+              "mnCloud": 0.12,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 11,
+              "uSparkle": 0.4,
+              "uFoamLight": 0.62,
+              "uGlints": 0.6,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+              }
+            ],
+            "counts": {
+              "frame": 509,
+              "calls": 252,
+              "triangles": 461832,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+            "triangles": 2,
+            "materials": [
+              "515983bc-cd63-451c-8273-beb9928e54b3",
+              "46f2b5da-7663-4192-9916-c1dd69086186"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 160,
+              "fogFar": 700,
+              "sunDisc": 0.8,
+              "skyStars": 1,
+              "mnTime": 4.2,
+              "mnCloud": 0.12,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 11,
+              "uSparkle": 0.4,
+              "uFoamLight": 0.62,
+              "uGlints": 0.6,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+              }
+            ],
+            "counts": {
+              "frame": 957,
+              "calls": 198,
+              "triangles": 394128,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+            "triangles": 2,
+            "materials": [
+              "515983bc-cd63-451c-8273-beb9928e54b3",
+              "46f2b5da-7663-4192-9916-c1dd69086186"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "high",
+            "coarse": false,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 160,
+              "fogFar": 700,
+              "sunDisc": 0.8,
+              "skyStars": 1,
+              "mnTime": 4.2,
+              "mnCloud": 0.12,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 11,
+              "uSparkle": 0.4,
+              "uFoamLight": 0.62,
+              "uGlints": 0.6,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+              },
+              {
+                "name": "tRefract",
+                "width": 960,
+                "height": 540,
+                "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 1920,
+                "height": 1080,
+                "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+              }
+            ],
+            "counts": {
+              "frame": 1237,
+              "calls": 252,
+              "triangles": 409894,
+              "points": 2088,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+            "triangles": 2,
+            "materials": [
+              "515983bc-cd63-451c-8273-beb9928e54b3",
+              "46f2b5da-7663-4192-9916-c1dd69086186"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 160,
+            "fogFar": 700,
+            "sunDisc": 0.8,
+            "skyStars": 1,
+            "mnTime": 4.2,
+            "mnCloud": 0.12,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 11,
+            "uSparkle": 0.4,
+            "uFoamLight": 0.62,
+            "uGlints": 0.6,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+            }
+          ],
+          "counts": {
+            "frame": 1279,
+            "calls": 252,
+            "triangles": 409894,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+          "triangles": 2,
+          "materials": [
+            "515983bc-cd63-451c-8273-beb9928e54b3",
+            "46f2b5da-7663-4192-9916-c1dd69086186"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": false,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 160,
+            "fogFar": 700,
+            "sunDisc": 0.8,
+            "skyStars": 1,
+            "mnTime": 4.2,
+            "mnCloud": 0.12,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 11,
+            "uSparkle": 0.4,
+            "uFoamLight": 0.62,
+            "uGlints": 0.6,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "db733dea-88a0-416c-9d13-4e7432047acc"
+            }
+          ],
+          "counts": {
+            "frame": 1285,
+            "calls": 190,
+            "triangles": 306578,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+          "triangles": 2,
+          "materials": [
+            "515983bc-cd63-451c-8273-beb9928e54b3",
+            "46f2b5da-7663-4192-9916-c1dd69086186"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 160,
+            "fogFar": 700,
+            "sunDisc": 0.8,
+            "skyStars": 1,
+            "mnTime": 4.2,
+            "mnCloud": 0.12,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 11,
+            "uSparkle": 0.4,
+            "uFoamLight": 0.62,
+            "uGlints": 0.6,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+            },
+            {
+              "name": "tRefract",
+              "width": 640,
+              "height": 360,
+              "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1280,
+              "height": 720,
+              "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+            }
+          ],
+          "counts": {
+            "frame": 1313,
+            "calls": 253,
+            "triangles": 409826,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+          "triangles": 2,
+          "materials": [
+            "515983bc-cd63-451c-8273-beb9928e54b3",
+            "46f2b5da-7663-4192-9916-c1dd69086186"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": false,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 160,
+            "fogFar": 700,
+            "sunDisc": 0.8,
+            "skyStars": 1,
+            "mnTime": 4.2,
+            "mnCloud": 0.12,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 11,
+            "uSparkle": 0.4,
+            "uFoamLight": 0.62,
+            "uGlints": 0.6,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "864ca5d3-1bf4-4af4-bfcb-bae5beb9dade"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "ec4e0cec-051c-4974-a48f-e8f05e426c79"
+            },
+            {
+              "name": "tRefract",
+              "width": 960,
+              "height": 540,
+              "uuid": "f5321c2b-c487-4427-8aa1-777f230adc76"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1920,
+              "height": 1080,
+              "uuid": "20aed512-84ed-4d3c-ab59-811a43f5c598"
+            }
+          ],
+          "counts": {
+            "frame": 1341,
+            "calls": 252,
+            "triangles": 409894,
+            "points": 2088,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "0d17bc97-f327-46cd-a64a-f9bb4a5be4a4",
+          "triangles": 2,
+          "materials": [
+            "515983bc-cd63-451c-8273-beb9928e54b3",
+            "46f2b5da-7663-4192-9916-c1dd69086186"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    },
+    {
+      "device": "portrait",
+      "phase": "after",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "views": [
+        {
+          "name": "map",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 22,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+              }
+            ],
+            "counts": {
+              "frame": 411,
+              "calls": 264,
+              "triangles": 460098,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+            "triangles": 2,
+            "materials": [
+              "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+              "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                127.30172161090766,
+                17.24918616050267,
+                106.26155628434961
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "close",
+          "x": 116.89249224727973,
+          "z": 95.85232692072168,
+          "distance": 5,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+              }
+            ],
+            "counts": {
+              "frame": 831,
+              "calls": 189,
+              "triangles": 358964,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+            "triangles": 2,
+            "materials": [
+              "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+              "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                119.25822619355881,
+                4.615724127386971,
+                98.21806086700076
+              ],
+              "target": [
+                116.89249224727973,
+                0.1,
+                95.85232692072168
+              ],
+              "fov": 35
+            }
+          }
+        },
+        {
+          "name": "deep",
+          "x": 135,
+          "z": 112,
+          "distance": 32,
+          "state": {
+            "quality": "medium",
+            "coarse": true,
+            "mode": "screen-refraction",
+            "time": 4.2,
+            "terrainCaustics": 0,
+            "uniforms": {
+              "fogDensity": 0.00025,
+              "fogNear": 220,
+              "fogFar": 950,
+              "sunDisc": 1,
+              "skyStars": 0,
+              "mnTime": 4.2,
+              "mnCloud": 0.32,
+              "mnOccR": 1.8,
+              "mnOccOn": 1,
+              "mnNearFade": 0,
+              "mnLightCount": 7,
+              "uSparkle": 1,
+              "uFoamLight": 1,
+              "uGlints": 0.15,
+              "mnCausticStrength": 0.12,
+              "mnCausticWidth": 0.035,
+              "mnFoamContactScale": 0.55,
+              "mnFoamLaceWidth": 0.035,
+              "mnFoamLaceStrength": 0.52,
+              "mnFoamWaveStrength": 0.28,
+              "mnWaterSurfaceLight": 0.035,
+              "uWaves": 1,
+              "uRefract": 0.02,
+              "uNear": 0.5,
+              "uFar": 1400
+            },
+            "samplers": [
+              {
+                "name": "mnNoiseTex",
+                "width": 256,
+                "height": 256,
+                "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+              },
+              {
+                "name": "tWave",
+                "width": 256,
+                "height": 256,
+                "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+              },
+              {
+                "name": "tRefract",
+                "width": 422,
+                "height": 195,
+                "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+              },
+              {
+                "name": "tSceneDepth",
+                "width": 844,
+                "height": 390,
+                "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+              }
+            ],
+            "counts": {
+              "frame": 1111,
+              "calls": 242,
+              "triangles": 374562,
+              "points": 1944,
+              "lines": 0
+            },
+            "errors": {},
+            "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+            "triangles": 2,
+            "materials": [
+              "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+              "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+            ],
+            "glError": 0,
+            "programsLinked": true,
+            "camera": {
+              "position": [
+                150.1406972561861,
+                24.680634415276614,
+                127.14069725618609
+              ],
+              "target": [
+                135,
+                0.1,
+                112
+              ],
+              "fov": 35
+            }
+          }
+        }
+      ],
+      "transitions": [
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+            }
+          ],
+          "counts": {
+            "frame": 1153,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+          "triangles": 2,
+          "materials": [
+            "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+            "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "low",
+          "reused": true,
+          "quality": "low",
+          "coarse": true,
+          "mode": "simple",
+          "time": 4.2,
+          "terrainCaustics": 1,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 0,
+            "uRefract": 0.02,
+            "uWorldHalf": 200
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+            },
+            {
+              "name": "uHeight",
+              "width": 256,
+              "height": 256,
+              "uuid": "df6d8c11-9267-4e9b-bfcd-277a616af827"
+            }
+          ],
+          "counts": {
+            "frame": 1159,
+            "calls": 179,
+            "triangles": 271314,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+          "triangles": 2,
+          "materials": [
+            "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+            "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "medium",
+          "reused": true,
+          "quality": "medium",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+            },
+            {
+              "name": "tRefract",
+              "width": 422,
+              "height": 195,
+              "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 844,
+              "height": 390,
+              "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+            }
+          ],
+          "counts": {
+            "frame": 1187,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+          "triangles": 2,
+          "materials": [
+            "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+            "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        },
+        {
+          "tier": "high",
+          "reused": true,
+          "quality": "high",
+          "coarse": true,
+          "mode": "screen-refraction",
+          "time": 4.2,
+          "terrainCaustics": 0,
+          "uniforms": {
+            "fogDensity": 0.00025,
+            "fogNear": 220,
+            "fogFar": 950,
+            "sunDisc": 1,
+            "skyStars": 0,
+            "mnTime": 4.2,
+            "mnCloud": 0.32,
+            "mnOccR": 1.8,
+            "mnOccOn": 1,
+            "mnNearFade": 0,
+            "mnLightCount": 7,
+            "uSparkle": 1,
+            "uFoamLight": 1,
+            "uGlints": 0.15,
+            "mnCausticStrength": 0.12,
+            "mnCausticWidth": 0.035,
+            "mnFoamContactScale": 0.55,
+            "mnFoamLaceWidth": 0.035,
+            "mnFoamLaceStrength": 0.52,
+            "mnFoamWaveStrength": 0.28,
+            "mnWaterSurfaceLight": 0.035,
+            "uWaves": 1,
+            "uRefract": 0.02,
+            "uNear": 0.5,
+            "uFar": 1400
+          },
+          "samplers": [
+            {
+              "name": "mnNoiseTex",
+              "width": 256,
+              "height": 256,
+              "uuid": "b1456998-e127-4472-9f27-13b58a5f66af"
+            },
+            {
+              "name": "tWave",
+              "width": 256,
+              "height": 256,
+              "uuid": "bdc7941e-fb88-4f43-ab88-1ec75392d305"
+            },
+            {
+              "name": "tRefract",
+              "width": 633,
+              "height": 292,
+              "uuid": "14f4f247-ac27-4ddb-8b49-7c811363edcb"
+            },
+            {
+              "name": "tSceneDepth",
+              "width": 1266,
+              "height": 585,
+              "uuid": "b0d29199-1a02-4d81-9959-6b906afc8602"
+            }
+          ],
+          "counts": {
+            "frame": 1215,
+            "calls": 242,
+            "triangles": 374562,
+            "points": 1944,
+            "lines": 0
+          },
+          "errors": {},
+          "waterGeometry": "54d61941-4208-440e-9cdb-707fb544e449",
+          "triangles": 2,
+          "materials": [
+            "9a7d9d07-d5a0-4d52-ac08-301a96268932",
+            "be11423e-729e-4e3f-80dc-8b221e58f4a3"
+          ],
+          "glError": 0,
+          "programsLinked": true,
+          "camera": {
+            "position": [
+              150.1406972561861,
+              24.680634415276614,
+              127.14069725618609
+            ],
+            "target": [
+              135,
+              0.1,
+              112
+            ],
+            "fov": 35
+          }
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Before stable views have no GL/game errors; their low-to-medium transitions retain the historical GL1286 failure.",
+    "After views and all 24 recorded tier switches have zero GL/game errors, linked programs and reused water geometry/materials.",
+    "Portrait exercises the game's existing rotated landscape stage in a portrait viewport.",
+    "Whole-scene counters are diagnostic; concurrent naval and session content prevents attributing their changes to S11. They are not physical FPS.",
+    "S11 leaves the existing water-contact VFX row pending; player/boat contact-system acceptance is outside this cut."
+  ]
+}

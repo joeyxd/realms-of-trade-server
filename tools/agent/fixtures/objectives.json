@@ -1,0 +1,6 @@
+{
+  "v": 1,
+  "revision": 1,
+  "scope": {"ownerId": "owner-lab", "characterId": "brisa-lab", "worldId": "world-lab"},
+  "goals": [{"id": "help-owner", "status": "active", "text": "Acompañar al dueño en la prueba local", "constraints": ["Solo capacidades de la fixture", "Conservar resultados inciertos"]}]
+}

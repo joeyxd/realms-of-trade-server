@@ -1,18 +1,26 @@
-// Holds (M6 / M7): what a ship (or your pack on foot) carries. Space is in goods' `w` units; perishables rot on the
+// Holds (M6 / M7): what a ship (or your pack on foot) carries. Volume and mass are independent; perishables rot on the
 // game clock. A hold is plain data { cap, goods: { id: n } } so it saves and travels as JSON.
 import { GOODS } from '../../data/goods.js';
 
 export const PACK_CAP = 10; // what a pirate carries on foot (no ship)
 
 export const newHold = (cap = PACK_CAP) => ({ cap, goods: {} });
+// Catalog dimensions are abstract game units. The legacy w alias remains volume for old callers.
+export const goodVolume = (g) => GOODS[g]?.volume ?? GOODS[g]?.w ?? 1;
+export const goodMass = (g) => GOODS[g]?.mass ?? GOODS[g]?.w ?? 1;
 export function holdUsed(h) {
   let u = 0;
-  for (const [g, n] of Object.entries(h.goods)) u += (GOODS[g] ? GOODS[g].w : 1) * n;
+  for (const [g, n] of Object.entries(h.goods)) u += goodVolume(g) * n;
   return u;
+}
+export function holdMass(h) {
+  let mass = 0;
+  for (const [g, n] of Object.entries(h?.goods || {})) mass += goodMass(g) * n;
+  return mass;
 }
 export const holdFree = (h) => Math.max(0, h.cap - holdUsed(h));
 // How many units of g still fit.
-export const roomFor = (h, g) => (GOODS[g] ? Math.floor(holdFree(h) / GOODS[g].w) : 0);
+export const roomFor = (h, g) => (GOODS[g] ? Math.floor(holdFree(h) / goodVolume(g)) : 0);
 
 export function load(h, g, n) {
   if (!GOODS[g] || !(n > 0) || roomFor(h, g) < n) return false;

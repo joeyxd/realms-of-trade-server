@@ -45,7 +45,7 @@ export class AccountAuth {
     this.config = null;
     this.listeners = new Set();
     this.bootstrapPromise = null;
-    this.state = { enabled: false, busy: false, email: '', signedIn: false, guestChoice: false, error: '' };
+    this.state = { enabled: false, busy: false, email: '', accountId: '', signedIn: false, guestChoice: false, error: '' };
   }
 
   subscribe(callback) {
@@ -56,6 +56,7 @@ export class AccountAuth {
   }
 
   publish(patch) {
+    if (patch.signedIn === false) patch = { ...patch, accountId: '' };
     this.state = { ...this.state, ...patch };
     const snapshot = { ...this.state };
     for (const callback of this.listeners) callback(snapshot);
@@ -152,7 +153,7 @@ export class AccountAuth {
 
   applySession(session) {
     if (this.state.guestChoice) return;
-    this.publish({ signedIn: Boolean(session?.access_token), email: String(session?.user?.email || ''), error: '' });
+    this.publish({ signedIn: Boolean(session?.access_token), accountId: String(session?.user?.id || ''), email: String(session?.user?.email || ''), error: '' });
   }
 
   useGuest() {
@@ -232,6 +233,18 @@ export class AccountAuth {
     } finally {
       this.publish({ busy: false });
     }
+  }
+
+  // Return a matched identity/token pair without publishing the bearer or applying a stale session.
+  async sessionIdentity() {
+    const accountId = this.state.accountId;
+    if (!this.state.enabled || !this.state.signedIn || this.state.guestChoice || !accountId) throw new Error(ERRORS.session);
+    const client = await this.ensureClient();
+    const { data, error } = await client.auth.getSession();
+    const session = data?.session;
+    if (error || !this.state.signedIn || this.state.guestChoice || this.state.accountId !== accountId
+      || session?.user?.id !== accountId || typeof session?.access_token !== 'string' || !session.access_token) throw new Error(ERRORS.session);
+    return { accountId, token: session.access_token };
   }
 
   async token() {

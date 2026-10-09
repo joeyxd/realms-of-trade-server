@@ -16,7 +16,7 @@ const point = (r, x, z) => ({ x: r.x + Math.cos(r.yaw) * x + Math.sin(r.yaw) * z
 // Its local +Z runs from dock to raft. Both endpoints overlap their supporting deck by 0.3 units.
 export function raftGangplank(r, dock) {
   if (!dock || r.pilot || !Array.isArray(r.parts)) return null;
-  const bases = r.parts.filter((p) => p[0] === 'foundation');
+  const bases = r.parts.filter((p) => RAFT_PARTS[p[0]]?.layer === 'base');
   if (!bases.length || Math.cos(r.yaw) * dock.dir.z + Math.sin(r.yaw) * dock.dir.x < 0.9999) return null;
   const minX = Math.min(...bases.map((p) => p[1])), maxX = Math.max(...bases.map((p) => p[1]));
   const minZ = Math.min(...bases.map((p) => p[2])), maxZ = Math.max(...bases.map((p) => p[2]));

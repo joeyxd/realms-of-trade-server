@@ -21,6 +21,8 @@ import { DeathDropStaging } from './deathDropStaging.mjs';
 import { DeathDropLifecycle, managedDeathDrop } from './deathDropLifecycle.mjs';
 import { PearlStartup } from './pearlStartup.mjs';
 import { groundKey } from './pearlGround.mjs';
+import { AgentControl } from './agentControl.mjs';
+import { BTN } from '../src/sim/systems/movement.js';
 
 const LIMITS = {
   msgsPerSec: 120, msgsBurst: 240,   // a client flushes inputs once per frame (≤ 60/s) plus pings
@@ -40,8 +42,11 @@ export class GameHost {
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
-    worldId = null, worldSaveMs = 60000, pearlJournal = null } = {}) {
+    worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null } = {}) {
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
+    if (agentControl !== null && !resolvePlayer) throw new StoreError('configuration');
+    if (agentControl !== null && worldId !== null && agentControl.worldId !== worldId) throw new StoreError('configuration');
+    this.agentControl = agentControl === null ? null : new AgentControl(agentControl);
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
     if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
     if (!Number.isFinite(worldSaveMs) || worldSaveMs <= 0 || worldSaveMs > 2147483647) throw new StoreError('configuration');
@@ -75,7 +80,7 @@ export class GameHost {
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
     this.server = new LocalServer({
-      seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, ...(saves ? { saves } : {}),
+      seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
       commandAccess: (id, entity, plan) => this.commandAvailable(id, entity, plan),
@@ -83,6 +88,7 @@ export class GameHost {
       beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
       onSave: (id, p) => this.saveProfile(id, p),
     });
+    if (this.agentControl) this.server.inputAccess = (...args) => this.agentInputAllowed(...args);
     this.worldSaveMs = worldSaveMs;
     this.worldState = worldId === null ? null : new WorldState(store, { id: worldId, seed: this.server.world.seed,
       onFailure: (code) => this.fenceWorld(code) });
@@ -416,6 +422,26 @@ export class GameHost {
 
   receive(sock, msg) {
     if (this.closing || !this.sockets.has(sock.id)) return;
+    this.sweepAgentControl();
+    if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
+      this.agentMessage(sock, msg); return;
+    }
+    if (sock.agentIdentity) {
+      const state = this.agentControl?.byClient(sock.id);
+      if (msg.t === MSG.INPUTS) {
+        if (!this.agentInputAllowed(sock.id, msg.control, null)) {
+          this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: false, why: 'control_mismatch', state: state ?? null }); return;
+        }
+      } else if (msg.t === MSG.CHAT_SEND) {
+        if (!state?.grant.capabilities.includes('chat') || !this.agentControl.authorize(sock.id, msg.control?.epoch) ||
+            Object.keys(msg.control ?? {}).length !== 1) return;
+        const { control, ...chat } = msg; this.server.receive(sock.id, chat); return;
+      } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
+    }
+    if (msg.t === MSG.HELLO && Object.hasOwn(msg, 'agent') &&
+        (msg.agent !== true || !this.agentControl || !this.resolvePlayer)) {
+      this.sendTo(sock.id, { t: MSG.ERROR, code: 'auth' }); return;
+    }
     if (msg.t === MSG.HELLO && !this.resolvePlayer && Object.hasOwn(msg, 'token')) {
       this.sendTo(sock.id, { t: MSG.ERROR, code: 'auth_disabled' }); return;
     }
@@ -435,10 +461,120 @@ export class GameHost {
     this.joins.add(task);
   }
 
+  clearAgentInputs(id) {
+    const c = this.server.clients.get(id);
+    const count = c?.queue.length ?? 0;
+    if (c) {
+      c.queue.length = 0; c.carry = 0; c.last = null;
+      c.starve = c.fillPt = c.lastPt = 0;
+      if (c.entity) c.controlNeutral = true;
+    }
+    return { tick: this.server.world.tick, queueCleared: count, neutralPending: !!c?.controlNeutral, ack: c?.ack ?? 0 };
+  }
+
+  publishAgentState(result, requester = null, invalidate = false) {
+    const state = result.state ?? null;
+    const controller = state && [...this.sockets.values()].find((sock) => sock.agentIdentity === state.grant.scope.characterId &&
+      sock.agentSessionId === state.grant.scope.sessionId);
+    const receipt = invalidate && controller ? this.clearAgentInputs(controller.id) :
+      { tick: this.server.world.tick, queueCleared: 0, neutralPending: false, ack: 0 };
+    const message = { t: MSG.AGENT_STATE, ...result, state, receipt };
+    if (controller) this.sendTo(controller.id, message);
+    if (requester !== null && requester !== controller?.id) this.sendTo(requester, message);
+    return message;
+  }
+
+  sweepAgentControl() {
+    if (!this.agentControl) return;
+    for (const state of this.agentControl.sweep()) this.publishAgentState({ ok: true, state }, null, true);
+    for (const sock of this.sockets.values()) {
+      if (!sock.agentIdentity) continue;
+      const c = this.server.clients.get(sock.id), ecs = this.server.world.ecs;
+      if (c?.entity && (!ecs.alive[c.entity] || ecs.hp[c.entity] <= 0) && this.agentControl.byClient(sock.id)) {
+        const state = this.agentControl.retire(sock.id, 'death');
+        this.publishAgentState({ ok: true, state }, null, true);
+      }
+    }
+  }
+
+  agentMessage(sock, msg) {
+    const fail = (why) => this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: false, why, state: null });
+    if (!this.agentControl) { fail('disabled'); return; }
+    const exact = (keys) => Object.keys(msg).length === keys.length && keys.every((key) => Object.hasOwn(msg, key));
+    if (msg.t === MSG.AGENT_CONTROL) {
+      const s = this.profiles.clients.get(sock.id), c = this.server.clients.get(sock.id);
+      // An account session is the principal; local owner labels and payload owner IDs grant nothing.
+      if (sock.agentIdentity || !c?.entity || !s || s.closed || s.failed || this.profiles.accounts.get(s.key) !== s) { fail('forbidden'); return; }
+      if (!exact(['direct', 'cancel'].includes(msg.op) ? ['t', 'op', 'characterId', 'task'] : ['t', 'op', 'characterId']) ||
+          !['stop', 'revoke', 'resume', 'direct', 'cancel'].includes(msg.op)) { fail('invalid_control'); return; }
+      if (msg.op === 'resume') {
+        if (!this.agentControl.resume(s.key, msg.characterId)) { fail('forbidden'); return; }
+        this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: true, state: this.agentControl.byCharacter(msg.characterId), resumed: true }); return;
+      }
+      if (['direct', 'cancel'].includes(msg.op)) {
+        const result = msg.op === 'direct' ? this.agentControl.direct(s.key, msg.characterId, msg.task) :
+          this.agentControl.cancelOwner(s.key, msg.characterId, msg.task);
+        if (!result.ok) { fail(result.why); return; }
+        this.publishAgentState(result, sock.id, true); return;
+      }
+      const state = this.agentControl.revoke(s.key, msg.characterId, msg.op === 'stop' ? 'stop' : 'revoked');
+      if (!state) { fail('forbidden'); return; }
+      this.publishAgentState({ ok: true, state }, sock.id, true); return;
+    }
+    if (!sock.agentIdentity) { fail('forbidden'); return; }
+    if (msg.t === MSG.AGENT_RELEASE) {
+      if (!exact(['t', 'epoch']) || !this.agentControl.authorize(sock.id, msg.epoch)) { fail('control_mismatch'); return; }
+      this.publishAgentState({ ok: true, state: this.agentControl.retire(sock.id, 'stop') }, sock.id, true); return;
+    }
+    const keys = msg.t === MSG.AGENT_TASK ? ['t', 'epoch', 'expectedTaskRevision', 'actionId', 'type', 'args', 'priority'] :
+      ['t', 'epoch', 'expectedTaskRevision'];
+    if (!exact(keys)) { fail('invalid_task'); return; }
+    const { t, ...request } = msg;
+    const result = t === MSG.AGENT_TASK ? this.agentControl.task(sock.id, request) : this.agentControl.cancel(sock.id, request);
+    this.publishAgentState(result, sock.id, result.ok);
+  }
+
+  agentInputAllowed(id, control, cmd, phase = 'input') {
+    const sock = this.sockets.get(id);
+    if (!sock?.agentIdentity && !this.server.clients.get(id)?.agentManaged) return true;
+    if (!sock?.agentIdentity) return false;
+    const state = this.agentControl.byClient(id);
+    if (phase === 'active') return !!state && this.agentControl.authorize(id, state.grant.controlRevision);
+    if (!control || Object.keys(control).length !== 2 || !Object.hasOwn(control, 'epoch') ||
+        !Object.hasOwn(control, 'taskRevision') || !Number.isSafeInteger(control.epoch) || control.epoch < 1 ||
+        !Number.isSafeInteger(control.taskRevision) || control.taskRevision < 1 ||
+        !this.agentControl.authorize(id, control.epoch, control.taskRevision)) return false;
+    if (!cmd) return true;
+    const caps = state.grant.capabilities, type = state.task.type;
+    const moving = ['move', 'go_to', 'follow', 'keep_distance', 'body_pve'].includes(type);
+    if ((cmd.mx || cmd.mz) && (!moving || !caps.includes('move'))) return false;
+    const attacking = ['attack_pve', 'body_pve'].includes(type) && caps.includes('attack_pve');
+    const guarding = type === 'body_pve' && caps.includes('body_pve');
+    const aiming = ['aim', 'attack_pve', 'body_pve'].includes(type) && caps.includes('aim');
+    const allowed = (aiming ? BTN.AIM : 0) | (attacking ? BTN.ATTACK : 0) |
+      (guarding ? BTN.GUARD | (state.task.args.allowPotion ? BTN.POTION : 0) : 0);
+    if (cmd.w || ((cmd.btn | cmd.prs) & ~allowed)) return false;
+    // This is a server check over live ECS players, independent of the runner's perception/cap.
+    if ((cmd.btn | cmd.prs) & BTN.ATTACK) {
+      const e = this.server.clients.get(id)?.entity, ecs = this.server.world.ecs;
+      if (!e || ecs.weapon[e] !== 0) return false;
+      for (let other = 1; other < ecs.cap; other++) if (other !== e && ecs.alive[other] && ecs.kind[other] === 1 &&
+          Math.hypot(ecs.x[other] - ecs.x[e], ecs.z[other] - ecs.z[e]) < 8) return false;
+    }
+    return true;
+  }
+
   async join(sock, msg, signal) {
     try {
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
+      if (msg.agent === true) {
+        const admitted = this.agentControl?.admit(identity, sock.id, 0);
+        if (!admitted?.ok) throw new StoreError('auth');
+        sock.agentIdentity = identity;
+        sock.agentSessionId = admitted.state.grant.scope.sessionId;
+        this.server.clients.get(sock.id).agentManaged = true;
+      } else if (this.agentControl?.binding(identity)) throw new StoreError('auth');
       // This explicitly mounted recovery pilot has no guest/backfill authority.
       if ((this.#requiresPearlStartup || this.#combatDeaths) && identity === null) throw new StoreError('auth');
       if (this.#requiresPearlStartup && msg.importSave === true) throw new StoreError('legacy');
@@ -457,13 +593,22 @@ export class GameHost {
         }
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
+      if (sock.agentIdentity && !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) throw new StoreError('auth');
       if (this.closing || this.#combatDeaths?.pending || this.#deathDrops?.pending) throw new StoreError('busy');
       this.server.receive(sock.id, msg, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
         this.profiles.close(sock.id);
         this.releaseLegacy(sock.id);
+        if (sock.agentIdentity) throw new StoreError('auth');
       }
     } catch (err) {
+      if (sock.agentIdentity) {
+        this.agentControl.retire(sock.id, 'disconnect');
+        // A partial spawn must never become a human lane after an admission error.
+        // Preserve the managed marker until normal detachment finishes.
+        try { sock.ws.close(1008, 'auth'); } catch { /* gone */ }
+        this.onClose(sock);
+      }
       this.profiles.close(sock.id);
       if (this.sockets.has(sock.id)) {
         const allowed = ['session', 'auth', 'legacy', 'legacy_used', 'legacy_active'];
@@ -564,6 +709,7 @@ export class GameHost {
   }
 
   tickAvailable() {
+    this.sweepAgentControl();
     this.#assertCombatOwner();
     this.#assertDropOwner();
     if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed) return false;
@@ -646,6 +792,7 @@ export class GameHost {
   onClose(sock) {
     if (!this.sockets.has(sock.id)) return;
     this.sockets.delete(sock.id);
+    if (sock.agentIdentity) this.agentControl?.retire(sock.id, 'disconnect');
     sock.joinAbort?.abort();
     sock.in.close(); sock.out.close();
     this.server.disconnect(sock.id);
@@ -660,6 +807,7 @@ export class GameHost {
   sendTo(id, msg) {
     const sock = this.sockets.get(id);
     if (!sock) return;
+    if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id) };
     // A broadcast hands every client the same object: serialize it once.
     let data;
     if (msg === this.lastMsg) data = this.lastData;

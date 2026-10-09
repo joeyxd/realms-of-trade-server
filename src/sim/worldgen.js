@@ -5,6 +5,7 @@ import { LAWLESS } from '../data/lawless.js';
 import { makeNoise2D } from './noise.js';
 import { mulberry32 } from '../core/rng.js';
 import { smoothstep, clamp01, lerp } from '../core/math.js';
+import { revampTerrain } from './terrainRevamp.js';
 
 const S = Math.SQRT1_2;
 // Design frame: u = toward screen-up (north-west), v = toward screen-right (north-east).
@@ -621,7 +622,7 @@ export function generateWorld(seed) {
     return null;
   }
 
-  return {
+  return revampTerrain({
     seed, size, half, res, N, heights,
     enemySpawns, practice, racks, checkpoints, checkpointAt,
     heightAt, groundAt, onDock, masks, materialAt, zoneAt, pathInfo, trailInfo,
@@ -631,5 +632,5 @@ export function generateWorld(seed) {
     props, colliders, queryColliders, npcs, botWaypoints, dock,
     landmarks: { spawn, village, arena, arenaR: L.arenaR, volcano, dockBase, dockEnd, path, ship: P(L.ship) },
     toWorld, toUV,
-  };
+  });
 }

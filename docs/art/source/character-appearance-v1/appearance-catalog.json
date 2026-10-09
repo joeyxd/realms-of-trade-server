@@ -1,0 +1,188 @@
+{
+  "schema": "character-appearance-catalog/v1",
+  "baseVersion": "v3",
+  "bodies": [
+    "male",
+    "female"
+  ],
+  "choices": {
+    "hairId": [
+      {
+        "id": "none",
+        "label": "Calvo"
+      },
+      {
+        "id": "scout",
+        "label": "Explorador"
+      },
+      {
+        "id": "swept",
+        "label": "Barrido"
+      },
+      {
+        "id": "pony",
+        "label": "Coleta"
+      },
+      {
+        "id": "crop",
+        "label": "Corto"
+      }
+    ],
+    "beardId": [
+      {
+        "id": "none",
+        "label": "Afeitado"
+      },
+      {
+        "id": "stubble",
+        "label": "Barba corta"
+      },
+      {
+        "id": "full",
+        "label": "Barba de capitán"
+      }
+    ],
+    "eyesId": [
+      {
+        "id": "neutral",
+        "label": "Serenos"
+      },
+      {
+        "id": "keen",
+        "label": "Atentos"
+      },
+      {
+        "id": "soft",
+        "label": "Suaves"
+      }
+    ],
+    "browsId": [
+      {
+        "id": "natural",
+        "label": "Naturales"
+      },
+      {
+        "id": "bold",
+        "label": "Marcadas"
+      },
+      {
+        "id": "arched",
+        "label": "Arqueadas"
+      }
+    ],
+    "irisPaletteId": [
+      {
+        "id": "amber",
+        "label": "Ámbar",
+        "color": "#8A6038"
+      },
+      {
+        "id": "sea",
+        "label": "Mar",
+        "color": "#477E82"
+      },
+      {
+        "id": "leaf",
+        "label": "Oliva",
+        "color": "#607747"
+      },
+      {
+        "id": "slate",
+        "label": "Gris",
+        "color": "#657586"
+      }
+    ],
+    "hairPaletteId": [
+      {
+        "id": "brown",
+        "label": "Castaño",
+        "color": "#65452F"
+      },
+      {
+        "id": "black",
+        "label": "Negro",
+        "color": "#302A29"
+      },
+      {
+        "id": "copper",
+        "label": "Cobre",
+        "color": "#A65532"
+      },
+      {
+        "id": "sand",
+        "label": "Arena",
+        "color": "#C3A06B"
+      },
+      {
+        "id": "silver",
+        "label": "Canas",
+        "color": "#B8B5AA"
+      }
+    ],
+    "beardPaletteId": [
+      {
+        "id": "brown",
+        "label": "Castaño",
+        "color": "#65452F"
+      },
+      {
+        "id": "black",
+        "label": "Negro",
+        "color": "#302A29"
+      },
+      {
+        "id": "copper",
+        "label": "Cobre",
+        "color": "#A65532"
+      },
+      {
+        "id": "sand",
+        "label": "Arena",
+        "color": "#C3A06B"
+      },
+      {
+        "id": "silver",
+        "label": "Canas",
+        "color": "#B8B5AA"
+      }
+    ],
+    "browPaletteId": [
+      {
+        "id": "brown",
+        "label": "Castaño",
+        "color": "#65452F"
+      },
+      {
+        "id": "black",
+        "label": "Negro",
+        "color": "#302A29"
+      },
+      {
+        "id": "copper",
+        "label": "Cobre",
+        "color": "#A65532"
+      },
+      {
+        "id": "sand",
+        "label": "Arena",
+        "color": "#C3A06B"
+      },
+      {
+        "id": "silver",
+        "label": "Canas",
+        "color": "#B8B5AA"
+      }
+    ]
+  },
+  "defaults": {
+    "v": 1,
+    "hairId": "scout",
+    "beardId": "none",
+    "eyesId": "neutral",
+    "browsId": "natural",
+    "hairPaletteId": "brown",
+    "beardPaletteId": "brown",
+    "browPaletteId": "brown",
+    "irisPaletteId": "amber"
+  }
+}

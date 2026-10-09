@@ -1,0 +1,493 @@
+{
+  "schema": "character-appearance-browser/v1",
+  "scope": "P03a isolated local UI and downloads; no saved identity, game or physical-device performance acceptance",
+  "cases": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900,
+      "size": 1024,
+      "bodies": [
+        {
+          "kind": "male",
+          "hairs": [
+            {
+              "id": "scout",
+              "hairMeshes": 1,
+              "triangles": 11432
+            },
+            {
+              "id": "swept",
+              "hairMeshes": 1,
+              "triangles": 11144
+            },
+            {
+              "id": "pony",
+              "hairMeshes": 1,
+              "triangles": 11088
+            },
+            {
+              "id": "crop",
+              "hairMeshes": 1,
+              "triangles": 11096
+            },
+            {
+              "id": "none",
+              "hairMeshes": 0,
+              "triangles": 10032
+            }
+          ],
+          "beards": [
+            {
+              "id": "none",
+              "count": 0
+            },
+            {
+              "id": "stubble",
+              "count": 1
+            },
+            {
+              "id": "full",
+              "count": 1
+            }
+          ],
+          "eyes": [
+            "neutral",
+            "keen",
+            "soft"
+          ],
+          "brows": [
+            "natural",
+            "bold",
+            "arched"
+          ],
+          "paletteIsolation": [
+            {
+              "field": "hairPaletteId",
+              "changed": [
+                "hair"
+              ]
+            },
+            {
+              "field": "beardPaletteId",
+              "changed": [
+                "beard"
+              ]
+            },
+            {
+              "field": "browPaletteId",
+              "changed": [
+                "brows"
+              ]
+            }
+          ],
+          "bind": {
+            "maxHeadLocalDriftMeters": 4.2207643840401616e-17,
+            "parts": [
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_swept",
+              "beard_full"
+            ],
+            "sharedSkeleton": true
+          },
+          "download": {
+            "path": "docs/art/character-appearance-v1/desktop-male-selected.glb",
+            "bytes": 1318660,
+            "sha256": "6df049b441d9126b8a82950921cb52fb105a981c5c4cb7c0e11ab60a39608984",
+            "names": [
+              "body_base",
+              "head_base",
+              "base_top",
+              "base_shorts",
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_pony"
+            ],
+            "metadata": {
+              "schema": "character-lab-appearance/v1",
+              "body": "male",
+              "baseVersion": "v3",
+              "appearance": {
+                "v": 1,
+                "hairId": "pony",
+                "beardId": "none",
+                "eyesId": "keen",
+                "browsId": "arched",
+                "irisPaletteId": "sea",
+                "hairPaletteId": "copper",
+                "beardPaletteId": "silver",
+                "browPaletteId": "black"
+              },
+              "skinColor": "#C89476",
+              "textureSize": 1024,
+              "scope": "P03a local composition; no saved identity or gameplay authority"
+            }
+          },
+          "reimport": {
+            "parts": 8,
+            "skinned": true,
+            "maps": [
+              1024,
+              1024,
+              1024,
+              1024
+            ]
+          }
+        },
+        {
+          "kind": "female",
+          "hairs": [
+            {
+              "id": "scout",
+              "hairMeshes": 1,
+              "triangles": 11432
+            },
+            {
+              "id": "swept",
+              "hairMeshes": 1,
+              "triangles": 11144
+            },
+            {
+              "id": "pony",
+              "hairMeshes": 1,
+              "triangles": 11088
+            },
+            {
+              "id": "crop",
+              "hairMeshes": 1,
+              "triangles": 11096
+            },
+            {
+              "id": "none",
+              "hairMeshes": 0,
+              "triangles": 10032
+            }
+          ],
+          "beards": [
+            {
+              "id": "none",
+              "count": 0
+            },
+            {
+              "id": "stubble",
+              "count": 1
+            },
+            {
+              "id": "full",
+              "count": 1
+            }
+          ],
+          "eyes": [
+            "neutral",
+            "keen",
+            "soft"
+          ],
+          "brows": [
+            "natural",
+            "bold",
+            "arched"
+          ],
+          "paletteIsolation": [
+            {
+              "field": "hairPaletteId",
+              "changed": [
+                "hair"
+              ]
+            },
+            {
+              "field": "beardPaletteId",
+              "changed": [
+                "beard"
+              ]
+            },
+            {
+              "field": "browPaletteId",
+              "changed": [
+                "brows"
+              ]
+            }
+          ],
+          "bind": {
+            "maxHeadLocalDriftMeters": 2.260205560892005e-16,
+            "parts": [
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_swept",
+              "beard_full"
+            ],
+            "sharedSkeleton": true
+          },
+          "download": {
+            "path": "docs/art/character-appearance-v1/desktop-female-selected.glb",
+            "bytes": 1319172,
+            "sha256": "958035ce3f828f76d45c251cb63df1b94075b74144f9b09c76b360c10c0c41f9",
+            "names": [
+              "body_base",
+              "head_base",
+              "base_top",
+              "base_shorts",
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_pony"
+            ],
+            "metadata": {
+              "schema": "character-lab-appearance/v1",
+              "body": "female",
+              "baseVersion": "v3",
+              "appearance": {
+                "v": 1,
+                "hairId": "pony",
+                "beardId": "none",
+                "eyesId": "keen",
+                "browsId": "arched",
+                "irisPaletteId": "sea",
+                "hairPaletteId": "copper",
+                "beardPaletteId": "silver",
+                "browPaletteId": "black"
+              },
+              "skinColor": "#C89476",
+              "textureSize": 1024,
+              "scope": "P03a local composition; no saved identity or gameplay authority"
+            }
+          },
+          "reimport": {
+            "parts": 8,
+            "skinned": true,
+            "maps": [
+              1024,
+              1024,
+              1024,
+              1024
+            ]
+          }
+        }
+      ],
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v3/male-base-v3.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v3/female-base-v3.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v2/female-base-v2.glb"
+      ],
+      "failed": [
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v2/female-base-v2.glb"
+      ],
+      "staleExportSuppressed": true,
+      "rapidSwitchPreserved": true
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "size": 512,
+      "isMobile": true,
+      "hasTouch": true,
+      "bodies": [
+        {
+          "kind": "male",
+          "hairs": [
+            {
+              "id": "scout",
+              "hairMeshes": 1,
+              "triangles": 11432
+            },
+            {
+              "id": "swept",
+              "hairMeshes": 1,
+              "triangles": 11144
+            },
+            {
+              "id": "pony",
+              "hairMeshes": 1,
+              "triangles": 11088
+            },
+            {
+              "id": "crop",
+              "hairMeshes": 1,
+              "triangles": 11096
+            },
+            {
+              "id": "none",
+              "hairMeshes": 0,
+              "triangles": 10032
+            }
+          ],
+          "beards": [
+            {
+              "id": "none",
+              "count": 0
+            },
+            {
+              "id": "stubble",
+              "count": 1
+            },
+            {
+              "id": "full",
+              "count": 1
+            }
+          ],
+          "eyes": [
+            "neutral",
+            "keen",
+            "soft"
+          ],
+          "brows": [
+            "natural",
+            "bold",
+            "arched"
+          ],
+          "paletteIsolation": [
+            {
+              "field": "hairPaletteId",
+              "changed": [
+                "hair"
+              ]
+            },
+            {
+              "field": "beardPaletteId",
+              "changed": [
+                "beard"
+              ]
+            },
+            {
+              "field": "browPaletteId",
+              "changed": [
+                "brows"
+              ]
+            }
+          ],
+          "bind": {
+            "maxHeadLocalDriftMeters": 4.2207643840401616e-17,
+            "parts": [
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_swept",
+              "beard_full"
+            ],
+            "sharedSkeleton": true
+          },
+          "download": {
+            "path": "docs/art/character-appearance-v1/mobile-male-selected.glb",
+            "bytes": 821988,
+            "sha256": "5876cb09385e20ddcb5390b5c15a3e5ae5f48809b43fa41997038d7098476388",
+            "names": [
+              "body_base",
+              "head_base",
+              "base_top",
+              "base_shorts",
+              "eyes_selected",
+              "brows_selected",
+              "face_accents",
+              "hair_pony"
+            ],
+            "metadata": {
+              "schema": "character-lab-appearance/v1",
+              "body": "male",
+              "baseVersion": "v3",
+              "appearance": {
+                "v": 1,
+                "hairId": "pony",
+                "beardId": "none",
+                "eyesId": "keen",
+                "browsId": "arched",
+                "irisPaletteId": "sea",
+                "hairPaletteId": "copper",
+                "beardPaletteId": "silver",
+                "browPaletteId": "black"
+              },
+              "skinColor": "#C89476",
+              "textureSize": 512,
+              "scope": "P03a local composition; no saved identity or gameplay authority"
+            }
+          },
+          "reimport": {
+            "parts": 8,
+            "skinned": true,
+            "maps": [
+              512,
+              512,
+              512,
+              512
+            ]
+          }
+        },
+        {
+          "kind": "female",
+          "hairs": [
+            {
+              "id": "scout",
+              "hairMeshes": 1,
+              "triangles": 11432
+            },
+            {
+              "id": "swept",
+              "hairMeshes": 1,
+              "triangles": 11144
+            },
+            {
+              "id": "pony",
+              "hairMeshes": 1,
+              "triangles": 11088
+            },
+            {
+              "id": "crop",
+              "hairMeshes": 1,
+              "triangles": 11096
+            },
+            {
+              "id": "none",
+              "hairMeshes": 0,
+              "triangles": 10032
+            }
+          ],
+          "beards": [
+            {
+              "id": "none",
+              "count": 0
+            },
+            {
+              "id": "stubble",
+              "count": 1
+            },
+            {
+              "id": "full",
+              "count": 1
+            }
+          ],
+          "eyes": [
+            "neutral",
+            "keen",
+            "soft"
+          ],
+          "brows": [
+            "natural",
+            "bold",
+            "arched"
+          ]
+        }
+      ],
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v3/male-base-v3-mobile.glb",
+        "http://127.0.0.1:5194/docs/art/source/characters-base-v3/female-base-v3-mobile.glb"
+      ],
+      "failed": [],
+      "staleExportSuppressed": true
+    }
+  ],
+  "failures": [
+    {
+      "case": "desktop",
+      "message": "Browser/network errors"
+    },
+    {
+      "case": "mobile",
+      "message": "page.evaluate: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,Translate,AutoDeElevate,OptimizationHints,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --user-data-dir=C:\\Users\\xxajx\\AppData\\Local\\Temp\\playwright_chromiumdev_profile-WGGPKl --remote-debugging-pipe --no-startup-window\n<launched> pid=31536\n[pid=31536][err] [31536:38508:1008/052531.069:ERROR:components\\system_cpu\\cpu_probe_win.cc:112] PdhAddEnglishCounter failed for '\\Hyper-V Hypervisor Logical Processor(_Total)\\% Total Run Time': Tiempo de espera de la operación de espera agotado. (0x80070102)\n[pid=31536][err] [31536:39236:1008/053008.724:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT\n[pid=31536][err] [31536:39236:1008/053039.885:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT\n[pid=31536][err] [31536:41928:1008/053115.064:ERROR:chrome\\browser\\ui\\views\\user_education\\impl\\browser_user_education_interface_impl.cc:186] Attempting to show IPH IPH_ExtensionsZeroStatePromo before browser initialization complete; IPH will not be shown.\n[pid=31536][err] [31536:38508:1008/053131.383:ERROR:components\\system_cpu\\cpu_probe_win.cc:120] PdhCollectQueryData failed: Error (0x13D) while retrieving error. (0x800007D5)\n[pid=31536][err] [31536:39236:1008/053143.112:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT\n[pid=31536][err] [31536:38508:1008/053144.394:ERROR:components\\system_cpu\\cpu_probe_win.cc:134] PdhGetFormattedCounterValue failed: Error (0x13D) while retrieving error. (0xC0000BC6)\n[pid=31536][err] [31536:38508:1008/053301.540:ERROR:components\\system_cpu\\cpu_probe_win.cc:120] PdhCollectQueryData failed: Error (0x13D) while retrieving error. (0x800007D5)\n[pid=31536][err] [31536:38508:1008/053314.575:ERROR:components\\system_cpu\\cpu_probe_win.cc:134] PdhGetFormattedCounterValue failed: Error (0x13D) while retrieving error. (0xC0000BC6)\n[pid=31536][err] [31536:39236:1008/053343.170:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT\n[pid=31536][err] [31536:39236:1008/053632.171:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT\n[pid=31536][err] [31536:38508:1008/053701.935:ERROR:components\\system_cpu\\cpu_probe_win.cc:120] PdhCollectQueryData failed: Error (0x13D) while retrieving error. (0x800007D5)\n[pid=31536][err] [31536:38508:1008/053714.986:ERROR:components\\system_cpu\\cpu_probe_win.cc:134] PdhGetFormattedCounterValue failed: Error (0x13D) while retrieving error. (0xC0000BC6)\n[pid=31536][err] [31536:39236:1008/054302.453:ERROR:google_apis\\gcm\\engine\\registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT"
+    }
+  ]
+}

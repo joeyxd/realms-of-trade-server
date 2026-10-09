@@ -1,0 +1,1555 @@
+{
+  "generatedAt": "2026-10-07T22:05:49.927Z",
+  "harness": "ephemeral GameHost + memory store; local Three.js/GSAP routes; Chrome SwiftShader",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "compact-landscape-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-landscape-844x390-lifecycle-before-board.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-landscape-844x390-reference.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-landscape-844x390-picker.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-landscape-844x390-touch-accepted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-landscape-844x390-lifecycle-after-dock.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "986c3e30-a995-4994-801d-0fdcc96538e2:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "lifecycle": {
+        "beforeBoard": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        },
+        "dockAction": "Amarrar",
+        "afterDock": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        }
+      },
+      "visual": {
+        "layout": "reference",
+        "touchEnabled": true,
+        "slotCount": 3,
+        "pickerExists": true,
+        "sticks": [
+          {
+            "name": "move",
+            "x": 24,
+            "y": 260,
+            "width": 108,
+            "height": 108,
+            "right": 132,
+            "bottom": 368
+          },
+          {
+            "name": "look",
+            "x": 638,
+            "y": 315,
+            "width": 52,
+            "height": 52,
+            "right": 690,
+            "bottom": 367
+          }
+        ],
+        "slots": [
+          {
+            "slot": "0",
+            "disabled": false,
+            "x": 638,
+            "y": 257,
+            "width": 50,
+            "height": 50,
+            "right": 688,
+            "bottom": 307
+          },
+          {
+            "slot": "1",
+            "disabled": false,
+            "x": 661,
+            "y": 194,
+            "width": 50,
+            "height": 50,
+            "right": 711,
+            "bottom": 244
+          },
+          {
+            "slot": "2",
+            "disabled": false,
+            "x": 723,
+            "y": 196,
+            "width": 50,
+            "height": 50,
+            "right": 773,
+            "bottom": 246
+          }
+        ],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": true,
+          "wheelDecal": true,
+          "wheelDecalPaths": 16,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "compact": {
+          "stripDisplay": "none",
+          "wind": {
+            "text": "75%",
+            "valueVisible": true,
+            "valueFontSize": 27,
+            "iconVisible": true,
+            "gustText": "Ráfaga 11 s",
+            "gustValue": 0,
+            "gustMin": 0,
+            "gustMax": 100,
+            "marker": true,
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "backgroundAlpha": 0,
+            "rect": {
+              "x": 622,
+              "y": 62,
+              "width": 102,
+              "height": 50,
+              "right": 724,
+              "bottom": 112
+            }
+          },
+          "hull": {
+            "insidePlayerBars": true,
+            "text": "240 / 240",
+            "value": 100,
+            "min": 0,
+            "max": 100,
+            "fillWidth": 141,
+            "rect": {
+              "x": 80,
+              "y": 73,
+              "width": 162,
+              "height": 22,
+              "right": 242,
+              "bottom": 95
+            }
+          },
+          "compass": {
+            "x": 742,
+            "y": 12,
+            "width": 84,
+            "height": 84,
+            "right": 826,
+            "bottom": 96
+          },
+          "objective": {
+            "x": 14,
+            "y": 108,
+            "width": 169.4375,
+            "height": 39.9375,
+            "right": 183.4375,
+            "bottom": 147.9375
+          },
+          "cluster": {
+            "x": 638,
+            "y": 194,
+            "width": 188,
+            "height": 182,
+            "right": 826,
+            "bottom": 376
+          },
+          "wheel": {
+            "x": 24,
+            "y": 260,
+            "width": 108,
+            "height": 108,
+            "right": 132,
+            "bottom": 368
+          }
+        },
+        "chrome": {
+          "clockHidden": true,
+          "settings": {
+            "x": 676,
+            "y": 12,
+            "width": 44,
+            "height": 44,
+            "right": 720,
+            "bottom": 56
+          }
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "documentOverflow": false,
+          "rotated": false
+        },
+        "controlRect": {
+          "x": 638,
+          "y": 194,
+          "right": 826,
+          "bottom": 376,
+          "width": 188,
+          "height": 182
+        },
+        "headerRect": {
+          "x": 0,
+          "y": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "touchInitial": {
+        "catalog": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "binding": "capture",
+        "camera": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "pickerOpened": true,
+      "actionsAfterLongPressRelease": [],
+      "longPressTrace": [
+        {
+          "type": "closePicker",
+          "stack": "Error\n    at touch.closePicker (eval at evaluate (:311:30), <anonymous>:11:102)\n    at TouchHelm.chooseBinding (http://127.0.0.1:61953/src/ui/touchHelm.js:232:10)\n    at eval (eval at evaluate (:311:30), <anonymous>:32:45)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+          "pickerVisible": false,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerdown",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 663,
+          "y": 282,
+          "target": {},
+          "pickerVisible": false
+        },
+        {
+          "type": "openPicker",
+          "index": 0,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerup",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 663,
+          "y": 282,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "lostpointercapture",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 663,
+          "y": 282,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "click",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 1,
+          "x": 663,
+          "y": 282,
+          "target": {},
+          "pickerVisible": true
+        },
+        {
+          "type": "ignoreClick",
+          "pointerId": 2,
+          "x": 663,
+          "y": 282,
+          "localPoint": {
+            "x": 663,
+            "y": 282
+          },
+          "recent": {
+            "pointerId": 2,
+            "x": 663,
+            "y": 282,
+            "expiresAt": 1791410769385
+          },
+          "distance": 0,
+          "now": 1791410767887,
+          "ignored": true,
+          "remaining": null
+        }
+      ],
+      "bindingAfterPick": {
+        "binding": "center",
+        "actions": []
+      },
+      "bindingAfterRedraw": {
+        "binding": "center",
+        "text": "Centrar"
+      },
+      "simultaneous": {
+        "input": {
+          "naval": {
+            "throttle": 0.9155845476951434,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0.9155845476951434
+          }
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.9097531579442095,
+          "orbitYaw": 0.095,
+          "orbitPitch": 0,
+          "look": {
+            "x": 1,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.88975027925517,
+            3.5199999999999996,
+            93.9190801258652
+          ],
+          "target": [
+            130.78464608478134,
+            0.37,
+            105.81642217486662
+          ]
+        },
+        "pose": {
+          "x": 125.59736682317693,
+          "y": 0.72,
+          "z": 101.79814948007812,
+          "yaw": 0.9097531579442095
+        },
+        "tick": 1179
+      },
+      "cancelNeutral": {
+        "controls": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "input": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "cameraLook": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "centerActivation": {
+        "look": {
+          "x": 0,
+          "y": 0
+        },
+        "actions": [
+          "center"
+        ]
+      },
+      "pausedNeutral": {
+        "paused": true,
+        "enabled": false,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        }
+      },
+      "hiddenNeutral": {
+        "paused": true,
+        "enabled": false,
+        "throttle": 0
+      },
+      "endDiagnostics": {
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "errors": [],
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "htmlScrollWidth": 844,
+        "bodyScrollWidth": 844
+      }
+    },
+    {
+      "name": "compact-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-portrait-390x844-lifecycle-before-board.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-portrait-390x844-reference.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-portrait-390x844-picker.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-portrait-390x844-touch-accepted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-portrait-390x844-lifecycle-after-dock.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "09c1b420-4f50-404f-9c35-c53e5de36a11:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "lifecycle": {
+        "beforeBoard": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        },
+        "dockAction": "Amarrar",
+        "afterDock": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        }
+      },
+      "visual": {
+        "layout": "reference",
+        "touchEnabled": true,
+        "slotCount": 3,
+        "pickerExists": true,
+        "sticks": [
+          {
+            "name": "move",
+            "x": 22,
+            "y": 24,
+            "width": 108,
+            "height": 108,
+            "right": 130,
+            "bottom": 132
+          },
+          {
+            "name": "look",
+            "x": 23,
+            "y": 638,
+            "width": 52,
+            "height": 52,
+            "right": 75,
+            "bottom": 690
+          }
+        ],
+        "slots": [
+          {
+            "slot": "0",
+            "disabled": false,
+            "x": 83,
+            "y": 638,
+            "width": 50,
+            "height": 50,
+            "right": 133,
+            "bottom": 688
+          },
+          {
+            "slot": "1",
+            "disabled": false,
+            "x": 146,
+            "y": 661,
+            "width": 50,
+            "height": 50,
+            "right": 196,
+            "bottom": 711
+          },
+          {
+            "slot": "2",
+            "disabled": false,
+            "x": 144,
+            "y": 723,
+            "width": 50,
+            "height": 50,
+            "right": 194,
+            "bottom": 773
+          }
+        ],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": true,
+          "wheelDecal": true,
+          "wheelDecalPaths": 16,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "compact": {
+          "stripDisplay": "none",
+          "wind": {
+            "text": "75%",
+            "valueVisible": true,
+            "valueFontSize": 27,
+            "iconVisible": true,
+            "gustText": "Ráfaga 12 s",
+            "gustValue": 0,
+            "gustMin": 0,
+            "gustMax": 100,
+            "marker": true,
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "backgroundAlpha": 0,
+            "rect": {
+              "x": 278,
+              "y": 622,
+              "width": 50,
+              "height": 102,
+              "right": 328,
+              "bottom": 724
+            }
+          },
+          "hull": {
+            "insidePlayerBars": true,
+            "text": "240 / 240",
+            "value": 100,
+            "min": 0,
+            "max": 100,
+            "fillWidth": 4,
+            "rect": {
+              "x": 295,
+              "y": 80,
+              "width": 22,
+              "height": 162,
+              "right": 317,
+              "bottom": 242
+            }
+          },
+          "compass": {
+            "x": 294,
+            "y": 742,
+            "width": 84,
+            "height": 84,
+            "right": 378,
+            "bottom": 826
+          },
+          "objective": {
+            "x": 242.0625,
+            "y": 14,
+            "width": 39.9375,
+            "height": 169.4375,
+            "right": 282,
+            "bottom": 183.4375
+          },
+          "cluster": {
+            "x": 14,
+            "y": 638,
+            "width": 182,
+            "height": 188,
+            "right": 196,
+            "bottom": 826
+          },
+          "wheel": {
+            "x": 22,
+            "y": 24,
+            "width": 108,
+            "height": 108,
+            "right": 130,
+            "bottom": 132
+          }
+        },
+        "chrome": {
+          "clockHidden": true,
+          "settings": {
+            "x": 334,
+            "y": 676,
+            "width": 44,
+            "height": 44,
+            "right": 378,
+            "bottom": 720
+          }
+        },
+        "stage": {
+          "width": 390,
+          "height": 844,
+          "documentOverflow": false,
+          "rotated": true
+        },
+        "controlRect": {
+          "x": 14,
+          "y": 638,
+          "right": 196,
+          "bottom": 826,
+          "width": 182,
+          "height": 188
+        },
+        "headerRect": {
+          "x": 0,
+          "y": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "touchInitial": {
+        "catalog": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "binding": "capture",
+        "camera": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "pickerOpened": true,
+      "actionsAfterLongPressRelease": [],
+      "longPressTrace": [
+        {
+          "type": "closePicker",
+          "stack": "Error\n    at touch.closePicker (eval at evaluate (:311:30), <anonymous>:11:102)\n    at TouchHelm.chooseBinding (http://127.0.0.1:54783/src/ui/touchHelm.js:232:10)\n    at eval (eval at evaluate (:311:30), <anonymous>:32:45)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+          "pickerVisible": false,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerdown",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 108,
+          "y": 663,
+          "target": {},
+          "pickerVisible": false
+        },
+        {
+          "type": "openPicker",
+          "index": 0,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerup",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 108,
+          "y": 663,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "lostpointercapture",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 108,
+          "y": 663,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "click",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 1,
+          "x": 108,
+          "y": 663,
+          "target": {},
+          "pickerVisible": true
+        },
+        {
+          "type": "ignoreClick",
+          "pointerId": 2,
+          "x": 108,
+          "y": 663,
+          "localPoint": {
+            "x": 663,
+            "y": 282
+          },
+          "recent": {
+            "pointerId": 2,
+            "x": 663,
+            "y": 282,
+            "expiresAt": 1791410795740
+          },
+          "distance": 0,
+          "now": 1791410794241,
+          "ignored": true,
+          "remaining": null
+        }
+      ],
+      "bindingAfterPick": {
+        "binding": "center",
+        "actions": []
+      },
+      "bindingAfterRedraw": {
+        "binding": "center",
+        "text": "Centrar"
+      },
+      "simultaneous": {
+        "input": {
+          "naval": {
+            "throttle": 0.9155843412721312,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0.9155843412721312
+          }
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.9097531579442095,
+          "orbitYaw": 0.095,
+          "orbitPitch": 0,
+          "look": {
+            "x": 1,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.66775569081605,
+            3.5199999999999996,
+            93.74641766819035
+          ],
+          "target": [
+            130.56265149634223,
+            0.37,
+            105.64375971719177
+          ]
+        },
+        "pose": {
+          "x": 125.27135115310581,
+          "y": 0.72,
+          "z": 101.5445817366895,
+          "yaw": 0.9097531579442095
+        },
+        "tick": 1074
+      },
+      "cancelNeutral": {
+        "controls": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "input": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "cameraLook": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "centerActivation": {
+        "look": {
+          "x": 0,
+          "y": 0
+        },
+        "actions": [
+          "center"
+        ]
+      },
+      "pausedNeutral": {
+        "paused": true,
+        "enabled": false,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        }
+      },
+      "hiddenNeutral": {
+        "paused": true,
+        "enabled": false,
+        "throttle": 0
+      },
+      "endDiagnostics": {
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "errors": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "htmlScrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "name": "compact-container-640x360",
+      "width": 640,
+      "height": 360,
+      "touch": true,
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-container-640x360-lifecycle-before-board.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-container-640x360-reference.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-container-640x360-picker.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-container-640x360-touch-accepted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c6-live-coastal-loop\\compact-container-640x360-lifecycle-after-dock.png"
+      ],
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "player": {
+        "shipId": "22863cea-77a4-46ce-83cc-f155d1f26ab5:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        }
+      },
+      "lifecycle": {
+        "beforeBoard": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        },
+        "dockAction": "Amarrar",
+        "afterDock": {
+          "aboard": false,
+          "bodyTouchClass": false,
+          "touchEnabled": false,
+          "objective": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "compass": {
+            "display": "none",
+            "visibility": "visible",
+            "width": 0,
+            "height": 0
+          },
+          "hull": {
+            "display": "none",
+            "width": 0,
+            "height": 0
+          },
+          "bag": {
+            "visible": true,
+            "disabled": false,
+            "width": 34.65625,
+            "height": 34.65625
+          }
+        }
+      },
+      "visual": {
+        "layout": "reference",
+        "touchEnabled": true,
+        "slotCount": 3,
+        "pickerExists": true,
+        "sticks": [
+          {
+            "name": "move",
+            "x": 14,
+            "y": 238,
+            "width": 100,
+            "height": 100,
+            "right": 114,
+            "bottom": 338
+          },
+          {
+            "name": "look",
+            "x": 450,
+            "y": 285,
+            "width": 52,
+            "height": 52,
+            "right": 502,
+            "bottom": 337
+          }
+        ],
+        "slots": [
+          {
+            "slot": "0",
+            "disabled": false,
+            "x": 450,
+            "y": 229,
+            "width": 50,
+            "height": 50,
+            "right": 500,
+            "bottom": 279
+          },
+          {
+            "slot": "1",
+            "disabled": false,
+            "x": 471,
+            "y": 172,
+            "width": 50,
+            "height": 50,
+            "right": 521,
+            "bottom": 222
+          },
+          {
+            "slot": "2",
+            "disabled": false,
+            "x": 532,
+            "y": 172,
+            "width": 50,
+            "height": 50,
+            "right": 582,
+            "bottom": 222
+          }
+        ],
+        "hud": {
+          "fireGauge": true,
+          "svg": true,
+          "speed": "0.0",
+          "touchGauge": true,
+          "wheelDecal": true,
+          "wheelDecalPaths": 16,
+          "helmMesh": true,
+          "helmWheel": true
+        },
+        "compact": {
+          "stripDisplay": "none",
+          "wind": {
+            "text": "75%",
+            "valueVisible": true,
+            "valueFontSize": 24,
+            "iconVisible": true,
+            "gustText": "Ráfaga 12 s",
+            "gustValue": 0,
+            "gustMin": 0,
+            "gustMax": 100,
+            "marker": true,
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "backgroundImage": "none",
+            "backgroundAlpha": 0,
+            "rect": {
+              "x": 444,
+              "y": 58,
+              "width": 96,
+              "height": 46,
+              "right": 540,
+              "bottom": 104
+            }
+          },
+          "hull": {
+            "insidePlayerBars": true,
+            "text": "240 / 240",
+            "value": 100,
+            "min": 0,
+            "max": 100,
+            "fillWidth": 141,
+            "rect": {
+              "x": 80,
+              "y": 73,
+              "width": 162,
+              "height": 22,
+              "right": 242,
+              "bottom": 95
+            }
+          },
+          "compass": {
+            "x": 558,
+            "y": 12,
+            "width": 68,
+            "height": 68,
+            "right": 626,
+            "bottom": 80
+          },
+          "objective": {
+            "x": 12,
+            "y": 100,
+            "width": 169.4375,
+            "height": 37.640625,
+            "right": 181.4375,
+            "bottom": 137.640625
+          },
+          "cluster": {
+            "x": 450,
+            "y": 172,
+            "width": 178,
+            "height": 174,
+            "right": 628,
+            "bottom": 346
+          },
+          "wheel": {
+            "x": 14,
+            "y": 238,
+            "width": 100,
+            "height": 100,
+            "right": 114,
+            "bottom": 338
+          }
+        },
+        "chrome": {
+          "clockHidden": true,
+          "settings": {
+            "x": 496,
+            "y": 12,
+            "width": 44,
+            "height": 44,
+            "right": 540,
+            "bottom": 56
+          }
+        },
+        "stage": {
+          "width": 640,
+          "height": 360,
+          "documentOverflow": false,
+          "rotated": false
+        },
+        "controlRect": {
+          "x": 450,
+          "y": 172,
+          "right": 628,
+          "bottom": 346,
+          "width": 178,
+          "height": 174
+        },
+        "headerRect": {
+          "x": 0,
+          "y": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "touchInitial": {
+        "catalog": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "binding": "capture",
+        "camera": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "pickerOpened": true,
+      "actionsAfterLongPressRelease": [],
+      "longPressTrace": [
+        {
+          "type": "closePicker",
+          "stack": "Error\n    at touch.closePicker (eval at evaluate (:311:30), <anonymous>:11:102)\n    at TouchHelm.chooseBinding (http://127.0.0.1:62972/src/ui/touchHelm.js:232:10)\n    at eval (eval at evaluate (:311:30), <anonymous>:32:45)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+          "pickerVisible": false,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerdown",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 475,
+          "y": 254,
+          "target": {},
+          "pickerVisible": false
+        },
+        {
+          "type": "openPicker",
+          "index": 0,
+          "catalogSignature": "[[\"capture\",\"Ráfaga\",\"wind\",\"skill\",false,true,false],[\"bag\",\"Mochila\",\"cargo\",\"item\",false,true,false],[\"mode\",\"Cubierta\",\"crew\",\"action\",false,true,false],[\"center\",\"Centrar\",\"center\",\"action\",false,true,false],[\"map\",\"Mapa\",\"map\",\"action\",false,true,false],[\"dock\",\"Amarrar\",\"helm\",\"action\",false,true,false]]"
+        },
+        {
+          "type": "pointerup",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 475,
+          "y": 254,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "lostpointercapture",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 0,
+          "x": 475,
+          "y": 254,
+          "target": "naval-touch-slot naval-touch-action",
+          "pickerVisible": true
+        },
+        {
+          "type": "click",
+          "pointerId": 2,
+          "pointerType": "touch",
+          "detail": 1,
+          "x": 475,
+          "y": 254,
+          "target": {},
+          "pickerVisible": true
+        },
+        {
+          "type": "ignoreClick",
+          "pointerId": 2,
+          "x": 475,
+          "y": 254,
+          "localPoint": {
+            "x": 475,
+            "y": 254
+          },
+          "recent": {
+            "pointerId": 2,
+            "x": 475,
+            "y": 254,
+            "expiresAt": 1791410820687
+          },
+          "distance": 0,
+          "now": 1791410819189,
+          "ignored": true,
+          "remaining": null
+        }
+      ],
+      "bindingAfterPick": {
+        "binding": "center",
+        "actions": []
+      },
+      "bindingAfterRedraw": {
+        "binding": "center",
+        "text": "Centrar"
+      },
+      "simultaneous": {
+        "input": {
+          "naval": {
+            "throttle": 0.9401913875598086,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0.9401913875598086
+          }
+        },
+        "camera": {
+          "mode": "chase",
+          "yaw": 0.9097531579442095,
+          "orbitYaw": 0.095,
+          "orbitPitch": 0,
+          "look": {
+            "x": 1,
+            "y": 0
+          },
+          "fov": 50,
+          "position": [
+            123.5560991708589,
+            3.5199999999999996,
+            93.65957370822366
+          ],
+          "target": [
+            130.4509949763851,
+            0.37,
+            105.55691575722508
+          ]
+        },
+        "pose": {
+          "x": 125.10041468596167,
+          "y": 0.72,
+          "z": 101.41163115113292,
+          "yaw": 0.9097531579442095
+        },
+        "tick": 1017
+      },
+      "cancelNeutral": {
+        "controls": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "input": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "cameraLook": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "centerActivation": {
+        "look": {
+          "x": 0,
+          "y": 0
+        },
+        "actions": [
+          "center"
+        ]
+      },
+      "pausedNeutral": {
+        "paused": true,
+        "enabled": false,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        }
+      },
+      "hiddenNeutral": {
+        "paused": true,
+        "enabled": false,
+        "throttle": 0
+      },
+      "endDiagnostics": {
+        "touch": {
+          "enabled": true,
+          "disposed": false,
+          "pointers": 0,
+          "move": {
+            "x": 0,
+            "y": 0
+          },
+          "look": {
+            "x": 0,
+            "y": 0
+          },
+          "actions": 0,
+          "picker": false,
+          "pickerSlot": null,
+          "bindings": [
+            "center",
+            "capture",
+            "bag"
+          ],
+          "preferredBindings": [
+            "center",
+            null,
+            null
+          ],
+          "layout": "reference"
+        },
+        "errors": [],
+        "viewport": {
+          "width": 640,
+          "height": 360
+        },
+        "htmlScrollWidth": 640,
+        "bodyScrollWidth": 640
+      }
+    }
+  ],
+  "failures": [],
+  "status": "passed",
+  "finishedAt": "2026-10-07T22:07:06.755Z"
+}

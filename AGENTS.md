@@ -30,6 +30,11 @@
 
 ## Prioridades y límites actuales
 
+- Decisión del autor, 2026-10-07: jugar con agentes LLM es parte **esencial** del proyecto, junto a
+  construcción, barcos y comercio; sustituye la prioridad baja del 2026-10-05. Primera entrega propia:
+  chat ingame C01 (mundo, cercanía y susurros), compartido por humanos y agentes; después L00–L06.
+  Usar transporte/identidad autoritativos existentes. El chat no concede permisos de gameplay ni
+  convierte texto de jugadores en órdenes privilegiadas; mantener mente LLM fuera de `src/sim/**`.
 - La joya del juego es construir y habitar en tierra firme o en un barco modular; barcos aéreos más adelante.
   Comercio entre ciudades, transporte con riesgo y combate/piratería deben reforzar esa identidad.
 - Dirección naval aprobada y fases en `docs/NAVAL-ROADMAP.md`: materiales/navegación/distribución/carga afectan

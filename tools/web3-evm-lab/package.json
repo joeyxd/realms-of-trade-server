@@ -1,0 +1,19 @@
+{
+  "name": "marea-negra-web3-evm-lab",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Disposable local EVM reader rehearsal; never a public-network deployment tool",
+  "scripts": {
+    "test": "node --test reader-evm.test.mjs amoy-pilot.test.mjs amoy-deployment.test.mjs",
+    "build:amoy": "node build-amoy-pilot.mjs --build",
+    "check:amoy": "node build-amoy-pilot.mjs --check",
+    "prepare:amoy": "node prepare-amoy-deployment.mjs --prepare"
+  },
+  "devDependencies": {
+    "@ethereumjs/common": "10.1.3",
+    "@ethereumjs/util": "10.1.3",
+    "@ethereumjs/vm": "10.1.3",
+    "@openzeppelin/contracts": "5.6.1",
+    "solc": "0.8.37",
+    "viem": "2.5

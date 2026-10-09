@@ -1,28 +1,37 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 19; // D08c.4: shared coastal contact, public hull/part HP and impact feedback.
+export const PROTOCOL_VERSION = 32; // Utility belt, craft catalogue and shared mining; retains terrain and managed agent control.
 
 export const MSG = {
   // client -> server
-  HELLO: 'hello',     // {v, name, skin, weapon, save, token?, importSave?}; token absence is guest mode
-  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}]}
+  HELLO: 'hello',     // {v, name, skin, weapon, save, token?, importSave?, agent?:true}; managed admission requires token
+  INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}], control?:{epoch,taskRevision}}
   CMD: 'cmd',         // {type: 'pause' | 'equip' | 'raft' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
   PING: 'ping',       // {t}
+  CHAT_SEND: 'chat_send', // {id, channel: world|local|whisper, text, target?: peer connection id, control?:{epoch}}
+  AGENT_TASK: 'agent_task', // managed controller: {epoch,expectedTaskRevision,actionId,type,args,priority}
+  AGENT_CANCEL: 'agent_cancel', // managed controller: {epoch,expectedTaskRevision}
+  AGENT_RELEASE: 'agent_release', // managed controller relinquishes its lease: {epoch}
+  AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
-  WELCOME: 'welcome', // {you, tick, seed}
-  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts: [public blueprint/pose/crew...], naval?, deck?: private trial states}
+  WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
+  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?: private coastal lifecycle}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)
   PONG: 'pong',       // {t, tick}
   FULL: 'full',       // {max}: the instance has no room for another player (you keep spectating)
   ERROR: 'error',     // {code: 'version' | 'name' ...}
+  CHAT_STATE: 'chat_state', // {self, peers:[{id,entity,name}], config, history: session-visible messages}
+  CHAT_MESSAGE: 'chat_message', // {id,requestId,channel,sender,target?,text,tick}; identity comes from server
+  CHAT_RESULT: 'chat_result', // {requestId,ok,code?,messageId?,duplicate?}; routed, not a read receipt
+  AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
   PROFILE: 'profile', // {p}: your profile (bag, equipment, gold, masteries, quests…), private (M4)
   SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
-  // SHIP_INPUT and DECK_INPUT are used only by the dedicated pilot trial; other naval/trade messages remain reserved.
+  // Session-owned helm and relative deck input; the remaining naval/trade messages stay reserved.
   SHIP_SPAWN: 'ship_spawn',
-  SHIP_INPUT: 'ship_input', // private pilot harness: {epoch, seq, throttle, brake, steer}; session owns pilot
+  SHIP_INPUT: 'ship_input', // {epoch, seq, throttle, brake, steer, capture?:boolean}; session owns pilot
   DECK_INPUT: 'deck_input', // private local crew: {epoch, seq, mx, mz}; axes in the raft's local frame
   SHIP_STATE: 'ship_state',
   BOARD: 'board',

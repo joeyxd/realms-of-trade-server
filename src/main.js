@@ -23,6 +23,7 @@ import { WEAPONS, WEAPON_KINDS, SKILLS, weaponIndex, weaponOf } from './data/wea
 import { createTransport, probeServer, servedByGameServer, httpUrlFor } from './net/transport.js';
 import { GameClient } from './client/gameClient.js';
 import { AccountAuth } from './client/accountAuth.js';
+import { WalletLink } from './client/walletLink.js';
 import { AccountPanel } from './ui/account.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
@@ -43,6 +44,11 @@ import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
 import { RaftEditor } from './ui/raftEditor.js';
 import { CommercePanel } from './ui/commerce.js';
+import { ResourceActions } from './ui/resourceActions.js';
+import { WorkbenchPanel } from './ui/workbench.js';
+import { ChatPanel } from './ui/chat.js';
+import { ChatBubbles } from './ui/chatBubbles.js';
+import { MSG } from './net/protocol.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -51,9 +57,13 @@ import { phaseAt } from './data/clock.js';
 import { elementVisual } from './data/elements.js';
 import { audio } from './audio/engine.js';
 import { sfx } from './audio/sfx.js';
+import { harvestSound } from './audio/harvest.js';
+import { startHarvestPose } from './render/harvestPose.js';
 import { Ambience } from './audio/ambience.js';
 import { Music } from './audio/music.js';
 import { assets } from './render/assets/registry.js';
+import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
+import { LiveNavigationView } from './client/liveNavigationView.js';
 
 const errors = new Map();
 function safe(name, fn) {
@@ -88,6 +98,7 @@ async function boot() {
   // Imported models and textures (assets/manifest.json; docs/ASSETS.md) load while the world generates; anything
   // missing or broken stays procedural. ?noassets skips them (compare against the procedural look).
   const assetsP = params.has('noassets') ? Promise.resolve(assets) : assets.load('assets/manifest.json');
+  const raftSkinP = params.has('noassets') ? Promise.resolve(null) : loadNavalRaftSkin({ mobile: isTouch });
   const map = generateWorld(GAME.seed);
   const debug = params.has('debug');
   // Online when this page comes from the game server (or ?server=ws://…), solo with ?solo or without one.
@@ -98,7 +109,7 @@ async function boot() {
   });
   const canvas = $('#game');
   await assetsP;
-  const world = new GameScene(canvas, map);
+  const world = new GameScene(canvas, map, { raftSkin: await raftSkinP });
   // ?tod=night|dusk|day|cycle and ?phase=0..1 for screenshots; otherwise the saved setting.
   world.lighting.setTimeOfDay(params.get('tod') || settings.timeOfDay, 0);
   if (params.get('phase')) world.lighting.setPhase(+params.get('phase'));
@@ -162,8 +173,8 @@ async function boot() {
   const hud = new Hud($('#hud'), {
     onSettings: () => openPause('settings'),
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
-    onBag: () => { commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
-    onMap: () => { commercePanel.close(); raftEditor.close(); mapView.toggle(); },
+    onBag: () => { workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
+    onMap: () => { workbench.close(); commercePanel.close(); raftEditor.close(); mapView.toggle(); },
   });
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
@@ -187,13 +198,13 @@ async function boot() {
   const mapView = new MapView($('#mapview'), map);
   const raftEditor = new RaftEditor({
     parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
-    profile: () => client?.profile, rafts: () => client?.pred.rafts,
+    profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
     raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer,
     player: () => ps, send: sendCmd,
-    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead,
+    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) commercePanel.close();
-      input.setBuildContext(active || commercePanel.active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) { workbench.close(); commercePanel.close(); }
+      input.setBuildContext(active || commercePanel.active || workbench.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('building-raft', active);
       if (active) { charPanel.close(); dialog.hide(); mapView.close(); }
       canvas.focus({ preventScroll: true });
@@ -201,20 +212,38 @@ async function boot() {
   });
   bus.on('raftEdit', (ev) => safe('raftEdit', () => raftEditor.onResult(ev)));
   const commercePanel = new CommercePanel({
-    parent: $('#ui'), profile: () => client?.profile, rafts: () => client?.pred.rafts,
+    parent: $('#ui'), profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
     raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer, player: () => ps,
     map, send: sendCmd,
-    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead,
+    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) { raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
-      input.setBuildContext(active || raftEditor.active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) { workbench.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      input.setBuildContext(active || raftEditor.active || workbench.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('trading-goods', active);
       canvas.focus({ preventScroll: true });
     },
   });
   bus.on('commerce', (ev) => safe('commerce', () => commercePanel.onResult(ev)));
   bus.on('raftProduction', (ev) => safe('production', () => commercePanel.onProductionResult(ev)));
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { commercePanel.close(); raftEditor.close(); fn(); } };
+  const resources = new ResourceActions({ client: () => client, player: () => ps,
+    enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !raftEditor.active && !commercePanel.active,
+    toast: (html) => hud.toast(html, 4200), sound: () => sfx.pickup(0) });
+  const workbench = new WorkbenchPanel({ parent: $('#ui'), profile: () => client?.profile, player: () => ps,
+    bench: () => client?.resources?.bench,
+    enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
+    blocked: () => !!(client.naval.active || client.deck.active || client.voyage?.active),
+    submit: (command) => resources.send(command),
+    onContext: (active) => {
+      if (active) { commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      input.setBuildContext(active || raftEditor.active || commercePanel.active); aimCtl.reset(); st.wantWeapon = 0;
+      document.body.classList.toggle('working-materials', active);
+      canvas.focus({ preventScroll: true });
+    },
+  });
+  resources.openWorkbench = () => workbench.open();
+  bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
+  bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { workbench.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
@@ -246,9 +275,38 @@ async function boot() {
     onNewGame: () => { resetSave(); location.reload(); },
     gpu: () => st.gpu,
   });
+  const chatPanel = new ChatPanel($('#chat'), {
+    send: (payload) => client.send({ t: MSG.CHAT_SEND, ...payload }),
+    enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && !client.t.closed,
+    onFocus: (focused) => {
+      input.clearActions();
+      aimCtl.reset();
+      st.wantWeapon = 0;
+      input.enabled = !focused && st.mode === 'playing' && !pause.open && !client?.t.closed;
+    },
+  });
+  bus.on('chat:state', (m) => safe('chat', () => chatPanel.onState(m)));
+  bus.on('chat:message', (m) => safe('chat', () => chatPanel.onMessage(m)));
+  bus.on('chat:result', (m) => safe('chat', () => chatPanel.onResult(m)));
+  const chatBubbles = new ChatBubbles({
+    show: (entity, message, lifeMs) => worldUI.chatBubble(entity, message, lifeMs),
+    remove: (entity) => worldUI.removeChatBubble(entity),
+    clear: () => worldUI.clearChatBubbles(),
+  });
+  bus.on('chat:state', (m) => safe('chatBubbles', () => chatBubbles.onState(m)));
+  bus.on('chat:message', (m) => safe('chatBubbles', () => {
+    if (st.mode === 'playing' && client.joined && !client.t.closed) chatBubbles.onMessage(m);
+  }));
+  input.onHotkey('Enter', () => {
+    if (st.mode !== 'playing' || pause.open) return false;
+    workbench.close(); commercePanel.close(); raftEditor.close();
+    return chatPanel.open();
+  });
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    chatPanel.close();
+    workbench.close();
     commercePanel.close();
     raftEditor.close();
     // Online the world never waits: the menu opens, your input goes neutral and the island carries on.
@@ -269,6 +327,8 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (chatPanel.opened) { chatPanel.close(); return true; }
+    if (workbench.active) { workbench.close(); return true; }
     if (commercePanel.active) { commercePanel.close(); return; }
     if (raftEditor.active) { raftEditor.close(); return; }
     if (aimCtl.preview && aimCtl.preview.kind === 'ground' && !pause.open) { input.cancelAim(); return; } // ESC drops an area being aimed
@@ -303,12 +363,23 @@ async function boot() {
   // ---- Net / entities --------------------------------------------------------------------------
   const transport = await transportP;
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
+  const navigation = new LiveNavigationView({
+    world, client: () => client, input, isTouch, stage, parent: $('#ui'),
+    active: () => st.mode === 'playing' && client.joined && !client.t.closed,
+    onClosePanels: () => { workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); aimCtl.reset(); input.clearActions(); },
+  });
+  bus.on('combat', (ev) => safe('navigation event', () => navigation.event(ev)));
+  bus.on('navalPilot', (ev) => safe('navigation event', () => navigation.event(ev)));
+  bus.on('navalImpact', (ev) => safe('navigation event', () => navigation.event(ev)));
+  bus.on('navalGust', (ev) => safe('navigation event', () => navigation.event(ev)));
   st.online = transport.kind === 'ws';
   // Saved games (M4): one per server ('solo' for the Web Worker). The server sends a fresh blob when your
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  const walletLink = st.online ? new WalletLink({ auth: accountAuth, httpBase: httpUrlFor(transport.url) }) : null;
   const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, {
+    wallet: walletLink,
     hasLegacySave: () => !!loadSave(saveSlot()),
     looks: SKINS.slice(0, 5).map((look, id) => ({ id, name: look.name, color: '#' + look.swatch[0].toString(16).padStart(6, '0') })),
     getCharacter: () => ({ name: settings.name, skin: settings.skin }),
@@ -340,6 +411,9 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost() {
+    chatPanel.disconnected();
+    chatBubbles.disconnected();
+    workbench.close();
     commercePanel.close();
     raftEditor.close();
     if (document.querySelector('.net-lost')) return;
@@ -362,6 +436,12 @@ async function boot() {
   }
 
   const views = world.views;
+  bus.on('resourceHit', (ev) => safe('harvest effects', () => {
+    if (!world.resources.hit(ev)) return;
+    const distance = Math.hypot(ps.x - ev.x, ps.z - ev.z);
+    if (distance < 26) startHarvestPose(views.get(ev.e), ev);
+    harvestSound(ev, distance);
+  }));
   const devPanel = new DevPanel($('#devpanel'), { client, world, hud });
   const debugDraw = new DebugDraw(world.scene);
   let loop = null;
@@ -418,6 +498,7 @@ async function boot() {
   }));
   bus.on('entity:despawn', (rec) => {
     world.removeCharacter(rec.id); worldUI.removeNameplate(rec.id);
+    chatBubbles.forgetEntity(rec.id);
     if (rec.human && rec.id !== client.youServer && st.mode === 'playing') hud.toast(`<b>${escHtml(rec.name)}</b> dejó la isla`, 2600);
   });
   bus.on('you:welcome', ({ id }) => { worldUI.removeNameplate(id); });
@@ -667,7 +748,8 @@ async function boot() {
     world.rig.blendFromCurrent(reduced() ? 0.6 : 2.2);
     setTimeout(() => {
       hud.show();
-      input.enabled = true;
+      chatPanel.setVisible(true);
+      input.enabled = !chatPanel.typing;
       if (isTouch) touch.show();
       canvas.focus({ preventScroll: true });
     }, reduced() ? 300 : 1500);
@@ -820,10 +902,22 @@ async function boot() {
   loop = new Loop({
     fixed: () => safe('fixed', () => {
       if (st.mode !== 'playing' || !client.joined || st.paused) return;
+      const navalInput = navigation.fixedInput();
+      if (navalInput) {
+        input.consumePresses(); aimCtl.reset(); st.wantWeapon = 0;
+        client.tickInput(chatPanel.typing || pause.open || !input.enabled
+          ? { naval: { throttle: 0, brake: 0, steer: 0, capture: false }, deck: { mx: 0, mz: 0 } }
+          : navalInput);
+        return;
+      }
+      if (chatPanel.typing) {
+        client.tickInput({ mx: 0, mz: 0, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
+        return;
+      }
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
-      if (raftEditor.active || commercePanel.active) {
+      if (raftEditor.active || commercePanel.active || workbench.active) {
         client.tickInput({ mx: move.x, mz: move.z, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
         return;
       }
@@ -882,6 +976,10 @@ async function boot() {
       st.lawless = playing && map.lawlessAt(ps.x, ps.z);
       hud.setLawless(st.lawless);
       const viewTick = client.viewTick(alpha);
+      safe('navigation', () => navigation.update(realDt, alpha, ps, {
+        paused: pause.open || chatPanel.typing || !input.enabled,
+        reducedMotion: settings.reducedMotion, quality: quality.current, muted: settings.muted,
+      }));
 
       // Characters.
       safe('chars', () => {
@@ -923,7 +1021,9 @@ async function boot() {
               view.lastDashes = s.dashes;
             }
           }
+          view.footprintDeck = !!client.pred.raftDeck.surface(s.x, s.z, s.y);
           view.update(simDt, s);
+          navigation.poseCharacter(view, s, rec.id, simDt);
           // The Timón rides at the shoulder while charging; Rayo de mástil only uses its ground aim preview.
           const mastboltCharge = rec.id === client.youServer
             ? ps.castK === 3 && skillId(ps.skG) === 'mastbolt'
@@ -955,7 +1055,8 @@ async function boot() {
           else { st.zoneCandidate = z; st.zoneTimer = 0; if (st.zone === null) enterZone(z); }
         } else st.zoneCandidate = null;
         // One action prompt floats under the player's feet: interaction first, then the tutorial.
-        const npc = nearestNpc();
+        const navalInteraction = navigation.interaction();
+        const npc = client.naval.active || client.deck.active ? null : nearestNpc();
         if (npc && npcKey(npc) === 'tattoo' && !st.sepiaTaught) {
           st.sepiaTaught = true;
           hud.toast('<b>Doña Sepia</b> tatúa habilidades para tus huecos Q / E. El primero es gratis. (<span class="kbd">T</span>: tus tatuajes)', 6500);
@@ -968,15 +1069,23 @@ async function boot() {
         const tierSel = prof ? prof.flags.tierSel || 1 : 1, tierNext = prof ? (tierSel % prof.flags.tier) + 1 : 1;
         const rack = !npc && !chest && !runes && !ps.dead ? rackNear(map, ps.x, ps.z) : null;
         const other = (ps.weapon + 1) % WEAPON_KINDS.length;
+        const resourceInteraction = !workbench.active && !navalInteraction && !npc && !chest && !runes && !rack ? resources.interaction() : null;
+        const bench = client.resources?.bench;
+        if (bench) {
+          if (!worldUI.labels.has('workbench')) worldUI.addLabel('workbench', '◆ Banco de materiales', { cls: 'quest', color: '#e6b75b', range: 17 });
+          anchor('workbench', bench.x, bench.y + 1.5, bench.z, 0);
+        }
         let act = null;
-        if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
+        if (navalInteraction) act = null; // The navigation HUD owns this prompt.
+        else if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
         else if (chest) act = rewards.chestPrompt(chest);
         else if (runes) act = `<b>${TIERS[tierSel - 1].name}</b> · <span class="kbd">F</span> cambiar a ${TIERS[tierNext - 1].name}`;
         else if (rack) {
           act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
           if (!st.rackTaught) { st.rackTaught = true; hud.toast('<b>Armero:</b> aquí cambias de arma. Cada arma trae su LMB, Q, E y R. <span class="kbd">F</span> para probar las pistolas.', 5200); }
         }
-        else if (nearShip) act = '<span class="kbd">F</span> ZARPAR · próximamente';
+        else if (resourceInteraction) act = resourceInteraction.html;
+        else if (nearShip) act = 'Tu balsa está en el muelle · <span class="kbd">B</span> construir';
         else if (st.tut === 'move') act = isTouch ? 'Usa el joystick para moverte' : '<span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> para moverte';
         else if (st.tut === 'dash') act = isTouch ? 'Toca <b>DASH</b> para esquivar' : '<span class="kbd">ESPACIO</span> para hacer dash';
         else if (st.tut === 'attack') {
@@ -995,14 +1104,16 @@ async function boot() {
         if (cv) anchor('you', cv.x, cv.y - 0.1, cv.z, 0); else anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
         // On touch the action button carries the verb (and the key hint is noise): strip it from the prompt.
         if (isTouch) {
-          touch.setAction(npc ? { verb: 'Hablar', icon: 'talk' } : chest ? { verb: 'Abrir', icon: 'chest' } : runes ? { verb: 'Marea', icon: 'rune' }
-            : rack ? { verb: 'Cambiar', icon: 'swap' } : nearShip ? { verb: 'Zarpar', icon: 'ship' } : null);
+          touch.setAction(navalInteraction ? { verb: navalInteraction.verb, icon: 'ship' } : npc ? { verb: 'Hablar', icon: 'talk' } : chest ? { verb: 'Abrir', icon: 'chest' } : runes ? { verb: 'Marea', icon: 'rune' }
+            : rack ? { verb: 'Cambiar', icon: 'swap' } : resourceInteraction ? { verb: resourceInteraction.verb, icon: resourceInteraction.icon || 'chest' }
+            : nearShip ? { verb: 'Zarpar', icon: 'ship' } : null);
           if (act) act = act.replace('<span class="kbd">F</span> ', '');
         }
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         const interact = input.consumeInteract();
-        if (!commercePanel.active && interact) {
-          if (npc) {
+        if (!workbench.active && !commercePanel.active && interact) {
+          if (navalInteraction?.key === 'F') navalInteraction.run();
+          else if (npc) {
             const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
             const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
             worldUI.bubble(npc.id, `<b>${npc.name}</b>${lines[i]}`, 5200);
@@ -1015,9 +1126,8 @@ async function boot() {
             client.send({ t: 'cmd', type: 'tier', tier: tierNext });
           } else if (rack) {
             st.wantWeapon = other + 1; // sent with the next command; the sim checks the rack too
-          } else if (nearShip) {
-            hud.toast('<b>El barco aún no zarpa.</b> La navegación llegará en una próxima actualización.', 3600);
-            sfx.click();
+          } else if (resourceInteraction) {
+            resourceInteraction.run();
           }
         }
         // Mouse aim (raycast cursor → plane at player height) for the camera look-ahead.
@@ -1101,8 +1211,15 @@ async function boot() {
         if (st.sheet) sheetFrame(realDt);
         else if (playing) {
           focus.set(ps.x, ps.y, ps.z);
+          if (navigation.applyCamera(realDt, ps, alpha)) { st.navalCamera = true; return; }
+          if (st.navalCamera) {
+            st.navalCamera = false; st.snapCam = true;
+            world.camera.fov = tuning.camera.fov; world.camera.updateProjectionMatrix();
+          }
           if (st.snapCam) { world.rig.snapTo(focus); st.snapCam = false; }
-          world.rig.update(realDt, focus, mouseAiming() || padAiming() ? aim : null, loop.timeScale);
+          // Combat look-ahead moves the construction grid away from a stationary cursor.
+          const cameraAim = !raftEditor.active && (mouseAiming() || padAiming()) ? aim : null;
+          world.rig.update(realDt, focus, cameraAim, loop.timeScale);
         } else {
           // Title: slow orbit around the island.
           st.titleAngle += realDt * (reduced() ? 0.008 : 0.03);
@@ -1120,7 +1237,7 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, shadowFocus, simDt, rafts: client.pred.rafts, you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, resources: client.resources, naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);
@@ -1132,6 +1249,7 @@ async function boot() {
       });
       safe('raftEditor', () => raftEditor.update());
       safe('commerce', () => commercePanel.update());
+      safe('workbench', () => workbench.update());
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));
       st.fps = st.fps * 0.9 + (1 / Math.max(loop.rawDt, 1e-3)) * 0.1;
@@ -1165,7 +1283,7 @@ async function boot() {
   title.ready();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, panels: { charPanel, dialog, mapView, raftEditor, commercePanel } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, panels: { charPanel, dialog, mapView, raftEditor, commercePanel, chatPanel, workbench } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

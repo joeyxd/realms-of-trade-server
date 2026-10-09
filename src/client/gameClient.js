@@ -35,9 +35,13 @@ export class GameClient {
     this.entities = new Map(); // serverId -> record
     this.pred.rafts = [];
     this.lastRaftTick = -1;
+    this.resources = { nodes: [], bench: null };
     this.lastSnapshotTick = -1;
     this.naval = new NavalPilotPrediction(map);
     this.deck = new NavalDeckPrediction();
+    this.voyage = { active: false };
+    this.route = null;
+    this.capacity = null;
     this.raftSamples = new Map();
     this.clock = 0;
     this.serverOffset = null;
@@ -110,6 +114,7 @@ export class GameClient {
       }
       case MSG.WELCOME: {
         this.naval = new NavalPilotPrediction(this.map);
+        this.route = null;
         this.deck = new NavalDeckPrediction();
         this.raftSamples.clear();
         this.youServer = m.you;
@@ -139,6 +144,9 @@ export class GameClient {
       case MSG.SAVE: this.bus.emit('save', m); break;
       case MSG.FULL: this.bus.emit('net:full', m); break;
       case MSG.ERROR: this.bus.emit('net:error', m); break;
+      case MSG.CHAT_STATE: this.bus.emit('chat:state', m); break;
+      case MSG.CHAT_MESSAGE: this.bus.emit('chat:message', m); break;
+      case MSG.CHAT_RESULT: this.bus.emit('chat:result', m); break;
       default:
         break;
     }
@@ -148,7 +156,11 @@ export class GameClient {
   isMe(e) { return e !== undefined && e === this.youServer; }
 
   onEvent(ev) {
-    if (ev.type === 'navalDeck' || ev.type === 'navalInvite' || ev.type === 'navalImpact') {
+    if (ev.type === 'resourceHit') {
+      this.bus.emit('resourceHit', ev);
+      return;
+    }
+    if (ev.type === 'navalDeck' || ev.type === 'navalInvite' || ev.type === 'navalImpact' || ev.type === 'navalGust') {
       if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
       return;
     }
@@ -162,6 +174,10 @@ export class GameClient {
     }
     if (ev.type === 'commerce') {
       if (ev.to === this.youServer) this.bus.emit('commerce', ev);
+      return;
+    }
+    if (ev.type === 'resource') {
+      if (ev.to === this.youServer) this.bus.emit('resource', ev);
       return;
     }
     if (ev.type === 'raftEdit') {
@@ -335,8 +351,12 @@ export class GameClient {
     if (naval.active && deck.active && naval.shipId !== deck.shipId) return;
     // Validate both private streams before committing either cursor or the shared snapshot.
     this.naval = naval; this.deck = deck;
+    if (s.voyage && typeof s.voyage.active === 'boolean') this.voyage = s.voyage;
+    this.route = s.route?.v === 1 ? s.route : null;
     if (this.naval.active || this.deck.active) this.pending.length = 0;
     this.lastSnapshotTick = s.tick;
+    if (s.resources && Array.isArray(s.resources.nodes)) { this.resources = s.resources; this.resourceTick = s.tick; }
+    if (Object.hasOwn(s, 'capacity')) this.capacity = s.capacity;
     if (Array.isArray(s.rafts) && s.tick >= this.lastRaftTick) {
       this.lastRaftTick = s.tick;
       this.pred.rafts = s.rafts;

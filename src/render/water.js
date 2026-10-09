@@ -15,6 +15,7 @@ import { GLSL_COMMON, GLSL_BAND, GLSL_LIGHTS, U } from './toon.js';
 import { GLSL_SKY, SKY } from './sky.js';
 import { WATERU } from './pipeline.js';
 import { getWaveTexture } from './noiseTex.js';
+import { WATER_DETAIL_DEFAULTS, WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 
 export const WATER_LOOK = {
   absorb: new THREE.Vector3(0.46, 0.2, 0.15), // per-channel extinction per unit of path (red dies first)
@@ -63,6 +64,8 @@ ${GLSL_COMMON}
 ${GLSL_BAND}
 ${GLSL_SKY}
 ${GLSL_LIGHTS}
+${CAUSTIC_PARS}
+uniform float mnFoamContactScale, mnFoamLaceWidth, mnFoamLaceStrength, mnFoamWaveStrength, mnWaterSurfaceLight;
 uniform sampler2D tWave;
 uniform vec3 uWaterLight;
 uniform float uSparkle;
@@ -132,8 +135,8 @@ void main() {
     vec2 cuv = bedXZ * 0.11 + warp;
     float c1 = texture2D(mnNoiseTex, cuv + vec2(t * 0.013, t * 0.009)).g;
     float c2 = texture2D(mnNoiseTex, cuv * 1.29 - vec2(t * 0.011, -t * 0.014) + 0.41).g;
-    float caust = smoothstep(0.72, 0.95, 1.0 - min(c1, c2));
-    under += uCaustic * uWaterLight * caust * 0.26 * (1.0 - smoothstep(0.2, 2.6, depth)) * smoothstep(0.05, 0.3, depth) * (0.3 + 0.7 * vis);
+    float caust = mnCausticMask(c1, c2);
+    under += uCaustic * uWaterLight * caust * mnCausticStrength * (1.0 - smoothstep(0.2, 2.6, depth)) * smoothstep(0.05, 0.3, depth) * (0.3 + 0.7 * vis);
   }
 #endif
 
@@ -149,7 +152,7 @@ void main() {
   float h1 = texture2D(tWave, xz * 0.035 + mnWind * t * 0.010).b;
   float h2 = texture2D(tWave, xz * 0.083 + vec2(-mnWind.y, mnWind.x) * t * 0.018 + 0.37).b;
   float glow = smoothstep(0.6, 0.7, h1 * 0.55 + h2 * 0.45);
-  col += vec3(0.8, 1.0, 1.0) * uWaterLight * glow * 0.07 * (0.35 + 0.65 * vis) * smoothstep(0.15, 1.0, depth);
+  col += vec3(0.8, 1.0, 1.0) * uWaterLight * glow * mnWaterSurfaceLight * (0.35 + 0.65 * vis) * smoothstep(0.15, 1.0, depth);
 
   // Sky reflection (fresnel).
   float fr = 0.02 + 0.98 * pow(1.0 - max(dot(n, V), 0.0), 5.0);
@@ -174,18 +177,23 @@ void main() {
   float nz2 = texture2D(mnNoiseTex, xz * 0.13 - vec2(t * 0.02, -t * 0.015)).b;
   // Contact foam: around anything that pierces the surface (shore, rocks, posts, legs, hull).
   float pulse = 0.015 * sin(t * 1.7 + nz * 9.0);
-  float edgeW = 0.05 + nz2 * 0.06 + pulse;
-  float contact = 1.0 - smoothstep(edgeW - 0.015, edgeW + 0.015, depth);
-  // Lace foam in the shallows: thick cell borders (foam with holes) at the shore, thinning out.
-  float lace = texture2D(mnNoiseTex, xz * 0.11 + vec2(t * 0.014, t * 0.01) + slope * 0.04).g;
+  float edgeW = (0.05 + nz2 * 0.06 + pulse) * mnFoamContactScale;
+  float contactAA = max(fwidth(depth) * 0.7, 0.008);
+  float contact = 1.0 - smoothstep(max(0.0, edgeW - contactAA), edgeW + contactAA, depth);
+  contact *= mix(0.55, 1.0, smoothstep(0.28, 0.65, nz2));
+  // Thin, broken lace leaves open water between moving patches. Reuse the sampled wave slopes.
+  float lace = texture2D(mnNoiseTex, xz * 0.11 + vec2(t * 0.014, t * 0.01) + s1 * 0.16 + s2 * 0.07).g;
   float reach = 0.42 + 0.16 * sin(t * 0.85 + nz * 6.0);
-  float laceW = mix(0.3, 0.04, smoothstep(0.03, reach, depth));
-  float laceFoam = (1.0 - smoothstep(laceW, laceW + 0.06, lace)) * (1.0 - smoothstep(reach * 0.8, reach + 0.15, depth));
+  float laceW = mix(mnFoamLaceWidth, mnFoamLaceWidth * 0.4, smoothstep(0.03, reach, depth));
+  float laceAA = fwidth(lace) * 0.7 + 0.003;
+  float laceFoam = (1.0 - smoothstep(max(0.0, laceW - laceAA), laceW + laceAA, lace)) * (1.0 - smoothstep(reach * 0.8, reach + 0.15, depth));
   laceFoam *= smoothstep(0.25, 0.45, nz + 0.1); // patchy, not a uniform band
+  laceFoam *= smoothstep(0.35, 0.58, nz2);
   // Wave lines pushing toward the shore.
   float wv = sin(depth * 5.5 - t * 1.25 + nz * 7.0);
-  float lines = smoothstep(0.93, 0.985, wv) * (1.0 - smoothstep(0.6, 1.7, depth)) * step(0.22, depth) * smoothstep(0.42, 0.62, nz2);
-  float foam = clamp(max(contact, max(laceFoam * 0.9, lines * 0.85)), 0.0, 1.0);
+  float waveAA = fwidth(wv) * 0.7 + 0.001;
+  float lines = smoothstep(0.985 - waveAA, 0.995 + waveAA, wv) * (1.0 - smoothstep(0.6, 1.7, depth)) * step(0.22, depth) * smoothstep(0.42, 0.62, nz2);
+  float foam = clamp(max(contact * 0.82, max(laceFoam * mnFoamLaceStrength, lines * mnFoamWaveStrength)), 0.0, 1.0);
   col = mix(col, uFoam * (mix(0.8, 1.02, vis) * uWaterLight * uFoamLight + mnLocalLight(vWorld, vec3(0.0, 1.0, 0.0)) * 0.3), foam);
 
 #ifdef MN_WATER_SSR
@@ -208,6 +216,7 @@ function makeMaterial(map, heightTex, ssr) {
     mnPlayer: U.mnPlayer, mnOccR: U.mnOccR, mnOccOn: U.mnOccOn, mnNearFade: U.mnNearFade,
     mnLightPos: U.mnLightPos, mnLightCol: U.mnLightCol, mnLightCount: U.mnLightCount,
     ...WATER_LIGHT,
+    ...WATER_DETAIL_UNIFORMS,
     tWave: { value: getWaveTexture() },
     uAbsorb: { value: WATER_LOOK.absorb },
     uScatterShallow: { value: WATER_LOOK.scatterShallow },
@@ -215,7 +224,7 @@ function makeMaterial(map, heightTex, ssr) {
     uFoam: { value: WATER_LOOK.foam },
     uCaustic: { value: WATER_LOOK.caustic },
     uWaves: { value: 1 },
-    uRefract: { value: 0.035 },
+    uRefract: { value: WATER_DETAIL_DEFAULTS.refraction },
   });
   if (ssr) Object.assign(uniforms, WATERU);
   else Object.assign(uniforms, { uHeight: { value: heightTex }, uWorldHalf: { value: map.size / 2 } });

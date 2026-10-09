@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "family": "seaweed-v1",
+  "policy": "Historical snapshot: check validates copied bytes; future renderer work does not refresh this source.",
+  "files": [
+    {
+      "source": "src/render/seaweedGeometry.js",
+      "snapshot": "docs/art/source/seaweed-v1/seaweedGeometry.source.js",
+      "bytes": 4784,
+      "sha256": "642a8f47a1151bc063f0ced28267d1bb6302d7c99f49158d3f9b548c1f5a0747"
+    },
+    {
+      "source": "src/render/seaweedPlacement.js",
+      "snapshot": "docs/art/source/seaweed-v1/seaweedPlacement.source.js",
+      "bytes": 3335,
+      "sha256": "ef94eacf4039dd64fa6387d940d3e76be93e2f546dab331b51ee17ead5a972a1"
+    },
+    {
+      "source": "src/render/seaweed.js",
+      "snapshot": "docs/art/source/seaweed-v1/seaweed.source.js",
+      "bytes": 4721,
+      "sha256": "34a4ece0ccefcea13feaef96b9ad8e7ce8ea73e22c02e06f714278462a1ddbed"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/seaweed-v1/vegetation.source.js",
+      "bytes": 18979,
+      "sha256": "e059a8fc226c3dcfb86378a78d0bfa7b9d6f7d09179dcc881ba30053dd0686b0"
+    },
+    {
+      "source": "src/render/scene.js",
+      "snapshot": "docs/art/source/seaweed-v1/scene.source.js",
+      "bytes": 20302,
+      "sha256": "958c5ca3688bc5bb35ba7007958cd03f48dfc5d825650b83d40a353df33f33fc"
+    },
+    {
+      "source": "tools/qa-seaweed.playwright.js",
+      "snapshot": "docs/art/source/seaweed-v1/qa-seaweed.source.js",
+      "bytes": 7352,
+      "sha256": "ef4abe64cdda8e51cb2f50b91bc4ff8853383a021b22ace246b93330517b7b23"
+    },
+    {
+      "source": "tests/seaweed.test.mjs",
+      "snapshot": "docs/art/source/seaweed-v1/seaweed.test.source.mjs",
+      "bytes": 12835,
+      "sha256": "009ce82e141b0fbffc856e3649958fef9332b64a7924fcb664d79c6f424de38a"
+    },
+    {
+      "source": "tools/prepare-seaweed-sources.mjs",
+      "snapshot": "docs/art/source/seaweed-v1/prepare-seaweed-sources.source.mjs",
+      "bytes": 2764,
+      "sha256": "4487bc376a191dcf57e27fc25b9b3e13755684246738f1de2b84d44a2f64cc06"
+    }
+  ]
+}

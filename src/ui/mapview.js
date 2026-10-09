@@ -10,7 +10,7 @@ const RES = 320;
 
 export class MapView {
   constructor(root, map) {
-    this.root = root; this.map = map;
+    this.root = root; this.map = map; this.span = map.mapSpan || SPAN;
     this.isOpen = false;
     this.base = null;
     root.addEventListener('click', (e) => { if (e.target.closest('[data-close]') || e.target === root) this.close(); });
@@ -18,11 +18,13 @@ export class MapView {
 
   // World (x, z) → map pixels (of a size × size canvas).
   px(x, z, size) {
+    const SPAN = this.span;
     const { u, v } = toUV(x, z);
     return [((v + SPAN) / (2 * SPAN)) * size, ((SPAN - u) / (2 * SPAN)) * size];
   }
 
   build() {
+    const SPAN = this.span;
     const m = this.map, c = document.createElement('canvas');
     c.width = c.height = RES;
     const ctx = c.getContext('2d'), img = ctx.createImageData(RES, RES), d = img.data;
@@ -59,6 +61,7 @@ export class MapView {
   }
 
   open() {
+    const SPAN = this.span;
     if (!this.base) this.build();
     this.root.innerHTML = `<div class="mapv frame interactive" role="dialog" aria-label="Mapa">
       <div class="mapv-head"><b class="outlined">Isla de la Caldera</b><button class="icon-btn" data-close aria-label="Cerrar">✕</button></div>
@@ -99,6 +102,7 @@ export class MapView {
 
   // ps: you {x, z, f}; crew: [{x, z}]; profile: for the goal.
   update(ps, crew, profile, time) {
+    const SPAN = this.span;
     if (!this.isOpen || !this.canvas) return;
     const c = this.canvas, ctx = c.getContext('2d'), W = c.width, m = this.map;
     ctx.imageSmoothingEnabled = true;

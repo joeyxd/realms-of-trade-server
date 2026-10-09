@@ -8,6 +8,7 @@ import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
 import { RaftLayer } from './rafts.js';
+import { ResourceNodes } from './resourceNodes.js';
 import { CameraRig } from './camera.js';
 import { CharacterView, SENTINEL, ENEMY_LOOK, characterMaterial } from './characters.js';
 import { createCalaRing } from './vfx/calaring.js';
@@ -16,6 +17,7 @@ import { CrabView } from './crab.js';
 import { Effects } from './vfx/effects.js';
 import { ProjectileView } from './vfx/projectiles.js';
 import { Decals } from './vfx/decals.js';
+import { Footprints } from './vfx/footprints.js';
 import { BeamFx, LavaRing } from './vfx/hazardfx.js';
 import { CombatFx } from './vfx/combatfx.js';
 import { Debris } from './vfx/debris.js';
@@ -62,7 +64,7 @@ function makeShieldBubble() {
 }
 
 export class GameScene {
-  constructor(canvas, map) {
+  constructor(canvas, map, { raftSkin = null } = {}) {
     this.map = map;
     const r = (this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false }));
     r.outputColorSpace = THREE.SRGBColorSpace;
@@ -90,14 +92,20 @@ export class GameScene {
     const veg = createVegetation(map);
     this.vegetation = veg.group;
     this.swayU = veg.swayU;
+    this.grass = veg.grass;
+    this.beachDebris = veg.debris;
+    this.seaweed = veg.seaweed;
     this.scene.add(this.vegetation);
     const props = createProps(map);
     this.props = props;
     this.scene.add(props.group);
-    this.rafts = new RaftLayer(this.scene, { dock: map.dock });
+    this.resources = new ResourceNodes(this.scene, { palms: veg.palmResources, swayUniform: veg.swayU });
+    this.resources.onChange = () => this.pipeline.markDirty();
+    this.rafts = new RaftLayer(this.scene, { dock: map.dock, surfaceSkin: raftSkin, sailingRig: true });
     this.effects = new Effects(this.scene, map);
     this.projectiles = new ProjectileView(this.scene, map);
     this.decals = new Decals(this.scene, map, 32);
+    this.footprints = new Footprints(this.scene, map);
     this.beamFx = new BeamFx(this.scene, map);
     this.lavaRing = new LavaRing(this.scene, map);
     this.combatFx = new CombatFx(this.scene);
@@ -142,6 +150,10 @@ export class GameScene {
     this.pipeline.setQuality({ pixelRatio: cfg.pixelRatio, ss: cfg.ss, outlines: cfg.outlines, fxaa: cfg.fxaa, comic: cfg.comic ?? 0, outlineMul: cfg.outlineMul ?? 1 });
     this.lighting.setShadowSize(cfg.shadow);
     this.effects.setQuality(cfg.particles, cfg.outlines);
+    this.footprints.setQuality(cfg.particles, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
+    this.grass.setQuality(cfg.name, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
+    this.beachDebris.setQuality(cfg.name, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
+    this.seaweed.setQuality(cfg.name, globalThis.matchMedia?.('(pointer: coarse)')?.matches === true);
     this.lights.max = cfg.lights;
     this.water.material.uniforms.uWaves.value = cfg.waves;
     U.mnTerrainCaustics.value = cfg.outlines ? 0 : 1;
@@ -192,6 +204,11 @@ export class GameScene {
     }
     else view = new CharacterView(skin, opts);
     view.enemy = kind || null;
+    if (view instanceof CharacterView && !view.look.hover) {
+      view.onFootprint = (side, state) => {
+        if (!view.footprintDeck) this.footprints.plant(id, side, state);
+      };
+    }
     this.scene.add(view.root);
     this.views.set(id, view);
     this.pipeline.markDirty();
@@ -203,6 +220,7 @@ export class GameScene {
     if (!view) return;
     this.scene.remove(view.root);
     this.views.delete(id);
+    this.footprints.forget(id);
     this.pipeline.markDirty();
   }
 
@@ -217,7 +235,7 @@ export class GameScene {
     // instance yet either. Compile them now so the first slash or kill does not hitch.
     const cf = this.combatFx;
     for (const m of [this.inkFx.clouds[0].disk, this.inkFx.clouds[0].rim, this.inkFx.marks[0].mesh]) { m.visible = true; temp.push(m); }
-    for (const m of [cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m, this.indicators.marker.mesh, this.indicators.range.mesh, this.indicators.arrow.mesh, this.indicators.chargeRing.mesh, this.indicators.arc.mesh, this.skillFx.spouts[0].m, this.skillFx.vortices[0].m, this.skillFx.shadows[0].m, this.skillFx.wheels[0].m, this.stormFx.bolts[0].mesh]) { m.visible = true; temp.push(m); }
+    for (const m of [this.footprints.mesh, cf.slashes[0].m, cf.rings[0].m, cf.guard, this.shieldBubble, this.beamFx.pool[0], this.lavaRing.mesh, this.weaponFx.crescents[0].m, this.indicators.marker.mesh, this.indicators.range.mesh, this.indicators.arrow.mesh, this.indicators.chargeRing.mesh, this.indicators.arc.mesh, this.skillFx.spouts[0].m, this.skillFx.vortices[0].m, this.skillFx.shadows[0].m, this.skillFx.wheels[0].m, this.stormFx.bolts[0].mesh]) { m.visible = true; temp.push(m); }
     // A legendary drop (its model, beam and disc) so the first loot does not hitch either.
     const lv = this.loot.add({ id: -1, kind: 'item', x: this.focus.x, z: this.focus.z, item: { u: 0, b: 'sable', r: 4, l: 1, a: [] } });
     lootProbe = lv;
@@ -272,8 +290,13 @@ export class GameScene {
     U.mnTime.value = this.time;
     this.pipeline.update(dt);
     this.focus.copy(ctx.focus);
+    this.grass.update(ctx.focus);
+    this.beachDebris.update(ctx.focus);
+    this.resources.update(ctx.resources, ctx.focus, this.time);
+    this.seaweed.update(ctx.focus);
     U.mnPlayer.value.set(ctx.focus.x, ctx.focus.y + 0.9, ctx.focus.z);
-    U.mnOccOn.value = ctx.playing ? 1 : 0;
+    // The close naval camera must keep the hull, sail and helm fully visible.
+    U.mnOccOn.value = ctx.playing && !ctx.naval ? 1 : 0;
     if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus, ctx.clockPhase);
     this.applyPreset(this.lighting.cur);
@@ -281,6 +304,7 @@ export class GameScene {
     this.sky.position.copy(this.camera.position);
     // Combat-timed pieces follow instance time (they freeze in the hitstop with the characters).
     const sim = ctx.simDt ?? dt;
+    this.footprints.update(sim, ctx.playing);
     this.effects.update(dt, ctx.focus);
     this.after.update(sim);
     this.ambient.update(dt, ctx.focus, this.camera.position);

@@ -19,6 +19,8 @@ import { setWeapon } from './skills.js';
 import { C } from '../ecs.js';
 import { LAWLESS } from '../../data/lawless.js';
 import { newEco, sanitizeEco } from './trade.js';
+import { syncRaftProfiles } from './rafts.js';
+import { newTools, sanitizeTools } from '../../data/resources.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -33,7 +35,7 @@ export function newProfile({ weapon = 0 } = {}) {
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
     eco: newEco(), // trade (M7): pack, ships, deeds (systems/trade.js)
-    pirateId: '', pearls: newPearls(),
+    pirateId: '', pearls: newPearls(), tools: newTools(),
   };
   for (const s of SLOTS) p.eq[s] = null;
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
@@ -75,6 +77,7 @@ export function sanitizeProfile(raw) {
   p.pearls = sanitizePearls(raw.pearls);
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
   p.eco = sanitizeEco(raw.eco);
+  p.tools = sanitizeTools(raw.tools);
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];
@@ -159,6 +162,7 @@ export function attachProfile(world, e, p) {
 export function syncProfile(world, e) {
   const p = profileOf(world, e), ecs = world.ecs;
   if (!p || !ecs.alive[e]) return p;
+  syncRaftProfiles(world, e);
   p.lvl = ecs.level[e]; p.xp = Math.round(ecs.xp[e] * 100) / 100; p.pot = ecs.potions[e];
   for (const [id, c] of Object.entries(world.map.checkpoints)) if (Math.abs(c.x - ecs.cpX[e]) < 1e-6 && Math.abs(c.z - ecs.cpZ[e]) < 1e-6) p.cp = id;
   return p;

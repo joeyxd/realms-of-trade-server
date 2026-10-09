@@ -1,0 +1,877 @@
+{
+  "sourceDirectory": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\art\\source\\character-alpha-v1",
+  "derivativeDirectory": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\art\\source\\character-alpha-v1\\mobile",
+  "maxWidth": 512,
+  "images": [
+    {
+      "file": "female-base-v1.png",
+      "original": {
+        "sha256": "1c6665b9570be3b572cf14237bc61eac3786083ef1cd3355b3600a8750b1afe8",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1515200,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1180311
+        }
+      },
+      "derivative": {
+        "sha256": "7f9344326efbdf381a9fedbbd066a004b27d510acfaf540f0aed9f0cd8c77d6d",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 214883,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 295312
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-boots-v1.png",
+      "original": {
+        "sha256": "07f0630135b23ef5cc1c0b492f7b0f12761060ac063ae29860e0ac5d94e6bf65",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1053511,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1385277
+        }
+      },
+      "derivative": {
+        "sha256": "b8c50d42be5272b91d51863c4fe698d73820553922dc8a150cea9ab98b901184",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 126335,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 346410
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-breeches-v1.png",
+      "original": {
+        "sha256": "16d672f9e3c4f1890b7f478bd8efae24d5f02553c75dfa17038bbd188bf75944",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1896615,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 942625
+        }
+      },
+      "derivative": {
+        "sha256": "ed7f28b1be237f77b823fa31f05ca0cbd2a296c7d594ff2799f3600cc892af8c",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 365279,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 235150
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-brows-v1.png",
+      "original": {
+        "sha256": "033a704d51733fb88ec6dcb57762cbb82a2cb68b7ff9b5ae8462b398797466a5",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 603024,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1553718
+        }
+      },
+      "derivative": {
+        "sha256": "296a5738a853bcd692e10853b7ba4131f4f7ae62ea18044f928e3d42910c4886",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 17600,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 388590
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-eyes-amber-v1.png",
+      "original": {
+        "sha256": "6f834c739801d63eb926e161cc6cab2945d33e06cb76533e1ac99a2ca99afa29",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 784365,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1505446
+        }
+      },
+      "derivative": {
+        "sha256": "89f7ffafde975df24f3b5cfc87111f5854863f9e5c9d6eda93eebce4af762acf",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 48353,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 376558
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-hair-pony-v1.png",
+      "original": {
+        "sha256": "8868686376b1c3f3b00529fe0ebe9b84f2c86e7f48021c666c9c22ce825672e8",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1557308,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1163296
+        }
+      },
+      "derivative": {
+        "sha256": "9e27ad78dc5df7161330b83569caef921b024781151d95a9f0023c804a45cebc",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 270060,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 291360
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-mouth-smile-v1.png",
+      "original": {
+        "sha256": "27dee3c25bb036bfc4ac6534aebf7c045daa6bf82bb4d162dbe4d72c3266fe7e",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 642242,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1558529
+        }
+      },
+      "derivative": {
+        "sha256": "c0c6bd1b162b89f7f8a4cbfd027f1b69c1540802c8696d08e5cb76f64a9de597",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 13365,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 389639
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-scout-master-v1.png",
+      "original": {
+        "sha256": "0ea6cb33ce60d3a28f1e27289fb5bf5e446b3e90800babf76b4ec68aa78f07e4",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1941574,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1057980
+        }
+      },
+      "derivative": {
+        "sha256": "1c2bdb3c1e17f1fd7d049fb91a076014891fdbf6319cfd7bab2c2094171f9bc7",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 352172,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 264797
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "female-shirt-v1.png",
+      "original": {
+        "sha256": "ffefe91f1d3520c57c58d9994d2dc37911654e9c3c39be6110ba3ec2ea1da50b",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1400994,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1183351
+        }
+      },
+      "derivative": {
+        "sha256": "db1a35b9bb94dd390e6f97c9e802b82d965930ee9e508f14db3ee67a34311faa",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 237899,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 295954
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "harbor-background-v1.png",
+      "original": {
+        "sha256": "99ee28d0b1767a1f9e26c06b6f9901052d77f1892341b4f3f515444e4a3c157c",
+        "dimensions": {
+          "width": 1536,
+          "height": 1024
+        },
+        "bytes": 3021109,
+        "alpha": {
+          "min": 255,
+          "max": 255,
+          "transparentPixelCount": 0
+        }
+      },
+      "derivative": {
+        "sha256": "044ddee487c4dfa335b43a4dd5dd286af32481b8243500f5fb3e28b2508c2d82",
+        "dimensions": {
+          "width": 512,
+          "height": 341
+        },
+        "bytes": 376054,
+        "alpha": {
+          "min": 255,
+          "max": 255,
+          "transparentPixelCount": 0
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-base-v1.png",
+      "original": {
+        "sha256": "957f35ac9973a1a0720cb0e12c72cbbc43b10bcc8891064973240f27c75c951a",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1540799,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1149137
+        }
+      },
+      "derivative": {
+        "sha256": "d9f0ce1827598899efff6c6185b061387a67f9fd25faa1d4fc4c6d6b72091086",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 231066,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 286959
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-beard-short-v1.png",
+      "original": {
+        "sha256": "e957d43513d34dcfc0bea2c87541d61f76dac61baecbf6ef5b130bda7c54efc3",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 734599,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1510516
+        }
+      },
+      "derivative": {
+        "sha256": "0b747d65905fbf30eb86be714271c0f18af7e0ba9cb4a191f5f55a9fe7fb7804",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 50701,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 377889
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-beard-short-v2.png",
+      "original": {
+        "sha256": "92ab50768084face2a7d79531ae9ab4f67ae8e95f143e6f46018b7186bd7aee7",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 699665,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1524073
+        }
+      },
+      "derivative": {
+        "sha256": "fa8c0708d60a1ec7defd3f211590d3ac338c5fe899b5d0964e71375d8c31d80f",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 40993,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 381341
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-boots-v1.png",
+      "original": {
+        "sha256": "df5fef680e5edc7dc8274c5b5b119436de3dcf669e7ec334cf4b3d0f81c554ab",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 969505,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1405085
+        }
+      },
+      "derivative": {
+        "sha256": "b70a76c8565e47194d623313893c29809480b6267a229d6dd8d5d64fd64b76ce",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 113870,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 350935
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-breeches-v1.png",
+      "original": {
+        "sha256": "d17562e16d2f9fdc3dbecd6d350ddc75059993f33080e982d7d99cdb1d6004d9",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1871791,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 930473
+        }
+      },
+      "derivative": {
+        "sha256": "1ad7e0fc7107c73f8d70085ddfd66290d7a6b44ee5b3bab7b21ce6e36d0acb94",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 359145,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 232170
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-brows-scout-v1.png",
+      "original": {
+        "sha256": "d38138d66c39fc568ffdeb6b53a99138328eccb0eb20830e1626f3b3641c5013",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 574052,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1541250
+        }
+      },
+      "derivative": {
+        "sha256": "616232597f737409d7bd43a34dc89ae94a0e6a482a5bc06c2d7867ada5bad450",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 25148,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 385317
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-eyes-amber-v1.png",
+      "original": {
+        "sha256": "663c3bcdf90cd9f85cf0fc29fe51eb782cbd81cbcb426ed8139061a83b5f931c",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 511135,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1559544
+        }
+      },
+      "derivative": {
+        "sha256": "fd99cb30c1ef8f94f0cdb909fed52bbd31c0dc62b65a4f1950d71779e23e2406",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 13142,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 389933
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-eyes-blue-v1.png",
+      "original": {
+        "sha256": "5fc0d4d71ebfb7a0ca2da98f17c4916499a7bb5cd984d09ebf25f2ba42ce2d4c",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1451970,
+        "alpha": {
+          "min": 12,
+          "max": 252,
+          "transparentPixelCount": 0
+        }
+      },
+      "derivative": {
+        "sha256": "e2cc096c15895cb52f83403ee1f8f5c9fa6b8e2db5752685d52c5fad71c0492e",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 172355,
+        "alpha": {
+          "min": 13,
+          "max": 252,
+          "transparentPixelCount": 0
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-eyes-blue-v2.png",
+      "original": {
+        "sha256": "f169acdfe47bea3e081792e9473b5dfa53d0816174c9c02e1861bddfec30dce6",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 588310,
+        "alpha": {
+          "min": 0,
+          "max": 253,
+          "transparentPixelCount": 1559591
+        }
+      },
+      "derivative": {
+        "sha256": "ef73983fa139de2f734b4f86a916a385eb6c1e1081336e365ebee1d6f17e32dc",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 13192,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 389981
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-hair-scout-v1.png",
+      "original": {
+        "sha256": "d55192bc8f69af6e77b60f47d3181755193ca034edd721d8768efb8ae82b1d14",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 628719,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1513192
+        }
+      },
+      "derivative": {
+        "sha256": "6ca0da4d8ebf03880fb919b4ac7ed73671dc2498c4c6284511c376891112ed66",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 45074,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 378262
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-hair-swept-v1.png",
+      "original": {
+        "sha256": "8cfca9f8deb2695cdce800d4045a5a939268e683ebbda5bdff324f9a5f09dc2c",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1055326,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1341104
+        }
+      },
+      "derivative": {
+        "sha256": "c51e35f4ea2cb2e3ddc58fa97e5170c434917721333f4720cb4a357d997fb8ed",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 144785,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 334980
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-mouth-smile-v1.png",
+      "original": {
+        "sha256": "a32eefebc170bf77557009e34915e904003f44c14c606cb618c05606bab315b8",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 525183,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1561866
+        }
+      },
+      "derivative": {
+        "sha256": "10685d4e4254504e7e3b182cce3aa6ff514b2741d1071718bf1786589d2d7bb9",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 11623,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 390465
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-scout-master-v1.png",
+      "original": {
+        "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1885419,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1057741
+        }
+      },
+      "derivative": {
+        "sha256": "641f52ea0468099ac6bd1bde48bc09ad18a59d0db5478a413e5842e8fea046cb",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 339076,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 264925
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "male-shirt-v1.png",
+      "original": {
+        "sha256": "e0983468cc25a5c9e8ea8846fca7c2b6de5dfb376c2d0b6fa0b9291e9906694b",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1197799,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1251992
+        }
+      },
+      "derivative": {
+        "sha256": "c0f4e2533d27a52dfb590f76b21e256f9d9c826cee9580cc8c9c73da2b76eb53",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 186190,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 312951
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "scout-gloves-v1.png",
+      "original": {
+        "sha256": "861b437a540c3ee14c73edaaffef4639fe0167149f697448aaa1025ed89c82de",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 970941,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1416561
+        }
+      },
+      "derivative": {
+        "sha256": "7fcb04f4c9e6716a65acba3ada27d2fadfb822dbdb6670966af1d261a88729ec",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 109255,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 354428
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "scout-goggles-v1.png",
+      "original": {
+        "sha256": "5b72d5a2fc6a39906ea6a827af23ab1f543ce8fab9bf1753ce1f632786b9dd47",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 676112,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1523947
+        }
+      },
+      "derivative": {
+        "sha256": "33a87a6d31425daf24b9c9ac60453e50d54bd4ba7ae269ae1018e9f448c8bbd4",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 39693,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 381006
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "scout-harness-v1.png",
+      "original": {
+        "sha256": "e2d5942bf897f41cfb43f9e37899aaa05db4fa6c842d06fb2245bf147ef50b9d",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1453917,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1273072
+        }
+      },
+      "derivative": {
+        "sha256": "5b085627bd765170f0227a903de0ed115ef8b3f1b5a0a97954f5276bf5a6141d",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 203166,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 317930
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "scout-pouch-v1.png",
+      "original": {
+        "sha256": "b174ed35dff71fe65a5a2097366a1eea25f54cd088f2461c6b15a401cd944d1c",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1546808,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1086973
+        }
+      },
+      "derivative": {
+        "sha256": "bd66e55354058989f9c4038276876eff878d61863956d25f7b324460c669aba7",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 265202,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 271359
+        },
+        "alphaPreserved": true
+      }
+    },
+    {
+      "file": "scout-rope-v1.png",
+      "original": {
+        "sha256": "825bdd26dbb19df33a1d4b20831b9d0cfeccf907c54b86b8ddab5b49452e205b",
+        "dimensions": {
+          "width": 1024,
+          "height": 1536
+        },
+        "bytes": 1209115,
+        "alpha": {
+          "min": 0,
+          "max": 254,
+          "transparentPixelCount": 1402991
+        }
+      },
+      "derivative": {
+        "sha256": "44fae2f06f422f76357ec649ccec15aaf031f36ebcf2d48ab08cb6d63b7d2fa3",
+        "dimensions": {
+          "width": 512,
+          "height": 768
+        },
+        "bytes": 127492,
+        "alpha": {
+          "min": 0,
+          "max": 255,
+          "transparentPixelCount": 350748
+        },
+        "alphaPreserved": true
+      }
+    }
+  ]
+}

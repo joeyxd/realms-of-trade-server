@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "family": "water-clarity-v1",
+  "policy": "Historical snapshot: before preserves observed pre-cut source text normalized to LF; after copies exact live source bytes. --check validates copied bytes and never refreshes them.",
+  "files": [
+    {
+      "phase": "before",
+      "source": "src/render/water.js",
+      "snapshot": "docs/art/source/water-clarity-v1/before/water.source.js",
+      "bytes": 11401,
+      "sha256": "63e23603e17249c04ad17dc21a8598c39d1a84c5d66e313ede0ce610ce785bcf"
+    },
+    {
+      "phase": "before",
+      "source": "src/render/terrain.js",
+      "snapshot": "docs/art/source/water-clarity-v1/before/terrain.source.js",
+      "bytes": 15455,
+      "sha256": "c82a9e58de9cdc71efdeaf3d2fa27be88021ddf06226e2946651e85443d30493"
+    },
+    {
+      "phase": "before",
+      "source": "src/render/pipeline.js",
+      "snapshot": "docs/art/source/water-clarity-v1/before/pipeline.source.js",
+      "bytes": 27425,
+      "sha256": "0129b15c77440cbd0c24e50b8bdee263c0d41960d612a2d9d808fbf8cf409719"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/waterDetail.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/waterDetail.source.js",
+      "bytes": 1267,
+      "sha256": "ae619c4955c2537acbdb50884b12820f4856218da333e6d28f6f39f0c540217d"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/water.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/water.source.js",
+      "bytes": 12344,
+      "sha256": "756d825cebea169fb152a403f783d0bd9d9e259abb6e4d5a2b49e4b1ee9d5364"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/terrain.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/terrain.source.js",
+      "bytes": 15848,
+      "sha256": "8be2b2272f09043ecca308a2333bdf45acd5e734b4371672ae50db27dfa2dbe1"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/pipeline.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/pipeline.source.js",
+      "bytes": 28368,
+      "sha256": "ddcfad2e7dca246693735c62a47636840fd88556cd3dd7b4d01e5dc93ff4c336"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/noiseTex.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/noiseTex.source.js",
+      "bytes": 4941,
+      "sha256": "8cbb2ccf6b56101cb5532c705cf86a88b364cbaba4c42d7fb9707b0ca08e944a"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-water-clarity.playwright.js",
+      "snapshot": "docs/art/source/water-clarity-v1/after/qa-water-clarity.source.js",
+      "bytes": 4927,
+      "sha256": "c90a46d40bc1443413efcf48b19e86abe902e5f2a57e61b1f831bd049f32a9f1"
+    },
+    {
+      "phase": "after",
+      "source": "tests/water-clarity.test.mjs",
+      "snapshot": "docs/art/source/water-clarity-v1/after/water-clarity.test.source.mjs",
+      "bytes": 10329,
+      "sha256": "198a29e3e469b97169720c49c03dd75e8316b178f8dba0c8d540bdbd96065c99"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-water-clarity-sources.mjs",
+      "snapshot": "docs/art/source/water-clarity-v1/after/prepare-water-clarity-sources.source.mjs",
+      "bytes": 3165,
+      "sha256": "295ea17affe729590a446eb2814226f1f824613344d62c26dc63f038512762b6"
+    }
+  ]
+}

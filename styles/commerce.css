@@ -40,6 +40,25 @@
 .cargo-summary small { color: #d8ae6c; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
 .cargo-summary b { font: 800 18px Georgia, serif; }
 .cargo-summary i { padding: 0 4px; color: #9d8665; font-style: normal; }
+.cargo-capacity { display: grid; gap: 6px; margin-bottom: 8px; padding: 9px 10px; border: 1px solid #75cbd04a; border-radius: 7px; background: linear-gradient(120deg, #15323888, #22201d99); }
+.cargo-capacity > header, .cargo-meter label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.cargo-capacity > header b { color: #e7d4aa; font: 800 13px Georgia, serif; }
+.cargo-capacity > header small, .cargo-mass-breakdown { color: #a9c5c1; font-size: 9px; }
+.cargo-capacity.is-waiting { border-color: #b9894d55; background: #241e1a; }
+.cargo-capacity.is-waiting b { color: #efcf91; font-size: 11px; }
+.cargo-capacity.is-waiting small { color: #b8aa91; font-size: 10px; }
+.cargo-capacity.is-heavy { border-color: #cf9a4d88; background: linear-gradient(120deg, #49351d99, #22201d99); }
+.cargo-capacity.is-heavy > header b { color: #f2cf83; }
+.cargo-capacity.is-overloaded { border-color: #d96d5988; background: linear-gradient(120deg, #4b282699, #22201d99); }
+.cargo-capacity.is-overloaded > header b { color: #ffab91; }
+.cargo-capacity-warning { color: #ffad99; font-size: 10px; font-weight: 800; }
+.cargo-meter { display: grid; gap: 3px; }
+.cargo-meter label { color: #a9c5c1; font-size: 9px; font-weight: 800; letter-spacing: .04em; }
+.cargo-meter label b { color: #f1e6ce; font-size: 10px; letter-spacing: 0; }
+.cargo-meter progress { display: block; width: 100%; height: 7px; accent-color: #55c6c4; }
+.cargo-meter progress::-webkit-progress-bar { border-radius: 5px; background: #101518; }
+.cargo-meter progress::-webkit-progress-value { border-radius: 5px; background: linear-gradient(90deg, #327e81, #70d5cf); }
+.cargo-meter progress::-moz-progress-bar { border-radius: 5px; background: linear-gradient(90deg, #327e81, #70d5cf); }
 .cargo-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 9px 2px; color: #c8b99c; font-size: 11px; }
 .commerce-good-list, .market-list { display: grid; gap: 5px; }
 .commerce-good, .market-row { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 47px; padding: 7px 9px; text-align: left; border: 1px solid #83704f55; border-radius: 6px; background: #1a1a1f; color: #eee0c2; }

@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "recipe": "palm-bases-v1",
+  "recipeSha256": "33c74cfe04358c4b54a9790f9d639420fda387422c88d7e5fd690e7659796ba9",
+  "source": {
+    "reference": {
+      "original": "materials/references/palmera tropical.png",
+      "copy": "docs/art/source/palm-bases-v1/reference.png",
+      "bytes": 2761091,
+      "sha256": "10962346ec73ab45bffe49398ad4f03629bc1051cb38b70ee5d5c1e661bd456a",
+      "copiedByteForByte": true
+    },
+    "geometry": {
+      "file": "src/render/palmBaseGeometry.js",
+      "bytes": 7623,
+      "sha256": "59465dbc448372b032c8bae3f8c636ffde6ded4269765fea1c8bbfb647d79692"
+    },
+    "tool": {
+      "file": "tools/prepare-palm-bases.mjs",
+      "bytes": 14754,
+      "sha256": "a0a864984f8d61a3edf8420aebecf0386f6147f06f4faa3887ea0177635b4f5e"
+    }
+  },
+  "geometryCodePath": "src/render/palmBaseGeometry.js:PALM_BASE_STYLES,palmBaseGeometry",
+  "format": "GLB 2.0; two transform-free meshes in roots/leaves order; POSITION,NORMAL,COLOR_0,TEXCOORD_0,_FLEX,_PAINT; no embedded images",
+  "atlasMapping": {
+    "roots": {
+      "atlas": "assets/textures/palm-family-v1/{albedo,normal}-{desktop,mobile}.webp",
+      "quadrant": "top-left; shares the S05 trunk tile",
+      "uvInset": [
+        0.015625,
+        0.015625
+      ],
+      "uvSpan": [
+        0.46875,
+        0.46875
+      ]
+    },
+    "leaves": {
+      "atlas": "assets/textures/palm-base-v1/{albedo,normal}-{pc,mobile}.webp",
+      "layout": "two equal horizontal tiles, one per half of U; UV inset [1/64,1/32], span [15/32,15/16]; desktop 512x256, mobile 256x128"
+    }
+  },
+  "materials": [
+    {
+      "part": "roots",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": false
+    },
+    {
+      "part": "leaves",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": true
+    }
+  ],
+  "attributeEncoding": {
+    "position": "FLOAT32 stride12",
+    "normal": "FLOAT32 VEC3 stride12; no KHR_mesh_quantization",
+    "color": "UNORM8 VEC3 stride4 padded",
+    "uv": "UNORM16 VEC2 stride4",
+    "aFlex": "UNORM8 scalar stride4 padded",
+    "aPaint": "UNORM8 VEC2 stride4 padded",
+    "bufferViewAlignmentBytes": 4,
+    "vertexElementStrideAlignmentBytes": 4
+  },
+  "budgets": {
+    "maxBytesPerModel": 81920,
+    "maxTrianglesPerModel": 600
+  },
+  "models": [
+    {
+      "style": "open",
+      "file": "assets/models/palm-base-open-v1.glb",
+      "bytes": 54728,
+      "sha256": "9c60830701a8cbeda29762ded51d52f485069d3c7d0fd40ed296684f68f56c08",
+      "triangles": 410,
+      "sourceVertices": 1230,
+      "compactVertices": 1222,
+      "compactPartVertices": {
+        "roots": 742,
+        "leaves": 480
+      },
+      "bounds": {
+        "min": [
+          -1.0224593877792358,
+          0.013115656562149525,
+          -1.11381196975708
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.9648388624191284
+        ]
+      },
+      "parts": {
+        "roots": {
+          "sourceVertices": 750,
+          "triangles": 250,
+          "bounds": {
+            "min": [
+              -1.0224593877792358,
+              0.013115656562149525,
+              -0.8488884568214417
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.9648388624191284
+            ]
+          }
+        },
+        "leaves": {
+          "sourceVertices": 480,
+          "triangles": 160,
+          "bounds": {
+            "min": [
+              -0.9327526688575745,
+              0.11999999731779099,
+              -1.11381196975708
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    },
+    {
+      "style": "lush",
+      "file": "assets/models/palm-base-lush-v1.glb",
+      "bytes": 70952,
+      "sha256": "4dd7ec9ee7e13985fd21eb87f7f816c89bbb61b91f3eccfcb60b629e5c32ae6c",
+      "triangles": 540,
+      "sourceVertices": 1620,
+      "compactVertices": 1608,
+      "compactPartVertices": {
+        "roots": 888,
+        "leaves": 720
+      },
+      "bounds": {
+        "min": [
+          -1.0727527141571045,
+          0.013115656562149525,
+          -1.1436957120895386
+        ],
+        "max": [
+          0.9399999976158142,
+          0.6656630635261536,
+          0.922872006893158
+        ]
+      },
+      "parts": {
+        "roots": {
+          "sourceVertices": 900,
+          "triangles": 300,
+          "bounds": {
+            "min": [
+              -0.8056649565696716,
+              0.013115656562149525,
+              -0.922436535358429
+            ],
+            "max": [
+              0.8053929209709167,
+              0.3181000053882599,
+              0.922872006893158
+            ]
+          }
+        },
+        "leaves": {
+          "sourceVertices": 720,
+          "triangles": 240,
+          "bounds": {
+            "min": [
+              -1.0727527141571045,
+              0.11999999731779099,
+              -1.1436957120895386
+            ],
+            "max": [
+              0.9399999976158142,
+              0.6656630635261536,
+              0.8412955403327942
+            ]
+          }
+        }
+      },
+      "meshes": 2,
+      "images": 0
+    }
+  ]
+}

@@ -29,6 +29,8 @@ export const ICONS = {
   flask: ico('<path d="M9 3h6"/><path d="M10 3v6L5 18.5a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 15h9"/>'),
   talk: ico('<path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/>'),
   chest: ico('<path d="M4 11V9.5A4.5 4.5 0 0 1 8.5 5h7A4.5 4.5 0 0 1 20 9.5V11z"/><path d="M4 11v8h16v-8"/><path d="M12 11v4"/>'),
+  axe: ico('<path d="m5 21 10-16 3 2L8 23z"/><path d="M13 4 8 2 3 8l7 5 5-6"/><path d="m4 8 6 4"/>'),
+  mine: ico('<path d="m5 21 9-15 2 1-9 15z"/><path d="M3 9c4-7 12-8 18-3l-1 2c-5-3-10-2-14 2z"/><path d="m18 17 2-2 2 3-2 3-3-1z"/>'),
   swap: ico('<path d="M4 8h15M15 4l4 4-4 4"/><path d="M20 16H5M9 12l-4 4 4 4"/>'),
   rune: ico('<path d="M8 3v18M8 9l9-5M8 15l9-5"/>'),
   ship: ico('<path d="M3 16h18l-3 4H6z"/><path d="M12 3v13"/><path d="M12 4.5l7 9.5h-7z"/><path d="M10.5 7L5 14h5.5"/>'),

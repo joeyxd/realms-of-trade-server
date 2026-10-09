@@ -13,9 +13,12 @@
 //   stairs a tile that joins a level with the one above
 // size: [w, d] cells (tiles). cost: goods (and gold) to place; weight: units against the raft's buoyancy.
 export const RAFT = { cell: 2, levelHeight: 2.6, levels: 3, maxCells: 12 * 12, buoyancy: 14, refund: 0.5, bareSpeed: 0.6 };
+export const RAFT_LOAD = Object.freeze({ safeFraction: 0.9, crewMass: 3, heavyFraction: 0.85 });
+export const RAFT_REINFORCEMENT = Object.freeze({ madera: 1, hierro: 1 });
 
 export const RAFT_PARTS = {
-  foundation: { name: 'Cimiento', layer: 'base', cost: { madera: 4 }, weight: 4, hp: 60, floats: 1 },
+  foundation: { name: 'Cimiento', layer: 'base', cost: { madera: 4 }, weight: 4, hp: 60, floats: 1, structuralCapacity: 10 },
+  reinforcedFoundation: { name: 'Cimiento reforzado', layer: 'base', cost: { madera: 5, hierro: 1 }, weight: 5, hp: 90, floats: 1, structuralCapacity: 14 },
   floor: { name: 'Piso', layer: 'floor', cost: { madera: 3 }, weight: 3, hp: 40 },
   pillar: { name: 'Pilar', layer: 'pillar', cost: { madera: 2 }, weight: 2, hp: 50 },
   wall: { name: 'Pared', layer: 'edge', cost: { madera: 3 }, weight: 3, hp: 50, supports: true },

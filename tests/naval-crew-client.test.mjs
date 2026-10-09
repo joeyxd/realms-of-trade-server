@@ -264,8 +264,8 @@ test('held heartbeat updates unrelated public raft data without advancing the cr
     'Plano actualizado durante heartbeat', 'outer public snapshot still installs independent updates');
 });
 
-test('ordinary LocalServer snapshots and commands never activate private naval walk state', () => {
-  const h = harness({ count: 1, serverFactory: (options) => new LocalServer({ ...options, bots: 0, enemies: false }) });
+test('disabled navigation LocalServer snapshots and commands never activate private naval walk state', () => {
+  const h = harness({ count: 1, serverFactory: (options) => new LocalServer({ ...options, navigation: false, bots: 0, enemies: false }) });
   const client = h.clients.get(1), server = h.server;
   assert.equal(server.world.navalPilot, null);
   assert.equal(server.world.navalTrial, null);

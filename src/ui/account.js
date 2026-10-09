@@ -1,9 +1,10 @@
 // Comic account dossier. Auth owns the session; the title owns the current name and appearance.
+import { WalletPanel } from './wallet.js';
 const CREST = `<svg viewBox="0 0 160 160" aria-hidden="true" focusable="false"><path d="M24 126 127 23l11 12L36 139Zm0-91 12-12 103 103-12 13Z" fill="#edf6eb" stroke="#161626" stroke-width="7"/><path d="M43 58c0-47 74-47 74 0v27l-17 15v20H60v-20L43 85Z" fill="#fff1bd" stroke="#161626" stroke-width="8" stroke-linejoin="round"/><path d="m43 53 70-22 13 19-81 24Z" fill="#ed5b41" stroke="#161626" stroke-width="7"/><path d="m59 73 16 5-9 13-12-5Zm27 6 17-8 2 17-14 3Z" fill="#161626"/><path d="m79 88-8 12h16Z" fill="#161626"/><path d="M71 111v10m17-10v10" stroke="#161626" stroke-width="5"/><path d="m18 21 13 2-2 13-12-3Zm115 117 10-12 10 11-11 10Z" fill="#ffc53b" stroke="#161626" stroke-width="4"/></svg>`;
 
 export class AccountPanel {
   constructor(parent, auth, { hasLegacySave = () => false, onChange = null, looks = [],
-    getCharacter = () => ({ name: 'Grumete', skin: 0 }), onCharacterChange = null, onReady = null } = {}) {
+    getCharacter = () => ({ name: 'Grumete', skin: 0 }), onCharacterChange = null, onReady = null, wallet = null } = {}) {
     Object.assign(this, { auth, hasLegacySave, onChange, looks, getCharacter, onCharacterChange, onReady });
     this.boarding = false; this.import = false; this.mode = 'login';
     this.notice = ''; this.noticeTone = ''; this.confirmationEmail = ''; this.portraits = new Map();
@@ -62,6 +63,8 @@ export class AccountPanel {
         </div>
       </section>`;
     document.body.append(this.overlay);
+    this.wallet = wallet;
+    this.walletPanel = wallet ? new WalletPanel(this.overlay.querySelector('.account-signed'), wallet) : null;
     this.dialog = this.overlay.querySelector('.account-dialog'); this.form = this.overlay.querySelector('.account-form');
     this.feedback = this.overlay.querySelector('.account-feedback'); this.importToggle = this.overlay.querySelector('.account-import-toggle');
     this.characterName = this.overlay.querySelector('[name=characterName]'); this.buildLooks();
@@ -165,6 +168,7 @@ export class AccountPanel {
     this.status.textContent = signed ? state.email : state.guestChoice ? 'Invitado · esta sesión' : state.error || (state.enabled ? 'Tu aventura te espera' : 'Cuentas no disponibles');
     this.feedback.textContent = this.notice || state.error || ''; this.feedback.hidden = !this.feedback.textContent; this.feedback.dataset.tone = this.notice ? this.noticeTone : 'error';
     this.renderCharacter(); this.setControlsDisabled(this.boarding || state.busy);
+    if (signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.refreshWallet();
     if (state.busy && !this.overlay.hidden) this.dialog.focus({ preventScroll: true });
     if (signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.characterName.focus({ preventScroll: true });
     if (!state.busy) this.wasSignedIn = signed;
@@ -178,12 +182,23 @@ export class AccountPanel {
     this.form.elements.password.value = ''; this.form.elements.confirmPassword.value = ''; this.form.elements.password.type = 'password';
     this.renderPasswordToggle(false); this.form.elements.confirmPassword.setCustomValidity('');
   }
-  setControlsDisabled(disabled) { this.openButton.disabled = Boolean(disabled); for (const control of this.overlay.querySelectorAll('button, input')) control.disabled = Boolean(disabled); }
+  setControlsDisabled(disabled) {
+    this.openButton.disabled = Boolean(disabled);
+    for (const control of this.overlay.querySelectorAll('button, input')) control.disabled = Boolean(disabled);
+    this.walletPanel?.setBlocked(disabled);
+    this.wallet?.setBlocked(disabled);
+  }
   open() {
     if (this.boarding || this.auth.state.busy) return; this.notice = ''; this.noticeTone = ''; this.overlay.hidden = false; this.render(this.auth.state);
     const focus = this.auth.state.signedIn ? this.characterName : this.confirmationEmail || !this.auth.state.enabled ? this.dialog : this.form.elements.email; focus.focus({ preventScroll: true });
+    this.refreshWallet();
   }
-  close() { this.clearPasswords(); if (this.overlay.hidden) return; this.overlay.hidden = true; this.openButton.focus({ preventScroll: true }); }
+  refreshWallet() {
+    if (this.wallet) void this.wallet.init().then((enabled) => {
+      if (enabled && !this.overlay.hidden && this.auth.state.signedIn) return this.wallet.refresh();
+    }).catch(() => {});
+  }
+  close() { this.wallet?.cancel(); this.clearPasswords(); if (this.overlay.hidden) return; this.overlay.hidden = true; this.openButton.focus({ preventScroll: true }); }
   hide() { this.close(); }
   setBoarding(on) { this.boarding = Boolean(on); if (this.boarding) this.close(); this.setControlsDisabled(this.boarding || this.auth.state.busy); }
 
@@ -213,5 +228,5 @@ export class AccountPanel {
   async logout() {
     this.notice = ''; this.noticeTone = ''; this.clearPasswords(); const result = await this.auth.logout(); this.render(this.auth.state); if (result.ok) this.form.elements.email.focus({ preventScroll: true });
   }
-  destroy() { this.clearPasswords(); this.unsubscribe?.(); this.launch.remove(); this.overlay.remove(); }
+  destroy() { this.clearPasswords(); this.unsubscribe?.(); this.walletPanel?.destroy(); this.wallet?.destroy(); this.launch.remove(); this.overlay.remove(); }
 }

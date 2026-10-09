@@ -1,0 +1,797 @@
+{
+  "schemaVersion": 1,
+  "family": "sand-family-v1",
+  "generatedAt": "2026-10-07T01:50:34.743Z",
+  "generator": {
+    "script": "tools/prepare-sand-materials.mjs",
+    "ffmpeg": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers\r",
+    "ffprobe": "ffprobe version 8.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers\r",
+    "resampler": "Lanczos with accurate rounding; no explicit colorspace conversion"
+  },
+  "sourceCopies": [
+    {
+      "id": "dry-albedo",
+      "originalPath": "materials/Textura de arena dorada con guijarros y conchas.png",
+      "path": "docs/art/source/sand-family-v1/dry-albedo.png",
+      "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1",
+      "byteLength": 3728793,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "dry-normal",
+      "originalPath": "materials/Textura ormal de arena dorada con guijarros y conchas.png",
+      "path": "docs/art/source/sand-family-v1/dry-normal.png",
+      "sha256": "1fd8fa37cda57519a92ef82a40786bce1746a806fd066b05907f67327e83782b",
+      "byteLength": 3109600,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "wet-albedo",
+      "originalPath": "materials/Textura de arena dorada con guijarros y conchas mojada.png",
+      "path": "docs/art/source/sand-family-v1/wet-albedo.png",
+      "sha256": "d5f1c158adeba34fe37447a39f4eaa99ec67891f3ef80562d80bfe227c9a2acd",
+      "byteLength": 3540983,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "ripple-albedo",
+      "originalPath": "materials/Textura de arena dorada estilizada.png",
+      "path": "docs/art/source/sand-family-v1/ripple-albedo.png",
+      "sha256": "56ceba571e6ad8a45ec9d695294a849f7f8f29cfd362c0ed2841333274ada27f",
+      "byteLength": 3062888,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "ripple-normal",
+      "originalPath": "materials/Mapa normal de arena ondulada.png",
+      "path": "docs/art/source/sand-family-v1/ripple-normal.png",
+      "sha256": "7dec2de46368e8cc6bcdc6e4b30b5496d128c77830fc8efb8ca1f14454fc2161",
+      "byteLength": 2612324,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "footprints-albedo",
+      "originalPath": "materials/Textura de arena con huellas y conchas.png",
+      "path": "docs/art/source/sand-family-v1/footprints-albedo.png",
+      "sha256": "b92454ac42b074952da44d0561d8eeeac0587b1f4ac3b9df9617b69a248bde97",
+      "byteLength": 3408633,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "footprints-normal",
+      "originalPath": "materials/Textura normal de arena con huellas y conchas.png",
+      "path": "docs/art/source/sand-family-v1/footprints-normal.png",
+      "sha256": "1ae11ce69f6047b0a275ee2b5ed554a449c27a5be7d789e87fd785009561ed6c",
+      "byteLength": 3017168,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "shore-albedo",
+      "originalPath": "materials/Orilla Turquesa de Arena Dorada shoreline.png",
+      "path": "docs/art/source/sand-family-v1/shore-albedo.png",
+      "sha256": "934b1c3e1ca91fcf1998c79acfca27269b09a5e8122336ac733c49fc9b591cf1",
+      "byteLength": 3599251,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "shore-normal",
+      "originalPath": "materials/Orilla Turquesa de Arena Dorada shoreline mapa normal .png",
+      "path": "docs/art/source/sand-family-v1/shore-normal.png",
+      "sha256": "9630a4d506fbb28f40680746d12d76e6fe981e007ea9625fb065247d5c090ccf",
+      "byteLength": 2945018,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "dry-albedo",
+      "file": "Textura de arena dorada con guijarros y conchas.png",
+      "kind": "albedo",
+      "originalPath": "materials/Textura de arena dorada con guijarros y conchas.png",
+      "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1",
+      "byteLength": 3728793,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "dry-normal",
+      "file": "Textura ormal de arena dorada con guijarros y conchas.png",
+      "kind": "normal",
+      "originalPath": "materials/Textura ormal de arena dorada con guijarros y conchas.png",
+      "sha256": "1fd8fa37cda57519a92ef82a40786bce1746a806fd066b05907f67327e83782b",
+      "byteLength": 3109600,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "wet-albedo",
+      "file": "Textura de arena dorada con guijarros y conchas mojada.png",
+      "kind": "albedo",
+      "originalPath": "materials/Textura de arena dorada con guijarros y conchas mojada.png",
+      "sha256": "d5f1c158adeba34fe37447a39f4eaa99ec67891f3ef80562d80bfe227c9a2acd",
+      "byteLength": 3540983,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "ripple-albedo",
+      "file": "Textura de arena dorada estilizada.png",
+      "kind": "albedo",
+      "originalPath": "materials/Textura de arena dorada estilizada.png",
+      "sha256": "56ceba571e6ad8a45ec9d695294a849f7f8f29cfd362c0ed2841333274ada27f",
+      "byteLength": 3062888,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "ripple-normal",
+      "file": "Mapa normal de arena ondulada.png",
+      "kind": "normal",
+      "originalPath": "materials/Mapa normal de arena ondulada.png",
+      "sha256": "7dec2de46368e8cc6bcdc6e4b30b5496d128c77830fc8efb8ca1f14454fc2161",
+      "byteLength": 2612324,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "footprints-albedo",
+      "file": "Textura de arena con huellas y conchas.png",
+      "kind": "albedo",
+      "originalPath": "materials/Textura de arena con huellas y conchas.png",
+      "sha256": "b92454ac42b074952da44d0561d8eeeac0587b1f4ac3b9df9617b69a248bde97",
+      "byteLength": 3408633,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "footprints-normal",
+      "file": "Textura normal de arena con huellas y conchas.png",
+      "kind": "normal",
+      "originalPath": "materials/Textura normal de arena con huellas y conchas.png",
+      "sha256": "1ae11ce69f6047b0a275ee2b5ed554a449c27a5be7d789e87fd785009561ed6c",
+      "byteLength": 3017168,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "shore-albedo",
+      "file": "Orilla Turquesa de Arena Dorada shoreline.png",
+      "kind": "albedo",
+      "originalPath": "materials/Orilla Turquesa de Arena Dorada shoreline.png",
+      "sha256": "934b1c3e1ca91fcf1998c79acfca27269b09a5e8122336ac733c49fc9b591cf1",
+      "byteLength": 3599251,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    },
+    {
+      "id": "shore-normal",
+      "file": "Orilla Turquesa de Arena Dorada shoreline mapa normal .png",
+      "kind": "normal",
+      "originalPath": "materials/Orilla Turquesa de Arena Dorada shoreline mapa normal .png",
+      "sha256": "9630a4d506fbb28f40680746d12d76e6fe981e007ea9625fb065247d5c090ccf",
+      "byteLength": 2945018,
+      "dimensions": {
+        "width": 1254,
+        "height": 1254
+      },
+      "pixelFormat": "rgb24",
+      "sourceColorMetadata": {
+        "colorSpace": "gbr",
+        "transfer": null,
+        "primaries": null
+      }
+    }
+  ],
+  "derivatives": [
+    {
+      "id": "dry-albedo-desktop",
+      "path": "assets/textures/sand-family-v1/dry-albedo-desktop.webp",
+      "sourceId": "dry-albedo",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 384736,
+      "sha256": "7e0d7a3335731656f67f45c6a4cecef2d34748b958547a607da92cb32ee18d33",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "dry-albedo-mobile",
+      "path": "assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+      "sourceId": "dry-albedo",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 88000,
+      "sha256": "bc74cc1ad448a170537c86293417e0e93eeea71b7104ae4517207b3dc8a2fb7e",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "dry-normal-desktop",
+      "path": "assets/textures/sand-family-v1/dry-normal-desktop.webp",
+      "sourceId": "dry-normal",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1829130,
+      "sha256": "c559b05bdd97f0b1743df3d8562deafef7f4b4fe54679a2991eb4d10f171758a",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "dry-normal-mobile",
+      "path": "assets/textures/sand-family-v1/dry-normal-mobile.webp",
+      "sourceId": "dry-normal",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 496252,
+      "sha256": "afe210089b232a0eb79ef58cba371eeeebc2980c31bb3f4c4bfe006633d760cf",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "wet-albedo-desktop",
+      "path": "assets/textures/sand-family-v1/wet-albedo-desktop.webp",
+      "sourceId": "wet-albedo",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 349814,
+      "sha256": "b65580c9509a0536361ea35ee1e55979606a7655cc12ef7bd4cba2e575b92836",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "wet-albedo-mobile",
+      "path": "assets/textures/sand-family-v1/wet-albedo-mobile.webp",
+      "sourceId": "wet-albedo",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 77120,
+      "sha256": "402640cb5f4c1ea090de3974bff4a0ae51ab22c0996215ea53df1bdc4adf25e9",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "ripple-albedo-desktop",
+      "path": "assets/textures/sand-family-v1/ripple-albedo-desktop.webp",
+      "sourceId": "ripple-albedo",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 253872,
+      "sha256": "48b82ba003e155d849304ba238ca123c395bc035ae16f5d16a5840a1d1ecdb10",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "ripple-albedo-mobile",
+      "path": "assets/textures/sand-family-v1/ripple-albedo-mobile.webp",
+      "sourceId": "ripple-albedo",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 56394,
+      "sha256": "b1b58983c900b249b3b26b4c6ad4d10d60e82e34ecce2d2c25df509dc19a1cc1",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "ripple-normal-desktop",
+      "path": "assets/textures/sand-family-v1/ripple-normal-desktop.webp",
+      "sourceId": "ripple-normal",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1567578,
+      "sha256": "4cb59b5fd181dbb16648af5d6e645162a828b807c515d1015e25bff4aa322786",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "ripple-normal-mobile",
+      "path": "assets/textures/sand-family-v1/ripple-normal-mobile.webp",
+      "sourceId": "ripple-normal",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 433384,
+      "sha256": "d82a2dadf15f6219a5e20b4b0a42b5a292f78911299fa25d79004994a480b8c9",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "footprints-albedo-desktop",
+      "path": "assets/textures/sand-family-v1/footprints-albedo-desktop.webp",
+      "sourceId": "footprints-albedo",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 335748,
+      "sha256": "328bac7875b9049409a4445754c6fd8f251b102b800cc4632937e3d56add2319",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "footprints-albedo-mobile",
+      "path": "assets/textures/sand-family-v1/footprints-albedo-mobile.webp",
+      "sourceId": "footprints-albedo",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 83196,
+      "sha256": "06787e2790dbe0cac21c03910b97bceb4fc823752675399d234ffde6b8f2ce87",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "footprints-normal-desktop",
+      "path": "assets/textures/sand-family-v1/footprints-normal-desktop.webp",
+      "sourceId": "footprints-normal",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1749050,
+      "sha256": "b2bdd389dd38e83ddc43ae31a8396b008feab69a5a600819d6e66dadc88ccd32",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "footprints-normal-mobile",
+      "path": "assets/textures/sand-family-v1/footprints-normal-mobile.webp",
+      "sourceId": "footprints-normal",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 473312,
+      "sha256": "5febd08d2a50d652a1db32c16ed722b461a04e0434d62facfd2612e2971b7fe1",
+      "crop": null,
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "shore-sand-albedo-desktop",
+      "path": "assets/textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+      "sourceId": "shore-albedo",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 223570,
+      "sha256": "e6145933ea279dfaea4ae804626d77af4eaea02e9d0cb438a62d23a0f98d6faa",
+      "crop": {
+        "x": 0,
+        "y": 742,
+        "width": 512,
+        "height": 512,
+        "note": "bottom-left sand-only sample; painted water excluded"
+      },
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "shore-sand-albedo-mobile",
+      "path": "assets/textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+      "sourceId": "shore-albedo",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 94378,
+      "sha256": "1a2725c8bd3b7b1e7b02af62459226e5177fe2bf0418bb5f807a020960035058",
+      "crop": {
+        "x": 0,
+        "y": 742,
+        "width": 512,
+        "height": 512,
+        "note": "bottom-left sand-only sample; painted water excluded"
+      },
+      "colorSpace": {
+        "meaning": "albedo color",
+        "processing": "source RGB resampled with Lanczos; no explicit color or transfer-function transform",
+        "sourceProfile": "none reported by ffprobe"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": false,
+        "quality": 82,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "yuv420p"
+    },
+    {
+      "id": "shore-sand-normal-desktop",
+      "path": "assets/textures/sand-family-v1/shore-sand-normal-desktop.webp",
+      "sourceId": "shore-normal",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "byteLength": 1253408,
+      "sha256": "357eac78c54f228cf068a9f0a8bb463d908d0a8ec64c51df58c2937932a6048b",
+      "crop": {
+        "x": 0,
+        "y": 742,
+        "width": 512,
+        "height": 512,
+        "note": "matching bottom-left sand-only sample; painted water excluded"
+      },
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    },
+    {
+      "id": "shore-sand-normal-mobile",
+      "path": "assets/textures/sand-family-v1/shore-sand-normal-mobile.webp",
+      "sourceId": "shore-normal",
+      "dimensions": {
+        "width": 512,
+        "height": 512
+      },
+      "byteLength": 449804,
+      "sha256": "8f1ec919294696de1b70c88b83bd799688b24ab7a015a65d30210848d0d18673",
+      "crop": {
+        "x": 0,
+        "y": 742,
+        "width": 512,
+        "height": 512,
+        "note": "matching bottom-left sand-only sample; painted water excluded"
+      },
+      "colorSpace": {
+        "meaning": "linear normal-map data",
+        "processing": "RGB channels resampled independently with Lanczos; no color or transfer-function transform",
+        "webp": "lossless"
+      },
+      "encoding": {
+        "format": "WebP",
+        "lossless": true,
+        "quality": null,
+        "compressionLevel": 6
+      },
+      "pixelFormat": "argb"
+    }
+  ],
+  "pairs": [
+    {
+      "id": "dry",
+      "albedo": [
+        "dry-albedo-desktop",
+        "dry-albedo-mobile"
+      ],
+      "normal": [
+        "dry-normal-desktop",
+        "dry-normal-mobile"
+      ]
+    },
+    {
+      "id": "wet",
+      "albedo": [
+        "wet-albedo-desktop",
+        "wet-albedo-mobile"
+      ],
+      "normal": [
+        "dry-normal-desktop",
+        "dry-normal-mobile"
+      ],
+      "normalSharedWith": "dry"
+    },
+    {
+      "id": "ripple",
+      "albedo": [
+        "ripple-albedo-desktop",
+        "ripple-albedo-mobile"
+      ],
+      "normal": [
+        "ripple-normal-desktop",
+        "ripple-normal-mobile"
+      ]
+    },
+    {
+      "id": "footprints",
+      "albedo": [
+        "footprints-albedo-desktop",
+        "footprints-albedo-mobile"
+      ],
+      "normal": [
+        "footprints-normal-desktop",
+        "footprints-normal-mobile"
+      ]
+    },
+    {
+      "id": "shore-sand",
+      "albedo": [
+        "shore-sand-albedo-desktop",
+        "shore-sand-albedo-mobile"
+      ],
+      "normal": [
+        "shore-sand-normal-desktop",
+        "shore-sand-normal-mobile"
+      ],
+      "sourceFilesPreservedFull": [
+        "shore-albedo",
+        "shore-normal"
+      ],
+      "note": "Cropped sand material sample only; the full painted shoreline bitmap is not a repeating sand material."
+    }
+  ]
+}

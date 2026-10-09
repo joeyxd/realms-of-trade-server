@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "family": "port-cargo-v1",
+  "catalogRevision": 31,
+  "httpFilesVerified": 58,
+  "policy": "Root opened both existing catalogue rows without saving. All gallery images decoded; exact HTTP bytes checked separately by verify-port-cargo-catalog.mjs.",
+  "rows": [
+    {
+      "id": "barril",
+      "title": "Barril",
+      "state": "applied",
+      "images": 40,
+      "imageFailures": [],
+      "links": 96
+    },
+    {
+      "id": "crate-integrada",
+      "title": "Caja de carga integrada",
+      "state": "applied",
+      "images": 41,
+      "imageFailures": [],
+      "links": 99
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/art/port-cargo/catalog-barril-v1.png",
+    "docs/art/port-cargo/catalog-crate-integrada-v1.png"
+  ]
+}

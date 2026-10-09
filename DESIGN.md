@@ -6,6 +6,8 @@
 
 Rebanada vertical 1: **Isla tropical + Arena «La Caldera»**. Action-RPG isométrico para navegador
 (Three.js 0.160), arquitectura MMO-ready, todo procedural (geometría, texturas, shaders, audio).
+**Checkpoint S21, 2026-10-08:** el autor autorizó un pase solo de terreno; [informe local](docs/delivery/map-revamp-v1.md). Conserva base/colocaciones/RNG legacy 400/N401 y amplía por postpass determinista a 560/N561, resolución 1; suelo seco muestreado +63,148347 % (paso 2, umbral >0,65). Dos conexiones suaves de terreno permiten llegar caminando a puntos interiores (171 y 109 aristas; ascenso máximo 0,1412 y 0,1377 por paso, límite 0,15); se conservan los núcleos húmedos, sin puentes ni assets nuevos. Salty Shore: tres niveles 2,4/6,4/10,4, rampas y seis pads planos para huts existentes. Mantiene orden/identidad/XZ de 1.259 props y 176 recursos, con Y proyectada; volcán/boss, PvP, llegada y muelle protegidos. Sin pueblo, gameplay, colisiones, recursos o assets nuevos. No mueve anclajes de Puerto Sol/Ceniza ni implementa el corredor A3. Alpha 0.1.0-alpha.15/protocolo 31 requiere recarga de host/peers. 220 pruebas, 30 capturas de escena + 2 del panel M, cinco contextos emulados, 20 chequeos de datos de calidad, geometría reutilizada; catálogo rev. 37 (110 filas, 54 aplicadas); fuentes y enlaces HTTP comprobados. Local, no publicado; FPS físico y multijugador humano pendientes.
+
 
 **El chiste del juego** (decisión del autor, M4.7): la estructura es la **economía**, la **construcción**, los
 **barcos** y el **comercio entre pueblos**, y descansa sobre una base de acción que es divertida por sí misma
@@ -19,10 +21,78 @@ juego; barcos aéreos más adelante. Acuerdos de manejo por materiales/navegaci�
 oficios regionales y ciudades en `docs/NAVAL-ROADMAP.md`. Topología naval/abordaje, fórmulas y detalles de
 pérdidas/recuperación siguen abiertos. La discusión inicial vive en `docs/NAVAL-HOUSING-DISCUSSION.md`.
 
-**Línea extra de baja prioridad (2026-10-05):** [personajes con LLM, cuerpo y memoria](PLAN-EXTRA-LLM.md).
-Exploración incremental en paralelo de agentes que reciben el juego por texto y actúan con controles normales,
-con posible modelo/tokens propios de su dueño. Plan documentado; implementación, balance y negocio pendientes.
-La construcción, barcos y comercio conservan su prioridad; esta línea no bloquea sus entregas.
+**Pilar esencial (decisión del autor, 2026-10-07):** [jugadores agentes, cuerpo, chat y memoria](PLAN-EXTRA-LLM.md).
+Humanos y agentes juegan juntos: la mente LLM conversa/planea, el cuerpo determinista actúa con controles
+normales y recibe feedback. Sustituye la prioridad baja inicial. Primera entrega **C01 chat ingame**:
+mundo, cercanía y susurros directos con la misma identidad/transporte para humanos y agentes.
+Después contrato/runner/cuerpo/LLM/memoria/BYOK; construcción, barcos y comercio son los otros pilares.
+Inferencia y recuerdos fuera de la simulación; autoridad y permisos siguen en el servidor.
+**Identidad/control acordados después el mismo día:** cada agente tiene personaje propio y plaza
+normal. Su dueño autoriza capacidades, fija límites de gasto y puede detenerlo; el agente elige
+metas y actúa libremente dentro de ese alcance. Los archivos de personalidad, memoria y objetivos
+son visibles para su dueño. [L00 v1](docs/agents/interface-v1.md) concreta contrato, ciclo y archivos
+de fixture verificados localmente. [L01a](docs/agents/network-runner.md) conecta un personaje invitado
+por red normal y consulta archivos reales; [L01b](docs/delivery/l01b-agent-chat.md) conecta C01,
+privacidad/routing y poda del contexto; [L01c](docs/agents/lifecycle-runner.md) añade vida/reentrada local
+sin repetir acciones antiguas. [L02a](docs/agents/movement-runner.md) añade movimiento/radio/bloqueo
+local del cuerpo por inputs normales; [L02b](docs/agents/pve-runner.md) añade modos PvE, guardia,
+retirada y reservas confirmadas con feedback parcial. [L02c](docs/agents/authority-runner.md) añade
+control opt-in del servidor: binding de cuentas separadas, exclusividad, epoch/CAS y revocación de
+cola antes del siguiente tick permitido. [L03a](docs/agents/mind-runner.md) añade mente intercambiable
+con decisiones estructuradas, contexto podado/compactado completo, reservas/uso desconocido, timeout
+y una consulta en curso; WebSocket/CLI verificados con modelos simulados. [L03b](docs/agents/conversation-runner.md)
+añade turnos de conversación explícitos, personalidad y chat entregado, audiencia fijada, contexto
+inspeccionable y supresión acotada por proceso, verificados con modelos simulados.
+[L03c](docs/agents/goals-runner.md) añade metas revisables desde feedback, archivo real versionado y
+ensayo PvE local frente al cuerpo sin modelo. [L04a](docs/agents/memory-runner.md) añade memoria
+local persistente, recuperación de recuerdos antiguos pertinentes y resúmenes con fuentes/incertidumbre,
+verificados con modelos simulados; sigue L04b, administración/exportación/borrado y retención/migración.
+Provisioning, persistencia
+del vínculo, panel, proveedor/tokenizer/facturación reales y gasto durable siguen pendientes.
+**Percepción/contexto acordados:** estado propio, entorno observable y chat entregado con frescura y
+confirmado/predicho/recordado separados; poda y compactado limitan el contexto enviado por consulta.
+Conservar archivos visibles y presupuestar también el coste de resumir; requisito de L00/L03/L04.
+
+**Capa Web3 solicitada (2026-10-07):** [equipo premium, tierra y creaciones comerciables](PLAN-WEB3.md).
+El autor prioriza equipo y tierra para el primer piloto; el equipo incluye **apariencias coleccionables y
+piezas funcionales comerciables**, ambos con [reglas claras](docs/briefs/w00-equipment-rules.md).
+Red elegida por el autor el 2026-10-08: **Polygon PoS**, con **Amoy** para el piloto y Web3 opcional
+para el juego ordinario ([decisión y alcance](PLAN-WEB3.md#51-polygon-pos-elegida-amoy-para-pruebas)).
+Derechos de pérdida/licencias, custodia, pagos y precios siguen por acordar.
+Desarrollo iniciado: [W01](docs/delivery/w01-asset-registry.md), registro aislado de
+equipo/parcelas y operaciones recuperables, 25/25 locales + 56/56 de regresión seleccionada.
+W01 no integra wallets/tokens ni host; la simulación conserva su autoridad y la proyección jugable queda pendiente.
+El [contrato de contenido de ambas modalidades](docs/delivery/w00-equipment-content.md) valida y vincula
+definiciones por hash; apariencia aporta cero stats y funcional usa las reglas actuales del equipo.
+[W02a](docs/delivery/w02a-wallet-link.md) vincula cuenta/wallet mediante firma EOA y reto durable de un uso:
+backend HTTP opt-in, 29/29 nuevas + 61/61 regresión local, sin derechos de juego.
+[W02b](docs/delivery/w02b-wallet-browser.md) añade el panel de navegador: conectar/revisar/firmar/consultar,
+109/109 seleccionadas y 3/3 vistas emuladas con proveedor simulado. Extensión real, testnet/RPC y Supabase live pendientes;
+`npm start` conserva Web3 desactivado y el vínculo no concede derechos de juego.
+[W02c](docs/delivery/w02c-wallet-runtime.md), 2026-10-08: `npm start` permite activación explícita
+por configuración, apagada por defecto; cliente service-role separado y comprobación de prerrequisitos/ACLs
+SQL antes de escuchar. Montaje/recuperación verificados localmente; Supabase live, extensión y testnet pendientes.
+[W02d](docs/delivery/w02d-wallet-preflight.md) añade comprobación independiente de SQL y RPC explícitos,
+solo lectura y sin cargar `.env`/arrancar el juego. Verificación con SDK y endpoints locales de fixture;
+no selecciona red ni acredita finalidad, propiedad o disponibilidad real del piloto.
+[W02e](docs/delivery/w02e-erc721-reader.md) observa el titular ERC-721 de un contrato/token explícitos
+en un bloque por número/hash, con CLI independiente y transporte W02d compartido; 27/27 seleccionadas
+locales. No proyecta derechos al juego ni registra tokens en W01; RPC/contrato reales pendientes.
+[W02f](docs/delivery/w02f-erc1155-reader.md) complementa con saldo exacto ERC-1155 por holder/tipo/bloque,
+incluido cero; 15 nuevas + 27 regresión W02d/e locales. No acredita tirada/licencia ni reserva copias;
+sin permisos, SQL o despliegue, y el formato contractual definitivo sigue abierto.
+[W02g](docs/delivery/w02g-local-evm-rehearsal.md) verifica ambos lectores/CLIs contra bytecode Solidity
+ejecutado en EVM local: mint, transferencias, historial y fallos, 7 nuevas + 42 regresión seleccionada.
+Herramientas en paquete aislado; bloques/canonicalidad sintéticos, sin RPC/testnet real o derechos jugables.
+[W02h](docs/delivery/w02h-amoy-rpc-check.md): diagnóstico independiente de RPC Amoy por hash,
+58/58 seleccionadas locales y consulta pública real satisfactoria con identity precompile, sin gas.
+Comprueba formato aceptado/echo/bloque estable; no finalidad, conformidad completa o NFT público.
+Sin proveedor permanente, permisos jugables, SQL o publicación.
+[W02i](docs/delivery/w02i-amoy-erc721-pilot.md): contrato ERC-721 experimental separado de los
+fixtures abiertos, constructor/mint solo Amoy, operador inmutable y metadata sin derechos de juego.
+Artefacto reproducible y 68/68 seleccionadas locales (10 nuevas + 58 previas); chain 80002
+simulada no acredita red pública. Siguiente W02j: wallet/operador explícitos y comprobación de
+deploy/mint/transfer/lectura en Amoy. Sin gas, contrato público, pagos o proyección jugable.
 
 **Assets: híbrido** (decisión del autor). Todo lo que se pueda sigue siendo procedural (mundo, props, vegetación,
 VFX, audio y los personajes base). Más adelante se importarán modelos `.glb` (GLTFLoader) para héroes, jefes y quizá
@@ -744,6 +814,36 @@ tres tonos con la sombra teñida por `splitShadow` del preset (sombra real, no n
 terreno, props y vegetación (`src/render/inkGlsl.js`). Regla: solo lecturas de `mnNoiseTex` y ALU, nada de
 texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 
+Checkpoint naval local D08c.9 (2026-10-07, alpha.9/protocolo 24): el porte es el mínimo entre capacidad
+estructural por cimiento y desplazamiento seguro, menos piezas equipadas y masa corporal. Cuenta bodega
+y mochilas de tripulación consentida. Refuerzo 1:1 de cimiento consume madera/hierro, mejora HP/estructura
+y conserva flotación; zarpe nuevo/carga excedida se rechazan sin pérdida. Regreso excedido tras daño sigue
+posible; pose/HP de viaje son de sesión. [Contrato y evidencia](docs/delivery/d08c9-raft-load-limits.md).
+
+Checkpoint naval local D08c.10 (2026-10-07, alpha.10/protocolo 25): astillero Reparar con materiales
+según HP faltante, mismo ID/casilla y recibo sin doble cobro. Condición por pieza queda en la nave adjunta
+al terminar el viaje, se reutiliza al zarpar y determina retiro/refuerzo, porte y producción vivos.
+Plano/carga no se borran. HP/pose siguen de sesión y se reinicializan al desconectar; conservación durable
+precede amenaza/riesgo público. [Contrato y evidencia](docs/delivery/d08c10-raft-repair.md).
+
+Checkpoint naval local D08c.11 (2026-10-08, alpha.11/protocolo 26): el perfil conserva identidad/HP
+por pieza y última pose confirmada por seed. Reentrada estacionada sin tripulación; reembarque desde
+costa válida o recuperación en puerto conservando daño/carga. Pose incompatible vuelve al amarre.
+617/617 pertinentes y 3/3 vistas emuladas locales; HMAC guest y cuenta/CAS en memoria, sin Supabase
+live, SQL o publicación. Ventana de guardado y replay guest siguen vigentes; sin exposición offline.
+[Contrato y evidencia](docs/delivery/d08c11-raft-recovery.md). Primera amenaza acotada sigue después;
+D09/M5 mantienen la puerta de pérdidas públicas permanentes.
+
+Checkpoint naval local D08c.12 (2026-10-08, alpha.12/protocolo 27): circuito opcional de tres boyas
+y regreso con atraque real. Batería anclada con proyectil en arco, marca fija y aviso de dos segundos;
+impacto contra flotadores vivos en su pose girada. Daño por instancia reparable/guardable, hasta 6 HP
+por impacto/24 por ensayo y piso del 50%; costa conserva daño previo. Sin carga perdida, botín ni XP.
+Progreso/resultados de sesión; cancelación/desembarco/atraque temprano terminan sin éxito.
+[Contrato y evidencia](docs/delivery/d08c12-naval-route.md): 15/15 nuevas, 371 previas seleccionadas,
+9/9 host y 3/3 vistas emuladas, con fixtures/incidencias documentadas y capturas inspeccionadas.
+Aún sin rival móvil/destructible ni armas
+del jugador, sin SQL/publicación; D09/M5 mantienen la puerta de pérdidas públicas permanentes.
+
 ## 16. Milestones y checklist de cada entrega
 
 | M | Contenido | Estado |
@@ -764,7 +864,8 @@ texturas nuevas ni pasadas; `low` sigue sin contornos de post-proceso.
 | M6 | «La Balsa»: tu barco es tu casa, construido pieza a pieza en cuadrícula (velas, bodegas, huertos, redes, cañones), viajes entre pueblos, peleas sobre cubierta (`PLAN-M6.md`) | núcleo hecho |
 | M7 | Comercio entre pueblos: 18 mercancías, 6 pueblos con su equilibrio (lo que uno fabrica es barato allí y caro donde se come), leyes y contrabando, mercaderes (`PLAN-M7.md`) | motor hecho |
 | M8 | Construcción en pueblos: solares, talleres con recetas, almacenes, astillero, taberna, fortín (`PLAN-M8.md`) | núcleo hecho |
-| — | Pulido continuo: highlights (level-up, cofre), música por capas, accesibilidad, bots + chat | |
+| C01/L00–L06 | Pilar de juego con agentes: chat común → interfaz textual → cuerpo → LLM → memoria/BYOK/convivencia (`PLAN-EXTRA-LLM.md`) | C01, L00, L01a/b/c, cuerpo L02a/b, autoridad opt-in L02c, mente L03a, conversación L03b, metas L03c y memoria L04a verificados localmente con modelos simulados ([memoria](docs/delivery/l04a-agent-memory.md)); sigue L04b, modelo real y aceptación humana pendientes |
+| — | Pulido continuo: highlights (level-up, cofre), música por capas, accesibilidad, bots | |
 
 Checklist de capturas por milestone: ¿el personaje queda tapado por glow/partículas/texto/vegetación? ¿algo se quema
 a blanco? ¿se distinguen parreable/pesado/imparable al zoom por defecto? ¿artefactos de contorno? ¿texto pequeño

@@ -24,11 +24,22 @@ async function player(url, name, skin) {
   return { t, c, seen, acc: 0, n: 0, corr0: 0 };
 }
 
-test('two players at 100 ms RTT: prediction holds, they see each other walk and swing', { timeout: 30000 }, async () => {
-  const gs = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, lagMs: 50, log: () => {} });
+test('two players at 100 ms RTT: prediction holds, they see each other walk and swing', { timeout: 30000 }, async (t) => {
+  let gs, a, b, timer;
+  // A timeout must release the loop, sockets and host just like a successful run.
+  t.after(async () => {
+    clearInterval(timer);
+    let cleanupError;
+    for (const close of [() => a?.t.close(), () => b?.t.close(), () => gs?.close()]) {
+      try { await close(); } catch (error) { cleanupError ??= error; }
+    }
+    if (cleanupError && !t.signal.aborted) throw cleanupError;
+  });
+  gs = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, lagMs: 50, log: () => {} });
   const port = await gs.listen();
   const url = `ws://127.0.0.1:${port}/ws`;
-  const a = await player(url, 'Ana', 1), b = await player(url, 'Bruno', 3);
+  a = await player(url, 'Ana', 1); b = await player(url, 'Bruno', 3);
+  t.signal.throwIfAborted();
   await sleep(400);
   a.corr0 = a.c.stats.corrections; b.corr0 = b.c.stats.corrections;
   // A walks a square on the beach; B stands and swings its cutlass now and then.
@@ -38,8 +49,16 @@ test('two players at 100 ms RTT: prediction holds, they see each other walk and 
   };
   const xs = [];
   let last = performance.now();
-  await new Promise((resolve) => {
-    const timer = setInterval(() => {
+  await new Promise((resolve, reject) => {
+    const finish = (error) => {
+      clearInterval(timer);
+      t.signal.removeEventListener('abort', abort);
+      if (error) reject(error); else resolve();
+    };
+    const abort = () => finish(t.signal.reason);
+    t.signal.addEventListener('abort', abort, { once: true });
+    if (t.signal.aborted) { abort(); return; }
+    timer = setInterval(() => {
       const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       for (const [k, p] of [['a', a], ['b', b]]) {
@@ -50,7 +69,9 @@ test('two players at 100 ms RTT: prediction holds, they see each other walk and 
       }
       const ra = b.c.entities.get(a.c.youServer);
       if (ra && ra.ready) xs.push(ra.r.x);
-      if (a.n > 60 * 5) { clearInterval(timer); resolve(); }
+      if (a.n > 60 * 5) {
+        finish();
+      }
     }, 16);
   });
   await sleep(300);
@@ -67,8 +88,6 @@ test('two players at 100 ms RTT: prediction holds, they see each other walk and 
   // The server never needed fillers or dropped anything for these two.
   const st = gs.game.server.stats;
   assert.equal(st.late + st.trimmed, 0, JSON.stringify(st));
-  a.t.close(); b.t.close();
-  await gs.close();
 });
 
 test('a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched', async () => {

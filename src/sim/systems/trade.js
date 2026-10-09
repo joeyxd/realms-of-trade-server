@@ -14,12 +14,14 @@ import { board, MARKET } from '../economy/market.js';
 import { newHold, sanitizeHold, holdUsed, PACK_CAP } from '../economy/cargo.js';
 import { HULLS, MODULES } from '../../data/ships.js';
 import { newRaft, raftStats, sanitizeRaft } from '../economy/raft.js';
+import { sanitizeRaftCondition } from '../naval/condition.js';
+import { sanitizeRaftVoyage } from '../naval/recovery.js';
 
 // p.eco: id (stable owner key for plots and ships; '' until first needed), pack (what you carry on foot), ships
 // (vessels or rafts), raftV (one-time starter migration), deeds ([[town, plot index]]; M8).
 const starterRaft = () => {
   const grid = newRaft();
-  return { kind: 'raft', id: '', rev: 1, berth: -1, berthBasis: null, n: 'La Balsa', grid, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
+  return { kind: 'raft', id: '', rev: 1, berth: -1, berthBasis: null, n: 'La Balsa', grid, condition: null, voyage: null, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
 };
 export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, tradeRev: 0, deeds: [] });
 export function sanitizeEco(raw) {
@@ -48,7 +50,9 @@ export function sanitizeEco(raw) {
         const grid = sanitizeRaft(s.grid);
         const hold = sanitizeHold(s.hold, 1e6);
         hold.cap = raftStats(grid).hold;
-        return { kind: 'raft', id, rev, berth, berthBasis, n: String(s.n || 'La Balsa').slice(0, 24), grid, hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
+        return { kind: 'raft', id, rev, berth, berthBasis, n: String(s.n || 'La Balsa').slice(0, 24), grid,
+          condition: sanitizeRaftCondition(s.condition, grid.parts), voyage: sanitizeRaftVoyage(s.voyage),
+          hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
       }
       const mods = (Array.isArray(s.mods) ? s.mods : []).filter((m) => MODULES[m]).slice(0, 32);
       return { n: String(s.n || HULLS[s.hull].name).slice(0, 24), hull: s.hull, mods, hold: sanitizeHold(s.hold, 1e6), at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, +s.hp || 1)) };
@@ -88,6 +92,7 @@ export const TRADE = { calm: 3 }; // s without damage before you can trade
 const deny = (world, e, why) => { world.emit({ type: 'tradeDenied', to: e, why }); return false; };
 
 export function marketCmd(world, e, msg, saveFits = () => true) {
+  if (world.navalPilot?.locked?.(e)) return deny(world, e, 'busy');
   const p = world.profiles && world.profiles.get(e), eco = world.economy;
   if (!p || !eco) return false;
   if (!p.eco) p.eco = newEco();

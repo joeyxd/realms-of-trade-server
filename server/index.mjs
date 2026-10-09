@@ -12,6 +12,9 @@ import { storeFromEnv, StoreError } from './store.mjs';
 import { accountAuthFromEnv, publicAuthConfig } from './auth.mjs';
 import { worldConfigFromEnv } from './worldState.mjs';
 import { GAME } from '../src/data/meta.js';
+import { chatFromEnv } from '../src/data/chat.js';
+import { createWalletHttpHandler } from './web3/walletHttp.mjs';
+import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -26,17 +29,19 @@ const PUBLIC = ['src', 'styles', 'assets'];
 
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
-  worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null } = {}) {
+  worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
   if (authConfig.enabled && !resolvePlayer) throw new Error('Account verifier is required');
+  if (walletLink?.prepare !== undefined && typeof walletLink.prepare !== 'function') throw new StoreError('configuration');
+  const walletHttp = walletLink === null ? null : createWalletHttpHandler({ service: walletLink, resolvePlayer });
   if (pearlStartup !== null && (!pearlStartup || typeof pearlStartup !== 'object' || Array.isArray(pearlStartup) ||
       !pearlStartup.journal || pearlStaging === null || worldId === undefined ||
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
-  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs,
-    pearlJournal: pearlStartup?.journal ?? null });
+  const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
+    pearlJournal: pearlStartup?.journal ?? null, agentControl });
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
   if (pearlStartup !== null) {
@@ -46,6 +51,11 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
+    if (walletHttp?.handles(p)) { void walletHttp.handle(req, res, p); return; }
+    if (p === '/web3/wallet/config') {
+      res.writeHead(req.method === 'GET' ? 200 : 405, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      res.end(JSON.stringify({ enabled: false })); return;
+    }
     if (p === '/health') { const ready = game.healthy(); res.writeHead(ready ? 200 : 503, { 'content-type': 'text/plain' }).end(ready ? 'ok' : 'storage unavailable'); return; }
     if (p === '/status') {
       res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store', 'access-control-allow-origin': '*' });
@@ -95,6 +105,8 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     listen() {
       if (listening) return listening;
       listening = (async () => {
+        if (walletLink?.prepare) await walletLink.prepare();
+        if (game.closing) throw new Error('Server is closing');
         await game.prepare();
         if (game.closing) throw new Error('Server is closing');
         return new Promise((resolve, reject) => {
@@ -119,25 +131,29 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
 // Entry point (npm start).
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const localEnv = path.join(ROOT, '.env');
-  if (fs.existsSync(localEnv)) process.loadEnvFile(localEnv);
   const env = process.env, num = (v, d) => (v !== undefined && v !== '' && Number.isFinite(+v) ? +v : d);
-  const auth = accountAuthFromEnv(env);
-  const gs = createGameServer({
-    port: num(env.PORT, 5173), host: env.HOST || '0.0.0.0', bots: num(env.BOTS, 3), maxPlayers: num(env.MAX_PLAYERS, 4),
-    dev: env.DEV === '1', lagMs: num(env.LAG_MS, 0), jitterMs: num(env.JITTER_MS, 0),
-    origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
-    store: storeFromEnv(env), resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig,
-    initializeAccounts: auth.publicConfig.enabled,
-    ...worldConfigFromEnv(env),
-  });
-  let port;
-  try { port = await gs.listen(); }
+  let gs, port;
+  try {
+    if (fs.existsSync(localEnv)) process.loadEnvFile(localEnv);
+    const auth = accountAuthFromEnv(env), store = storeFromEnv(env);
+    const walletLink = walletLinkFromEnv(env, { auth, gameStore: store });
+    gs = createGameServer({
+      port: num(env.PORT, 5173), host: env.HOST || '0.0.0.0', bots: num(env.BOTS, 3), maxPlayers: num(env.MAX_PLAYERS, 4),
+      dev: env.DEV === '1', lagMs: num(env.LAG_MS, 0), jitterMs: num(env.JITTER_MS, 0),
+      origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
+      store, resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig, walletLink,
+      initializeAccounts: auth.publicConfig.enabled,
+      ...worldConfigFromEnv(env),
+    });
+    port = await gs.listen();
+  }
   catch {
-    console.error('[srv] startup failed: world storage or listener unavailable');
-    try { await gs.close(); } catch { /* failed authority */ }
+    console.error('[srv] startup failed: configuration, wallet readiness, world storage or listener unavailable');
+    try { await gs?.close(); } catch { /* failed authority */ }
     process.exit(1);
   }
   console.log(`${GAME.title} v${GAME.version} · http://localhost:${port} · máx ${gs.game.maxPlayers} jugadores${env.DEV === '1' ? ' · DEV' : ''}${gs.game.lag.ms ? ` · lag ${gs.game.lag.ms}±${gs.game.lag.jitter} ms` : ''}`);
+  if (env.MN_WEB3_WALLET_ENABLED === '1') console.log('[srv] wallet linking enabled · durable storage · EOA proof only');
   const stop = async (sig) => {
     console.log(`[srv] ${sig}: closing`);
     try { await gs.close(); process.exit(0); }

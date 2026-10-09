@@ -33,10 +33,11 @@ function validBody(body) {
 }
 
 function validAxes(axes) {
-  return axes && !Array.isArray(axes) && Object.keys(axes).length === 3 &&
+  return axes && !Array.isArray(axes) && (Object.keys(axes).length === 3 ||
+    (Object.keys(axes).length === 4 && Object.hasOwn(axes, 'capture'))) &&
     ['throttle', 'brake', 'steer'].every((key) => finite(axes[key])) &&
     axes.throttle >= 0 && axes.throttle <= 1 && axes.brake >= 0 && axes.brake <= 1 &&
-    axes.steer >= -1 && axes.steer <= 1;
+    axes.steer >= -1 && axes.steer <= 1 && (!Object.hasOwn(axes, 'capture') || typeof axes.capture === 'boolean');
 }
 
 function wrapPose(pose) {
@@ -138,7 +139,8 @@ export class NavalPilotPrediction {
   step(axes) {
     if (!this.active || !this.body || !validAxes(axes) || this.seq >= NAVAL_TRIAL.maxSequence) return null;
     const command = Object.freeze({ epoch: this.epoch, seq: this.seq + 1,
-      throttle: axes.throttle, brake: axes.brake, steer: axes.steer });
+      throttle: axes.throttle, brake: axes.brake, steer: axes.steer,
+      ...(Object.hasOwn(axes, 'capture') ? { capture: axes.capture } : {}) });
     let next;
     try { next = stepTrialBody(this.body, command, this.wind, this.coast); } catch { return null; }
     this.prevPose = wrapPose(this.body.pose);

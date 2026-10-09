@@ -1,0 +1,1722 @@
+{
+  "version": 1,
+  "cut": "S09",
+  "date": "2026-10-07",
+  "scope": "Local solo preview; device emulation and draw counts do not certify physical FPS.",
+  "cases": [
+    {
+      "device": "desktop",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 968,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 733,
+            "calls": 271,
+            "triangles": 525448,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 747,
+            "calls": 268,
+            "triangles": 524880,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 3,
+          "extraTriangles": 568
+        },
+        "assetState": [
+          {
+            "id": "model:beach-debris-branch-v1",
+            "kind": "model",
+            "src": "models/beach-debris-branch-v1.glb",
+            "selectedSrc": "models/beach-debris-branch-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 208,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-log-v1",
+            "kind": "model",
+            "src": "models/beach-debris-log-v1.glb",
+            "selectedSrc": "models/beach-debris-log-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-planks-v1",
+            "kind": "model",
+            "src": "models/beach-debris-planks-v1.glb",
+            "selectedSrc": "models/beach-debris-planks-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 132,
+            "notes": []
+          }
+        ],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 968,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 568,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 968,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        }
+      ]
+    },
+    {
+      "device": "mobile",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "medium",
+        "coarse": true,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 607,
+            "calls": 283,
+            "triangles": 549122,
+            "points": 1944,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 621,
+            "calls": 279,
+            "triangles": 548458,
+            "points": 1944,
+            "lines": 0
+          },
+          "extraCalls": 4,
+          "extraTriangles": 664
+        },
+        "assetState": [
+          {
+            "id": "model:beach-debris-branch-v1",
+            "kind": "model",
+            "src": "models/beach-debris-branch-v1.glb",
+            "selectedSrc": "models/beach-debris-branch-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 208,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-log-v1",
+            "kind": "model",
+            "src": "models/beach-debris-log-v1.glb",
+            "selectedSrc": "models/beach-debris-log-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-planks-v1",
+            "kind": "model",
+            "src": "models/beach-debris-planks-v1.glb",
+            "selectedSrc": "models/beach-debris-planks-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 132,
+            "notes": []
+          }
+        ],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 568,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        }
+      ]
+    },
+    {
+      "device": "low",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "low",
+        "coarse": true,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 568,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 167,
+            "calls": 203,
+            "triangles": 364434,
+            "points": 1944,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 170,
+            "calls": 200,
+            "triangles": 363866,
+            "points": 1944,
+            "lines": 0
+          },
+          "extraCalls": 3,
+          "extraTriangles": 568
+        },
+        "assetState": [
+          {
+            "id": "model:beach-debris-branch-v1",
+            "kind": "model",
+            "src": "models/beach-debris-branch-v1.glb",
+            "selectedSrc": "models/beach-debris-branch-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 208,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-log-v1",
+            "kind": "model",
+            "src": "models/beach-debris-log-v1.glb",
+            "selectedSrc": "models/beach-debris-log-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-planks-v1",
+            "kind": "model",
+            "src": "models/beach-debris-planks-v1.glb",
+            "selectedSrc": "models/beach-debris-planks-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 132,
+            "notes": []
+          }
+        ],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 568,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 664,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [
+            "model:beach-debris-branch-v1",
+            "model:beach-debris-log-v1",
+            "model:beach-debris-planks-v1"
+          ],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        }
+      ]
+    },
+    {
+      "device": "disabled",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 691,
+            "calls": 270,
+            "triangles": 523508,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 705,
+            "calls": 267,
+            "triangles": 522820,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 3,
+          "extraTriangles": 688
+        },
+        "assetState": [],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 688,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 784,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        }
+      ]
+    },
+    {
+      "device": "missing",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 607,
+            "calls": 272,
+            "triangles": 527948,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 621,
+            "calls": 269,
+            "triangles": 527260,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 3,
+          "extraTriangles": 688
+        },
+        "assetState": [
+          {
+            "id": "model:beach-debris-branch-v1",
+            "kind": "model",
+            "src": "models/beach-debris-branch-v1.glb",
+            "selectedSrc": "models/beach-debris-branch-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-branch-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-log-v1",
+            "kind": "model",
+            "src": "models/beach-debris-log-v1.glb",
+            "selectedSrc": "models/beach-debris-log-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-log-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-planks-v1",
+            "kind": "model",
+            "src": "models/beach-debris-planks-v1.glb",
+            "selectedSrc": "models/beach-debris-planks-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-planks-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 688,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 784,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        }
+      ]
+    },
+    {
+      "device": "invalid",
+      "errors": [],
+      "consoleErrors": [],
+      "requests": [
+        "http://127.0.0.1:5192/assets/models/beach-debris-branch-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-log-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-debris-planks-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "focus": {
+          "x": 114.83738555107266,
+          "z": 70.36532981321216
+        },
+        "debris": {
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 733,
+            "calls": 274,
+            "triangles": 568250,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 747,
+            "calls": 271,
+            "triangles": 567562,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 3,
+          "extraTriangles": 688
+        },
+        "assetState": [
+          {
+            "id": "model:beach-debris-branch-v1",
+            "kind": "model",
+            "src": "models/beach-debris-branch-v1.glb",
+            "selectedSrc": "models/beach-debris-branch-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-branch-v1: Unexpected token 'i', \"invalid GLB fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-log-v1",
+            "kind": "model",
+            "src": "models/beach-debris-log-v1.glb",
+            "selectedSrc": "models/beach-debris-log-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-log-v1: Unexpected token 'i', \"invalid GLB fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-debris-planks-v1",
+            "kind": "model",
+            "src": "models/beach-debris-planks-v1.glb",
+            "selectedSrc": "models/beach-debris-planks-v1.glb",
+            "state": "error",
+            "error": "model:beach-debris-planks-v1: Unexpected token 'i', \"invalid GLB fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "low",
+          "total": 34,
+          "limit": 96,
+          "active": 4,
+          "batches": 3,
+          "triangles": 688,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 32,
+            "distance": 32
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 34,
+          "limit": 96,
+          "active": 5,
+          "batches": 4,
+          "triangles": 784,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 64,
+            "distance": 45
+          }
+        },
+        {
+          "tier": "high",
+          "total": 34,
+          "limit": 96,
+          "active": 7,
+          "batches": 6,
+          "triangles": 1088,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 34,
+          "limit": 96,
+          "active": 0,
+          "batches": 0,
+          "triangles": 0,
+          "variants": [
+            {
+              "style": "branch",
+              "count": 19
+            },
+            {
+              "style": "log",
+              "count": 8
+            },
+            {
+              "style": "planks",
+              "count": 7
+            }
+          ],
+          "loaded": [],
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "chunkSize": 32,
+          "budget": {
+            "limit": 96,
+            "distance": 65
+          }
+        }
+      ]
+    }
+  ]
+}

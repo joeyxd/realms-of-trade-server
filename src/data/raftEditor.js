@@ -6,6 +6,10 @@ export const EDITOR_PARTS = Object.freeze([
 export const EDITOR_RADIUS = 8;
 
 export const EDITOR_REASONS = Object.freeze({
+  healthy: 'Esa pieza ya tiene todos sus HP.',
+  condition: 'Cambió el daño de esa pieza. Selecciónala de nuevo.',
+  capacity: 'Ese peso excede el porte de la balsa. Reduce carga o amplía/refuerza el casco.',
+  reinforced: 'Ese cimiento ya está reforzado.',
   command: 'Solicitud de edición inválida.',
   owner: 'Esa balsa no es tuya.',
   raft: 'La balsa no está disponible en Aldea.',

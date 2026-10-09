@@ -9,6 +9,9 @@ import { publicRafts } from './rafts.js';
 import { townAt, TRADE } from './trade.js';
 import { CLOCK } from '../../data/clock.js';
 import { productionRows } from '../economy/raftProduction.js';
+import { ownerRaftCapacity } from './raftCapacity.js';
+import { holdLoadIncreases } from '../economy/raftCapacity.js';
+import { activeRaftParts } from '../naval/condition.js';
 
 const MAX_REV = 2147483647;
 const MAX_OPS = 64;
@@ -90,7 +93,7 @@ function nearRaft(w, e, record) {
   const pz = d.base.z + d.dir.z * Math.max(0, d.len - 10);
   if ((c.x[e] - px) ** 2 + (c.z[e] - pz) ** 2 > EDITOR_RADIUS ** 2) return false;
   const pub = publicRafts(w).find((r) => r.id === record.ship.id);
-  const plank = pub && raftGangplank(pub, d);
+  const plank = pub && raftGangplank({ ...pub, parts: record.ship.grid.parts }, d);
   return !!plank && (c.x[e] - plank.x) ** 2 + (c.z[e] - plank.z) ** 2 <= 2.5 ** 2;
 }
 
@@ -105,12 +108,13 @@ function ownRaft(w, e, profile, id) {
   return active;
 }
 
-function cargoState(profile, active) {
+function cargoState(w, e, profile, active) {
   const ship = active.ship;
   return { id: ship.id, hold: { cap: ship.hold.cap, goods: { ...ship.hold.goods } },
     pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
     gold: profile.gold, stats: raftStats(ship.grid, ship.hold), raftRev: ship.rev,
-    production: productionRows(ship.grid, ship.hold, { blocked: active.productionBlocked || '' }),
+    capacity: ownerRaftCapacity(w, e),
+    production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked: active.productionBlocked || '' }),
     productionBlocked: active.productionBlocked || '', daySec: CLOCK.daySec };
 }
 
@@ -155,6 +159,8 @@ function cargoCommand(w, e, msg, profile, active, saveFits) {
     return emit(w, e, msg, false, 'room', tradeRev);
   if (!unload(from, msg.g, msg.n) || !load(to, msg.g, msg.n))
     return emit(w, e, msg, false, 'room', tradeRev);
+  if (msg.side === 'deposit' && holdLoadIncreases(activeRaftParts(w.rafts.get(ship.id)), ship.hold, hold))
+    return emit(w, e, msg, false, 'capacity', tradeRev);
 
   const nextTradeRev = tradeRev + 1;
   const eco = cloneEco(profile, pack, ship, hold, nextTradeRev);
@@ -166,7 +172,7 @@ function cargoCommand(w, e, msg, profile, active, saveFits) {
   profile.eco.pack = pack;
   profile.eco.tradeRev = nextTradeRev;
   w.profileDirty?.add(e);
-  return emit(w, e, msg, true, '', nextTradeRev, cargoState(profile, active));
+  return emit(w, e, msg, true, '', nextTradeRev, cargoState(w, e, profile, active));
 }
 
 export function commerceCmd(w, e, msg, saveFits = () => true) {
@@ -177,6 +183,7 @@ export function commerceCmd(w, e, msg, saveFits = () => true) {
       || !exactKeys(msg))
     return fail('command');
   const profile = w.profiles?.get(e);
+  if (w.navalPilot?.locked?.(e)) return fail('busy', readTradeRev(profile?.eco || {}));
   const tradeRev = readTradeRev(profile?.eco || {});
   const mutating = ['buy', 'sell', 'transfer'].includes(msg.op);
   if (mutating) {
@@ -205,7 +212,7 @@ export function commerceCmd(w, e, msg, saveFits = () => true) {
     if (!active) return fail('owner', tradeRev);
     if (msg.op === 'cargo') {
       if (!nearRaft(w, e, active)) return fail('far', tradeRev);
-      return emit(w, e, msg, true, '', tradeRev, cargoState(profile, active));
+      return emit(w, e, msg, true, '', tradeRev, cargoState(w, e, profile, active));
     }
     if (!alive(w, e)) return fail('dead', tradeRev);
     const out = cargoCommand(w, e, msg, profile, active, saveFits);

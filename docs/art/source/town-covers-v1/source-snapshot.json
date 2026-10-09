@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "family": "town-covers-v1",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-covers-v1/before/props.source.js",
+      "bytes": 35724,
+      "sha256": "482685f4d89cc24f2dd203cd8b268fd0835027e45bd97eac2882a744294740c3"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-covers-v1/after/props.js",
+      "bytes": 36388,
+      "sha256": "9e5bfebb7e6035aecc4aedc7fc1a72c57978c1d73c1f0c1300b2b207b6d03446"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/townCovers.js",
+      "snapshot": "docs/art/source/town-covers-v1/after/townCovers.js",
+      "bytes": 4532,
+      "sha256": "5ba31605b682a6074b72d8f38850553189aaa37abb6d786ea8525ceacb5eae40"
+    },
+    {
+      "phase": "after",
+      "source": "tests/town-covers.test.mjs",
+      "snapshot": "docs/art/source/town-covers-v1/after/town-covers.test.mjs",
+      "bytes": 10301,
+      "sha256": "edc58ff660625a488ec5f0a6bf486da736f24ead5caf24daf5d39fbce1432840"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-town-covers.playwright.js",
+      "snapshot": "docs/art/source/town-covers-v1/after/qa-town-covers.playwright.js",
+      "bytes": 7658,
+      "sha256": "5e8fba3fe1bab405b7b9b56ecbc2073b1ca64864ed69e8abc228f0887efd5d76"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-covers-sources.mjs",
+      "snapshot": "docs/art/source/town-covers-v1/after/prepare-town-covers-sources.mjs",
+      "bytes": 3455,
+      "sha256": "75fd91fdba822228e7ad2dc17971624426467641d9717c3d2ce6b798ad16c8fd"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-covers-catalog.mjs",
+      "snapshot": "docs/art/source/town-covers-v1/after/register-town-covers-catalog.mjs",
+      "bytes": 18444,
+      "sha256": "812e9fd9900fcc33635ded6f8211655076c6033201e867250e38b462c1abb2da"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-town-covers-catalog.mjs",
+      "snapshot": "docs/art/source/town-covers-v1/after/verify-town-covers-catalog.mjs",
+      "bytes": 6835,
+      "sha256": "2de141f179f32f347d9d439bdd4ed64a1be5fa1c7767d00baf750528e090ff6a"
+    }
+  ],
+  "reusedAssets": [
+    {
+      "id": "tex:raft-comic-v1",
+      "path": "assets/textures/raft/comic-materials-v1.webp",
+      "bytes": 308536,
+      "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54"
+    },
+    {
+      "id": "tex:raft-comic-v1",
+      "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+      "bytes": 82878,
+      "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719"
+    }
+  ]
+}

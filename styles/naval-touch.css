@@ -1,0 +1,233 @@
+.naval-touch {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  color: #f2ead8;
+  font: 600 10px/1.1 system-ui, sans-serif;
+}
+
+.naval-touch-stick {
+  position: absolute;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+  background: radial-gradient(circle at 35% 27%, rgb(191 219 209 / 13%), rgb(8 21 26 / 56%) 72%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 23%), inset 0 0 0 1px rgb(218 226 207 / 12%);
+  backdrop-filter: blur(5px);
+}
+
+.naval-touch-stick-move { left: max(18px, env(safe-area-inset-left, 0px)); }
+.naval-touch-stick-look { right: max(18px, env(safe-area-inset-right, 0px)); }
+.naval-touch-ring {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 1px solid rgb(232 220 190 / 38%);
+  box-shadow: inset 0 0 0 1px rgb(11 25 30 / 45%);
+}
+.naval-touch-ring::before,
+.naval-touch-ring::after {
+  content: '';
+  position: absolute;
+  background: rgb(221 223 205 / 17%);
+}
+.naval-touch-ring::before { width: 1px; inset: 12px 50%; }
+.naval-touch-ring::after { height: 1px; inset: 50% 12px; }
+.naval-touch-puck {
+  position: absolute;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgb(237 223 188 / 52%);
+  background: radial-gradient(circle at 35% 30%, rgb(175 208 190 / 50%), rgb(34 59 59 / 89%) 72%);
+  box-shadow: 0 3px 11px rgb(0 0 0 / 32%), inset 0 0 0 1px rgb(2 12 15 / 45%);
+  will-change: transform;
+  pointer-events: none;
+}
+.naval-touch-cue {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  color: rgb(226 220 197 / 72%);
+  font-size: 7px;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.naval-touch-caption {
+  position: absolute;
+  bottom: -16px;
+  color: rgb(241 233 213 / 83%);
+  font-size: 8px;
+  letter-spacing: .14em;
+  white-space: nowrap;
+  text-shadow: 0 1px 5px #000;
+  pointer-events: none;
+}
+
+.naval-touch-actions {
+  position: absolute;
+  right: max(18px, env(safe-area-inset-right, 0px));
+  bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+.naval-touch-action {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 6px 8px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 3px;
+  border: 1px solid rgb(220 207 174 / 38%);
+  border-radius: 15px;
+  color: #f3e7ca;
+  background: rgb(9 24 29 / 70%);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 22%);
+  pointer-events: auto;
+  touch-action: none;
+  font: inherit;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .04em;
+  text-transform: none;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.naval-touch-action svg { width: 21px; height: 21px; }
+.naval-touch-action-label { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 8px; }
+.naval-touch-action:active:not(:disabled) { transform: scale(.95); background: rgb(43 70 67 / 86%); }
+.naval-touch-action:disabled { opacity: .38; cursor: default; }
+.naval-touch[data-enabled="false"] { visibility: hidden; }
+
+@media (orientation: landscape) {
+  .naval-touch-stick { width: 116px; height: 116px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+  .naval-touch-stick-move { left: max(24px, env(safe-area-inset-left, 0px)); }
+  .naval-touch-stick-look { right: max(24px, env(safe-area-inset-right, 0px)); }
+  .naval-touch-puck { width: 46px; height: 46px; }
+  .naval-touch-actions { right: max(24px, env(safe-area-inset-right, 0px)); bottom: calc(145px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .naval-touch-action:active:not(:disabled) { transform: none; }
+}
+
+/* The reference layout is opt-in; the accepted lab controls keep their existing geometry. */
+.naval-touch[data-layout="reference"] {
+  --nt-edge: #c8b48a;
+  --nt-ink: #102027;
+  --nt-right: max(18px, env(safe-area-inset-right, 0px));
+  --nt-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  --nt-cluster-width: 188px;
+  --nt-cluster-height: 182px;
+  --nt-wheel: 108px;
+  --nt-gauge: 118px;
+  --nt-orbit: 96px;
+  --nt-orbit-center-x: calc(var(--nt-cluster-width) - var(--nt-gauge) / 2 + 2px);
+  --nt-orbit-center-y: calc(var(--nt-cluster-height) - var(--nt-gauge) / 2 - 4px);
+  font-family: 'Arial Narrow', system-ui, sans-serif;
+}
+.naval-touch[data-layout="reference"] .naval-touch-stick {
+  border: 3px solid var(--nt-ink);
+  background: radial-gradient(circle at 35% 20%, rgb(151 179 171 / 64%), rgb(27 62 66 / 83%) 64%, rgb(11 26 31 / 84%));
+  box-shadow: 0 0 0 2px var(--nt-edge), 0 0 0 4px rgb(12 21 23 / 90%), inset 0 0 0 5px rgb(230 205 157 / 24%), 0 6px 14px #0006;
+  backdrop-filter: blur(3px);
+}
+.naval-touch[data-layout="reference"] .naval-touch-stick-move {
+  width: var(--nt-wheel); height: var(--nt-wheel);
+  left: max(24px, env(safe-area-inset-left, 0px)); bottom: var(--nt-bottom);
+  background: repeating-linear-gradient(-19deg, #203d424f 0 12px, #aac5b63b 13px 14px), radial-gradient(circle at 36% 20%, #6f8d898f, #1b4246c9 72%);
+}
+.naval-touch[data-layout="reference"] .naval-touch-stick-look {
+  width: 52px; height: 52px;
+  right: calc(var(--nt-right) + var(--nt-cluster-width) - 52px);
+  bottom: calc(var(--nt-bottom) + 9px);
+  background: radial-gradient(circle at 35% 30%, #7f85738c, #23393aeb 68%);
+}
+.naval-touch[data-layout="reference"] .naval-touch-ring { inset: 6px; border-color: #d4c29982; border-width: 2px; }
+.naval-touch[data-layout="reference"] .naval-touch-ring::before,
+.naval-touch[data-layout="reference"] .naval-touch-ring::after { display: none; }
+.naval-touch[data-layout="reference"] .naval-touch-puck { width: 32px; height: 32px; opacity: 0; border-color: #e8d1a3; background: #172e339c; box-shadow: 0 0 10px #fdebc04d; }
+.naval-touch[data-layout="reference"] .naval-touch-stick:active .naval-touch-puck { opacity: .55; }
+.naval-touch-decal { position: absolute; width: 78%; height: 78%; inset: 11%; pointer-events: none; filter: drop-shadow(1px 3px 1px #0009); }
+.naval-touch-pad-icon-move { transform: rotate(-12deg); }
+.naval-touch-pad-icon-look { width: 62%; height: 62%; inset: 19%; }
+.naval-touch-pad-arrows { position: absolute; inset: 4px; color: #e6d2a2; font-size: 0; pointer-events: none; }
+.naval-touch-pad-arrows-move::before,
+.naval-touch-pad-arrows-move::after { content: '◀'; position: absolute; left: 4px; top: 44%; font-size: 14px; -webkit-text-stroke: 1px #222b2c; }
+.naval-touch-pad-arrows-move::after { content: '▶'; left: auto; right: 4px; }
+.naval-touch[data-layout="reference"] .naval-touch-cue { display: none; }
+.naval-touch[data-layout="reference"] .naval-touch-caption { bottom: -13px; font-size: 9px; font-weight: 900; font-style: italic; color: #f5e4be; letter-spacing: .05em; text-shadow: 1px 2px 0 #07181f; }
+.naval-touch[data-layout="reference"] .naval-touch-stick-move .naval-touch-caption { top: -23px; bottom: auto; font: italic 900 12px/1 Impact, 'Arial Narrow', sans-serif; }
+.naval-touch[data-layout="reference"] .naval-touch-stick-move::before,
+.naval-touch[data-layout="reference"] .naval-touch-stick-move::after { content: '↶'; position: absolute; top: -22px; left: -6px; font-size: 29px; font-weight: 900; color: #ffbb48; -webkit-text-stroke: 1px #17252a; text-shadow: 0 2px 0 #8a482d; }
+.naval-touch[data-layout="reference"] .naval-touch-stick-move::after { content: '↷'; left: auto; right: -6px; }
+.naval-touch[data-layout="reference"] .naval-touch-actions { display: none; }
+.naval-touch-instrument { position: absolute; right: var(--nt-right); bottom: var(--nt-bottom); width: var(--nt-cluster-width); height: var(--nt-cluster-height); pointer-events: none; }
+.naval-touch-gauge { position: absolute; right: -2px; bottom: 4px; width: var(--nt-gauge); height: var(--nt-gauge); color: #fff1d1; pointer-events: none; }
+.naval-touch-gauge > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 4px #ee7f385e); }
+.nt-dial-flame { opacity: .75; }
+.naval-touch-gauge[data-boost="true"] > svg { filter: drop-shadow(0 0 8px #ffac428e); }
+.naval-touch-gauge[data-boost="true"] .nt-dial-flame { opacity: 1; }
+.nt-dial-number { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 3px; }
+.nt-dial-number strong { font: italic 900 30px/.95 Impact, 'Arial Narrow', system-ui, sans-serif; font-variant-numeric: tabular-nums; text-shadow: 1px 3px 0 #071a22; }
+.nt-dial-number span { margin-top: 3px; font: italic 800 12px/1 'Arial Narrow', sans-serif; }
+.nt-dial-state { position: absolute; bottom: 1px; width: 100%; font: italic 900 12px/1 Impact, 'Arial Narrow', sans-serif; text-align: center; text-shadow: 1px 2px 0 #081a20; }
+.naval-touch-slots { position: absolute; inset: 0; pointer-events: none; }
+.naval-touch-slot { position: absolute; width: 50px; height: 50px; padding: 6px; display: grid; place-items: center; margin: 0; border: 3px solid var(--nt-ink); border-radius: 50%; color: #efe4c9; background: radial-gradient(circle at 35% 25%, #5b867dab, #143b3ee8 67%); box-shadow: 0 0 0 2px #d3c5a4b8, inset 0 0 0 2px #080f1966, 0 4px 8px #0006; appearance: none; -webkit-appearance: none; pointer-events: auto; touch-action: none; font: inherit; }
+/* Equal angular steps around the dial keep the skill buttons on one readable arc. */
+.naval-touch-slot {
+  left: calc(var(--nt-orbit-center-x) + var(--nt-orbit) * var(--nt-orbit-cos) - 25px);
+  top: calc(var(--nt-orbit-center-y) + var(--nt-orbit) * var(--nt-orbit-sin) - 25px);
+}
+.naval-touch-slot[data-slot="0"] { --nt-orbit-cos: -.866025; --nt-orbit-sin: -.5; }
+.naval-touch-slot[data-slot="1"] { --nt-orbit-cos: -.422618; --nt-orbit-sin: -.906308; }
+.naval-touch-slot[data-slot="2"] { --nt-orbit-cos: .173648; --nt-orbit-sin: -.984808; }
+.naval-touch-slot[data-action="capture"] { color: #baf8ec; background: radial-gradient(circle at 35% 25%, #4d9f99bb, #153c43e8 68%); }
+.naval-touch-slot[data-action="bag"] { color: #e6bd73; background: radial-gradient(circle at 35% 25%, #b4854699, #483826e8 67%); }
+.naval-touch-slot[data-action="mode"] { color: #dcebdc; background: radial-gradient(circle at 35% 25%, #547b8f99, #203a49e8 67%); }
+.naval-touch-slot[data-unavailable="true"] .naval-touch-slot-icon { opacity: .4; }
+.naval-touch-slot:active { transform: scale(.96); box-shadow: 0 0 0 2px #ffdb94, inset 0 0 9px #eaba5777; }
+.naval-touch-slot:focus-visible, .naval-touch-picker button:focus-visible { outline: 2px solid #ffe2a0; outline-offset: 5px; }
+.naval-touch-slot-icon { position: absolute; top: 4px; left: 8px; display: grid; place-items: center; width: 28px; height: 28px; filter: drop-shadow(1px 2px 0 #081c23); }
+.naval-touch-slot-icon svg { width: 28px; height: 28px; }
+.naval-touch-slot-icon svg [stroke] { stroke-width: 2.1; }
+.naval-touch-slot-label { position: absolute; bottom: 3px; left: 2px; right: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #f5e7c8; font: italic 900 8px/1 'Arial Narrow', system-ui, sans-serif; text-align: center; text-shadow: 1px 2px 0 #102127; }
+.naval-touch-picker[hidden] { display: none !important; }
+.naval-touch-picker { position: absolute; z-index: 5; width: 266px; right: 0; bottom: 95px; padding: 12px; box-sizing: border-box; color: #efe4c9; border: 2px solid #ceb788; border-radius: 13px; background: linear-gradient(150deg, #28464af7, #10252cf7); box-shadow: 0 0 0 3px #102029, 0 12px 30px #0007; backdrop-filter: blur(6px); pointer-events: auto; }
+.naval-touch-picker-title { margin-bottom: 8px; font: italic 900 16px/1 Impact, 'Arial Narrow', sans-serif; letter-spacing: .03em; }
+.naval-touch-picker-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; max-height: 146px; overflow-y: auto; overscroll-behavior: contain; }
+.naval-touch-picker-option { min-height: 44px; padding: 6px 8px; display: flex; align-items: center; gap: 7px; border: 1px solid #bcb4956e; border-radius: 8px; color: #f3e7c9; background: #41646552; font: 700 11px/1.1 system-ui, sans-serif; text-align: left; touch-action: manipulation; }
+.naval-touch-picker-option svg { flex: none; width: 22px; height: 22px; }
+.naval-touch-picker-option.is-skill { color: #aee7dd; }
+.naval-touch-picker-option.is-item { color: #e9c483; }
+.naval-touch-picker-option[data-selected="true"] { border-color: #ffce7a; background: #bea56a36; }
+.naval-touch-picker-cancel { min-height: 44px; margin-top: 8px; width: 100%; border: 1px solid #bdb99b66; border-radius: 8px; color: #d9d9c4; background: #142c33; font: 700 11px/1 system-ui, sans-serif; }
+@container stage (max-width: 700px) {
+  .naval-touch[data-layout="reference"] { --nt-cluster-width: 178px; --nt-cluster-height: 174px; --nt-wheel: 100px; --nt-right: 12px; --nt-gauge: 112px; --nt-orbit: 90px; }
+  .naval-touch[data-layout="reference"] .naval-touch-stick-move { left: 14px; }
+  .naval-touch-picker { width: 248px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .naval-touch-slot:active { transform: none; }
+}

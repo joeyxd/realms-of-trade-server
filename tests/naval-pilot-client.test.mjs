@@ -280,7 +280,7 @@ test('leave, disconnect and default-off LocalServer preserve the saved mooring a
   assert.equal(server.world.navalPilot.size, 0);
   assert.equal(JSON.stringify(ship), sourceBytes);
 
-  const ordinary = new LocalServer({ seed: GAME.seed, bots: 0, enemies: false, send() {} });
+  const ordinary = new LocalServer({ navigation: false, seed: GAME.seed, bots: 0, enemies: false, send() {} });
   assert.equal(ordinary.world.navalPilot, null);
   assert.equal(ordinary.world.navalTrial, null);
 });

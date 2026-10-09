@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: only live local chat creates a nearby bubble with state-derived identity and radius
+ok 1 - only live local chat creates a nearby bubble with state-derived identity and radius
+  ---
+  duration_ms: 3.942
+  type: 'test'
+  ...
+# Subtest: world and unrelated channels never create bubbles
+ok 2 - world and unrelated channels never create bubbles
+  ---
+  duration_ms: 1.7196
+  type: 'test'
+  ...
+# Subtest: empty and non-string text is ignored before deduplication or display
+ok 3 - empty and non-string text is ignored before deduplication or display
+  ---
+  duration_ms: 0.4985
+  type: 'test'
+  ...
+# Subtest: whispers are limited to the sender or current target and use trusted labels
+ok 4 - whispers are limited to the sender or current target and use trusted labels
+  ---
+  duration_ms: 0.6203
+  type: 'test'
+  ...
+# Subtest: sender and whisper target must match current opaque token and entity mapping
+ok 5 - sender and whisper target must match current opaque token and entity mapping
+  ---
+  duration_ms: 0.5692
+  type: 'test'
+  ...
+# Subtest: leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+ok 6 - leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+  ---
+  duration_ms: 0.7642
+  type: 'test'
+  ...
+# Subtest: state updates never replay prior history and duplicate live IDs are suppressed
+ok 7 - state updates never replay prior history and duplicate live IDs are suppressed
+  ---
+  duration_ms: 0.3892
+  type: 'test'
+  ...
+# Subtest: Unicode text is truncated by code point and lifetime stays within five to eight seconds
+ok 8 - Unicode text is truncated by code point and lifetime stays within five to eight seconds
+  ---
+  duration_ms: 0.5292
+  type: 'test'
+  ...
+# Subtest: chat state gives joined peers opaque whisper tokens and excludes spectators
+ok 9 - chat state gives joined peers opaque whisper tokens and excludes spectators
+  ---
+  duration_ms: 342.5582
+  type: 'test'
+  ...
+# Subtest: world chat trusts server identity, preserves text literally, and delivers only to joined peers
+ok 10 - world chat trusts server identity, preserves text literally, and delivers only to joined peers
+  ---
+  duration_ms: 285.874
+  type: 'test'
+  ...
+# Subtest: local chat uses current server x/y/z distance and includes the sender
+ok 11 - local chat uses current server x/y/z distance and includes the sender
+  ---
+  duration_ms: 275.4967
+  type: 'test'
+  ...
+# Subtest: whisper is private to the opaque recipient token and rejects stale tokens
+ok 12 - whisper is private to the opaque recipient token and rejects stale tokens
+  ---
+  duration_ms: 277.5186
+  type: 'test'
+  ...
+# Subtest: chat request receipts are idempotent per peer and conflicting reuse is rejected
+ok 13 - chat request receipts are idempotent per peer and conflicting reuse is rejected
+  ---
+  duration_ms: 293.7283
+  type: 'test'
+  ...
+# Subtest: chat validates channel, target and bounded text before delivery
+ok 14 - chat validates channel, target and bounded text before delivery
+  ---
+  duration_ms: 484.9636
+  type: 'test'
+  ...
+# Subtest: chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+ok 15 - chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+  ---
+  duration_ms: 455.117
+  type: 'test'
+  ...
+# Subtest: disabled chat returns a result and leaves simulation events untouched
+ok 16 - disabled chat returns a result and leaves simulation events untouched
+  ---
+  duration_ms: 643.2668
+  type: 'test'
+  ...
+# Subtest: chat rejects prejoin requests and applies a per-peer token bucket using injected time
+ok 17 - chat rejects prejoin requests and applies a per-peer token bucket using injected time
+  ---
+  duration_ms: 548.9045
+  type: 'test'
+  ...
+# Subtest: real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+ok 18 - real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+  ---
+  duration_ms: 1111.1897
+  type: 'test'
+  ...
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+ok 19 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 6470.6133
+  type: 'test'
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 20 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 8.3368
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14620.2422

@@ -125,7 +125,7 @@ export function stepRaftProduction(raft, hold, days) {
   return { made, used, changed: workChanged || goodsChanged };
 }
 
-const STOPPED = new Set(['saveSize', 'revisionLimit']);
+const STOPPED = new Set(['saveSize', 'revisionLimit', 'capacity']);
 
 // Describe only the selected production chain; all maps and nested values are detached copies.
 export function productionRows(raft, hold, { blocked = '' } = {}) {

@@ -1,10 +1,12 @@
 // Private cargo and market UI. Every mutation is an intent; server acknowledgements and profile revisions confirm it.
 import { GOODS, GOOD_CATS } from '../data/goods.js';
+import { RAFT_LOAD } from '../data/raftparts.js';
 import { TOWNS } from '../data/towns.js';
 import { EDITOR_RADIUS } from '../data/raftEditor.js';
 import { raftStats } from '../sim/economy/raft.js';
 import { productionRows } from '../sim/economy/raftProduction.js';
-import { holdUsed, roomFor } from '../sim/economy/cargo.js';
+import { holdUsed, roomFor, goodMass, goodVolume } from '../sim/economy/cargo.js';
+import { raftCapacity } from '../sim/economy/raftCapacity.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
 
 const MAX_QTY = 500;
@@ -18,13 +20,13 @@ const REASONS = {
   good: 'Esa mercancía no se ofrece aquí.', n: 'Elige una cantidad válida.', law: 'La ley del pueblo prohíbe esa mercancía.',
   stock: 'El mercado no tiene esa cantidad.', gold: 'No tienes oro suficiente.', room: 'No cabe toda la mercancía.',
   have: 'No llevas esa cantidad.', owner: 'Esa bodega no es tuya.', raft: 'Tu balsa no está disponible en Aldea.',
-  revision: 'El plano cambió; actualiza la bodega.', busy: 'Detente antes de transferir.', dead: 'No puedes comerciar mientras estás fuera de combate.',
+  revision: 'El plano cambió; actualiza la bodega.', capacity: 'La bodega no puede recibir esa carga: el límite de porte reserva masa para el piloto.',
+  busy: 'Detente antes de transferir.', dead: 'No puedes comerciar mientras estás fuera de combate.',
   price: 'El precio cambió; revisa la nueva cotización.', saveSize: 'La partida supera el límite de guardado.', command: 'Solicitud no válida.',
   duplicate: 'Ese identificador ya se usó con otra solicitud.', revisionLimit: 'La revisión llegó a su límite; vuelve a entrar.', market: 'El mercado no pudo completar la solicitud.',
 };
 const reason = (why) => REASONS[why] || 'El servidor rechazó la operación.';
 const goodName = (id) => GOODS[id]?.name || id;
-const goodWeight = (id) => GOODS[id]?.w || 1;
 const clampQty = (n) => Math.max(1, Math.min(MAX_QTY, Math.floor(Number(n) || 1)));
 const formatRecipe = (counts) => Object.entries(counts || {}).map(([g, n]) => `${num(n)} ${goodName(g)}`).join(' + ') || 'sin insumos';
 
@@ -76,7 +78,7 @@ export class CommercePanel {
     if (!record || !ship || ship.at !== 'aldea' || !(ship.hp > 0) || !player || player.dead
       || ![player.x, player.y, player.z].every(Number.isFinite)) return null;
     const deck = this.raftDeck?.()?.surface(player.x, player.z, player.y);
-    const plank = raftGangplank(record, this.map?.dock), dock = this.map?.dock;
+    const plank = raftGangplank({ ...record, parts: ship.grid.parts }, this.map?.dock), dock = this.map?.dock;
     const dockDistance = dock ? Math.hypot(player.x - dock.base.x - dock.dir.x * Math.max(0, dock.len - 10),
       player.z - dock.base.z - dock.dir.z * Math.max(0, dock.len - 10)) : Infinity;
     const nearPlank = !!plank && dockDistance <= EDITOR_RADIUS && Math.hypot(player.x - plank.x, player.z - plank.z) <= 2.5;
@@ -106,7 +108,7 @@ export class CommercePanel {
     if (!ev || ev.type !== 'raftProduction' || typeof ev.id !== 'string'
       || !Number.isSafeInteger(ev.rev) || !Number.isSafeInteger(ev.raftRev)
       || !Number.isSafeInteger(ev.daySec) || !Array.isArray(ev.production)
-      || !['', 'saveSize', 'revisionLimit'].includes(ev.productionBlocked)) return;
+      || !['', 'saveSize', 'revisionLimit', 'capacity'].includes(ev.productionBlocked)) return;
     const c = this.context();
     if (!c || ev.id !== c.record.id) return;
     this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
@@ -196,7 +198,7 @@ export class CommercePanel {
       if (read.op === 'cargo') {
         if (ev.id !== read.meta.raftId || !ev.hold || !ev.pack || !Number.isSafeInteger(ev.raftRev)
           || !Array.isArray(ev.production) || !Number.isSafeInteger(ev.daySec) || !Number.isSafeInteger(ev.rev)
-          || !['', 'saveSize', 'revisionLimit'].includes(ev.productionBlocked)) return;
+          || !['', 'saveSize', 'revisionLimit', 'capacity'].includes(ev.productionBlocked)) return;
         this.cargoSnapshot = ev;
         this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
         this.lastResult = ''; this.render(); return;
@@ -355,13 +357,39 @@ export class CommercePanel {
     };
   }
 
+  confirmedCapacity(c) {
+    if (!c) return null;
+    if (c.record.rev !== c.ship.rev) return null;
+    const tradeRev = c.profile?.eco?.tradeRev;
+    const matches = (value) => value && value.id === c.record.id && value.raftRev === c.ship.rev
+      && value.tradeRev === tradeRev && ['port', 'sailing', 'reboard'].includes(value.mode)
+      && ['dryMass', 'holdMass', 'packMass', 'cargoMass', 'totalMass', 'buoyancy', 'structuralLimit', 'safeDisplacement', 'totalLimit',
+        'crewMass', 'crewCount', 'guestMass', 'cargoMax', 'freeMass', 'overMass', 'load', 'holdVolume', 'holdFree', 'holdCap', 'packVolume', 'packFree', 'packCap']
+        .every((key) => Number.isFinite(value[key]) && value[key] >= 0)
+      && ['ready', 'heavy', 'overloaded'].includes(value.status);
+    const streamed = this.capacity?.();
+    if (matches(streamed)) return streamed;
+    const privateCapacity = this.cargoSnapshot?.capacity;
+    return matches(privateCapacity) ? privateCapacity : null;
+  }
+
   cargoRows() {
     const { hold, pack } = this.cargoState();
     const ids = [...new Set([...Object.keys(hold.goods || {}), ...Object.keys(pack.goods || {})])];
     return ids.map((g) => ({ g, hold: hold.goods?.[g] || 0, pack: pack.goods?.[g] || 0 })).filter((r) => GOODS[r.g]);
   }
 
-  transferMax(g, from, to) { return Math.max(0, Math.min(from?.goods?.[g] || 0, roomFor(to || { cap: 0, goods: {} }, g), MAX_QTY)); }
+  transferMax(g, from, to) {
+    let max = Math.max(0, Math.min(from?.goods?.[g] || 0, roomFor(to || { cap: 0, goods: {} }, g), MAX_QTY));
+    if (this.cargoSide === 'deposit') {
+      const c = this.context();
+      if (c?.record?.parts && to) {
+        const freeMass = raftCapacity(c.record.parts, to).freeMass;
+        max = Math.min(max, Math.max(0, Math.floor((freeMass + 1e-8) / goodMass(g))));
+      }
+    }
+    return max;
+  }
   currentTransferMax() {
     const c = this.context(), g = this.selected; if (!c || !g) return 0;
     return this.cargoSide === 'deposit' ? this.transferMax(g, c.profile.eco.pack, c.ship.hold) : this.transferMax(g, c.ship.hold, c.profile.eco.pack);
@@ -407,17 +435,32 @@ export class CommercePanel {
     const { hold, pack, ship } = cargo, rows = this.cargoRows();
     const selected = this.selectedCargoRow();
     const stats = this.cargoSnapshot?.stats || (ship?.grid ? raftStats(ship.grid, ship.hold) : null);
-    const options = rows.map((r) => `<button type="button" class="commerce-good${r.g === this.selected ? ' on' : ''}" data-good="${esc(r.g)}"><i class="good-mark cat-${esc(GOODS[r.g].cat)}">${CAT_MARK[GOODS[r.g].cat] || '•'}</i><span><b>${esc(goodName(r.g))}</b><small>En bodega <strong>${num(r.hold)}</strong> · mochila <strong>${num(r.pack)}</strong></small></span></button>`).join('');
+    const capacity = this.confirmedCapacity(this.context());
+    const options = rows.map((r) => `<button type="button" class="commerce-good${r.g === this.selected ? ' on' : ''}" data-good="${esc(r.g)}"><i class="good-mark cat-${esc(GOODS[r.g].cat)}">${CAT_MARK[GOODS[r.g].cat] || '•'}</i><span><b>${esc(goodName(r.g))}</b><small>Bodega <strong>${num(r.hold)}</strong> · mochila <strong>${num(r.pack)}</strong> · ${num(goodMass(r.g))} uM / ${num(goodVolume(r.g))} uV por unidad</small></span></button>`).join('');
     const from = this.cargoSide === 'deposit' ? pack : hold, to = this.cargoSide === 'deposit' ? hold : pack;
     const max = selected ? this.transferMax(selected.g, from, to) : 0;
-    const amount = this.transferQty === 'max' ? max : Math.min(max || 1, clampQty(this.transferQty || 1));
-    return `<div class="cargo-summary"><div><small>ESPACIO · BODEGA</small><b>${num(holdUsed(hold))}<i>/</i>${num(hold.cap || 0)}</b></div><div><small>ESPACIO · MOCHILA</small><b>${num(holdUsed(pack))}<i>/</i>${num(pack.cap || 0)}</b></div></div>
-      <div class="cargo-stats">${stats ? `<span>${num(stats.cells)} cimientos</span><span>${num(stats.weight)} peso</span><span>${num(stats.buoyancy)} flotación</span><span>Velocidad teórica ${stats.speed.toFixed(1)}</span>` : '<span>Estadísticas no disponibles</span>'}</div>
+    const amount = this.transferQty === 'max' ? max : Math.min(max, clampQty(this.transferQty || 1));
+    const transferMass = selected ? amount * goodMass(selected.g) : 0;
+    const transferVolume = selected ? amount * goodVolume(selected.g) : 0;
+    const holdVolume = capacity?.holdVolume ?? holdUsed(hold), holdCap = capacity?.holdCap ?? hold.cap ?? 0;
+    const packVolume = capacity?.packVolume ?? holdUsed(pack), packCap = capacity?.packCap ?? pack.cap ?? 0;
+    const nextHold = this.cargoSide === 'deposit' ? holdVolume + transferVolume : Math.max(0, holdVolume - transferVolume);
+    const nextPack = this.cargoSide === 'deposit' ? Math.max(0, packVolume - transferVolume) : packVolume + transferVolume;
+    const capacityMode = capacity ? ({ port: 'Puerto', sailing: 'Navegación', reboard: 'Reembarque' })[capacity.mode] : '';
+    const capacityStatus = ({ ready: 'LISTA', heavy: 'PESADA', overloaded: 'SOBRECARGADA' })[capacity?.status];
+    const heavyPct = num(RAFT_LOAD.heavyFraction * 100);
+    const capacityHtml = capacity ? `<section class="cargo-capacity is-${capacity.status}" aria-label="Capacidad confirmada"><header><b>Porte de la balsa · ${capacityStatus}</b><small>${capacityMode} · masa / espacio</small></header><div class="cargo-meter"><label><span>LÍMITE TOTAL</span><b>${num(capacity.totalMass)} / ${num(capacity.totalLimit)} uM${capacity.overMass > 0 ? ` · exceso ${num(capacity.overMass)}` : ` · ${num(capacity.freeMass)} libres`}</b></label><progress aria-label="Masa total respecto al porte" max="${Math.max(1, capacity.totalLimit)}" value="${Math.min(capacity.totalLimit, capacity.totalMass)}"></progress></div><div class="cargo-meter"><label><span>BODEGA · ESPACIO</span><b>${num(capacity.holdVolume)} / ${num(capacity.holdCap)} uV · ${num(capacity.holdFree)} libres</b></label><progress aria-label="Espacio de bodega libre" max="${Math.max(1, capacity.holdCap)}" value="${Math.min(capacity.holdCap, capacity.holdVolume)}"></progress></div><small class="cargo-mass-breakdown">Estructura ${num(capacity.dryMass)} uM · tripulación ${num(capacity.crewMass)} uM (${num(capacity.crewCount)}) · invitados ${num(capacity.guestMass)} uM</small><small class="cargo-mass-breakdown">Carga ${num(capacity.cargoMass)} uM · bodega ${num(capacity.holdMass)} uM · mochilas ${num(capacity.packMass)} uM</small><small class="cargo-mass-breakdown">Desplazamiento seguro ${num(capacity.safeDisplacement)} · límite estructural ${num(capacity.structuralLimit)} uM. Aviso de pesada desde ${heavyPct}%; transferir entre bodega y mochila no cambia el peso total.</small>${capacity.status === 'overloaded' ? '<small class="cargo-capacity-warning">Sobrecargada: no zarpa hasta quedar bajo el límite.</small>' : ''}</section>`
+      : '<section class="cargo-capacity is-waiting" aria-live="polite"><b>Actualizando capacidad…</b><small>Esperando el estado de tu balsa.</small></section>';
+    const transferForecast = capacity && selected
+      ? `Tras mover: bodega ${num(nextHold)}/${num(holdCap)} uV · mochila ${num(nextPack)}/${num(packCap)} uV. La carga sigue pesando ${num(capacity.cargoMass)} uM.`
+      : '';
+    return `${capacityHtml}
+      <div class="cargo-stats">${stats ? `<span>${num(stats.cells)} bases</span><span>${num(stats.buoyancy)} flotación nominal</span>` : '<span>Estadísticas no disponibles</span>'}</div>
       <div class="commerce-good-list">${options || '<p class="commerce-empty">No hay mercancías en tus almacenes.</p>'}</div>
       <div class="cargo-transfer"><label>Dirección<select data-cargo-side><option value="deposit" ${this.cargoSide !== 'withdraw' ? 'selected' : ''}>Mochila → bodega</option><option value="withdraw" ${this.cargoSide === 'withdraw' ? 'selected' : ''}>Bodega → mochila</option></select></label>
       <div class="commerce-qty">${[1,5,10].map((n) => `<button type="button" data-qty="${n}" class="${this.transferQty === n ? 'on' : ''}" ${max < n ? 'disabled' : ''}>${n}</button>`).join('')}<button type="button" data-qty="max" class="${this.transferQty === 'max' ? 'on' : ''}" ${max < 1 ? 'disabled' : ''}>Máx.</button>
       <input type="number" min="1" max="${max}" value="${amount}" data-amount aria-label="Cantidad a transferir" ${max < 1 ? 'disabled' : ''}></div>
-      <p class="commerce-transfer-note">${selected ? `${esc(goodName(selected.g))}: ${num(selected.pack)} en mochila y ${num(selected.hold)} en bodega. Caben hasta ${num(max)} por este movimiento.` : 'Selecciona una mercancía.'}</p></div>`;
+      <p class="commerce-transfer-note">${selected ? `Mueves ${num(amount)} ${esc(goodName(selected.g))}: ${num(transferMass)} uM · ${num(transferVolume)} uV. ${transferForecast}` : 'Selecciona una mercancía.'}</p></div>`;
   }
 
   marketHtml() {
@@ -437,7 +480,7 @@ export class CommercePanel {
       <label>Operación<select data-market-side><option value="buy" ${this.side === 'buy' ? 'selected' : ''}>Comprar</option><option value="sell" ${this.side === 'sell' ? 'selected' : ''}>Vender</option></select></label>
       <div class="commerce-qty">${[1,5,10].map((n) => `<button type="button" data-qty="${n}" class="${this.qty === n ? 'on' : ''}" ${max < n ? 'disabled' : ''}>${n}</button>`).join('')}<button type="button" data-qty="max" class="${this.qty === max ? 'on' : ''}" ${max < 1 ? 'disabled' : ''}>Máx.</button><input type="number" min="1" max="${max}" value="${this.qty}" data-amount aria-label="Cantidad" ${max < 1 ? 'disabled' : ''}></div>
       <div class="market-quote"><span>Total cotizado</span><b>${q?.signature === JSON.stringify([this.town, this.selected, this.qty, this.side]) ? `${num(q.total)} oro` : 'Solicitando al servidor…'}</b>${q?.avg ? `<small>Media ${num(q.avg)} oro por unidad</small>` : ''}</div>
-      <small class="market-hold">En mochila: ${num(pack[this.selected] || 0)} unidades · artículo de ${num(goodWeight(this.selected))} espacio</small></div>`;
+      <small class="market-hold">En mochila: ${num(pack[this.selected] || 0)} unidades · ${num(goodMass(this.selected))} uM / ${num(goodVolume(this.selected))} uV por unidad</small></div>`;
   }
 
   productionData() {
@@ -472,6 +515,7 @@ export class CommercePanel {
       const statusText = row.status === 'working' ? 'En marcha'
         : row.status === 'inputs' ? (profileIsCurrent ? `Faltan ${Object.entries(row.inputs || {}).filter(([g, n]) => n > (hold?.goods?.[g] || 0)).map(([g, n]) => `${num(n - (hold?.goods?.[g] || 0))} ${goodName(g)}`).join(', ')}` : 'Esperando ingredientes')
         : row.status === 'room' ? 'Bodega llena: no cabe el lote completo'
+        : row.status === 'capacity' ? 'Pausada: el porte supera el límite actual'
         : row.status === 'saveSize' ? 'Detenida: el guardado alcanzó su límite'
         : row.status === 'revisionLimit' ? 'Detenida: se alcanzó el límite de revisión' : 'Detenida';
       return `<article class="production-card" data-production-key="${esc(row.key)}">
@@ -514,9 +558,14 @@ export class CommercePanel {
   signature() {
     const c = this.context(), p = this.profile?.();
     const production = this.view === 'production' ? this.productionData() : null;
+    const capacity = this.capacity?.();
     return JSON.stringify([this.active, this.view, this.town, this.selected, this.side, this.qty, this.transferQty, this.cargoSide,
       this.rows, this.quote, this.market?.gold, this.market?.pack, p?.gold, p?.eco?.tradeRev, p?.eco?.pack?.goods,
-      c?.ship?.rev, c?.ship?.hold?.goods, c?.record?.rev, this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt],
+      c?.ship?.rev, c?.ship?.hold?.goods, c?.record?.rev, capacity && [capacity.id, capacity.raftRev, capacity.tradeRev, capacity.mode, capacity.freeMass, capacity.holdFree, capacity.packFree,
+        capacity.crewMass, capacity.crewCount, capacity.guestMass, capacity.status],
+      this.cargoSnapshot?.capacity && [this.cargoSnapshot.capacity.id, this.cargoSnapshot.capacity.raftRev, this.cargoSnapshot.capacity.tradeRev,
+        this.cargoSnapshot.capacity.crewMass, this.cargoSnapshot.capacity.crewCount, this.cargoSnapshot.capacity.guestMass, this.cargoSnapshot.capacity.status],
+      this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt],
       production?.rows, production?.blocked, production?.daySec, production?.profileIsCurrent,
       this.lastResult, [...this.readByKind.entries()].map(([k,id]) => [k,this.reads.get(id)?.timedOut,this.reads.get(id)?.sentAt])]);
   }

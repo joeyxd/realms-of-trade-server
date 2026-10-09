@@ -1,6 +1,6 @@
 {
   "name": "marea-negra",
-  "version": "0.6.0-alpha.4",
+  "version": "0.6.0-alpha.16",
   "private": true,
   "description": "Isometric action-RPG (Three.js) — vertical slice 1: tropical island + La Caldera arena. MMO-ready architecture.",
   "type": "module",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
+    "viem": "2.57.3",
     "ws": "^8.22.0"
   },
   "devDependencies": {

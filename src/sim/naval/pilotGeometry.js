@@ -1,6 +1,19 @@
 // Pure transforms between a raft's local frame and the pilot's world pose.
 // Raft local +Z is forward; local +X is right. Collision uses only this rigid pose.
+import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
 const TAU = Math.PI * 2;
+
+// A real, deterministic helm station on an unobstructed base tile. The stern-most free tile wins;
+// the same anchor is used by the renderer, boarding prompt and server admission.
+export function liveHelmAnchor(parts) {
+  if (!Array.isArray(parts)) return null;
+  const candidates = parts.filter((p) => RAFT_PARTS[p[0]]?.layer === 'base' && p[3] === 0 &&
+    !parts.some((q) => q !== p && q[1] === p[1] && q[2] === p[2] && q[3] === 0 &&
+      (RAFT_PARTS[q[0]]?.layer === 'tile' || q[0] === 'pillar' || q[0] === 'stairs')));
+  candidates.sort((a, b) => a[2] - b[2] || a[1] - b[1]);
+  const p = candidates[0];
+  return p ? Object.freeze({ x: (p[1] + .5) * RAFT.cell, y: 0, z: (p[2] + .5) * RAFT.cell, f: 0 }) : null;
+}
 
 function finiteFields(value, fields, label) {
   if (!value || typeof value !== 'object' || fields.some((key) => !Number.isFinite(value[key]))) {

@@ -1,0 +1,68 @@
+.wallet-panel[hidden] { display: none; }
+.wallet-panel {
+  min-width: 0;
+  display: grid;
+  gap: 9px;
+  padding: 13px;
+  border: 2px solid #161626;
+  border-left-width: 6px;
+  color: #161626;
+  background: #f4e5c4;
+  box-shadow: 3px 3px 0 #161626;
+  overflow-wrap: anywhere;
+}
+.wallet-panel h3 { margin: 0; font: 400 21px/1.1 var(--font-display); }
+.wallet-panel-note, .wallet-panel-status, .wallet-panel-identity-line,
+.wallet-panel-review p, .wallet-panel-error {
+  min-width: 0;
+  margin: 0;
+  font: 800 11px/1.45 var(--font-ui);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.wallet-panel-note { color: #625849; }
+.wallet-panel-status { color: #154c4d; }
+.wallet-panel-identity { display: grid; gap: 3px; min-width: 0; margin: 0; }
+.wallet-panel-identity-line { display: block; }
+.wallet-panel-identity-line b { color: #5c4c36; }
+.wallet-panel-review { min-width: 0; padding: 9px; border: 2px dashed #9b8058; background: #fff8e9; }
+.wallet-panel-review p { margin-bottom: 8px; }
+.wallet-panel-review pre {
+  max-width: 100%;
+  max-height: 12em;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid #bca982;
+  color: #161626;
+  background: #fffdf7;
+  font: 700 11px/1.45 var(--font-ui);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.wallet-panel-error { padding: 8px 9px; border: 2px solid #161626; border-left-width: 5px; color: #631f22; background: #ffded1; }
+.wallet-panel-actions { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.wallet-panel-actions button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 11px;
+  border: 2px solid #161626;
+  border-radius: 2px;
+  color: #161626;
+  background: #ffc53b;
+  box-shadow: 2px 3px 0 #161626;
+  font: 900 11px/1.25 var(--font-ui);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.wallet-panel-actions .wallet-panel-sign { background: #51dbdf; }
+.wallet-panel-actions .wallet-panel-cancel,
+.wallet-panel-actions .wallet-panel-refresh { background: #fff2d1; }
+.wallet-panel-actions button:hover:not(:disabled) { filter: brightness(1.05); }
+.wallet-panel-actions button:focus-visible { outline: 3px solid #007986; outline-offset: 3px; }
+.wallet-panel-actions button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 620px) {
+  .wallet-panel { padding: 10px; }
+  .wallet-panel-actions button { flex: 1 1 44%; }
+}

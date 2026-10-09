@@ -3,8 +3,12 @@
 import * as THREE from 'three';
 import { toonMesh, normalMatFor } from './toon.js';
 import { INK_GLSL } from './inkGlsl.js';
+import { assets } from './assets/registry.js';
+import { sandUniforms, SAND_PARS, SAND_COLOR, SAND_NORMAL_SAMPLE, SAND_NORMAL } from './sandMaterials.js';
+import { groundUniforms, GROUND_PARS, GROUND_SETUP, GROUND_EDGE_COLOR, GROUND_PATH_COLOR, GROUND_NORMAL_SAMPLE } from './groundMaterials.js';
+import { WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 
-export function createTerrain(map, { segments = 250 } = {}) {
+export function createTerrain(map, { segments = map.terrainRevision ? 320 : 250, assetRegistry = assets } = {}) {
   const size = map.size, half = size / 2;
   const n = segments + 1;
   const step = size / segments;
@@ -47,6 +51,8 @@ export function createTerrain(map, { segments = 250 } = {}) {
   geo.computeBoundingBox();
 
   const arena = map.landmarks.arena;
+  const sandFamily = sandUniforms(assetRegistry, map);
+  const groundFamily = groundUniforms(assetRegistry);
   const opts = {
     key: 'terrain',
     glowMask: 'mnGlowSrc',
@@ -54,7 +60,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
     hatchMask: '(1.0 - smoothstep(0.05, 0.35, vMask.w)) * (1.0 - smoothstep(0.0, 0.15, mnTerrainCrack)) * smoothstep(0.02, 0.12, vMnWorld.y)',
     vertPars: 'attribute vec4 aMask;\nvarying vec4 vMask;\nvarying vec3 vTN;\n',
     vertBody: 'vMask = aMask; vTN = normal;\n',
-    fragPars: /* glsl */ `
+    fragPars: CAUSTIC_PARS + /* glsl */ `
       varying vec4 vMask;
       varying vec3 vTN;
       uniform float mnLavaPulse;
@@ -67,10 +73,10 @@ export function createTerrain(map, { segments = 250 } = {}) {
       float caustic(vec2 p, float t) {
         float c1 = texture2D(mnNoiseTex, p * 0.055 + vec2(t * 0.011, t * 0.007)).g;
         float c2 = texture2D(mnNoiseTex, p * 0.075 - vec2(t * 0.009, -t * 0.012) + 0.41).g;
-        return pow(1.0 - min(c1, c2), 7.0);
+        return mnCausticMask(c1, c2);
       }
-    ` + INK_GLSL,
-    // Painted detail (P5) is albedo only, all from mnNoiseTex, and fades out with distance (mnDetailFade).
+    ` + INK_GLSL + SAND_PARS + GROUND_PARS,
+    // Painted sand, grass and road colour/normal blends retain procedural fallbacks.
     albedo: /* glsl */ `
       {
         vec3 wp = vMnWorld;
@@ -89,19 +95,18 @@ export function createTerrain(map, { segments = 250 } = {}) {
         vec3 rock = srgb(vec3(0.62, 0.57, 0.54));
         vec3 basalt = srgb(vec3(0.31, 0.26, 0.33));
         vec3 dirt = srgb(vec3(0.80, 0.63, 0.42));
-        vec3 col = sand * (0.96 + 0.06 * n1);
         float gh = h + (n1 - 0.5) * 0.35;
         float grassW = smoothstep(1.3, 1.75, gh);
         vec3 grass = mix(grassA, grassB, smoothstep(0.35, 0.65, n2));
         grass = mix(grass, grass * 1.12, step(0.68, texture2D(mnNoiseTex, wp.xz * 0.2).b) * 0.6);
-        col = mix(col, grass, grassW);
         float wetW = (1.0 - smoothstep(0.05, 0.5, h)) * (1.0 - grassW);
-        col = mix(col, wet, wetW);
+        ${GROUND_SETUP}
+        ${SAND_COLOR}
+        ${GROUND_EDGE_COLOR}
         // Rock on steep slopes.
         float rockW = smoothstep(0.28, 0.42, slope + (n1 - 0.5) * 0.08);
         col = mix(col, rock * (0.9 + 0.2 * n1), rockW);
         // Path / village dirt with flagstones: crisp ink joint, a light bevel inside each stone, a little hue per stone.
-        float pathW = vMask.x * smoothstep(0.25, 0.55, vMask.x + (n1 - 0.5) * 0.4);
         if (pathW > 0.001) {
           vec4 vs = texture2D(mnNoiseTex, wp.xz * 0.1125);
           vec3 stone = mix(dirt, srgb(vec3(0.88, 0.77, 0.58)), 0.55) * (0.88 + 0.24 * vs.a);
@@ -111,6 +116,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
           vec3 p = mix(dirt, stone, gap * isStone);
           p *= 1.0 + 0.08 * mnLine(abs(vs.g - 0.13), 0.035) * isStone * fade;
           p = mix(p, MN_INK, 0.7 * mnLine(vs.g, 0.085) * isStone * fade);
+          ${GROUND_PATH_COLOR}
           col = mix(col, p, pathW);
         }
         // Volcanic basalt; the upper cone gets layered rock strata with an ink line on each boundary.
@@ -127,8 +133,10 @@ export function createTerrain(map, { segments = 250 } = {}) {
         col = mix(col, MN_INK, 0.65 * mnCracks(wp, tn, 0.13, 0.03, 0.57, fade * crackW > 0.02) * crackW * fade);
         // Sand and grass painting: only where the ground is still plain (no rock, path, basalt, arena floor, lava).
         float plain = (1.0 - rockW) * (1.0 - pathW) * (1.0 - volcW) * (1.0 - vMask.z) * (1.0 - smoothstep(0.3, 0.8, vMask.w));
-        float sandW = plain * (1.0 - grassW) * smoothstep(0.25, 0.7, h);
-        float grassP = plain * grassW;
+        ${SAND_NORMAL_SAMPLE}
+        ${GROUND_NORMAL_SAMPLE}
+        float sandW = plain * (1.0 - grassW) * smoothstep(0.25, 0.7, h) * (1.0 - mnSandDryOn * sandOn);
+        float grassP = plain * grassW * (1.0 - mnGroundEnabled);
         if (fade * (sandW + grassP) > 0.02) {
           // Small cells (0.38 u): dark stipple dots on sand, a few darker ticks on grass.
           vec4 st = textureGrad(mnNoiseTex, wp.xz * 0.33, gp.xy * 0.33, gp.zw * 0.33);
@@ -151,7 +159,7 @@ export function createTerrain(map, { segments = 250 } = {}) {
         }
         // Dark rim where the grass meets the sand (contour of the grass mask at 0.5, ~0.25 u wide) so patches read as shapes.
         float tg = sqrt(max(1.0 - tn.y * tn.y, 0.0)) / max(tn.y, 0.3);
-        col *= 1.0 - 0.35 * mnLine(abs(gh - 1.525) / max(tg, 0.1), 0.125) * plain * fade;
+        col *= 1.0 - 0.35 * mnLine(abs(gh - 1.525) / max(tg, 0.1), 0.125) * plain * fade * (1.0 - mnGroundEnabled);
         // Arena floor: hexy basalt tiles with lava cracks. Seams become crisp ink with a light bevel, and an
         // outer band carries a greek-key border (polar cells, a whole number of periods around the circle).
         mnTerrainCrack = 0.0;
@@ -195,11 +203,12 @@ export function createTerrain(map, { segments = 250 } = {}) {
         if (h < 0.05 && mnTerrainCaustics > 0.5) {
           float d = clamp(-h, 0.0, 6.0);
           col *= mix(vec3(1.0), vec3(0.62, 0.86, 0.9), smoothstep(0.0, 2.5, d));
-          col += vec3(0.9, 1.0, 0.95) * caustic(wp.xz, mnTime) * 0.4 * (1.0 - smoothstep(0.2, 3.2, d)) * smoothstep(0.02, 0.25, d);
+          col += vec3(0.9, 1.0, 0.95) * caustic(wp.xz, mnTime) * mnCausticStrength * (1.0 - smoothstep(0.2, 3.2, d)) * smoothstep(0.02, 0.25, d);
         }
         diffuseColor.rgb = col;
       }
     `,
+    normal: SAND_NORMAL,
     emissive: /* glsl */ `
       {
         float pulse = 0.82 + 0.18 * sin(mnTime * 2.2 + vMnWorld.x * 0.3 + vMnWorld.z * 0.2);
@@ -216,11 +225,13 @@ export function createTerrain(map, { segments = 250 } = {}) {
         mnGlowSrc = lavaW * (1.0 - crust * 0.6) * 0.3 + mnTerrainCrack * hot;
       }
     `,
-    uniforms: { mnLavaPulse: { value: 1 }, mnArena: { value: new THREE.Vector3(arena.x, arena.z, map.landmarks.arenaR) } },
+    uniforms: { ...sandFamily.uniforms, ...groundFamily.uniforms, ...WATER_DETAIL_UNIFORMS, mnLavaPulse: { value: 1 }, mnArena: { value: new THREE.Vector3(arena.x, arena.z, map.landmarks.arenaR) } },
   };
   const mesh = toonMesh(geo, { color: 0xffffff }, opts);
   mesh.userData.nm = normalMatFor({});
   mesh.material.userData.lavaU = opts.uniforms.mnLavaPulse;
+  mesh.userData.sand = { loaded: sandFamily.loaded, uniforms: sandFamily.uniforms };
+  mesh.userData.ground = { loaded: groundFamily.loaded, uniforms: groundFamily.uniforms };
   mesh.receiveShadow = true;
   mesh.castShadow = false;
   mesh.name = 'terrain';

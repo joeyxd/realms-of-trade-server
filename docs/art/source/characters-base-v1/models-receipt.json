@@ -1,0 +1,604 @@
+{
+  "schema": "character-anatomy-v1/receipt-1",
+  "scope": "P02a: continuous parametric body, facial relief, cylindrical UVs and painted material study; production topology and gameplay acceptance pending.",
+  "sources": {
+    "generate.mjs": "8b7ca191763cee0ec421fa6fd1bba84bf46e0fd9d122c9db244a1c01221786de",
+    "body.mjs": "60b0c4152c888d9cac30ab0474e870d912702f895c61fae8f86572536d0e7fef",
+    "head.mjs": "6cb45fe12883704e537ccda82d73a9c879783bf79aa148ee48de833203f0113c",
+    "textures.mjs": "b19ac9eff9b84c62db173af68916a81ecebf73b707e8a89d4e6050624448b29c",
+    "inspect.mjs": "b99a78a3f61c5bfef47cc6084a74443c5a3d55475a1c5b5ba0bcdf83de24ef38"
+  },
+  "coordinates": {
+    "units": "meters",
+    "up": "+Y",
+    "front": "+Z",
+    "characterLeft": "+X"
+  },
+  "rig": {
+    "bones": [
+      "body",
+      "hips",
+      "thighL",
+      "shinL",
+      "thighR",
+      "shinR",
+      "spine",
+      "chest",
+      "head",
+      "armL",
+      "foreL",
+      "armR",
+      "foreR",
+      "clothF",
+      "clothB"
+    ],
+    "parent": {
+      "hips": "body",
+      "thighL": "hips",
+      "shinL": "thighL",
+      "thighR": "hips",
+      "shinR": "thighR",
+      "spine": "hips",
+      "chest": "spine",
+      "head": "chest",
+      "armL": "chest",
+      "foreL": "armL",
+      "armR": "chest",
+      "foreR": "armR",
+      "clothF": "hips",
+      "clothB": "hips"
+    },
+    "rest": "arms down, matching the local 15-joint convention"
+  },
+  "models": {
+    "male-base-v1.glb": {
+      "sha256": "7aceaae0640d7cac2a0850a873726988c4bf34bedc51e0e20bc838107ac1214a",
+      "bytes": 1387164,
+      "textureSize": 1024,
+      "triangles": 23844,
+      "heightMeters": 1.8582,
+      "bones": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 5321,
+          "triangles": 10532,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 1.7926,
+          "uvRange": "0..1",
+          "material": "body_paint"
+        },
+        {
+          "name": "head_base",
+          "vertices": 2759,
+          "triangles": 5032,
+          "components": 3,
+          "boundaryEdges": 56,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.21336,
+          "uvRange": "0..1",
+          "material": "head_paint"
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 996,
+          "triangles": 1448,
+          "components": 19,
+          "boundaryEdges": 506,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.00792,
+          "uvRange": "0..1",
+          "material": "neutral_eyes_and_accents"
+        },
+        {
+          "name": "base_top",
+          "vertices": 1909,
+          "triangles": 3720,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.68787,
+          "uvRange": "0..1",
+          "material": "top_paint"
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 1583,
+          "triangles": 3112,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.50774,
+          "uvRange": "0..1",
+          "material": "shorts_paint"
+        }
+      ],
+      "images": [
+        {
+          "name": "body_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 67261
+        },
+        {
+          "name": "head_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 93511
+        },
+        {
+          "name": "top_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 134162
+        },
+        {
+          "name": "shorts_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 134279
+        }
+      ],
+      "bindMatricesMatchRest": true,
+      "weightsNormalized": true,
+      "finiteData": true
+    },
+    "male-base-v1-mobile.glb": {
+      "sha256": "cfb64b730cbcda7e5cbba7d82a80e485ec0946af64aed3afa982ed358e1cd730",
+      "bytes": 1115952,
+      "textureSize": 512,
+      "triangles": 23844,
+      "heightMeters": 1.8582,
+      "bones": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 5321,
+          "triangles": 10532,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 1.7926,
+          "uvRange": "0..1",
+          "material": "body_paint"
+        },
+        {
+          "name": "head_base",
+          "vertices": 2759,
+          "triangles": 5032,
+          "components": 3,
+          "boundaryEdges": 56,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.21336,
+          "uvRange": "0..1",
+          "material": "head_paint"
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 996,
+          "triangles": 1448,
+          "components": 19,
+          "boundaryEdges": 506,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.00792,
+          "uvRange": "0..1",
+          "material": "neutral_eyes_and_accents"
+        },
+        {
+          "name": "base_top",
+          "vertices": 1909,
+          "triangles": 3720,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.68787,
+          "uvRange": "0..1",
+          "material": "top_paint"
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 1583,
+          "triangles": 3112,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.50774,
+          "uvRange": "0..1",
+          "material": "shorts_paint"
+        }
+      ],
+      "images": [
+        {
+          "name": "body_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 30392
+        },
+        {
+          "name": "head_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42969
+        },
+        {
+          "name": "top_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42229
+        },
+        {
+          "name": "shorts_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42433
+        }
+      ],
+      "bindMatricesMatchRest": true,
+      "weightsNormalized": true,
+      "finiteData": true
+    },
+    "female-base-v1.glb": {
+      "sha256": "913fa2e460bb1c62f395790aa0746e8dae6c3db52dedd6939bf5c0a368d000d0",
+      "bytes": 1362008,
+      "textureSize": 1024,
+      "triangles": 23182,
+      "heightMeters": 1.831,
+      "bones": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 4999,
+          "triangles": 9890,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 1.69947,
+          "uvRange": "0..1",
+          "material": "body_paint"
+        },
+        {
+          "name": "head_base",
+          "vertices": 2759,
+          "triangles": 5032,
+          "components": 3,
+          "boundaryEdges": 56,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.21133,
+          "uvRange": "0..1",
+          "material": "head_paint"
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 996,
+          "triangles": 1448,
+          "components": 19,
+          "boundaryEdges": 506,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.00759,
+          "uvRange": "0..1",
+          "material": "neutral_eyes_and_accents"
+        },
+        {
+          "name": "base_top",
+          "vertices": 1933,
+          "triangles": 3768,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.68854,
+          "uvRange": "0..1",
+          "material": "top_paint"
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 1550,
+          "triangles": 3044,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.4999,
+          "uvRange": "0..1",
+          "material": "shorts_paint"
+        }
+      ],
+      "images": [
+        {
+          "name": "body_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 67261
+        },
+        {
+          "name": "head_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 93511
+        },
+        {
+          "name": "top_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 134162
+        },
+        {
+          "name": "shorts_paint_1024",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 134279
+        }
+      ],
+      "bindMatricesMatchRest": true,
+      "weightsNormalized": true,
+      "finiteData": true
+    },
+    "female-base-v1-mobile.glb": {
+      "sha256": "b5fb67a7ba7ae4ae4e2cadb3fa0961b8bf64cbd72e85114cc23d6da53b46a7d2",
+      "bytes": 1090800,
+      "textureSize": 512,
+      "triangles": 23182,
+      "heightMeters": 1.831,
+      "bones": [
+        "body",
+        "hips",
+        "thighL",
+        "shinL",
+        "thighR",
+        "shinR",
+        "spine",
+        "chest",
+        "head",
+        "armL",
+        "foreL",
+        "armR",
+        "foreR",
+        "clothF",
+        "clothB"
+      ],
+      "meshes": [
+        {
+          "name": "body_base",
+          "vertices": 4999,
+          "triangles": 9890,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 1.69947,
+          "uvRange": "0..1",
+          "material": "body_paint"
+        },
+        {
+          "name": "head_base",
+          "vertices": 2759,
+          "triangles": 5032,
+          "components": 3,
+          "boundaryEdges": 56,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.21133,
+          "uvRange": "0..1",
+          "material": "head_paint"
+        },
+        {
+          "name": "eyes_base",
+          "vertices": 996,
+          "triangles": 1448,
+          "components": 19,
+          "boundaryEdges": 506,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.00759,
+          "uvRange": "0..1",
+          "material": "neutral_eyes_and_accents"
+        },
+        {
+          "name": "base_top",
+          "vertices": 1933,
+          "triangles": 3768,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.68854,
+          "uvRange": "0..1",
+          "material": "top_paint"
+        },
+        {
+          "name": "base_shorts",
+          "vertices": 1550,
+          "triangles": 3044,
+          "components": 1,
+          "boundaryEdges": 0,
+          "nonManifoldEdges": 0,
+          "degenerateTriangles": 0,
+          "trianglesAgainstNormals": 0,
+          "badNormals": 0,
+          "surfaceAreaMeters2": 0.4999,
+          "uvRange": "0..1",
+          "material": "shorts_paint"
+        }
+      ],
+      "images": [
+        {
+          "name": "body_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 30392
+        },
+        {
+          "name": "head_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42969
+        },
+        {
+          "name": "top_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42229
+        },
+        {
+          "name": "shorts_paint_512",
+          "width": 512,
+          "height": 512,
+          "bytes": 42433
+        }
+      ],
+      "bindMatricesMatchRest": true,
+      "weightsNormalized": true,
+      "finiteData": true
+    }
+  },
+  "textures": {
+    "body-paint-512.png": {
+      "size": 512,
+      "bytes": 30392,
+      "sha256": "28d9393600970a10ee3ddcd8196f7a927514440dc2f3c2ad4f613aa328ce10cb"
+    },
+    "body-paint-1024.png": {
+      "size": 1024,
+      "bytes": 67261,
+      "sha256": "1771cb4f5ca421186cf8c211932c818c77eb9dcdf0e550770a4aa6a6dda71224"
+    },
+    "head-paint-512.png": {
+      "size": 512,
+      "bytes": 42969,
+      "sha256": "b455a372b8e09b54e4c36f8b56dcbef7b315ca178e7cf68c904f31f73265fec8"
+    },
+    "head-paint-1024.png": {
+      "size": 1024,
+      "bytes": 93511,
+      "sha256": "75c8c4b29e46f41efb2d5d2f7999b2f7cd9fd1af6a607f915c7cb32941c22b43"
+    },
+    "top-paint-512.png": {
+      "size": 512,
+      "bytes": 42229,
+      "sha256": "9783d426bb301492bba2d8b0d4bdcb7d72658642529853a6de6ca44c1513aba8"
+    },
+    "top-paint-1024.png": {
+      "size": 1024,
+      "bytes": 134162,
+      "sha256": "f2c0f773c02343a76f0baa717949754e005b35b46af96159a2a6e98318b978a5"
+    },
+    "shorts-paint-512.png": {
+      "size": 512,
+      "bytes": 42433,
+      "sha256": "4542863992150167397092a3c899ba48207f965aa047e4ba938fdc4a0230255e"
+    },
+    "shorts-paint-1024.png": {
+      "size": 1024,
+      "bytes": 134279,
+      "sha256": "a1c71518ee85ab35346d6f74bd1d10156dbebacf2c9cafa360b808aecc023ddd"
+    }
+  },
+  "limitations": [
+    "Implicit body topology is editable as source parameters; it is not an artist-retopologized quad mesh.",
+    "Head ears and facial overlays are separate connected components; neck is a controlled overlapping attachment.",
+    "Cylindrical UVs allow mapping and preview; they are not a production packed atlas with uniform texel density.",
+    "Four modest procedural painted maps are material studies, not painted versions of the concept sheets.",
+    "No hair, beards, equipment, animation clips, facial rig, saved appearance, game renderer integration or measured physical-device FPS."
+  ]
+}

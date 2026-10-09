@@ -1,14 +1,17 @@
 // Server authority for the small, explicit raft construction palette.
 import { C } from '../ecs.js';
 import { SLOTS, slotSkill } from '../../data/tattoos.js';
-import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
+import { RAFT, RAFT_PARTS, RAFT_REINFORCEMENT } from '../../data/raftparts.js';
 import { tuning } from '../../data/tuning.js';
 import { EDITOR_PARTS, EDITOR_RADIUS } from '../../data/raftEditor.js';
-import { load, unload, holdUsed, roomFor, newHold } from '../economy/cargo.js';
+import { load, unload, holdUsed, roomFor, newHold, goodMass } from '../economy/cargo.js';
+import { raftCapacity } from '../economy/raftCapacity.js';
 import { place, remove, raftStats } from '../economy/raft.js';
 import { publicRafts } from './rafts.js';
 import { raftGangplank } from '../raftGeometry.js';
 import { sanitizeProduction, productionKey } from '../economy/raftProduction.js';
+import { repairPart, repairPartCost, salvagePartCost, liveStructureParts } from '../naval/structure.js';
+import { activeRaftParts, encodeRaftCondition, persistRaftCondition, raftConditionEntry, refitRaftCondition } from '../naval/condition.js';
 
 const allowed = new Set(EDITOR_PARTS);
 const MAX_REV = 2147483647;
@@ -25,7 +28,7 @@ function answer(w, e, msg, ok, why, rev, record = null, extra = null) {
   const out = { type: 'raftEdit', to: e,
     id: typeof msg?.id === 'string' ? msg.id.slice(0, 120) : '',
     opId: typeof msg?.opId === 'string' && OP_ID.test(msg.opId) ? msg.opId : '',
-    op: ['place', 'remove', 'quote', 'supply'].includes(msg?.op) ? msg.op : '', ok, why, rev };
+    op: ['place', 'remove', 'reinforce', 'repair', 'quote', 'supply'].includes(msg?.op) ? msg.op : '', ok, why, rev };
   if (record) out.record = record;
   if (extra) Object.assign(out, extra);
   w.emit(out);
@@ -50,7 +53,7 @@ function nearEditPoint(w, e, r) {
   const nearPoint = (ecs.x[e] - x) ** 2 + (ecs.z[e] - z) ** 2 <= EDITOR_RADIUS ** 2;
   if (!nearPoint) return false;
   const plank = publicRafts(w).find((q) => q.id === r.ship.id);
-  const join = plank && raftGangplank(plank, w.map.dock);
+  const join = plank && raftGangplank({ ...plank, parts: r.ship.grid.parts }, w.map.dock);
   return !!join && (ecs.x[e] - join.x) ** 2 + (ecs.z[e] - join.z) ** 2 <= 2.5 ** 2;
 }
 
@@ -230,7 +233,7 @@ function creditAfterRemoval(shipHold, pack, cap, cost) {
     nextHold.cap = cap;
     let fits = true;
     for (const [g, n] of Object.entries(cost)) {
-      const refund = Math.floor(n * RAFT.refund);
+      const refund = n;
       if (!refund) continue;
       const intoHold = Math.min(refund, spaceForUnits(nextHold, g));
       if (intoHold) load(nextHold, g, intoHold);
@@ -256,9 +259,13 @@ function reject(w, e, msg, why, ship, stale = false) {
 export function raftCmd(w, e, msg, saveFits = () => true) {
   const reading = msg?.op === 'quote';
   if (!msg || (msg.cmd !== 'raft' && msg.type !== 'raft') || (!reading && (typeof msg.opId !== 'string' || !OP_ID.test(msg.opId))) || typeof msg.id !== 'string' || msg.id.length > 120
-      || !['place', 'remove', 'quote', 'supply'].includes(msg.op) || !Number.isSafeInteger(msg.expectedRev))
+      || !['place', 'remove', 'reinforce', 'repair', 'quote', 'supply'].includes(msg.op) || !Number.isSafeInteger(msg.expectedRev))
+    return reject(w, e, msg, 'command');
+  if (msg.op === 'repair' && Object.keys(msg).some((key) =>
+    !['t', 'cmd', 'type', 'op', 'id', 'expectedRev', 'opId', 'index', 'piece', 'partId', 'expectedHp'].includes(key)))
     return reject(w, e, msg, 'command');
   const profile = w.profiles?.get(e);
+  if (w.navalPilot?.locked?.(e)) return reject(w, e, msg, 'busy');
   if (!profile?.eco || !w.ecs.alive[e] || w.ecs.dead[e] > 0) return reject(w, e, msg, 'dead');
   const ecs = w.ecs;
   if (ecs.dashT[e] >= 0 || ecs.dashBuffer[e] > 0 || ecs.castK[e] > 0 || ecs.castLock[e] > 0 || ecs.moveMag[e] > 1e-6
@@ -270,7 +277,8 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   const ship = active.ship, hold = cloneHold(ship.hold), pack = cloneHold(profile.eco.pack);
   const cache = receiptMap(w, e), signature = JSON.stringify([msg.id, msg.op, msg.expectedRev,
     tuple(msg.piece) ? msg.piece : null, Number.isSafeInteger(msg.index) ? msg.index : null,
-    typeof msg.g === 'string' ? msg.g : null, Number.isSafeInteger(msg.n) ? msg.n : null]), prior = !reading && cache.get(msg.opId);
+    typeof msg.g === 'string' ? msg.g : null, Number.isSafeInteger(msg.n) ? msg.n : null,
+    typeof msg.partId === 'string' ? msg.partId : null, Number.isFinite(msg.expectedHp) ? msg.expectedHp : null]), prior = !reading && cache.get(msg.opId);
   if (prior) {
     if (prior.signature !== signature)
       return reject(w, e, msg, 'duplicate', active.ship);
@@ -288,6 +296,37 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     });
     return answer(w, e, msg, true, '', active.ship.rev, null, { supplies });
   }
+  if (msg.op === 'repair') {
+    if (!Number.isSafeInteger(msg.index) || !sameTuple(ship.grid.parts[msg.index], msg.piece))
+      return reject(w, e, msg, 'piece', ship);
+    const entry = raftConditionEntry(active, msg.index);
+    if (!entry?.id || typeof msg.partId !== 'string' || msg.partId !== entry.id)
+      return reject(w, e, msg, 'condition', ship);
+    if (entry.hp === entry.maxHp) return reject(w, e, msg, 'healthy', ship);
+    if (typeof msg.expectedHp !== 'number' || !Number.isFinite(msg.expectedHp) || msg.expectedHp !== entry.hp)
+      return reject(w, e, msg, 'condition', ship);
+    const cost = repairPartCost(entry);
+    if (!debit(cost, hold, pack)) return reject(w, e, msg, 'goods', ship);
+    const repaired = repairPart(active.condition, entry.id), parts = liveStructureParts(repaired.structure);
+    if (!fitsLayout(w, active, parts)) return reject(w, e, msg, 'layout', ship);
+    if (!safeForOccupants(w, active, parts)) return reject(w, e, msg, 'occupied', ship);
+    const candidate = { ...profile, eco: { ...profile.eco, pack,
+      ships: profile.eco.ships.map((s) => s === ship ? { ...s, hold, rev: s.rev + 1,
+        condition: encodeRaftCondition(repaired.structure, active.conditionNext) } : s) } };
+    let fits = false;
+    try { fits = saveFits(candidate) === true; } catch { /* Preserve goods and condition on preflight failure. */ }
+    if (!fits) return reject(w, e, msg, 'saveSize', ship);
+    // Condition and debit are admitted together; retry returns this receipt without restoring twice.
+    active.condition = repaired.structure;
+    persistRaftCondition(active);
+    ship.hold = hold; profile.eco.pack = pack; ship.rev++;
+    w.raftDeck.update(publicRafts(w)); w.profileDirty?.add(e);
+    const ack = answer(w, e, msg, true, '', ship.rev, null,
+      { repair: { partId: entry.id, hp: entry.maxHp, maxHp: entry.maxHp, cost, reconstructed: repaired.event.reconstructed } });
+    cache.set(msg.opId, { signature, ack });
+    while (cache.size > RECEIPTS_PER_OWNER) cache.delete(cache.keys().next().value);
+    return ack;
+  }
   if (msg.op === 'supply') {
     if (!['madera', 'hierro'].includes(msg.g) || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 10)
       return reject(w, e, msg, 'market', active.ship);
@@ -296,9 +335,10 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (!q?.ok) return reject(w, e, msg, q?.why === 'stock' ? 'stock' : 'market', active.ship);
     if (profile.gold < q.total) return reject(w, e, msg, 'gold', active.ship);
     const unitWeight = holdUsed({ cap: 1e9, goods: { [msg.g]: 1 } });
-    const available = roomFor(hold, msg.g) + roomFor(pack, msg.g);
+    const holdRoom = Math.min(roomFor(hold, msg.g), Math.max(0, Math.floor((raftCapacity(activeRaftParts(active), hold).freeMass + 1e-8) / goodMass(msg.g))));
+    const available = holdRoom + roomFor(pack, msg.g);
     if (available < msg.n) return reject(w, e, msg, 'room', active.ship);
-    const inHold = Math.min(msg.n, roomFor(hold, msg.g));
+    const inHold = Math.min(msg.n, holdRoom);
     if ((inHold && !load(hold, msg.g, inHold)) || (msg.n > inHold && !load(pack, msg.g, msg.n - inHold)))
       return reject(w, e, msg, 'room', active.ship);
     const candidate = { ...profile, gold: profile.gold - q.total, eco: { ...profile.eco, pack,
@@ -321,7 +361,14 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   }
   const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
   let why = '';
-  if (msg.op === 'place') {
+  if (msg.op === 'reinforce') {
+    if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !sameTuple(ship.grid.parts[msg.index], msg.piece))
+      return reject(w, e, msg, 'piece', ship);
+    if (msg.piece[0] === 'reinforcedFoundation') return reject(w, e, msg, 'reinforced', ship);
+    if (msg.piece[0] !== 'foundation') return reject(w, e, msg, 'piece', ship);
+    if (!debit(RAFT_REINFORCEMENT, hold, pack)) return reject(w, e, msg, 'goods', ship);
+    grid.parts[msg.index][0] = 'reinforcedFoundation';
+  } else if (msg.op === 'place') {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
     const [id, x, z, level, dir] = msg.piece;
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
@@ -337,27 +384,38 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (holdUsed(hold) > cap) return reject(w, e, msg, 'room', ship);
     hold.cap = cap;
   } else {
-    if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !allowed.has(msg.piece[0])
+    if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !(allowed.has(msg.piece[0]) || msg.piece[0] === 'reinforcedFoundation')
         || !sameTuple(ship.grid.parts[msg.index], msg.piece)) return reject(w, e, msg, 'piece', ship);
     const removed = grid.parts[msg.index];
     delete grid.work[productionKey(removed)];
     why = remove(grid, msg.index, null);
     if (why) return reject(w, e, msg, why, ship);
     const cap = raftStats(grid).hold;
-    if (!creditAfterRemoval(hold, pack, cap, RAFT_PARTS[removed[0]].cost)) return reject(w, e, msg, 'room', ship);
+    if (!creditAfterRemoval(hold, pack, cap, salvagePartCost(raftConditionEntry(active, msg.index)))) return reject(w, e, msg, 'room', ship);
   }
   grid.work = sanitizeProduction(grid.parts, grid.work);
+  let condition;
+  try { condition = active.condition ? refitRaftCondition(active, grid.parts,
+    { reinforceIndex: msg.op === 'reinforce' ? msg.index : -1 }) : null; }
+  catch (error) {
+    if (error instanceof RangeError) return reject(w, e, msg, 'revisionLimit', ship);
+    throw error;
+  }
+  const liveParts = condition ? liveStructureParts(condition.structure) : grid.parts;
   const priorPublic = publicRafts(w).find((q) => q.id === ship.id);
   if (priorPublic && raftGangplank(priorPublic, w.map.dock) && !raftGangplank({ ...priorPublic, parts: grid.parts }, w.map.dock))
     return reject(w, e, msg, 'layout', ship);
   if (!fitsLayout(w, active, grid.parts)) return reject(w, e, msg, 'layout', ship);
-  if (!safeForOccupants(w, active, grid.parts)) return reject(w, e, msg, 'occupied', ship);
+  if (!safeForOccupants(w, active, liveParts)) return reject(w, e, msg, 'occupied', ship);
   const candidate = { ...profile, eco: { ...profile.eco, pack,
-    ships: profile.eco.ships.map((s) => s === ship ? { ...s, grid, hold, rev: s.rev + 1 } : s) } };
+    ships: profile.eco.ships.map((s) => s === ship ? { ...s, grid, hold, rev: s.rev + 1,
+      ...(condition ? { condition: encodeRaftCondition(condition.structure, condition.nextId) } : {}) } : s) } };
   if (!saveFits(candidate)) return reject(w, e, msg, 'saveSize', ship);
 
   // Everything above operates on clones; this synchronous commit is the only mutation point.
   ship.grid = grid;
+  if (condition) { active.condition = condition.structure; active.conditionNext = condition.nextId; }
+  persistRaftCondition(active);
   ship.hold = hold;
   ship.rev++;
   profile.eco.pack = pack;

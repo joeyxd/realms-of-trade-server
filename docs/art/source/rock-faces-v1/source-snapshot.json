@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "family": "rock-faces-v1",
+  "policy": "Before is the exact file copied before S12. After is exact final live source bytes. --check verifies historical copies without refreshing from future live source.",
+  "files": [
+    {
+      "phase": "before",
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/rock-faces-v1/before/vegetation.source.js",
+      "bytes": 18979,
+      "sha256": "e059a8fc226c3dcfb86378a78d0bfa7b9d6f7d09179dcc881ba30053dd0686b0"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/rockMaterials.js",
+      "snapshot": "docs/art/source/rock-faces-v1/after/rockMaterials.js",
+      "bytes": 3208,
+      "sha256": "6276f88d278c4633310ac25e48af77f79462ffe6b3e0cf10ad1c740689d44693"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/rock-faces-v1/after/vegetation.js",
+      "bytes": 18909,
+      "sha256": "b72f442d7d88106cb26698ae7222916a0314dd47e79f4ca9fd902de3dad5d5af"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-rock-faces.playwright.js",
+      "snapshot": "docs/art/source/rock-faces-v1/after/qa-rock-faces.playwright.js",
+      "bytes": 6581,
+      "sha256": "b2ee39f5e35a973f3731f810e2a2a706b3b43a0022c09a94057f485c9eb6b1fe"
+    },
+    {
+      "phase": "after",
+      "source": "tests/rock-materials.test.mjs",
+      "snapshot": "docs/art/source/rock-faces-v1/after/rock-materials.test.mjs",
+      "bytes": 7606,
+      "sha256": "1cd3260e7d2e3fca9e5cd137c8d1e7d10f3adaf8820e3f47c3807c0bb8d9a4df"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-rock-faces-sources.mjs",
+      "snapshot": "docs/art/source/rock-faces-v1/after/prepare-rock-faces-sources.mjs",
+      "bytes": 2961,
+      "sha256": "5edcef0653d6c952ee925283c82cebbb5264a449178152ad045d2c46c3cf2e37"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-rock-faces-catalog.mjs",
+      "snapshot": "docs/art/source/rock-faces-v1/after/register-rock-faces-catalog.mjs",
+      "bytes": 4509,
+      "sha256": "379b754f00fee629440cbad9d93e272411e047231560c35de4f77dc0a498a6f7"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-rock-faces-catalog.mjs",
+      "snapshot": "docs/art/source/rock-faces-v1/after/verify-rock-faces-catalog.mjs",
+      "bytes": 3352,
+      "sha256": "13bfe20c75689ae107921dc4cec5f61ec19cdb3b36150b63c8e0fe025d904f06"
+    },
+    {
+      "phase": "after",
+      "source": "tools/rock-faces-evidence.mjs",
+      "snapshot": "docs/art/source/rock-faces-v1/after/rock-faces-evidence.mjs",
+      "bytes": 8521,
+      "sha256": "c01459dcce6cb70a528b1ef58130743460d3bbf73db5f08711a278dbeebbc34e"
+    }
+  ]
+}

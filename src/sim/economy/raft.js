@@ -6,7 +6,7 @@
 //
 // A piece: [id, x, z, level, dir]. dir: edges only, 0 north (−z side of the cell), 1 east (+x), 2 south, 3 west.
 import { RAFT, RAFT_PARTS, STARTER_RAFT } from '../../data/raftparts.js';
-import { load, unload, holdUsed } from './cargo.js';
+import { load, unload, holdMass } from './cargo.js';
 import { sanitizeProduction } from './raftProduction.js';
 
 const key = (x, z, l) => `${x},${z},${l}`;
@@ -134,7 +134,7 @@ function connected(parts) {
   return seen.size === cells.length;
 }
 
-// What the raft does. cargo: the hold's goods weigh too (half their space). Returns { cells, buoyancy, weight, load
+// What the raft does. Cargo uses its catalog mass, independently of storage volume. Returns { cells, buoyancy, weight, load
 // (weight / buoyancy: over 1 it rides low and slows), hold (space), speed (leagues per game hour, like
 // data/ships.js), sail, engines, crew, turrets, research, light, anchor, respawn, makes {g: per day},
 // needs {g: per day} }.
@@ -156,7 +156,7 @@ export function raftStats(raft, cargo = null) {
     }
     for (const [g, n] of Object.entries(P.needs || {})) s.needs[g] = (s.needs[g] || 0) + n;
   }
-  if (cargo) s.weight += holdUsed(cargo) * 0.5;
+  if (cargo) s.weight += holdMass(cargo);
   s.load = s.buoyancy ? s.weight / s.buoyancy : 99;
   const power = s.sail + s.engines;
   let v = (RAFT.bareSpeed + 2.2 * power) / Math.sqrt(Math.max(1, s.weight / 40));

@@ -1,0 +1,2182 @@
+{
+  "generatedAt": "2026-10-08T03:38:35.021Z",
+  "purpose": "Check that excessive cargo blocks a new helm mount, an in-place reinforced foundation changes the authoritative limit, and the saved plan survives signed guest reentry.",
+  "harness": "Fresh isolated ephemeral GameHost and memory store per viewport, GAME.seed, local Three.js/GSAP routes, normal Chrome renderer, no .env, SQL, external hosts, or persistent browser storage. Browser is not launched by this script until explicitly run.",
+  "fixture": "Fresh starter raft. QA fixture puts hierro:1 in hold and madera:1+piedra:3 in backpack (cargo 21 uM; hold 3 uV, backpack 9 uV), preserves gold and other goods. Reinforcement spends exactly 1 madera+1 hierro, leaving piedra:3 (12 uM). Inventory injection is setup only, not a reward or balance claim.",
+  "expected": {
+    "before": {
+      "dryMass": 21,
+      "structuralLimit": 40,
+      "safeDisplacement": 50.4,
+      "totalLimit": 40,
+      "crewMass": 3,
+      "cargoMass": 21,
+      "totalMass": 45,
+      "overMass": 5,
+      "status": "overloaded"
+    },
+    "after": {
+      "dryMass": 22,
+      "structuralLimit": 44,
+      "safeDisplacement": 50.4,
+      "totalLimit": 44,
+      "crewMass": 3,
+      "cargoMass": 12,
+      "totalMass": 37,
+      "freeMass": 7,
+      "status": "ready"
+    }
+  },
+  "protocolVersion": 24,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "load-limits-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-00-overloaded-before.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-01-overloaded-warning.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-02-reinforce-forecast.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-03-reinforced-plan.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-03b-reinforced-deck-canvas-only.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-04-sailing-after-refit.png"
+      ],
+      "initialGold": 0,
+      "fixture": {
+        "shipId": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+        "hold": {
+          "hierro": 1
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "goldPreserved": true,
+        "helmAnchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "cameraSnapForAcceptance": true,
+        "ownerPosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "seed": 99282957
+      },
+      "before": {
+        "capacity": {
+          "id": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+          "raftRev": 2,
+          "tradeRev": 1,
+          "mode": "port",
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "load": 0.8035714285714286,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "hold": {
+          "hierro": 1
+        },
+        "gold": 0,
+        "shipRev": 2,
+        "authoritative": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 1
+        }
+      },
+      "mountDenied": {
+        "event": {
+          "type": "navalPilot",
+          "to": 26,
+          "op": "mount",
+          "ok": false,
+          "why": "capacity",
+          "epoch": 0,
+          "active": false
+        },
+        "active": false,
+        "voyage": false,
+        "notice": "Porte excedido. Reduce carga o amplía/refuerza el casco antes de zarpar."
+      },
+      "overloadWarning": {
+        "text": "",
+        "classes": "",
+        "liveWarning": ""
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.05643520452546857,
+          "z": 0.05655334935038777
+        },
+        "blend": false
+      },
+      "reinforcementPreview": {
+        "cell": [
+          0,
+          0
+        ],
+        "point": {
+          "x": 529.3516002882927,
+          "y": 397.07959351848524
+        },
+        "forecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10
+          }
+        },
+        "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+        "button": "Confirmar refuerzo",
+        "rect": {
+          "x": 972,
+          "y": 161.5,
+          "right": 1254,
+          "bottom": 289.25,
+          "width": 282,
+          "height": 127.75
+        },
+        "actionRect": {
+          "x": 1132.265625,
+          "y": 415.75,
+          "right": 1254,
+          "bottom": 472,
+          "width": 121.734375,
+          "height": 56.25
+        },
+        "editorScroll": [
+          {
+            "root": {
+              "x": 958,
+              "y": 12,
+              "right": 1268,
+              "bottom": 486,
+              "width": 310,
+              "height": 474
+            },
+            "forecast": {
+              "x": 972,
+              "y": 161.5,
+              "right": 1254,
+              "bottom": 289.25,
+              "width": 282,
+              "height": 127.75
+            },
+            "button": {
+              "x": 1132.265625,
+              "y": 415.75,
+              "right": 1254,
+              "bottom": 472,
+              "width": 121.734375,
+              "height": 56.25
+            },
+            "scrollTop": 0,
+            "scrollHeight": 470,
+            "clientHeight": 470,
+            "visible": true,
+            "rotated": false
+          }
+        ],
+        "attempts": [
+          {
+            "cell": [
+              0,
+              0
+            ],
+            "screen": {
+              "x": 529.3516002882927,
+              "y": 397.07959351848524
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 0,
+              "level": 0,
+              "dir": 0
+            },
+            "disabled": false,
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 15,
+                "cargoMass": 21,
+                "totalMass": 45,
+                "buoyancy": 56,
+                "cargoMax": 16,
+                "structuralLimit": 40,
+                "safeDisplacement": 50.4,
+                "totalLimit": 40,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 0,
+                "overMass": 5,
+                "status": "overloaded",
+                "load": 0.8035714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 9,
+                "packFree": 1,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 0,
+                "packMass": 12,
+                "cargoMass": 12,
+                "totalMass": 37,
+                "buoyancy": 56,
+                "cargoMax": 19,
+                "structuralLimit": 44,
+                "safeDisplacement": 50.4,
+                "totalLimit": 44,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 7,
+                "overMass": 0,
+                "status": "ready",
+                "load": 0.6607142857142857,
+                "holdVolume": 0,
+                "holdFree": 6,
+                "holdCap": 6,
+                "packVolume": 6,
+                "packFree": 4,
+                "packCap": 10
+              },
+              "state": "valid",
+              "target": {
+                "index": 0,
+                "p": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+            "button": "Confirmar refuerzo"
+          }
+        ]
+      },
+      "reinforcement": {
+        "interaction": "mouse click on Confirmar refuerzo",
+        "sentAck": {
+          "send": {
+            "type": "raft",
+            "op": "reinforce",
+            "id": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+            "expectedRev": 2,
+            "opId": "b4159b9b-8295-4cfc-9477-801105f50402",
+            "index": 0,
+            "piece": [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "ack": {
+            "type": "raftEdit",
+            "op": "reinforce",
+            "ok": true,
+            "why": "",
+            "rev": 3,
+            "opId": "b4159b9b-8295-4cfc-9477-801105f50402"
+          },
+          "clicks": 1
+        },
+        "clicks": 1,
+        "before": {
+          "shipRev": 2,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 2,
+            "tradeRev": 1
+          }
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        },
+        "authoritativeAfter": {
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 1
+        }
+      },
+      "reinforcedDeckCloseup": {
+        "file": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-desktop-1280x720-03b-reinforced-deck-canvas-only.png",
+        "canvas": {
+          "width": 1280,
+          "height": 720,
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "overlayExcluded": true,
+        "previewGhostHiddenForCapture": true,
+        "method": "temporarily hide only DOM overlay and editor preview ghost while capturing the live raft canvas"
+      },
+      "savedProfileBlobBytes": 1350,
+      "reentry": {
+        "signedProfileRestored": true,
+        "blobBytes": 1350,
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        }
+      },
+      "mountAccepted": {
+        "event": {
+          "op": "mount",
+          "ok": true,
+          "epoch": 1,
+          "active": true,
+          "shipId": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+          "ack": 0
+        },
+        "capacity": {
+          "id": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+          "raftRev": 3,
+          "tradeRev": 1,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "load": 0.6607142857142857,
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10
+        },
+        "voyage": {
+          "active": true,
+          "shipId": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": true,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "naval": {
+          "epoch": 1,
+          "active": true,
+          "seq": 3,
+          "ack": 0,
+          "shipId": "f58b2cf3-16a6-4d51-940f-40649c7e7ab5:r1",
+          "authorityTick": 1044
+        }
+      }
+    },
+    {
+      "name": "load-limits-mobile-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-00-overloaded-before.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-01-overloaded-warning.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-02-reinforce-forecast.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-03-reinforced-plan.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-03b-reinforced-deck-canvas-only.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-04-sailing-after-refit.png"
+      ],
+      "initialGold": 0,
+      "fixture": {
+        "shipId": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+        "hold": {
+          "hierro": 1
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "goldPreserved": true,
+        "helmAnchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "cameraSnapForAcceptance": true,
+        "ownerPosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "seed": 99282957
+      },
+      "before": {
+        "capacity": {
+          "id": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+          "raftRev": 2,
+          "tradeRev": 1,
+          "mode": "port",
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "load": 0.8035714285714286,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "hold": {
+          "hierro": 1
+        },
+        "gold": 0,
+        "shipRev": 2,
+        "authoritative": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 1
+        }
+      },
+      "mountDenied": {
+        "event": {
+          "type": "navalPilot",
+          "to": 26,
+          "op": "mount",
+          "ok": false,
+          "why": "capacity",
+          "epoch": 0,
+          "active": false
+        },
+        "active": false,
+        "voyage": false,
+        "notice": "Porte excedido. Reduce carga o amplía/refuerza el casco antes de zarpar."
+      },
+      "overloadWarning": {
+        "text": "",
+        "classes": "",
+        "liveWarning": ""
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.027291367523566073,
+          "z": -0.07373538587929299
+        },
+        "blend": false
+      },
+      "reinforcementPreview": {
+        "cell": [
+          0,
+          0
+        ],
+        "point": {
+          "x": 360.0936074513317,
+          "y": 217.41180959892392
+        },
+        "forecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10
+          }
+        },
+        "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+        "button": "Confirmar refuerzo",
+        "rect": {
+          "x": 570,
+          "y": 97,
+          "right": 830,
+          "bottom": 221.53125,
+          "width": 260,
+          "height": 124.53125
+        },
+        "actionRect": {
+          "x": 718.390625,
+          "y": 336.53125,
+          "right": 830,
+          "bottom": 376.53125,
+          "width": 111.609375,
+          "height": 40
+        },
+        "editorScroll": [
+          {
+            "root": {
+              "x": 561,
+              "y": 5,
+              "right": 839,
+              "bottom": 385,
+              "width": 278,
+              "height": 380
+            },
+            "forecast": {
+              "x": 570,
+              "y": 97,
+              "right": 830,
+              "bottom": 221.53125,
+              "width": 260,
+              "height": 124.53125
+            },
+            "button": {
+              "x": 718.390625,
+              "y": 336.53125,
+              "right": 830,
+              "bottom": 376.53125,
+              "width": 111.609375,
+              "height": 40
+            },
+            "scrollTop": 41,
+            "scrollHeight": 418,
+            "clientHeight": 376,
+            "visible": true,
+            "rotated": false
+          }
+        ],
+        "attempts": [
+          {
+            "cell": [
+              0,
+              0
+            ],
+            "screen": {
+              "x": 360.0936074513317,
+              "y": 217.41180959892392
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 0,
+              "level": 0,
+              "dir": 0
+            },
+            "disabled": false,
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 15,
+                "cargoMass": 21,
+                "totalMass": 45,
+                "buoyancy": 56,
+                "cargoMax": 16,
+                "structuralLimit": 40,
+                "safeDisplacement": 50.4,
+                "totalLimit": 40,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 0,
+                "overMass": 5,
+                "status": "overloaded",
+                "load": 0.8035714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 9,
+                "packFree": 1,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 0,
+                "packMass": 12,
+                "cargoMass": 12,
+                "totalMass": 37,
+                "buoyancy": 56,
+                "cargoMax": 19,
+                "structuralLimit": 44,
+                "safeDisplacement": 50.4,
+                "totalLimit": 44,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 7,
+                "overMass": 0,
+                "status": "ready",
+                "load": 0.6607142857142857,
+                "holdVolume": 0,
+                "holdFree": 6,
+                "holdCap": 6,
+                "packVolume": 6,
+                "packFree": 4,
+                "packCap": 10
+              },
+              "state": "valid",
+              "target": {
+                "index": 0,
+                "p": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+            "button": "Confirmar refuerzo"
+          }
+        ]
+      },
+      "reinforcement": {
+        "interaction": "touch tap on Confirmar refuerzo",
+        "sentAck": {
+          "send": {
+            "type": "raft",
+            "op": "reinforce",
+            "id": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+            "expectedRev": 2,
+            "opId": "d50faa1e-c41f-498a-a7bd-fb13ba698551",
+            "index": 0,
+            "piece": [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "ack": {
+            "type": "raftEdit",
+            "op": "reinforce",
+            "ok": true,
+            "why": "",
+            "rev": 3,
+            "opId": "d50faa1e-c41f-498a-a7bd-fb13ba698551"
+          },
+          "clicks": 1
+        },
+        "clicks": 1,
+        "before": {
+          "shipRev": 2,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 2,
+            "tradeRev": 1
+          }
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        },
+        "authoritativeAfter": {
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 1
+        }
+      },
+      "reinforcedDeckCloseup": {
+        "file": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-mobile-844x390-03b-reinforced-deck-canvas-only.png",
+        "canvas": {
+          "width": 844,
+          "height": 390,
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 844,
+            "height": 390
+          }
+        },
+        "overlayExcluded": true,
+        "previewGhostHiddenForCapture": true,
+        "method": "temporarily hide only DOM overlay and editor preview ghost while capturing the live raft canvas"
+      },
+      "savedProfileBlobBytes": 1350,
+      "reentry": {
+        "signedProfileRestored": true,
+        "blobBytes": 1350,
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        }
+      },
+      "mountAccepted": {
+        "event": {
+          "op": "mount",
+          "ok": true,
+          "epoch": 1,
+          "active": true,
+          "shipId": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+          "ack": 0
+        },
+        "capacity": {
+          "id": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+          "raftRev": 3,
+          "tradeRev": 1,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "load": 0.6607142857142857,
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10
+        },
+        "voyage": {
+          "active": true,
+          "shipId": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": true,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "naval": {
+          "epoch": 1,
+          "active": true,
+          "seq": 3,
+          "ack": 0,
+          "shipId": "165d5f78-c573-4d06-b042-eda1613aa4b8:r1",
+          "authorityTick": 738
+        }
+      }
+    },
+    {
+      "name": "load-limits-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-00-overloaded-before.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-01-overloaded-warning.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-02-reinforce-forecast.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-03-reinforced-plan.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-03b-reinforced-deck-canvas-only.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-04-sailing-after-refit.png"
+      ],
+      "initialGold": 0,
+      "fixture": {
+        "shipId": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+        "hold": {
+          "hierro": 1
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "goldPreserved": true,
+        "helmAnchor": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "cameraSnapForAcceptance": true,
+        "ownerPosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "seed": 99282957
+      },
+      "before": {
+        "capacity": {
+          "id": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+          "raftRev": 2,
+          "tradeRev": 1,
+          "mode": "port",
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "load": 0.8035714285714286,
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10
+        },
+        "pack": {
+          "madera": 1,
+          "piedra": 3
+        },
+        "hold": {
+          "hierro": 1
+        },
+        "gold": 0,
+        "shipRev": 2,
+        "authoritative": {
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 15,
+          "cargoMass": 21,
+          "totalMass": 45,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 0,
+          "overMass": 5,
+          "status": "overloaded",
+          "holdVolume": 3,
+          "holdFree": 3,
+          "holdCap": 6,
+          "packVolume": 9,
+          "packFree": 1,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 2,
+          "tradeRev": 1
+        }
+      },
+      "mountDenied": {
+        "event": {
+          "type": "navalPilot",
+          "to": 26,
+          "op": "mount",
+          "ok": false,
+          "why": "capacity",
+          "epoch": 0,
+          "active": false
+        },
+        "active": false,
+        "voyage": false,
+        "notice": "Porte excedido. Reduce carga o amplía/refuerza el casco antes de zarpar."
+      },
+      "overloadWarning": {
+        "text": "",
+        "classes": "",
+        "liveWarning": ""
+      },
+      "editorCamera": {
+        "look": {
+          "x": 0.02540116401265378,
+          "z": -0.0746503575233845
+        },
+        "blend": false
+      },
+      "reinforcementPreview": {
+        "cell": [
+          0,
+          0
+        ],
+        "point": {
+          "x": 172.4676712518216,
+          "y": 359.8811328017005
+        },
+        "forecast": {
+          "before": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10
+          },
+          "after": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10
+          }
+        },
+        "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+        "button": "Confirmar refuerzo",
+        "rect": {
+          "x": 170,
+          "y": 570,
+          "right": 309,
+          "bottom": 830,
+          "width": 139,
+          "height": 260
+        },
+        "actionRect": {
+          "x": 13,
+          "y": 718.390625,
+          "right": 53,
+          "bottom": 830,
+          "width": 40,
+          "height": 111.609375
+        },
+        "editorScroll": [
+          {
+            "root": {
+              "x": 5,
+              "y": 561,
+              "right": 385,
+              "bottom": 839,
+              "width": 380,
+              "height": 278
+            },
+            "forecast": {
+              "x": 170,
+              "y": 570,
+              "right": 309,
+              "bottom": 830,
+              "width": 139,
+              "height": 260
+            },
+            "button": {
+              "x": 13,
+              "y": 718.390625,
+              "right": 53,
+              "bottom": 830,
+              "width": 40,
+              "height": 111.609375
+            },
+            "scrollTop": 58,
+            "scrollHeight": 435,
+            "clientHeight": 376,
+            "visible": true,
+            "rotated": true
+          }
+        ],
+        "attempts": [
+          {
+            "cell": [
+              0,
+              0
+            ],
+            "screen": {
+              "x": 172.4676712518216,
+              "y": 359.8811328017005
+            },
+            "inside": true,
+            "hit": "game",
+            "target": {
+              "x": 0,
+              "z": 0,
+              "level": 0,
+              "dir": 0
+            },
+            "disabled": false,
+            "forecast": {
+              "before": {
+                "dryMass": 21,
+                "holdMass": 6,
+                "packMass": 15,
+                "cargoMass": 21,
+                "totalMass": 45,
+                "buoyancy": 56,
+                "cargoMax": 16,
+                "structuralLimit": 40,
+                "safeDisplacement": 50.4,
+                "totalLimit": 40,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 0,
+                "overMass": 5,
+                "status": "overloaded",
+                "load": 0.8035714285714286,
+                "holdVolume": 3,
+                "holdFree": 3,
+                "holdCap": 6,
+                "packVolume": 9,
+                "packFree": 1,
+                "packCap": 10
+              },
+              "after": {
+                "dryMass": 22,
+                "holdMass": 0,
+                "packMass": 12,
+                "cargoMass": 12,
+                "totalMass": 37,
+                "buoyancy": 56,
+                "cargoMax": 19,
+                "structuralLimit": 44,
+                "safeDisplacement": 50.4,
+                "totalLimit": 44,
+                "crewCount": 1,
+                "crewMass": 3,
+                "guestMass": 0,
+                "freeMass": 7,
+                "overMass": 0,
+                "status": "ready",
+                "load": 0.6607142857142857,
+                "holdVolume": 0,
+                "holdFree": 6,
+                "holdCap": 6,
+                "packVolume": 6,
+                "packFree": 4,
+                "packCap": 10
+              },
+              "state": "valid",
+              "target": {
+                "index": 0,
+                "p": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            },
+            "text": "ACTUAL · SOBRECARGADA\nTu balsa\n45 / 40 uM · exceso 5\nVISTA PREVIA · REFUERZO\nCon la pieza\n37 / 44 uM · 7 libres\nIncluye la pieza y sus materiales.\nEstructura 40 · desplazamiento seguro 50.4 uM.\nTripulación 3 uM (1) · invitados 0 uM · pesado desde 85%.\nSobrecargada: no puede zarpar hasta quedar bajo el límite.",
+            "button": "Confirmar refuerzo"
+          }
+        ]
+      },
+      "reinforcement": {
+        "interaction": "touch tap on Confirmar refuerzo",
+        "sentAck": {
+          "send": {
+            "type": "raft",
+            "op": "reinforce",
+            "id": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+            "expectedRev": 2,
+            "opId": "65d52bbe-baea-42bd-93ad-efbcb237215f",
+            "index": 0,
+            "piece": [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "ack": {
+            "type": "raftEdit",
+            "op": "reinforce",
+            "ok": true,
+            "why": "",
+            "rev": 3,
+            "opId": "65d52bbe-baea-42bd-93ad-efbcb237215f"
+          },
+          "clicks": 1
+        },
+        "clicks": 1,
+        "before": {
+          "shipRev": 2,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 21,
+            "holdMass": 6,
+            "packMass": 15,
+            "cargoMass": 21,
+            "totalMass": 45,
+            "buoyancy": 56,
+            "cargoMax": 16,
+            "structuralLimit": 40,
+            "safeDisplacement": 50.4,
+            "totalLimit": 40,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 0,
+            "overMass": 5,
+            "status": "overloaded",
+            "holdVolume": 3,
+            "holdFree": 3,
+            "holdCap": 6,
+            "packVolume": 9,
+            "packFree": 1,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 2,
+            "tradeRev": 1
+          }
+        },
+        "after": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        },
+        "authoritativeAfter": {
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10,
+          "mode": "port",
+          "raftRev": 3,
+          "tradeRev": 1
+        }
+      },
+      "reinforcedDeckCloseup": {
+        "file": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c9-raft-load-limits\\load-limits-portrait-390x844-03b-reinforced-deck-canvas-only.png",
+        "canvas": {
+          "width": 844,
+          "height": 390,
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          }
+        },
+        "overlayExcluded": true,
+        "previewGhostHiddenForCapture": true,
+        "method": "temporarily hide only DOM overlay and editor preview ghost while capturing the live raft canvas"
+      },
+      "savedProfileBlobBytes": 1350,
+      "reentry": {
+        "signedProfileRestored": true,
+        "blobBytes": 1350,
+        "state": {
+          "gold": 0,
+          "tradeRev": 1,
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "piedra": 3
+          },
+          "parts": [
+            [
+              "reinforcedFoundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "capacity": {
+            "dryMass": 22,
+            "holdMass": 0,
+            "packMass": 12,
+            "cargoMass": 12,
+            "totalMass": 37,
+            "buoyancy": 56,
+            "cargoMax": 19,
+            "structuralLimit": 44,
+            "safeDisplacement": 50.4,
+            "totalLimit": 44,
+            "crewCount": 1,
+            "crewMass": 3,
+            "guestMass": 0,
+            "freeMass": 7,
+            "overMass": 0,
+            "status": "ready",
+            "holdVolume": 0,
+            "holdFree": 6,
+            "holdCap": 6,
+            "packVolume": 6,
+            "packFree": 4,
+            "packCap": 10,
+            "mode": "port",
+            "raftRev": 3,
+            "tradeRev": 1
+          }
+        }
+      },
+      "mountAccepted": {
+        "event": {
+          "op": "mount",
+          "ok": true,
+          "epoch": 1,
+          "active": true,
+          "shipId": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+          "ack": 0
+        },
+        "capacity": {
+          "id": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+          "raftRev": 3,
+          "tradeRev": 1,
+          "mode": "sailing",
+          "dryMass": 22,
+          "holdMass": 0,
+          "packMass": 12,
+          "cargoMass": 12,
+          "totalMass": 37,
+          "buoyancy": 56,
+          "cargoMax": 19,
+          "structuralLimit": 44,
+          "safeDisplacement": 50.4,
+          "totalLimit": 44,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "load": 0.6607142857142857,
+          "holdVolume": 0,
+          "holdFree": 6,
+          "holdCap": 6,
+          "packVolume": 6,
+          "packFree": 4,
+          "packCap": 10
+        },
+        "voyage": {
+          "active": true,
+          "shipId": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": true,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "naval": {
+          "epoch": 1,
+          "active": true,
+          "seq": 3,
+          "ack": 0,
+          "shipId": "d986a8a1-3ad0-4d24-87ee-86181abe9ace:r1",
+          "authorityTick": 708
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "finishedAt": "2026-10-08T03:39:18.285Z",
+  "status": "passed"
+}

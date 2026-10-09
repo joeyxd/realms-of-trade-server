@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "cut": "W02f",
+  "generatedAt": "2026-10-08T21:09:15.193Z",
+  "environment": {
+    "node": "v24.14.0",
+    "viem": "2.57.3",
+    "platform": "win32"
+  },
+  "status": "locally-verified",
+  "verification": {
+    "command": "node --test tests/web3-erc1155-reader.test.mjs tests/web3-edition-read-cli.test.mjs tests/web3-erc721-reader.test.mjs tests/web3-token-read-cli.test.mjs tests/web3-wallet-preflight.test.mjs",
+    "tests": 42,
+    "pass": 42,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "durationMs": 4095.9559,
+    "newTests": {
+      "adapter": 12,
+      "cli": 3
+    },
+    "regressionTests": {
+      "erc721AdapterAndCli": 14,
+      "walletPreflight": 13
+    },
+    "abiOracle": "viem encodeFunctionData/decodeFunctionData",
+    "syntax": "passed",
+    "utf8NoBom": "passed",
+    "markdownFileLinks": "passed",
+    "rpcExternalRequests": 0,
+    "loopbackFixtures": true
+  },
+  "scope": {
+    "pilotChainId": 80002,
+    "productionChainId": 137,
+    "fixedContractPerReader": true,
+    "blockIdentity": "explicit-number-and-hash",
+    "contractQueries": "EIP-1898 requireCanonical true",
+    "maxRpcRequestsPerObservation": 8,
+    "retry": false,
+    "quantities": "decimal-string-uint256-including-zero",
+    "finalityProof": false,
+    "supplyOrLicenseInferred": false,
+    "gameOwnershipChanged": false,
+    "quantityReservations": false,
+    "liveEnvRead": false,
+    "liveSqlApplied": false,
+    "authorHostStarted": false,
+    "liveRpcTested": false,
+    "liveContractTested": false,
+    "evmExecution": false,
+    "signing": false,
+    "transactions": false,
+    "payments": false,
+    "newUi": false,
+    "deployed": false
+  },
+  "sources": [
+    {
+      "path": "server/web3/erc1155Reader.mjs",
+      "sha256": "538b2dd31bdad1d0471a5b2dacbb7c850d41bf6030c03d7a99c068b6e21983cd",
+      "bytes": 4141
+    },
+    {
+      "path": "tools/web3-edition-read.mjs",
+      "sha256": "b6173deb16f8580c5b4a99e6b427978a06e1a59b5ee6218489a1820bfa99218b",
+      "bytes": 1643
+    },
+    {
+      "path": "tests/web3-erc1155-reader.test.mjs",
+      "sha256": "f77f81a62987ff3d44df6f70e6c9aafc971b0ba9dc71ef0510adcdd7c3874d7a",
+      "bytes": 15936
+    },
+    {
+      "path": "tests/web3-edition-read-cli.test.mjs",
+      "sha256": "902dad4295892c2f4f3f5b32a07d2f56a5460a1027cebc6a1d5fc0290e7f7beb",
+      "bytes": 8269
+    },
+    {
+      "path": "server/web3/rpcTransport.mjs",
+      "sha256": "b43c4f24da50d2e958c6c7e89c7ca70e41fb984330daa05b24bdd80c82076458",
+      "bytes": 4667
+    },
+    {
+      "path": "server/web3/rpcProbe.mjs",
+      "sha256": "c4f4cb9c14cef0ab142517cf47dc77e374a23991e7acb89a2502e656ba0bd129",
+      "bytes": 630
+    },
+    {
+      "path": "server/web3/erc721Reader.mjs",
+      "sha256": "1e81265f3a4a0253267308452c51702e8213ea2e88c616a409ed31ceb733b1c9",
+      "bytes": 3875
+    },
+    {
+      "path": "tools/web3-token-read.mjs",
+      "sha256": "140aa767e133028f406dd244579624db87e3181417202b9a6ed5e616754502f3",
+      "bytes": 1556
+    },
+    {
+      "path": "tests/web3-erc721-reader.test.mjs",
+      "sha256": "64bc760592af7f6742685a5132d2bfcc89e4a65445948c64687eb7d8c512ee3d",
+      "bytes": 16263
+    },
+    {
+      "path": "tests/web3-token-read-cli.test.mjs",
+      "sha256": "8e784f20917751fd4ab128876cfef02bf7df67dcc5842cacc9a2a05ab0f7223b",
+      "bytes": 7346
+    },
+    {
+      "path": "tests/web3-wallet-preflight.test.mjs",
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d",
+      "bytes": 15733
+    },
+    {
+      "path": "deploy/marea-negra.env.example",
+      "sha256": "32521b3f0899ced278d4167f5b0c49bbcf591792a5a8cdb61ec0394d3b58a497",
+      "bytes": 2750
+    },
+    {
+      "path": "docs/briefs/w02f-erc1155-reader.md",
+      "sha256": "19c9e62c46981af6cbc83348c9740ffe325189e07fd32917e1bc644f0391c74c",
+      "bytes": 5125
+    },
+    {
+      "path": "docs/delivery/w02f-erc1155-reader.md",
+      "sha256": "c868942154401270aa82e595125c780a0aa128c712f09770b6c7e6ca4a22abc8",
+      "bytes": 4975
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "sha256": "3a36a356cc6ce8165d9cd4a9db040c6f7fae9f4cb78d8a7962d4c6d426f3c2fb",
+      "bytes": 22402
+    },
+    {
+      "path": "DESIGN.md",
+      "sha256": "e55c059f9455f0baeecc8dda68f6411df1f7d669820a68395be9f9ef245b15b8",
+      "bytes": 75354
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "sha256": "8e5fb50525ca820d151627bfc7f9bd4a810c9b9c93212540e27e392a9ca2763c",
+      "bytes": 69948
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "0e415e74c28504b031efa8ac1516afe7aaede498fc103b60f7157afbd2f80f5f",
+      "bytes": 109017
+    }
+  ]
+}

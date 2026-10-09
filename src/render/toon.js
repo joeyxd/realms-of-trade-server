@@ -441,6 +441,7 @@ export function patchToon(mat, opts = {}) {
       .replace('#include <gradientmap_pars_fragment>', BAND_PARS)
       .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\n' + FRAG_OCCLUDE)
       .replace('#include <color_fragment>', '#include <color_fragment>\n' + (opts.albedo || ''))
+      .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + (opts.normal || ''))
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' + (opts.emissive || '') + '\n#ifdef MN_GLOW\ntotalEmissiveRadiance += diffuseColor.rgb * vMnGlow * mnGlowAmt;\n#endif')
       .replace('#include <lights_fragment_begin>', 'float mnSunCloud = mnCloudShadow(vMnWorld.xz);\n' + lightsBegin())
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_RIM)

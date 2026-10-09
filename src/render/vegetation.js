@@ -1,15 +1,30 @@
 // Instanced vegetation and rocks, chunked spatially so frustum culling works per chunk.
 // Palms sway in the vertex shader (paired normal material sways identically for the outlines).
 import * as THREE from 'three';
-import { part, merge, ico, sphere, cyl, lumpy } from './geo.js';
+import { part, merge, ico, cyl, lumpy } from './geo.js';
 import { toon, normalMatFor } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { INK_GLSL, INK_WN } from './inkGlsl.js';
+import { assets } from './assets/registry.js';
+import { COAST_ROCK_ID, coastRockGeometry, coastRockVariant, coastRockBase, isCoastRock } from './coastRockGeometry.js';
+import { BEACH_SHELL_IDS, BEACH_PEBBLES_ID, buildBeachDetails, shellGeometry, beachPebbleGeometry } from './beachDetails.js';
+import { PALM_IDS, PALM_STYLES, palmGeometry, palmVariant, loadedPalmGeometry } from './palmGeometry.js';
+import { palmMaterials } from './palmMaterials.js';
+import { PALM_BASE_IDS, PALM_BASE_STYLES, PALM_BASE_LIMIT, palmBaseGeometry, loadedPalmBaseGeometry, buildPalmBases } from './palmBaseGeometry.js';
+import { palmBaseMaterials } from './palmBaseMaterials.js';
+import { SHRUB_IDS, SHRUB_STYLES, shrubGeometry, loadedShrubGeometry } from './shrubGeometry.js';
+import { SHRUB_LIMIT, buildShrubs } from './shrubPlacement.js';
+import { shrubMaterials } from './shrubMaterials.js';
+import { createGrassPatches } from './grassPatches.js';
+import { createBeachDebris } from './beachDebris.js';
+import { createSeaweed } from './seaweed.js';
+import { isNaturalRock, naturalRockMaterial } from './rockMaterials.js';
+import { resourceLayout } from '../data/resources.js';
+import { preserveTerrainSites } from './terrainSites.js';
 
 const CHUNK = 48;
 
-// Ink pass (P5), albedo only. Rocks: ink cracks like the terrain slopes. Palm trunks: ring bands every ~0.32 u of height
-// (darker band above each joint, thin ink line on the joint), in object space so they sway with the trunk. Bushes: two-tone
+// Ink pass (P5), albedo only. Rocks: ink cracks like the terrain slopes. Bushes: two-tone
 // brush strokes, lighter on the upward-facing side.
 const ROCK_INK = {
   vertPars: INK_WN.vertPars,
@@ -20,23 +35,6 @@ const ROCK_INK = {
       float fade = mnDetailFade();
       float cr = mnCracks(vMnWorld, normalize(vMnWN), 0.26, 0.022, 0.5, fade > 0.01);
       diffuseColor.rgb = mix(diffuseColor.rgb, MN_INK, 0.65 * cr * fade);
-    }
-  `,
-};
-const TRUNK_INK = {
-  vertPars: 'varying vec3 vMnObj;\n',
-  vertBody: 'vMnObj = position;\n',
-  fragPars: INK_GLSL + 'varying vec3 vMnObj;\n',
-  albedo: /* glsl */ `
-    {
-      float fade = mnDetailFade();
-      if (fade > 0.01) {
-        float f = fract((vMnObj.y + vMnObj.z * 0.25) / 0.32); // rings tilt a little across the trunk
-        float ringZone = (1.0 - smoothstep(5.2, 5.6, vMnObj.y)) * fade; // none on the crown and coconuts
-        float band = mix(0.82, 1.0, smoothstep(0.0, 0.55, f));
-        diffuseColor.rgb *= mix(1.0, band, ringZone);
-        diffuseColor.rgb = mix(diffuseColor.rgb, MN_INK, 0.55 * mnLine(min(f, 1.0 - f) * 0.32, 0.016) * ringZone);
-      }
     }
   `,
 };
@@ -60,87 +58,31 @@ const BUSH_INK = {
     }
   `,
 };
+// Broad radial ribs are part of the shell paint, including on low; antialias before they become subpixel noise.
+const SHELL_PAINT = {
+  vertPars: 'varying vec3 vShellPoint;\n',
+  vertBody: 'vShellPoint = position;\n',
+  fragPars: 'varying vec3 vShellPoint; uniform float mnShellOval;\n',
+  albedo: /* glsl */ `
+    {
+      vec2 p = mix(vShellPoint.xz + vec2(0.0, 0.2), vShellPoint.xz / vec2(0.73, 1.1), mnShellOval);
+      float r = length(p);
+      float angle = atan(p.x, p.y);
+      float count = mix(10.0 / 2.64, 12.0 / 6.2831853, mnShellOval);
+      float phase = (angle + mix(1.32, 0.0, mnShellOval)) * count;
+      float f = fract(phase);
+      float d = min(f, 1.0 - f) * r / count;
+      float aa = fwidth(d) * 0.8 + 0.0001;
+      float rib = 1.0 - smoothstep(0.009 - aa, 0.009 + aa, d);
+      float fade = (1.0 - smoothstep(18.0, 38.0, distance(vMnWorld, cameraPosition))) * smoothstep(0.03, 0.12, r);
+      float top = smoothstep(0.014, 0.025, vShellPoint.y);
+      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.30, 0.13, 0.085), rib * fade * top * 0.68);
+    }
+  `,
+};
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
 const up = new THREE.Vector3(0, 1, 0);
 
-function palmTrunkGeometry() {
-  const H = 6, rings = 9, radial = 7;
-  const pos = [], col = [], flex = [], idx = [];
-  const light = new THREE.Color(0xb98352), dark = new THREE.Color(0x8a5a34);
-  for (let i = 0; i <= rings; i++) {
-    const t = i / rings;
-    const cx = 1.15 * t * t, cy = t * H;
-    const r = 0.3 * (1 - 0.42 * t) + 0.12 * Math.max(0, 0.15 - t) * 6;
-    const c = Math.floor(t * 13) % 2 ? light : dark;
-    for (let k = 0; k < radial; k++) {
-      const a = (k / radial) * Math.PI * 2;
-      pos.push(cx + Math.cos(a) * r, cy, Math.sin(a) * r);
-      col.push(c.r, c.g, c.b);
-      flex.push(t * t);
-    }
-  }
-  for (let i = 0; i < rings; i++) for (let k = 0; k < radial; k++) {
-    const a = i * radial + k, b = i * radial + ((k + 1) % radial), c = a + radial, d = b + radial;
-    idx.push(a, c, b, b, c, d);
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  g.setAttribute('aFlex', new THREE.Float32BufferAttribute(flex, 1));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  // Crown knob + coconuts.
-  const top = new THREE.Vector3(1.15, H, 0);
-  const extra = [
-    part(sphere(0.34, 8, 6), 0x6f8f3a, { pos: [top.x, top.y + 0.05, 0] }),
-    part(sphere(0.2, 6, 5), 0x6b4423, { pos: [top.x + 0.22, top.y - 0.18, 0.12] }),
-    part(sphere(0.2, 6, 5), 0x6b4423, { pos: [top.x - 0.18, top.y - 0.2, 0.18] }),
-    part(sphere(0.2, 6, 5), 0x7a5230, { pos: [top.x + 0.02, top.y - 0.22, -0.24] }),
-  ].map((e) => { e.setAttribute('aFlex', new THREE.Float32BufferAttribute(new Float32Array(e.attributes.position.count).fill(1), 1)); return e; });
-  const gNon = g.toNonIndexed();
-  const merged = merge([gNon, ...extra]);
-  return { geo: merged, top };
-}
-
-function palmFrondGeometry(top) {
-  const leaves = 8, segs = 7;
-  const pos = [], col = [], flex = [], idx = [];
-  const vein = new THREE.Color(0x86d64e), edge = new THREE.Color(0x3c9a3c), tip = new THREE.Color(0x2f7f39);
-  let base = 0;
-  for (let l = 0; l < leaves; l++) {
-    const a = (l / leaves) * Math.PI * 2 + (l % 2) * 0.2;
-    const dir = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
-    const side = new THREE.Vector3(-dir.z, 0, dir.x);
-    const L = 2.7 + (l % 3) * 0.3;
-    const lift = 0.55 + (l % 2) * 0.25;
-    for (let s = 0; s <= segs; s++) {
-      const t = s / segs;
-      const w = 0.62 * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.05)), 0.75) + 0.04;
-      const cx = top.x + dir.x * t * L, cz = dir.z * t * L;
-      const cy = top.y + t * lift * 1.6 - t * t * (1.9 + lift);
-      const fold = w * 0.38;
-      const cc = new THREE.Color().copy(vein).lerp(tip, t * 0.7);
-      const ce = new THREE.Color().copy(edge).lerp(tip, t * 0.5);
-      // left edge, center, right edge (V-fold)
-      pos.push(cx - side.x * w, cy + fold, cz - side.z * w); col.push(ce.r, ce.g, ce.b);
-      pos.push(cx, cy, cz); col.push(cc.r, cc.g, cc.b);
-      pos.push(cx + side.x * w, cy + fold, cz + side.z * w); col.push(ce.r, ce.g, ce.b);
-      flex.push(2, 2, 2);
-    }
-    for (let s = 0; s < segs; s++) {
-      const r0 = base + s * 3, r1 = r0 + 3;
-      idx.push(r0, r1, r0 + 1, r0 + 1, r1, r1 + 1, r0 + 1, r1 + 1, r0 + 2, r0 + 2, r1 + 1, r1 + 2);
-    }
-    base += (segs + 1) * 3;
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  g.setAttribute('aFlex', new THREE.Float32BufferAttribute(flex, 1));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  return g;
-}
 
 function bushGeometry(variant) {
   const paint = (x, y) => (y > 0.55 ? 0x63c24a : y > 0.25 ? 0x47a63d : 0x2f8236);
@@ -164,45 +106,6 @@ function rockGeometry(variant) {
   return merge([part(g, 0, { pos: [0, 0.3, 0], scale: [1.15, 0.75, 1], paint })]);
 }
 
-// Seaweed: a tuft of curved, tapered ribbons; aFlex grows with height so tips sway most.
-function seaweedGeometry() {
-  const blades = 5, rows = 6;
-  const pos = [], col = [], flex = [], idx = [];
-  const base = new THREE.Color(0x1f6b45), tip = new THREE.Color(0x6fd08a);
-  let v0 = 0;
-  for (let b = 0; b < blades; b++) {
-    const a = (b / blades) * Math.PI * 2 + b * 0.7;
-    const r0 = 0.06 + (b % 2) * 0.05;
-    const H = 0.75 + (b % 3) * 0.18;
-    const bend = 0.18 + (b % 2) * 0.12;
-    const dir = new THREE.Vector3(Math.cos(a), 0, Math.sin(a));
-    const side = new THREE.Vector3(-dir.z, 0, dir.x);
-    for (let r = 0; r <= rows; r++) {
-      const t = r / rows;
-      const w = 0.07 * (1 - t * 0.85);
-      const c = new THREE.Vector3().copy(dir).multiplyScalar(r0 + bend * t * t);
-      c.y = t * H;
-      const k = new THREE.Color().copy(base).lerp(tip, t);
-      for (const sgn of [-1, 1]) {
-        pos.push(c.x + side.x * w * sgn, c.y, c.z + side.z * w * sgn);
-        col.push(k.r, k.g, k.b);
-        flex.push(Math.pow(t, 1.5) * 0.9);
-      }
-    }
-    for (let r = 0; r < rows; r++) {
-      const a0 = v0 + r * 2;
-      idx.push(a0, a0 + 2, a0 + 1, a0 + 1, a0 + 2, a0 + 3);
-    }
-    v0 += (rows + 1) * 2;
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  g.setAttribute('aFlex', new THREE.Float32BufferAttribute(flex, 1));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  return g;
-}
 
 function pebbleGeometry() {
   return merge([
@@ -243,9 +146,11 @@ function chunked(name, props, geo, mat, nm, place, colorOf, opts = {}) {
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
+    if (opts.boundPad) mesh.boundingSphere.radius += opts.boundPad;
     mesh.castShadow = opts.castShadow !== false;
     mesh.receiveShadow = true;
     if (nm) mesh.userData.nm = nm;
+    if (opts.depth) mesh.customDepthMaterial = opts.depth;
     if (opts.noOutline) mesh.layers.set(LAYER.NO_OUTLINE);
     group.add(mesh);
   }
@@ -256,28 +161,96 @@ export function createVegetation(map) {
   const group = new THREE.Group();
   group.name = 'vegetation';
   const swayU = { value: 0.3 };
-  const palmOpts = { sway: true, occluder: true, swayUniform: swayU, key: 'palm' };
-  const trunkMat = toon({ color: 0xffffff, vertexColors: true }, { ...palmOpts, ...TRUNK_INK });
-  const frondMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, { ...palmOpts, key: 'frond' });
-  const trunkNm = normalMatFor(palmOpts);
-  const frondNm = normalMatFor(palmOpts, THREE.DoubleSide);
-  const { geo: trunkGeo, top } = palmTrunkGeometry();
-  const frondGeo = palmFrondGeometry(top);
-
-  const palms = map.props.filter((p) => p.kind === 'palm');
+  // Harvestable trunks are drawn by ResourceNodes using the same geometry and atlas.
+  // Their original small collider remains as the stump; map generation is untouched.
+  const harvestNodes = map.landmarks?.spawn && map.landmarks?.village ? resourceLayout(map).nodes : [];
+  const harvestPalms = new Set(harvestNodes.filter((n) => n.kind === 'palm').map((n) => n.propIndex));
+  const palms = map.props.filter((p, i) => p.kind === 'palm' && !harvestPalms.has(i));
+  const palmGeometries = [];
+  const palmMats = palmMaterials(assets, swayU), palmLoaded = [], palmCounts = [];
   const placePalm = (p, m) => {
     const s = (p.h / 6) * p.scale;
     q.setFromAxisAngle(up, p.rot);
     m.compose(v.set(p.x, p.y - 0.1, p.z), q, sc.set(s, s, s));
   };
-  group.add(chunked('palmTrunks', palms, trunkGeo, trunkMat, trunkNm, placePalm));
-  group.add(chunked('palmFronds', palms, frondGeo, frondMat, frondNm, placePalm));
+  for (let variant = 0; variant < 3; variant++) {
+    const list = palms.filter((p) => palmVariant(p) === variant);
+    const imported = palmMats.painted ? loadedPalmGeometry(assets.data(PALM_IDS[variant])) : null;
+    const geometry = imported || palmGeometry(variant, { cards: palmMats.painted });
+    palmGeometries.push(geometry);
+    if (imported) palmLoaded.push(PALM_IDS[variant]);
+    palmCounts.push({ style: PALM_STYLES[variant], count: list.length });
+    // Wind padding covers the maximum local sway after scale; palm scale is bounded by world generation.
+    const boundPad = Math.max(0, ...list.map((p) => (p.h / 6) * p.scale)) * 0.5;
+    group.add(chunked('palmTrunks' + variant, list, geometry.trunk, palmMats.trunk, palmMats.trunkNm, placePalm, null,
+      { depth: palmMats.trunkDepth, boundPad }));
+    group.add(chunked('palmFronds' + variant, list, geometry.fronds, palmMats.fronds, palmMats.frondNm, placePalm, null,
+      { depth: palmMats.frondDepth, boundPad }));
+  }
+  group.userData.palms = { total: palms.length, variants: palmCounts, loaded: palmLoaded, textures: palmMats.textures,
+    painted: palmMats.painted, normal: palmMats.normal, cosmetic: true };
 
-  const bushMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'bush', ...BUSH_INK });
+  const bases = preserveTerrainSites(map, buildPalmBases), baseMats = palmBaseMaterials(assets, swayU, palmMats);
+  const baseLoaded = [], baseCounts = [], baseYaw = new THREE.Quaternion(), baseUp = new THREE.Vector3();
+  const baseGroup = new THREE.Group(); baseGroup.name = 'palmBases';
+  const placeBase = (p, m) => {
+    q.setFromUnitVectors(up, baseUp.set(p.nx, p.ny, p.nz));
+    baseYaw.setFromAxisAngle(up, p.rot); q.multiply(baseYaw);
+    m.compose(v.set(p.x, p.y, p.z), q, sc.setScalar(p.scale));
+  };
+  for (let variant = 0; variant < 2; variant++) {
+    const list = bases.filter((p) => p.variant === variant);
+    const imported = baseMats.painted ? loadedPalmBaseGeometry(assets.data(PALM_BASE_IDS[variant])) : null;
+    const geometry = imported || palmBaseGeometry(variant, { cards: baseMats.painted });
+    if (imported) baseLoaded.push(PALM_BASE_IDS[variant]);
+    baseCounts.push({ style: PALM_BASE_STYLES[variant], count: list.length });
+    if (!list.length) { geometry.roots.dispose(); geometry.leaves.dispose(); continue; }
+    const boundPad = Math.max(...list.map((p) => p.scale)) * 0.5;
+    baseGroup.add(chunked('palmBaseRoots' + variant, list, geometry.roots, baseMats.roots, baseMats.rootNm, placeBase, null,
+      { depth: baseMats.rootDepth }));
+    baseGroup.add(chunked('palmBaseLeaves' + variant, list, geometry.leaves, baseMats.leaves, baseMats.leafNm, placeBase, null,
+      { depth: baseMats.leafDepth, boundPad }));
+  }
+  baseGroup.userData.bases = { total: bases.length, limit: PALM_BASE_LIMIT, variants: baseCounts, loaded: baseLoaded,
+    textures: baseMats.textures, rootTextures: palmMats.textures, painted: baseMats.painted, normal: baseMats.normal, cosmetic: true };
+  group.add(baseGroup);
+
   const bushes = map.props.filter((p) => p.kind === 'bush');
+  const shrubs = preserveTerrainSites(map, buildShrubs), shrubMats = shrubMaterials(assets, swayU);
+  const shrubGroup = new THREE.Group(); shrubGroup.name = 'shrubs';
+  const shrubLoaded = [], shrubCounts = [], shrubYaw = new THREE.Quaternion(), shrubUp = new THREE.Vector3();
+  const placeShrub = (p, m) => {
+    q.setFromUnitVectors(up, shrubUp.set(p.nx, p.ny, p.nz));
+    shrubYaw.setFromAxisAngle(up, p.rot); q.multiply(shrubYaw);
+    m.compose(v.set(p.x, p.y, p.z), q, sc.setScalar(p.scale));
+  };
+  for (let variant = 0; variant < SHRUB_STYLES.length; variant++) {
+    const list = shrubs.filter((p) => p.variant === variant);
+    const imported = shrubMats.painted ? loadedShrubGeometry(assets.data(SHRUB_IDS[variant])) : null;
+    const geometry = imported || shrubGeometry(variant, { cards: shrubMats.painted });
+    if (imported) shrubLoaded.push(SHRUB_IDS[variant]);
+    shrubCounts.push({ style: SHRUB_STYLES[variant], count: list.length });
+    if (!list.length) { geometry.stems.dispose(); geometry.leaves.dispose(); continue; }
+    const boundPad = Math.max(...list.map((p) => p.scale)) * 0.5;
+    shrubGroup.add(chunked('shrubStems' + variant, list, geometry.stems, shrubMats.stems, shrubMats.stemNm, placeShrub, null,
+      { depth: shrubMats.stemDepth }));
+    shrubGroup.add(chunked('shrubLeaves' + variant, list, geometry.leaves, shrubMats.leaves, shrubMats.leafNm, placeShrub, null,
+      { depth: shrubMats.leafDepth, boundPad }));
+  }
+  const replaced = new Set(shrubs.map((p) => p.original).filter(Boolean));
+  shrubGroup.userData.shrubs = { total: shrubs.length, limit: SHRUB_LIMIT, replaced: replaced.size,
+    scatter: shrubs.length - replaced.size, retained: bushes.length - replaced.size, variants: shrubCounts,
+    loaded: shrubLoaded, textures: shrubMats.textures, painted: shrubMats.painted, normal: shrubMats.normal, cosmetic: true };
+  group.add(shrubGroup);
+
+  const grass = createGrassPatches(map, { shrubs });
+  group.add(grass.group);
+
+  // Keep the original silhouettes at unsafe steep/crowded anchors, preserving visible collider feedback.
+  const bushMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'bush', ...BUSH_INK });
   const tint = new THREE.Color();
   for (let variant = 0; variant < 2; variant++) {
-    const list = bushes.filter((p, i) => (p.v < 0.25 ? 1 : 0) === variant);
+    const list = bushes.filter((p) => !replaced.has(p) && (p.v < 0.25 ? 1 : 0) === variant);
     group.add(chunked('bushes' + variant, list, bushGeometry(variant), bushMat, null, (p, m) => {
       q.setFromAxisAngle(up, p.rot);
       m.compose(v.set(p.x, p.y - 0.12, p.z), q, sc.setScalar(p.scale));
@@ -285,18 +258,47 @@ export function createVegetation(map) {
   }
 
   const rockMat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'rock', ...ROCK_INK });
+  const naturalMat = naturalRockMaterial();
   const rockNm = normalMatFor({ occluder: true });
-  const rocks = map.props.filter((p) => p.kind === 'rock');
+  const allRocks = map.props.filter((p) => p.kind === 'rock');
+  const coastSource = assets.data(COAST_ROCK_ID)?.parts?.[0]?.geo;
+  const terrainSource = map.terrainSource || map;
+  const sourceProp = (p) => terrainSource.props?.[map.props.indexOf(p)] || p;
+  const coastRocks = coastSource ? allRocks.filter((p) => isCoastRock(terrainSource, sourceProp(p))) : [];
+  const coastSet = new Set(coastRocks);
+  const rocks = allRocks.filter((p) => !coastSet.has(p));
+  const naturalSet = new Set(rocks.filter(p => isNaturalRock(terrainSource, sourceProp(p))));
   for (let variant = 0; variant < 2; variant++) {
     const list = rocks.filter((p) => (p.v < 0.5 ? 0 : 1) === variant);
-    group.add(chunked('rocks' + variant, list, rockGeometry(variant), rockMat, rockNm, (p, m) => {
+    const geometry = rockGeometry(variant);
+    const placeRock = (p, m) => {
       q.setFromEuler(new THREE.Euler(p.v * 0.4 - 0.2, p.rot, p.v * 0.3 - 0.15));
       m.compose(v.set(p.x, p.y, p.z), q, sc.set(p.scale, p.scale * (0.8 + p.v * 0.4), p.scale));
-    }, (p) => {
+    };
+    const tintRock = (p) => {
       const volc = map.masks(p.x, p.z).volcanic;
       return new THREE.Color(0xffffff).lerp(new THREE.Color(0x5b4b5e), volc);
-    }));
+    };
+    // Keep volcanic, arena and lava stones on their existing paint and normal-pass contract.
+    group.add(chunked('rocks' + variant, list.filter(p => naturalSet.has(p)), geometry, naturalMat, rockNm, placeRock, tintRock));
+    group.add(chunked('volcanicRocks' + variant, list.filter(p => !naturalSet.has(p)), geometry, rockMat, rockNm, placeRock, tintRock));
   }
+
+  if (coastRocks.length) {
+    const coastMat = naturalMat;
+    const coastNm = normalMatFor({ occluder: true });
+    for (let variant = 0; variant < 3; variant++) {
+      const list = coastRocks.filter((p, i) => coastRockVariant(p, i) === variant);
+      if (!list.length) continue;
+      group.add(chunked('coastRocks' + variant, list, coastRockGeometry(coastSource, variant), coastMat, coastNm, (p, m) => {
+        q.setFromAxisAngle(up, p.rot);
+        m.compose(v.set(p.x, coastRockBase(map, p), p.z), q, sc.setScalar(p.scale));
+      }));
+    }
+  }
+  group.userData.coastRocks = { asset: coastRocks.length ? COAST_ROCK_ID : null, count: coastRocks.length, variants: 3 };
+  group.userData.rockFaces = { family: 'rock-faces-v1', natural: naturalSet.size + coastRocks.length,
+    coastal: coastRocks.length, legacy: rocks.length - naturalSet.size, texturesAdded: 0, cosmetic: true };
 
   const flowerMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'flower', comic: false });
   const flowers = map.props.filter((p) => p.kind === 'flower');
@@ -310,16 +312,9 @@ export function createVegetation(map) {
     }, null, { castShadow: false, noOutline: true }));
   });
 
-  // Underwater: seaweed (slow sway) and pale pebbles.
-  const weedSway = { value: 0.1 };
-  const weedOpts = { sway: true, swayUniform: weedSway, key: 'seaweed', comic: false };
-  const weedMat = toon({ color: 0xffffff, vertexColors: true, side: THREE.DoubleSide }, weedOpts);
-  const weedNm = normalMatFor(weedOpts, THREE.DoubleSide);
-  const weeds = map.props.filter((p) => p.kind === 'seaweed');
-  group.add(chunked('seaweed', weeds, seaweedGeometry(), weedMat, weedNm, (p, m) => {
-    q.setFromAxisAngle(up, p.rot);
-    m.compose(v.set(p.x, p.y - 0.05, p.z), q, sc.setScalar(p.scale));
-  }, null, { castShadow: false }));
+  // Underwater ribbons use shared paint, spatial batches and distance LOD.
+  const seaweed = createSeaweed(map);
+  group.add(seaweed.group);
   const pebbleMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'pebble', comic: false });
   const pebbles = map.props.filter((p) => p.kind === 'pebble');
   const pebbleColors = [0xf4f1ea, 0xc9d8e6, 0xe8d3b0, 0xf2b8a8, 0x9fb4c6].map((c) => new THREE.Color(c));
@@ -328,5 +323,36 @@ export function createVegetation(map) {
     m.compose(v.set(p.x, p.y - 0.02, p.z), q, sc.setScalar(p.scale));
   }, (p) => pebbleColors[Math.floor(p.v * pebbleColors.length)], { castShadow: false }));
 
-  return { group, swayU };
+  // Independent beach silhouettes complement the tiny shells painted in S01's sand albedo.
+  const detail = preserveTerrainSites(map, buildBeachDetails), detailYaw = new THREE.Quaternion(), detailUp = new THREE.Vector3();
+  const detailMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'beach-detail-v1', comic: false });
+  const placeDetail = (p, m) => {
+    q.setFromUnitVectors(up, detailUp.set(p.nx, p.ny, p.nz));
+    detailYaw.setFromAxisAngle(up, p.rot); q.multiply(detailYaw);
+    m.compose(v.set(p.x, p.y, p.z), q, sc.setScalar(p.scale));
+  };
+  const detailGroup = new THREE.Group(); detailGroup.name = 'beachDetails';
+  const loaded = [];
+  for (let variant = 0; variant < 3; variant++) {
+    const source = assets.data(BEACH_SHELL_IDS[variant])?.parts?.[0]?.geo;
+    if (source) loaded.push(BEACH_SHELL_IDS[variant]);
+    const list = detail.shells.filter((p) => p.variant === variant);
+    const shellMat = toon({ color: 0xffffff, vertexColors: true }, { key: 'beach-shell-v1-' + variant, comic: false,
+      ...SHELL_PAINT, uniforms: { mnShellOval: { value: variant === 1 ? 1 : 0 } } });
+    if (list.length) detailGroup.add(chunked('beachShells' + variant, list, source || shellGeometry(variant), shellMat, null,
+      placeDetail, null, { castShadow: false, noOutline: true }));
+  }
+  if (detail.pebbles.length) {
+    const source = assets.data(BEACH_PEBBLES_ID)?.parts?.[0]?.geo;
+    if (source) loaded.push(BEACH_PEBBLES_ID);
+    detailGroup.add(chunked('beachPebbleClusters', detail.pebbles, source || beachPebbleGeometry(coastSource), detailMat, null,
+      placeDetail, null, { castShadow: false, noOutline: true }));
+  }
+  detailGroup.userData.details = { shells: detail.shells.length, pebbleClusters: detail.pebbles.length,
+    loaded, source: 'S04 painted geometry; SM_Rock pebble derivative', cosmetic: true };
+  group.add(detailGroup);
+
+  const debris = createBeachDebris(map, { shrubs, grass: grass.points });
+  group.add(debris.group);
+  return { group, swayU, grass, debris, seaweed, palmResources: { mats: palmMats, geometries: palmGeometries, loaded: palmLoaded } };
 }

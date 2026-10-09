@@ -263,8 +263,8 @@ test('forged private coast contract rejects both private streams atomically', ()
   assert.equal(owner.naval.coast, before.naval.coast, 'accepted local coast metadata stays unchanged');
 });
 
-test('ordinary LocalServer never advertises naval coast or private impact authority', () => {
-  const h = fixture({ count: 1, serverFactory: (o) => new LocalServer({ ...o, bots: 0, enemies: false }) });
+test('disabled navigation LocalServer never advertises naval coast or private impact authority', () => {
+  const h = fixture({ count: 1, serverFactory: (o) => new LocalServer({ ...o, navigation: false, bots: 0, enemies: false }) });
   h.server.broadcastSnapshot();
   const latest = h.transports.get(1).takeSnapshots().at(-1);
   assert.equal(h.server.world.navalTrial, null); assert.equal(h.server.world.navalPilot, null);

@@ -1,0 +1,37 @@
+TAP version 13
+# Subtest: AgentChat rejects malformed deliveries and a changed C01 session identity
+ok 1 - AgentChat rejects malformed deliveries and a changed C01 session identity
+  ---
+  duration_ms: 4.3045
+  type: 'test'
+  ...
+# Subtest: real guests share world, local, and private chat through C01 routing
+ok 2 - real guests share world, local, and private chat through C01 routing
+  ---
+  duration_ms: 688.543
+  type: 'test'
+  ...
+# Subtest: server rate and recipient rejections return visible chat outcomes
+ok 3 - server rate and recipient rejections return visible chat outcomes
+  ---
+  duration_ms: 443.488
+  type: 'test'
+  ...
+# Subtest: same-ID retry recovers a lost C01 reply without duplicating delivery
+ok 4 - same-ID retry recovers a lost C01 reply without duplicating delivery
+  ---
+  duration_ms: 511.0364
+  type: 'test'
+  ...
+# Subtest: chat and body orders share action IDs, and server chat accepts 281–300 code points
+ok 5 - chat and body orders share action IDs, and server chat accepts 281–300 code points
+  ---
+  duration_ms: 388.2734
+  type: 'test'
+  ...
+# Subtest: real chat history is bounded, replay deduplicated, and control text is cleaned
+ok 6 - real chat history is bounded, replay deduplicated, and control text is cleaned
+  ---
+  duration_ms: 35936.3082
+  type: 'test'
+  ...

@@ -6,6 +6,10 @@ import { RAFT } from '../../data/raftparts.js';
 import { SLOTS, slotSkill } from '../../data/tattoos.js';
 import { indexRaft } from '../economy/raft.js';
 import { newEco } from './trade.js';
+import { liveHelmAnchor } from '../naval/pilotGeometry.js';
+import { activeRaftParts, persistRaftCondition, restoreRaftCondition } from '../naval/condition.js';
+import { hullIntegrity } from '../naval/structure.js';
+import { restoredRaftPose } from '../naval/recovery.js';
 
 export function installRafts(w, namespace) {
   w.rafts = new Map(); // stable ship id -> active vehicle, profile reference is server-only
@@ -42,7 +46,7 @@ export function prepareRaftProfile(w, p) {
 
 // The first two berths sit on opposite sides of the dock. Further rows are spaced for the technical maximum
 // grid width, so even legacy blueprints do not overlap each other. This is a local mooring prototype, not a
-// decision about sea regions or port ownership. Pose is derived afresh, never copied from a saved x/z/yaw.
+// decision about sea regions or port ownership. The home berth is always derived by the server.
 function mooring(map, ship, berth) {
   const [minX, maxX, minZ, maxZ] = ship.berthBasis, cell = RAFT.cell, d = map.dock;
   const cx = (minX + maxX + 1) * cell / 2;
@@ -81,15 +85,34 @@ export function attachRafts(w, owner, p) {
   const berth = candidates.find((b) => b >= 0 && b <= 63 && !used.has(b) && insideMap(w.map, ship, mooring(w.map, ship, b)));
   if (berth === undefined) return; // preserve the saved vessel when no valid prototype berth fits
   ship.berth = berth;
-  const pose = mooring(w.map, ship, berth), ecs = w.ecs;
+  const home = mooring(w.map, ship, berth), ecs = w.ecs;
+  const condition = restoreRaftCondition(ship.condition, ship.grid.parts);
+  let pose = home;
+  if (w.navalTrial?.navigation) {
+    try { pose = restoredRaftPose(w, ship, condition.structure) || home; }
+    catch (error) { if (!(error instanceof TypeError || error instanceof RangeError)) throw error; }
+  }
+  if (Math.hypot(pose.x - home.x, pose.z - home.z) < 1e-6 &&
+      Math.abs(Math.atan2(Math.sin(pose.yaw - home.yaw), Math.cos(pose.yaw - home.yaw))) < 1e-6) pose = home;
+  // Never restore a colliding fleet member. Conservative fallback is the reserved home berth.
+  if (pose !== home && publicRafts(w).some((r) => Math.hypot(r.x - pose.x, r.z - pose.z) < 48)) pose = home;
+  if (pose === home) ship.voyage = null;
   const entity = ecs.create(KIND.SHIP, C.POS | C.VEHICLE);
   ecs.x[entity] = pose.x; ecs.y[entity] = pose.y; ecs.z[entity] = pose.z; ecs.facing[entity] = pose.yaw;
-  w.rafts.set(ship.id, { entity, owner, ship });
+  const active = { entity, owner, ship, home: Object.freeze({ ...home }) };
+  active.condition = condition.structure; active.conditionNext = condition.nextId;
+  persistRaftCondition(active);
+  w.rafts.set(ship.id, active);
+  if (pose !== home && !w.navalPilot?.restore(owner, ship.id)) {
+    ecs.x[entity] = home.x; ecs.y[entity] = home.y; ecs.z[entity] = home.z; ecs.facing[entity] = home.yaw;
+    ship.voyage = null;
+  }
   w.raftDeck.update(publicRafts(w));
   w.profileDirty.add(owner);
 }
 
 export function detachRafts(w, owner) {
+  syncRaftProfiles(w, owner);
   w.navalPilot?.removeOwner(owner);
   w.navalTrial?.removeOwner(owner);
   w.raftEditReceipts?.delete(owner);
@@ -119,13 +142,22 @@ export function detachRafts(w, owner) {
   }
 }
 
+// Capture before profile publication and before lifecycle teardown can remove the live vessel.
+export function syncRaftProfiles(w, owner) {
+  w.navalPilot?.persist(owner);
+  for (const source of w.rafts?.values() || []) if (source.owner === owner) persistRaftCondition(source);
+}
+
 // Full lists repair late joins, dropped snapshots and logout removals. Private holds, eco owner keys and
 // profile data never enter this whitelist. Editor acknowledgements remain private; this list repairs edits.
 export function publicRafts(w) {
   const ecs = w.ecs;
   const records = [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,
     name: r.ship.n, berth: r.ship.berth, x: ecs.x[r.entity], y: ecs.y[r.entity], z: ecs.z[r.entity],
-    yaw: ecs.facing[r.entity], parts: r.ship.grid.parts.map((p) => [...p]),
+    yaw: ecs.facing[r.entity], parts: activeRaftParts(r).map((p) => [...p]),
+    helm: liveHelmAnchor(activeRaftParts(r)),
+    ...(r.condition ? { hull: { ...hullIntegrity(r.condition) }, partHealth: r.condition.entries.map((p) =>
+      ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })) } : {}),
     look: r.ship.look ? { banner: r.ship.look.banner, paint: r.ship.look.paint } : null }));
   return w.navalPilot ? w.navalPilot.project(records) : records;
 }

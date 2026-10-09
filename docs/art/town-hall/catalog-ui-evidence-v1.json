@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "family": "town-hall-v1",
+  "catalogRevision": 34,
+  "httpFiles": 42,
+  "rows": 109,
+  "applied": 53,
+  "review": {
+    "images": 28,
+    "links": 76,
+    "allDecoded": true,
+    "title": "Fachada de Salty Shore",
+    "errors": [],
+    "dialogClosed": true
+  },
+  "screenshot": "docs/art/town-hall/catalog-fachada-salty-shore-v1-v1.png"
+}

@@ -1,0 +1,166 @@
+{
+  "schema": "l03b-agent-conversation-verification/v1",
+  "status": "local_software_verified_with_simulated_models",
+  "generatedAt": "2026-10-08T22:06:40.132Z",
+  "checkout": {
+    "head": "bc566af538a94f246c7cedd29124b15a5e4e2db9",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null,
+    "hashBasis": "core gameplay/auth/storage/agent modules and relative test import graph"
+  },
+  "protocol": {
+    "version": 30,
+    "changedByMission": false,
+    "agentOrderVersion": 1
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs tests/agent-authority.test.mjs tests/agent-authority-network.test.mjs tests/agent-authority-runner.test.mjs tests/agent-inference-budget.test.mjs tests/agent-mind.test.mjs tests/agent-mind-context.test.mjs tests/agent-mind-network.test.mjs tests/agent-conversation-policy.test.mjs tests/agent-conversation-mind.test.mjs tests/agent-conversation-network.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "bc566af538a94f246c7cedd29124b15a5e4e2db9",
+    "headAfter": "bc566af538a94f246c7cedd29124b15a5e4e2db9",
+    "startedAt": "2026-10-08T22:05:42.230Z",
+    "finishedAt": "2026-10-08T22:06:31.057Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 267,
+    "pass": 266,
+    "fail": 0,
+    "skipped": 1,
+    "cancelled": 0,
+    "durationMs": 48750.8657,
+    "stderr": "",
+    "log": "agents-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 252
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/server.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/account-import.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-crew-authority.test.mjs tests/pearl-input-boundary.test.mjs tests/pearl-host-mount.test.mjs tests/death-host-mount.test.mjs tests/combat-death-host.test.mjs tests/death-drop-host.test.mjs tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "bc566af538a94f246c7cedd29124b15a5e4e2db9",
+    "headAfter": "bc566af538a94f246c7cedd29124b15a5e4e2db9",
+    "startedAt": "2026-10-08T22:03:54.420Z",
+    "finishedAt": "2026-10-08T22:04:57.278Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 206,
+    "pass": 206,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 62767.7292,
+    "stderr": "",
+    "log": "regression-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 246
+  },
+  "newMissionTestFiles": [
+    "agent-conversation-policy",
+    "agent-conversation-mind",
+    "agent-conversation-network"
+  ],
+  "dependencyStability": {
+    "finalDrift": [],
+    "status": "verified",
+    "provisionalCapture": "First agent capture excluded: CLI test failed before normalized-observation wait fix; its test source changed during capture. First regression passed 206 but src/net/localServer.js changed during capture"
+  },
+  "planIntegrity": {
+    "agreedDirectionRows": 22,
+    "agreementAndDemonstrationUnchanged": true,
+    "da3Unchanged": true,
+    "da3State": "Propuesto; por acordar",
+    "baseline": "docs/delivery/l03b-agent-conversation/baseline.json"
+  },
+  "localProof": {
+    "realWebSocket": true,
+    "realChildCli": true,
+    "threeClientAudience": true,
+    "authenticatedOwnerStop": "injected localhost resolver and server-owned chat capability binding",
+    "models": "scripted simulated replies and injected contract fixtures",
+    "realProviderCalls": 0,
+    "realTokenizerVerified": false,
+    "realBillingVerified": false,
+    "linguisticQualityAccepted": false,
+    "humanExperienceAccepted": false,
+    "accountTokenExcludedFromProviderContext": true,
+    "ownerFilesUnchanged": true,
+    "externalMigrationApplied": false,
+    "existingEmbeddedSqlRegressionRan": true,
+    "externalServiceTouched": false,
+    "published": false,
+    "deployed": false
+  },
+  "guarantees": [
+    "explicit source-ID turn only, no automatic response scheduler",
+    "raw delivered source matches normalized character observation and current peer entity",
+    "runner fixes channel and whisper sender target; generated JSON cannot widen the audience",
+    "world reply requires explicit configured channel opt-in",
+    "chat cannot authorize body actions or change goals",
+    "selected source and policy protected in six-block L00 context; optional chat and memory pruned",
+    "owner-local selected provider context inspection plus full prepared request fingerprint and counts",
+    "same inference budget and single flight as body decisions; native usage settles before stale-response rejection",
+    "source consumed once; own echoes excluded; bounded per-peer/total/cooldown suppression",
+    "stop/session/epoch/task/files/freshness/source/recipient changes fence late replies",
+    "sent/uncertain C01 outcomes prevent new conversation sends; thrown submission blocks instance",
+    "local send acceptance, routed receipt and unknown reading remain distinct"
+  ],
+  "limits": [
+    "No real provider/tokenizer/rates/billing or linguistic/human acceptance",
+    "Trusted adapter must measure exact transmitted payload and enforce output/I/O caps without hidden paid calls",
+    "Process-local budget and reply ledger reset on process restart; no durable/global loop or spend guarantee",
+    "Peer IDs identify connections, not authoritative human/agent classification; reconnection may change token",
+    "Local channel audience is chosen by C01 positions at send time, not frozen from inbound message",
+    "Conversation diagnostics contain selected delivered text and personality for the owner to inspect",
+    "No unsolicited conversation cadence, goal mutation, memory write, owner panel or D-A3 operation choice",
+    "Server perception/provisioning/UI/multi-host and physical gameplay/latency remain separate",
+    "Existing Windows symlink escape test skipped because EPERM"
+  ],
+  "unrealReuse": {
+    "sourceReadOnly": true,
+    "candidates": [
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/QuestSystem/ChildQuests/BP_TalkToQuest.uasset",
+        "bytes": 55851
+      },
+      {
+        "path": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/QuestSystem/QuestCreator/Data/E_QuestDialogueType.uasset",
+        "bytes": 4494
+      }
+    ],
+    "decision": "Unreal quest assets are nonportable C01/Node components; no graph inspected, export or source edits"
+  },
+  "sourceFiles": {
+    "tools/agent/conversation.mjs": "221c7f6bad78077013e979c47dec5e6bc6ea0481bea8fdeddc913dad7b5d879c",
+    "tools/agent/mind.mjs": "8e17d08ace589516771a531672bcc616352946fc8c0343b47938f7c85dfd00ed",
+    "tools/agent/mind-contract.mjs": "e096936e3d8c4f95388f3d9988f3f8cf25eaa4ea0c55ef96fcfe6d138ad43204",
+    "tools/agent/mind-context.mjs": "5e05b4ac814c6f941d6c9571c1f5b4209ff9dba6f92ec274f269621ef4dfc920",
+    "tools/agent/mind-snapshot.mjs": "c3682642e350f4e1627009f914720cc2ad95fbd772da22605e7436af34a66d86",
+    "tools/agent/simulated-mind.mjs": "786c365dca0eb2d6a04099b090583228c19783ad0dd1f4da0bfc0d404a3aedc1",
+    "tools/agent/run.mjs": "c0f4a1db28728e0bd468b60102ce224b2c9e0ece6ad9d6f216565fcd64dd4da6",
+    "tools/qa-agent-conversation.mjs": "d7c80917270182fcc0d757a98988e24c7a19c3fc17f4a648f82859e775d854a9",
+    "tools/qa-agent-conversation-evidence.mjs": "d2de68b91b9f234194acab17dae94e930a66c4475008c1764befb67b6275636a",
+    "tests/agent-conversation-policy.test.mjs": "c127f5fd8cb7d6c5e2940d0e1a2d623cbc7f7715be92a6ed48f2b9642842844b",
+    "tests/agent-conversation-mind.test.mjs": "0a3de33886edd220e93e4c7e2022520d64f7a923e524072f8d54941e12ad7e16",
+    "tests/agent-conversation-network.test.mjs": "13915dcdb1b0ac3cbacf61fa619983627970ef8c81eda27161179b7c46f6325c",
+    "docs/agents/conversation-runner.md": "90c30ec0e73cf70ad7e47d57feb8f9af63e16fb6829cb65a015ffad8fc6706b0",
+    "docs/agents/mind-runner.md": "c579f0f3553a6c7192c94e7eda4b62559bb00e7e5425b409cccc3c8902428f80",
+    "docs/briefs/l03b-agent-conversation.md": "cfe1faf7b0b6e0cc858bd9289717b36163652c35846262e2250d9190c5cf3260",
+    "docs/delivery/l03b-agent-conversation.md": "20e54c8aa56851aa375e0e6b8a3e2d18807e47a4647bc21ed593834fe71eab61",
+    "PLAN-EXTRA-LLM.md": "645105ad99c07fd6046c33cfe7e949d582434211a44728a6ce100c79123d6409",
+    "PLAN-DELIVERY.md": "dd0f9cb486a32013e98bd3990110cbdd0af2882229e551d5df2fb53ccde86802",
+    "DESIGN.md": "86952be7f17a8ab32298197709245b8e688067f9ab60ee618c32468eef8b0388",
+    "docs/HANDOFF.md": "d1af10fe4a698fe62aca4416bdfe9c7f877c0f11ffa387d129be6bcc880751c1"
+  },
+  "evidenceFiles": {
+    "docs/delivery/l03b-agent-conversation/baseline.json": "c88f20df78662f0d5a8396197d41837079c918eeb077e467093f1bf97ee43407",
+    "docs/delivery/l03b-agent-conversation/agents-tests.tap": "23a6a24da8861009a7d518539a0a1cedb7ec74d58ab4ec9e768445878c5e698e",
+    "docs/delivery/l03b-agent-conversation/agents-tests.json": "2db3a73ff837b6e892303c7a3080b0f15fb798438aef6cda4e14989aeeaec881",
+    "docs/delivery/l03b-agent-conversation/regression-tests.tap": "e763c491b1b7a1a3fbd29aba71d3f6b800822ea0af17dd8a83c9eb23cea4d9bf",
+    "docs/delivery/l03b-agent-conversation/regression-tests.json": "f8116223b4fca75a88c62ce1dd47fb14df792de53097596faf12430044d00bd9",
+    "docs/delivery/l03b-agent-conversation/provisional-agents-tests.tap": "10d71e3747447488edf9d8ec7a8673fb18f89827fbad87d39953d3345e10b71b",
+    "docs/delivery/l03b-agent-conversation/provisional-agents-tests.json": "e68221f750fcdfda006fe0ac4183b4d144af86bacb02643d51dacf44d12caee6",
+    "docs/delivery/l03b-agent-conversation/provisional-regression-tests.tap": "4a8c4a723dcbaebd6f374d2bc8a7fc1c4709d92a979a622b81c510c6ea588dc8",
+    "docs/delivery/l03b-agent-conversation/provisional-regression-tests.json": "67d1ca510092e4ac34d67d3a5f44952ea528ee3287f0a506a87c79f0e5ccfb8d"
+  },
+  "nextSlice": "L03c: goals selected and revised from game feedback within authority and inference budget"
+}

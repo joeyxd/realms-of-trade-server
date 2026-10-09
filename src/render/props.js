@@ -6,6 +6,14 @@ import { part, merge, box, rbox, bbox, sphere, cyl, cone, torus, ico, lumpy, can
 import { toon, normalMatFor, glowBasic } from './toon.js';
 import { LAYER } from './pipeline.js';
 import { INK_GLSL } from './inkGlsl.js';
+import { RAFT_ATLAS_ID } from './raftMaterials.js';
+import { dockWoodPart, dockWoodMaterial } from './dockWood.js';
+import { createDockRopes } from './dockRopes.js';
+import { portCargoGeometry, paintPortCargoInstances } from './portCargo.js';
+import { townLanternGeometry, townSignPostGeometry, townSignGeometry, townSignInk, townSignMaterial } from './townFixtures.js';
+import { TOWN_ALBEDO_ID, TOWN_NORMAL_ID, townPart, townNeutral, townMaterial } from './townMaterials.js';
+import { townCoverPart, townCoverNeutral, townCoverMaterial } from './townCovers.js';
+import { selectTownHall, townHallSupportsGeometry, townHallBannerGeometry, townHallBannerMaterial } from './townHall.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
@@ -53,15 +61,16 @@ const PROP_INK = {
 
 const WOOD = 0xb5803f, WOOD_D = 0x8a5a2e, WOOD_L = 0xd6a565, STRAW = 0xe9b54d, STRAW_D = 0xc98f2c, STONE = 0x9a948e;
 
-function hutGeo() {
+function hutGeo(mapped = false) {
+  const P = (geo, color, transform, role = null, options = {}) => townPart(geo, color, transform, { mapped, role, ...options });
   const wallPaint = (x, y, z) => (Math.floor((y + 10) * 4.2) % 2 ? 0xe8c98a : 0xd9b26d);
   const L = [];
-  for (const [x, z] of [[1.7, 1.7], [-1.7, 1.7], [1.7, -1.7], [-1.7, -1.7]]) L.push(part(cyl(0.16, 0.2, 1.1, 8), WOOD_D, { pos: [x, 0.55, z] }));
-  L.push(part(rbox(4.3, 0.26, 4.3, 0.08), WOOD, { pos: [0, 1.15, 0] }));
-  L.push(part(rbox(3.5, 2.0, 3.5, 0.12), 0, { pos: [0, 2.25, 0], paint: wallPaint }));
-  L.push(part(rbox(0.95, 1.45, 0.12, 0.05), 0x3b2418, { pos: [0, 2.0, 1.76] }));
-  L.push(part(rbox(0.7, 0.55, 0.12, 0.05), 0x3b2418, { pos: [1.15, 2.45, 1.76] }));
-  L.push(part(rbox(0.12, 0.55, 0.7, 0.05), 0x3b2418, { pos: [1.76, 2.45, 0] }));
+  for (const [x, z] of [[1.7, 1.7], [-1.7, 1.7], [1.7, -1.7], [-1.7, -1.7]]) L.push(P(cyl(0.16, 0.2, 1.1, 8), WOOD_D, { pos: [x, 0.55, z] }, 'corner'));
+  L.push(P(rbox(4.3, 0.26, 4.3, 0.08), WOOD, { pos: [0, 1.15, 0] }, 'floor'));
+  L.push(P(rbox(3.5, 2.0, 3.5, 0.12), 0, { pos: [0, 2.25, 0], paint: wallPaint }, 'planks'));
+  L.push(P(rbox(0.95, 1.45, 0.12, 0.05), 0x3b2418, { pos: [0, 2.0, 1.76] }, 'door', { crop: [.225, .04, .775, .94] }));
+  L.push(P(rbox(0.7, 0.55, 0.12, 0.05), 0x3b2418, { pos: [1.15, 2.45, 1.76] }, 'window', { crop: [.22, .20, .78, .84] }));
+  L.push(P(rbox(0.12, 0.55, 0.7, 0.05), 0x3b2418, { pos: [1.76, 2.45, 0] }, 'window', { crop: [.22, .20, .78, .84] }));
   // layered thatch roof
   // Stepped thatch: stacked square frustums with alternating straw tones.
   const bands = 5, base = 3.2, top = 5.35, r0 = 3.6;
@@ -69,12 +78,13 @@ function hutGeo() {
     const t0 = i / bands, t1 = (i + 1) / bands;
     const y0 = base + (top - base) * t0, y1 = base + (top - base) * t1;
     const rb = r0 * (1 - t0) + 0.05, rt = r0 * (1 - t1) + (i === bands - 1 ? 0.02 : 0.32);
-    L.push(part(new THREE.CylinderGeometry(rt, rb, y1 - y0, 4, 1), i % 2 ? 0xe9b54d : 0xd09a35, { pos: [0, (y0 + y1) / 2, 0], rot: [0, Math.PI / 4, 0] }));
+    L.push(townCoverPart(new THREE.CylinderGeometry(rt, rb, y1 - y0, 4, 1), i % 2 ? 0xe9b54d : 0xd09a35,
+      { pos: [0, (y0 + y1) / 2, 0], rot: [0, Math.PI / 4, 0] }, 'thatch', { mapped }));
   }
-  L.push(part(sphere(0.24, 8, 6), WOOD_D, { pos: [0, 5.45, 0] }));
+  L.push(P(sphere(0.24, 8, 6), WOOD_D, { pos: [0, 5.45, 0] }));
   // steps
-  for (let i = 0; i < 3; i++) L.push(part(bbox(1.1, 0.12, 0.4), WOOD_L, { pos: [0, 0.25 + i * 0.32, 2.75 - i * 0.35] }));
-  return merge(L);
+  for (let i = 0; i < 3; i++) L.push(P(bbox(1.1, 0.12, 0.4), WOOD_L, { pos: [0, 0.25 + i * 0.32, 2.75 - i * 0.35] }, 'beam', { longU: true }));
+  return merge(L.map(townCoverNeutral));
 }
 
 function crateGeo() {
@@ -90,14 +100,16 @@ function barrelGeo() {
   return merge([part(body, 0, { paint }), part(cyl(0.38, 0.38, 0.04, 14), WOOD_D, { pos: [0, 0.99, 0] })]);
 }
 
-function stallGeo() {
+function stallGeo(mapped = false) {
+  const P = (geo, color, transform, role = null, options = {}) => townPart(geo, color, transform, { mapped, role, ...options });
   const canopy = (x) => (Math.floor((x + 5) * 2.5) % 2 ? 0xe8463c : 0xfaf3e3);
-  const L = [part(rbox(2.6, 0.12, 1.3, 0.04), WOOD, { pos: [0, 0.95, 0] }), part(rbox(2.4, 0.8, 1.1, 0.04), WOOD_D, { pos: [0, 0.5, 0] })];
-  for (const [x, z] of [[1.25, 0.6], [-1.25, 0.6], [1.25, -0.6], [-1.25, -0.6]]) L.push(part(cyl(0.06, 0.06, 2.4, 6), WOOD_D, { pos: [x, 1.2, z] }));
-  L.push(part(rbox(3.0, 0.12, 1.8, 0.04), 0, { pos: [0, 2.45, 0], rot: [0.18, 0, 0], paint: canopy }));
+  const L = [P(rbox(2.6, 0.12, 1.3, 0.04), WOOD, { pos: [0, 0.95, 0] }, 'floor'), P(rbox(2.4, 0.8, 1.1, 0.04), WOOD_D, { pos: [0, 0.5, 0] }, 'patched')];
+  for (const [x, z] of [[1.25, 0.6], [-1.25, 0.6], [1.25, -0.6], [-1.25, -0.6]]) L.push(P(cyl(0.06, 0.06, 2.4, 6), WOOD_D, { pos: [x, 1.2, z] }, 'iron'));
+  L.push(townCoverPart(rbox(3.0, 0.12, 1.8, 0.04), 0,
+    { pos: [0, 2.45, 0], rot: [0.18, 0, 0], paint: canopy }, 'cloth', { mapped }));
   const fruit = [0xff9f1c, 0xffd166, 0x7bc74d, 0xe8463c, 0xff9f1c];
-  for (let i = 0; i < 9; i++) L.push(part(sphere(0.13, 8, 6), fruit[i % fruit.length], { pos: [-0.9 + (i % 5) * 0.42, 1.12, -0.25 + Math.floor(i / 5) * 0.4] }));
-  return merge(L);
+  for (let i = 0; i < 9; i++) L.push(P(sphere(0.13, 8, 6), fruit[i % fruit.length], { pos: [-0.9 + (i % 5) * 0.42, 1.12, -0.25 + Math.floor(i / 5) * 0.4] }));
+  return merge(L.map(townCoverNeutral));
 }
 
 // Weapon rack (M3.5): a little roofed wooden stand with a cutlass hanging on pegs and a brace of
@@ -133,30 +145,31 @@ function rackGeo() {
 // Doña Sepia's stall (M4.7): a slanted indigo-striped awning on four posts, a bar at the back for the hides she
 // shows her designs on (a textured mesh of their own: tattooHidesMesh), a low table with ink pots, a needle box and a
 // candle, a stool. Front is +z (the side she stands on). About 2.4 × 1.4 u.
-function tattooStallGeo() {
+function tattooStallGeo(mapped = false) {
+  const P = (geo, color, transform, role = null, options = {}) => townPart(geo, color, transform, { mapped, role, ...options });
   const INDIGO = 0x3a2a5a, CREAM = 0xd8cbb0, INK = 0x1e2238, BRASS = 0xc9a44c;
   const awning = (x) => (Math.floor((x + 5) * 2.2) % 2 ? INDIGO : CREAM);
   const L = [];
-  for (const [x, z, h] of [[1.1, 0.55, 2.0], [-1.1, 0.55, 2.0], [1.1, -0.6, 2.35], [-1.1, -0.6, 2.35]]) L.push(part(cyl(0.055, 0.065, h, 6), WOOD_D, { pos: [x, h / 2, z] }));
+  for (const [x, z, h] of [[1.1, 0.55, 2.0], [-1.1, 0.55, 2.0], [1.1, -0.6, 2.35], [-1.1, -0.6, 2.35]]) L.push(P(cyl(0.055, 0.065, h, 6), WOOD_D, { pos: [x, h / 2, z] }, 'timber'));
   L.push(part(rbox(2.6, 0.1, 1.55, 0.03), 0, { pos: [0, 2.22, -0.02], rot: [-0.24, 0, 0], paint: awning }));
   for (const x of [-1.25, -0.42, 0.42, 1.25]) L.push(part(cone(0.09, 0.2, 4), INDIGO, { pos: [x, 1.98, 0.74], rot: [Math.PI, 0, 0] })); // the awning's scalloped edge
-  L.push(part(cyl(0.035, 0.035, 2.3, 6), WOOD, { pos: [0, 2.05, -0.6], rot: [0, 0, Math.PI / 2] })); // the hide bar
+  L.push(P(cyl(0.035, 0.035, 2.3, 6), WOOD, { pos: [0, 2.05, -0.6], rot: [0, 0, Math.PI / 2] }, 'timber')); // the hide bar
   // The table: top, legs, a cloth runner; ink pots (black, indigo, red), a needle box, a candle.
-  L.push(part(rbox(1.3, 0.07, 0.62, 0.02), WOOD, { pos: [0.35, 0.78, 0.05] }));
-  for (const [x, z] of [[0.95, 0.3], [-0.25, 0.3], [0.95, -0.2], [-0.25, -0.2]]) L.push(part(cyl(0.035, 0.035, 0.76, 5), WOOD_D, { pos: [x, 0.38, z] }));
+  L.push(P(rbox(1.3, 0.07, 0.62, 0.02), WOOD, { pos: [0.35, 0.78, 0.05] }, 'floor', { longU: true }));
+  for (const [x, z] of [[0.95, 0.3], [-0.25, 0.3], [0.95, -0.2], [-0.25, -0.2]]) L.push(P(cyl(0.035, 0.035, 0.76, 5), WOOD_D, { pos: [x, 0.38, z] }, 'timber'));
   L.push(part(rbox(0.5, 0.01, 0.66, 0.005), 0x6e3a5a, { pos: [0.35, 0.82, 0.05] }));
   for (const [x, z, c, r] of [[0.0, 0.18, INK, 0.07], [0.18, 0.2, 0x2a3a8a, 0.06], [0.33, 0.16, 0x8a1e22, 0.055], [0.12, -0.05, INK, 0.05]]) {
     L.push(part(cyl(r, r * 1.1, 0.12, 8), c, { pos: [x, 0.88, z] }));
     L.push(part(cyl(r * 0.6, r * 0.6, 0.03, 8), 0x0e0c14, { pos: [x, 0.95, z] }));
   }
-  L.push(part(rbox(0.3, 0.07, 0.16, 0.01), 0x5a3418, { pos: [0.72, 0.86, 0.12] }));
+  L.push(P(rbox(0.3, 0.07, 0.16, 0.01), 0x5a3418, { pos: [0.72, 0.86, 0.12] }, 'planks', { crop: [.15, .2, .65, .7] }));
   for (let i = 0; i < 4; i++) L.push(part(cyl(0.006, 0.006, 0.18, 4), 0xdfe6ea, { pos: [0.64 + i * 0.05, 0.92, 0.12], rot: [0, 0, Math.PI / 2] }));
   L.push(part(cyl(0.035, 0.04, 0.14, 6), 0xf2e6c8, { pos: [0.95, 0.89, -0.08] }));
   L.push(part(cyl(0.06, 0.06, 0.02, 8), BRASS, { pos: [0.95, 0.82, -0.08] }));
   // The stool.
-  L.push(part(cyl(0.2, 0.2, 0.06, 8), WOOD, { pos: [-0.75, 0.5, 0.25] }));
-  for (const a of [0, 2.1, 4.2]) L.push(part(cyl(0.025, 0.03, 0.5, 5), WOOD_D, { pos: [-0.75 + Math.cos(a) * 0.13, 0.25, 0.25 + Math.sin(a) * 0.13] }));
-  return merge(L);
+  L.push(P(cyl(0.2, 0.2, 0.06, 8), WOOD, { pos: [-0.75, 0.5, 0.25] }, 'floor'));
+  for (const a of [0, 2.1, 4.2]) L.push(P(cyl(0.025, 0.03, 0.5, 5), WOOD_D, { pos: [-0.75 + Math.cos(a) * 0.13, 0.25, 0.25 + Math.sin(a) * 0.13] }, 'timber'));
+  return merge(mapped ? L.map(townNeutral) : L);
 }
 
 // The hides on the bar: three stretched skins painted with an anchor, a skull and waves (one canvas, one mesh).
@@ -207,17 +220,9 @@ function tattooHidesTexture() {
   });
 }
 
-function lanternGeo() {
-  return merge([
-    part(cyl(0.07, 0.09, 2.2, 6), WOOD_D, { pos: [0, 1.1, 0] }),
-    part(rbox(0.5, 0.06, 0.06, 0.02), WOOD_D, { pos: [0.2, 2.15, 0] }),
-    part(rbox(0.34, 0.06, 0.34, 0.02), 0x3a2a20, { pos: [0.42, 1.95, 0] }),
-    part(cone(0.24, 0.18, 4), 0x3a2a20, { pos: [0.42, 2.07, 0], rot: [0, Math.PI / 4, 0] }),
-  ]);
-}
-
-function postGeo() {
-  return merge([part(cyl(0.2, 0.24, 6, 8), WOOD_D, { pos: [0, -2.4, 0] }), part(cyl(0.22, 0.2, 0.08, 8), WOOD_L, { pos: [0, 0.6, 0] })]);
+function postGeo(mapped = false) {
+  const P = (geo, color, transform, role = null, options = {}) => townPart(geo, color, transform, { mapped, role, ...options });
+  return merge([P(cyl(0.2, 0.24, 6, 8), WOOD_D, { pos: [0, -2.4, 0] }, 'timber'), P(cyl(0.22, 0.2, 0.08, 8), WOOD_L, { pos: [0, 0.6, 0] }, 'timber')]);
 }
 
 function braziersGeo() {
@@ -240,10 +245,6 @@ function gatePostGeo() {
     part(cyl(0.45, 0.25, 0.4, 8), 0x2a2230, { pos: [0, 4.65, 0] }),
     part(rbox(1.4, 0.3, 1.4, 0.08), 0x5a4a5a, { pos: [0, 0.15, 0] }),
   ]);
-}
-
-function signGeo() {
-  return merge([part(cyl(0.08, 0.1, 2.2, 6), WOOD_D, { pos: [0, 1.1, 0] })]);
 }
 
 // La Cala Calavera (M4.5): the border totems, the old fort's stakes and the black flag's pole. Front is +z.
@@ -400,11 +401,26 @@ export function createProps(map) {
   const mat = toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'prop', ...PROP_INK });
   const nm = normalMatFor({ occluder: true });
   const glowMat = glowBasic({ color: 0xffd36a }, 1);
+  const townAtlas = assets.texture(TOWN_ALBEDO_ID);
+  const townNormal = townAtlas ? assets.texture(TOWN_NORMAL_ID) : null;
+  const dockAtlas = assets.texture(RAFT_ATLAS_ID);
+  // Reuse the same registry-owned cloth/wood atlas already consumed by the dock and raft.
+  const coverBase = townAtlas ? townMaterial(townAtlas, townNormal, mat, PROP_INK)
+    : toon({ color: 0xffffff, vertexColors: true }, { occluder: true, key: 'prop', ...PROP_INK });
+  const townMat = townCoverMaterial(coverBase, dockAtlas);
+  const mappedTown = !!townAtlas;
   const kits = {
-    hut: hutGeo(), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(), lantern: lanternGeo(),
-    dockPost: postGeo(), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: signGeo(),
+    hut: hutGeo(mappedTown), crate: crateGeo(), barrel: barrelGeo(), stall: stallGeo(mappedTown), lantern: townLanternGeometry(mappedTown),
+    dockPost: postGeo(mappedTown), brazier: braziersGeo(), pillar: pillarGeo(), gatePost: gatePostGeo(), sign: townSignPostGeometry(mappedTown),
     campfire: rockRingGeo(), rack: rackGeo(), skullPost: skullPostGeo(), palisade: palisadeGeo(), blackFlag: flagPoleGeo(),
   };
+  if (mappedTown) for (const kind of ['crate', 'barrel']) {
+    const original = kits[kind];
+    kits[kind] = portCargoGeometry(original, kind);
+    original.dispose();
+  }
+  if (mappedTown) for (const geo of Object.values(kits)) townNeutral(geo);
+  for (const geo of Object.values(kits)) townCoverNeutral(geo);
   const byKind = new Map();
   for (const p of map.props) {
     if (!kits[p.kind]) continue;
@@ -415,6 +431,8 @@ export function createProps(map) {
   // prop's size (so the sim's colliders still match), their own emission instead of the glass / coal / window parts.
   const extOf = new Map(), extAt = new Map();
   for (const kind of byKind.keys()) { const id = assets.propId(kind); if (id) { extOf.set(kind, id); extAt.set(kind, []); } }
+  // Dress only a native, port-facing hut. Imported houses keep their authored shape and fittings.
+  const hall = mappedTown && !extOf.has('hut') ? selectTownHall(map) : null;
   // Static props are baked into one merged mesh per world chunk (few draw calls, culls per chunk).
   const CH = 72;
   const buckets = new Map();
@@ -431,6 +449,18 @@ export function createProps(map) {
       const key = `${Math.floor(p.x / CH)},${Math.floor(p.z / CH)}`;
       if (!buckets.has(key)) buckets.set(key, []);
       buckets.get(key).push(kits[kind].clone().applyMatrix4(m4));
+      if (p === hall) {
+        const supports = townCoverNeutral(townHallSupportsGeometry());
+        buckets.get(key).push(supports.applyMatrix4(m4));
+        const banner = new THREE.Mesh(townHallBannerGeometry(), townHallBannerMaterial());
+        banner.applyMatrix4(m4);
+        banner.name = 'townHallBanner';
+        banner.castShadow = true; banner.receiveShadow = true;
+        banner.userData.nm = normalMatFor({ occluder: true }, THREE.DoubleSide);
+        group.userData.townHall = { family: 'town-hall-v1', anchor: { x: p.x, y: p.y, z: p.z, rot: p.rot, scale: p.scale },
+          canvas: [256, 256], texturesDownloaded: 0 };
+        group.add(banner);
+      }
       if (kind === 'lantern') glowParts.push(strip(lanternGlass.clone().applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(0.42, 1.78, 0)))));
       if (kind === 'hut') {
         windowParts.push(strip(new THREE.BoxGeometry(0.54, 0.4, 0.04).applyMatrix4(m4.clone().multiply(new THREE.Matrix4().makeTranslation(1.15, 2.45, 1.83)))));
@@ -442,13 +472,16 @@ export function createProps(map) {
   }
   // Doña Sepia's stall (M4.7), render only: 2 u behind her, facing the way she faces (the sim keeps her space clear).
   const sepia = (map.npcs || []).find((n) => n.id === 'tattoo');
+  let sepiaKey = null;
   if (sepia) {
     const f = sepia.facing || 0, sx = sepia.x - Math.sin(f) * 2.0, sz = sepia.z - Math.cos(f) * 2.0;
     q.setFromAxisAngle(up, f);
     m4.compose(v.set(sx, map.groundAt(sx, sz), sz), q, sc.set(1, 1, 1));
     const key = `${Math.floor(sx / CH)},${Math.floor(sz / CH)}`;
+    sepiaKey = key;
     if (!buckets.has(key)) buckets.set(key, []);
-    buckets.get(key).push(tattooStallGeo().applyMatrix4(m4));
+    const sepiaGeo = tattooStallGeo(mappedTown);
+    buckets.get(key).push(townCoverNeutral(mappedTown ? townNeutral(sepiaGeo) : sepiaGeo).applyMatrix4(m4));
     const hides = new THREE.PlaneGeometry(2.1, 0.86);
     hides.translate(0, 1.6, -0.62);
     const hm = new THREE.Mesh(hides, toon({ map: tattooHidesTexture(), color: 0xffffff, alphaTest: 0.5, side: THREE.DoubleSide }, { key: 'hides' }));
@@ -457,17 +490,23 @@ export function createProps(map) {
     hm.userData.nm = normalMatFor({}, THREE.DoubleSide);
     group.add(hm);
   }
-  for (const list of buckets.values()) {
-    const mesh = new THREE.Mesh(merge(list), mat);
+  for (const [key, list] of buckets) {
+    const mesh = new THREE.Mesh(merge(list), townMat);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.userData.nm = nm;
     mesh.name = 'propsChunk';
+    mesh.userData.townWood = { mapped: mappedTown, normal: !!townNormal, family: 'town-wood-v1' };
+    mesh.userData.townCovers = { family: 'town-covers-v1', clothAtlas: dockAtlas ? RAFT_ATLAS_ID : null };
+    if (key === sepiaKey) mesh.userData.townFurniture = { family: 'town-furniture-v1', kind: 'sepia', mapped: mappedTown, texturesAdded: 0 };
     group.add(mesh);
   }
   for (const [kind, id] of extOf) {
     const ext = assets.instanced(id, extAt.get(kind), boxTarget(kits[kind]));
-    if (ext) group.add(ext);
+    if (ext) {
+      if (mappedTown && kind === 'crate' && id === 'prop:storage-crate') paintPortCargoInstances(ext, townMat);
+      group.add(ext);
+    }
   }
   const coalMat = glowBasic({ color: 0xff7a1a }, 0.85);
   if (glowParts.length) group.add(new THREE.Mesh(mergeGeometries(glowParts), glowMat));
@@ -485,21 +524,30 @@ export function createProps(map) {
 
   // Dock deck planks.
   const d = map.dock;
+  const dockMat = dockWoodMaterial(dockAtlas, mat);
+  const dockPart = (geometry, color, transform, variant) => dockWoodPart(geometry, color, transform,
+    { mapped: !!dockAtlas, variant });
   const planks = [];
   const n = Math.floor((d.len + 1.5) / 0.5);
   for (let i = 0; i < n; i++) {
     const along = -1.5 + i * 0.5 + 0.22;
-    planks.push(part(bbox(d.halfWidth * 2 + 0.1, 0.14, 0.42), i % 3 === 0 ? WOOD_L : i % 3 === 1 ? WOOD : 0xc08a4c, { pos: [0, d.deckY - 0.07, along] }));
+    planks.push(dockPart(bbox(d.halfWidth * 2 + 0.1, 0.14, 0.42), i % 3 === 0 ? WOOD_L : i % 3 === 1 ? WOOD : 0xc08a4c, { pos: [0, d.deckY - 0.07, along] }, i));
   }
-  planks.push(part(bbox(0.18, 0.18, d.len + 1.5), WOOD_D, { pos: [d.halfWidth, d.deckY - 0.2, d.len / 2 - 0.75] }));
-  planks.push(part(bbox(0.18, 0.18, d.len + 1.5), WOOD_D, { pos: [-d.halfWidth, d.deckY - 0.2, d.len / 2 - 0.75] }));
-  const deck = new THREE.Mesh(merge(planks), mat);
+  planks.push(dockPart(bbox(0.18, 0.18, d.len + 1.5), WOOD_D, { pos: [d.halfWidth, d.deckY - 0.2, d.len / 2 - 0.75] }, 1));
+  planks.push(dockPart(bbox(0.18, 0.18, d.len + 1.5), WOOD_D, { pos: [-d.halfWidth, d.deckY - 0.2, d.len / 2 - 0.75] }, 2));
+  const deck = new THREE.Mesh(merge(planks), dockMat);
+  deck.name = 'dockDeck';
+  deck.userData.dockWood = { family: 'dock-wood-v1', atlas: dockAtlas ? RAFT_ATLAS_ID : null,
+    mapped: !!dockAtlas, boards: n, beams: 2, texturesAdded: 0 };
   deck.userData.nm = nm;
   deck.position.set(d.base.x, 0, d.base.z);
   deck.rotation.y = Math.atan2(d.dir.x, d.dir.z);
   deck.castShadow = true;
   deck.receiveShadow = true;
   group.add(deck);
+
+  const dockRopes = createDockRopes(map, dockAtlas);
+  if (dockRopes) group.add(dockRopes);
 
   // Ship (bobs gently).
   const shipProp = map.props.find((p) => p.kind === 'ship');
@@ -534,10 +582,14 @@ export function createProps(map) {
 
   // Sign boards with text (h 1: the Cala's).
   for (const signP of map.props.filter((p) => p.kind === 'sign')) {
-    const board = new THREE.Mesh(new THREE.BoxGeometry(1.5, signP.h ? 1.45 : 1.1, 0.1), toon({ map: signTexture(!!signP.h), color: 0xffffff }, { key: 'signboard' }));
+    const board = mappedTown
+      ? new THREE.Mesh(townSignGeometry(!!signP.h), townSignMaterial(townAtlas, townNormal, townSignInk(!!signP.h)))
+      : new THREE.Mesh(new THREE.BoxGeometry(1.5, signP.h ? 1.45 : 1.1, 0.1), toon({ map: signTexture(!!signP.h), color: 0xffffff }, { key: 'signboard' }));
     board.position.set(signP.x, signP.y + (signP.h ? 1.85 : 1.75), signP.z);
     board.rotation.y = signP.rot;
     board.castShadow = true;
+    board.name = 'townSign';
+    board.userData.townFixtures = { family: 'town-fixtures-v1', kind: 'sign', cala: !!signP.h, mapped: mappedTown };
     group.add(board);
   }
   // The Cala's black flag (it flutters: GameScene.update).

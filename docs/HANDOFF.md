@@ -3,6 +3,82 @@
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
 (orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
 
+**Dirección de alfa del autor, 2026-10-08:** tres pueblos especializados que crecen con aportes de jugadores;
+primer pueblo **Salty Shore**, reconstruido en la isla existente por el agente de arte. Mecánicas y anclas
+funcionales/capacidad se detallan en [PLAN-ALFA-MUNDO](../PLAN-ALFA-MUNDO.md). Ocho personajes incluyendo
+agentes y ocho balsas simultáneas son meta propuesta, no capacidad medida: host/pilotaje actuales parten de
+cuatro. Tres pueblos caminables, obras/aprendizaje durables y la expansión regional completa siguen por implementar; S21 amplía el terreno de la isla actual.
+**Confirmado por el autor:** servers/mundos separados con personajes/economía/progreso propios; geografía
+continua y estado conservado hasta wipe explícito, aunque haya cargas de sector. Ocho es meta de conexión
+simultánea, no total de residentes durante la vida del server. Aislamiento de perfiles y transición de zonas
+requieren implementación/verificación; no se activa SQL, publicación ni cambios de gameplay aquí.
+**Ampliación del autor:** dos pueblos conectados por tierra, recursos/bandidos y alternativas de comercio
+por camino o mar. El autor aprobó el plan como base: Salty Shore–Puerto Sol en la misma isla y Ceniza aparte; esa ubicación
+no cambia todavía los anclajes de Puerto Sol/Ceniza; S21 implementa terreno para la isla actual, y el corredor A3 sigue pendiente. Crecimiento a miles distingue residentes, concurrencia mundial y densidad
+local; filtro de interés/regiones/handoff son arquitectura futura, no capacidad demostrada. A3 cubre el
+corredor y A8 el prototipo posterior al alfa pequeño.
+
+
+**Checkpoint S21 de terreno, 2026-10-08, autorizado por el autor como pase solo de terreno:** [informe](delivery/map-revamp-v1.md). Base 400/N401 y RNG legacy conservadas; postpass determinista 560/N561, resolución 1. Suelo seco muestreado +63,148347 % (paso 2, umbral >0,65). Dos conexiones suaves de terreno permiten llegar caminando a puntos interiores (171 y 109 aristas; ascenso máximo 0,1412 y 0,1377 por paso, límite 0,15); se conservan los núcleos húmedos, sin puentes ni assets nuevos. Pueblo: tres niveles 2,4/6,4/10,4, rampas y seis pads planos de huts existentes. Conserva orden/identidad/XZ de 1.259 props y 176 recursos, con Y proyectada; volcán/boss, PvP, llegada y muelle protegidos. Sin pueblo, gameplay, colisiones, recursos o assets nuevos. 0.1.0-alpha.15/protocolo 31 requiere recarga de host/peers. 220 pruebas; 30 capturas de escena + 2 del panel M, cinco contextos emulados, 20 chequeos de datos de calidad y geometría reutilizada. Catálogo rev. 37 (110 filas, 54 aplicadas); fuentes y enlaces HTTP comprobados. Local, no publicado; FPS físico y multijugador humano pendientes.
+
+**Dirección Web3 (2026-10-07):** [PLAN-WEB3](../PLAN-WEB3.md), capa de equipo premium, tierra y contenido
+creado por jugadores que pueda tokenizarse y comerciarse. Primer piloto priorizado por el autor:
+**equipo y tierra**. Desarrollo autorizado: [W01](delivery/w01-asset-registry.md), registro/transferencias
+internas aisladas con intención, reserva y recibo; **25/25 pertinentes + 56/56 regresión seleccionada**.
+Supabase SDK contra PGlite local, tres procesos y coexistencia SQL001–010; migración opt-in en
+`server/migrations/web3/001_asset_registry.sql`, sin Supabase live, wallets/tokens ni montaje del juego.
+Derechos/pérdidas/custodia/economía pendientes; siguiente W00a y W02, sin alterar la cola existente.
+**Red elegida por el autor, 2026-10-08: Polygon PoS; piloto Amoy (`80002`), producción futura `137`.**
+[Alcance y fuentes](../PLAN-WEB3.md#51-polygon-pos-elegida-amoy-para-pruebas): acceso a OpenSea,
+Web3 opcional, USDC nativo/gas patrocinado como dirección propuesta. Plantilla alineada y apagada;
+origen/proveedores y presupuesto abiertos, sin modificar `.env` real ni activar servicios/pagos.
+El autor elige **apariencias coleccionables y piezas funcionales comerciables** dentro de reglas claras.
+[Reglas W00a-equipo](briefs/w00-equipment-rules.md) y [contrato de contenido local](delivery/w00-equipment-content.md):
+cero stats para apariencia, paridad con equipo normal para funcional; hash inmutable durante transferencia.
+No acredita procedencia ni autoriza mint/uso. Permanencia visual, pérdidas y condiciones económicas abiertas.
+[W02a](delivery/w02a-wallet-link.md): vínculo cuenta/wallet EOA, retos/recibos durables y HTTP montable
+mediante `createGameServer({walletLink,resolvePlayer})`. 29/29 nuevas + 61/61 regresión seleccionada local;
+SQL Web3 002 opcional e independiente, compatible con W01. `npm start` no monta esta opción; sin extensión de wallet,
+RPC/testnet, Supabase live, tokens ni pagos. Cambiar wallet sigue sin flujo; un vínculo no concede uso/propiedad.
+[W02b](delivery/w02b-wallet-browser.md): panel Cuenta con conexión/revisión/firma explícita/consulta,
+109/109 seleccionadas y 3/3 vistas emuladas, proveedor y Auth simulados con firma EOA local real.
+Recupera respuesta perdida y recarga sin otra firma; cambios de identidad/red descartan respuestas tardías.
+Cerrar intento conserva el reto pendiente hasta caducar. `npm start` sigue sin montar Web3;
+extensión real, testnet/RPC, Supabase live, ERC-1271 y publicación pendientes. Ningún cambio de perfil/sim/token.
+[W02c](delivery/w02c-wallet-runtime.md), 2026-10-08: montaje desde env explícito en el arranque normal,
+apagado por defecto. Requiere cuentas/store Supabase; consulta read-only de prerrequisitos/ACLs SQL antes
+de preparar mundo/escuchar. Migración opcional Web3 003 después de Web3 002, sin aplicar SQL live ni
+reiniciar el host. 15/15 nuevas + 130/130 regresión seleccionada locales y recuperación al reabrir PGlite;
+UI W02b conservada.
+[W02d](delivery/w02d-wallet-preflight.md), 2026-10-08: comando independiente `--check` sobre env
+explícito, SQL read-only antes de RPC/red/bloque observado, límites y errores sin claves/URLs privadas.
+SDK y endpoints de fixture locales; no carga `.env`, inicia el juego ni aplica SQL. W02 sigue parcial.
+[W02e](delivery/w02e-erc721-reader.md), 2026-10-08: lector ERC-721 de contrato fijo y token/bloque
+explícitos, con EIP-1898 por hash/canonical, interfaz reportada y ownerOf; CLI independiente.
+27/27 seleccionadas locales (14 nuevas + 13 W02d), con ABI contrastada por viem y CLI loopback.
+Transporte W02d extraído preservando su API/secuencia; sin permisos, SQL, tokens/contrato real o host.
+[W02f](delivery/w02f-erc1155-reader.md), 2026-10-08: lector de cantidades ERC-1155 por
+holder/tipo/bloque explícitos, con CLI separado. 42/42 seleccionadas locales (15 nuevas + 27 W02d/e),
+uint256 decimal exacto incluido cero, ABI contrastada con viem y CLI loopback. Fallo no equivale a cero;
+sin inferir tirada/licencias, reservar copias, conceder uso ni probar contratos/testnet reales.
+[W02g](delivery/w02g-local-evm-rehearsal.md), 2026-10-08: lectores/CLIs verificados contra bytecode
+Solidity ejecutado en EVM en memoria, fixtures OpenZeppelin y loopback. 49/49 seleccionadas locales
+(7 nuevas + 42 W02d/e/f): mint/transferencias/historia/revert, saldo exacto y raíces preservadas al leer.
+Paquete privado con lock propio; chain ID 31337 y bloques/canonicalidad sintéticos. Sin RPC/testnet real,
+contrato público, gas pagado, Supabase/SQL/host o permiso jugable; no cierra derechos/custodia.
+[W02h](delivery/w02h-amoy-rpc-check.md), 2026-10-08: diagnóstico RPC Amoy por hash e identity
+precompile, 58/58 seleccionadas locales (9 nuevas + 49 anteriores) y CLI contra RPC público real
+satisfactorio: chain 80002, formato aceptado, echo y bloque estable; cero gas/transacciones.
+No demuestra finalidad, conformidad completa EIP-1898 o contrato NFT; no selecciona proveedor de operación.
+[W02i](delivery/w02i-amoy-erc721-pilot.md), 2026-10-08: contrato ERC-721 experimental con
+constructor/mint solo 80002, operador explícito inmutable y metadata sin derechos de juego;
+artefacto reproducible, 68/68 seleccionadas locales (10 nuevas + 58 previas), runtime contrastado
+con sus inmutables. EVM con 80002 simulado y bloques sintéticos; sin NFT público, gas o pagos.
+Siguiente W02j: dirección pública del operador/deployer y wallet de firma; simulación/envío testnet,
+recibos/código y lectores contra mint/transfer reales. Sin claves por defecto o secretos en chat.
+Origen/proveedor operativo, Supabase y extensión reales pendientes; cerrar producto antes de
+W03/W04. Fixtures W02g/receptores auxiliares no desplegables; el nuevo artefacto W02i es preparatorio.
+
 ## 1. Qué es y sus reglas
 
 - Action-RPG isométrico / bullet hell para navegador, **Three.js 0.160** desde CDN, sin bundler. Interfaz y textos
@@ -41,7 +117,167 @@ docs/         ASSETS, DEPLOY, HANDOFF y los briefs de trabajo (docs/briefs)
 deploy/       systemd, Caddy, env de ejemplo, script de actualización
 ```
 
-## 3. Estado (2026-10-06)
+## 3. Estado (2026-10-08)
+
+**Herramientas y minería D08c.7d:** local **alpha.16/protocolo 32**, conserva S21 y L02c.
+[Entrega](delivery/d08c7d-tools.md): madera/hacha/pico desde mochila vacía, dos ranuras fijas de
+cinturón saneadas/guardadas; hacha para palmeras, pico para 24 rocas/6 vetas. 206 nodos con los
+176 anteriores conservados. Progreso compartido y rendimiento final, grietas/pico/astillas/audio;
+mineral de hierro bruto distinto de hierro, sin fundición ni stock de mercado. **121 casos únicos
+pertinentes verificados** (120/121 serial + 5/5 focal tras actualizar whitelist de snapshot),
+**3/3 vistas emuladas** y reentrada firmada, capturas inspeccionadas. Incidencias de banco/QA en
+la entrega; 14 archivos pasan sintaxis. Sin texturas nuevas/SQL/publicación; nodos/regeneración
+de sesión. Siguen mantener/timing opcional, luego metalurgia/recetas/aportes comunitarios.
+
+**Recolección por la isla D08c.7c:** local **alpha.14/protocolo 30**; conserva L02c.
+[Contrato](briefs/d08c7c-harvest.md) y [entrega](delivery/d08c7c-harvest.md): 176 nodos reales
+(96 palmeras cortables, 69 piedras recogibles, 11 troncos sueltos). Tres F/touch → dos troncos;
+hacha contextual, audio, astillas/hojas, caída y tocón compartido. Mochila → banco por tandas
+→ madera de construcción/reparación. El catálogo se envía al admitir/cambiar, se conserva en
+cliente entre snapshots y la admisión invalida cualquier envío previo a HELLO.
+**87/87 seleccionadas en serial + 3/3 vistas emuladas**, capturas inspeccionadas y guardado
+firmado/reentrada. Incidencia de admisión y carrera de un test previo bajo carga documentadas.
+Reutiliza S05/S02/S19/S14; cero texturas nuevas, sin SQL/publicación/cambio de terreno o cupo.
+Materiales guardados; nodos/golpes/reloj aún de sesión, reiniciar host repuebla. No afirma
+persistencia antifarming ni FPS físicos. El autor priorizó este corte; después seguir §8.1
+del plan del mundo con aporte atómico antes de tablero/artesano/aprendizaje.
+
+**Banco de materiales D08c.7b:** local **alpha.13/protocolo 29**; conserva L02c.
+[Contrato](briefs/d08c7b-workbench.md) y [entrega](delivery/d08c7b-workbench.md): F/touch abre
+receta actual de madera, materiales, cantidad y espacio; tandas completas, un débito/revisión y
+replay exacto. Cerrar/alejarse/regresar conserva la solicitud pendiente y permite recuperar el ack.
+**61/61 seleccionadas + 3/3 vistas emuladas**, capturas inspeccionadas, guardado firmado/reentrada.
+Reutiliza banco S19/atlas S14; sin assets nuevos, terreno, SQL ni publicación. No es A1 comunitario.
+Siguiente: contrato de aporte atómico inventario/proyecto/recibo y recuperación antes del tablero,
+artesano y aprendizaje personal; perfiles/autosave de mundo actuales son independientes.
+Plan de tres pueblos/corredor aprobado como base; cifras de capacidad siguen objetivos no medidos.
+
+**Circuito naval opcional D08c.12:** local **alpha.12/protocolo 27**.
+[Contrato](briefs/d08c12-naval-route.md) y [entrega](delivery/d08c12-naval-route.md):
+Probar ruta desde el timón cerca del amarre, tres boyas en orden y regreso con Amarrar real.
+Una batería anclada lanza salvas hacia marcas fijas con aviso de dos segundos; golpea piezas
+vivas del casco girado. Hasta 6 HP por impacto/24 por ensayo, sin bajar una pieza del 50%;
+costa conserva su daño. Condición se guarda/repara, carga/plano se conservan, sin botín/XP.
+Cancelar/desembarcar/atraque temprano invalidan el ensayo; progreso/salvas son de sesión.
+**15/15 nuevas + 371 previas seleccionadas + 9/9 host**, 395 casos únicos entre pases documentados,
+**3/3 vistas emuladas** y capturas inspeccionadas; fixtures/incidencias explícitas en la entrega.
+Reutiliza VFX/audio/primitivas existentes;
+Unreal revisado e intacto. Sin publicación ni SQL. No es aún rival móvil/destructible ni
+armamento del jugador; ese es el siguiente corte. D09/M5 mantienen las pérdidas públicas detrás de su gate.
+
+**Conservación y recuperación D08c.11:** local **alpha.11/protocolo 26**.
+[Contrato](briefs/d08c11-raft-recovery.md) y [entrega](delivery/d08c11-raft-recovery.md):
+ID/HP por pieza y última pose confirmada del viaje sobreviven guardado/reentrada. La balsa vuelve
+detenida, sin piloto ni tripulación; el personaje conserva su checkpoint. Reembarcar exige costa
+válida/proximidad; recuperar desde el muelle devuelve la misma nave sin sanar ni duplicar carga.
+Pose incompatible/otro seed/sin flotación vuelve al amarre conservando daño y bienes.
+**617/617 pertinentes + 3/3 vistas emuladas**, capturas inspeccionadas y cero errores finales.
+HMAC guest y CAS de cuenta/store en memoria probados localmente; Supabase live no verificado.
+Guardado periódico conserva su ventana; blobs guest antiguos siguen reproducibles y no hay
+exposición offline. Sin publicación o SQL. Sigue primera ruta/amenaza PvE acotada con assets
+revisados; pérdidas públicas permanentes siguen detrás de D09/M5.
+
+**Reparación D08c.10:** local **alpha.10/protocolo 25**.
+[Contrato](briefs/d08c10-raft-repair.md) y [entrega](delivery/d08c10-raft-repair.md):
+daño por instancia conservado entre viajes de la sesión; astillero Reparar con HP/coste/confirmación,
+débito bodega→mochila, recibo exacto y reconstrucción 1:1 sin duplicados. Refuerzo conserva fracción HP;
+retiro devuelve según condición. Porte/carga/producción usan módulos vivos; recuperación desde muelle
+conserva stock/plano. **355/355 pertinentes + 3/3 vistas emuladas**, capturas inspeccionadas y pase final
+sin errores. Condición/pose no sobreviven desconexión/reinicio; materiales/revisión sí se guardan.
+Sin publicación o SQL. Sigue condición/pose durable y después amenaza de ruta; balance/dispositivos pendientes.
+
+**Porte y refuerzos D08c.9:** implementación local **alpha.9/protocolo 24**.
+[Contrato](briefs/d08c9-raft-load-limits.md) y [entrega](delivery/d08c9-raft-load-limits.md):
+límite mínimo estructura/desplazamiento seguro, tripulación y mochilas consentidas; aviso pesado y
+rechazo de zarpe/carga antes de mutación. Refuerzo 1:1 de cimiento cuesta 1 madera + 1 hierro,
+sube HP/estructura con cinchas reutilizadas y conserva flotación. Recuperación/reembarque permite exceso
+por daño; legacy intacto. **344/344 pertinentes** y **3/3 vistas emuladas**: rechazo de zarpe,
+refuerzo confirmado, reentrada firmada y timón/HUD; capturas inspeccionadas, cero errores en el pase final.
+Pose/HP del viaje siguen de sesión. No publicación, SQL o aceptación de balance/FPS físico.
+Sigue reparación con materiales y después pose/daño durable/primera amenaza de ruta.
+
+**Checkpoint previo, carga y porte D08c.8:** implementación local **alpha.8/protocolo 23**.
+[Contrato](briefs/d08c8-raft-capacity.md) y [entrega](delivery/d08c8-raft-capacity.md):
+masa/volumen independientes por bien, una masa de catálogo para economía y navegación,
+lectura privada por dueño de nave/bodega/mochila, espacio y porte nominal restante.
+Editor compara estado confirmado con colocación prevista descontando materiales; HUD naval
+reutiliza su lectura de carga. **208/208 focales** pasan, incluidos conservación, saves anteriores,
+daño de flotación y exceso que sigue navegable. **3/3 vistas emuladas** pasan con transferencia,
+colocación real, guardado/reentrada y timón/HUD; capturas de UI inspeccionadas. La cámara ya no
+sigue el apuntado de combate mientras se construye. No aceptación de balance/FPS físico.
+Porte es una estimación por flotación existente; masa corporal/tripulantes y mochilas de invitados,
+límite estructural/materiales/reserva y bloqueo de carga/zarpe siguen pendientes. No se actualiza
+la demo pública ni se aplica SQL. Ese límite operativo y el primer refuerzo se incorporan en D08c.9.
+
+**Creador y bases humanas:** el autor pidió iniciar un personaje modular masculino y femenino en el estilo
+de las láminas del explorador/tripulación. [Plan](../PLAN-CHARACTER-CREATOR.md) y
+[entrega inicial](delivery/characters-base-v0.md) conservan las referencias y GLB v0.
+[P02a anatomía v1](delivery/characters-base-v1.md) añade cuerpo continuo, relieve facial, UV y estudio de
+material. [P02b superficies v2](delivery/characters-base-v2.md) añade anillos/parches, extremidades
+simplificadas, atlas corporal regional y 7.080 triángulos por base. Comparación v0/v1/v2 y mapas 1024/512
+en el visor aparte; tres poses y 16 muestras de carrera CPU, escritorio/móvil emulado sin errores. Ejecutar
+`node tools/character-lab/server.mjs` y abrir `http://127.0.0.1:5194`.
+[P02c rostro/manos v3](delivery/characters-base-v3.md), 2026-10-08: dedos/pulgar estáticos conectados,
+relieve facial y pies redondeados, 10.216 tris por base, guía alpha con prompt/origen y acercamientos
+de mano/pie. Cuarenta capturas y tres poses/16 muestras CPU; v0/v1/v2 conservadas.
+P02 mantiene refinamiento artístico, rig de dedos, atlas y acabado antes de los módulos de cabello/barba/ojos/prendas,
+creador, perfil y equipo visible. Los índices legacy y la animación corporal actual tienen contrato de
+compatibilidad en el plan. El corte acompaña M5/D08/agentes y permanece fuera de la partida.
+
+**Rechazo visual del autor, 2026-10-08:** rechazó todas las bases procedurales existentes y las mallas de
+apariencia por feas y muy alejadas de la referencia más reciente de Horizon Tides. Se conserva el prototipo
+como evidencia técnica, no como arte aprobado. P03a tuvo 13/13 pruebas CPU históricas; su QA de navegador
+falló (error de red/escritorio y cierre durante móvil), la evidencia HTTP está pendiente y el catálogo de
+arte en revisión 31 no contiene filas `char-appearance-*`. Su lógica de piezas/IDs/paletas/exportación puede
+reutilizarse. P02/P03 permanecen abiertos y no hay integración de estos visuales en partida.
+
+**Kit ilustrado alpha v1, 2026-10-08 — QA técnica local pasada:** 13/13 aserciones de navegador, ocho
+capturas, 26 PNG móviles solicitados y 62 recursos HTTP verificados. Se conservan 29 intentos; 27
+seleccionados (26 alpha y un puerto opaco) suman 32,320,538 bytes; derivados móviles seleccionados,
+4,290,112 bytes. Los dos descartes son `male-eyes-blue-v1` (fallo alpha) y `male-beard-short-v1`
+(contorno flotante, alpha válido); se eligieron v2 para ambos. Recortes/offsets ajustados en runtime, PNG
+originales intactos; barba con máscara `base` que sigue la mandíbula. [Entrega](delivery/character-alpha-v1.md).
+El autor aceptó el look como dirección para el piloto 3D el 2026-10-08. Registro global en catálogo pendiente;
+no se cierra P02/P03 ni se integra a partida. No se afirma coincidencia pixel por pixel ni rendimiento físico.
+[Piloto Meshy](delivery/character-3d-pilot-v1.md): MCP oficial 0.6.1 instalado/configurado fuera del checkout,
+handshake directo y 24 herramientas comprobados; falta API key. Petición inicial preparada desde el master
+masculino; cero generaciones enviadas y ningún modelo 3D producido en este corte.
+
+**Avance local posterior de navegación:** D08c.6 conecta la partida ordinaria al circuito costero,
+**alpha.6/protocolo 21**. [Entrega y evidencia](delivery/d08c6-live-coastal-loop.md): timón/cubierta,
+carga real, corrientes/ráfaga, cámara/audio/VFX/touch, contacto/HP por pieza, desembarco/reembarque/atraque.
+Recolección/crafting avanza en el checkpoint siguiente. Pose/daño siguen siendo de sesión; amarre/plano/bodega
+se conservan. Este checkpoint no actualiza la URL pública ni aplica SQL; D09/D10 y dispositivos siguen abiertos.
+
+**Loop de materiales D08c.7:** implementación local **alpha.7/protocolo 22**.
+[Contrato](briefs/d08c7-resource-loop.md) y [entrega](delivery/d08c7-resource-loop.md):
+nodos autoritativos de troncos/piedra → mochila → banco del puerto (1 tronco → 1 madera)
+→ bodega/editor existente. 154/154 focales, incluido guardado firmado/reentrada y
+masa refrescada al reembarcar tras recoger en tierra. Sin receta de piedra ni tiers completos;
+agotamiento de nodos es de sesión, no durable. **3/3 recorridos emulados** PC/móvil horizontal/
+vertical rotado pasan, con capturas inspeccionadas, entradas reales y cero errores JS/consola;
+fixture de posición/encuadre explícita en la entrega. No se actualiza la demo pública ni se afirma
+rendimiento/aceptación física.
+
+**UI naval móvil de referencia:** timón izquierdo, dial con fuego, tres acciones reasignables por
+pulsación larga de 500 ms y stick compacto de cámara. Preferencias locales sobreviven costa/reembarque;
+solo se ofrecen acciones reales. 43/43 pruebas focales y 3/3 vistas de navegador emulado aprobadas,
+con capturas inspeccionadas en la [entrega D08c.6](delivery/d08c6-live-coastal-loop.md).
+Pulido posterior local: timón más pequeño, botones derechos compactos, viento transparente
+junto a la brújula y barra del casco integrada bajo las estadísticas del personaje; ver la
+evidencia compacta y sus verificaciones en la misma entrega.
+13/13 de interacción y 3/3 tamaños emulados aprobados para este pulido; capturas inspeccionadas.
+Composición posterior: timón 8 px más abajo, chat cerrado por encima y habilidades en arco
+regular alrededor del velocímetro; la entrega conserva evidencia propia de esta pasada.
+Arco/chat: 3/3 vistas emuladas aprobadas tras el último ajuste, panel visible y controles
+recuperados al cerrar; capturas finales inspeccionadas en la misma entrega.
+Porte/materiales: enfoque aprobado por el autor el 2026-10-07 en
+[NAVAL-ROADMAP §2.1](NAVAL-ROADMAP.md#21-porte-y-mejoras-del-barco--revisión-2026-10-07):
+masa/volumen separados, capacidad por estructura/flotación y upgrades para transportar más.
+El peso ya afecta manejo; D08c.8 separa masa/volumen y muestra porte nominal. Límite estructural,
+tripulación y upgrades de porte siguen sin implementar. Cifras y márgenes pendientes de calibrar; esta aprobación no activa bloqueos
+nuevos de carga ni pérdidas. La primera receta/recolección se integra en D08c.7; sigue la
+lectura de D08c.8 queda implementada antes de límites, tiers y recetas regionales.
 
 **Demo actualizada y fuente subida:** [entrega del 2026-10-06](delivery/demo-update-20261006.md),
 fuente `f89bec5`, alpha.4/protocolo 16. **745/745** sobre commit aislado, paquete/hash verificados;
@@ -62,22 +298,355 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
 | **M4.7 «Tatuajes»** | ✅ (cómic Ultra, huecos Q/E, los tres tatuajes, apuntar y VFX, pestaña y Doña Sepia) |
 | M4.8 «Perlas negras» | **rc.1**: kit pulido y probado; aceptación física y publicación pendientes (`PLAN-M4.8.md`) |
 | M5 mundo persistente (Supabase) | **P1–P3 + base D09a–e y D09f server-only**: 003–006 reales; same-holder commit/recuperación 21/21. Efecto común sim/staging 745/745 aisladas; lote death/reemplazo storage 481/481 pertinentes, 007 pendiente real. Afinidad, diario/cola/staging de lote, hooks/restauración/adopción/leases y publicación abiertos (`PLAN-M5.md`) |
-| M6 «La Balsa» | **P1–P3 + P4 bodega/producción local**: red/parrilla y fracciones guardadas; agua/hamaca/luces, dispositivos y publicación pendientes (`PLAN-M6.md`) |
+| M6 «La Balsa» | **P1–P3 + P4 parcial + D08c.6 circuito costero local integrado**: navegar/desembarcar/reembarcar/atracar; recolección/crafting, agua/hamaca/luces, riesgo durable/PvE, dispositivos y publicación pendientes (`PLAN-M6.md`) |
 | M7 comercio | **P1–P2 local**: mercaderes Aldea/Cala, panel con cotización/compra/venta; iconos por bien/muerte/rumores/balance regional/publicación pendientes (`PLAN-M7.md`) |
 | M8 construcción en pueblos | núcleo de solares hecho; plan (`PLAN-M8.md`) |
 | Assets externos | ✅ (`docs/ASSETS.md`) |
 | Jugar en línea en un servidor propio | ✅ (`docs/DEPLOY.md`) |
 
-### Línea extra de baja prioridad — personajes con LLM (2026-10-05)
+### Pilar esencial — humanos/agentes y chat C01 (2026-10-07)
 
-- Dirección del autor documentada en [PLAN-EXTRA-LLM](../PLAN-EXTRA-LLM.md): LLM para objetivos/táctica,
-  cuerpo programado con modos y acciones directas, feedback textual, memoria y exploración de tokens propios.
-- Cola aparte **L00–L06**, incremental/en paralelo cuando haya capacidad; no desplaza D06/D08/D09.
-  Primero contrato y cliente sin gráficos en instancia aislada; BYOK, convivencia económica/PvP y
-  servicio comercial son fases posteriores. Reglas numéricas, autonomía offline y cobros siguen abiertos.
-- Solo planificación y enlaces revisados; implementación/pruebas de juego/publicación pendientes.
-  La propuesta de diferenciación/ingresos es una hipótesis con precedentes y métricas de piloto en el plan.
-  Próximo paso propio: L00 al asignarlo; la siguiente entrega principal conserva su estado actual.
+- El autor promueve agentes a parte **esencial** y ordena empezar por chat ingame; sustituye la
+  prioridad baja del 2026-10-05. Mente LLM conversa/decide, cuerpo determinista actúa, feedback textual.
+- Orden propio: **C01 → L00 → L01 → L02 → L03 → L04/L05 → L06**. [Brief C01](briefs/c01-chat.md):
+  mundo (instancia), cerca (posición/radio autoritativo) y susurros privados; WebSocket/`ws` existente,
+  identidad de sesión y confirmación de routing. Agentes usarán el mismo contrato y solo su audiencia.
+- C01 implementado y verificado localmente: [entrega](delivery/c01-chat.md), **17/17 pertinentes**,
+  conversación de dos invitados por UI y tamaños reducidos revisados. Regresión general **1707/1708**:
+  timeout de dos jugadores pasó aislado, causa exacta abierta. Sin despliegue ni ensayo físico.
+  **alpha.5/protocolo 20** fue el corte C01 y requiere cliente/servidor compatibles; las entregas navales
+  posteriores avanzan el protocolo. L00 usa contrato propio, separado de esa constante.
+  [Pulido visual C01](delivery/c01-chat-style.md): cristal azul, colores por canal, iconos y compositor
+  responsive; 10/10 del chat y capturas sobre el juego. Local, sin nuevo protocolo ni publicación.
+  [Burbujas sobre personajes](delivery/c01-chat-bubbles.md): Cerca inicial, susurros solo a participantes,
+  panel como historial; 18/18 pertinentes, tres clientes y capturas PC/vertical/horizontal. Sin despliegue.
+  Modelo real, historial durable, BYOK, offline/PvP y negocio pendientes. Construcción/naval/M5
+  continúan; D09 sigue siendo puerta para bienes en riesgo. No habilita proveedores ni cobros.
+- El autor pide completar el plan de agentes **paso a paso con una línea de acuerdo por parte**.
+  Registro único en [PLAN-EXTRA-LLM §4](../PLAN-EXTRA-LLM.md#4-cortes-de-desarrollo-y-aceptación):
+  Las 22 líneas L00a–L06e tienen dirección acordada; L00, L01a/b/c y L02a/b tienen evidencia local;
+  L02c añade autoridad opt-in, L03a API/mente simulada y L03b conversación simulada verificadas localmente;
+  L03c tiene metas/feedback y ciclo local simulados; L04a tiene memoria local con resúmenes simulados;
+  L04b–L06 siguen pendientes, con demostración
+  y estado de diseño/implementación por fila.
+  **D-A1 acordada:** personaje propio y plaza normal; su dueño autoriza capacidades y puede detenerlo.
+  El autor añade autonomía para elegir metas/acciones dentro de límites de gasto del usuario y archivos
+  reales de personalidad, memoria y objetivos visibles para su dueño. Distinguir inferencia de bienes
+  del juego; la visibilidad comienza con los archivos del runner L01, memoria persistente en L04.
+  **D-A2 acordada:** primera prueba de conversación, movimiento y ayuda en PvE; después comercio,
+  construcción y barcos. **L00b/D-A8 acordada:** estado propio, entorno observable y chat recibido,
+  distinguidos de predicción/recuerdos y con frescura. El autor exige poda/compactado/optimización:
+  archivo de memoria separado del contexto por consulta, recuperación pertinente y presupuesto de
+  la petición completa; fuentes/resúmenes visibles. Diseñar en L00, aplicar desde L03 y persistir en L04;
+  medir también el coste de resumir y comprobar que historial creciente no dispara el prompt.
+  **L00c/D-A9 acordada:** órdenes identificables, acotadas y cancelables; feedback de envío,
+  ejecución, confirmación, rechazo e incertidumbre. **L00d/D-A10 acordada:** ciclo con decisiones
+  simuladas, errores/desconexiones/cancelaciones e historial enorme antes de conectar un LLM.
+  Las cuatro líneas L00 tienen contrato/defaults de laboratorio y pruebas locales verificadas;
+  integración real, balance y cifras de producto permanecen pendientes.
+  **L01a acordada:** cliente textual sin gráficos conectado como jugador normal; observa/actúa
+  con feedback, humanos ven su personaje y el dueño inspecciona sus archivos. Adaptador invitado
+  verificado localmente; L02c añade vínculo/control opt-in del servidor, sin provisioning ni UI de lanzamiento.
+  **L01b acordada:** recepción/envío de Mundo, Cerca y susurros con identidad/reglas humanas y
+  audiencia del personaje. [Adaptación invitada verificada localmente](delivery/l01b-agent-chat.md);
+  la elección de respuestas LLM llega en L03.
+  **L01c acordada:** stop/muerte/desconexión limpian tareas/inputs; reentrada con estado fresco,
+  descartando órdenes/respuestas antiguas y conservando incertidumbre sin repetir acciones.
+  L01a/b/c tienen software invitado local con vida/reentrada comprobadas. **L02a acordada:** ir a un punto,
+  seguir y mantener distancia con colisiones y feedback de progreso/llegada/bloqueo/cancelación,
+  sin una consulta LLM por cada paso. [Controlador local verificado](delivery/l02a-agent-movement.md):
+  rutas directas acotadas, radio y bloqueo; navegación general no aceptada.
+  **L02b acordada:** modos agresivo, defensivo y de apoyo para atacar/proteger/retirarse/reaccionar
+  a amenazas en PvE mientras la mente piensa, con recursos/daño/colisiones/recargas del jugador.
+  [Controlador/encuentro local verificados](delivery/l02b-agent-pve.md); defaults de ensayo.
+  **L02c acordada:** stop/revocación prevalecen; el servidor invalida
+  el control anterior, cancela tareas, limpia entradas pendientes y rechaza respuestas tardías, con un
+  único controlador autorizado por personaje. [Autoridad opt-in verificada localmente](delivery/l02c-agent-authority.md):
+  cuentas separadas, epoch/CAS, prioridad y cola neutralizada antes del siguiente tick permitido.
+  Provisioning, panel, vínculo persistente y coordinación entre hosts pendientes.
+  **L03a acordada:** mente LLM intercambiable, decisiones estructuradas, contexto relevante/compacto
+  y límites de tokens/gasto/tiempo; latencia o fallo no detienen el cuerpo.
+  [API y modelos simulados verificados](delivery/l03a-agent-mind.md); proveedor/tokenizer/facturación
+  reales y gasto durable pendientes.
+  **L03b acordada:** personalidad en Mundo/Cerca/susurros dentro de permisos, solo mensajes entregados,
+  charla y órdenes autorizadas diferenciadas, sin ampliar permisos ni crear bucles entre agentes.
+  [Turnos explícitos y C01 verificados con modelos simulados](delivery/l03b-agent-conversation.md),
+  con audiencia fijada y supresión por proceso; proveedor/calidad/experiencia humana pendientes.
+  **L03c acordada:** metas ajustadas con feedback dentro de permisos/gasto,
+  objetivos visibles mientras el cuerpo actúa y validar el ciclo junto a un humano en PvE.
+  Metas/archivos y ensayo PvE local simulados verificados; encuentro y aceptación humana pendientes. **L04a acordada:** personalidad/objetivos/recuerdos entre
+  sesiones, fuentes/vigencia, recuperación relevante y compactado trazable dentro del presupuesto del prompt.
+  Journal/recuperación y reentrada locales verificados con resúmenes simulados; calidad/proveedor reales pendientes. **L04b acordada:** consulta/exportación de archivos reales,
+  borrado de recuerdos con sus resúmenes/índices derivados, aislamiento por dueño y reglas de retención.
+  Gestión/detalles/pruebas pendientes. **L05a acordada:** límites del dueño y reserva antes de inferencia
+  incluido compactado, consumo registrado, bloqueo de nuevas llamadas sin presupuesto suficiente,
+  aviso y claves fuera del juego. Operación/importes/pruebas pendientes. **L05b acordada:** panel del dueño
+  con modelo/estado/tarea/consumo/límites, medición/estimación/desconocido, archivos reales, ajuste de límites
+  y stop. Panel/pruebas pendientes. **L06a acordada:** piloto social/PvE pequeño con agentes identificables,
+  percepción/permisos del personaje exigidos por el servidor y aislamiento/carga comprobados antes de
+  ampliar acceso. Piloto/autoridad/pruebas pendientes. **L06b acordada:** inventario/compra/venta dentro de
+  permisos y presupuesto del juego separado de inferencia; reglas humanas, guardado/recuperación verificados
+  por operación y reintentos/reconexiones sin duplicar cobros ni objetos. Comercio/contratos/pruebas pendientes.
+  **L06c acordada:** construcción con cuerpo/comandos comunes, planos válidos, propiedad y límites de
+  materiales/gasto; desmontar/destruir como capacidades autorizadas por separado. Construcción/permisos/pruebas pendientes.
+  **L06d acordada:** tripulación/navegación autorizadas, mente para destino/táctica, cuerpo para mandos
+  humanos y permisos del barco/carga/colisiones; ruta costera y tarea de cubierta. Cuerpo naval/permisos/pruebas pendientes.
+  **L06e acordada:** evaluación con humanos de experiencia/recuperación/efectos económicos/coste de
+  inferencia/carga y decisión de ampliar o ajustar el piloto con evidencia. Evaluación y decisión pendientes.
+  Dirección de las 22 líneas acordada; [L00 v1](agents/interface-v1.md) y su
+  [fixture/evidencia](delivery/l00-agent-interface.md) ya están verificados localmente.
+  [L01a](delivery/l01a-agent-network.md): personaje invitado/plaza normal, movimiento visible desde
+  navegador, swing de práctica por inputs normales y archivos reales/scope/revisiones/hashes.
+  73 aprobadas, una omitida por EPERM de symlink; 12/12 de regresión chat/red en esa entrega.
+  [L01b](delivery/l01b-agent-chat.md): recepción/envío por C01, tres clientes ordinarios y privacidad
+  de susurros, rechazo/reintento y contexto podado con omisiones visibles. 87 aprobadas, una omitida
+  por symlink Windows; 20/20 de regresión chat/burbujas/red, dos capturas inspeccionadas.
+  [L01c](delivery/l01c-agent-lifecycle.md): muerte/corte/stop, archivo de resultados acotado y
+  reentrada explícita con sesión/snapshot frescos, IDs anteriores bloqueados y cero reanudación automática.
+  96 aprobadas, una omitida por symlink Windows; 20/20 de regresión chat/burbujas/red.
+  [L02a](delivery/l02a-agent-movement.md): ir/seguir/mantener distancia por inputs normales,
+  feedback de posición confirmada, cancelación/CLI y bloqueo en terreno controlado. 114 aprobadas,
+  una omitida por symlink Windows; 20/20 de regresión chat/burbujas/red.
+  [L02b](delivery/l02b-agent-pve.md): agresivo/defensivo/apoyo, interposición/guardia, retirada,
+  reservas/recarga y obstáculo en encuentros invitados controlados. 142 aprobadas, una omitida por
+  symlink Windows; 63/63 de regresión chat/burbujas/red/combate/armas/Sin ley/items en esa entrega.
+  [L02c](delivery/l02c-agent-authority.md): binding server-owned y runner autenticado opt-in,
+  exclusividad, prioridad directa/meta/reflejo, epoch/CAS y limpieza de cola/carry/último input.
+  163 aprobadas, una omitida por symlink Windows; 206/206 de regresión de host/cuentas/naval/chat/combate.
+  Protocolo 28; entrada npm apagada por defecto, sin aplicar migraciones ni tocar servicios externos.
+  [L03a](delivery/l03a-agent-mind.md) añade mente intercambiable/decisiones estructuradas, contexto completo
+  podado/compactado, reservas/uso desconocido, timeout y una consulta en curso. 211 pruebas de agentes
+  aprobadas, una omitida por symlink Windows; 206/206 de regresión. WebSocket y CLI locales con modelos
+  simulados; proveedor/tokenizer/facturación reales pendientes.
+  [L03b](delivery/l03b-agent-conversation.md) añade conversación explícita sobre chat entregado,
+  personalidad, audiencia fijada, contexto inspeccionable y límites contra respuestas repetidas;
+  WebSocket/CLI locales simulados. [L03c](delivery/l03c-agent-goals.md) añade metas con feedback,
+  archivo real revisado y ensayo PvE local frente al cuerpo sin modelo. [L04a](delivery/l04a-agent-memory.md)
+  añade journal local persistente, recuperación y resúmenes con fuentes/incertidumbre, escritura/CLI/reentrada
+  y coste de compactado verificados con modelos simulados. Sigue L04b; proveedor, encuentro/aceptación humana y calidad pendientes.
+  Provisioning/UI, percepción autoritativa, gasto real, memoria
+  administrada con borrado/retención y evaluación humana siguen pendientes. Sin publicación ni despliegue.
+
+### Dirección visual del puerto (2026-10-06)
+
+- El autor aportó una referencia de puerto tropical de cómic pintado y su lista de assets/materiales.
+  Precisión posterior: ilustrado moderno/tipo sprite cercano a Borderlands; láminas de arena y palmera.
+  [Catálogo HTML local](../tools/art-catalog/README.md) en `CATALOGO-DE-ARTE.cmd` / puerto 5190:
+  80 filas con referencia, archivos reales, variantes, notas y destino. Guardado en JSON del proyecto,
+  uploads versionados en `docs/art/catalog-files/` y ficha de integración por pieza.
+  [PLAN-VISUAL-PORT](../PLAN-VISUAL-PORT.md) analiza composición, formas, color, luz/agua y las brechas
+  frente al renderer; propone materiales, kit compartido, presupuestos y cortes V00–V08 ligados a A05/M8.
+  El índice del trabajo por familias está en [docs/art/README.md](art/README.md).
+- Reutilización inicial: atlas de balsa 1024/512, crate Dreamrise y geometría procedural. Roughness,
+  metallic y AO no se conservan en el adaptador toon actual; su consumo es trabajo propuesto.
+- **Catálogo local implementado**: [entrega](delivery/art-catalog.md), 7/7, guardado/uploads y
+  PC/móvil emulado en fixture, 14 enlaces verificados en su entrega inicial. Originales ahora encontrados
+  en `materials/references/`; lámina de arena copiada y registrada en sus cinco filas.
+- **Familia arena aplicada localmente:** [entrega S01](delivery/sand-family-v1.md), **10/10** y capturas
+  reales de inicio/costa PC y móvil emulado. Nueve PNG del autor intactos y WebP 1024/512, nueve mapas
+  únicos en manifiesto; seca, mojada con normal compartida, ondulada, par pintado de huellas y
+  muestra recortada de arena de orilla. Shader albedo/normal, máscaras del terreno y agua animada existentes.
+  Registro por filas con pares/evidencia; `PROBAR-ARENAS.cmd` / puerto 5192 abre el juego actual en solo.
+  Compactada se incorpora después en S03; conchas grandes pendientes. Repetición/densidad y arte final abiertos.
+  Ampliación [huellas dinámicas](delivery/sand-footprints-v1.md): apoyos alternados, 18–5 s según humedad,
+  una malla/pool con límite PC 256/táctil 128/baja 96; banda estática apagada por defecto. **35/35**,
+  caminata y desaparición PC/móvil emulado revisadas. Cosméticas, sin persistencia ni deformación.
+  v1/v2 generadas conservadas. Muestras Unreal revisadas; arena fotográfica no elegida.
+  El puerto completo sigue propuesto; sin benchmark físico ni publicación.
+- **S02 rocas de playa aplicadas localmente:** [entrega](delivery/coast-rocks-v1.md), **41/41** pertinentes.
+  SM_Rock exportado desde copia aislada, cuatro dependencias/hashes verificados; GLB 7.964 B/64 tri,
+  sin texturas nuevas. Tres siluetas pintadas en ocho rocas existentes de arena; colisiones/mapa conservados.
+  PC/móvil/low y fallos 404/GLB inválido/noassets revisados. Catálogo revisión 6, fila `roca-playa`
+  con fuente/modelo/capturas. `?solo&debug&q=high&tod=day&art=rocks` en preview 5192 lleva al ensayo
+  tras Jugar. Revisión artística del autor pendiente; conchas/cantos y palmas siguientes por filas.
+- **S03 suelos y transiciones aplicados localmente:** [entrega](delivery/ground-family-v1.md), **46/46** pertinentes.
+  Ocho PNG del autor intactos; hierba, tierra seca, transición arena–hierba y arena–tierra compactada.
+  Dos atlas compartidos PC 2048/móvil 1024; descarga nueva 8.37/2.23 MB, cuatro filas/revisión 7.
+  Playa/sendero/pueblo/arena PC/móvil/low y pérdida de color/normal/noassets revisados; shader enlazado,
+  14 samplers de 16. Plaza central de piedra preservada, altura/colisiones/clasificación sin cambios.
+  El ensayo corregido mantiene proyección mundial para evitar franjas al estirar el degradado.
+  Arte fino/repetición/FPS físicos y publicación pendientes; conchas/cantos/palmas siguen abiertos.
+- **S04 conchas y cantos aplicados localmente:** [entrega](delivery/beach-details-v1.md), **50/50** pertinentes.
+  Tres conchas propias y un grupo de tres cantos derivado del SM_Rock S02: cuatro GLB, 49.176 B en total,
+  normales geométricas/color por vértice, sin texturas nuevas. Nervaduras pintadas en shader, también en low.
+  Semilla actual: 100 conchas/58 grupos, máximo global 144/96; hash de renderer, props/RNG/colisiones intactos.
+  PC/móvil emulado/low y 404/GLB inválido/noassets revisados; catálogo revisión 9, 33 enlaces exactos.
+  Fuentes descargables como snapshots de código; muestrario temporal 1,7× distinguido del mapa real.
+  Arte final/FPS físicos/publicación pendientes; la base y raíces avanzaron después en S06.
+- Siguiente de esta línea: [V00 baseline](briefs/visual-v00-port-baseline.md), luego composición gris V01
+  y un rincón acabado V02. Ensayos aislados paralelos; topología/cubiertas funcionales requieren sus
+  entregas de gameplay. Mantener la cola y gates D06/D08/D09 y los cambios navales ajenos.
+
+- **S05 familia de palmeras aplicada localmente:** [entrega](delivery/palm-family-v1.md), tres GLB de dos partes
+  (1.016/1.064/1.112 triángulos; 377.204 B en total) y atlas compartidos del autor color/normal v2 (1024 PC,
+  512 móvil; 1.052.630 B PC y 357.894 B móvil). La semilla actual muestra 234 palmas (93/77/64); selección por
+  hash de coordenadas local al renderer, sin consumo de RNG ni cambios de colisión. Frondas recortadas con alpha
+  0,35 en color/normal/contorno y MeshDepth; viento conserva ecuación y reloj. Sombra de fronda aislada probada con
+  radio 0,35 configurable y mapas existentes (2048 high/medium, 1024 low, half 30): en la captura de escritorio
+  cambian dos huecos al comparar viento 0/2,1; en móvil medium no hubo error de shader y en low los huecos pequeños
+  desaparecen a 1024. **56/56** pruebas y 4 comprobaciones sintácticas, dos recomputaciones del generador pasaron.
+  Ocho casos visuales (tres modos y cinco fallos) terminados sin errores JS/shader. Snapshots de seis fuentes
+  verificados con --check; catálogo revisión 10: 80 filas, 24 aplicadas, 52 enlaces de palma exactos por bytes
+  comprobados en 5190. Los conjuntos S01/S03/S02/S04 (47/44/13/33 enlaces) también pasan y la repetición
+  idempotente conserva revisión 10. Revisión artística fina, FPS físicos y publicación pendientes.
+  M5/D08 conservan su cola.
+
+- **S06 raíces y plantas bajas alrededor de palmeras, integradas localmente:** [brief](briefs/visual-s06-palm-bases.md),
+  [entrega](delivery/palm-bases-v1.md). Dos GLB (`open`/`lush`), 54.728/70.952 B (125.680 B total), 410/540 triángulos.
+  Atlas nuevo de hojas color+normal 512×256 PC (74.944 B) y 256×128 móvil coarse (30.006 B); raíces usan el bark UV
+  ya cargado por S05. Descarga nueva total por dispositivo: 200.624 B PC / 155.686 B móvil. De las 234 palmeras
+  existentes, 144 bases (74 abiertas/70 frondosas); selección por hash local al renderer, sin RNG ni cambios de props,
+  colisiones o mapa. Rechaza huellas sobre caminos, agua/muelle, pendientes, NPCs y otros obstáculos. Seis snapshots
+  de código inmutables generados y verificados; snapshots S05 históricos conservados. **62/62** pruebas,
+  sin omisiones. Ocho QA (PC/móvil/low y cinco fallos), sin errores JS de juego ni GL, programas enlazados;
+  atlas realmente cargados 512×256 PC / 256×128 móvil. Modelos ausentes/inválidos usan geometría nativa;
+  sin color las hojas usan silueta geométrica, sin normal conservan pintura; noassets añade cero solicitudes S06.
+  Fallos esperados de assets en sus fixtures y mensajes auxiliares 404 documentados; consola no totalmente vacía.
+  Catálogo revisión 11, 82 filas/26 aplicadas, 47 enlaces HTTP únicos exactos. Conjuntos anteriores
+  S01/S03/S02/S04/S05 (47/44/13/33/52) también pasan. Galería temporal 1× oculta personajes solo en muestrario;
+  contacto real conserva dither S05. Arte fino, FPS físicos y publicación pendientes; M5/D08 conservan su cola.
+- **S07 arbusto tropical integrado localmente:** [brief](briefs/visual-s07-shrubs.md),
+  [entrega](delivery/shrubs-v1.md). Tres modelos 424/512/440 triángulos, 79.208 B juntos; atlas color/normal
+  512² PC / 256² móvil. Descarga nueva 250.132 B PC / 138.228 B móvil. Seed 99282957: 784 arbustos
+  (330 redondos/290 bajos/164 altos), 262 sustituciones y 522 nuevos; 80 anclajes inseguros conservan
+  arbusto anterior. Distribución por hash, límite 900, sin RNG/props/colliders. Exclusiones de agua,
+  muelle, caminos, zonas volcánicas, pendientes, obstáculos y accesos. Viento y recorte alfa 0,35 en
+  color/contorno/sombra, normal 0,16; arte original y fuentes históricas intactos. **63/63** pruebas
+  pertinentes y ocho QA (PC/móvil/low y cinco fallos), sin errores JS de juego ni GL; programas enlazados,
+  URLs/resoluciones comprobadas. Favicon 404 de preview e inyección de errores de asset documentados.
+  Seis snapshots de integración y dos generadores --check pasan. Catálogo conserva concepto y añade
+  previews/archivos/evidencia del mapa. FPS físicos, revisión artística fina y publicación pendientes.
+
+- **S08 pasto volumétrico integrado localmente:** [brief](briefs/visual-s08-grass-patches.md),
+  [entrega](delivery/grass-patches-v1.md). Seed 99282957: 522 matas/184 grupos, tres siluetas.
+  Material opaco compartido sin mapas; 28/36/44 tri cerca y 14/18/22 lejos, instancing en celdas de 24.
+  High 600/radio 55; móvil-medium 320/38; low 160/28. Viento suave, recibe sombras existentes,
+  sin sombra propia ni pase de contorno. Distribución cosmética por hash, despejes compartidos con arbustos.
+  **69/69** pertinentes; PC/móvil/low/noassets sin errores de página/juego/GL, capturas inspeccionadas.
+  Misma vista: +8/+6/+2 draw calls y +918/+464/+108 tri respectivamente; no son FPS físicos.
+  Nueve snapshots inmutables, fila propia `pasto-volumetrico`; catálogo revisión 15, 83 filas/28 aplicadas.
+  Revisión artística del autor, dispositivos físicos y publicación pendientes.
+
+- **S09 madera varada integrada localmente:** [brief](briefs/visual-s09-beach-debris.md),
+  [entrega](delivery/beach-debris-v1.md). 34 conjuntos (19 ramas/ocho troncos/siete tablones) sobre
+  arena con despejes de accesos, conchas y vegetación. Tres GLB de 18.740 B, 208/96/132 tri;
+  tablones derivados de SM_Logs exportado de copia aislada, fuentes Unreal intactas. Material opaco
+  compartido con vetas, instancing y límites high 96/65 m, móvil-medium 64/45, low 32/32.
+  Sin texturas nuevas ni sombra propia. **77/77** pertinentes y seis casos PC/móvil/low/noassets/404/GLB
+  inválido, sin errores JS de juego ni GL; capturas inspeccionadas. Misma vista: +3/+4/+3 llamadas,
+  +568/+664/+568 tri respectivamente, no FPS. Once snapshots históricos; registro `restos-playa`.
+  Revisión artística del autor, FPS físicos y publicación pendientes.
+
+- **S10 algas someras integradas localmente:** [brief](briefs/visual-s10-seaweed.md),
+  [entrega](delivery/seaweed-v1.md). 197/216 posiciones submarinas existentes, tres formas pintadas
+  (58 cintas/62 bifurcadas/77 abanicos), oscilación y LOD de 16 tri por mata. Material opaco compartido,
+  sin imágenes/GLB nuevos, sombra propia ni pase de contorno. Fondo inclinado y ocho muestras de apoyo;
+  puntas sumergidas y muelle despejado. High 256/65/22, móvil-medium 160/45/14, low 96/32/solo reducido.
+  **83/83** pertinentes; cuatro QA PC/móvil/low/noassets sin errores JS de juego ni GL, capturas revisadas.
+  Misma vista: +4/+7/+4 llamadas y +684/+696/+80 tri; no son FPS. Ocho snapshots históricos;
+  fila `hierbas-algas` junto al pasto costero S08, catálogo revisión 17, 83 filas/30 aplicadas, 31 enlaces exactos.
+  Espuma/cáusticas actuales limitan lectura fina; calibración de agua, arte final, FPS físicos y publicación pendientes.
+
+- **S11 agua más clara integrada localmente:** [brief](briefs/visual-s11-water-clarity.md),
+  [entrega](delivery/water-clarity-v1.md). Trama de espuma más fina/discontinua, cáustica compartida
+  0,12 y refracción 0,02 para leer fondo/algas; mismas texturas y superficie de dos triángulos.
+  Corrige depth de `rtNormal` al cambiar tamaño antes de usar el framebuffer: falla histórica
+  low→medium conservada en evidencia. **88/88** pertinentes; seis casos finales PC/móvil/low/noassets/
+  noche/viewport vertical y 24 cambios de calidad sin errores de juego/GL, programas enlazados.
+  27 capturas antes/después, once fuentes finales congeladas, catálogo revisión 18, 83 filas/32
+  aplicadas y 44 enlaces HTTP exactos. `m11-mar-espuma`/`fondo-marino` aplicadas; `vfx-contacto-agua`
+  pendiente. Contadores globales no aíslan coste visual; FPS físicos, arte fino y publicación pendientes.
+
+- **S12 pintura de roca natural integrada localmente:** [brief](briefs/visual-s12-rock-faces.md),
+  [entrega](delivery/rock-faces-v1.md). 33 rocas existentes (ocho S02 + 25 procedurales) comparten
+  caras pintadas cálidas, fracturas finas y humedad costera; 35 volcánicas/arena de combate/lava mantienen
+  su shader anterior. Instancias/matrices/colores/atributos geométricos coinciden por bytes; cero imágenes
+  nuevas. Batches espaciales 34→38, mismos 5.312 triángulos y dos materiales de color, sin afirmar FPS.
+  **92/92** pertinentes; seis casos finales, 24 cambios de calidad sin errores JS de juego/assets/GL,
+  programas enlazados, capturas inspeccionadas. 27 comparaciones y nueve fuentes finales congeladas.
+  Catálogo revisión 20, 85 filas/34 aplicadas, 43 enlaces exactos; `roca-cara` y `m03-roca-natural` aplicadas
+  a objetos existentes. Terreno no cambia: módulos/caras de acantilado y arcos pendientes; también
+  ajuste artístico final, FPS físicos y publicación. Continuidad naval/M5/chat conservada.
+
+- **S13 tablones del muelle integrados localmente:** [brief](briefs/visual-s13-dock-wood.md),
+  [entrega](delivery/dock-wood-v1.md). 67 tablas y dos vigas de cubierta reutilizan el atlas de balsa
+  1024/512 con cuatro recortes y espejos, sin imágenes nuevas. Misma geometría/posición/fallback;
+  un material de color propio y 19.872 B de UV. **105/105** pertinentes, siete casos finales y 28 cambios
+  de calidad GL=0, 20 capturas y ocho fuentes finales congeladas. Catálogo revisión 22, 86 filas/35 aplicadas,
+  37 enlaces HTTP exactos; M01 extendida y `muelle-tablones` aplicada. Postes/soportes/kit modular,
+  arte final/FPS físicos/publicación pendientes; continuidad naval/M5/chat/personajes conservada.
+
+- **S14 madera del pueblo integrada localmente:** [brief](briefs/visual-s14-town-wood.md),
+  [entrega](delivery/town-wood-v1.md). Nueve pares del autor en seis casas, un puesto y ocho postes;
+  paredes/puerta/ventanas/pisos/parches/vetas/refuerzos. Dos atlas compartidos 2048 PC / 1024 táctil,
+  normal lineal 0.18; color ausente recupera el material anterior y normal ausente conserva pintura.
+  Mismas 27 mallas / 42.034 triángulos; +1.350.720 B UV/máscara, dos texturas y un material propio.
+  **109/109** pertinentes, ocho casos finales / 32 cambios de calidad GL=0, 44 capturas y doce fuentes
+  congeladas. Catálogo revisión 24, 97 filas / 44 aplicadas; 101 enlaces exactos y ficha de puerta con
+  52 imágenes cargadas. Los 88 registros previos completos se conservaron. Kit modular/huecos,
+  techos/toldos, arte fino/FPS físicos/publicación pendientes; naval/M5/chat/personajes conservados.
+
+- **S15 paja/toldo integrados localmente:** [brief](briefs/visual-s15-town-covers.md),
+  [entrega](delivery/town-covers-v1.md). Seis casas con pintura de paja y un puesto del mercado con
+  lona del atlas existente 1024/512. Misma geometría/mapa/sombras; cero imágenes/mallas/pasadas nuevas,
+  +1.350.720 B de máscara/coordenadas. **113/113** pertinentes; siete casos finales, 28 cambios de
+  calidad GL=0, 40 capturas y ocho fuentes finales congeladas. Catálogo revisión 28, 101 filas / 46
+  aplicadas, 55 enlaces HTTP exactos; las 99 filas iniciales intactas. Ambas fichas abren 42 imágenes
+  y 102 enlaces sin errores JS. Fuentes de diagnóstico retenidas; usar `final-v3` para reproducir.
+  Kit modular/techo irregular/tela animada/FPS físicos/publicación abiertos. Siguen cuerdas/amarres;
+  naval/M5/chat/agentes/Web3/personajes conservan su continuidad.
+
+- **S16 cuerdas del muelle integradas localmente:** [brief](briefs/visual-s16-dock-ropes.md),
+  [entrega](delivery/dock-ropes-v1.md). Vueltas sobre ocho postes y dos rollos laterales, atlas existente
+  1024/512 compartido, tinte nativo si falta. +1 malla/material, 4.160 triángulos y 108.672 B de buffers;
+  cero imágenes/descargas nuevas, sin caster de sombra/contorno. Props anteriores/mapa/RNG intactos.
+  **118/118** pertinentes, siete contextos finales y 28 cambios de calidad GL=0; 30 capturas y ocho
+  fuentes congeladas. Catálogo revisión 29, 102 filas / 47 aplicadas; 101 filas previas intactas,
+  44 enlaces HTTP exactos y ficha con 32 imágenes / 77 enlaces sin errores. Cuerda física/conexión
+  a barcos, nudos complejos, arte fino/FPS físicos/publicación pendientes.
+  naval/M5/chat/agentes/Web3/personajes conservan su continuidad.
+
+- **S17 barriles y cajas integrados localmente:** [brief](briefs/visual-s17-port-cargo.md),
+  [entrega](delivery/port-cargo-v1.md). Ocho barriles cerrados con duelas/aros pintados y siete cajas
+  Dreamrise abiertas con veta horizontal; comparten color/normal del pueblo 2048/1024. Cero imágenes,
+  descargas, mallas o pasadas nuevas; geometría/mapa conservados. **122/122** pertinentes, tres
+  contextos previos y nueve finales, 36 capturas / 36 cambios de calidad finales GL=0. Ocho fuentes
+  congeladas. Catálogo revisión 31, 104 filas / 48 aplicadas; otras 102 filas intactas y 58 enlaces
+  HTTP exactos. Ambas fichas revisadas, todas sus imágenes decodifican. Variantes adicionales,
+  almacenamiento funcional, arte fino/FPS físicos/publicación pendientes; demás continuidades conservadas.
+
+- **S18 faroles y señalización integrados localmente:** [brief](briefs/visual-s18-town-fixtures.md),
+  [entrega](delivery/town-fixtures-v1.md). Ocho faroles con madera/jaula oscura y dos letreros con
+  veta horizontal y letras frontales. Atlas color/normal S14 compartidos 2048/1024; dos canvas 256²
+  sustituyen los anteriores, cero descargas nuevas. +640 triángulos / 117.840 B en buffers, sin mallas,
+  pasadas o luces nuevas. Mapa/colisiones/fuentes de luz intactos. **127/127** pertinentes, un QA previo
+  y ocho finales / 36 capturas / 32 cambios finales de calidad GL=0, siete fuentes `final-v2` congeladas.
+  Catálogo revisión 32, 106 filas / 50 aplicadas; 104 filas anteriores intactas, 53 enlaces HTTP exactos
+  y fichas con 40 imágenes / 98 enlaces cada una, sin fallos. Arte fino/FPS físicos/publicación pendientes.
+  Continuado por S19; demás continuidades conservadas.
+
+- **S19 banco y muebles integrados localmente:** [brief](briefs/visual-s19-town-furniture.md),
+  [entrega](delivery/town-furniture-v1.md). Banco de carpintero con repisa, tornillo y martillo;
+  mesa/taburete/postes/caja de agujas de Doña Sepia con atlas S14 compartidos 2048/1024, sin descargas nuevas.
+  Banco 6 → 2 mallas con gema, +96 triángulos; props estáticos conservan forma y presupuesto.
+  Ancla/nodos/crafting intactos; fallback sin color conserva el banco anterior. **147/147** pertinentes,
+  un PC previo y siete contextos finales / 24 capturas / 28 cambios de calidad finales GL=0.
+  Nueve fuentes congeladas; catálogo revisión 33, 108 filas / 52 aplicadas, 106 anteriores intactas.
+  43 rutas HTTP exactas; dos fichas con 28 imágenes / 76 enlaces, sin errores.
+  Arte fino/FPS físicos/publicación pendientes. Continuado visualmente por S20; composición funcional Salty Shore,
+  plaza/capitanía y kit de obra A0/A1 siguen pendientes, con anclas coordinadas antes de mover props.
+  Naval/M5/chat/agentes/Web3/personajes conservan su continuidad.
+
+- **S20 fachada Salty Shore integrada localmente:** [brief](briefs/visual-s20-town-hall.md),
+  [entrega](delivery/town-hall-v1.md). Tela roja con ancla/letras, madera ilustrada y mástil en
+  el lateral del tejado de una hut existente; atlas 2048/1024 compartidos y canvas 256², cero descargas nuevas.
+  +218 triángulos / 28.376 B de buffers / una malla, sin luces ni pasos nuevos del pipeline.
+  Mapa, colisiones, recursos, puerta/escaleras y Capitana Brea conservados; no capitanía funcional nueva.
+  **152/152**, un PC previo y siete finales / 24 capturas / 28 cambios de calidad GL=0;
+  25 mallas estáticas intactas y un chunk ampliado, cámaras PC equivalentes. Siete fuentes congeladas.
+  Catálogo revisión 34, 109 filas / 53 aplicadas, 108 anteriores intactas; 42 rutas HTTP exactas;
+  ficha con 28 imágenes / 76 enlaces, todas decodificadas y sin errores JS. Kit de obra A0/A1,
+  composición funcional, FPS físicos/publicación y demás continuidades permanecen pendientes.
 
 ### Discusión de navegación activa (2026-10-06)
 
