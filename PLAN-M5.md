@@ -444,6 +444,19 @@ file-backed o restart real de GameHost. Sigue convertir PearlStaging/returnPearl
 atomicidad reloj/gameplay, política offline/cadencia/startup/autoridad entre procesos y aceptación real.
 Afinidad permanente, finalizador/leases y P4/P6 abiertos; sin host/CLI/env/protocolo/defaults/publicación.
 
+Checkpoint D09f-2b.35, base 241edb9: **dejar perlas de bolsa con plazos durables**.
+PearlStaging leave opt-in captura ground durable antes de I/O y proyecta marker conservando tiempos,
+geometría, bolsa/progreso/perla tragada/eventos. Binding privado de plan/tick/request valida recibo y
+proyección antes de apply reversible; generación gestionada sigue avanzando. Legacy conserva shape.
+**446/446** pertinentes aisladas, veinte archivos y **16 nuevas**, 429 fuentes + 954 archivos Three
+estables; **82/82** focales compartidas con 122 fuentes estables. SDK/SQL001–013: leave nuevo, replay
+sin cambio de perfil, World sin writes async, dos restauraciones tick cero y checkpoint desde reloj
+recargado; disponibilidad pasada negativa y grounds/ventanas originales conservados.
+[Contrato/evidencia](docs/delivery/d09f-pearl-leave-clock.md). Sin SQL nueva/canario live/reopen de proceso
+ni host/defaults/protocolo/publicación. Siguen dueño staged de pickup y retorno/venta de perlas, dominio
+legacy, atomicidad reloj/gameplay/crash, política offline/cadencia/startup/leases y aceptación real.
+Afinidad permanente por personaje/tipo, finalizador y P4/P6 abiertos; trabajo paralelo conservado.
+
 ## 1. Decisión: Supabase (propuesta del autor)
 
 - **Postgres** para todo lo persistente, **Auth** para las cuentas (correo / Google / Discord), **Realtime** para

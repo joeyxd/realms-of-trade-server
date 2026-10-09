@@ -10,6 +10,7 @@ import { batchOperation, checkedBatchResult } from './pearlBatch.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
 import { pearlEcsDraft, pearlSwallowEffect } from './pearlEcsEffect.mjs';
 import { PEARL_PROFILE_ECS_FIELDS } from './pearlProfileSnapshot.mjs';
+import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 
 const clone = (value) => structuredClone(value);
 const frozen = (value) => {
@@ -73,13 +74,15 @@ function stagedDrop(world, planned) {
 export class PearlStaging {
   #captureProfile; #capturing = false; #captureViolation = false;
   #prepareInputs; #inputCallback = false; #inputViolation = false;
+  #deadlineClock; #leavePlans = new WeakMap(); #clockPlans = new WeakMap();
 
-  constructor(sessions, world, scope, { limit = 64, captureProfile = null, prepareInputs = null } = {}) {
+  constructor(sessions, world, scope, { limit = 64, captureProfile = null, prepareInputs = null, deadlineClock = null } = {}) {
     this.sessions = sessions; this.world = world; this.scope = groundKey(scope);
     if (!Number.isInteger(limit) || limit < 1 || limit > 256 ||
         (captureProfile !== null && typeof captureProfile !== 'function') ||
         (prepareInputs !== null && typeof prepareInputs !== 'function') ||
         (sessions.pearls.journal && sessions.pearls.journal.scope !== this.scope)) throw new StoreError('configuration');
+    this.#deadlineClock = deadlineClock === null ? null : assertGroundDeadlineClock(deadlineClock, this.scope);
     this.#captureProfile = captureProfile;
     this.#prepareInputs = prepareInputs;
     this.limit = limit; this.accounts = new Map(); this.uids = new Map(); this.operations = new Map();
@@ -219,6 +222,8 @@ export class PearlStaging {
     if (this.operations.size >= this.limit) throw new StoreError('busy');
     const ledger = w.pearlLedger.get(uid);
     if (ledger?.place !== 'profile' || ledger.owner !== from.profile.pirateId || ledger.entity !== from.entity) throw new StoreError('ownership');
+    const capturedTick = w.tick;
+    if (this.#deadlineClock !== null) this.#deadlineClock.at(capturedTick);
     const draft = pearlEcsDraft(w.ecs, from.entity);
     const view = { ecs: { ...draft.ecs, names: clone(w.ecs.names) }, map: w.map, raftDeck: w.raftDeck,
       tick: w.tick, nextDrop: 1, drops: new Map(), profiles: new Map([[from.entity, clone(from.profile)]]),
@@ -230,14 +235,25 @@ export class PearlStaging {
         view.pearlLedger.size !== 1 || view.pearlLedger.get(uid)?.drop !== 1 ||
         view.events.length !== 2 || view.events[0].type !== 'loot' || view.events[1].type !== 'pearlChanged' ||
         view.events[1].op !== 'leave') throw new StoreError('effect');
+    const ground = { x: drop.x, z: drop.z, availableAt: drop.pickAt, returnAt: drop.t };
+    let localDrop = drop;
+    if (this.#deadlineClock !== null) {
+      ground.availableAt = this.#deadlineClock.at(drop.pickAt);
+      ground.returnAt = this.#deadlineClock.at(drop.t);
+      const projection = this.#deadlineClock.project(ground, 'pearl');
+      if (projection.pickAt !== drop.pickAt || projection.t !== drop.t) throw new StoreError('operation');
+      localDrop = { ...clone(drop), ...projection };
+      this.#deadlineClock.assertDrop(localDrop, 'pearl', ground);
+    }
     const meta = groundIntent({ operationId: randomUUID(), ...drop.pearl, from: from.key, to: null,
       expectedVersion: managed ? 1 : expectedVersion, world: this.scope,
-      ground: { x: drop.x, z: drop.z, availableAt: drop.pickAt, returnAt: drop.t } });
+      ground });
     // Validate the frozen destination before IO; unresolved generations never leave staging.
     if (managed) meta.expectedVersion = null;
     const plan = frozen({ effect: 'leave', meta,
       profiles: [{ id: from.key, before: clone(from.profile.pearls), after: clone(after.pearls) }],
-      ledgers: [{ uid, data: clone(view.pearlLedger.get(uid)) }], drop: clone(drop), events: view.events });
+      ledgers: [{ uid, data: clone(view.pearlLedger.get(uid)) }], drop: clone(localDrop), events: view.events });
+    if (this.#deadlineClock !== null) this.#leavePlans.set(plan, { plan, tick: capturedTick, request: null });
     return this.enqueue(plan, [from], new Map([[uid, ledger]]), managed);
   }
 
@@ -282,15 +298,20 @@ export class PearlStaging {
     // progress now, so an older initial ECS capture cannot overwrite progress earned in that wait.
     ctx.baselines = snapshots;
     ctx.plan = frozen(resolved);
+    const binding = this.#clockPlans.get(ctx);
+    if (binding) binding.plan = ctx.plan; // Only this trusted generation resolution may replace the plan.
     return ctx.plan;
   }
 
   enqueue(plan, endpoints, ledgers, managed = false) {
     this.#assertCaptureEntry();
+    const binding = this.#leavePlans.get(plan);
+    if (this.#deadlineClock !== null && plan.effect === 'leave' && !binding) throw new StoreError('operation');
     const uids = plan.meta.items ? plan.meta.items.map((q) => q.uid) : [plan.meta.uid];
     const reservation = this.gate.reserve({ accounts: endpoints.map((e) => e.key), uids });
     const ctx = { plan, endpoints, uids, reservation, ledgers: new Map([...ledgers].map(([uid, row]) => [uid, clone(row)])),
       state: 'pending', sequence: ++this.sequence };
+    if (binding) this.#clockPlans.set(ctx, binding);
     // Capture before any async save/IO. The optional trusted adapter is read-only and synchronous;
     // its selectors contain no caller account identity, capability, inventory or receipt.
     try {
@@ -330,6 +351,7 @@ export class PearlStaging {
             const { actor: _actor, ...intent } = plan.meta;
             ctx.request = batchOperation({ ...intent, profile: profiles[0] }).request;
           } else ctx.request = groundOperation({ ...plan.meta, profiles }).request;
+          if (binding) binding.request = ctx.request = frozen(ctx.request);
           return built;
         }, ctx.reservation);
         if (!ctx.request || !(batch ? checkedBatchResult : checkedGroundResult)(result?.receipt, ctx.request).ok) {
@@ -344,8 +366,24 @@ export class PearlStaging {
     return Object.freeze({ operationId: plan.meta.operationId });
   }
 
+  #assertClockPlan(ctx, receipt = false) {
+    const binding = this.#clockPlans.get(ctx);
+    if (!binding) return;
+    if (ctx.plan !== binding.plan || this.world.tick < binding.tick) throw new StoreError('operation');
+    this.#deadlineClock.at(this.world.tick);
+    const plan = binding.plan;
+    if (plan.drop?.kind !== 'pearl' || plan.drop.pearl?.uid !== plan.meta.uid ||
+        plan.drop.pearl?.kind !== plan.meta.kind) throw new StoreError('operation');
+    this.#deadlineClock.assertDrop(plan.drop, 'pearl', plan.meta.ground);
+    if (receipt && (!binding.request || ctx.request !== binding.request ||
+        binding.request.uid !== plan.meta.uid || binding.request.kind !== plan.meta.kind ||
+        canonicalText(binding.request.ground) !== canonicalText(plan.meta.ground) ||
+        !checkedGroundResult(ctx.receipt, binding.request).ok)) throw new StoreError('response');
+  }
+
   current(ctx) {
     if (!this.gate.active(ctx.reservation)) return false;
+    try { this.#assertClockPlan(ctx); } catch { return false; }
     const w = this.world;
     return ctx.endpoints.every((e) => this.sessions.clients.get(e.clientId) === e.session &&
       this.sessions.accounts.get(e.key) === e.session && !e.session.closed && !e.session.failed &&
@@ -411,6 +449,7 @@ export class PearlStaging {
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         this.assertLedgers(ctx);
+        this.#assertClockPlan(ctx, true);
         writes = endpoints.map((e) => {
           const delta = plan.profiles.find((p) => p.id === e.key), before = normalized(e.profile), live = this.#snapshot(e);
           // Correctly routed snapshots are buffered above. Any storage work in the apply gap is a
@@ -463,6 +502,7 @@ export class PearlStaging {
       try {
         if (!this.current(ctx)) throw new StoreError('cancelled');
         this.assertLedgers(ctx);
+        this.#assertClockPlan(ctx, true);
         if (writes.some((change) => canonicalText(normalized(change.e.profile)) !== change.beforeText)) throw new StoreError('ownership');
         effect?.assertCurrent(w.ecs);
         dropEffect?.assertCurrent();
