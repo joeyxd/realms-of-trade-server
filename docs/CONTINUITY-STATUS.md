@@ -2,6 +2,12 @@
 
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
+**AREA07 RNV03 observado, 2026-10-10 20:56:35 UTC:** alpha.28/protocolo 40, `9f23be3`.
+[Noche y farol portátil](delivery/rnv03-dark-night.md), reloj compartido y N/toque público.
+Sesión solamente, apagado en muerte/reentrada; sin SQL/perfil/writer nuevo. Una imagen sana, 107/107 de imagen,
+entrada real WSS/reloj/mapa, cero errores/pendientes y timer activo. SQL018/019 siguen sin montar;
+GM03a y L03d-a preservados. No prueba persistencia autenticada del farol ni activa coordinadores opcionales.
+
 **AREA17 L03d-a, corte local 2026-10-10:** [ledger de inferencia nativa](delivery/l03d-native-metering.md),
 separado de M5 y de la factura externa. `agent-inference-budget/v2` persiste `metering` con IDs
 de proveedor/modelo declarados, unidad nano USD, tarifas/referencia/fecha fijadas y hash por reserva/

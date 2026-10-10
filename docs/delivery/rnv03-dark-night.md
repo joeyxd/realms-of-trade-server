@@ -2,7 +2,7 @@
 
 [Contrato](../briefs/rnv03-dark-night.md). Alpha.28/protocolo 40.
 
-## Implementación local
+## Implementación
 
 El árbol de trabajo implementa el farol básico de cinturón, su acción N/toque, confirmación por la
 autoridad de sesión y réplica en snapshots. Se apaga al morir y al salir/reentrar; no crea un objeto
@@ -76,7 +76,17 @@ entrada de cámara se sustituyen como aceptación por la evidencia final asentad
   El botón naval PC queda encima del velocímetro; móvil conserva separación del arco de acciones.
 - **Aceptación local completada**; noche/faroles y regresión naval comprobados. No acredita navegación
   humana prolongada ni una travesía en mar abierto.
-- **Despliegue pendiente:** updater existente, revisión/imagen/salud/entrada pública por verificar.
+- **Implementado, publicado y activo:** código `acfba03`, integración `9f23be3`;
+  revisión activa `9f23be355107ce0fdb783a5f68fd9cc93289cbda`, imagen `sha256:0813ca3ffaeb86b22ce09a311a9f7f956862e29d2178152a469467d424345f8e`.
+  Observado 2026-10-10 20:56:35 UTC. [Despliegue](rnv03-dark-night/deployment.json),
+  [entrada pública](rnv03-dark-night/public-browser.json), [salud posterior](rnv03-dark-night/post-smoke.json).
+  Una autoridad sana, 107/107 de imagen; reloj real, N encendido/apagado, accesorio/fuente y mapa/minimapa.
+  Invitado nuevo, sin escrituras de inventario ni prueba de guardado autenticado del farol.
+  [Captura de partida](rnv03-dark-night/public-gameplay.png) y [mapa](rnv03-dark-night/public-map.png) inspeccionados.
+- Integración concurrente: SQL019 mantiene su coordinator sin montar; GM03a y L03d-a se conservan.
+  No se aplicó SQL ni se cambiaron flags/secretos por RNV03. Repetición final: [107/107 release](rnv03-dark-night/merged-release-final.tap),
+  [70/70 focales GM/agentes/farol](rnv03-dark-night/merged-integration.tap), [266/266 diario](rnv03-dark-night/merged-journal.tap).
+  Se solapan con selecciones previas; no sumar como casos únicos.
 - Sigue agua costera/reembarque: primero contrato de carga, agotamiento, rescate y pérdidas.
 
 La luz local no proyecta sombras ni oclusión por paredes. La noche oscura es una regla de

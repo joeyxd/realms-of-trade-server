@@ -13,13 +13,15 @@ y conciliación sin confundir cargo calculado con factura. V1/panel/runner sigue
 proveedor, SDK, credencial ni SQL nuevo. Falta elegir proveedor/modelo y aceptar transporte, memoria,
 conversación/PvE y coste reales. Fuente integrada alpha.27/protocolo 39; publicación en la entrega.
 
-**AREA07 RNV03, 2026-10-10 — alpha.28/protocolo 40, implementación local en aceptación:**
+**AREA07 RNV03, 2026-10-10 — alpha.28/protocolo 40, implementado y activo:**
 [Contrato](briefs/rnv03-dark-night.md) y [entrega](delivery/rnv03-dark-night.md).
 La noche respeta el reloj compartido, sin selector cosmético ni relleno automático del jugador.
 N/toque enciende el farol básico de cinturón; otros humanos aprovechan su luz y ven el accesorio.
 Estado de sesión, apagado al morir/reentrar, sin inventario/combustible/perfil/SQL nuevo ni otro writer.
 El transporte administrado de agentes conserva sus permisos actuales: no admite este interruptor.
-La entrega registra pruebas, capturas y revisión/imagen/entrada pública antes de marcar desplegado.
+650/650 integradas, 107/107 release; integración concurrente 70/70 focales y 107/107 release (solapamiento).
+VPS `9f23be3` sano a 2026-10-10 20:56:35 UTC, una autoridad, imagen 107/107 y timer activo.
+Entrada real WSS: N encendido/apagado, accesorio/fuente, hora compartida y mapa/minimapa comprobados.
 Sigue agua costera/reembarque con reglas explícitas de carga/agotamiento/rescate, después provisiones/hogar.
 
 **AREA15, 2026-10-10 — diario del sobre:** [SQL019 y recuperación](delivery/m5-ground-transaction-journal.md).
