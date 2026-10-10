@@ -1,6 +1,6 @@
 # RNV04 — combustible privado y fuegos útiles
 
-Contrato de implementación local de AREA07. La entrega visual, aceptación pública y activación de SQL022 siguen pendientes. Este corte reutiliza la simulación, el perfil de personaje/balsa y la autoridad M5 existentes; no introduce otra autoridad de guardado.
+Contrato AREA07, alpha.31 / protocolo 42. Implementación y aceptación local completadas; SQL022 aplicada y canario real 8/8. Publicación y entrada autenticada pendientes de registrar en la [entrega](../delivery/rnv04-fire-fuel.md). Este corte reutiliza la simulación, el perfil de personaje/balsa y la autoridad M5 existentes; no introduce otra autoridad de guardado.
 
 ## Reglas de producto
 
@@ -15,7 +15,7 @@ Contrato de implementación local de AREA07. La entrega visual, aceptación púb
 
 `src/data/fire.js` centraliza las duraciones y el límite de slots. `src/sim/economy/fire.js` sanea el estado versionado, calcula el tiempo restante y aplica carga/interruptor como transiciones puras. La omisión antigua del campo se interpreta vacía; versiones futuras o estado inválido fallan cerradas.
 
-El perfil guarda un mapa privado versionado con revisión propia. La antorcha usa la clave `hand`; cada pieza de la balsa usa `[shipId, conditionEntryId]`, para que quitar/reconstruir una pieza no herede combustible de otra. El límite total es 601 slots: una antorcha personal y hasta 600 piezas privadas. La proyección pública entrega solo clave, tipo, segundos restantes y estado encendido; no publica recibos ni marcas temporales privadas.
+El perfil guarda un mapa privado versionado con revisión propia. La antorcha usa la clave `hand`; cada pieza de la balsa usa `[shipId, conditionEntryId]`, para que quitar/reconstruir una pieza no herede combustible de otra. El límite total es 601 slots: una antorcha personal y hasta 600 piezas privadas. La proyección privada de UI entrega clave, tipo, segundos restantes y estado encendido. Los demás reciben solo el estado visible de la antorcha y las piezas encendidas; no reciben combustible, recibos ni marcas temporales privadas.
 
 El consumo usa segundos de simulación derivados del reloj de economía del mundo (`economy.hours × CLOCK.daySec / 24`). No se consulta el reloj del dispositivo ni se cobra inactividad mientras el mundo está detenido. Apagar no pierde el saldo fraccionario ya redondeado; la combustión activa sigue avanzando con la simulación.
 
@@ -31,15 +31,15 @@ La visualización de la antorcha personal y de piezas privadas sigue el estado c
 
 La referencia Unreal previamente comprobada en solo lectura es `C:\Unreal\survival project\SimpleMultiplayerSurvival\Content\Dreamrise_SMSK\Assets\Meshes\SM_Torch.uasset` (21,751 bytes), con `Blueprints\BP_Building_Torch.uasset` (35,153 bytes). La miniatura muestra una antorcha azul alta, distinta del farol cálido de madera/hierro. No hay GLB portable aceptado; el Blueprint no aporta lógica browser portable. Reutilizar el lenguaje procedural existente hasta que exportación, estilo y presupuesto móvil se acepten. No modificar la fuente Unreal.
 
-La implementación actual añade las fuentes privadas usando los presupuestos de luces locales existentes; no añade luces Three.js por pieza, sombras ni oclusión. La revisión visual aún debe comprobar día/noche, materiales, giro/pose, fuego encendido/apagado y reemplazo/retirada en escritorio y móvil bajo/alto. Las capturas deben inspeccionarse antes de aceptar la presentación.
+La implementación actual añade las fuentes privadas usando los presupuestos de luces locales existentes; no añade luces Three.js por pieza, sombras ni oclusión. La revisión local comprobó antorcha, farol, antorchas de pared/suelo, fogata y parrilla en PC ES y móvil emulado EN, bajo/alto. Capturas inspeccionadas y resultados enlazados en la entrega. Selección/reubicación/reloj de fixtures son programáticos; no acreditan recorrido humano ni FPS en teléfono físico.
 
 ## Estado de aceptación
 
-**Implementación local:** contrato de slots, operación M5 opcional, panel ES/EN, integración N/V y render están en el árbol local. La bandera sigue apagada por defecto. No se declara SQL022 aplicado, canario autenticado, publicado ni desplegado.
+**Implementado y probado localmente:** slots, M5, panel ES/EN, N/V, render y piezas del editor. Integración 91/91, selección de imagen 107/107 y composición del diario/autoridad común 33/33 (selecciones solapadas). Cuatro vistas PC/móvil emulado bajo/alto aceptadas. Suite global con fallos ajenos/temporización documentada; no se declara globalmente verde.
 
-**Pruebas de UI ya ejecutadas:** `tests/fire-state.test.mjs` (8/8), `tests/fire-panel.test.mjs` (6/6), y el corte focal `tests/fire-actions.test.mjs tests/personal-lantern-ui.test.mjs tests/raft-lantern-ui.test.mjs` (19/19). Esto no sustituye la suite integrada de autoridad/SQL, la revisión visual, el chequeo del artefacto, el estado sano de la revisión activa ni la entrada pública.
+**SQL real:** SQL022 aplicada mediante editor SQL autenticado; canario aislado 8/8, perfiles/mundos QA eliminados y recibos inmutables retenidos. Composición con SQL018/019 probada localmente sin activar el montaje de reloj común del mundo legacy.
 
-**Pendiente antes de activar:** validar la suite completa de operación con SQL022, canario y replays/crash sobre la autoridad única, aceptación visual de las seis clases privadas, activación explícita de la bandera, despliegue sin jugadores y comprobación pública de revisión/imagen/salud/entrada. No afirmar consumo durable en producción hasta completar esas etapas.
+**Publicación:** bandera por defecto apagada; activación VPS y entrada autenticada por registrar en la [entrega](../delivery/rnv04-fire-fuel.md). No afirmar consumo durable público hasta cerrar esa evidencia.
 
 ## Continuidad AREA07
 

@@ -32,6 +32,10 @@ const specs = [
   { name: 'fire-desktop-es', width: 1280, height: 720, touch: false, quality: 'low', locale: 'es' },
   { name: 'fire-mobile-en', width: 390, height: 844, touch: true, quality: 'low', locale: 'en' },
 ];
+if (process.env.MN_QA_QUALITY) {
+  if (!['low', 'high'].includes(process.env.MN_QA_QUALITY)) throw new Error('unsupported QA quality');
+  for (const spec of specs) { spec.quality = process.env.MN_QA_QUALITY; spec.name += `-${spec.quality}`; }
+}
 if (process.env.MN_QA_VIEWPORT) {
   const selected = specs.filter(spec => spec.name.includes(process.env.MN_QA_VIEWPORT));
   if (!selected.length) throw new Error(`unknown MN_QA_VIEWPORT filter: ${process.env.MN_QA_VIEWPORT}`);
@@ -305,8 +309,10 @@ async function run(browser, spec) {
       clientSeconds: 0, serverLightOff: true, monotonicClockJump: '24 to 54 hours' };
     await toggleHandControl();
     await page.waitForFunction(() => window.__mn.panels.firePanel.active, null, { timeout: 5000 });
+    const beforeReloadRev = profile.fire.rev;
     await page.locator('.fire-load').click();
-    await waitUntil(() => profile.fire.slots.hand.lit === true && profile.fire.slots.hand.seconds === 1200,
+    await waitUntil(() => profile.fire.rev > beforeReloadRev && profile.fire.slots.hand.since > beforeExpiry &&
+      profile.fire.slots.hand.lit === true && profile.fire.slots.hand.seconds === 1200,
       'fresh hand fuel after simulation expiry');
     check(profile.eco.pack.goods.madera === undefined, 'reload did not spend the second preseeded pack wood');
     result.reload = { seconds: profile.fire.slots.hand.seconds, lit: profile.fire.slots.hand.lit,
