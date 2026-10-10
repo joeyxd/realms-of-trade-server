@@ -483,7 +483,7 @@ export default {
   'systems.raft.status.supplyComplete': ['Compra confirmada por snapshot.', 'Purchase confirmed by snapshot.'],
   'systems.raft.status.repairComplete': ['Reparación confirmada por snapshot.', 'Repair confirmed by snapshot.'],
   'systems.raft.status.reinforceComplete': ['Refuerzo confirmado por snapshot.', 'Reinforcement confirmed by snapshot.'],
-  'systems.raft.status.planComplete': ['Plano confirmado por snapshot.', 'Plan confirmed by snapshot.'],
+  'systems.raft.status.planComplete': ['Plano y perfil confirmados por snapshot.', 'Plan and profile confirmed by snapshot.'],
   'systems.raft.status.needFoundation': ['Apunta a un cimiento básico.', 'Point at a basic foundation.'],
   'systems.raft.supply': ['{good} +1 · {price} oro', '{good} +1 · {price} gold'],
 };

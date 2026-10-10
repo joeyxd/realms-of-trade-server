@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
+[Entrega](delivery/rnv04-fire-fuel.md), [contrato](briefs/RNV04-fire-fuel.md).
+Luces municipales infinitas; antorcha de mano 20 min, faroles/antorchas privadas 60 min por madera,
+fogata/parrilla 30 min provisionales. Un slot, apagar conserva combustible; panel N/V ES/EN y tres piezas
+del editor. SQL022 aplicada, canario real 8/8; 91/91 integración, 107/107 selección de imagen y
+33/33 de composición GameHost/diario común (selecciones solapadas). PC/móvil emulado bajo/alto
+aceptados localmente. Publicación y entrada autenticada VPS pendientes de registrar en la entrega.
+No activa artesano ni montaje de reloj común. Sigue agua costera/reembarque y después provisiones/hogar.
+
 **AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**
 [entrega](delivery/m5-ground-host-authority.md), [contrato](briefs/m5-ground-host-authority.md).
 API explícita de GameHost con un dueño de tick/época/SQL018/019; aplica economía en `beforeTick`

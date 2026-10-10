@@ -105,7 +105,7 @@ function nextWork(raft, hold, record, progress, days, made, used) {
 }
 
 // Advance at most one game day per call; elapsed time beyond the cap is discarded, never banked.
-export function stepRaftProduction(raft, hold, days) {
+export function stepRaftProduction(raft, hold, days, { poweredKeys = null } = {}) {
   const made = {}, used = {};
   if (!raft || !Array.isArray(raft.parts) || !hold || !hold.goods
       || !Number.isFinite(days) || days <= 0) return { made, used, changed: false };
@@ -113,6 +113,7 @@ export function stepRaftProduction(raft, hold, days) {
   const beforeGoods = { ...hold.goods };
   raft.work = sanitizeProduction(raft.parts, raft.work);
   for (const record of productionParts(raft).slice(0, 600)) {
+    if (record.part === 'grill' && poweredKeys && !poweredKeys.has(record.key)) continue;
     const progress = raft.work[record.key] || 0;
     const next = nextWork(raft, hold, record, progress, days, made, used);
     if (next > 0) raft.work[record.key] = next;
@@ -128,12 +129,12 @@ export function stepRaftProduction(raft, hold, days) {
 const STOPPED = new Set(['saveSize', 'revisionLimit', 'capacity']);
 
 // Describe only the selected production chain; all maps and nested values are detached copies.
-export function productionRows(raft, hold, { blocked = '' } = {}) {
+export function productionRows(raft, hold, { blocked = '', poweredKeys = null } = {}) {
   if (!hold?.goods) return [];
   const work = sanitizeProduction(raft?.parts, raft?.work);
   return productionParts(raft).slice(0, 600).map((record) => {
     const progress = work[record.key] || 0;
-    const stopped = STOPPED.has(blocked) ? blocked : readiness(hold, record.inputs, record.outputs);
+    const stopped = STOPPED.has(blocked) ? blocked : record.part === 'grill' && poweredKeys && !poweredKeys.has(record.key) ? 'fuel' : readiness(hold, record.inputs, record.outputs);
     return {
       key: record.key, part: record.part, name: RAFT_PARTS[record.part].name, rate: record.rate,
       inputs: { ...record.inputs }, outputs: { ...record.outputs }, progress,

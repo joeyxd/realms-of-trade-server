@@ -384,11 +384,12 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   } else if (msg.op === 'place') {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
     const [id, x, z, level, dir] = msg.piece;
+    if (['torchFloor', 'torchWall', 'campfire'].includes(id) && !w.fireEnabled) return reject(w, e, msg, 'disabled', ship);
     if (id === ARTISAN.part && !knowsStorage(profile)) return reject(w, e, msg, 'knowledge', ship);
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
-    if (id === 'roof' || id === 'lantern') {
+    if (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(id)) {
       const support = canPlace(activeRaftParts(active), msg.piece);
       if (support) return reject(w, e, msg, support, ship);
     }

@@ -69,7 +69,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, fireOperations = false, agentTrade = false,
     groundTransactions = null } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
@@ -83,6 +83,8 @@ export class GameHost {
     this.loggingOperations = loggingOperations;
     if (typeof artisanOperations !== 'boolean' || artisanOperations && !loggingOperations) throw new StoreError('configuration');
     this.artisanOperations = artisanOperations;
+    if (typeof fireOperations !== 'boolean' || fireOperations && !economicOperations) throw new StoreError('configuration');
+    this.fireOperations = fireOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -133,7 +135,7 @@ export class GameHost {
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
-    this.server = new LocalServer({
+    this.server = new LocalServer({ fire: fireOperations,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -471,6 +473,8 @@ export class GameHost {
           (await this.store.checkResourceOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.loggingOperations && (typeof this.store.checkLoggingOperations !== 'function' ||
           (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.fireOperations && (typeof this.store.checkFireOperations !== 'function' ||
+          (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
           (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
@@ -558,6 +562,7 @@ export class GameHost {
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
           logging: this.loggingOperations },
+        fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
@@ -609,7 +614,7 @@ export class GameHost {
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
     }
     if (this.economicAuthority?.handle(sock, msg)) return;
-    if (msg.t === MSG.CMD && ['community', 'artisan'].includes(msg.type)) {
+    if (msg.t === MSG.CMD && ['community', 'artisan', 'fire'].includes(msg.type)) {
       this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
         op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
       return;

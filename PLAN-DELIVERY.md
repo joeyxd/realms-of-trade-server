@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
+[Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
+Mano 20 min, faroles/antorchas privadas 60 min por madera, fogata/parrilla 30 min provisionales;
+municipales infinitas. Un slot y apagado conservador; panel ES/EN, N/V y tres piezas construibles.
+SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composición común 33/33
+solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicación/activación y entrada
+autenticada VPS se registrarán tras comprobarlas. Otros flags conservados. Sigue agua/reembarque.
+
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).
 Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/reloj juntos.

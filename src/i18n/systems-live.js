@@ -1,5 +1,6 @@
 // Strings for M5 systems added after the first localization catalog cut.
 export default {
+  'systems.commerce.production.fuel': ['Sin fuego: carga madera y enciende la parrilla con V', 'No fire: load timber and light the grill with V'],
   'systems.logging.tab': ['Oficios', 'Trades'],
   'systems.logging.section': ['Tala', 'Logging'],
   'systems.logging.level': ['Nivel {level}', 'Level {level}'],

@@ -515,7 +515,7 @@ export class CommercePanel {
     const profileIsCurrent = !source || Number.isSafeInteger(c.profile?.eco?.tradeRev)
       && c.profile.eco.tradeRev >= source.rev && Number.isSafeInteger(c.ship.rev) && c.ship.rev >= source.raftRev;
     return {
-      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked }) : source.rows,
+      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked, poweredKeys: this.fireEnabled?.() ? new Set((c.record.litLanterns || []).map(part => JSON.stringify(part))) : null }) : source.rows,
       daySec: source?.daySec ?? null,
       blocked,
       hold: c.ship.hold,
@@ -533,6 +533,7 @@ export class CommercePanel {
       const nextSeconds = row.remainingDays === null ? null : Math.ceil(row.remainingDays * secondsPerDay);
       const statusText = row.status === 'working' ? t('systems.commerce.production.working')
         : row.status === 'inputs' ? (profileIsCurrent ? t('systems.commerce.production.missingInputs', { goods: Object.entries(row.inputs || {}).filter(([g, n]) => n > (hold?.goods?.[g] || 0)).map(([g, n]) => `${num(n - (hold?.goods?.[g] || 0))} ${goodName(g)}`).join(', ') }) : t('systems.commerce.production.waitingInputs'))
+        : row.status === 'fuel' ? t('systems.commerce.production.fuel')
         : row.status === 'room' ? t('systems.commerce.production.fullHold')
         : row.status === 'capacity' ? t('systems.commerce.production.capacity')
         : row.status === 'saveSize' ? t('systems.commerce.production.saveSize')

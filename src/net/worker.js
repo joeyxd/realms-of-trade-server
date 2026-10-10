@@ -8,7 +8,7 @@ const CLIENT = 1;
 self.onmessage = (ev) => {
   const msg = ev.data;
   if (msg && msg.t === 'boot') {
-    server = new LocalServer({ seed: msg.seed, bots: msg.bots, debug: !!msg.debug, send: (_id, m) => self.postMessage(m) });
+    server = new LocalServer({ fire: true, seed: msg.seed, bots: msg.bots, debug: !!msg.debug, send: (_id, m) => self.postMessage(m) });
     server.connect(CLIENT);
     server.start();
     self.postMessage({ t: MSG.READY });

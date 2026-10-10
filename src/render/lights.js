@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { U, MAX_LIGHTS } from './toon.js';
 import { lanternPoint } from '../sim/naval/lantern.js';
-import { personalLanternPoint } from './personalLantern.js';
+import { isRaftFireTuple, personalLanternPoint, raftFirePoint } from './personalLantern.js';
 
 export { MAX_LIGHTS };
 
@@ -99,7 +99,8 @@ export class LocalLights {
       if (!record || record.id == null || !Array.isArray(record.parts) || !Array.isArray(record.litLanterns)) continue;
       const raftId = String(record.id);
       for (const part of record.litLanterns) {
-        const point = lanternPoint(record, part);
+        if (!isRaftFireTuple(part)) continue;
+        const point = part[0] === 'lantern' ? lanternPoint(record, part) : raftFirePoint(record, part);
         if (!point ||
             !record.parts.some((p) => Array.isArray(p) && p.length === 5 && p.every((v, i) => v === part[i]))) continue;
         // A placed, destroyed lantern is absent from public live parts. Explicit health data also
@@ -111,15 +112,17 @@ export class LocalLights {
         wanted.add(key);
         let source = this.raftSources.get(key);
         if (!source) {
-          const k = KINDS.lantern;
-          source = { kind: 'lantern', raftId, part: [...part], x: 0, y: 0, z: 0,
+          const lightKind = part[0] === 'lantern' ? 'lantern' :
+            ['campfire', 'grill'].includes(part[0]) ? 'campfire' : 'brazier';
+          const k = KINDS[lightKind];
+          source = { kind: lightKind, raftId, part: [...part], x: 0, y: 0, z: 0,
             r: k.r, i: k.i, color: new THREE.Color(k.color), flicker: k.flicker, speed: k.speed,
             wrap: k.wrap, knob: k.knob, seed: sourceSeed(key), d: 0, w: 0, priority: 0 };
           this.raftSources.set(key, source);
           membershipChanged = true;
         }
         source.x = point.x;
-        source.y = point.y + 1.24;
+        source.y = point.y + (part[0] === 'lantern' ? 1.24 : 0);
         source.z = point.z;
         source.priority = raftId === active ? 1 : 0;
       }

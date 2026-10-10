@@ -22,6 +22,7 @@ import { newEco, sanitizeEco } from './trade.js';
 import { syncRaftProfiles } from './rafts.js';
 import { newTools, sanitizeTools } from '../../data/resources.js';
 import { newProgression, readProgression } from './progression.js';
+import { readFire } from '../economy/fire.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -98,6 +99,14 @@ export function sanitizeProfile(raw) {
   p.eco = sanitizeEco(raw.eco);
   p.tools = sanitizeTools(raw.tools);
   if (hasProgression) p.progression = progression;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(raw, 'fire');
+    if (descriptor) {
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || descriptor.value === undefined) return null;
+      p.fire = readFire(descriptor.value);
+    } else for (let prototype = Object.getPrototypeOf(raw); prototype; prototype = Object.getPrototypeOf(prototype))
+      if (Object.getOwnPropertyDescriptor(prototype, 'fire')) return null;
+  } catch { return null; }
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];
