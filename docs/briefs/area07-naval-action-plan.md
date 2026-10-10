@@ -185,6 +185,8 @@ cuatro vistas PC/móvil bajo/alto y canario SQL real 8/8 aceptados. VPS `fe50ab1
 activo con fuego habilitado, imagen 107/107 y 30/30 focales solapadas. Entrada autenticada pública 9/9:
 mano pagada, saldo y madera conservados tras recargar, reencendido sin cobro repetido y mapa/minimapa.
 Cuenta/perfil QA eliminados, recibos retenidos; límites/evidencia en la [entrega](../delivery/rnv04-fire-fuel.md).
+Revalidado en `ee88690`, alpha.34/protocolo 43: recorrido público completo 9/9 y 35/35 de identidad
+cliente/agente, conservando compañeros y contenido GM; una interrupción GM anterior queda registrada aparte.
 
 **Sigue agua costera/reembarque:** definir primero alcance, carga, agotamiento, rescate y pérdidas;
 usar la cubierta y autoridad actuales. Después provisiones/hogar.

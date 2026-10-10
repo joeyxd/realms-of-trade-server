@@ -41,6 +41,8 @@ La implementación actual añade las fuentes privadas usando los presupuestos de
 
 **Publicación:** bandera de ejemplo apagada; VPS activado expresamente y sano en `fe50ab1`, alpha.32/protocolo 42. Imagen 107/107 y 30/30 de fuego; navegador público autenticado 9/9 comprueba mano/cobro, apagar/reencender, recarga, madera y saldo persistentes, mapa/minimapa. Capturas inspeccionadas, cuenta/perfil QA eliminados y recibos retenidos. El recorrido público no cubre fuegos navales; su aceptación es local y SQL aislada. Evidencia en la [entrega](../delivery/rnv04-fire-fuel.md).
 
+**Revalidación final:** VPS `ee88690`, alpha.34/protocolo 43, mismo recorrido público **9/9** tras integrar compañeros/GM. Cuenta/perfil QA eliminados y cuatro recibos retenidos; 35/35 de identidad cliente/agente. La entrega conserva revisiones exactas, capturas y la interrupción previa por cambio GM sin reclasificarla como aprobada.
+
 ## Continuidad AREA07
 
 Este corte añade combustible a fuentes privadas y no reemplaza la siguiente dependencia del plan naval: agua costera y reembarque con carga, agotamiento, salida y rescate decididos y probados. Provisiones/servicios de hogar y viaje entre puertos continúan después según el orden vigente. La vivienda colocable en tierra, el carbón y la expansión de recetas permanecen fuera de este corte.

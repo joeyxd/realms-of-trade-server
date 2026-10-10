@@ -40,5 +40,6 @@ print(json.dumps({
     'validation': validation,
     'offlineCounts': counts,
     'authorities': authorities,
-    'timer': subprocess.check_output(['systemctl', 'is-active', 'marea-negra-update.timer'], text=True).strip(),
+    'timer': subprocess.run(['systemctl', 'is-active', 'marea-negra-update.timer'],
+                            capture_output=True, text=True, check=False).stdout.strip(),
 }))
