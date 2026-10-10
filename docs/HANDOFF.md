@@ -1,5 +1,12 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17, 2026-10-10 — evaluación Inference Center/Hermes, solo documentación:**
+[propuesta de arquitectura](briefs/l03d-inference-center.md). Adaptar Nitro sin Nango a conexiones/modelos
+por cuenta y ficha del compañero; API acotada recomendada primero, conexión local opcional después.
+Nitro actual configura un operador compartido; copiarlo no aísla jugadores. AgentMind/M5 conservan
+autoridad y memoria propias. Sin proveedor/modelo elegido, consumo o activación; tramos propuestos
+dentro de L03d/L05c. D-A3 aún no se marca acordado o implementado.
+
 **AREA03 PRG01c, 2026-10-10 — código publicado alpha.29/protocolo 41, feature apagada:**
 [artesano y bodega personal](delivery/prg01c-artisan.md), [contrato](briefs/prg01c-artisan-storage.md).
 Carpintería completa + Tala 60/hito permiten aprender `raft_storage` pagando dos maderas en mochila
