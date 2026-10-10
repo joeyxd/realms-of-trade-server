@@ -4,6 +4,8 @@
 UUID/petición exactos antes del efecto; intención y SQL018 se cierran juntos. La sesión opt-in resuelve
 pending antes de cargar reloj/mundo actuales, sin instalar perfiles históricos ni emitir ACK al recuperar.
 266/266 pruebas y tres SIGKILL locales. Sin montaje GameHost, SQL018/019 live ni flags; sigue dueño común de tick/legacy.
+Publicado `6748f9a`, alpha.27/protocolo 39: una imagen sana, 107/107 offline y entrada pública 6/6.
+Se verifican imports del journal/recovery en Node 22; este corte no activa SQL018/019.
 
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).

@@ -26,8 +26,18 @@ Es prueba de proceso/SQL local, sin GameHost, corte eléctrico, pérdida de disc
 
 ## Publicación y alcance
 
-Publicación de código y comprobación de imagen/entrada se registran al aceptar este corte. SQL019
-y el journal son opt-in; este informe no acredita activación SQL018/019 en Supabase ni gameplay
+Código y runtime publicados en `6748f9a9fd1046a391dcb8fdc58855affe5a944d`, alpha.27/protocolo 39.
+VPS aceptado el 2026-10-10 después de las 20:46 UTC: una imagen sana
+`sha256:8c04a7adf587789b64e0087ebf25dc971ed04ace562ec058aff4617ce04723a5`, timer activo,
+economía/recursos/Tala listos y cero errores/guardados pendientes. Journal/sesión/recovery importan
+dentro de esa imagen con Node v22.23.3. [Revisión, imagen y status posterior a entrada](m5-ground-transaction-journal/deployment.json).
+
+La imagen pasó [107/107 pruebas offline](m5-ground-transaction-journal/vps-validation.json), con
+solapamiento respecto a la suite local. [6/6 públicas](m5-ground-transaction-journal/public-smoke.json):
+health, M5 sano, protocolo, WSS ordinario, snapshot y perfil; la conexión QA queda cerrada.
+[Sonda reproducible](m5-ground-transaction-journal/public-smoke.mjs). No ejecuta una acción durable.
+
+SQL019 y el journal son opt-in; este corte no aplica/activa SQL018/019 en Supabase ni acredita gameplay
 durable de perlas/muerte/botín en el servidor público. No cambia flags, secretos ni el protocolo.
 
 Sigue el dueño común de `beforeTick`, época compartida y adopción legacy; después composición de

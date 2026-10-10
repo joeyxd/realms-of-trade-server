@@ -5,6 +5,8 @@ Preparación exacta previa; cierre junto a operación/mundo/reloj; sesión opt-i
 sin reaplicar snapshots históricos. 266/266 pruebas; tres SIGKILL locales cubren pending, commit provisional y confirmado.
 Sin montaje GameHost ni activación SQL018/019. Sigue dueño de tick y adopción legacy;
 [contrato](docs/briefs/m5-ground-transaction-journal.md).
+Publicado y verificado en `6748f9a`, alpha.27/protocolo 39: imagen sana, 107/107 offline y entrada
+pública 6/6. APIs disponibles; sin activación SQL018/019 por este corte.
 
 **AREA15, siguiente corte 2026-10-10 — implementado localmente:** [SQL018, mundo/reloj/operación
 en un commit](docs/delivery/m5-ground-transactions.md), con sesión detenida, recibo exacto y recuperación.
