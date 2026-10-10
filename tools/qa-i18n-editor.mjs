@@ -151,7 +151,9 @@ try {
     assert.equal(await second.evaluate(() => editorQA.editor.dirty), true);
     const before = await snapshot(second);
     await locale(second, 'es'); assert.match(await status(second).innerText(), /conflicto|otra pestaña/i);
+    assert.match(await second.locator('.gm-selection-name').innerText(), /Modelo de prueba/);
     await locale(second, 'en'); assert.match(await status(second).innerText(), /conflict|another tab/i);
+    assert.match(await second.locator('.gm-selection-name').innerText(), /Test model/);
     assert.deepEqual(await second.evaluate(() => editorQA.editor.store.load()), saved);
     assert.deepEqual(await snapshot(second), before);
     await shot(second, '05-indexeddb-conflict-en');

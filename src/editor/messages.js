@@ -50,7 +50,8 @@ export function renderEditorMessage(message, locale = 'es') {
 
 export function editorErrorMessage(error, locale = 'es', context = 'unknown') {
   const code = typeof error?.code === 'string' ? error.code : '';
-  const key = error?.name === 'DraftConflictError' ? 'draftConflict'
+  const key = error?.name === 'SyntaxError' && context === 'import' ? 'importJson'
+    : error?.name === 'DraftConflictError' ? 'draftConflict'
     : error?.name === 'DocumentValidationError' ? documentCodes[code]
       : draftCodes[code];
   return (key && known[key]) || pairs[context] || pairs.unknown;

@@ -183,12 +183,15 @@ try {
  await page.evaluate(()=>window.__mn.panels.charPanel.open('stats'));
  await page.waitForTimeout(300);
  assert.equal(await page.locator('.cp').isVisible(),true);
+ assert.match(await page.locator('.st-table').innerText(), /Level[\s\S]*Attack[\s\S]*Defense/);
+ assert.match(await page.locator('.st-side').innerText(), /Deck cutlass[\s\S]*Mastery/);
  await shot(page,'03-character-en');
  await characterHeader(page);
  const profile=await page.evaluate(()=>JSON.stringify(window.__mn.client.profile));
  await language(page,'es');
  assert.equal(await page.evaluate(()=>JSON.stringify(window.__mn.client.profile)),profile);
  assert.equal(await page.evaluate(()=>window.__mn.panels.charPanel.tab),'stats');
+ assert.match(await page.locator('.st-table').innerText(), /Nivel[\s\S]*Ataque[\s\S]*Defensa/);
  await characterHeader(page);
  await shot(page,'04-character-es');
  await page.evaluate(()=>{window.__mn.panels.charPanel.close();window.__mn.panels.mapView.open();});

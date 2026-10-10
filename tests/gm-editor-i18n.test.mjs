@@ -9,6 +9,10 @@ test('known draft and document errors become natural bilingual messages', () => 
 
   const invalid = Object.assign(new Error('Invalid GM map document: object_id'), { name: 'DocumentValidationError', code: 'object_id' });
   assert.equal(editorErrorMessage(invalid, 'es', 'transform').es, 'El borrador contiene datos no válidos y no se pudo usar.');
+  const parseError = new SyntaxError('Expected property name with private parser bytes');
+  assert.match(editorErrorMessage(parseError, 'es', 'import').es, /JSON/);
+  assert.match(editorErrorMessage(parseError, 'en', 'import').en, /JSON/);
+  assert.doesNotMatch(editorErrorMessage(parseError, 'en', 'import').en, /private parser/);
 });
 
 test('unknown external error bytes never reach the visible status', () => {

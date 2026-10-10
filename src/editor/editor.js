@@ -518,7 +518,7 @@ export class WorldEditor {
     if (!this.selectionName || !this.fields) return;
     const item = this._selectedItem();
     const record = item && this.records.get(item.id);
-    const label = record?.entry?.label;
+    const label = this._entryForAsset(item?.assetId)?.label || record?.entry?.label;
     const localized = typeof label === 'string' ? label : label?.[this.lang] || label?.es || label?.en || item?.assetId;
     this.selectionName.textContent = item ? (localized + ' · ' + item.id) : this._t('Nothing selected', 'Nada seleccionado');
     const t = this.dragStart ? this._selectedTransform() : item?.transform;

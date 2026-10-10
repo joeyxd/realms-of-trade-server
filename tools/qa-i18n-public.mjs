@@ -35,7 +35,7 @@ try {
   await page.evaluate(() => window.__mn.panels.charPanel.open('stats'));
   assert.match(await page.locator('#charpanel').innerText(), /Atributos/);
   await page.evaluate(async () => (await import('/src/core/i18n.js')).setLocale('en'));
-  assert.match(await page.locator('#charpanel').innerText(), /Attributes/);
+  assert.match(await page.locator('#charpanel').innerText(), /Stats[\s\S]*Level[\s\S]*Attack/);
   await page.waitForTimeout(500); await shot(page, '03-character-en');
   report.checks.push('Public English entry, real guest WebSocket, Spanish settings and live character panel switch');
   await page.evaluate(() => { window.__mn.panels.charPanel.close(); window.__mn.transport.ws.close(1000, 'i18n acceptance'); });

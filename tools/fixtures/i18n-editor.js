@@ -2,7 +2,6 @@
 import * as THREE from 'three';
 import { initI18n, setLocale } from '../../src/core/i18n.js';
 import { generateWorld } from '../../src/sim/worldgen.js';
-import { createTerrain } from '../../src/render/terrain.js';
 import { createVegetation } from '../../src/render/vegetation.js';
 import { WorldEditor } from '../../src/editor/editor.js';
 import { addDecoration, createDecoration } from '../../src/editor/document.js';
@@ -18,8 +17,14 @@ scene.add(new THREE.HemisphereLight(0xe5faff, 0x8c6630, 2));
 const sun = new THREE.DirectionalLight(0xffdda2, 2); sun.position.set(5, 15, 10); scene.add(sun);
 // Keep the fixture on the same generated GM base/map and editable vegetation contract as the game.
 const map = generateWorld(12);
-scene.add(createTerrain(map, { segments: 96 }));
-scene.add(createVegetation(map).group);
+const terrain = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshStandardMaterial({ color: '#b89a61', roughness: 1 }));
+terrain.rotation.x = -Math.PI / 2; terrain.name = 'terrain'; scene.add(terrain);
+const vegetation = createVegetation(map).group;
+// Retain the actual GM-editable meshes and source indices, without rendering unrelated foliage.
+for (const child of [...vegetation.children]) {
+  if (!/^(?:rocks[01]|coastRocks\d+|flowers\d+|pebbles)$/.test(child.name)) vegetation.remove(child);
+}
+scene.add(vegetation);
 const entry = { id: 'model:i18n-fixture', kind: 'model', label: { es: 'Modelo de prueba', en: 'Test model' }, src: 'editor/fixture.glb' };
 const template = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 2), new THREE.MeshStandardMaterial({ color: '#dc9656' }));
 template.position.y = 1.5;
@@ -80,7 +85,13 @@ window.editorQA = {
     return editor.catalog.choose(entry.id);
   },
 };
+// Text/CAS acceptance uses a static scene; cap fixture rendering while multiple tabs are open.
 let last = performance.now();
-function frame(now) { editor.update(Math.min((now - last) / 1000, 0.05)); last = now; renderer.render(scene, camera); requestAnimationFrame(frame); }
+function frame(now) {
+  if (now - last >= 500) {
+    editor.update(Math.min((now - last) / 1000, 0.05)); last = now; renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+}
 requestAnimationFrame(frame);
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });

@@ -137,7 +137,7 @@ export class CommunityPanel {
     select.disabled = !ctx || !!this.pending || !choices.length;
     input.disabled = !ctx || !!this.pending || !choices.length;
     this.$('[data-owned]').textContent = selected ? t('systems.community.backpack', { owned: fmt(selected.owned), remaining: fmt(selected.remaining) }) : t('systems.community.noUsefulMaterials');
-    this.$('[data-project-name]').textContent = this.project?.name || (this.project ? t('systems.community.projectName') : this.status ? t('systems.community.title') : t('systems.community.loadingProject'));
+    this.$('[data-project-name]').textContent = translateData(this.project?.name) || (this.project ? t('systems.community.projectName') : this.status ? t('systems.community.title') : t('systems.community.loadingProject'));
     const list = this.$('[data-project-rows]');
     if (!this.project) list.innerHTML = `<p class="community-empty">${this.durable === false ? t('systems.community.empty') : t('systems.community.waitingRequirements')}</p>`;
     else if (!rows.length) list.innerHTML = `<p class="community-empty">${t('systems.community.noMaterials')}</p>`;
