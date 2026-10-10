@@ -1,0 +1,60 @@
+{
+  "schema": "l03d-companion-config-browser/v1",
+  "version": "0.6.0-alpha.36",
+  "at": "2026-10-10T23:37:27.293Z",
+  "simulatedAuth": true,
+  "public": false,
+  "production": false,
+  "gameplayDurabilityNotVerified": true,
+  "storage": {
+    "migration": "SQL025",
+    "durable": true,
+    "store": "memory gameplay store + SQL-backed companion-config RPC fixture"
+  },
+  "checks": [
+    "owner_can_edit_only_their_bound_companion_and_SQL025_fixture_is_ready",
+    "personality_and_one_goal_saved_as_private_durable_revision_one",
+    "editor_and_owner_surface_follow_global_english_locale",
+    "browser_reload_and_game_reentry_loads_the_persisted_sql_head",
+    "stale_CAS_conflict_keeps_the_unsaved_editor_draft",
+    "manual_reload_adopts_the_current_server_head",
+    "logout_hides_editor_and_clears_private_draft",
+    "second_owner_cannot_load_first_owners_saved_configuration",
+    "tab_wraps_inside_owner_dialog_and_escape_closes_editor_and_suspends_game_input",
+    "viewport_stage_bounds_mobile-landscape",
+    "viewport_stage_bounds_mobile-portrait",
+    "no_page_or_game_errors_and_current_SQL_head",
+    "SQL025_disk_database_reopens_with_revision_two"
+  ],
+  "screenshots": [
+    "companion-config-desktop-es.png",
+    "companion-config-desktop-en.png",
+    "companion-config-mobile-landscape.png",
+    "companion-config-mobile-portrait.png"
+  ],
+  "errors": [],
+  "fixtures": {
+    "owner": "22222222-2222-4222-8222-222222222222",
+    "character": "33333333-3333-4333-8333-333333333333",
+    "other": "44444444-4444-4444-8444-444444444444",
+    "otherCharacter": "66666666-6666-4666-8666-666666666666",
+    "world": "companion-config-browser-fixture"
+  },
+  "diagnostics": [
+    {
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": []
+    },
+    {
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": []
+    }
+  ]
+}

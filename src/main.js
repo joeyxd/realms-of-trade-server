@@ -28,6 +28,8 @@ import { WalletLink } from './client/walletLink.js';
 import { AccountPanel } from './ui/account.js';
 import { CompanionsClient } from './client/companions.js';
 import { CompanionsUI } from './ui/companions.js';
+import { CompanionConfigClient } from './client/companionConfig.js';
+import { CompanionConfigUI } from './ui/companionConfig.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
@@ -497,6 +499,8 @@ async function boot() {
   let joiningCompanionAccount = null;
   const companions = new CompanionsClient({ transport, auth: accountAuth,
     joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
+  const companionConfig = new CompanionConfigClient({ transport, auth: accountAuth,
+    joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
   let companionsPoll = null;
   companionsPanel = new CompanionsUI(hud.root.querySelector('.hud-top-right'), {
     getState: () => companions.snapshot(),
@@ -509,14 +513,17 @@ async function boot() {
         chatPanel.close(); artisan.close(); community.close(); workbench.close(); commercePanel.close();
         raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close();
         companions.refresh();
-        companionsPoll = setInterval(() => { if (!document.hidden) companions.refresh(); }, 5000);
+        companionsPoll = setInterval(() => { if (!document.hidden && !companionsPanel.configEditor?.isOpen) companions.refresh(); }, 5000);
       }
       input.clearActions(); input.keys.clear(); aimCtl.reset(); st.wantWeapon = 0;
       input.enabled = !open && st.mode === 'playing' && !pause.open && !chatPanel.typing && !transport.closed;
     },
   });
+  const companionConfigEditor = new CompanionConfigUI(companionsPanel.panel, { client: companionConfig,
+    lang: getLocale(), onClose: () => companionsPanel.closeConfiguration() });
+  companionsPanel.setConfigurationEditor(companionConfigEditor);
   companions.subscribe((state) => companionsPanel.setState(state));
-  onLocaleChange(() => companionsPanel.setLanguage(getLocale()));
+  onLocaleChange(() => { companionsPanel.setLanguage(getLocale()); companionConfigEditor.setLanguage(getLocale()); });
   document.addEventListener('pointerdown', (event) => {
     if (companionsPanel.isOpen && !companionsPanel.container.contains(event.target) &&
         !companionsPanel.panel.contains(event.target)) companionsPanel.close();
@@ -641,7 +648,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost(contentChanged = false) {
-    companionsPanel?.close(); companions.disconnect();
+    companionsPanel?.close(); companions.disconnect(); companionConfig.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
@@ -947,7 +954,7 @@ async function boot() {
           client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
         });
         if (r.k !== 'ok') {
-          joiningCompanionAccount = null; companions.setSession(null);
+          joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null);
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
             version: rich('join.version'),
@@ -971,7 +978,7 @@ async function boot() {
       accountPanel?.hide();
       await title.hide();
     } catch {
-      joiningCompanionAccount = null; companions.setSession(null);
+      joiningCompanionAccount = null; companions.setSession(null); companionConfig.setSession(null);
       title.message(rich('join.recover'));
     } finally {
       st.boarding = false;
@@ -982,6 +989,7 @@ async function boot() {
   bus.on('you:ready', () => {
     st.mode = 'playing';
     companions.setSession(joiningCompanionAccount);
+    companionConfig.setSession(joiningCompanionAccount);
     companionsPanel.setVisible(true);
     companions.refresh();
     world.setTitleShadows(false);

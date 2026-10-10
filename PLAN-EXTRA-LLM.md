@@ -6,6 +6,14 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 44:**
+[Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
+Personalidad/objetivos por cuenta–mundo–personaje vinculado, CAS/replay y borrador conservado ante
+conflicto/incertidumbre. SQL025 aplicado, readiness de servicio y canario transaccional real aprobados;
+fixture revertido. Publicación de código en curso. No alimenta la mente ni crea vínculos/conexiones,
+memorias, permisos o presupuesto; stop sigue de proceso. Sigue conexión/modelo/límites conjuntos y
+memoria con fuentes antes del canario L03d completo.
+
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](docs/delivery/l03d-owner-center.md). Panel ingame por cuenta con estado y detención de
 personajes ya vinculados, aislamiento/logout/revisión exacta y UI ES/EN. Control de proceso, sin
@@ -469,7 +477,7 @@ aceptadas ni activan servicios.
 |---|---|---|---|
 | D-A1 · Personaje (L00a) | Personaje propio del agente, asociado a un dueño y ocupando una plaza normal; juega a su lado, con capacidades autorizadas y stop del dueño. | Relevo del avatar humano queda como modalidad futura separada. | Acordado 2026-10-07; vínculo/control opt-in verificados en L02c; provisioning, persistencia y operación pendientes |
 | D-A2 · Alcance inicial (L00a) | Primera prueba: conversación, movimiento y ayuda en PvE; después ampliar a comercio, construcción y barcos. | Preparación recomendada: laboratorio aislado con dueño presente; concretar escenario, capacidades y ciclo de vida en el contrato. | Experiencia inicial acordada 2026-10-07; implementación pendiente |
-| D-A3 · Cómo lo lanzamos (L01/L05) | [Evaluación 2026-10-10](docs/briefs/l03d-inference-center.md): centro ingame por cuenta y ficha del compañero; API alojada acotada primero, conexión local personal opcional. Adaptar Nitro sin Nango; Hermes candidato de transporte/autenticación. | CLI local existente conserva su modo de laboratorio. Alojamiento, credenciales, vínculo durable, límites conjuntos y cuota de suscripción requieren contratos propios; no se comparte el login Codex del operador. | Dirección aprobada; L03d-b implementa estado/stop. Configuración durable, ruta/proveedor y canario pendientes |
+| D-A3 · Cómo lo lanzamos (L01/L05) | [Evaluación 2026-10-10](docs/briefs/l03d-inference-center.md): centro ingame por cuenta y ficha del compañero; API alojada acotada primero, conexión local personal opcional. Adaptar Nitro sin Nango; Hermes candidato de transporte/autenticación. | CLI local existente conserva su modo de laboratorio. Alojamiento, credenciales, vínculo durable, límites conjuntos y cuota de suscripción requieren contratos propios; no se comparte el login Codex del operador. | Dirección aprobada; L03d-b implementa estado/stop y L03d-c ficha privada durable de personalidad/objetivos. Vínculos/conexiones durables, integración de la mente, ruta/proveedor y canario pendientes |
 | D-A4 · Primera demostración LLM (L03) | Conversar con un humano y ayudarle en un encuentro PvE, explicando una decisión sin detener el cuerpo. | Concretar la explicación de decisiones y el criterio de utilidad del escenario acordado. | Conversación y escenario PvE acordados; explicación/criterios/pruebas pendientes |
 | D-A5 · Archivos visibles (L00/L01/L04) | El dueño consulta/exporta los archivos reales de personalidad, memoria y objetivos y borra recuerdos con sus derivados; el runner refleja metas/revisiones vigentes y L04 añade persistencia y aislamiento. | Concretar formato, ubicación, retención/migración y controles de edición; cerrar el contrato de exportación/borrado. | Consulta local verificada en L01a; exportación byte exacta, borrado con derivados y política explícita de retención/migración local verificados en L04b; panel/operación remota pendientes |
 | D-A6 · Capacidades del mundo (L06) | Social/PvE → inventario/comercio → construcción → tripulación/navegación, con permisos por capacidad. | Concretar capacidades/alcances de cada etapa; las dependencias autoritativas y durables siguen siendo obligatorias. | Progresión acordada; contratos/implementación/pruebas pendientes |

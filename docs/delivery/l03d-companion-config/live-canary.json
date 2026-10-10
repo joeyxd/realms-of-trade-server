@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-10T23:36:58.156Z",
+  "migration": "SQL025",
+  "role": "service_role",
+  "source": "Existing authenticated Supabase SQL Editor",
+  "result": "SQL025 service save/load/replay/conflict/isolation passed; fixture rolled back",
+  "readiness": {
+    "version": 1
+  },
+  "fixtureAbsent": true,
+  "canarySha256": "8e90bea6ca2ee60c3a627507e358904ef3a5b131b291cce34f341885bafd8834",
+  "limits": [
+    "Transaction-scoped service RPC canary; all fixture writes rolled back.",
+    "No gameplay, binding, provider or public agent activation.",
+    "No authenticated public browser save was exercised."
+  ]
+}

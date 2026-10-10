@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 44:**
+[Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
+Personalidad/objetivos ingame por cuenta–mundo–personaje ya vinculado; CAS, replay y recuperación
+explícita sin pisar borrador. SQL025 aplicado con readiness desde VPS y canario de servicio real;
+datos de fixture revertidos. Código en publicación. Sin proveedor/inferencia, vínculo durable o
+memoria nueva; la ficha aún no alimenta la mente. Stop sigue de proceso. Sigue conexión/modelo y
+límites conjuntos antes del canario social/PvE/memoria/coste.
+
 **AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
 [contrato](docs/briefs/prg01d-starter-workshop.md) y [entrega/evidencia](docs/delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
 caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.

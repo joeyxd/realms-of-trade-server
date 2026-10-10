@@ -3,6 +3,7 @@
 // outside the fixed-step simulation.
 import { WebSocketServer } from 'ws';
 import { LoggingAim } from './loggingAim.mjs';
+import { CompanionConfigService } from './companionConfig.mjs';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
@@ -72,7 +73,7 @@ export class GameHost {
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, agentTrade = false,
-    groundTransactions = null } = {}) {
+    groundTransactions = null, companionConfigAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -123,6 +124,7 @@ export class GameHost {
     this.nextId = 1;
     this.errors = 0;
     this.store = store;
+    this.companionConfig = new CompanionConfigService(this, { allowMemory: companionConfigAllowMemory });
     this.resolvePlayer = resolvePlayer; // Optional server-owned identity verifier; the title/login is P2.
     this.initializeAccounts = initializeAccounts;
     this.legacyReservations = new Map();
@@ -636,6 +638,7 @@ export class GameHost {
     if (msg.t === MSG.AGENT_TRADE) { agentTradeMessage(this, sock, msg); return; }
     if (msg.t === MSG.AGENT_GOODS_BUDGET) { void agentGoodsBudgetMessage(this, sock, msg); return; }
     if (msg.t === MSG.AGENT_OWNER) { this.agentOwnerMessage(sock, msg); return; }
+    if (this.companionConfig.handle(sock, msg)) return;
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }

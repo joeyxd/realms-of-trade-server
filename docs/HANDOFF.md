@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 44:**
+[Entrega](delivery/l03d-companion-config.md), [contrato](briefs/l03d-companion-config.md).
+Editor ES/EN de personalidad/objetivos de compañeros ya vinculados. SQL025 privado por cuenta,
+mundo y personaje, CAS/replay y borrador conservado ante conflicto o guardado incierto. SQL aplicado,
+readiness de servicio desde VPS y canario transaccional real aprobados; fixture revertido. Publicación
+de código en curso. No conecta la ficha a la mente, crea bindings/conexiones, memorias o presupuesto;
+stop permanece de proceso. Sigue conexión/modelo/límites conjuntos y memoria con fuentes.
+
 **AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
 [contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
 caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.

@@ -2,10 +2,10 @@
 const COPY = {
   es: {
     title: 'Mis compañeros', open: 'Abrir mis compañeros', close: 'Cerrar mis compañeros',
-    refresh: 'Actualizar', refreshing: 'Actualizando…', stop: 'Detener', stopping: 'Deteniendo…', closePanel: 'Cerrar panel',
+    refresh: 'Actualizar', refreshing: 'Actualizando…', stop: 'Detener', stopping: 'Deteniendo…', closePanel: 'Cerrar panel', configure: 'Ficha',
     signed_out: 'Inicia sesión para consultar tus compañeros.', loading: 'Consultando compañeros…',
     error: 'No se pudo consultar el estado. Inténtalo de nuevo.', offline: 'Sin conexión. Los compañeros no están disponibles.',
-    setupNote: 'Aún no puedes configurar una conexión desde el juego.', sessionNote: 'La detención dura esta sesión del servidor; tras reiniciar, tendrás que detenerlo de nuevo.',
+    setupNote: 'Aún no puedes configurar una conexión desde el juego.', configNote: 'La ficha guarda personalidad y objetivos. Conexión al modelo y memoria siguen pendientes.', sessionNote: 'La detención dura esta sesión del servidor; tras reiniciar, tendrás que detenerlo de nuevo.',
     serverDisabled: 'Los compañeros están desactivados en este servidor.', ready: 'Estado actualizado.',
     noCompanions: 'No hay compañeros vinculados a esta cuenta.', fallbackName: (n) => `Compañero ${n}`,
     online: 'En línea', offlineAgent: 'Desconectado',
@@ -16,10 +16,10 @@ const COPY = {
   },
   en: {
     title: 'My companions', open: 'Open my companions', close: 'Close my companions',
-    refresh: 'Refresh', refreshing: 'Refreshing…', stop: 'Stop', stopping: 'Stopping…', closePanel: 'Close panel',
+    refresh: 'Refresh', refreshing: 'Refreshing…', stop: 'Stop', stopping: 'Stopping…', closePanel: 'Close panel', configure: 'Profile',
     signed_out: 'Sign in to view your companions.', loading: 'Checking companions…',
     error: 'Could not load status. Try again.', offline: 'Offline. Companions are unavailable.',
-    setupNote: 'You cannot configure a connection from the game yet.', sessionNote: 'Stopping lasts for this server session; after a restart, you may need to stop the companion again.',
+    setupNote: 'You cannot configure a connection from the game yet.', configNote: 'The profile saves personality and goals. Model connection and memory are still pending.', sessionNote: 'Stopping lasts for this server session; after a restart, you may need to stop the companion again.',
     serverDisabled: 'Companions are disabled on this server.', ready: 'Status updated.',
     noCompanions: 'No companions are linked to this account.', fallbackName: (n) => `Companion ${n}`,
     online: 'Online', offlineAgent: 'Offline',
@@ -145,6 +145,8 @@ export class CompanionsUI {
     this.panel.addEventListener('click', (event) => {
       const button = event.target?.closest?.('[data-stop-key]');
       if (button) this.stop(button.dataset.stopKey);
+      const configure = event.target?.closest?.('[data-config-key]');
+      if (configure) this.openConfiguration(configure.dataset.configKey);
     });
     this.setState(this.state);
     this.setVisible(false);
@@ -172,6 +174,7 @@ export class CompanionsUI {
       this.localPendingStop.clear();
       this.localError = '';
       this.refreshPending = false;
+      this.configEditor?.reset();
     }
     this.render();
   }
@@ -199,6 +202,7 @@ export class CompanionsUI {
     const wasOpen = this.isOpen;
     this.panel.hidden = true;
     this.toggleButton.setAttribute('aria-expanded', 'false');
+    this.configEditor?.close();
     if (wasOpen) {
       this.onVisibilityChange(false);
       if (this.visible) this.toggleButton.focus?.({ preventScroll: true });
@@ -228,16 +232,31 @@ export class CompanionsUI {
     finally { this.localPendingStop.delete(characterKey); this.render(); }
   }
 
+  setConfigurationEditor(editor) { this.configEditor = editor; this.render(); }
+  openConfiguration(characterKey) {
+    const row = this.state.companions.find(item => item.characterKey === characterKey);
+    if (!this.configEditor || !row || this.state.status !== 'ready' || !this.state.enabled) return;
+    this.configurationKey = characterKey;
+    this.configEditor.open(characterKey, row.name || COPY[this.lang].fallbackName(this.state.companions.indexOf(row) + 1));
+    this.render();
+    this.configEditor.backButton?.focus?.({ preventScroll: true });
+  }
+  closeConfiguration() {
+    this.configEditor?.close(); this.render();
+    (this.configureButtons?.find(button => button.dataset.configKey === this.configurationKey) || this.closeButton).focus?.({ preventScroll: true });
+  }
+
   render() {
     const text = COPY[this.lang];
     const focusedElement = document.activeElement;
     const focusedStopKey = focusedElement?.dataset?.stopKey || null;
+    const focusedConfigKey = focusedElement?.dataset?.configKey || null;
     this.title.textContent = text.title;
     this.toggleButton.textContent = text.title;
     this.closeButton.textContent = '×';
     this.closeButton.setAttribute('aria-label', text.closePanel);
     this.closeButton.title = text.closePanel;
-    this.setupNote.textContent = text.setupNote;
+    this.setupNote.textContent = this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
     this.sessionNote.textContent = text.sessionNote;
     this.toggleButton.setAttribute('aria-label', this.isOpen ? text.close : text.open);
     this.refreshButton.textContent = this.refreshPending ? text.refreshing : text.refresh;
@@ -250,6 +269,7 @@ export class CompanionsUI {
     this.status.textContent = this.localError ? text[this.localError] : status;
     this.list.replaceChildren();
     this.stopButtons = [];
+    this.configureButtons = [];
     this.state.companions.forEach((companion, index) => {
       const item = node('li', 'mn-companions-row');
       const info = node('div', 'mn-companions-info');
@@ -258,6 +278,13 @@ export class CompanionsUI {
       const details = node('span', 'mn-companions-details', `${companion.online ? text.online : text.offlineAgent} · ${runState}`);
       info.append(name, details);
       item.append(info);
+      if (this.configEditor && this.state.enabled) {
+        const configure = node('button', 'mn-companions-stop', text.configure);
+        configure.type = 'button'; configure.dataset.configKey = companion.characterKey;
+        configure.disabled = this.state.status !== 'ready';
+        configure.setAttribute('aria-label', `${text.configure}: ${companion.name || text.fallbackName(index + 1)}`);
+        item.append(configure); this.configureButtons.push(configure);
+      }
       const pending = this.localPendingStop.has(companion.characterKey) || this.state.pendingStop === companion.characterKey;
       const canStop = this.state.enabled && !companion.stopped;
       if (canStop) {
@@ -271,7 +298,11 @@ export class CompanionsUI {
       }
       this.list.append(item);
     });
-    if (focusedStopKey) {
+    const configuring = this.configEditor?.isOpen === true;
+    for (const el of [this.setupNote, this.sessionNote, this.status, this.list, this.refreshButton]) el.hidden = configuring;
+    if (focusedConfigKey && !configuring) {
+      (this.configureButtons.find(button => button.dataset.configKey === focusedConfigKey && !button.disabled) || this.closeButton).focus?.({ preventScroll: true });
+    } else if (focusedStopKey) {
       const replacement = this.stopButtons.find((button) => button.dataset.stopKey === focusedStopKey && !button.disabled);
       (replacement || this.closeButton).focus?.({ preventScroll: true });
     } else if (focusedElement === this.refreshButton && this.refreshButton.disabled) {
@@ -280,6 +311,8 @@ export class CompanionsUI {
   }
 
   focusables() {
-    return [this.closeButton, this.refreshButton, ...(this.stopButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
+    if (this.panel.querySelectorAll) return [...this.panel.querySelectorAll('button,input,textarea,select,[tabindex]')]
+      .filter(el => !el.disabled && el.tabIndex !== -1 && !el.hidden && el.getClientRects().length > 0);
+    return [this.closeButton, this.refreshButton, ...(this.configureButtons || []), ...(this.stopButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
   }
 }

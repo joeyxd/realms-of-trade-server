@@ -15,6 +15,7 @@ export const MSG = {
   AGENT_RELEASE: 'agent_release', // managed controller relinquishes its lease: {epoch}
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
   AGENT_OWNER: 'agent_owner', // private owner list/stop: {requestId,op,characterKey?,epoch?}
+  AGENT_COMPANION_CONFIG: 'agent_companion_config', // private metadata load/save; owner/world come from the admitted session
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
   AGENT_TRADE: 'agent_trade', // managed trade: {opId,epoch,sessionId,op,g,n,expectedTotal}; server selects account/town
@@ -34,6 +35,7 @@ export const MSG = {
   CHAT_RESULT: 'chat_result', // {requestId,ok,code?,messageId?,duplicate?}; routed, not a read receipt
   AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
   AGENT_OWNER_RESULT: 'agent_owner_result', // correlated safe owned-character projection; no grant or task details
+  AGENT_COMPANION_CONFIG_RESULT: 'agent_companion_config_result', // private CAS head; never a grant or running-mind ACK
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
   AGENT_TRADE_RESULT: 'agent_trade_result', // private durable receipt; historical results never hydrate current inventory

@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-10T23:34:44.335Z",
+  "rpc": "mn_companion_config_ready",
+  "ok": true,
+  "version": 1,
+  "code": null,
+  "source": "Read-only RPC from the active VPS container with its existing service environment",
+  "migrationSha256": "afc1e4fae6afa37d8f8111be5e84cab056371fbff303daf54846396eef40d492",
+  "migrationAppliedVia": "Existing authenticated Supabase SQL Editor; Success. No rows returned",
+  "limits": ["This readiness result does not activate agents or prove an authenticated public UI save."]
+}
