@@ -1,4 +1,11 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
+**GM03a, 2026-10-10 — migración GM `020_gm_drafts.sql` aplicada; runtime sin publicar:** el almacenamiento remoto de borradores privados
+por cuenta/mundo está listo en base de datos, con CAS y recibos idempotentes; no toca mapa activo ni autoridad
+M5. Readiness live `version: 1` a `2026-10-10T20:41:47Z`; hash aplicado de migración GM `020_gm_drafts.sql`
+`601d45004c2daba734f92ada44a6300d741b490eeea14ea2d5e69f5babdbc9e4`. Suite local SQL/store de este corte:
+6/6. Falta publicar el runtime, verificar canario remoto y completar aceptación browser/GM. GM03b
+(publicación, activación y rollback) sigue pendiente. [Entrega GM03a](delivery/gm03a/DELIVERY.md) ·
+[brief](briefs/gm03a-remote-drafts.md) · [plan GM](../PLAN-GM-EDITOR.md).
 
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).

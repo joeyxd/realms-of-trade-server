@@ -43,6 +43,22 @@
 .gm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
 .gm-actions [data-action="save"] { color: #d8fff2; border-color: #358875; }
 .gm-actions .gm-close { color: #ffd8d2; }
+.gm-actions [data-action="remote"] { color: #c8e9ff; border-color: #4583a0; }
+.gm-actions [data-action="remote"][data-state="pending"], .gm-actions [data-action="remote"][data-state="conflict"] { color: #ffd69d; border-color: #b57e3b; }
+.gm-remote-dialog { pointer-events: auto; width: min(590px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow: auto; padding: 22px; color: #edf4f5; background: #102129; border: 1px solid #4a6b78; border-radius: 13px; box-shadow: 0 25px 100px #000b; }
+.gm-remote-dialog::backdrop { background: #030a10b8; }
+.gm-remote-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.gm-remote-dialog h2 { font-size: 19px; margin: 0; }
+.gm-remote-dialog p { color: #a9c2c9; }
+.gm-remote-dialog .gm-remote-state { color: #a4e8ce; font-weight: 700; }
+.gm-remote-dialog .gm-remote-state[data-state="pending"], .gm-remote-dialog .gm-remote-state[data-state="conflict"] { color: #ffd69d; }
+.gm-remote-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 18px 0; }
+.gm-remote-comparison section { padding: 14px; border: 1px solid #34505e; border-radius: 8px; }
+.gm-remote-comparison p { margin-bottom: 0; font-size: 12px; }
+.gm-remote-dialog footer { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.gm-remote-dialog .gm-remote-error { color: #ffad9f; }
+.gm-remote-review { border-top: 1px solid #4a6b78; padding-top: 18px; margin-top: 18px; }
+.gm-remote-review [data-remote="confirm"] { border-color: #5bbaa5; color: #c9ffef; }
 .gm-import-button { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
 .gm-import-button span { padding: 7px 10px; border: 1px solid rgba(177, 202, 205, .24); border-radius: 7px; background: #17272e; }
 .gm-import-button input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
