@@ -1,6 +1,6 @@
 # RNV05 — natación costera y reembarque propio
 
-**Estado: implementado localmente en `area07-pilot`; aceptación de publicación pendiente.**
+**Estado: publicado y aceptado en el VPS, alpha.36/protocolo 45, 2026-10-10.**
 El servidor sigue siendo autoridad de movimiento, resistencia, daño y transiciones de la balsa.
 El corte conserva las consecuencias normales de muerte y es compatible con su montaje M5/GameHost.
 No añade tablas, migraciones SQL ni un escritor de guardado.
@@ -87,16 +87,30 @@ la prueba móvil no acredita rendimiento en un teléfono físico.
 [balsa PC](rnv05-coastal-swimming/swim-desktop-es-low-2026-10-10T23-48-36-233Z-06-own-raft-water-exit.jpg)
 y [agotamiento móvil](rnv05-coastal-swimming/swim-mobile-en-low-2026-10-10T23-48-36-233Z-03-exhaustion-warning.jpg).
 
-Publicación, revisión activa del VPS y entrada pública quedan pendientes. No se requiere activar
-el montaje opcional de muerte durable para este despliegue y no se acredita un canario autenticado.
+El VPS activó `56155bbe990f8c1ec4f2072ac907318b5a42a678` con imagen
+`sha256:d7c9b49bd25cf8c5f87d4c2b3a49d83861b433f7460cd4e1f57e4f7679ef634c`.
+[Evidencia de despliegue](rnv05-coastal-swimming/deployment.json): una sola autoridad sana,
+Supabase/accounts activos, recursos/Tala/fuego listos, cero errores/pendientes/guardados sucios,
+contenido gen4/base conservado, página y health 200, timer activo. El actualizador aprobó 109/109;
+su configuración y las activaciones M5 se conservaron.
 
-Registro final de aceptación, a completar por la integración principal:
+La misma imagen ejecutó **34/34** pruebas de natación, reembarque, movimiento y navegación
+en un contenedor de pruebas sin red, con los tests del release montados de solo lectura:
+[log](rnv05-coastal-swimming/image-swimming.tap). La muerte M5 montada se verifica en la selección
+local de 121; requiere PGlite de desarrollo y no se atribuye a la imagen de producción.
 
-- Revisión/commit integrado y versión de protocolo activa: **pendiente**.
-- Conteos finales: 121/121; `node --test --test-reporter=tap --test-concurrency=2` con los 17 archivos
-  enumerados por sus subtests en el log enlazado.
-- Capturas PC/touch ES/EN inspeccionadas y evidencia del recorrido: recorrido local aceptado.
-- Revisión activa, salud pública y entrada pública: **pendiente**.
+La [entrada pública](rnv05-coastal-swimming/public/evidence.json) pasó sus diez comprobaciones:
+WSS real, alpha.36/protocolo 45, cuatro campos de natación, reserva 30 en tierra, HUD oculto en seco,
+partida conectada, minimapa y mapa M, sin errores. Se inspeccionaron las capturas de
+[partida](rnv05-coastal-swimming/public/public-gameplay.jpg) y
+[mapa](rnv05-coastal-swimming/public/public-map.jpg). Esta entrada fue de invitado; el recorrido
+completo de nado/agotar/volver y G/F pertenece a la prueba local aislada. No se acredita muerte
+autenticada ni persistencia pública de ese montaje opcional.
+
+Después de aceptar el runtime se incorporó por avance directo la continuidad `f04cd7d` de
+compañeros/i18n. No cambia la simulación de natación ni las transiciones de balsa. La comprobación
+conjunta de los cuatro archivos anteriores y companion-config client/network/store pasó **51/51**.
+Los conteos se solapan y no se suman. Los menús conservan el mundo vivo; abrirlos no pausa la reserva.
 
 ## Siguiente corte
 

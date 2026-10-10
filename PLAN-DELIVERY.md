@@ -8,14 +8,16 @@ datos de fixture revertidos. Código en publicación. Sin proveedor/inferencia, 
 memoria nueva; la ficha aún no alimenta la mente. Stop sigue de proceso. Sigue conexión/modelo y
 límites conjuntos antes del canario social/PvE/memoria/coste.
 
-**AREA07 RNV05, 2026-10-10 — natación costera integrada, alpha.36/protocolo 45; publicación pendiente:**
+**AREA07 RNV05, 2026-10-10 — natación costera publicada, alpha.36/protocolo 45:**
 [Contrato](docs/briefs/RNV05-coastal-swimming.md) y [entrega](docs/delivery/rnv05-coastal-swimming.md).
 Playa/agua/playa, resistencia y carga autoritativas/predichas, aviso de agotamiento y daño gradual
 con muerte actual y compatibilidad M5 probada localmente, sin activar ese montaje VPS. G baja por
 un borde cercano del viaje propio detenido; F devuelve a cubierta
 como caminante. Sin SQL/writer nuevo. Integración 121/121 en 17 archivos; regresión previa 104/104,
 selecciones solapadas. PC ES y móvil EN emulado recorren costa/agua/tierra y G/F desde balsa propia;
-revisión activa VPS pendiente. Sigue RNV06: un purificador útil para provisiones/hogar.
+VPS `56155bb` sano, imagen específica 34/34, actualizador 109/109 y entrada pública 10/10
+con minimapa/mapa M. Continuidad compañeros/i18n integrada 51/51; conteos solapados.
+Sigue RNV06: un purificador útil para provisiones/hogar.
 
 **AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
 [entrega](docs/delivery/gm03b2/DELIVERY.md), [evidencia pública](docs/delivery/gm03b2/public-evidence.json) y [despliegue](docs/delivery/gm03b2/deployment.json).
