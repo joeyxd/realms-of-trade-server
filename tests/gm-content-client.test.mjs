@@ -228,7 +228,9 @@ test('server baseline absorbs tiny cross-runtime geometry drift and preserves it
   const clientBase = generateWorld(778898), baseline = baselineFor(clientBase);
   const entry = gmEditableBaseProps(clientBase, 'terrain-s21-v1')[0];
   assert.ok(entry);
-  baseline.props[entry.index].x += 2e-8;
+  const drift = 2e-8;
+  baseline.props[entry.index].x += drift;
+  for (const collider of baseline.colliders) if (collider.x === entry.prop.x && collider.z === entry.prop.z && collider.r === entry.prop.r) collider.x += drift;
   const serverBase = withBaseline(clientBase, baseline), serverEntry = gmEditableBaseProps(serverBase, 'terrain-s21-v1')
     .find((item) => item.index === entry.index);
   assert.notEqual(serverEntry.id, entry.id, 'the fixture drift would change an identity before authoritative baseline install');

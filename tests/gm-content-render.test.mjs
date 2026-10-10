@@ -57,6 +57,28 @@ test('two scenes install identical base override matrices; restore returns both 
   assert.ok(Math.abs(restoredPos.z - entry.prop.z) < 1e-6);
 });
 
+test('reloading a live layer rebases to original decoration matrices and restore returns to base', async () => {
+  const map = generateWorld(20261024), entry = gmEditableBaseProps(map, BASE)[0], { scene, mesh } = makeScene(map, entry);
+  const original = new THREE.Matrix4(); mesh.getMatrixAt(0, original);
+  const transform = (offset) => ({ position: { x: entry.prop.x + offset, y: entry.prop.y + 1, z: entry.prop.z - offset },
+    rotation: { x: 0.1, y: 0.4, z: -0.1 }, scale: entry.prop.scale * 1.2 });
+  const firstDoc = createDocument({ seed: map.seed, baseRevision: BASE,
+    objects: [], baseOverrides: [{ id: entry.id, transform: transform(5), hidden: false }] });
+  const secondDoc = createDocument({ seed: map.seed, baseRevision: BASE,
+    objects: [], baseOverrides: [{ id: entry.id, transform: transform(13), hidden: false }] });
+  const layer = createGmContentLayer({ scene, map, assets: fakeAssets(), baseRevision: BASE });
+  await layer.load(firstDoc);
+  await layer.load(secondDoc);
+  const moved = new THREE.Matrix4(); mesh.getMatrixAt(0, moved);
+  const movedPosition = new THREE.Vector3().setFromMatrixPosition(moved);
+  assert.ok(Math.abs(movedPosition.x - transform(13).position.x) < 1e-6);
+  assert.ok(Math.abs(movedPosition.z - transform(13).position.z) < 1e-6);
+  layer.restore();
+  const restored = new THREE.Matrix4(); mesh.getMatrixAt(0, restored);
+  assert.ok(restored.elements.every((value, index) => Math.abs(value - original.elements[index]) < 1e-9));
+  layer.dispose();
+});
+
 test('authored models load from prepared entries, preserve YXZ transform, and are removed on restore', async () => {
   const map = generateWorld(20261021), entry = gmEditableBaseProps(map, BASE)[0], { scene } = makeScene(map, entry);
   const assets = fakeAssets();

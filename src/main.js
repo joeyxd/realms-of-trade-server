@@ -593,7 +593,7 @@ async function boot() {
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
-    artisan.close(); community.close();
+    artisan.close(); community.close(); firePanel.close();
     workbench.close();
     commercePanel.close();
     raftEditor.close();

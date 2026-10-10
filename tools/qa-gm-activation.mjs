@@ -24,7 +24,7 @@ if (!production) {
   // This storage label exercises the real gate, but is explicitly simulated, not durable-storage proof.
   const store = createMemoryStore(); store.durable = true;
   server = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, log() {}, store,
-    saveSecret: 'gm-activation-fixture', gmAccountIds: [GM],
+    saveSecret: 'gm-activation-fixture', gmAccountIds: [GM], worldSaveMs: 60_000,
     gmContentDirectory: await mkdtemp(join(tmpdir(), 'gm-activation-')),
     gmContentLock: { async run(fn) { return fn({ assertHeld() {} }); } },
     publicAuth: { enabled: true, url: 'http://127.0.0.1:1', publicKey: 'sb_publishable_fixture' },
@@ -141,10 +141,11 @@ try {
       assert.equal(collisionHash, lastContent.revision.content.collision.sha256);
       await page.locator('#btn-play').click({ force: true }); await page.waitForFunction(() => __mn.client.joined, null, { timeout: 30000 });
       if (!i) {
-        await page.evaluate((p) => { __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); }, evidence.placement);
+        await page.evaluate((p) => { __mn.st.mode = 'qa-camera'; __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); }, evidence.placement);
         const frame = await page.evaluate(() => __mn.world.pipeline.frame);
         await page.waitForFunction((f) => __mn.world.pipeline.frame >= f+3, frame);
         await page.screenshot({ path: resolve(out, (production ? 'public' : 'local') + '-shared-crate.png') });
+        await page.evaluate(() => { __mn.st.mode = 'playing'; });
       }
       assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
     }
