@@ -32,7 +32,7 @@ mecánicas ni recuperación tras una caída abrupta.
 - `AGENTS.md` registra la petición del autor: completar/revisar/pushear cada corte y verificar la
   publicación. Los cambios sin commit de otros agentes quedan fuera del paquete.
 
-El guard tiene diez pruebas, incluida una que observa el drain de un proceso hijo real antes de salir.
+El guard tiene once pruebas, incluida una que observa el drain de un proceso hijo real antes de salir.
 Las pruebas del actualizador verifican rechazos, espera por jugadores, rollback sin solapamiento,
 comprobación de imagen y permisos. La aceptación Linux y las revisiones activas se registran en los
 logs privados del servicio y en su marcador de validación por SHA/imagen.

@@ -15,6 +15,9 @@ arrancar la nueva, comprueba revisión/salud/almacenamiento y vuelve a la imagen
 Conserva `/etc/marea-negra/alpha.env`, `SAVE_SECRET` y `WORLD_ID`; no ejecuta migraciones ni activa M5/Web3.
 Cambios que requieren SQL o configuración necesitan su integración específica antes de publicarse.
 
+La descarga usa historial acotado y trae solo los blobs de las rutas que necesita la release. Antes de
+construir, comprueba CPU ocupada, espera de disco, memoria disponible y espacio libre del VPS compartido.
+
 El enlace `/opt/marea-negra/current` identifica la release aceptada. El código del actualizador instalado
 en `/opt/marea-negra/ops/vps-update.py` no se sustituye a sí mismo desde Git. Para actualizar el propio
 actualizador, revisar/copiar su nueva versión y unidades; el runtime sí se actualiza en cada imagen.
@@ -54,7 +57,7 @@ Los invitados conservan su partida en el navegador mediante una firma HMAC; `SAV
 
 ## Crear una release reproducible
 
-Ejecuta el empaquetado desde un equipo con el repositorio y SSH configurados. El archivo Git contiene solo los archivos de runtime del commit fijado; después se copian únicamente los tres archivos de empaquetado revisados. Así no se envían cambios dirty, `.env`, `.git`, documentación o materiales al VPS ni a la imagen. Sustituye `usuario-ssh` por la cuenta SSH ya autorizada para el host.
+Ejecuta el empaquetado desde un equipo con el repositorio y SSH configurados. Runtime, pruebas y empaquetado proceden del mismo commit fijado. Así no se envían cambios dirty, `.env`, `.git`, documentación o materiales al VPS ni a la imagen. Sustituye `usuario-ssh` por la cuenta SSH ya autorizada para el host.
 
 ```bash
 commit=$(git rev-parse HEAD)
@@ -183,7 +186,7 @@ La sonda opcional desde un equipo operador con Node 22 y `ws` instalado es `node
 
 ## Actualizar o volver atrás
 
-Esta autoridad es de una sola instancia: no uses blue/green, dos réplicas ni una segunda copia de `WORLD_ID=marea-negra`. Para cada actualización, prepara un directorio nuevo con el archivo Git del commit exacto y los tres archivos de empaquetado revisados; crea un tag de imagen nuevo. No reemplaces el contenido de una release ya desplegada.
+Esta autoridad es de una sola instancia: no uses blue/green, dos réplicas ni una segunda copia de `WORLD_ID=marea-negra`. Para cada actualización, prepara un directorio nuevo con runtime y empaquetado del mismo commit exacto; crea un tag de imagen nuevo. No reemplaces el contenido de una release ya desplegada.
 
 Antes de cambiar la imagen, detén el proyecto actual y deja que el proceso cierre/guarde durante su gracia de 90 segundos. Hay una interrupción breve mientras se cambia la única autoridad:
 

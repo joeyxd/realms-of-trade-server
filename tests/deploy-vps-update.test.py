@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import os
 import tempfile
 import unittest
@@ -25,15 +26,142 @@ class VpsUpdateTests(unittest.TestCase):
                 "tickBlocked": False,
                 "staging": None, "deathStaging": None, "deathDrops": None,
                 "pearlGround": None, "combatDeaths": None, "startup": None,
+                "economic": None, "profileWrites": 0, "worldWriting": False,
                 "world": {"id": "marea-negra", "ready": True, "failed": False},
             },
         }
+
+    @staticmethod
+    def resource_gate_result(before, after, mem_available_kib=31 * 1024 * 1024, free_disk=6 * 1024**3):
+        cpu_samples = iter((before, after))
+
+        def fake_open(path, *args, **kwargs):
+            if path == "/proc/stat":
+                counters = next(cpu_samples)
+                return io.StringIO("cpu " + " ".join(str(value) for value in counters) + "\n")
+            if path == "/proc/meminfo":
+                return io.StringIO(f"MemAvailable: {mem_available_kib} kB\n")
+            raise AssertionError(f"unexpected host file read: {path}")
+
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch("builtins.open", side_effect=fake_open))
+            stack.enter_context(mock.patch.object(update.time, "sleep"))
+            stack.enter_context(mock.patch.object(update.shutil, "disk_usage", return_value=mock.Mock(free=free_disk)))
+            try:
+                update.resource_gate()
+                return None
+            except update.BusyWorld as exc:
+                return exc
 
     def test_rejects_non_full_or_non_hex_revision(self):
         for value in ("", "deadbeef", "g" * 40, "0" * 39, "0" * 40 + "0", None):
             with self.subTest(value=value):
                 self.assertFalse(update.valid_sha(value))
         self.assertTrue(update.valid_sha("a" * 40))
+
+    def test_initial_source_fetch_is_shallow_and_explicit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            source = Path(temp) / "source.git"
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(update, "SOURCE", source))
+                git = stack.enter_context(mock.patch.object(update, "git", return_value=mock.Mock(stdout="", returncode=0)))
+                update.ensure_source()
+            args, kwargs = git.call_args_list[-1].args[0], git.call_args_list[-1].kwargs
+        self.assertIn("--depth=8", args)
+        self.assertIn("--no-tags", args)
+        self.assertIn("--filter=blob:none", args)
+        self.assertIn(f"refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
+        self.assertEqual(kwargs["timeout"], update.FETCH_TIMEOUT)
+        git_calls = [call.args[0] for call in git.call_args_list]
+        self.assertIn(["--git-dir", str(source), "config", "remote.origin.promisor", "true"], git_calls)
+        self.assertIn(["--git-dir", str(source), "config", "remote.origin.partialclonefilter", "blob:none"], git_calls)
+
+    def test_prefetch_requests_only_unique_selected_blobs_in_bounded_batches(self):
+        blob_ids = [f"{index:040x}" for index in range(update.BLOB_BATCH_SIZE + 1)]
+        entries = [f"100644 blob {blob_ids[0]}\tpackage.json",
+                   f"160000 commit {'z' * 40}\tassets/submodule",
+                   f"100644 blob {blob_ids[0]}\tserver/duplicate.mjs"]
+        entries.extend(f"100644 blob {blob_id}\tassets/file-{index}.bin" for index, blob_id in enumerate(blob_ids[1:], 1))
+        with mock.patch.object(update, "git", side_effect=[mock.Mock(stdout="\n".join(entries) + "\n"),
+                                                           mock.Mock(stdout=""), mock.Mock(stdout="")]) as git:
+            update.prefetch_release_blobs("a" * 40)
+        listing_args = git.call_args_list[0].args[0]
+        self.assertEqual(listing_args[listing_args.index("--") + 1:], list(update.ARCHIVE_PATHS))
+        fetches = git.call_args_list[1:]
+        self.assertEqual([len(call.kwargs["input_text"].splitlines()) for call in fetches], [128, 1])
+        requested = [sha for call in fetches for sha in call.kwargs["input_text"].splitlines()]
+        self.assertEqual(len(requested), len(set(requested)))
+        for call in fetches:
+            args = call.args[0]
+            self.assertEqual(args[-2:], ["origin", "--stdin"])
+            self.assertIn("--no-write-fetch-head", args)
+            self.assertNotIn("--force", args)
+
+    def test_prefetch_rejects_malformed_blob_id_and_ignores_non_blob_entries(self):
+        output = f"160000 commit {'q' * 40}\tassets/submodule\n100644 blob not-a-sha\tpackage.json\n"
+        with mock.patch.object(update, "git", return_value=mock.Mock(stdout=output)) as git:
+            with self.assertRaisesRegex(update.UpdateError, "malformed selected-path blob ID"):
+                update.prefetch_release_blobs("a" * 40)
+        git.assert_called_once()
+
+    def test_shallow_ancestor_check_deepens_until_fast_forward_is_proven(self):
+        checks = {"ancestor": 0, "fetch": 0}
+
+        def fake_git(args, **kwargs):
+            if "merge-base" in args:
+                checks["ancestor"] += 1
+                return mock.Mock(returncode=0 if checks["ancestor"] == 3 else 1, stdout="")
+            if "rev-parse" in args:
+                return mock.Mock(returncode=0, stdout="true\n")
+            if "fetch" in args:
+                checks["fetch"] += 1
+                return mock.Mock(returncode=0, stdout="")
+            self.fail(f"unexpected Git operation: {args}")
+
+        with mock.patch.object(update, "git", side_effect=fake_git):
+            update.reject_rewind("c" * 40, "b" * 40)
+        self.assertEqual(checks["fetch"], 2)
+        self.assertEqual(checks["ancestor"], 3)
+
+    def test_non_ancestor_is_rejected_after_bounded_deepen_without_force(self):
+        fetches = []
+
+        def fake_git(args, **kwargs):
+            if "merge-base" in args:
+                return mock.Mock(returncode=1, stdout="")
+            if "rev-parse" in args:
+                return mock.Mock(returncode=0, stdout="true\n")
+            if "fetch" in args:
+                fetches.append(args)
+                return mock.Mock(returncode=0, stdout="")
+            self.fail(f"unexpected Git operation: {args}")
+
+        with mock.patch.object(update, "git", side_effect=fake_git):
+            with self.assertRaisesRegex(update.UpdateError, "ancestry remains unknown"):
+                update.reject_rewind("c" * 40, "b" * 40)
+        self.assertEqual(len(fetches), 4)
+        for args in fetches:
+            self.assertIn("--deepen=32", args)
+            self.assertNotIn("--force", args)
+            self.assertIn(f"refs/heads/{update.BRANCH}:refs/remotes/origin/{update.BRANCH}", args)
+
+    def test_resource_gate_uses_sampled_cpu_iowait_memory_and_disk(self):
+        baseline = [100000, 0, 0, 100000, 0, 0, 0, 0]
+        modest = [103322, 0, 0, 106661, 17, 0, 0, 0]
+        self.assertIsNone(self.resource_gate_result(baseline, modest))
+
+        high_busy = [109500, 0, 0, 100500, 0, 0, 0, 0]
+        self.assertIsInstance(self.resource_gate_result(baseline, high_busy), update.BusyWorld)
+
+        self.assertIsInstance(self.resource_gate_result(baseline, modest, mem_available_kib=1024 * 1024), update.BusyWorld)
+
+        self.assertIsInstance(self.resource_gate_result(baseline, modest, free_disk=4 * 1024**3), update.BusyWorld)
+
+    def test_resource_gate_fails_closed_for_unknown_or_nonpositive_cpu_interval(self):
+        sample = [1000, 0, 0, 1000, 0, 0, 0, 0]
+        self.assertIsInstance(self.resource_gate_result(sample, sample), update.BusyWorld)
+        reset = [999, 0, 0, 1001, 0, 0, 0, 0]
+        self.assertIsInstance(self.resource_gate_result(sample, reset), update.BusyWorld)
 
     def test_refuses_multiple_running_project_service_containers(self):
         result = mock.Mock(stdout="one marea-negra-alpha-1\ntwo marea-negra-alpha-2\n")
@@ -83,11 +211,29 @@ class VpsUpdateTests(unittest.TestCase):
         status = self.idle_status()
         self.assertTrue(update.is_idle_and_durable(status))
         self.assertTrue(update.runtime_status_ready(status))
+        legacy = self.idle_status()
+        for field in ("economic", "profileWrites", "worldWriting"):
+            del legacy["storage"][field]
+        self.assertTrue(update.is_idle_and_durable(legacy))
+        self.assertTrue(update.runtime_status_ready(legacy))
         joined = self.idle_status()
         joined["players"] = 1
         joined["sockets"] = 1
         self.assertFalse(update.is_idle_and_durable(joined))
         self.assertTrue(update.runtime_status_ready(joined))
+        for field, value in (
+            ("economic", {"enabled": True, "pending": 1, "failed": False, "completed": 0, "replays": 0}),
+            ("economic", {"enabled": True, "pending": 0, "failed": True, "completed": 0, "replays": 0}),
+            ("economic", {"enabled": True, "pending": 0, "completed": 0, "replays": 0}),
+            ("economic", {"enabled": True, "pending": False, "failed": False, "completed": 0, "replays": 0}),
+            ("profileWrites", 1),
+            ("profileWrites", False),
+            ("worldWriting", True),
+        ):
+            blocked = self.idle_status()
+            blocked["storage"][field] = value
+            self.assertFalse(update.is_idle_and_durable(blocked), (field, value))
+            self.assertFalse(update.runtime_status_ready(blocked), (field, value))
         for field in ("staging", "deathStaging", "deathDrops", "pearlGround", "combatDeaths", "startup"):
             invalid = self.idle_status()
             del invalid["storage"][field]

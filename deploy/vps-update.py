@@ -39,6 +39,8 @@ ARCHIVE_PATHS = ("package.json", "package-lock.json", "index.html", "src", "serv
 TESTS = ("tests/store-host.test.mjs", "tests/accounts-server.test.mjs", "tests/world-state.test.mjs", "tests/world-host.test.mjs", "tests/raft-persistence.test.mjs", "tests/harvest-tools.test.mjs", "tests/server.test.mjs", "tests/deploy-runtime.test.mjs")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 COMMAND_TIMEOUT = 120
+FETCH_TIMEOUT = 300
+BLOB_BATCH_SIZE = 128
 BUILD_TIMEOUT = 600
 TEST_TIMEOUT = 180
 COOLDOWN = 600
@@ -65,8 +67,11 @@ def run(args, *, timeout=COMMAND_TIMEOUT, cwd=None, env=None, input_text=None, c
     return result
 
 
-def git(args, *, timeout=COMMAND_TIMEOUT, check=True):
-    return run(["git", "-c", "credential.helper=", *args], timeout=timeout, check=check)
+def git(args, *, timeout=COMMAND_TIMEOUT, check=True, input_text=None):
+    env = os.environ.copy()
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    return run(["git", "-c", "credential.helper=", *args], timeout=timeout, env=env,
+               input_text=input_text, check=check)
 
 
 def valid_sha(value):
@@ -140,12 +145,31 @@ def local_status(container):
         raise UpdateError("active server returned invalid status") from exc
 
 
+def operation_lanes_quiescent(storage):
+    """Accept legacy status, but fail closed for any reported in-flight or unknown writer."""
+    if "economic" in storage:
+        economic = storage["economic"]
+        if economic is not None and (not isinstance(economic, dict) or
+                economic.get("enabled") is not True or type(economic.get("pending")) is not int or
+                economic.get("pending") != 0 or
+                economic.get("failed") is not False):
+            return False
+    if "profileWrites" in storage and (type(storage["profileWrites"]) is not int or
+            storage["profileWrites"] != 0):
+        return False
+    if "worldWriting" in storage and storage["worldWriting"] is not False:
+        return False
+    return True
+
+
 def is_idle_and_durable(status):
     if not isinstance(status, dict):
         return False
     storage = status.get("storage")
     world = storage.get("world") if isinstance(storage, dict) else None
     if not isinstance(storage, dict) or not isinstance(world, dict):
+        return False
+    if not operation_lanes_quiescent(storage):
         return False
     nullable = ("staging", "deathStaging", "deathDrops", "pearlGround", "combatDeaths", "startup")
     if not all(key in storage and storage[key] is None for key in nullable):
@@ -166,6 +190,7 @@ def runtime_status_ready(status):
     storage = status.get("storage")
     world = storage.get("world") if isinstance(storage, dict) else None
     return bool(isinstance(storage, dict) and isinstance(world, dict) and
+                operation_lanes_quiescent(storage) and
                 storage.get("durable") is True and storage.get("accounts") is True and
                 storage.get("unsaved") == 0 and storage.get("errors") == 0 and storage.get("tickBlocked") is False and
                 status.get("errors") == 0 and world.get("id") == WORLD_ID and
@@ -214,6 +239,7 @@ def archive_release(sha):
     RELEASES.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f".{sha}.", dir=RELEASES))
     try:
+        prefetch_release_blobs(sha)
         result = subprocess.run(["git", "-c", "credential.helper=", "--git-dir", str(SOURCE), "archive", "--format=tar", sha, *ARCHIVE_PATHS],
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=COMMAND_TIMEOUT, check=False)
         if result.returncode:
@@ -241,7 +267,31 @@ def ensure_source():
         git(["--git-dir", str(SOURCE), "remote", "add", "origin", REPO])
     else:
         git(["--git-dir", str(SOURCE), "remote", "set-url", "origin", REPO])
-    git(["--git-dir", str(SOURCE), "fetch", "--no-tags", "origin", f"refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=COMMAND_TIMEOUT)
+    git(["--git-dir", str(SOURCE), "config", "remote.origin.promisor", "true"])
+    git(["--git-dir", str(SOURCE), "config", "remote.origin.partialclonefilter", "blob:none"])
+    git(["--git-dir", str(SOURCE), "fetch", "--filter=blob:none", "--depth=8", "--no-tags", "origin",
+         f"refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
+
+
+def prefetch_release_blobs(sha):
+    listing = git(["--git-dir", str(SOURCE), "ls-tree", "-r", sha, "--", *ARCHIVE_PATHS])
+    blobs = set()
+    for line in listing.stdout.splitlines():
+        try:
+            metadata, _path = line.split("\t", 1)
+            _mode, kind, object_id = metadata.split()
+        except ValueError as exc:
+            raise UpdateError("Git returned a malformed selected-path tree entry") from exc
+        if kind != "blob":
+            continue
+        if not valid_sha(object_id):
+            raise UpdateError("Git returned a malformed selected-path blob ID")
+        blobs.add(object_id)
+    ordered = sorted(blobs)
+    for start in range(0, len(ordered), BLOB_BATCH_SIZE):
+        batch = ordered[start:start + BLOB_BATCH_SIZE]
+        git(["--git-dir", str(SOURCE), "fetch", "--no-tags", "--no-write-fetch-head", "origin", "--stdin"],
+            timeout=FETCH_TIMEOUT, input_text="\n".join(batch) + "\n")
 
 
 def remote_sha():
@@ -283,9 +333,22 @@ def active_revision(container):
 def reject_rewind(candidate, active):
     if active is None:
         return
-    result = git(["--git-dir", str(SOURCE), "merge-base", "--is-ancestor", active, candidate], check=False)
-    if result.returncode != 0:
-        raise UpdateError("remote branch rewinds or diverges from active revision")
+    for deepen_count in range(5):
+        result = git(["--git-dir", str(SOURCE), "merge-base", "--is-ancestor", active, candidate], check=False)
+        if result.returncode == 0:
+            return
+        if result.returncode != 1:
+            raise UpdateError("Git could not verify active revision ancestry")
+        shallow = git(["--git-dir", str(SOURCE), "rev-parse", "--is-shallow-repository"], check=False)
+        if shallow.returncode != 0:
+            raise UpdateError("Git could not inspect source repository depth")
+        if shallow.stdout.strip() != "true":
+            raise UpdateError("remote branch rewinds or diverges from active revision")
+        if deepen_count == 4:
+            break
+        git(["--git-dir", str(SOURCE), "fetch", "--filter=blob:none", "--deepen=32", "--no-tags", "origin",
+             f"refs/heads/{BRANCH}:refs/remotes/origin/{BRANCH}"], timeout=FETCH_TIMEOUT)
+    raise UpdateError("active revision ancestry remains unknown after bounded shallow fetches")
 
 
 def prior_release(active):
@@ -301,18 +364,44 @@ def prior_release(active):
     return release
 
 
+def cpu_counters():
+    try:
+        with open("/proc/stat", encoding="ascii") as stream:
+            line = next(line for line in stream if line.startswith("cpu "))
+        values = [int(value) for value in line.split()[1:]]
+    except (OSError, ValueError, StopIteration):
+        raise BusyWorld("CPU counters are unavailable; update deferred")
+    if len(values) < 8 or any(value < 0 for value in values):
+        raise BusyWorld("CPU counters are invalid; update deferred")
+    return values[:8]
+
+
+def cpu_pressure():
+    before = cpu_counters()
+    time.sleep(0.25)
+    after = cpu_counters()
+    delta = [end - start for start, end in zip(before, after)]
+    if any(value < 0 for value in delta):
+        raise BusyWorld("CPU counters changed unexpectedly; update deferred")
+    total = sum(delta)
+    idle, iowait = delta[3], delta[4]
+    if total <= 0 or idle + iowait > total:
+        raise BusyWorld("CPU counter interval is invalid; update deferred")
+    return (total - idle - iowait) / total, iowait / total
+
+
 def resource_gate():
     try:
-        with open("/proc/loadavg", encoding="ascii") as stream:
-            load_1m = float(stream.read().split()[0])
+        busy, iowait = cpu_pressure()
         with open("/proc/meminfo", encoding="ascii") as stream:
             mem_available = next(int(line.split()[1]) for line in stream if line.startswith("MemAvailable:"))
-        cpu_count = os.cpu_count() or 1
         free_disk = shutil.disk_usage(RELEASES).free
     except (OSError, ValueError, StopIteration):
         raise BusyWorld("host resource state is unavailable; update deferred")
-    if load_1m > 2 * cpu_count or mem_available < 2 * 1024 * 1024 or free_disk < 5 * 1024**3:
-        raise BusyWorld("host load, available memory, or free disk is below update threshold")
+    if busy >= 0.90 or iowait >= 0.30:
+        raise BusyWorld("host CPU busy or I/O wait is above update threshold")
+    if mem_available < 2 * 1024 * 1024 or free_disk < 5 * 1024**3:
+        raise BusyWorld("host available memory or free disk is below update threshold")
 
 
 def image_metadata(image):

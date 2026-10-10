@@ -69,12 +69,31 @@ function harness(options = {}) {
 
 test('recovery decision accepts only the fully idle durable failed-world state', () => {
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus()), true);
+  assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage: {
+    economic: { enabled: true, pending: 0, failed: false, completed: 2, replays: 1 },
+    profileWrites: 0, worldWriting: false,
+  } })), true);
   assert.equal(shouldRecoverWorldFailure(200, failedWorldStatus()), false);
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage: { unsaved: 1 } })), false);
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage: { staging: { enabled: true } } })), false);
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage: { durable: false } })), false);
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ players: 1 })), false);
   assert.equal(shouldRecoverWorldFailure(503, { storage: { durable: true } }), false);
+});
+
+test('recovery stays closed around economic operations and pending profile or world writes', () => {
+  const blocked = [
+    { economic: { enabled: true, pending: 1, failed: false, completed: 0, replays: 0 } },
+    { economic: { enabled: true, pending: 0, failed: true, completed: 0, replays: 0 } },
+    { economic: { enabled: true, pending: 0, completed: 0, replays: 0 } },
+    { profileWrites: 1 },
+    { worldWriting: true },
+  ];
+  for (const storage of blocked) {
+    assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage })), false, JSON.stringify(storage));
+  }
+  // Older status payloads omit these fields and retain the legacy recovery behavior.
+  assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus()), true);
 });
 
 test('HTTP probe accepts only a 200 JSON status contract', async (t) => {

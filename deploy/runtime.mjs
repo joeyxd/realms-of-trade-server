@@ -19,6 +19,11 @@ function object(value) {
 export function shouldRecoverWorldFailure(healthStatus, status) {
   if (healthStatus !== 503 || !object(status) || !object(status.storage) || !object(status.storage.world)) return false;
   const storage = status.storage;
+  if (Object.hasOwn(storage, 'economic') && storage.economic !== null &&
+      (!object(storage.economic) || storage.economic.enabled !== true ||
+       storage.economic.pending !== 0 || storage.economic.failed !== false)) return false;
+  if (Object.hasOwn(storage, 'profileWrites') && storage.profileWrites !== 0) return false;
+  if (Object.hasOwn(storage, 'worldWriting') && storage.worldWriting !== false) return false;
   const world = storage.world;
   return world.failed === true && world.ready === false &&
     storage.durable === true && storage.unsaved === 0 &&
