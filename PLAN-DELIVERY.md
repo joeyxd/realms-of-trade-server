@@ -1,8 +1,9 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
-corregido y probado localmente: 102/102 pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo.
-Despliegue y recorrido público pendientes.
+**Hotfix GM01 publicado (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
+corregido en `e78c2c3`, integrado sin cambios en alpha.23 (`4c6743b`, sana desde 18:43:12Z). Local alpha.21:
+102/102 pruebas y navegador 16/16, cuatro calidades/arrastre. Actualizador 107/107; navegador público 7/7
+con Supabase real, GM en calidad alta con contornos, colocación/guardado local y logout sin errores de render.
 
 Fecha: 2026-10-04. Este es el **orden operativo** para avanzar paso a paso desde el juego actual hacia
 casas/barcos habitables, comercio, combate naval y ciudades productivas. Integra mecánicas y pruebas de assets;

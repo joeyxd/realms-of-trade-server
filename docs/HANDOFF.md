@@ -14,9 +14,10 @@ aprobada; 176 pruebas tras integrar upstream y ocho verificaciones UI. SQL015 co
 entrega para distinguir publicación, activación y aceptación VPS. Con recursos adoptados, todo rollback
 necesita runtime compatible y `MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado.
 
-**Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) reproducido
-en calidad alta y corregido separando sus materiales de la pasada de normales. Validación local: 102/102
-pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo. Despliegue y recorrido público pendientes.
+**Hotfix GM01 publicado (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) corregido
+en `e78c2c3`, incluido en alpha.23 (`4c6743b`, imagen sana desde 18:43:12Z). Validación local alpha.21:
+102/102 pruebas y navegador 16/16, cuatro calidades y arrastre real. Actualizador 107/107; navegador público
+7/7 con Supabase real, GM en calidad alta con contornos, colocación/guardado local y logout sin errores de render.
 
 **AREA17 L06b-2a, 2026-10-10:** [inventario/contexto y mercado privado](delivery/l06b-agent-market.md).
 Lecturas tipadas `inventory_read`/`market_read`, pueblo derivado del servidor, list/quote sin mutación,

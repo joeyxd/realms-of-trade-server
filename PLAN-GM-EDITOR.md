@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-Fecha: 2026-10-10, hora de México. Estado: **GM01 desplegado y verificado en producción en alpha.18; el borrador sigue local y no hay publicación de mapas**. Imagen activa `marea-negra:alpha-d3159949f9ef` (`d3159949f9ef6fbbab51ce7e7a1b928d25f428a0`), sana desde 2026-10-10T16:20:39Z. [Informe y evidencias](docs/delivery/gm01-world-editor.md).
+Fecha: 2026-10-10, hora de México. Estado: **GM01 con corrección de gizmo desplegado y verificado en producción en alpha.23; el borrador sigue local y no hay publicación de mapas**. Imagen verificada `marea-negra:alpha-4c6743b87b71` (`4c6743b87b71ba765e316cd1652d1e4f23991501`), sana desde 2026-10-10T18:43:12Z. [Entrega inicial](docs/delivery/gm01-world-editor.md) · [Hotfix y evidencia pública en calidad alta](docs/delivery/gm01-render-fix.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -12,12 +12,14 @@ reducir el peso de los modelos descargados con texturas 2K/4K conservando su apa
 Los originales se conservan; las optimizaciones producen derivados comparables y reversibles.
 
 **Corte implementado (GM01):** la imagen del servidor está desplegada y sana; en producción se verificaron
-6/6 comprobaciones con Supabase real, incluida autorización de la cuenta GM, colocación/guardado local y
+6/6 comprobaciones iniciales en alpha.18 con Supabase real, incluida autorización de la cuenta GM, colocación/guardado local y
 revocación al cerrar sesión. El editor permite colocar y transformar decoraciones nuevas, pero el documento
 y su recuperación siguen privados en IndexedDB por navegador/cuenta/mundo, con CAS y fallback de memoria
 durante la sesión ante cuota agotada. No existe guardado remoto ni publicación de mapas. QA local separado:
 100/100 pruebas pertinentes (30 GM) y navegador 13/13 con autenticación simulada. GM02 aún debe añadir
 edición de decoración base y prueba caminando; GM03 añade borradores remotos durables y publicación controlada.
+El hotfix de render se validó localmente en alpha.21 (102 pruebas, navegador 16/16) y públicamente en alpha.23
+(7/7 con Supabase real y calidad alta con contornos). La entrega inicial solo había ejercitado calidad baja.
 
 Las decisiones técnicas futuras siguientes son propuestas de implementación, sujetas a la revisión del autor.
 Este plan continúa AREA01/AREA14 de la guía de áreas `PLAN-MASTER.md` del workspace compartido, no incluida
@@ -450,7 +452,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | Corte | Resultado visible y alcance | Prueba que permite cerrarlo |
 |---|---|---|
 | GM00 | Cuatro candidatos de optimización local: roca 2K/1K y coral 200K/50K triángulos; originales intactos | [Comparación visual local](docs/art/gm00/visual-review.md) con loader real, 14 capturas y dos ángulos; roca 1K casi idéntica, coral 200K mantiene silueta/color con pérdida de detalle fino, 50K se ve más facetado. Sin rendimiento físico móvil ni aceptación gameplay; recibo conserva `visualReview: pending` |
-| GM01 | **Implementado; imagen alpha.18 desplegada y sana:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, historial, recuperación local y borrador | [Informe](docs/delivery/gm01-world-editor.md): suite local 100/100 (30 GM), navegador local 13/13 simulado y navegador real Supabase 6/6; cuenta GM autorizada en host. El borrador continúa local; publicación de mapas no implementada |
+| GM01 | **Implementado; hotfix de gizmo activo en alpha.23:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, historial, recuperación local y borrador | [Hotfix](docs/delivery/gm01-render-fix.md): suite local 102/102 (32 GM), navegador local 16/16 con cuatro calidades/arrastre; público Supabase 7/7 con calidad alta/contornos. El borrador continúa local; publicación de mapas no implementada |
 | GM02 | Selección y edición de decoración existente, proxies compatibles y prueba caminando | Recorrido/colisiones en borrador aislado sin tocar M5; edición del mapa base bien delimitada |
 | GM03 | Persistencia online durable, publicación controlada, contenido versionado, permisos para operaciones de escritura y recuperación | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
 | GM04 | Grupos/prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Editar un conjunto; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
