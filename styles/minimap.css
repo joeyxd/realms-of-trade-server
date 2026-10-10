@@ -13,11 +13,11 @@
 body:has(.world-minimap.is-touch) #hud .hud-top-right { right: calc(120px + var(--safe-r)); }
 /* Leave the map caption clear above objectives; short stages use HUD's folded left column. */
 @container stage (min-height: 481px) {
-  #hud:has(.world-minimap.is-desktop) { --tracker-map-top: 194px; }
-  #hud:has(.world-minimap.is-touch) { --tracker-map-top: 140px; }
+  #hud:has(.world-minimap.is-desktop) { --tracker-map-top: 194px; --tracker-bar-space: 90px; }
+  #hud:has(.world-minimap.is-touch) { --tracker-map-top: 140px; --tracker-bar-space: 0px; }
   #hud:has(.world-minimap) .tracker {
     top: calc(var(--tracker-map-top) + var(--safe-t));
-    max-height: calc((100cqh - var(--tracker-map-top) - 16px - var(--safe-t) - var(--safe-b)) / var(--ui-scale));
+    max-height: calc((100cqh - var(--tracker-map-top) - 16px - var(--safe-t) - var(--safe-b)) / var(--ui-scale) - var(--tracker-bar-space));
     overflow: auto; pointer-events: auto;
   }
 }

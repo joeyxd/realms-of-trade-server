@@ -63,7 +63,7 @@ try {
   // Measure the actual deployed CSS after entrance/title animations in both layouts and languages.
   report.hud = [];
   for (const viewport of [{ width: 1280, height: 800, scale: 1 }, { width: 844, height: 390, scale: 1 }, { width: 1280, height: 500, scale: 1.3 }]) {
-    await page.setViewportSize(viewport);
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.evaluate(scale => document.documentElement.style.setProperty('--ui-scale', String(scale)), viewport.scale);
     await page.waitForFunction(({ width, height }) => {
       const b = document.querySelector('#stage').getBoundingClientRect();
@@ -72,17 +72,25 @@ try {
     for (const locale of ['es', 'en']) {
       await page.evaluate(async locale => (await import('/src/core/i18n.js')).setLocale(locale), locale);
       await page.waitForTimeout(800);
-      const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption'].map(selector => {
+      const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption', '.actionbar'].map(selector => {
         const el = document.querySelector(selector), b = el.getBoundingClientRect();
         return [selector, { top: b.top, bottom: b.bottom, left: b.left, right: b.right, visible: getComputedStyle(el).display !== 'none' }];
       })));
       const a = boxes['.tracker'];
       assert.equal(a.visible, true);
-      for (const selector of ['.world-minimap', '.minimap-caption']) {
+      for (const selector of ['.world-minimap', '.minimap-caption', '.actionbar']) {
         const b = boxes[selector];
         assert.ok(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right, 'Objectives clear ' + selector);
       }
       assert.ok(a.bottom <= viewport.height && a.right <= viewport.width, 'Objectives remain inside the stage');
+      const scroll = await page.locator('.tracker').evaluate(el => {
+        el.scrollTop = el.scrollHeight;
+        const last = [...el.querySelectorAll('li')].filter(li => getComputedStyle(li).display !== 'none').at(-1);
+        const row = last.getBoundingClientRect(), box = el.getBoundingClientRect();
+        return { height: el.clientHeight, contentHeight: el.scrollHeight, scrollTop: el.scrollTop,
+          lastVisible: row.top >= box.top && row.bottom <= box.bottom };
+      });
+      assert.equal(scroll.lastVisible, true, 'Last objective remains reachable');
       const fallen = await page.evaluate(() => {
         const row = document.createElement('div'); row.className = 'party';
         row.innerHTML = '<div class="pm dead"><span class="pn">QA</span></div>';
@@ -91,12 +99,13 @@ try {
         row.remove(); return content;
       });
       assert.match(fallen, locale === 'es' ? /caído/ : /fallen/);
-      report.hud.push({ viewport, locale, boxes, fallen });
+      report.hud.push({ viewport, locale, boxes, fallen, scroll });
       await shot(page, `hud-${viewport.width}x${viewport.height}-${locale}`);
     }
   }
   report.checks.push('Deployed objectives clear minimap/caption at 1280x800, 844x390 and 1280x500 with maximum UI scale; CSS fallen label follows ES/EN');
   assert.deepEqual(report.errors, []);
+  report.pass = true;
   await context.close();
 } finally {
   await browser.close();
