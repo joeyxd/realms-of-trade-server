@@ -12,10 +12,11 @@
 | Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
 | Perlas/muerte/botín | Contratos M5 opcionales; no compuestos con economía activa | Dueño común de tick y transacciones de gameplay |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
+| Borrador del editor GM | [GM02](delivery/gm02-draft-walk.md): IndexedDB privado por navegador/cuenta/mundo, documento v2 con migración v1, CAS y recuperación/export local | GM03 debe integrar guardado remoto y publicación con M5; preview caminando descartable, sin bienes ni progreso |
 
-**Runtime actual observado, 2026-10-10 19:24:26 UTC:** `29a9e46e41169119a9547e47acc88ca56e3eae0c`,
-alpha.24/protocolo 37 con [refugio RNV01](delivery/rnv01-naval-refuge.md), imagen sana, una autoridad y
-107/107 offline en esa imagen; entrada real de invitado/mapa/minimapa y protocolo comprobados en navegador.
+**Runtime actual observado, 2026-10-10 19:39:17 UTC:** `e2ff69ecf814056dbeaed4d202c5cdd6d5d67d61`,
+alpha.25/protocolo 37 con [GM02](delivery/gm02-draft-walk.md), conservando refugio RNV01 y Tala. Imagen
+sana, una autoridad, 107/107 offline y navegador público real 12/12, incluida entrada normal WSS y GM.
 Recursos/economía siguen activos. Tala publicada pero apagada, SQL016 pendiente; no constituye todavía
 aceptación de aprendizaje durable público. [Evidencia PRG01b2](delivery/prg01b2-logging.md).
 

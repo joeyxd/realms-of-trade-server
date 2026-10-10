@@ -8,5 +8,12 @@
   "failed": 0,
   "cancelled": 0,
   "durationMs": 12643.4667,
-  "source": "test-output.txt"
+  "source": "test-output.txt",
+  "gmSubset": {
+    "tests": 51,
+    "passed": 51,
+    "failed": 0,
+    "command": "node --test tests/gm-assets.test.mjs tests/gm-editor-assets.test.mjs tests/gm-editor-base-decoration.test.mjs tests/gm-editor-base-document.test.mjs tests/gm-editor-document.test.mjs tests/gm-editor-entry.test.mjs tests/gm-editor-model-factory.test.mjs tests/gm-editor-rendering.test.mjs tests/gm-editor-walk-preview.test.mjs tests/gm-session-http.test.mjs tests/gmSession.test.mjs",
+    "source": "gm-test-output.txt"
+  }
 }

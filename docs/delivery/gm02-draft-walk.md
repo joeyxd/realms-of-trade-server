@@ -1,6 +1,6 @@
 # GM02 — decoración existente y prueba caminando
 
-Estado: **implementado y validado localmente en alpha.25/protocolo 37; publicación pendiente**.
+Estado: **publicado y verificado en producción en alpha.25/protocolo 37**.
 El corte parte de `883d35e` (alpha.23/protocolo 36); la integración `c4ada55` conserva refugio naval
 y Tala de upstream `7ca767e`, sin activar SQL016 ni cambiar flags.
 [Brief previo](../briefs/gm02-draft-walk.md) · [Plan GM](../../PLAN-GM-EDITOR.md).
@@ -59,9 +59,27 @@ radios heredados extremos. No se midieron FPS en hardware móvil físico ni se h
 
 ## Publicación
 
-Pendiente: revisión/imagen activa, salud/almacenamiento público, pruebas offline del actualizador y
-entrada real de invitado/GM con Supabase. No se cambia la contraseña de la cuenta del autor. Se conservan
-la única autoridad M5, flags y SQL activados por sus dueños; el editor no escribe en esas tablas.
+La release verificada es `e2ff69ecf814056dbeaed4d202c5cdd6d5d67d61`, imagen
+`marea-negra:alpha-e2ff69ecf814` / `sha256:e6701a415003812dbebc0e0464f91a4792adb0a9c8cd7a287f35c409a40391a1`,
+sana desde 2026-10-10T19:37:56Z. El actualizador pasó **107/107** offline antes de sustituir la única
+autoridad. La comprobación final a las 19:39:17Z confirmó `/health` 200, versión alpha.25, Supabase durable
+con cuentas, economía/recursos listos, tick avanzando y cero errores/jugadores/sockets/guardados pendientes.
+Tala continúa apagada y SQL016 pendiente; no se alteraron flags, SQL, secretos ni la autoridad M5.
+[Recibo de despliegue](gm02/deployment-evidence.json).
+
+El navegador público pasó **12/12** con Supabase real: invitado sin permiso, entrada normal WSS,
+modelo optimizado con bytes/hash correctos, sesión GM y gizmo en calidad alta con contornos, colocación,
+edición privada de roca base, guardar/cerrar/reabrir/restaurar, duplicación y radio automático,
+WASD en preview privado, cámara/documento/mapa intactos al volver y logout durante preview con limpieza.
+Errores de página y del loop vacíos. [Recibo público](gm02/public-evidence.json).
+Las cinco capturas públicas fueron inspeccionadas, especialmente [edición base](gm02/production-gm02-base.png)
+y [recorrido](gm02/production-gm02-walk.png). Se canceló el formulario de contraseña: no se cambió la del
+autor. El token de prueba fue consumido, borrado del URL y eliminado del archivo temporal; el logout fue
+solo de esa sesión QA. No se tocó el borrador del navegador del autor.
+
+La integración en el workspace compartido conserva los cambios concurrentes de idioma. Pasó además
+27/27 pruebas enfocadas y navegador 28/28 allí. Ese árbol aún declara alpha.17 y contiene otros cambios
+sin commit: no constituye la release publicada ni se empaquetó entero.
 
 Sigue **GM03**: borradores remotos durables y publicación controlada. GM02 permite experimentar
 localmente; todavía no cambia el mundo compartido de los jugadores.
