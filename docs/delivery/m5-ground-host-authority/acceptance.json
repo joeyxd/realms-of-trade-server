@@ -1,7 +1,7 @@
 {
-  "startedAt": "2026-10-10T21:48:38.029550+00:00",
-  "finishedAt": "2026-10-10T21:49:51.435194+00:00",
-  "baseCommit": "6e6f42192bc1cc8cc564d870471d18dcdee9ac66",
+  "startedAt": "2026-10-10T21:54:18.519811+00:00",
+  "finishedAt": "2026-10-10T21:59:35.207333+00:00",
+  "baseCommit": "e6d6a70c5fa01ce4c949bd2f40c9222052a1485f",
   "node": "v24.14.0",
   "command": [
     "node",
@@ -65,6 +65,8 @@
   },
   "sourcesUnchanged": true,
   "sha256": {
+    "deploy/runtime.mjs": "4bd096ea2f1c903d5b243083fe04e9ce0e05547b30812f03c136ae5875e5cd81",
+    "deploy/vps-update.py": "1099aa4466087f588c2657c1cdaeec9acee2e27d2662f96940771fbb64611a43",
     "server/agentControl.mjs": "f126d91fc9f1bf8331ab33e2ce8961fa513f0714e07283d3ab25f7bb7a7a7325",
     "server/agentGoodsBudget.mjs": "e881984a06199e6271b1177d4e6c1f4ebad13cb9e928903bb22f9d61b0a104f6",
     "server/agentInventory.mjs": "8b19443fb09a97877bbe79a66582ed7ede0a2074a55796aa11e8f11b8811a54c",
@@ -585,7 +587,8 @@
     "tests/death-storage-regression.test.mjs": "77f0b243de70896e0cac1a7ef122a9ca28a63ef6b65cc1e327231183b28a6906",
     "tests/death-storage-sql.test.mjs": "a1166ce22d8b48855e8a3eb05ac70de175a795c0400af00d3bf92da038d882f1",
     "tests/death-storage.test.mjs": "51cdcbb8f587193430509b514cbbcf4ded8f206b623270307864f53239f51ec7",
-    "tests/deploy-runtime.test.mjs": "760ff36915c816187374e7142ae105ab008805ea40718556323759dd95fd7862",
+    "tests/deploy-runtime.test.mjs": "6ac9e3ae84dc5d75523437ea439a93fcd08718c620393ab3b9e88f98f939807e",
+    "tests/deploy-vps-update.test.py": "b7d265e5796eb7c381b342de5459f98a0e3fe730fe5c768af68be9f5c82b8f8d",
     "tests/dock-ropes.test.mjs": "0dcf1fa29881474dee5c47446eb53d0fdf8cb80c8ff36f3569cfc6816922278d",
     "tests/dock-wood.test.mjs": "3a23bffc8e45d6ecae16f78e023432d4ff29694e1bd2dce7f423232bfd2191aa",
     "tests/economic-host.test.mjs": "04bca809d28a31bf96b0252f322af1695cc316ee92481a829f44e0ae030dbe7b",

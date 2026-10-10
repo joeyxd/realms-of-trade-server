@@ -21,6 +21,8 @@ tick igual al de recursos, seed y snapshot exactos, sin creación automática ni
 Este montaje acotado admite cuentas autenticadas, cero bots y economía/recursos; rechaza invitados,
 importación legacy, diario antiguo de perlas y control/comercio de agentes. SQL017 y el runtime normal
 conservan sus caminos. No añade flags, campos de perfil, protocolo ni migraciones.
+El supervisor excluye este montaje de su recuperación de autosave legacy: la recuperación del
+diario común conserva su propio dueño y sus verificaciones detenidas.
 
 ## Pruebas
 
