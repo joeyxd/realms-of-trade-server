@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { catalogs, dataCatalog, dataParam, rich, setLocale, t, text, translateData } from '../src/core/i18n.js';
 import { BASES, STATS } from '../src/data/items.js';
 import { itemName } from '../src/sim/items.js';
+import { generateWorld } from '../src/sim/worldgen.js';
 import { chooseLocale, getLocale, LOCALE_KEY } from '../src/core/locale.js';
 import { GOOD_CATS, GOOD_IDS, GOODS } from '../src/data/goods.js';
 import { TOWN_IDS, TOWNS } from '../src/data/towns.js';
@@ -232,4 +233,19 @@ test('community, naval HUD, and cartography display the selected locale', () => 
     assert.equal(routePresentation({ status: 'complete' }).stage, 'Trial complete');
     assert.equal(routePresentation({ hits: 2, dodged: 3, damage: 7 }).score, '2 hits · 3 dodged · 7 HP');
   });
+});
+
+test('generated village NPC roles translate while authored names and world data stay intact', () => {
+  const map = generateWorld(18743);
+  const before = JSON.stringify(map.npcs);
+  withLocale('es', () => {
+    for (const npc of map.npcs) assert.equal(translateData(npc.title), npc.title);
+  });
+  withLocale('en', () => {
+    for (const npc of map.npcs) {
+      assert.notEqual(translateData(npc.title), npc.title, `${npc.id} role has an English label`);
+      assert.equal(translateData(npc.name), npc.name, `${npc.id} retains its authored name`);
+    }
+  });
+  assert.equal(JSON.stringify(map.npcs), before);
 });
