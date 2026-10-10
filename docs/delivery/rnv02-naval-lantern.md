@@ -24,8 +24,14 @@ Materiales, reubicaciones ECS y estímulo de daño son fixtures; no acreditan pi
 selector táctil y comprobación de daño. La revisión detectó además carcasa opaca y colisión de atajos;
 jaula abierta y cámara en Y los resuelven. Las capturas previas no sustituyen el lote final.
 
-Pruebas integradas y revisión desplegada se registrarán al finalizar la publicación. El test de conservación
-usa GameHost y store de memoria durable como fixture; no es una prueba autenticada de farol en Supabase público.
+Tras combinar L06b y el corte no montado SQL018: **631/631 pruebas integradas y 107/107 de release**,
+sin fallos ni omisiones, con solapamiento. [Comandos/resultados](rnv02-naval-lantern/verification.json),
+[integradas](rnv02-naval-lantern/integrated.tap) y [release](rnv02-naval-lantern/release.tap).
+Un [probe adicional](rnv02-naval-lantern/evidence-2026-10-10T20-05-48-998Z.json) comprueba F real → timón,
+E → cubierta activa, caminar y V → ACK de encendido. Su captura cercana deja ver núcleo/jaula abiertos.
+Las fixtures descargan el exceso de materiales antes de embarcar; el rechazo previo por porte era correcto.
+El test de conservación usa GameHost y store de memoria durable como fixture; no es una prueba autenticada
+de farol en Supabase público. Publicación efectiva pendiente de revisión/imagen/entrada pública.
 
 ## Límites y siguiente corte
 

@@ -148,6 +148,37 @@
         }
       ],
       "failures": []
+    },
+    {
+      "file": "evidence-2026-10-10T20-04-59-143Z.json",
+      "generatedAt": "2026-10-10T20:04:59.143Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "failed",
+          "stage": "real-deck-context-v",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ],
+      "failures": [
+        {
+          "viewport": "lantern-desktop-low-es",
+          "stage": "real-deck-context-v",
+          "error": "page.waitForFunction: Timeout 15000ms exceeded."
+        }
+      ]
+    },
+    {
+      "file": "evidence-2026-10-10T20-05-48-998Z.json",
+      "generatedAt": "2026-10-10T20:05:48.998Z",
+      "profiles": [
+        {
+          "name": "lantern-desktop-low-es",
+          "status": "passed",
+          "stage": "complete"
+        }
+      ],
+      "failures": []
     }
   ],
   "corrections": [
@@ -155,6 +186,7 @@
     "Fixture repair attempted an artificial raft pose rejected correctly by fitsLayout; restored the valid dock pose before repair.",
     "Touch path now taps the visible context prompt rather than a naval-only action-row selector.",
     "Final destruction stimulus acts on an explicitly relit lamp and waits for actual dead-part, public lit tuple, and light-source removal.",
-    "Product fixes: open cage makes emissive core visible; camera-center moved from V to Y because C belongs to stats."
+    "Product fixes: open cage makes emissive core visible; camera-center moved from V to Y because C belongs to stats.",
+    "Deck-active F/E/V probe initially refused overloaded seeded QA pack; unloading only that fixture allowed real embark/walk/V success."
   ]
 }

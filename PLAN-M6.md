@@ -15,6 +15,7 @@ Tala conserva su activación opt-in aparte del refugio; detalle y límites en la
 **RNV02 implementado, aceptación/publicación en curso:** [farol funcional](docs/delivery/rnv02-naval-lantern.md),
 integración alpha.27/protocolo 39. Editor B con doce piezas, V/toque, luz móvil y estado por instancia en perfil M5.
 Coste/soporte vivo/HP, replay, visitante y reparación sin encendido automático; sin SQL ni consumo de combustible.
+631/631 integradas, 107/107 release (solapamiento), cuatro vistas y probe real F/E/V aceptados localmente.
 **Sigue:** noche casi negra sin fuente de luz, luego agua costera/reembarque.
 No oscurecer la noche antes de disponer de luces. Luego natación, provisiones/hogar, rutas, rival y cooperación.
 

@@ -273,6 +273,54 @@ async function run(spec) {
     result.damageRepair = { ...result.damageFixture, repairedHp: lamp.maxHp, remainsOff: true, paidUiRepair: true };
     await screenshot('08-repaired-off');
     await page.locator('.raft-editor .re-close').click();
+    if (process.env.MN_QA_CHECK_DECK === '1') {
+      result.stage = 'real-deck-context-v';
+      // Strip the temporary roof test pieces so the open deck path stays traversable.
+      const beforeDeckCheck = publicRafts(world).find((row) => row.id === ship.id);
+      source.ship.grid.parts = source.ship.grid.parts.filter((part) => part[0] !== 'wall' && part[0] !== 'roof');
+      source.condition = { ...source.condition, entries: source.condition.entries.filter((entry) => entry.part[0] !== 'wall' && entry.part[0] !== 'roof') };
+      ship.rev += 1; persistRaftCondition(source); world.profileDirty.add(entity);
+      // Placement materials were seeded in the disposable player pack; unload their unused remainder before boarding.
+      profile.eco.pack.goods = {}; ship.hold.goods = {};
+      server.sendProfile(clientRow[0], clientRow[1]);
+      world.raftDeck.update(publicRafts(world)); server.broadcastSnapshot();
+      const helm = publicRafts(world).find((row) => row.id === ship.id)?.helm;
+      check(helm, 'deck-mode verification has no live helm anchor');
+      relocate(world, server, player, publicRafts(world).find((row) => row.id === ship.id), helm.x, helm.z);
+      await page.keyboard.press('f');
+      await page.waitForFunction((id) => window.__mn.client.naval.active && window.__mn.client.naval.shipId === id,
+        ship.id, { timeout: 15000 });
+      await page.keyboard.press('e');
+      await page.waitForFunction((id) => window.__mn.client.deck.active && window.__mn.client.deck.shipId === id,
+        ship.id, { timeout: 15000 });
+      const target = lanternPoint(publicRafts(world).find((row) => row.id === ship.id), tuple);
+      const localTarget = { x: Math.cos(beforeDeckCheck.yaw) * (target.x - beforeDeckCheck.x) -
+          Math.sin(beforeDeckCheck.yaw) * (target.z - beforeDeckCheck.z),
+        z: Math.sin(beforeDeckCheck.yaw) * (target.x - beforeDeckCheck.x) +
+          Math.cos(beforeDeckCheck.yaw) * (target.z - beforeDeckCheck.z) };
+      let remaining = Infinity;
+      for (let step = 0; step < 8; step++) {
+        const state = await page.evaluate(() => window.__mn.client.deck.state);
+        const dx = localTarget.x - state.x, dz = localTarget.z - state.z;
+        remaining = Math.hypot(dx, dz);
+        if (remaining <= 1.35) break;
+        const keys = [];
+        if (dx > 0.2) keys.push('d'); else if (dx < -0.2) keys.push('a');
+        if (dz > 0.2) keys.push('w'); else if (dz < -0.2) keys.push('s');
+        for (const key of keys) await page.keyboard.down(key);
+        await page.waitForTimeout(350);
+        for (const key of keys) await page.keyboard.up(key);
+      }
+      await page.waitForFunction(() => window.__mn.client.deck.active &&
+        window.__mn.navigation.interaction()?.actions?.some((action) => action.lantern && action.key === 'V'), null,
+      { timeout: 12000 });
+      const deckAckStart = result.lanternAcks.length;
+      await page.keyboard.press('v');
+      await waitUntil(() => result.lanternAcks.slice(deckAckStart).some((ack) => ack.ok && ack.lit), 'V command while deck.active');
+      check(await page.evaluate(() => window.__mn.client.deck.active), 'deck context ended before the V acknowledgement');
+      result.deckModeV = { navalActive: true, deckActive: true, key: 'V', lanternAck: 'lit', deckWalkDistanceAtStop: remaining };
+      await screenshot('09-real-deck-active-v');
+    }
     result.viewportCheck = await page.evaluate(() => ({ width: innerWidth, height: innerHeight,
       documentWidth: document.documentElement.scrollWidth, overflow: document.documentElement.scrollWidth > innerWidth,
       quality: window.__mn.quality.current, websocketReady: window.__mn.transport?.ws?.readyState === WebSocket.OPEN }));
