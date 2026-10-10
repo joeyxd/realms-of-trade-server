@@ -665,9 +665,9 @@
 test at tests\agent-market-runner.test.mjs:53:1
 ✖ managed runner reads live market and inventory, ages views, and fences stop/reentry results (5458.4248ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   false !== true
-  
+
       at TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area07-pilot/tests/agent-market-runner.test.mjs:150:12)
       at runNextTicks (node:internal/process/task_queues:65:5)
       at process.processTimers (node:internal/timers:538:9)
