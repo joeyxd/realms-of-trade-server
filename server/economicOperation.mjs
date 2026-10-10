@@ -7,6 +7,7 @@ import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { checkedResourceState } from './resourceState.mjs';
 import { loggingParticipants, loggingResultProfiles } from './loggingOperation.mjs';
 import { artisanMutation } from './artisanOperation.mjs';
+import { fireMutation } from './fireOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -91,6 +92,14 @@ export function canonicalEconomicText(value) {
 function checkedCommand(raw) {
   if (!object(raw)) fail('input');
   const id = commandId(raw.opId);
+  if (raw.type === 'fire') {
+    exact(raw, ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit']);
+    if (!['load', 'set'].includes(raw.op) || !['handTorch', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(raw.kind) || typeof raw.lit !== 'boolean') fail('input');
+    integer(raw.expectedRev, 0, MAX_VERSION - 1);
+    if (raw.kind === 'handTorch') { if (raw.ship !== '' || raw.part !== 'hand') fail('input'); }
+    else { key(raw.ship, 120); key(raw.part); }
+    return jsonCopy(raw);
+  }
   if (raw.type === 'commerce' && ['buy', 'sell'].includes(raw.op)) {
     exact(raw, COMMERCE_BUY_FIELDS);
     if (!TOWN_IDS.includes(raw.town) || !Object.hasOwn(GOODS, raw.g)) fail('input');
@@ -206,7 +215,7 @@ function checkedRequest(input) {
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
-  if (artisanMutation(command)) {
+  if (artisanMutation(command) || fireMutation(command)) {
     if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
     const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
     if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');

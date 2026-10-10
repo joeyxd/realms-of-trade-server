@@ -17,6 +17,7 @@ import { EconomicOperationError, economicOperation, canonicalEconomicText, check
 import { checkedResourceState, upgradeLoggingState } from './resourceState.mjs';
 import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
 import { artisanWorldTransition, artisanMutation } from './artisanOperation.mjs';
+import { fireWorldTransition, fireMutation } from './fireOperation.mjs';
 import { agentGoodsBudgetCreate, agentGoodsBudgetRevoke, agentGoodsBudgetScope, agentTradeInput, checkedAgentGoodsBudget,
   checkAgentTradeDelta } from './agentGoodsBudget.mjs';
 import { groundTransactionOperation, checkedGroundTransactionResult, checkedGroundTransactionReceipt } from './groundTransaction.mjs';
@@ -131,8 +132,8 @@ export function createMemoryStore() {
     const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
     if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
         currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
-    if (artisanMutation(request.command) && canonicalEconomicText(currentProfile.data) !== canonicalEconomicText(request.before)) return conflict();
-    if (!artisanWorldTransition(currentWorld.data, request)) return { ok: false, why: 'operation' };
+    if ((artisanMutation(request.command) || fireMutation(request.command)) && canonicalEconomicText(currentProfile.data) !== canonicalEconomicText(request.before)) return conflict();
+    if (!(fireMutation(request.command) ? fireWorldTransition(currentWorld.data, request) : artisanWorldTransition(currentWorld.data, request))) return { ok: false, why: 'operation' };
     if (request.worldData.resources?.v === 2 && currentWorld.data.resources?.v !== 2) return conflict();
     if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
     if (!loggingWorldTransition(currentWorld.data.resources, request)) return { ok: false, why: 'operation' };
@@ -154,6 +155,7 @@ export function createMemoryStore() {
       const current = profiles.get(row.account);
       if (!current || current.version !== row.expectedVersion || row.before &&
           canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
+      if (!fireMutation(request.command) && canonicalEconomicText(current.data.fire ?? null) !== canonicalEconomicText(row.profile.fire ?? null)) return conflict();
       nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
     }
     assertManagedPearls(nextProfiles, uniques);
@@ -201,6 +203,7 @@ export function createMemoryStore() {
     async checkResourceOperations() { return { version: 1 }; },
     async checkLoggingOperations() { return { version: 1 }; },
     async checkArtisanOperations() { return { version: 1 }; },
+    async checkFireOperations() { return { version: 1 }; },
     async checkAgentTradeOperations() { return { version: 1 }; },
     async commitEconomicOperation(raw) {
       const { operationId, request } = checkedEconomicInput(raw);
@@ -658,6 +661,7 @@ export function createSupabaseStore(client) {
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
       return result;
     },
+    async checkFireOperations() { const raw = await rpc('mn_fire_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkArtisanOperations() {
       const result = await rpc('mn_artisan_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');

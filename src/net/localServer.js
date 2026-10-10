@@ -25,6 +25,7 @@ import { raftCmd } from '../sim/systems/raftEditor.js';
 import { raftDoorCmd } from '../sim/systems/raftDoors.js';
 import { raftLanternCmd } from '../sim/systems/raftLanterns.js';
 import { personalLanternCmd, clearPersonalLantern } from '../sim/systems/personalLantern.js';
+import { localFireCmd, fireStatus, syncFireLight, hideHandFire } from '../sim/systems/fire.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
@@ -60,7 +61,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -99,6 +100,8 @@ export class LocalServer {
     installTrade(this.world); // M7: the economy (markets, plots) and the market command
     installRafts(this.world, namespace);
     installResources(this.world);
+    this.world.fireEnabled = fire;
+    this.world.hideHandFire = e => hideHandFire(this.world, e);
     if (typeof navigation !== 'boolean') throw new TypeError('navigation option');
     if (navigation) {
       this.world.navalTrial = new NavalTrial(this.world, { coast: true, navigation: true });
@@ -157,7 +160,10 @@ export class LocalServer {
       clearCommerceReceipts(this.world, c.entity);
       clearResourceReceipts(this.world, c.entity);
       detachRafts(this.world, c.entity);
+      if (this.world.fireEnabled) hideHandFire(this.world, c.entity);
       clearPersonalLantern(this.world, c.entity);
+      this.world.fireReceipts?.delete(c.entity);
+      this.world.fireHandOff?.delete(c.entity);
       const p = detachProfile(this.world, c.entity);
       if (save && p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
@@ -221,6 +227,7 @@ export class LocalServer {
         // Pre-admission snapshots may precede the browser's snapshot listener while assets load.
         // Admission must resend the catalogue even when the world has not changed.
         c.resourceSignature = null;
+        if (this.world.fireEnabled) hideHandFire(this.world, c.entity);
         this.send(clientId, { t: MSG.WELCOME, v: PROTOCOL_VERSION, you: c.entity, tick: this.world.tick, seed: this.world.seed });
         this.flushEvents(); // Private events and already circulating pearls now know who "you" is.
         this.sendProfile(clientId, c);
@@ -281,6 +288,12 @@ export class LocalServer {
 
   // What a player asks for with what they own (M4): the bag, the equipment, a chest.
   playerCommand(c, msg) {
+    if (msg?.type === 'fire') {
+      if (c.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
+      const ack = localFireCmd(this.world, c.entity, msg, p => c.serverProfile || this.saves.store(p).length <= MAX_SAVE);
+      if (ack.ok) { this.sendProfile(this.clientOf(c.entity), c); this.broadcastSnapshot(); }
+      return ack.ok;
+    }
     if (msg?.type === 'navalPilot') return this.navalCommand(c, msg);
     if (msg?.type === 'raftDoor') return this.doorCommand(c, msg);
     if (msg?.type === 'raftLantern') return this.lanternCommand(c, msg);
@@ -350,6 +363,7 @@ export class LocalServer {
   }
 
   lanternCommand(c, msg) {
+    if (this.world.fireEnabled) { this.world.emit({ type: 'raftLantern', to: c.entity, opId: msg.opId, ok: false, why: 'fuel' }); return false; }
     if (c?.paused || this.tickBlocked) return false;
     const source = this.world.rafts?.get(msg.id), ownerId = source && this.clientOf(source.owner);
     const owner = this.clients.get(ownerId);
@@ -364,6 +378,7 @@ export class LocalServer {
   }
 
   personalLanternCommand(c, msg) {
+    if (this.world.fireEnabled) { this.world.emit({ type: 'personalLantern', to: c.entity, opId: msg.opId, ok: false, why: 'fuel' }); return false; }
     if (c?.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
     const ack = personalLanternCmd(this.world, c.entity, msg);
     if (ack.ok && ack.changed) this.broadcastSnapshot();
@@ -827,6 +842,7 @@ export class LocalServer {
     const frost = w.hazards.frostFields.map(({ e, seq, x, z, r, t0, tEnd, slow }) => ({ e, seq, x, z, r, t0, tEnd, slow }));
     const storm = w.hazards.stormSnapshot();
     const ink = { clouds: w.inkClouds.filter((f) => f.tEnd > w.tick).map(({ e, seq, x, z, r, t0, tEnd }) => ({ e, seq, x, z, r, t0, tEnd })), marks: [] };
+    for (const c of this.clients.values()) if (c.entity) syncFireLight(w, c.entity);
     const clock = { tick: w.tick, hours: w.gameHoursAt(), daySec: CLOCK.daySec };
     const rafts = publicRafts(w);
     const resources = publicResources(w);
@@ -843,6 +859,7 @@ export class LocalServer {
       const resourceChanged = c.resourceSignature !== resourceSignature;
       this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts,
         ...(resourceChanged ? { resources } : {}),
+        fire: c.entity ? fireStatus(w, c.entity) : null,
         capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
         ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
           voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null,

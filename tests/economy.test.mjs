@@ -231,7 +231,7 @@ import { newRaft, canPlace, place, remove, raftStats, stepRaft, sanitizeRaft } f
 
 test('raft pieces: costs are known goods, layers known, the starter raft is valid', () => {
   for (const [id, P] of Object.entries(RAFT_PARTS)) {
-    assert.ok(['base', 'floor', 'pillar', 'roof', 'edge', 'tile'].includes(P.layer), id);
+    assert.ok(['base', 'floor', 'pillar', 'roof', 'edge', 'mount', 'tile'].includes(P.layer), id);
     for (const g of [...Object.keys(P.cost), ...Object.keys(P.makes || {}), ...Object.keys(P.needs || {})]) assert.ok(GOODS[g], `${id}: ${g}`);
   }
   assert.equal(newRaft().parts.length, STARTER_RAFT.length);
@@ -297,7 +297,7 @@ test('raft work: purifiers water the crops, nets fish, the still makes rum; a ro
   assert.ok(out.made.agua > 0, 'spare water stored');
   const dry = newRaft([...STARTER_RAFT.filter((p) => p[0] !== 'crate'), ['cropPlot', 1, 1, 0]]);
   assert.equal(stepRaft(dry, newHold(50), 2).made.fruta, undefined, 'no water: no fruit');
-  const roofed = newRaft([...STARTER_RAFT, ['purifier', 1, 0, 0], ['roof', 1, 0, 0]]);
+  const roofed = newRaft([...STARTER_RAFT, ['purifier', 1, 0, 0], ['wall', 1, 0, 0, 0], ['roof', 1, 0, 0]]);
   assert.ok(raftStats(roofed).makes.agua > RAFT_PARTS.purifier.makes.agua);
 });
 

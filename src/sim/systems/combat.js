@@ -118,6 +118,7 @@ export function killPlayer(world, e, seq, by = 0) {
   ecs.hp[e] = 0;
   ecs.dead[e] = 1;
   ecs.lantern[e] = 0;
+  if (world.fireEnabled) world.hideHandFire?.(e);
   ecs.deadT[e] = tuning.combat.respawnTime;
   ecs.atkStage[e] = 0; ecs.guardT[e] = -1; ecs.chain[e] = 0;
   ecs.pend0[e] = ecs.pend1[e] = 0;

@@ -159,7 +159,7 @@ export function publicRafts(w) {
   const records = [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,
     name: r.ship.n, berth: r.ship.berth, x: ecs.x[r.entity], y: ecs.y[r.entity], z: ecs.z[r.entity],
     yaw: ecs.facing[r.entity], parts: activeRaftParts(r).map((p) => [...p]),
-    helm: liveHelmAnchor(activeRaftParts(r)), openDoors: openDoorParts(r), litLanterns: litLanternParts(r),
+    helm: liveHelmAnchor(activeRaftParts(r)), openDoors: openDoorParts(r), litLanterns: litLanternParts(r, w),
     ...(r.condition ? { hull: { ...hullIntegrity(r.condition) }, partHealth: r.condition.entries.map((p) =>
       ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })) } : {}),
     look: r.ship.look ? { banner: r.ship.look.banner, paint: r.ship.look.paint } : null }));

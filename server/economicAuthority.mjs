@@ -16,6 +16,9 @@ import { ARTISAN } from '../src/data/artisan.js';
 import { artisanMutation, draftArtisan } from './artisanOperation.mjs';
 import { restoreRaftCondition } from '../src/sim/naval/condition.js';
 import { publicRafts } from '../src/sim/systems/rafts.js';
+import { fireMutation, fireProfileDelta } from './fireOperation.mjs';
+import { fireAccess, fireSeconds, applyFireProfile } from '../src/sim/systems/fire.js';
+import { readFire } from '../src/sim/economy/fire.js';
 
 const clone = structuredClone;
 const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -27,7 +30,7 @@ export function economicOperationId(world, account, opId) {
 export function economicCommand(msg) {
   if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.opId !== 'string' || !OP_ID.test(msg.opId) ||
       (msg.t !== undefined && msg.t !== MSG.CMD)) throw new StoreError('operation');
-  const fields = msg.type === 'commerce' ? {
+  const fields = msg.type === 'fire' ? { load: ['ship', 'part', 'kind', 'expectedRev', 'lit'], set: ['ship', 'part', 'kind', 'expectedRev', 'lit'] }[msg.op] : msg.type === 'commerce' ? {
     buy: ['town', 'g', 'n', 'expectedTotal'], sell: ['town', 'g', 'n', 'expectedTotal'],
     transfer: ['id', 'expectedRev', 'g', 'n', 'side'],
   }[msg.op] : msg.type === 'raft' ? { supply: ['id', 'expectedRev', 'g', 'n'],
@@ -80,6 +83,10 @@ export function economicCommand(msg) {
     } else if (typeof msg.town !== 'string' || !/^[a-z_]{1,32}$/.test(msg.town) ||
         !Number.isSafeInteger(msg.expectedTotal) || msg.expectedTotal < 0 || msg.expectedTotal > 1e9) throw new StoreError('operation');
   }
+  if (msg.type === 'fire' && (typeof msg.ship !== 'string' || typeof msg.part !== 'string' || typeof msg.kind !== 'string' ||
+    !['handTorch', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(msg.kind) ||
+    !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 0 || msg.expectedRev > 2147483646 || typeof msg.lit !== 'boolean' ||
+    (msg.kind === 'handTorch' ? msg.ship !== '' || msg.part !== 'hand' : !/^[A-Za-z0-9:_-]{1,120}$/.test(msg.ship) || !/^[A-Za-z0-9:_-]{1,100}$/.test(msg.part)))) throw new StoreError('operation');
   return clone(out);
 }
 
@@ -139,13 +146,14 @@ export class EconomicAuthority {
       this.host.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'tradeDenied', to: this.host.server.clients.get(sock.id)?.entity, why: 'command' } });
       return true;
     }
-    if (!(msg.type === 'community' || msg.type === 'artisan' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
+    if (!(msg.type === 'fire' || msg.type === 'community' || msg.type === 'artisan' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
         msg.type === 'raft' && (msg.op === 'supply' || artisanMutation(msg)) || this.host.resourceOperations && msg.type === 'resource')) return false;
     let command;
     try { command = economicCommand(msg); }
     catch { reject('command'); return true; }
     const h = this.host, c = h.server.clients.get(sock.id), s = h.profiles.clients.get(sock.id);
     if (!c?.entity) return true;
+    if (command.type === 'fire' && !h.fireOperations) { reject('disabled'); return true; }
     if ((command.type === 'artisan' || artisanMutation(command)) && !h.artisanOperations) { reject('disabled'); return true; }
     if (command.op === 'list') {
       const why = this.busy ? 'busy' : !h.worldState.community ? 'disabled' : communityAccess(h.server.world, c.entity);
@@ -182,7 +190,7 @@ export class EconomicAuthority {
       // Freeze the live economy/resource clock as this operation's confirmed baseline through
       // the existing world writer. A lesson/edit cannot change markets, nor restore an older
       // autosave's accumulator when ordinary ticks advanced since the last checkpoint.
-      if (artisanMutation(command)) h.worldState.save(h.server.world.economy);
+      if (artisanMutation(command) || fireMutation(command)) h.worldState.save(h.server.world.economy);
       h.worldState.operationBusy = true;
       if (agent) h.clearAgentInputs(sock.id);
       a.task = this.prepare(a).catch(() => { this.fence(a); });
@@ -273,7 +281,13 @@ export class EconomicAuthority {
     if (!this.valid(a)) throw new StoreError('cancelled');
     if (this.cancelAgent(a)) return;
     let proposal;
-    if (a.command.type === 'resource') {
+    if (a.command.type === 'fire') {
+      let why = fireAccess(h.server.world, a.entity, a.command);
+      const changed = why ? null : fireProfileDelta(a.profile, a.command, fireSeconds(h.server.world));
+      why ||= changed?.why;
+      proposal = { profile: why ? clone(a.profile) : changed.profile, economy: h.server.world.economy, community: clone(h.worldState.community),
+        ack: { type: 'fire', op: a.command.op, opId: a.command.opId, ok: !why, why: why || '', rev: readFire((why ? a.profile : changed.profile).fire).rev } };
+    } else if (a.command.type === 'resource') {
       proposal = draftResource(h.server.world, a.entity, a.command, a.profile, h.worldState.resources, a.s.key,
         h.worldState.resourceTick(), new Map([...a.members].map(([key, member]) => [key, member.profile])));
       proposal.community = clone(h.worldState.community);
@@ -303,7 +317,7 @@ export class EconomicAuthority {
     a.request = { world: h.worldState.id, account: a.s.key, command: a.command,
       expectedProfileVersion: a.s.version, expectedWorldVersion: h.worldState.version,
       profile: proposal.profile, worldData: data, ack: proposal.ack };
-    if (artisanMutation(a.command)) a.request.before = clone(a.profile);
+    if (artisanMutation(a.command) || fireMutation(a.command)) a.request.before = clone(a.profile);
     if (h.loggingOperations && a.command.type === 'resource' && a.command.op === 'gather'
         && data.resources.nodes.find(n => n.id === a.command.node)?.kind === 'palm') {
       a.request.beneficiaries = [...proposal.profiles].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([account, profile]) => {
@@ -354,6 +368,7 @@ export class EconomicAuthority {
         const p = w.profiles.get(a.entity), next = a.request.profile;
         if (a.command.type === 'resource') applyResource(w, a.entity, a.command, a.proposal);
         // Preserve live profile/raft object identities used by deterministic systems.
+        if (fireMutation(a.command) && a.ack.ok === true && next.fire) applyFireProfile(w, a.entity, next);
         p.gold = next.gold; p.eco.pack = clone(next.eco.pack); p.eco.tradeRev = next.eco.tradeRev;
         if (a.command.type === 'resource') p.tools = clone(next.tools);
         if (Object.hasOwn(next, 'progression')) p.progression = clone(next.progression);

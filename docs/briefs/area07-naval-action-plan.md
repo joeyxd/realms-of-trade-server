@@ -174,6 +174,15 @@ Usa el presupuesto existente y mantiene la luz propia; modelo/fuente siguen pose
 Costa/puerto, pie, farol naval e interior se verifican por navegador; publicación y revisión activa
 se documentan en la entrega. No hay sombras/oclusión por paredes ni prueba de FPS físico.
 
+[RNV04 — combustible privado y fuegos útiles (implementación local; aceptación pendiente)](RNV04-fire-fuel.md).
+Las luces municipales siguen públicas e infinitas. La antorcha de mano consume una madera por 20 minutos
+de simulación; faroles/antorchas privados de balsa consumen una por 60 minutos y fogatas/parrilla por 30.
+Apagar conserva el saldo, no hay recarga automática y la parrilla usa únicamente la producción que ya tenía.
+El estado y los recibos se integran con el perfil y autoridad M5 existentes, con SQL022 opcional y apagado
+por defecto. La construcción cubre piezas de balsa; colocar hogares privados en tierra y añadir carbón
+quedan para después. Las pruebas focales son locales; faltan aceptación visual en escritorio/móvil,
+suite integrada/canario con SQL022 y bandera, publicación y comprobación de la autoridad pública.
+
 **Sigue agua costera/reembarque:** definir primero alcance, carga, agotamiento, rescate y pérdidas;
 usar la cubierta y autoridad actuales. Después provisiones/hogar.
 
