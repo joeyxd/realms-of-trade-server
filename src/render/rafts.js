@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RAFT, RAFT_PARTS, RAFT_LOOKS } from '../data/raftparts.js';
 import { STAIR, raftGangplank } from '../sim/raftGeometry.js';
+import { isDoorOpen } from '../sim/naval/shelter.js';
 import { toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
@@ -30,7 +31,8 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function keyOf(record) {
   // Cargo/work revisions change private state without changing the silhouette or its mobile GPU buffers.
-  return `${JSON.stringify(record.parts || [])}|${JSON.stringify(record.look || null)}`;
+  const openDoors = Array.isArray(record.openDoors) ? record.openDoors : [];
+  return `${JSON.stringify(record.parts || [])}|${JSON.stringify(record.look || null)}|${JSON.stringify(openDoors)}`;
 }
 
 function paintColor(look) {
@@ -51,6 +53,15 @@ function hashPhase(id) {
 }
 
 export class RaftLayer {
+  setInterior(id) {
+    let changed = false;
+    for (const view of this.views.values()) for (const mesh of view.visual.children) if (mesh.userData.raftRoof) {
+      const visible = String(view.id) !== String(id);
+      if (mesh.visible !== visible) { mesh.visible = visible; changed = true; }
+    }
+    return changed;
+  }
+
   constructor(scene, { skin = new URLSearchParams(globalThis.location?.search || '').get('raftskin') !== '0', dock = null, surfaceSkin = null, sailingRig = false } = {}) {
     this.scene = scene;
     this.dock = dock;
@@ -300,14 +311,14 @@ export class RaftLayer {
     const visual = new THREE.Group();
     visual.name = 'raft:visual';
     root.add(visual);
-    const batches = new Map();
+    const batches = new Map(), roofBatches = new Map();
     const external = [];
     const ownedGeometries = [];
     const sails = [];
-    const add = (color, shape, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') => {
+    const addTo = (target, color, shape, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') => {
       const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
       const key = materialKey(spec);
-      if (!batches.has(key)) batches.set(key, { spec, pieces: [] });
+      if (!target.has(key)) target.set(key, { spec, pieces: [] });
       const g = shape.clone();
       if (spec.kind !== 'solid') this.mapSurfaceUV(g, spec.kind, {
         grain: shape.type === 'BoxGeometry' ? 'box' : shape.type === 'CylinderGeometry' ? 'cylinder' : 'raw',
@@ -317,8 +328,9 @@ export class RaftLayer {
       this.tempPosition.set(x, y, z);
       this.tempMatrix.compose(this.tempPosition, this.tempQuaternion, this.tempScale);
       g.applyMatrix4(this.tempMatrix);
-      batches.get(key).pieces.push(g);
+      target.get(key).pieces.push(g);
     };
+    const add = (...args) => addTo(batches, ...args);
     const box = (color, w, h, d, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') =>
       add(color, this.boxShape(w, h, d), x, y, z, rx, ry, rz, order);
     const cyl = (color, rt, rb, h, x, y, z, segments = 8, rx = 0, ry = 0, rz = 0) =>
@@ -395,27 +407,46 @@ export class RaftLayer {
           for (const s of [-1, 1]) box(WOOD_DARK, horizontal ? 0.16 : thick, LEVEL_H - 0.18, horizontal ? thick : 0.16,
             ex + off[0] * s, eh, ez + off[2] * s);
           edgeBox(WOOD, 1.8, 0.18, thick, y + LEVEL_H - 0.27);
-          // P2 keeps doors visually closed; the solid leaf makes the doorway read clearly from every side.
           const normal = horizontal ? [0, 0, d === 0 ? -1 : 1] : [d === 1 ? 1 : -1, 0, 0];
           const leafOffset = 0.035;
-          const doorPoint = (u, yy, face = leafOffset) => [
-            ex + (horizontal ? u : normal[0] * face), yy,
-            ez + (horizontal ? normal[2] * face : u),
-          ];
-          const faceBox = (color, wide, tall, deep, u, yy, face = leafOffset) => {
-            const p = doorPoint(u, yy, face);
-            box(color, horizontal ? wide : deep, tall, horizontal ? deep : wide, p[0], p[1], p[2]);
+          const hingeU = -0.675, leafCenterU = 0.675;
+          const leaf = new THREE.Group();
+          leaf.name = `raft:door-leaf:${x}:${z}:${level}:${d}`;
+          leaf.position.set(ex + (horizontal ? hingeU : normal[0] * leafOffset), y + 1.125,
+            ez + (horizontal ? normal[2] * leafOffset : hingeU));
+          const open = isDoorOpen(record.openDoors, raw);
+          const closedYaw = horizontal ? 0 : -Math.PI / 2;
+          const openYaw = Math.atan2(-normal[2], normal[0]);
+          leaf.rotation.y = open ? openYaw : closedYaw;
+          leaf.userData.open = open;
+          const leafGroups = new Map();
+          const leafPiece = (color, shape, px, py, pz, rz = 0) => {
+            const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
+            const key = materialKey(spec);
+            if (!leafGroups.has(key)) leafGroups.set(key, { spec, pieces: [] });
+            const geometry = shape.clone();
+            if (spec.kind !== 'solid') this.mapSurfaceUV(geometry, spec.kind, { grain: shape.type === 'BoxGeometry' ? 'box' : 'raw' });
+            if (rz) geometry.rotateZ(rz);
+            geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(px, py, pz));
+            leafGroups.get(key).pieces.push(geometry);
           };
-          faceBox(WOOD_DARK, 1.35, 2.25, 0.12, 0, y + 1.125);
-          for (let i = 0; i < 4; i++) faceBox(WOOD, 0.31, 2.17, 0.045, -0.51 + i * 0.34, y + 1.125, leafOffset + 0.078);
-          // Cross braces are thin iron rods on the leaf face, and remain part of the atlas-mapped batch.
-          const brace = (u0, h0, u1, h1) => line(IRON, doorPoint(u0, y + h0, leafOffset + 0.12), doorPoint(u1, y + h1, leafOffset + 0.12), 0.035);
-          brace(-0.52, 0.20, 0.52, 0.72); brace(-0.52, 2.05, 0.52, 1.53);
-          faceBox(IRON, 0.09, 0.24, 0.04, 0.45, y + 1.12, leafOffset + 0.13);
-          const handle = doorPoint(0.45, y + 1.12, leafOffset + 0.18);
-          const handleRx = horizontal ? (normal[2] > 0 ? Math.PI / 2 : -Math.PI / 2) : 0;
-          const handleRz = horizontal ? 0 : (normal[0] > 0 ? -Math.PI / 2 : Math.PI / 2);
-          cyl(IRON_LIGHT, 0.035, 0.035, 0.08, handle[0], handle[1], handle[2], 8, handleRx, 0, handleRz);
+          leafPiece(WOOD_DARK, this.boxShape(1.35, 2.25, 0.12), leafCenterU, 0, 0);
+          for (let i = 0; i < 4; i++) leafPiece(WOOD, this.boxShape(0.31, 2.17, 0.045), leafCenterU - 0.51 + i * 0.34, 0, 0.078);
+          leafPiece(IRON, this.boxShape(1.2, 0.07, 0.045), leafCenterU, -0.55, 0.12, -0.46);
+          leafPiece(IRON, this.boxShape(1.2, 0.07, 0.045), leafCenterU, 0.55, 0.12, 0.46);
+          leafPiece(IRON, this.boxShape(0.09, 0.24, 0.04), leafCenterU + 0.45, -0.005, 0.13);
+          for (const { spec, pieces } of leafGroups.values()) {
+            const geometry = mergeGeometries(pieces, false);
+            for (const piece of pieces) piece.dispose();
+            if (!geometry) continue;
+            geometry.computeBoundingBox(); geometry.computeBoundingSphere(); ownedGeometries.push(geometry);
+            const mesh = new THREE.Mesh(geometry, this.material(spec));
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            mesh.userData.nm = spec.kind === 'cloth' ? this.clothNm : this.nm;
+            mesh.userData.raftSurface = spec.kind;
+            leaf.add(mesh);
+          }
+          visual.add(leaf);
         } else if (id === 'window') {
           edgeBox(base, 1.9, 0.15, thick, y + 0.25);
           edgeBox(base, 1.9, 0.15, thick, y + 1.85);
@@ -438,8 +469,22 @@ export class RaftLayer {
           }
         }
       } else if (part.layer === 'roof') {
-        box(id === 'roof' ? CLOTH_DARK : hull, w * 0.99, 0.16, depth * 0.99, cx, y + LEVEL_H - 0.13, cz);
-        box(WOOD_DARK, 0.12, 0.2, depth * 0.95, cx, y + LEVEL_H - 0.28, cz);
+        const roof = new THREE.BufferGeometry();
+        const ridge = 0.28, eave = -0.32, halfW = w * 0.5, halfD = depth * 0.5;
+        const positions = new Float32Array([
+          -halfW, ridge, 0, halfW, eave, halfD, halfW, ridge, 0,
+          -halfW, ridge, 0, -halfW, eave, halfD, halfW, eave, halfD,
+          -halfW, ridge, 0, halfW, eave, -halfD, -halfW, eave, -halfD,
+          -halfW, ridge, 0, halfW, ridge, 0, halfW, eave, -halfD,
+        ]);
+        roof.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        roof.computeVertexNormals();
+        roof.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0], 2));
+        addTo(roofBatches, id === 'roof' ? CLOTH_DARK : hull, roof, cx, y + LEVEL_H - 0.13, cz);
+        roof.dispose();
+        addTo(roofBatches, WOOD_DARK, this.boxShape(w * 0.95, 0.12, 0.12), cx, y + LEVEL_H + 0.15, cz);
+        for (const side of [-1, 1]) addTo(roofBatches, WOOD_DARK,
+          this.boxShape(w * 0.95, 0.09, 0.09), cx, y + LEVEL_H - 0.45, cz + side * halfD * 0.94);
       } else if (part.layer === 'tile') {
         if (id === 'sail' || id === 'bigSail') {
           const mastH = id === 'bigSail' ? 4.4 : 3.25;
@@ -680,7 +725,7 @@ export class RaftLayer {
       }
     }
 
-    for (const [key, { spec, pieces }] of batches) {
+    for (const [key, { spec, pieces }] of [...batches, ...[...roofBatches].map(([key, batch]) => [`roof|${key}`, batch])]) {
       const merged = mergeGeometries(pieces, false);
       for (const piece of pieces) piece.dispose();
       if (!merged) continue;
@@ -692,6 +737,7 @@ export class RaftLayer {
       mesh.receiveShadow = true;
       mesh.userData.nm = spec.kind === 'cloth' ? this.clothNm : this.nm;
       mesh.userData.raftSurface = spec.kind;
+      if (key.startsWith('roof|')) mesh.userData.raftRoof = true;
       mesh.name = `raft:parts:${key}`;
       visual.add(mesh);
     }

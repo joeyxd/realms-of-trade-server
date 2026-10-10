@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
+Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y apertura por instancia.
+Dueño/visitante usan puertas sin cerradura; guarda el perfil M5 del dueño, sin SQL ni otro writer.
+Techo se oculta al entrar y vuelve al salir. Cubierta/predicción admiten cambios de puerta en el mismo tick.
+478 pruebas seleccionadas, 107 del actualizador con solapamiento y tres vistas UI inspeccionadas.
+Publicación/imagen/entrada VPS en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
+actualizados; sigue RNV02 farol usable, después oscuridad. No acredita clima/descanso/colapso estructural.
+
 **AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
 concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
 embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger

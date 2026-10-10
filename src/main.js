@@ -44,6 +44,7 @@ import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
 import { MiniMap } from './ui/minimap.js';
 import { RaftEditor } from './ui/raftEditor.js';
+import { RaftDoorActions } from './ui/raftDoorActions.js';
 import { CommercePanel } from './ui/commerce.js';
 import { ResourceActions } from './ui/resourceActions.js';
 import { WorkbenchPanel } from './ui/workbench.js';
@@ -251,6 +252,10 @@ async function boot() {
     },
   });
   resources.openWorkbench = () => workbench.open();
+  const raftDoors = new RaftDoorActions({ client: () => client,
+    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
+  bus.on('raftDoor', (ev) => safe('raftDoor', () => raftDoors.acknowledge(ev)));
+  bus.on('you:welcome', () => raftDoors.reset());
   bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
   bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
   const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
@@ -396,6 +401,7 @@ async function boot() {
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),
     active: () => st.mode === 'playing' && client.joined && !client.t.closed,
+    doorInteraction: () => !pause.open && input.enabled && !raftEditor.active && !workbench.active && !commercePanel.active && !chatPanel.typing && !ps.dead ? raftDoors.interaction() : null,
     onClosePanels: () => { workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); aimCtl.reset(); input.clearActions(); },
   });
   bus.on('combat', (ev) => safe('navigation event', () => navigation.event(ev)));
@@ -1223,6 +1229,7 @@ async function boot() {
         const interact = input.consumeInteract();
         if (!workbench.active && !commercePanel.active && interact) {
           if (navalInteraction?.key === 'F') navalInteraction.run();
+          else if (navalInteraction?.door) navalInteraction.run();
           else if (npc) {
             const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
             const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
@@ -1352,7 +1359,7 @@ async function boot() {
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
         resources.update();
-        world.update(realDt, { focus, playing, resources: resources.renderResources(), naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        world.update(realDt, { focus, playing, resources: resources.renderResources(), shelterId: playing ? client.pred.raftDeck.shelterAt(ps.x, ps.z, ps.y)?.id : null, naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);

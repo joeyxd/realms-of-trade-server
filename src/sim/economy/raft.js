@@ -74,6 +74,8 @@ export function canPlace(parts, piece, ix = indexRaft(parts)) {
     if (set.has(key(x, z, l))) return 'overlap';
     if (!standable(ix, x, z, l)) return 'deck';
     if (P.layer === 'pillar' && ix.tile.has(key(x, z, l))) return 'overlap';
+    if (P.layer === 'roof' && !heldUp(ix, parts, x, z, l + 1) &&
+        !NB.some(([a, b]) => ix.roof.has(key(x + a, z + b, l)) && heldUp(ix, parts, x + a, z + b, l + 1))) return 'support';
     return '';
   }
   if (P.layer === 'edge') {

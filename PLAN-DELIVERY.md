@@ -10,6 +10,12 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA07 RNV01 (2026-10-10), **alpha.24/protocolo 37**: [refugio naval](docs/delivery/rnv01-naval-refuge.md),
+  techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
+  del dueño. Editor de once piezas; coste/HP existentes, visitantes sin cerradura y vista interior.
+  478 pruebas seleccionadas, 107 del actualizador con solapamiento y tres vistas UI.
+  Publicación/activación en la entrega. Sigue farol, luego noche oscura.
+
 - AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
   primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
   Reutiliza CAS M5 y distingue aprendizaje local/pendiente/confirmado; sin SQL ni premio repetible.

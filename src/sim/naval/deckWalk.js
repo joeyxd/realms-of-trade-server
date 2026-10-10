@@ -5,6 +5,7 @@ import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
 import { DT, tuning } from '../../data/tuning.js';
 import { RaftDeck } from '../raftGeometry.js';
 import { stepMover } from '../systems/movement.js';
+import { doorKey } from './shelter.js';
 
 const OFFSET_Y = 0.72;
 const LIMIT = 256;
@@ -30,6 +31,9 @@ function validate(state, axes, parts, params) {
     throw new TypeError('invalid operational raft parts');
   if (!own(params, ['speed', 'radius']) || !finite(params.speed) || params.speed < 0 || params.speed > 50 ||
       !finite(params.radius) || params.radius < 0.05 || params.radius > 2) throw new TypeError('invalid deck walk params');
+  if (params.openDoors !== undefined && (!Array.isArray(params.openDoors) || params.openDoors.length > 600 ||
+      params.openDoors.some((part) => !doorKey(part) || !parts.some((p) => doorKey(p) === doorKey(part)))))
+    throw new TypeError('invalid open deck doors');
 }
 
 function virtualMap() {
@@ -59,7 +63,7 @@ export class DeckWalkEngine {
   step(state, axes, parts, params) {
     validate(state, axes, parts, params);
     const e = this.#entity, ecs = this.#ecs;
-    const raft = { id: 'deck-walk', x: 0, y: OFFSET_Y, z: 0, yaw: 0, rev: 0, parts };
+    const raft = { id: 'deck-walk', x: 0, y: OFFSET_Y, z: 0, yaw: 0, rev: 0, parts, openDoors: params.openDoors || [] };
     this.#world.raftDeck.update([raft]);
     const support = this.#world.raftDeck.surface(state.x, state.z, state.y + OFFSET_Y);
     if (!support || Math.abs(support.y - (state.y + OFFSET_Y)) >= 0.6 ||

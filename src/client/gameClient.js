@@ -190,6 +190,10 @@ export class GameClient {
       if (ev.to === this.youServer) this.bus.emit('raftEdit', ev);
       return;
     }
+    if (ev.type === 'raftDoor') {
+      if (ev.to === this.youServer) this.bus.emit('raftDoor', ev);
+      return;
+    }
     const H = this.pred.hazards;
     // (A shot names its owner, not `e`.)
     const mine = this.isMe(ev.type === 'shot' ? ev.owner : ev.e) || ((ev.type === 'death' || ev.type === 'respawn') && ev.id === this.youServer);

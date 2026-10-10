@@ -1,6 +1,7 @@
 // Moored raft walk surfaces and blockers, shared by authority and prediction. Geometry is compiled
 // only when a public blueprint/pose changes; rendering and inventory never decide where a body stands.
 import { RAFT, RAFT_PARTS } from '../data/raftparts.js';
+import { isDoorOpen } from './naval/shelter.js';
 
 export const STAIR = Object.freeze({ width: 1.55, steps: 8 });
 const CELL = RAFT.cell, HEIGHT = RAFT.levelHeight, STEP = 0.6, EPS = 1e-8;
@@ -44,7 +45,7 @@ const segmentDistance2 = (x, z, a, b) => {
 };
 
 function compile(r, dock) {
-  const floors = [], stairs = [], edges = [];
+  const floors = [], stairs = [], edges = [], roofs = [];
   let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
   for (const [id, x, z, level, dir = 0] of r.parts) {
     const p = RAFT_PARTS[id];
@@ -53,6 +54,7 @@ function compile(r, dock) {
     minX = Math.min(minX, x0); maxX = Math.max(maxX, x0 + CELL);
     minZ = Math.min(minZ, z0); maxZ = Math.max(maxZ, z0 + CELL);
     if (p.layer === 'base' || p.layer === 'floor') floors.push({ x0, z0, y });
+    if (p.layer === 'roof') roofs.push({ x0, z0, y });
     if (id === 'stairs') {
       const [fx, fz] = FORWARD[(dir & 3)];
       stairs.push({ x: x0 + CELL / 2, z: z0 + CELL / 2, y, fx, fz });
@@ -66,10 +68,22 @@ function compile(r, dock) {
       const d = dir & 3;
       const a = d === 0 ? [x0, z0] : d === 1 ? [x0 + CELL, z0] : d === 2 ? [x0, z0 + CELL] : [x0, z0];
       const b = d === 0 ? [x0 + CELL, z0] : d === 1 ? [x0 + CELL, z0 + CELL] : d === 2 ? [x0 + CELL, z0 + CELL] : [x0, z0 + CELL];
-      edges.push({ a, b, y, h: id === 'railing' ? 0.75 : HEIGHT - 0.18, thick: id === 'railing' ? 0.05 : 0.09 });
+      if (id === 'door' && isDoorOpen(r.openDoors, [id, x, z, level, dir])) {
+        const tx = (b[0] - a[0]) / CELL, tz = (b[1] - a[1]) / CELL;
+        const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+        const at = (u) => [mid[0] + tx * u, mid[1] + tz * u];
+        const hinge = at(-0.675), normal = d === 0 ? [0, -1] : d === 1 ? [1, 0] : d === 2 ? [0, 1] : [-1, 0];
+        for (const [from, to] of [[a, at(-0.70)], [at(0.70), b],
+          [hinge, [hinge[0] + normal[0] * 1.35, hinge[1] + normal[1] * 1.35]]])
+          edges.push({ a: from, b: to, y, h: HEIGHT - 0.18, thick: 0.09 });
+      } else edges.push({ a, b, y, h: id === 'railing' ? 0.75 : HEIGHT - 0.18, thick: id === 'railing' ? 0.05 : 0.09 });
     }
   }
-  return { record: r, floors, stairs, edges, minX, maxX, minZ, maxZ, plank: raftGangplank(r, dock) };
+  for (const edge of edges) for (const [x, z] of [edge.a, edge.b]) {
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+    minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z);
+  }
+  return { record: r, floors, stairs, edges, roofs, minX, maxX, minZ, maxZ, plank: raftGangplank(r, dock) };
 }
 
 export class RaftDeck {
@@ -80,7 +94,7 @@ export class RaftDeck {
     const next = new Map();
     for (const r of records || []) {
       if (!r || !Array.isArray(r.parts) || ![r.x, r.y, r.z, r.yaw].every(Number.isFinite)) continue;
-      const key = `${r.x}|${r.y}|${r.z}|${r.yaw}|${r.rev}|${r.pilot?.epoch || 0}|${JSON.stringify(r.parts)}`;
+      const key = `${r.x}|${r.y}|${r.z}|${r.yaw}|${r.rev}|${r.pilot?.epoch || 0}|${JSON.stringify(r.parts)}|${JSON.stringify(r.openDoors || [])}`;
       const prior = this.entries.get(r.id);
       next.set(r.id, prior?.key === key ? prior : { key, ...compile(r, this.map.dock) });
     }
@@ -134,5 +148,17 @@ export class RaftDeck {
       }
     }
     return false;
+  }
+
+  // A roof is cover, never a new walkable storey. Used for the local interior cutaway;
+  // weather, rest and lighting benefits remain separate systems.
+  shelterAt(x, z, y) {
+    for (const g of this.entries.values()) {
+      const [lx, lz] = local(g.record, x, z);
+      for (const roof of g.roofs) if (Math.abs(y - roof.y) < STEP &&
+          lx >= roof.x0 && lx < roof.x0 + CELL && lz >= roof.z0 && lz < roof.z0 + CELL)
+        return { id: g.record.id, y: roof.y + HEIGHT };
+    }
+    return null;
   }
 }
