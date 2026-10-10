@@ -342,7 +342,10 @@ export class LiveNavigationView {
       if (voyage.phase === 'shore') {
         const player = c.youServer && c.cur;
         const actions = [];
-        if (player && voyage.landing && distance(player, voyage.landing) <= 4)
+        if (voyage.swimming && voyage.canReboard === true && voyage.shipId)
+          actions.push({ key: 'F', prompt: t('nav.waterReboardPrompt'), verb: t('nav.waterReboard'),
+            run: () => this.command('reboard', voyage.shipId) });
+        if (!voyage.swimming && player && voyage.landing && distance(player, voyage.landing) <= 4)
           actions.push({ key: 'F', prompt: t('nav.reboardPrompt'), verb: t('nav.reboard'), run: () => this.command('reboard', voyage.shipId) });
         const dock = this.world.map?.dock;
         if (player && dock) {
@@ -353,7 +356,12 @@ export class LiveNavigationView {
         return this.actionSet(actions);
       }
       const options = [];
+      if (voyage.swimming && voyage.canReboard === true && voyage.shipId)
+        options.push({ key: 'F', prompt: t('nav.waterReboardPrompt'), verb: t('nav.waterReboard'),
+          run: () => this.command('reboard', voyage.shipId) });
       if (voyage.canDock) options.push({ id: 'dock', key: 'G', prompt: t('nav.dockPrompt'), verb: t('nav.dock'), run: () => this.command('dock') });
+      if (voyage.canSwim === true && !voyage.canDock && (!voyage.canLand || c.naval?.active || c.deck?.active))
+        options.push({ id: 'swim', key: 'G', prompt: t('nav.swimPrompt'), verb: t('nav.swim'), run: () => this.command('swim') });
       if (c.deck?.active) {
         const player = c.youServer && c.cur;
         const raft = (c.renderRafts?.(1) || c.pred?.rafts || []).find((r) => String(r.id) === String(voyage.shipId));
@@ -407,7 +415,7 @@ export class LiveNavigationView {
 
   command(op, shipId = null) {
     const c = this.client(); if (!c) return false;
-    const clientOp = { land: 'landNaval', dock: 'dockNaval', reboard: 'reboardNaval' }[op];
+    const clientOp = { land: 'landNaval', dock: 'dockNaval', reboard: 'reboardNaval', swim: 'swimNaval' }[op];
     if (typeof c[clientOp] === 'function') { c[clientOp](...(shipId ? [shipId] : [])); return true; }
     const message = { t: 'cmd', type: 'navalPilot', op };
     if (op !== 'reboard' && op !== 'recall') message.epoch = c.naval?.epoch;
@@ -557,7 +565,8 @@ export class LiveNavigationView {
       actions.push({ id: 'mode', label: c?.deck?.active ? t('nav.helm') : t('nav.deck'), icon: c?.deck?.active ? 'helm' : 'crew', kind: 'action', disabled: !i?.actions?.some(a => a.key === 'E') });
     actions.push({ id: 'center', label: t('nav.center'), icon: 'center', kind: 'action' }, { id: 'map', label: t('nav.map'), icon: 'map', kind: 'action' });
     for (const action of i?.actions || []) if (action.key === 'G' || action.key === 'F')
-      actions.push({ id: action.key === 'F' ? 'reboard' : action.id === 'dock' ? 'dock' : action.id === 'land' ? 'land' : 'recall',
+      actions.push({ id: action.key === 'F' ? 'reboard' : action.id === 'dock' ? 'dock' : action.id === 'land' ? 'land' :
+        action.id === 'swim' ? 'swim' : action.id === 'recall' ? 'recall' : 'land',
         label: action.verb, icon: action.key === 'G' ? 'helm' : 'crew', kind: 'action' });
     const keyedActions = actions.map((action) => ({ ...action, shortcut: action.shortcut || NAVAL_SHORTCUTS[action.id] }));
     const signature = JSON.stringify(keyedActions);

@@ -3,6 +3,7 @@
 import { tuning } from '../../data/tuning.js';
 import { STATE } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
+import { canSwim, refreshSwimming } from './swimming.js';
 
 // AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
 // even while walking another way; without it you face where you walk (touch, keyboard only).
@@ -14,21 +15,27 @@ export function standingHeight(world, x, z, referenceY) {
   return world.raftDeck?.surface(x, z, referenceY)?.y ?? world.map.groundAt(x, z);
 }
 
-function walkStep(world, x0, z0, x1, z1, y0, r) {
+function walkStep(world, x0, z0, x1, z1, y0, r, waterAllowed = false) {
   const map = world.map;
   const W = tuning.world;
   const lim = map.half - 2;
   if (x1 < -lim || x1 > lim || z1 < -lim || z1 > lim) return false;
   const raft0 = world.raftDeck?.surface(x0, z0, y0), raft1 = world.raftDeck?.surface(x1, z1, y0);
   const deck1 = map.onDock(x1, z1) || raft1, deck0 = map.onDock(x0, z0) || raft0;
-  const g1 = raft1?.y ?? map.groundAt(x1, z1);
-  if (!deck1 && W.waterLevel - g1 > W.wadeMax) return false;
+  const terrain1 = map.groundAt(x1, z1), terrain0 = map.groundAt(x0, z0);
+  const wet1 = !deck1 && W.waterLevel - terrain1 > W.wadeMax;
+  const wet0 = !deck0 && W.waterLevel - terrain0 > W.wadeMax;
+  if (wet1 && (!waterAllowed || world.raftDeck?.surface(x1, z1))) return false;
+  const g1 = raft1?.y ?? (wet1 ? W.waterLevel - tuning.swim.bodyDepth : terrain1);
   if (world.raftDeck?.blocked(x1, z1, g1, r)) return false;
-  const g0 = raft0?.y ?? map.groundAt(x0, z0);
+  const g0 = raft0?.y ?? (wet0 ? W.waterLevel - tuning.swim.bodyDepth : terrain0);
   const d = Math.hypot(x1 - x0, z1 - z0);
   if (d < 1e-9) return true;
   const dh = g1 - g0;
   if (deck0 || deck1) return Math.abs(dh) < 0.6;
+  // Water follows its surface rather than the seabed. A shallow shore is reachable without
+  // treating the small float-to-wade height change as a vertical cliff.
+  if (waterAllowed && (wet0 || wet1)) return wet1 || (g1 <= W.waterLevel + 0.05 && dh < 0.6);
   // Steep ground stops you going up; going down you just drop (a knockback onto a ledge is no trap).
   return dh / d <= W.maxSlope;
 }
@@ -53,7 +60,7 @@ export function canStand(world, x, z, r = tuning.player.radius, referenceY) {
 export function moveWithCollision(world, e, dx, dz) {
   // A continuous sampled path also protects ordinary walking, knockback and skill movement from
   // skipping a narrow deck gap or an edge. Keep the existing island path unchanged without rafts.
-  const steps = world.raftDeck?.size ? Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.15)) : 1;
+  const steps = world.raftDeck?.size || canSwim(world.ecs, e) ? Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.15)) : 1;
   let moved = 0;
   for (let i = 0; i < steps; i++) moved += moveOnce(world, e, dx / steps, dz / steps);
   return moved;
@@ -64,9 +71,10 @@ function moveOnce(world, e, dx, dz) {
   const x = ecs.x[e], z = ecs.z[e], r = ecs.radius[e];
   let nx = x + dx, nz = z + dz;
   const y = ecs.y[e];
-  if (!walkStep(world, x, z, nx, nz, y, r)) {
-    if (walkStep(world, x, z, nx, z, y, r)) nz = z;
-    else if (walkStep(world, x, z, x, nz, y, r)) nx = x;
+  const waterAllowed = canSwim(ecs, e) && !ecs.dead[e];
+  if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) {
+    if (walkStep(world, x, z, nx, z, y, r, waterAllowed)) nz = z;
+    else if (walkStep(world, x, z, x, nz, y, r, waterAllowed)) nx = x;
     else { nx = x; nz = z; }
   }
   for (let iter = 0; iter < 2; iter++) {
@@ -84,10 +92,11 @@ function moveOnce(world, e, dx, dz) {
       }
     }
   }
-  if (!walkStep(world, x, z, nx, nz, y, r)) { nx = x; nz = z; }
+  if (!walkStep(world, x, z, nx, nz, y, r, waterAllowed)) { nx = x; nz = z; }
   ecs.x[e] = nx;
   ecs.z[e] = nz;
   ecs.y[e] = standingHeight(world, nx, nz, y);
+  if (waterAllowed) refreshSwimming(world, e);
   return Math.hypot(nx - x, nz - z);
 }
 
@@ -95,6 +104,7 @@ function moveOnce(world, e, dx, dz) {
 export function stepMover(world, e, cmd, dt) {
   const ecs = world.ecs, map = world.map;
   const P = tuning.player, D = tuning.dash, W = tuning.world;
+  const swimming = refreshSwimming(world, e);
 
   let mx = cmd.mx || 0, mz = cmd.mz || 0;
   // Down or staggered: no steering, no dash (presses are still buffered).
@@ -104,7 +114,7 @@ export function stepMover(world, e, cmd, dt) {
   if (len > 1) { mx /= len; mz /= len; len = 1; }
   ecs.moveMag[e] = len;
 
-  if (cmd.prs & BTN.DASH) ecs.dashBuffer[e] = P.inputBuffer;
+  if (!swimming && cmd.prs & BTN.DASH) ecs.dashBuffer[e] = P.inputBuffer;
 
   // Charges recharge sequentially.
   if (ecs.dashCharges[e] < ecs.dashMax[e]) {
@@ -142,7 +152,10 @@ export function stepMover(world, e, cmd, dt) {
     // Sub-step so fast dashes never tunnel through colliders.
     const steps = Math.max(1, Math.ceil(want / 0.3));
     let moved = 0;
-    for (let s = 0; s < steps; s++) moved += moveWithCollision(world, e, (ecs.dashDirX[e] * want) / steps, (ecs.dashDirZ[e] * want) / steps);
+    for (let s = 0; s < steps; s++) {
+      moved += moveWithCollision(world, e, (ecs.dashDirX[e] * want) / steps, (ecs.dashDirZ[e] * want) / steps);
+      if (ecs.swim[e]) break;
+    }
     ecs.dashCovered[e] += moved;
     ecs.vx[e] = (ecs.dashDirX[e] * moved) / dt;
     ecs.vz[e] = (ecs.dashDirZ[e] * moved) / dt;
@@ -157,19 +170,22 @@ export function stepMover(world, e, cmd, dt) {
     }
   } else {
     // Wading slows you down.
-    const depth = map.onDock(ecs.x[e], ecs.z[e]) ? 0 : W.waterLevel - ecs.y[e];
+    const depth = map.onDock(ecs.x[e], ecs.z[e]) || world.raftDeck?.surface(ecs.x[e], ecs.z[e], ecs.y[e]) ? 0 : W.waterLevel - ecs.y[e];
     ecs.wade[e] = depth > 0 ? depth : 0;
     let mul = 1;
     if (depth > W.wadeStart) mul = 1 - W.wadeSlow * Math.min(1, depth / W.wadeMax);
     mul *= ecs.moveMul[e]; // swings and parries slow you down
+    if (swimming) mul = 1;
     // Walking backwards (away from where you aim) is a little slower; sideways is free.
     const aimed = (cmd.btn & BTN.AIM) !== 0;
-    if (aimed && len > 0.05) {
+    if (!swimming && aimed && len > 0.05) {
       const c = (mx * Math.sin(ecs.facing[e]) + mz * Math.cos(ecs.facing[e])) / len;
       const k = Math.min(1, Math.max(0, (-c - 0.17) / 0.6));
       mul *= 1 - (1 - P.backMul) * k;
     }
-    const tx = mx * ecs.speed[e] * mul, tz = mz * ecs.speed[e] * mul;
+    const speed = swimming ? (ecs.swimStamina[e] <= 0 ? tuning.swim.exhaustedSpeed :
+      tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e])) : ecs.speed[e];
+    const tx = mx * speed * mul, tz = mz * speed * mul;
     const rate = (len > 0.05 ? P.accel : P.decel) * dt;
     let ddx = tx - ecs.vx[e], ddz = tz - ecs.vz[e];
     const dl = Math.hypot(ddx, ddz);
@@ -194,5 +210,10 @@ export function stepMover(world, e, cmd, dt) {
     const k = Math.exp(-10 * dt);
     ecs.kbx[e] *= k; ecs.kbz[e] *= k;
     if (Math.abs(ecs.kbx[e]) + Math.abs(ecs.kbz[e]) < 0.05) { ecs.kbx[e] = 0; ecs.kbz[e] = 0; }
+  }
+  if (refreshSwimming(world, e)) {
+    const limit = ecs.swimStamina[e] <= 0 ? tuning.swim.exhaustedSpeed : tuning.swim.speed * (1 - tuning.swim.loadSlow * ecs.swimLoad[e]);
+    const speed = Math.hypot(ecs.vx[e], ecs.vz[e]);
+    if (speed > limit) { ecs.vx[e] *= limit / speed; ecs.vz[e] *= limit / speed; }
   }
 }

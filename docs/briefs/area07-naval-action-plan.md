@@ -79,7 +79,7 @@ revisión publicada ni a esta propuesta. Al integrarlo hay que volver a contrast
 | Conservación | Perfil con plano, bodega, condición e identidad; última pose compatible con seed/mapa. Reentrada estacionada, reembarque costero o recuperación en puerto; la entidad sale del mundo cuando se desconecta su dueño | Presencia física de barcos aparcados sin dueño conectado, política de exposición/producción offline, custodia entre regiones/hosts, pérdidas definitivas y recuperación ante caída abrupta de todo el recorrido |
 | Vida a bordo | Bodega y producción efectiva de red → pescado y parrilla → galletas, con lotes/fracciones y parada por falta de espacio/materiales | Agua, huertos, alambique, combustible, faroles, cama/hamaca funcional y servicios de hogar. Sus datos o el helper económico antiguo no equivalen a sistemas montados |
 | Objetivos en el mar | Ensayo opcional: tres boyas en orden, salvas anunciadas y regreso con atraque real | Rutas útiles entre pueblos, rival móvil/vencible, armamento del jugador y recompensas/progreso durables. La amenaza actual es una batería fija |
-| Natación | Salida y reembarque por costa en el circuito existente | Natación general, resistencia/rescate y después buceo. La maldición de Brasa en agua ya existe y debe revisarse explícitamente al introducir natación |
+| Natación | RNV05 local: salida por costa desde la balsa propia detenida, nado compartido con predicción, reserva/carga/agotamiento y reembarque por borde expuesto. Usa muerte M5 actual; publicación pendiente | Barcos ajenos, buceo y rescate general permanecen fuera de alcance. La maldición de Brasa conserva su interacción en agua |
 | Presentación | HUD naval, instrumentos, mapa/minimapa, cámara, audio, espuma y controles PC/touch integrados | Localizar el recorrido completo ES/EN, revisar módulos nuevos y medir dispositivos. Más luz/reflejos en calidad alta es un pase visual propio |
 
 Fuentes de implementación:
@@ -125,7 +125,7 @@ RNV01 entrega techo/puerta y RNV02 completa el refugio con luz, antes de oscurec
 |---|---|---|
 | 1 | **PRG02: primera lección de pilotaje** | Una ida/vuelta costera con objetivo en el mundo, maniobra/atraque y una mejora perceptible de pilotaje. Reutiliza navegación existente; AREA03 comparte el contrato de aprendizaje y M5 conserva el avance. No añadir XP por mantener una tecla o navegar en círculos ni regalar una recompensa económica por el ensayo antiguo |
 | 2 | **Primer refugio naval construible** | Techo y puerta interactuable, después farol; poder armar una habitación, caminar por ella y navegar sin bloquear salida ni cambiar el origen del barco. Habilitar catálogo exige colisión/interacción, coste, daño, soporte y guardado completos, además de render |
-| 3 | **Agua costera y reembarque** | Entrar al agua, desplazarse y salir claramente por playa o embarcación. Corte separado de PRG02; definir agotamiento/rescate y relación con carga/Brasa, verificar predicción y servidores. Buceo va después |
+| 3 | **RNV05: agua costera y reembarque propio** | Implementado localmente; ver [entrega](../delivery/rnv05-coastal-swimming.md). Publicación/aceptación VPS pendiente. Buceo y abordaje ajeno se mantienen después |
 | 4 | **Provisiones y servicios de hogar** | Un módulo nuevo útil, preferentemente agua por purificador, conectado a consumo/producción/carga. Luego huerto y hamaca por cortes propios; respawn requiere reglas de muerte y punto inválido. Evitar activar simultáneamente todos los datos del helper antiguo |
 | 5 | **Primer viaje comercial entre puertos** | Salty Shore–Puerto Sol con llegada física, descarga y retorno; comparar camino y costa. AREA01 entrega geografía/anclas transitables y AREA08 reutiliza mercados M5. Con AREA15, definir amarres/custodia y presencia sin dueño antes de exponer bienes públicos. Después Bahía Ceniza, con necesidad marítima real |
 | 6 | **Primer rival naval vencible — D10/A6** | Un barco NPC móvil con intención legible, un arma utilizable, esquiva/huida, daño a piezas y regreso a reparar. Los bienes que exponga requieren el contrato de continuidad correspondiente; no basta ampliar la batería fija |
@@ -188,8 +188,15 @@ Cuenta/perfil QA eliminados, recibos retenidos; límites/evidencia en la [entreg
 Revalidado en `ee88690`, alpha.34/protocolo 43: recorrido público completo 9/9 y 35/35 de identidad
 cliente/agente, conservando compañeros y contenido GM; una interrupción GM anterior queda registrada aparte.
 
-**Sigue agua costera/reembarque:** definir primero alcance, carga, agotamiento, rescate y pérdidas;
-usar la cubierta y autoridad actuales. Después provisiones/hogar.
+**RNV05 implementado localmente — natación costera y reembarque propio.** Reserva predicha de 30 s,
+consumo por movimiento/flotación, carga, velocidad agotado y daño gradual después de 5 s de gracia;
+usa la muerte y autoridad M5 actuales. Salida G desde un viaje propio detenido por una base expuesta,
+reembarque F desde el agua con geometría libre. Incluye indicador/pose procedural ES/EN. Sin SQL ni
+nueva persistencia. Publicación y aceptación VPS siguen pendientes; ver
+[contrato](RNV05-coastal-swimming.md) y [entrega](../delivery/rnv05-coastal-swimming.md).
+
+**Sigue RNV06 — provisiones/hogar:** un módulo útil, preferentemente el purificador de agua,
+conectado a la economía y al porte existentes.
 
 ## 5 Más allá del alfa
 

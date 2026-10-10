@@ -19,6 +19,7 @@
 import { tuning, DT } from '../../data/tuning.js';
 import { PEARL } from '../../data/pearls.js';
 import { BTN, moveWithCollision } from './movement.js';
+import { stepSwimming } from './swimming.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
 import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
 import { ACT } from '../ecs.js';
@@ -184,6 +185,7 @@ function respawnPlayer(world, e, seq) {
   ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = 0;
   ecs.hurtInv[e] = tuning.combat.respawnIframes;
   ecs.stagger[e] = 0;
+  ecs.swim[e] = ecs.swimDrown[e] = 0; ecs.swimStamina[e] = tuning.swim.stamina; ecs.state[e] = 0;
   world.emit({ type: 'respawn', id: e, seq, x: ecs.x[e], z: ecs.z[e] });
 }
 
@@ -546,6 +548,12 @@ function riposteWave(world, e, pt, seq) {
 export function stepPlayerCombat(world, e, cmd, dt) {
   const ecs = world.ecs, T = tuning, P = T.parry, M = T.melee, Cb = T.combat, G = T.guard;
   const seq = cmd.seq >>> 0;
+  if (ecs.swim[e]) {
+    cmd = { ...cmd, btn: cmd.btn & (BTN.AIM | BTN.INTERACT | BTN.POTION), prs: cmd.prs & (BTN.INTERACT | BTN.POTION) };
+    ecs.atkStage[e] = ecs.atkBuf[e] = ecs.qBuf[e] = ecs.eBuf[e] = ecs.gBuf[e] = ecs.rBuf[e] = 0;
+    ecs.guardT[e] = -1;
+    cancelCast(ecs, e);
+  }
   const pt = world.cmdTick(e, cmd);
   let prev = ecs.lastPt[e];
   if (!(prev > 0) || prev >= pt || pt - prev > 30) prev = pt - 1;
@@ -564,6 +572,10 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   stepTromba(world, e, cmd, prev, pt, seq);
   stepWheel(world, e, prev, pt, seq);
   stepWaterCurse(world, e, dt, seq);
+  const drowning = stepSwimming(world, e, dt);
+  for (let pulse = 0; pulse < drowning && !ecs.dead[e]; pulse++) hurtPlayer(world, e,
+    ecs.maxHp[e] * tuning.swim.damageFraction,
+    { kind: 'drowning', x: ecs.x[e], z: ecs.z[e], knock: 0, noInv: true, pierce: true, seq });
 
   if (ecs.dead[e] > 0) {
     ecs.moveMul[e] = 0;
@@ -607,7 +619,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
     cancelCast(ecs, e); // only in a cast's recovery: its windup / active frames hold the dash back
   }
   if (ecs.stagger[e] > 0) cancelCast(ecs, e);
-  const canAct = !dashing && ecs.stagger[e] <= 0;
+  const canAct = !ecs.swim[e] && !dashing && ecs.stagger[e] <= 0;
 
   // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
   // where you stand; the cutlass only: the pistols reflect by catching) and RMB into a block.
