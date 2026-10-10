@@ -464,8 +464,8 @@ export class Hud {
     const ms = Math.round(n.rtt);
     this.netChip.className = 'net-chip ' + (ms < 90 ? 'good' : ms < 180 ? 'ok' : 'bad');
     this.netChip.querySelector('.ms').textContent = ms + ' ms';
-    this.netChip.querySelector('.pl').textContent = t('hud.pirates',{count:n.players});
-    this.netChip.title = t('hud.latency',{ms});
+    setText(this.netChip.querySelector('.pl'), 'hud.pirates', { count: n.players });
+    setAttributeText(this.netChip, 'title', 'hud.latency', { ms });
   }
 
   // Party frames under yours: the other human pirates (name, level, HP, weapon, fallen).

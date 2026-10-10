@@ -76,6 +76,7 @@ try {
     for (const locale of ['es', 'en']) {
       await page.evaluate(async locale => (await import('/src/core/i18n.js')).setLocale(locale), locale);
       await page.waitForTimeout(800);
+      assert.match(await page.locator('.net-chip .pl').innerText(), locale === 'es' ? /pirata/ : /pirate/);
       const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption', '.actionbar', '.personal-lantern'].map(selector => {
         const el = document.querySelector(selector), b = el.getBoundingClientRect();
         return [selector, { top: b.top, bottom: b.bottom, left: b.left, right: b.right, visible: !el.hidden && getComputedStyle(el).display !== 'none' }];
