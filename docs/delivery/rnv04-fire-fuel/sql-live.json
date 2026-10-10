@@ -1,0 +1,1 @@
+{"pass":true,"checkNames":["readiness","anonymousDenied","isolatedIdentity","handLoad","handSet","floorStation","nonfireReset","malformedKind"],"cleanup":{"receiptInspectionPass":true,"retainedQaReceiptCount":3,"retainedQaReceiptHashes":["05b2c64b12471922","6195287248c6f467","91a5841aaf141584"],"profileDeleted":true,"worldDeleted":true}}

@@ -30,6 +30,7 @@ export class GameClient {
     this.pred = new World(map.seed, { map });
     this.youServer = 0;
     this.personalLantern = false;
+    this.fire = null;
     this.youLocal = 0;
     this.seq = 0;
     this.pending = [];
@@ -121,6 +122,7 @@ export class GameClient {
           this.t.close?.(); this.bus.emit('net:error', { code: 'content_revision' }); break;
         }
         this.personalLantern = false;
+    this.fire = null;
         this.naval = new NavalPilotPrediction(this.map);
         this.route = null;
         this.lesson = null;
@@ -203,6 +205,10 @@ export class GameClient {
     }
     if (ev.type === 'raftLantern') {
       if (ev.to === this.youServer) this.bus.emit('raftLantern', ev);
+      return;
+    }
+    if (ev.type === 'fire') {
+      if (ev.to === this.youServer) this.bus.emit('fire', ev);
       return;
     }
     if (ev.type === 'personalLantern') {
@@ -400,6 +406,7 @@ export class GameClient {
       for (const id of this.raftSamples.keys()) if (!ids.has(id)) this.raftSamples.delete(id);
     }
     const st = s.tick * DT;
+    if (s.fire) this.fire = structuredClone(s.fire);
     const off = st - this.clock;
     // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one
     // is the best clock sample; a slow device whose clock lags real time keeps up), late ones only

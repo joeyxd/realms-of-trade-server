@@ -56,37 +56,42 @@ export function characterMaterial(kind = 'base') {
 }
 
 let blobGeo = null, blobMat = null;
-let lanternShellGeo = null, lanternCapGeo = null, lanternCoreGeo = null;
-let lanternShellMat = null, lanternCoreMat = null;
+let lanternHandleGeo = null, lanternWrapGeo = null, lanternCoreGeo = null, lanternFlameGeo = null;
+let lanternHandleMat = null, lanternWrapMat = null, lanternCoreMat = null, lanternFlameMat = null;
 
 function createPersonalLantern() {
-  if (!lanternShellGeo) {
-    lanternCapGeo = new THREE.CylinderGeometry(0.094, 0.094, 0.025, 6);
+  if (!lanternHandleGeo) {
+    lanternHandleGeo = new THREE.CylinderGeometry(0.035, 0.05, 0.42, 6);
+    lanternHandleGeo.translate(0, -0.08, 0);
+    lanternWrapGeo = new THREE.CylinderGeometry(0.056, 0.056, 0.035, 6);
+    lanternWrapGeo.translate(0, -0.17, 0);
     lanternCoreGeo = new THREE.SphereGeometry(0.045, 6, 5);
-    const top = lanternCapGeo.clone(); top.translate(0, 0.087, 0);
-    const bottom = lanternCapGeo.clone(); bottom.translate(0, -0.087, 0);
-    const cage = [top, bottom];
-    for (let i = 0; i < 6; i++) {
-      const a = i * Math.PI / 3;
-      const bar = new THREE.CylinderGeometry(0.012, 0.012, 0.15, 5);
-      bar.translate(Math.cos(a) * 0.074, 0, Math.sin(a) * 0.074);
-      cage.push(bar);
-    }
-    lanternShellGeo = merge(cage);
-    lanternShellMat = toon({ color: 0x58412a });
-    lanternShellMat.userData.nm = charNormalMat();
-    lanternCoreMat = new THREE.MeshBasicMaterial({ color: 0xffcf78 });
+    lanternFlameGeo = new THREE.ConeGeometry(0.14, 0.36, 6);
+    lanternFlameGeo.translate(0, 0.22, 0);
+    lanternHandleMat = toon({ color: 0x704522 });
+    lanternHandleMat.userData.nm = charNormalMat();
+    lanternWrapMat = toon({ color: 0x3d3430 });
+    lanternWrapMat.userData.nm = charNormalMat();
+    lanternCoreMat = new THREE.MeshBasicMaterial({ color: 0xffd879 });
     lanternCoreMat.userData.nm = charNormalMat();
+    lanternFlameMat = new THREE.MeshBasicMaterial({ color: 0xff7b2f });
+    lanternFlameMat.userData.nm = charNormalMat();
   }
   const group = new THREE.Group();
   group.position.set(PERSONAL_LANTERN_LOCAL.x, PERSONAL_LANTERN_LOCAL.y, PERSONAL_LANTERN_LOCAL.z);
-  const shell = new THREE.Mesh(lanternShellGeo, lanternShellMat);
-  shell.userData.nm = charNormalMat();
+  const handle = new THREE.Mesh(lanternHandleGeo, lanternHandleMat);
+  const wrap = new THREE.Mesh(lanternWrapGeo, lanternWrapMat);
+  handle.userData.nm = charNormalMat();
+  wrap.userData.nm = charNormalMat();
   const core = new THREE.Mesh(lanternCoreGeo, lanternCoreMat);
+  core.position.y = 0.18;
+  const flame = new THREE.Mesh(lanternFlameGeo, lanternFlameMat);
   core.visible = false;
   core.userData.nm = charNormalMat();
-  group.add(shell, core);
-  return { group, core };
+  flame.visible = false;
+  flame.userData.nm = charNormalMat();
+  group.add(handle, wrap, flame, core);
+  return { group, core, flame };
 }
 
 export class CharacterView {
@@ -123,6 +128,7 @@ export class CharacterView {
     const personalLantern = createPersonalLantern();
     this.personalLantern = personalLantern.group;
     this.personalLanternCore = personalLantern.core;
+    this.personalLanternFlame = personalLantern.flame;
     this.lanternLit = false;
     this.personalLantern.visible = false;
     this.root.add(this.personalLantern);
@@ -196,6 +202,7 @@ export class CharacterView {
     this.lanternLit = !!lit;
     this.personalLantern.visible = !!carried;
     this.personalLanternCore.visible = this.lanternLit && this.personalLantern.visible;
+    this.personalLanternFlame.visible = this.lanternLit && this.personalLantern.visible;
   }
 
   // The leap this view is flying (M4.7): its cast event's air time and height (a remote pirate's come from its

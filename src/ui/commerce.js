@@ -496,7 +496,7 @@ export class CommercePanel {
     const profileIsCurrent = !source || Number.isSafeInteger(c.profile?.eco?.tradeRev)
       && c.profile.eco.tradeRev >= source.rev && Number.isSafeInteger(c.ship.rev) && c.ship.rev >= source.raftRev;
     return {
-      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked }) : source.rows,
+      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked, poweredKeys: this.fireEnabled?.() ? new Set((c.record.litLanterns || []).map(part => JSON.stringify(part))) : null }) : source.rows,
       daySec: source?.daySec ?? null,
       blocked,
       hold: c.ship.hold,
@@ -514,6 +514,7 @@ export class CommercePanel {
       const nextSeconds = row.remainingDays === null ? null : Math.ceil(row.remainingDays * secondsPerDay);
       const statusText = row.status === 'working' ? 'En marcha'
         : row.status === 'inputs' ? (profileIsCurrent ? `Faltan ${Object.entries(row.inputs || {}).filter(([g, n]) => n > (hold?.goods?.[g] || 0)).map(([g, n]) => `${num(n - (hold?.goods?.[g] || 0))} ${goodName(g)}`).join(', ')}` : 'Esperando ingredientes')
+        : row.status === 'fuel' ? 'Sin fuego: carga madera y enciende la parrilla con V'
         : row.status === 'room' ? 'Bodega llena: no cabe el lote completo'
         : row.status === 'capacity' ? 'Pausada: el porte supera el límite actual'
         : row.status === 'saveSize' ? 'Detenida: el guardado alcanzó su límite'

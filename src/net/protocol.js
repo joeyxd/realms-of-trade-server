@@ -1,10 +1,10 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 42; // Exact static-content admission before profile/spawn; reload peers.
+export const PROTOCOL_VERSION = 43; // Exact content admission plus private fire fuel status/commands; reload peers.
 
 export const MSG = {
   // client -> server
-  HELLO: 'hello',     // {v, name, skin, weapon, save, token?, importSave?, agent?:true}; managed admission requires token
+  HELLO: 'hello',     // {v, name, skin, weapon, save, content?:{generation,revisionId}, token?, importSave?, agent?:true}
   INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}], control?:{epoch,taskRevision}}
   CMD: 'cmd',         // {type: 'pause' | 'equip' | 'raft' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
   PING: 'ping',       // {t}

@@ -1,10 +1,13 @@
 // Instance-bound light service. Legacy/new lamps start off; the blueprint stays unchanged.
 import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
+import { readFire, remainingFire } from '../economy/fire.js';
+import { fireClockSeconds } from '../../data/fire.js';
+export const FIRE_PARTS = Object.freeze(['lantern', 'torchFloor', 'torchWall', 'campfire', 'grill']);
 
 export const LANTERN_REACH = 1.7;
 const MAX_PARTS = 600;
 const validId = (id) => typeof id === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(id);
-const validPart = (part) => Array.isArray(part) && part.length === 5 && part[0] === 'lantern' &&
+const validPart = (part) => Array.isArray(part) && part.length === 5 && FIRE_PARTS.includes(part[0]) &&
   part.slice(1).every(Number.isSafeInteger) && part[3] >= 0 && part[3] < RAFT.levels && part[4] >= 0 && part[4] <= 3;
 const key = (part) => validPart(part) ? JSON.stringify(part) : '';
 
@@ -15,11 +18,18 @@ export function sanitizeLitLanterns(raw, conditionEncoded) {
     counts.set(row[0], (counts.get(row[0]) || 0) + 1);
   const living = new Set(rows.filter((row) => Array.isArray(row) && row.length === 7 && validId(row[0]) &&
     counts.get(row[0]) === 1 && validPart(row.slice(1, 6)) && typeof row[6] === 'number' &&
-    Number.isFinite(row[6]) && row[6] > 0 && row[6] <= RAFT_PARTS.lantern.hp).map((row) => row[0]));
+    Number.isFinite(row[6]) && row[6] > 0 && row[6] <= RAFT_PARTS[row[1]].hp).map((row) => row[0]));
   return [...new Set(raw.slice(0, MAX_PARTS).filter((id) => living.has(id)))].sort();
 }
 
-export function litLanternParts(source) {
+export function litLanternParts(source, w = null) {
+  if (w?.fireEnabled) {
+    const state = readFire(w.profiles.get(source.owner)?.fire), now = fireClockSeconds(w.economy.hours);
+    return (source.condition?.entries || []).filter(entry => {
+      const slot = state.slots[JSON.stringify([source.ship.id, entry.id])];
+      return validPart(entry.part) && entry.hp > 0 && slot?.kind === entry.part[0] && slot.lit && remainingFire(slot, now) > 0;
+    }).map(entry => [...entry.part]);
+  }
   const ids = new Set(Array.isArray(source?.ship?.litLanterns) ? source.ship.litLanterns : []);
   return (source?.condition?.entries || []).slice(0, MAX_PARTS).filter((entry) => entry && validId(entry.id) &&
     ids.has(entry.id) && validPart(entry.part) && Number.isFinite(entry.hp) && entry.hp > 0)
