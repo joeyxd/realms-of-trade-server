@@ -1,0 +1,33 @@
+{
+  "schema": "gm03a-tests/v1",
+  "at": "2026-10-10T20:48:53.679Z",
+  "files": [
+    "tests/gm-assets.test.mjs",
+    "tests/gm-draft-http.test.mjs",
+    "tests/gm-draft-server.test.mjs",
+    "tests/gm-draft-sql.test.mjs",
+    "tests/gm-draft-store.test.mjs",
+    "tests/gm-draft-validation.test.mjs",
+    "tests/gm-editor-assets.test.mjs",
+    "tests/gm-editor-base-decoration.test.mjs",
+    "tests/gm-editor-base-document.test.mjs",
+    "tests/gm-editor-document.test.mjs",
+    "tests/gm-editor-entry.test.mjs",
+    "tests/gm-editor-model-factory.test.mjs",
+    "tests/gm-editor-rendering.test.mjs",
+    "tests/gm-editor-walk-preview.test.mjs",
+    "tests/gm-remote-draft-client.test.mjs",
+    "tests/gm-session-http.test.mjs",
+    "tests/gmSession.test.mjs",
+    "tests/ground-transaction-journal-sql.test.mjs",
+    "tests/ground-transaction-journal.test.mjs",
+    "tests/ground-transaction-journal-process.test.mjs"
+  ],
+  "exitCode": 0,
+  "tests": 102,
+  "pass": 102,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "output": "integrated-tests.log"
+}

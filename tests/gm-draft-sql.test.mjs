@@ -7,6 +7,7 @@ import { createSupabaseGmDraftMethods } from '../server/gmDraftStore.mjs';
 import { database as baseDatabase, reopenDatabase as reopenBaseDatabase } from './helpers/ground-transaction-sql.mjs';
 
 const migration = await readFile(new URL('../server/migrations/020_gm_drafts.sql', import.meta.url), 'utf8');
+const journalMigration = await readFile(new URL('../server/migrations/019_ground_transaction_journal.sql', import.meta.url), 'utf8');
 const owner = 'a1b2c3d4-e5f6-4789-8123-123456789abc';
 const operation = n => `b1000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const document = (revision = 'map-v1', seed = 42) => ({ schema: 'marea.gm.map-draft', version: 2,
@@ -34,6 +35,7 @@ async function database(t, path) {
   const close = async () => { if (!closed) { closed = true; await base.close(); } };
   t.after(close);
   await base.db.exec('RESET ROLE');
+  await base.db.exec(journalMigration);
   await base.db.exec(migration);
   await base.db.exec(migration);
   await base.db.exec('SET ROLE service_role');
