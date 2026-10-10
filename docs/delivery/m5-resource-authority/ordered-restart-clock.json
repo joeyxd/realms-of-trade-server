@@ -1,0 +1,49 @@
+{
+  "phase": "restarted",
+  "recordedAt": "2026-10-10T18:50:31.892289+00:00",
+  "revision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+  "container": "f789f28aa883",
+  "mode": "ordered-stop-with-12-second-offline-window",
+  "offlineMs": 12918,
+  "uptimeBefore": 117,
+  "uptimeAfter": 8,
+  "checkpoint": {
+    "worldVersion": 1374,
+    "resourceTick": 18447,
+    "resourceHash": "79967545c5e0953d4937fa6cb6a7c30c0f7c0b8ac50a151aba6f6cf68c4fcc53"
+  },
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "tickBlocked": false,
+    "staging": null,
+    "deathStaging": null,
+    "deathDrops": null,
+    "pearlGround": null,
+    "combatDeaths": null,
+    "startup": null,
+    "resources": {
+      "enabled": true,
+      "ready": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1374,
+      "errors": 0
+    }
+  }
+}

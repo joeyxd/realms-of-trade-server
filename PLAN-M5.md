@@ -1,9 +1,14 @@
 # PLAN M5 — «Mundo persistente»
 
-**AREA15, 2026-10-10:** [recursos/crafting M5](docs/delivery/m5-resource-authority.md), release alpha.22
-aislada con confirmación conjunta de perfil/nodo/reloj/recibo. Reaparición pausada offline; 139 pruebas,
-incluidas cuatro caídas forzadas. SQL015 y `MN_RESOURCE_OPERATIONS` requieren la aceptación específica
-documentada en la entrega. No cierra perlas/muerte/botín, XP/misiones ni backups/restauración.
+**AREA15, 2026-10-10 — activo:** [recursos/crafting M5](docs/delivery/m5-resource-authority.md),
+desplegado en `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36 (activación inicial 4c;
+commit actual docs/herramientas GM/AREA17 sobre runtime equivalente). SQL015 y ambos flags activos;
+recursos listos en Supabase. Aceptación offline **107/107** y suite runtime **57/57**. Ocho operaciones reales confirmadas,
+con 23 replays exactos tras dos reinicios ordenados y SIGKILL posterior al ACK; pausa offline medida
+en 12 918 ms. Evidencia SIGKILL: contenedor de la revisión desplegada, exit 137 y `docker start`
+manual; no prometer autoreinicio automático. Cleanup QA verificó Auth/perfil ausentes y recibos/mundo
+conservados. [Status/crash/cleanup](docs/delivery/m5-resource-authority.md). No cubre corte eléctrico/
+restauración de disco ni cierra perlas/muerte/botín, XP/misiones, producción autónoma o backups/restauración.
 
 Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09; base antes de riesgo persistente.
 
