@@ -56,9 +56,46 @@ try {
     const player = document.querySelector('#hud .hud-player');
     return player && Number(getComputedStyle(player).opacity) >= 0.99;
   });
+  await page.waitForTimeout(1000);
   assert.match(await page.locator('#hud').innerText(), /Primeros pasos/);
   report.checks.push('Actual socket close, bilingual disconnect overlay, reconnect reload retains Spanish and rejoins authority');
   await shot(page, '05-reconnected-es');
+  // Measure the actual deployed CSS after entrance/title animations in both layouts and languages.
+  report.hud = [];
+  for (const viewport of [{ width: 1280, height: 800, scale: 1 }, { width: 844, height: 390, scale: 1 }, { width: 1280, height: 500, scale: 1.3 }]) {
+    await page.setViewportSize(viewport);
+    await page.evaluate(scale => document.documentElement.style.setProperty('--ui-scale', String(scale)), viewport.scale);
+    await page.waitForFunction(({ width, height }) => {
+      const b = document.querySelector('#stage').getBoundingClientRect();
+      return Math.abs(b.width - width) < 1 && Math.abs(b.height - height) < 1;
+    }, viewport);
+    for (const locale of ['es', 'en']) {
+      await page.evaluate(async locale => (await import('/src/core/i18n.js')).setLocale(locale), locale);
+      await page.waitForTimeout(800);
+      const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption'].map(selector => {
+        const el = document.querySelector(selector), b = el.getBoundingClientRect();
+        return [selector, { top: b.top, bottom: b.bottom, left: b.left, right: b.right, visible: getComputedStyle(el).display !== 'none' }];
+      })));
+      const a = boxes['.tracker'];
+      assert.equal(a.visible, true);
+      for (const selector of ['.world-minimap', '.minimap-caption']) {
+        const b = boxes[selector];
+        assert.ok(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right, 'Objectives clear ' + selector);
+      }
+      assert.ok(a.bottom <= viewport.height && a.right <= viewport.width, 'Objectives remain inside the stage');
+      const fallen = await page.evaluate(() => {
+        const row = document.createElement('div'); row.className = 'party';
+        row.innerHTML = '<div class="pm dead"><span class="pn">QA</span></div>';
+        document.querySelector('#hud').append(row);
+        const content = getComputedStyle(row.querySelector('.pn'), '::after').content;
+        row.remove(); return content;
+      });
+      assert.match(fallen, locale === 'es' ? /caído/ : /fallen/);
+      report.hud.push({ viewport, locale, boxes, fallen });
+      await shot(page, `hud-${viewport.width}x${viewport.height}-${locale}`);
+    }
+  }
+  report.checks.push('Deployed objectives clear minimap/caption at 1280x800, 844x390 and 1280x500 with maximum UI scale; CSS fallen label follows ES/EN');
   assert.deepEqual(report.errors, []);
   await context.close();
 } finally {
