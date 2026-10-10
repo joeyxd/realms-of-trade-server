@@ -7,12 +7,14 @@ Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/re
 SQL018–021 readiness real confirmada; dominio legacy sin reloj común. Sin activación de esta API
 ni artesano; sigue adopción atómica y composición perlas/muerte/botín, luego canario autenticado VPS.
 
-**GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
+**GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
 [preparar revisión](docs/delivery/gm03b1/DELIVERY.md), [contrato](docs/briefs/gm03b1-prepared-revision.md).
 Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
 Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
 colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
-de gameplay/SQL/flags. 183/183 regresión y navegador local 41/41; aceptación pública pendiente.
+de gameplay/SQL/flags. 183/183 regresión, navegador local simulado 41/41, actualizador 107/107 y
+navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionados y borrador previo
+restaurado por CAS r6→r13. [Evidencia pública](docs/delivery/gm03b1/public-evidence.json).
 Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
 
 **AREA03 PRG01c, código publicado 2026-10-10:** [artesano/Bodega](docs/delivery/prg01c-artisan.md), alpha.29/protocolo 41.

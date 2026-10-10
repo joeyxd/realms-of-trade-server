@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { createHash } from 'node:crypto';
 import { verifyPreparedRevision } from '../src/editor/publicationArtifact.js';
 
 /** Shared browser checks; every remote write uses CAS and restores only our own last head. */
@@ -65,6 +66,16 @@ export async function runGmPreparationChecks({ page, origin, check, shot, out = 
       if (out) await writeFile(resolve(out, 'prepared-example.json'), JSON.stringify(prepared, null, 2) + '\n');
       assert.equal(prepared.content.assets[0].id, 'prop:storage-crate');
       assert.match(prepared.content.assets[0].sha256, /^[a-f0-9]{64}$/);
+      const manifest = await (await fetch(origin + '/assets/manifest.json')).json();
+      assert.equal(prepared.content.baselineAssets.length, manifest.assets.reduce((sum, entry) => sum + 1 + (entry.mobileSrc ? 1 : 0), 0));
+      const coast = prepared.content.baselineAssets.find((asset) => asset.id === 'model:coast-rock-v1');
+      const mobile = prepared.content.baselineAssets.find((asset) => asset.variant === 'mobile');
+      assert.ok(coast); assert.ok(mobile);
+      for (const dependency of [prepared.content.assets[0], coast, mobile]) {
+        const bytes = Buffer.from(await (await fetch(new URL(dependency.src, origin))).arrayBuffer());
+        assert.equal(bytes.length, dependency.bytes);
+        assert.equal(createHash('sha256').update(bytes).digest('hex'), dependency.sha256);
+      }
       assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), valid);
       assert.deepEqual(await page.evaluate(() => __mn.gmEditor.remotePanel.head), last);
       assert.equal(await page.evaluate(() => __mn.client.joined), false);

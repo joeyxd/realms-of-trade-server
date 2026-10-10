@@ -1,7 +1,7 @@
 # GM03b1 — revisión preparada para publicación
 
-Fecha: 2026-10-10. Estado: **implementado y probado localmente en alpha.30 / protocolo 41**;
-publicación de código y aceptación pública en curso. [Contrato previo](../../briefs/gm03b1-prepared-revision.md).
+Fecha: 2026-10-10. Estado: **código desplegado y flujo público verificado en alpha.30 / protocolo 41**.
+[Contrato previo](../../briefs/gm03b1-prepared-revision.md).
 No se ha activado un mapa nuevo. GM03b2 conserva publicación durable, activación y rollback como siguiente entrega.
 
 Desde **Editor del mundo → Online → Validar para publicar**, el GM prepara la revisión online que está
@@ -38,7 +38,31 @@ fijan la base generada. No se sobrescriben originales ni se vuelve a comprimir u
   compartida de peticiones al restaurar tras la suite anterior. Se corrigió el harness para comenzar
   una ventana nueva de cuota; no se aumentó el límite del producto. La ejecución completa pasó después.
 - Tras esa ejecución se amplió la fijación de dependencias a todos los assets base y se aclaró el texto
-  de la UI. La regresión 183/183 cubre esa ampliación; el navegador público comprobará el runtime final.
+  de la UI. La regresión 183/183 y el navegador público siguiente comprueban el runtime final.
+
+## Publicación y aceptación real
+
+[Despliegue](deployment-evidence.json): release `6e6f42192bc1cc8cc564d870471d18dcdee9ac66`, imagen
+`marea-negra:alpha-6e6f42192bc1`, contenedor sano y único, `/health` 200, Supabase durable/cuentas
+sin errores ni escrituras pendientes. Actualizador: **107/107**. No se cambió ninguna activación M5.
+
+[Navegador público](public-evidence.json): **23/23**, Supabase real, calidad alta, sin errores.
+Incluye entrada de invitado al juego y rechazo GM, autorización real, gizmos, edición base y recorrido
+privado, guardado/adopción/conflicto entre dos contextos, revocación y los seis checks de preparación.
+El paquete válido registra **57 dependencias base**, incluidas variantes móviles. Además de verificar
+el ID del JSON se compararon tamaño y SHA-256 de tres archivos servidos: caja añadida, roca costera
+y variante móvil. La repetición produce el mismo ID; editar invalida el resultado y preparar una
+revisión remota antigua devuelve conflicto sin perder el diseño local.
+
+La prueba GM03a restauró mediante CAS el documento previo r6→r9; la preparación restauró el mismo
+documento r9→r13. Props/colisiones del mapa activo y diseño local se conservaron. No se cambió la
+contraseña. [Ejemplo preparado de QA](prepared-example.json), solo metadatos y hashes; no es contenido
+activado ni un paquete de modelos retenidos. Capturas reales ES/EN inspeccionadas:
+[errores reparables](production-gm03b1-problems-es.png), [preparada ES](production-gm03b1-prepared-es.png),
+[preparada EN](production-gm03b1-prepared-en.png).
+
+[Estado posterior a QA](post-qa-status.json): misma revisión e imagen, cero jugadores/sockets,
+almacenamiento sano, sin escrituras pendientes ni tick bloqueado.
 
 ## Continuación
 

@@ -8,12 +8,14 @@ real confirmada; el dominio actual tiene recursos v2 y aún carece de reloj com�
 filas coherentes existentes y queda sin activar. Sigue adopción atómica legacy y perlas/muerte/botín,
 sin otro writer ni creación de reloj a cero. Artesano continúa apagado; SQL021 ya está disponible.
 
-**GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
+**GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
 [preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).
 Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
 Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
 colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
-de gameplay/SQL/flags. 183/183 regresión y navegador local 41/41; aceptación pública pendiente.
+de gameplay/SQL/flags. 183/183 regresión, navegador local simulado 41/41, actualizador 107/107 y
+navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionados y borrador previo
+restaurado por CAS r6→r13. [Evidencia pública](delivery/gm03b1/public-evidence.json).
 Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
 
 **AREA03 PRG01c, código publicado, mecánica apagada:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
