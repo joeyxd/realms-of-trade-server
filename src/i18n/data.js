@@ -114,4 +114,3 @@ for (const base of Object.values(BASES)) for (const stat of Object.values(STATS)
 }
 export default DATA_ES_EN;
 export { DATA_ES_EN };
-

@@ -326,4 +326,3 @@ export default {
   'reward.no_potions': ['<b>Sin pociones.</b> Tía Perla las vende en la aldea.', '<b>No potions.</b> Tía Perla sells them in the village.'],
   'reward.health_full': ['Vida completa', 'Full health'],
 };
-

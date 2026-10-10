@@ -1,6 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
 export const PROTOCOL_VERSION = 42; // Private fire fuel status and paid fire commands; reload peers.
+// Owner companion list/stop adds optional messages only; existing DTOs retain v42.
 
 export const MSG = {
   // client -> server
@@ -13,6 +14,7 @@ export const MSG = {
   AGENT_CANCEL: 'agent_cancel', // managed controller: {epoch,expectedTaskRevision}
   AGENT_RELEASE: 'agent_release', // managed controller relinquishes its lease: {epoch}
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
+  AGENT_OWNER: 'agent_owner', // private owner list/stop: {requestId,op,characterKey?,epoch?}
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
   AGENT_TRADE: 'agent_trade', // managed trade: {opId,epoch,sessionId,op,g,n,expectedTotal}; server selects account/town
@@ -31,6 +33,7 @@ export const MSG = {
   CHAT_MESSAGE: 'chat_message', // {id,requestId,channel,sender,target?,text,tick}; identity comes from server
   CHAT_RESULT: 'chat_result', // {requestId,ok,code?,messageId?,duplicate?}; routed, not a read receipt
   AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
+  AGENT_OWNER_RESULT: 'agent_owner_result', // correlated safe owned-character projection; no grant or task details
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
   AGENT_TRADE_RESULT: 'agent_trade_result', // private durable receipt; historical results never hydrate current inventory

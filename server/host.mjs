@@ -598,6 +598,7 @@ export class GameHost {
     if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_TRADE) { agentTradeMessage(this, sock, msg); return; }
     if (msg.t === MSG.AGENT_GOODS_BUDGET) { void agentGoodsBudgetMessage(this, sock, msg); return; }
+    if (msg.t === MSG.AGENT_OWNER) { this.agentOwnerMessage(sock, msg); return; }
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }
@@ -786,6 +787,45 @@ export class GameHost {
         }
       }
     }
+  }
+
+  agentOwnerMessage(sock, msg) {
+    const idValid = typeof msg.requestId === 'string' && /^[A-Za-z0-9:_-]{1,100}$/.test(msg.requestId);
+    const reply = (why, companions = [], enabled = false) => this.sendTo(sock.id, {
+      t: MSG.AGENT_OWNER_RESULT, requestId: idValid ? msg.requestId : null,
+      ok: why === null, why, enabled, companions,
+    });
+    const s = this.profiles.clients.get(sock.id), c = this.server.clients.get(sock.id);
+    // The admitted profile session is the principal, including when the agent feature is off.
+    if ((this.agentPilot && !sock.worldAdmitted) || sock.agentIdentity || !c?.entity || !c.serverProfile || !s || s.closed || s.failed ||
+        this.profiles.accounts.get(s.key) !== s) { reply('forbidden'); return; }
+    const keys = msg.op === 'list' ? ['t', 'requestId', 'op'] : ['t', 'requestId', 'op', 'characterKey', 'epoch'];
+    if (!idValid || !['list', 'stop'].includes(msg.op) || Object.keys(msg).length !== keys.length ||
+        !keys.every((key) => Object.hasOwn(msg, key)) ||
+        (msg.op === 'stop' && (typeof msg.characterKey !== 'string' ||
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(msg.characterKey) ||
+          (msg.epoch !== null && (!Number.isSafeInteger(msg.epoch) || msg.epoch < 1))))) {
+      reply('invalid_request'); return;
+    }
+    if (!this.agentControl) { reply(msg.op === 'list' ? null : 'disabled'); return; }
+    const projection = () => this.agentControl.listOwned(s.key).map((row) => {
+      const current = [...this.sockets.values()].find((candidate) => candidate.agentIdentity === row.characterKey &&
+        (!this.agentPilot || candidate.worldAdmitted) && candidate.ws.readyState === 1 &&
+        candidate.agentSessionId === this.agentControl.byCharacter(row.characterKey)?.grant.scope.sessionId);
+      const entity = current && this.server.clients.get(current.id)?.entity;
+      const name = entity ? this.server.world.describe(entity).name : null;
+      return { ...row, online: !!current, name: typeof name === 'string' ? name.slice(0, 64) : null };
+    });
+    if (msg.op === 'list') { reply(null, projection(), true); return; }
+    const row = this.agentControl.listOwned(s.key).find((entry) => entry.characterKey === msg.characterKey);
+    if (!row) { reply('forbidden'); return; }
+    // A stale tab cannot stop a newly admitted/resumed session, including an offline-to-online race.
+    if (row.epoch !== msg.epoch) { reply('stale_control', projection(), true); return; }
+    if (!row.stopped) {
+      const state = this.agentControl.revoke(s.key, msg.characterKey, 'stop');
+      this.publishAgentState({ ok: true, state }, null, true);
+    }
+    reply(null, projection(), true);
   }
 
   agentMessage(sock, msg) {

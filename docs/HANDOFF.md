@@ -1,5 +1,21 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
+[entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
+tick de recursos y recibo inmutable sin reescribir mundo. Cerco SQL de escritores legacy por mundo;
+adopción v1 rechaza suelo/perlas/botín previo. 235/235 en 34 archivos; 22 casos nuevos y dos
+SIGKILL de adopción; regresión repetida tras integrar I18N04b y L03d. SQL022/alpha.33/protocolo 42. SQL023 aún por aplicar;
+no se adopta el mundo real ni se activa el montaje. Sigue composición perlas/muerte/botín y
+transición detenida con exclusión del writer anterior y canario autenticado VPS.
+
+
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+[entrega](delivery/l03d-owner-center.md), [contrato](briefs/l03d-owner-center.md). Entrada ingame
+ES/EN para listar y detener personajes ya vinculados a la cuenta autenticada. Revisión exacta,
+cola de entradas vaciada y proyección privada retirada al cerrar sesión. Stop es de proceso y se
+pierde al reiniciar; no hay provisioning, proveedor/inferencia o SQL nuevo. El siguiente tramo es
+configuración durable por cuenta/conexión/personaje y límites conjuntos antes del canario L03d.
+
 **AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
 [Entrega y evidencia](delivery/i18n04b.md), [plan bilingüe](../PLAN-I18N.md).
 Selector global desde arranque/cuenta/ajustes; cliente y editor GM ES/EN sobre `c9d3bbf`,
@@ -41,12 +57,12 @@ navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionad
 restaurado por CAS r6→r13. [Evidencia pública](delivery/gm03b1/public-evidence.json).
 Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
 
-**AREA17, 2026-10-10 — evaluación Inference Center/Hermes, solo documentación:**
+**Evaluación inicial AREA17, 2026-10-10 — Inference Center/Hermes:**
 [propuesta de arquitectura](briefs/l03d-inference-center.md). Adaptar Nitro sin Nango a conexiones/modelos
 por cuenta y ficha del compañero; API acotada recomendada primero, conexión local opcional después.
 Nitro actual configura un operador compartido; copiarlo no aísla jugadores. AgentMind/M5 conservan
 autoridad y memoria propias. Sin proveedor/modelo elegido, consumo o activación; tramos propuestos
-dentro de L03d/L05c. D-A3 aún no se marca acordado o implementado.
+dentro de L03d/L05c. El autor aprobó avanzar; L03d-b implementa solo el primer tramo de estado/stop.
 
 **AREA03 PRG01c, 2026-10-10 — código publicado alpha.29/protocolo 41, feature apagada:**
 [artesano y bodega personal](delivery/prg01c-artisan.md), [contrato](briefs/prg01c-artisan-storage.md).
