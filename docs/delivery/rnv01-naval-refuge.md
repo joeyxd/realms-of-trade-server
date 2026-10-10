@@ -2,7 +2,9 @@
 
 2026-10-10 · **0.6.0-alpha.24 / protocolo 37**. [Contrato](../briefs/rnv01-naval-refuge.md) y
 [plan AREA07](../briefs/area07-naval-action-plan.md). Integración aislada en `codex/area07-pilot`, conservando
-recursos M5, Pilotaje II, mercado de agentes y hotfix GM. El checkout compartido dirty no se empaqueta.
+recursos M5, Pilotaje II, mercado de agentes, hotfix GM y Tala cooperativa concurrente. El checkout
+compartido dirty no se empaqueta. Tala conserva su flag opt-in y requisito SQL016, todavía separados
+de publicar este runtime; no se habilita como parte del refugio.
 
 El editor **B** añade puerta y techo con materiales, masa y HP del catálogo. El techo necesita pared/pilar
 vivo o una casilla de voladizo desde techo directamente soportado; retirar el soporte se rechaza.
@@ -25,8 +27,9 @@ una caída previa al save confirmado puede perder el cambio más reciente.
 
 ## Verificación local
 
-- **478/478** casos seleccionados: balsa, navegación/costa/cubierta, daño/reparación, editor,
-  perfiles/progresión y autoridad/SQL de recursos. Incluye soporte destruido, coste/retiro atómicos,
+- **516/516** casos seleccionados después del merge `a05878f`: balsa, navegación/costa/cubierta,
+  daño/reparación, editor, perfiles/progresión y autoridad/SQL de recursos/Tala. Los 478 previos
+  se repitieron junto a los 38 nuevos de Tala. Incluye soporte destruido, coste/retiro atómicos,
   puerta reconstruida, cuatro orientaciones, replay del mismo tick y reservas del dueño/visitante.
   La prueba GameHost de reentrada usa un store en memoria que declara capacidad durable: comprueba
   la ruta CAS, no Supabase público.
@@ -34,7 +37,8 @@ una caída previa al save confirmado puede perder el cambio más reciente.
   no sumar como casos únicos. [Registro](rnv01-naval-refuge/verification.json).
 - **3/3 vistas**: PC 1280×720, táctil 844×390 y retrato 390×844, GameHost efímero/WebSocket,
   editor DOM, V real y toque contextual, cierre ocupado y techo oculto/restaurado. Sin errores de
-  página/consola/red ni overflow horizontal. [JSON y 18 capturas JPEG](rnv01-naval-refuge/evidence-2026-10-10T19-06-28-269Z.json).
+  página/consola/red ni overflow horizontal. Repetidas después del merge:
+  [JSON y 18 capturas JPEG](rnv01-naval-refuge/evidence-2026-10-10T19-14-36-609Z.json).
   Capturas representativas de las tres vistas inspeccionadas; retrato conserva la rotación apaisada actual.
 
 QA declara materiales/reubicaciones y fija la casilla del preview; coste/colocación sí recorren editor y

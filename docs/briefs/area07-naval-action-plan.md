@@ -3,7 +3,7 @@
 Plan operativo de AREA07, aprobado por el autor el 2026-10-10. La auditoría inicial se conserva como
 base histórica; los checkpoints siguientes distinguen implementación, pruebas, publicación y activación.
 
-Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demás áreas). ·
+Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demás áreas).
 [M6](../../PLAN-M6.md) · [Dirección naval](../NAVAL-ROADMAP.md) ·
 [Progresión](../../PLAN-PROGRESSION.md#5-navegación-natación-y-poderes) ·
 [Mundo del alfa](../../PLAN-ALFA-MUNDO.md) · [Continuidad M5](../../PLAN-M5.md).
@@ -21,7 +21,7 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
 - **RNV01 implementado, alpha.24/protocolo 37: refugio construible.** Techo soportado y puerta real, coste/materiales/daño del catálogo,
   sin cambiar origen/amarre. Puerta sin cerradura usable por personajes cercanos desde ambos lados.
   Apertura por instancia en el perfil del dueño, colisión/predicción compartidas y techo con vista interior.
-  [Contrato](rnv01-naval-refuge.md) y [entrega](../delivery/rnv01-naval-refuge.md): 478 casos seleccionados,
+  [Contrato](rnv01-naval-refuge.md) y [entrega](../delivery/rnv01-naval-refuge.md): 516 casos tras integrar Tala,
   107 del actualizador con solapamiento y tres vistas UI. V/toque, soporte destruido, retiro/reconstrucción,
   colisión, reintentos y CAS del dueño comprobados localmente.
 - **Sigue RNV02:** farol utilizable → noche oscura → agua costera/reembarque → provisiones/hogar → rutas → rival → cooperación.
