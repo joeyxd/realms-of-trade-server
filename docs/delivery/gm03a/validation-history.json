@@ -13,6 +13,14 @@
     {
       "kind": "harness",
       "detail": "Check exported JSON under document.base, matching the existing envelope."
+    },
+    {
+      "kind": "harness",
+      "detail": "Live canary catches GmDraftStoreError rather than unrelated M5 StoreError; actual lost-response commit succeeded. Corrected run passes 14 checks."
+    },
+    {
+      "kind": "harness",
+      "detail": "Public logout camera observed synchronously at walkPreview.stop before title camera animation; first public run already passed all five GM03a checks and restored baseline."
     }
   ],
   "final": {

@@ -2,7 +2,8 @@
 // Reads only process.env, never prints credentials, and writes only an isolated synthetic world/owner.
 import { randomUUID } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
-import { createSupabaseStore, StoreError } from '../server/store.mjs';
+import { createSupabaseStore } from '../server/store.mjs';
+import { GmDraftStoreError } from '../server/gmDraftStore.mjs';
 import { GAME } from '../src/data/meta.js';
 
 const now = () => new Date().toISOString();
@@ -33,7 +34,7 @@ function ensure(value, check) {
 }
 
 function safeErrorCode(error) {
-  if (error instanceof StoreError && /^[a-z0-9_]{1,32}$/.test(error.code)) return error.code;
+  if (error instanceof GmDraftStoreError && /^[a-z0-9_]{1,32}$/.test(error.code)) return error.code;
   return 'unexpected';
 }
 
@@ -74,6 +75,8 @@ async function main() {
 
   const owner = randomUUID().toLowerCase();
   const world = `gm03qa-${randomUUID().toLowerCase()}`;
+  out.scopeWorld = world;
+  out.ownerFixture = owner;
   const base = { seed: GAME.seed, revision: 'terrain-s21-v1' };
   const makeDocument = (x = 1) => ({ schema: 'marea.gm.map-draft', version: 2, base,
     objects: [{ id: 'qa-crate', assetId: 'prop:storage-crate',
@@ -121,7 +124,7 @@ async function main() {
   const uncertainStore = createSupabaseStore(droppingClient);
   let lostReplyObserved = false;
   try { await uncertainStore.saveGmDraft(lostRequest); }
-  catch (error) { lostReplyObserved = error instanceof StoreError && error.code === 'unavailable'; }
+  catch (error) { lostReplyObserved = error instanceof GmDraftStoreError && error.code === 'unavailable'; }
   ensure(lostReplyObserved, 'commit_reply_loss_is_reported_as_uncertain');
   const recoveryStore = createSupabaseStore(auditedClient);
   const recovered = await recoveryStore.saveGmDraft(lostRequest);

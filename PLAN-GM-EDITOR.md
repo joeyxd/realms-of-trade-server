@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-Fecha: 2026-10-10, hora de México. Estado: **GM02 publicado y verificado en producción en alpha.25/protocolo 37; GM03a storage aplicado, runtime pendiente de publicación y aceptación en navegador**. GM03a añade persistencia remota privada por cuenta/mundo; GM03b publicación/rollback sigue pendiente. [Entrega GM03a y evidencia disponible](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
+Fecha: 2026-10-10, hora de México. Estado: **GM02 publicado y verificado en producción en alpha.25/protocolo 37; GM03a publicado y aceptado en alpha.28 / protocolo 40 integrado**. GM03a añade persistencia remota privada por cuenta/mundo; GM03b publicación/rollback sigue pendiente. [Entrega GM03a y evidencia disponible](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -18,7 +18,7 @@ y su recuperación siguen privados en IndexedDB por navegador/cuenta/mundo, con 
 durante la sesión ante cuota agotada. En ese corte no existía guardado remoto ni publicación de mapas. QA local separado:
 100/100 pruebas pertinentes (30 GM) y navegador 13/13 con autenticación simulada. GM02 ya añade
 edición privada de rocas naturales/costeras, flores y guijarros, círculos compatibles y prueba caminando;
-GM03a ya tiene migración GM `020_gm_drafts.sql` aplicada para borradores remotos privados; falta publicar y aceptar el runtime.
+GM03a ya guarda borradores remotos privados: SQL020 aplicada, canario real 14/14 y navegador público 17/17 en `9f23be3`.
 GM03b cubre publicación/activación/rollback controlados y permanece pendiente.
 El hotfix de render se validó localmente en alpha.21 (102 pruebas, navegador 16/16) y públicamente en alpha.23
 (7/7 con Supabase real y calidad alta con contornos). La entrega inicial solo había ejercitado calidad baja.
@@ -338,13 +338,13 @@ pruebas pertinentes, incluidas 30 GM. El navegador real de producción pasó 6/6
 denegado y sesión GM autorizada; [evidencia](docs/delivery/gm01/public-evidence.json) y
 [despliegue](docs/delivery/gm01/deployment-evidence.json). La autorización positiva de GM ya está verificada
 en el host activo. GM03a añade endpoints y almacenamiento remoto con permisos de servicio; migración GM `020_gm_drafts.sql` está live,
-pero el runtime que los monta sigue sin publicarse y no se ofrece todavía en producción. GM03b definirá
+y el runtime `9f23be3` los monta y ofrece Online, aceptado con Supabase real. GM03b definirá
 autorización de publicación, puntero M5, registro y recuperación antes de activar mapas.
 
 GM01 usa IndexedDB local, con clave separada por navegador/cuenta/mundo y CAS. GM03a persiste un borrador
 privado en tablas de contenido separadas de perfiles/economía y acceso de servicio autorizado; una operación
-solo podrá marcarse durable al recibir confirmación remota. Está implementada la capa de código local,
-pero su despliegue, prueba de canario, UI de adopción/conflicto y recuperación browser quedan pendientes.
+solo se marca durable al recibir confirmación remota. Guardado/carga explícitos, conflicto sin pérdida,
+reintento exacto y exportación están aceptados: local 35/35, canario real 14/14 y público real 17/17.
 
 Los derivados aprobados se distribuyen inicialmente con los assets de la release, usando nombres/hash
 inmutables. La preparación local sincroniza índice y derivados por ese flujo; un asset aún no disponible
@@ -457,7 +457,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM00 | Cuatro candidatos de optimización local: roca 2K/1K y coral 200K/50K triángulos; originales intactos | [Comparación visual local](docs/art/gm00/visual-review.md) con loader real, 14 capturas y dos ángulos; roca 1K casi idéntica, coral 200K mantiene silueta/color con pérdida de detalle fino, 50K se ve más facetado. Sin rendimiento físico móvil ni aceptación gameplay; recibo conserva `visualReview: pending` |
 | GM01 | **Implementado; hotfix de gizmo activo en alpha.23:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, historial, recuperación local y borrador | [Hotfix](docs/delivery/gm01-render-fix.md): suite local 102/102 (32 GM), navegador local 16/16 con cuatro calidades/arrastre; público Supabase 7/7 con calidad alta/contornos. El borrador continúa local; publicación de mapas no implementada |
 | GM02 | **Publicado en alpha.25:** Escena, edición/ocultación/restauración de rocas naturales/costeras, flores y guijarros; duplicación, círculos XZ y prueba caminando | [Entrega](docs/delivery/gm02-draft-walk.md): navegador 28/28, matrices originales/restauración, documento v2 migrable, preview privado con movimiento real; 162/162 pruebas (51 GM), 107/107 VPS y público real 12/12 |
-| GM03a | **migración GM `020_gm_drafts.sql` aplicada; runtime aún no publicado:** borrador privado remoto por cuenta/mundo, CAS y recibo idempotente; sin cambiar mapa activo ni autoridad M5 | Readiness live versión 1 a 2026-10-10T20:41:47Z. Falta publicar runtime, canario remoto y aceptación browser/GM. [Entrega](docs/delivery/gm03a/DELIVERY.md) |
+| GM03a | **Publicado `9f23be3`, alpha.28 / protocolo 40 integrado:** borrador privado remoto por cuenta/mundo, CAS, recibo idempotente y UI explícita; sin cambiar mapa activo ni autoridad M5 | SQL020/readiness live, canario 14/14, local 35/35, público real 17/17 y release 107/107. [Entrega](docs/delivery/gm03a/DELIVERY.md) |
 | GM03b | Pendiente: preparar/publicar revisión, puntero activo coordinado con M5, validación, exclusión y rollback | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
 | GM04 | Grupos/prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Editar un conjunto; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05 | Esculpir/pintar terreno existente con deltas y reconstrucción coordinada | Rampa caminable, agua/minimapa coherentes, undo exacto y zonas protegidas preservadas |
@@ -465,7 +465,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
 GM01 permite construir un borrador local de decoraciones nuevas y GM02 editar la decoración base segura
-y probar el recorrido. GM03a prepara continuidad de borradores en servidor una vez publicado y aceptado el runtime;
+y probar el recorrido. GM03a ya permite continuar el borrador desde otro navegador mediante guardado/carga explícitos;
 GM03b seguirá siendo necesario para usar revisiones publicadas en el mundo compartido. No esperar a terreno, prefabs, multiedición
 o todos los assets para continuar construyendo el rincón.
 La ampliación del terreno se diseña ahora para que el formato la admita y se implementa después.
@@ -514,8 +514,8 @@ Quedan por cerrar en los briefs, sin cambiar la dirección confirmada: presupues
 retención/recuperación operativa y plantillas iniciales de colisión. GM03a ya fija y aplica esquema y permisos
 de borradores. Las recetas de los
 cuatro pilotos están fijadas y sus derivados verificados por hash.
-La cuenta GM y su permiso en el host ya están verificados; migración GM `020_gm_drafts.sql` de GM03a está aplicada, pero falta publicar
-el runtime y aceptar el guardado remoto. La publicación/activación de GM03b sigue pendiente.
+La cuenta GM y su permiso en el host están verificados; SQL020 y runtime GM03a están publicados y
+el guardado remoto, adopción y conflicto se aceptaron con Supabase real. La publicación/activación de GM03b sigue pendiente.
 Recomendación: autor como único GM inicial, escritorio para editar, assets estáticos preparados y decoración
 existente primero, publicación con mundo vacío y terreno por fases.
 

@@ -1,0 +1,63 @@
+{
+  "schema": "gm03a-public/v1",
+  "at": "2026-10-10T20:56:00.867Z",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "public_health_version_and_storage",
+    "public_guest_denied_gm",
+    "public_optimized_model_hash_and_bytes",
+    "real_public_browser_guest_join",
+    "real_owner_high_quality_gizmo_frames_have_no_caught_errors",
+    "real_owner_recovery_session_password_prompt_gm_placement_and_local_save",
+    "real_owner_gm02_base_rock_numeric_edit_is_draft_only_and_map_stays_unchanged",
+    "real_owner_gm02_saved_base_override_reopens_and_restore_returns_original_matrix",
+    "real_owner_gm02_base_duplicate_inherits_proxy_and_circle_radius_autosizes",
+    "real_gm_remote_save_is_explicit_and_durable",
+    "real_gm_second_context_load_and_undo_round_trip",
+    "real_gm_stale_context_conflict_preserves_local_and_refreshes_head",
+    "real_gm_remote_head_restore_uses_cas",
+    "real_gm_local_editor_state_restored",
+    "real_owner_gm02_private_walk_moves_with_w_and_restores_camera_document_and_map"
+  ],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   146.41259532402998,\n+   58,\n+   136.0488583308951\n-   4.5,\n-   13.502562165260315,\n-   15.5\n  ]\n\n    at file:///C:/DEV/real%20of%20trade/gm-editor-first/tools/qa-gm-production.mjs:282:12\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:472:9)"
+  ],
+  "version": "0.6.0-alpha.28",
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0
+  },
+  "guestBoot": {
+    "online": true,
+    "transport": "ws",
+    "serverMarked": true,
+    "signedIn": false
+  },
+  "gm03a": {
+    "schema": "gm03a-public/v1",
+    "checks": [
+      "real_gm_remote_save_is_explicit_and_durable",
+      "real_gm_second_context_load_and_undo_round_trip",
+      "real_gm_stale_context_conflict_preserves_local_and_refreshes_head",
+      "real_gm_remote_head_restore_uses_cas",
+      "real_gm_local_editor_state_restored"
+    ],
+    "screenshots": [
+      "production-gm03a-online-es.png",
+      "production-gm03a-online-en.png"
+    ],
+    "errors": [],
+    "originalRemoteRevision": 0,
+    "testHeadRevision": 2,
+    "remoteRestore": {
+      "attempted": true,
+      "status": "restored",
+      "fromRevision": 0,
+      "throughRevision": 3,
+      "emptyBaseline": true
+    }
+  }
+}
