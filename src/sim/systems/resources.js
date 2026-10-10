@@ -5,6 +5,7 @@ import { GOODS } from '../../data/goods.js';
 import { TRADE } from './trade.js';
 import { holdUsed, load, unload } from '../economy/cargo.js';
 import { C } from '../ecs.js';
+import { evaluateLoggingChallenge } from './loggingTiming.js';
 
 const MAX_RECEIPTS = 64;
 const MAX_OWNERS = 256;
@@ -54,7 +55,9 @@ export function publicResources(w) {
     nodes.push(view);
   }
   nodes.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
-  return { nodes, bench: r.bench ? { ...r.bench } : null };
+  return { nodes, bench: r.bench ? { ...r.bench } : null,
+    ...(r.timing === undefined ? {} : { timing: r.timing }),
+    ...(typeof r.logicalTick === 'function' ? { logicalTick: r.logicalTick() } : {}) };
 }
 
 export function clearResourceReceipts(w, e) {
@@ -78,10 +81,12 @@ function exactSchema(msg) {
   const fields = msg.op === 'gather' ? ['node', 'expectedRev']
     : msg.op === 'craft' ? ['recipe', 'expectedRev', 'n'] : null;
   if (!fields) return false;
-  const allowed = new Set(['type', 't', 'op', 'opId', ...fields]);
+  const allowed = new Set(['type', 't', 'op', 'opId', ...fields,
+    ...(msg.op === 'gather' && owns(msg, 'challenge') ? ['challenge'] : [])]);
   return Object.keys(msg).every((k) => allowed.has(k))
     && owns(msg, 'opId') && typeof msg.opId === 'string' && OP_ID.test(msg.opId)
     && owns(msg, 'expectedRev') && Number.isSafeInteger(msg.expectedRev)
+    && (!owns(msg, 'challenge') || (msg.op === 'gather' && typeof msg.challenge === 'string' && OP_ID.test(msg.challenge)))
     && (msg.op !== 'gather' || (typeof msg.node === 'string' && msg.node.length > 0 && msg.node.length <= 40))
     && (msg.op !== 'craft' || (typeof msg.recipe === 'string' && owns(CRAFT_RECIPES, msg.recipe)
       && (!owns(msg, 'n') || (Number.isSafeInteger(msg.n) && msg.n >= 1 && msg.n <= CRAFT_RECIPES[msg.recipe].max))));
@@ -89,7 +94,7 @@ function exactSchema(msg) {
 
 function signature(msg) {
   return msg.op === 'gather'
-    ? JSON.stringify([msg.op, msg.node, msg.expectedRev])
+    ? JSON.stringify([msg.op, msg.node, msg.expectedRev, msg.challenge ?? null])
     : JSON.stringify([msg.op, msg.recipe, msg.expectedRev, msg.n ?? 1]);
 }
 
@@ -194,15 +199,40 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
     if (tradeRev >= HARVEST.maxRev) return deny('revisionLimit', node.rev);
     const kind = RESOURCE_KINDS[node.kind], good = kind?.good;
     if (kind.tool && profile.tools?.[kind.tool] !== 1) return deny('tool', node.rev, { tool: kind.tool });
-    const pack = { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } };
+    const pack = { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } };
     const work = !!kind.hits, isPalm = node.kind === 'palm';
+    let timing = null, timingQuality = 0;
+    const timingEnabled = isPalm && w.loggingTimingVersion === 3;
+    if (timingEnabled) {
+      if (!msg.challenge) return deny('aimRequired', node.rev);
+      try {
+        timing = w.loggingProof;
+        const ledger = w.loggingState?.logging?.[node.id];
+        if (!timing || timing.challenge?.node !== node.id || timing.challenge?.rev !== node.rev
+            || !Number.isSafeInteger(timing.receivedTick) || !Number.isSafeInteger(timing.quality)) return deny('timing', node.rev);
+        const evaluated = evaluateLoggingChallenge(timing.challenge, { rev: node.rev, receivedTick: timing.receivedTick });
+        if (timing.quality !== evaluated.quality) return deny('timing', node.rev);
+        timingQuality = ledger === null && !(node.hits === HARVEST.palmHits
+          && node.readyTick > 0 && node.readyTick <= w.tick) ? 0 : evaluated.quality;
+        timing = { challenge: { ...timing.challenge }, receivedTick: timing.receivedTick, quality: evaluated.quality };
+      } catch { return deny('timing', node.rev); }
+    }
     const hits = work && node.readyTick > 0 && node.readyTick <= w.tick ? 0 : (node.hits || 0);
     const finalHit = !work || hits + 1 >= kind.hits;
-    const count = finalHit ? (kind.yield || 1) : 0;
-    const stagedCount = kind.yield || 1;
-    if (!good || !load(pack, good, stagedCount)) return deny('full', node.rev);
-    if (!finalHit && !fits(profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
-    if (count > 0 && !commit(w, e, profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
+    let count = finalHit ? (kind.yield || 1) : 0;
+    if (timingEnabled && finalHit) {
+      const ledger = w.loggingState.logging[node.id];
+      const legacyUncredited = ledger === null && !(node.hits === HARVEST.palmHits
+        && node.readyTick > 0 && node.readyTick <= w.tick);
+      count = 3 + (legacyUncredited ? 0 : (ledger?.quality || 0) + timingQuality);
+    }
+    const stagedCount = timingEnabled ? 6 : (kind.yield || 1);
+    const stagedPack = { ...pack, goods: { ...pack.goods } };
+    if (!good || !load(stagedPack, good, stagedCount)) return deny('full', node.rev);
+    if (!finalHit && !fits(profile, stagedPack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
+    if (count > 0) {
+      if (!load(pack, good, count) || !commit(w, e, profile, pack, tradeRev + 1, saveFits)) return deny('saveSize', node.rev);
+    }
     node.rev += 1;
     if (work) {
       node.hits = hits + 1;
@@ -214,7 +244,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
       rev: node.rev, remaining: left, felled: isPalm && finalHit,
       ...(work && !isPalm ? { broken: finalHit, tool: kind.tool } : {}) });
     return remember(emit(w, e, msg, true, '', node.rev,
-      work ? { good, count, profileRev: profile.eco.tradeRev, remaining: left, ...(isPalm ? { felled: finalHit } : { broken: finalHit }) }
+      work ? { good, count, profileRev: profile.eco.tradeRev, remaining: left, ...(timing ? { timing } : {}), ...(isPalm ? { felled: finalHit } : { broken: finalHit }) }
         : { good, count, profileRev: profile.eco.tradeRev }));
   }
 
@@ -225,7 +255,7 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
   const bench = r.bench;
   if (!bench) return deny('bench', tradeRev);
   if (Math.hypot(c.x[e] - bench.x, c.z[e] - bench.z) > HARVEST.benchRadius) return deny('far', tradeRev);
-  const pack = { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } };
+  const pack = { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } };
   const recipe = CRAFT_RECIPES[msg.recipe], n = msg.n ?? 1, count = n * recipe.count;
   const tools = recipe.tool ? sanitizeTools(profile.tools) : null;
   if (tools && tools[recipe.tool] >= recipe.tier) return deny('alreadyOwned', tradeRev);

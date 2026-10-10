@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-10T22:50:42.722Z",
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "scope": "Public guest entry, locale persistence and real WebSocket reconnect; no login, signing or durable economic commands",
+  "checks": [
+    "Public English entry, real guest WebSocket, Spanish settings and live character panel switch",
+    "Actual socket close, bilingual disconnect overlay, reconnect reload retains Spanish and rejoins authority"
+  ],
+  "errors": [],
+  "screenshots": [
+    "01-entry-en.png",
+    "02-settings-es.png",
+    "03-character-en.png",
+    "04-disconnect-es.png",
+    "05-reconnected-es.png"
+  ],
+  "status": {
+    "version": "0.6.0-alpha.32",
+    "players": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "unsaved": 0,
+      "tickBlocked": false
+    }
+  }
+}

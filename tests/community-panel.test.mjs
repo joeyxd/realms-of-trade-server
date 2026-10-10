@@ -8,7 +8,7 @@ test('community progress projects server requirements against only the current p
     eco: { pack: { goods: { madera: 4, tronco: 50 } } },
   });
   assert.deepEqual(rows, [
-    { good: 'madera', name: 'Madera', required: 18, current: 7, remaining: 11, owned: 4, percent: 39 },
+    { good: 'madera', name: 'Tabla básica', required: 18, current: 7, remaining: 11, owned: 4, percent: 39 },
     { good: 'piedra', name: 'Piedra', required: 6, current: 6, remaining: 0, owned: 0, percent: 100 },
   ]);
 });

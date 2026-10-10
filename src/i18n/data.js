@@ -2,6 +2,7 @@
 // player-authored names remain outside this table.
 import { BASES, STATS } from '../data/items.js';
 const DATA_ES_EN = {
+  'Tabla básica': 'Basic plank',
   'Antorcha de suelo':'Floor torch','Antorcha de pared':'Wall torch','Fogata':'Campfire',
   'Carpintería de Salty Shore':'Salty Shore carpentry',
   'Aguante de guardia':'Guard stamina','Pociones':'Potions',

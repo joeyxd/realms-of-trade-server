@@ -22,6 +22,8 @@ import { newEco, sanitizeEco } from './trade.js';
 import { syncRaftProfiles } from './rafts.js';
 import { newTools, sanitizeTools } from '../../data/resources.js';
 import { newProgression, readProgression } from './progression.js';
+import { carryLimits, readCarryField } from '../economy/carry.js';
+import { newWorkshop, readWorkshop } from './workshop.js';
 import { readFire } from '../economy/fire.js';
 
 export const PROFILE_VERSION = 1;
@@ -31,12 +33,17 @@ const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
 // Tattoos (M4.7): has[id] = [rank, xp (tinta), form] for what you learned; lo = the Q / E loadout of each weapon
 // (ids, SLOTS order); free = 1 while your first tattoo is still free.
 const newSk = () => ({ has: {}, lo: WEAPON_KINDS.map((k) => [...DEFAULT_LOADOUT[k]]), free: 1 });
-export function newProfile({ weapon = 0 } = {}) {
+export function newProfile({ weapon = 0, starter = true } = {}) {
+  const starterEnabled = starter === true;
   const p = {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
-    eco: newEco(), // trade (M7): pack, ships, deeds (systems/trade.js)
+    ...(starterEnabled ? { carry: { v: 1, backpack: 0 } } : {}),
+    eco: starterEnabled
+      ? newEco({ packCap: carryLimits({ v: 1, backpack: 0 }, 1).volume, packMaxMass: carryLimits({ v: 1, backpack: 0 }, 1).maxMass })
+      : newEco(), // Legacy managed profiles keep SQL021's 10-unit, no-mass-field pack shape.
+    ...(starterEnabled ? { workshop: newWorkshop() } : {}),
     pirateId: '', pearls: newPearls(), tools: newTools(), progression: newProgression(),
   };
   for (const s of SLOTS) p.eq[s] = null;
@@ -47,6 +54,20 @@ export function newProfile({ weapon = 0 } = {}) {
 // of ours (an unknown version). The save is signed online, so this is about old builds and bugs, not cheats.
 export function sanitizeProfile(raw) {
   if (!raw || typeof raw !== 'object' || raw.v !== PROFILE_VERSION) return null;
+  const carryField = readCarryField(raw), hasCarry = carryField.present, carry = carryField.value;
+  if (hasCarry && !carry) return null;
+  let hasWorkshop = false, workshop;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(raw, 'workshop');
+    if (descriptor) {
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value')) return null;
+      hasWorkshop = true;
+      workshop = readWorkshop(descriptor.value);
+    } else {
+      for (let prototype = Object.getPrototypeOf(raw); prototype; prototype = Object.getPrototypeOf(prototype))
+        if (Object.getOwnPropertyDescriptor(prototype, 'workshop')) return null;
+    }
+  } catch { return null; }
   // Keep the legacy DTO shape intact: profile operations compare canonical snapshots,
   // so zero progression is materialized only when a later operation explicitly earns it.
   // Read only an own data property so progression accessors never run during validation.
@@ -67,8 +88,12 @@ export function sanitizeProfile(raw) {
   const int = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, Math.floor(v))) : d);
   const num = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d);
   const p = newProfile();
+  if (!hasCarry) delete p.carry;
+  if (hasWorkshop) p.workshop = workshop;
+  else delete p.workshop;
   if (!hasProgression) delete p.progression;
   p.lvl = int(raw.lvl, 1, tuning.stats.maxLevel, 1);
+  if (hasCarry) p.carry = carry;
   p.xp = num(raw.xp, 0, 1e6, 0);
   p.gold = int(raw.gold, 0, 1e9, 0);
   p.pot = int(raw.pot, 0, CONSUMABLES.potion.max, 0);
@@ -96,7 +121,8 @@ export function sanitizeProfile(raw) {
   p.sk = sanitizeSk(raw.sk, int, num);
   p.pearls = sanitizePearls(raw.pearls);
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
-  p.eco = sanitizeEco(raw.eco);
+  const limits = hasCarry ? carryLimits(carry, p.lvl) : null;
+  p.eco = sanitizeEco(raw.eco, limits ? { packCap: limits.volume, packMaxMass: limits.maxMass } : undefined);
   p.tools = sanitizeTools(raw.tools);
   if (hasProgression) p.progression = progression;
   try {
@@ -193,6 +219,10 @@ export function syncProfile(world, e) {
   if (!p || !ecs.alive[e]) return p;
   syncRaftProfiles(world, e);
   p.lvl = ecs.level[e]; p.xp = Math.round(ecs.xp[e] * 100) / 100; p.pot = ecs.potions[e];
+  if (p.carry) {
+    const limits = carryLimits(p.carry, p.lvl);
+    p.eco.pack.cap = limits.volume; p.eco.pack.maxMass = limits.maxMass;
+  }
   for (const [id, c] of Object.entries(world.map.checkpoints)) if (Math.abs(c.x - ecs.cpX[e]) < 1e-6 && Math.abs(c.z - ecs.cpZ[e]) < 1e-6) p.cp = id;
   return p;
 }

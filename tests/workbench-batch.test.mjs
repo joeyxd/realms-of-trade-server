@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { HARVEST } from '../src/data/resources.js';
+import { CRAFT_RECIPES, HARVEST } from '../src/data/resources.js';
 import { GOODS } from '../src/data/goods.js';
 import { newProfile } from '../src/sim/systems/inventory.js';
 import { C } from '../src/sim/ecs.js';
@@ -28,7 +28,7 @@ function fixture() {
   w.ecs.x[1] = 0; w.ecs.y[1] = 2; w.ecs.z[1] = 0; w.ecs.dashT[1] = -1; w.ecs.regenT[1] = 10;
   const p = newProfile();
   p.gold = 321; p.flags.tier = 3;
-  p.eco.pack = { cap: 40, goods: { tronco: 3, piedra: 2 } };
+  p.eco.pack = { cap: 40, goods: { tronco: 6, piedra: 2 } };
   w.profiles.set(1, p);
   return w;
 }
@@ -38,8 +38,10 @@ const craft = (opId, expectedRev = 0, n) => ({ type: 'resource', op: 'craft', op
 const last = (w) => w.events.at(-1);
 const snapshot = (w) => structuredClone(w.profiles.get(1));
 
-test('batch crafting consumes exact inputs, preserves other profile data, and advances one revision', () => {
+test('two logs make one board; batch crafting consumes exact inputs and advances one revision', () => {
   const w = fixture(), p = w.profiles.get(1);
+  assert.deepEqual(CRAFT_RECIPES.madera.inputs, { tronco: 2 });
+  assert.equal(CRAFT_RECIPES.madera.count, 1);
   assert.equal(resourceCmd(w, 1, craft('batch-three', 0, 3)), true);
   assert.deepEqual(p.eco.pack.goods, { madera: 3, piedra: 2 });
   assert.equal(p.eco.tradeRev, 1);
@@ -60,7 +62,7 @@ test('exact batch replay does not debit twice; quantity reuse is denied and omit
   assert.deepEqual(p, after);
 
   w.tick += HARVEST.actionTicks;
-  p.eco.pack.goods = { tronco: 1, piedra: 2 }; p.eco.tradeRev++;
+  p.eco.pack.goods = { tronco: 2, piedra: 2 }; p.eco.tradeRev++;
   const singleRev = p.eco.tradeRev;
   assert.equal(resourceCmd(w, 1, craft('single', singleRev)), true);
   const afterSingle = snapshot(w);
@@ -92,7 +94,7 @@ test('insufficient materials, stale revision, preflight false or throw leave pro
   assert.equal(last(w).why, 'revision');
   assert.deepEqual(p, short);
 
-  p.eco.pack.goods.tronco = 3;
+  p.eco.pack.goods.tronco = 6;
   for (const preflight of [() => false, () => { throw new Error('fixture'); }]) {
     const state = snapshot(w);
     assert.equal(resourceCmd(w, 1, craft(`savefail-${w.events.length}`, 0, 3), preflight), false);
@@ -106,11 +108,11 @@ test('insufficient materials, stale revision, preflight false or throw leave pro
 
 test('final output volume overflow rejects the entire batch', () => {
   const w = fixture(), p = w.profiles.get(1);
-  p.eco.pack = { cap: 13, goods: { tronco: 3, piedra: 2 } };
+  p.eco.pack = { cap: 23, goods: { tronco: 6, piedra: 2 } };
   const original = GOODS.madera.volume;
   try {
     // Model a future recipe whose product occupies more space than its inputs.
-    GOODS.madera.volume = GOODS.tronco.volume + 1;
+    GOODS.madera.volume = GOODS.tronco.volume + 4;
     const before = snapshot(w);
     assert.equal(resourceCmd(w, 1, craft('output-overflow', 0, 3)), false);
     assert.equal(last(w).why, 'full');
@@ -136,7 +138,7 @@ test('only the first of two distinct requests at the same revision can craft', (
   w.tick += HARVEST.actionTicks;
   assert.equal(resourceCmd(w, 1, craft('second', 0, 2)), false);
   assert.equal(last(w).why, 'revision');
-  assert.deepEqual(p.eco.pack.goods, { tronco: 2, madera: 1, piedra: 2 });
+  assert.deepEqual(p.eco.pack.goods, { tronco: 4, madera: 1, piedra: 2 });
   assert.equal(p.eco.tradeRev, 1);
 });
 
@@ -144,20 +146,43 @@ test('pure workbench preview agrees with server batch input, output, and pack-sp
   const w = fixture(), p = w.profiles.get(1);
   const preview = workbenchPreview(p, 3);
   assert.equal(preview.craftMax, HARVEST.craftMax);
-  assert.equal(preview.inputNeeded, 3);
+  assert.equal(preview.inputNeeded, 6);
   assert.equal(preview.outputAmount, 3);
   assert.equal(preview.maxCraftable, 3);
   assert.equal(preview.canCraft, true);
 
-  p.eco.pack = { cap: 13, goods: { tronco: 3, piedra: 2 } };
+  p.eco.pack = { cap: 22, goods: { tronco: 6, piedra: 2 } };
   const original = GOODS.madera.volume;
   try {
-    GOODS.madera.volume = GOODS.tronco.volume + 1;
+    GOODS.madera.volume = GOODS.tronco.volume + 4;
     const tight = workbenchPreview(p, 3);
     assert.equal(tight.maxCraftable, 0);
     assert.equal(tight.spaceFits, false);
     assert.equal(tight.canCraft, false);
   } finally { GOODS.madera.volume = original; }
+});
+
+test('workbench preview and server agree when a recipe would exceed the pack mass limit', () => {
+  const w = fixture(), p = w.profiles.get(1);
+  p.eco.pack = { cap: 40, maxMass: 28, goods: { tronco: 6, piedra: 2 } };
+  const original = GOODS.madera.mass;
+  try {
+    GOODS.madera.mass = 7;
+    const tooHeavy = workbenchPreview(p, 3);
+    assert.equal(tooHeavy.massBefore, 26);
+    assert.equal(tooHeavy.maxCraftable, 2);
+    assert.equal(tooHeavy.massFits, false);
+    const before = snapshot(w);
+    assert.equal(resourceCmd(w, 1, craft('mass-overflow', 0, 3)), false);
+    assert.equal(last(w).why, 'full');
+    assert.deepEqual(p, before);
+
+    const allowed = workbenchPreview(p, 2);
+    assert.equal(allowed.canCraft, true);
+    assert.equal(resourceCmd(w, 1, craft('mass-fits', 0, 2)), true);
+    assert.equal(last(w).count, allowed.outputAmount);
+    assert.deepEqual(p.eco.pack.goods, { tronco: 2, madera: 2, piedra: 2 });
+  } finally { GOODS.madera.mass = original; }
 });
 
 test('LocalServer HMAC batch craft acknowledges, saves, replays once, and reloads exact profile state', () => {
@@ -197,7 +222,7 @@ test('LocalServer HMAC batch craft acknowledges, saves, replays once, and reload
 
     const initial = newProfile();
     initial.gold = 246;
-    initial.eco.pack = { cap: 10, goods: { tronco: 2, piedra: 1 } };
+    initial.eco.pack = { cap: 14, maxMass: 18, goods: { tronco: 4, piedra: 1 } };
     const f = makeServer({ saves }), owner = join(f.server, 31, saves.store(initial));
     const profile = f.server.world.profiles.get(owner);
     standAtBench(f.server, owner);

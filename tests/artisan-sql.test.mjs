@@ -31,6 +31,9 @@ const progression = () => ({ v: 1, practice: { logging: 60 }, milestones: ['logg
 const publicProject = () => ({ ...community.project, name: 'Carpintería de Salty Shore', complete: true });
 function character({ eligible = true, wood = 2 } = {}) {
   const p = newProfile();
+  // SQL021's immutable historical contract predates carried-capacity/workshop metadata.
+  delete p.carry; delete p.workshop;
+  p.eco.pack = { cap: 10, goods: {} };
   p.eco.pack.goods.madera = wood;
   p.progression = eligible ? progression() : { ...progression(), practice: { logging: 50 }, milestones: [] };
   return p;

@@ -149,6 +149,65 @@ silenciosa al cargar un perfil. Acomodo por bodega y tiers completos pueden segu
 Este enfoque acordado complementa recolección/crafting; no activa pérdidas permanentes ni modifica
 la cola principal. Balance de masa, margen seguro y daño en mar quedan por fijar.
 
+### 2.2 Flotabilidad, materiales y escala — dirección aceptada 2026-10-10
+
+**Dirección aceptada por el autor:** cada casco debe relacionar materiales, desplazamiento, masa propia,
+capacidad de carga y manejo. Cimientos/base del casco desplazan agua y aportan flotación; pisos superiores,
+paredes, mobiliario, velas, máquinas y carga suman peso, pero no flotación. Capacidad de bodega es volumen
+geométrico: abrir más espacio para mercancías nunca equivale por sí solo a aumentar el desplazamiento seguro.
+Una vela aporta empuje según aparejo/viento y suma su propio peso; no hace que el casco flote más.
+
+El material no tendrá una respuesta universalmente superior. Las maderas/familias de casco deben ofrecer
+intercambios entre masa, flotación/desplazamiento, capacidad estructural, durabilidad, coste y disponibilidad
+regional. La madera ligera puede favorecer carga o respuesta pero exigir más volumen de casco/refuerzo; la
+madera densa o un refuerzo metálico puede soportar más estructura/daño a cambio de masa y coste. Son roles a
+probar, no estadísticas ni recetas ya fijadas. Combinar casco, refuerzo, velas y carga debe ser más importante
+que escoger una única especie «mejor».
+
+El tamaño debe seguir teniendo un precio de manejo: más eslora/manga y masa distribuida elevan el momento de
+inercia y el área mojada; aparejos/rudder adecuados, distribución de carga y navegación pueden compensar una
+parte, con rendimientos decrecientes. La compensación no borra el coste de girar una nave grande, y ninguna
+progresión deja la velocidad sin techo. Un galeón es una meta tardía de casco, materiales, astillero, tripulación,
+aparejos y logística; no una balsa agrandada con multiplicadores gratuitos. Debe conservar ventajas situacionales
+de barcos pequeños/medianos y requerir cadenas de producción y mantenimiento propios.
+
+**Implementado hoy, no extrapolar como balance de materiales:** `raftparts.js` solo distingue cimiento de
+cimiento reforzado: ambos aportan `floats: 1` y 14 uM de flotación; el normal pesa 4, tiene capacidad estructural
+10 y 60 HP, mientras el reforzado pesa 5, capacidad 14 y 90 HP, a cambio de 1 madera + 1 hierro adicionales
+frente al cimiento normal. Pisos, paredes, velas, bodegas y otros módulos declaran peso, y bodegas declaran
+volumen, no flotación. No hay catálogo de especies de madera ni cascos por era.
+
+La retícula actual usa celdas de 2 unidades, tres niveles, hasta 144 bases y una huella máxima de 12 × 12
+celdas. No representa todavía los tamaños/roles ni las restricciones de construcción de un galeón.
+
+`raftCapacity()` calcula `desplazamientoSeguro = flotación × 0,90`,
+`límiteTotal = min(capacidadEstructural, desplazamientoSeguro)`,
+`cargaMáxima = max(0, límiteTotal − masaSeca − masaTripulación)` y `exceso = max(0, masaTotal − límiteTotal)`.
+Cada base aporta 14 uM de flotación; las tripulaciones cuentan 3 uM por persona, el aviso de pesado empieza al
+85% del límite y una nueva salida/entrada de bodega que agrava el exceso se bloquea. El límite estructural suma
+10 por cimiento o 14 por cimiento reforzado; los módulos superiores solo suman su peso.
+
+Hay dos lecturas de movimiento que conviene mantener diferenciadas al calibrar. La lectura económica
+`raftStats()` usa `velocidad = min(8, (0,6 + 2,2 × (vela + motor)) / sqrt(max(1, peso / 40)))`, aplica al exceder
+la flotación `max(0,15, 1 − 2 × (carga/flotación − 1))`, y usa 0,3 sin vela/motor (remo). En navegación del rig,
+`buildNavalRig()` calcula centro de masa, inercia distribuida y dimensiones del casco; `stepNaval()` deriva empuje,
+arrastre y giro de carga/viento. El torque de timón escala con `(celdasFlotantes / 4)^1,5`, pero también se divide
+por la inercia; flotación y estabilidad multiplican la respuesta, y el arrastre depende de superficie mojada,
+masa y velocidad. La velocidad del rig tiene un tope configurado. El tamaño del casco ya afecta el manejo por
+distribución de masa, inercia, superficie mojada y número de celdas con flotación: **no hay una penalización
+independiente por huella/área**, ni tiers de material ni galeones implementados. El laboratorio D08 avanza a
+60 Hz, limita el giro a 1,2 rad/s y usa 10 unidades/s de velocidad normal, con eventos que pueden elevar el
+tope como máximo a 13. La lectura económica separada limita la velocidad a 8 leagues/hora. Son topes distintos
+de dos modelos, no una meta de balance común.
+
+**Camino de juego propuesto:** primero dar una tabla visible vacía/cargada con masa, volumen, margen de flotación
+y respuesta, y probar una balsa ligera, un mercante cargado y un casco ancho. Después introducir dos familias
+de madera/casco con intercambios legibles y costes/recursos regionales; añadir aparejos y refuerzos que compensen
+solo parte del manejo/peso. Por último probar un barco grande de varios sistemas como aspirante a galeón, con
+astillero, tripulación, suministros y mantenimiento. Cada etapa debe medir giro, aceleración, carga útil,
+velocidad limitada y recuperación tras daño, y preservar usos viables para casco/materiales anteriores. No se
+fijan especies, ratios, coeficientes, recetas finales ni fecha de entrega con esta decisión.
+
 ## 3. Formato del mar: alternativas y recomendación
 
 El zoom, el modelo de movimiento y la separación de servidores son decisiones diferentes.

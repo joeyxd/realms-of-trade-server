@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
+[contrato](docs/briefs/prg01d-starter-workshop.md) y [entrega/evidencia](docs/delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
+caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
+Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
+no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
+con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
+Publicación en curso; no activar `MN_STARTER_WORKSHOP` hasta verificar readiness SQL024 y el canario durable.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
+
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
 tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
@@ -35,6 +44,8 @@ SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composi
 solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicado y activo en `fe50ab1`,
 alpha.32/protocolo 42: imagen 107/107 y 30/30 de fuego, navegador autenticado público 9/9 con
 saldo/madera tras recargar y mapa/minimapa. Otros flags conservados. Sigue agua/reembarque.
+Revalidación pública final `ee88690`, alpha.34/protocolo 43: 9/9 y capturas inspeccionadas;
+cuenta/perfil QA eliminados, cuatro recibos retenidos y 35/35 de identidad cliente/agente.
 
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).

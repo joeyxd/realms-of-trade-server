@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
+[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
+caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
+Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
+no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
+con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
+Publicación en curso; no activar `MN_STARTER_WORKSHOP` hasta verificar readiness SQL024 y el canario durable.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
+
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
 tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
@@ -39,6 +48,8 @@ aceptados localmente. VPS `fe50ab1`, alpha.32/protocolo 42, publicado y fuego ha
 107/107 y 30/30 focales. Navegador público autenticado 9/9: combustible/madera persistentes,
 reencendido sin repetir cobro y mapa/minimapa. Cuenta/perfil QA eliminados; recibos retenidos.
 No activa artesano ni montaje de reloj común. Sigue agua costera/reembarque y después provisiones/hogar.
+Revalidado públicamente en `ee88690`, alpha.34/protocolo 43: 9/9 con capturas inspeccionadas,
+cuenta/perfil QA eliminados y cuatro recibos retenidos. Identidad cliente/agente 35/35.
 
 **AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**
 [entrega](delivery/m5-ground-host-authority.md), [contrato](briefs/m5-ground-host-authority.md).

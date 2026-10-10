@@ -12,8 +12,9 @@ test('renders every carried good, volume, mass, and tier-one utility tools', () 
   assert.match(html, /Tronco recogido/);
   assert.match(html, /Piedra/);
   assert.match(html, /Seda/);
-  assert.match(html, /Volumen <b>16 \/ 30 u<\/b>/);
+  assert.match(html, /Volumen <b>16 \/ 30 uV<\/b>/);
   assert.match(html, /Masa <b>19 uM<\/b>/);
+  assert.doesNotMatch(html, /Masa <b>19 \/ \d+ uM/); // legacy profiles have no declared mass cap
   assert.match(html, /Hacha de piedra/);
   assert.match(html, /Nivel I/);
   assert.doesNotMatch(html, /Pico de piedra/);
@@ -36,13 +37,22 @@ test('supports English labels and a projected pack without changing saved invent
   const before = structuredClone(profile);
   const html = packInventoryHtml(profile, { pack: { cap: 12, goods: { madera: 2 } }, pendingGoods: {} }, 'en-US');
   assert.match(html, /Materials pack/);
-  assert.match(html, /Timber/);
-  assert.match(html, /Volume <b>6 \/ 12 u<\/b>/);
+  assert.match(html, /Basic plank/);
+  assert.match(html, /Volume <b>6 \/ 12 uV<\/b>/);
   assert.match(html, /Mass <b>6 uM<\/b>/);
+  assert.match(html, /3 uV · 3 uM/);
   assert.match(html, /Utility belt/);
   assert.match(html, /Stone axe/);
   assert.match(html, /Stone pickaxe/);
   assert.deepEqual(profile, before);
+});
+
+test('carry metadata supplies mass limit and strength; each item exposes both dimensions', () => {
+  const html = packInventoryHtml({ carry: { v: 1, backpack: 1 }, lvl: 3,
+    eco: { pack: { cap: 30, maxMass: 22, goods: { madera: 2 } } } }, {}, 'en');
+  assert.match(html, /Mass <b>6 \/ 22 uM<\/b>/);
+  assert.match(html, /Strength <b>12<\/b>/);
+  assert.match(html, /3 uV · 3 uM/);
 });
 
 test('empty packs and unowned tools have localized empty states', () => {

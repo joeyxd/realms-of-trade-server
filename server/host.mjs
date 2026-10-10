@@ -2,6 +2,7 @@
 // WebSockets. Gameplay stays in LocalServer; transport and optional account persistence live here,
 // outside the fixed-step simulation.
 import { WebSocketServer } from 'ws';
+import { LoggingAim } from './loggingAim.mjs';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
@@ -31,7 +32,7 @@ import { INVENTORY_QUERY_LIMIT, inventoryId } from '../src/net/agentInventory.js
 import { MARKET_QUERY_LIMIT, MARKET_FAILURES, validMarketQuery, validMarketProjection } from '../src/net/agentMarket.js';
 import { readCommerce } from '../src/sim/systems/commerce.js';
 import { townAt } from '../src/sim/systems/trade.js';
-import { newResourceState, restoreResourceState, upgradeLoggingState } from './resourceState.mjs';
+import { newResourceState, restoreResourceState, upgradeLoggingState, upgradeTimingState } from './resourceState.mjs';
 import { BTN } from '../src/sim/systems/movement.js';
 import { types } from 'node:util';
 import { EconomicAuthority } from './economicAuthority.mjs';
@@ -70,7 +71,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, fireOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, agentTrade = false,
     groundTransactions = null } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
@@ -84,6 +85,9 @@ export class GameHost {
     this.loggingOperations = loggingOperations;
     if (typeof artisanOperations !== 'boolean' || artisanOperations && !loggingOperations) throw new StoreError('configuration');
     this.artisanOperations = artisanOperations;
+    if (typeof workshopOperations !== 'boolean' || workshopOperations && !artisanOperations) throw new StoreError('configuration');
+    this.workshopOperations = workshopOperations;
+    this.loggingAim = new LoggingAim(this);
     if (typeof fireOperations !== 'boolean' || fireOperations && !economicOperations) throw new StoreError('configuration');
     this.fireOperations = fireOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
@@ -131,7 +135,7 @@ export class GameHost {
       if (this.#drainingPearls) { this.#stopPearls(); return; }
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
-    }, { journal: pearlJournal });
+    }, { journal: pearlJournal, starter: workshopOperations });
     // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
@@ -482,6 +486,8 @@ export class GameHost {
           (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
           (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.workshopOperations && (typeof this.store.checkStarterWorkshop !== 'function' ||
+          (await this.store.checkStarterWorkshop())?.version !== 1)) throw new StoreError('configuration');
       if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
@@ -490,9 +496,10 @@ export class GameHost {
       economy.onAdvance = this.server.world.economy.onAdvance;
       this.server.world.economy = economy;
       if (this.worldState.resources && !this.resourceOperations) throw new StoreError('configuration');
-      if (this.worldState.resources?.v === 2 && !this.loggingOperations) throw new StoreError('configuration');
+      if ((this.worldState.resources?.v >= 2 && !this.loggingOperations) ||
+          (this.worldState.resources?.v === 3 && !this.workshopOperations)) throw new StoreError('configuration');
       if (this.resourceOperations) {
-        const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1;
+        const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1 || this.workshopOperations && this.worldState.resources.v < 3;
         if (adopting && this.groundAuthority) throw new StoreError('configuration');
         if (this.worldState.resources) restoreResourceState(this.server.world, this.worldState.resources);
         else {
@@ -500,6 +507,9 @@ export class GameHost {
           this.worldState.resources = newResourceState(this.server.world);
         }
         if (this.loggingOperations) this.worldState.resources = upgradeLoggingState(this.worldState.resources);
+        if (this.workshopOperations) this.worldState.resources = upgradeTimingState(this.worldState.resources);
+        this.server.world.resources.timing = this.workshopOperations;
+        this.server.world.resources.logicalTick = () => this.worldState.resourceTick();
         // Only successful simulation steps advance this clock, never wall time or downtime.
         const epoch = this.worldState.resources.tick - this.server.world.tick;
         this.worldState.resourceTick = this.groundAuthority
@@ -589,6 +599,7 @@ export class GameHost {
           logging: this.loggingOperations },
         fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
+        workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -640,6 +651,7 @@ export class GameHost {
         const { control, ...chat } = msg; this.server.receive(sock.id, chat); return;
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
     }
+    if (this.loggingAim.handle(sock, msg)) return;
     if (this.economicAuthority?.handle(sock, msg)) return;
     if (msg.t === MSG.CMD && ['community', 'artisan', 'fire'].includes(msg.type)) {
       this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
@@ -1206,6 +1218,7 @@ export class GameHost {
       this.economicAuthority.deferredCloses.add(sock); return;
     }
     this.sockets.delete(sock.id);
+    this.loggingAim.forget(sock.id);
     if (sock.agentIdentity) this.agentControl?.retire(sock.id, 'disconnect');
     sock.joinAbort?.abort();
     sock.in.close(); sock.out.close();
