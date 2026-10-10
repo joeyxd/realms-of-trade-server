@@ -1,0 +1,13 @@
+{
+  "schema": "mn.logging.activation-validation.v1",
+  "date": "2026-10-10",
+  "revision": "dfbf9e7a147773af45bdd1f02ddfadfd21633da9",
+  "command": "node --test --test-concurrency=1 tests/logging-authority.test.mjs tests/logging-operation-contract.test.mjs tests/logging-resource-state.test.mjs tests/logging-sql.test.mjs tests/logging-sql-boundaries.test.mjs",
+  "tests": 31,
+  "pass": 31,
+  "fail": 0,
+  "skipped": 0,
+  "durationMs": 24946.6692,
+  "toolSyntaxChecksPassed": true,
+  "scope": "Focused regression after integrating current upstream; earlier integrated and visual evidence remains separate."
+}

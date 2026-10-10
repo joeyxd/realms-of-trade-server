@@ -7,6 +7,8 @@ import { GAME } from '../src/data/meta.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 
 const origin = 'https://marea.62.171.136.148.sslip.io', checks = [];
+const loggingEnabled = process.argv.includes('--logging-enabled');
+assert.ok(process.argv.slice(2).every(arg => arg === '--logging-enabled'), 'unknown public QA option');
 const record = (check, extra = {}) => checks.push({ check, pass: true, ...extra });
 const get = path => fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
 
@@ -18,8 +20,8 @@ try {
   assert.equal(status.storage.kind, 'supabase'); assert.equal(status.storage.durable, true);
   assert.equal(status.storage.accounts, true); assert.equal(status.storage.errors, 0);
   assert.equal(status.storage.economic.failed, false); assert.equal(status.storage.tickBlocked, false);
-  assert.equal(status.storage.resources.ready, true); assert.equal(status.storage.resources.logging, false);
-  record('compatible_runtime_logging_off', { version: status.version });
+  assert.equal(status.storage.resources.ready, true); assert.equal(status.storage.resources.logging, loggingEnabled);
+  record(loggingEnabled ? 'compatible_runtime_logging_on' : 'compatible_runtime_logging_off', { version: status.version });
   assert.ok((await (await get('/src/net/protocol.js')).text()).includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`));
   record('protocol', { version: PROTOCOL_VERSION });
   assert.ok((await (await get('/src/ui/loggingSkill.js')).text()).includes('loggingSkillHtml'));
@@ -48,8 +50,9 @@ try {
     await closed; clearTimeout(timer);
   }
   const report = { schema: 'mn.logging.public.v1', at: new Date().toISOString(), pass: true, checks,
-    limits: ['Logging remains disabled pending SQL016 and authenticated acceptance.', 'Guest entry does not verify a durable logging award.'] };
-  await writeFile(new URL('../docs/delivery/prg01b2-logging/public-smoke.json', import.meta.url), JSON.stringify(report, null, 2) + '\n');
+    limits: [...(loggingEnabled ? [] : ['Logging remains disabled pending SQL016 and authenticated acceptance.']),
+      'Guest entry does not verify a durable logging award.'] };
+  await writeFile(new URL(`../docs/delivery/prg01b2-logging/${loggingEnabled ? 'public-active-smoke' : 'public-smoke'}.json`, import.meta.url), JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));
 } catch (error) {
   console.error(JSON.stringify({ pass: false, checks, why: error.code ?? 'public check failed' }));

@@ -3,6 +3,8 @@
 **AREA15, corte local 2026-10-10:** [SQL018: operación, mundo y reloj en un commit](docs/delivery/m5-ground-transactions.md).
 Reutiliza familias M5, valida recibos y conserva pausa offline con sesión/drain detenidos. No monta
 GameHost ni activa SQL; sigue composición de tick/diario/legacy y aceptación real de perlas/muerte/botín.
+APIs publicadas y verificadas en `e648d1b`/alpha.27/protocolo 39, imagen 107/107 y entrada pública 6/6;
+esto no activa los coordinadores ni prueba gameplay durable de perlas/muerte/botín.
 
 **Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](docs/delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
 
@@ -39,12 +41,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   Activo en VPS `29a9e46`, sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo
   comprobados; evidencia/límites en la entrega. Sigue farol, luego noche oscura.
 
-- AREA03 PRG01b2 (2026-10-10), **corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37**: [Tala cooperativa](docs/delivery/prg01b2-logging.md)
-  integra práctica proporcional, beneficiarios offline, nodo, troncos y recibo en la misma M5.
-  Primer hito 60, cadencia 54→45 desde el siguiente golpe y ficha ES/EN. SQL016 y flag opt-in;
-  publicado en runtime `56e4345` sano, imagen 107/107 y smoke público 6/6 con entrada WSS (19:19 UTC).
-  SQL016 pendiente y Tala apagada. 230 pruebas integradas y ocho comprobaciones visuales; evidencia en
-  la entrega. Sigue activar/aceptar Tala y después artesano/bodega PRG01c.
+- AREA03 PRG01b2 (2026-10-10), **Tala activa, alpha.26/protocolo 38**: [aceptación SQL016](docs/delivery/prg01b2-logging.md).
+  Adopción exacta v1→v2 en `758a217`; reparto 7/3, crédito offline/reentrada, hito 60 y cadencia 45 ticks
+  comprobados por comandos autenticados. Reinicio ordenado en `454e2da` conservó perfiles/nodos/ledger;
+  nueve replays sin duplicar bienes/práctica y cleanup de dos cuentas QA, reteniendo nueve recibos.
+  31/31 de regresión actual y público 6/6; revisión/imagen sana y una autoridad a las 20:08:38 UTC.
+  Las 230 pruebas y ocho vistas locales iniciales conservan su evidencia. Sigue artesano y enseñanza
+  personal de `raft_storage` PRG01c; el hito no concede recetas automáticamente.
 
 - AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
   primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
