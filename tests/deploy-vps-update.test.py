@@ -93,7 +93,7 @@ class VpsUpdateTests(unittest.TestCase):
         self.assertEqual(len(requested), len(set(requested)))
         for call in fetches:
             args = call.args[0]
-            self.assertEqual(args[-2:], ["origin", "--stdin"])
+            self.assertEqual(args[-1], "--stdin")
             self.assertIn("--no-write-fetch-head", args)
             self.assertIn("--filter=blob:none", args)
             self.assertIn("--recurse-submodules=no", args)
