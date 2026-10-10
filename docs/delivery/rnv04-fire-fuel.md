@@ -93,6 +93,9 @@ adopción de mundo de AREA15, sin activar otra ruta de guardado. Fuego, paneles,
 composición fuego/diario común pasaron **57/57** en once archivos sobre el merge final:
 [salida](rnv04-fire-fuel/final-integration.tap). La evidencia pública anterior identifica su revisión
 alpha.32 exacta; las pruebas locales no se presentan como un recorrido público de alpha.33.
+La integración siguiente conserva GM03b2 alpha.34/protocolo 43: los once archivos anteriores más
+cliente/HTTP/servicio de contenido GM pasaron **82/82** en catorce archivos:
+[salida](rnv04-fire-fuel/gm-integration.tap). No activa revisiones GM ni cambia flags de gameplay.
 
 Sigue agua costera/reembarque, después provisiones/hogar; carga, agotamiento, rescate y relación con Brasa
 deben cerrar su contrato antes de activar natación. Carbón y construcción privada en tierra siguen pendientes.
