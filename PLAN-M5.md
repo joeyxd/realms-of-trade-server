@@ -658,9 +658,10 @@ Nuevos GameHosts, misma instancia PGlite/proceso; no reapertura DB/restart real/
 CLI/defaults/push/despliegue. Siguen autoridad/arranque/política offline y atomicidad reloj-gameplay/crash,
 creación durable loot/cofres, legacy/backfill/leases/finalizador, afinidad y aceptación real; P4/P6 parciales.
 
-**M5 econ?mico, 2026-10-09 ? integraci?n en aceptaci?n:** mercado cotizado, compra de materiales
+**M5 económico, 2026-10-10 — publicado y verificado:** mercado cotizado, compra de materiales
 desde el editor de la balsa, transferencias de carga y aportes usan perfil/mundo/recibo en una
-transacci?n M5; sin montar otra autoridad A1. Meta provisional aprobada: 40 madera + 20 piedra.
-SQL014 aplicada y permisos verificados en Supabase; publicaci?n y recorrido p?blico con reinicio
-en curso. [Contrato](docs/briefs/m5-economic-authority.md) ? [Entrega](docs/delivery/m5-economic-authority.md).
-No cierra recursos/crafting, todo M5 ni crecimiento autom?tico del edificio.
+transacción M5; sin montar otra autoridad A1. Meta provisional aprobada: 40 madera + 20 piedra.
+SQL014 y permisos verificados en Supabase; alfa público 0.6.0-alpha.17. Diez operaciones reales,
+diez replays tras reconexión y diez tras reinicio real, sin segundo débito ni retroceso.
+[Contrato](docs/briefs/m5-economic-authority.md) · [Entrega](docs/delivery/m5-economic-authority.md).
+No cierra recursos/crafting, todo M5 ni crecimiento automático del edificio.

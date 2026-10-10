@@ -41,17 +41,41 @@ recibió snapshots durante 30 segundos y terminó sin errores ni desconexiones i
 pública HTTP 200, Supabase durable y mundo preparado. Evidencia saneada:
 [availability.json](m5-economic-authority/availability.json).
 
+Después de activar M5 y del reinicio de aceptación, la sonda del 2026-10-10 05:32 UTC volvió a admitir
+cuatro clientes durante 30 segundos: 6,912 entradas, 2,441 snapshots posteriores a la admisión,
+cero errores y cero desconexiones inesperadas. El p95 de `stepMs` fue 2.877 ms, medido sobre muestras
+por segundo del host; no es una medida de FPS de teléfono. Evidencia:
+[availability-m5.json](m5-economic-authority/availability-m5.json).
+
 La recuperación operativa y el actualizador revisado están descritos en
 [vps-updates](vps-updates.md). Un contenedor vivo por sí solo no acredita disponibilidad; se comprueban
 imagen/revisión, salud pública y entrada real. Las activaciones SQL/env se verifican por separado.
 
-## SQL aplicada; publicación y aceptación en curso
+## Publicación y aceptación M5
 
 SQL014 se aplicó en el Supabase configurado; el editor confirmó éxito y el RPC de lectura ya responde.
 Se verificaron RLS, ejecución/lectura de servicio y denegación de ejecución/escritura directa al
 cliente. Evidencia saneada: [sql-live.json](m5-economic-authority/sql-live.json).
-La publicación y el nuevo recorrido público con cuenta, comercio/aporte y reinicio siguen pendientes
-en este checkpoint. No se declara ese recorrido probado hasta registrar sus resultados.
+La autoridad económica está activada en el mismo VPS público, versión `0.6.0-alpha.17`, protocolo 32.
+El recorrido con cuenta real pasó por los controles normales: recoger troncos, fabricar madera,
+aportar una unidad, vender cinco unidades cotizadas, comprar una fruta, depositar una madera en
+la bodega, comprar otra desde el editor de balsa y retirar la depositada. Perfil, mundo y diez
+recibos se verificaron en Supabase. La reconexión restauró oro, materiales, bodega y obra;
+los diez reintentos idénticos conservaron el perfil y el progreso actuales.
+
+El 2026-10-10 05:30 UTC se reinició realmente el contenedor `d24f782` tras comprobar cero jugadores,
+cero sockets y guardados drenados, bajo el mismo bloqueo del actualizador. El arranque recuperó
+el perfil versión 23, la balsa revisión 4 y la obra versión 4. Evidencia:
+[controlled-restart.json](m5-economic-authority/controlled-restart.json) y
+[live-acceptance.json](m5-economic-authority/live-acceptance.json). Los diez reintentos después
+del reinicio también pasaron, sin segundo débito, nueva carga ni retroceso del mundo. En total se
+contrastaron diez operaciones y veinte replays públicos, diez tras reconexión y diez tras reinicio.
+
+La sonda usa una cuenta desechable y rutas calculadas sobre el mapa, con entradas normales; no
+inyecta oro, materiales, capacidad ni posición. Se corrigieron supuestos del arnés sobre capacidad
+de mochila, revisiones de nodos, obstáculos y stock fraccionario/autónomo. Sus intentos parciales
+quedan diferenciados de los checkpoints completos. La limpieza elimina solo la cuenta/perfil de
+prueba y conserva los aportes legítimos al mundo y sus recibos de auditoría.
 
 No se afirma persistencia de cada acción, crecimiento automático de edificios, ocho conexiones,
 coordinadores de perlas activos ni tolerancia a pérdida de disco. La pausa global durante el RPC es

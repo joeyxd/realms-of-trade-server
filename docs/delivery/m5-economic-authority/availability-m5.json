@@ -1,0 +1,182 @@
+{
+  "schema": "marea-negra.vps-capacity-probe.v1",
+  "startedAt": "2026-10-10T05:32:37.961Z",
+  "finishedAt": "2026-10-10T05:33:10.331Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "protocolExpected": 32,
+  "plannedDurationMs": 30000,
+  "clients": {
+    "attempted": 4,
+    "transportOpen": 4,
+    "welcomed": 4,
+    "protocolErrors": 0,
+    "hostErrorCount": 0,
+    "full": 0,
+    "unexpectedDisconnects": 0,
+    "inputMessages": 1152,
+    "inputCommands": 6912,
+    "snapshots": 2456,
+    "snapshotsAfterWelcome": 2441,
+    "disconnects": 4,
+    "chatConfig": [
+      {
+        "client": 1,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 2,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 3,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 4,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      }
+    ],
+    "chatResults": [
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      }
+    ],
+    "chatRejections": [],
+    "errors": []
+  },
+  "health": "ok",
+  "status": {
+    "samples": 32,
+    "sampleErrors": 0,
+    "stepMsStatistic": "quantiles across one-second samples of the host stepMs field",
+    "medianStepMs": 2.476,
+    "p95StepMs": 2.877,
+    "maxStepMs": 2.921,
+    "first": {
+      "atMs": 1011,
+      "players": 0,
+      "max": 4,
+      "sockets": 0,
+      "tick": 7137,
+      "stepMs": 1.148,
+      "errors": 0,
+      "storageErrors": 0,
+      "storageDurable": true
+    },
+    "last": {
+      "atMs": 32206,
+      "players": 4,
+      "max": 4,
+      "sockets": 4,
+      "tick": 9009,
+      "stepMs": 2.659,
+      "errors": 0,
+      "storageErrors": 0,
+      "storageDurable": true
+    },
+    "finalStatusNoErrors": true,
+    "tickAdvanced": true
+  },
+  "acceptance": {
+    "ready": true,
+    "allReceivedSnapshots": true,
+    "finalStatusNoErrors": true,
+    "tickAdvanced": true,
+    "noProtocolErrors": true,
+    "noHostErrors": true
+  },
+  "movementDeltaAdvisory": [
+    {
+      "client": 1,
+      "first": {
+        "x": 102.53,
+        "z": 94.045
+      },
+      "last": {
+        "x": 117.059,
+        "z": 94.045
+      },
+      "delta": {
+        "x": 14.529,
+        "z": 0
+      },
+      "distance": 14.529
+    },
+    {
+      "client": 2,
+      "first": {
+        "x": 102.53,
+        "z": 94.045
+      },
+      "last": {
+        "x": 117.059,
+        "z": 94.045
+      },
+      "delta": {
+        "x": 14.529,
+        "z": 0
+      },
+      "distance": 14.529
+    },
+    {
+      "client": 3,
+      "first": {
+        "x": 102.53,
+        "z": 94.045
+      },
+      "last": {
+        "x": 117.059,
+        "z": 94.045
+      },
+      "delta": {
+        "x": 14.529,
+        "z": 0
+      },
+      "distance": 14.529
+    },
+    {
+      "client": 4,
+      "first": {
+        "x": 102.53,
+        "z": 94.045
+      },
+      "last": {
+        "x": 117.059,
+        "z": 94.045
+      },
+      "delta": {
+        "x": 14.529,
+        "z": 0
+      },
+      "distance": 14.529
+    }
+  ],
+  "fatal": null,
+  "acceptedServerRevision": "d24f782a779ed4e15d0ba72d2d3af346efb0382f",
+  "afterControlledRestart": true
+}
