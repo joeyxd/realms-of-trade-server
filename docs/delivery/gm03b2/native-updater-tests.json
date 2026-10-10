@@ -1,0 +1,12 @@
+{
+  "schema": "gm03b2-native-updater-tests/v1",
+  "at": "2026-10-10T23:13:06.968454+00:00",
+  "platform": "linux",
+  "python": "3.12.3",
+  "updaterSha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d",
+  "exitCode": 0,
+  "tests": 22,
+  "pass": 22,
+  "skipped": 0,
+  "output": "......................\n----------------------------------------------------------------------\nRan 22 tests in 0.069s\n\nOK\n"
+}

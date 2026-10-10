@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createGameServer } from '../server/index.mjs';
 import { createMemoryStore } from '../server/store.mjs';
 import { GAME } from '../src/data/meta.js';
@@ -62,16 +62,72 @@ async function boot(ctx, suffix = '') {
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
   return page;
 }
-async function check(name, fn) { await fn(); evidence.checks.push(name); console.log('PASS ' + name); }
+async function check(name, fn) { updateLock?.assertHeld(); await fn(); updateLock?.assertHeld(); evidence.checks.push(name); console.log('PASS ' + name); }
 const publicState = async () => (await fetch(origin + '/api/world/content')).json();
-let gmPage, baselineDraft, lastDraft, baselineContent, lastContent, local, activation;
+let gmPage, baselineDraft, lastDraft, baselineContent, lastContent, local, activation, updateLock;
+async function holdUpdater() {
+  // Coordinate operator QA with every updater invocation, including manual starts.
+  // Do not hold content/switch.lock: activation and the offline checker need it.
+  const child = spawn('ssh', ['-T', '-o', 'BatchMode=yes', '-o', 'ServerAliveInterval=10',
+    '-o', 'ServerAliveCountMax=3', 'root@62.171.136.148',
+    "timeout 1200s flock -w 600 /opt/marea-negra/update.lock python3 -u -c 'import sys; print(\"qa_update_locked\",flush=True); sys.stdin.read()'"],
+    { stdio: ['pipe', 'pipe', 'pipe'] });
+  let closed = false, failed = false;
+  child.on('error', () => { failed = true; });
+  const done = new Promise((resolve) => child.once('close', (code) => { closed = true; resolve(code); }));
+  const release = async () => {
+    child.stdin.end();
+    await Promise.race([done, new Promise((resolve) => setTimeout(resolve, 5000))]);
+    if (!closed) child.kill();
+  };
+  try {
+    await new Promise((resolve, reject) => {
+      let stdout = '', stderr = '';
+      const timer = setTimeout(() => reject(new Error('Updater QA lock readiness timed out')), 615000);
+      const fail = (code) => { clearTimeout(timer); reject(new Error(`Updater QA lock failed (${code}): ${stderr.trim().slice(0,300) || 'busy; retry after updater finishes'}`)); };
+      child.once('error', fail); child.once('close', fail);
+      child.stdout.on('data', (data) => {
+        stdout += data;
+        if (stdout.includes('qa_update_locked')) { clearTimeout(timer); child.off('error', fail); child.off('close', fail); resolve(); }
+      });
+      child.stderr.on('data', (data) => { stderr += data; });
+    });
+  } catch (error) { await release(); throw error; }
+  return { release, assertHeld() { assert.ok(!closed && !failed, 'Updater QA lock was lost'); } };
+}
 const api = async (route, method, input) => gmPage.evaluate(async ({ route, method, input }) => {
   const session = await __mn.gmEntry.auth.sessionIdentity();
   const r = await fetch('/api/gm/' + route, { method, headers: { authorization: 'Bearer ' + session.token,
     ...(input ? { 'content-type': 'application/json' } : {}) }, ...(input ? { body: JSON.stringify(input) } : {}) });
   return { status: r.status, body: await r.json() };
 }, { route, method, input });
+async function confirmContent(expectedGeneration, revisionId) {
+  for (let attempt=0; attempt<4; attempt++) {
+    updateLock?.assertHeld();
+    await gmPage.locator('[data-remote="content-confirm"]').click();
+    await gmPage.waitForFunction((expected) => {
+      const panel = __mn.gmEditor.remotePanel;
+      return !panel.busy && (panel.content?.active.generation === expected || !!panel.contentError);
+    }, expectedGeneration, { timeout: 30000 });
+    const result = await gmPage.evaluate(() => ({ generation: __mn.gmEditor.remotePanel.content?.active.generation,
+      error: __mn.gmEditor.remotePanel.contentError }));
+    if (result.generation === expectedGeneration) return;
+    assert.equal(result.error, 'gm_content_busy', 'Only definite busy rejection may be retried');
+    const status = await (await fetch(origin+'/status')).json();
+    (evidence.busyDeferrals ||= []).push({ attempt, expectedGeneration, players: status.players,
+      sockets: status.sockets, errors: status.errors, storage: status.storage });
+    assert.ok(attempt<3, 'Content stayed busy after four explicit reviews');
+    await new Promise((resolve) => setTimeout(resolve,5000));
+    await gmPage.locator('[data-content-revision]').selectOption(revisionId || '');
+    await gmPage.locator('[data-remote="content-activate"]').click();
+  }
+}
 try {
+  if (production && process.env.MN_GM_QA_HOLD_UPDATE_LOCK === '1') {
+    console.log('Waiting for exclusive updater QA lock');
+    updateLock = await holdUpdater(); updateLock.assertHeld(); evidence.updaterLockHeld = true;
+    console.log('Exclusive updater QA lock acquired');
+  }
   const status = await (await fetch(origin + '/status')).json();
   assert.equal(status.version, GAME.version); assert.equal(status.players, 0, 'Canary requires empty world');
   baselineContent = await publicState(); lastContent = baselineContent;
@@ -99,6 +155,7 @@ try {
     if (validateGmPublication({ map, document: doc, baseRevision: 'terrain-s21-v1' }).valid && validateGmRoutes(map, projectGmContent(map, doc)).valid) { document = doc; break outer; }
   }
   assert.ok(document, 'Need safe visible crate location'); evidence.placement = document.objects[0].transform.position;
+  updateLock?.assertHeld();
   await gmPage.evaluate(async (doc) => { const e = __mn.gmEditor; await e._hydrate(doc); e._clearGhost(); e.transform.detach(); e.selectedId = null; e._commit(doc); await e.saveNow(); }, document);
   await gmPage.locator('[data-action="remote"]').click();
   await gmPage.locator('[data-remote="refresh"]').click();
@@ -123,8 +180,7 @@ try {
     await gmPage.locator('[data-remote="content-confirm"]').scrollIntoViewIfNeeded();
     await gmPage.screenshot({ path: resolve(out, (production ? 'public' : 'local') + '-activation-en.png') });
     await gmPage.locator('[data-remote="language"]').click();
-    await gmPage.locator('[data-remote="content-confirm"]').click();
-    await gmPage.waitForFunction(() => !!__mn.gmEditor.remotePanel.contentApplied, null, { timeout: 30000 });
+    await confirmContent(baselineContent.generation+1,evidence.revisionId);
     lastContent = await publicState(); assert.equal(lastContent.revisionId, evidence.revisionId);
     assert.equal(lastContent.generation, baselineContent.generation + 1);
     assert.equal(await gmPage.evaluate(() => __mn.gmEditor.active && __mn.st.contentStale), true);
@@ -151,7 +207,8 @@ try {
         const { canStand } = await import('/src/sim/systems/movement.js');
         return [canStand(__mn.client.pred, p.x, p.z), canStand(__mn.client.pred, p.x+2.8, p.z)];
       }, evidence.placement), [false, true]);
-      await page.locator('#btn-play').click({ force: true }); await page.waitForFunction(() => __mn.client.joined, null, { timeout: 30000 });
+      await page.locator('#btn-play').click({ force: true });
+      await page.waitForFunction(() => __mn.client.joined && __mn.st.mode === 'playing' && !__mn.st.boarding, null, { timeout: 30000 });
       if (!i) {
         await page.evaluate((p) => { __mn.loop.running = false; __mn.world.nearFade(false); __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); __mn.world.camera.updateMatrixWorld(); for(let n=0;n<3;n++) __mn.world.render(); }, evidence.placement);
         await page.screenshot({ path: resolve(out, (production ? 'public' : 'local') + '-shared-crate.png') });
@@ -170,18 +227,25 @@ try {
   for (let i=0;i<100;i++) { const s=await (await fetch(origin+'/status')).json(); if (!s.players && !s.storage.profileWrites && !s.storage.worldWriting) break; await new Promise((r)=>setTimeout(r,100)); }
   await check('rollback_restores_previous_content_without_replacing_private_draft', async () => {
     await gmPage.locator('[data-content-revision]').selectOption(baselineContent.revisionId || '');
-    await gmPage.locator('[data-remote="content-activate"]').click(); await gmPage.locator('[data-remote="content-confirm"]').click();
-    await gmPage.waitForFunction((generation) => __mn.gmEditor.remotePanel.content?.active.generation === generation, lastContent.generation+1);
+    await gmPage.locator('[data-remote="content-activate"]').click();
+    await confirmContent(lastContent.generation+1,baselineContent.revisionId);
     lastContent = await publicState(); assert.equal(lastContent.revisionId, baselineContent.revisionId);
     assert.deepEqual((await api('draft', 'GET')).body.head, lastDraft);
     const ctx = await context(), page = await boot(ctx);
     assert.deepEqual(await page.evaluate(() => __mn.map.gmContentIdentity), { generation: lastContent.generation, revisionId: baselineContent.revisionId });
     assert.equal(await page.evaluate(() => !!__mn.world.scene.getObjectByName('gm:qa-shared-crate')), false);
-    await page.locator('#btn-play').click({ force: true }); await page.waitForFunction(() => __mn.client.joined);
+    await page.locator('#btn-play').click({ force: true });
+    await page.waitForFunction(() => __mn.client.joined && __mn.st.mode === 'playing' && !__mn.st.boarding);
     await ctx.close();
   });
   await check('old_generation_cannot_replace_rollback', async () => {
-    const r = await api('activate', 'POST', { operationId: randomUUID(), expectedGeneration: baselineContent.generation, revisionId: evidence.revisionId });
+    let r;
+    for (let i=0;i<4;i++) {
+      r = await api('activate', 'POST', { operationId: randomUUID(), expectedGeneration: baselineContent.generation, revisionId: evidence.revisionId });
+      if (r.body.code !== 'gm_content_busy' || i===3) break;
+      evidence.staleCasBusyDeferrals = (evidence.staleCasBusyDeferrals || 0)+1;
+      await new Promise((resolve) => setTimeout(resolve,20000));
+    }
     assert.equal(r.status, 409); assert.equal(r.body.code, 'gm_content_conflict');
     assert.equal((await publicState()).generation, lastContent.generation);
   });
@@ -215,7 +279,8 @@ try {
       if (local) await gmPage.evaluate(async (doc) => { const e=__mn.gmEditor; await e._hydrate(doc); e._commit(doc); await e.saveNow(); },local);
     }
   } catch (error) { evidence.errors.push('restore_failed'); console.error(error.message); }
-  await browser.close(); await server?.close();
+  try { await browser.close(); await server?.close(); }
+  finally { await updateLock?.release(); }
   await writeFile(resolve(out, production ? 'public-evidence.json' : 'local-browser-evidence.json'),JSON.stringify(evidence,null,2)+'\n');
 }
 assert.deepEqual(evidence.errors,[]);

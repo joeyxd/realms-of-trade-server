@@ -1,5 +1,15 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
+[entrega](delivery/gm03b2/DELIVERY.md), [evidencia pública](delivery/gm03b2/public-evidence.json) y [despliegue](delivery/gm03b2/deployment.json).
+Online registra revisiones y activa o vuelve atrás con mundo vacío, CAS y exclusión del actualizador.
+Dos clientes nuevos verificaron el mismo modelo/colisiones antes de entrar; canario real 6/6 sin errores,
+incluidos rechazo con jugadores, rollback y generación antigua. Borrador restaurado por CAS r19→r21.
+Runtime `2006667` sano; gen3 canaria → gen4/mapa base, volumen durable y timer activo.
+Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualizador Linux 22/22 independiente.
+Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
+para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
+
 **AREA03 PRG01d, 2026-10-10 — publicado alpha.35/protocolo 44; taller apagado:**
 [contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
 caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
