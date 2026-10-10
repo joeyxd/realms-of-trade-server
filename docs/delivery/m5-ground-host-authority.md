@@ -21,6 +21,8 @@ tick igual al de recursos, seed y snapshot exactos, sin creación automática ni
 Este montaje acotado admite cuentas autenticadas, cero bots y economía/recursos; rechaza invitados,
 importación legacy, diario antiguo de perlas y control/comercio de agentes. SQL017 y el runtime normal
 conservan sus caminos. No añade flags, campos de perfil, protocolo ni migraciones.
+El supervisor excluye este montaje de su recuperación de autosave legacy: la recuperación del
+diario común conserva su propio dueño y sus verificaciones detenidas.
 
 ## Pruebas
 
@@ -28,6 +30,8 @@ conservan sus caminos. No añade flags, campos de perfil, protocolo ni migracion
 Node 24.14.0 local. La aceptación integrada y sus hashes están en [acceptance.json](m5-ground-host-authority/acceptance.json)
 y [TAP](m5-ground-host-authority/acceptance.tap). Incluye doce casos nuevos: ocho gates/cola/cierre,
 dos recorridos SDK/PGlite con SQL001–021 y dos caídas SIGKILL del GameHost real.
+[Fuentes publicadas](m5-ground-host-authority/source-check.json): los 862 archivos de fuente del
+scope conservan los hashes aceptados y el diff de fuente contra `cf5857f` está limpio.
 
 - Tala cooperativa con dos cuentas, aporte que completa carpintería, crafting, enseñanza personal,
   comercio, checkpoint, respuesta perdida, reinicio y replay sin cambiar filas/versiones/recibos.
@@ -49,8 +53,20 @@ La inspección del dominio real a las 21:38:31 UTC encontró recursos v2/tick 60
 pero ninguna fila de reloj común; [dominio legacy](m5-ground-host-authority/legacy-domain.json).
 Son lecturas: este corte no escribe datos del juego ni activa artesano o el montaje común.
 
-La publicación de código y su verificación de imagen/entrada pública se registran aquí al terminar
-el despliegue. Tener SQL aplicado o importar la API no prueba que esta opción esté montada.
+Código publicado `a47f887`, integración con la aceptación GM03b1 `e6d6a70` y cierre operativo
+`cf5857f3b6d0e4fbc4c7ca19581900436b9d318c`. Esa revisión quedó activa en el VPS desde
+22:03:44 UTC; a las 22:04:34 UTC había una autoridad sana, timer activo y cero jugadores,
+sockets, errores, operaciones/guardados pendientes. Alpha.30/protocolo 41, Node 22.23.3;
+[revisión/imagen/status](m5-ground-host-authority/deployment.json).
+
+La imagen exacta pasó [107/107 del actualizador](m5-ground-host-authority/vps-validation.json)
+y [8/8 del nuevo montaje](m5-ground-host-authority/image-authority-tests.json) sin red ni
+credenciales. Son regresiones solapadas con las 355 locales; los ocho fixtures de memoria prueban
+gates/cola/cierre, no durabilidad SQL. La [entrada pública real](m5-ground-host-authority/public-smoke.json)
+pasó 6/6: health, storage, protocolo, WSS, snapshot y perfil de invitado; sin acción durable autenticada.
+Economía/recursos/Tala conservan su configuración; `groundTransactions:null` y artesano apagado.
+Tener SQL aplicado o importar la API no prueba que esta opción esté montada. Las revisiones posteriores
+que sólo registran esta evidencia no modifican esas fuentes de runtime.
 
 ## Siguiente corte
 

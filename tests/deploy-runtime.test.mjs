@@ -83,6 +83,9 @@ test('recovery decision accepts only the fully idle durable failed-world state',
 
 test('recovery stays closed around economic operations and pending profile or world writes', () => {
   const blocked = [
+    { groundTransactions: { enabled: true, ready: false, pending: 0, failed: true } },
+    { groundTransactions: { enabled: true, ready: true, pending: 1, failed: false } },
+    { groundTransactions: {} },
     { economic: { enabled: true, pending: 1, failed: false, completed: 0, replays: 0 } },
     { economic: { enabled: true, pending: 0, failed: true, completed: 0, replays: 0 } },
     { economic: { enabled: true, pending: 0, completed: 0, replays: 0 } },
@@ -94,6 +97,7 @@ test('recovery stays closed around economic operations and pending profile or wo
   }
   // Older status payloads omit these fields and retain the legacy recovery behavior.
   assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus()), true);
+  assert.equal(shouldRecoverWorldFailure(503, failedWorldStatus({ storage: { groundTransactions: null } })), true);
 });
 
 test('HTTP probe accepts only a 200 JSON status contract', async (t) => {

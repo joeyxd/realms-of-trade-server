@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-10T22:02:42.206288+00:00",
+  "sourceRevision": "cf5857f3b6d0e4fbc4c7ca19581900436b9d318c",
+  "acceptanceBase": "e6d6a70c5fa01ce4c949bd2f40c9222052a1485f",
+  "counts": {
+    "tests": 355,
+    "pass": 355,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "sourceFiles": 862,
+  "worktreeMatchesAcceptance": true,
+  "trackedSourceDiff": "clean",
+  "scope": "Source files in server/src/tests/deploy retain the raw Windows worktree hashes accepted in the local suite. Git publication normalizes line endings; production image validation is recorded separately."
+}
