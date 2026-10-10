@@ -2,6 +2,7 @@
 import { CLOCK } from '../../data/clock.js';
 import { stepRaftProduction, productionRows, sanitizeProduction } from '../economy/raftProduction.js';
 import { holdLoadIncreases } from '../economy/raftCapacity.js';
+import { poweredFireKeys } from './fire.js';
 import { activeRaftParts } from '../naval/condition.js';
 
 const MAX_REV = 2147483647;
@@ -20,7 +21,7 @@ export function stepRaftWork(w, days, saveFits = () => true) {
       const grid = { ...ship.grid, work: { ...ship.grid.work } };
       const hold = { cap: ship.hold.cap, goods: { ...ship.hold.goods } };
       const parts = activeRaftParts(active), workingGrid = { parts, work: sanitizeProduction(parts, grid.work) };
-      result = stepRaftProduction(workingGrid, hold, days);
+      result = stepRaftProduction(workingGrid, hold, days, { poweredKeys: poweredFireKeys(w, active) });
       // Preserve dormant work on destroyed modules; no elapsed time is banked while absent.
       grid.work = { ...grid.work, ...workingGrid.work };
       for (const row of productionRows(workingGrid, hold))
@@ -44,7 +45,7 @@ export function stepRaftWork(w, days, saveFits = () => true) {
     active.productionBlocked = blocked;
     if (previousBlock !== blocked || Object.keys(result.made).length) {
       w.emit({ type: 'raftProduction', to: owner, id: ship.id, raftRev: ship.rev,
-        rev: profile.eco.tradeRev, production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked }),
+        rev: profile.eco.tradeRev, production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked, poweredKeys: poweredFireKeys(w, active) }),
         productionBlocked: blocked, daySec: CLOCK.daySec, made: result.made, used: result.used });
     }
   }

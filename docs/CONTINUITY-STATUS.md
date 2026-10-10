@@ -1,12 +1,14 @@
 # Continuidad de servidor — AREA15
 
-**AREA15, 2026-10-10 — GameHost común implementado, publicación en curso:**
+**AREA15, 2026-10-10 — GameHost común publicado, montaje apagado:**
 [economía y checkpoints](delivery/m5-ground-host-authority.md). Un dueño de tick/época y sesión
 SQL018/019, con I/O separado del drain síncrono/ACK; WorldState escribe mundo/reloj juntos.
 355/355 en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost. Readiness SQL018–021
 real confirmada; el dominio actual tiene recursos v2 y aún carece de reloj común. El montaje exige
 filas coherentes existentes y queda sin activar. Sigue adopción atómica legacy y perlas/muerte/botín,
 sin otro writer ni creación de reloj a cero. Artesano continúa apagado; SQL021 ya está disponible.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 del montaje
+sin red en Node 22.23.3 y entrada pública 6/6; pruebas solapadas, sin canario durable del nuevo montaje.
 
 **GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
 [preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).

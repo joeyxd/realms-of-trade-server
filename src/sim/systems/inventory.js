@@ -24,6 +24,7 @@ import { newTools, sanitizeTools } from '../../data/resources.js';
 import { newProgression, readProgression } from './progression.js';
 import { carryLimits, readCarryField } from '../economy/carry.js';
 import { newWorkshop, readWorkshop } from './workshop.js';
+import { readFire } from '../economy/fire.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -32,14 +33,17 @@ const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
 // Tattoos (M4.7): has[id] = [rank, xp (tinta), form] for what you learned; lo = the Q / E loadout of each weapon
 // (ids, SLOTS order); free = 1 while your first tattoo is still free.
 const newSk = () => ({ has: {}, lo: WEAPON_KINDS.map((k) => [...DEFAULT_LOADOUT[k]]), free: 1 });
-export function newProfile({ weapon = 0 } = {}) {
+export function newProfile({ weapon = 0, starter = true } = {}) {
+  const starterEnabled = starter === true;
   const p = {
     v: PROFILE_VERSION, lvl: 1, xp: 0, gold: 0, pot: CONSUMABLES.potion.start, uid: 1, bag: [], eq: {},
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
-    carry: { v: 1, backpack: 0 },
-    eco: newEco({ packCap: carryLimits({ v: 1, backpack: 0 }, 1).volume, packMaxMass: carryLimits({ v: 1, backpack: 0 }, 1).maxMass }), // trade (M7): pack, ships, deeds (systems/trade.js)
-    workshop: newWorkshop(),
+    ...(starterEnabled ? { carry: { v: 1, backpack: 0 } } : {}),
+    eco: starterEnabled
+      ? newEco({ packCap: carryLimits({ v: 1, backpack: 0 }, 1).volume, packMaxMass: carryLimits({ v: 1, backpack: 0 }, 1).maxMass })
+      : newEco(), // Legacy managed profiles keep SQL021's 10-unit, no-mass-field pack shape.
+    ...(starterEnabled ? { workshop: newWorkshop() } : {}),
     pirateId: '', pearls: newPearls(), tools: newTools(), progression: newProgression(),
   };
   for (const s of SLOTS) p.eq[s] = null;
@@ -121,6 +125,14 @@ export function sanitizeProfile(raw) {
   p.eco = sanitizeEco(raw.eco, limits ? { packCap: limits.volume, packMaxMass: limits.maxMass } : undefined);
   p.tools = sanitizeTools(raw.tools);
   if (hasProgression) p.progression = progression;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(raw, 'fire');
+    if (descriptor) {
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || descriptor.value === undefined) return null;
+      p.fire = readFire(descriptor.value);
+    } else for (let prototype = Object.getPrototypeOf(raw); prototype; prototype = Object.getPrototypeOf(prototype))
+      if (Object.getOwnPropertyDescriptor(prototype, 'fire')) return null;
+  } catch { return null; }
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];

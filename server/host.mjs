@@ -70,7 +70,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, agentTrade = false,
     groundTransactions = null } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
@@ -87,6 +87,8 @@ export class GameHost {
     if (typeof workshopOperations !== 'boolean' || workshopOperations && !artisanOperations) throw new StoreError('configuration');
     this.workshopOperations = workshopOperations;
     this.loggingAim = new LoggingAim(this);
+    if (typeof fireOperations !== 'boolean' || fireOperations && !economicOperations) throw new StoreError('configuration');
+    this.fireOperations = fireOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -132,12 +134,12 @@ export class GameHost {
       if (this.#drainingPearls) { this.#stopPearls(); return; }
       const sock = this.sockets.get(id);
       if (sock) { try { sock.ws.close(1011, 'storage'); } catch { /* gone */ } this.onClose(sock); }
-    }, { journal: pearlJournal });
+    }, { journal: pearlJournal, starter: workshopOperations });
     // A blocked final snapshot is evidence of an incomplete shutdown, never a retryable save blob.
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
-    this.server = new LocalServer({
+    this.server = new LocalServer({ fire: fireOperations,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -475,6 +477,8 @@ export class GameHost {
           (await this.store.checkResourceOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.loggingOperations && (typeof this.store.checkLoggingOperations !== 'function' ||
           (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.fireOperations && (typeof this.store.checkFireOperations !== 'function' ||
+          (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
           (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.workshopOperations && (typeof this.store.checkStarterWorkshop !== 'function' ||
@@ -487,7 +491,8 @@ export class GameHost {
       economy.onAdvance = this.server.world.economy.onAdvance;
       this.server.world.economy = economy;
       if (this.worldState.resources && !this.resourceOperations) throw new StoreError('configuration');
-      if (this.worldState.resources?.v >= 2 && !this.loggingOperations || this.worldState.resources?.v === 3 && !this.workshopOperations) throw new StoreError('configuration');
+      if ((this.worldState.resources?.v >= 2 && !this.loggingOperations) ||
+          (this.worldState.resources?.v === 3 && !this.workshopOperations)) throw new StoreError('configuration');
       if (this.resourceOperations) {
         const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1 || this.workshopOperations && this.worldState.resources.v < 3;
         if (adopting && this.groundAuthority) throw new StoreError('configuration');
@@ -567,6 +572,7 @@ export class GameHost {
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
           logging: this.loggingOperations },
+        fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         world: this.worldState?.status() ?? null },
@@ -620,7 +626,7 @@ export class GameHost {
     }
     if (this.loggingAim.handle(sock, msg)) return;
     if (this.economicAuthority?.handle(sock, msg)) return;
-    if (msg.t === MSG.CMD && ['community', 'artisan'].includes(msg.type)) {
+    if (msg.t === MSG.CMD && ['community', 'artisan', 'fire'].includes(msg.type)) {
       this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
         op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
       return;

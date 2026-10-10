@@ -8,6 +8,7 @@ import { isDoorOpen } from '../sim/naval/shelter.js';
 import { glowBasic, toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
+import { isRaftFireTuple } from './personalLantern.js';
 
 const WOOD = surface('wood', 0xb5803f), WOOD_DARK = surface('wood', 0x704522, 0xd5bfa5), WOOD_LIGHT = surface('wood', 0xd6a565);
 const IRON = surface('iron', 0x626b72), IRON_LIGHT = surface('iron', 0xb1b9b8, 0xffecd2);
@@ -20,7 +21,7 @@ const ATLAS_ALBEDO = `{
   mnRaftPaint = floor(mnRaftPaint * 6.0 + 0.5) / 6.0;
   diffuseColor.rgb = pow(mnRaftPaint, vec3(2.2)) * 1.16;
 }`;
-const GREEN = 0x56844b, GREEN_LIGHT = 0x91b65c, FIRE = 0xe88835;
+const GREEN = 0x56844b, GREEN_LIGHT = 0x91b65c;
 const LEVEL_H = RAFT.levelHeight || 2.6;
 const CELL = RAFT.cell;
 const TAU = Math.PI * 2;
@@ -37,12 +38,11 @@ function keyOf(record) {
 
 function lanternStateKey(record) {
   const lit = Array.isArray(record.litLanterns) ? record.litLanterns : [];
-  return JSON.stringify(lit.filter(validLanternTuple));
+  return JSON.stringify(lit.filter(isRaftFireTuple));
 }
 
 function validLanternTuple(part) {
-  return Array.isArray(part) && part.length === 5 && part[0] === 'lantern' &&
-    part.slice(1).every(Number.isSafeInteger) && part[3] >= 0 && part[3] < RAFT.levels && part[4] >= 0 && part[4] <= 3;
+  return isRaftFireTuple(part);
 }
 
 function paintColor(look) {
@@ -86,6 +86,7 @@ export class RaftLayer {
     this.nm = normalMatFor({ occluder: true, lineW: 0.65 });
     this.clothNm = normalMatFor({ occluder: true, lineW: 0.65 }, THREE.DoubleSide);
     this.lanternGlow = glowBasic({ color: 0xffb24e }, 0.9);
+    this.fireInnerGlow = glowBasic({ color: 0xffe189 }, 0.8);
     this.tempMatrix = new THREE.Matrix4();
     this.tempQuaternion = new THREE.Quaternion();
     this.tempPosition = new THREE.Vector3();
@@ -351,6 +352,32 @@ export class RaftLayer {
       add(color, this.cylinderShape(rt, rb, h, segments), x, y, z, rx, ry, rz);
     const ring = (color, radius, tube, x, y, z, ry = 0, rx = 0) =>
       add(color, this.shape(`ring:${radius}:${tube}`, () => new THREE.TorusGeometry(radius, tube, 4, 12)), x, y, z, rx, ry);
+    const addRaftFireCore = (tuple, x, y, z) => {
+      const flameGeo = this.shape('raft-fire-flame-outer', () => {
+        const geometry = new THREE.ConeGeometry(0.17, 0.4, 6);
+        geometry.translate(0, 0.2, 0);
+        return geometry;
+      }).clone();
+      const core = new THREE.Mesh(flameGeo, this.lanternGlow);
+      core.position.set(x, y, z);
+      core.visible = litLanterns.has(JSON.stringify(tuple));
+      core.castShadow = false; core.receiveShadow = false;
+      core.userData.nm = this.nm;
+      core.userData.raftLanternPart = [...tuple];
+      core.name = `raft:fire-core:${tuple.join(':')}`;
+      const innerGeo = this.shape('raft-fire-flame-inner', () => {
+        const geometry = new THREE.ConeGeometry(0.085, 0.26, 6);
+        geometry.translate(0, 0.16, 0);
+        return geometry;
+      }).clone();
+      const inner = new THREE.Mesh(innerGeo, this.fireInnerGlow);
+      inner.castShadow = false; inner.receiveShadow = false;
+      inner.userData.nm = this.nm;
+      core.add(inner);
+      visual.add(core);
+      lanternCores.push(core);
+      ownedGeometries.push(flameGeo, innerGeo);
+    };
     const line = (color, from, to, radius = 0.025) => {
       const curve = new THREE.LineCurve3(new THREE.Vector3(...from), new THREE.Vector3(...to));
       const g = new THREE.TubeGeometry(curve, 1, radius, 5, false);
@@ -362,7 +389,8 @@ export class RaftLayer {
     for (const raw of parts) {
       if (!Array.isArray(raw) || typeof raw[0] !== 'string') continue;
       const [id, ix, iz, level0, dir0] = raw;
-      const part = RAFT_PARTS[id];
+      const part = RAFT_PARTS[id] || (id === 'torchWall' ? { layer: 'edge', size: [1, 1] } :
+        ['torchFloor', 'campfire'].includes(id) ? { layer: 'tile', size: [1, 1] } : null);
       if (!part) continue;
       const x = cleanNum(ix), z = cleanNum(iz), level = Math.max(0, cleanNum(level0));
       const y = level * LEVEL_H;
@@ -405,6 +433,19 @@ export class RaftLayer {
         const ph = LEVEL_H - 0.18;
         for (const sx of [-1, 1]) for (const sz of [-1, 1])
           box(WOOD_DARK, 0.18, ph, 0.18, cx + sx * 0.72, y + ph / 2, cz + sz * 0.72);
+      } else if (part.layer === 'mount') {
+        // Mount fixtures occupy a wall edge without replacing the wall that supports them.
+        const ex = cx + (d === 1 ? CELL / 2 : d === 3 ? -CELL / 2 : 0);
+        const ez = cz + (d === 2 ? CELL / 2 : d === 0 ? -CELL / 2 : 0);
+        const inward = d === 0 ? [0, 1] : d === 1 ? [-1, 0] : d === 2 ? [0, -1] : [1, 0];
+        const mountX = ex + inward[0] * 0.055, mountZ = ez + inward[1] * 0.055;
+        const stemX = ex + inward[0] * 0.32, stemZ = ez + inward[1] * 0.32;
+        const ry = d * Math.PI / 2;
+        box(IRON, 0.28, 0.08, 0.18, mountX, y + 1.64, mountZ, 0, ry);
+        box(IRON_LIGHT, 0.08, 0.09, 0.1, mountX, y + 1.7, mountZ, 0, ry);
+        cyl(WOOD_DARK, 0.055, 0.07, 0.42, stemX, y + 1.88, stemZ, 7);
+        cyl(IRON, 0.1, 0.1, 0.07, stemX, y + 2.08, stemZ, 7);
+        addRaftFireCore(raw, stemX, y + 2.13, stemZ);
       } else if (part.layer === 'edge') {
         const horizontal = d === 0 || d === 2;
         const ex = cx + (d === 1 ? CELL / 2 : d === 3 ? -CELL / 2 : 0);
@@ -702,7 +743,20 @@ export class RaftLayer {
           box(WOOD_DARK, 1.25, 0.5, 1.15, cx, y + 0.38, cz);
           box(IRON, 1.2, 0.13, 1.25, cx, y + 0.78, cz);
           for (let i = -2; i <= 2; i++) box(IRON_LIGHT, 0.035, 0.12, 1.16, cx + i * 0.22, y + 0.88, cz);
-          cyl(FIRE, 0.26, 0.18, 0.32, cx, y + 1.08, cz, 6);
+          cyl(0x51351f, 0.26, 0.18, 0.32, cx, y + 1.08, cz, 6);
+          addRaftFireCore(raw, cx, y + 1.12, cz);
+        } else if (id === 'torchFloor') {
+          cyl(WOOD_DARK, 0.06, 0.09, 1.45, cx, y + 0.74, cz, 7);
+          for (const side of [-1, 1]) cyl(WOOD, 0.04, 0.05, 0.46, cx, y + 1.35, cz, 6, 0, 0, side * 0.35);
+          cyl(IRON, 0.1, 0.1, 0.065, cx, y + 1.47, cz, 7);
+          addRaftFireCore(raw, cx, y + 1.52, cz);
+        } else if (id === 'campfire') {
+          for (let i = 0; i < 7; i++) {
+            const a = i * Math.PI * 2 / 7, px = cx + Math.cos(a) * 0.58, pz = cz + Math.sin(a) * 0.58;
+            cyl(0x716458, 0.16, 0.21, 0.24, px, y + 0.12, pz, 5, 0, 0, Math.PI / 2);
+          }
+          for (const a of [0.7, -0.7]) cyl(WOOD_DARK, 0.08, 0.08, 1.05, cx, y + 0.28, cz, 6, 0, a, Math.PI / 2);
+          addRaftFireCore(raw, cx, y + 0.48, cz);
         } else if (id === 'still') {
           box(WOOD_DARK, 1.2, 0.34, 1.2, cx, y + 0.17, cz);
           cyl(IRON, 0.52, 0.42, 0.95, cx, y + 0.82, cz, 10);
@@ -863,6 +917,7 @@ export class RaftLayer {
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();
     this.lanternGlow.dispose();
+    this.fireInnerGlow.dispose();
     this.nm.dispose();
     this.clothNm.dispose();
   }

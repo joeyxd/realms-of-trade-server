@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 42; // Starter workshop/carry DTO and authoritative logging challenges; reload peers.
+export const PROTOCOL_VERSION = 43; // Starter workshop/carry DTO, timed logging and paid fire; reload peers.
 
 export const MSG = {
   // client -> server

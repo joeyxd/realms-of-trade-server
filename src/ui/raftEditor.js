@@ -22,7 +22,7 @@ const fmtHp = (n) => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 
 const partMeta = (id) => RAFT_PARTS[id] || {};
 const english = () => globalThis.document?.documentElement?.lang?.startsWith('en') === true;
 const shelterName = (id) => english()
-  ? ({ door: 'Door', roof: 'Roof', lantern: 'Lantern', storage: 'Storage' }[id] || partMeta(id).name) : partMeta(id).name;
+  ? ({ door: 'Door', roof: 'Roof', lantern: 'Lantern', torchFloor: 'Floor torch', torchWall: 'Wall torch', campfire: 'Campfire', storage: 'Storage' }[id] || partMeta(id).name) : partMeta(id).name;
 const reasonText = (why) => EDITOR_REASONS[why] || ({ '': 'Lugar válido', goods: 'Faltan materiales', materials: 'Faltan materiales.', condition: 'El estado de la pieza cambió; actualiza el diagnóstico.', damage: 'La pieza ya no necesita reparación.', gold: 'No tienes oro suficiente.', market: 'El mercado no ofrece ese material.', stock: 'No queda material en Aldea.', calm: 'Espera a estar en calma para comprar.' })[why] || 'Lugar no válido';
 const STORAGE_REASONS = {
   '': { es: 'Lugar válido.', en: 'Valid placement.' },
@@ -166,7 +166,7 @@ export class RaftEditor {
 
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
-    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', lantern: '☼' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
+    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', lantern: '☼', torchFloor: '♨', torchWall: '♨', campfire: '♨' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
     this.syncStoragePalette();
     this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (partMeta(this.selected).layer === 'floor' && this.level === 0) this.level = 1; if (partMeta(this.selected).layer === 'base' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
@@ -235,7 +235,7 @@ export class RaftEditor {
   }
   conditionEntries(c) { return this.conditionFor(c)?.entries || []; }
   placementReason(c, piece = this.proposed(c)) {
-    return raftPlacementReason(c?.profile, this.gridParts(c), piece, this.workshopEnabled?.() === true) || (['roof', 'lantern'].includes(piece[0])
+    return (['torchFloor', 'torchWall', 'campfire'].includes(piece?.[0]) && !this.fireEnabled?.() ? 'disabled' : '') || raftPlacementReason(c?.profile, this.gridParts(c), piece, this.workshopEnabled?.() === true) || (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(piece[0])
       ? canPlace(c.record.parts || this.gridParts(c), piece) : '');
   }
   repairCost(entry) {
@@ -313,7 +313,7 @@ export class RaftEditor {
     const candidates = [];
     parts.forEach((p, index) => {
       const id = p[0], def = partMeta(id); let wx, wz;
-      if (def.layer === 'edge') { const d = p[4] || 0; const px = p[1] * RAFT.cell, pz = p[2] * RAFT.cell;
+      if (['edge', 'mount'].includes(def.layer)) { const d = p[4] || 0; const px = p[1] * RAFT.cell, pz = p[2] * RAFT.cell;
         const ex = d === 1 ? RAFT.cell : d === 2 ? RAFT.cell / 2 : d === 0 ? RAFT.cell / 2 : 0;
         const ez = d === 0 ? 0 : d === 1 ? RAFT.cell / 2 : d === 2 ? RAFT.cell : RAFT.cell / 2; wx = px + ex; wz = pz + ez;
       } else { wx = (p[1] + 0.5) * RAFT.cell; wz = (p[2] + 0.5) * RAFT.cell; }
@@ -447,15 +447,17 @@ export class RaftEditor {
         ? `<b>${esc(shelterName(this.selected))}</b><small>${english() ? `Build cost: ${cost.madera || 6} wood · +${partMeta(this.selected).hold} hold capacity` : `Coste: ${cost.madera || 6} madera · +${partMeta(this.selected).hold} de capacidad de bodega`}</small>`
         : `<b>${esc(shelterName(this.selected))}</b><small>Coste: ${fmtGoods(cost)} · ${direction(this.selected, this.dir)}</small>`;
     const shelterHelp = this.$('.re-shelter-help');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
     shelterHelp.textContent = workshopOn && this.selected === 'crate'
       ? isEnglish ? 'Place one crate kit prepared at the carpentry workbench. It adds raft cargo space.' : 'Coloca un kit preparado en el banco de carpintería. Añade espacio de carga a la balsa.'
       : this.selected === ARTISAN.part
       ? this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
         : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
-      : this.selected === 'lantern'
-      ? isEnglish ? 'Starts off. Use V or touch nearby to switch its warm light on or off. A broken lantern stops lighting; repair it and switch it on again. No fuel in this slice.'
-        : 'Empieza apagado. Usa V o toca cerca para encender o apagar su luz cálida. Si se rompe deja de alumbrar; repáralo y enciéndelo otra vez. Sin combustible en este corte.'
+      : ['lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(this.selected)
+      ? this.fireEnabled?.()
+        ? (isEnglish ? 'Starts off. Use V or touch nearby to load one wood and light it. Fixed lamps last 60 minutes; campfires and grills last 30. Extinguish to preserve fuel. Wall torches need a wall.'
+          : 'Empieza apagado. Usa V o toca cerca para cargar una madera y encender. Las luces fijas duran 60 minutos; fogatas y parrillas, 30. Apaga para conservar combustible. La antorcha de pared necesita pared.')
+        : (isEnglish ? 'Starts off. Use V or touch nearby to switch the light on or off.' : 'Empieza apagado. Usa V o toca cerca para encender o apagar la luz.')
       : this.selected === 'roof'
       ? isEnglish ? 'Needs a wall or pillar; one supported neighbour permits one cell of overhang. The roof lifts from view while you are inside.'
         : 'Necesita pared o pilar; un vecino soportado permite una casilla de voladizo. El techo se oculta al entrar debajo.'
@@ -523,14 +525,14 @@ export class RaftEditor {
       const placeDir = targetPiece ? targetPiece[4] || 0 : this.dir;
       const previewId = targetPiece ? targetPiece[0] : this.selected;
       const def = partMeta(previewId);
-      const edgeOffset = def.layer === 'edge' ? { x: DIR[placeDir][0] * RAFT.cell / 2, z: DIR[placeDir][1] * RAFT.cell / 2 } : { x: 0, z: 0 };
+      const edgeOffset = ['edge', 'mount'].includes(def.layer) ? { x: DIR[placeDir][0] * RAFT.cell / 2, z: DIR[placeDir][1] * RAFT.cell / 2 } : { x: 0, z: 0 };
       this.ghost.position.set(p.x + Math.cos(c.record.yaw) * edgeOffset.x + Math.sin(c.record.yaw) * edgeOffset.z, c.record.y + this.target.level * RAFT.levelHeight + 0.08, p.z - Math.sin(c.record.yaw) * edgeOffset.x + Math.cos(c.record.yaw) * edgeOffset.z);
       this.ghost.rotation.set(0, c.record.yaw + placeDir * Math.PI / 2, 0);
       const valid = this.mode === 'place' && !this.placementReason(c) || this.mode === 'reinforce' && !!reinforcement || this.mode === 'repair' && !!repair;
       this.ghostCell.material.color.setHex(valid ? 0x70e47a : 0xf06454);
       const layer = def.layer;
       const dims = layer === 'pillar' ? [0.28, RAFT.levelHeight * 0.92, 0.28]
-        : layer === 'edge' ? [RAFT.cell * 0.88, previewId === 'railing' ? 0.75 : RAFT.levelHeight * 0.82, 0.12]
+        : ['edge', 'mount'].includes(layer) ? [RAFT.cell * 0.88, previewId === 'railing' ? 0.75 : RAFT.levelHeight * 0.82, 0.12]
           : this.selected === 'crate' || this.mode === 'remove' && selection?.p[0] === 'crate' ? [0.75, 0.72, 0.75]
             : previewId === 'lantern' ? [0.5, 1.6, 0.5]
             : layer === 'roof' ? [RAFT.cell * 0.99, 0.16, RAFT.cell * 0.99]
@@ -538,7 +540,7 @@ export class RaftEditor {
               : [RAFT.cell * 0.72, 0.28, RAFT.cell * 0.72];
       this.ghostPart.scale.set(...dims); this.ghostPart.position.y = layer === 'roof' ? RAFT.levelHeight - 0.13 : dims[1] / 2;
       this.ghostArrow.position.set(0, Math.max(0.16, dims[1] + 0.12), 0.72);
-      const arrowSign = def.layer === 'edge' && placeDir % 2 === 0 ? -1 : 1;
+      const arrowSign = ['edge', 'mount'].includes(def.layer) && placeDir % 2 === 0 ? -1 : 1;
       this.ghostArrow.rotation.set(arrowSign * Math.PI / 2, 0, 0);
       this.ghostArrow.position.z = arrowSign * 0.72;
       this.ghostPart.material.color.setHex(valid ? 0x9be879 : 0xf06454);

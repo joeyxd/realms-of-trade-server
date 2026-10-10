@@ -1,11 +1,21 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA15, 2026-10-10 — GameHost económico/checkpoint implementado, publicación en curso:**
+**AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
+[Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
+Mano 20 min, faroles/antorchas privadas 60 min por madera, fogata/parrilla 30 min provisionales;
+municipales infinitas. Un slot y apagado conservador; panel ES/EN, N/V y tres piezas construibles.
+SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composición común 33/33
+solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicación/activación y entrada
+autenticada VPS se registrarán tras comprobarlas. Otros flags conservados. Sigue agua/reembarque.
+
+**AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).
 Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/reloj juntos.
 355/355 pruebas en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost; integra GM03b1.
 SQL018–021 readiness real confirmada; dominio legacy sin reloj común. Sin activación de esta API
 ni artesano; sigue adopción atómica y composición perlas/muerte/botín, luego canario autenticado VPS.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 del montaje
+sin red en Node 22 y entrada pública 6/6. Regresiones solapadas; no se activa esta API por publicar código.
 
 **GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
 [preparar revisión](docs/delivery/gm03b1/DELIVERY.md), [contrato](docs/briefs/gm03b1-prepared-revision.md).
