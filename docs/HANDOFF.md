@@ -1,6 +1,6 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA15, 2026-10-10 — montaje común económico/checkpoint, publicación en curso:**
+**AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**
 [entrega](delivery/m5-ground-host-authority.md), [contrato](briefs/m5-ground-host-authority.md).
 API explícita de GameHost con un dueño de tick/época/SQL018/019; aplica economía en `beforeTick`
 antes del ACK y guarda mundo/reloj juntos. Startup recupera el diario y verifica filas actuales.
@@ -8,6 +8,8 @@ antes del ACK y guarda mundo/reloj juntos. Startup recupera el diario y verifica
 Readiness real SQL018–021 confirmada tras la aplicación del autor. Mundo legacy aún sin reloj común:
 sin activación de este montaje ni artesano. Sigue adopción atómica y composición de perlas/muerte/botín,
 después canario autenticado con caída/reinicio VPS. No acredita toda la permanencia del juego.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 focales
+del montaje en Node 22.23.3 sin red y entrada pública 6/6; regresiones solapadas con la suite local.
 
 **GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
 [preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).

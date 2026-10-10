@@ -29,6 +29,8 @@ Los flags existentes de Tala y artesano siguen siendo necesarios para esas featu
   desconocido cerca la autoridad; el próximo startup recupera el diario, sin autosave obsoleto.
 - El montaje rechaza bots, invitados, importación legacy, diario antiguo de perlas y control/trade
   de agentes. SQL017 conserva su camino y presupuesto atómicos en el runtime normal.
+- El supervisor no toma este montaje como un fallo de autosave legacy; su startup debe recuperar
+  el diario común con las verificaciones detenidas antes de admitir jugadores.
 
 El runtime normal conserva sus opciones y escritores existentes. No combinar las dos modalidades
 contra el mismo mundo. Preparar SQL019 no concede un lease entre procesos.
