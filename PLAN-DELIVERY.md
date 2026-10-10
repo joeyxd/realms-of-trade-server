@@ -1,5 +1,10 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+[entrega](docs/delivery/l03d-owner-center.md), [brief](docs/briefs/l03d-owner-center.md). Estado/stop
+ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
+sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
+
 **AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
 [Entrega y evidencia](docs/delivery/i18n04b.md), [plan bilingüe](PLAN-I18N.md).
 Cliente y editor GM ES/EN, selector temprano y cambio en caliente conservando datos/solicitudes;

@@ -487,4 +487,3 @@ export default {
   'systems.raft.status.needFoundation': ['Apunta a un cimiento básico.', 'Point at a basic foundation.'],
   'systems.raft.supply': ['{good} +1 · {price} oro', '{good} +1 · {price} gold'],
 };
-

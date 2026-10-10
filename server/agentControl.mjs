@@ -124,6 +124,20 @@ export class AgentControl {
     return binding?.ownerId === ownerId ? copy({ ownerId, characterId, capabilities: binding.capabilities }) : null;
   }
 
+  // Return only owner-facing control metadata, including configured offline characters.
+  listOwned(ownerId) {
+    if (!canonicalUuid(ownerId)) return [];
+    const time = this.#time();
+    return [...this.#bindings.values()].filter((binding) => binding.ownerId === ownerId)
+      .sort((a, b) => a.characterId.localeCompare(b.characterId)).map((binding) => {
+        const record = this.#characters.get(binding.characterId), state = record?.state;
+        return { characterKey: binding.characterId,
+          active: !binding.disabled && state?.state === 'active' && time < state.grant.expiresAtMs,
+          stopped: binding.disabled, epoch: state?.grant.controlRevision ?? null,
+          capabilities: [...binding.capabilities] };
+      });
+  }
+
   admit(identity, clientId, entity) {
     const binding = this.#bindings.get(identity);
     if (!binding) return { ok: false, why: 'unmapped' };
