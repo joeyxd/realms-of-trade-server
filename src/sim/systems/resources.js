@@ -214,7 +214,8 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
       rev: node.rev, remaining: left, felled: isPalm && finalHit,
       ...(work && !isPalm ? { broken: finalHit, tool: kind.tool } : {}) });
     return remember(emit(w, e, msg, true, '', node.rev,
-      work ? { good, count, remaining: left, ...(isPalm ? { felled: finalHit } : { broken: finalHit }) } : { good, count }));
+      work ? { good, count, profileRev: profile.eco.tradeRev, remaining: left, ...(isPalm ? { felled: finalHit } : { broken: finalHit }) }
+        : { good, count, profileRev: profile.eco.tradeRev }));
   }
 
   if (msg.expectedRev !== tradeRev) return deny('revision', tradeRev);

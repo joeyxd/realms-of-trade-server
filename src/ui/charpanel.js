@@ -19,14 +19,15 @@ import { esc, itemIcon, slotIcon, itemCard, targetSlot, statText } from './itemu
 import { sfx } from '../audio/sfx.js';
 import { stage } from './stage.js';
 import { pearlHtml } from './pearlpanel.js';
+import { packInventoryHtml } from './packInventory.js';
 
 const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T'], ['pearl', 'Perlas', 'P']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
 const pct = (v, d = 0) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
 export class CharPanel {
-  constructor(root, { send, profile, stats, portrait, onClose, nearby }) {
-    Object.assign(this, { root, send, profile, stats, portrait, onClose, nearby });
+  constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, locale = 'es' }) {
+    Object.assign(this, { root, send, profile, stats, portrait, onClose, nearby, backpack, locale });
     this.tab = 'gear';
     this.shop = false;
     this.pinned = null; // {where: 'bag' | 'worn', uid, slot}
@@ -149,11 +150,13 @@ export class CharPanel {
     const left = this.shop ? this.shopHtml(p) : `<div class="doll">${doll}<div class="cp-portrait"><canvas width="160" height="160"></canvas></div></div>
       <div class="cp-mini"><span>ATK <b>${st.atk}</b></span><span>DEF <b>${st.def}</b></span><span>VIDA <b>${st.maxHp}</b></span></div>`;
     const cells = p.bag.map((it) => this.cell(it)).join('') + Array.from({ length: Math.max(0, ITEMS.bag - p.bag.length) }, () => '<span class="bag-cell empty"></span>').join('');
+    const backpack = this.backpack?.() || { pack: p.eco?.pack, pendingGoods: {} };
     return `<div class="cp-gear">
       <div class="cp-left">${left}</div>
       <div class="cp-right">
         <div class="bag-head"><b>Bolsa</b> <small>${p.bag.length}/${ITEMS.bag}</small><span class="cp-gold">${st.gold} oro</span><span class="cp-pot">🧪 ${st.potions}/${CONSUMABLES.potion.max}</span></div>
         <div class="bag-grid">${cells}</div>
+        ${packInventoryHtml(p, backpack, typeof this.locale === 'function' ? this.locale() : this.locale)}
         <div class="cp-detail"></div>
       </div>
     </div>`;

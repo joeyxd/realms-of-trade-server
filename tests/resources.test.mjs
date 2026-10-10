@@ -49,6 +49,7 @@ const last = (w) => w.events.at(-1);
 test('two players race for one resource; shared depletion and exact replay cannot duplicate goods', () => {
   const w = fixture({ players: 2 });
   assert.equal(resourceCmd(w, 1, gather('a')), true);
+  assert.equal(last(w).profileRev, 1, 'private acknowledgement identifies the exact inventory revision');
   assert.equal(w.profiles.get(1).eco.pack.goods.tronco, 1);
   assert.deepEqual(sanitizeProfile(w.profiles.get(1)).eco.pack.goods, { tronco: 1 });
   assert.equal(resourceCmd(w, 2, gather('b')), false);

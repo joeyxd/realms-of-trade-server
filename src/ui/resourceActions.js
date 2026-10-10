@@ -1,7 +1,15 @@
 // F/touch uses the same intent; only a private acknowledgement confirms gathered/crafted goods.
 import { HARVEST, RESOURCE_KINDS } from '../data/resources.js';
 import { DT } from '../data/tuning.js';
-import { holdUsed } from '../sim/economy/cargo.js';
+import { holdUsed, load } from '../sim/economy/cargo.js';
+
+const MAX_GATHERS = 8, RETRY_MS = 5000;
+const COPY = {
+  es: { collecting: 'Recogiendo', working: 'Trabajando', retry: 'Reintentar', retryAction: 'Reintentar la recogida',
+    delayed: 'La conexión está tardando. Puedes reintentar la recogida.', full: 'La mochila está llena. Deposita materiales en tu balsa.' },
+  en: { collecting: 'Collecting', working: 'Harvesting', retry: 'Retry', retryAction: 'Retry collection',
+    delayed: 'The connection is taking longer. You can retry collection.', full: 'Your backpack is full. Store materials on your raft.' },
+};
 
 const REASONS = {
   room: 'La mochila está llena. Deposita materiales en tu balsa.', far: 'Acércate al recurso o al banco.',
@@ -26,38 +34,83 @@ const REASONS = {
 };
 
 export class ResourceActions {
-  constructor({ client, player, enabled, toast, sound }) {
-    Object.assign(this, { client, player, enabled, toast, sound }); this.pending = null; this.openWorkbench = null; this.gatherUntil = 0;
+  constructor({ client, player, enabled, toast, sound, onGather, onChange, locale = () => 'es', now = () => performance.now() }) {
+    Object.assign(this, { client, player, enabled, toast, sound, onGather, onChange, locale, now });
+    this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0;
   }
-  reset() { this.pending = null; this.gatherUntil = 0; }
+  get pending() { return this.craftPending || this.gathers.values().next().value || null; }
+  get copy() { return COPY[this.locale()] || COPY.es; }
+  reset() { this.craftPending = null; this.gathers.clear(); this.predictedHits.clear(); this.gatherUntil = 0; this.onChange?.(); }
+  update() {
+    const c = this.client();
+    if (c !== this.owner || c?.t?.closed) { if (this.pending) this.reset(); this.owner = c; return; }
+    let changed = false;
+    for (const [id, pending] of this.gathers) {
+      const node = c.resources?.nodes?.find((n) => n.id === pending.command.node);
+      if (pending.ack && node?.rev >= pending.ack.rev && (!pending.count || c.profile?.eco?.tradeRev >= pending.ack.profileRev)) {
+        this.gathers.delete(id); changed = true;
+      } else if (!pending.ack && !pending.expired && this.now() - pending.sentAt >= RETRY_MS) {
+        // Uncertainty never turns a presentation preview into spendable inventory.
+        pending.expired = true; changed = true;
+        if (!pending.ack) this.toast(this.copy.delayed);
+      }
+    }
+    if (changed) this.onChange?.();
+  }
+  backpack() {
+    const source = this.client()?.profile?.eco?.pack;
+    if (!source) return { pack: null, pendingGoods: {} };
+    const pack = { cap: source.cap, goods: { ...source.goods } }, pendingGoods = {};
+    for (const pending of this.gathers.values()) {
+      if (pending.expired || !pending.count || pending.ack && this.client().profile.eco.tradeRev >= pending.ack.profileRev) continue;
+      if (load(pack, pending.good, pending.count)) pendingGoods[pending.good] = (pendingGoods[pending.good] || 0) + pending.count;
+    }
+    return { pack, pendingGoods };
+  }
+  renderResources() {
+    const snapshot = this.client()?.resources;
+    if (!snapshot || !this.gathers.size) return snapshot;
+    const hidden = new Set([...this.gathers.values()].filter((p) => !p.expired && !p.def.tool).map((p) => p.command.node));
+    return hidden.size ? { ...snapshot, nodes: snapshot.nodes.map((n) => hidden.has(n.id) ? { ...n, collecting: true } : n) } : snapshot;
+  }
+  predictedHit(event) {
+    const key = `${event.node}:${event.rev}`;
+    if (!this.predictedHits.has(key)) return false;
+    this.predictedHits.delete(key); return true;
+  }
   interaction() {
+    this.update();
     const c = this.client(), p = this.player();
     if (!this.enabled() || !c?.joined || !p || p.dead || c.naval.active || c.deck.active) return null;
     const bench = c.resources?.bench;
     const nearBench = !c.voyage?.active && bench && Math.abs(p.y - bench.y) <= 1.5
       && Math.hypot(p.x - bench.x, p.z - bench.z) <= HARVEST.benchRadius;
-    if (this.pending) {
-      if (this.pending.command.op === 'craft' && this.openWorkbench) {
+    if (this.craftPending) {
+      if (this.openWorkbench) {
         if (!nearBench) return null;
         return { html: '<span class="kbd">F</span> Banco de materiales · preparación pendiente', verb: 'Preparar',
           run: () => this.openWorkbench() };
       }
-      const retry = performance.now() - this.pending.sentAt >= 5000;
+      const retry = this.now() - this.craftPending.sentAt >= RETRY_MS;
       return { html: retry ? '<span class="kbd">F</span> Reintentar la solicitud' : 'Esperando confirmación…',
-        verb: retry ? 'Reintentar' : 'Esperando', run: () => { if (retry) this.send(this.pending.command); } };
+        verb: retry ? 'Reintentar' : 'Esperando', run: () => { if (retry) this.send(this.craftPending.command); } };
     }
+    const retry = [...this.gathers.values()].find((pending) => pending.expired && !pending.ack && this.now() - pending.sentAt >= RETRY_MS);
+    if (retry) return { html: `<span class="kbd">F</span> ${this.copy.retryAction}`, verb: this.copy.retry,
+      run: () => this.send(retry.command) };
     const rows = c.resources?.nodes || [];
     let node = null, distance = HARVEST.radius;
     for (const row of rows) {
       if (!RESOURCE_KINDS[row.kind] || Math.abs(p.y - row.y) > 1.5) continue;
       const d = Math.hypot(p.x - row.x, p.z - row.z);
-      if (d <= distance) { node = row; distance = d; }
+      if (d <= HARVEST.radius && ![...this.gathers.values()].some((pending) => pending.command.node === row.id)
+          && (!node || row.ready && !node.ready || row.ready === node.ready && d <= distance)) { node = row; distance = d; }
     }
     if (node) {
       const def = RESOURCE_KINDS[node.kind];
       const elapsed = Number.isFinite(c.resourceTick) ? Math.max(0, (c.serverTick?.() ?? c.resourceTick) - c.resourceTick) * DT : 0;
       if (!node.ready) return { html: `${node.kind === 'palm' ? 'Tocón · la palmera crece' : def.name + ' agotado · vuelve'} en ${Math.ceil(Math.max(0, node.wait - elapsed))} s`, verb: 'Agotado', icon: def.tool === 'pickaxe' ? 'mine' : node.kind === 'palm' ? 'axe' : 'chest', run() {} };
-      const pack = c.profile?.eco?.pack;
+      const pack = this.backpack().pack;
       const space = pack ? ` · mochila ${holdUsed(pack)}/${pack.cap}` : '';
       const cutting = node.kind === 'palm', working = !!def.tool;
       const maxHits = def.hits || HARVEST.palmHits;
@@ -66,7 +119,7 @@ export class ResourceActions {
       const expectedYield = def.yield || def.count || (cutting ? HARVEST.palmYield : 1);
       const toolOwned = !def.tool || c.profile?.tools?.[def.tool] === 1;
       const needsTool = def.tool && !toolOwned;
-      const wait = Math.max(0, this.gatherUntil - performance.now());
+      const wait = Math.max(0, this.gatherUntil - this.now());
       const icon = def.tool === 'pickaxe' ? 'mine' : cutting ? 'axe' : 'chest';
       if (needsTool) return { html: `${def.name} · necesitas ${def.tool === 'pickaxe' ? 'pico' : 'hacha'} (banco)`,
         verb: def.tool === 'pickaxe' ? 'Minar' : 'Cortar', icon,
@@ -80,6 +133,9 @@ export class ResourceActions {
       return { html: `<span class="kbd">F</span> ${def.verb}${compactProgress}${space}`, verb: def.tool === 'pickaxe' ? 'Minar' : cutting ? 'Cortar' : 'Recoger', icon,
         run: () => this.send({ t: 'cmd', type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev }) };
     }
+    if (this.gathers.size && this.now() < this.gatherUntil) return {
+      html: this.copy.collecting, verb: this.copy.collecting, icon: 'chest', run() {},
+    };
     if (nearBench) {
       const count = c.profile?.eco?.pack.goods.tronco || 0;
       if (this.openWorkbench) return { html: `<span class="kbd">F</span> Banco de materiales · ${count} ${count === 1 ? 'tronco' : 'troncos'}`,
@@ -91,16 +147,60 @@ export class ResourceActions {
   }
   send(command) {
     if (!this.enabled()) return false;
+    this.update();
+    const c = this.client();
+    if (!c?.joined || c.t?.closed) return false;
     if (!command.opId) command = { ...command, opId: crypto.randomUUID() };
-    if (this.pending && this.pending.command.opId !== command.opId) return false;
-    this.pending = { command, sentAt: performance.now() };
-    this.client().send(command);
+    const existing = this.gathers.get(command.opId);
+    if (existing) {
+      if (!existing.expired || existing.ack || this.now() - existing.sentAt < RETRY_MS || JSON.stringify(existing.command) !== JSON.stringify(command)) return false;
+      try { c.send(existing.command); } catch { return false; }
+      // Retrying the same receipt does not repeat the sound, animation or preview.
+      existing.sentAt = this.now(); return true;
+    }
+    if (command.op !== 'gather') {
+      if (this.gathers.size || this.craftPending && this.craftPending.command.opId !== command.opId) return false;
+      this.craftPending = { command, sentAt: this.now() };
+      try { c.send(command); } catch { this.craftPending = null; return false; }
+      return true;
+    }
+    if (this.craftPending || this.gathers.size >= MAX_GATHERS || this.now() < this.gatherUntil) return false;
+    const node = c.resources?.nodes?.find((n) => n.id === command.node), def = RESOURCE_KINDS[node?.kind];
+    if (!node?.ready || !def || node.rev !== command.expectedRev || [...this.gathers.values()].some((p) => p.command.node === node.id)) return false;
+    if (def.tool && c.profile?.tools?.[def.tool] !== 1) return false;
+    const pack = this.backpack().pack, yieldCount = def.yield || 1;
+    if (!pack || !load({ cap: pack.cap, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(this.copy.full); return false; }
+    const count = !def.hits || (node.hits || 0) + 1 >= def.hits ? yieldCount : 0;
+    const pending = { command: { ...command }, sentAt: this.now(), def, good: def.good, count };
+    this.gathers.set(command.opId, pending);
+    try { c.send(command); } catch { this.gathers.delete(command.opId); return false; }
+    this.gatherUntil = pending.sentAt + (def.actionTicks || HARVEST.actionTicks) * DT * 1000;
+    pending.until = this.gatherUntil;
+    const key = `${node.id}:${node.rev + 1}`; this.predictedHits.add(key);
+    while (this.predictedHits.size > 32) this.predictedHits.delete(this.predictedHits.values().next().value);
+    this.onGather?.({ type: 'resourceHit', e: c.youServer, node: node.id, kind: node.kind, x: node.x, y: node.y, z: node.z,
+      rev: node.rev + 1, remaining: def.hits ? Math.max(0, def.hits - (node.hits || 0) - 1) : 0, tool: def.tool });
+    if (count) { this.sound?.(); this.toast(`<b>+${count} ${def.good === 'piedra' ? (this.locale() === 'en' ? 'stone' : 'piedra') : def.good === 'mineral_hierro' ? (this.locale() === 'en' ? 'iron ore' : 'mineral de hierro') : (this.locale() === 'en' ? 'log' : 'tronco')}</b>`); }
+    this.onChange?.();
     return true;
   }
   onResult(event) {
-    if (!this.pending || this.pending.command.opId !== event.opId) return;
-    const node = this.client().resources?.nodes?.find((row) => row.id === this.pending.command.node);
-    this.pending = null;
+    const gather = this.gathers.get(event.opId), pending = gather || this.craftPending;
+    if (!pending || pending.command.opId !== event.opId || pending.command.op !== event.op) return;
+    const node = this.client().resources?.nodes?.find((row) => row.id === pending.command.node);
+    if (gather?.ack) return;
+    if (gather) {
+      if (!event.ok) {
+        this.gathers.delete(event.opId); this.predictedHits.delete(`${pending.command.node}:${pending.command.expectedRev + 1}`);
+        if (this.gatherUntil === pending.until) this.gatherUntil = 0;
+      }
+      else {
+        gather.ack = event; gather.good = event.good; gather.count = event.count; gather.expired = false;
+        // Old servers lack the revision barrier: drop the preview and await their canonical profile.
+        if (!Number.isSafeInteger(event.profileRev)) gather.count = 0;
+      }
+      this.onChange?.(); this.update();
+    } else this.craftPending = null;
     if (!event.ok) {
       this.toast(event.why === 'tool'
         ? `Necesitas ${event.tool === 'pickaxe' ? 'un pico' : 'un hacha'} para trabajar este recurso.`
@@ -109,16 +209,12 @@ export class ResourceActions {
         : REASONS[event.why] || 'No se pudo completar la acción.');
       return;
     }
-    if (event.op === 'gather') {
-      const def = RESOURCE_KINDS[node?.kind];
-      const ticks = event.remaining !== undefined ? (def?.actionTicks || HARVEST.chopTicks) : (def?.actionTicks || HARVEST.actionTicks);
-      this.gatherUntil = performance.now() + ticks * DT * 1000;
-    }
     if (event.op === 'gather' && event.count === 0) {
       const mining = node?.kind === 'rock' || node?.kind === 'iron_ore';
       this.toast(`<b>¡TAC!</b> · ${event.remaining === 1 ? `Un golpe más para ${mining ? 'romperla' : 'talarla'}.` : mining ? 'La roca empieza a ceder.' : 'La palmera empieza a ceder.'}`);
       return;
     }
+    if (gather) return;
     this.sound?.();
     const count = Number.isSafeInteger(event.count) && event.count > 0 ? event.count : 1;
     this.toast(event.op === 'craft' ? (event.tool

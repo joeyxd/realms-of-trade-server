@@ -192,6 +192,7 @@ async function boot() {
   };
   const charPanel = new CharPanel($('#charpanel'), {
     send: sendCmd, profile: () => client && client.profile, stats: playerStats,
+    backpack: () => resources.backpack(), locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es',
     nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
@@ -232,6 +233,9 @@ async function boot() {
   bus.on('raftProduction', (ev) => safe('production', () => commercePanel.onProductionResult(ev)));
   const resources = new ResourceActions({ client: () => client, player: () => ps,
     enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !raftEditor.active && !commercePanel.active,
+    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    onChange: () => charPanel.refresh(),
+    onGather: (ev) => { startHarvestPose(world.views.get(client.youServer), ev); if (ev.tool) harvestSound(ev, 0); },
     toast: (html) => hud.toast(html, 4200), sound: () => sfx.pickup(0) });
   const workbench = new WorkbenchPanel({ parent: $('#ui'), profile: () => client?.profile, player: () => ps,
     bench: () => client?.resources?.bench,
@@ -464,6 +468,10 @@ async function boot() {
   bus.on('resourceHit', (ev) => safe('harvest effects', () => {
     if (!world.resources.hit(ev)) return;
     const distance = Math.hypot(ps.x - ev.x, ps.z - ev.z);
+    if (ev.e === client.youServer && resources.predictedHit(ev)) {
+      if (ev.felled) harvestSound(ev, distance);
+      return;
+    }
     if (distance < 26) startHarvestPose(views.get(ev.e), ev);
     harvestSound(ev, distance);
   }));
@@ -1266,7 +1274,8 @@ async function boot() {
         if (st.sheet) shadowFocus.copy(st.sheet.center);
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
-        world.update(realDt, { focus, playing, resources: client.resources, naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        resources.update();
+        world.update(realDt, { focus, playing, resources: resources.renderResources(), naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);

@@ -431,7 +431,7 @@ export class ResourceNodes {
       }
       record.group.position.set(node.x, node.y, node.z);
       const nodeDistance = Math.hypot(focus.x - node.x, focus.z - node.z);
-      record.group.visible = nodeDistance < 30;
+      record.group.visible = nodeDistance < 30 && !node.collecting;
       record.node = node;
       const depleted = record.mining && !node.ready;
       record.mesh.visible = !record.mining ? node.ready : true;

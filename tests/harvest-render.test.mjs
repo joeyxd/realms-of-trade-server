@@ -202,6 +202,19 @@ test('mining rocks read larger than hand stones, crack per hit, shed bounded chi
   } finally { disposeBuilt(built); }
 });
 
+test('pending loose collection hides only its view and rejection restores it without touching revisions', () => {
+  const built = buildNodes(), { nodes } = built;
+  try {
+    const stone = { id: 'stone-preview', kind: 'stone', x: 1, y: 0, z: 1, rev: 1, ready: true };
+    nodes.update({ nodes: [{ ...stone, collecting: true }] }, { x: 0, z: 0 }, 0);
+    assert.equal(nodes.records.get(stone.id).group.visible, false);
+    assert.equal(stone.ready, true); assert.equal(stone.rev, 1);
+    nodes.update({ nodes: [stone] }, { x: 0, z: 0 }, .05);
+    assert.equal(nodes.records.get(stone.id).group.visible, true);
+    assert.equal(nodes.records.get(stone.id).mesh.visible, true);
+  } finally { disposeBuilt(built); }
+});
+
 test('pickaxe harvest pose restores the equipped character geometry after its short animation', () => {
   const weaponGeometry = buildLook(0, true).geo;
   const view = { root: new THREE.Group(), mesh: { geometry: weaponGeometry }, skin: 0, armed: true, weaponKind: 'sable',
