@@ -73,20 +73,21 @@ test('two players join the same island, see each other move, and leaving despawn
     const sb = await a.wait((m) => m.t === MSG.SPAWN && m.e.id === wb.you, 8000);
     assert.equal(sa.e.human, 1);
     assert.equal(sb.e.name, 'Ana 2');
+    // Exercise input recovery after the server has filled an idle client's missing ticks.
+    const first = await a.wait((m) => m.t === MSG.SNAPSHOT, 8000);
+    await a.wait((m) => m.t === MSG.SNAPSHOT && m.tick >= first.tick + 30, 8000);
     // A walks +x. Keep feeding bounded batches until a snapshot proves the full displacement;
     // a fixed burst can all arrive between slow simulation ticks on the one-CPU offline runner.
     const x0 = (await b.wait((m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you), 8000))
       .ents.find((e) => e[ENT.ID] === wa.you)[ENT.X];
     const moved = (m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you && e[ENT.X] > x0 + 3);
-    let seq = 0, snap = b.msgs.find(moved);
+    let seq = 0, inputTick = 0, snap = b.msgs.find(moved);
     const movementDeadline = Date.now() + 15000;
     while (!snap && Date.now() < movementDeadline) {
-      // `pt` is the server tick the client is playing against. A constant zero is
-      // immediately behind the server's filler watermark, so those commands are
-      // acknowledged as late without ever reaching movement simulation.
-      const latestSnapshot = [...a.msgs].reverse().find((m) => m.t === MSG.SNAPSHOT);
-      const pt = Math.max(1, latestSnapshot?.tick ?? 1);
-      a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt })) });
+      // Zero timestamps become stale once the server has filled a silent client's missing ticks.
+      const latestTick = a.msgs.filter((m) => m.t === MSG.SNAPSHOT).at(-1)?.tick ?? 0;
+      inputTick = Math.max(inputTick, latestTick);
+      a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt: ++inputTick })) });
       await sleep(100);
       snap = b.msgs.find(moved);
     }
