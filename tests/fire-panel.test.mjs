@@ -30,14 +30,15 @@ class DocumentStub {
 
 function fixture({ locale = 'es', wood = 1, holdWood = 0, enabled = true } = {}) {
   let clock = 0;
+  let currentLocale = locale;
   const doc = new DocumentStub(), parent = new Element(); parent.ownerDocument = doc;
   const commands = [], toasts = [], opened = [];
   const client = { joined: true, youServer: 7, fire: { enabled, rev: 4, slots: [] },
     profile: { eco: { pack: { goods: { madera: wood } }, ships: [{ id: 'raft:1', hold: { goods: { madera: holdWood } } }] } },
     send(command) { commands.push(command); } };
-  const panel = newFirePanel({ parent, client: () => client, locale: () => locale, toast: message => toasts.push(message),
+  const panel = newFirePanel({ parent, client: () => client, locale: () => currentLocale, toast: message => toasts.push(message),
     onOpen: target => opened.push(target), now: () => clock });
-  return { panel, client, doc, parent, commands, toasts, opened, setTime(value) { clock = value; } };
+  return { panel, client, doc, parent, commands, toasts, opened, setTime(value) { clock = value; }, setLocale(value) { currentLocale = value; } };
 }
 
 test('hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent', () => {
@@ -115,4 +116,26 @@ test('English labels, disabled-world guard, active-only Escape, and dispose life
   f.doc.key('Escape'); assert.equal(f.panel.active, false); assert.equal((f.doc.listeners.keydown || []).length, 0);
   f.panel.open(); f.panel.dispose();
   assert.equal(f.panel.root, null); assert.equal(f.panel.active, false); assert.equal((f.doc.listeners.keydown || []).length, 0);
+});
+
+test('hot locale refresh translates pending and acknowledged status without resending the command', () => {
+  const f = fixture();
+  f.panel.open();
+  assert.equal(f.panel.load(), true);
+  const command = f.commands[0], pending = f.panel.pending;
+  assert.equal(f.panel.$('.fire-status').textContent, 'Esperando confirmación…');
+
+  f.setLocale('en'); f.panel.update();
+  assert.equal(f.panel.$('.fire-status').textContent, 'Waiting for confirmation…');
+  assert.equal(f.panel.pending, pending);
+  assert.equal(f.panel.pending.command, command);
+  assert.equal(f.commands.length, 1);
+
+  assert.equal(f.panel.acknowledge({ type: 'fire', op: 'load', opId: command.opId, ok: true }), true);
+  assert.equal(f.panel.$('.fire-status').textContent, 'Fuel loaded and fire lit.');
+  f.setLocale('es'); f.panel.update();
+  assert.equal(f.panel.$('.fire-status').textContent, 'Combustible cargado y fuego encendido.');
+  assert.equal(f.panel.pending, null);
+  assert.equal(f.commands.length, 1);
+  assert.equal(f.commands[0], command);
 });

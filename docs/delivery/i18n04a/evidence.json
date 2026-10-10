@@ -1,0 +1,21 @@
+{
+  "schema": "i18n04a-editor/v1",
+  "at": "2026-10-10T18:57:40.966Z",
+  "scope": "local real WorldEditor and IndexedDB; simulated save/model failures; no gameplay host",
+  "checks": [
+    "initial status and toolbar switch ES/EN without draft changes or autosave",
+    "pending save changes language without duplicate writes; late conflict uses current locale",
+    "invalid import preserves draft and translates existing error without replay",
+    "pending model load and unknown external error switch safely without refetch",
+    "two real tabs keep newer IndexedDB draft on conflict and locale changes"
+  ],
+  "screenshots": [
+    "docs\\delivery\\i18n04a\\01-save-conflict-en.png",
+    "docs\\delivery\\i18n04a\\02-save-conflict-es.png",
+    "docs\\delivery\\i18n04a\\03-import-error-en.png",
+    "docs\\delivery\\i18n04a\\04-model-error-en.png",
+    "docs\\delivery\\i18n04a\\05-indexeddb-conflict-en.png",
+    "docs\\delivery\\i18n04a\\06-compact-conflict-es.png"
+  ],
+  "errors": []
+}

@@ -9,6 +9,8 @@ import { createBaseDecorationLayer } from './baseDecoration.js';
 import { EditorWalkPreview } from './walkPreview.js';
 import { RemoteDraftPanel } from './remotePanel.js';
 import { compileGmColliders } from './publicationValidation.js';
+import { EditorStatus, editorErrorMessage, editorMessage } from './messages.js';
+import { getLocale, onLocaleChange, setLocale } from '../core/locale.js';
 import { LAYER } from '../render/pipeline.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -35,13 +37,13 @@ export class WorldEditor {
     this.parent = parent; this.onClose = onClose;
     this.invalidate = invalidate; this.onChanged = onChanged;
     this.worldId = draftWorldId || ('gm-' + (map.seed >>> 0).toString(16));
-    this.baseRevision = baseRevision; this.lang = 'es'; this.active = false; this.session = 0;
+    this.baseRevision = baseRevision; this.lang = getLocale(); this.active = false; this.session = 0;
     this.document = null; this.history = null; this.revision = 0; this.dirty = false;
     this.saveTimer = 0; this.saveTask = null; this.saveAgain = false; this.resumeDocument = null;
     this.recoveryRevision = null;
     this.lastSavedJson = ''; this.records = new Map(); this.selectedId = null;
     this.pendingEntry = null; this.ghost = null; this.dragging = false; this.dragStart = null;
-    this.pointerNdc = new THREE.Vector2(); this.pointerInside = false; this.error = null;
+    this.pointerNdc = new THREE.Vector2(); this.pointerInside = false; this.error = null; this.lastError = null;
     this.snapEnabled = true; this.snapStep = 0.5;
     this.baseLayer = createBaseDecorationLayer({ scene, map, baseRevision });
     this.baseEntries = this.baseLayer.list().filter((entry) => entry.editable);
@@ -68,7 +70,7 @@ export class WorldEditor {
     this.onPointerMove = (e) => this._pointerMove(e);
     this.onPointerDown = (e) => this._pointerDown(e);
     this.onKeyDown = (e) => this._keyDown(e);
-    this.onLang = () => { this.lang = this.lang === 'es' ? 'en' : 'es'; this._setLanguage(); };
+    this.onLang = () => setLocale(this.lang === 'es' ? 'en' : 'es');
     this.onClick = (e) => this._toolbarAction(e);
     this.onChange = (e) => this._inspectorChange(e);
     this.onSceneSearch = () => this._renderSceneList();
@@ -87,10 +89,11 @@ export class WorldEditor {
     window.addEventListener('blur', this.onBlur);
     this.catalog = new EditorCatalog({
       root: this.catalogRoot, assets: this.assets, onSelect: ({ entry, object }) => this._selectAsset(entry, object),
-      t: (en, es) => this._t(en, es),
+      t: (en, es) => this._t(en, es), onError: (error) => { this.lastError = error || null; },
     });
     this.remoteClient = remoteClient;
     this.remotePanel = new RemoteDraftPanel(this, remoteClient);
+    this.unsubscribeLocale = onLocaleChange((lang) => { this.lang = lang; this._setLanguage(); });
     this._setLanguage();
   }
 
@@ -146,6 +149,7 @@ export class WorldEditor {
     this.langButton = this.ui.querySelector('[data-role="language"]');
     this.selectionName = this.ui.querySelector('[data-role="selection-name"]');
     this.statusNode = this.ui.querySelector('[data-role="status"]');
+    this.status = new EditorStatus(this.statusNode, this.lang);
     this.fields = Object.fromEntries([...this.ui.querySelectorAll('[data-field]')].map((el) => [el.dataset.field, el]));
     this.importInput = this.ui.querySelector('[data-role="import"]');
     this.scenePanel = this.ui.querySelector('[data-role="scene-panel"]');
@@ -159,6 +163,7 @@ export class WorldEditor {
   _t(en, es) { return this.lang === 'en' ? en : es; }
 
   _setLanguage() {
+    this.status?.setLocale(this.lang);
     const words = {
       brand: ['World editor', 'Editor del mundo'], draftLocal: ['PRIVATE DRAFT · NO PUBLISH', 'BORRADOR PRIVADO · SIN PUBLICAR'],
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
@@ -222,9 +227,9 @@ export class WorldEditor {
       this.lastSavedJson = JSON.stringify(normal.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision }));
       this.dirty = !!recovery && JSON.stringify(recovery) !== this.lastSavedJson;
       this._addControls(); this.cameraController.enable();
-      this._setStatus(this._t('Local draft. Nothing is published or written to gameplay.',
+      this._setStatus(editorMessage('Local draft. Nothing is published or written to gameplay.',
         'Borrador local. Nada se publica ni se escribe en gameplay.'), 'info');
-      if (recovery) this._setStatus(this._t('Recovered unsaved draft. Save or export it; conflicting revisions stay protected.',
+      if (recovery) this._setStatus(editorMessage('Recovered unsaved draft. Save or export it; conflicting revisions stay protected.',
         'Borrador sin guardar recuperado. Guarda o exporta; las revisiones en conflicto siguen protegidas.'), 'error');
       this.catalog.refresh();
       await this.catalog.ready;
@@ -242,7 +247,7 @@ export class WorldEditor {
       this.cameraController.disable(); this._clearGhost(); this.transform.detach();
       if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
       this._clearRecords();
-      this._setStatus(error?.message || this._t('Could not open draft.', 'No se pudo abrir el borrador.'), 'error');
+      this._setError(error, 'draft');
       return false;
     }
   }
@@ -262,7 +267,7 @@ export class WorldEditor {
       const saved = await this.saveNow();
       if (!saved && !force) {
         void this.remotePanel?.start();
-        this._setStatus(this._t('Draft remains open because local save failed. Export it or retry.',
+        this._setStatus(editorMessage('Draft remains open because local save failed. Export it or retry.',
           'El borrador sigue abierto porque falló el guardado. Expórtalo o vuelve a intentar.'), 'error');
         return false;
       }
@@ -364,7 +369,7 @@ export class WorldEditor {
       object.material = Array.isArray(object.material) ? copies : copies[0];
     });
     this.ghost.visible = false; this.scene.add(this.ghost);
-    this._setStatus(this._t('Click the terrain to add this model to the local draft.', 'Pulsa el terreno para añadir el modelo al borrador local.'), 'info');
+    this._setStatus(editorMessage('Click the terrain to add this model to the local draft.', 'Pulsa el terreno para añadir el modelo al borrador local.'), 'info');
     if (this.pointerInside) this._updateGhost();
     this._updateButtons(); this.invalidate();
   }
@@ -436,7 +441,7 @@ export class WorldEditor {
       x: clamp(point.x, -280, 280), y: clamp(this.map.groundAt(point.x, point.z), -64, 100), z: clamp(point.z, -280, 280),
     }, collider: 'none' });
     this._commit(addDecoration(this.history.current(), decoration)); this.select(decoration.id);
-    this._setStatus(this._t('Added to draft only. No gameplay collision.', 'Añadido solo al borrador. Sin colisión de gameplay.'), 'ok');
+    this._setStatus(editorMessage('Added to draft only. No gameplay collision.', 'Añadido solo al borrador. Sin colisión de gameplay.'), 'ok');
   }
 
   select(id) {
@@ -504,7 +509,7 @@ export class WorldEditor {
         updateDecoration(this.history.current(), this.selectedId, { transform }));
     }
     catch (error) {
-      this._setStatus(this._t('Invalid transform: ' + (error.code || error.message), 'Transformación inválida: ' + (error.code || error.message)), 'error');
+      this._setError(error, 'transform');
       this._renderDocument(this.history.current());
     }
   }
@@ -513,7 +518,7 @@ export class WorldEditor {
     if (!this.selectionName || !this.fields) return;
     const item = this._selectedItem();
     const record = item && this.records.get(item.id);
-    const label = record?.entry?.label;
+    const label = this._entryForAsset(item?.assetId)?.label || record?.entry?.label;
     const localized = typeof label === 'string' ? label : label?.[this.lang] || label?.es || label?.en || item?.assetId;
     this.selectionName.textContent = item ? (localized + ' · ' + item.id) : this._t('Nothing selected', 'Nada seleccionado');
     const t = this.dragStart ? this._selectedTransform() : item?.transform;
@@ -564,7 +569,7 @@ export class WorldEditor {
 
   _scheduleSave() {
     clearTimeout(this.saveTimer); this.saveTimer = setTimeout(() => this.saveNow(), 900);
-    this._setStatus(this._t('Draft changed · autosaving locally…', 'Borrador modificado · guardando localmente…'), 'saving');
+    this._setStatus(editorMessage('Draft changed · autosaving locally…', 'Borrador modificado · guardando localmente…'), 'saving');
   }
 
   async saveNow() {
@@ -579,11 +584,10 @@ export class WorldEditor {
           this.revision = saved.revision; this.lastSavedJson = JSON.stringify(saved.document);
           this.dirty = JSON.stringify(this.history.current()) !== this.lastSavedJson;
           if (!this.dirty) { this.resumeDocument = null; await this._clearRecovery(); }
-          this._setStatus(this._t('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
+          this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
         } catch (error) {
           this.dirty = true; this.saveAgain = false;
-          this._setStatus(this._t('Local save failed: ' + (error.code || error.message) + '. Export to keep this draft.',
-            'Falló el guardado local: ' + (error.code || error.message) + '. Expórtalo para conservarlo.'), 'error');
+          this._setError(error, 'save');
         }
       } while (this.saveAgain && this.dirty);
       this._updateButtons();
@@ -591,7 +595,15 @@ export class WorldEditor {
     await this.saveTask; this.saveTask = null; return !this.dirty;
   }
 
-  _setStatus(message, kind = '') { this.statusNode.textContent = message; this.statusNode.dataset.kind = kind; }
+  _setStatus(message, kind = '') {
+    this.lastError = null;
+    this.status.set(typeof message === 'string' ? editorMessage(message, message) : message, kind);
+  }
+
+  _setError(error, context = 'unknown') {
+    this.lastError = error || null;
+    this.status.set(editorErrorMessage(error, this.lang, context), 'error');
+  }
 
   _setSceneTab(sceneTab) {
     this.sceneTab = sceneTab; this.catalogRoot.hidden = sceneTab; this.scenePanel.hidden = !sceneTab;
@@ -655,7 +667,7 @@ export class WorldEditor {
       this._setLanguage(); this._updateButtons();
     } catch (error) {
       this.cameraController.enable(); this.select(this.selectedId);
-      this._setStatus(this._t('No walkable spot nearby. Select a clear area or reduce the proxy.',
+      this._setStatus(editorMessage('No walkable spot nearby. Select a clear area or reduce the proxy.',
         'No hay espacio caminable cerca. Elige una zona libre o reduce el proxy.'), 'error');
     }
     this.invalidate();
@@ -708,7 +720,7 @@ export class WorldEditor {
     if (this.walkPreview?.active && !['walk', 'close'].includes(action)) return;
     if (this.importTask && !['close', 'export'].includes(action)) return;
     switch (action) {
-      case 'place': if (this.pendingEntry) this._clearGhost(); else this._setStatus(this._t('Choose a model from the library.', 'Elige un modelo de la biblioteca.'), 'info'); break;
+      case 'place': if (this.pendingEntry) this._clearGhost(); else this._setStatus(editorMessage('Choose a model from the library.', 'Elige un modelo de la biblioteca.'), 'info'); break;
       case 'undo': this._restoreHistory('undo'); break;
       case 'redo': this._restoreHistory('redo'); break;
       case 'duplicate': this._duplicate(); break;
@@ -843,7 +855,7 @@ export class WorldEditor {
     const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
     const link = document.createElement('a'); link.href = url; link.download = name + '.json'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
-    this._setStatus(status || this._t('Current in-memory draft exported.', 'Se exportó el borrador actual.'), 'ok');
+    this._setStatus(status || editorMessage('Current in-memory draft exported.', 'Se exportó el borrador actual.'), 'ok');
   }
 
   async _importFile(file) {
@@ -856,18 +868,18 @@ export class WorldEditor {
 
   async _importFileForSession(file, session) {
     try {
-      if (file.size > MAX_DRAFT_EXPORT_BYTES) throw new Error(this._t('Import file exceeds the 5 MB limit.', 'El archivo supera el límite de 5 MB.'));
+      if (file.size > MAX_DRAFT_EXPORT_BYTES) throw Object.assign(new Error('import_size'), { code: 'import_size' });
       const serialized = await file.text();
       if (!this.active || session !== this.session) return;
-      if (new TextEncoder().encode(serialized).byteLength > MAX_DRAFT_EXPORT_BYTES) throw new Error(this._t('Import file exceeds the 5 MB limit.', 'El archivo supera el límite de 5 MB.'));
+      if (new TextEncoder().encode(serialized).byteLength > MAX_DRAFT_EXPORT_BYTES) throw Object.assign(new Error('import_size'), { code: 'import_size' });
       const envelope = JSON.parse(serialized);
       if (!envelope || envelope.format !== DRAFT_EXPORT_FORMAT || envelope.version !== DRAFT_EXPORT_VERSION) {
-        throw new Error(this._t('Unsupported draft export format.', 'Formato de exportación no compatible.'));
+        throw Object.assign(new Error('import_format'), { code: 'import_format' });
       }
       const checked = validateDocument(envelope.document);
       this._validateBaseReferences(checked);
       if (checked.base.seed !== (this.map.seed >>> 0) || checked.base.revision !== this.baseRevision) {
-        throw new Error(this._t('Import belongs to a different base map.', 'La importación pertenece a otra base del mapa.'));
+        throw Object.assign(new Error('base_mismatch'), { code: 'base_mismatch' });
       }
       if (!this.active || session !== this.session) return;
       const saved = await this.store.import(serialized, { expectedRevision: this.revision });
@@ -877,9 +889,9 @@ export class WorldEditor {
       this.history = createDocumentHistory(saved.document); this.document = saved.document; this.dirty = false;
       await this._hydrate(saved.document); this._renderDocument(saved.document);
       this.onChanged({ document: clone(saved.document), dirty: false });
-      this._setStatus(this._t('Draft imported and saved locally.', 'Borrador importado y guardado localmente.'), 'ok');
+      this._setStatus(editorMessage('Draft imported and saved locally.', 'Borrador importado y guardado localmente.'), 'ok');
     } catch (error) {
-      this._setStatus(this._t('Import failed: ' + (error.code || error.message), 'Falló la importación: ' + (error.code || error.message)), 'error');
+      this._setError(error, 'import');
     } finally { this.importInput.value = ''; }
   }
 
@@ -887,7 +899,7 @@ export class WorldEditor {
     if (!this.active) return;
     if (this.walkPreview?.active) {
       try { this.walkPreview.update(dt); }
-      catch (error) { this._stopWalking(); this._setStatus(this._t('Walk test stopped: ', 'Prueba detenida: ') + error.message, 'error'); }
+      catch (error) { this._stopWalking(); this._setError(error, 'walk'); }
       return;
     }
     this.cameraController.update(dt);
@@ -898,6 +910,7 @@ export class WorldEditor {
   async dispose() {
     if (this.active) await this.close({ force: true });
     this.remotePanel?.dispose();
+    this.unsubscribeLocale?.();
     clearTimeout(this.saveTimer); this.cameraController.dispose();
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);

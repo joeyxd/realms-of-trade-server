@@ -1,3 +1,5 @@
+import { t, onLocaleChange, translateData } from '../core/i18n.js';
+
 const DEAD_ZONE = 0.12;
 const ICONS = Object.freeze({
   wind: [{ d: 'M3 8h11c4 0 4-5 1-5-2 0-3 1-3 2' }, { d: 'M3 12h16c3 0 3 5 0 5-2 0-3-1-3-2' }, { d: 'M3 16h6' }],
@@ -49,12 +51,12 @@ export class TouchHelm {
     this.enabled = !!enabled; this.disposed = false; this.pointers = new Map(); this.sticks = new Map(); this.buttons = new Map();
     this.listeners = []; this.wrapper = makeElement(doc, 'div', 'naval-touch');
     if (this.layout === 'reference') this.wrapper.setAttribute('data-layout', 'reference');
-    this.wrapper.setAttribute('aria-label', 'Controles táctiles de navegación');
+    this.wrapper.setAttribute('aria-label', t('systems.touch.navControls'));
     this.wrapper.setAttribute('data-enabled', this.enabled ? 'true' : 'false');
     this.container.appendChild(this.wrapper);
-    this.buildStick('move', 'Movimiento'); this.buildStick('look', 'Cámara');
+    this.buildStick('move', t('systems.touch.move')); this.buildStick('look', t('systems.touch.camera'));
     this.actionRow = makeElement(doc, 'div', 'naval-touch-actions');
-    this.actionRow.setAttribute('aria-label', 'Acciones de navegación'); this.wrapper.appendChild(this.actionRow);
+    this.actionRow.setAttribute('aria-label', t('systems.touch.navActions')); this.wrapper.appendChild(this.actionRow);
     this.slotButtons = [];
     if (this.layout === 'reference') this.buildReferenceInstrument();
     this.setActions(actions);
@@ -65,20 +67,45 @@ export class TouchHelm {
     this.listen(this.doc, 'pointercancel', (event) => this.finishPointer(event, false));
     this.listen(this.doc, 'lostpointercapture', (event) => this.finishPointer(event, false));
     this.listen(this.doc, 'pointermove', (event) => this.moveActionPointer(event));
+    this.unsubscribeLocale = onLocaleChange(() => this.refreshLocale());
+  }
+
+  refreshLocale() {
+    this.wrapper.setAttribute('aria-label', t('systems.touch.navControls'));
+    this.actionRow.setAttribute('aria-label', t('systems.touch.navActions'));
+    for (const [name, stick] of this.sticks) {
+      const label = t(name === 'move' ? 'systems.touch.move' : 'systems.touch.camera');
+      stick.pad.setAttribute('aria-label', t(name === 'move' ? 'systems.touch.moveHelp' : 'systems.touch.cameraHelp'));
+      stick.pad.querySelector('.naval-touch-cue').textContent = name === 'move' ? t('systems.touch.moveCue') : t('systems.touch.cameraCue');
+      stick.pad.querySelector('.naval-touch-caption').textContent = name === 'move' && this.layout === 'reference' ? t('systems.touch.helm') : label.toUpperCase();
+    }
+    for (const record of this.buttons.values()) {
+      const label = translateData(record.action.label);
+      record.button.setAttribute('aria-label', label); record.button.setAttribute('title', label);
+      const text = record.button.querySelector?.('.naval-touch-action-label'); if (text) text.textContent = label;
+    }
+    if (this.instrument) {
+      this.instrument.setAttribute('aria-label', t('systems.touch.instrument'));
+      this.picker.setAttribute('aria-label', t('systems.touch.chooseSkill'));
+      this.picker.querySelector('.naval-touch-picker-title').textContent = t('systems.touch.chooseSkill');
+      this.picker.querySelector('.naval-touch-picker-cancel').textContent = t('systems.touch.cancel');
+      this.renderBindings();
+      this.refreshPickerOptions();
+    }
   }
 
   listen(target, type, callback) { target.addEventListener(type, callback); this.listeners.push([target, type, callback]); }
 
   buildStick(name, label) {
     const pad = makeElement(this.doc, 'div', `naval-touch-stick naval-touch-stick-${name}`);
-    const accessibleLabel = name === 'move' ? `${label}: arriba avanza, abajo frena` : `${label}: desplaza para mirar`;
+    const accessibleLabel = name === 'move' ? t('systems.touch.moveHelp') : t('systems.touch.cameraHelp');
     pad.setAttribute('role', 'group'); pad.setAttribute('aria-label', accessibleLabel); pad.setAttribute('data-stick', name);
     const ring = makeElement(this.doc, 'div', 'naval-touch-ring'); ring.setAttribute('aria-hidden', 'true');
     const puck = makeElement(this.doc, 'div', 'naval-touch-puck'); puck.setAttribute('aria-hidden', 'true');
     const cue = makeElement(this.doc, 'span', `naval-touch-cue naval-touch-cue-${name}`);
-    cue.textContent = name === 'move' ? '↑ AVANZA  ·  ↓ FRENA' : '↔ CÁMARA'; cue.setAttribute('aria-hidden', 'true');
-    const caption = makeElement(this.doc, 'span', 'naval-touch-caption'); caption.textContent = name === 'move' ? 'MOVIMIENTO' : 'CÁMARA';
-    if (this.layout === 'reference' && name === 'move') caption.textContent = 'TIMÓN';
+    cue.textContent = name === 'move' ? t('systems.touch.moveCue') : t('systems.touch.cameraCue'); cue.setAttribute('aria-hidden', 'true');
+    const caption = makeElement(this.doc, 'span', 'naval-touch-caption'); caption.textContent = name === 'move' ? t('systems.touch.move').toUpperCase() : t('systems.touch.camera').toUpperCase();
+    if (this.layout === 'reference' && name === 'move') caption.textContent = t('systems.touch.helm').toUpperCase();
     pad.appendChild(ring); pad.appendChild(puck);
     if (this.layout === 'reference') {
       const icon = this.createReferencePadIcon(name); icon.setAttribute('class', `naval-touch-decal naval-touch-pad-icon naval-touch-pad-icon-${name}`);
@@ -116,12 +143,12 @@ export class TouchHelm {
 
   buildReferenceInstrument() {
     this.instrument = makeElement(this.doc, 'div', 'naval-touch-instrument');
-    this.instrument.setAttribute('aria-label', 'Instrumentos y habilidades');
+    this.instrument.setAttribute('aria-label', t('systems.touch.instrument'));
     const slots = makeElement(this.doc, 'div', 'naval-touch-slots');
     for (let index = 0; index < 3; index++) {
       const button = makeElement(this.doc, 'button', 'naval-touch-slot naval-touch-action'); button.type = 'button';
       button.dataset.slot = String(index); button.setAttribute('data-slot', String(index));
-      button.setAttribute('aria-label', `Habilidad ${index + 1}: vacía`);
+      button.setAttribute('aria-label', t('systems.touch.skillEmpty', { slot: index + 1 }));
       const glyph = makeElement(this.doc, 'span', 'naval-touch-slot-icon'); glyph.setAttribute('aria-hidden', 'true'); button.appendChild(glyph);
       const label = makeElement(this.doc, 'span', 'naval-touch-slot-label'); label.textContent = '—'; button.appendChild(label);
       const shortcut = makeElement(this.doc, 'kbd', 'naval-touch-slot-key'); shortcut.setAttribute('aria-hidden', 'true'); button.appendChild(shortcut);
@@ -134,10 +161,10 @@ export class TouchHelm {
       this.slotButtons.push({ button, glyph, label, shortcut, listeners: [['pointerdown', down], ['click', click]] }); slots.appendChild(button);
     }
     this.instrument.appendChild(slots);
-    const picker = makeElement(this.doc, 'div', 'naval-touch-picker'); picker.hidden = true; picker.setAttribute('aria-label', 'Elegir habilidad');
-    const title = makeElement(this.doc, 'div', 'naval-touch-picker-title'); title.textContent = 'Elegir habilidad'; picker.appendChild(title);
+    const picker = makeElement(this.doc, 'div', 'naval-touch-picker'); picker.hidden = true; picker.setAttribute('aria-label', t('systems.touch.chooseSkill'));
+    const title = makeElement(this.doc, 'div', 'naval-touch-picker-title'); title.textContent = t('systems.touch.chooseSkill'); picker.appendChild(title);
     this.pickerChoices = makeElement(this.doc, 'div', 'naval-touch-picker-choices'); picker.appendChild(this.pickerChoices);
-    const cancel = makeElement(this.doc, 'button', 'naval-touch-picker-cancel'); cancel.type = 'button'; cancel.textContent = 'Cancelar';
+    const cancel = makeElement(this.doc, 'button', 'naval-touch-picker-cancel'); cancel.type = 'button'; cancel.textContent = t('systems.touch.cancel');
     cancel.addEventListener('click', (event) => { if (this.ignoreLongPressCompatibilityClick(event)) return; this.closePicker(); }); picker.appendChild(cancel);
     this.instrument.appendChild(picker); this.picker = picker; this.wrapper.appendChild(this.instrument); this.loadBindings();
   }
@@ -163,8 +190,8 @@ export class TouchHelm {
       button.setAttribute('data-unavailable', action && (action.disabled || action.available === false || action.unavailable === true) ? 'true' : 'false');
       if (action) { button.dataset.action = action.id; button.setAttribute('data-action', action.id); }
       else { delete button.dataset.action; button.removeAttribute?.('data-action'); }
-      button.setAttribute('aria-label', action ? `Habilidad ${slot + 1}: ${action.label}` : `Habilidad ${slot + 1}: vacía`);
-      label.textContent = action?.label || '—'; glyph.replaceChildren?.();
+      button.setAttribute('aria-label', action ? t('systems.touch.skillAction', { slot: slot + 1, action: translateData(action.label) }) : t('systems.touch.skillEmpty', { slot: slot + 1 }));
+      label.textContent = action ? translateData(action.label) : '—'; glyph.replaceChildren?.();
       shortcut.textContent = action?.shortcut || '';
       if (action?.shortcut) button.setAttribute('aria-keyshortcuts', action.shortcut);
       else button.removeAttribute?.('aria-keyshortcuts');
@@ -187,7 +214,7 @@ export class TouchHelm {
     option.dataset.bindId = id; option.dataset.kind = action.kind || 'action'; option.dataset.selected = selected ? 'true' : 'false';
     option.setAttribute('data-bind-id', id); option.setAttribute('aria-pressed', selected ? 'true' : 'false');
     option.appendChild(createIcon(this.doc, action.icon || id));
-    const label = makeElement(this.doc, 'span', 'naval-touch-picker-label'); label.textContent = action.label; option.appendChild(label);
+    const label = makeElement(this.doc, 'span', 'naval-touch-picker-label'); label.textContent = translateData(action.label); option.appendChild(label);
     option.addEventListener('click', (event) => { if (this.ignoreLongPressCompatibilityClick(event)) return; this.chooseBinding(slot, id); });
     return option;
   }
@@ -205,7 +232,7 @@ export class TouchHelm {
       option.dataset.kind = action.kind || 'action';
       const selected = this.bindings[slot] === id;
       option.dataset.selected = selected ? 'true' : 'false'; option.setAttribute('aria-pressed', selected ? 'true' : 'false');
-      const label = option.children?.[1]; if (label) label.textContent = action.label;
+      const label = option.children?.[1]; if (label) label.textContent = translateData(action.label);
     }
   }
 
@@ -285,10 +312,11 @@ export class TouchHelm {
     for (const action of clean) {
       if (!action || typeof action.id !== 'string' || !action.id || typeof action.label !== 'string' || this.buttons.has(action.id)) continue;
       const button = makeElement(this.doc, 'button', 'naval-touch-action');
-      button.type = 'button'; button.setAttribute('aria-label', action.label); button.setAttribute('title', action.label);
+      const actionLabel = translateData(action.label);
+      button.type = 'button'; button.setAttribute('aria-label', actionLabel); button.setAttribute('title', actionLabel);
       button.disabled = action.disabled === true; button.dataset.action = action.id;
       button.appendChild(createIcon(this.doc, action.icon || action.id));
-      const text = makeElement(this.doc, 'span', 'naval-touch-action-label'); text.textContent = action.label; button.appendChild(text);
+      const text = makeElement(this.doc, 'span', 'naval-touch-action-label'); text.textContent = actionLabel; button.appendChild(text);
       const down = (event) => this.startAction(event, action.id, button);
       const click = (event) => { if (this.enabled && !this.disposed && !button.disabled && event.detail === 0) this.callbacks.onAction(action.id); };
       button.addEventListener('pointerdown', down); button.addEventListener('click', click);
@@ -331,8 +359,8 @@ export class TouchHelm {
     const record = this.buttons.get(id); if (!record || this.disposed) return false;
     if (disabled !== undefined) { record.action.disabled = !!disabled; record.button.disabled = !!disabled; }
     if (label !== undefined && typeof label === 'string') {
-      record.action.label = label; record.button.setAttribute('aria-label', label); record.button.setAttribute('title', label);
-      const text = record.button.querySelector?.('.naval-touch-action-label'); if (text) text.textContent = label;
+      record.action.label = label; const localized = translateData(label); record.button.setAttribute('aria-label', localized); record.button.setAttribute('title', localized);
+      const text = record.button.querySelector?.('.naval-touch-action-label'); if (text) text.textContent = localized;
     }
     return true;
   }
@@ -433,6 +461,7 @@ export class TouchHelm {
 
   dispose() {
     if (this.disposed) return;
+    this.unsubscribeLocale?.();
     this.clear(); this.disposed = true; this.enabled = false;
     for (const [target, type, callback] of this.listeners) target.removeEventListener(type, callback);
     this.listeners.length = 0;

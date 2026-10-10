@@ -1,9 +1,10 @@
 // Pause menu with settings and controls. Writes to the shared settings object and notifies.
 import { gsap } from 'gsap';
 import { sfx } from '../audio/sfx.js';
+import { t, createLanguagePicker, onLocaleChange } from '../core/i18n.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const GPU_TIER = { strong: 'potente', mid: 'media', weak: 'básica' };
+const GPU_TIER = { strong: 'strong', mid: 'mid', weak: 'weak' };
 
 export class PauseMenu {
   constructor(root, settings, { onChange, onResume, onNewGame, gpu }) {
@@ -15,9 +16,15 @@ export class PauseMenu {
     this.gpu = gpu || (() => null); // { name, tier } of the graphics card, for the quality hint
     this.open = false;
     this.tab = 'settings';
+    this.confirmingNew = false;
+    this.languagePicker = createLanguagePicker();
+    this.unsubscribeLocale = onLocaleChange(() => { if (this.open) { this.render(); } });
   }
 
   render() {
+    const focusedId = this.root.contains(document.activeElement) ? document.activeElement.id : '';
+    const focusedLocale = this.root.contains(document.activeElement) ? document.activeElement.dataset?.locale : '';
+    const scrollTop = this.root.querySelector('.panel')?.scrollTop || 0;
     const s = this.s;
     const range = (id, label, val, min = 0, max = 1, step = 0.05) =>
       `<div class="row"><label for="${id}">${label}</label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}"></div>`;
@@ -25,64 +32,66 @@ export class PauseMenu {
     const check = (id, label, val) => `<div class="row"><label for="${id}">${label}</label><input id="${id}" type="checkbox" ${val ? 'checked' : ''}></div>`;
     const settingsHtml = `
       <div class="section">
-        ${range('set-master', 'Volumen general', s.master)}
-        ${range('set-sfx', 'Efectos', s.sfx)}
-        ${range('set-music', 'Música', s.music)}
-        ${range('set-amb', 'Ambiente', s.ambience)}
-        ${check('set-muted', 'Silenciar todo', s.muted)}
+        ${range('set-master', t('pause.volume'), s.master)}
+        ${range('set-sfx', t('pause.effects'), s.sfx)}
+        ${range('set-music', t('pause.music'), s.music)}
+        ${range('set-amb', t('pause.ambience'), s.ambience)}
+        ${check('set-muted', t('pause.mute'), s.muted)}
       </div>
       <div class="section">
-        <div class="row"><label for="set-quality">Calidad gráfica</label><select id="set-quality">
-          ${['auto', 'low', 'medium', 'high', 'ultra'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta', ultra: 'Ultra · cómic dramático' }[q]}</option>`).join('')}
+        <div class="row"><label for="set-quality">${t('pause.quality')}</label><select id="set-quality">
+          ${['auto', 'low', 'medium', 'high', 'ultra'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${t('pause.' + (q === 'auto' ? 'auto' : q))}</option>`).join('')}
         </select></div>
-        <div class="row-note" id="set-gpu">GPU: ${esc(gpu.name || '—')} · ${GPU_TIER[gpu.tier] || GPU_TIER.mid}</div>
-        ${range('set-shake', 'Sacudida de cámara', s.shake)}
-        ${check('set-reduced', 'Reducir movimiento', s.reducedMotion)}
-        ${check('set-rotate', 'Rotar cámara con Z / X', s.camRotate)}
-        ${range('set-ui', 'Tamaño de la interfaz', s.uiScale, 0.8, 1.3, 0.05)}
-        ${check('set-contrast', 'Alto contraste (proyectiles con patrón)', s.highContrast)}
-        ${check('set-landscape', 'Forzar horizontal (móvil)', s.landscape !== false)}
-        <div class="row"><label for="set-touchsize">Tamaño de los botones</label><select id="set-touchsize">
-          ${[[0.85, 'Pequeño'], [1, 'Mediano'], [1.18, 'Grande']].map(([v, n]) => `<option value="${v}" ${+s.touchSize === v ? 'selected' : ''}>${n}</option>`).join('')}
+        <div class="row-note" id="set-gpu">${t('pause.gpu', { name: esc(gpu.name || '—'), tier: t('pause.tier.' + (GPU_TIER[gpu.tier] || 'mid')) })}</div>
+        ${range('set-shake', t('pause.shake'), s.shake)}
+        ${check('set-reduced', t('pause.reduceMotion'), s.reducedMotion)}
+        ${check('set-rotate', t('pause.rotate'), s.camRotate)}
+        ${range('set-ui', t('pause.uiSize'), s.uiScale, 0.8, 1.3, 0.05)}
+        ${check('set-contrast', t('pause.contrast'), s.highContrast)}
+        ${check('set-landscape', t('pause.landscape'), s.landscape !== false)}
+        <div class="row"><label for="set-touchsize">${t('pause.buttonSize')}</label><select id="set-touchsize">
+          ${[[0.85, t('pause.small')], [1, t('pause.medium')], [1.18, t('pause.large')]].map(([v, n]) => `<option value="${v}" ${+s.touchSize === v ? 'selected' : ''}>${n}</option>`).join('')}
         </select></div>
-        ${check('set-haptics', 'Vibración (móvil)', s.haptics !== false)}
-        ${check('set-comicfx', 'Efectos de cómic (impactos, onomatopeyas)', s.comicFx !== false)}
-        <div class="row"><label for="set-launch">Lanzamiento de áreas</label><select id="set-launch">
-          ${[['indicator', 'Con indicador (mantén y suelta)'], ['quick', 'Rápido (al pulsar)']].map(([v, n]) => `<option value="${v}" ${(s.launch || 'indicator') === v ? 'selected' : ''}>${n}</option>`).join('')}
+        ${check('set-haptics', t('pause.haptics'), s.haptics !== false)}
+        ${check('set-comicfx', t('pause.comicFx'), s.comicFx !== false)}
+        <div class="row"><label for="set-launch">${t('pause.launch')}</label><select id="set-launch">
+          ${[['indicator', t('pause.indicator')], ['quick', t('pause.quick')]].map(([v, n]) => `<option value="${v}" ${(s.launch || 'indicator') === v ? 'selected' : ''}>${n}</option>`).join('')}
         </select></div>
       </div>`;
     const controlsHtml = `
       <div class="section controls-list">
-        <span><span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span></span><span>Moverte (o flechas)</span>
-        <span class="kbd">ESPACIO</span><span>Dash: invulnerable 0,22 s. Una carga en Nv 1, dos desde Nv 2</span>
-        <span class="kbd">F</span><span>Hablar / interactuar. Junto a un armero: cambiar de arma (sable ↔ pistolas)</span>
-        <span class="kbd">N</span><span>${document.documentElement.lang.startsWith('en') ? 'Toggle your starter lantern' : 'Encender o apagar tu farol inicial'}</span>
-        <span class="kbd">Rueda</span><span>Zoom (3 niveles)</span>
-        <span><span class="kbd">Z</span> <span class="kbd">X</span></span><span>Rotar cámara 90° (actívalo en Ajustes)</span>
-        <span class="kbd">ESC</span><span>Pausa</span>
-        <span class="kbd">F3</span><span>Rendimiento</span>
-        <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>Sable: combo de 3. Golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE). Pistolas: mantén para disparar</span>
-        <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>Guardia (mantener): bloquea de frente y gasta aguante. Súbela justo a tiempo para ATRAPAR la bala; tu siguiente ataque la devuelve</span>
-        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span>Tus dos huecos: las artes del arma (sable: Estocada y Hoja de viento; pistolas: Descarga y Paso de humo) o tus tatuajes (<span class="kbd">T</span>)</span>
-        <span><span class="kbd">Q</span> <span class="kbd">E</span> mantener</span><span>Tromba y Abordaje: mantén para ver el área, suelta para lanzar · <span class="kbd">RMB</span> o <span class="kbd">ESC</span> cancela · Timón: mantén para cargar, suelta para lanzar</span>
-        <span class="kbd">R</span><span>Con el RIPOSTE lleno. Sable: Tormenta (refleja todo cerca). Pistolas: Lluvia de plomo en el cursor</span>
-        <span class="kbd">Ratón</span><span>Apuntar: miras al cursor (o con el stick derecho del mando)</span>
-        <span class="kbd">F4</span><span>Panel de pruebas: ajustes de combate, enemigos, arma, hitboxes</span>
+        <span><span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span></span><span>${t('controls.move')}</span>
+        <span class="kbd">${t('controls.key.space')}</span><span>${t('controls.dash')}</span>
+        <span class="kbd">F</span><span>${t('controls.interact')}</span>
+        <span class="kbd">N</span><span>${t('ui.controls.lantern')}</span>
+        <span class="kbd">${t('controls.key.wheel')}</span><span>${t('controls.zoom')}</span>
+        <span><span class="kbd">Z</span> <span class="kbd">X</span></span><span>${t('controls.rotate')}</span>
+        <span class="kbd">ESC</span><span>${t('controls.pause')}</span>
+        <span class="kbd">F3</span><span>${t('controls.performance')}</span>
+        <span><span class="kbd">LMB</span> <span class="kbd">J</span></span><span>${t('controls.sword')}</span>
+        <span><span class="kbd">RMB</span> <span class="kbd">K</span></span><span>${t('controls.guard')}</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span></span><span>${t('controls.abilities')}</span>
+        <span><span class="kbd">Q</span> <span class="kbd">E</span> ${t('controls.key.hold')}</span><span>${t('controls.area')}</span>
+        <span class="kbd">R</span><span>${t('controls.riposte')}</span>
+        <span class="kbd">${t('controls.key.mouse')}</span><span>${t('controls.aim')}</span>
+        <span class="kbd">F4</span><span>${t('controls.debug')}</span>
       </div>`;
     this.root.innerHTML = `
       <div class="panel frame interactive" role="dialog" aria-modal="true" aria-labelledby="pause-title">
-        <h2 id="pause-title" class="outlined">Pausa</h2>
+        <h2 id="pause-title" class="outlined">${t('pause.title')}</h2>
         <div class="tabs" role="tablist">
-          <button class="tab" role="tab" data-tab="settings" aria-selected="${this.tab === 'settings'}">Ajustes</button>
-          <button class="tab" role="tab" data-tab="controls" aria-selected="${this.tab === 'controls'}">Controles</button>
+          <button class="tab" role="tab" data-tab="settings" aria-selected="${this.tab === 'settings'}">${t('title.settings')}</button>
+          <button class="tab" role="tab" data-tab="controls" aria-selected="${this.tab === 'controls'}">${t('title.controls')}</button>
         </div>
         ${this.tab === 'settings' ? settingsHtml : controlsHtml}
         <div class="actions" id="pause-actions">
-          <button class="btn" id="btn-resume">Reanudar</button>
-          <button class="btn secondary" id="btn-new">Nueva partida</button>
+          <button class="btn" id="btn-resume">${t('pause.resume')}</button>
+          <button class="btn secondary" id="btn-new">${t('pause.newGame')}</button>
         </div>
       </div>`;
     this.root.querySelectorAll('.tab').forEach((b) => b.addEventListener('click', () => { this.tab = b.dataset.tab; sfx.click(); this.render(); }));
+    const panel = this.root.querySelector('.panel');
+    panel.insertBefore(this.languagePicker, panel.querySelector('.tabs'));
     this.root.querySelector('#btn-resume').addEventListener('click', () => { sfx.click(); this.onResume(); });
     this.root.querySelector('#btn-new').addEventListener('click', () => this.confirmNew());
     const bind = (id, key, fn = (el) => +el.value) => {
@@ -104,19 +113,29 @@ export class PauseMenu {
     bind('set-touchsize', 'touchSize');
     bind('set-haptics', 'haptics', (el) => el.checked);
     bind('set-comicfx', 'comicFx', (el) => el.checked);
+    if (this.confirmingNew) this.renderNewConfirmation();
+    panel.scrollTop = scrollTop;
+    if (focusedLocale) this.languagePicker.querySelector(`[data-locale="${focusedLocale}"]`)?.focus({ preventScroll: true });
+    else if (focusedId) this.root.querySelector('#' + focusedId)?.focus({ preventScroll: true });
   }
 
   confirmNew() {
     sfx.click();
+    this.confirmingNew = true;
+    this.renderNewConfirmation();
+  }
+
+  renderNewConfirmation() {
     const box = this.root.querySelector('#pause-actions');
-    box.innerHTML = `<div class="confirm"><span>Se borrarán tus ajustes y tu progreso guardado en este navegador.</span>
-      <div class="actions"><button class="btn" id="btn-new-yes">Borrar y empezar</button><button class="btn secondary" id="btn-new-no">Cancelar</button></div></div>`;
+    box.innerHTML = `<div class="confirm"><span>${t('pause.confirmDelete')}</span>
+      <div class="actions"><button class="btn" id="btn-new-yes">${t('pause.deleteStart')}</button><button class="btn secondary" id="btn-new-no">${t('pause.cancel')}</button></div></div>`;
     box.querySelector('#btn-new-yes').addEventListener('click', () => { sfx.click(); this.onNewGame(); });
-    box.querySelector('#btn-new-no').addEventListener('click', () => { sfx.click(); this.render(); });
+    box.querySelector('#btn-new-no').addEventListener('click', () => { sfx.click(); this.confirmingNew = false; this.render(); this.root.querySelector('#btn-new')?.focus({ preventScroll: true }); });
   }
 
   show(tab = 'settings') {
     this.tab = tab;
+    this.confirmingNew = false;
     this.render();
     this.root.hidden = false;
     this.open = true;

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ChatBubbles } from '../src/ui/chatBubbles.js';
+import { getLocale, setLocale, t } from '../src/core/i18n.js';
 
 const people = [
   { id: 'self-token', entity: 1, name: 'Yo' },
@@ -37,8 +38,36 @@ test('only live local chat creates a nearby bubble with state-derived identity a
   assert.equal(h.shown[0][0], 2);
   assert.deepEqual(h.shown[0][1], {
     text: '¡Hola!', channel: 'local', label: 'Cerca · Marina', own: false, range: 31,
+    labelKey: 'chatBubble.local_sender', labelParams: { name: 'Marina' }, labelNameKey: null,
   });
   assert.equal(h.shown[0][2], 5100);
+});
+
+test('bubble labels switch language while human text, player name, lifetime, and live-message deduplication stay fixed', () => {
+  const originalLocale = getLocale();
+  try {
+    setLocale('es');
+    const h = harness();
+    h.bubbles.onMessage(local('locale-1'));
+    const payload = h.shown[0][1];
+    const lifetime = h.shown[0][2];
+
+    assert.equal(t(payload.labelKey, payload.labelParams), '\u0043erca \u00b7 Marina');
+    assert.equal(payload.labelParams.name, 'Marina');
+    assert.equal(payload.text, '\u00a1Hola!');
+    assert.equal(lifetime, 5100);
+
+    setLocale('en');
+    assert.equal(t(payload.labelKey, payload.labelParams), 'Nearby \u00b7 Marina');
+    assert.equal(payload.label, '\u0043erca \u00b7 Marina', 'locale changes do not mutate the original presentation payload');
+    assert.equal(payload.labelParams.name, 'Marina', 'player names remain literal');
+    assert.equal(payload.text, '\u00a1Hola!', 'human chat remains literal');
+    assert.equal(h.shown[0][2], lifetime, 'locale changes do not restart bubble lifetime');
+    h.bubbles.onMessage(local('locale-1'));
+    assert.equal(h.shown.length, 1, 'locale changes do not replay a live message');
+  } finally {
+    setLocale(originalLocale);
+  }
 });
 
 test('world and unrelated channels never create bubbles', () => {

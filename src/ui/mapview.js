@@ -3,10 +3,12 @@ import { gsap } from 'gsap';
 import { describeMap, projectMap } from './cartography.js';
 import { mapAtlas, drawMapRegions, drawChartMarkers, drawPlayer } from './mapCanvas.js';
 import { QUESTS, QUEST_IDS, QST } from '../data/quests.js';
+import { t, onLocaleChange, translateData } from '../core/i18n.js';
 
 export class MapView {
   constructor(root, map) {
     this.root = root; this.isOpen = false; this.setMap(map);
+    this.unsubscribeLocale = onLocaleChange(() => this.refreshLocale());
     root.addEventListener('click', (e) => { if (e.target.closest('[data-close]') || e.target === root) this.close(); });
   }
 
@@ -18,6 +20,12 @@ export class MapView {
 
   px(x, z, size) { return projectMap(this.description.frame, x, z, size); }
 
+  refreshLocale() {
+    if (!this.isOpen) return;
+    const focusedClose = this.root.ownerDocument.activeElement === this.root.querySelector('[data-close]');
+    this.open(); if (focusedClose) this.root.querySelector('[data-close]')?.focus({ preventScroll: true });
+  }
+
   build() {
     this.atlas = mapAtlas(this.map, this.root.ownerDocument); this.base = this.atlas.base;
     this.description = this.atlas.description; this.span = this.description.frame.span;
@@ -25,24 +33,24 @@ export class MapView {
   }
 
   buildLabels() {
-    this.root.querySelector('.mapv-title').textContent = this.description.title;
+    this.root.querySelector('.mapv-title').textContent = translateData(this.description.title);
     this.labels.replaceChildren();
     for (const p of this.description.points) {
       if (['npc', 'rack', 'ship'].includes(p.kind)) continue;
       const pos = this.px(p.x, p.z, 100);
       if (!pos || pos.some(n => n < 0 || n > 100)) continue;
       const label = this.root.ownerDocument.createElement('span');
-      label.textContent = p.name; label.className = p.kind === 'danger' ? 'lawless' : '';
+      label.textContent = translateData(p.name); label.className = p.kind === 'danger' ? 'lawless' : '';
       label.style.left = `${pos[0]}%`; label.style.top = `${pos[1]}%`;
       this.labels.appendChild(label);
     }
   }
 
   open() {
-    this.root.innerHTML = `<div class="mapv frame interactive" role="dialog" aria-label="Mapa">
-      <div class="mapv-head"><b class="mapv-title outlined"></b><button class="icon-btn" data-close aria-label="Cerrar">✕</button></div>
+    this.root.innerHTML = `<div class="mapv frame interactive" role="dialog" aria-label="${t('systems.map.dialog')}">
+      <div class="mapv-head"><b class="mapv-title outlined"></b><button class="icon-btn" data-close aria-label="${t('systems.map.close')}">✕</button></div>
       <div class="mapv-body"><canvas width="640" height="640"></canvas><div class="mapv-labels"></div></div>
-      <div class="mapv-legend"><span class="me">Tú</span><span class="crew">Compañeros</span><span class="npc">Lugares</span><span class="ship">Balsas</span><span class="goal">Destino</span><span class="law">Sin ley</span></div></div>`;
+      <div class="mapv-legend"><span class="me">${t('systems.map.you')}</span><span class="crew">${t('systems.map.crew')}</span><span class="npc">${t('systems.map.places')}</span><span class="ship">${t('systems.map.rafts')}</span><span class="goal">${t('systems.map.destination')}</span><span class="law">${t('systems.map.outlaw')}</span></div></div>`;
     this.canvas = this.root.querySelector('canvas'); this.labels = this.root.querySelector('.mapv-labels');
     this.build(); this.root.hidden = false; this.isOpen = true;
     gsap.fromTo(this.root.querySelector('.mapv'), { scale: .9, opacity: 0 }, { scale: 1, opacity: 1, duration: .3, ease: 'back.out(2)' });
