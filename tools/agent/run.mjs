@@ -20,6 +20,8 @@ En modo autenticado, --owner y --character deben ser UUID del dueño autenticado
 Opcionales: --name "Brisa [IA]" --capabilities move,aim,attack_pve,body_pve,chat --minutes 5 --inspect --stay-open
 JSON por stdin: observe, files, context, actions, chat, lifecycle, stop, exit; order/chat_send con campo order (sobre v1); chat_retry con requestId; cancel con actionId.
 Lecturas privadas / Private reads: inventory_read y market_read con query v1; inventory y market inspeccionan el ledger. Requieren inventory_read/market_read en el grant autenticado; market_read solo admite list o quote, sin mover bienes / only list or quote, no goods movement.
+Trade explícito / Explicit trade: trade con opId, op (buy|sell), g, n y expectedTotal. Requiere el grant autenticado trade_buy o trade_sell y presupuesto server-owned habilitado. gameSpendingEnabled indica la capacidad explícita y que no se conoce un presupuesto deshabilitado; no garantiza que la siguiente operación pueda completarse. Repetir el mismo opId y cuerpo tras una respuesta incierta recupera su recibo durable con el grant de sesión actual; no se reenvía automáticamente. No está disponible como herramienta de mente.
+English: send trade with opId, op (buy or sell), g, n, and expectedTotal. It requires an authenticated trade_buy or trade_sell grant and an enabled server-owned budget. gameSpendingEnabled reports the explicit capability while a disabled budget is not known; it does not guarantee the next operation can complete. After an uncertain response, explicitly resend the same immutable operation under the current session to recover its durable receipt; the runner never retries automatically. Trade is not a mind tool.
 Movimiento con capacidad move: go_to, follow, keep_distance; rutas directas locales y resultados inspeccionables, sin navegación global.
 body_pve requiere move,aim,attack_pve,body_pve; modos aggressive/defensive/support, reservas propias y ataque suprimido cerca de otros jugadores.
 Con --stay-open: reenter explícito tras cierre; modo invitado crea un cuerpo local nuevo. Modo autenticado pide un grant nuevo al servidor y nunca reanuda tareas; self-stop libera el lease y permite conexión fresca, mientras stop/revoke del dueño requiere resume explícito y conexión fresca.
@@ -94,7 +96,9 @@ async function main() {
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
     const ready = await agent.connect();
-    write('ready', { ...ready, grant: agent.grant, authority: agent.authority?.grant ? 'server_controller' : 'local_runner_only', inferenceCalls: 0, gameSpendingEnabled: false });
+    const gameSpendingEnabled = () => !!agent.authority?.grant && agent.tradeState.available;
+    write('ready', { ...ready, grant: agent.grant, authority: agent.authority?.grant ? 'server_controller' : 'local_runner_only', inferenceCalls: 0,
+      gameSpendingEnabled: gameSpendingEnabled(), gameSpendingRequiresEnabledBudget: true });
     if (mind) write('mind', mind.state);
     const publishMind = (type, result) => {
       write(type, result);
@@ -105,7 +109,7 @@ async function main() {
       let message;
       try { message = JSON.parse(raw); } catch { write('rejected', { why: 'invalid_json' }); return; }
       if (!message || typeof message !== 'object' || Array.isArray(message)) { write('rejected', { why: 'invalid_message' }); return; }
-      const keys = ['inventory_read', 'market_read'].includes(message.type) ? ['type', 'query'] : ['order', 'chat_send'].includes(message.type) ? ['type', 'order'] : message.type === 'respond' ? ['type', 'messageId'] : message.type === 'compact_memory' ? ['type', 'sourceIds'] : message.type === 'chat_retry' ? ['type', 'requestId'] : message.type === 'cancel' ? ['type', 'actionId'] : ['type'];
+      const keys = ['inventory_read', 'market_read'].includes(message.type) ? ['type', 'query'] : message.type === 'trade' ? ['type', 'opId', 'op', 'g', 'n', 'expectedTotal'] : ['order', 'chat_send'].includes(message.type) ? ['type', 'order'] : message.type === 'respond' ? ['type', 'messageId'] : message.type === 'compact_memory' ? ['type', 'sourceIds'] : message.type === 'chat_retry' ? ['type', 'requestId'] : message.type === 'cancel' ? ['type', 'actionId'] : ['type'];
       if (Object.keys(message).length !== keys.length || !keys.every((key) => Object.hasOwn(message, key))) { write('rejected', { why: 'invalid_message' }); return; }
       switch (message.type) {
         case 'order': mind?.cancel(); write('order_response', agent.order(message.order)); break;
@@ -115,6 +119,8 @@ async function main() {
         case 'market': write('market', agent.market); break;
         case 'inventory_read': write('inventory_read_response', agent.readInventory(message.query)); break;
         case 'market_read': write('market_read_response', agent.readMarket(message.query)); break;
+        case 'trade': write('trade_response', agent.trade({ opId: message.opId, op: message.op, g: message.g, n: message.n,
+          expectedTotal: message.expectedTotal })); break;
         case 'cancel': mind?.cancel(); write('cancel_response', agent.cancel(message.actionId, scope.ownerId)); break;
         case 'chat': write('chat', agent.chat); break;
         case 'chat_send': write('chat_send_response', agent.sendChat(message.order)); break;
@@ -152,7 +158,7 @@ async function main() {
           try { files = await loadOwnerFiles({ directory, scope: memoryScope }); }
           catch (error) { write('rejected', { why: error.code ?? 'owner_files_unavailable' }); break; }
           const result = await agent.reenter(scope.ownerId);
-          write('reenter_response', { ...result, inferenceCalls: 0, gameSpendingEnabled: false });
+          write('reenter_response', { ...result, inferenceCalls: 0, gameSpendingEnabled: gameSpendingEnabled(), gameSpendingRequiresEnabledBudget: true });
           if (result.ok) write('owner_files', files);
           break;
         }

@@ -94,6 +94,8 @@ export function runnerMindSnapshot(runner, files, nowMs) {
   const inventoryState = inventoryReadState(runner, current);
   const marketState = marketReadState(runner, current);
   const capabilities = runner.state === 'ready' ? grant.capabilities.filter((capability) =>
+    // L06b trade is an explicit controller API. The simulated mind has no spending action.
+    !['trade_buy', 'trade_sell'].includes(capability) &&
     (capability !== INVENTORY_READ_CAPABILITY || !!inventoryState) &&
     (capability !== MARKET_READ_CAPABILITY || !!marketState)) : [];
   const scope = { ownerId: grant.scope.ownerId, characterId: grant.scope.characterId, worldId: grant.scope.worldId };

@@ -13,6 +13,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA17 L06b-2b (2026-10-10), **alpha.26/protocolo 38**: [comercio explícito y presupuesto](docs/delivery/l06b-agent-trade.md).
+  Compra/venta con capacidades separadas, cuenta/ciudad derivadas y mandato acumulado SQL017 sin refill;
+  consumo y recibo en la misma M5 humana. Recuperación exacta, stop y revocación cubiertos localmente.
+  Regresión y publicación en la entrega; piloto/comercio/proveedor de agentes apagados. SQL017 y canario
+  autenticado live pendientes. Conserva Tala/refugio del upstream. Sigue L03d social/PvE con proveedor,
+  memoria y coste medidos, con activación económica independiente.
+
 - AREA07 RNV01 (2026-10-10), **alpha.24/protocolo 37**: [refugio naval](docs/delivery/rnv01-naval-refuge.md),
   techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
   del dueño. Editor de once piezas; coste/HP existentes, visitantes sin cerradura y vista interior.
@@ -50,8 +57,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   Introducido en alpha.20/protocolo 35, publicado en `4c6743b`/alpha.23/protocolo 36, con
   46/46 pruebas de integración, 107/107 del VPS y 8/8 públicas; revisión/imagen/entrada WSS verificadas.
   Integra prerrequisitos locales L05/L06a/L06b-1; piloto público apagado.
-  Sin proveedor real, SQL nuevo ni movimiento de bienes. Sigue L06b-2b: compra/venta con permisos
-  y presupuesto durable propio en `EconomicAuthority`/M5; después canario social/PvE con proveedor.
+  Sin proveedor real, SQL nuevo ni movimiento de bienes por 2a. Compra/venta local 2b queda registrada
+  arriba; después sigue canario social/PvE con proveedor y su puerta económica independiente.
   Implementación, pruebas y despliegue se distinguen en la entrega.
 
 - Revisión A1/M5 del autor (2026-10-09): continuidad tiene otro dueño. **M5 mantiene la única

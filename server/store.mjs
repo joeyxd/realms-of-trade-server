@@ -16,6 +16,8 @@ import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemo
 import { EconomicOperationError, economicOperation, canonicalEconomicText, checkedEconomicResult, checkedEconomicReceipt } from './economicOperation.mjs';
 import { checkedResourceState, upgradeLoggingState } from './resourceState.mjs';
 import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
+import { agentGoodsBudgetCreate, agentGoodsBudgetRevoke, agentGoodsBudgetScope, agentTradeInput, checkedAgentGoodsBudget,
+  checkAgentTradeDelta } from './agentGoodsBudget.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -82,6 +84,7 @@ export function createMemoryStore() {
   const deathReceipts = new Map(), deathDrops = new Map(), dropReceipts = new Map(), deathDropStates = new Map();
   const groundClocks = new Map(), clockReceipts = new Map();
   const economicReceipts = new Map();
+  const agentGoodsBudgets = new Map(), agentTradeReceipts = new Map();
   const intents = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
@@ -111,6 +114,53 @@ export function createMemoryStore() {
   const applyPearl = (request, candidate) => {
     for (const p of request.profiles) profiles.set(p.id, candidate.nextProfiles.get(p.id));
     uniques.set(request.uid, candidate.unique);
+  };
+  const commitEconomic = (operationId, request) => {
+    const text = canonicalEconomicText(request), receipt = economicReceipts.get(operationId);
+    if (receipt) {
+      if (receipt.text !== text) return { ok: false, why: 'operation' };
+      return checkedEconomicOutput({ ...structuredClone(receipt.result), replay: true }, request, true);
+    }
+    if (intents.has(operationId) || [pearlReceipts, groundReceipts, batchReceipts, deathReceipts, dropReceipts, clockReceipts].some(r => r.has(operationId))) {
+      return { ok: false, why: 'operation' };
+    }
+    const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
+    if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
+        currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
+    if (request.worldData.resources?.v === 2 && currentWorld.data.resources?.v !== 2) return conflict();
+    if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
+    if (!loggingWorldTransition(currentWorld.data.resources, request)) return { ok: false, why: 'operation' };
+    const resource = request.command.type === 'resource', palm = resource && request.command.op === 'gather' &&
+      currentWorld.data.resources?.nodes.find(n => n.id === request.command.node)?.kind === 'palm';
+    if (currentWorld.data.resources?.v === 2 && resource && (palm ? !request.beneficiaries
+      : canonicalEconomicText(currentWorld.data.resources.logging) !== canonicalEconomicText(request.worldData.resources.logging)
+        || canonicalEconomicText(currentWorld.data.resources.nodes.filter(n => n.kind === 'palm')) !==
+          canonicalEconomicText(request.worldData.resources.nodes.filter(n => n.kind === 'palm')))) return conflict();
+    if (Object.hasOwn(currentWorld.data, 'community') && request.command.type === 'resource' &&
+        (!Object.hasOwn(request.worldData, 'community') ||
+         canonicalEconomicText(currentWorld.data.community) !== canonicalEconomicText(request.worldData.community))) return conflict();
+
+    const profileVersion = request.expectedProfileVersion + 1, worldVersion = request.expectedWorldVersion + 1;
+    version(profileVersion, 1); version(worldVersion, 1);
+    const nextProfiles = new Map(profiles);
+    const members = request.beneficiaries ?? [{ account: request.account, expectedVersion: request.expectedProfileVersion, profile: request.profile }];
+    for (const row of members) {
+      const current = profiles.get(row.account);
+      if (!current || current.version !== row.expectedVersion || row.before &&
+          canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
+      nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
+    }
+    assertManagedPearls(nextProfiles, uniques);
+    const result = checkedEconomicOutput({ ok: true, replay: false, profileVersion, worldVersion, ack: request.ack,
+      ...(request.beneficiaries ? { profiles: loggingResultProfiles(request) } : {}) }, request);
+    const stored = { text, request: structuredClone(request), result };
+    const nextWorld = { data: structuredClone(request.worldData), version: worldVersion };
+    const reply = structuredClone(result);
+    // Validate and clone the entire logging/economic batch before its synchronous commit point.
+    for (const row of members) profiles.set(row.account, nextProfiles.get(row.account));
+    worlds.set(request.world, nextWorld);
+    economicReceipts.set(operationId, stored);
+    return reply;
   };
   const store = {
     kind: 'memory', durable: false,
@@ -143,52 +193,91 @@ export function createMemoryStore() {
     },
     async checkResourceOperations() { return { version: 1 }; },
     async checkLoggingOperations() { return { version: 1 }; },
+    async checkAgentTradeOperations() { return { version: 1 }; },
     async commitEconomicOperation(raw) {
-      const { operationId, request } = checkedEconomicInput(raw), text = canonicalEconomicText(request);
-      const receipt = economicReceipts.get(operationId);
-      if (receipt) {
-        if (receipt.text !== text) return { ok: false, why: 'operation' };
-        return checkedEconomicOutput({ ...structuredClone(receipt.result), replay: true }, request, true);
+      const { operationId, request } = checkedEconomicInput(raw);
+      return commitEconomic(operationId, request);
+    },
+    async createAgentGoodsBudget(raw) {
+      let input;
+      try { input = agentGoodsBudgetCreate(raw); } catch { throw new StoreError('operation'); }
+      const id = `${input.world}:${input.characterId}`, current = agentGoodsBudgets.get(id);
+      if (current) {
+        if (current.ownerId !== input.ownerId || current.budgetId !== input.budgetId ||
+            canonicalEconomicText(current.limits) !== canonicalEconomicText(input.limits)) throw new StoreError('operation');
+        return checkedAgentGoodsBudget(current.public);
       }
-      if (intents.has(operationId) || [pearlReceipts, groundReceipts, batchReceipts, deathReceipts, dropReceipts, clockReceipts].some(r => r.has(operationId))) {
+      if ([...agentGoodsBudgets.values()].some(row => row.world === input.world &&
+          row.ownerId === input.ownerId && row.budgetId === input.budgetId)) throw new StoreError('operation');
+      const created = { ownerId: input.ownerId, world: input.world, characterId: input.characterId,
+        budgetId: input.budgetId, limits: structuredClone(input.limits), enabled: true, buyGoldUsed: 0, sellUnitsUsed: {} };
+      created.public = { v: 1, budgetId: created.budgetId, enabled: true, limits: created.limits,
+        buyGoldUsed: 0, sellUnitsUsed: {} };
+      agentGoodsBudgets.set(id, created);
+      return checkedAgentGoodsBudget(created.public);
+    },
+    async loadAgentGoodsBudget(raw) {
+      let scope;
+      try { scope = agentGoodsBudgetScope(raw); } catch { throw new StoreError('operation'); }
+      const current = agentGoodsBudgets.get(`${scope.world}:${scope.characterId}`);
+      if (!current || current.ownerId !== scope.ownerId) return null;
+      return checkedAgentGoodsBudget(current.public);
+    },
+    async revokeAgentGoodsBudget(raw) {
+      let input;
+      try { input = agentGoodsBudgetRevoke(raw); } catch { throw new StoreError('operation'); }
+      const current = agentGoodsBudgets.get(`${input.world}:${input.characterId}`);
+      if (!current || current.ownerId !== input.ownerId || current.budgetId !== input.budgetId) throw new StoreError('budget');
+      current.enabled = false; current.public.enabled = false;
+      return checkedAgentGoodsBudget(current.public);
+    },
+    async commitAgentTrade(raw) {
+      let input;
+      try { input = agentTradeInput(raw); } catch { throw new StoreError('operation'); }
+      const { operationId, request, ownerId, budgetId } = input;
+      const checked = checkedEconomicInput({ operationId, request });
+      if (checked.request.command.type !== 'commerce' || !['buy', 'sell'].includes(checked.request.command.op)) throw new StoreError('operation');
+      const prior = agentTradeReceipts.get(operationId);
+      if (prior) {
+        if (prior.text !== canonicalEconomicText(checked.request) || prior.ownerId !== ownerId || prior.budgetId !== budgetId) return { ok: false, why: 'operation' };
+        return checkedEconomicOutput({ ...structuredClone(prior.result), replay: true }, checked.request, true);
+      }
+      if (economicReceipts.has(operationId) || [pearlReceipts, groundReceipts, batchReceipts, deathReceipts, dropReceipts, clockReceipts].some(r => r.has(operationId)) || intents.has(operationId)) {
         return { ok: false, why: 'operation' };
       }
-      const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
-      if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
-          currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
-      if (request.worldData.resources?.v === 2 && currentWorld.data.resources?.v !== 2) return conflict();
-      if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
-      if (!loggingWorldTransition(currentWorld.data.resources, request)) return { ok: false, why: 'operation' };
-      const resource = request.command.type === 'resource', palm = resource && request.command.op === 'gather'
-        && currentWorld.data.resources?.nodes.find(n => n.id === request.command.node)?.kind === 'palm';
-      if (currentWorld.data.resources?.v === 2 && resource && (palm ? !request.beneficiaries
-        : canonicalEconomicText(currentWorld.data.resources.logging) !== canonicalEconomicText(request.worldData.resources.logging)
-          || canonicalEconomicText(currentWorld.data.resources.nodes.filter(n => n.kind === 'palm')) !==
-            canonicalEconomicText(request.worldData.resources.nodes.filter(n => n.kind === 'palm')))) return conflict();
-      if (Object.hasOwn(currentWorld.data, 'community') && request.command.type === 'resource' &&
-          (!Object.hasOwn(request.worldData, 'community') ||
-           canonicalEconomicText(currentWorld.data.community) !== canonicalEconomicText(request.worldData.community))) return conflict();
-
-      const profileVersion = request.expectedProfileVersion + 1, worldVersion = request.expectedWorldVersion + 1;
-      version(profileVersion, 1); version(worldVersion, 1);
-      const nextProfiles = new Map(profiles);
-      const members = request.beneficiaries ?? [{ account: request.account, expectedVersion: request.expectedProfileVersion, profile: request.profile }];
-      for (const row of members) {
-        const current = profiles.get(row.account);
-        if (!current || current.version !== row.expectedVersion || row.before
-            && canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
-        nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
+      const budget = agentGoodsBudgets.get(`${checked.request.world}:${checked.request.account}`);
+      if (!budget || budget.ownerId !== ownerId || budget.budgetId !== budgetId || !budget.enabled) return { ok: false, why: 'budget' };
+      const currentProfile = profiles.get(checked.request.account);
+      let delta;
+      try { delta = checkAgentTradeDelta(currentProfile?.data, checked.request); } catch { return { ok: false, why: 'budget' }; }
+      const command = checked.request.command;
+      if (command.op === 'buy') {
+        if (checked.request.ack.ok === true && (delta.buyGold > budget.limits.buyGoldPerTrade || budget.buyGoldUsed + delta.buyGold > budget.limits.buyGold)) return { ok: false, why: 'budget' };
+      } else if (checked.request.ack.ok === true && (command.n > budget.limits.sellUnitsPerTrade ||
+          (budget.sellUnitsUsed[command.g] ?? 0) + command.n > (budget.limits.sellUnits[command.g] ?? 0))) return { ok: false, why: 'budget' };
+      const requestText = canonicalEconomicText(checked.request), storedRequest = structuredClone(checked.request);
+      const nextBudget = structuredClone(budget);
+      if (checked.request.ack.ok === true) {
+        nextBudget.buyGoldUsed += delta.buyGold;
+        if (delta.sellUnits) nextBudget.sellUnitsUsed[command.g] = (nextBudget.sellUnitsUsed[command.g] ?? 0) + delta.sellUnits;
       }
-      assertManagedPearls(nextProfiles, uniques);
-      const result = checkedEconomicOutput({ ok: true, replay: false, profileVersion, worldVersion, ack: request.ack,
-        ...(request.beneficiaries ? { profiles: loggingResultProfiles(request) } : {}) }, request);
-      const stored = { text, request: structuredClone(request), result };
-      const nextWorld = { data: structuredClone(request.worldData), version: worldVersion };
-      // All validation and cloning precedes this synchronous commit point.
-      for (const row of members) profiles.set(row.account, nextProfiles.get(row.account));
-      worlds.set(request.world, nextWorld);
-      economicReceipts.set(operationId, stored);
-      return structuredClone(result);
+      nextBudget.public = checkedAgentGoodsBudget({ v: 1, budgetId: nextBudget.budgetId, enabled: nextBudget.enabled,
+        limits: nextBudget.limits, buyGoldUsed: nextBudget.buyGoldUsed, sellUnitsUsed: nextBudget.sellUnitsUsed });
+      const preparedReceipt = { ownerId, budgetId, request: storedRequest, text: requestText, result: null };
+      const result = commitEconomic(operationId, checked.request);
+      if (result.ok !== true) return result;
+      // Both receipt maps retain the same internal immutable result. Every public read returns
+      // a clone; no fallible cloning/serialization follows the economic commit point.
+      preparedReceipt.result = economicReceipts.get(operationId).result;
+      agentGoodsBudgets.set(`${checked.request.world}:${checked.request.account}`, nextBudget);
+      agentTradeReceipts.set(operationId, preparedReceipt);
+      return result;
+    },
+    async loadAgentTradeOperation(operationId) {
+      try { operationId = playerKey(operationId); } catch { throw new StoreError('operation'); }
+      const receipt = agentTradeReceipts.get(operationId);
+      return receipt ? { request: structuredClone(receipt.request), result: structuredClone(receipt.result),
+        ownerId: receipt.ownerId, budgetId: receipt.budgetId } : null;
     },
     async loadEconomicOperation(operationId) {
       operationId = playerKey(operationId);
@@ -487,6 +576,51 @@ export function createSupabaseStore(client) {
       const result = await rpc('mn_commit_economic_operation', { p_operation_id: operationId, p_request: request });
       return checkedEconomicOutput(result, request, result?.replay === true);
     },
+    async createAgentGoodsBudget(raw) {
+      let input;
+      try { input = agentGoodsBudgetCreate(raw); } catch { throw new StoreError('operation'); }
+      const result = await rpc('mn_create_agent_goods_budget', { p_world: input.world, p_owner_id: input.ownerId,
+        p_character_id: input.characterId, p_budget_id: input.budgetId, p_limits: input.limits });
+      if (result?.ok === false) throw new StoreError(result.why === 'conflict' ? 'operation' : 'response');
+      try { return checkedAgentGoodsBudget(result); } catch { throw new StoreError('response'); }
+    },
+    async loadAgentGoodsBudget(raw) {
+      let scope;
+      try { scope = agentGoodsBudgetScope(raw); } catch { throw new StoreError('operation'); }
+      const result = await rpc('mn_load_agent_goods_budget', { p_world: scope.world,
+        p_owner_id: scope.ownerId, p_character_id: scope.characterId });
+      if (result === null) return null;
+      try { return checkedAgentGoodsBudget(result); } catch { throw new StoreError('response'); }
+    },
+    async revokeAgentGoodsBudget(raw) {
+      let input;
+      try { input = agentGoodsBudgetRevoke(raw); } catch { throw new StoreError('operation'); }
+      const result = await rpc('mn_revoke_agent_goods_budget', { p_world: input.world,
+        p_owner_id: input.ownerId, p_character_id: input.characterId, p_budget_id: input.budgetId });
+      if (result?.ok === false) throw new StoreError(result.why === 'budget' ? 'budget' : 'response');
+      try { return checkedAgentGoodsBudget(result); } catch { throw new StoreError('response'); }
+    },
+    async commitAgentTrade(raw) {
+      let input;
+      try { input = agentTradeInput(raw); } catch { throw new StoreError('operation'); }
+      const checked = checkedEconomicInput({ operationId: input.operationId, request: input.request });
+      if (checked.request.command.type !== 'commerce' || !['buy', 'sell'].includes(checked.request.command.op)) throw new StoreError('operation');
+      const result = await rpc('mn_commit_agent_trade', { p_operation_id: input.operationId,
+        p_request: checked.request, p_owner_id: input.ownerId, p_budget_id: input.budgetId });
+      if (result?.ok === false && ['budget', 'operation', 'conflict'].includes(result.why)) return result;
+      return checkedEconomicOutput(result, checked.request, result?.replay === true);
+    },
+    async loadAgentTradeOperation(operationId) {
+      try { operationId = playerKey(operationId); } catch { throw new StoreError('operation'); }
+      const raw = await rpc('mn_load_agent_trade_operation', { p_operation_id: operationId });
+      if (raw === null) return null;
+      try {
+        if (!raw || typeof raw !== 'object' || Array.isArray(raw) || Object.keys(raw).length !== 4 ||
+            !Object.hasOwn(raw, 'ownerId') || !Object.hasOwn(raw, 'budgetId')) throw new Error('shape');
+        const receipt = checkedEconomicReceipt({ request: raw.request, result: raw.result }, operationId);
+        return { ...receipt, ownerId: playerKey(raw.ownerId), budgetId: playerKey(raw.budgetId) };
+      } catch { throw new StoreError('response'); }
+    },
     async checkResourceOperations() {
       const result = await rpc('mn_resource_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
@@ -496,6 +630,12 @@ export function createSupabaseStore(client) {
       const result = await rpc('mn_logging_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
       return result;
+    },
+    async checkAgentTradeOperations() {
+      const result = await rpc('mn_agent_trade_ready', {});
+      if (!result || typeof result !== 'object' || Array.isArray(result) || result.version !== 1 ||
+          Reflect.ownKeys(result).length !== 1 || !Object.hasOwn(result, 'version')) throw new StoreError('response');
+      return { version: 1 };
     },
     async loadEconomicOperation(operationId) {
       operationId = playerKey(operationId);

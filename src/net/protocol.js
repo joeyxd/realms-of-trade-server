@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 37; // Instance-bound open doors on public rafts and moving-deck collision/prediction.
+export const PROTOCOL_VERSION = 38; // Private authorized trade and durable goods-budget receipts, alongside raft doors; reload peers.
 
 export const MSG = {
   // client -> server
@@ -15,6 +15,8 @@ export const MSG = {
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
+  AGENT_TRADE: 'agent_trade', // managed trade: {opId,epoch,sessionId,op,g,n,expectedTotal}; server selects account/town
+  AGENT_GOODS_BUDGET: 'agent_goods_budget', // authenticated owner: create/read/revoke for a configured character
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
@@ -31,6 +33,8 @@ export const MSG = {
   AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
+  AGENT_TRADE_RESULT: 'agent_trade_result', // private durable receipt; historical results never hydrate current inventory
+  AGENT_GOODS_BUDGET_RESULT: 'agent_goods_budget_result', // private owner policy projection; no credentials or foreign identity
   PROFILE: 'profile', // {p}: your profile (bag, equipment, gold, masteries, quests…), private (M4)
   SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
   // Session-owned helm and relative deck input; the remaining naval/trade messages stay reserved.

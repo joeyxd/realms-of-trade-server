@@ -15,7 +15,8 @@ export const AGENT_PILOT_POLICY = Object.freeze({
 
 const PASS_THROUGH = new Set([
   MSG.WELCOME, MSG.CHAT_STATE, MSG.CHAT_MESSAGE, MSG.CHAT_RESULT,
-  MSG.AGENT_STATE, MSG.AGENT_INVENTORY_RESULT, MSG.AGENT_MARKET_RESULT, MSG.PONG, MSG.ERROR, MSG.FULL,
+  MSG.AGENT_STATE, MSG.AGENT_INVENTORY_RESULT, MSG.AGENT_MARKET_RESULT, MSG.AGENT_TRADE_RESULT,
+  MSG.AGENT_GOODS_BUDGET_RESULT, MSG.PONG, MSG.ERROR, MSG.FULL,
 ]);
 
 function positioned(ecs, id) {
@@ -108,6 +109,9 @@ export class AgentPerception {
       return ev ? [{ t: MSG.EVENT, ev }] : [];
     }
     if (message.t === MSG.DESPAWN) {
+      // The outbox may deliver a retired body's despawn after reentry reused its ECS id.
+      // A live current self is authoritative; a real destroyed body still retires below.
+      if (message.id === selfEntity && positioned(world?.ecs, selfEntity)) return [];
       if (!this.#lives.delete(message.id)) return [];
       return [{ t: MSG.DESPAWN, id: message.id }];
     }

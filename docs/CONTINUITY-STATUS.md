@@ -5,6 +5,7 @@
 | Recorrido | Cobertura | Próximo cierre |
 |---|---|---|
 | Comercio, materiales de balsa, carga y aportes | SQL014, perfil/mundo/recibo y aceptación publicada | Caída VPS y nuevas operaciones |
+| Comercio autorizado de agentes | [L06b-2b/SQL017](delivery/l06b-agent-trade.md), local opt-in: mandato + consumo + vínculo al recibo SQL014/015/016 | SQL017 y canario autenticado live; agentes/comercio públicos apagados |
 | Recolección, golpes parciales, crafting y herramientas | [SQL015/alpha.23](delivery/m5-resource-authority.md), activa en Supabase; 57/57 runtime, 107/107 offline VPS, 8 acciones confirmadas y 23 replays tras dos reinicios ordenados y SIGKILL | Otras operaciones/features M5; la durabilidad de recursos no acredita cortes eléctricos ni restauración de disco |
 | Reloj de recursos | Tick lógico en commit/checkpoint; reinicio ordenado con pausa offline real de 12 918 ms y espera recalculada exacta de 43,9 s | El tiempo de simulación sin checkpoint puede retroceder ante caída abrupta |
 | Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md): Tala, troncos y hasta tres perfiles actuales en el mismo recibo M5; legacy/pilotaje preservados | SQL016 y activación/aceptación VPS; después enseñanza del artesano |
@@ -49,3 +50,10 @@ su práctica con nodo/reloj/recibo. Ausencia legacy sigue representando cero sin
 recursos v1 se adoptan una vez sin inventar autoría en ciclos parciales. Replay histórico no instala
 estado antiguo y la recuperación local se comprueba terminando el proceso antes/después del commit.
 Scope por personaje/mundo/época y aceptación de una caída real del VPS permanecen pendientes.
+
+L06b-2b registra `buyGoldUsed` y `sellUnitsUsed` en SQL017, con defaults cero y scope
+mundo/dueño/personaje. `budgetId` no cambia y los límites no se renuevan; revocar es definitivo.
+`economicOperationId(world,character,opId)` conserva la identidad existente: el mismo commit confirma
+perfil, mercado y consumo, y un vínculo inmutable añade dueño/presupuesto. Replay no concede bienes
+ni hidrata perfiles históricos. La reapertura PGlite prueba almacenamiento local; SQL017 live y caída
+de proceso/disco de esta nueva política requieren evidencia aparte. Publicación inerte no activa grants.

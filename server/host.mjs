@@ -26,6 +26,7 @@ import { groundKey } from './pearlGround.mjs';
 import { AgentControl } from './agentControl.mjs';
 import { AgentPerception, AGENT_PILOT_POLICY } from './agentPerception.mjs';
 import { captureAgentInventory } from './agentInventory.mjs';
+import { agentTradeMessage, agentGoodsBudgetMessage } from './agentTrade.mjs';
 import { INVENTORY_QUERY_LIMIT, inventoryId } from '../src/net/agentInventory.js';
 import { MARKET_QUERY_LIMIT, MARKET_FAILURES, validMarketQuery, validMarketProjection } from '../src/net/agentMarket.js';
 import { readCommerce } from '../src/sim/systems/commerce.js';
@@ -67,7 +68,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false } = {}) {
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, agentTrade = false } = {}) {
     if (typeof resourceOperations !== 'boolean' || resourceOperations && !economicOperations) throw new StoreError('configuration');
     this.resourceOperations = resourceOperations;
     if (typeof loggingOperations !== 'boolean' || loggingOperations && !resourceOperations) throw new StoreError('configuration');
@@ -86,6 +87,10 @@ export class GameHost {
           maxPlayers < 2 || maxPlayers > 4 || pilot.maxAgents >= maxPlayers) throw new StoreError('configuration');
       this.agentPilot = Object.freeze({ maxAgents: pilot.maxAgents });
     }
+    if (typeof agentTrade !== 'boolean' || agentTrade && (!economicOperations || !this.agentPilot ||
+        !['createAgentGoodsBudget', 'loadAgentGoodsBudget', 'revokeAgentGoodsBudget', 'commitAgentTrade',
+          'loadAgentTradeOperation', 'checkAgentTradeOperations'].every(method => typeof store[method] === 'function'))) throw new StoreError('configuration');
+    this.agentTrade = agentTrade;
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
     if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
     if (!Number.isFinite(worldSaveMs) || worldSaveMs <= 0 || worldSaveMs > 2147483647) throw new StoreError('configuration');
@@ -451,6 +456,7 @@ export class GameHost {
           (await this.store.checkResourceOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.loggingOperations && (typeof this.store.checkLoggingOperations !== 'function' ||
           (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
       // Preserve the current authority's callbacks while restoring its economic clock/RNG first.
@@ -561,6 +567,8 @@ export class GameHost {
     this.sweepAgentControl();
     if (msg.t === MSG.AGENT_INVENTORY) { this.agentInventoryMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
+    if (msg.t === MSG.AGENT_TRADE) { agentTradeMessage(this, sock, msg); return; }
+    if (msg.t === MSG.AGENT_GOODS_BUDGET) { void agentGoodsBudgetMessage(this, sock, msg); return; }
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }
@@ -1113,7 +1121,9 @@ export class GameHost {
     if (!sock) return;
     if (this.agentPilot) {
       const inventoryDenial = (msg.t === MSG.AGENT_INVENTORY_RESULT && msg.ok === false && msg.inventory === null) ||
-        (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null);
+        (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null) ||
+        (msg.t === MSG.AGENT_TRADE_RESULT && msg.ok === false && msg.receipt === null) ||
+        (msg.t === MSG.AGENT_GOODS_BUDGET_RESULT && msg.ok === false && msg.budget === null);
       // Identity is unresolved before HELLO/profile admission: no spectator lane may leak the world.
       if (!sock.worldAdmitted && !inventoryDenial && ![MSG.WELCOME, MSG.ERROR, MSG.FULL, MSG.PONG, MSG.AGENT_STATE].includes(msg.t) &&
           !(msg.t === MSG.SPAWN && msg.e?.id === this.server.clients.get(id)?.entity)) return;
@@ -1126,7 +1136,9 @@ export class GameHost {
             this.sendTo(id, { t: MSG.SPAWN, e: this.server.world.describe(e) });
         }
       }
-      if (sock.agentIdentity && !inventoryDenial && ![MSG.WELCOME, MSG.AGENT_STATE, MSG.ERROR, MSG.FULL, MSG.PONG].includes(msg.t) &&
+      // A previously admitted trade can commit after stop. Its bounded private receipt still
+      // resolves uncertainty; it grants no new read/control authority or current profile view.
+      if (sock.agentIdentity && !inventoryDenial && ![MSG.WELCOME, MSG.AGENT_STATE, MSG.AGENT_TRADE_RESULT, MSG.ERROR, MSG.FULL, MSG.PONG].includes(msg.t) &&
           !this.agentControl.authorize(id, this.agentControl.byClient(id)?.grant.controlRevision)) return;
     }
     if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id),

@@ -2,6 +2,15 @@
 
 **Checkpoint GM02 (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), implementado localmente; publicación pendiente. Escena permite editar/ocultar/restaurar rocas naturales/costeras, flores y guijarros; documento v2 migra borradores v1, círculos XZ y recorrido privado sin entrar al servidor/M5. Navegador 28/28, cuatro calidades, cámara/restauración exactas y limpieza al revocar. Sigue GM03 de guardado remoto/publicación; terreno y objetos funcionales quedan fuera.
 
+**AREA17 L06b-2b, 2026-10-10 — alpha.26/protocolo 38:** [compra/venta explícitas](delivery/l06b-agent-trade.md)
+con presupuesto acumulado y revocable SQL017, separado de inferencia. Se reutilizan perfil/mundo/recibo
+M5 humanos; no hay otra autoridad ni transferencia desde el dueño. Reentrada/replay no restauran saldo;
+stop cancela preparación y reconcilia commits enviados. [Contrato/CLI ES/EN](agents/trade.md).
+Pruebas y publicación en la entrega; `npm start` conserva agentes/comercio/proveedor apagados.
+SQL017 live y canario autenticado pendientes. Integra Tala SQL016 y refugio sin cambiar sus flags.
+Sigue L03d proveedor real/conversación/PvE con memoria y gasto medidos; luego autonomía por eventos
+y operación del dueño. Publicación inerte no equivale a activación o aceptación de economía agente.
+
 **AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
 Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y apertura por instancia.
 Dueño/visitante usan puertas sin cerradura; guarda el perfil M5 del dueño, sin SQL ni otro writer.

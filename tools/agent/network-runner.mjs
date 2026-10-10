@@ -9,6 +9,7 @@ const clock = () => Math.floor(performance.timeOrigin + performance.now());
 // Terminal clients remain terminal; archives cannot write into a subsequent connection.
 export class AgentNetworkRunner {
   #options; #active; #archives = []; #retiredIds = new Set(); #sessions = new Set();
+  #tradeOperations = new Map();
   #now; #feedback; #opening = false; #closed = false; #maxSessions; #connectOptions = {}; #transition = 0; #attempts = 0;
   constructor({ maxSessions = 8, onFeedback = () => {}, now = clock, ...options }) {
     if (!validGrant(options.grant) || !integer(maxSessions) || maxSessions < 1 || maxSessions > 16 ||
@@ -21,7 +22,7 @@ export class AgentNetworkRunner {
   }
   #create(grant) {
     this.#attempts++;
-    const client = new AgentNetworkClient({ ...this.#options, grant, now: this.#now, onFeedback: (event) => {
+    const client = new AgentNetworkClient({ ...this.#options, grant, tradeOperations: this.#tradeOperations, now: this.#now, onFeedback: (event) => {
       if (this.#active !== client) return;
       if (event.type === 'stopped') this.#archive(client);
       this.#feedback({ ...event, sessionId: client.grant.scope.sessionId });
@@ -33,12 +34,12 @@ export class AgentNetworkRunner {
     const sessionId = client.grant.scope.sessionId;
     if (this.#archives.some((a) => a.scope.sessionId === sessionId)) return;
     const actions = client.actions, requests = client.chat.requests, inventoryRequests = client.inventoryRequests,
-      marketRequests = client.marketRequests;
+      marketRequests = client.marketRequests, tradeOperations = client.tradeOperations.filter((entry) => entry.sessions?.includes(sessionId));
     for (const entry of [...actions, ...requests]) this.#retiredIds.add(entry.order.actionId);
     for (const entry of inventoryRequests) this.#retiredIds.add(entry.requestId);
     for (const entry of marketRequests) this.#retiredIds.add(entry.requestId);
     this.#archives.push(copy({ scope: client.grant.scope, controlRevision: client.grant.controlRevision,
-      identity: client.identity, termination: client.termination, actions, chatRequests: requests, inventoryRequests, marketRequests }));
+      identity: client.identity, termination: client.termination, actions, chatRequests: requests, inventoryRequests, marketRequests, tradeOperations }));
   }
   get state() { return this.#active.state; }
   get closed() { return this.#closed; }
@@ -52,6 +53,8 @@ export class AgentNetworkRunner {
   get inventoryRequests() { return this.#active.inventoryRequests; }
   get market() { return this.#active.market; }
   get marketRequests() { return this.#active.marketRequests; }
+  get tradeState() { return this.#active.trade; }
+  get tradeOperations() { return this.#active.tradeOperations; }
   get nowMs() { return this.#active.nowMs; }
   get maxObservationAgeMs() { return this.#active.maxObservationAgeMs; }
   get viewReport() { return this.#active.viewReport; }
@@ -75,7 +78,10 @@ export class AgentNetworkRunner {
       ...s.marketRequests.filter((r) => r.state === 'uncertain').map((r) => ({ sessionId: s.scope.sessionId,
         requestId: r.requestId, kind: 'market', state: r.state, why: r.why, result: r.result,
         read: 'unknown', retryAllowed: false })),
-    ]).map((v) => ({ ...copy(v), retryAllowed: false, active: false }));
+      ...s.tradeOperations.filter((r) => r.state === 'uncertain').map((r) => ({ sessionId: s.scope.sessionId,
+        opId: r.opId, kind: 'goods_trade', state: r.state, why: r.why, result: r.result,
+        read: 'durable_receipt', retryAllowed: true, body: r.body })),
+    ]).map((v) => ({ ...copy(v), retryAllowed: v.kind === 'goods_trade', active: false }));
   }
   async connect(options = {}) {
     if (this.#closed || this.#opening || this.state !== 'idle') throw new TypeError('invalid runner connect');
@@ -126,6 +132,7 @@ export class AgentNetworkRunner {
   retryChat(requestId) { return this.#retiredIds.has(requestId) ? { ok: false, why: 'retired_action_id' } : this.#active.retryChat(requestId); }
   readInventory(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readInventory(query); }
   readMarket(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readMarket(query); }
+  trade(operation) { return this.#active.tradeGoods(operation); }
   cancel(actionId, ownerId) { return this.#active.cancel(actionId, ownerId); }
   pump() { return this.#active.pump(); }
   stop(ownerId) {

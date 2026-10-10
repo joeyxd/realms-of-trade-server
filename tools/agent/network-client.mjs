@@ -10,6 +10,7 @@ import { AgentSession } from './session.mjs';
 import { AgentChat } from './chat.mjs';
 import { AgentInventory } from './inventory.mjs';
 import { AgentMarket } from './market.mjs';
+import { AgentTrade } from './trade.mjs';
 import { labLimits, validGrant, integer } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
@@ -27,10 +28,11 @@ export class AgentNetworkClient {
   #serverPerception = null;
   #nearbyPlayer = false;
   #life = randomUUID(); #termination = null; #closedPromise; #closedResolve;
-  #actionMeta = new Map(); #receipt = 0; #name; #skin; #weapon; #facade; #inventory; #market;
+  #actionMeta = new Map(); #receipt = 0; #name; #skin; #weapon; #facade; #inventory; #market; #trade;
   #authorization; #authority = null; #controlAwaiting = null; #directPending = null;
   constructor({ url, grant, name = 'Brisa [IA]', skin = 0, weapon = 0, now = clock,
-    onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000, authorization = null, transportFactory = (address) => new WsTransport(address) }) {
+    onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000,
+    tradeTimeoutMs = 5000, tradeOperations = new Map(), authorization = null, transportFactory = (address) => new WsTransport(address) }) {
     const address = new URL(url);
     if (!['ws:', 'wss:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) throw new TypeError('invalid game URL');
     if (!validGrant(grant) || typeof now !== 'function' || typeof onFeedback !== 'function') throw new TypeError('invalid agent configuration');
@@ -54,6 +56,11 @@ export class AgentNetworkClient {
         this.#t.send(message);
       } });
     this.#market = new AgentMarket({ now, limits: this.#limits, timeoutMs: marketTimeoutMs,
+      onFeedback: (type, data) => this.#emit(type, data), send: (message) => {
+        if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
+        this.#t.send(message);
+      } });
+    this.#trade = new AgentTrade({ now, timeoutMs: tradeTimeoutMs, operations: tradeOperations,
       onFeedback: (type, data) => this.#emit(type, data), send: (message) => {
         if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
         this.#t.send(message);
@@ -85,6 +92,8 @@ export class AgentNetworkClient {
   get inventoryRequests() { return this.#inventory.requests; }
   get market() { return this.#market.state; }
   get marketRequests() { return this.#market.requests; }
+  get trade() { return this.#trade.state; }
+  get tradeOperations() { return this.#trade.operations; }
   get nowMs() { return this.#now(); }
   get maxObservationAgeMs() { return this.#limits.maxObservationAgeMs; }
   get grant() { return this.#session.grant; }
@@ -126,6 +135,14 @@ export class AgentNetworkClient {
     if (!m || typeof m !== 'object' || this.#state === 'stopped') return;
     if (m.t === MSG.AGENT_INVENTORY_RESULT) { this.#inventory.receive(m); return; }
     if (m.t === MSG.AGENT_MARKET_RESULT) { this.#market.receive(m); return; }
+    if (m.t === MSG.AGENT_TRADE_RESULT) {
+      const accepted = this.#trade.receive(m);
+      if (accepted && m.ok && !m.replay && !m.historical) {
+        this.#inventory.updateContext(null); this.#market.updateContext(null); this.#updateReads();
+      }
+      return;
+    }
+    if (m.t === MSG.AGENT_GOODS_BUDGET) { return; }
     if (m.t === MSG.FULL || m.t === MSG.ERROR) { this.#fail(m.t === MSG.FULL ? 'full' : `server_${m.code || 'error'}`); return; }
     if (m.t === MSG.SPAWN && integer(m.e?.id) && kinds[m.e.kind]) {
       if (!this.#metadata.has(m.e.id) && this.#metadata.size >= 4096) { this.#fail('entity_capacity'); return; }
@@ -372,11 +389,12 @@ export class AgentNetworkClient {
   }
   #updateReads() {
     const context = { ready: this.#state === 'ready', authenticated: !!this.#authorization,
-      grant: this.grant, authority: this.#authority, observation: this.observation };
-    this.#inventory.updateContext(context); this.#market.updateContext(context);
+      grant: this.grant, authority: this.#authority, observation: this.observation, limits: this.#limits };
+    this.#inventory.updateContext(context); this.#market.updateContext(context); this.#trade.updateContext(context);
   }
   readInventory(query) { return this.#inventory.read(query); }
   readMarket(query) { return this.#market.read(query); }
+  tradeGoods(operation) { return this.#trade.trade(operation); }
   retryChat(requestId) {
     const result = this.#chat.retry(requestId, { grant: this.grant, observation: this.observation, ready: this.#state === 'ready' });
     this.#emit('chat_retry_response', result); return result;
@@ -403,6 +421,7 @@ export class AgentNetworkClient {
     if (this.#state !== 'ready') return { ok: false, why: 'not_ready' };
     this.#inventory.expire();
     this.#market.expire();
+    this.#trade.expire();
     if (this.#t.closed || this.#t.ws.readyState !== 1) { this.#halt('disconnect', false); return { ok: false, why: 'transport_closed' }; }
     if (this.#authority && (this.#controlAwaiting || !this.#authority.task || this.#authority.state !== 'active')) {
       if (this.#now() >= this.grant.expiresAtMs) this.#halt('expired', false);
@@ -442,6 +461,7 @@ export class AgentNetworkClient {
     this.#chat.stop(reason);
     this.#inventory.stop(reason);
     this.#market.stop(reason);
+    this.#trade.stop(reason);
     // Drop any unsent outbox before sending a final neutral command on the live socket.
     this.#t.outbox.length = 0;
     if (sendNeutral && !this.#authority && this.#client?.joined && this.#t.ws.readyState === 1) {
@@ -467,6 +487,7 @@ export class AgentNetworkClient {
       clearInterval(this.#timer); this.#session.interrupt('stop', this.#now()); this.#chat.stop('stop');
       this.#inventory.stop('stop');
       this.#market.stop('stop');
+      this.#trade.stop('stop');
       this.#t.outbox.length = 0; this.#client.pending.length = 0; this.#client.predicted.clear(); this.#state = 'stopping';
       this.#t.send({ t: MSG.AGENT_RELEASE, epoch });
       this.#readyTimer = setTimeout(() => this.#halt('stop', false), 1000);
