@@ -14,6 +14,7 @@ import { deathDropOperation, deathDropResult, deathDropInWindow, deathDropKey, c
   checkedDeathDropResult, checkedDeathDropReceipt, checkedCurrentDeathDrop, checkedCurrentDeathDropPage } from './deathDropOperation.mjs';
 import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
 import { EconomicOperationError, economicOperation, canonicalEconomicText, checkedEconomicResult, checkedEconomicReceipt } from './economicOperation.mjs';
+import { checkedResourceState } from './resourceState.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -51,6 +52,14 @@ function legacyKey(value) {
   return value;
 }
 const conflict = () => ({ ok: false, why: 'conflict' });
+function resourceAdvanceAllowed(current, next, operation = false) {
+  if (!Object.hasOwn(next, 'resources')) return !Object.hasOwn(current, 'resources');
+  try { checkedResourceState(next.resources); } catch { return false; }
+  if (!Object.hasOwn(current, 'resources')) return true;
+  if (next.resources.tick < current.resources.tick) return false;
+  return operation || canonicalEconomicText({ ...current.resources, tick: 0 }) ===
+    canonicalEconomicText({ ...next.resources, tick: 0 });
+}
 function checkedEconomicInput(raw) {
   try { return economicOperation(raw); }
   catch (error) { throw new StoreError(error instanceof EconomicOperationError ? error.code : 'operation'); }
@@ -122,8 +131,10 @@ export function createMemoryStore() {
       const current = worlds.get(id);
       if (current && Object.hasOwn(current.data, 'community') &&
           (!Object.hasOwn(data, 'community') || canonicalEconomicText(data.community) !== canonicalEconomicText(current.data.community))) return conflict();
+      if (!resourceAdvanceAllowed(current?.data ?? {}, data)) return conflict();
       return save(worlds, id, data, expectedVersion);
     },
+    async checkResourceOperations() { return { version: 1 }; },
     async commitEconomicOperation(raw) {
       const { operationId, request } = checkedEconomicInput(raw), text = canonicalEconomicText(request);
       const receipt = economicReceipts.get(operationId);
@@ -137,6 +148,10 @@ export function createMemoryStore() {
       const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
       if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
           currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
+      if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
+      if (Object.hasOwn(currentWorld.data, 'community') && request.command.type === 'resource' &&
+          (!Object.hasOwn(request.worldData, 'community') ||
+           canonicalEconomicText(currentWorld.data.community) !== canonicalEconomicText(request.worldData.community))) return conflict();
 
       const profileVersion = request.expectedProfileVersion + 1, worldVersion = request.expectedWorldVersion + 1;
       version(profileVersion, 1); version(worldVersion, 1);
@@ -449,6 +464,11 @@ export function createSupabaseStore(client) {
       const { operationId, request } = checkedEconomicInput(raw);
       const result = await rpc('mn_commit_economic_operation', { p_operation_id: operationId, p_request: request });
       return checkedEconomicOutput(result, request, result?.replay === true);
+    },
+    async checkResourceOperations() {
+      const result = await rpc('mn_resource_operations_ready', {});
+      if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
+      return result;
     },
     async loadEconomicOperation(operationId) {
       operationId = playerKey(operationId);

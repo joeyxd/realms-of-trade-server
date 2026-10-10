@@ -10,6 +10,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA15, 2026-10-10: [recursos/crafting M5](docs/delivery/m5-resource-authority.md), release alpha.22
+  aislada con nodos/perfil/reloj/recibo, pausa offline y 139 pruebas. Estado de SQL015, publicación,
+  activación y prueba real separado en la entrega; [contrato para cada feature](docs/briefs/m5-resource-authority.md).
+
 - Checkpoint PRG02a (2026-10-10), **alpha.19/protocolo 33**: lección naval voluntaria con salida, boya de maniobra (radio 9 m, ≤0,8 u/s durante 0,75 s) y atraque real. Estado de sesión server-owned; sin XP/rango/perfil/SQL ni salvas. **219/219 pruebas seleccionadas y 3/3 vistas de navegador aprobadas**, capturas representativas inspeccionadas. [Contrato](docs/briefs/prg02a-coastal-lesson.md) · [entrega](docs/delivery/prg02a-coastal-lesson.md). Frenado local: 85 ticks/3,32 m vacío y 112/4,37 m con cuatro maderas desde 4 u/s. La fixture de navegador reubica candidatos y no acredita pilotaje humano. Sigue PRG02b de aprendizaje común; la regla de oscuridad AREA07 requiere faroles disponibles antes de bajar la luz ambiente. Publicación/despliegue se registran en la entrega.
 
 - AREA17, 2026-10-10: [L06b-2a](docs/delivery/l06b-agent-market.md) conecta inventario vigente y

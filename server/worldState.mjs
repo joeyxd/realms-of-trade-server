@@ -6,6 +6,7 @@ import { BUILDINGS, RECIPES } from '../src/data/buildings.js';
 import { GOOD_IDS } from '../src/data/goods.js';
 import { StoreError } from './store.mjs';
 import { validateCommunityState } from './communityProject.mjs';
+import { checkedResourceState } from './resourceState.mjs';
 
 const MAX_VERSION = 2147483647;
 const object = (o) => !!o && typeof o === 'object' && !Array.isArray(o);
@@ -20,6 +21,7 @@ export class WorldState {
     this.version = 0; this.ready = false; this.failed = false; this.errors = 0;
     this.pending = null; this.running = null; this.last = null;
     this.community = null; this.operationBusy = false;
+    this.resources = null; this.resourceTick = null;
     this.loadAbort = new AbortController();
   }
 
@@ -37,6 +39,7 @@ export class WorldState {
           !object(row.data) || row.data.v !== 1 || row.data.seed !== this.seed) throw new StoreError('world_format');
         validateEconomy(row.data.economy, this.seed);
         this.community = validateCommunityState(row.data.community, this.id);
+        this.resources = Object.hasOwn(row.data, 'resources') ? checkedResourceState(row.data.resources) : null;
         const economy = Economy.from(row.data.economy, this.seed);
         this.version = row.version;
         this.last = JSON.stringify(this.snapshot(economy));
@@ -59,7 +62,9 @@ export class WorldState {
 
   snapshot(economy) {
     const data = structuredClone({ v: 1, seed: this.seed, economy: economy.serialize(),
-      ...(this.community ? { community: this.community } : {}) });
+      ...(this.community ? { community: this.community } : {}),
+      ...(this.resources ? { resources: checkedResourceState({ ...this.resources,
+        tick: this.resourceTick ? this.resourceTick() : this.resources.tick }) } : {}) });
     validateEconomy(data.economy, this.seed);
     return data;
   }
@@ -88,6 +93,7 @@ export class WorldState {
       if (next.text === this.last) continue;
       try {
         this.accept(await this.store.saveWorld(this.id, next.data, this.version));
+        if (next.data.resources) this.resources = structuredClone(next.data.resources);
         this.last = next.text;
       } catch (err) {
         this.fail(err instanceof StoreError && ['conflict', 'response'].includes(err.code) ? err.code : 'unavailable');

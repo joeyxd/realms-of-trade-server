@@ -5,9 +5,11 @@ import { holdUsed, load } from '../sim/economy/cargo.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
 const COPY = {
-  es: { collecting: 'Recogiendo', working: 'Trabajando', retry: 'Reintentar', retryAction: 'Reintentar la recogida',
+  es: { account_required: 'Inicia sesión para recoger o fabricar en este servidor.', storage: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.',
+    collecting: 'Recogiendo', working: 'Trabajando', retry: 'Reintentar', retryAction: 'Reintentar la recogida',
     delayed: 'La conexión está tardando. Puedes reintentar la recogida.', full: 'La mochila está llena. Deposita materiales en tu balsa.' },
-  en: { collecting: 'Collecting', working: 'Harvesting', retry: 'Retry', retryAction: 'Retry collection',
+  en: { account_required: 'Sign in to gather or craft on this server.', storage: 'The server could not confirm the save. Reconnect to continue.',
+    collecting: 'Collecting', working: 'Harvesting', retry: 'Retry', retryAction: 'Retry collection',
     delayed: 'The connection is taking longer. You can retry collection.', full: 'Your backpack is full. Store materials on your raft.' },
 };
 
@@ -206,7 +208,7 @@ export class ResourceActions {
         ? `Necesitas ${event.tool === 'pickaxe' ? 'un pico' : 'un hacha'} para trabajar este recurso.`
         : event.why === 'full' && node?.kind === 'palm'
         ? `Necesitas espacio para ${HARVEST.palmYield} troncos. Deposita materiales en tu balsa.`
-        : REASONS[event.why] || 'No se pudo completar la acción.');
+        : this.copy[event.why] || REASONS[event.why] || 'No se pudo completar la acción.');
       return;
     }
     if (event.op === 'gather' && event.count === 0) {

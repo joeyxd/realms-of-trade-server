@@ -1,5 +1,10 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-10:** [recursos/crafting M5](docs/delivery/m5-resource-authority.md), release alpha.22
+aislada con confirmación conjunta de perfil/nodo/reloj/recibo. Reaparición pausada offline; 139 pruebas,
+incluidas cuatro caídas forzadas. SQL015 y `MN_RESOURCE_OPERATIONS` requieren la aceptación específica
+documentada en la entrega. No cierra perlas/muerte/botín, XP/misiones ni backups/restauración.
+
 Orden de ejecución y aceptación: [PLAN-DELIVERY.md](PLAN-DELIVERY.md), D07/D09; base antes de riesgo persistente.
 
 **Corrección de dirección del autor, 2026-10-09:** las perlas se encuentran mediante botín/cofres;

@@ -10,6 +10,8 @@ import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { communityAccess, draftCommunity, publicCommunity } from './communityProject.mjs';
 import { StoreError } from './store.mjs';
+import { CRAFT_RECIPES, HARVEST } from '../src/data/resources.js';
+import { draftResource, applyResource } from './resourceState.mjs';
 
 const clone = structuredClone;
 const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -26,10 +28,23 @@ export function economicCommand(msg) {
     transfer: ['id', 'expectedRev', 'g', 'n', 'side'],
   }[msg.op] : msg.type === 'raft' && msg.op === 'supply' ? ['id', 'expectedRev', 'g', 'n'] : msg.type === 'community' ? {
     list: [], contribute: ['projectId', 'good', 'amount', 'expectedRev'],
+  }[msg.op] : msg.type === 'resource' ? {
+    gather: ['node', 'expectedRev'], craft: ['recipe', 'expectedRev', 'n'],
   }[msg.op] : null;
   if (!fields || Object.keys(msg).some(k => !['t', 'type', 'op', 'opId', ...fields].includes(k)) ||
-      fields.some(k => !Object.hasOwn(msg, k))) throw new StoreError('operation');
+      fields.some(k => !Object.hasOwn(msg, k) && !(msg.type === 'resource' && msg.op === 'craft' && k === 'n'))) throw new StoreError('operation');
   const out = Object.fromEntries(['type', 'op', 'opId', ...fields].map(k => [k, msg[k]]));
+  if (msg.type === 'resource') {
+    if (!Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < (msg.op === 'gather' ? 1 : 0)
+        || msg.expectedRev >= HARVEST.maxRev) throw new StoreError('operation');
+    if (msg.op === 'gather') {
+      if (typeof msg.node !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(msg.node)) throw new StoreError('operation');
+    } else {
+      if (!Object.hasOwn(msg, 'n')) out.n = 1;
+      if (typeof msg.recipe !== 'string' || !Object.hasOwn(CRAFT_RECIPES, msg.recipe)
+          || !Number.isSafeInteger(out.n) || out.n < 1 || out.n > CRAFT_RECIPES[msg.recipe].max) throw new StoreError('operation');
+    }
+  }
   if (msg.type === 'community' && msg.op === 'contribute' &&
       (typeof msg.projectId !== 'string' || !/^[A-Za-z0-9:_-]{1,100}$/.test(msg.projectId) ||
        typeof msg.good !== 'string' || !/^[a-z_]{1,40}$/.test(msg.good) ||
@@ -106,7 +121,7 @@ export class EconomicAuthority {
       return true;
     }
     if (!(msg.type === 'community' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
-        msg.type === 'raft' && msg.op === 'supply')) return false;
+        msg.type === 'raft' && msg.op === 'supply' || this.host.resourceOperations && msg.type === 'resource')) return false;
     let command;
     try { command = economicCommand(msg); }
     catch { this.reply(sock.id, msg, 'command'); return true; }
@@ -172,7 +187,11 @@ export class EconomicAuthority {
     while (a.s.running) await a.s.running;
     if (!this.valid(a) || a.s.pending) throw new StoreError('cancelled');
     let proposal;
-    if (a.command.type === 'community') {
+    if (a.command.type === 'resource') {
+      proposal = draftResource(h.server.world, a.entity, a.command, a.profile, h.worldState.resources, a.s.key,
+        h.worldState.resourceTick());
+      proposal.community = clone(h.worldState.community);
+    } else if (a.command.type === 'community') {
       proposal = draftCommunity({ command: a.command, profile: clone(a.profile), state: clone(h.worldState.community),
         world: h.server.world, entity: a.entity, worldId: h.worldState.id, account: a.s.key,
         profileVersion: a.s.version, operationId: a.operationId });
@@ -189,6 +208,8 @@ export class EconomicAuthority {
     }
     const data = h.worldState.snapshot(proposal.economy);
     if (proposal.community) data.community = clone(proposal.community);
+    if (proposal.resources) data.resources = clone(proposal.resources);
+    a.proposal = proposal;
     a.request = { world: h.worldState.id, account: a.s.key, command: a.command,
       expectedProfileVersion: a.s.version, expectedWorldVersion: h.worldState.version,
       profile: proposal.profile, worldData: data, ack: proposal.ack };
@@ -216,8 +237,10 @@ export class EconomicAuthority {
     try {
       if (!a.replay) {
         const p = w.profiles.get(a.entity), next = a.request.profile;
+        if (a.command.type === 'resource') applyResource(w, a.entity, a.command, a.proposal);
         // Preserve live profile/raft object identities used by deterministic systems.
         p.gold = next.gold; p.eco.pack = clone(next.eco.pack); p.eco.tradeRev = next.eco.tradeRev;
+        if (a.command.type === 'resource') p.tools = clone(next.tools);
         for (const ship of p.eco.ships) {
           const candidate = next.eco.ships.find(s => s.id === ship.id);
           if (candidate?.kind === 'raft') { ship.hold = clone(candidate.hold); ship.rev = candidate.rev; }
@@ -226,10 +249,12 @@ export class EconomicAuthority {
         economy.payUpkeep = w.economy.payUpkeep; economy.onAdvance = w.economy.onAdvance;
         w.economy = economy;
         h.worldState.community = clone(a.request.worldData.community ?? null);
+        h.worldState.resources = clone(a.request.worldData.resources ?? null);
         a.s.version = a.result.profileVersion; a.s.confirmed = clone(next); a.s.last = JSON.stringify(next); a.s.pending = null;
         h.worldState.version = a.result.worldVersion; h.worldState.last = JSON.stringify(a.request.worldData);
         h.worldState.pending = null;
         w.profileDirty.add(a.entity); this.completed++;
+        for (const event of a.proposal?.events ?? []) w.emit(clone(event));
       }
       a.gate.release(a.reservation); a.released = true; h.worldState.operationBusy = false; this.active = null;
       // Publication follows confirmed rows and the synchronous apply, never the provider continuation.

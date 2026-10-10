@@ -1,5 +1,11 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-10:** [recursos/crafting M5](delivery/m5-resource-authority.md) en release aislada
+alpha.22: nodos, golpes, herramientas, inventario, reloj y recibo en una transacción. Pausa offline
+aprobada; 176 pruebas tras integrar upstream y ocho verificaciones UI. SQL015 confirmado por el autor; consultar la
+entrega para distinguir publicación, activación y aceptación VPS. Con recursos adoptados, todo rollback
+necesita runtime compatible y `MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado.
+
 **Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) reproducido
 en calidad alta y corregido separando sus materiales de la pasada de normales. Validación local: 102/102
 pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo. Despliegue y recorrido público pendientes.

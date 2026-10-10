@@ -2,7 +2,9 @@
 // Identity, gameplay eligibility and candidate construction remain the host's responsibility.
 import { GOODS } from '../src/data/goods.js';
 import { TOWN_IDS } from '../src/data/towns.js';
+import { CRAFT_RECIPES } from '../src/data/resources.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
+import { checkedResourceState } from './resourceState.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -15,6 +17,8 @@ const COMMERCE_BUY_FIELDS = ['type', 'op', 'opId', 'town', 'g', 'n', 'expectedTo
 const COMMERCE_TRANSFER_FIELDS = ['type', 'op', 'opId', 'id', 'expectedRev', 'g', 'n', 'side'];
 const COMMUNITY_FIELDS = ['type', 'op', 'opId', 'projectId', 'good', 'amount', 'expectedRev'];
 const RAFT_SUPPLY_FIELDS = ['type', 'op', 'opId', 'id', 'expectedRev', 'g', 'n'];
+const RESOURCE_GATHER_FIELDS = ['type', 'op', 'opId', 'node', 'expectedRev'];
+const RESOURCE_CRAFT_FIELDS = ['type', 'op', 'opId', 'recipe', 'expectedRev', 'n'];
 const ACK_FIELDS = ['type', 'op', 'opId', 'ok', 'why', 'rev'];
 const fail = code => { throw new EconomicOperationError(code); };
 
@@ -117,13 +121,28 @@ function checkedCommand(raw) {
     return { type: 'raft', op: 'supply', opId: id, id: raw.id, expectedRev: raw.expectedRev,
       g: raw.g, n: raw.n };
   }
+  if (raw.type === 'resource' && raw.op === 'gather') {
+    exact(raw, RESOURCE_GATHER_FIELDS);
+    if (typeof raw.node !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(raw.node)) fail('input');
+    integer(raw.expectedRev, 1, MAX_VERSION - 1);
+    return { type: 'resource', op: 'gather', opId: id, node: raw.node, expectedRev: raw.expectedRev };
+  }
+  if (raw.type === 'resource' && raw.op === 'craft') {
+    exact(raw, RESOURCE_CRAFT_FIELDS);
+    const recipe = CRAFT_RECIPES[raw.recipe];
+    if (!recipe) fail('input');
+    integer(raw.expectedRev, 0, MAX_VERSION - 1);
+    integer(raw.n, 1, recipe.max);
+    return { type: 'resource', op: 'craft', opId: id, recipe: raw.recipe, expectedRev: raw.expectedRev, n: raw.n };
+  }
   fail('input');
 }
 
 function checkedWorldData(raw) {
   if (!object(raw)) fail('input');
   const fields = Object.keys(raw).sort();
-  const expected = Object.hasOwn(raw, 'community') ? ['community', 'economy', 'seed', 'v'] : ['economy', 'seed', 'v'];
+  const expected = ['economy', 'seed', 'v', ...(Object.hasOwn(raw, 'community') ? ['community'] : []),
+    ...(Object.hasOwn(raw, 'resources') ? ['resources'] : [])].sort();
   if (canonicalEconomicText(fields) !== canonicalEconomicText(expected)) fail('input');
   if (raw.v !== 1) fail('input');
   integer(raw.seed, 0, 0xffffffff);
@@ -134,6 +153,9 @@ function checkedWorldData(raw) {
     if (!object(market) || market.id !== town || !object(market.stock) || !object(market.last) || !Array.isArray(plots)) fail('input');
   }
   if (Object.hasOwn(raw, 'community') && !object(raw.community)) fail('input');
+  if (Object.hasOwn(raw, 'resources')) {
+    try { checkedResourceState(raw.resources); } catch { fail('input'); }
+  }
   const data = jsonCopy(raw);
   bytes(data, MAX_WORLD_BYTES);
   return data;
@@ -160,6 +182,7 @@ function checkedRequest(input) {
   const profile = parsedProfile && sanitizeProfile(parsedProfile);
   if (!profile || canonicalEconomicText(profile) !== canonicalEconomicText(parsedProfile)) fail('input');
   const worldData = checkedWorldData(input.worldData);
+  if (command.type === 'resource' && !Object.hasOwn(worldData, 'resources')) fail('input');
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };

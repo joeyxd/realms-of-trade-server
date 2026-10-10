@@ -9,6 +9,10 @@ const recipeFor = (id = WOOD_RECIPE.id) => CRAFT_RECIPES?.[id] || CRAFT_RECIPES?
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
 const isToolRecipe = (recipe) => !!recipe.tool;
+const STORAGE_REASONS = {
+  es: { account_required: 'Inicia sesión para fabricar en este servidor.', storage: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.' },
+  en: { account_required: 'Sign in to craft on this server.', storage: 'The server could not confirm the save. Reconnect to continue.' },
+};
 const REASONS = {
   schema: 'La solicitud no es válida. Ajusta la cantidad e inténtalo otra vez.', n: 'Elige una cantidad válida para preparar.',
   materials: 'No llevas suficientes materiales para esa receta.', full: 'La mochila no tiene espacio para el resultado.',
@@ -142,7 +146,11 @@ export class WorkbenchPanel {
   retry() { const p = this.pending; if (!p || performance.now() - p.sentAt < 5000 || !this.context() || typeof this.submitCommand !== 'function') return false; let accepted = false; try { accepted = this.submitCommand(p.command) === true; } catch {} if (accepted) p.sentAt = performance.now(); this.update(); return accepted; }
   onResult(ev) {
     const p = this.pending; if (!p || !ev || ev.type !== 'resource' || ev.opId !== p.command.opId || ev.op !== 'craft') return;
-    if (ev.ok === false) { this.pending = null; this.lastResult = REASONS[ev.why] || 'El banco no pudo completar la receta. Revisa tu mochila e inténtalo otra vez.'; this.update(); return; }
+    if (ev.ok === false) {
+      const locale = document.documentElement?.lang?.startsWith('en') ? 'en' : 'es';
+      this.pending = null; this.lastResult = STORAGE_REASONS[locale][ev.why] || REASONS[ev.why] || 'El banco no pudo completar la receta. Revisa tu mochila e inténtalo otra vez.';
+      this.update(); return;
+    }
     if (!craftAcknowledgementMatches(p, ev)) return;
     p.ackRev = ev.rev; this.lastResult = ''; this.update();
   }

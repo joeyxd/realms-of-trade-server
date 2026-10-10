@@ -1,0 +1,314 @@
+{
+  "schema": "mn.m5-resource-ui.v1",
+  "fixture": "local components and fake profile; no host or external service",
+  "viewportSizes": {
+    "desktop": {
+      "width": 1280,
+      "height": 720
+    },
+    "compact": {
+      "width": 390,
+      "height": 844
+    }
+  },
+  "screenshots": [
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\desktop-es-account_required.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\desktop-es-storage.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\desktop-en-account_required.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\desktop-en-storage.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\compact-es-account_required.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\compact-es-storage.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\compact-en-account_required.png",
+    "C:\\DEV\\real of trade\\area15-resource-live\\docs\\delivery\\m5-resource-authority\\ui\\compact-en-storage.png"
+  ],
+  "checks": [
+    {
+      "name": "desktop-es-account_required",
+      "locale": "es",
+      "reason": "account_required",
+      "resourceMessage": "Inicia sesión para recoger o fabricar en este servidor.",
+      "workbenchMessage": "Inicia sesión para fabricar en este servidor.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 846,
+        "top": 129.90625,
+        "right": 1266,
+        "bottom": 702,
+        "width": 420,
+        "height": 572.09375
+      },
+      "feedback": {
+        "left": 863,
+        "top": 588,
+        "right": 1249,
+        "bottom": 606,
+        "width": 386,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "desktop-es-storage",
+      "locale": "es",
+      "reason": "storage",
+      "resourceMessage": "El servidor no pudo confirmar el guardado. Vuelve a conectar.",
+      "workbenchMessage": "El servidor no pudo confirmar el guardado. Vuelve a conectar.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 846,
+        "top": 129.90625,
+        "right": 1266,
+        "bottom": 702,
+        "width": 420,
+        "height": 572.09375
+      },
+      "feedback": {
+        "left": 863,
+        "top": 588,
+        "right": 1249,
+        "bottom": 606,
+        "width": 386,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "desktop-en-account_required",
+      "locale": "en",
+      "reason": "account_required",
+      "resourceMessage": "Sign in to gather or craft on this server.",
+      "workbenchMessage": "Sign in to craft on this server.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 55.546875,
+        "width": 300,
+        "height": 37.546875
+      },
+      "panel": {
+        "left": 846,
+        "top": 129.90625,
+        "right": 1266,
+        "bottom": 702,
+        "width": 420,
+        "height": 572.09375
+      },
+      "feedback": {
+        "left": 863,
+        "top": 588,
+        "right": 1249,
+        "bottom": 606,
+        "width": 386,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "desktop-en-storage",
+      "locale": "en",
+      "reason": "storage",
+      "resourceMessage": "The server could not confirm the save. Reconnect to continue.",
+      "workbenchMessage": "The server could not confirm the save. Reconnect to continue.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 846,
+        "top": 129.90625,
+        "right": 1266,
+        "bottom": 702,
+        "width": 420,
+        "height": 572.09375
+      },
+      "feedback": {
+        "left": 863,
+        "top": 588,
+        "right": 1249,
+        "bottom": 606,
+        "width": 386,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "compact-es-account_required",
+      "locale": "es",
+      "reason": "account_required",
+      "resourceMessage": "Inicia sesión para recoger o fabricar en este servidor.",
+      "workbenchMessage": "Inicia sesión para fabricar en este servidor.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 14,
+        "top": 237.90625,
+        "right": 376,
+        "bottom": 826,
+        "width": 362,
+        "height": 588.09375
+      },
+      "feedback": {
+        "left": 31,
+        "top": 712,
+        "right": 359,
+        "bottom": 730,
+        "width": 328,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "compact-es-storage",
+      "locale": "es",
+      "reason": "storage",
+      "resourceMessage": "El servidor no pudo confirmar el guardado. Vuelve a conectar.",
+      "workbenchMessage": "El servidor no pudo confirmar el guardado. Vuelve a conectar.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 14,
+        "top": 237.90625,
+        "right": 376,
+        "bottom": 826,
+        "width": 362,
+        "height": 588.09375
+      },
+      "feedback": {
+        "left": 31,
+        "top": 712,
+        "right": 359,
+        "bottom": 730,
+        "width": 328,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "compact-en-account_required",
+      "locale": "en",
+      "reason": "account_required",
+      "resourceMessage": "Sign in to gather or craft on this server.",
+      "workbenchMessage": "Sign in to craft on this server.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 55.546875,
+        "width": 300,
+        "height": 37.546875
+      },
+      "panel": {
+        "left": 14,
+        "top": 237.90625,
+        "right": 376,
+        "bottom": 826,
+        "width": 362,
+        "height": 588.09375
+      },
+      "feedback": {
+        "left": 31,
+        "top": 712,
+        "right": 359,
+        "bottom": 730,
+        "width": 328,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    },
+    {
+      "name": "compact-en-storage",
+      "locale": "en",
+      "reason": "storage",
+      "resourceMessage": "The server could not confirm the save. Reconnect to continue.",
+      "workbenchMessage": "The server could not confirm the save. Reconnect to continue.",
+      "toast": {
+        "left": 12,
+        "top": 18,
+        "right": 312,
+        "bottom": 73.09375,
+        "width": 300,
+        "height": 55.09375
+      },
+      "panel": {
+        "left": 14,
+        "top": 237.90625,
+        "right": 376,
+        "bottom": 826,
+        "width": 362,
+        "height": 588.09375
+      },
+      "feedback": {
+        "left": 31,
+        "top": 712,
+        "right": 359,
+        "bottom": 730,
+        "width": 328,
+        "height": 18
+      },
+      "fitsViewport": true,
+      "pageOverflow": false,
+      "panelContentOverflow": false,
+      "feedbackOverflow": false,
+      "pageErrors": 0
+    }
+  ]
+}
