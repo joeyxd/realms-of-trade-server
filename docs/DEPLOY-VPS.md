@@ -215,4 +215,11 @@ docker compose --project-name marea-negra-alpha \
   -f /opt/marea-negra/releases/<SHA_NUEVO>/deploy/compose.vps.yml up -d --no-build
 ```
 
-Para volver atrás, vuelve a detener la autoridad por hasta 90 segundos y apunta `GAME_IMAGE` a la imagen anterior ya existente. Conserva exactamente el mismo `alpha.env`, `SAVE_SECRET`, hostname y `WORLD_ID`. Arranca el proyecto con la release anterior y repite las comprobaciones de salud y estado. Nunca inicies la imagen anterior antes de confirmar que la nueva se detuvo.
+Para volver atrás, usa únicamente una imagen compatible con los datos ya adoptados. Después de activar
+SQL015/recursos durables, conserva `MN_RESOURCE_OPERATIONS=1` y `MN_ECONOMIC_OPERATIONS=1`: una
+imagen anterior al contrato de recursos no es un rollback válido para ese mundo. Ver el
+[contrato y activación de recursos](briefs/m5-resource-authority.md).
+
+Detén la autoridad por hasta 90 segundos y apunta `GAME_IMAGE` a la imagen compatible ya existente.
+Conserva exactamente el mismo `alpha.env`, `SAVE_SECRET`, hostname y `WORLD_ID`. Arranca esa release
+y repite las comprobaciones de salud y estado. Nunca la inicies antes de confirmar que la otra se detuvo.
