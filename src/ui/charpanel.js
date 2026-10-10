@@ -20,8 +20,9 @@ import { sfx } from '../audio/sfx.js';
 import { stage } from './stage.js';
 import { pearlHtml } from './pearlpanel.js';
 import { packInventoryHtml } from './packInventory.js';
+import { loggingSkillHtml } from './loggingSkill.js';
 
-const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T'], ['pearl', 'Perlas', 'P']];
+const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T'], ['pearl', 'Perlas', 'P'], ['logging', 'Oficios', '']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
 const pct = (v, d = 0) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
@@ -102,10 +103,11 @@ export class CharPanel {
   // ---- Rendering -----------------------------------------------------------------------------------------
   render() {
     const p = this.profile();
-    const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${name} <span class="kbd">${key}</span></button>`).join('');
+    const locale = typeof this.locale === 'function' ? this.locale() : this.locale;
+    const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${id === 'logging' ? (locale === 'en' ? 'Trades' : 'Oficios') : name}${key ? ` <span class="kbd">${key}</span>` : ''}</button>`).join('');
     const html = `<div class="cp frame interactive" role="dialog" aria-label="Personaje">
       <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="Cerrar">✕</button></div>
-      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.questsHtml(p)}</div>
+      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.tab === 'logging' ? loggingSkillHtml(p.progression, locale) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.

@@ -14,7 +14,8 @@ import { deathDropOperation, deathDropResult, deathDropInWindow, deathDropKey, c
   checkedDeathDropResult, checkedDeathDropReceipt, checkedCurrentDeathDrop, checkedCurrentDeathDropPage } from './deathDropOperation.mjs';
 import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
 import { EconomicOperationError, economicOperation, canonicalEconomicText, checkedEconomicResult, checkedEconomicReceipt } from './economicOperation.mjs';
-import { checkedResourceState } from './resourceState.mjs';
+import { checkedResourceState, upgradeLoggingState } from './resourceState.mjs';
+import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -57,6 +58,12 @@ function resourceAdvanceAllowed(current, next, operation = false) {
   try { checkedResourceState(next.resources); } catch { return false; }
   if (!Object.hasOwn(current, 'resources')) return true;
   if (next.resources.tick < current.resources.tick) return false;
+  if (current.resources.v === 2 && next.resources.v !== 2) return false;
+  if (current.resources.v === 1 && next.resources.v === 2) {
+    if (operation) return false; // Adoption is a separate, exact startup checkpoint.
+    try { return canonicalEconomicText(upgradeLoggingState({ ...current.resources, tick: next.resources.tick })) === canonicalEconomicText(next.resources); }
+    catch { return false; }
+  }
   return operation || canonicalEconomicText({ ...current.resources, tick: 0 }) ===
     canonicalEconomicText({ ...next.resources, tick: 0 });
 }
@@ -135,6 +142,7 @@ export function createMemoryStore() {
       return save(worlds, id, data, expectedVersion);
     },
     async checkResourceOperations() { return { version: 1 }; },
+    async checkLoggingOperations() { return { version: 1 }; },
     async commitEconomicOperation(raw) {
       const { operationId, request } = checkedEconomicInput(raw), text = canonicalEconomicText(request);
       const receipt = economicReceipts.get(operationId);
@@ -148,7 +156,15 @@ export function createMemoryStore() {
       const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
       if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
           currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
+      if (request.worldData.resources?.v === 2 && currentWorld.data.resources?.v !== 2) return conflict();
       if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
+      if (!loggingWorldTransition(currentWorld.data.resources, request)) return { ok: false, why: 'operation' };
+      const resource = request.command.type === 'resource', palm = resource && request.command.op === 'gather'
+        && currentWorld.data.resources?.nodes.find(n => n.id === request.command.node)?.kind === 'palm';
+      if (currentWorld.data.resources?.v === 2 && resource && (palm ? !request.beneficiaries
+        : canonicalEconomicText(currentWorld.data.resources.logging) !== canonicalEconomicText(request.worldData.resources.logging)
+          || canonicalEconomicText(currentWorld.data.resources.nodes.filter(n => n.kind === 'palm')) !==
+            canonicalEconomicText(request.worldData.resources.nodes.filter(n => n.kind === 'palm')))) return conflict();
       if (Object.hasOwn(currentWorld.data, 'community') && request.command.type === 'resource' &&
           (!Object.hasOwn(request.worldData, 'community') ||
            canonicalEconomicText(currentWorld.data.community) !== canonicalEconomicText(request.worldData.community))) return conflict();
@@ -156,14 +172,20 @@ export function createMemoryStore() {
       const profileVersion = request.expectedProfileVersion + 1, worldVersion = request.expectedWorldVersion + 1;
       version(profileVersion, 1); version(worldVersion, 1);
       const nextProfiles = new Map(profiles);
-      nextProfiles.set(request.account, { data: request.profile, version: profileVersion });
+      const members = request.beneficiaries ?? [{ account: request.account, expectedVersion: request.expectedProfileVersion, profile: request.profile }];
+      for (const row of members) {
+        const current = profiles.get(row.account);
+        if (!current || current.version !== row.expectedVersion || row.before
+            && canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
+        nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
+      }
       assertManagedPearls(nextProfiles, uniques);
-      const result = checkedEconomicOutput({ ok: true, replay: false, profileVersion, worldVersion, ack: request.ack }, request);
+      const result = checkedEconomicOutput({ ok: true, replay: false, profileVersion, worldVersion, ack: request.ack,
+        ...(request.beneficiaries ? { profiles: loggingResultProfiles(request) } : {}) }, request);
       const stored = { text, request: structuredClone(request), result };
-      const nextProfile = { data: structuredClone(request.profile), version: profileVersion };
       const nextWorld = { data: structuredClone(request.worldData), version: worldVersion };
       // All validation and cloning precedes this synchronous commit point.
-      profiles.set(request.account, nextProfile);
+      for (const row of members) profiles.set(row.account, nextProfiles.get(row.account));
       worlds.set(request.world, nextWorld);
       economicReceipts.set(operationId, stored);
       return structuredClone(result);
@@ -467,6 +489,11 @@ export function createSupabaseStore(client) {
     },
     async checkResourceOperations() {
       const result = await rpc('mn_resource_operations_ready', {});
+      if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
+      return result;
+    },
+    async checkLoggingOperations() {
+      const result = await rpc('mn_logging_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
       return result;
     },

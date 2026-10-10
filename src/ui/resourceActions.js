@@ -2,6 +2,7 @@
 import { HARVEST, RESOURCE_KINDS } from '../data/resources.js';
 import { DT } from '../data/tuning.js';
 import { holdUsed, load } from '../sim/economy/cargo.js';
+import { loggingStatus } from '../sim/systems/progression.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
 const COPY = {
@@ -38,11 +39,11 @@ const REASONS = {
 export class ResourceActions {
   constructor({ client, player, enabled, toast, sound, onGather, onChange, locale = () => 'es', now = () => performance.now() }) {
     Object.assign(this, { client, player, enabled, toast, sound, onGather, onChange, locale, now });
-    this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0;
+    this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0; this.latestGather = null;
   }
   get pending() { return this.craftPending || this.gathers.values().next().value || null; }
   get copy() { return COPY[this.locale()] || COPY.es; }
-  reset() { this.craftPending = null; this.gathers.clear(); this.predictedHits.clear(); this.gatherUntil = 0; this.onChange?.(); }
+  reset() { this.craftPending = null; this.gathers.clear(); this.predictedHits.clear(); this.gatherUntil = 0; this.latestGather = null; this.onChange?.(); }
   update() {
     const c = this.client();
     if (c !== this.owner || c?.t?.closed) { if (this.pending) this.reset(); this.owner = c; return; }
@@ -176,7 +177,9 @@ export class ResourceActions {
     const pending = { command: { ...command }, sentAt: this.now(), def, good: def.good, count };
     this.gathers.set(command.opId, pending);
     try { c.send(command); } catch { this.gathers.delete(command.opId); return false; }
-    this.gatherUntil = pending.sentAt + (def.actionTicks || HARVEST.actionTicks) * DT * 1000;
+    this.latestGather = pending;
+    const actionTicks = node.kind === 'palm' ? loggingStatus(c.profile?.progression).actionTicks : (def.actionTicks || HARVEST.actionTicks);
+    this.gatherUntil = pending.sentAt + actionTicks * DT * 1000;
     pending.until = this.gatherUntil;
     const key = `${node.id}:${node.rev + 1}`; this.predictedHits.add(key);
     while (this.predictedHits.size > 32) this.predictedHits.delete(this.predictedHits.values().next().value);
@@ -200,6 +203,12 @@ export class ResourceActions {
         gather.ack = event; gather.good = event.good; gather.count = event.count; gather.expired = false;
         // Old servers lack the revision barrier: drop the preview and await their canonical profile.
         if (!Number.isSafeInteger(event.profileRev)) gather.count = 0;
+        // Only a fresh receipt for the still-current action may refine its local timer.
+        if (gather === this.latestGather && this.gatherUntil === gather.until
+            && !event.historical && !event.replay && Number.isSafeInteger(event.actionTicks) && event.actionTicks > 0) {
+          gather.until = gather.sentAt + event.actionTicks * DT * 1000;
+          this.gatherUntil = gather.until;
+        }
       }
       this.onChange?.(); this.update();
     } else this.craftPending = null;

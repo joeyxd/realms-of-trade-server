@@ -1,5 +1,12 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 PRG01b2, 2026-10-10 — alpha.24/protocolo 36:** [Tala cooperativa](delivery/prg01b2-logging.md)
+implementada sobre la única autoridad M5: palmera, troncos, práctica proporcional y hasta tres perfiles
+actuales en una transacción. Incluye participantes offline, hito 60, cadencia 54→45 desde el siguiente
+golpe y ficha Oficios/Trades ES/EN. SQL016 y flag opt-in; no confundir publicación del runtime con
+activación de Tala. Pruebas, revisión/imagen/entrada pública y paso pendiente de SQL en la entrega.
+Sigue PRG01c: artesano y enseñanza personal `raft_storage`; no se concede automáticamente con el hito.
+
 **AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
 concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
 embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger
