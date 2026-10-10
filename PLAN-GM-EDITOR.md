@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-Fecha: 2026-10-10, hora de México. Estado: **GM03b1 publicado en alpha.30/protocolo 41, release `6e6f421` sana**. Preparación verificable desde Online, informe y descarga; 183/183 regresión, 41/41 navegador local y 23/23 navegador público con Supabase real. Activación/rollback GM03b2 pendientes. [GM03b1](docs/delivery/gm03b1/DELIVERY.md) · [GM03a](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
+Fecha: 2026-10-10, hora de México. Estado: **GM03b2 integrado en alpha.34/protocolo 43, con upstream Companions alpha.33 conservado; 308/308 regresión, navegador local 6/6 y capturas ES/EN inspeccionadas. Checker real 2/2 y actualizador Linux 22/22. Aceptación pública pendiente; no desplegado.** Online registra, activa y revierte revisiones guardadas; el cliente comprueba identidad antes de admisión. [GM03b2](docs/delivery/gm03b2/DELIVERY.md) · [GM03b1, alpha.30/protocolo 41](docs/delivery/gm03b1/DELIVERY.md) · [GM03a](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -19,7 +19,7 @@ durante la sesión ante cuota agotada. En ese corte no existía guardado remoto 
 100/100 pruebas pertinentes (30 GM) y navegador 13/13 con autenticación simulada. GM02 ya añade
 edición privada de rocas naturales/costeras, flores y guijarros, círculos compatibles y prueba caminando;
 GM03a ya guarda borradores remotos privados: SQL020 aplicada, canario real 14/14 y navegador público 17/17 en `9f23be3`.
-GM03b1 añade preparación verificable e informe; GM03b2 conserva registro/publicación/activación/rollback pendientes.
+GM03b1 añadió preparación verificable e informe; GM03b2 integra registro, activación y rollback. La aceptación local incluye navegador ES/EN y revisión de capturas; sigue pendiente la aceptación pública. Ver [estado y límites](docs/delivery/gm03b2/DELIVERY.md).
 El hotfix de render se validó localmente en alpha.21 (102 pruebas, navegador 16/16) y públicamente en alpha.23
 (7/7 con Supabase real y calidad alta con contornos). La entrega inicial solo había ejercitado calidad baja.
 
@@ -36,8 +36,10 @@ en el checkout aislado de primera entrega; respeta la autoridad M5 y las depende
 4. Coloca, mueve, gira, escala, duplica o elimina; puede seleccionar objetos ya existentes.
 5. Activa **Probar caminando / Walk test** en una sesión privada con la misma geometría y colisiones.
 6. Regresa al editor conservando selección y cámara; guarda y revisa la lista de cambios.
-7. Cuando exista publicación, prepara una revisión y solicita su activación. La interfaz muestra si está
-   guardada, validada, esperando activación o realmente activa en el servidor.
+7. En **Online**, guarda el borrador, prepara la revisión y usa **Guardar revisión preparada** para registrar
+   el artefacto exacto. Elige esa revisión o **Mapa base**, revisa y confirma la activación cuando el mundo
+   esté vacío. Para rollback, elige **Mapa base** o una revisión guardada anterior y confirma. La UI separa
+   borrador, preparación, revisión registrada y revisión activa; las pestañas abiertas recargan para entrar.
 
 La escena de edición usa el renderer y los assets del juego, con una instancia de borrador aislada.
 Al entrar desde una partida se completa la salida y el guardado normal del personaje antes de cambiar
@@ -322,7 +324,7 @@ limpieza también usa CAS. Si falla una escritura por cuota, el fallback en memo
 Este flujo local sigue disponible. GM03a añade una cabeza remota privada por cuenta/mundo, revisionado CAS
 y recibos de operación exactos; migración GM `020_gm_drafts.sql` ya está aplicada y readiness live reportó versión 1. El runtime
 ya se publicó y su continuidad remota se aceptó con navegador/Supabase real. La retención operativa
-sigue pendiente; GM03b1 prepara revisiones y GM03b2 cubrirá su registro y activación.
+sigue pendiente; GM03b1 preparó revisiones y GM03b2 implementa el registro y la activación, con aceptación local aprobada y publicación pública pendiente.
 
 GM01 permite varios contextos locales, con control de revisión para que otra pestaña detecte conflicto y
 no sobrescriba silenciosamente. La colaboración simultánea en línea, cursores compartidos y mezcla de
@@ -338,8 +340,9 @@ pruebas pertinentes, incluidas 30 GM. El navegador real de producción pasó 6/6
 denegado y sesión GM autorizada; [evidencia](docs/delivery/gm01/public-evidence.json) y
 [despliegue](docs/delivery/gm01/deployment-evidence.json). La autorización positiva de GM ya está verificada
 en el host activo. GM03a añade endpoints y almacenamiento remoto con permisos de servicio; migración GM `020_gm_drafts.sql` está live,
-y el runtime `9f23be3` los monta y ofrece Online, aceptado con Supabase real. GM03b definirá
-autorización de publicación, puntero M5, registro y recuperación antes de activar mapas.
+y el runtime `9f23be3` los monta y ofrece Online, aceptado con Supabase real. GM03b2 implementa
+autorización de publicación, registro, recuperación y admisión de la revisión activa; navegador local y
+checker están aceptados. Falta el canario público para cerrar la publicación.
 
 GM01 usa IndexedDB local, con clave separada por navegador/cuenta/mundo y CAS. GM03a persiste un borrador
 privado en tablas de contenido separadas de perfiles/economía y acceso de servicio autorizado; una operación
@@ -459,7 +462,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM02 | **Publicado en alpha.25:** Escena, edición/ocultación/restauración de rocas naturales/costeras, flores y guijarros; duplicación, círculos XZ y prueba caminando | [Entrega](docs/delivery/gm02-draft-walk.md): navegador 28/28, matrices originales/restauración, documento v2 migrable, preview privado con movimiento real; 162/162 pruebas (51 GM), 107/107 VPS y público real 12/12 |
 | GM03a | **Publicado `9f23be3`, alpha.28 / protocolo 40 integrado:** borrador privado remoto por cuenta/mundo, CAS, recibo idempotente y UI explícita; sin cambiar mapa activo ni autoridad M5 | SQL020/readiness live, canario 14/14, local 35/35, público real 17/17 y release 107/107. [Entrega](docs/delivery/gm03a/DELIVERY.md) |
 | GM03b1 | **Publicado, alpha.30/protocolo 41:** preparar desde revisión online exacta, informe, dependencias por hash y descarga; sin activación | [Entrega](docs/delivery/gm03b1/DELIVERY.md): 183/183 regresión, navegador local 41/41 simulado, actualizador 107/107 y navegador público Supabase 23/23; borrador anterior restaurado por CAS |
-| GM03b2 | Pendiente: registro/publicación durable, puntero activo coordinado con M5, admisión, exclusión y rollback | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
+| GM03b2 | **Integrado en alpha.34/protocolo 43:** registro durable, activación/rollback con CAS, exclusión del host/actualizador, admisión por identidad y UI Online; upstream Companions alpha.33 conservado | 308/308 regresión, navegador local 6/6 con capturas ES/EN inspeccionadas, checker real 2/2 y actualizador Linux 22/22. Aceptación pública pendiente. [Entrega](docs/delivery/gm03b2/DELIVERY.md) |
 | GM04 | Grupos/prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Editar un conjunto; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05 | Esculpir/pintar terreno existente con deltas y reconstrucción coordinada | Rampa caminable, agua/minimapa coherentes, undo exacto y zonas protegidas preservadas |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
@@ -474,8 +477,8 @@ La ampliación del terreno se diseña ahora para que el formato la admita y se i
 Antes de cada corte, verificar base/upstream y archivo dueño: `src/main.js`, protocolo, manifiesto y host
 son puntos compartidos. Un escritor por archivo. Las rutas nuevas de la tabla son propuestas, no archivos creados.
 GM02 delimita la edición a decoración segura y el recorrido a círculos XZ privados. GM03a persiste
-borradores remotos privados sin escribir mapa activo ni gameplay. GM03b concretará autorización de publicación
-y la referencia activa con el dueño M5.
+borradores remotos privados sin escribir mapa activo ni gameplay. GM03b2 implementa autorización de publicación
+y referencia activa del mundo; su evidencia de aceptación pública continúa pendiente.
 
 ## 12 Matriz de comprobación
 
@@ -495,15 +498,16 @@ y la referencia activa con el dueño M5.
   dos clientes y entrada tardía con revisión correcta, rollback compatible sin revertir economía.
 
 La matriz es objetivo de aceptación por corte, no una afirmación de cobertura completa. GM01 y GM02
-registran las comprobaciones ejecutadas en sus entregas; activación de mapas, terreno y
-aceptación física móvil siguen pendientes. Cada corte
-registrará implementación, evidencia, aceptación visual y publicación por separado.
+registran las comprobaciones ejecutadas en sus entregas; GM03b2 registra integración, pruebas locales y
+aceptación visual local; canario público y salud de la publicación siguen pendientes. Edición de terreno
+y aceptación física móvil también siguen pendientes. Cada corte registra implementación, evidencia,
+aceptación visual y publicación por separado.
 
 ## 13 Base revisada y decisiones pendientes
 
-Revisión de planificación: checkout `claude/loving-lovelace-ptbif7`, HEAD observado `e967fb1`; upstream y
-PR #1 observados en `ec5d054`. Hay trabajo concurrente sin commit. Las observaciones técnicas proceden del
-árbol leído y del contraste selectivo con upstream; no se ha cambiado de rama ni actualizado ese trabajo.
+Revisión de planificación: alpha.34/protocolo 43 integra el upstream Companions alpha.33, conservando sus
+cambios concurrentes en el merge. La aceptación de navegador y pruebas locales corresponden a este checkout;
+el siguiente recorrido browser final se repite sobre el merge integrado. No implica publicación ni despliegue.
 
 Referencias de continuidad: [HANDOFF](docs/HANDOFF.md), [ASSETS](docs/ASSETS.md),
 [catálogo de arte](tools/art-catalog/README.md), [terreno S21](docs/delivery/map-revamp-v1.md),
@@ -516,7 +520,10 @@ retención/recuperación operativa y plantillas iniciales de colisión. GM03a ya
 de borradores. Las recetas de los
 cuatro pilotos están fijadas y sus derivados verificados por hash.
 La cuenta GM y su permiso en el host están verificados; SQL020 y runtime GM03a están publicados y
-el guardado remoto, adopción y conflicto se aceptaron con Supabase real. La publicación/activación de GM03b sigue pendiente.
+el guardado remoto, adopción y conflicto se aceptaron con Supabase real. GM03b2 está integrado en alpha.34:
+308/308 regresión, navegador local 6/6, checker real 2/2 y actualizador Linux 22/22. La aceptación pública
+sigue pendiente.
+Ver [entrega GM03b2](docs/delivery/gm03b2/DELIVERY.md).
 Recomendación: autor como único GM inicial, escritorio para editar, assets estáticos preparados y decoración
 existente primero, publicación con mundo vacío y terreno por fases.
 

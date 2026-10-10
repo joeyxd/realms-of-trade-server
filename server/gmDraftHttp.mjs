@@ -55,7 +55,7 @@ function checkedHead(raw) {
 }
 
 export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId, seed, baseRevision = 'terrain-s21-v1',
-  validateReferences, publication = null, allowMemory = false, timeoutMs = 10_000 } = {}) {
+  validateReferences, publication = null, content = null, allowMemory = false, timeoutMs = 10_000 } = {}) {
   if (!store || typeof resolvePlayer !== 'function' || typeof worldId !== 'string' || !worldId.trim() || worldId.length > 100 ||
       !Number.isSafeInteger(seed) || seed < 0 || seed > 0xffffffff || typeof baseRevision !== 'string' ||
       !baseRevision || baseRevision.length > 128 || typeof validateReferences !== 'function' ||
@@ -94,7 +94,7 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
       }
       return ready;
     },
-    async handle(req, res, { prepareRevision = false } = {}) {
+    async handle(req, res, { prepareRevision = false, registerRevision = false, activateRevision = false } = {}) {
       req.on?.('error', () => {});
       const controller = new AbortController();
       const abort = () => controller.abort();
@@ -105,12 +105,16 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         if (auth.aborted || res.destroyed || res.writableEnded || req.aborted) return true;
         if (auth.status !== 200) { send(res, auth.status, auth.body); return true; }
         const method = req.method;
-        const allowed = prepareRevision ? ['POST'] : ['GET', 'PUT'];
+        const allowed = prepareRevision || activateRevision ? ['POST'] : registerRevision ? ['GET', 'POST'] : ['GET', 'PUT'];
         if (!allowed.includes(method)) { res.writeHead(405, { ...JSON_HEADERS, allow: allowed.join(', ') }); res.end(JSON.stringify({ ok: false, code: 'method' })); return true; }
         if (!ready) { send(res, 503, unavailable()); return true; }
         let accountId;
         try { accountId = playerKey(auth.body.accountId); } catch { send(res, 503, unavailable()); return true; }
         if (!noteRequest(accountId)) { send(res, 429, { ok: false, code: 'gm_draft_rate' }); return true; }
+        if ((registerRevision || activateRevision) && !content?.ready) { send(res, 503, { ok: false, code: 'gm_content_unavailable' }); return true; }
+        if (registerRevision && method === 'GET') {
+          send(res, 200, { ok: true, ...await content.list() }); return true;
+        }
         if (method === 'GET') {
           const loaded = await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs);
           const head = checkedHead(loaded ?? { revision: 0, document: null, savedAt: null });
@@ -130,8 +134,22 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
           send(res, code === 'size' ? 413 : code === 'timeout' ? 408 : 400,
             { ok: false, code: code === 'size' ? 'size' : code === 'timeout' ? 'timeout' : 'input' }); return true;
         }
-        if (prepareRevision) {
-          if (!exactKeys(input, ['expectedRevision']) || !Number.isSafeInteger(input.expectedRevision) ||
+        if (activateRevision) {
+          if (!exactKeys(input, ['operationId', 'expectedGeneration', 'revisionId']) || typeof input.operationId !== 'string' ||
+              !UUID.test(input.operationId) || /^0{8}-0{4}-0{4}-0{4}-0{12}$/i.test(input.operationId) ||
+              !Number.isSafeInteger(input.expectedGeneration) || input.expectedGeneration < 0 || input.expectedGeneration >= MAX_REVISION ||
+              input.revisionId !== null && !/^[a-f0-9]{64}$/.test(input.revisionId)) {
+            send(res, 400, { ok: false, code: 'operation' }); return true;
+          }
+          if (controller.signal.aborted || req.aborted) return true;
+          // A disconnect after this point is not cancellation of the durable operation.
+          const result = await content.activate({ ...input, operationId: input.operationId.toLowerCase() });
+          if (result?.ok === false) { send(res, 409, { ok: false, code: 'gm_content_conflict' }); return true; }
+          send(res, 200, result); return true;
+        }
+        if (prepareRevision || registerRevision) {
+          if (!exactKeys(input, registerRevision ? ['expectedRevision', 'revisionId'] : ['expectedRevision']) ||
+              registerRevision && !/^[a-f0-9]{64}$/.test(input.revisionId) || !Number.isSafeInteger(input.expectedRevision) ||
               input.expectedRevision < 1 || input.expectedRevision > MAX_REVISION) {
             send(res, 400, { ok: false, code: 'operation' }); return true;
           }
@@ -161,6 +179,12 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
             if (current?.revision !== head.revision) {
               send(res, 409, { ok: false, code: 'gm_draft_conflict', revision: current?.revision ?? 0 }); return true;
             }
+            if (registerRevision) {
+              if (preparation.revision?.revisionId !== input.revisionId) {
+                send(res, 409, { ok: false, code: 'gm_content_changed' }); return true;
+              }
+              send(res, 200, { ok: true, ...await content.register(preparation.revision) }); return true;
+            }
             send(res, 200, { ok: true, durable: store.durable === true, scope, headRevision: head.revision, preparation });
           } finally { if (!buildStarted) preparing = false; }
           return true;
@@ -189,8 +213,13 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         const head = checkedHead(result.head);
         if (!head) throw new Error('response');
         send(res, 200, { ok: true, durable: store.durable === true, scope, head, replay: result.replay });
-      } catch {
-        send(res, 503, unavailable());
+      } catch (error) {
+        const code = error?.code;
+        const known = ['gm_content_busy', 'gm_content_conflict', 'gm_content_changed', 'gm_content_missing',
+          'gm_content_incompatible', 'gm_content_candidate', 'gm_content_routes', 'gm_content_occupied',
+          'gm_content_operation', 'gm_content_limit'];
+        if (known.includes(code)) send(res, 409, { ok: false, code });
+        else send(res, 503, registerRevision || activateRevision ? { ok: false, code: 'gm_content_unavailable' } : unavailable());
       } finally {
         req.removeListener?.('aborted', abort); res.removeListener?.('close', abort);
       }

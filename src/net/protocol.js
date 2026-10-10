@@ -1,11 +1,11 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 42; // Private fire fuel status and paid fire commands; reload peers.
-// Owner companion list/stop adds optional messages only; existing DTOs retain v42.
+export const PROTOCOL_VERSION = 43; // Exact content admission plus private fire fuel status/commands; reload peers.
+// Owner companion list/stop uses optional messages; its authority contract is unchanged.
 
 export const MSG = {
   // client -> server
-  HELLO: 'hello',     // {v, name, skin, weapon, save, token?, importSave?, agent?:true}; managed admission requires token
+  HELLO: 'hello',     // {v, name, skin, weapon, save, content?:{generation,revisionId}, token?, importSave?, agent?:true}
   INPUTS: 'inputs',   // {cmds: [{seq, mx, mz, ax, az, btn, prs, pt, w}], control?:{epoch,taskRevision}}
   CMD: 'cmd',         // {type: 'pause' | 'equip' | 'raft' | 'salvage' | 'open' | 'loadout' | 'form' | 'learn' | 'dev' ...}
   PING: 'ping',       // {t}

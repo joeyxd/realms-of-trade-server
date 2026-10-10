@@ -58,7 +58,7 @@ import { CommunityPanel } from './ui/community.js';
 import { ArtisanPanel } from './ui/artisan.js';
 import { ChatPanel } from './ui/chat.js';
 import { ChatBubbles } from './ui/chatBubbles.js';
-import { MSG } from './net/protocol.js';
+import { MSG, PROTOCOL_VERSION } from './net/protocol.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -72,6 +72,8 @@ import { startHarvestPose } from './render/harvestPose.js';
 import { Ambience } from './audio/ambience.js';
 import { Music } from './audio/music.js';
 import { assets } from './render/assets/registry.js';
+import { loadGmWorldContent } from './editor/activeContent.js';
+import { installGmContent } from './editor/contentProjection.js';
 import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
 import { LiveNavigationView } from './client/liveNavigationView.js';
 import { GmEntry } from './editor/entry.js';
@@ -111,7 +113,8 @@ async function boot() {
   // missing or broken stays procedural. ?noassets skips them (compare against the procedural look).
   const assetsP = params.has('noassets') ? Promise.resolve(assets) : assets.load('assets/manifest.json');
   const raftSkinP = params.has('noassets') ? Promise.resolve(null) : loadNavalRaftSkin({ mobile: isTouch });
-  const map = generateWorld(GAME.seed);
+  const baseMap = generateWorld(GAME.seed);
+  const map = { ...baseMap };
   const debug = params.has('debug');
   // Online when this page comes from the game server (or ?server=ws://…), solo with ?solo or without one.
   // ?lag=&jitter= add artificial latency per direction (testing).
@@ -121,7 +124,16 @@ async function boot() {
   });
   const canvas = $('#game');
   await assetsP;
+  const transport = await transportP;
+  const gmContent = transport.kind === 'ws' ? await loadGmWorldContent({ httpBase: httpUrlFor(transport.url),
+    map, baseMap, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) : null;
   const world = new GameScene(canvas, map, { raftSkin: await raftSkinP });
+  let gmContentLayer = null;
+  if (gmContent?.revision) {
+    const { createGmContentLayer } = await import('./render/gmContent.js');
+    gmContentLayer = createGmContentLayer({ scene: world.scene, map: baseMap, assets });
+    await gmContentLayer.load(gmContent.revision.content.document, gmContent.revision.content.assets);
+  }
   // Title/editor screenshots may select a preset. Playing always follows the shared world clock.
   world.lighting.setTimeOfDay(debug ? params.get('tod') || 'cycle' : 'cycle', 0);
   if (debug && params.get('phase')) world.lighting.setPhase(+params.get('phase'));
@@ -449,7 +461,6 @@ async function boot() {
   }
 
   // ---- Net / entities --------------------------------------------------------------------------
-  const transport = await transportP;
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),
@@ -528,6 +539,7 @@ async function boot() {
       if (st.mode !== 'title' || st.boarding || client.joined) return;
       st.gmOpening = true;
       try {
+        gmContentLayer?.suspend(); installGmContent(map, baseMap, null);
         const { WorldEditor } = await import('./editor/editor.js');
         const { RemoteDraftClient } = await import('./editor/remoteDraft.js');
         if (gmOwner !== accountId) { await gmEditor?.dispose?.(); gmEditor = null; gmOwner = accountId; }
@@ -551,6 +563,7 @@ async function boot() {
               } };
             },
             onClose: ({ saved, recoveryDocument }) => {
+              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
               if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
               else gmRecoveries.delete(gmOwner);
               gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
@@ -558,6 +571,7 @@ async function boot() {
               worldUI.root.hidden = gmWorldUIHidden;
               world.setTitleShadows(true); gmEntry.closed(); input.clearActions(); input.keys.clear();
               canvas.focus({ preventScroll: true });
+              if (st.contentStale) netLost(true);
             },
           });
           const recovery = gmRecoveries.get(accountId);
@@ -579,6 +593,7 @@ async function boot() {
         gmWorldUIHidden = worldUI.root.hidden; worldUI.root.hidden = true;
         world.setTitleShadows(false); world.nearFade(false);
       } catch (error) {
+        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
         st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
         world.setTitleShadows(true); input.enabled = false;
         title.message(rich('runtime.gmFail') +
@@ -600,18 +615,21 @@ async function boot() {
       if (st.mode !== 'title') { clearInterval(refresh); return; }
       probeServer(httpUrlFor(transport.url)).then((s2) => { if (s2 && st.mode === 'title') title.setNet({ mode: 'online', ...s2 }); });
     }, 4000);
-    transport.onClose(() => safe('net', () => netLost()));
+    transport.onClose((event) => safe('net', () => {
+      if (event.reason === 'content_revision' && gmEditor?.active) { st.contentStale = true; return; }
+      netLost(event.reason === 'content_revision');
+    }));
   } else {
     title.setNet({ mode: 'solo' });
     if (servedByGameServer()) probeServer().then((s2) => { if (s2) title.setNet({ mode: 'solo', server: s2 }); });
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
-  function netLost() {
+  function netLost(contentChanged = false) {
     companionsPanel?.close(); companions.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
-    artisan.close(); community.close();
+    artisan.close(); community.close(); firePanel.close();
     workbench.close();
     commercePanel.close();
     raftEditor.close();
@@ -619,7 +637,7 @@ async function boot() {
     const el = document.createElement('div');
     el.className = 'net-lost';
     el.setAttribute('role', 'alertdialog');
-    el.innerHTML = `<div class="frame net-card"><h2 class="outlined">${ltext('runtime.lost')}</h2><p>${ltext('runtime.lostHint')}</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">${ltext('runtime.reconnect')}</button><button class="btn secondary interactive" id="btn-go-solo">${ltext('runtime.solo')}</button></div></div>`;
+    el.innerHTML = `<div class="frame net-card"><h2 class="outlined">${ltext(contentChanged ? 'runtime.contentChanged' : 'runtime.lost')}</h2><p>${ltext(contentChanged ? 'runtime.contentChangedHint' : 'runtime.lostHint')}</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">${ltext(contentChanged ? 'runtime.contentReload' : 'runtime.reconnect')}</button><button class="btn secondary interactive" id="btn-go-solo">${ltext('runtime.solo')}</button></div></div>`;
     $('#stage').appendChild(el);
     el.querySelector('#btn-reconnect').addEventListener('click', () => location.reload());
     el.querySelector('#btn-go-solo').addEventListener('click', () => switchMode('solo'));
@@ -917,6 +935,8 @@ async function boot() {
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
             version: rich('join.version'),
+            content_revision: rich('join.contentRevision'),
+            content_busy: rich('join.contentBusy'),
             auth: rich('join.auth'),
             auth_disabled: rich('join.disabled'),
             session: rich('join.session'),
@@ -1539,7 +1559,7 @@ async function boot() {
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
+  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

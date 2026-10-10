@@ -38,6 +38,7 @@ import { EconomicAuthority } from './economicAuthority.mjs';
 import { newCommunityState } from './communityProject.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { GroundHostAuthority } from './groundHostAuthority.mjs';
+import { sameContentIdentity } from './gmContent.mjs';
 
 function assemblyOptions(raw, keys) {
   if (!raw || types.isProxy(raw) || ![Object.prototype, null].includes(Object.getPrototypeOf(raw))) throw new StoreError('configuration');
@@ -401,6 +402,7 @@ export class GameHost {
       server: http, path, maxPayload: LIMITS.maxPayload, clientTracking: false,
       perMessageDeflate: { threshold: 256, zlibDeflateOptions: { level: 6 }, concurrencyLimit: 4 },
       verifyClient: (info, cb) => {
+        if (this.contentSwitching) return cb(false, 503, 'content');
         if (!this.healthy() || this.groundAuthority && !this.groundAuthority.canMutate() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
         if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
@@ -420,6 +422,7 @@ export class GameHost {
     // Drive the server's fixed-step pump ourselves: one bad tick is logged, it never takes the process down.
     this.server.last = performance.now();
     this.timer = setInterval(() => {
+      if (this.contentSwitching) return;
       const t0 = performance.now(), tick0 = this.server.world.tick;
       try { this.server.pump(); } catch (err) {
         this.errors++;
@@ -428,7 +431,9 @@ export class GameHost {
       const n = this.server.world.tick - tick0;
       if (n > 0) { this.stats.steps += n; this.stats.stepMs += (performance.now() - t0 - this.stats.stepMs) * 0.05; }
     }, 4);
-    if (this.worldState) this.worldTimer = setInterval(() => this.worldState.save(this.server.world.economy), this.worldSaveMs);
+    if (this.worldState) this.worldTimer = setInterval(() => {
+      if (!this.contentSwitching) this.worldState.save(this.server.world.economy);
+    }, this.worldSaveMs);
     return this;
   }
 
@@ -518,6 +523,25 @@ export class GameHost {
     }
   }
 
+  beginContentSwitch() {
+    const s = this.status(), storage = s.storage;
+    if (this.contentSwitching || !this.healthy() || s.players !== 0 || this.pendingJoins || this.joins.size ||
+        storage.durable !== true || !storage.accounts || !storage.world?.ready || storage.world.failed ||
+        storage.errors || s.errors || storage.unsaved || storage.profileWrites || storage.worldWriting || storage.tickBlocked ||
+        storage.economic && (storage.economic.pending !== 0 || storage.economic.failed) ||
+        ['staging', 'deathStaging', 'deathDrops', 'pearlGround', 'combatDeaths', 'startup'].some((key) => storage[key] !== null) ||
+        this.groundAuthority && !this.groundAuthority.canMutate()) throw Object.assign(new Error('gm_content_busy'), { code: 'gm_content_busy' });
+    this.contentSwitching = true;
+    return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
+  }
+
+  closeContentSpectators() {
+    for (const sock of this.sockets.values()) {
+      // beginContentSwitch rejects every active or pending character before this point.
+      try { sock.ws.close(1012, 'content_revision'); } catch { /* gone */ }
+    }
+  }
+
   healthy() { return !this.closing && this.#pearlsReady() && !this.unsavedProfiles.size &&
     (!this.groundAuthority || this.groundAuthority.ready) && (!this.worldState || this.worldState.ready); }
 
@@ -541,6 +565,7 @@ export class GameHost {
       players: s.humans, max: this.maxPlayers, sockets: this.sockets.size, tick: s.world.tick,
       uptime: Math.round((performance.now() - this.started) / 1000), stepMs: +this.stats.stepMs.toFixed(3),
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
+      ...(this.contentIdentity ? { content: { ...this.contentIdentity, switching: !!this.contentSwitching } } : {}),
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
         profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
@@ -570,6 +595,7 @@ export class GameHost {
   }
 
   onConnection(ws, req) {
+    if (this.contentSwitching) { try { ws.close(1013, 'content'); } catch { /* gone */ } return; }
     if (!this.healthy() || this.groundAuthority && !this.groundAuthority.canMutate() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
     const id = this.nextId++;
     const now = performance.now();
@@ -619,6 +645,10 @@ export class GameHost {
       this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
         op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
       return;
+    }
+    if (this.contentSwitching) { this.sendTo(sock.id, { t: MSG.ERROR, code: 'content_busy' }); return; }
+    if (msg.t === MSG.HELLO && this.contentIdentity && !sameContentIdentity(msg.content, this.contentIdentity)) {
+      this.sendTo(sock.id, { t: MSG.ERROR, code: 'content_revision' }); return;
     }
     if (msg.t === MSG.HELLO && (this.economicAuthority?.busy || this.groundAuthority && !this.groundAuthority.canMutate())) { this.sendTo(sock.id, { t: MSG.ERROR, code: 'storage' }); return; }
     if (msg.t === MSG.HELLO && Object.hasOwn(msg, 'agent') &&
@@ -934,6 +964,7 @@ export class GameHost {
 
   async join(sock, msg, signal) {
     try {
+      if (this.contentSwitching || this.contentIdentity && !sameContentIdentity(msg.content, this.contentIdentity)) throw new StoreError('content_revision');
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (msg.agent === true) {
@@ -1190,6 +1221,7 @@ export class GameHost {
   sendTo(id, msg) {
     const sock = this.sockets.get(id);
     if (!sock) return;
+    if (msg.t === MSG.WELCOME) msg = { ...msg, content: { ...(this.contentIdentity ?? { generation: 0, revisionId: null }) } };
     if (this.agentPilot) {
       const inventoryDenial = (msg.t === MSG.AGENT_INVENTORY_RESULT && msg.ok === false && msg.inventory === null) ||
         (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null) ||

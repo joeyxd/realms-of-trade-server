@@ -1,5 +1,16 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
+[entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
+tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
+V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
+solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
+VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
+pública 6/6. SQL023 aún por aplicar; no se adopta el mundo real ni se activa el montaje.
+Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
+recuperación y canario autenticado VPS.
+
+
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
 [entrega](delivery/l03d-owner-center.md), [contrato](briefs/l03d-owner-center.md). Entrada ingame
 ES/EN para listar y detener personajes ya vinculados a la cuenta autenticada. Revisión exacta,
@@ -21,7 +32,9 @@ Luces municipales infinitas; antorcha de mano 20 min, faroles/antorchas privadas
 fogata/parrilla 30 min provisionales. Un slot, apagar conserva combustible; panel N/V ES/EN y tres piezas
 del editor. SQL022 aplicada, canario real 8/8; 91/91 integración, 107/107 selección de imagen y
 33/33 de composición GameHost/diario común (selecciones solapadas). PC/móvil emulado bajo/alto
-aceptados localmente. Publicación y entrada autenticada VPS pendientes de registrar en la entrega.
+aceptados localmente. VPS `fe50ab1`, alpha.32/protocolo 42, publicado y fuego habilitado; imagen
+107/107 y 30/30 focales. Navegador público autenticado 9/9: combustible/madera persistentes,
+reencendido sin repetir cobro y mapa/minimapa. Cuenta/perfil QA eliminados; recibos retenidos.
 No activa artesano ni montaje de reloj común. Sigue agua costera/reembarque y después provisiones/hogar.
 
 **AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**

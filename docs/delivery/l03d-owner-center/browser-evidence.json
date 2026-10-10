@@ -1,7 +1,7 @@
 {
   "schema": "l03d-companions-browser/v1",
-  "version": "0.6.0-alpha.33",
-  "at": "2026-10-10T22:43:18.239Z",
+  "version": "0.6.0-alpha.34",
+  "at": "2026-10-10T22:54:15.723Z",
   "simulatedAuth": true,
   "production": false,
   "checks": [
@@ -45,7 +45,7 @@
       "pageErrors": [],
       "responses": [
         {
-          "url": "http://127.0.0.1:58206/src/main.js",
+          "url": "http://127.0.0.1:62718/src/main.js",
           "status": 200
         }
       ]
@@ -57,14 +57,14 @@
       ],
       "failedRequests": [
         {
-          "url": "http://127.0.0.1:58206/api/gm/session",
+          "url": "http://127.0.0.1:62718/api/gm/session",
           "failure": "net::ERR_ABORTED"
         }
       ],
       "pageErrors": [],
       "responses": [
         {
-          "url": "http://127.0.0.1:58206/src/main.js",
+          "url": "http://127.0.0.1:62718/src/main.js",
           "status": 200
         }
       ]
@@ -78,7 +78,7 @@
       "pageErrors": [],
       "responses": [
         {
-          "url": "http://127.0.0.1:58206/src/main.js",
+          "url": "http://127.0.0.1:62718/src/main.js",
           "status": 200
         }
       ]
@@ -90,7 +90,7 @@
       "pageErrors": [],
       "responses": [
         {
-          "url": "http://127.0.0.1:60714/src/main.js",
+          "url": "http://127.0.0.1:61874/src/main.js",
           "status": 200
         }
       ]
@@ -102,14 +102,14 @@
       ],
       "failedRequests": [
         {
-          "url": "http://127.0.0.1:58206/api/gm/session",
+          "url": "http://127.0.0.1:62718/api/gm/session",
           "failure": "net::ERR_ABORTED"
         }
       ],
       "pageErrors": [],
       "responses": [
         {
-          "url": "http://127.0.0.1:58206/src/main.js",
+          "url": "http://127.0.0.1:62718/src/main.js",
           "status": 200
         }
       ]

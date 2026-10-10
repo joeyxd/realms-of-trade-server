@@ -29,8 +29,9 @@ una lista de personajes no acredita esa memoria.
 - Cerrar sesión/cambiar cuenta/desconectar borra la proyección y descarta respuestas anteriores.
   Timeout no reenvía una mutación. El panel neutraliza movimiento/ataque mientras está abierto.
 
-Protocolo 42 revisado tras integrar combustible: dos tipos opcionales nuevos; no cambia snapshot, `you`, perfil ni mensajes
-existentes. Sin SQL, nuevo writer o cambios de flags. M5/GameHost conserva la autoridad del juego.
+Introducido en protocolo 42 tras integrar combustible; la composición GM usa protocolo 43 y admisión
+por revisión de contenido. Compañeros conserva sus dos mensajes opcionales y no cambia snapshot, `you`,
+perfil o mensajes existentes. Sin SQL propio, nuevo writer o cambios de flags. M5/GameHost conserva la autoridad del juego.
 
 ## Reutilización y aceptación
 

@@ -181,8 +181,8 @@ export class WorldEditor {
       uniformScale: ['Uniform scale', 'Escala uniforme'],
       snap: ['Snap', 'Rejilla'], world: ['World axes', 'Ejes del mundo'], local: ['Local axes', 'Ejes locales'],
       ground: ['Place on terrain', 'Apoyar en terreno'],
-      colliderNote: ['Circles block only the private walk test, at every height. Models are not walkable surfaces. Nothing is published.',
-        'Los círculos bloquean solo la prueba privada, a cualquier altura. Los modelos no crean superficies transitables. Nada se publica.'],
+      colliderNote: ['Circles block movement at every height. Models are not walkable surfaces. Draft changes stay private until activation from Online.',
+        'Los círculos bloquean el paso a cualquier altura. Los modelos no crean superficies transitables. Los cambios del borrador son privados hasta activarlos desde Online.'],
     };
     for (const el of this.ui.querySelectorAll('[data-i18n]')) {
       const value = words[el.dataset.i18n]; if (value) el.textContent = value[this.lang === 'en' ? 0 : 1];

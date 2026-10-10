@@ -223,3 +223,21 @@ imagen anterior al contrato de recursos no es un rollback válido para ese mundo
 Detén la autoridad por hasta 90 segundos y apunta `GAME_IMAGE` a la imagen compatible ya existente.
 Conserva exactamente el mismo `alpha.env`, `SAVE_SECRET`, hostname y `WORLD_ID`. Arranca esa release
 y repite las comprobaciones de salud y estado. Nunca la inicies antes de confirmar que la otra se detuvo.
+
+## GM03b2: almacén durable de contenido y exclusión
+
+Esta sección fija el procedimiento operativo del corte GM03b2. No acredita que el volumen o esta versión estén instalados en el VPS; confirmar allí permisos, revisión activa y salud antes de declarar publicación.
+
+El instalador de root debe aprovisionar una sola vez `/opt/marea-negra/content`, propiedad `1000:1000` y modo `0770`. Debe crear `state.json` solo si falta, con estado inicial de mundo base y generación cero:
+
+```json
+{"version":1,"worldId":"marea-negra","generation":0,"revisionId":null,"operations":{}}
+```
+
+El estado inicial representa el puntero base. Si `state.json`, `revisions/` o `blobs/` ya existen, consérvalos: nunca reinicialices ni limpies el volumen para resolver un error. Comprueba dueño y modo antes de arrancar el servicio.
+
+Crea `switch.lock` en ese directorio con dueño `1000:1000` y modo `0660`. El archivo es un punto de coordinación permanente: actualizador y activador usan Linux `flock` sobre la misma ruta e inode. No lo borres, reemplaces ni recrees durante operación o recuperación. El actualizador adquiere primero su `update.lock` y después `content/switch.lock`; conserva ambos durante la comprobación y el cambio ordenado de la única autoridad. El activador solo adquiere `switch.lock`. Si no puede obtenerse cualquiera de los locks, la operación se difiere o falla cerrada.
+
+Antes de detener la autoridad actual, el actualizador ejecuta el checker incluido en la imagen candidata con red deshabilitada, límites de una CPU y 1 GiB, y monta `/opt/marea-negra/content` en solo lectura como `/var/lib/marea-content`, configurado por `MN_GM_CONTENT_DIR`. Una imagen antigua sin checker solo puede pasar cuando el puntero durable es la base (`revisionId: null`); con una revisión activa, la ausencia o el fallo del checker bloquea el cambio antes de parar el servidor.
+
+El código que cambie la huella de dependencias o runtime no es compatible con una revisión de contenido activa hasta que exista una migración explícita. Para actualizar en ese estado, activa primero la base desde Online (generación CAS vigente), deja que el puntero durable vuelva a `revisionId: null` y luego reintenta el actualizador. Si el código candidato no puede verificar la revisión activa, el actualizador debe rechazarlo sin detener ni reemplazar la autoridad. No fuerces la actualización borrando o editando el estado.

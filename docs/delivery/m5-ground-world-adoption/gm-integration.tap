@@ -1,0 +1,457 @@
+TAP version 13
+# Subtest: recovery decision accepts only the fully idle durable failed-world state
+ok 1 - recovery decision accepts only the fully idle durable failed-world state
+  ---
+  duration_ms: 0.8902
+  type: 'test'
+  ...
+# Subtest: recovery stays closed around economic operations and pending profile or world writes
+ok 2 - recovery stays closed around economic operations and pending profile or world writes
+  ---
+  duration_ms: 0.3466
+  type: 'test'
+  ...
+# Subtest: HTTP probe accepts only a 200 JSON status contract
+ok 3 - HTTP probe accepts only a 200 JSON status contract
+  ---
+  duration_ms: 29.9294
+  type: 'test'
+  ...
+# Subtest: four persistent eligible probes request one graceful recovery and exit nonzero
+ok 4 - four persistent eligible probes request one graceful recovery and exit nonzero
+  ---
+  duration_ms: 1.3454
+  type: 'test'
+  ...
+# Subtest: a healthy or unrecognized probe resets the consecutive failure count
+ok 5 - a healthy or unrecognized probe resets the consecutive failure count
+  ---
+  duration_ms: 0.2793
+  type: 'test'
+  ...
+# Subtest: pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+ok 6 - pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+  ---
+  duration_ms: 0.2418
+  type: 'test'
+  ...
+# Subtest: a probe that never resolves cannot advance or fire the failure guard
+ok 7 - a probe that never resolves cannot advance or fire the failure guard
+  ---
+  duration_ms: 0.1784
+  type: 'test'
+  ...
+# Subtest: external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+ok 8 - external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+  ---
+  duration_ms: 0.2135
+  type: 'test'
+  ...
+# Subtest: a child that exits on its own keeps its exit status
+ok 9 - a child that exits on its own keeps its exit status
+  ---
+  duration_ms: 0.1693
+  type: 'test'
+  ...
+# Subtest: child launch error settles once with a nonzero code
+ok 10 - child launch error settles once with a nonzero code
+  ---
+  duration_ms: 0.1906
+  type: 'test'
+  ...
+# Subtest: a real child completes its SIGTERM drain before recovery exits nonzero
+ok 11 - a real child completes its SIGTERM drain before recovery exits nonzero
+  ---
+  duration_ms: 78.5939
+  type: 'test'
+  ...
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 12 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 456.8616
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 13 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 359.1618
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 14 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 315.2114
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 15 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 573.3715
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 16 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 273.208
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 17 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 286.2065
+  type: 'test'
+  ...
+# Subtest: release checker accepts real current artifact and an active base pointer
+ok 18 - release checker accepts real current artifact and an active base pointer
+  ---
+  duration_ms: 3917.2358
+  type: 'test'
+  ...
+# Subtest: release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+ok 19 - release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+  ---
+  duration_ms: 8391.7483
+  type: 'test'
+  ...
+# Subtest: GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+ok 20 - GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+  ---
+  duration_ms: 3993.8954
+  type: 'test'
+  ...
+# Subtest: stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+ok 21 - stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+  ---
+  duration_ms: 5970.4787
+  type: 'test'
+  ...
+# Subtest: default server accepts a HELLO without content identity and welcomes with the base identity
+ok 22 - default server accepts a HELLO without content identity and welcomes with the base identity
+  ---
+  duration_ms: 559.9723
+  type: 'test'
+  ...
+# Subtest: real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+ok 23 - real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+  ---
+  duration_ms: 504.8964
+  type: 'test'
+  ...
+# Subtest: activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+ok 24 - activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+  ---
+  duration_ms: 330.1527
+  type: 'test'
+  ...
+# Subtest: activation refuses an occupied durable item and a busy game before pointer commit
+ok 25 - activation refuses an occupied durable item and a busy game before pointer commit
+  ---
+  duration_ms: 610.5559
+  type: 'test'
+  ...
+# occupied preflight left the registry head and M5 state unchanged
+# Subtest: lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+ok 26 - lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+  ---
+  duration_ms: 381.6717
+  type: 'test'
+  ...
+# Subtest: strict publication fingerprint mismatch fails before installation or durable pointer change
+ok 27 - strict publication fingerprint mismatch fails before installation or durable pointer change
+  ---
+  duration_ms: 318.0544
+  type: 'test'
+  ...
+# Subtest: content identity requires the exact server generation and revision pair
+ok 28 - content identity requires the exact server generation and revision pair
+  ---
+  duration_ms: 0.2618
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 29 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 766.51
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 30 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 579.9747
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 31 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 309.8358
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 32 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 307.6624
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 33 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 307.8043
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 34 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.8814
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 35 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 317.7676
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 36 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 415.2997
+  type: 'test'
+  ...
+# Subtest: adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+ok 37 - adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+  ---
+  duration_ms: 8793.06
+  type: 'test'
+  ...
+# Subtest: world adoption, initial resource clock and fences recover after SIGKILL before-commit
+ok 38 - world adoption, initial resource clock and fences recover after SIGKILL before-commit
+  ---
+  duration_ms: 5092.9825
+  type: 'test'
+  ...
+# PGlite file-backed SIGKILL proof for SQL001-023; process recovery and persistence fences only.
+# Subtest: world adoption, initial resource clock and fences recover after SIGKILL after-commit
+ok 39 - world adoption, initial resource clock and fences recover after SIGKILL after-commit
+  ---
+  duration_ms: 6707.073
+  type: 'test'
+  ...
+# PGlite file-backed SIGKILL proof for SQL001-023; process recovery and persistence fences only.
+# Subtest: SQL023 readiness, exact legacy adoption, immutable replay, and checkpoint continuation
+ok 40 - SQL023 readiness, exact legacy adoption, immutable replay, and checkpoint continuation
+  ---
+  duration_ms: 2005.5467
+  type: 'test'
+  ...
+# Subtest: SQL023 stale, malformed, tick-mismatched, and pre-clocked worlds fail without partial adoption
+ok 41 - SQL023 stale, malformed, tick-mismatched, and pre-clocked worlds fail without partial adoption
+  ---
+  duration_ms: 2466.3124
+  type: 'test'
+  ...
+# Subtest: SQL023 rejects existing legacy pearl locations and death-drop rows, including held pearls
+ok 42 - SQL023 rejects existing legacy pearl locations and death-drop rows, including held pearls
+  ---
+  duration_ms: 2661.451
+  type: 'test'
+  ...
+# Subtest: SQL023 refuses pending and committed pre-adoption identities, including UUID collision from another world
+ok 43 - SQL023 refuses pending and committed pre-adoption identities, including UUID collision from another world
+  ---
+  duration_ms: 2504.9179
+  type: 'test'
+  ...
+# Subtest: SQL023 keeps economic family commits inside the common wrapper after adoption
+ok 44 - SQL023 keeps economic family commits inside the common wrapper after adoption
+  ---
+  duration_ms: 2718.0847
+  type: 'test'
+  ...
+# Subtest: SQL023 persistent fence rejects legacy world, clock, and direct ground-row writes while unadopted worlds retain legacy behavior
+ok 45 - SQL023 persistent fence rejects legacy world, clock, and direct ground-row writes while unadopted worlds retain legacy behavior
+  ---
+  duration_ms: 2356.5743
+  type: 'test'
+  ...
+# Subtest: SQL023 RPCs and private adoption state obey service-only permissions
+ok 46 - SQL023 RPCs and private adoption state obey service-only permissions
+  ---
+  duration_ms: 1906.7023
+  type: 'test'
+  ...
+# Subtest: SQL023 write guards reject repeatable-read and serializable legacy saves for adopted and legacy worlds
+ok 47 - SQL023 write guards reject repeatable-read and serializable legacy saves for adopted and legacy worlds
+  ---
+  duration_ms: 2161.1701
+  type: 'test'
+  ...
+# Subtest: readiness and per-world receipt use exact RPC parameters and validate persisted identity
+ok 48 - readiness and per-world receipt use exact RPC parameters and validate persisted identity
+  ---
+  duration_ms: 5.0657
+  type: 'test'
+  ...
+# Subtest: readiness rejects a malformed capability response
+ok 49 - readiness rejects a malformed capability response
+  ---
+  duration_ms: 0.515
+  type: 'test'
+  ...
+# Subtest: adoption validates exact IDs, version, resource snapshot, and hostile input before RPC
+ok 50 - adoption validates exact IDs, version, resource snapshot, and hostile input before RPC
+  ---
+  duration_ms: 5.311
+  type: 'test'
+  ...
+# Subtest: adoption sends a detached snapshot and accepts the exact clock-only result
+ok 51 - adoption sends a detached snapshot and accepts the exact clock-only result
+  ---
+  duration_ms: 1.9821
+  type: 'test'
+  ...
+# Subtest: SQL conflict and operation rejections are returned as exact domain outcomes
+ok 52 - SQL conflict and operation rejections are returned as exact domain outcomes
+  ---
+  duration_ms: 3.3461
+  type: 'test'
+  ...
+# Subtest: an ambiguous committed response resolves through the exact durable receipt without a second write
+ok 53 - an ambiguous committed response resolves through the exact durable receipt without a second write
+  ---
+  duration_ms: 2.7447
+  type: 'test'
+  ...
+# Subtest: malformed success is terminal and never triggers receipt recovery or a second write
+ok 54 - malformed success is terminal and never triggers receipt recovery or a second write
+  ---
+  duration_ms: 1.8845
+  type: 'test'
+  ...
+# Subtest: malformed durable evidence after a lost reply fails closed without retry
+ok 55 - malformed durable evidence after a lost reply fails closed without retry
+  ---
+  duration_ms: 3.9483
+  type: 'test'
+  ...
+# Subtest: an absent receipt retries the same frozen operation once and accepts SQL replay
+ok 56 - an absent receipt retries the same frozen operation once and accepts SQL replay
+  ---
+  duration_ms: 2.0169
+  type: 'test'
+  ...
+# Subtest: a receipt for another candidate conflicts and an unknown post-retry outcome stays unavailable
+ok 57 - a receipt for another candidate conflicts and an unknown post-retry outcome stays unavailable
+  ---
+  duration_ms: 4.4211
+  type: 'test'
+  ...
+# Subtest: malformed or mismatched persisted receipts fail closed
+ok 58 - malformed or mismatched persisted receipts fail closed
+  ---
+  duration_ms: 3.2677
+  type: 'test'
+  ...
+# Subtest: memory profile roundtrip sanitizes and returns isolated snapshots
+ok 59 - memory profile roundtrip sanitizes and returns isolated snapshots
+  ---
+  duration_ms: 5.4867
+  type: 'test'
+  ...
+# Subtest: memory store rejects invalid identity, data and unknown profile versions
+ok 60 - memory store rejects invalid identity, data and unknown profile versions
+  ---
+  duration_ms: 0.8251
+  type: 'test'
+  ...
+# Subtest: concurrent create and compare-and-swap writes admit one winner
+ok 61 - concurrent create and compare-and-swap writes admit one winner
+  ---
+  duration_ms: 1.7127
+  type: 'test'
+  ...
+# Subtest: world state is isolated by key and each key has independent CAS versions
+ok 62 - world state is isolated by key and each key has independent CAS versions
+  ---
+  duration_ms: 0.343
+  type: 'test'
+  ...
+# Subtest: unique ownership arbitrates competing owners and release generations
+ok 63 - unique ownership arbitrates competing owners and release generations
+  ---
+  duration_ms: 0.4872
+  type: 'test'
+  ...
+# Subtest: Supabase adapter uses fixed RPC names, validated arguments and sanitized records
+ok 64 - Supabase adapter uses fixed RPC names, validated arguments and sanitized records
+  ---
+  duration_ms: 2.722
+  type: 'test'
+  ...
+# Subtest: Supabase adapter rejects malformed responses and redacts provider errors
+ok 65 - Supabase adapter rejects malformed responses and redacts provider errors
+  ---
+  duration_ms: 0.6101
+  type: 'test'
+  ...
+# Subtest: storeFromEnv uses memory only when credentials are both absent and configures service auth
+ok 66 - storeFromEnv uses memory only when credentials are both absent and configures service auth
+  ---
+  duration_ms: 0.7606
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 67 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 448.5877
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 68 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 474.0123
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 69 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 309.365
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 70 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 468.5366
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 71 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 456.1029
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 72 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 437.0625
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 73 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 530.903
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 74 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 505.2942
+  type: 'test'
+  ...
+1..74
+# tests 74
+# suites 0
+# pass 74
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43971.159

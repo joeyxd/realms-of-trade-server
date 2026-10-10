@@ -90,6 +90,7 @@ export class GameClient {
   // save: the blob the server sent last time (M4), '' for a fresh start.
   join(name, skin, weapon = 0, save = '', account = null) {
     this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save,
+      ...(this.map?.gmContentIdentity ? { content: { ...this.map.gmContentIdentity } } : {}),
       ...(account ? { token: account.token, importSave: account.importSave === true } : {}) });
   }
 
@@ -116,6 +117,10 @@ export class GameClient {
         break;
       }
       case MSG.WELCOME: {
+        if (this.map.gmContentIdentity && (m.content?.generation !== this.map.gmContentIdentity.generation ||
+            m.content?.revisionId !== this.map.gmContentIdentity.revisionId)) {
+          this.t.close?.(); this.bus.emit('net:error', { code: 'content_revision' }); break;
+        }
         this.personalLantern = false;
     this.fire = null;
         this.naval = new NavalPilotPrediction(this.map);
