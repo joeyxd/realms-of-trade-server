@@ -95,8 +95,9 @@ class VpsUpdateTests(unittest.TestCase):
             args = call.args[0]
             self.assertEqual(args[-2:], ["origin", "--stdin"])
             self.assertIn("--no-write-fetch-head", args)
-            self.assertIn("--no-filter", args)
-            self.assertLess(args.index("--no-filter"), args.index("origin"))
+            self.assertIn("--filter=blob:none", args)
+            self.assertIn("--recurse-submodules=no", args)
+            self.assertGreater(args.index("--filter=blob:none"), args.index("origin"))
             self.assertIn("fetch.negotiationAlgorithm=noop", args)
             self.assertLess(args.index("fetch.negotiationAlgorithm=noop"), args.index("fetch"))
             self.assertNotIn("--force", args)

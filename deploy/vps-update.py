@@ -291,8 +291,8 @@ def prefetch_release_blobs(sha):
     for start in range(0, len(ordered), BLOB_BATCH_SIZE):
         batch = ordered[start:start + BLOB_BATCH_SIZE]
         # Explicit blob wants have no commit ancestry to negotiate (notably on Git 2.43).
-        git(["-c", "fetch.negotiationAlgorithm=noop", "--git-dir", str(SOURCE), "fetch", "--no-filter",
-             "--no-tags", "--no-write-fetch-head", "origin", "--stdin"],
+        git(["-c", "fetch.negotiationAlgorithm=noop", "--git-dir", str(SOURCE), "fetch", "origin",
+             "--no-tags", "--no-write-fetch-head", "--recurse-submodules=no", "--filter=blob:none", "--stdin"],
             timeout=FETCH_TIMEOUT, input_text="\n".join(batch) + "\n")
 
 
