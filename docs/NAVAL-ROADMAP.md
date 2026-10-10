@@ -31,6 +31,14 @@ recomendación siguen abiertos; este documento no anuncia sistemas ya jugables.
 | Exposición | Las mercancías y recursos que llevas en tu casa-nave se arriesgan al entrar en aguas de combate; un cofre privado no los vuelve inmunes |
 | Entrega | Avanzar desde una versión básica completa hacia sistemas más complejos |
 
+### Noche y fuentes de luz
+
+**Decisión del autor, 2026-10-10 — noche y fuentes de luz:** fuera de zonas iluminadas, la noche debe
+verse casi negra. Llevar/colocar luz será necesario para explorar y navegar; UI legible y cobertura de
+luz equivalente en calidad baja/móvil. El farol del primer refugio naval debe cumplir esta función.
+Antes de oscurecer, entregar fuentes utilizables y adaptar luz automática, relleno y preset cosmético de día.
+[Contrato y aceptación futura](briefs/area07-night-visibility.md). Esta decisión no modifica aún el render.
+
 ## 2. Tamaño, materiales, navegación y distribución
 
 Recomendación: separar **límite estructural**, **límite de operación competente** y **límite técnico del juego**.

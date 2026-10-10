@@ -11,6 +11,8 @@ Publicación efectiva se verifica aparte; los planes y recursos en el checkout c
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
 (orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
 
+**Checkpoint PRG02a, 2026-10-10 — lección costera, alpha.19/protocolo 33:** [contrato](briefs/prg02a-coastal-lesson.md) y [entrega](delivery/prg02a-coastal-lesson.md). Dos boyas en orden, maniobra detenida 0,75 s y regreso con atraque normal; sesión voluntaria, server-owned y sin crédito permanente. 219/219 pruebas seleccionadas y 3/3 vistas de navegador aprobadas, capturas representativas inspeccionadas. Fixture de reubicación: no prueba pilotaje humano ni rendimiento físico. Publicación/despliegue se registran en la entrega. Sigue PRG02b con el aprendizaje común. El brief de oscuridad AREA07 exige disponer de faroles antes de reducir la luz ambiente.
+
 **Corrección de inventario/recogida, 2026-10-09:** [informe y capturas](delivery/inventory-feedback.md).
 F/táctil responde inmediatamente; ocultación y cantidades provisionales se reconcilian con la autoridad
 sin duplicar materiales. El tiempo de acción comienza al pulsar, sin sumar el viaje de la respuesta.

@@ -18,6 +18,7 @@ const playwrightUrl = process.env.MN_PLAYWRIGHT
   ? pathToFileURL(resolve(process.env.MN_PLAYWRIGHT)).href
   : pathToFileURL(resolve('.scratch/pilot-browser/node_modules/playwright/index.mjs')).href;
 const { chromium } = await import(playwrightUrl);
+const gsapRoot = resolve(process.env.MN_GSAP || '.scratch/gsap-local/package');
 const evidence = {
   generatedAt: new Date().toISOString(),
   purpose: 'Verify the optional route through the live GameHost snapshot and UI: start at berth, cross three ordered buoys, read a real telegraphed corsair salvo and its hit-or-dodge result, return, and dock through the normal command.',
@@ -51,7 +52,7 @@ async function installLocalRoutes(page) {
   await page.route(/https:\/\/(cdn\.jsdelivr\.net\/npm|unpkg\.com)\/(three@0\.160\.0|gsap@3\.12\.5)\/(.*)/, async (route) => {
     const match = route.request().url().match(/(three@0\.160\.0|gsap@3\.12\.5)\/([^?#]*)/);
     if (!match) return route.abort();
-    const file = resolve(match[1].startsWith('three') ? 'node_modules/three' : '.scratch/gsap-local/package', match[2]);
+    const file = resolve(match[1].startsWith('three') ? 'node_modules/three' : gsapRoot, match[2]);
     if (!fs.existsSync(file)) return route.abort();
     return route.fulfill({ status: 200, contentType: 'text/javascript', headers: { 'access-control-allow-origin': '*' }, body: fs.readFileSync(file) });
   });
@@ -119,6 +120,13 @@ async function run(spec) {
     await page.waitForFunction(() => window.__mn.client.naval.active, null, { timeout: 20000 });
     result.stage = 'route-available';
     await page.waitForFunction(() => window.__mn.client.route?.available && window.__mn.client.route?.canStart, null, { timeout: 15000 });
+    // The coastal lesson is the default offer; select this optional cannon trial explicitly.
+    await page.waitForFunction(() => document.querySelector('.ln-route-trial')?.dataset.activity, null, { timeout: 15000 });
+    if (await page.locator('.ln-route-trial').getAttribute('data-activity') !== 'trial') {
+      const activitySwitch = page.locator('[data-route-switch]');
+      if (spec.touch) await activitySwitch.tap(); else await activitySwitch.click();
+      await page.waitForFunction(() => document.querySelector('.ln-route-trial')?.dataset.activity === 'trial', null, { timeout: 10000 });
+    }
     const before = world.navalPilot.snapshot(entity), routeBefore = world.navalRoute.snapshot(entity);
     check(before.active && before.shipId === raft.id && routeBefore.available && routeBefore.canStart, 'server did not expose an eligible owner helm and route');
     result.fixture = { shipId: raft.id, home: routeBefore.home, routeLayout: { buoys: routeBefore.buoys, threat: routeBefore.threat },

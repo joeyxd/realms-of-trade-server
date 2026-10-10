@@ -345,6 +345,7 @@ export class NavalPilot {
     if (walker) this.#removeWalker(walker, 'land', false);
     r.ashore = true; r.helm = false; r.landing = Object.freeze({ x: landing.x, y: landing.y, z: landing.z });
     w.navalRoute?.end(owner, 'shore');
+    w.navalLesson?.end(owner, 'shore');
     r.epoch = this.#nextEpoch++;
     this.#epochs.set(owner, r.epoch);
     this.#placePlayer(owner, landing);
@@ -568,6 +569,7 @@ export class NavalPilot {
     const w = this.#world, ecs = w.ecs, guests = this.#guests(r.shipId, r.owner);
     this.persist(r.owner);
     w.navalRoute?.end(r.owner, why);
+    w.navalLesson?.end(r.owner, why);
     this.#records.delete(r.owner);
     w.navalTrial.stop(r.handle);
     if (!['detach', 'close'].includes(why)) this.#returnHome(w.rafts.get(r.shipId));
@@ -581,6 +583,7 @@ export class NavalPilot {
   removeOwner(owner) {
     const r = this.#records.get(owner); if (r) this.#release(r, 'detach');
     this.#world.navalRoute?.end(owner, 'detach');
+    this.#world.navalLesson?.end(owner, 'detach');
     this.#recoveries.delete(owner);
     for (const c of [...this.#walkers.values()]) if (c.e === owner || c.source.owner === owner) this.#removeWalker(c, 'detach', true);
     for (const [id, permits] of this.#invites) {

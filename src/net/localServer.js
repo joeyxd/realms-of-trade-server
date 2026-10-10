@@ -34,6 +34,7 @@ import { ChatService } from './chatService.js';
 import { NavalTrial } from '../sim/naval/trial.js';
 import { NavalPilot } from '../sim/naval/pilot.js';
 import { NavalRoute } from '../sim/naval/route.js';
+import { NavalLesson } from '../sim/naval/lesson.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
@@ -97,6 +98,7 @@ export class LocalServer {
       this.world.navalTrial = new NavalTrial(this.world, { coast: true, navigation: true });
       this.world.navalPilot = new NavalPilot(this.world, { live: true });
       this.world.navalRoute = new NavalRoute(this.world);
+      this.world.navalLesson = new NavalLesson(this.world);
     }
     // Quests (M4): quest items drop only while wanted; picking one up counts.
     this.world.questWants = (e, item) => questWants(this.world, e, item);
@@ -327,7 +329,7 @@ export class LocalServer {
     if (!pilot || c?.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
     const fields = { mount: ['shipId'], reboard: ['shipId'], invite: ['shipId', 'target'], board: ['shipId'],
       walk: ['epoch'], helm: ['epoch'], land: ['epoch'], dock: ['epoch'], recall: [], leave: ['epoch'], deckleave: ['epoch'],
-      routeStart: ['epoch'], routeAbort: ['epoch'] };
+      routeStart: ['epoch'], routeAbort: ['epoch'], lessonStart: ['epoch'], lessonAbort: ['epoch'] };
     if (!Object.hasOwn(fields, msg.op) || Object.keys(msg).some((key) => !['t', 'type', 'op', ...fields[msg.op]].includes(key))) return false;
     let ok = false;
     const e = c.entity;
@@ -343,6 +345,8 @@ export class LocalServer {
       case 'recall': ok = pilot.recall?.(e) || false; break;
       case 'routeStart': ok = this.world.navalRoute?.start(e, msg.epoch) || false; break;
       case 'routeAbort': ok = this.world.navalRoute?.abort(e, msg.epoch) || false; break;
+      case 'lessonStart': ok = this.world.navalLesson?.start(e, msg.epoch) || false; break;
+      case 'lessonAbort': ok = this.world.navalLesson?.abort(e, msg.epoch) || false; break;
       // In the live game leaving is a nearby docking request, never an offshore teleport.
       case 'leave': ok = pilot.dock?.(e, msg.epoch) || false; break;
       case 'deckleave': ok = pilot.land?.(e, pilot.snapshot(e).epoch) || false; break;
@@ -789,7 +793,8 @@ export class LocalServer {
         ...(resourceChanged ? { resources } : {}),
         capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
         ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
-          voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null } : {}) });
+          voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null,
+          lesson: w.navalLesson?.snapshot(c.entity) || null } : {}) });
       c.resourceSignature = resourceSignature;
     }
   }

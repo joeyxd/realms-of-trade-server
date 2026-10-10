@@ -277,7 +277,8 @@ export class NavalTrial {
       body = stepTrialBody(body, input, T.wind, this.#coast, { parked: r.parked });
       const routePlan = this.#navigation ? this.#world.navalRoute?.plan(r.owner, r.shipId, body) : null;
       if (routePlan) body = routePlan.body;
-      next.push({ record: r, body, routePlan, controlActive, input, ack: controlActive ? r.lastSeq : r.ack,
+      const lessonPlan = this.#navigation ? this.#world.navalLesson?.plan(r.owner, r.shipId, body) : null;
+      next.push({ record: r, body, routePlan, lessonPlan, controlActive, input, ack: controlActive ? r.lastSeq : r.ack,
         confirmedEvent: this.#navigation && body.activity?.resultUntil > priorResultUntil ? body.activity.result : '' });
     }
     // Commit only after every body has a valid next step. A failed calculation must not consume
@@ -294,6 +295,7 @@ export class NavalTrial {
       r.pendingDamage.length = 0;
     }
     for (const n of next) this.#world.navalRoute?.commit(n.routePlan);
+    for (const n of next) this.#world.navalLesson?.commit(n.lessonPlan);
     this.#lastTick = tick;
     // Feedback follows the all-body commit. Prediction computes the same physics but emits nothing.
     for (const n of next) for (const impact of [...n.body.impacts, ...(n.routePlan?.impacts || [])]) if (impact.damage > 0) {

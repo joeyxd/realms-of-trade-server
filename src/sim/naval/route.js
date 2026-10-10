@@ -68,15 +68,18 @@ export class NavalRoute {
     this.#world = world; this.#layout = navalRouteLayout(world.map);
   }
 
+  active(owner) { return active(this.#runs.get(owner)?.status); }
+
   #canStart(ctx, prior) {
     return !!this.#layout && !!ctx?.helm && !ctx.ashore && !active(prior?.status) &&
+      !this.#world.navalLesson?.active(ctx.owner) &&
       distance(ctx.body.pose, ctx.home) <= R.startRange && !ctx.body.operational.disabled &&
       this.#serial < Number.MAX_SAFE_INTEGER && [...this.#runs.values()].filter((s) => active(s.status)).length < R.maxRuns;
   }
 
   start(owner, epoch) {
     const ctx = this.#world.navalPilot.routeContext(owner), prior = this.#runs.get(owner);
-    if (ctx?.epoch !== epoch || !this.#canStart(ctx, prior)) return false;
+    if (ctx?.epoch !== epoch || !this.#canStart(ctx && { ...ctx, owner }, prior)) return false;
     this.#runs.set(owner, { owner, shipId: ctx.shipId, epoch, runId: `route:${++this.#serial}`, status: 'outbound',
       next: 0, home: { x: ctx.home.x, z: ctx.home.z }, shots: [], serial: 0, hits: 0, dodged: 0, damage: 0,
       startTick: this.#world.tick, tick: this.#world.tick, elapsedTicks: 0,
@@ -171,7 +174,7 @@ export class NavalRoute {
         yaw: s?.gunYaw ?? this.#layout.threat.yaw } : null, shots: s ? clone(s).shots : [],
       home: s ? { ...s.home } : null, damage: s?.damage || 0, hits: s?.hits || 0, dodged: s?.dodged || 0,
       elapsedTicks: s?.elapsedTicks || 0, reason: s?.reason || '',
-      canStart: this.#canStart(ctx, s),
+      canStart: this.#canStart(ctx && { ...ctx, owner: player }, s),
       canAbort: active(status) && !!ctx?.helm && !ctx.ashore,
     };
   }

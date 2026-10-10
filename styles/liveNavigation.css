@@ -75,6 +75,17 @@
 .ln-route-trial small { color: rgb(222 225 205 / 68%); font-size: 9px; white-space: nowrap; }
 .ln-route-trial .ln-route-rules { max-width: 280px; color: rgb(239 204 125 / 78%); font-size: 8px; line-height: 1.1; white-space: normal; }
 .ln-route-trial button { min-height: 32px; padding: 0 11px; border: 1px solid rgb(130 223 198 / 36%); border-radius: 8px; color: #e7f5eb; background: rgb(130 223 198 / 12%); font: inherit; font-size: 10px; cursor: pointer; }
+.ln-route-trial > span { min-width: 0; }
+.ln-route-trial small { white-space: normal; line-height: 1.35; }
+.ln-activity-actions { display: grid; flex-shrink: 0; gap: 5px; }
+.ln-route-trial [data-route-switch] { min-height: 27px; color: #cec9b8; border-color: #a7987044; background: transparent; font-size: 9px; }
+.ln-route-trial button:disabled { opacity: .5; cursor: default; }
+.ln-route-trial button:focus-visible { outline: 2px solid #f1cf7c; outline-offset: 2px; }
+.ln-lesson-progress { appearance: none; width: 100%; height: 6px; border: 0; border-radius: 3px; background: #071b24; accent-color: #82dfc6; }
+.ln-lesson-progress::-webkit-progress-bar { border-radius: 3px; background: #071b24; }
+.ln-lesson-progress::-webkit-progress-value { border-radius: 3px; background: #82dfc6; }
+.ln-lesson-progress::-moz-progress-bar { border-radius: 3px; background: #82dfc6; }
+.ln-lesson-progress[hidden] { display: none; }
 .live-navigation .speed-ink { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 body.is-naval .actionbar, body.is-naval #touch, body.is-naval .tracker { display: none !important; }
 body.is-naval .hud-player { top: auto; bottom: calc(18px + var(--safe-b)); transform-origin: bottom left; }
@@ -203,6 +214,12 @@ body.is-naval-touch .mn-chat:has(.mn-chat-toggle[aria-expanded="false"]) { botto
 body.is-naval-touch .mn-chat-toggle { min-height: 44px; }
 body.is-naval-touch #toasts { left: 256px; top: 150px; width: clamp(130px, calc(100cqw - 480px), 240px); }
 body.is-naval-touch #toasts .toast { font-size: 10px; padding: 6px 8px; }
+/* Portrait devices rotate the stage: place this card by stage width, not viewport media width. */
+@container stage (min-width: 701px) {
+  .live-navigation.is-touch .ln-route-trial { top: 72px; left: 50%; transform: translateX(-50%); max-width: min(320px, calc(100% - 24px)); }
+  .live-navigation.is-touch .ln-route-trial button { min-height: 32px; }
+  .live-navigation.is-touch .ln-route-trial [data-route-switch] { min-height: 27px; }
+}
 @container stage (max-width: 700px) {
   .ln-touch-objective { left: 12px; max-width: 180px; top: 100px; }
   .ln-touch-objective b { font-size: 11px; }

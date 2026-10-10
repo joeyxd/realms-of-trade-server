@@ -6,6 +6,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- Checkpoint PRG02a (2026-10-10), **alpha.19/protocolo 33**: lección naval voluntaria con salida, boya de maniobra (radio 9 m, ≤0,8 u/s durante 0,75 s) y atraque real. Estado de sesión server-owned; sin XP/rango/perfil/SQL ni salvas. **219/219 pruebas seleccionadas y 3/3 vistas de navegador aprobadas**, capturas representativas inspeccionadas. [Contrato](docs/briefs/prg02a-coastal-lesson.md) · [entrega](docs/delivery/prg02a-coastal-lesson.md). Frenado local: 85 ticks/3,32 m vacío y 112/4,37 m con cuatro maderas desde 4 u/s. La fixture de navegador reubica candidatos y no acredita pilotaje humano. Sigue PRG02b de aprendizaje común; la regla de oscuridad AREA07 requiere faroles disponibles antes de bajar la luz ambiente. Publicación/despliegue se registran en la entrega.
+
 - Revisión A1/M5 del autor (2026-10-09): continuidad tiene otro dueño. **M5 mantiene la única
   autoridad de guardado de GameHost**; no continuar desde A1 un segundo montaje de sesiones/mochila.
   A1b1–A1b2b4 quedan como banco de contratos/regresión; aportes se integran en la mochila M5.

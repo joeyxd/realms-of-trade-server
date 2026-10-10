@@ -41,6 +41,7 @@ export class GameClient {
     this.deck = new NavalDeckPrediction();
     this.voyage = { active: false };
     this.route = null;
+    this.lesson = null;
     this.capacity = null;
     this.raftSamples = new Map();
     this.clock = 0;
@@ -115,6 +116,7 @@ export class GameClient {
       case MSG.WELCOME: {
         this.naval = new NavalPilotPrediction(this.map);
         this.route = null;
+        this.lesson = null;
         this.deck = new NavalDeckPrediction();
         this.raftSamples.clear();
         this.youServer = m.you;
@@ -357,6 +359,7 @@ export class GameClient {
     this.naval = naval; this.deck = deck;
     if (s.voyage && typeof s.voyage.active === 'boolean') this.voyage = s.voyage;
     this.route = s.route?.v === 1 ? s.route : null;
+    this.lesson = s.lesson?.v === 1 ? s.lesson : null;
     if (this.naval.active || this.deck.active) this.pending.length = 0;
     this.lastSnapshotTick = s.tick;
     if (s.resources && Array.isArray(s.resources.nodes)) { this.resources = s.resources; this.resourceTick = s.tick; }

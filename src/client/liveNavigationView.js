@@ -12,6 +12,7 @@ import { poseNavalHelm } from '../render/navalHelmPose.js';
 import { buildLook } from '../render/charlooks.js';
 import { assets } from '../render/assets/registry.js';
 import { NavalRouteRenderer, routePresentation, routeTarget, routeCommand } from '../render/naval/route.js';
+import { lessonPresentation, lessonCommand } from '../ui/navalLessonState.js';
 import { DT } from '../data/tuning.js';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : lo));
@@ -35,7 +36,8 @@ export function shoreRouteTarget(voyage, raft, dock) {
 }
 
 export class LiveNavigationView {
-  constructor({ world, client, input, isTouch = false, stage, parent, onClosePanels = () => {}, active = () => true } = {}) {
+  constructor({ world, client, input, isTouch = false, stage, parent, onClosePanels = () => {}, active = () => true,
+    locale = () => document.documentElement.lang || 'es' } = {}) {
     if (!world?.scene || !world?.camera || typeof client !== 'function' || !input || !parent)
       throw new TypeError('LiveNavigationView needs the game scene, client getter, input, and parent.');
     this.world = world; this.getClient = client; this.input = input; this.isTouch = !!isTouch;
@@ -44,6 +46,7 @@ export class LiveNavigationView {
     this.cameraWasNaval = false; this.lastPose = null; this.lastBody = null; this.lastRaft = null;
     this.helmVisuals = new Map(); this.lastFeel = { fov: 35, roll: 0 }; this.captureHeld = false; this.actionSignature = '';
     this.lastNotice = ''; this.disposed = false; this.paused = false; this.effectsWasActive = false;
+    this.locale = locale; this.activityMode = 'lesson'; this.currentActivity = 'lesson';
 
     this.root = document.createElement('section');
     this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
@@ -57,7 +60,7 @@ export class LiveNavigationView {
       <div class="ln-route"><span class="ln-route-arrow" aria-hidden="true">↑</span><span><small data-target-label>RUTA</small><b data-target>Puerto</b><i><span data-heading>000°</span> · <span data-distance>—</span></i></span></div>
       <button class="ln-center" type="button" data-action="center" aria-label="Centrar cámara">Centrar</button>
     </div>
-    <div class="ln-route-trial" hidden aria-live="polite"><span><b data-route-title>Práctica opcional</b><small data-route-score></small><small class="ln-route-rules">Sin botín ni XP · hasta 24 HP reparables · tu carga se conserva</small></span><button type="button" data-route-action>Probar ruta</button></div>
+    <div class="ln-route-trial" hidden><span><b data-route-title role="status">Lección costera</b><small data-route-score></small><progress class="ln-lesson-progress" data-lesson-progress max="1" value="0" hidden></progress><small class="ln-route-rules" data-route-rules></small></span><div class="ln-activity-actions"><button type="button" data-route-action>Empezar lección</button><button type="button" data-route-switch>Ensayo con salvas</button></div></div>
     <div class="ln-prompt" aria-live="polite" hidden><kbd data-key>F</kbd><span data-prompt>Preparar timón</span><button type="button" data-run>Usar</button></div>
     <div class="ln-notice" aria-live="polite" hidden></div>
     <div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>EXPLORA LA COSTA</span></b><span data-touch-load>Carga 0%</span></div>
@@ -89,6 +92,11 @@ export class LiveNavigationView {
     this.$('[data-action="center"]').addEventListener('click', () => { if (this.canAct()) this.sceneCamera.recenter(); });
     this.$('[data-run]').addEventListener('click', () => this.interaction()?.run?.());
     this.$('[data-route-action]').addEventListener('click', () => this.runRouteAction());
+    this.$('[data-route-switch]').addEventListener('click', () => {
+      const c = this.client();
+      if (!this.canAct() || c?.route?.active || c?.lesson?.active) return;
+      this.activityMode = this.currentActivity === 'lesson' ? 'trial' : 'lesson';
+    });
     // Both input modes share the reference instrument, action bindings and live readings.
     // Desktop keeps keyboard/mouse movement; only its action cards and gauge are displayed.
     this.touch = new TouchHelm(parent, { enabled: false, layout: 'reference', storageKey: 'mn:naval-touch-loadout:v1',
@@ -140,7 +148,7 @@ export class LiveNavigationView {
 
   update(dt, alpha, ps, { paused = false, reducedMotion = false, muted = false } = {}) {
     if (this.disposed) return;
-    const c = this.client(), voyage = c?.voyage || { active: false }, route = c?.route || null;
+    const c = this.client(), voyage = c?.voyage || { active: false }, route = c?.route || null, lesson = c?.lesson || null;
     if (!voyage.active) this.mapTarget = null;
     const enabled = !!c?.joined && !!this.isActive() && !paused;
     this.paused = !!paused;
@@ -158,7 +166,9 @@ export class LiveNavigationView {
     const interaction = this.interaction();
     const routeSummary = !!(route?.available && ['complete', 'aborted'].includes(route.status) && route.home &&
       c?.cur && distance(c.cur, route.home) <= 24);
-    this.root.hidden = !enabled || (!voyage.active && !c?.naval?.active && !c?.deck?.active && !interaction && !routeSummary);
+    const lessonSummary = !!(lesson?.available && ['complete', 'aborted'].includes(lesson.status) && lesson.home &&
+      c?.cur && distance(c.cur, lesson.home) <= 24);
+    this.root.hidden = !enabled || (!voyage.active && !c?.naval?.active && !c?.deck?.active && !interaction && !routeSummary && !lessonSummary);
     if (this.touchHull) this.touchHull.hidden = !enabled || !aboard;
     this.$('.ln-strip').hidden = !voyage.active && !aboard;
     this.touch?.setEnabled(enabled && !!(c?.naval?.active || c?.deck?.active));
@@ -391,7 +401,24 @@ export class LiveNavigationView {
   }
 
   updateRoute(route, tick, dt = 0) {
+    const lesson = this.client()?.lesson;
+    if (route?.active) this.activityMode = 'trial';
+    if (lesson?.active) this.activityMode = 'lesson';
+    if (lesson?.available && !route?.active && this.activityMode !== 'trial') {
+      this.updateLesson(lesson, tick); return;
+    }
+    this.currentActivity = 'trial';
+    const swap = this.$('[data-route-switch]');
+    if (swap) {
+      swap.hidden = !lesson?.available || !!route?.active;
+      swap.textContent = this.locale?.().startsWith('en') ? 'Coastal lesson' : 'Lección costera';
+    }
+    const rules = this.$('[data-route-rules]');
+    if (rules) rules.textContent = 'Sin botín ni XP · hasta 24 HP reparables · tu carga se conserva';
+    const progress = this.$('[data-lesson-progress]');
+    if (progress) progress.hidden = true;
     const box = this.$('.ln-route-trial');
+    if (box.dataset) box.dataset.activity = 'trial';
     const helm = !!this.client()?.naval?.active && !this.client()?.deck?.active;
     const outcome = route?.status === 'complete' || route?.status === 'aborted';
     this.root.classList.toggle('has-route-trial', !!route?.available && (helm || outcome));
@@ -441,9 +468,43 @@ export class LiveNavigationView {
     this.routeShotIds = ids;
   }
 
+  updateLesson(lesson, tick) {
+    this.currentActivity = 'lesson';
+    const c = this.client(), helm = !!c?.naval?.active && !c?.deck?.active;
+    const outcome = ['complete', 'aborted'].includes(lesson.status);
+    const box = this.$('.ln-route-trial');
+    box.hidden = !lesson.available || (!helm && !lesson.active && !outcome);
+    box.dataset.activity = 'lesson';
+    this.root.classList.toggle('has-route-trial', !box.hidden);
+    const view = lessonPresentation(lesson, this.locale(), { atHelm: helm, isTouch: this.isTouch });
+    this.$('[data-route-title]').textContent = view.stage;
+    this.$('[data-route-score]').textContent = view.detail;
+    this.$('[data-route-rules]').textContent = view.rules;
+    const button = this.$('[data-route-action]');
+    button.hidden = !helm; button.textContent = view.button;
+    button.disabled = !helm || !(lesson.active ? lesson.canAbort : lesson.canStart);
+    button.setAttribute('aria-label', view.button);
+    const swap = this.$('[data-route-switch]');
+    swap.hidden = lesson.active || !c?.route?.available || !helm;
+    swap.textContent = view.switchLabel;
+    const progress = this.$('[data-lesson-progress]');
+    progress.hidden = lesson.status !== 'maneuver'; progress.value = view.progress;
+    progress.setAttribute('aria-label', view.detail);
+    // Reuse the existing pooled markers; lessons never render a battery or salvos.
+    this.routeRenderer.update({ ...lesson, threat: null, shots: [] }, tick);
+    this.routeVisualRunId = null;
+    this.routeShotIds.clear(); this.routeShotRecords.clear(); this.routeImpactEvents.clear();
+  }
+
   runRouteAction() {
     if (!this.canAct()) return false;
     const c = this.client(), route = c?.route;
+    if (this.currentActivity === 'lesson') {
+      if (!c?.naval?.active || c?.deck?.active || route?.active) return false;
+      const command = lessonCommand(c?.lesson, c.naval.epoch);
+      if (!command) return false;
+      c.send(command); return true;
+    }
     if (!route?.available || !c?.naval?.active || c?.deck?.active || (route.active ? !route.canAbort : !route.canStart)) return false;
     const command = routeCommand(route, c.naval.epoch);
     if (!command) return false;
@@ -515,11 +576,13 @@ export class LiveNavigationView {
     const carryingText = capacity ? capacity.status === 'overloaded' ? `Exceso ${capacity.overMass.toFixed(1)} uM · regresa para descargar`
       : `${capacity.status === 'heavy' ? 'Pesada · ' : ''}Porte libre ${capacity.freeMass.toFixed(1)} uM` : 'Actualizando porte…';
     $('[data-load]').textContent = capacity ? `${carryingText} · bodega ${capacity.holdVolume}/${capacity.holdCap} uV` : carryingText;
-    const route = this.client()?.route;
+    const lesson = this.client()?.lesson;
+    const route = lesson?.active ? lesson : this.client()?.route;
     const target = voyage.phase === 'shore' ? shoreRouteTarget(voyage, this.lastRaft, this.world.map?.dock)
       : routeTarget(route, voyage);
     this.mapTarget = target;
-    const label = target?.label || (voyage.phase === 'shore' ? 'Balsa' : 'Puerto');
+    const label = lesson?.active && voyage.phase !== 'shore' ? lessonPresentation(lesson, this.locale()).targetLabel
+      : target?.label || (voyage.phase === 'shore' ? 'Balsa' : 'Puerto');
     const routeOrigin = voyage.phase === 'shore' ? this.client()?.cur || pose : pose;
     const metres = target ? distance(routeOrigin, target) : (voyage.distanceHome ?? 0);
     $('[data-target-label]').textContent = voyage.phase === 'shore'
@@ -558,7 +621,7 @@ export class LiveNavigationView {
       gauge.querySelector('[data-touch-speed-state]').textContent = stateHud.boostActive ? `BOOST ${stateHud.boostSeconds.toFixed(1)} s` : 'VELOCIDAD';
       $('[data-touch-objective]').textContent = voyage.phase === 'shore'
         ? voyage.recovery ? 'BALSA RECUPERABLE' : 'VUELVE A TU BALSA'
-        : 'EXPLORA LA COSTA';
+        : lesson?.active ? lessonPresentation(lesson, this.locale()).stage : 'EXPLORA LA COSTA';
       $('[data-touch-load]').textContent = voyage.phase === 'shore' && voyage.recovery
         ? `Posición guardada · ${label} ${metres.toFixed(0)} m`
         : `${carryingText}${!this.isTouch && capacity ? ` · bodega ${capacity.holdVolume}/${capacity.holdCap} uV` : ''} · ${label} ${metres.toFixed(0)} m`;

@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 32; // Utility belt, craft catalogue and shared mining; retains terrain and managed agent control.
+export const PROTOCOL_VERSION = 33; // Adds private, session-only coastal lesson snapshots and scoped commands.
 
 export const MSG = {
   // client -> server
@@ -16,7 +16,7 @@ export const MSG = {
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
-  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?: private coastal lifecycle}
+  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?, route?, lesson?: private session activity}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)
