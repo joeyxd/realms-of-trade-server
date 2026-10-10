@@ -88,5 +88,11 @@ restaurar sesión. El último pasó los ocho checks funcionales, pero detectó u
 el icono real y se repitió el recorrido completo en la imagen final. Todas las cuentas/perfiles de esos
 intentos se limpiaron; los recibos permanecen. No se declara verde la suite global ni estabilidad 24/7.
 
+**Integración concurrente posterior:** se conservó alpha.33 de compañeros y la biblioteca opcional de
+adopción de mundo de AREA15, sin activar otra ruta de guardado. Fuego, paneles, compañeros y la
+composición fuego/diario común pasaron **57/57** en once archivos sobre el merge final:
+[salida](rnv04-fire-fuel/final-integration.tap). La evidencia pública anterior identifica su revisión
+alpha.32 exacta; las pruebas locales no se presentan como un recorrido público de alpha.33.
+
 Sigue agua costera/reembarque, después provisiones/hogar; carga, agotamiento, rescate y relación con Brasa
 deben cerrar su contrato antes de activar natación. Carbón y construcción privada en tierra siguen pendientes.
