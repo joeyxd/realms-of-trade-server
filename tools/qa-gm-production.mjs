@@ -1,10 +1,13 @@
 // Public deployment smoke test; no account credentials or fixture auth.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { GAME } from '../src/data/meta.js';
 const origin = 'https://marea.62.171.136.148.sslip.io';
+const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm01');
+await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
 const evidence = { schema: 'gm01-public/v1', at: new Date().toISOString(), production: true, simulatedAuth: false, checks: [], errors: [] };
 const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
@@ -12,7 +15,7 @@ try {
   assert.equal((await fetch(origin + '/health')).status, 200);
   const status = await (await fetch(origin + '/status')).json();
   evidence.version = status.version;
-  assert.equal(status.version, '0.6.0-alpha.18');
+  assert.equal(status.version, GAME.version);
   evidence.storage = { kind: status.storage.kind, durable: status.storage.durable, accounts: status.storage.accounts, errors: status.storage.errors };
   assert.equal(status.errors, 0); assert.equal(status.storage.errors, 0);
   evidence.checks.push('public_health_version_and_storage');
@@ -28,12 +31,13 @@ try {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
   page.on('pageerror', (error) => evidence.errors.push(error.message));
-  await page.goto(origin + '/?q=low&tod=day', { waitUntil: 'domcontentloaded' });
+  await page.goto(origin + '/?q=high&tod=day', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => !!window.__mn, null, { timeout: 90000 });
   assert.equal(await page.evaluate(() => __mn.gmEntry.button.hidden), true);
   await page.locator('#btn-play').click({ force: true });
   await page.waitForFunction(() => __mn.st.mode === 'playing' && __mn.client.joined, null, { timeout: 30000 });
-  await page.screenshot({ path: resolve('docs/delivery/gm01/production-gameplay.png') });
+  assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
+  await page.screenshot({ path: resolve(out, 'production-gameplay.png') });
   evidence.checks.push('real_public_browser_guest_join');
   if (process.env.MN_GM_SETUP_FILE) {
     const file = process.env.MN_GM_SETUP_FILE;
@@ -43,14 +47,17 @@ try {
     const gmContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
     const gmPage = await gmContext.newPage();
     gmPage.on('pageerror', () => evidence.errors.push('production_gm_page_error'));
-    await gmPage.goto(origin + '/?q=low&tod=day&account-setup=1#gm_setup_token=' + tokenHash, { waitUntil: 'domcontentloaded' });
+    await gmPage.goto(origin + '/?q=high&tod=day&account-setup=1#gm_setup_token=' + tokenHash, { waitUntil: 'domcontentloaded' });
     await gmPage.waitForFunction(() => window.__mn?.gmEntry.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 90000 });
     assert.equal(await gmPage.evaluate(() => location.hash), '');
     await gmPage.addStyleTag({ content: '.account-status, .account-email { visibility: hidden !important; }' });
-    await gmPage.screenshot({ path: resolve('docs/delivery/gm01/production-account-setup.png') });
+    await gmPage.screenshot({ path: resolve(out, 'production-account-setup.png') });
     await gmPage.locator('.gm-account-setup-card [data-action="cancel"]').click();
     await gmPage.locator('#btn-gm-editor').click();
     await gmPage.waitForFunction(() => __mn.st.mode === 'editor');
+    const entryFrame = await gmPage.evaluate(() => __mn.world.pipeline.frame);
+    await gmPage.waitForFunction((frame) => __mn.errors.size || __mn.world.pipeline.frame >= frame + 6, entryFrame);
+    assert.deepEqual(await gmPage.evaluate(() => [...__mn.errors]), []);
     await gmPage.locator('[data-editor-asset="model:gm-rock-1k"]').click();
     await gmPage.waitForFunction(() => !!__mn.gmEditor.ghost);
     await gmPage.mouse.move(700, 420); await gmPage.mouse.click(700, 420);
@@ -60,7 +67,13 @@ try {
     await gmPage.locator('[data-action="save"]').click();
     await gmPage.waitForFunction(() => !__mn.gmEditor.dirty);
     assert.equal(await gmPage.evaluate(() => __mn.client.joined), false);
-    await gmPage.screenshot({ path: resolve('docs/delivery/gm01/production-gm-editor.png') });
+    const placementFrame = await gmPage.evaluate(() => __mn.world.pipeline.frame);
+    await gmPage.waitForFunction((frame) => __mn.errors.size || __mn.world.pipeline.frame >= frame + 6, placementFrame);
+    assert.deepEqual(await gmPage.evaluate(() => [...__mn.errors]), []);
+    assert.equal(await gmPage.evaluate(() => __mn.quality.current), 'high');
+    assert.equal(await gmPage.evaluate(() => __mn.world.pipeline.q.outlines), true);
+    await gmPage.screenshot({ path: resolve(out, 'production-gm-editor.png') });
+    evidence.checks.push('real_owner_high_quality_gizmo_frames_have_no_caught_errors');
     evidence.checks.push('real_owner_recovery_session_password_prompt_gm_placement_and_local_save');
     await gmPage.evaluate(async () => { const client=await __mn.gmEntry.auth.ensureClient(); await client.auth.signOut({scope:'local'}); });
     await gmPage.waitForFunction(() => __mn.st.mode === 'title' && !__mn.gmEditor.active);
@@ -72,6 +85,6 @@ try {
 } catch (error) { evidence.errors.push(String(error.stack || error).replace(/gm_setup_token=[^\s"']+/g, 'gm_setup_token=[redacted]')); process.exitCode = 1; }
 finally {
   await browser.close();
-  await writeFile(resolve('docs/delivery/gm01/public-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
+  await writeFile(resolve(out, 'public-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');
   console.log(JSON.stringify(evidence));
 }

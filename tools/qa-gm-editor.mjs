@@ -47,7 +47,7 @@ async function setup(context, { accountId = GM, token = 'gm-fixture' } = {}) {
   });
 }
 async function ready(page, setupPassword = false) {
-  await page.goto(`${origin}/?q=low&tod=day${setupPassword ? '&account-setup=1#gm_setup_token=' + 'a'.repeat(56) : ''}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${origin}/?q=${process.env.MN_GM_QA_QUALITY || 'low'}&tod=day${setupPassword ? '&account-setup=1#gm_setup_token=' + 'a'.repeat(56) : ''}`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-gm-editor').disabled, null, { timeout: 90000 });
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
 }
@@ -84,6 +84,11 @@ try {
     assert.equal(await page.evaluate(() => window.__mn.client.joined), false);
     assert.equal(await page.evaluate(() => window.__mn.input.enabled), false);
   });
+  await check('editor_first_frames_render_without_caught_errors', async () => {
+    const frame = await page.evaluate(() => __mn.world.pipeline.frame);
+    await page.waitForFunction((frame) => __mn.errors.size || __mn.world.pipeline.frame >= frame + 6, frame);
+    assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
+  });
   await shot(page, 'editor-es.png');
   const baseMap = await page.evaluate(() => JSON.stringify({ props: __mn.map.props, colliders: __mn.map.colliders }));
   await check('free_camera_moves_and_blur_releases_keys', async () => {
@@ -118,6 +123,61 @@ try {
     assert.equal(await page.evaluate(() => __mn.gmEditor.history.current().objects[0].transform.scale), 1);
     for (let i = 0; i < 3; i++) await page.locator('[data-action="redo"]').click();
     assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), expected);
+  });
+  await check('gizmo_renders_in_every_quality_and_transform_mode', async () => {
+    evidence.rendering = [];
+    await page.evaluate(() => {
+      const p = __mn.gmEditor.records.get(__mn.gmEditor.selectedId).root.position;
+      __mn.world.camera.position.set(p.x + 12, p.y + 8, p.z + 12); __mn.gmEditor._focusSelection();
+    });
+    for (const quality of ['low', 'medium', 'high', 'ultra']) {
+      for (const mode of ['translate', 'rotate', 'scale']) {
+        const frame = await page.evaluate(({ quality, mode }) => {
+          __mn.quality.setMode(quality); __mn.gmEditor.transform.setMode(mode); __mn.world.pipeline.markDirty();
+          return __mn.world.pipeline.frame;
+        }, { quality, mode });
+        await page.waitForFunction((frame) => __mn.errors.size || __mn.world.pipeline.frame >= frame + 6, frame);
+        const state = await page.evaluate(() => ({ errors: [...__mn.errors], quality: __mn.quality.current,
+          mode: __mn.gmEditor.transform.mode, frame: __mn.world.pipeline.frame,
+          gizmoInNormalPass: __mn.world.pipeline.casters.some((mesh) => {
+            for (let node = mesh; node; node = node.parent) if (node === __mn.gmEditor.transform) return true;
+            return false;
+          }) }));
+        assert.deepEqual(state.errors, []); assert.equal(state.quality, quality); assert.equal(state.mode, mode);
+        assert.equal(state.gizmoInNormalPass, false);
+        evidence.rendering.push({ quality, mode, frames: state.frame - frame });
+      }
+      await shot(page, `editor-${quality}.png`);
+    }
+    await page.evaluate(() => { __mn.quality.setMode('high'); __mn.gmEditor.transform.setMode('translate'); });
+  });
+  await check('pointer_drag_of_gizmo_moves_object_and_undo_restores_it', async () => {
+    const before = await page.evaluate(() => __mn.gmEditor.history.current());
+    const point = await page.evaluate(async () => {
+      const THREE = await import('three');
+      const controls = __mn.gmEditor.transform;
+      __mn.world.scene.updateMatrixWorld(true);
+      const handles = controls.children.find((node) => node.isTransformControlsGizmo).picker.translate.children;
+      for (const mesh of handles.filter((node) => node.name === 'X')) {
+        mesh.geometry.computeBoundingSphere();
+        const p = mesh.geometry.boundingSphere.center.clone().applyMatrix4(mesh.matrixWorld).project(__mn.world.camera);
+        controls.pointerHover({ x: p.x, y: p.y, button: -1 });
+        if (controls.axis !== 'X') continue;
+        const rect = __mn.gmEditor.canvas.getBoundingClientRect();
+        return { x: rect.left + (p.x + 1) * rect.width / 2, y: rect.top + (1 - p.y) * rect.height / 2 };
+      }
+      return null;
+    });
+    assert.ok(point, 'an X handle must be raycastable');
+    await page.mouse.move(point.x, point.y); await page.mouse.down();
+    assert.equal(await page.evaluate(() => __mn.gmEditor.transform.dragging), true);
+    await page.mouse.move(point.x + 80, point.y, { steps: 8 }); await page.mouse.up();
+    const after = await page.evaluate(() => __mn.gmEditor.history.current());
+    assert.notEqual(after.objects[0].transform.position.x, before.objects[0].transform.position.x);
+    assert.equal(await page.evaluate(() => __mn.gmEditor.transform.dragging), false);
+    await page.locator('[data-action="undo"]').click();
+    assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), before);
+    assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
   });
   await page.locator('[data-action="duplicate"]').click();
   assert.equal(await page.evaluate(() => __mn.gmEditor.history.current().objects.length), 2);

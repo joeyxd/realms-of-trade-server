@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { createEditorTransformControls } from './transformControls.js';
 import { addDecoration, createDecoration, createDocument, createDocumentHistory, removeDecoration, updateDecoration, validateDocument } from './document.js';
 import { DraftStore, DRAFT_EXPORT_FORMAT, DRAFT_EXPORT_VERSION, MAX_DRAFT_EXPORT_BYTES } from './draftStore.js';
 import { EditorCatalog } from './catalog.js';
@@ -41,7 +41,7 @@ export class WorldEditor {
 
     this._installStyles(); this._buildUI();
     this.cameraController = new EditorFreeCamera(camera, canvas, { ownsTarget: (target) => this.ui.contains(target) });
-    this.transform = new TransformControls(camera, canvas); this.transform.setSize(0.85);
+    this.transform = createEditorTransformControls(camera, canvas); this.transform.setSize(0.85);
     this._configureSnap();
     this.transform.addEventListener('dragging-changed', (e) => { this.dragging = e.value; });
     this.transform.addEventListener('mouseDown', () => { this.dragStart = this._selectedTransform(); });

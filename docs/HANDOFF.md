@@ -1,5 +1,9 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) reproducido
+en calidad alta y corregido separando sus materiales de la pasada de normales. Validación local: 102/102
+pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo. Despliegue y recorrido público pendientes.
+
 **AREA17 L06b-2a, 2026-10-10:** [inventario/contexto y mercado privado](delivery/l06b-agent-market.md).
 Lecturas tipadas `inventory_read`/`market_read`, pueblo derivado del servidor, list/quote sin mutación,
 frescura y retiro de vistas ante movimiento, denegación, stop/revocación o nueva sesión. CLI y mente

@@ -481,12 +481,16 @@ export class Pipeline {
       m.userData._m = mat;
       m.material = m.userData.nm || (mat.userData && mat.userData.nm) || this.defaultNormal; // mesh pair, else its material's (characters)
     }
-    r.autoClear = true;
-    cam.layers.set(LAYER.WORLD);
-    r.setClearColor(0x000000, 0);
-    r.setRenderTarget(this.rtNormal);
-    r.render(scene, cam);
-    for (let i = 0; i < list.length; i++) { const m = list[i]; m.material = m.userData._m; m.userData._m = null; }
+    try {
+      r.autoClear = true;
+      cam.layers.set(LAYER.WORLD);
+      r.setClearColor(0x000000, 0);
+      r.setRenderTarget(this.rtNormal);
+      r.render(scene, cam);
+    } finally {
+      // A failed render must not leave any scene object with a temporary material.
+      for (let i = 0; i < list.length; i++) { const m = list[i]; m.material = m.userData._m; m.userData._m = null; }
+    }
 
     // 2) Opaque color (shadow map refreshed once, here).
     r.setClearColor(this.clearColor, 1);

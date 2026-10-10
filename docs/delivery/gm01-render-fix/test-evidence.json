@@ -1,0 +1,35 @@
+{
+  "schema": "gm01-render-fix-tests/v1",
+  "at": "2026-10-10T16:59:58.014Z",
+  "version": "0.6.0-alpha.21",
+  "base": "fc3c38a",
+  "passed": 102,
+  "failed": 0,
+  "gmTests": 32,
+  "command": "node --test tests/gm*.test.mjs tests/store-host.test.mjs tests/accounts-server.test.mjs tests/world-state.test.mjs tests/world-host.test.mjs tests/raft-persistence.test.mjs tests/harvest-tools.test.mjs tests/server.test.mjs tests/deploy-runtime.test.mjs",
+  "baseline": {
+    "quality": "high",
+    "originalGmLoopErrors": 6,
+    "reproduced": true,
+    "priorLocalEvidenceQuality": "low"
+  },
+  "browser": {
+    "passed": 16,
+    "failed": 0,
+    "production": false,
+    "simulatedAuth": true,
+    "qualityModeCombinations": 12,
+    "realPointerDrag": true,
+    "source": "browser-evidence.json"
+  },
+  "visualReview": {
+    "rootInspected": true,
+    "files": [
+      "editor-low.png",
+      "editor-medium.png",
+      "editor-high.png",
+      "editor-ultra.png"
+    ]
+  },
+  "repeatAfterUpstreamIntegration": true
+}
