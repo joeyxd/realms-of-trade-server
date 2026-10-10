@@ -1,5 +1,10 @@
 // Runtime UI copy. Keys never enter gameplay commands.
 export default {
+  "runtime.contentChanged": ["El mapa publicado cambió", "The published map changed"],
+  "runtime.contentChangedHint": ["Recarga para ver la nueva revisión compartida. Tu progreso se conserva.", "Reload to see the new shared revision. Your progress is preserved."],
+  "runtime.contentReload": ["Recargar", "Reload"],
+  "join.contentRevision": ["El mapa publicado cambió: recarga la página para entrar.", "The published map changed: reload the page to join."],
+  "join.contentBusy": ["El mundo está activando una revisión. Espera y recarga la página.", "The world is activating a revision. Wait and reload the page."],
   'nav.coastalLesson': ['Lección costera', 'Coastal lesson'],
   'nav.startLesson': ['Empezar lección', 'Start lesson'],
   'nav.salvoTrial': ['Ensayo con salvas', 'Salvo trial'],

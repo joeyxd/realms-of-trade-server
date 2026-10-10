@@ -20,6 +20,8 @@ import { createGmDraftHandler } from './gmDraftHttp.mjs';
 import { createGmDraftValidator } from './gmDraftValidation.mjs';
 import { createGmPublicationService } from './gmPublication.mjs';
 import { PROTOCOL_VERSION } from '../src/net/protocol.js';
+import { generateWorld } from '../src/sim/worldgen.js';
+import { createGmContentService } from './gmContent.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -36,7 +38,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, fireOperations = false, agentTrade = false,
-  gmDraftsAllowMemory = false, groundTransactions = null } = {}) {
+  gmDraftsAllowMemory = false, groundTransactions = null, gmContentDirectory = null, gmContentLock } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
@@ -50,16 +52,20 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
     pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, fireOperations, agentTrade, groundTransactions });
-  let gmDrafts = null;
-  if (resolvePlayer && gmAccountIds?.length && worldId !== null) {
+  let gmDrafts = null, gmContent = null, publication = null;
+  if (resolvePlayer && gmAccountIds?.length && worldId !== null || gmContentDirectory !== null) {
     const baseRevision = 'terrain-s21-v1';
-    const validateReferences = createGmDraftValidator({ map: game.server.world.map, baseRevision,
+    const baseMap = generateWorld(game.server.world.seed);
+    const validateReferences = createGmDraftValidator({ map: baseMap, baseRevision,
       manifest: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/manifest.json'), 'utf8')),
       editorCatalog: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/editor/catalog.json'), 'utf8')) });
-    gmDrafts = createGmDraftHandler({ store: game.store, resolvePlayer, accountIds: gmAccountIds,
+    publication = createGmPublicationService({ root: ROOT, map: baseMap, baseRevision, worldId,
+      validateReferences, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION });
+    if (gmContentDirectory !== null) gmContent = createGmContentService({ directory: gmContentDirectory, root: ROOT, worldId,
+      baseMap, baseRevision, game, publication, lock: gmContentLock });
+    if (resolvePlayer && gmAccountIds?.length) gmDrafts = createGmDraftHandler({ store: game.store, resolvePlayer, accountIds: gmAccountIds,
       worldId, seed: game.server.world.seed, baseRevision, validateReferences, allowMemory: gmDraftsAllowMemory,
-      publication: createGmPublicationService({ root: ROOT, map: game.server.world.map, baseRevision, worldId,
-        validateReferences, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) });
+      publication, content: gmContent });
   }
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
@@ -71,8 +77,15 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
     if (p === '/api/gm/session') { void gmSession(req, res); return; }
-    if (p === '/api/gm/draft' || p === '/api/gm/prepare') {
-      if (gmDrafts) void gmDrafts.handle(req, res, { prepareRevision: p === '/api/gm/prepare' });
+    if (p === '/api/world/content') {
+      if (!['GET', 'HEAD'].includes(req.method)) { res.writeHead(405).end(); return; }
+      const content = gmContent?.snapshot() ?? { generation: 0, revisionId: null, revision: null };
+      res.writeHead(200, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      res.end(req.method === 'HEAD' ? undefined : JSON.stringify({ ok: true, ...content })); return;
+    }
+    if (['/api/gm/draft', '/api/gm/prepare', '/api/gm/revisions', '/api/gm/activate'].includes(p)) {
+      if (gmDrafts) void gmDrafts.handle(req, res, { prepareRevision: p === '/api/gm/prepare',
+        registerRevision: p === '/api/gm/revisions', activateRevision: p === '/api/gm/activate' });
       else { res.writeHead(503, { 'content-type': MIME['.json'], 'cache-control': 'no-store' }).end(JSON.stringify({ ok: false, code: 'gm_drafts_unavailable' })); }
       return;
     }
@@ -126,12 +139,13 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   game.attach(server, '/ws');
   let listening;
   return {
-    game, server,
+    game, server, gmContent,
     listen() {
       if (listening) return listening;
       listening = (async () => {
         if (walletLink?.prepare) await walletLink.prepare();
         if (game.closing) throw new Error('Server is closing');
+        if (gmContent) { await publication.prepare(); await gmContent.prepare(); }
         await game.prepare();
         if (gmDrafts) await gmDrafts.prepare();
         if (game.closing) throw new Error('Server is closing');
@@ -169,6 +183,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
       store, resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig, walletLink,
       gmAccountIds: parseGmAccountIds(env.GM_ACCOUNT_IDS),
+      gmContentDirectory: env.MN_GM_CONTENT_DIR || null,
       initializeAccounts: auth.publicConfig.enabled,
       economicOperations: env.MN_ECONOMIC_OPERATIONS === '1',
       resourceOperations: env.MN_RESOURCE_OPERATIONS === '1',

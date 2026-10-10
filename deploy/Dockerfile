@@ -15,6 +15,7 @@ WORKDIR /app
 
 COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
+RUN test -x /usr/bin/flock
 
 COPY --chown=node:node index.html ./index.html
 COPY --chown=node:node server/ ./server/
