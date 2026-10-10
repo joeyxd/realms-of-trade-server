@@ -11,7 +11,7 @@ import { storageProfileDelta } from '../../src/sim/systems/raftEditor.js';
 const [mode,path,stage]=process.argv.slice(2);
 if(!['hold','inspect'].includes(mode)||!path||!['before','learned','built'].includes(stage))throw Error('mode/path/stage required');
 const account='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',world='artisan-process',ids={learn:'10000000-0000-4000-8000-000000000001',place:'10000000-0000-4000-8000-000000000002'};
-const baseline=newProfile();baseline.eco.pack.goods={madera:2};baseline.progression={v:1,practice:{logging:60},milestones:['logging_steady'],knowledge:[]};
+const baseline=newProfile({starter:false});baseline.eco.pack.goods={madera:2};baseline.progression={v:1,practice:{logging:60},milestones:['logging_steady'],knowledge:[]};
 const ship=baseline.eco.ships.find(s=>s.kind==='raft');ship.id='process:raft';ship.rev=1;
 ship.grid={parts:[...Array.from({length:4},(_,x)=>['foundation',x,0,0,0]),...Array.from({length:3},(_,x)=>['crate',x,0,0,0])],work:{}};ship.hold={cap:18,goods:{madera:6}};
 const worldData={v:1,seed:91,economy:new Economy(91).serialize(),community:{v:1,epoch:'10000000-0000-4000-8000-000000000003',project:{id:'salty-shore-carpentry',version:7,requirements:{madera:4,piedra:2},contributed:{madera:4,piedra:2}}}};

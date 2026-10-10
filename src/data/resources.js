@@ -19,7 +19,7 @@ export function sanitizeTools(raw) {
   return out;
 }
 export const CRAFT_RECIPES = Object.freeze({
-  madera: Object.freeze({ id: 'madera', name: 'Madera', inputs: Object.freeze({ tronco: 1 }), output: 'madera', count: 1, max: 10 }),
+  madera: Object.freeze({ id: 'madera', name: 'Tabla básica', inputs: Object.freeze({ tronco: 2 }), output: 'madera', count: 1, max: 10 }),
   hacha_piedra: Object.freeze({ id: 'hacha_piedra', name: 'Hacha de piedra', inputs: Object.freeze({ madera: 1, piedra: 1 }), tool: 'axe', tier: 1, count: 1, max: 1 }),
   pico_piedra: Object.freeze({ id: 'pico_piedra', name: 'Pico de piedra', inputs: Object.freeze({ madera: 1, piedra: 2 }), tool: 'pickaxe', tier: 1, count: 1, max: 1 }),
 });

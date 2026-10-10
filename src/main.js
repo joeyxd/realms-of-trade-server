@@ -56,6 +56,7 @@ import { ResourceActions } from './ui/resourceActions.js';
 import { WorkbenchPanel } from './ui/workbench.js';
 import { CommunityPanel } from './ui/community.js';
 import { ArtisanPanel } from './ui/artisan.js';
+import { WorkshopPanel } from './ui/workshop.js';
 import { ChatPanel } from './ui/chat.js';
 import { ChatBubbles } from './ui/chatBubbles.js';
 import { MSG, PROTOCOL_VERSION } from './net/protocol.js';
@@ -228,7 +229,9 @@ async function boot() {
   const raftEditor = new RaftEditor({
     parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
     profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
-    raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer, fireEnabled: () => client?.fire?.enabled === true,
+    raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer,
+    workshopEnabled: () => client?.resources?.timing === true,
+    fireEnabled: () => client?.fire?.enabled === true,
     player: () => ps, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
@@ -300,6 +303,7 @@ async function boot() {
   bus.on('you:welcome', () => personalLantern.reset());
   input.onHotkey('KeyN', () => personalLantern.toggle());
   bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
+  bus.on('loggingAim', ev => safe('loggingAim', () => resources.onAim(ev)));
   bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
   const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
     context: () => workbench.context(),
@@ -319,18 +323,30 @@ async function boot() {
   workbench.$('.wb-head').appendChild(communityTrigger);
   bus.on('community', (ev) => safe('community', () => community.onResult(ev)));
   bus.on('profile', () => community.update());
-  artisan = new ArtisanPanel({ parent: $('#ui'), profile: () => client?.profile, context: () => workbench.context(),
+  const artisanOptions = { parent: $('#ui'), profile: () => client?.profile, context: () => workbench.context(),
     getLocale: () => getLocale(),
     enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
     submit: (command) => { if (!st.online || !client?.joined || client.t.closed) return false; client.send(command); return true; },
     onCommunity: () => community.open(),
     onContext: active => {
-      if (active) { workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
+      if (active) { firePanel?.close(); companionsPanel?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
       input.setBuildContext(active || workbench.active || community.active || commercePanel.active || raftEditor.active);
       aimCtl.reset(); st.wantWeapon = 0; document.body.classList.toggle('learning-artisan', active);
       if (!active) canvas.focus({ preventScroll: true });
     },
-  });
+  };
+  const legacyArtisan = new ArtisanPanel(artisanOptions);
+  const workshop = new WorkshopPanel(artisanOptions);
+  const currentArtisan = () => client?.resources?.timing === true ? workshop : legacyArtisan;
+  artisan = {
+    get active() { return legacyArtisan.active || workshop.active; },
+    get root() { return currentArtisan().root; },
+    open: () => currentArtisan().open(),
+    close: () => { legacyArtisan.close(); workshop.close(); },
+    reset: () => { legacyArtisan.reset(); workshop.reset(); },
+    update: () => currentArtisan().update(),
+    onResult: ev => currentArtisan().onResult(ev),
+  };
   const artisanTrigger = document.createElement('button'); artisanTrigger.type = 'button';
   artisanTrigger.className = 'community-trigger'; artisanTrigger.hidden = true;
   artisanTrigger.addEventListener('click', () => artisan.open()); workbench.$('.wb-head').appendChild(artisanTrigger);
@@ -1519,7 +1535,9 @@ async function boot() {
         communityTrigger.disabled = !!community.active;
         artisan.update();
         artisanTrigger.hidden = !(st.online && st.mode === 'playing' && workbench.context());
-        artisanTrigger.textContent = document.documentElement.lang.startsWith('en') ? 'Visit artisan' : 'Visitar artesano';
+        artisanTrigger.textContent = client?.resources?.timing === true
+          ? (document.documentElement.lang.startsWith('en') ? 'Workshop and backpack' : 'Taller y mochila')
+          : (document.documentElement.lang.startsWith('en') ? 'Visit artisan' : 'Visitar artesano');
       });
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));

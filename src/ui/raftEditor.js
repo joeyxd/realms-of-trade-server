@@ -4,6 +4,7 @@ import { RAFT, RAFT_LOAD, RAFT_PARTS, RAFT_REINFORCEMENT } from '../data/raftpar
 import { EDITOR_PARTS, EDITOR_RADIUS } from '../data/raftEditor.js';
 import { ARTISAN } from '../data/artisan.js';
 import { readProgression } from '../sim/systems/progression.js';
+import { readWorkshop } from '../sim/systems/workshop.js';
 import { canPlace } from '../sim/economy/raft.js';
 import { holdUsed, roomFor, goodMass } from '../sim/economy/cargo.js';
 import { raftCapacity } from '../sim/economy/raftCapacity.js';
@@ -20,6 +21,7 @@ const direction = (id, dir) => (id === 'stairs'
   : [t('systems.raft.direction.north'), t('systems.raft.direction.east'), t('systems.raft.direction.south'), t('systems.raft.direction.west')])[dir];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const fmtGoods = (goods = {}) => Object.entries(goods).filter(([, n]) => n > 0).map(([g, n]) => `${formatNumber(n)} ${translateData(GOODS[g]?.name || g)}`).join(' · ') || `0 ${t('systems.raft.materials')}`;
+const fmtStorageGoods = (goods = {}) => fmtGoods(goods);
 const fmtHp = (n) => formatNumber(Number(n), { maximumFractionDigits: 1 });
 const partMeta = (id) => RAFT_PARTS[id] || {};
 const english = () => globalThis.document?.documentElement?.lang?.startsWith('en') === true;
@@ -27,6 +29,8 @@ const reasonText = (why) => t(`systems.raft.reason.${why || 'valid'}`);
 const STORAGE_REASONS = {
   '': { es: 'Lugar válido.', en: 'Valid placement.' },
   knowledge: { es: 'Aprende Bodega con la artesana del banco antes de construirla.', en: 'Learn Storage from the workbench artisan before building it.' },
+  crateKit: { es: 'Prepara un kit de caja en el banco de carpintería.', en: 'Craft a crate kit at the carpentry workbench.' },
+  profile: { es: 'El estado del taller no está disponible.', en: 'Workshop state is unavailable.' },
   practice: { es: 'Alcanza 60 puntos de tala para aprender Bodega.', en: 'Reach 60 logging points to learn Storage.' },
   learned: { es: 'Ya conoces la receta Bodega.', en: 'You already know the Storage recipe.' },
   land: { es: 'La obra comunitaria de carpintería aún no está completa.', en: 'The community carpentry project is not complete yet.' },
@@ -51,12 +55,51 @@ const STORAGE_REASONS = {
 };
 export const storageEditorReason = (why, lang = globalThis.document?.documentElement?.lang || 'es') =>
   STORAGE_REASONS[why]?.[String(lang).startsWith('en') ? 'en' : 'es'] || reasonText(why);
+const placementReasonText = (why, piece) => piece?.[0] === ARTISAN.part || ['crateKit', 'profile'].includes(why)
+  ? storageEditorReason(why) : reasonText(why);
+const workshopPaymentLabel = (payment, piece) => {
+  const en = english();
+  if (payment.why) return placementReasonText(payment.why, piece);
+  if (payment.kit) return en ? 'Cost: 1 crate kit from the workbench.' : 'Coste: 1 kit de caja del banco.';
+  if (piece?.[0] === ARTISAN.part && payment.credit) return en
+    ? `First storage build paid by your workshop reward · +${partMeta(piece[0]).hold} hold capacity.`
+    : `Primera bodega cubierta por la recompensa del taller · +${partMeta(piece[0]).hold} de capacidad.`;
+  if (piece?.[0] === ARTISAN.part && payment.active) return en
+    ? `Build cost: 10 planks · +${partMeta(piece[0]).hold} hold capacity.`
+    : `Coste: 10 tablas · +${partMeta(piece[0]).hold} de capacidad.`;
+  return '';
+};
 export const knowsRaftStorage = (profile) => {
   try { return readProgression(profile?.progression).knowledge.includes(ARTISAN.lesson); }
   catch { return false; }
 };
-export function raftPlacementReason(profile, parts, piece) {
+export function workshopBuildPayment(profile, piece, workshopEnabled = false) {
+  if (workshopEnabled !== true || !['crate', ARTISAN.part].includes(piece?.[0]))
+    return { cost: partMeta(piece?.[0]).cost || {}, kit: false, credit: false, active: false };
+  let workshop;
+  try { workshop = readWorkshop(profile?.workshop); } catch { return { cost: {}, kit: false, credit: false, active: true, why: 'profile' }; }
+  if (piece[0] === 'crate') return workshop.crateKits > 0
+    ? { cost: {}, kit: true, credit: false, active: true, workshop: { ...workshop, crateKits: workshop.crateKits - 1 } }
+    : { cost: {}, kit: true, credit: false, active: true, why: 'crateKit' };
+  if (!knowsRaftStorage(profile)) return { cost: {}, kit: false, credit: false, active: true, why: 'knowledge' };
+  return workshop.storageCredit
+    ? { cost: {}, kit: false, credit: true, active: true, workshop: { ...workshop, storageCredit: false } }
+    : { cost: { madera: 10 }, kit: false, credit: false, active: true };
+}
+
+function workshopSnapshot(profile) {
+  try { return readWorkshop(profile?.workshop); } catch { return null; }
+}
+const workshopMatches = (profile, expected) => {
+  const actual = workshopSnapshot(profile);
+  return !!actual && !!expected && actual.v === expected.v && actual.boards === expected.boards
+    && actual.storageCredit === expected.storageCredit && actual.crateKits === expected.crateKits;
+};
+
+export function raftPlacementReason(profile, parts, piece, workshopEnabled = false) {
   if (piece?.[0] === ARTISAN.part && !knowsRaftStorage(profile)) return 'knowledge';
+  const payment = workshopBuildPayment(profile, piece, workshopEnabled);
+  if (payment.why) return payment.why;
   return canPlace(parts, piece);
 }
 
@@ -226,7 +269,7 @@ export class RaftEditor {
   }
   conditionEntries(c) { return this.conditionFor(c)?.entries || []; }
   placementReason(c, piece = this.proposed(c)) {
-    return (['torchFloor', 'torchWall', 'campfire'].includes(piece?.[0]) && !this.fireEnabled?.() ? 'disabled' : '') || raftPlacementReason(c?.profile, this.gridParts(c), piece) || (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(piece[0])
+    return (['torchFloor', 'torchWall', 'campfire'].includes(piece?.[0]) && !this.fireEnabled?.() ? 'disabled' : '') || raftPlacementReason(c?.profile, this.gridParts(c), piece, this.workshopEnabled?.() === true) || (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(piece[0])
       ? canPlace(c.record.parts || this.gridParts(c), piece) : '');
   }
   repairCost(entry) {
@@ -280,8 +323,9 @@ export class RaftEditor {
     }
     if (!this.target) return { before, after: null, state: 'idle' };
     const piece = this.proposed(c), why = this.placementReason(c, piece);
-    if (why) return { before, after: null, state: 'invalid', reason: piece[0] === ARTISAN.part ? storageEditorReason(why) : reasonText(why) };
-    const cost = partMeta(piece[0]).cost || {}, holdGoods = { ...(hold.goods || {}) }, packGoods = { ...(pack.goods || {}) };
+    if (why) return { before, after: null, state: 'invalid', reason: placementReasonText(why, piece) };
+    const payment = workshopBuildPayment(c.profile, piece, this.workshopEnabled?.() === true);
+    const cost = payment.cost, holdGoods = { ...(hold.goods || {}) }, packGoods = { ...(pack.goods || {}) };
     for (const [g, count] of Object.entries(cost)) {
       let remaining = count;
       const fromHold = Math.min(remaining, holdGoods[g] || 0);
@@ -331,7 +375,10 @@ export class RaftEditor {
     if (this.mode === 'remove') {
       const chosen = this.removalTarget(c); if (!chosen) { this.setResult('systems.raft.status.chooseRemove'); this.render(); return; }
       const id = crypto.randomUUID(); const message = { type: 'raft', op: 'remove', id: c.record.id, expectedRev: c.record.rev, opId: id, index: chosen.index, piece: [...chosen.p] };
-      this.pending = { id, expectedRev: c.record.rev, op: 'remove', message, sentAt: performance.now() }; this.send(message);
+      const workshopRule = this.workshopEnabled?.() === true && ['crate', ARTISAN.part].includes(chosen.p[0]);
+      this.pending = { id, expectedRev: c.record.rev, op: 'remove', message, sentAt: performance.now(),
+        workshopRule, expectedWorkshop: workshopRule ? workshopSnapshot(c.profile) : null,
+        expectedTradeRev: workshopRule ? c.profile.eco.tradeRev : null }; this.send(message);
     } else if (this.mode === 'reinforce') {
       const chosen = this.reinforcementTarget(c);
       if (!chosen) { this.setResult('systems.raft.status.chooseFoundation'); this.render(); return; }
@@ -351,9 +398,17 @@ export class RaftEditor {
       this.pending = { id, expectedRev: c.record.rev, op: 'repair', message, sentAt: performance.now() }; this.send(message);
     } else {
       const piece = this.proposed(c); if (!piece) return;
-      const why = this.placementReason(c, piece); if (why) { if (piece[0] === ARTISAN.part) this.setStorageResult(why); else this.setResult(`systems.raft.reason.${why}`); this.render(); return; }
+      const why = this.placementReason(c, piece); if (why) {
+        if (piece[0] === ARTISAN.part || this.workshopEnabled?.() === true && piece[0] === 'crate') this.setStorageResult(why);
+        else this.setResult(`systems.raft.reason.${why}`);
+        this.render(); return;
+      }
       const id = crypto.randomUUID(); const message = { type: 'raft', op: 'place', id: c.record.id, expectedRev: c.record.rev, opId: id, piece };
-      this.pending = { id, expectedRev: c.record.rev, op: 'place', message, sentAt: performance.now() }; this.send(message);
+      const workshopRule = this.workshopEnabled?.() === true && ['crate', ARTISAN.part].includes(piece[0]);
+      const payment = workshopBuildPayment(c.profile, piece, workshopRule);
+      this.pending = { id, expectedRev: c.record.rev, op: 'place', message, sentAt: performance.now(), workshopRule,
+        expectedWorkshop: workshopRule ? payment.workshop || workshopSnapshot(c.profile) : null,
+        expectedTradeRev: workshopRule ? c.profile.eco.tradeRev + 1 : null }; this.send(message);
     }
     this.render();
   }
@@ -375,17 +430,26 @@ export class RaftEditor {
     }
     if (!this.pending || ev.opId !== this.pending.id || ev.id !== this.pending.message.id || ev.op && ev.op !== this.pending.op) return;
     const storagePlace = this.pending.op === 'place' && this.pending.message.piece?.[0] === ARTISAN.part;
-    if (storagePlace && (ev.historical || ev.replay)) { this.pending.historical = true; this.pending.ack = true; this.pending.durable = true; this.pending.resultRev = this.pending.expectedRev + 1; this.setStorageResult('storage'); if (this.active) this.render(); return; }
+    const workshopProfileOp = this.pending.workshopRule === true;
+    if ((storagePlace || workshopProfileOp) && (ev.historical || ev.replay)) { this.pending.historical = true; this.pending.ack = true; this.pending.durable = true; this.pending.resultRev = this.pending.expectedRev + 1; this.setStorageResult('storage'); if (this.active) this.render(); return; }
     const denied = ev.type === 'raftDenied' || ev.ok === false || !!ev.why;
-    if (denied) { if (storagePlace) this.setStorageResult(ev.why || 'storage'); else this.setResult(`systems.raft.reason.${ev.why || 'invalid'}`); this.pending = null; }
-    else if (storagePlace && (ev.durable !== true || !Number.isSafeInteger(ev.rev) || ev.rev !== this.pending.expectedRev + 1)) {
+    if (denied) { if (storagePlace || workshopProfileOp) this.setStorageResult(ev.why || 'storage'); else this.setResult(`systems.raft.reason.${ev.why || 'invalid'}`); this.pending = null; }
+    else if ((storagePlace || workshopProfileOp) && (ev.durable !== true || !Number.isSafeInteger(ev.rev) || ev.rev !== this.pending.expectedRev + 1)) {
       this.setStorageResult('storage'); this.pending = null;
-    } else { this.pending.ack = true; this.pending.durable = ev.durable === true; this.pending.resultRev = ev.rev; this.setResult(storagePlace ? 'systems.raft.status.planAccepted' : this.pending.op === 'supply' ? 'systems.raft.status.supplyAccepted' : this.pending.op === 'repair' ? 'systems.raft.status.repairAccepted' : this.pending.op === 'reinforce' ? 'systems.raft.status.planAccepted' : 'systems.raft.status.planAccepted'); }
+    } else {
+      this.pending.ack = true; this.pending.durable = ev.durable === true; this.pending.resultRev = ev.rev;
+      this.setResult(storagePlace || workshopProfileOp ? 'systems.raft.status.planAccepted'
+        : this.pending.op === 'supply' ? 'systems.raft.status.supplyAccepted'
+          : this.pending.op === 'repair' ? 'systems.raft.status.repairAccepted'
+            : 'systems.raft.status.planAccepted');
+    }
     if (this.active) this.render();
   }
 
   render() {
     const c = this.context(); if (this.active && !c) { this.close(); return; }
+    const storageFlow = this.selected === ARTISAN.part || this.pending?.message?.piece?.[0] === ARTISAN.part
+      || this.workshopEnabled?.() === true && (this.selected === 'crate' || this.pending?.message?.piece?.[0] === 'crate');
     const isEnglish = english();
     this.syncStoragePalette();
     const disabled = !c || !!this.pending;
@@ -400,18 +464,27 @@ export class RaftEditor {
     const reinforcement = this.mode === 'reinforce' ? this.reinforcementTarget(c) : null;
     const repair = this.mode === 'repair' ? this.repairTarget(c) : null;
     const cost = def.cost || {};
+    const workshopOn = this.workshopEnabled?.() === true;
+    const selectedPayment = workshopBuildPayment(c?.profile, [this.selected, this.target?.x || 0, this.target?.z || 0,
+      this.target?.level || this.level, this.dir], workshopOn);
     const repairCost = repair ? this.repairCost(repair) : {};
     const refund = selection ? salvagePartCost(selection.condition || { part: selection.p, hp: partMeta(selection.p[0]).hp, maxHp: partMeta(selection.p[0]).hp }) : {};
     this.$('.re-details').innerHTML = this.mode === 'remove'
-      ? `<b>${selection ? esc(translateData(partMeta(selection.p[0]).name)) : t('systems.raft.choosePart')}</b><small>${t('systems.raft.refund')}: ${fmtGoods(refund)}</small>`
+      ? `<b>${selection ? esc(translateData(partMeta(selection.p[0]).name)) : t('systems.raft.choosePart')}</b><small>${storageFlow && isEnglish ? `Estimated refund: ${fmtStorageGoods(refund)}` : `${t('systems.raft.refund')}: ${fmtGoods(refund)}`}</small>`
       : this.mode === 'repair' ? `<b>${repair ? `${esc(translateData(partMeta(repair.piece[0]).name))} · ${fmtHp(repair.hp)}/${fmtHp(repair.maxHp)} HP` : t('systems.raft.chooseDamaged')}</b><small>${repair ? `${t('systems.raft.repair')}: ${fmtGoods(repairCost)} · ${t('systems.raft.cell')} ${repair.piece[1]}, ${repair.piece[2]} · ${t('systems.raft.level')} ${repair.piece[3]}` : t('systems.raft.chooseFromList')}</small>`
       : this.mode === 'reinforce' ? `<b>${reinforcement ? t('systems.raft.reinforceFoundation') : t('systems.raft.selectFoundation')}</b><small>${t('systems.raft.incrementalCost')}: ${fmtGoods(RAFT_REINFORCEMENT)} · ${t('systems.raft.replacement')}${reinforcement?.condition && reinforcement.condition.hp < reinforcement.condition.maxHp ? ` · ${t('systems.raft.retainHealth', { percent: Math.round(reinforcement.condition.hp / reinforcement.condition.maxHp * 100) })}` : ''}</small>`
+      : workshopOn && ['crate', ARTISAN.part].includes(this.selected)
+        ? `<b>${esc(translateData(def.name))}</b><small>${esc(workshopPaymentLabel(selectedPayment, [this.selected]))}</small>`
       : `<b>${esc(translateData(def.name))}</b><small>${t('systems.raft.cost')}: ${fmtGoods(cost)}${this.selected === ARTISAN.part ? ` · +${partMeta(this.selected).hold} ${isEnglish ? 'hold capacity' : 'de capacidad de bodega'}` : ` · ${direction(this.selected, this.dir)}`}</small>`;
     const shelterHelp = this.$('.re-shelter-help');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', ARTISAN.part].includes(this.selected);
-    shelterHelp.textContent = this.selected === ARTISAN.part
-      ? this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
-        : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
+    shelterHelp.textContent = workshopOn && this.selected === 'crate'
+      ? isEnglish ? 'Place one crate kit prepared at the carpentry workbench. It adds raft cargo space.' : 'Coloca un kit preparado en el banco de carpintería. Añade espacio de carga a la balsa.'
+      : this.selected === ARTISAN.part
+      ? workshopOn
+        ? (isEnglish ? 'Complete your personal 10-plank workshop project for the first storage reward. Place it on a free deck or floor cell; raft mass limits still apply.' : 'Completa tu proyecto personal de 10 tablas en el taller para recibir la primera recompensa de bodega. Colócala en una cubierta o piso libre; se mantienen los límites de peso de la balsa.')
+        : this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
+          : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
       : ['lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(this.selected)
       ? this.fireEnabled?.()
         ? (isEnglish ? 'Starts off. Use V or touch nearby to load one wood and light it. Fixed lamps last 60 minutes; campfires and grills last 30. Extinguish to preserve fuel. Wall torches need a wall.'
@@ -459,7 +532,7 @@ export class RaftEditor {
       return `<button type="button" data-supply="${esc(offer.g)}" ${disabled || offer.stock < 1 || gold < offer.price || room < 1 ? 'disabled' : ''}>${t('systems.raft.supply', { good: translateData(GOODS[offer.g]?.name || offer.g), price: formatNumber(offer.price) })}</button>`;
     }).join('');
     let reason = this.lastResult;
-    if (!reason && c && this.mode === 'place' && this.target) { const why = this.placementReason(c); reason = this.selected === ARTISAN.part ? storageEditorReason(why) : reasonText(why); }
+    if (!reason && c && this.mode === 'place' && this.target) { const why = this.placementReason(c); reason = placementReasonText(why, this.proposed(c)); }
     if (!reason && this.mode === 'remove' && selection) reason = t('systems.raft.status.confirmRemove');
     if (!reason && this.mode === 'reinforce' && reinforcement) reason = t('systems.raft.status.confirmReinforce');
     if (!reason && this.mode === 'repair' && repair) reason = this.repairAffordable(c, repair) ? t('systems.raft.status.confirmRepair') : t('systems.raft.status.missingMaterials', { goods: fmtGoods(Object.fromEntries(Object.entries(repairCost).map(([g, n]) => [g, Math.max(0, n - (stock[g] || 0))]))) });
@@ -509,7 +582,11 @@ export class RaftEditor {
     this.launcher.hidden = this.active || !canOpen;
     this.syncStoragePalette();
     const c = this.context();
+    const pendingWorkshopProfile = this.pending?.workshopRule === true;
+    const workshopProfileReady = !pendingWorkshopProfile || Number.isSafeInteger(c?.profile?.eco?.tradeRev)
+      && c.profile.eco.tradeRev >= this.pending.expectedTradeRev && workshopMatches(c.profile, this.pending.expectedWorkshop);
     if (this.pending?.ack && c && Number.isSafeInteger(this.pending.resultRev) && c.record.rev >= this.pending.resultRev && c.ship.rev >= this.pending.resultRev
+        && workshopProfileReady
         && (!this.pending.durable || this.pending.op !== 'place' || this.pending.message.piece?.[0] !== ARTISAN.part || this.knowsStorage(c))) {
       const op = this.pending.op, storagePlace = op === 'place' && this.pending.message.piece?.[0] === ARTISAN.part;
       this.pending = null; this.quote = null; this.quotePending = null;
@@ -545,13 +622,14 @@ export class RaftEditor {
   signature() {
     const c = this.context(); if (!c) return 'off';
     const capacity = this.capacity?.();
-    return JSON.stringify([c.record.rev, c.ship.rev, c.ship.hold?.goods, c.profile.gold, c.profile.eco?.pack?.goods, c.profile.progression?.knowledge, globalThis.document?.documentElement?.lang,
+    return JSON.stringify([c.record.rev, c.ship.rev, c.ship.hold?.goods, c.profile.gold, c.profile.eco?.tradeRev, c.profile.eco?.pack?.goods,
+      c.profile.progression?.knowledge, c.profile.workshop, c.profile.carry, globalThis.document?.documentElement?.lang,
       capacity && [capacity.id, capacity.raftRev, capacity.tradeRev, capacity.mode, capacity.freeMass, capacity.holdFree,
         capacity.crewMass, capacity.crewCount, capacity.guestMass, capacity.status,
         capacity.condition && [capacity.condition.hull, capacity.condition.entries?.filter((entry) => entry.hp < entry.maxHp)
           .map((entry) => [entry.index, entry.id, entry.hp, entry.maxHp, entry.piece, entry.cost])]],
       this.quote, this.target, this.repairChoiceId, this.selected, this.level, this.dir, this.mode, this.lastResult,
-      this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt], this.removeChoice]);
+      this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.expectedWorkshop, this.pending.expectedTradeRev, this.pending.sentAt], this.removeChoice]);
   }
 
   destroy() { this.unsubscribeLocale?.(); this.close(); this.canvas.removeEventListener('pointermove', this.onPointerMove); this.canvas.removeEventListener('pointerdown', this.onPointerDown); this.ghost.removeFromParent(); this.ghostCell.geometry.dispose(); this.ghostCell.material.dispose(); this.ghostPart.geometry.dispose(); this.ghostPart.material.dispose(); this.ghostArrow.geometry.dispose(); this.ghostArrow.material.dispose(); this.root.remove(); this.launcher.remove(); }

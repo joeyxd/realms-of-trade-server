@@ -14,7 +14,7 @@ export const GOODS = {
   ron: { name: 'Ron', cat: 'drink', base: 22, w: 1, volume: 1, mass: 1 },
   agua: { name: 'Agua dulce', cat: 'drink', base: 2, w: 1, volume: 1, mass: 1 }, // rafts make it (purifier) and drink it (crops)
   cana: { name: 'Caña de azúcar', cat: 'material', base: 6, w: 2, volume: 2, mass: 2, perish: 0.02 },
-  madera: { name: 'Madera', cat: 'material', base: 9, w: 3, volume: 3, mass: 3 },
+  madera: { name: 'Tabla básica', cat: 'material', base: 9, w: 3, volume: 3, mass: 3 },
   tronco: { name: 'Tronco recogido', cat: 'material', base: 5, w: 3, volume: 3, mass: 3 },
   piedra: { name: 'Piedra', cat: 'material', base: 4, w: 2, volume: 2, mass: 4 },
   hierro: { name: 'Hierro', cat: 'material', base: 16, w: 3, volume: 3, mass: 6 },

@@ -25,8 +25,8 @@ test('logging, pack and naval lesson snapshots localize without changing their s
   assert.match(loggingSkillHtml(progression, 'en'), /Logging/);
   const esPack = packInventoryHtml(profile, {}, 'es');
   const enPack = packInventoryHtml(profile, {}, 'en');
-  assert.match(esPack, /Madera/);
-  assert.match(enPack, /Timber/);
+  assert.match(esPack, /Tabla básica/);
+  assert.match(enPack, /Basic plank/);
   assert.deepEqual(profile, before, 'rendering either locale does not mutate the profile');
 
   const lesson = { available: true, active: false, canStart: true, status: 'ready', learning: { learned: true, persistence: 'pending' } };
