@@ -39,10 +39,10 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
-- AREA07 RNV03 (2026-10-10), **alpha.28/protocolo 40, implementación local en aceptación**:
+- AREA07 RNV03 (2026-10-10), **alpha.28/protocolo 40, implementado y activo**:
   [noche casi negra y farol de cinturón](docs/delivery/rnv03-dark-night.md). Hora compartida obligatoria,
   N/toque, luz pública y apagado en muerte/reentrada; sin SQL, objetos económicos ni nuevo writer.
-  Pruebas/capturas y revisión realmente activa se registran en la entrega. Sigue agua costera/reembarque
+  650/650 locales y 107/107 imagen; VPS `9f23be3`, entrada pública comprobada (detalle/solapamiento en entrega). Sigue agua costera/reembarque
   con contrato previo de carga/agotamiento/rescate, después provisiones/hogar.
 
 - AREA07 RNV02 (2026-10-10), **integración alpha.27/protocolo 39**: [farol funcional](docs/delivery/rnv02-naval-lantern.md).

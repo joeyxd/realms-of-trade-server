@@ -27,9 +27,9 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
   colisión, reintentos y CAS del dueño comprobados localmente.
 - **RNV02 implementado y activo:** farol utilizable, coste/soporte vivo/HP, V/toque y guardado
   del dueño. [Contrato](rnv02-naval-lantern.md) y [entrega](../delivery/rnv02-naval-lantern.md).
-- **RNV03 aceptado localmente:** [noche y farol portátil](../delivery/rnv03-dark-night.md), alpha.28/protocolo 40.
+- **RNV03 implementado y activo:** [noche y farol portátil](../delivery/rnv03-dark-night.md), alpha.28/protocolo 40.
   650/650 en serie, 107/107 release (solapamiento), cuatro vistas de pie/puerto, cuatro navales y dos probes
-  N/toque al timón/cubierta. Despliegue en comprobación; sigue agua costera/reembarque → provisiones/hogar.
+  N/toque al timón/cubierta. VPS `9f23be3` sano, 107/107 imagen y entrada WSS comprobados; sigue agua costera/reembarque → provisiones/hogar.
 
 ## 1 Visión y criterio de éxito
 
@@ -164,7 +164,7 @@ Arte procedural existente reutilizado tras verificar antorcha Unreal concreta, d
 VPS `e648d1b` sano hasta las 20:15:21 UTC, imagen 107/107 y timer activo. Entrada pública WSS,
 mapa/minimapa y catálogo comprobados; evidencia/límites en entrega.
 
-### RNV03 — noche oscura y farol portátil (implementado localmente, en aceptación)
+### RNV03 — noche oscura y farol portátil (implementado y activo)
 
 [Contrato](rnv03-dark-night.md) · [entrega](../delivery/rnv03-dark-night.md), alpha.28/protocolo 40.
 Noche casi negra sin fuentes, también en bajo/móvil; hora compartida obligatoria durante la partida,

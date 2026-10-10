@@ -18,10 +18,12 @@ Coste/soporte vivo/HP, replay, visitante y reparación sin encendido automático
 631/631 integradas, 107/107 release (solapamiento), cuatro vistas y probe real F/E/V aceptados localmente.
 VPS `e648d1b` sano hasta las 20:15:21 UTC; imagen 107/107, timer activo y entrada pública WSS,
 mapa/minimapa y catálogo comprobados. Evidencia/límites en la entrega.
-**RNV03 implementado localmente, en aceptación:** [noche oscura y farol portátil](docs/delivery/rnv03-dark-night.md),
+**RNV03 implementado y activo:** [noche oscura y farol portátil](docs/delivery/rnv03-dark-night.md),
 alpha.28/protocolo 40. La hora compartida manda sobre los presets; sin luz automática del jugador.
 Farol básico de cinturón N/toque, público, apagado en muerte/reentrada, sin coste/combustible/SQL ni perfil nuevo.
-Costa, puerto y farol naval se verifican en PC/móvil bajo/alto; la entrega registra pruebas y despliegue.
+Costa/puerto y farol naval aceptados en PC/móvil bajo/alto: 650/650, 107/107 release (solapamiento).
+VPS `9f23be3` sano a 2026-10-10 20:56:35 UTC, una autoridad, imagen 107/107 y timer activo.
+Entrada real WSS: N encendido/apagado, accesorio/fuente, hora compartida y mapa/minimapa comprobados.
 **Sigue:** agua costera y reembarque, primero contrato de carga/agotamiento/rescate. Luego provisiones/hogar,
 rutas, rival y cooperación. Los faroles preceden a la noche casi negra.
 

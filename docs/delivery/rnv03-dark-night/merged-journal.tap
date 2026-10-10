@@ -1,0 +1,1617 @@
+TAP version 13
+# Subtest: public Auth config accepts publishable/anon keys and rejects private or partial configuration
+ok 1 - public Auth config accepts publishable/anon keys and rejects private or partial configuration
+  ---
+  duration_ms: 2.8904
+  type: 'test'
+  ...
+# Subtest: verifier uses SDK getUser HTTP response, rejects supplied invalid tokens, and never decodes client identity
+ok 2 - verifier uses SDK getUser HTTP response, rejects supplied invalid tokens, and never decodes client identity
+  ---
+  duration_ms: 10.8375
+  type: 'test'
+  ...
+# Subtest: accounts persist before WELCOME; invalid token cannot fall back to a valid signed save
+ok 3 - accounts persist before WELCOME; invalid token cannot fall back to a valid signed save
+  ---
+  duration_ms: 839.4766
+  type: 'test'
+  ...
+# Subtest: one-time import consumes all signed versions of the pirate and retires guest restoration
+ok 4 - one-time import consumes all signed versions of the pirate and retires guest restoration
+  ---
+  duration_ms: 611.4562
+  type: 'test'
+  ...
+# Subtest: existing account wins; malformed/id-less/tampered imports fail without creating a new profile
+ok 5 - existing account wins; malformed/id-less/tampered imports fail without creating a new profile
+  ---
+  duration_ms: 501.7344
+  type: 'test'
+  ...
+# Subtest: guest/import races reserve legacy identity before await, releasing failed and closed joins
+ok 6 - guest/import races reserve legacy identity before await, releasing failed and closed joins
+  ---
+  duration_ms: 420.8777
+  type: 'test'
+  ...
+# Subtest: real HTTP public config/SDK and WebSocket account admission expose no service credentials
+ok 7 - real HTTP public config/SDK and WebSocket account admission expose no service credentials
+  ---
+  duration_ms: 680.3964
+  type: 'test'
+  ...
+# Subtest: timed-out guest DB checks cannot retain a reservation or spawn later
+ok 8 - timed-out guest DB checks cannot retain a reservation or spawn later
+  ---
+  duration_ms: 566.1824
+  type: 'test'
+  ...
+# Subtest: a malformed initialization response does not admit an unpersisted default
+ok 9 - a malformed initialization response does not admit an unpersisted default
+  ---
+  duration_ms: 411.7694
+  type: 'test'
+  ...
+# Subtest: SQL017 is rerunnable, scoped and exposes only the public budget projection
+ok 10 - SQL017 is rerunnable, scoped and exposes only the public budget projection
+  ---
+  duration_ms: 2555.532
+  type: 'test'
+  ...
+# Subtest: SQL017 atomically accounts successful buys and exact replay keeps a single economic receipt
+ok 11 - SQL017 atomically accounts successful buys and exact replay keeps a single economic receipt
+  ---
+  duration_ms: 2154.8137
+  type: 'test'
+  ...
+# Subtest: SQL017 rejects caps and revoked policy without economic writes; denied ACK is receipted at zero cost
+ok 12 - SQL017 rejects caps and revoked policy without economic writes; denied ACK is receipted at zero cost
+  ---
+  duration_ms: 1807.115
+  type: 'test'
+  ...
+# Subtest: SQL017 rejects altered or human receipt reuse and preserves ordinary economic commands
+ok 13 - SQL017 rejects altered or human receipt reuse and preserves ordinary economic commands
+  ---
+  duration_ms: 1696.5245
+  type: 'test'
+  ...
+# Subtest: SQL017 recovers a lost reply from one immutable operation and denies foreign revoke
+ok 14 - SQL017 recovers a lost reply from one immutable operation and denies foreign revoke
+  ---
+  duration_ms: 1988.6442
+  type: 'test'
+  ...
+# Subtest: SQL017 budget usage and linked receipt survive a disk database reopen
+ok 15 - SQL017 budget usage and linked receipt survive a disk database reopen
+  ---
+  duration_ms: 4703.339
+  type: 'test'
+  ...
+# Subtest: SQL017 sale consumes its own unit cap and never refills buy allowance; forged deltas roll back
+ok 16 - SQL017 sale consumes its own unit cap and never refills buy allowance; forged deltas roll back
+  ---
+  duration_ms: 2305.5684
+  type: 'test'
+  ...
+# Subtest: memory mandate is immutable and exposes a public projection without identities
+ok 17 - memory mandate is immutable and exposes a public projection without identities
+  ---
+  duration_ms: 9.0729
+  type: 'test'
+  ...
+# Subtest: memory trade applies one receipt and usage debit; exact retry is historical
+ok 18 - memory trade applies one receipt and usage debit; exact retry is historical
+  ---
+  duration_ms: 16.3353
+  type: 'test'
+  ...
+# Subtest: memory budget cap rejection makes no economic or profile/world writes; denied ACK spends zero
+ok 19 - memory budget cap rejection makes no economic or profile/world writes; denied ACK spends zero
+  ---
+  duration_ms: 8.8652
+  type: 'test'
+  ...
+# Subtest: memory sell caps accumulate per good, revoke is monotonic, and old exact replay remains readable
+ok 20 - memory sell caps accumulate per good, revoke is monotonic, and old exact replay remains readable
+  ---
+  duration_ms: 9.6352
+  type: 'test'
+  ...
+# Subtest: memory rejects altered trade replay and human receipt collision
+ok 21 - memory rejects altered trade replay and human receipt collision
+  ---
+  duration_ms: 12.326
+  type: 'test'
+  ...
+# Subtest: authenticated owner budget debits only successful own-character buy and sell receipts
+ok 22 - authenticated owner budget debits only successful own-character buy and sell receipts
+  ---
+  duration_ms: 1123.9261
+  type: 'test'
+  ...
+# Subtest: trade lane is opt-in, capability-gated, exact-schema, location-bound, and generic commerce CMD stays blocked
+ok 23 - trade lane is opt-in, capability-gated, exact-schema, location-bound, and generic commerce CMD stays blocked
+  ---
+  duration_ms: 2058.2624
+  type: 'test'
+  ...
+# Subtest: agent-trade readiness checks required store operations before world open or admission
+ok 24 - agent-trade readiness checks required store operations before world open or admission
+  ---
+  duration_ms: 869.2482
+  type: 'test'
+  ...
+# Subtest: response-lost receipt replays after same-store host restart and agent reentry without a second debit
+ok 25 - response-lost receipt replays after same-store host restart and agent reentry without a second debit
+  ---
+  duration_ms: 1065.5698
+  type: 'test'
+  ...
+# Subtest: historical receipt with a different budget identity is rejected instead of replayed
+ok 26 - historical receipt with a different budget identity is rejected instead of replayed
+  ---
+  duration_ms: 591.7428
+  type: 'test'
+  ...
+# Subtest: zero spend and sell caps fail before EconomicAuthority writes while commerce failures keep zero-cost receipts
+ok 27 - zero spend and sell caps fail before EconomicAuthority writes while commerce failures keep zero-cost receipts
+  ---
+  duration_ms: 614.7612
+  type: 'test'
+  ...
+# Subtest: full pack and empty market are durable zero-cost denials; dead and navigation-locked agents cannot trade
+ok 28 - full pack and empty market are durable zero-cost denials; dead and navigation-locked agents cannot trade
+  ---
+  duration_ms: 640.763
+  type: 'test'
+  ...
+# Subtest: revocation during preparation aborts before write; revocation after durable dispatch preserves the accepted commit
+ok 29 - revocation during preparation aborts before write; revocation after durable dispatch preserves the accepted commit
+  ---
+  duration_ms: 635.1898
+  type: 'test'
+  ...
+# Subtest: community progress projects server requirements against only the current profile pack
+ok 30 - community progress projects server requirements against only the current profile pack
+  ---
+  duration_ms: 2.8602
+  type: 'test'
+  ...
+# Subtest: community progress accepts row contracts and clamps display progress to requirements
+ok 31 - community progress accepts row contracts and clamps display progress to requirements
+  ---
+  duration_ms: 0.4323
+  type: 'test'
+  ...
+# Subtest: community server failures map to short Spanish recovery guidance
+ok 32 - community server failures map to short Spanish recovery guidance
+  ---
+  duration_ms: 0.3941
+  type: 'test'
+  ...
+# Subtest: GameClient forwards community receipts only to the addressed entity
+ok 33 - GameClient forwards community receipts only to the addressed entity
+  ---
+  duration_ms: 1.0393
+  type: 'test'
+  ...
+# Subtest: recovery decision accepts only the fully idle durable failed-world state
+ok 34 - recovery decision accepts only the fully idle durable failed-world state
+  ---
+  duration_ms: 1.2641
+  type: 'test'
+  ...
+# Subtest: recovery stays closed around economic operations and pending profile or world writes
+ok 35 - recovery stays closed around economic operations and pending profile or world writes
+  ---
+  duration_ms: 0.2453
+  type: 'test'
+  ...
+# Subtest: HTTP probe accepts only a 200 JSON status contract
+ok 36 - HTTP probe accepts only a 200 JSON status contract
+  ---
+  duration_ms: 36.8937
+  type: 'test'
+  ...
+# Subtest: four persistent eligible probes request one graceful recovery and exit nonzero
+ok 37 - four persistent eligible probes request one graceful recovery and exit nonzero
+  ---
+  duration_ms: 1.457
+  type: 'test'
+  ...
+# Subtest: a healthy or unrecognized probe resets the consecutive failure count
+ok 38 - a healthy or unrecognized probe resets the consecutive failure count
+  ---
+  duration_ms: 0.294
+  type: 'test'
+  ...
+# Subtest: pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+ok 39 - pending profiles, enabled staging, hung probes, and unknown state do not trigger recovery
+  ---
+  duration_ms: 0.2563
+  type: 'test'
+  ...
+# Subtest: a probe that never resolves cannot advance or fire the failure guard
+ok 40 - a probe that never resolves cannot advance or fire the failure guard
+  ---
+  duration_ms: 0.2026
+  type: 'test'
+  ...
+# Subtest: external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+ok 41 - external shutdown closes polling, forwards termination, escalates, and preserves child exit code
+  ---
+  duration_ms: 0.3403
+  type: 'test'
+  ...
+# Subtest: a child that exits on its own keeps its exit status
+ok 42 - a child that exits on its own keeps its exit status
+  ---
+  duration_ms: 0.3295
+  type: 'test'
+  ...
+# Subtest: child launch error settles once with a nonzero code
+ok 43 - child launch error settles once with a nonzero code
+  ---
+  duration_ms: 0.3742
+  type: 'test'
+  ...
+# Subtest: a real child completes its SIGTERM drain before recovery exits nonzero
+ok 44 - a real child completes its SIGTERM drain before recovery exits nonzero
+  ---
+  duration_ms: 122.8707
+  type: 'test'
+  ...
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 45 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 765.1883
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 46 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 658.1011
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 47 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 502.296
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 48 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 1064.4278
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 49 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 456.4885
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 50 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 444.6898
+  type: 'test'
+  ...
+# Subtest: raft supply commits wallet, hold/pack cargo, ship revision, and market stock as one replayable receipt
+ok 51 - raft supply commits wallet, hold/pack cargo, ship revision, and market stock as one replayable receipt
+  ---
+  duration_ms: 668.3995
+  type: 'test'
+  ...
+# Subtest: held raft supply stays unapplied until receipt, lost response recovers, and legacy market mutation is denied
+ok 52 - held raft supply stays unapplied until receipt, lost response recovers, and legacy market mutation is denied
+  ---
+  duration_ms: 579.2403
+  type: 'test'
+  ...
+# Subtest: resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+ok 53 - resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+  ---
+  duration_ms: 15.1883
+  type: 'test'
+  ...
+# Subtest: resource command schemas and revision/count bounds are strict
+ok 54 - resource command schemas and revision/count bounds are strict
+  ---
+  duration_ms: 4.9749
+  type: 'test'
+  ...
+# Subtest: resource world state is mandatory for resource commands and strictly checked
+ok 55 - resource world state is mandatory for resource commands and strictly checked
+  ---
+  duration_ms: 9.4541
+  type: 'test'
+  ...
+# Subtest: community and resources can coexist in an economic world snapshot
+ok 56 - community and resources can coexist in an economic world snapshot
+  ---
+  duration_ms: 2.3256
+  type: 'test'
+  ...
+# Subtest: memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+ok 57 - memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+  ---
+  duration_ms: 18.2098
+  type: 'test'
+  ...
+# Subtest: SQL015 is reapplicable and exposes resource capability only to service_role
+ok 58 - SQL015 is reapplicable and exposes resource capability only to service_role
+  ---
+  duration_ms: 2245.8193
+  type: 'test'
+  ...
+# Subtest: SQL015 validates historical SQL014 receipts without rewriting legacy or progressed profiles on replay
+ok 59 - SQL015 validates historical SQL014 receipts without rewriting legacy or progressed profiles on replay
+  ---
+  duration_ms: 1972.6952
+  type: 'test'
+  ...
+# Subtest: SQL015 atomically commits resource profile, world state and exact receipt; replay survives
+ok 60 - SQL015 atomically commits resource profile, world state and exact receipt; replay survives
+  ---
+  duration_ms: 1700.5159
+  type: 'test'
+  ...
+# Subtest: SQL015 accepts strict craft/gather bounds and rejects malformed resource snapshots
+ok 61 - SQL015 accepts strict craft/gather bounds and rejects malformed resource snapshots
+  ---
+  duration_ms: 1976.6537
+  type: 'test'
+  ...
+# Subtest: ordinary economic writes preserve bootstrapped resources and saveWorld cannot erase or rewrite them
+ok 62 - ordinary economic writes preserve bootstrapped resources and saveWorld cannot erase or rewrite them
+  ---
+  duration_ms: 2079.7074
+  type: 'test'
+  ...
+# Subtest: memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+ok 63 - memory economic operation commits profile, world and immutable receipt together; exact replay is historical
+  ---
+  duration_ms: 29.2767
+  type: 'test'
+  ...
+# Subtest: client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+ok 64 - client operation IDs remain opaque strings and receipt UUID reuse requires the exact command
+  ---
+  duration_ms: 10.0256
+  type: 'test'
+  ...
+# Subtest: terminal gameplay denial receives a durable receipt without changing candidate snapshots
+ok 65 - terminal gameplay denial receives a durable receipt without changing candidate snapshots
+  ---
+  duration_ms: 11.9725
+  type: 'test'
+  ...
+# Subtest: community contribution uses the same profile, world and receipt authority
+ok 66 - community contribution uses the same profile, world and receipt authority
+  ---
+  duration_ms: 5.4931
+  type: 'test'
+  ...
+# Subtest: ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+ok 67 - ordinary world saves preserve committed community metadata while allowing unchanged snapshots
+  ---
+  duration_ms: 5.7547
+  type: 'test'
+  ...
+# Subtest: simultaneous economic commits using one profile and world baseline admit one winner
+ok 68 - simultaneous economic commits using one profile and world baseline admit one winner
+  ---
+  duration_ms: 7.8996
+  type: 'test'
+  ...
+# Subtest: stale profile or world CAS changes neither row and creates no receipt
+ok 69 - stale profile or world CAS changes neither row and creates no receipt
+  ---
+  duration_ms: 2.8992
+  type: 'test'
+  ...
+# Subtest: economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+ok 70 - economic UUIDs share memory receipt and pending-intent namespaces with other M5 families
+  ---
+  duration_ms: 11.2073
+  type: 'test'
+  ...
+# Subtest: economic snapshots cannot rewrite managed pearl ownership
+ok 71 - economic snapshots cannot rewrite managed pearl ownership
+  ---
+  duration_ms: 5.6042
+  type: 'test'
+  ...
+# Subtest: contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+ok 72 - contract rejects open commands, foreign ACK routing, noncanonical profiles and oversized snapshots
+  ---
+  duration_ms: 15.4173
+  type: 'test'
+  ...
+# Subtest: contract enforces the host contribution ceiling and exact client operation ID ACK
+ok 73 - contract enforces the host contribution ceiling and exact client operation ID ACK
+  ---
+  duration_ms: 1.1197
+  type: 'test'
+  ...
+# Subtest: memory ground-clock authority boundaries
+    # Subtest: simultaneous CAS attempts admit one winner and no losing receipt
+    ok 1 - simultaneous CAS attempts admit one winner and no losing receipt
+      ---
+      duration_ms: 3.8971
+      type: 'test'
+      ...
+    # Subtest: pearl: clock/receipt UUID collision is non-mutating in both directions
+    ok 2 - pearl: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 8.0171
+      type: 'test'
+      ...
+    # Subtest: ground: clock/receipt UUID collision is non-mutating in both directions
+    ok 3 - ground: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 1.1515
+      type: 'test'
+      ...
+    # Subtest: batch: clock/receipt UUID collision is non-mutating in both directions
+    ok 4 - batch: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 9.2057
+      type: 'test'
+      ...
+    # Subtest: death: clock/receipt UUID collision is non-mutating in both directions
+    ok 5 - death: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 18.1719
+      type: 'test'
+      ...
+    # Subtest: drop: clock/receipt UUID collision is non-mutating in both directions
+    ok 6 - drop: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 16.8301
+      type: 'test'
+      ...
+    # Subtest: checkpoint does not alter economy, profiles, drop state or source deadlines
+    ok 7 - checkpoint does not alter economy, profiles, drop state or source deadlines
+      ---
+      duration_ms: 10.1705
+      type: 'test'
+      ...
+    1..7
+ok 74 - memory ground-clock authority boundaries
+  ---
+  duration_ms: 69.5059
+  type: 'test'
+  ...
+# Subtest: SQL013 ground-clock authority boundaries
+    # Subtest: simultaneous CAS attempts admit one winner and no losing receipt
+    ok 1 - simultaneous CAS attempts admit one winner and no losing receipt
+      ---
+      duration_ms: 2589.5533
+      type: 'test'
+      ...
+    # Subtest: pearl: clock/receipt UUID collision is non-mutating in both directions
+    ok 2 - pearl: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 1860.8099
+      type: 'test'
+      ...
+    # Subtest: ground: clock/receipt UUID collision is non-mutating in both directions
+    ok 3 - ground: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 1937.6868
+      type: 'test'
+      ...
+    # Subtest: batch: clock/receipt UUID collision is non-mutating in both directions
+    ok 4 - batch: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 2252.7725
+      type: 'test'
+      ...
+    # Subtest: death: clock/receipt UUID collision is non-mutating in both directions
+    ok 5 - death: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 2432.7674
+      type: 'test'
+      ...
+    # Subtest: drop: clock/receipt UUID collision is non-mutating in both directions
+    ok 6 - drop: clock/receipt UUID collision is non-mutating in both directions
+      ---
+      duration_ms: 2380.7317
+      type: 'test'
+      ...
+    # Subtest: checkpoint does not alter economy, profiles, drop state or source deadlines
+    ok 7 - checkpoint does not alter economy, profiles, drop state or source deadlines
+      ---
+      duration_ms: 1716.333
+      type: 'test'
+      ...
+    1..7
+ok 75 - SQL013 ground-clock authority boundaries
+  ---
+  duration_ms: 15175.304
+  type: 'test'
+  ...
+# Subtest: SDK refuses hostile or invalid input before any RPC
+ok 76 - SDK refuses hostile or invalid input before any RPC
+  ---
+  duration_ms: 1.2319
+  type: 'test'
+  ...
+# Subtest: SDK rejects mismatched clock/results/receipts instead of accepting unbound success
+ok 77 - SDK rejects mismatched clock/results/receipts instead of accepting unbound success
+  ---
+  duration_ms: 1.919
+  type: 'test'
+  ...
+# Subtest: SQL013 grants no direct service writes and keeps guarded receipts immutable
+ok 78 - SQL013 grants no direct service writes and keeps guarded receipts immutable
+  ---
+  duration_ms: 1542.7101
+  type: 'test'
+  ...
+# Subtest: SQL013 rejects invalid JSON types/ranges without creating a row or receipt
+ok 79 - SQL013 rejects invalid JSON types/ranges without creating a row or receipt
+  ---
+  duration_ms: 1623.9729
+  type: 'test'
+  ...
+# Subtest: SQL013 permits the last safe version and refuses overflow without losing the checkpoint
+ok 80 - SQL013 permits the last safe version and refuses overflow without losing the checkpoint
+  ---
+  duration_ms: 1807.5754
+  type: 'test'
+  ...
+# Subtest: session resolves a lost SQL013 reply by read and reopens with a fresh local epoch
+ok 81 - session resolves a lost SQL013 reply by read and reopens with a fresh local epoch
+  ---
+  duration_ms: 4953.2641
+  type: 'test'
+  ...
+# Retained file-backed SQL fixture: C:\\Users\\xxajx\\AppData\\Local\\Temp\\clock-session-7EC65f\\db
+# Subtest: SQL absent receipt stays unresolved until explicit exact resume
+ok 82 - SQL absent receipt stays unresolved until explicit exact resume
+  ---
+  duration_ms: 1985.7016
+  type: 'test'
+  ...
+# Subtest: foreign SQL writer between startup reads fences instead of adopting an uncertain epoch
+ok 83 - foreign SQL writer between startup reads fences instead of adopting an uncertain epoch
+  ---
+  duration_ms: 2189.2185
+  type: 'test'
+  ...
+# Subtest: epoch preserves deadline boundaries without changing a simulation object
+ok 84 - epoch preserves deadline boundaries without changing a simulation object
+  ---
+  duration_ms: 2.3991
+  type: 'test'
+  ...
+# Subtest: session rejects a current receipt with changed expected tick despite an identical result
+ok 85 - session rejects a current receipt with changed expected tick despite an identical result
+  ---
+  duration_ms: 3.338
+  type: 'test'
+  ...
+# Subtest: session invalid DTO descriptors are rejected before callbacks or I/O
+ok 86 - session invalid DTO descriptors are rejected before callbacks or I/O
+  ---
+  duration_ms: 1.0275
+  type: 'test'
+  ...
+# Subtest: malformed write response stays ambiguous and is recovered from the exact durable receipt
+ok 87 - malformed write response stays ambiguous and is recovered from the exact durable receipt
+  ---
+  duration_ms: 1.4306
+  type: 'test'
+  ...
+# Subtest: missing attempted receipt with a competing clock fences before a resume can dispatch
+ok 88 - missing attempted receipt with a competing clock fences before a resume can dispatch
+  ---
+  duration_ms: 1.5716
+  type: 'test'
+  ...
+# Subtest: cancelled in-flight creation may commit storage but never publishes a local epoch
+ok 89 - cancelled in-flight creation may commit storage but never publishes a local epoch
+  ---
+  duration_ms: 0.7868
+  type: 'test'
+  ...
+# Subtest: epoch maps coordinates both ways, preserves overdue negative values, and detaches its anchor
+ok 90 - epoch maps coordinates both ways, preserves overdue negative values, and detaches its anchor
+  ---
+  duration_ms: 3.0188
+  type: 'test'
+  ...
+# Subtest: epoch rejects backwards input, unsafe coordinates, and mapped overflow as operation errors
+ok 91 - epoch rejects backwards input, unsafe coordinates, and mapped overflow as operation errors
+  ---
+  duration_ms: 1.4286
+  type: 'test'
+  ...
+# Subtest: stable explicit absence becomes missing and only then can initialize
+ok 92 - stable explicit absence becomes missing and only then can initialize
+  ---
+  duration_ms: 3.9645
+  type: 'test'
+  ...
+# Subtest: load requires the captured local tick at drain and publishes a stable loaded anchor
+ok 93 - load requires the captured local tick at drain and publishes a stable loaded anchor
+  ---
+  duration_ms: 1.5853
+  type: 'test'
+  ...
+# Subtest: logical tick maps from the anchor and cannot move backwards
+ok 94 - logical tick maps from the anchor and cannot move backwards
+  ---
+  duration_ms: 1.08
+  type: 'test'
+  ...
+# Subtest: unloaded, unresolved, and pending sessions do not expose a logical tick
+ok 95 - unloaded, unresolved, and pending sessions do not expose a logical tick
+  ---
+  duration_ms: 2.0158
+  type: 'test'
+  ...
+# Subtest: async checkpoint prepares only; the synchronous same-tick drain applies its clock
+ok 96 - async checkpoint prepares only; the synchronous same-tick drain applies its clock
+  ---
+  duration_ms: 2.2877
+  type: 'test'
+  ...
+# Subtest: checkpoint requires a strictly advancing durable target derived from local time
+ok 97 - checkpoint requires a strictly advancing durable target derived from local time
+  ---
+  duration_ms: 2.3289
+  type: 'test'
+  ...
+# Subtest: load preparation does not publish before drain and rejects local-tick drift
+ok 98 - load preparation does not publish before drain and rejects local-tick drift
+  ---
+  duration_ms: 1.5141
+  type: 'test'
+  ...
+# Subtest: lost commit reply enters unresolved and reconcile reads the receipt without resending
+ok 99 - lost commit reply enters unresolved and reconcile reads the receipt without resending
+  ---
+  duration_ms: 2.4996
+  type: 'test'
+  ...
+# Subtest: missing receipt preserves unresolved; resume resends the identical UUID request
+ok 100 - missing receipt preserves unresolved; resume resends the identical UUID request
+  ---
+  duration_ms: 2.7624
+  type: 'test'
+  ...
+# Subtest: a receipt whose current row moved is fenced instead of installing a stale anchor
+ok 101 - a receipt whose current row moved is fenced instead of installing a stale anchor
+  ---
+  duration_ms: 1.7001
+  type: 'test'
+  ...
+# Subtest: external CAS advance fences a fresh checkpoint attempt
+ok 102 - external CAS advance fences a fresh checkpoint attempt
+  ---
+  duration_ms: 1.0581
+  type: 'test'
+  ...
+# Subtest: receipt corruption and operation identity mismatch fence the session
+ok 103 - receipt corruption and operation identity mismatch fence the session
+  ---
+  duration_ms: 2.2559
+  type: 'test'
+  ...
+# Subtest: cancel during load is sticky and ignores late preparation
+ok 104 - cancel during load is sticky and ignores late preparation
+  ---
+  duration_ms: 0.7085
+  type: 'test'
+  ...
+# Subtest: ready sessions cannot be cancelled and continue to map logical time
+ok 105 - ready sessions cannot be cancelled and continue to map logical time
+  ---
+  duration_ms: 1.93
+  type: 'test'
+  ...
+# Subtest: SQL013 storage contract through Supabase SDK transport
+    # Subtest: creates explicitly, advances monotonically with both CAS values, and keeps worlds independent
+    ok 1 - creates explicitly, advances monotonically with both CAS values, and keeps worlds independent
+      ---
+      duration_ms: 3017.5091
+      type: 'test'
+      ...
+    # Subtest: replays immutable UUID receipts after later advances and rejects identity changes
+    ok 2 - replays immutable UUID receipts after later advances and rejects identity changes
+      ---
+      duration_ms: 2125.4204
+      type: 'test'
+      ...
+    # Subtest: lost response recovers from receipt without a second advance
+    ok 3 - lost response recovers from receipt without a second advance
+      ---
+      duration_ms: 1596.1578
+      type: 'test'
+      ...
+    # Subtest: rejects unsafe DTOs without mutation or callbacks and enforces numeric boundaries
+    ok 4 - rejects unsafe DTOs without mutation or callbacks and enforces numeric boundaries
+      ---
+      duration_ms: 1626.3204
+      type: 'test'
+      ...
+    # Subtest: shares operation UUIDs with pearl intents in both directions
+    ok 5 - shares operation UUIDs with pearl intents in both directions
+      ---
+      duration_ms: 1795.864
+      type: 'test'
+      ...
+    1..5
+ok 106 - SQL013 storage contract through Supabase SDK transport
+  ---
+  duration_ms: 10173.3901
+  type: 'test'
+  ...
+# Subtest: SQL013 binds exact RPC parameters and exposes only service-role access
+ok 107 - SQL013 binds exact RPC parameters and exposes only service-role access
+  ---
+  duration_ms: 2232.1817
+  type: 'test'
+  ...
+# Subtest: SQL013 rejects fractional JSON ticks atomically and rolls back failed writes
+ok 108 - SQL013 rejects fractional JSON ticks atomically and rolls back failed writes
+  ---
+  duration_ms: 2320.6079
+  type: 'test'
+  ...
+# Subtest: SQL013 clock and receipt survive file-backed PGlite close and reopen
+ok 109 - SQL013 clock and receipt survive file-backed PGlite close and reopen
+  ---
+  duration_ms: 5010.3128
+  type: 'test'
+  ...
+# Retained PGlite fixture: C:\\Users\\xxajx\\AppData\\Local\\Temp\\ground-clock-hdbf51\\db
+# Subtest: SQL013 migration remains idempotent when reapplied by its database owner
+ok 110 - SQL013 migration remains idempotent when reapplied by its database owner
+  ---
+  duration_ms: 1640.1185
+  type: 'test'
+  ...
+# Subtest: memory storage ground-clock contract
+    # Subtest: creates explicitly, advances monotonically with both CAS values, and keeps worlds independent
+    ok 1 - creates explicitly, advances monotonically with both CAS values, and keeps worlds independent
+      ---
+      duration_ms: 8.405
+      type: 'test'
+      ...
+    # Subtest: replays immutable UUID receipts after later advances and rejects identity changes
+    ok 2 - replays immutable UUID receipts after later advances and rejects identity changes
+      ---
+      duration_ms: 2.6648
+      type: 'test'
+      ...
+    # Subtest: lost response recovers from receipt without a second advance
+    ok 3 - lost response recovers from receipt without a second advance
+      ---
+      duration_ms: 1.3891
+      type: 'test'
+      ...
+    # Subtest: rejects unsafe DTOs without mutation or callbacks and enforces numeric boundaries
+    ok 4 - rejects unsafe DTOs without mutation or callbacks and enforces numeric boundaries
+      ---
+      duration_ms: 2.2711
+      type: 'test'
+      ...
+    # Subtest: shares operation UUIDs with pearl intents in both directions
+    ok 5 - shares operation UUIDs with pearl intents in both directions
+      ---
+      duration_ms: 55.1594
+      type: 'test'
+      ...
+    1..5
+ok 111 - memory storage ground-clock contract
+  ---
+  duration_ms: 73.0169
+  type: 'test'
+  ...
+# Subtest: checkpoint envelope accepts exact canonical input and binds its independent clock
+ok 112 - checkpoint envelope accepts exact canonical input and binds its independent clock
+  ---
+  duration_ms: 11.5361
+  type: 'test'
+  ...
+# Subtest: checkpoint permits a same-tick transaction without increasing the ground clock version
+ok 113 - checkpoint permits a same-tick transaction without increasing the ground clock version
+  ---
+  duration_ms: 3.1943
+  type: 'test'
+  ...
+# Subtest: ground family preserves its complete canonical SQL request and rejects fields it would otherwise drop
+ok 114 - ground family preserves its complete canonical SQL request and rejects fields it would otherwise drop
+  ---
+  duration_ms: 8.5755
+  type: 'test'
+  ...
+# Subtest: rejects unsafe JSON, noncanonical input, malformed envelopes, and oversized payloads
+ok 115 - rejects unsafe JSON, noncanonical input, malformed envelopes, and oversized payloads
+  ---
+  duration_ms: 38.343
+  type: 'test'
+  ...
+# Subtest: rejects invalid UUIDs, world identity, versions, clock ranges, and tick disagreement
+ok 116 - rejects invalid UUIDs, world identity, versions, clock ranges, and tick disagreement
+  ---
+  duration_ms: 16.4382
+  type: 'test'
+  ...
+# Subtest: result and receipt validation rejects changed bindings, replay, version, and family effects
+ok 117 - result and receipt validation rejects changed bindings, replay, version, and family effects
+  ---
+  duration_ms: 12.7501
+  type: 'test'
+  ...
+# Subtest: only the declared checkpoint effect is accepted for the checkpoint family
+ok 118 - only the declared checkpoint effect is accepted for the checkpoint family
+  ---
+  duration_ms: 2.9041
+  type: 'test'
+  ...
+# Subtest: prepared intent and all gameplay rows recover together after SIGKILL after-prepare
+ok 119 - prepared intent and all gameplay rows recover together after SIGKILL after-prepare
+  ---
+  duration_ms: 9230.8821
+  type: 'test'
+  ...
+# PGlite file-backed SQL001-019 process proof; no GameHost mounting, power loss or live VPS claim.
+# Subtest: prepared intent and all gameplay rows recover together after SIGKILL before-commit
+ok 120 - prepared intent and all gameplay rows recover together after SIGKILL before-commit
+  ---
+  duration_ms: 10709.9921
+  type: 'test'
+  ...
+# PGlite file-backed SQL001-019 process proof; no GameHost mounting, power loss or live VPS claim.
+# Subtest: prepared intent and all gameplay rows recover together after SIGKILL after-commit
+ok 121 - prepared intent and all gameplay rows recover together after SIGKILL after-commit
+  ---
+  duration_ms: 9105.3692
+  type: 'test'
+  ...
+# PGlite file-backed SQL001-019 process proof; no GameHost mounting, power loss or live VPS claim.
+# Subtest: SQL019 keeps a pending exact envelope across reopen and lists pending rows in UUID order
+ok 122 - SQL019 keeps a pending exact envelope across reopen and lists pending rows in UUID order
+  ---
+  duration_ms: 5354.2977
+  type: 'test'
+  ...
+# Subtest: SQL019 persists a commit when the response is lost, and retry returns its canonical receipt
+ok 123 - SQL019 persists a commit when the response is lost, and retry returns its canonical receipt
+  ---
+  duration_ms: 1828.7403
+  type: 'test'
+  ...
+# Subtest: SQL019 terminalizes a stale CAS without effects, releases the world, and admits the next intent
+ok 124 - SQL019 terminalizes a stale CAS without effects, releases the world, and admits the next intent
+  ---
+  duration_ms: 2378.7264
+  type: 'test'
+  ...
+# Subtest: SQL019 rolls every effect and receipt back if finalization fails, leaving the intent recoverable
+ok 125 - SQL019 rolls every effect and receipt back if finalization fails, leaving the intent recoverable
+  ---
+  duration_ms: 2441.3033
+  type: 'test'
+  ...
+# Subtest: SQL019 immutable identities, terminal results, namespace reservation, and world-scoped pending limit
+ok 126 - SQL019 immutable identities, terminal results, namespace reservation, and world-scoped pending limit
+  ---
+  duration_ms: 2730.8766
+  type: 'test'
+  ...
+# Subtest: SQL019 reapply is safe and all intent RPCs and tables remain service-only
+ok 127 - SQL019 reapply is safe and all intent RPCs and tables remain service-only
+  ---
+  duration_ms: 2145.6303
+  type: 'test'
+  ...
+# Subtest: SQL019 permits sequential same-tick intents to reuse the current clock receipt
+ok 128 - SQL019 permits sequential same-tick intents to reuse the current clock receipt
+  ---
+  duration_ms: 1849.0167
+  type: 'test'
+  ...
+# Subtest: SQL019 allows the current receipt from a prior advancing intent as the next same-tick clock
+ok 129 - SQL019 allows the current receipt from a prior advancing intent as the next same-tick clock
+  ---
+  duration_ms: 2035.0504
+  type: 'test'
+  ...
+# Subtest: SQL019 retains SQL018 legacy collision guards for old transaction and clock identities
+ok 130 - SQL019 retains SQL018 legacy collision guards for old transaction and clock identities
+  ---
+  duration_ms: 2480.3561
+  type: 'test'
+  ...
+# Subtest: SQL019 recovers an exact pending envelope before session world load, then accepts same-tick begin after lost reply
+ok 131 - SQL019 recovers an exact pending envelope before session world load, then accepts same-tick begin after lost reply
+  ---
+  duration_ms: 1950.8283
+  type: 'test'
+  ...
+# Subtest: SQL019 preserves standalone legacy pearl writes and blocks both UUIDs reserved by a pending intent
+ok 132 - SQL019 preserves standalone legacy pearl writes and blocks both UUIDs reserved by a pending intent
+  ---
+  duration_ms: 1545.4363
+  type: 'test'
+  ...
+# Subtest: SQL019 admits exact nested pearl mint and pickup receipts and commits each final journal row atomically
+ok 133 - SQL019 admits exact nested pearl mint and pickup receipts and commits each final journal row atomically
+  ---
+  duration_ms: 1821.5005
+  type: 'test'
+  ...
+# Subtest: journal DTO rejects unknown fields, getters, interim states and mismatched terminal results
+ok 134 - journal DTO rejects unknown fields, getters, interim states and mismatched terminal results
+  ---
+  duration_ms: 25.3246
+  type: 'test'
+  ...
+# Subtest: Supabase adapter validates exact identity, scoped ordered pages and scrubs provider errors
+ok 135 - Supabase adapter validates exact identity, scoped ordered pages and scrubs provider errors
+  ---
+  duration_ms: 18.7717
+  type: 'test'
+  ...
+# Subtest: begin persists intent before dispatch and adopts committed metadata only at the captured drain
+ok 136 - begin persists intent before dispatch and adopts committed metadata only at the captured drain
+  ---
+  duration_ms: 22.4465
+  type: 'test'
+  ...
+# Subtest: lost prepare and commit replies recover exact identity with one gameplay commit
+ok 137 - lost prepare and commit replies recover exact identity with one gameplay commit
+  ---
+  duration_ms: 19.0586
+  type: 'test'
+  ...
+# Subtest: unavailable preparation never dispatches gameplay and reconcile retains the original request
+ok 138 - unavailable preparation never dispatches gameplay and reconcile retains the original request
+  ---
+  duration_ms: 19.986
+  type: 'test'
+  ...
+# Subtest: cancel during preparation prevents dispatch, retains recovery evidence and settle waits for I/O
+ok 139 - cancel during preparation prevents dispatch, retains recovery evidence and settle waits for I/O
+  ---
+  duration_ms: 9.4024
+  type: 'test'
+  ...
+# Subtest: startup resolves pre-commit intent then loads current rows without applying historical effects
+ok 140 - startup resolves pre-commit intent then loads current rows without applying historical effects
+  ---
+  duration_ms: 17.6969
+  type: 'test'
+  ...
+# Subtest: startup after committed intent loads current rows and never resends the historical transaction
+ok 141 - startup after committed intent loads current rows and never resends the historical transaction
+  ---
+  duration_ms: 5.9391
+  type: 'test'
+  ...
+# Subtest: unknown recovery holds startup closed; cancelling its in-flight commit cannot adopt late state
+ok 142 - unknown recovery holds startup closed; cancelling its in-flight commit cannot adopt late state
+  ---
+  duration_ms: 10.9538
+  type: 'test'
+  ...
+# Subtest: an incompatible final journal result cannot reach the synchronous apply boundary
+ok 143 - an incompatible final journal result cannot reach the synchronous apply boundary
+  ---
+  duration_ms: 24.1409
+  type: 'test'
+  ...
+# Subtest: reconcile retains unresolved state if verifying a committed receipt loses the journal reply
+ok 144 - reconcile retains unresolved state if verifying a committed receipt loses the journal reply
+  ---
+  duration_ms: 38.0185
+  type: 'test'
+  ...
+# Subtest: startup records terminal conflicts without effects and reloads current rows; live conflicts fence
+ok 145 - startup records terminal conflicts without effects and reloads current rows; live conflicts fence
+  ---
+  duration_ms: 29.2623
+  type: 'test'
+  ...
+# Subtest: clock, pearl, profile, world and receipts recover together after SIGKILL before-commit
+ok 146 - clock, pearl, profile, world and receipts recover together after SIGKILL before-commit
+  ---
+  duration_ms: 10074.6422
+  type: 'test'
+  ...
+# PGlite file-backed SQL001-018 process proof; no GameHost mounting, power loss or live VPS claim.
+# Subtest: clock, pearl, profile, world and receipts recover together after SIGKILL after-commit
+ok 147 - clock, pearl, profile, world and receipts recover together after SIGKILL after-commit
+  ---
+  duration_ms: 8871.2894
+  type: 'test'
+  ...
+# PGlite file-backed SQL001-018 process proof; no GameHost mounting, power loss or live VPS claim.
+# Subtest: load prepares a stable existing world and adopts its verified clock only at drain
+ok 148 - load prepares a stable existing world and adopts its verified clock only at drain
+  ---
+  duration_ms: 11.6007
+  type: 'test'
+  ...
+# Subtest: load rejects unstable worlds and missing durable clocks without adopting defaults
+ok 149 - load rejects unstable worlds and missing durable clocks without adopting defaults
+  ---
+  duration_ms: 7.8005
+  type: 'test'
+  ...
+# Subtest: cancel during load fences late preparation and settle waits for the load I/O
+ok 150 - cancel during load fences late preparation and settle waits for the load I/O
+  ---
+  duration_ms: 0.7903
+  type: 'test'
+  ...
+# Subtest: durable tick mapping pauses across a large offline gap and advances only with local ticks
+ok 151 - durable tick mapping pauses across a large offline gap and advances only with local ticks
+  ---
+  duration_ms: 3.5107
+  type: 'test'
+  ...
+# Subtest: checkpoint can advance a safe integer tick above 32 bits and updates clock only at drain
+ok 152 - checkpoint can advance a safe integer tick above 32 bits and updates clock only at drain
+  ---
+  duration_ms: 9.1175
+  type: 'test'
+  ...
+# Subtest: one owner is retained for a store and world for the entire session lifetime
+ok 153 - one owner is retained for a store and world for the entire session lifetime
+  ---
+  duration_ms: 0.7801
+  type: 'test'
+  ...
+# Subtest: operation input is captured, no gameplay apply occurs before synchronous drain, and same-tick ID is retained
+ok 154 - operation input is captured, no gameplay apply occurs before synchronous drain, and same-tick ID is retained
+  ---
+  duration_ms: 9.6766
+  type: 'test'
+  ...
+# Subtest: same durable tick requires the current clock operation UUID
+ok 155 - same durable tick requires the current clock operation UUID
+  ---
+  duration_ms: 5.6481
+  type: 'test'
+  ...
+# Subtest: begin snapshots the exact top-level input without invoking getters or accepting extras
+ok 156 - begin snapshots the exact top-level input without invoking getters or accepting extras
+  ---
+  duration_ms: 6.5718
+  type: 'test'
+  ...
+# Subtest: lost response recovers from an exact receipt and never repeats the commit
+ok 157 - lost response recovers from an exact receipt and never repeats the commit
+  ---
+  duration_ms: 12.0096
+  type: 'test'
+  ...
+# Subtest: unknown outcome remains unresolved and reconcile resends the same request ID and payload
+ok 158 - unknown outcome remains unresolved and reconcile resends the same request ID and payload
+  ---
+  duration_ms: 7.0167
+  type: 'test'
+  ...
+# Subtest: reconcile keeps unknown retry failures unresolved and fences a definite conflict
+ok 159 - reconcile keeps unknown retry failures unresolved and fences a definite conflict
+  ---
+  duration_ms: 14.2368
+  type: 'test'
+  ...
+# Subtest: reconcile fences a malformed receipt and cancel keeps settle waiting for in-flight reconciliation
+ok 160 - reconcile fences a malformed receipt and cancel keeps settle waiting for in-flight reconciliation
+  ---
+  duration_ms: 11.8751
+  type: 'test'
+  ...
+# Subtest: cancel fences late I/O and apply failures fence the session
+ok 161 - cancel fences late I/O and apply failures fence the session
+  ---
+  duration_ms: 12.4157
+  type: 'test'
+  ...
+# Subtest: async apply callback is rejected and fences after exactly one callback invocation
+ok 162 - async apply callback is rejected and fences after exactly one callback invocation
+  ---
+  duration_ms: 7.2144
+  type: 'test'
+  ...
+# Subtest: SQL018 readiness is service-only and resource gather/craft share the durable clock transaction
+ok 163 - SQL018 readiness is service-only and resource gather/craft share the durable clock transaction
+  ---
+  duration_ms: 3278.6347
+  type: 'test'
+  ...
+# Subtest: pearl mint and pickup commit with clock, immutable replay, and no duplicate legacy receipt promotion
+ok 164 - pearl mint and pickup commit with clock, immutable replay, and no duplicate legacy receipt promotion
+  ---
+  duration_ms: 1877.6632
+  type: 'test'
+  ...
+# Subtest: world CAS, clock CAS and a post-effect SQL failure roll every family write back
+ok 165 - world CAS, clock CAS and a post-effect SQL failure roll every family write back
+  ---
+  duration_ms: 1738.3461
+  type: 'test'
+  ...
+# Subtest: whole death and death-drop pickup share one transaction family with the same world clock
+ok 166 - whole death and death-drop pickup share one transaction family with the same world clock
+  ---
+  duration_ms: 1834.341
+  type: 'test'
+  ...
+# Subtest: SQL018 reapply, v1/v2 resource and logging snapshots, and lost response survive reopen
+ok 167 - SQL018 reapply, v1/v2 resource and logging snapshots, and lost response survive reopen
+  ---
+  duration_ms: 4344.0152
+  type: 'test'
+  ...
+# Subtest: SQL018 rejects NULL payloads and refuses to overwrite a corrupt current world snapshot
+ok 168 - SQL018 rejects NULL payloads and refuses to overwrite a corrupt current world snapshot
+  ---
+  duration_ms: 1522.3467
+  type: 'test'
+  ...
+# Subtest: new and legacy profiles sanitize utility tools into bounded integer slots
+ok 169 - new and legacy profiles sanitize utility tools into bounded integer slots
+  ---
+  duration_ms: 6.787
+  type: 'test'
+  ...
+# Subtest: tool crafting commits pack, unique belt slot, trade revision, and save preflight atomically
+ok 170 - tool crafting commits pack, unique belt slot, trade revision, and save preflight atomically
+  ---
+  duration_ms: 8.38
+  type: 'test'
+  ...
+# Subtest: rock final yield preflight failure and replay leave node, inventory, and fresh-hit events atomic
+ok 171 - rock final yield preflight failure and replay leave node, inventory, and fresh-hit events atomic
+  ---
+  duration_ms: 2.4079
+  type: 'test'
+  ...
+# Subtest: both mining kinds require a pickaxe, reserve the entire yield, and reset progress on tick regrowth
+ok 172 - both mining kinds require a pickaxe, reserve the entire yield, and reset progress on tick regrowth
+  ---
+  duration_ms: 6.0567
+  type: 'test'
+  ...
+# Subtest: empty signed guest must bootstrap materials, craft both tools, then save and rejoin with raw ore
+ok 173 - empty signed guest must bootstrap materials, craft both tools, then save and rejoin with raw ore
+  ---
+  duration_ms: 1293.5976
+  type: 'test'
+  ...
+# Subtest: unowned tool recipes and resource commands reject forged tiers, counts, and extra authority fields
+ok 174 - unowned tool recipes and resource commands reject forged tiers, counts, and extra authority fields
+  ---
+  duration_ms: 487.8511
+  type: 'test'
+  ...
+# Subtest: SQL016 keeps SQL014 and SQL015 receipts byte-stable across upgrade and reapply
+ok 175 - SQL016 keeps SQL014 and SQL015 receipts byte-stable across upgrade and reapply
+  ---
+  duration_ms: 2533.2182
+  type: 'test'
+  ...
+# Subtest: SQL016 commits generated exact 4/3/3 awards, caps practice, and preserves pilot v2 fields
+ok 176 - SQL016 commits generated exact 4/3/3 awards, caps practice, and preserves pilot v2 fields
+  ---
+  duration_ms: 3251.6472
+  type: 'test'
+  ...
+# Subtest: legacy absent progression survives partial, denied, and expired null-ledger palm requests
+ok 177 - legacy absent progression survives partial, denied, and expired null-ledger palm requests
+  ---
+  duration_ms: 1495.4484
+  type: 'test'
+  ...
+# Subtest: forged awards, omitted contributors, fresh operation reuse, and downgrade saves leave rows untouched
+ok 178 - forged awards, omitted contributors, fresh operation reuse, and downgrade saves leave rows untouched
+  ---
+  duration_ms: 1654.5815
+  type: 'test'
+  ...
+# Subtest: a v1 to v2 adoption cannot be smuggled through an economic receipt
+ok 179 - a v1 to v2 adoption cannot be smuggled through an economic receipt
+  ---
+  duration_ms: 1602.7623
+  type: 'test'
+  ...
+# Subtest: an economic receipt cannot introduce v2 resources into a world without a resource baseline
+ok 180 - an economic receipt cannot introduce v2 resources into a world without a resource baseline
+  ---
+  duration_ms: 1827.3584
+  type: 'test'
+  ...
+# Subtest: SQL016 reapplication and readiness RPC preserve the service-only boundary
+ok 181 - SQL016 reapplication and readiness RPC preserve the service-only boundary
+  ---
+  duration_ms: 2475.0043
+  type: 'test'
+  ...
+# Subtest: v1 adoption preserves existing state and v2 save cannot erase or rewrite its ledger
+ok 182 - v1 adoption preserves existing state and v2 save cannot erase or rewrite its ledger
+  ---
+  duration_ms: 1728.1279
+  type: 'test'
+  ...
+# Subtest: one logging receipt CAS commits the finisher and offline contributor profiles with the world
+ok 183 - one logging receipt CAS commits the finisher and offline contributor profiles with the world
+  ---
+  duration_ms: 1474.9562
+  type: 'test'
+  ...
+# Subtest: beneficiaries must be sorted and non-actors may change only progression
+ok 184 - beneficiaries must be sorted and non-actors may change only progression
+  ---
+  duration_ms: 1456.5997
+  type: 'test'
+  ...
+# Subtest: renders every carried good, volume, mass, and tier-one utility tools
+ok 185 - renders every carried good, volume, mass, and tier-one utility tools
+  ---
+  duration_ms: 2.1919
+  type: 'test'
+  ...
+# Subtest: lists all catalog goods with positive counts and marks pending presentation quantities
+ok 186 - lists all catalog goods with positive counts and marks pending presentation quantities
+  ---
+  duration_ms: 1.5006
+  type: 'test'
+  ...
+# Subtest: supports English labels and a projected pack without changing saved inventory
+ok 187 - supports English labels and a projected pack without changing saved inventory
+  ---
+  duration_ms: 0.3778
+  type: 'test'
+  ...
+# Subtest: empty packs and unowned tools have localized empty states
+ok 188 - empty packs and unowned tools have localized empty states
+  ---
+  duration_ms: 0.1825
+  type: 'test'
+  ...
+# Subtest: condition serialization retains stable piece identities, HP and a monotonic next ID across refits
+ok 189 - condition serialization retains stable piece identities, HP and a monotonic next ID across refits
+  ---
+  duration_ms: 5.521
+  type: 'test'
+  ...
+# Subtest: legacy condition restores healthy generated IDs; present malformed condition fails damaged pieces closed
+ok 190 - legacy condition restores healthy generated IDs; present malformed condition fails damaged pieces closed
+  ---
+  duration_ms: 0.5543
+  type: 'test'
+  ...
+# Subtest: signed save restart restores away pose and condition without moving the player or activating a pilot body
+ok 191 - signed save restart restores away pose and condition without moving the player or activating a pilot body
+  ---
+  duration_ms: 1513.1607
+  type: 'test'
+  ...
+# Subtest: wrong-seed, unsafe and colliding voyage poses fall back to the dock while retaining condition and cargo
+ok 192 - wrong-seed, unsafe and colliding voyage poses fall back to the dock while retaining condition and cargo
+  ---
+  duration_ms: 1961.9317
+  type: 'test'
+  ...
+# Subtest: profile sanitizer defaults legacy voyage/condition and ignores client attempts to set live HP or pose
+ok 193 - profile sanitizer defaults legacy voyage/condition and ignores client attempts to set live HP or pose
+  ---
+  duration_ms: 409.6698
+  type: 'test'
+  ...
+# Subtest: recovered raft recall rejects remote requests, then recalls at the dock and clears voyage without healing or losing cargo
+ok 194 - recovered raft recall rejects remote requests, then recalls at the dock and clears voyage without healing or losing cargo
+  ---
+  duration_ms: 664.7341
+  type: 'test'
+  ...
+# Subtest: recovered shore reboard starts a fresh stationary helm authority and rejects the inactive epoch
+ok 195 - recovered shore reboard starts a fresh stationary helm authority and rejects the inactive epoch
+  ---
+  duration_ms: 707.0015
+  type: 'test'
+  ...
+# Subtest: mounting a docked raft without movement and disconnecting stays docked without recovery
+ok 196 - mounting a docked raft without movement and disconnecting stays docked without recovery
+  ---
+  duration_ms: 637.1734
+  type: 'test'
+  ...
+# Subtest: a persisted zero-float wreck returns at its dock with zero HP and the same IDs, then can be repaired
+ok 197 - a persisted zero-float wreck returns at its dock with zero HP and the same IDs, then can be repaired
+  ---
+  duration_ms: 904.317
+  type: 'test'
+  ...
+# Subtest: a blocked simulation tick cannot save queued but uncommitted raft damage
+ok 198 - a blocked simulation tick cannot save queued but uncommitted raft damage
+  ---
+  duration_ms: 432.4152
+  type: 'test'
+  ...
+# Subtest: GameHost account close and restart restores the memory-store raft snapshot
+ok 199 - GameHost account close and restart restores the memory-store raft snapshot
+  ---
+  duration_ms: 687.9072
+  type: 'test'
+  ...
+# Subtest: account memory store reopens the same persisted boat and rejects a stale profile CAS
+ok 200 - account memory store reopens the same persisted boat and rejects a stale profile CAS
+  ---
+  duration_ms: 1.87
+  type: 'test'
+  ...
+# Subtest: collection feels immediate at 500ms RTT without changing saved or simulation inventory
+ok 201 - collection feels immediate at 500ms RTT without changing saved or simulation inventory
+  ---
+  duration_ms: 3.2569
+  type: 'test'
+  ...
+# Subtest: different nodes can be collected while the first response is delayed; the same node cannot
+ok 202 - different nodes can be collected while the first response is delayed; the same node cannot
+  ---
+  duration_ms: 0.4374
+  type: 'test'
+  ...
+# Subtest: a denial restores the world view and inventory while preserving unrelated confirmed goods
+ok 203 - a denial restores the world view and inventory while preserving unrelated confirmed goods
+  ---
+  duration_ms: 0.302
+  type: 'test'
+  ...
+# Subtest: a lost response rolls back only the preview and retries the exact receipt without new feedback
+ok 204 - a lost response rolls back only the preview and retries the exact receipt without new feedback
+  ---
+  duration_ms: 0.3231
+  type: 'test'
+  ...
+# Subtest: tool swings respond locally but only the server grants final harvest materials
+ok 205 - tool swings respond locally but only the server grants final harvest materials
+  ---
+  duration_ms: 0.439
+  type: 'test'
+  ...
+# Subtest: full bags, send failures and disconnects leave no speculative materials
+ok 206 - full bags, send failures and disconnects leave no speculative materials
+  ---
+  duration_ms: 1.0564
+  type: 'test'
+  ...
+# Subtest: pending collections stay bounded and block crafting with a stale canonical revision
+ok 207 - pending collections stay bounded and block crafting with a stale canonical revision
+  ---
+  duration_ms: 0.4361
+  type: 'test'
+  ...
+# Subtest: legacy acknowledgements and PROFILE-before-ACK reconcile without granting a second copy
+ok 208 - legacy acknowledgements and PROFILE-before-ACK reconcile without granting a second copy
+  ---
+  duration_ms: 0.3012
+  type: 'test'
+  ...
+# Subtest: confirmed collections stay visible while canonical updates are late
+ok 209 - confirmed collections stay visible while canonical updates are late
+  ---
+  duration_ms: 0.1983
+  type: 'test'
+  ...
+# Subtest: a successful late acknowledgement restores its preview until canonical updates arrive
+ok 210 - a successful late acknowledgement restores its preview until canonical updates arrive
+  ---
+  duration_ms: 0.2771
+  type: 'test'
+  ...
+# Subtest: /health, /status and only the client files are served
+ok 211 - /health, /status and only the client files are served
+  ---
+  duration_ms: 630.8715
+  type: 'test'
+  ...
+# Subtest: two players join the same island, see each other move, and leaving despawns
+ok 212 - two players join the same island, see each other move, and leaving despawns
+  ---
+  duration_ms: 1754.0436
+  type: 'test'
+  ...
+# Subtest: a full instance and a wrong protocol version are refused politely
+ok 213 - a full instance and a wrong protocol version are refused politely
+  ---
+  duration_ms: 464.3233
+  type: 'test'
+  ...
+# Subtest: junk does not hurt the server: malformed messages close only that socket
+ok 214 - junk does not hurt the server: malformed messages close only that socket
+  ---
+  duration_ms: 753.2569
+  type: 'test'
+  ...
+# Subtest: names are cleaned: control characters, markup and length
+ok 215 - names are cleaned: control characters, markup and length
+  ---
+  duration_ms: 551.9263
+  type: 'test'
+  ...
+# Subtest: default signed saves restore and spoofed account fields never create stored profiles
+ok 216 - default signed saves restore and spoofed account fields never create stored profiles
+  ---
+  duration_ms: 571.3867
+  type: 'test'
+  ...
+# Subtest: trusted account profile loads before WELCOME and overrides an older signed save
+ok 217 - trusted account profile loads before WELCOME and overrides an older signed save
+  ---
+  duration_ms: 520.4667
+  type: 'test'
+  ...
+# Subtest: null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+ok 218 - null identity keeps signed anonymous saves; resolver errors fail closed without secrets
+  ---
+  duration_ms: 795.9699
+  type: 'test'
+  ...
+# Subtest: identity verifier gets request context without retained credential headers
+ok 219 - identity verifier gets request context without retained credential headers
+  ---
+  duration_ms: 564.2292
+  type: 'test'
+  ...
+# Subtest: duplicate HELLO and pending admission respect capacity, then release it on close
+ok 220 - duplicate HELLO and pending admission respect capacity, then release it on close
+  ---
+  duration_ms: 364.148
+  type: 'test'
+  ...
+# Subtest: same account has one authority and remains reserved through its final write
+ok 221 - same account has one authority and remains reserved through its final write
+  ---
+  duration_ms: 384.2953
+  type: 'test'
+  ...
+# Subtest: close cancels an unresolved load and shutdown does not wait for a stuck resolver
+ok 222 - close cancels an unresolved load and shutdown does not wait for a stuck resolver
+  ---
+  duration_ms: 1098.2497
+  type: 'test'
+  ...
+# Subtest: write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+ok 223 - write snapshots are isolated and serialized; shutdown awaits the final ECS/profile state
+  ---
+  duration_ms: 398.0995
+  type: 'test'
+  ...
+# Subtest: CAS conflict fences the session and reports failed shutdown without overwriting newer state
+ok 224 - CAS conflict fences the session and reports failed shutdown without overwriting newer state
+  ---
+  duration_ms: 332.1363
+  type: 'test'
+  ...
+# Subtest: join timeout releases capacity and unavailable stores never admit an empty replacement
+ok 225 - join timeout releases capacity and unavailable stores never admit an empty replacement
+  ---
+  duration_ms: 604.5074
+  type: 'test'
+  ...
+# Subtest: real WebSocket account path saves on shutdown and loads across two host instances
+ok 226 - real WebSocket account path saves on shutdown and loads across two host instances
+  ---
+  duration_ms: 905.7336
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 227 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 600.4224
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 228 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 699.0786
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 229 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 360.3494
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 230 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 457.2929
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 231 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 516.04
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 232 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 396.8058
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 233 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 343.9192
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 234 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 345.9199
+  type: 'test'
+  ...
+# Subtest: creation is persisted before readiness and restores zero-hour economy state and its next deterministic advance
+ok 235 - creation is persisted before readiness and restores zero-hour economy state and its next deterministic advance
+  ---
+  duration_ms: 9.7097
+  type: 'test'
+  ...
+# Subtest: save snapshots are detached before provider awaits and slow writes coalesce to the latest state
+ok 236 - save snapshots are detached before provider awaits and slow writes coalesce to the latest state
+  ---
+  duration_ms: 2.9806
+  type: 'test'
+  ...
+# Subtest: GameHost.prepare preserves the live owner-profile upkeep callback after restore
+ok 237 - GameHost.prepare preserves the live owner-profile upkeep callback after restore
+  ---
+  duration_ms: 573.0893
+  type: 'test'
+  ...
+# Subtest: GameHost.prepare restores economy time with active raft production still connected
+ok 238 - GameHost.prepare restores economy time with active raft production still connected
+  ---
+  duration_ms: 445.3716
+  type: 'test'
+  ...
+# Subtest: load corruption, seed mismatch and provider failure never create an empty replacement
+ok 239 - load corruption, seed mismatch and provider failure never create an empty replacement
+  ---
+  duration_ms: 1.7426
+  type: 'test'
+  ...
+# Subtest: world ID and autosave interval defaults are stable and invalid configuration is rejected
+ok 240 - world ID and autosave interval defaults are stable and invalid configuration is rejected
+  ---
+  duration_ms: 0.3428
+  type: 'test'
+  ...
+# Subtest: first-write conflict and ambiguous provider result fence the world without retrying over newer state
+ok 241 - first-write conflict and ambiguous provider result fence the world without retrying over newer state
+  ---
+  duration_ms: 0.7541
+  type: 'test'
+  ...
+# Subtest: a provider error after its CAS commit fences future writes and leaves the committed generation intact
+ok 242 - a provider error after its CAS commit fences future writes and leaves the committed generation intact
+  ---
+  duration_ms: 1.0089
+  type: 'test'
+  ...
+1..242
+# tests 266
+# suites 0
+# pass 266
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 67397.0788
