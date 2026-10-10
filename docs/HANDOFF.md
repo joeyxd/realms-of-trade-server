@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
+[preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión y navegador local 41/41; aceptación pública pendiente.
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
 **AREA17, 2026-10-10 — evaluación Inference Center/Hermes, solo documentación:**
 [propuesta de arquitectura](briefs/l03d-inference-center.md). Adaptar Nitro sin Nango a conexiones/modelos
 por cuenta y ficha del compañero; API acotada recomendada primero, conexión local opcional después.

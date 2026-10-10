@@ -8,6 +8,7 @@ import { createGameServer } from '../server/index.mjs';
 import { GAME } from '../src/data/meta.js';
 import { runGm02Checks } from './qa-gm02-checks.mjs';
 import { runGm03Checks } from './qa-gm03-checks.mjs';
+import { runGmPreparationChecks } from './qa-gm-preparation-checks.mjs';
 
 const root = resolve('.');
 const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm03a');
@@ -184,6 +185,7 @@ try {
   });
   await runGm02Checks({ page, check, shot, game });
   await runGm03Checks({ page, context, browser, setup, ready, origin, game, check, shot, out });
+  evidence.gm03b1 = await runGmPreparationChecks({ page, origin, check, shot, out });
   await page.locator('[data-action="duplicate"]').click();
   assert.equal(await page.evaluate(() => __mn.gmEditor.history.current().objects.length), 2);
   await page.locator('[data-action="delete"]').click();

@@ -1,5 +1,13 @@
 # Continuidad de servidor — AREA15
 
+**GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
+[preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión y navegador local 41/41; aceptación pública pendiente.
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
 **AREA03 PRG01c, código publicado, mecánica apagada:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
 Recibo económico con baseline de perfil exacto para aprender/colocar/retirar storage; coste, cargo,
 condición e IDs conservados. 114/114 integradas y 32 checks de navegador. Nueva migración SQL021

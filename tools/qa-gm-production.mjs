@@ -6,6 +6,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { GAME } from '../src/data/meta.js';
 import { runGm03ProductionChecks } from './qa-gm03-production-checks.mjs';
+import { runGmPreparationChecks } from './qa-gm-preparation-checks.mjs';
 const origin = 'https://marea.62.171.136.148.sslip.io';
 const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm03a');
 await mkdir(out, { recursive: true });
@@ -206,6 +207,9 @@ try {
     await runGm03ProductionChecks({ gmPage, browser, origin, out, evidence });
     assert.deepEqual(evidence.gm03a.errors, []);
     assert.equal(evidence.gm03a.remoteRestore.status, 'restored');
+    evidence.gm03b1 = await runGmPreparationChecks({ page: gmPage, origin, out,
+      check: async (name, fn) => { await fn(); evidence.checks.push(name); },
+      shot: async (page, name) => { await page.screenshot({ path: resolve(out, 'production-' + name) }); } });
 
     const walkCamera = await gmPage.evaluate((id) => {
       const editor = __mn.gmEditor, record = editor.records.get(id), point = record.root.position;

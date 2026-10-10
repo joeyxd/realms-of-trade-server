@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
+[preparar revisión](docs/delivery/gm03b1/DELIVERY.md), [contrato](docs/briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión y navegador local 41/41; aceptación pública pendiente.
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
 **AREA03 PRG01c, código publicado 2026-10-10:** [artesano/Bodega](docs/delivery/prg01c-artisan.md), alpha.29/protocolo 41.
 Lección personal tras Tala y carpintería, colocación/retiro de Bodega por recibo M5 exacto, sin otro
 writer. 114/114 integración, 107/107 release con solapamiento y 32 checks UI ES/EN/banco existente.
