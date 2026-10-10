@@ -78,12 +78,16 @@ export class NavalDeckPrediction {
     try {
       state = deepFreeze(clone(snapshot.state));
       parts = deepFreeze(clone(snapshot.parts));
-      params = deepFreeze({ speed: snapshot.params.speed, radius: snapshot.params.radius });
+      params = deepFreeze({ speed: snapshot.params.speed, radius: snapshot.params.radius,
+        openDoors: clone(snapshot.params.openDoors || []) });
       // Validate nested deck data through the same deterministic engine used for prediction.
       this.engine.step(state, neutralAxes, parts, params);
     } catch { return 'rejected'; }
 
-    if (!newEpoch && snapshot.epoch === this.epoch && snapshot.ack === this.ack && snapshot.tick === this.authorityTick)
+    // A door can change between ticks without changing the rig or the deck membership epoch.
+    // Reconcile outstanding inputs against the new collision data even with the same tick/ACK.
+    if (!newEpoch && snapshot.epoch === this.epoch && snapshot.ack === this.ack && snapshot.tick === this.authorityTick &&
+        JSON.stringify(parts) === JSON.stringify(this.parts) && JSON.stringify(params) === JSON.stringify(this.params))
       return 'duplicate';
 
     const previous = newEpoch || !this.state ? wrapState(state) : wrapState(this.state);

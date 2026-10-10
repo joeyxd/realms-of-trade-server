@@ -13,6 +13,20 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA07 RNV01 (2026-10-10), **alpha.24/protocolo 37**: [refugio naval](docs/delivery/rnv01-naval-refuge.md),
+  techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
+  del dueño. Editor de once piezas; coste/HP existentes, visitantes sin cerradura y vista interior.
+  516 pruebas tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas.
+  Activo en VPS `29a9e46`, sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo
+  comprobados; evidencia/límites en la entrega. Sigue farol, luego noche oscura.
+
+- AREA03 PRG01b2 (2026-10-10), **corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37**: [Tala cooperativa](docs/delivery/prg01b2-logging.md)
+  integra práctica proporcional, beneficiarios offline, nodo, troncos y recibo en la misma M5.
+  Primer hito 60, cadencia 54→45 desde el siguiente golpe y ficha ES/EN. SQL016 y flag opt-in;
+  publicado en runtime `56e4345` sano, imagen 107/107 y smoke público 6/6 con entrada WSS (19:19 UTC).
+  SQL016 pendiente y Tala apagada. 230 pruebas integradas y ocho comprobaciones visuales; evidencia en
+  la entrega. Sigue activar/aceptar Tala y después artesano/bodega PRG01c.
+
 - AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
   primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
   Reutiliza CAS M5 y distingue aprendizaje local/pendiente/confirmado; sin SQL ni premio repetible.

@@ -11,7 +11,7 @@ import { canonicalText } from './pearlOperations.mjs';
 import { communityAccess, draftCommunity, publicCommunity } from './communityProject.mjs';
 import { StoreError } from './store.mjs';
 import { CRAFT_RECIPES, HARVEST } from '../src/data/resources.js';
-import { draftResource, applyResource } from './resourceState.mjs';
+import { draftResource, applyResource, loggingAccounts } from './resourceState.mjs';
 
 const clone = structuredClone;
 const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -144,9 +144,20 @@ export class EconomicAuthority {
     }
     try {
       const profile = capturePearlProfile(h.server.world, c.entity);
-      const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(h.profileLanes(sock.id, c.entity));
+      const accounts = [...new Set([s.key, ...(h.loggingOperations
+        ? loggingAccounts(h.worldState.resources, command, s.key, h.worldState.resourceTick()) : [])])].sort();
+      const members = new Map(), lanes = { accounts, uids: [] };
+      for (const account of accounts) {
+        const session = h.profiles.accounts.get(account);
+        if (!session) { members.set(account, { account }); continue; }
+        const client = h.server.clients.get(session.id), entity = client?.entity;
+        if (!entity || session.closed || session.failed) throw new StoreError('session');
+        lanes.uids.push(...h.profileLanes(session.id, entity).uids);
+        members.set(account, { account, s: session, c: client, entity, profile: account === s.key ? profile : capturePearlProfile(h.server.world, entity) });
+      }
+      const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(lanes);
       const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate,
-        operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null };
+        members, operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null };
       this.active = a; h.worldState.operationBusy = true;
       a.task = this.prepare(a).catch(() => { this.fence(a); });
     } catch { this.reply(sock.id, command, 'storage'); }
@@ -157,13 +168,15 @@ export class EconomicAuthority {
     const h = this.host;
     return this.active === a && !this.failed && h.profiles.clients.get(a.id) === a.s && !a.s.failed && !a.s.closed &&
       h.server.clients.get(a.id) === a.c && a.c.entity === a.entity && h.server.world.profiles.has(a.entity) &&
+      [...a.members.values()].every(m => !m.s || h.profiles.accounts.get(m.account) === m.s && !m.s.failed && !m.s.closed
+        && h.server.clients.get(m.s.id) === m.c && m.c.entity === m.entity) &&
       a.gate.active(a.reservation);
   }
 
   async prepare(a) {
     const h = this.host;
     // Settle old CAS writes before taking either version. New autosaves cannot enter this account/world.
-    while (a.s.running) await a.s.running;
+    for (const m of a.members.values()) while (m.s?.running) await m.s.running;
     await h.worldState.flush();
     if (!this.valid(a)) throw new StoreError('cancelled');
     const prior = await h.store.loadEconomicOperation(a.operationId);
@@ -183,13 +196,25 @@ export class EconomicAuthority {
       a.replay = true; a.ready = true; return;
     }
     // Persist the current baseline before the operation, using M5's existing writer and reservation.
-    h.profiles.save(a.id, a.profile, a.reservation);
-    while (a.s.running) await a.s.running;
-    if (!this.valid(a) || a.s.pending) throw new StoreError('cancelled');
+    for (const m of a.members.values()) {
+      if (m.s) {
+        h.profiles.save(m.s.id, m.profile, a.reservation);
+        while (m.s.running) await m.s.running;
+        if (m.s.pending) throw new StoreError('cancelled');
+        m.version = m.s.version;
+      } else {
+        const row = await h.store.loadProfile(m.account);
+        const profile = row && sanitizeProfile(row.data);
+        if (!profile || canonicalText(profile) !== canonicalText(row.data) || !Number.isSafeInteger(row.version)
+            || row.version < 1 || row.version >= 2147483647) throw new StoreError('profile');
+        m.profile = profile; m.version = row.version;
+      }
+    }
+    if (!this.valid(a)) throw new StoreError('cancelled');
     let proposal;
     if (a.command.type === 'resource') {
       proposal = draftResource(h.server.world, a.entity, a.command, a.profile, h.worldState.resources, a.s.key,
-        h.worldState.resourceTick());
+        h.worldState.resourceTick(), new Map([...a.members].map(([key, member]) => [key, member.profile])));
       proposal.community = clone(h.worldState.community);
     } else if (a.command.type === 'community') {
       proposal = draftCommunity({ command: a.command, profile: clone(a.profile), state: clone(h.worldState.community),
@@ -213,6 +238,14 @@ export class EconomicAuthority {
     a.request = { world: h.worldState.id, account: a.s.key, command: a.command,
       expectedProfileVersion: a.s.version, expectedWorldVersion: h.worldState.version,
       profile: proposal.profile, worldData: data, ack: proposal.ack };
+    if (h.loggingOperations && a.command.type === 'resource' && a.command.op === 'gather'
+        && data.resources.nodes.find(n => n.id === a.command.node)?.kind === 'palm') {
+      a.request.beneficiaries = [...proposal.profiles].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([account, profile]) => {
+        const member = a.members.get(account);
+        if (!member) throw new StoreError('effect');
+        return { account, expectedVersion: member.version, before: clone(member.profile), profile: clone(profile) };
+      });
+    }
     let result;
     try { result = await h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request }); }
     catch {
@@ -241,6 +274,7 @@ export class EconomicAuthority {
         // Preserve live profile/raft object identities used by deterministic systems.
         p.gold = next.gold; p.eco.pack = clone(next.eco.pack); p.eco.tradeRev = next.eco.tradeRev;
         if (a.command.type === 'resource') p.tools = clone(next.tools);
+        if (Object.hasOwn(next, 'progression')) p.progression = clone(next.progression);
         for (const ship of p.eco.ships) {
           const candidate = next.eco.ships.find(s => s.id === ship.id);
           if (candidate?.kind === 'raft') { ship.hold = clone(candidate.hold); ship.rev = candidate.rev; }
@@ -251,6 +285,16 @@ export class EconomicAuthority {
         h.worldState.community = clone(a.request.worldData.community ?? null);
         h.worldState.resources = clone(a.request.worldData.resources ?? null);
         a.s.version = a.result.profileVersion; a.s.confirmed = clone(next); a.s.last = JSON.stringify(next); a.s.pending = null;
+        for (const row of a.request.beneficiaries ?? []) {
+          const member = a.members.get(row.account);
+          if (!member.s || member.s === a.s) continue;
+          const live = w.profiles.get(member.entity);
+          if (!live) throw new StoreError('effect');
+          if (Object.hasOwn(row.profile, 'progression')) live.progression = clone(row.profile.progression);
+          member.s.version = row.expectedVersion + 1; member.s.confirmed = clone(row.profile);
+          member.s.last = JSON.stringify(row.profile); member.s.pending = null;
+          w.profileDirty.add(member.entity);
+        }
         h.worldState.version = a.result.worldVersion; h.worldState.last = JSON.stringify(a.request.worldData);
         h.worldState.pending = null;
         w.profileDirty.add(a.entity); this.completed++;
@@ -259,6 +303,10 @@ export class EconomicAuthority {
       a.gate.release(a.reservation); a.released = true; h.worldState.operationBusy = false; this.active = null;
       // Publication follows confirmed rows and the synchronous apply, never the provider continuation.
       h.server.sendProfile(a.id, a.c);
+      if (!a.replay) for (const row of a.request.beneficiaries ?? []) {
+        const member = a.members.get(row.account);
+        if (member.s && member.s !== a.s) h.server.sendProfile(member.s.id, member.c);
+      }
       h.sendTo(a.id, { t: MSG.EVENT, ev: { ...a.ack, to: a.entity, durable: h.store.durable === true } });
       this.closeDeferred();
       return true;

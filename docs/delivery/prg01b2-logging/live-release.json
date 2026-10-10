@@ -1,0 +1,82 @@
+{
+  "revision": "56e4345b0b83ba58521d91f55b71891e126b0988",
+  "image": "marea-negra:alpha-56e4345b0b83",
+  "imageId": "sha256:900a490357bcd0a9f4cf98238d2652c27ef9f15bdc840b3992448a983409fdb0",
+  "container": "0e97fdae18a2",
+  "containerCount": 1,
+  "health": "healthy",
+  "startedAt": "2026-10-10T19:18:17.596267374Z",
+  "updaterTimer": "active",
+  "offlineReleaseTests": {
+    "tests": 107,
+    "pass": 107,
+    "fail": 0
+  },
+  "validationMarker": {
+    "revision": "56e4345b0b83ba58521d91f55b71891e126b0988",
+    "image_id": "sha256:900a490357bcd0a9f4cf98238d2652c27ef9f15bdc840b3992448a983409fdb0",
+    "tests_passed": true
+  },
+  "publicHealth": 200,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.24",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 2454,
+    "uptime": 43,
+    "stepMs": 3.313,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1404,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 1,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 115.9,
+      "kbIn": 0.1,
+      "dropped": 0
+    }
+  },
+  "sql016": "not applied by this release",
+  "loggingActive": false,
+  "recordedAt": "2026-10-10T19:19:07.066931+00:00",
+  "scope": "Compatible runtime published with logging disabled; no SQL016 or logging activation performed."
+}

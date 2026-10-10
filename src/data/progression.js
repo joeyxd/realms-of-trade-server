@@ -1,4 +1,4 @@
-// PRG01a tuning for the first logging pilot; not mounted by the resource handler yet.
+// Shared tuning for the opt-in M5 logging pilot and its pure progression plans.
 // Practice is independent of general XP, weapon mastery, tattoos, equipment and language.
 import { RESOURCE_KINDS } from './resources.js';
 

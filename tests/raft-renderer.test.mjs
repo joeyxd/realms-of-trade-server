@@ -207,3 +207,60 @@ test('RaftLayer without a loaded atlas keeps procedural fallback and shared impo
     source.material.dispose();
   }
 });
+
+test('RaftLayer opens a detailed door leaf around its jamb and keeps the roof in a cutaway-ready batch', () => {
+  const scene = new THREE.Scene();
+  const layer = new RaftLayer(scene);
+  const door = ['door', 0, 0, 0, 0];
+  const closed = {
+    id: 'shelter-door-test', entity: 1, owner: 1, x: 0, y: 0.72, z: 0, yaw: 0,
+    parts: [['foundation', 0, 0, 0, 0], door, ['roof', 0, 0, 0, 0]], openDoors: [],
+  };
+  try {
+    assert.equal(layer.update([closed], 0), true);
+    const firstView = layer.views.get(closed.id);
+    const closedLeaf = firstView.root.getObjectByName('raft:door-leaf:0:0:0:0');
+    assert.ok(closedLeaf);
+    assert.equal(closedLeaf.userData.open, false);
+    assert.ok(Math.abs(closedLeaf.position.x - 0.325) < 1e-9, 'closed leaf pivots 0.675 units from the cell center at its jamb');
+    const closedYaw = closedLeaf.rotation.y;
+    const closedGeometries = [...firstView.ownedGeometries];
+    const closedDisposals = closedGeometries.map(disposalCount);
+    const roofs = [];
+    firstView.root.traverse((object) => { if (object.isMesh && object.userData.raftRoof) roofs.push(object); });
+    assert.ok(roofs.length > 0, 'roof meshes are independently tagged for a local-player cutaway');
+    assert.ok(roofs.every((mesh) => mesh.material.map === null || mesh.userData.nm?.isMeshNormalMaterial),
+      'roof retains normal-pass material separation');
+
+    const open = { ...closed, openDoors: [door] };
+    assert.equal(layer.update([open], 0), true, 'door state changes the cached silhouette once');
+    const openView = layer.views.get(closed.id);
+    const openLeaf = openView.root.getObjectByName('raft:door-leaf:0:0:0:0');
+    assert.ok(openLeaf);
+    assert.equal(openLeaf.userData.open, true);
+    assert.ok(Math.abs(openLeaf.rotation.y - closedYaw) > 1, 'complete detailed leaf rotates out from the doorway');
+    assert.ok(closedDisposals.every((getCount) => getCount() === 1), 'old door geometry is disposed on the state transition');
+
+    const openRoot = openView.root;
+    const openGeometries = [...openView.ownedGeometries];
+    const openDisposals = openGeometries.map(disposalCount);
+    const moved = { ...open, x: 4, z: 2, rev: 2 };
+    assert.equal(layer.update([moved], 0), true, 'raft pose updates independently of the door geometry cache');
+    assert.equal(layer.views.get(closed.id).root, openRoot);
+    assert.ok(openDisposals.every((getCount) => getCount() === 0), 'pose changes do not rebuild door or roof geometry');
+    assert.equal(layer.update([moved], 0), false, 'stable open-door snapshots do not rebuild each frame');
+    assert.ok(openDisposals.every((getCount) => getCount() === 0));
+    const roofMeshes = [];
+    openRoot.traverse((object) => { if (object.userData.raftRoof) roofMeshes.push(object); });
+    const materials = roofMeshes.map((mesh) => ({ material: mesh.material, opacity: mesh.material.opacity,
+      transparent: mesh.material.transparent }));
+    layer.setInterior(closed.id);
+    assert.ok(roofMeshes.every((mesh) => !mesh.visible), 'local interior cutaway reveals the character');
+    layer.setInterior(null);
+    assert.ok(roofMeshes.every((mesh) => mesh.visible), 'roof returns when leaving the covered cells');
+    assert.ok(materials.every((m, i) => roofMeshes[i].material === m.material && m.material.opacity === m.opacity &&
+      m.material.transparent === m.transparent), 'cutaway does not mutate shared atlas materials');
+  } finally {
+    layer.dispose();
+  }
+});

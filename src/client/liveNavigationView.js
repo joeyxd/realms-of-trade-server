@@ -37,7 +37,7 @@ export function shoreRouteTarget(voyage, raft, dock) {
 
 export class LiveNavigationView {
   constructor({ world, client, input, isTouch = false, stage, parent, onClosePanels = () => {}, active = () => true,
-    locale = () => document.documentElement.lang || 'es' } = {}) {
+    locale = () => document.documentElement.lang || 'es', doorInteraction = () => null } = {}) {
     if (!world?.scene || !world?.camera || typeof client !== 'function' || !input || !parent)
       throw new TypeError('LiveNavigationView needs the game scene, client getter, input, and parent.');
     this.world = world; this.getClient = client; this.input = input; this.isTouch = !!isTouch;
@@ -47,6 +47,7 @@ export class LiveNavigationView {
     this.helmVisuals = new Map(); this.lastFeel = { fov: 35, roll: 0 }; this.captureHeld = false; this.actionSignature = '';
     this.lastNotice = ''; this.disposed = false; this.paused = false; this.effectsWasActive = false;
     this.locale = locale; this.activityMode = 'lesson'; this.currentActivity = 'lesson';
+    this.doorInteraction = doorInteraction;
 
     this.root = document.createElement('section');
     this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
@@ -114,7 +115,7 @@ export class LiveNavigationView {
     this.onBlur = () => this.clearInput(true);
     this.onVisibility = () => { if (document.hidden) this.clearInput(true); };
     this.panelShortcuts = [];
-    for (const key of ['KeyF', 'KeyE', 'KeyG']) {
+    for (const key of ['KeyF', 'KeyE', 'KeyG', 'KeyV']) {
       const previous = input.hotkeys?.get(key);
       const handler = () => {
         if (!this.canAct()) return false;
@@ -320,6 +321,13 @@ export class LiveNavigationView {
   }
 
   interaction() {
+    const navigation = this.navigationInteraction();
+    const door = this.isActive() && this.client()?.joined ? this.doorInteraction?.() : null;
+    if (!door) return navigation;
+    return this.actionSet([{ ...door, key: 'V', door: true }, ...(navigation?.actions || [])]);
+  }
+
+  navigationInteraction() {
     const c = this.client();
     if (!c?.joined || !this.isActive()) return null;
     const voyage = c.voyage || { active: false };
@@ -522,6 +530,7 @@ export class LiveNavigationView {
       this.captureHeld = true; return true;
     }
     if (id === 'context') { this.interaction()?.run?.(); return; }
+    if (id === 'door') { this.keyAction('V')?.run?.(); return; }
     if (id === 'land' || id === 'dock' || id === 'recall') { this.keyAction('G')?.run?.(); return; }
     if (id === 'reboard' || id === 'mount') { this.keyAction('F')?.run?.(); return; }
     if (id === 'mode' || id === 'leave') { this.keyAction('E')?.run?.(); return; }
@@ -532,6 +541,8 @@ export class LiveNavigationView {
   updateActions() {
     if (!this.touch) return;
     const c = this.client(), i = this.interaction(), actions = [];
+    const door = i?.actions?.find((action) => action.door);
+    if (door) actions.push({ id: 'door', label: door.verb, icon: 'crew', kind: 'action', shortcut: 'V' });
     if (c?.naval?.active && !c?.deck?.active && c.voyage?.phase === 'sailing')
       actions.push({ id: 'capture', label: 'Ráfaga', icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
     actions.push({ id: 'bag', label: 'Mochila', icon: 'cargo', kind: 'item' });
@@ -541,7 +552,7 @@ export class LiveNavigationView {
     for (const action of i?.actions || []) if (action.key === 'G' || action.key === 'F')
       actions.push({ id: action.key === 'F' ? 'reboard' : action.verb === 'Amarrar' ? 'dock' : action.verb === 'Desembarcar' ? 'land' : 'recall',
         label: action.verb, icon: action.key === 'G' ? 'helm' : 'crew', kind: 'action' });
-    const keyedActions = actions.map((action) => ({ ...action, shortcut: NAVAL_SHORTCUTS[action.id] }));
+    const keyedActions = actions.map((action) => ({ ...action, shortcut: action.shortcut || NAVAL_SHORTCUTS[action.id] }));
     const signature = JSON.stringify(keyedActions);
     if (signature !== this.actionSignature) { this.actionSignature = signature; this.touch.setActions(keyedActions); }
     const hints = this.touch.instrument.querySelector('.ln-desktop-controls');

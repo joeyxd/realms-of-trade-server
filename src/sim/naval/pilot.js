@@ -9,6 +9,7 @@ import { publicRafts } from '../systems/rafts.js';
 import { DeckWalkEngine } from './deckWalk.js';
 import { hullIntegrity } from './structure.js';
 import { activeRaftParts } from './condition.js';
+import { openDoorParts } from './shelter.js';
 import { encodeRaftVoyage } from './recovery.js';
 import { distanceToNavalHull, isNavalLandingValid, nearestNavalLanding } from './landing.js';
 
@@ -187,7 +188,7 @@ export class NavalPilot {
     if (this.#nextDeckEpoch >= Number.MAX_SAFE_INTEGER || !pose || !source) return false;
     const anchor = pilotLocal(pose, { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e], f: ecs.facing[e] });
     const state = Object.freeze({ ...anchor, vx: 0, vz: 0, mag: 0 });
-    const params = Object.freeze({ speed: ecs.speed[e], radius: ecs.radius[e] });
+    const params = Object.freeze({ speed: ecs.speed[e], radius: ecs.radius[e], openDoors: openDoorParts(source) });
     const r = this.#records.get(source.owner);
     const parts = r?.shipId === shipId ? r.body.operational.parts : activeRaftParts(source);
     try { this.#walker.step(state, { mx: 0, mz: 0 }, parts, params); } catch { return false; }
@@ -254,7 +255,7 @@ export class NavalPilot {
   deckSnapshot(e) {
     const c = this.#walkers.get(e), r = c && this.#records.get(c.source.owner);
     return c ? Object.freeze({ active: true, epoch: c.epoch, shipId: c.shipId, mode: 'walk', tick: this.#world.tick,
-      ack: c.ack, state: c.state, params: c.params,
+      ack: c.ack, state: c.state, params: { ...c.params, openDoors: openDoorParts(c.source) },
       parts: (r?.shipId === c.shipId ? r.body.operational.parts : activeRaftParts(c.source)).map((p) => [...p]) }) :
       Object.freeze({ active: false, epoch: this.#deckEpochs.get(e) || 0 });
   }
@@ -484,7 +485,7 @@ export class NavalPilot {
         continue;
       }
       if (this.#walkTick === w.tick) continue;
-      const params = Object.freeze({ speed: ecs.speed[c.e], radius: ecs.radius[c.e] });
+      const params = Object.freeze({ speed: ecs.speed[c.e], radius: ecs.radius[c.e], openDoors: openDoorParts(source) });
       const active = w.tick - c.inputTick < NAVAL_TRIAL.inputTimeoutTicks;
       const r = this.#records.get(source.owner), parts = r?.shipId === c.shipId ? r.body.operational.parts : activeRaftParts(source);
       try { next.push({ c, params, state: this.#walker.step(c.state, active ? c.input : { mx: 0, mz: 0 }, parts, params), ack: active ? c.lastSeq : c.ack }); }

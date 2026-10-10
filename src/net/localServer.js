@@ -22,6 +22,7 @@ import { DROPS } from '../data/loot.js';
 import { installTrade, marketCmd } from '../sim/systems/trade.js';
 import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts } from '../sim/systems/rafts.js';
 import { raftCmd } from '../sim/systems/raftEditor.js';
+import { raftDoorCmd } from '../sim/systems/raftDoors.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
@@ -278,6 +279,7 @@ export class LocalServer {
   // What a player asks for with what they own (M4): the bag, the equipment, a chest.
   playerCommand(c, msg) {
     if (msg?.type === 'navalPilot') return this.navalCommand(c, msg);
+    if (msg?.type === 'raftDoor') return this.doorCommand(c, msg);
     if (!msg || !PLAYER_COMMANDS.has(msg.type) ||
         (msg.type === 'pearl' && !PEARL_COMMANDS.has(msg.op))) return false;
     // Classify without calling a helper: even talk/list/quote can change progress or receipt caches.
@@ -325,6 +327,21 @@ export class LocalServer {
       default: break;
     }
     return true; // Dispatched, not an acknowledgement of helper success or durable storage.
+  }
+
+  doorCommand(c, msg) {
+    if (c?.paused || this.tickBlocked) return false;
+    const source = this.world.rafts?.get(msg.id), ownerId = source && this.clientOf(source.owner);
+    const owner = this.clients.get(ownerId);
+    if (!this.commandAllowed(c, { world: true, target: source && source.owner !== c.entity ? source.owner : null })) return false;
+    const ack = raftDoorCmd(this.world, c.entity, msg,
+      (p) => !!owner && (owner.serverProfile || this.saves.store(p).length <= MAX_SAVE));
+    if (ack.ok && ack.changed) {
+      // Visitors operate an unlocked door, but only the ship owner's canonical profile is saved.
+      this.sendSave(ownerId, owner); this.sendProfile(ownerId, owner);
+      this.broadcastSnapshot();
+    }
+    return ack.ok;
   }
 
   navalCommand(c, msg) {

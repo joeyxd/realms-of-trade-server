@@ -2,6 +2,23 @@
 
 **Checkpoint GM02 (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), implementado localmente; publicación pendiente. Escena permite editar/ocultar/restaurar rocas naturales/costeras, flores y guijarros; documento v2 migra borradores v1, círculos XZ y recorrido privado sin entrar al servidor/M5. Navegador 28/28, cuatro calidades, cámara/restauración exactas y limpieza al revocar. Sigue GM03 de guardado remoto/publicación; terreno y objetos funcionales quedan fuera.
 
+**AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
+Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y apertura por instancia.
+Dueño/visitante usan puertas sin cerradura; guarda el perfil M5 del dueño, sin SQL ni otro writer.
+Techo se oculta al entrar y vuelve al salir. Cubierta/predicción admiten cambios de puerta en el mismo tick.
+516 pruebas tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas/inspeccionadas.
+Activo en VPS `29a9e46`, sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo
+comprobados; evidencia/límites en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
+actualizados; sigue RNV02 farol usable, después oscuridad. No acredita clima/descanso/colapso estructural.
+
+**AREA03 PRG01b2, 2026-10-10 — corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37:** [Tala cooperativa](delivery/prg01b2-logging.md)
+implementada sobre la única autoridad M5: palmera, troncos, práctica proporcional y hasta tres perfiles
+actuales en una transacción. Incluye participantes offline, hito 60, cadencia 54→45 desde el siguiente
+golpe y ficha Oficios/Trades ES/EN. SQL016 y flag opt-in; no confundir publicación del runtime con
+activación de Tala. Runtime `56e4345` publicado y sano, imagen 107/107 y smoke público 6/6 con entrada
+WSS verificados el 2026-10-10 a las 19:19 UTC. **SQL016 pendiente, Tala apagada**; evidencia en la entrega.
+Sigue PRG01c: artesano y enseñanza personal `raft_storage`; no se concede automáticamente con el hito.
+
 **AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
 concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
 embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger
@@ -43,7 +60,8 @@ y [entrega](delivery/prg01b1-profile-continuity.md). Nuevos perfiles con progres
 su forma exacta y sus recibos. Aprendizaje válido se conserva en saves, muerte y reentrada; corrupción
 o versión futura rechaza admisión sin reemplazar la fila. 140 pruebas focales y 107 de release locales.
 Sin SQL nuevo ni cambio del protocolo de esta rama. El cálculo puro de Tala está disponible, pero
-todavía no concede práctica jugando: sigue integración M5 cooperativa, cadencia y ficha ES/EN en PRG01b2.
+en b1 no concedía práctica jugando. PRG01b2 ya publicó esa integración/cadencia/ficha, pendiente de SQL016
+y activación autenticada como se registra arriba.
 Publicación efectiva se verifica aparte; los planes y recursos en el checkout compartido avanzan en paralelo.
 
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
