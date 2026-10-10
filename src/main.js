@@ -1345,7 +1345,7 @@ async function boot() {
           anchor('workbench', bench.x, bench.y + 1.5, bench.z, 0);
         }
         let act = null;
-        if (navalInteraction) act = null; // The navigation HUD owns this prompt.
+        if (navalInteraction || ps.swim) act = null; // Navigation/swimming HUDs own these prompts.
         else if (npc) act = `<span class="kbd">F</span> ${ltext('runtime.talk', {name:translateData(npc.name)})}`;
         else if (chest) act = rewards.chestPrompt(chest);
         else if (runes) act = `<b>${dataText(TIERS[tierSel - 1].name)}</b> · <span class="kbd">F</span> ${ltext('runtime.changeTier', {name:translateData(TIERS[tierNext - 1].name)})}`;

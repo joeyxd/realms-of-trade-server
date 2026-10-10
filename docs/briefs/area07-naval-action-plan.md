@@ -79,7 +79,7 @@ revisión publicada ni a esta propuesta. Al integrarlo hay que volver a contrast
 | Conservación | Perfil con plano, bodega, condición e identidad; última pose compatible con seed/mapa. Reentrada estacionada, reembarque costero o recuperación en puerto; la entidad sale del mundo cuando se desconecta su dueño | Presencia física de barcos aparcados sin dueño conectado, política de exposición/producción offline, custodia entre regiones/hosts, pérdidas definitivas y recuperación ante caída abrupta de todo el recorrido |
 | Vida a bordo | Bodega y producción efectiva de red → pescado y parrilla → galletas, con lotes/fracciones y parada por falta de espacio/materiales | Agua, huertos, alambique, combustible, faroles, cama/hamaca funcional y servicios de hogar. Sus datos o el helper económico antiguo no equivalen a sistemas montados |
 | Objetivos en el mar | Ensayo opcional: tres boyas en orden, salvas anunciadas y regreso con atraque real | Rutas útiles entre pueblos, rival móvil/vencible, armamento del jugador y recompensas/progreso durables. La amenaza actual es una batería fija |
-| Natación | RNV05 local: salida por costa desde la balsa propia detenida, nado compartido con predicción, reserva/carga/agotamiento y reembarque por borde expuesto. Usa muerte M5 actual; publicación pendiente | Barcos ajenos, buceo y rescate general permanecen fuera de alcance. La maldición de Brasa conserva su interacción en agua |
+| Natación | RNV05 local: salida por costa desde la balsa propia detenida, nado compartido con predicción, reserva/carga/agotamiento y reembarque por borde expuesto. Conserva muerte actual; compatible con M5 sin activar ese montaje. Publicación pendiente | Barcos ajenos, buceo y rescate general permanecen fuera de alcance. La maldición de Brasa conserva su interacción en agua |
 | Presentación | HUD naval, instrumentos, mapa/minimapa, cámara, audio, espuma y controles PC/touch integrados | Localizar el recorrido completo ES/EN, revisar módulos nuevos y medir dispositivos. Más luz/reflejos en calidad alta es un pase visual propio |
 
 Fuentes de implementación:
@@ -190,7 +190,8 @@ cliente/agente, conservando compañeros y contenido GM; una interrupción GM ant
 
 **RNV05 implementado localmente — natación costera y reembarque propio.** Reserva predicha de 30 s,
 consumo por movimiento/flotación, carga, velocidad agotado y daño gradual después de 5 s de gracia;
-usa la muerte y autoridad M5 actuales. Salida G desde un viaje propio detenido por una base expuesta,
+conserva la muerte actual y autoridad única; M5 de muerte probado en fixture, sin activarlo en VPS.
+Salida G desde un viaje propio detenido por una base expuesta,
 reembarque F desde el agua con geometría libre. Incluye indicador/pose procedural ES/EN. Sin SQL ni
 nueva persistencia. Publicación y aceptación VPS siguen pendientes; ver
 [contrato](RNV05-coastal-swimming.md) y [entrega](../delivery/rnv05-coastal-swimming.md).

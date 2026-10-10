@@ -55,9 +55,11 @@ export class SwimStatus {
     this.root.hidden = true;
     this.root.setAttribute('role', 'status');
     this.root.innerHTML = `<style>
-      .mn-swim-status{position:fixed;z-index:24;left:50%;bottom:max(1rem,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(22rem,calc(100vw - 2rem));padding:.65rem .8rem;border:1px solid #9acbd6aa;border-radius:.75rem;background:#09212beF;color:#f4f3e8;font:600 13px/1.35 system-ui,sans-serif;box-shadow:0 5px 22px #00101680;pointer-events:none}
+      .mn-swim-status{position:fixed;z-index:24;left:50%;bottom:max(8.7rem,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(22rem,calc(100vw - 2rem));padding:.65rem .8rem;border:1px solid #9acbd6aa;border-radius:.75rem;background:#09212beF;color:#f4f3e8;font:600 13px/1.35 system-ui,sans-serif;box-shadow:0 5px 22px #00101680;pointer-events:none}
       .mn-swim-status[hidden]{display:none}.mn-swim-status header{display:flex;justify-content:space-between;gap:.7rem}.mn-swim-status progress{display:block;width:100%;height:.55rem;margin:.38rem 0 .24rem;accent-color:#58d5dc}.mn-swim-status.is-low progress{accent-color:#ffc45d}.mn-swim-status.is-exhausted progress,.mn-swim-status.is-drowning progress{accent-color:#ff7669}.mn-swim-status.is-brasa{border-color:#f78b60}.mn-swim-status .warning{color:#ffd070}.mn-swim-status .danger{color:#ff9a78}.mn-swim-status footer{display:flex;flex-wrap:wrap;gap:.15rem .7rem;opacity:.92}
-      @media(max-width:600px){.mn-swim-status{bottom:max(5.2rem,env(safe-area-inset-bottom));font-size:12px}}
+      body.is-swimming .live-navigation.is-desktop .ln-prompt{bottom:calc(8.7rem + 8rem)}
+      body.is-swimming .actionbar .wname,body.is-swimming .actionbar .mast{visibility:hidden}
+      body.touch .mn-swim-status{bottom:max(5.2rem,env(safe-area-inset-bottom));font-size:12px}
     </style><header><span data-title></span><b data-value></b></header><progress max="100" value="100" data-meter></progress><div class="warning" data-warning></div><footer><span class="danger" data-brasa></span><span data-load></span><span data-advice></span></footer>`;
     parent.appendChild(this.root);
   }
@@ -65,6 +67,7 @@ export class SwimStatus {
   update(current) {
     const state = swimStatusState(current), copy = swimStatusCopy(state, this.locale);
     this.root.hidden = !state.visible;
+    this.root.ownerDocument.body?.classList.toggle('is-swimming', state.visible);
     if (!state.visible) return state;
     this.root.querySelector('[data-title]').textContent = copy.title;
     const seconds = Math.ceil(state.stamina);
@@ -85,5 +88,5 @@ export class SwimStatus {
     return state;
   }
 
-  dispose() { this.root.remove(); }
+  dispose() { this.root.ownerDocument.body?.classList.remove('is-swimming'); this.root.remove(); }
 }

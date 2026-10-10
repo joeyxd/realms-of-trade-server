@@ -2,8 +2,8 @@
 
 **Estado: implementado localmente en `area07-pilot`; aceptación de publicación pendiente.**
 El servidor sigue siendo autoridad de movimiento, resistencia, daño y transiciones de la balsa.
-El corte reutiliza M5/GameHost para las consecuencias normales de muerte. No añade tablas,
-migraciones SQL ni un escritor de guardado.
+El corte conserva las consecuencias normales de muerte y es compatible con su montaje M5/GameHost.
+No añade tablas, migraciones SQL ni un escritor de guardado.
 
 ## Resultado implementado
 
@@ -22,7 +22,7 @@ Los valores iniciales viven en `tuning.swim` y siguen siendo ajustables:
 | Velocidad sin carga | 3.2 u/s |
 | Masa de carga para alcanzar el máximo efecto | 20 |
 | Reducción máxima de velocidad por carga | 40 % (1.92 u/s con carga máxima) |
-| Consumo mientras se mueve / flota | 1 / 0.5 s de reserva por segundo |
+| Consumo mientras se mueve / flota | 1 / 0.5 s de reserva por segundo; hasta ×2 por carga |
 | Velocidad agotado | 1.2 u/s |
 | Gracia tras agotarse | 5 segundos |
 | Daño tras la gracia | 10 % de vida máxima por segundo |
@@ -35,7 +35,8 @@ externa. El paso de natación no emite los callbacks de pisada terrestre.
 
 Desde el timón o la cubierta, **G** ofrece nadar únicamente si el viaje activo es propio, la balsa
 está casi detenida, no hay invitados y existe una salida abierta y accesible por una base expuesta
-de nivel cero. En el agua, **F** solo ofrece reembarcar cuando el servidor confirma proximidad y
+de nivel cero a no más de 1.5 unidades. En el agua, **F** solo ofrece reembarcar dentro de ese mismo
+alcance cuando el servidor confirma proximidad y
 un trayecto libre a esa misma balsa. La transición conserva identidad de dueño, revisión del
 plano, permisos, geometría y época del piloto; subir desde el agua devuelve al jugador a la
 tripulación caminante. Desembarcar a una playa y reembarcar desde tierra conservan su flujo
@@ -43,8 +44,11 @@ anterior.
 
 ## Autoridad y límites
 
-El ahogamiento aplica daño por `hurtPlayer`, por lo que una muerte usa `killPlayer` y el flujo M5
-existente de recibos, drops y respawn. No se crea una pérdida adicional, precio de rescate,
+El ahogamiento aplica daño por `hurtPlayer`, por lo que una muerte usa `killPlayer` y su flujo
+existente de drops y respawn; cuando está montado el coordinador M5 también usa sus recibos.
+La prueba local verifica ese montaje durable. El VPS conserva `combatDeaths`, `deathDrops` y
+`groundTransactions` sin montar: publicar este corte no los activa ni acredita su durabilidad pública.
+No se crea una pérdida adicional, precio de rescate,
 recompensa, persistencia de reserva ni política nueva para barcos desconectados. La maldición de
 Brasa en agua sigue activa junto al nuevo ahogamiento.
 
@@ -63,21 +67,36 @@ ripples/splash que ya pertenecen al juego. No se exportó ni modificó contenido
 
 ## Verificación y publicación
 
-Conteos locales comunicados durante la integración: **104 pruebas de regresión**, **15 pruebas de
-presentación**, incluidas **6 de natación**. Los grupos se solapan y no deben sumarse como pruebas
-independientes. La corrida de presentación de este corte pasó **15/15** (`swim-presentation`,
-`characters` y `raft-lantern-ui`), con `git diff --check` limpio para sus archivos.
+Integración final: **121/121 en 17 archivos**, incluyendo seis casos de natación, nueve de
+transiciones/rollback de balsa, muerte M5 montada, movimiento/soporte, presentación y reconciliación
+naval/cliente/touch. [Log completo](rnv05-coastal-swimming/local-acceptance.tap).
+La regresión previa de combate/Brasa/perlas/persistencia pasó 104/104; se solapa con esta selección.
+`git diff --check` limpio. No se suman los conteos de distintas corridas.
 
-La revisión visual del HUD y las capturas finales, la aceptación completa del recorrido, la
-revisión activa del VPS, la salud pública y la entrada autenticada quedan pendientes de completar
-por la integración principal. Este informe no declara el cambio publicado ni desplegado.
+PC 1280×720 ES y móvil 390×844 EN emulado completan el recorrido de costa, natación con carga,
+aviso de agotamiento, regreso a tierra y recuperación; también pilotar la balsa propia a agua
+abierta, detenerse, G para entrar al agua y F para volver caminando a cubierta. La partida usa
+`/ws` real contra un GameHost desechable en memoria. Solo la posición inicial de costa y el
+agotamiento se preparan en el servidor de prueba; movimiento y navegación usan teclado/joystick
+y acciones normales. No hubo errores de navegador ni solicitudes externas. Los prompts terrestres
+se ocultan mientras se nada, conservando F cuando se puede reembarcar. Capturas inspeccionadas;
+la prueba móvil no acredita rendimiento en un teléfono físico.
+
+[Evidencia local](rnv05-coastal-swimming/evidence-2026-10-10T23-48-36-233Z.json),
+[nado PC](rnv05-coastal-swimming/swim-desktop-es-low-2026-10-10T23-48-36-233Z-02-swimming-loaded.jpg),
+[balsa PC](rnv05-coastal-swimming/swim-desktop-es-low-2026-10-10T23-48-36-233Z-06-own-raft-water-exit.jpg)
+y [agotamiento móvil](rnv05-coastal-swimming/swim-mobile-en-low-2026-10-10T23-48-36-233Z-03-exhaustion-warning.jpg).
+
+Publicación, revisión activa del VPS y entrada pública quedan pendientes. No se requiere activar
+el montaje opcional de muerte durable para este despliegue y no se acredita un canario autenticado.
 
 Registro final de aceptación, a completar por la integración principal:
 
 - Revisión/commit integrado y versión de protocolo activa: **pendiente**.
-- Conteos finales y comandos exactos de regresión: **pendiente de consolidación**.
-- Capturas PC/touch ES/EN inspeccionadas y evidencia del recorrido: **pendiente**.
-- Revisión activa, salud pública y entrada autenticada: **pendiente**.
+- Conteos finales: 121/121; `node --test --test-reporter=tap --test-concurrency=2` con los 17 archivos
+  enumerados por sus subtests en el log enlazado.
+- Capturas PC/touch ES/EN inspeccionadas y evidencia del recorrido: recorrido local aceptado.
+- Revisión activa, salud pública y entrada pública: **pendiente**.
 
 ## Siguiente corte
 

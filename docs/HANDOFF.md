@@ -1,5 +1,16 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV05, 2026-10-10 — natación costera integrada, alpha.36/protocolo 45; publicación pendiente:**
+[Contrato](briefs/RNV05-coastal-swimming.md) y [entrega](delivery/rnv05-coastal-swimming.md).
+Playa/agua/playa con resistencia, carga de mochila, pose y HUD ES/EN, cinco segundos de aviso y
+ahogamiento gradual aprobado por el autor. Conserva la muerte actual; montaje M5 comprobado en
+fixture local, sin activarlo en VPS. Sin SQL ni writer nuevo.
+G permite bajar desde un borde cercano de la balsa propia detenida; F reembarca en cubierta como
+caminante. Solo viaje propio activo, sin invitados, con identidad/revisión/obstáculos verificados.
+Integración 121/121 en 17 archivos y regresión previa 104/104, selecciones solapadas. Recorrido
+PC ES y móvil EN emulado aceptado; VPS pendiente. Sigue RNV06: purificador útil conectado a
+provisiones/carga/economía existentes.
+
 **AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
 [entrega](delivery/gm03b2/DELIVERY.md), [evidencia pública](delivery/gm03b2/public-evidence.json) y [despliegue](delivery/gm03b2/deployment.json).
 Online registra revisiones y activa o vuelve atrás con mundo vacío, CAS y exclusión del actualizador.
