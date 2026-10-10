@@ -10,6 +10,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
+  primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
+  Reutiliza CAS M5 y distingue aprendizaje local/pendiente/confirmado; sin SQL ni premio repetible.
+  174 pruebas integradas, 38 de agentes y tres vistas de navegador aprobadas; 22 casos recursos/naval
+  pasan juntos con solapamiento. Publicación/VPS se registran en la entrega. Sigue techo/puerta funcionales,
+  después farol; no oscurecer la noche antes de tener luces utilizables.
+
 - AREA15, 2026-10-10: [recursos/crafting M5](docs/delivery/m5-resource-authority.md), release alpha.22
   aislada con nodos/perfil/reloj/recibo, pausa offline y 139 pruebas. Estado de SQL015, publicación,
   activación y prueba real separado en la entrega; [contrato para cada feature](docs/briefs/m5-resource-authority.md).

@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-10-10T17:06:11.466Z",
+  "purpose": "Verify PRG02b coastal lesson and pilot learning through isolated GameHost snapshot and UI: ordered buoys, maneuver, real dock, one common profile milestone and visible learned benefit; cancel and retry once.",
+  "harness": "Fresh ephemeral GameHost per viewport, real browser WebSocket and DOM/UI, in-memory profile store, local Three.js/GSAP/font routes. No .env, database, external host, production service, or device-performance claim.",
+  "fixture": "After the owner mounts the real server-created raft through the UI, QA wraps only world.navalRoute.plan to relocate that owner’s fixed-tick candidate body to server-issued lesson waypoints. NavalLesson start/plan/commit, snapshots, lesson progress, cancel/retry, cargo, hull condition, and completion through the real pilot.dock command remain live server behavior. This does not verify unaided sailing or physical-device performance.",
+  "expected": {
+    "orderedBuoys": 2,
+    "maneuverStableTicks": 45,
+    "completedBy": "actual navalPilot dock command",
+    "cancelAndRetry": true,
+    "noPracticeSalvos": true,
+    "profileMilestone": "pilot_coastal",
+    "durableStorageAcceptance": false
+  },
+  "protocolVersion": 36,
+  "viewports": [
+    {
+      "name": "naval-lesson-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "screenshots": [
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-01-ready.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-02-first-outbound.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-03-cancelled.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-04-first-buoy-maneuver-available.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-05-maneuver-progress.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-06-returning.png",
+        "naval-lesson-desktop-1280x720-2026-10-10T17-06-11-466Z-07-complete.png"
+      ],
+      "baseline": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "readyLayout": {
+        "card": {
+          "x": 480,
+          "y": 24,
+          "width": 320,
+          "height": 80,
+          "top": 24,
+          "right": 800,
+          "bottom": 104,
+          "left": 480
+        },
+        "playerHud": {
+          "x": 14,
+          "y": 551,
+          "width": 294,
+          "height": 151,
+          "top": 551,
+          "right": 308,
+          "bottom": 702,
+          "left": 14
+        },
+        "overlapPlayerHud": false
+      },
+      "modeSwitch": {
+        "lessonToTrial": true,
+        "trialToLesson": true
+      },
+      "retry": {
+        "previousRunId": "lesson:1",
+        "currentRunId": "lesson:2",
+        "status": "outbound",
+        "next": 0
+      },
+      "maneuver": {
+        "stableTicks": 5,
+        "requiredStableTicks": 45,
+        "progress": {
+          "status": "Maneuver at the second buoy",
+          "detail": "Brake inside the circle and hold your raft still 0.75 s.",
+          "visible": true,
+          "value": 0.1111111111111111,
+          "max": 1
+        }
+      },
+      "dockPrompt": {
+        "text": "Amarrar",
+        "target": {
+          "x": 710.8671875,
+          "y": 532,
+          "width": 66.828125,
+          "height": 34
+        },
+        "source": "normal live-navigation interaction prompt"
+      },
+      "completion": {
+        "status": "complete",
+        "reason": "dock",
+        "dockedPilotActive": false,
+        "prompt": "Amarrar"
+      },
+      "learning": {
+        "profile": {
+          "v": 2,
+          "practice": {
+            "logging": 0
+          },
+          "milestones": [
+            "pilot_coastal"
+          ],
+          "knowledge": []
+        },
+        "wire": {
+          "learned": true,
+          "rank": 2,
+          "helmResponse": 1.15,
+          "persistence": "local"
+        },
+        "label": "Piloting II · helm +15%. Learned in this game."
+      },
+      "after": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "noCombat": {
+        "enemyVisible": false,
+        "visibleSalvos": 0
+      },
+      "viewportCheck": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "speedLabel": "reference-gauge-present",
+        "lessonActivity": "lesson",
+        "htmlLanguage": "en"
+      }
+    },
+    {
+      "name": "naval-lesson-touch-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "screenshots": [
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-01-ready.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-02-first-outbound.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-03-cancelled.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-04-first-buoy-maneuver-available.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-05-maneuver-progress.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-06-returning.png",
+        "naval-lesson-touch-844x390-2026-10-10T17-06-11-466Z-07-complete.png"
+      ],
+      "baseline": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "readyLayout": {
+        "card": {
+          "x": 262,
+          "y": 72,
+          "width": 320,
+          "height": 80,
+          "top": 72,
+          "right": 582,
+          "bottom": 152,
+          "left": 262
+        },
+        "playerHud": {
+          "x": 16.212200164794922,
+          "y": 12,
+          "width": 229,
+          "height": 83,
+          "top": 12,
+          "right": 245.21220016479492,
+          "bottom": 95,
+          "left": 16.212200164794922
+        },
+        "overlapPlayerHud": false
+      },
+      "modeSwitch": {
+        "lessonToTrial": true,
+        "trialToLesson": true
+      },
+      "retry": {
+        "previousRunId": "lesson:1",
+        "currentRunId": "lesson:2",
+        "status": "outbound",
+        "next": 0
+      },
+      "maneuver": {
+        "stableTicks": 5,
+        "requiredStableTicks": 45,
+        "progress": {
+          "status": "Maneuver at the second buoy",
+          "detail": "Brake inside the circle and hold your raft still 0.75 s.",
+          "visible": true,
+          "value": 0.1111111111111111,
+          "max": 1
+        }
+      },
+      "dockPrompt": {
+        "text": "Amarrar",
+        "target": {
+          "x": 460.3515625,
+          "y": 322,
+          "width": 63.125,
+          "height": 44
+        },
+        "source": "normal live-navigation interaction prompt"
+      },
+      "completion": {
+        "status": "complete",
+        "reason": "dock",
+        "dockedPilotActive": false,
+        "prompt": "Amarrar"
+      },
+      "learning": {
+        "profile": {
+          "v": 2,
+          "practice": {
+            "logging": 0
+          },
+          "milestones": [
+            "pilot_coastal"
+          ],
+          "knowledge": []
+        },
+        "wire": {
+          "learned": true,
+          "rank": 2,
+          "helmResponse": 1.15,
+          "persistence": "local"
+        },
+        "label": "Piloting II · helm +15%. Learned in this game."
+      },
+      "after": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "noCombat": {
+        "enemyVisible": false,
+        "visibleSalvos": 0
+      },
+      "viewportCheck": {
+        "width": 844,
+        "height": 390,
+        "documentWidth": 844,
+        "overflow": false,
+        "speedLabel": "reference-gauge-present",
+        "lessonActivity": "lesson",
+        "htmlLanguage": "en"
+      }
+    },
+    {
+      "name": "naval-lesson-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "screenshots": [
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-01-ready.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-02-first-outbound.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-03-cancelled.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-04-first-buoy-maneuver-available.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-05-maneuver-progress.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-06-returning.png",
+        "naval-lesson-portrait-390x844-2026-10-10T17-06-11-466Z-07-complete.png"
+      ],
+      "baseline": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "readyLayout": {
+        "card": {
+          "x": 242,
+          "y": 262,
+          "width": 76,
+          "height": 320,
+          "top": 262,
+          "right": 318,
+          "bottom": 582,
+          "left": 242
+        },
+        "playerHud": {
+          "x": 295,
+          "y": 15.880000114440918,
+          "width": 83,
+          "height": 229,
+          "top": 15.880000114440918,
+          "right": 378,
+          "bottom": 244.88000011444092,
+          "left": 295
+        },
+        "overlapPlayerHud": false
+      },
+      "modeSwitch": {
+        "lessonToTrial": true,
+        "trialToLesson": true
+      },
+      "retry": {
+        "previousRunId": "lesson:1",
+        "currentRunId": "lesson:2",
+        "status": "outbound",
+        "next": 0
+      },
+      "maneuver": {
+        "stableTicks": 5,
+        "requiredStableTicks": 45,
+        "progress": {
+          "status": "Maneuver at the second buoy",
+          "detail": "Brake inside the circle and hold your raft still 0.75 s.",
+          "visible": true,
+          "value": 0.13333333333333333,
+          "max": 1
+        }
+      },
+      "dockPrompt": {
+        "text": "Amarrar",
+        "target": {
+          "x": 24,
+          "y": 460.3515625,
+          "width": 44,
+          "height": 63.125
+        },
+        "source": "normal live-navigation interaction prompt"
+      },
+      "completion": {
+        "status": "complete",
+        "reason": "dock",
+        "dockedPilotActive": false,
+        "prompt": "Amarrar"
+      },
+      "learning": {
+        "profile": {
+          "v": 2,
+          "practice": {
+            "logging": 0
+          },
+          "milestones": [
+            "pilot_coastal"
+          ],
+          "knowledge": []
+        },
+        "wire": {
+          "learned": true,
+          "rank": 2,
+          "helmResponse": 1.15,
+          "persistence": "local"
+        },
+        "label": "Piloting II · helm +15%. Learned in this game."
+      },
+      "after": {
+        "xp": 0,
+        "pack": "{\"cap\":10,\"goods\":{}}",
+        "raftGoods": "{}",
+        "blueprint": "{\"parts\":[[\"foundation\",0,0,0,0],[\"foundation\",1,0,0,0],[\"foundation\",0,1,0,0],[\"foundation\",1,1,0,0],[\"sail\",0,0,0,0],[\"crate\",1,1,0,0]],\"work\":{}}"
+      },
+      "noCombat": {
+        "enemyVisible": false,
+        "visibleSalvos": 0
+      },
+      "viewportCheck": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "speedLabel": "reference-gauge-present",
+        "lessonActivity": "lesson",
+        "htmlLanguage": "en"
+      }
+    }
+  ],
+  "failures": []
+}

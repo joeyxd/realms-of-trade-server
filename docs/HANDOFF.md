@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
+concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
+embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger
+nuevos; repetición sin premio adicional. 174 pruebas integradas, 38 de agentes y tres vistas de navegador
+aprobadas; recursos M5 y continuidad también pasan juntos (22 casos, con solapamiento). Publicación/estado
+VPS en la entrega; una conexión abierta aplaza el relevo. Sigue refugio con techo/puerta, después farol;
+disponer de fuentes utilizables antes de reducir la luz nocturna. PRG02a sin aprendizaje queda histórico.
+
 **AREA15, 2026-10-10:** [recursos/crafting M5](delivery/m5-resource-authority.md) en release aislada
 alpha.22: nodos, golpes, herramientas, inventario, reloj y recibo en una transacción. Pausa offline
 aprobada; 176 pruebas tras integrar upstream y ocho verificaciones UI. SQL015 confirmado por el autor; consultar la
