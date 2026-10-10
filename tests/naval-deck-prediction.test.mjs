@@ -28,6 +28,27 @@ test('ACK drops acknowledged steps and replays the remaining bounded walk comman
   assert.equal(client.acceptSnapshot(snapshot(acknowledged, { ack: 1, tick: 41 })), 'duplicate');
 });
 
+test('same-tick door changes reconcile collision data and replay pending steps without resetting the deck epoch', () => {
+  const client = new NavalDeckPrediction(), engine = new DeckWalkEngine();
+  const door = ['door', 0, 0, 0, 2], cabinParts = [...parts, door];
+  const initial = { ...start(), x: 1, z: 1 };
+  const closed = snapshot(initial, { parts: cabinParts, params: { ...params, openDoors: [] } });
+  assert.equal(client.acceptSnapshot(closed), 'accepted');
+  for (let i = 0; i < 20; i++) client.step({ mx: 0, mz: 1 });
+  const stoppedZ = client.state.z, epoch = client.epoch, seq = client.seq;
+  const opened = { ...closed, params: { ...params, openDoors: [door] } };
+  assert.equal(client.acceptSnapshot(opened), 'accepted', 'changed geometry is not discarded as a duplicate');
+  assert.deepEqual(client.params.openDoors, [door]);
+  let expected = initial;
+  for (let i = 0; i < 20; i++) expected = engine.step(expected, { mx: 0, mz: 1 }, cabinParts, opened.params);
+  near(client.state.z, expected.z, 'replay through open doorway');
+  assert.ok(client.state.z > stoppedZ + 0.2);
+  assert.equal(client.epoch, epoch); assert.equal(client.seq, seq); assert.equal(client.pending.length, 20);
+  assert.equal(client.acceptSnapshot(opened), 'duplicate');
+  assert.equal(client.acceptSnapshot({ ...opened, params: { ...params, openDoors: [['door', 99, 99, 0, 0]] } }), 'rejected');
+  assert.deepEqual(client.params.openDoors, [door], 'invalid same-tick geometry is rejected atomically');
+});
+
 test('neutral consumes a sequence without advancing prediction; invalid input leaves state untouched', () => {
   const client = new NavalDeckPrediction();
   assert.equal(client.acceptSnapshot(snapshot(start())), 'accepted');

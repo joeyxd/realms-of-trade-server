@@ -6,7 +6,7 @@ import { tuning } from '../../data/tuning.js';
 import { EDITOR_PARTS, EDITOR_RADIUS } from '../../data/raftEditor.js';
 import { load, unload, holdUsed, roomFor, newHold, goodMass } from '../economy/cargo.js';
 import { raftCapacity } from '../economy/raftCapacity.js';
-import { place, remove, raftStats } from '../economy/raft.js';
+import { canPlace, place, remove, raftStats } from '../economy/raft.js';
 import { publicRafts } from './rafts.js';
 import { raftGangplank } from '../raftGeometry.js';
 import { sanitizeProduction, productionKey } from '../economy/raftProduction.js';
@@ -141,6 +141,12 @@ function safeForOccupants(w, r, parts) {
 // Search the actual shared raft surfaces and blockers, rather than treating a nearby wall as proof of entrapment.
 // The lattice is finer than character collision samples and remains small for the 12-cell blueprint limit.
 function canReachGangplank(deck, id, [sx, sz, sy, radius]) {
+  // Every nearby character can open these unlocked doors. Path safety must allow that action,
+  // otherwise placing the final cabin wall would reject a usable room as a sealed trap.
+  const traversable = new deck.constructor(deck.map);
+  traversable.update([...deck.entries.values()].map(({ record }) => ({ ...record,
+    openDoors: record.parts.filter((p) => p[0] === 'door') })));
+  deck = traversable;
   const g = deck.entries.get(id);
   if (!g || !g.plank) return false;
   const r = g.record, c = Math.cos(r.yaw), s = Math.sin(r.yaw), step = 0.25;
@@ -374,6 +380,10 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
+    if (id === 'roof') {
+      const support = canPlace(activeRaftParts(active), msg.piece);
+      if (support) return reject(w, e, msg, support, ship);
+    }
     const virtual = newHold(1e9);
     for (const g of new Set([...Object.keys(hold.goods), ...Object.keys(pack.goods)]))
       virtual.goods[g] = (hold.goods[g] || 0) + (pack.goods[g] || 0);

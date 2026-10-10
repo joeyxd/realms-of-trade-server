@@ -1,6 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA03 PRG01b2, 2026-10-10 — alpha.24/protocolo 36:** [Tala cooperativa](delivery/prg01b2-logging.md)
+**AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
+Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y apertura por instancia.
+Dueño/visitante usan puertas sin cerradura; guarda el perfil M5 del dueño, sin SQL ni otro writer.
+Techo se oculta al entrar y vuelve al salir. Cubierta/predicción admiten cambios de puerta en el mismo tick.
+516 pruebas tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas/inspeccionadas.
+Publicación/imagen/entrada VPS en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
+actualizados; sigue RNV02 farol usable, después oscuridad. No acredita clima/descanso/colapso estructural.
+
+**AREA03 PRG01b2, 2026-10-10 — corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37:** [Tala cooperativa](delivery/prg01b2-logging.md)
 implementada sobre la única autoridad M5: palmera, troncos, práctica proporcional y hasta tres perfiles
 actuales en una transacción. Incluye participantes offline, hito 60, cadencia 54→45 desde el siguiente
 golpe y ficha Oficios/Trades ES/EN. SQL016 y flag opt-in; no confundir publicación del runtime con

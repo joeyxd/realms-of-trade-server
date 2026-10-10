@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 36; // Pilot learning/save evidence and helm response; retains private epoch-bound agent reads.
+export const PROTOCOL_VERSION = 37; // Instance-bound open doors on public rafts and moving-deck collision/prediction.
 
 export const MSG = {
   // client -> server

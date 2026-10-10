@@ -287,6 +287,7 @@ export class GameScene {
   update(dt, ctx) {
     this.time += dt;
     if (this.rafts.update(ctx.rafts || [], this.time, ctx.you || 0)) this.pipeline.markDirty();
+    if (this.rafts.setInterior(ctx.shelterId ?? null)) this.pipeline.markDirty();
     U.mnTime.value = this.time;
     this.pipeline.update(dt);
     this.focus.copy(ctx.focus);

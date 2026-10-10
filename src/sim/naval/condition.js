@@ -2,6 +2,7 @@
 // Refit keeps surviving instance identities and damage; only paid placement creates a new instance.
 import { RAFT_PARTS } from '../../data/raftparts.js';
 import { createNavalStructure, hullIntegrity, liveStructureParts } from './structure.js';
+import { sanitizeOpenDoors } from './shelter.js';
 
 const same = (a, b) => a?.[0] === b?.[0] && a.slice(1, 4).every((v, i) => v === b[i + 1]) && (a[4] || 0) === (b[4] || 0);
 const MAX_NEXT = 1e9;
@@ -54,6 +55,11 @@ export function restoreRaftCondition(raw, parts) {
 
 export function persistRaftCondition(source) {
   if (source.condition) source.ship.condition = encodeRaftCondition(source.condition, source.conditionNext);
+  if (Object.hasOwn(source.ship, 'openDoors')) {
+    const open = sanitizeOpenDoors(source.ship.openDoors, source.ship.condition);
+    if (open.length) source.ship.openDoors = open;
+    else delete source.ship.openDoors;
+  }
 }
 
 export function refitRaftCondition(source, parts, { reinforceIndex = -1 } = {}) {
