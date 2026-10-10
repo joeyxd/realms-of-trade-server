@@ -29,7 +29,7 @@ function makeServer(options = {}) {
 }
 
 function profileFixture({ woodInHold = 0, woodInPack = 0, gold = 0 } = {}) {
-  const profile = newProfile();
+  const profile = newProfile({ starter: false });
   const ship = profile.eco.ships.find((s) => s.kind === 'raft');
   ship.hold.cap = raftStats(ship.grid).hold;
   ship.hold.goods = {};

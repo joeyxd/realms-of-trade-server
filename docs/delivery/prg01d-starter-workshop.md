@@ -1,0 +1,38 @@
+# PRG01d — taller personal, bodega inicial y capacidad
+
+**Estado: implementación local; publicación y activación SQL en vivo pendientes.** El corte implementa la entrega personal de diez tablas, el crédito único de primera bodega, kits de caja y mochila con límites separados de volumen y masa. El host controla las operaciones. No se ha confirmado despliegue, activación en una base viva ni aceptación con una sesión autenticada.
+
+## Comportamiento entregado
+
+- El host habilita las operaciones del taller con `workshopOperations`. En perfiles nuevos, esa opción activa el estado de taller y la mochila básica de 18 uV. Con la opción apagada, los perfiles nuevos mantienen el contrato legado de 10 de capacidad y omiten `carry`/`workshop`; los perfiles existentes se conservan al abrir sesión.
+- `profile.workshop` es opcional; cuando existe su forma exacta es `{v:1,boards:0..10,storageCredit:boolean,crateKits:0..99}`. El lector valida JSON con descriptores seguros, rechaza campos desconocidos/versiones futuras y trata ausencia como estado vacío. Cada operación personal aceptada aumenta `tradeRev` una vez.
+- Contribuir entrega de 1 a 10 tablas que ya estén en la mochila, sin exceder el saldo restante hacia diez. La recepción final enseña `raft_storage` y crea un crédito único de primera bodega. Si esa lección ya se conocía por progreso previo, se marca la misión como completada sin conceder otro crédito. El recibo de la primera contribución exitosa también permite a un perfil legado sin metadatos adoptar mochila básica de 18 uV, únicamente si la carga restante tras el pago cabe en volumen y masa.
+- La primera bodega colocada consume el crédito; otras bodegas cuestan diez tablas. Crear un kit de caja cuesta dos tablas y aumenta `crateKits`; colocar una caja consume un kit. Ambos flujos son personales y no requieren Tala ni completar una misión comunitaria. El desguace conserva el salvamento proporcional a la condición: una bodega devuelve hasta tres tablas y una caja hasta una tabla al estar a vida completa. Las piezas dañadas devuelven menos; no se restaura la vida de la balsa.
+- La mochila tiene niveles de volumen 18/30/42 uV. Fuerza es `10 + (nivel - 1)` y masa máxima `18 + 2 × (Fuerza - 10)` uM. Subir del nivel inicial cuesta 2 tablas y 3 lona; subir al último nivel cuesta 4 tablas y 5 lona. El servidor cobra primero en una copia y comprueba después que los bienes restantes caben en la capacidad nueva; un rechazo no muta el perfil.
+- La receta de tabla básica consume dos troncos y produce una tabla. Tala usa objetivo +45 ticks, fin +90, inicio mínimo +6 y ventanas 5/8/11 ticks para práctica 0/60/180. Los tres golpes entregan 3–6 troncos según aciertos y diez puntos de práctica por ciclo. Son valores iniciales de tuning, todavía pendientes de playtest.
+- SQL024 es aditiva y sigue a SQL022; SQL021 y sus recibos anteriores no se reinterpretan. La bandera de taller controla también la ruta del desafío de Tala; las operaciones de taller/recursos se mantienen bajo autoridad del host.
+
+## Verificación local registrada
+
+Estos resultados son de comandos separados; no se suman en una cifra combinada.
+
+- `node --test tests/workbench-batch.test.mjs tests/workshop-build-ui.test.mjs tests/workshop-ui.test.mjs tests/pack-inventory.test.mjs tests/raft-editor-storage-ui.test.mjs tests/workshop.test.mjs tests/starter-workshop-authority.test.mjs`: **40/40** aprobadas en la ejecución registrada durante el desarrollo.
+- `node --test tests/commerce.test.mjs tests/raft-editor.test.mjs tests/logging-authority.test.mjs`: **27/27** aprobadas tras actualizar fixtures de capacidad y consumo.
+- `node --test tests/artisan-process-recovery.test.mjs tests/artisan-sql.test.mjs tests/profile-sessions-starter.test.mjs`: **10/10** aprobadas, incluyendo recuperación/compatibilidad del flujo SQL021.
+- La última ejecución reportada de `tests/starter-workshop-sql.test.mjs` fue **6/7**; está bajo reparación un conflicto de `raft.remove`. La prueba requiere una ejecución limpia después de corregir ese conflicto antes de aceptar SQL024.
+- El QA de paneles registró **39 comprobaciones locales y 36 capturas** para desktop, landscape y portrait, en español e inglés y con estados parciales/listos. Son fixtures locales: no demuestran aprobación del host autenticado, durabilidad de una base viva ni funcionamiento en un teléfono físico.
+
+## Evidencia visual
+
+El [índice de evidencia visual](prg01d-starter-workshop/ui/README.md) explica el alcance y enlaza el inventario completo. El [JSON de resultados](prg01d-starter-workshop/ui/evidence.json) recoge texto visible, ajuste al viewport y archivo de cada captura.
+
+- [Panel de taller, entrega parcial, escritorio ES](prg01d-starter-workshop/ui/desktop-es-partial.png)
+- [Crédito de primera bodega, escritorio EN](prg01d-starter-workshop/ui/desktop-en-ready.png)
+- [Taller en viewport móvil, portrait ES](prg01d-starter-workshop/ui/portrait-es-partial.png)
+- [Editor de balsa y bodega, landscape EN](prg01d-starter-workshop/ui/landscape-en-storage.png)
+- [Banco de trabajo, escritorio EN](prg01d-starter-workshop/ui/desktop-en-workbench.png)
+- [Panel de Tala, portrait EN](prg01d-starter-workshop/ui/portrait-en-timing.png)
+
+## Pendiente para publicación
+
+Resolver y volver a ejecutar la prueba SQL de `raft.remove` que está bajo reparación. Después, aplicar/verificar SQL024 en el entorno destino, validar readiness del host, publicar el mismo corte y hacer un canario autenticado que confirme recibos durables, reintentos idempotentes, carga y colocación/desguace. Hasta completar esos pasos, esta entrega describe implementación y pruebas locales, no disponibilidad en vivo.

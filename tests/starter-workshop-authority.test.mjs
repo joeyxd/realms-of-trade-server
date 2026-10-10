@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { economicOperationId } from '../server/economicAuthority.mjs';
 import { newProfile } from '../src/sim/systems/inventory.js';
-import { ACCOUNT_ONE, RESOURCE_WORLD, calmAt, copy, deferred, findNode, makeResourceHost,
+import { ACCOUNT_ONE, RESOURCE_WORLD, calmAt, connect, copy, deferred, findNode, makeResourceHost,
   makeResourceStore, startResourceHost, submitAndApply, turn } from './helpers/resource-authority-fixture.mjs';
 
 const options = { loggingOperations: true, artisanOperations: true, workshopOperations: true,
@@ -103,8 +103,7 @@ test('authoritative timing produces exactly earned logs and rejects a made-up ch
     while (host.worldState.resourceTick() < aim.challenge.targetTick) host.server.step();
     const ack = await submitAndApply(host, client, { type: 'resource', op: 'gather', opId: `timed-hit-${i}`,
       node: node.id, expectedRev: node.rev, challenge: aim.challengeId });
-    assert.equal(ack?.ok, true, JSON.stringify({ i, ack, status: host.economicAuthority.status(),
-      candidate: host.economicAuthority.active?.request, proposal: host.economicAuthority.active?.proposal?.ack }));
+    assert.equal(ack?.ok, true, JSON.stringify({ i, ack, status: host.economicAuthority.status() }));
     assert.equal(ack.timing.quality, 1); assert.equal(ack.count, i === 2 ? 6 : 0);
   }
   assert.equal(p.eco.pack.goods.tronco, 6); assert.equal(p.progression.practice.logging, 10);
@@ -113,7 +112,64 @@ test('authoritative timing produces exactly earned logs and rejects a made-up ch
 });
 
 test('missing workshop SQL readiness blocks admission before world adoption', async () => {
-  const { store } = makeResourceStore({ checkStarterWorkshop: async () => { throw new Error('SQL022 unavailable'); } });
+  const { store } = makeResourceStore({ checkStarterWorkshop: async () => { throw new Error('SQL023 unavailable'); } });
   const host = makeResourceHost(store, async () => ACCOUNT_ONE, options);
-  await assert.rejects(host.prepare(), /SQL022 unavailable/); assert.equal(host.worldState.ready, false);
+  await assert.rejects(host.prepare(), /SQL023 unavailable/); assert.equal(host.worldState.ready, false);
+});
+
+test('paid second storage debits ten boards and an occupied tile preserves the prepaid credit', async t => {
+  const f = await fixture(t), p = profileFor(f), { host, client } = f;
+  await submitAndApply(host, client, artisan(p, 'contribute', 'partial', { amount: 5 }));
+  p.eco.pack.goods.madera = 5;
+  await submitAndApply(host, client, artisan(p, 'contribute', 'finish', { amount: 5 }));
+  const ship = p.eco.ships[0]; onDeck(f, ship);
+  const before = copy(p);
+  const place = piece => ({ type: 'raft', op: 'place', opId: `place-${piece[1]}-${piece[2]}`,
+    id: ship.id, expectedRev: ship.rev, piece });
+  const occupied = await submitAndApply(host, client, place(['storage', 0, 0, 0, 0]));
+  assert.equal(occupied?.ok, false); assert.deepEqual(p, before);
+  assert.equal((await submitAndApply(host, client, place(['storage', 0, 1, 0, 0])))?.ok, true);
+  p.eco.pack.goods.madera = 6; ship.hold.goods.madera = 4;
+  assert.equal((await submitAndApply(host, client, place(['storage', 1, 0, 0, 0])))?.ok, true);
+  assert.equal(p.eco.pack.goods.madera, undefined); assert.equal(ship.hold.goods.madera, undefined);
+  assert.equal(ship.hold.cap, 46); assert.equal(p.workshop.storageCredit, false);
+});
+
+test('partial workshop progress survives host restart and shares the receipt authority with paid fire', async t => {
+  const { store, base } = makeResourceStore();
+  const f = await startResourceHost(t, store, { goods: { madera: 6 }, options: { ...options, fireOperations: true } });
+  const p = profileFor(f); calmAt(f.host, f.entity(), f.host.server.world.resources.bench);
+  assert.equal((await submitAndApply(f.host, f.client, artisan(p, 'contribute', 'before-restart', { amount: 5 })))?.ok, true);
+  const fire = { type: 'fire', op: 'load', opId: 'workshop-fire', ship: '', part: 'hand', kind: 'handTorch', expectedRev: 0, lit: false };
+  assert.equal((await submitAndApply(f.host, f.client, fire))?.ok, true);
+  assert.equal(p.workshop.boards, 5); assert.equal(p.eco.pack.maxMass, 18);
+  await f.host.close();
+  const persisted = await base.loadWorld(RESOURCE_WORLD);
+  const resumed = makeResourceHost(store, async () => ACCOUNT_ONE, { ...options, fireOperations: true });
+  t.after(() => resumed.close()); await resumed.prepare();
+  assert.equal(resumed.worldState.resourceTick(), persisted.data.resources.tick, 'downtime cannot advance the resource clock');
+  const client = connect(resumed); client.hello(); await Promise.all([...resumed.joins]);
+  const entity = resumed.server.clients.get(client.id).entity, profile = resumed.server.world.profiles.get(entity);
+  assert.equal(profile.workshop.boards, 5); assert.equal(profile.workshop.storageCredit, false);
+  assert.equal(profile.fire.slots.hand.seconds, 1200); assert.equal(profile.eco.pack.maxMass, 18);
+  const replay = await submitAndApply(resumed, client, fire);
+  assert.equal(replay?.replay, true); assert.equal(profile.eco.pack.goods.madera, undefined);
+});
+
+test('an existing legacy pack adopts the basic carry limits inside its first successful workshop receipt', async t => {
+  const { store, base } = makeResourceStore(), legacy = newProfile({ starter: false });
+  legacy.eco.pack.goods = { madera: 3 };
+  await store.initializeProfile(ACCOUNT_ONE, legacy);
+  const host = makeResourceHost(store, async () => ACCOUNT_ONE, options);
+  t.after(() => host.close()); await host.prepare();
+  const client = connect(host); client.hello(); await Promise.all([...host.joins]);
+  const entity = host.server.clients.get(client.id).entity, p = host.server.world.profiles.get(entity);
+  assert.equal(p.eco.pack.cap, 10); assert.equal(p.carry, undefined);
+  calmAt(host, entity, host.server.world.resources.bench);
+  assert.equal((await submitAndApply(host, client, artisan(p, 'contribute', 'legacy-first-board', { amount: 1 })))?.ok, true);
+  assert.deepEqual(p.carry, { v: 1, backpack: 0 }); assert.equal(p.eco.pack.cap, 18);
+  assert.equal(p.eco.pack.maxMass, 18); assert.equal(p.eco.pack.goods.madera, 2);
+  const receipt = await base.loadEconomicOperation(receiptId('legacy-first-board'));
+  assert.equal(receipt.request.before.carry, undefined); assert.equal(receipt.request.before.eco.pack.cap, 10);
+  assert.equal(receipt.request.profile.eco.pack.cap, 18);
 });

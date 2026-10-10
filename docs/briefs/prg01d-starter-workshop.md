@@ -35,4 +35,18 @@ Tuning inicial de capacidad: mochila básica 18 uV; mejoras 30/42 uV. Fuerza = 1
 
 La referencia visual sigue siendo el banco S19 y la caja procedural existente, revisados en [D06-REUSE](../research/unreal-assets/D06-REUSE.md). No se necesita arte ni exportación Unreal nueva para este recorrido.
 
+## Contrato implementado y alcance de activación
+
+El estado personal es opcional y versionado: `workshop:{v:1,boards:0..10,storageCredit:boolean,crateKits:0..99}`. La ausencia representa el estado vacío; campos adicionales, descriptores inseguros y versiones futuras se rechazan. `tradeRev` aumenta con cada operación personal exitosa. Las entregas aceptan de 1 a 10 tablas, únicamente desde la mochila y hasta completar diez; no consumen carga comunitaria. El recibo final enseña `raft_storage` y da un crédito único. Si la lección ya estaba aprendida por progreso previo, se considera completada y no se vuelve a otorgar crédito.
+
+Colocar la primera bodega usa ese crédito; las siguientes cuestan diez tablas. El kit de caja cuesta dos tablas en el banco, y colocar una caja consume un kit. El taller no requiere Tala ni completar una misión/comunidad. El desguace conserva los valores anteriores: tres tablas por bodega y un kit por caja, con la balsa en vida completa. El perfil inicial con funciones nuevas se habilita mediante `workshopOperations`; con esa opción apagada, un perfil nuevo conserva el formato/capacidad legado de 10 y no recibe metadatos `carry` ni `workshop`. Los perfiles legados existentes tampoco se reescriben al iniciar sesión. Tras un recibo de taller exitoso, un perfil legado puede adoptar la mochila básica de 18 uV si, después de pagar, su carga cabe en volumen y masa; nunca se descartan bienes.
+
+Las migraciones son aditivas: SQL024 se aplica después de SQL022. El cambio no altera recibos anteriores de SQL021. La mochila básica y sus mejoras tienen 18/30/42 uV; Fuerza es `10 + (nivel - 1)` y la carga máxima es `18 + 2 × (Fuerza - 10)` uM. Las mejoras cuestan, respectivamente, 2 tablas + 3 lona y 4 tablas + 5 lona. Se cobran los materiales y luego se valida que la carga restante quepa en el nuevo límite; si no cabe, la operación se rechaza sin mutación.
+
+Tala conserva el desafío con objetivo a +45 ticks, cierre a +90 y comienzo no anterior a +6. El ancho inicial es 5/8/11 ticks para práctica 0/60/180; los tres golpes producen 3–6 troncos según aciertos y diez puntos de práctica por ciclo. Esos valores son tuning inicial, pendiente de playtest.
+
+## Estado de aceptación
+
+La entrega local y la evidencia visual están en [PRG01d starter workshop](../delivery/prg01d-starter-workshop.md). La publicación y la activación SQL en un entorno vivo siguen pendientes; las pruebas locales no son un canario autenticado ni confirman persistencia en producción.
+
 Referencias: [PRG01c](prg01c-artisan-storage.md), [Tala durable](prg01b2-logging.md), [autoridad de recursos](m5-resource-authority.md), [continuidad](../CONTINUITY-STATUS.md).

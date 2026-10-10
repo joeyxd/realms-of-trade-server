@@ -7,9 +7,10 @@ import { PearlQueue } from './pearlQueue.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
 
 export class ProfileSessions {
-  constructor(store, onFailure, { journal = null } = {}) {
+  constructor(store, onFailure, { journal = null, starter = true } = {}) {
     this.store = store;
     this.onFailure = onFailure;
+    this.starter = starter === true;
     this.accounts = new Map();
     this.clients = new Map();
     this.tasks = new Set();
@@ -28,13 +29,13 @@ export class ProfileSessions {
       let row = await this.store.loadProfile(key);
       if (s.closed) throw new StoreError('cancelled');
       if (!row && initialize) {
-        const fresh = newProfile({ weapon });
+        const fresh = newProfile({ weapon, starter: this.starter });
         fresh.pirateId = `account:${key}`;
         row = await initialize(key, fresh);
         if (s.closed) throw new StoreError('cancelled');
         if (!row) throw new StoreError('response');
       }
-      const p = row ? sanitizeProfile(row.data) : newProfile({ weapon });
+      const p = row ? sanitizeProfile(row.data) : newProfile({ weapon, starter: this.starter });
       if (!p) throw new StoreError('profile');
       if (row && (!Number.isSafeInteger(row.version) || row.version < 1 || row.version > 2147483647)) throw new StoreError('response');
       pearlMutationGate(this).assertAvailable({ uids: profilePearls(p).map((q) => q.uid) });

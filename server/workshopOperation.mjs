@@ -84,6 +84,16 @@ export function workshopProfileDelta(profile, command) {
       ...(command.op === 'contribute' ? { amount: command.amount } : {}), expectedRev: command.expectedRev });
     if (result.why) return { profile, why: result.why };
     const next = result.profile;
+    // Adopt an old pack only inside this same paid workshop receipt, after its debit.
+    // No login autosave or historical receipt is allowed to rewrite its capacity.
+    if (!readCarryField(next).present) {
+      const carry = { v: CARRY.version, backpack: 0 }, limits = carryLimits(carry, next.lvl);
+      if (holdUsed(next.eco.pack) > limits.volume || holdMass(next.eco.pack) > limits.maxMass)
+        return { profile, why: 'capacity' };
+      next.carry = carry;
+      next.eco.pack.cap = limits.volume;
+      next.eco.pack.maxMass = limits.maxMass;
+    }
     return { profile: next, why: '', workshop: result.workshop || next.workshop || workshopValue(next),
       carry: result.carry || profileCarryView(next) };
   } catch (error) {

@@ -38,10 +38,10 @@ test('workshop preview supports repeated partial delivery, completion credit, ki
 
 test('draftWorkshop commits only personal changes, checks bench access, and upgrades carry with exact costs', () => {
   const world = benchWorld(), state = { opaque: 'same community reference' };
-  const p = profile({ wood: 10, canvas: 5 });
-  const partial = draftWorkshop({ command: command(p, 'contribute', { amount: 3 }), profile: p, world, entity: 1, state });
-  assert.equal(partial.ack.ok, true); assert.equal(partial.ack.rev, 4); assert.equal(partial.profile.eco.pack.goods.madera, 7);
-  assert.equal(partial.community, state); assert.equal(p.eco.pack.goods.madera, 10);
+  const p = profile({ wood: 3, canvas: 0 }); p.eco.pack.goods = { madera: 3 };
+  const partial = draftWorkshop({ command: command(p, 'contribute', { amount: 1 }), profile: p, world, entity: 1, state });
+  assert.equal(partial.ack.ok, true); assert.equal(partial.ack.rev, 4); assert.equal(partial.profile.eco.pack.goods.madera, 2);
+  assert.equal(partial.community, state); assert.equal(p.eco.pack.goods.madera, 3);
   const outOfRange = { ...world, ecs: { ...world.ecs, x: { ...world.ecs.x, 1: 20 } } };
   const denied = draftWorkshop({ command: command(p, 'craftCrate'), profile: p, world: outOfRange, entity: 1, state });
   assert.equal(denied.ack.ok, false); assert.equal(denied.ack.why, 'far'); assert.equal(denied.profile, p);

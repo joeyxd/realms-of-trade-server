@@ -3,7 +3,7 @@ import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { readProgression, loggingShares, loggingStatus, planLoggingHit } from '../src/sim/systems/progression.js';
 import { LOGGING } from '../src/data/progression.js';
 import { HARVEST } from '../src/data/resources.js';
-import { evaluateLoggingChallenge } from '../src/sim/systems/loggingTiming.js';
+import { createLoggingChallenge, evaluateLoggingChallenge } from '../src/sim/systems/loggingTiming.js';
 
 const UUID = /^(?!00000000-0000-0000-0000-000000000000$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const fail = () => { throw new Error('logging operation'); };
@@ -24,7 +24,11 @@ function timingQuality(request, node) {
   let result;
   try { result = evaluateLoggingChallenge(timing.challenge, { rev: node.rev, receivedTick: timing.receivedTick }); }
   catch { fail(); }
-  if (timing.quality !== result.quality || !same(request.ack.timing, timing)) fail();
+  const actor = request.beneficiaries?.find(row => row.account === request.account);
+  const expected = createLoggingChallenge({ node: node.id, rev: node.rev,
+    startTick: timing.challenge.startTick, practice: readProgression(actor?.before.progression).practice.logging });
+  if (timing.quality !== result.quality || timing.receivedTick !== request.worldData.resources.tick ||
+      !same(timing.challenge, expected)) fail();
   return result.quality;
 }
 
