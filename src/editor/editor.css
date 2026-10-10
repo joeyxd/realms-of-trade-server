@@ -63,7 +63,7 @@
 .gm-import-button span { padding: 7px 10px; border: 1px solid rgba(177, 202, 205, .24); border-radius: 7px; background: #17272e; }
 .gm-import-button input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
 .gm-import-button:hover span { background: #24404a; border-color: #60bbb5; }
-.gm-workspace { position: absolute; inset: 72px 10px 10px; display: grid; grid-template-columns: 286px minmax(0, 1fr) 268px; gap: 10px; pointer-events: none; }
+.gm-workspace { position: absolute; inset: 72px 10px 10px; display: grid; grid-template-columns: 286px minmax(0, 1fr) 268px; grid-template-rows: minmax(0, 1fr); gap: 10px; pointer-events: none; }
 .gm-sidebar, .gm-inspector {
   min-height: 0;
   overflow: hidden;
@@ -116,13 +116,13 @@
 .gm-asset-copy small { overflow: hidden; color: #92a8ad; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .gm-asset-ready { color: #72c6b9; font-size: 18px; }
 .gm-empty { padding: 12px; color: #a1b2b7; }
-.gm-inspector { align-self: start; max-height: 100%; overflow: auto; padding: 13px; }
+.gm-inspector { align-self: start; min-height: 0; max-height: 100%; overflow: auto; padding: 13px; }
 .gm-selection-name { margin: 9px 0 12px; overflow-wrap: anywhere; color: #b7c9cc; font-size: 11px; }
 .gm-transform-tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-.gm-snap { display: flex; gap: 6px; align-items: center; margin-top: 10px; font-size: 11px; }
+.gm-snap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; font-size: 11px; }
 .gm-snap label { white-space: nowrap; }
 .gm-snap input[type="number"] { width: 55px; }
-.gm-snap select { min-width: 0; width: 110px; }
+.gm-snap select { min-width: 130px; flex: 1; }
 .gm-snap input, .gm-snap select { color: #dbe8e9; background: #102129; border: 1px solid #354b54; border-radius: 4px; padding: 4px; }
 .gm-editor [data-action="ground"] { width: 100%; margin-top: 9px; }
 .gm-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 11px; }
@@ -130,11 +130,14 @@
 .gm-fields input { height: 31px; font-size: 12px; }
 .gm-fields label:last-child { grid-column: 1 / -1; }
 .gm-collider-note { margin: 12px 0 8px; color: #dfbd7f; font-size: 10px; }
-.gm-status { min-height: 36px; padding: 8px; border-radius: 6px; color: #b5c8cb; background: rgba(255,255,255,.045); font-size: 11px; overflow-wrap: anywhere; }
+.gm-status { position: sticky; bottom: 0; min-height: 36px; padding: 8px; border-radius: 6px; color: #b5c8cb; background: #11252c; font-size: 11px; overflow-wrap: anywhere; }
 .gm-status[data-kind="ok"] { color: #91e5bf; }
 .gm-status[data-kind="error"] { color: #ff9e8c; }
 .gm-status[data-kind="saving"] { color: #f2d184; }
 .gm-canvas-note { align-self: end; justify-self: center; margin-bottom: 9px; padding: 7px 10px; border-radius: 7px; color: #d4e1e3; background: rgba(8, 19, 24, .8); font-size: 10px; pointer-events: none; }
+@media (max-width: 1200px) {
+  .gm-workspace { top: 110px; }
+}
 @media (max-width: 950px) {
   .gm-editor .gm-topbar { align-items: flex-start; }
   .gm-brand { min-width: 115px; }
@@ -158,3 +161,5 @@
 .gm-publication-report li { margin-bottom: .45rem; }
 .gm-publication-report li button { margin-left: .4rem; font-size: .8rem; overflow-wrap: anywhere; }
 .gm-revision-id { display: block; overflow-wrap: anywhere; font-size: .75rem; }
+.gm-content label { display: block; margin: .7rem 0; }
+.gm-content select { display: block; width: 100%; margin-top: .3rem; padding: .5rem; color: inherit; background: #203338; border: 1px solid #62716b; border-radius: .3rem; }

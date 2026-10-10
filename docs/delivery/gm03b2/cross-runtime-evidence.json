@@ -1,0 +1,47 @@
+{
+  "schema": "gm03b2-cross-runtime-evidence/v1",
+  "date": "2026-10-10",
+  "method": {
+    "nodeRuntime": "Node.js 24.14.0",
+    "browserRuntime": "Chrome via Playwright, headless, GPU and software rasterizer disabled",
+    "moduleDelivery": "Local HTTP server serving the current worktree source modules",
+    "seed": 99282957,
+    "comparedValues": [
+      "generateWorld(GAME.seed).props",
+      "generateWorld(GAME.seed).colliders",
+      "resourceLayout(generateWorld(GAME.seed))",
+      "gmEditableBaseProps(..., terrain-s21-v1) IDs"
+    ]
+  },
+  "counts": {
+    "props": 1259,
+    "colliders": 773,
+    "resourceNodes": 206,
+    "editableBaseIdsNode": 296,
+    "editableBaseIdsChrome": 296,
+    "differentNumericValues": 43,
+    "differentEditableBaseIds": 0
+  },
+  "sha256CanonicalJson": {
+    "propsNode": "b0cea9a714a514e5eb44fe1c7b2584dcc447eb570d8dd53303df56e8d2030fb9",
+    "propsChrome": "dd140e7349dbf12228e6b6255f2b8f94788193a56b8f3927c103ba7f6f1be4ce",
+    "collidersNode": "4c7e08117e005523633b7697ef9dc3692dcdc332e5a75360e24f0d77e8b4a427",
+    "collidersChrome": "140cdb82698fe9871db4014f77c2189826662986c1eedf2c4cfb0a7277c98667",
+    "resourcesNode": "e3fcf51976cb6c960b8d74d00773d5a93e7af517af6aab5beea4a4764d89dc80",
+    "resourcesChrome": "e3fcf51976cb6c960b8d74d00773d5a93e7af517af6aab5beea4a4764d89dc80"
+  },
+  "maximumAbsoluteNumericDifference": 1.4210854715202004e-14,
+  "firstDifferences": [
+    { "path": "props.37.z", "node": -14.820036917618859, "chrome": -14.820036917618857, "delta": 1.7763568394002505e-15 },
+    { "path": "props.1182.rot", "node": -0.1418970546041623, "chrome": -0.14189705460416233, "delta": -2.7755575615628914e-17 },
+    { "path": "props.1184.x", "node": 54.546105225349514, "chrome": 54.54610522534951, "delta": -7.105427357601002e-15 },
+    { "path": "props.1184.z", "node": -9.41645381320329, "chrome": -9.416453813203297, "delta": -7.105427357601002e-15 },
+    { "path": "props.1184.y", "node": 3.7407074444015445, "chrome": 3.740707444401545, "delta": 4.440892098500626e-16 },
+    { "path": "props.1184.rot", "node": 2.2085868006529146, "chrome": 2.208586800652914, "delta": -4.440892098500626e-16 },
+    { "path": "props.1185.rot", "node": 1.8158877189541907, "chrome": 1.8158877189541904, "delta": -2.220446049250313e-16 },
+    { "path": "props.1187.z", "node": -32.72269106081055, "chrome": -32.72269106081056, "delta": -1.4210854715202004e-14 },
+    { "path": "props.1187.y", "node": 3.7649670130712534, "chrome": 3.7649670130712547, "delta": 1.3322676295501878e-15 },
+    { "path": "props.1187.rot", "node": 1.0304895555567424, "chrome": 1.0304895555567417, "delta": -6.661338147750939e-16 }
+  ],
+  "interpretation": "The resource layout is identical. Props and collider canonical hashes differ because 43 numeric values differ by floating-point ULP noise; the maximum observed absolute delta is 1.4210854715202004e-14. Editable base identity IDs match exactly for this seed."
+}

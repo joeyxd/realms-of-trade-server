@@ -1,0 +1,70 @@
+{
+  "scope": "local static client; solo Worker; no deployed server or wallet",
+  "checks": [
+    "Account: form/focus preserved, picker usable during auth, no duplicate login/wallet actions; pause values/delete confirmation retained",
+    "Community, crafting and market: exact pending commands, quantities and prices preserved; no duplicate sends; completed feedback and empty-inventory rows hot-switch; market select focus retained",
+    "Title picker, name preservation, settings value preservation, reload preference",
+    "F3 performance overlay switches ES/EN during the real solo game",
+    {
+      "spill": true,
+      "questReady": "Survive the Caldera: ready! Return to Capitana Brea.",
+      "shop": true
+    },
+    {
+      "liveChatLabel": true,
+      "humanTextPreserved": true,
+      "noReplay": true,
+      "offscreenPromptHidden": true
+    },
+    {
+      "tattooBranches": [
+        "tromba:0",
+        "tromba:1",
+        "tromba:2",
+        "leap:0",
+        "leap:1",
+        "leap:2",
+        "wheel:0",
+        "wheel:1",
+        "wheel:2"
+      ]
+    },
+    {
+      "missionBranches": [
+        "tierra",
+        "brea",
+        "sendero",
+        "guardianes",
+        "prueba",
+        "coral",
+        "caza"
+      ]
+    },
+    "Solo world, HUD, character sheet both languages, map, mission offer and ready branches, narrow landscape layout",
+    "Touch emulation 844x390: real pointer controls, EN first mount, settings picker tappable with 44px targets, ES labels after resume",
+    "CDN failure picker works without modules and changes failure text"
+  ],
+  "screenshots": [
+    "docs\\delivery\\i18n01\\10-account-en.png",
+    "docs\\delivery\\i18n01\\11-account-error-es.png",
+    "docs\\delivery\\i18n01\\12-mobile-confirmation-es.png",
+    "docs\\delivery\\i18n01\\15-community-en.png",
+    "docs\\delivery\\i18n01\\16-crafting-en.png",
+    "docs\\delivery\\i18n01\\17-market-en.png",
+    "docs\\delivery\\i18n01\\01-title-en.png",
+    "docs\\delivery\\i18n01\\02-settings-es.png",
+    "docs\\delivery\\i18n01\\20-performance-en.png",
+    "docs\\delivery\\i18n01\\03-character-en.png",
+    "docs\\delivery\\i18n01\\04-character-es.png",
+    "docs\\delivery\\i18n01\\05-map-en.png",
+    "docs\\delivery\\i18n01\\13-skills-en.png",
+    "docs\\delivery\\i18n01\\14-skills-es.png",
+    "docs\\delivery\\i18n01\\06-world-en.png",
+    "docs\\delivery\\i18n01\\07-mobile-gear-en.png",
+    "docs\\delivery\\i18n01\\08-mobile-settings-en.png",
+    "docs\\delivery\\i18n01\\18-touch-en.png",
+    "docs\\delivery\\i18n01\\19-touch-settings-es.png",
+    "docs\\delivery\\i18n01\\09-boot-failure-es.png"
+  ],
+  "errors": []
+}

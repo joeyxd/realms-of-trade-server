@@ -1,3 +1,4 @@
+import { t, text as ltext, rich, attr, setText, setDataText, translateData, dataText, getLocale, onLocaleChange, initI18n } from './core/i18n.js';
 // Entry point: boot, title, play loop. Every per-frame subsystem runs inside safe() so one failure
 // never freezes the game.
 import * as THREE from 'three';
@@ -25,6 +26,8 @@ import { GameClient } from './client/gameClient.js';
 import { AccountAuth } from './client/accountAuth.js';
 import { WalletLink } from './client/walletLink.js';
 import { AccountPanel } from './ui/account.js';
+import { CompanionsClient } from './client/companions.js';
+import { CompanionsUI } from './ui/companions.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
@@ -56,7 +59,7 @@ import { ArtisanPanel } from './ui/artisan.js';
 import { WorkshopPanel } from './ui/workshop.js';
 import { ChatPanel } from './ui/chat.js';
 import { ChatBubbles } from './ui/chatBubbles.js';
-import { MSG } from './net/protocol.js';
+import { MSG, PROTOCOL_VERSION } from './net/protocol.js';
 import { QUESTS, QUEST_IDS, QST, NPC_TALK, goalCount } from './data/quests.js';
 import { ENCOUNTERS } from './data/encounters.js';
 import { MASTERY } from './data/weapons.js';
@@ -70,6 +73,8 @@ import { startHarvestPose } from './render/harvestPose.js';
 import { Ambience } from './audio/ambience.js';
 import { Music } from './audio/music.js';
 import { assets } from './render/assets/registry.js';
+import { loadGmWorldContent } from './editor/activeContent.js';
+import { installGmContent } from './editor/contentProjection.js';
 import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
 import { LiveNavigationView } from './client/liveNavigationView.js';
 import { GmEntry } from './editor/entry.js';
@@ -89,6 +94,7 @@ const escHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;
 const $ = (s) => document.querySelector(s);
 
 async function boot() {
+  initI18n();
   document.title = GAME.title.charAt(0) + GAME.title.slice(1).toLowerCase().replace(/ (\w)/, (m, c) => ' ' + c.toUpperCase());
   loadSettings();
   if (!settings.name) {
@@ -108,7 +114,8 @@ async function boot() {
   // missing or broken stays procedural. ?noassets skips them (compare against the procedural look).
   const assetsP = params.has('noassets') ? Promise.resolve(assets) : assets.load('assets/manifest.json');
   const raftSkinP = params.has('noassets') ? Promise.resolve(null) : loadNavalRaftSkin({ mobile: isTouch });
-  const map = generateWorld(GAME.seed);
+  const baseMap = generateWorld(GAME.seed);
+  const map = { ...baseMap };
   const debug = params.has('debug');
   // Online when this page comes from the game server (or ?server=ws://…), solo with ?solo or without one.
   // ?lag=&jitter= add artificial latency per direction (testing).
@@ -118,7 +125,16 @@ async function boot() {
   });
   const canvas = $('#game');
   await assetsP;
+  const transport = await transportP;
+  const gmContent = transport.kind === 'ws' ? await loadGmWorldContent({ httpBase: httpUrlFor(transport.url),
+    map, baseMap, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) : null;
   const world = new GameScene(canvas, map, { raftSkin: await raftSkinP });
+  let gmContentLayer = null;
+  if (gmContent?.revision) {
+    const { createGmContentLayer } = await import('./render/gmContent.js');
+    gmContentLayer = createGmContentLayer({ scene: world.scene, map: baseMap, assets });
+    await gmContentLayer.load(gmContent.revision.content.document, gmContent.revision.content.assets);
+  }
   // Title/editor screenshots may select a preset. Playing always follows the shared world clock.
   world.lighting.setTimeOfDay(debug ? params.get('tod') || 'cycle' : 'cycle', 0);
   if (debug && params.get('phase')) world.lighting.setPhase(+params.get('phase'));
@@ -199,7 +215,7 @@ async function boot() {
   };
   const charPanel = new CharPanel($('#charpanel'), {
     send: sendCmd, profile: () => client && client.profile, stats: playerStats,
-    backpack: () => resources.backpack(), locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    backpack: () => resources.backpack(), locale: () => getLocale(),
     nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
@@ -243,7 +259,7 @@ async function boot() {
   bus.on('raftProduction', (ev) => safe('production', () => commercePanel.onProductionResult(ev)));
   const resources = new ResourceActions({ client: () => client, player: () => ps,
     enabled: () => st.mode === 'playing' && !pause.open && input.enabled && !raftEditor.active && !commercePanel.active && !artisan?.active,
-    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    locale: () => getLocale(),
     onChange: () => charPanel.refresh(),
     onGather: (ev) => { startHarvestPose(world.views.get(client.youServer), ev); if (ev.tool) harvestSound(ev, 0); },
     toast: (html) => hud.toast(html, 4200), sound: () => sfx.pickup(0) });
@@ -261,12 +277,13 @@ async function boot() {
   });
   resources.openWorkbench = () => workbench.open();
   const raftDoors = new RaftDoorActions({ client: () => client,
-    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
+    locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('raftDoor', (ev) => safe('raftDoor', () => raftDoors.acknowledge(ev)));
   bus.on('you:welcome', () => raftDoors.reset());
   firePanel = new FirePanel({ parent: $('#ui'), client: () => client,
-    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: text => hud.toast(text, 2400),
+    locale: () => getLocale(), toast: text => hud.toast(text, 2400),
     onOpen: () => {
+      companionsPanel?.close();
       artisan?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close();
       input.setBuildContext(true); aimCtl.reset(); st.wantWeapon = 0;
     },
@@ -275,13 +292,13 @@ async function boot() {
   bus.on('fire', ev => safe('fire', () => { firePanel.acknowledge(ev); personalLantern.acknowledge(ev); }));
   bus.on('you:welcome', () => firePanel.resetSession());
   const raftLanterns = new RaftLanternActions({ client: () => client, openFuel: target => firePanel.open(target),
-    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
+    locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('raftLantern', (ev) => safe('raftLantern', () => raftLanterns.acknowledge(ev)));
   bus.on('you:welcome', () => raftLanterns.reset());
   const personalLantern = new PersonalLanternActions({ client: () => client, openFuel: target => firePanel.open(target), parent: $('#ui'), player: () => ps,
     enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && !chatPanel.typing && input.enabled &&
       !firePanel.active && !raftEditor.active && !commercePanel.active && !workbench.active && !community.active && !mapView.isOpen && !st.sheet,
-    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
+    locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('personalLantern', (ev) => safe('personalLantern', () => personalLantern.acknowledge(ev)));
   bus.on('you:welcome', () => personalLantern.reset());
   input.onHotkey('KeyN', () => personalLantern.toggle());
@@ -300,19 +317,19 @@ async function boot() {
     },
   });
   const communityTrigger = document.createElement('button');
-  communityTrigger.type = 'button'; communityTrigger.className = 'community-trigger'; communityTrigger.textContent = 'Obra comunitaria';
-  communityTrigger.hidden = true; communityTrigger.setAttribute('aria-label', 'Consultar y aportar a la obra comunitaria');
+  communityTrigger.type = 'button'; communityTrigger.className = 'community-trigger'; setText(communityTrigger, 'runtime.community');
+  communityTrigger.hidden = true; communityTrigger.setAttribute('data-l10n-aria-label', 'runtime.contribute');
   communityTrigger.addEventListener('click', () => community.active ? community.close() : community.open());
   workbench.$('.wb-head').appendChild(communityTrigger);
   bus.on('community', (ev) => safe('community', () => community.onResult(ev)));
   bus.on('profile', () => community.update());
   const artisanOptions = { parent: $('#ui'), profile: () => client?.profile, context: () => workbench.context(),
-    getLocale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    getLocale: () => getLocale(),
     enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
     submit: (command) => { if (!st.online || !client?.joined || client.t.closed) return false; client.send(command); return true; },
     onCommunity: () => community.open(),
     onContext: active => {
-      if (active) { workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
+      if (active) { firePanel?.close(); companionsPanel?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
       input.setBuildContext(active || workbench.active || community.active || commercePanel.active || raftEditor.active);
       aimCtl.reset(); st.wantWeapon = 0; document.body.classList.toggle('learning-artisan', active);
       if (!active) canvas.focus({ preventScroll: true });
@@ -335,7 +352,8 @@ async function boot() {
   artisanTrigger.addEventListener('click', () => artisan.open()); workbench.$('.wb-head').appendChild(artisanTrigger);
   bus.on('artisan', ev => safe('artisan', () => artisan.onResult(ev)));
   bus.on('profile', () => artisan.update()); bus.on('you:welcome', () => artisan.reset());
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
+  var companionsPanel = null;
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { companionsPanel?.close(); artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
@@ -373,7 +391,7 @@ async function boot() {
       input.clearActions();
       aimCtl.reset();
       st.wantWeapon = 0;
-      input.enabled = !focused && st.mode === 'playing' && !pause.open && !client?.t.closed;
+      input.enabled = !focused && !companionsPanel?.isOpen && st.mode === 'playing' && !pause.open && !client?.t.closed;
     },
   });
   bus.on('chat:state', (m) => safe('chat', () => chatPanel.onState(m)));
@@ -396,6 +414,7 @@ async function boot() {
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    companionsPanel?.close();
     chatPanel.close();
     artisan.close();
     workbench.close();
@@ -408,7 +427,7 @@ async function boot() {
     input.enabled = false;
     input.keys.clear();
     pause.show(tab);
-    safe('pause', () => { pause.root.querySelector('#pause-title').textContent = st.online ? 'Menú · la isla sigue' : 'Pausa'; });
+    safe('pause', () => { setText(pause.root.querySelector('#pause-title'), st.online ? 'runtime.onlineMenu' : 'runtime.pause'); });
     audio.muffle(true);
   }
   function closePause() {
@@ -420,6 +439,7 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (companionsPanel?.isOpen) { companionsPanel.close(); return true; }
     if (chatPanel.opened) { chatPanel.close(); return true; }
     if (artisan.active) { artisan.close(); return true; }
     if (firePanel.active) { firePanel.close(); return true; }
@@ -453,11 +473,10 @@ async function boot() {
   function openPauseFromTitle(tab) {
     pause.show(tab);
     const resume = pause.root.querySelector('#btn-resume');
-    if (resume) resume.textContent = 'Volver';
+    if (resume) setText(resume, 'runtime.back');
   }
 
   // ---- Net / entities --------------------------------------------------------------------------
-  const transport = await transportP;
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),
@@ -475,6 +494,33 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  let joiningCompanionAccount = null;
+  const companions = new CompanionsClient({ transport, auth: accountAuth,
+    joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
+  let companionsPoll = null;
+  companionsPanel = new CompanionsUI(hud.root.querySelector('.hud-top-right'), {
+    getState: () => companions.snapshot(),
+    lang: getLocale(),
+    onRefresh: () => companions.refresh(), onStop: (key) => companions.stop(key),
+    onVisibilityChange: (open) => {
+      clearInterval(companionsPoll); companionsPoll = null;
+      if (open) {
+        firePanel.close();
+        chatPanel.close(); artisan.close(); community.close(); workbench.close(); commercePanel.close();
+        raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close();
+        companions.refresh();
+        companionsPoll = setInterval(() => { if (!document.hidden) companions.refresh(); }, 5000);
+      }
+      input.clearActions(); input.keys.clear(); aimCtl.reset(); st.wantWeapon = 0;
+      input.enabled = !open && st.mode === 'playing' && !pause.open && !chatPanel.typing && !transport.closed;
+    },
+  });
+  companions.subscribe((state) => companionsPanel.setState(state));
+  onLocaleChange(() => companionsPanel.setLanguage(getLocale()));
+  document.addEventListener('pointerdown', (event) => {
+    if (companionsPanel.isOpen && !companionsPanel.container.contains(event.target) &&
+        !companionsPanel.panel.contains(event.target)) companionsPanel.close();
+  });
   let accountSetup = null;
   if (st.online && params.get('account-setup') === '1') {
     const { mountAccountSetup } = await import('./editor/accountSetup.js');
@@ -509,6 +555,7 @@ async function boot() {
       if (st.mode !== 'title' || st.boarding || client.joined) return;
       st.gmOpening = true;
       try {
+        gmContentLayer?.suspend(); installGmContent(map, baseMap, null);
         const { WorldEditor } = await import('./editor/editor.js');
         const { RemoteDraftClient } = await import('./editor/remoteDraft.js');
         if (gmOwner !== accountId) { await gmEditor?.dispose?.(); gmEditor = null; gmOwner = accountId; }
@@ -532,6 +579,7 @@ async function boot() {
               } };
             },
             onClose: ({ saved, recoveryDocument }) => {
+              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
               if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
               else gmRecoveries.delete(gmOwner);
               gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
@@ -539,6 +587,7 @@ async function boot() {
               worldUI.root.hidden = gmWorldUIHidden;
               world.setTitleShadows(true); gmEntry.closed(); input.clearActions(); input.keys.clear();
               canvas.focus({ preventScroll: true });
+              if (st.contentStale) netLost(true);
             },
           });
           const recovery = gmRecoveries.get(accountId);
@@ -560,10 +609,11 @@ async function boot() {
         gmWorldUIHidden = worldUI.root.hidden; worldUI.root.hidden = true;
         world.setTitleShadows(false); world.nearFade(false);
       } catch (error) {
+        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
         st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
         world.setTitleShadows(true); input.enabled = false;
-        title.message(escHtml('No se pudo abrir el editor / Could not open editor: ' + (gmEditor?.error?.message || error.message)) +
-          (gmEditor?.rejectedDocument ? '<button type="button" class="btn secondary" id="btn-gm-recover">Exportar borrador / Export draft</button>' : ''));
+        title.message(rich('runtime.gmFail') +
+          (gmEditor?.rejectedDocument ? '<button type="button" class="btn secondary" id="btn-gm-recover">' + ltext('runtime.gmExport') + '</button>' : ''));
         document.getElementById('btn-gm-recover')?.addEventListener('click', () => gmEditor.exportRecovery());
         throw error;
       } finally { st.gmOpening = false; }
@@ -581,17 +631,21 @@ async function boot() {
       if (st.mode !== 'title') { clearInterval(refresh); return; }
       probeServer(httpUrlFor(transport.url)).then((s2) => { if (s2 && st.mode === 'title') title.setNet({ mode: 'online', ...s2 }); });
     }, 4000);
-    transport.onClose(() => safe('net', () => netLost()));
+    transport.onClose((event) => safe('net', () => {
+      if (event.reason === 'content_revision' && gmEditor?.active) { st.contentStale = true; return; }
+      netLost(event.reason === 'content_revision');
+    }));
   } else {
     title.setNet({ mode: 'solo' });
     if (servedByGameServer()) probeServer().then((s2) => { if (s2) title.setNet({ mode: 'solo', server: s2 }); });
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
-  function netLost() {
+  function netLost(contentChanged = false) {
+    companionsPanel?.close(); companions.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
-    artisan.close(); community.close();
+    artisan.close(); community.close(); firePanel.close();
     workbench.close();
     commercePanel.close();
     raftEditor.close();
@@ -599,7 +653,7 @@ async function boot() {
     const el = document.createElement('div');
     el.className = 'net-lost';
     el.setAttribute('role', 'alertdialog');
-    el.innerHTML = `<div class="frame net-card"><h2 class="outlined">Se perdió la conexión</h2><p>El servidor de la isla no responde. Tu nombre, aspecto y arma están guardados.</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">Reconectar</button><button class="btn secondary interactive" id="btn-go-solo">Jugar solo</button></div></div>`;
+    el.innerHTML = `<div class="frame net-card"><h2 class="outlined">${ltext(contentChanged ? 'runtime.contentChanged' : 'runtime.lost')}</h2><p>${ltext(contentChanged ? 'runtime.contentChangedHint' : 'runtime.lostHint')}</p><div class="title-row"><button class="btn interactive" id="btn-reconnect">${ltext(contentChanged ? 'runtime.contentReload' : 'runtime.reconnect')}</button><button class="btn secondary interactive" id="btn-go-solo">${ltext('runtime.solo')}</button></div></div>`;
     $('#stage').appendChild(el);
     el.querySelector('#btn-reconnect').addEventListener('click', () => location.reload());
     el.querySelector('#btn-go-solo').addEventListener('click', () => switchMode('solo'));
@@ -644,25 +698,25 @@ async function boot() {
     if (ev.type === 'death' && ev.by) killFeed(ev);
     if (ev.type === 'note' && ev.code === 'save' && ev.me) {
       setSaveAside(saveSlot());
-      hud.toast('<b>Tu partida guardada no vale en este servidor.</b> Empiezas de cero; la copia vieja queda aparte.', 6000);
+      hud.toast(rich('runtime.saveInvalid'), 6000);
     }
   }));
   // Pirates sinking pirates in the Cala Calavera (M4.5).
   function killFeed(ev) {
-    const name = (id) => escHtml((client.entities.get(id) || {}).name || 'alguien');
+    const name = (id) => (client.entities.get(id) || {}).name || t('chat.someone');
     const me = client.youServer;
-    if (ev.id === me) hud.toast(`<b class="pk">☠ Te hundió ${name(ev.by)}.</b>`, 4200);
-    else if (ev.by === me) { hud.toast(`<b class="pk">☠ Hundiste a ${name(ev.id)}.</b> Su botín es de quien lo pise primero.`, 4200); sfx.mastery(); }
-    else if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) hud.toast(`☠ ${name(ev.by)} hundió a ${name(ev.id)}.`, 3200);
+    if (ev.id === me) hud.toast(rich('runtime.killed', {name: name(ev.by)}), 4200);
+    else if (ev.by === me) { hud.toast(rich('runtime.kill', {name: name(ev.id)}), 4200); sfx.mastery(); }
+    else if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) hud.toast(rich('runtime.killFeed', {attacker:name(ev.by),victim:name(ev.id)}), 3200);
   }
   // The weapon you carry: remembered for the next session, the kit shown in a toast.
   function onEquip(w) {
     const kind = WEAPON_KINDS[w] || 'sable', W = WEAPONS[kind];
     if (settings.weapon !== kind) { settings.weapon = kind; saveSettings(); }
     const kitLine = kind === 'pistolas'
-      ? 'LMB mantenido: dispara · Q Descarga · E Paso de humo · R Lluvia de plomo. No reflejan: <b>atrapa</b> con la guardia y tu siguiente disparo lo devuelve.'
-      : 'LMB: combo y reflejo a tiempo · Q Estocada · E Hoja de viento · R Tormenta.';
-    hud.toast(`<b>${W.name}</b><br>${kitLine}`, 4600);
+      ? rich('runtime.kitPistol')
+      : t('runtime.kitSword');
+    hud.toast(`<b>${dataText(W.name)}</b><br>${kitLine}`, 4600);
     sfx.click();
   }
 
@@ -675,14 +729,14 @@ async function boot() {
     const minor = rec.def && rec.def.minor, boss = rec.def && rec.def.boss;
     if (!rec.isYou && !boss) worldUI.addNameplate(rec.id, { name: rec.name, level: rec.level, title: practice || minor ? '' : rec.title, kind: isNpc ? 'npc' : rec.enemy ? (practice ? 'practice' : minor ? 'minor' : 'enemy') : rec.human ? 'ally' : 'player' });
     // Another pirate came aboard (not the ones already here when you arrived).
-    if (rec.human && !rec.isYou && st.mode === 'playing') { hud.toast(`<b>${escHtml(rec.name)}</b> subió a bordo`, 2600); sfx.click(); }
+    if (rec.human && !rec.isYou && st.mode === 'playing') { hud.toast(rich('runtime.aboard', {name:rec.name}), 2600); sfx.click(); }
     rec.view = view;
     if (rec.ready) view.update(0, rec.r);
   }));
   bus.on('entity:despawn', (rec) => {
     world.removeCharacter(rec.id); worldUI.removeNameplate(rec.id);
     chatBubbles.forgetEntity(rec.id);
-    if (rec.human && rec.id !== client.youServer && st.mode === 'playing') hud.toast(`<b>${escHtml(rec.name)}</b> dejó la isla`, 2600);
+    if (rec.human && rec.id !== client.youServer && st.mode === 'playing') hud.toast(rich('runtime.left', {name:rec.name}), 2600);
   });
   bus.on('you:welcome', ({ id }) => { worldUI.removeNameplate(id); });
   bus.on('you:ready', () => {
@@ -714,17 +768,17 @@ async function boot() {
   // The beach tutorial (client-side; how far you got is kept in your save, M4). After it, the tracker shows your
   // quests (the server's): the village, Brea, the archers, the sentinels and HELLFIRE are quests now.
   const TRACK = [
-    { id: 'move', text: isTouch ? 'Muévete con el joystick' : 'Muévete con WASD o las flechas' },
-    { id: 'dash', text: isTouch ? 'Toca DASH para esquivar' : 'Haz un dash con ESPACIO' },
-    { id: 'attack', text: isTouch ? 'Golpea al muñeco: combo de 3 (ATK)' : 'Golpea al muñeco: combo de 3 golpes (clic izquierdo)' },
-    { id: 'parry', text: isTouch ? 'Entra en el aro y devuelve un cañonazo con la espada (ATK a tiempo)' : 'Entra en el aro y devuelve un cañonazo con la espada (clic izquierdo a tiempo)' },
-    { id: 'guard', text: isTouch ? 'Atrapa un cañonazo con la GUARDIA justo a tiempo' : 'Atrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo' },
+    { id: 'move', text: isTouch ? ltext('tutorial.moveTouch') : ltext('tutorial.move') },
+    { id: 'dash', text: isTouch ? ltext('tutorial.dashTouch') : ltext('tutorial.dash') },
+    { id: 'attack', text: isTouch ? ltext('tutorial.attackTouch') : ltext('tutorial.attack') },
+    { id: 'parry', text: isTouch ? ltext('tutorial.parryTouch') : ltext('tutorial.parry') },
+    { id: 'guard', text: isTouch ? ltext('tutorial.guardTouch') : ltext('tutorial.guard') },
   ];
   const ORDER = TRACK.map((t) => t.id);
   function refreshTracker() {
     if (st.tut !== 'done') {
       const i = Math.max(0, ORDER.indexOf(st.tut));
-      hud.setQuests('Primeros pasos', TRACK.map((t, k) => ({ ...t, done: k < i })));
+      hud.setQuests(t('tutorial.first'), TRACK.map((t, k) => ({ ...t, done: k < i })));
       return;
     }
     const p = client.profile, items = [];
@@ -732,22 +786,23 @@ async function boot() {
       for (const id of QUEST_IDS) {
         const q = p.quests[id], Q = QUESTS[id];
         if (!q || (q[0] !== QST.ACTIVE && q[0] !== QST.READY)) continue;
-        const n = goalCount(Q), who = Q.turnin === 'vendor' ? 'Tía Perla' : 'la Capitana Brea';
+        const n = goalCount(Q), who = Q.turnin === 'vendor' ? 'Tía Perla' : 'Capitana Brea';
         const prog = n > 1 ? ` <small>${Math.min(n, q[1])}/${n}</small>` : '';
-        items.push({ id, text: q[0] === QST.READY ? `${Q.name} · vuelve con ${who}` : `${Q.name}${prog}`, ready: q[0] === QST.READY });
+        items.push({ id, text: q[0] === QST.READY ? ltext('runtime.returnQuest', {quest:translateData(Q.name),who}) : `${dataText(Q.name)}${prog}`, ready: q[0] === QST.READY });
       }
     }
-    hud.setQuests('Misiones', items.length ? items.slice(0, 4) : [{ id: 'none', text: 'Habla con la gente de la aldea', done: false }]);
+    hud.setQuests(t('tutorial.quests'), items.length ? items.slice(0, 4) : [{ id: 'none', text: ltext('tutorial.village'), done: false }]);
   }
+  onLocaleChange(() => refreshTracker());
   function advanceTutorial() {
     const i = ORDER.indexOf(st.tut);
     if (i < 0) return;
     const msgs = {
-      move: '<b>¡Bien!</b> Ahora prueba el dash.',
-      dash: '<b>¡Esquiva!</b> Durante el dash eres invulnerable. Se recarga en 0,9 s.',
-      attack: '<b>¡Combo!</b> Los golpes también <b>rompen</b> los proyectiles ámbar que toquen.',
-      parry: '<b>¡Devuelto!</b> Cuanto más tarde golpeas la bala, mejor: <b>EXCELENTE</b> sale recta a tu cursor y hace el triple de daño.',
-      guard: '<b>¡Atrapada!</b> Tu siguiente golpe devuelve las balas atrapadas. Ahora sigue los faroles hasta la <b>Aldea Coralina</b>.',
+      move: rich('tutorial.moveDone'),
+      dash: rich('tutorial.dashDone'),
+      attack: rich('tutorial.attackDone'),
+      parry: rich('tutorial.parryDone'),
+      guard: rich('tutorial.guardDone'),
     };
     hud.toast(msgs[st.tut], 4200);
     sfx.marimba([659.25, 783.99, 1046.5], 0.07, 0.12);
@@ -759,8 +814,8 @@ async function boot() {
     if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
     else if (kind === 'parry' && d && d.tier >= 2 && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
     else if (kind === 'guard' && d && d.pid && st.tut === 'guard') advanceTutorial();
-    else if (kind === 'target') hud.toast('<b>¡Blanco!</b> Tu reflejo vuelve al que dispara, con el doble de daño.', 3600);
-    else if (kind === 'respawn') hud.toast('<b>Vuelves al último lugar seguro.</b> La vida vuelve sola si nadie te golpea un rato; una poción (<span class="kbd">1</span>) cura al momento.', 4600);
+    else if (kind === 'target') hud.toast(rich('tutorial.target'), 3600);
+    else if (kind === 'respawn') hud.toast(rich('tutorial.respawn'), 4600);
   }
   // Your profile (M4): gold, the tracker, and on the first one, how far the tutorial went.
   bus.on('profile', (p) => safe('profile', () => {
@@ -779,7 +834,7 @@ async function boot() {
     const prev = st.zone;
     st.zone = z;
     // Out of the Cala Calavera (M4.5): the law is back.
-    if (prev === 'calavera' && z !== 'calavera' && st.mode === 'playing') hud.toast('<b>A salvo.</b> Fuera de la Cala vuelve la ley: nadie de la tripulación te hiere y lo tuyo es tuyo.', 3800);
+    if (prev === 'calavera' && z !== 'calavera' && st.mode === 'playing') hud.toast(rich('runtime.safe'), 3800);
     if (z === 'mar') return;
     const Z = ZONES[z];
     if (prev !== null || st.mode === 'playing') hud.showZone(Z.name, Z.sub, z === 'caldera' ? 'caldera' : Z.lawless ? 'lawless' : '', reduced());
@@ -787,7 +842,7 @@ async function boot() {
       sfx.calderaZone();
       if (!settings.calaTaught) {
         settings.calaTaught = true; saveSettings();
-        hud.toast('<b>☠ Cala Calavera: aquí no hay ley.</b> Tus golpes hieren a cualquier pirata de dentro (tu tripulación también) y los suyos a ti. Los mobs se pelean entre ellos y los <b>Desalmados</b> cazan a todos. El botín es de quien lo pisa primero. <b>Si caes aquí, sueltas todo lo que llevas</b> (el oro no).', 11000);
+        hud.toast(rich('runtime.lawlessHint'), 11000);
       }
     }
     ambience.setZone(z);
@@ -820,14 +875,14 @@ async function boot() {
     hud.setBoss(boss);
     let line = null;
     if (active) {
-      if (stE === 'intro') line = 'La Prueba de Fuego';
-      else if (stE === 'wave') line = `OLEADA ${wave + 1}/${waves} · Enemigos <b>${left}</b>`;
-      else if (stE === 'rest') line = `Respira… · se acerca la OLEADA ${wave + 2}/${waves}`;
-      else if (stE === 'boss' && left > 1) line = `Esbirros <b>${left - 1}</b>`;
-      else if (stE === 'victory') line = '¡Victoria!';
+      if (stE === 'intro') line = t('runtime.trial');
+      else if (stE === 'wave') line = ltext('runtime.wave', {wave:wave+1,waves,left});
+      else if (stE === 'rest') line = ltext('runtime.rest', {wave:wave+2,waves});
+      else if (stE === 'boss' && left > 1) line = ltext('runtime.minions', {count:left-1});
+      else if (stE === 'victory') line = t('runtime.victory');
       // Co-op: the fight is scaled for the crew that started it. M4: and its Marea.
       const crew = E[10] || 0, tier = E[11] || 0;
-      if (line && crew > 1) line += ` · Tripulación <b>${crew}</b>`;
+      if (line && crew > 1) line += ltext('runtime.crew', {count:crew});
       if (line && tier > 1) line = `<b class="tier">${ENCOUNTERS.caldera.tiers[tier - 1].name}</b> · ` + line;
     }
     hud.setEnc(line);
@@ -839,7 +894,7 @@ async function boot() {
     // One warning when walking out mid-trial.
     if (E && stE !== 'idle' && stE !== 'victory' && !inside && Math.hypot(ps.x - A.x, ps.z - A.z) < map.landmarks.arenaR + 12 && !st.encWarned) {
       st.encWarned = true;
-      hud.toast('<b>Si sales de La Caldera</b>, la Prueba de Fuego se reinicia.', 3600);
+      hud.toast(rich('runtime.leaveTrial'), 3600);
     }
     if (!E || stE === 'idle') st.encWarned = false;
   }
@@ -879,8 +934,9 @@ async function boot() {
       sfx.play();
       saveSettings();
       await initializeAccount();
-      const token = st.online ? await accountAuth.token() : null;
-      const account = token ? { token, importSave: accountPanel?.importRequested() } : null;
+      const identity = st.online && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
+      const account = identity ? { token: identity.token, importSave: accountPanel?.importRequested() } : null;
+      joiningCompanionAccount = identity?.accountId ?? null;
       const saved = account && !account.importSave ? '' : loadSave(saveSlot());
       if (st.online) {
         // Wait for the server's answer: a place aboard, or why not.
@@ -891,20 +947,23 @@ async function boot() {
           client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
         });
         if (r.k !== 'ok') {
+          joiningCompanionAccount = null; companions.setSession(null);
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
-            version: 'Tu versión del juego es distinta a la del servidor: recarga la página.',
-            auth: 'Tu sesión no es válida o caducó. Vuelve a iniciar sesión.',
-            auth_disabled: 'Este servidor no tiene cuentas activas. Cierra sesión y vuelve a entrar.',
-            session: 'Tu cuenta ya está a bordo. Cierra la otra partida y vuelve a intentar.',
-            storage: 'No se pudo cargar o guardar el personaje. Prueba de nuevo en un rato.',
-            legacy: 'Esta partida no se puede importar: necesita una firma válida y una identidad de pirata.',
-            legacy_used: 'Esta partida ya fue importada. Entra con la cuenta que la recibió.',
-            legacy_active: 'Esta partida sigue abierta en otra ventana. Ciérrala antes de importar.',
+            version: rich('join.version'),
+            content_revision: rich('join.contentRevision'),
+            content_busy: rich('join.contentBusy'),
+            auth: rich('join.auth'),
+            auth_disabled: rich('join.disabled'),
+            session: rich('join.session'),
+            storage: rich('join.storage'),
+            legacy: rich('join.legacy'),
+            legacy_used: rich('join.used'),
+            legacy_active: rich('join.active'),
           };
-          title.message(r.k === 'full' ? `La tripulación está completa (${r.m.max}/${r.m.max}). Prueba en un rato o juega solo.`
-            : r.k === 'error' ? (joinErrors[r.m.code] || 'No se pudo entrar a la isla. Prueba de nuevo.')
-              : 'El servidor no contesta. Prueba de nuevo o juega solo.');
+          title.message(r.k === 'full' ? rich('join.full', {max:r.m.max})
+            : r.k === 'error' ? (joinErrors[r.m.code] || rich('join.failed'))
+              : rich('join.offline'));
           sfx.click();
           return;
         }
@@ -912,7 +971,8 @@ async function boot() {
       accountPanel?.hide();
       await title.hide();
     } catch {
-      title.message('No se pudo recuperar tu sesión. Abre Cuenta para volver a iniciar sesión.');
+      joiningCompanionAccount = null; companions.setSession(null);
+      title.message(rich('join.recover'));
     } finally {
       st.boarding = false;
       title.boarding(false);
@@ -921,6 +981,9 @@ async function boot() {
   }
   bus.on('you:ready', () => {
     st.mode = 'playing';
+    companions.setSession(joiningCompanionAccount);
+    companionsPanel.setVisible(true);
+    companions.refresh();
     world.setTitleShadows(false);
     const rec = client.entities.get(client.youServer);
     hud.setPlayer({ name: rec ? rec.name : settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
@@ -932,7 +995,7 @@ async function boot() {
     setTimeout(() => {
       hud.show();
       chatPanel.setVisible(true);
-      input.enabled = !chatPanel.typing;
+      input.enabled = !chatPanel.typing && !companionsPanel.isOpen;
       if (isTouch) touch.show();
       canvas.focus({ preventScroll: true });
     }, reduced() ? 300 : 1500);
@@ -1093,7 +1156,7 @@ async function boot() {
           : navalInput);
         return;
       }
-      if (chatPanel.typing) {
+      if (chatPanel.typing || companionsPanel?.isOpen) {
         client.tickInput({ mx: 0, mz: 0, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
         return;
       }
@@ -1262,7 +1325,7 @@ async function boot() {
         const npc = client.naval.active || client.deck.active ? null : nearestNpc();
         if (npc && npcKey(npc) === 'tattoo' && !st.sepiaTaught) {
           st.sepiaTaught = true;
-          hud.toast('<b>Doña Sepia</b> tatúa habilidades para tus huecos Q / E. El primero es gratis. (<span class="kbd">T</span>: tus tatuajes)', 6500);
+          hud.toast(rich('runtime.tattooHint'), 6500);
         }
         const nearShip = Math.hypot(ps.x - shipPos.x, ps.z - shipPos.z) < 4;
         const chest = !npc && !ps.dead ? rewards.chestNear() : null;
@@ -1275,31 +1338,31 @@ async function boot() {
         const resourceInteraction = !workbench.active && !navalInteraction && !npc && !chest && !runes && !rack ? resources.interaction() : null;
         const bench = client.resources?.bench;
         if (bench) {
-          if (!worldUI.labels.has('workbench')) worldUI.addLabel('workbench', '◆ Banco de materiales', { cls: 'quest', color: '#e6b75b', range: 17 });
+          if (!worldUI.labels.has('workbench')) worldUI.addLabel('workbench', ltext('runtime.bench'), { cls: 'quest', color: '#e6b75b', range: 17 });
           anchor('workbench', bench.x, bench.y + 1.5, bench.z, 0);
         }
         let act = null;
         if (navalInteraction) act = null; // The navigation HUD owns this prompt.
-        else if (npc) act = `<span class="kbd">F</span> Hablar con ${npc.name}`;
+        else if (npc) act = `<span class="kbd">F</span> ${ltext('runtime.talk', {name:translateData(npc.name)})}`;
         else if (chest) act = rewards.chestPrompt(chest);
-        else if (runes) act = `<b>${TIERS[tierSel - 1].name}</b> · <span class="kbd">F</span> cambiar a ${TIERS[tierNext - 1].name}`;
+        else if (runes) act = `<b>${dataText(TIERS[tierSel - 1].name)}</b> · <span class="kbd">F</span> ${ltext('runtime.changeTier', {name:translateData(TIERS[tierNext - 1].name)})}`;
         else if (rack) {
-          act = `<span class="kbd">F</span> Armero: tomar ${weaponOf(other).short.toLowerCase()}`;
-          if (!st.rackTaught) { st.rackTaught = true; hud.toast('<b>Armero:</b> aquí cambias de arma. Cada arma trae su LMB, Q, E y R. <span class="kbd">F</span> para probar las pistolas.', 5200); }
+          act = `<span class="kbd">F</span> ${ltext('runtime.takeWeapon', {name:translateData(weaponOf(other).short).toLowerCase()})}`;
+          if (!st.rackTaught) { st.rackTaught = true; hud.toast(rich('runtime.rackHint'), 5200); }
         }
         else if (resourceInteraction) act = resourceInteraction.html;
-        else if (nearShip) act = 'Tu balsa está en el muelle · <span class="kbd">B</span> construir';
-        else if (st.tut === 'move') act = isTouch ? 'Usa el joystick para moverte' : '<span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> para moverte';
-        else if (st.tut === 'dash') act = isTouch ? 'Toca <b>DASH</b> para esquivar' : '<span class="kbd">ESPACIO</span> para hacer dash';
+        else if (nearShip) act = rich('runtime.raftHint');
+        else if (st.tut === 'move') act = isTouch ? t('runtime.joy') : rich('runtime.wasd');
+        else if (st.tut === 'dash') act = isTouch ? rich('runtime.tapDash') : rich('runtime.spaceDash');
         else if (st.tut === 'attack') {
           const d = Math.hypot(ps.x - map.practice.dummy.x, ps.z - map.practice.dummy.z);
-          act = d < 7 ? (isTouch ? 'Toca <b>ATK</b> tres veces seguidas' : '<span class="kbd">LMB</span> <span class="kbd">LMB</span> <span class="kbd">LMB</span> combo de 3') : 'El muñeco de práctica está junto a la orilla';
+          act = d < 7 ? (isTouch ? rich('runtime.tapCombo') : rich('runtime.clickCombo')) : t('runtime.dummyShore');
         } else if (st.tut === 'parry') {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
-          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>ATK</b> justo antes del impacto' : '<span class="kbd">LMB</span> justo antes de que la bala te toque') : 'Entra en el aro de cuerda, frente al cañón';
+          act = d < map.practice.ring.r ? (isTouch ? rich('runtime.tapReflect') : rich('runtime.clickReflect')) : t('runtime.enterRing');
         } else if (st.tut === 'guard') {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
-          act = d < map.practice.ring.r ? (isTouch ? 'Toca <b>GUARDIA</b> justo antes del impacto' : 'Sube la guardia (<span class="kbd">RMB</span>) justo antes del impacto') : 'Vuelve al aro de cuerda';
+          act = d < map.practice.ring.r ? (isTouch ? rich('runtime.guardTouch') : rich('runtime.guardMouse')) : rich('runtime.backRing');
         }
         rewards.promptDrop = chest || 0;
         // A chest's prompt sits under the chest (it would cover it under your feet).
@@ -1307,9 +1370,9 @@ async function boot() {
         if (cv) anchor('you', cv.x, cv.y - 0.1, cv.z, 0); else anchor('you', ps.x, ps.y - 0.1, ps.z, 0);
         // On touch the action button carries the verb (and the key hint is noise): strip it from the prompt.
         if (isTouch) {
-          touch.setAction(navalInteraction ? { verb: navalInteraction.verb, icon: 'ship' } : npc ? { verb: 'Hablar', icon: 'talk' } : chest ? { verb: 'Abrir', icon: 'chest' } : runes ? { verb: 'Marea', icon: 'rune' }
-            : rack ? { verb: 'Cambiar', icon: 'swap' } : resourceInteraction ? { verb: resourceInteraction.verb, icon: resourceInteraction.icon || 'chest' }
-            : nearShip ? { verb: 'Zarpar', icon: 'ship' } : null);
+          touch.setAction(navalInteraction ? { verb: navalInteraction.verb, icon: 'ship' } : npc ? { verb: t('runtime.verbTalk'), icon: 'talk' } : chest ? { verb: t('runtime.verbOpen'), icon: 'chest' } : runes ? { verb: t('runtime.verbTier'), icon: 'rune' }
+            : rack ? { verb: t('runtime.verbSwap'), icon: 'swap' } : resourceInteraction ? { verb: resourceInteraction.verb, icon: resourceInteraction.icon || 'chest' }
+            : nearShip ? { verb: t('runtime.verbSail'), icon: 'ship' } : null);
           if (act) act = act.replace('<span class="kbd">F</span> ', '');
         }
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
@@ -1320,7 +1383,7 @@ async function boot() {
           else if (npc) {
             const k = npcKey(npc), lines = (NPC_TALK[k] && NPC_TALK[k].lines) || ['…'];
             const i = (st.talkIdx[k] = ((st.talkIdx[k] ?? -1) + 1) % lines.length);
-            worldUI.bubble(npc.id, `<b>${npc.name}</b>${lines[i]}`, 5200);
+            worldUI.bubble(npc.id, `<b>${dataText(npc.name)}</b>${dataText(lines[i])}`, 5200);
             st.lastLine = lines[i];
             sfx.talk();
             client.send({ t: 'cmd', type: 'talk', npc: npc.id }); // quests (accept, hand in), the stall
@@ -1377,7 +1440,7 @@ async function boot() {
         if (isTouch) { touch.setPotions(ps.potions | 0, (ps.potCd || 0) / CONSUMABLES.potion.cd); touch.setLocks(locks); }
         if (mLvl && prof && prof.mast[ps.weapon]) {
           const mx = prof.mast[ps.weapon], nx = MASTERY.xp[Math.min(MASTERY.xp.length - 1, mLvl - 1)];
-          hud.setMastery(mLvl, mx[1] / nx, mLvl >= MASTERY.max, `Maestría de ${kitW.short.toLowerCase()}: ${Math.floor(mx[1])} / ${nx}`);
+          hud.setMastery(mLvl, mx[1] / nx, mLvl >= MASTERY.max, t('runtime.mastery',{name:translateData(kitW.short).toLowerCase(),xp:Math.floor(mx[1]),next:nx}));
         } else hud.setMastery(0, 0, false);
         hud.setChain(ps.chain, ps.chainT <= tuning.parry.chainGap && !ps.dead);
         // Q / E follow the loadout (M4.7): icon, rank, form, and the cooldown of the form in use (× the gear's cdr).
@@ -1481,13 +1544,16 @@ async function boot() {
       st.fps = st.fps * 0.9 + (1 / Math.max(loop.rawDt, 1e-3)) * 0.1;
       if (st.perf) safe('perf', () => {
         const info = world.renderer.info;
-        $('#perf').textContent =
-          `FPS ${st.fps.toFixed(0)}  calidad ${quality.current}${settings.quality === 'auto' ? ' (auto)' : ''}\n` +
-          `draw calls ${info.render.calls}  tris ${(info.render.triangles / 1000).toFixed(1)}k\n` +
-          `entidades ${client.entities.size}  red ${transport.kind}  snaps ${transport.stats.snaps}${st.online ? `  rtt ${transport.rtt.toFixed(0)} ms  ↓${(st.kbIn || 0).toFixed(1)} KB/s` : ''}\n` +
-          `pred err ${client.stats.predErr.toFixed(4)}  cmds pendientes ${client.stats.pending}\n` +
-          `pos ${ps.x.toFixed(1)}, ${ps.z.toFixed(1)}  zona ${st.zone || '-'}\n` +
-          `proyectiles ${client.hazards.count}  reflejos ${client.shots.count}  pt ${client.ptCur} (${client.stats.ptLag >= 0 ? '+' : ''}${client.stats.ptLag})`;
+        $('#perf').textContent = t('runtime.perf', {
+          fps: st.fps.toFixed(0), quality: quality.current, auto: settings.quality === 'auto' ? ' (auto)' : '',
+          calls: info.render.calls, triangles: (info.render.triangles / 1000).toFixed(1),
+          entities: client.entities.size, network: transport.kind, snaps: transport.stats.snaps,
+          connection: st.online ? `  rtt ${transport.rtt.toFixed(0)} ms  ↓${(st.kbIn || 0).toFixed(1)} KB/s` : '',
+          prediction: client.stats.predErr.toFixed(4), pending: client.stats.pending,
+          x: ps.x.toFixed(1), z: ps.z.toFixed(1), zone: st.zone || '-',
+          projectiles: client.hazards.count, reflections: client.shots.count, tick: client.ptCur,
+          lag: (client.stats.ptLag >= 0 ? '+' : '') + client.stats.ptLag,
+        });
       });
     },
   });
@@ -1507,10 +1573,11 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
+  document.getElementById('bootstrap-locale').hidden = true;
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, get gmEditor() { return gmEditor; }, panels: { firePanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community } };
+  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.
@@ -1580,5 +1647,5 @@ async function boot() {
 
 boot().catch((err) => {
   console.error(err);
-  if (window.__mnFail) window.__mnFail('Algo falló al iniciar el juego. Recarga la página para intentarlo de nuevo.');
+  if (window.__mnFail) window.__mnFail(t('runtime.bootFail'));
 });

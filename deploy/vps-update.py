@@ -7,11 +7,13 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import time
 import uuid
+from contextlib import contextmanager
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -27,6 +29,9 @@ SOURCE = ROOT / "source.git"
 RELEASES = ROOT / "releases"
 CURRENT = ROOT / "current"
 LOCK = ROOT / "update.lock"
+CONTENT = ROOT / "content"
+CONTENT_LOCK = CONTENT / "switch.lock"
+CONTENT_STATE = CONTENT / "state.json"
 STATE = ROOT / "update-state.json"
 REPO = "https://github.com/joeyxd/realms-of-trade-server.git"
 BRANCH = "claude/loving-lovelace-ptbif7"
@@ -183,6 +188,132 @@ def is_idle_and_durable(status):
         return False
     coord = world.get("coord", status.get("coord"))
     return coord is None
+
+
+@contextmanager
+def content_exclusive_lock(content_dir=None, *, expected_uid=1000, expected_gid=1000):
+    """Acquire the activation lock after update.lock; never replace its inode."""
+    if fcntl is None:
+        raise UpdateError("content lock requires Linux")
+    directory = Path(content_dir) if content_dir is not None else CONTENT
+    try:
+        directory_stat = directory.lstat()
+    except OSError as exc:
+        raise UpdateError("durable content directory is not provisioned") from exc
+    if (not stat.S_ISDIR(directory_stat.st_mode) or stat.S_IMODE(directory_stat.st_mode) != 0o770 or
+            directory_stat.st_uid != expected_uid or directory_stat.st_gid != expected_gid):
+        raise UpdateError("durable content directory must be owned by 1000:1000 with mode 0770")
+
+    lock_path = directory / "switch.lock"
+    flags = os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
+    created = False
+    try:
+        fd = os.open(lock_path, flags | os.O_CREAT | os.O_EXCL, 0o660)
+        created = True
+    except FileExistsError:
+        try:
+            fd = os.open(lock_path, flags)
+        except OSError as exc:
+            raise UpdateError("durable content lock file is unavailable") from exc
+    except OSError as exc:
+        raise UpdateError("durable content lock file is unavailable") from exc
+
+    locked = False
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise UpdateError("durable content lock file is invalid")
+        if created:
+            os.fchown(fd, expected_uid, expected_gid)
+            os.fchmod(fd, 0o660)
+            os.fsync(fd)
+            directory_fd = os.open(directory, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        elif (info.st_uid != expected_uid or info.st_gid != expected_gid or
+              stat.S_IMODE(info.st_mode) != 0o660):
+            raise UpdateError("durable content lock must be owned by 1000:1000 with mode 0660")
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise BusyWorld("content activation or update is in progress; update deferred") from exc
+        locked = True
+    except UpdateError:
+        os.close(fd)
+        raise
+    except OSError as exc:
+        os.close(fd)
+        raise UpdateError("durable content lock file is unavailable") from exc
+    try:
+        yield
+    finally:
+        if locked:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+            except OSError:
+                pass
+        os.close(fd)
+
+
+def has_active_content():
+    """Fail closed on corrupt state; a missing registry means the legacy base."""
+    try:
+        state = json.loads(CONTENT_STATE.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return False
+    except (OSError, ValueError) as exc:
+        raise UpdateError("durable content state is unreadable") from exc
+    expected_keys = {"version", "worldId", "generation", "revisionId", "operations"}
+    if not isinstance(state, dict) or set(state) != expected_keys:
+        raise UpdateError("durable content state is invalid")
+    generation = state["generation"]
+    revision = state["revisionId"]
+    operations = state["operations"]
+    max_safe_integer = 2**53 - 1
+    if (state["worldId"] != WORLD_ID or state["version"] != 1 or type(generation) is not int or
+            generation < 0 or generation > max_safe_integer or
+            not (revision is None or isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{64}", revision)) or
+            not isinstance(operations, dict) or len(operations) > 4096):
+        raise UpdateError("durable content state is invalid")
+    operation_id = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+    for key, receipt in operations.items():
+        if (not operation_id.fullmatch(key) or not isinstance(receipt, dict) or
+                not {"expectedGeneration", "revisionId", "result"}.issubset(receipt) or
+                type(receipt.get("expectedGeneration")) is not int or
+                abs(receipt["expectedGeneration"]) > max_safe_integer or
+                not (receipt.get("revisionId") is None or
+                     isinstance(receipt.get("revisionId"), str) and
+                     re.fullmatch(r"[0-9a-f]{64}", receipt["revisionId"]))):
+            raise UpdateError("durable content state is invalid")
+        result = receipt.get("result")
+        if (not isinstance(result, dict) or not {"ok", "replay", "generation", "revisionId"}.issubset(result) or
+                type(result.get("ok")) is not bool or
+                type(result.get("replay")) is not bool or type(result.get("generation")) is not int or
+                abs(result["generation"]) > max_safe_integer or
+                not (result.get("revisionId") is None or
+                     isinstance(result.get("revisionId"), str) and
+                     re.fullmatch(r"[0-9a-f]{64}", result["revisionId"]))):
+            raise UpdateError("durable content state is invalid")
+    return revision is not None
+
+
+def check_candidate_content(release, image):
+    checker = Path(release) / "server/gmContentCheck.mjs"
+    active = has_active_content()
+    if not checker.is_file():
+        if active:
+            raise UpdateError("candidate cannot verify the active content revision")
+        return False
+    args = ["docker", "run", "--rm", "--network", "none", "--cpus", "1", "--memory", "1g",
+            "--volume", f"{CONTENT}:/var/lib/marea-content:ro",
+            "--env", "MN_GM_CONTENT_DIR=/var/lib/marea-content", "--workdir", "/app",
+            image, "node", "server/gmContentCheck.mjs"]
+    result = run(args, timeout=COMMAND_TIMEOUT, check=False)
+    if result.returncode:
+        raise UpdateError("candidate content registry check failed")
+    return True
 
 
 def runtime_status_ready(status):
@@ -493,6 +624,7 @@ def deploy(candidate):
     OPS.mkdir(parents=True, exist_ok=True)
     try:
         prepare_image(release, env_path, env_values, candidate, log_path)
+        check_candidate_content(release, env_values["GAME_IMAGE"])
         status = local_status(container)
         if not is_idle_and_durable(status):
             raise BusyWorld("world is busy or durable status is not ready; deployment deferred")
@@ -584,10 +716,12 @@ def main(argv=None):
                 return 0
             if argv:
                 raise UpdateError("usage: vps-update.py [--check]")
-            ensure_source()
-            candidate = remote_sha()
             try:
-                deploy(candidate)
+                # Lock order is update.lock -> content/switch.lock. Activation only takes the latter.
+                with content_exclusive_lock():
+                    ensure_source()
+                    candidate = remote_sha()
+                    deploy(candidate)
             except BusyWorld:
                 print("world busy; update deferred")
             return 0

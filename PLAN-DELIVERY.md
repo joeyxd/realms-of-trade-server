@@ -1,5 +1,26 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
+[entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
+tick de recursos y recibo inmutable sin reescribir mundo. Cerco SQL de escritores legacy por mundo;
+adopción v1 rechaza suelo/perlas/botín previo. 235/235 en 34 archivos; 22 casos nuevos y dos
+SIGKILL de adopción; regresión repetida tras integrar I18N04b y L03d. SQL022/alpha.33/protocolo 42. SQL023 aún por aplicar;
+no se adopta el mundo real ni se activa el montaje. Sigue composición perlas/muerte/botín y
+transición detenida con exclusión del writer anterior y canario autenticado VPS.
+
+
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+[entrega](docs/delivery/l03d-owner-center.md), [brief](docs/briefs/l03d-owner-center.md). Estado/stop
+ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
+sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
+
+**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
+[Entrega y evidencia](docs/delivery/i18n04b.md), [plan bilingüe](PLAN-I18N.md).
+Cliente y editor GM ES/EN, selector temprano y cambio en caliente conservando datos/solicitudes;
+integra fuego/fuel de `c9d3bbf`. Navegador local: 11 grupos cliente y 6 editor, capturas revisadas;
+IndexedDB real, servicios/auth/CAS remoto simulados. Publicación y recorrido público pendientes.
+Sin SQL ni flags propios. Sigue aceptación pública de I18N04b y materiales de I18N04c.
+
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
 Mano 20 min, faroles/antorchas privadas 60 min por madera, fogata/parrilla 30 min provisionales;

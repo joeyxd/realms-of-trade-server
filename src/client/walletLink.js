@@ -23,6 +23,7 @@ const ERRORS = {
   conflict: 'La cuenta o esta wallet ya tiene un vínculo. Consulta su estado.',
   identity: 'Este intento ya no está disponible. Vuelve a consultar el vínculo.',
 };
+const ERROR_KEYS = Object.freeze(Object.fromEntries(Object.keys(ERRORS).map((code) => [code, `wallet.error.${code}`])));
 const fail = (code) => { throw new WalletBrowserError(code); };
 function exact(value, keys) {
   if (!value || typeof value !== 'object' || Array.isArray(value)
@@ -64,7 +65,7 @@ export class WalletLink {
         && (base.protocol === 'https:' || (base.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(base.hostname)))) this.base = base.origin;
     } catch { /* Only a same-origin game can request account-bound proof. */ }
     this.listeners = new Set(); this.epoch = 0; this.accountId = ''; this.provider = null; this.blocked = false; this.destroyed = false;
-    this.state = { enabled: false, busy: false, phase: 'disabled', chainId: null, address: '', message: '', link: null, error: '' };
+    this.state = { enabled: false, busy: false, phase: 'disabled', chainId: null, address: '', message: '', link: null, error: '', errorKey: '' };
     this.unsubscribeAuth = auth.subscribe((state) => {
       const id = state.signedIn && !state.guestChoice && UUID.test(state.accountId) ? state.accountId : '';
       if (id !== this.accountId) { this.accountId = id; this.invalidate(); this.publish({ link: null, error: '', phase: this.state.enabled ? 'idle' : 'disabled' }); }
@@ -72,7 +73,12 @@ export class WalletLink {
   }
   subscribe(callback) { this.listeners.add(callback); callback(this.snapshot()); return () => this.listeners.delete(callback); }
   snapshot() { return { ...this.state, link: this.state.link && { ...this.state.link } }; }
-  publish(patch) { if (this.destroyed) return; this.state = { ...this.state, ...patch }; for (const callback of this.listeners) callback(this.snapshot()); }
+  publish(patch) {
+    if (this.destroyed) return;
+    if (Object.hasOwn(patch, 'error') && !Object.hasOwn(patch, 'errorKey')) patch = { ...patch, errorKey: '' };
+    this.state = { ...this.state, ...patch };
+    for (const callback of this.listeners) callback(this.snapshot());
+  }
   invalidate() {
     this.epoch++; this.challenge = null;
     this.publish({ busy: false, address: '', message: '', phase: this.state.link ? 'linked' : this.state.enabled ? 'idle' : 'disabled' });
@@ -123,21 +129,22 @@ export class WalletLink {
       this.unsubscribeProvider = this.provider.subscribe((event) => {
         // Initial permission approval commonly emits accountsChanged; re-read before showing review.
         if (event.type === 'accountsChanged' && this.state.phase === 'connecting') return;
-        this.invalidate(); this.publish({ error: ERRORS.changed });
+        this.invalidate(); this.publish({ error: ERRORS.changed, errorKey: ERROR_KEYS.changed });
       });
     }
     return this.provider;
   }
   async operation(phase, work) {
     if (this.state.busy || this.blocked || !this.state.enabled || this.destroyed) return false;
-    if (!this.accountId) { this.publish({ error: ERRORS.auth }); return false; }
+    if (!this.accountId) { this.publish({ error: ERRORS.auth, errorKey: ERROR_KEYS.auth }); return false; }
     const epoch = ++this.epoch, accountId = this.accountId;
     this.publish({ busy: true, phase, error: '' });
     try { await work(epoch, accountId); this.guard(epoch, accountId); return true; }
     catch (error) {
       if (this.epoch === epoch && !this.destroyed) {
         this.challenge = null;
-        this.publish({ message: '', address: '', phase: this.state.link ? 'linked' : 'idle', error: ERRORS[error?.code] || ERRORS.unavailable });
+        const code = ERROR_KEYS[error?.code] ? error.code : 'unavailable';
+        this.publish({ message: '', address: '', phase: this.state.link ? 'linked' : 'idle', error: ERRORS[code], errorKey: ERROR_KEYS[code] });
       }
       return false;
     } finally { if (this.epoch === epoch) this.publish({ busy: false }); }

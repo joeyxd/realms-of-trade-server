@@ -1,9 +1,10 @@
 import importlib.util
 import io
+import json
 import os
 import tempfile
 import unittest
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from unittest import mock
 
@@ -14,6 +15,154 @@ SPEC.loader.exec_module(update)
 
 
 class VpsUpdateTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == "posix", "flock is Linux/POSIX-specific")
+    def test_content_lock_serializes_without_replacing_its_inode(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp) / "content"
+            directory.mkdir()
+            os.chmod(directory, 0o770)
+            info = directory.stat()
+            kwargs = {"expected_uid": info.st_uid, "expected_gid": info.st_gid}
+            with update.content_exclusive_lock(directory, **kwargs):
+                lock_path = directory / "switch.lock"
+                inode = lock_path.stat().st_ino
+                self.assertEqual(lock_path.stat().st_mode & 0o777, 0o660)
+                with self.assertRaises(update.BusyWorld):
+                    with update.content_exclusive_lock(directory, **kwargs):
+                        self.fail("second writer unexpectedly acquired content lock")
+            with update.content_exclusive_lock(directory, **kwargs):
+                self.assertEqual((directory / "switch.lock").stat().st_ino, inode)
+
+    @unittest.skipUnless(os.name == "posix", "flock is Linux/POSIX-specific")
+    def test_content_lock_requires_manual_directory_provisioning(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp) / "content"
+            with self.assertRaisesRegex(update.UpdateError, "not provisioned"):
+                with update.content_exclusive_lock(directory):
+                    self.fail("lock should not create the durable volume")
+
+    def test_main_takes_update_lock_before_content_lock_and_holds_it_through_deploy(self):
+        events = []
+        fake_fcntl = mock.Mock(LOCK_EX=1, LOCK_NB=2)
+        fake_fcntl.flock.side_effect = lambda *_args: events.append("update-lock")
+
+        @contextmanager
+        def content_lock():
+            events.append("content-lock-enter")
+            try:
+                yield
+            finally:
+                events.append("content-lock-exit")
+
+        with tempfile.TemporaryDirectory() as temp, ExitStack() as stack:
+            root = Path(temp)
+            stack.enter_context(mock.patch.object(update, "LOCK", root / "update.lock"))
+            stack.enter_context(mock.patch.object(update, "OPS", root / "ops"))
+            stack.enter_context(mock.patch.object(update, "RELEASES", root / "releases"))
+            stack.enter_context(mock.patch.object(update, "fcntl", fake_fcntl))
+            stack.enter_context(mock.patch.object(update.os, "geteuid", return_value=0, create=True))
+            stack.enter_context(mock.patch.object(update, "content_exclusive_lock", side_effect=lambda: content_lock()))
+            stack.enter_context(mock.patch.object(update, "ensure_source", side_effect=lambda: events.append("ensure-source")))
+            stack.enter_context(mock.patch.object(update, "remote_sha", side_effect=lambda: events.append("candidate") or "a" * 40))
+            def deploy(_candidate):
+                events.extend(["deploy", "stop-old-authority", "start-candidate-authority"])
+            stack.enter_context(mock.patch.object(update, "deploy", side_effect=deploy))
+            self.assertEqual(update.main([]), 0)
+
+        self.assertEqual(events, ["update-lock", "content-lock-enter", "ensure-source", "candidate",
+                                  "deploy", "stop-old-authority", "start-candidate-authority", "content-lock-exit"])
+
+    def test_candidate_checker_skips_legacy_base_but_requires_active_revision_checker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            release = root / "release"
+            release.mkdir()
+            content = root / "content"
+            content.mkdir()
+            state = content / "state.json"
+            with mock.patch.object(update, "CONTENT", content), mock.patch.object(update, "CONTENT_STATE", state):
+                self.assertFalse(update.check_candidate_content(release, "image"))
+                base = {"version": 1, "worldId": update.WORLD_ID, "generation": 0,
+                        "revisionId": None, "operations": {}}
+                state.write_text(json.dumps(base))
+                self.assertFalse(update.check_candidate_content(release, "image"))
+
+                invalid_states = [
+                    {"version": 1, "worldId": update.WORLD_ID, "revisionId": None},
+                    {**base, "generation": -1},
+                    {**base, "generation": True},
+                    {**base, "generation": 2**53},
+                    {**base, "operations": []},
+                    {**base, "operations": {"bad/id": {}}},
+                    {**base, "operations": {"op-1": {"expectedGeneration": 0, "revisionId": None,
+                        "result": {"ok": True, "replay": False, "generation": 1}}}},
+                ]
+                for invalid in invalid_states:
+                    with self.subTest(invalid=invalid):
+                        state.write_text(json.dumps(invalid))
+                        with self.assertRaisesRegex(update.UpdateError, "state is invalid"):
+                            update.check_candidate_content(release, "image")
+
+                # A valid rollback-to-base receipt is part of a valid base pointer.
+                valid_base_with_receipt = {**base, "generation": 2, "operations": {
+                    "rollback-2": {"expectedGeneration": 1, "revisionId": None,
+                        "result": {"ok": True, "replay": False, "generation": 2, "revisionId": None}},
+                }}
+                state.write_text(json.dumps(valid_base_with_receipt))
+                self.assertFalse(update.check_candidate_content(release, "image"))
+
+                active_state = {**base, "generation": 1, "revisionId": "a" * 64}
+                state.write_text(json.dumps(active_state))
+                with self.assertRaisesRegex(update.UpdateError, "cannot verify"):
+                    update.check_candidate_content(release, "image")
+                state.write_text("not-json")
+                with self.assertRaisesRegex(update.UpdateError, "state is unreadable"):
+                    update.check_candidate_content(release, "image")
+                state.write_text(json.dumps(active_state))
+                (release / "server").mkdir()
+                (release / "server/gmContentCheck.mjs").write_text("// checker")
+                with mock.patch.object(update, "run", return_value=mock.Mock(returncode=0, stdout="")) as run:
+                    self.assertTrue(update.check_candidate_content(release, "image"))
+                command = run.call_args.args[0]
+                self.assertEqual(command[:10], ["docker", "run", "--rm", "--network", "none", "--cpus", "1",
+                                                 "--memory", "1g", "--volume"])
+                self.assertIn(f"{content}:/var/lib/marea-content:ro", command)
+                self.assertIn("MN_GM_CONTENT_DIR=/var/lib/marea-content", command)
+                self.assertEqual(command[-2:], ["node", "server/gmContentCheck.mjs"])
+                self.assertEqual(command[-3], "image")
+
+    def test_invalid_candidate_content_is_rejected_before_compose_stop(self):
+        sha = "a" * 40
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            release = base / "candidate"
+            (release / "server").mkdir(parents=True)
+            (release / "server/gmContentCheck.mjs").write_text("// checker")
+            content = base / "content"
+            content.mkdir()
+            state_file = content / "state.json"
+            state_file.write_text(json.dumps({"version": 1, "worldId": update.WORLD_ID, "generation": 1,
+                "revisionId": "b" * 64, "operations": {}}))
+            with ExitStack() as stack:
+                stack.enter_context(mock.patch.object(update, "CONTENT", content))
+                stack.enter_context(mock.patch.object(update, "CONTENT_STATE", state_file))
+                stack.enter_context(mock.patch.object(update, "OPS", base / "ops"))
+                stack.enter_context(mock.patch.object(update, "STATE", base / "update-state.json"))
+                stack.enter_context(mock.patch.object(update, "active_container", return_value="old"))
+                stack.enter_context(mock.patch.object(update, "active_metadata", return_value=("b" * 40, "marea-negra:alpha-bbbbbbb", "sha256:" + "1" * 64)))
+                stack.enter_context(mock.patch.object(update, "reject_rewind"))
+                stack.enter_context(mock.patch.object(update, "prior_release", return_value=base / "old"))
+                stack.enter_context(mock.patch.object(update, "read_state", return_value={}))
+                stack.enter_context(mock.patch.object(update, "archive_release", return_value=release))
+                stack.enter_context(mock.patch.object(update, "safe_env", return_value=(base / "compose.env", {"GAME_IMAGE": "candidate-image"})))
+                stack.enter_context(mock.patch.object(update, "prepare_image"))
+                stack.enter_context(mock.patch.object(update, "local_status", return_value=self.idle_status()))
+                stack.enter_context(mock.patch.object(update, "run", return_value=mock.Mock(returncode=1, stdout="bad content")))
+                compose = stack.enter_context(mock.patch.object(update, "compose"))
+                with self.assertRaisesRegex(update.UpdateError, "content registry check failed"):
+                    update.deploy(sha)
+            compose.assert_not_called()
+
     def test_missing_container_has_no_image_metadata(self):
         self.assertEqual(update.active_metadata(None), (None, None, None))
 

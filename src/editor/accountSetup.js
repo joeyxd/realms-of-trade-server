@@ -1,5 +1,8 @@
+import { getLocale, onLocaleChange } from '../core/locale.js';
+
 const SETUP_PARAM = 'account-setup';
 const MIN_PASSWORD_LENGTH = 12;
+const localized = (en, es) => getLocale() === 'en' ? en : es;
 
 function node(tag, className, text = '') {
   const element = document.createElement(tag);
@@ -58,36 +61,38 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   card.setAttribute('role', 'dialog');
   card.setAttribute('aria-modal', 'true');
   card.setAttribute('aria-labelledby', 'gm-account-setup-title');
-  const title = node('h1', '', 'Configura tu contraseña / Set your password');
+  const title = node('h1');
   title.id = 'gm-account-setup-title';
-  const description = node('p', '', 'Crea una contraseña nueva para tu cuenta. Debe tener al menos 12 caracteres. / Create a new password for your account. Use at least 12 characters.');
+  const description = node('p');
   const form = node('form', '');
   form.noValidate = true;
 
-  const passwordLabel = node('label', 'gm-account-setup-field', 'Contraseña nueva / New password');
+  const passwordLabel = node('label', 'gm-account-setup-field');
+  const passwordLabelText = node('span');
   const password = node('input', '');
   password.type = 'password'; password.name = 'new-password'; password.autocomplete = 'new-password';
   password.required = true; password.minLength = MIN_PASSWORD_LENGTH;
-  passwordLabel.append(password);
+  passwordLabel.append(passwordLabelText, password);
 
-  const confirmLabel = node('label', 'gm-account-setup-field', 'Confirma la contraseña / Confirm password');
+  const confirmLabel = node('label', 'gm-account-setup-field');
+  const confirmLabelText = node('span');
   const confirmation = node('input', '');
   confirmation.type = 'password'; confirmation.name = 'confirm-password'; confirmation.autocomplete = 'new-password';
   confirmation.required = true; confirmation.minLength = MIN_PASSWORD_LENGTH;
-  confirmLabel.append(confirmation);
+  confirmLabel.append(confirmLabelText, confirmation);
 
   const message = node('p', 'gm-account-setup-message');
   message.setAttribute('role', 'status'); message.setAttribute('aria-live', 'polite');
   const actions = node('div', 'gm-account-setup-actions');
-  const submit = node('button', '', 'Guardar contraseña / Save password');
+  const submit = node('button');
   submit.type = 'submit'; submit.dataset.action = 'submit';
-  const cancel = node('button', '', 'Ahora no / Not now');
+  const cancel = node('button');
   cancel.type = 'button'; cancel.dataset.action = 'cancel';
   actions.append(submit, cancel);
   form.append(passwordLabel, confirmLabel, message, actions);
   card.append(title, description, form);
   overlay.append(card);
-  const success = node('div', 'gm-account-setup-status', 'Contraseña guardada / Password saved');
+  const success = node('div', 'gm-account-setup-status');
   success.hidden = true; success.setAttribute('role', 'status'); success.setAttribute('aria-live', 'polite');
   parent.append(style, overlay, success);
 
@@ -100,6 +105,24 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   let wasVisible = false;
   let statusTimer = null;
   let linkPending = setupToken !== null;
+  let lastError = null;
+  let currentMessage = null;
+  let successMessage = { en: 'Password saved.', es: 'Contraseña guardada.' };
+
+  const setMessage = (pair) => {
+    currentMessage = pair;
+    message.textContent = pair ? localized(pair.en, pair.es) : '';
+  };
+  const renderLocale = () => {
+    title.textContent = localized('Set your password', 'Configura tu contraseña');
+    description.textContent = localized('Create a new password for your account. Use at least 12 characters.', 'Crea una contraseña nueva para tu cuenta. Debe tener al menos 12 caracteres.');
+    passwordLabelText.textContent = localized('New password', 'Contraseña nueva');
+    confirmLabelText.textContent = localized('Confirm password', 'Confirma la contraseña');
+    submit.textContent = localized('Save password', 'Guardar contraseña');
+    cancel.textContent = localized('Not now', 'Ahora no');
+    message.textContent = currentMessage ? localized(currentMessage.en, currentMessage.es) : '';
+    success.textContent = localized(successMessage.en, successMessage.es);
+  };
 
   const render = (state = auth.state) => {
     signedIn = state?.signedIn === true;
@@ -107,7 +130,7 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
     if (!signedIn) {
       password.value = '';
       confirmation.value = '';
-      message.textContent = '';
+      setMessage(null);
     }
     const enabled = signedIn && !!accountId && !busy && !completed && !linkPending;
     password.disabled = !enabled;
@@ -126,18 +149,19 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
     const nextPassword = password.value;
     const confirmPassword = confirmation.value;
     if ([...nextPassword].length < MIN_PASSWORD_LENGTH) {
-      message.textContent = 'Usa al menos 12 caracteres. / Use at least 12 characters.';
+      setMessage({ en: 'Use at least 12 characters.', es: 'Usa al menos 12 caracteres.' });
       password.focus();
       return;
     }
     if (nextPassword !== confirmPassword) {
-      message.textContent = 'Las contraseñas no coinciden. / The passwords do not match.';
+      setMessage({ en: 'The passwords do not match.', es: 'Las contraseñas no coinciden.' });
       confirmation.focus();
       return;
     }
 
-    busy = true; message.textContent = ''; render();
+    busy = true; setMessage(null); render();
     try {
+      lastError = null;
       const client = await auth.ensureClient();
       if (disposed || !signedIn || auth.state?.signedIn !== true || auth.state?.accountId !== submittedAccount) return;
       const { error } = await client.auth.updateUser({ password: nextPassword });
@@ -149,9 +173,10 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
       wasVisible = false;
       success.hidden = false;
       statusTimer = setTimeout(() => { if (!disposed) success.hidden = true; }, 3500);
-    } catch {
+    } catch (error) {
+      lastError = error;
       if (auth.state?.signedIn === true && auth.state?.accountId === submittedAccount) {
-        message.textContent = 'No se pudo guardar la contraseña. Inténtalo de nuevo. / Could not save the password. Please try again.';
+        setMessage({ en: 'Could not save the password. Please try again.', es: 'No se pudo guardar la contraseña. Inténtalo de nuevo.' });
       }
     } finally {
       // Drop the input values immediately; never persist or log credentials here.
@@ -165,25 +190,31 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   const onCancel = () => {
     if (busy) return;
     dismissed = true; overlay.hidden = true; wasVisible = false;
-    password.value = ''; confirmation.value = ''; message.textContent = '';
+    password.value = ''; confirmation.value = ''; setMessage(null);
   };
   form.addEventListener('submit', onSubmit);
   cancel.addEventListener('click', onCancel);
   const unsubscribe = auth.subscribe(render);
+  const unsubscribeLocale = onLocaleChange(renderLocale);
+  renderLocale();
 
   return {
+    get lastError() { return lastError; },
     async consumeLink() {
       if (!linkPending || disposed) return;
       try {
+        lastError = null;
         if (!/^[a-f0-9]{32,128}$/i.test(setupToken || '')) throw new Error('link');
         const client = await auth.ensureClient();
         const result = await client.auth.verifyOtp({ token_hash: setupToken, type: 'recovery' });
         if (result.error || !result.data?.session?.access_token) throw new Error('link');
         if (disposed) return;
         auth.publish({ guestChoice: false }); auth.applySession(result.data.session);
-      } catch {
+      } catch (error) {
+        lastError = error;
         dismissed = true; success.hidden = false;
-        success.textContent = 'El enlace caducó o no es válido. Solicita uno nuevo. / The link expired or is invalid. Request a new one.';
+        successMessage = { en: 'The link expired or is invalid. Request a new one.', es: 'El enlace caducó o no es válido. Solicita uno nuevo.' };
+        renderLocale();
       } finally { setupToken = null; linkPending = false; if (!disposed) render(); }
     },
     dispose() {
@@ -191,6 +222,7 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
       disposed = true;
       clearTimeout(statusTimer);
       unsubscribe?.();
+      unsubscribeLocale?.();
       form.removeEventListener('submit', onSubmit);
       cancel.removeEventListener('click', onCancel);
       password.value = '';

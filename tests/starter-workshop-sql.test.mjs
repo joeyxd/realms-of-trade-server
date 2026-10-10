@@ -248,3 +248,28 @@ test('SQL024 leaves a SQL021 receipt unchanged and replays it after both additiv
   assert.deepEqual(await commit(f, id(970), request), { ...result, replay: true });
   assert.deepEqual((await f.db.query('select request from public.mn_economic_operations where operation_id=$1::uuid', [id(970)])).rows[0].request, request);
 });
+
+test('SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority', async t => {
+  const f = await fixture(t), anchor = id(1100);
+  const adopted = (await f.db.query('select public.mn_adopt_ground_world($1::uuid,$2::jsonb) r',
+    [anchor, { world, expectedWorldVersion: f.wv, worldData: f.w }])).rows[0].r;
+  assert.equal(adopted.ok, true, JSON.stringify(adopted));
+  const request = proposal(f, 'contribute', 'adopted-workshop', { amount: 1 });
+  await assert.rejects(commit(f, id(1101), request), error => error.code === 'MNP02');
+  assert.equal((await f.db.query('select version from public.mn_profiles where player_id=$1::uuid', [account])).rows[0].version, 1);
+  assert.equal((await f.db.query('select count(*)::int n from public.mn_economic_operations')).rows[0].n, 0);
+  const common = async (operationId, operation) => (await f.db.query('select public.mn_commit_ground_transaction($1::uuid,$2::jsonb) r',
+    [operationId, { world, family: 'economic', operation, expectedWorldVersion: operation.expectedWorldVersion,
+      worldData: operation.worldData, clock: { operationId: anchor, expectedVersion: 1, expectedTick: 100, tick: 100 } }])).rows[0].r;
+  const result = await common(id(1102), request); assert.equal(result.ok, true, JSON.stringify(result));
+  assert.deepEqual(result.effect.ack, request.ack);
+  assert.deepEqual(await common(id(1102), request), { ...result, replay: true });
+  const legacy = { world, account, command: { type: 'commerce', op: 'buy', opId: 'adopted-legacy', town: 'aldea', g: 'madera', n: 1, expectedTotal: 0 },
+    expectedProfileVersion: result.effect.profileVersion, expectedWorldVersion: result.worldVersion,
+    profile: request.profile, worldData: request.worldData,
+    ack: { type: 'commerce', op: 'buy', opId: 'adopted-legacy', ok: false, why: 'gold', rev: request.profile.eco.tradeRev } };
+  assert.equal((await commit(f, id(1103), legacy)).ok, false);
+  const second = await common(id(1104), legacy); assert.equal(second.ok, true, JSON.stringify(second));
+  await f.db.exec('RESET ROLE');
+  assert.equal((await f.db.query('select count(*)::int n from public.mn_ground_world_write_context')).rows[0].n, 0);
+});

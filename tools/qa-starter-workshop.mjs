@@ -23,6 +23,7 @@ import { packInventoryHtml } from '/src/ui/packInventory.js';
 import { RaftEditor } from '/src/ui/raftEditor.js';
 import { ResourceActions } from '/src/ui/resourceActions.js';
 import { createLoggingChallenge } from '/src/sim/systems/loggingTiming.js';
+import { setLocale } from '/src/core/i18n.js';
 const profile=newProfile(); profile.eco.pack={...profile.eco.pack,cap:18,maxMass:18,goods:{madera:5}};
 profile.workshop={v:1,boards:5,storageCredit:false,crateKits:0};
 const ui=document.querySelector('#ui'),requests=[],player={x:0,y:0,z:0,dead:false};
@@ -38,7 +39,7 @@ const challenge=createLoggingChallenge({node:'palm-qa',rev:1,startTick:100,pract
 const client={joined:true,t:{closed:false},profile,resources:{timing:true,logicalTick:100,bench:{x:0,y:0,z:0},nodes:[{id:'palm-qa',kind:'palm',x:0,y:0,z:0,rev:1,ready:true,hits:0,remaining:3}]},resourceTick:100,serverTick:()=>100,send:m=>requests.push(m)};
 const toasts=[]; const actions=new ResourceActions({client:()=>client,player:()=>player,enabled:()=>true,toast:m=>toasts.push(m),sound(){},locale:()=>document.documentElement.lang});
 const pack=document.querySelector('.proof-pack');
-window.qa={profile,workshop,bench,editor,actions,client,requests,toasts,async state(name,lang){document.documentElement.lang=lang;workshop.close();bench.close();editor.close();actions.reset();
+window.qa={profile,workshop,bench,editor,actions,client,requests,toasts,async state(name,lang){setLocale(lang);document.documentElement.lang=lang;workshop.close();bench.close();editor.close();actions.reset();
  if(name==='partial'){profile.workshop={v:1,boards:5,storageCredit:false,crateKits:0};profile.eco.pack.goods={madera:5};workshop.open();}
  if(name==='ready'){profile.workshop={v:1,boards:10,storageCredit:true,crateKits:2};profile.progression.knowledge=['raft_storage'];profile.eco.pack.goods={madera:4,lona:3};workshop.open();}
  if(name==='workbench'){profile.eco.pack.goods={tronco:4,piedra:1};bench.open();}
@@ -59,9 +60,12 @@ try{
   try{await page.waitForFunction(()=>window.qa?.workshop,{timeout:8000});}catch{throw Error('Fixture initialization failed: '+JSON.stringify({errors,html:await page.locator('body').innerText().catch(()=>''),url:page.url()}));}
   for(const locale of ['es','en']) for(const state of ['partial','ready','workbench','storage','kit','timing']){
    await page.evaluate(([n,l])=>window.qa.state(n,l),[state,locale]);
-   const result=await page.evaluate(state=>{const sels={partial:'.workshop-panel',ready:'.workshop-panel',workbench:'.workbench-panel',storage:'.raft-editor',kit:'.raft-editor',timing:'.logging-timing'};const el=document.querySelector(sels[state]);const r=el.getBoundingClientRect();return {text:el.textContent.replace(/\\s+/g,' ').trim(),inputCount:el.querySelector('[data-input-count]')?.textContent,outputCount:el.querySelector('[data-output-count]')?.textContent,actionEnabled:el.querySelector('.re-action')?!el.querySelector('.re-action').disabled:undefined,visible:!el.hidden,rect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},fits:r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1,noPageOverflow:document.documentElement.scrollWidth<=innerWidth+1,pack:document.querySelector('.proof-pack').textContent.replace(/\\s+/g,' ').trim()};},state);
+   const result=await page.evaluate(state=>{const sels={partial:'.workshop-panel',ready:'.workshop-panel',workbench:'.workbench-panel',storage:'.raft-editor',kit:'.raft-editor',timing:'.logging-timing'};const el=document.querySelector(sels[state]);const r=el.getBoundingClientRect();return {text:el.textContent.replace(/\\s+/g,' ').trim(),heading:el.querySelector('[data-title],.wb-heading h2,.re-head b')?.textContent.trim(),ariaLabel:el.getAttribute('aria-label'),trackLabel:el.querySelector('[role=meter]')?.getAttribute('aria-label'),inputCount:el.querySelector('[data-input-count]')?.textContent,outputCount:el.querySelector('[data-output-count]')?.textContent,actionEnabled:el.querySelector('.re-action')?!el.querySelector('.re-action').disabled:undefined,visible:!el.hidden,rect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom},fits:r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1,noPageOverflow:document.documentElement.scrollWidth<=innerWidth+1,pack:document.querySelector('.proof-pack').textContent.replace(/\\s+/g,' ').trim()};},state);
    if(!result.visible||!result.fits||!result.noPageOverflow||errors.length)throw Error(JSON.stringify({device,locale,state,result,errors}));
    if(state==='partial'&&!/5\s*\/\s*10/.test(result.text))throw Error('Expected 5/10 partial progress: '+result.text);
+   const expectedHeading=state==='workbench'?(locale==='en'?'Materials bench':'Banco de materiales'):state==='partial'||state==='ready'?(locale==='en'?'Salty Shore Workshop':'Taller de Salty Shore'):state==='timing'?(locale==='en'?'Logging rhythm':'Ritmo de tala'):null;
+   if(expectedHeading&&result.heading!==expectedHeading)throw Error(`Wrong ${locale} heading for ${state}: ${result.heading}`);
+   if(state==='timing'&&(result.ariaLabel!==(locale==='en'?'Logging timing challenge':'Desafío de ritmo de tala')||result.trackLabel!==(locale==='en'?'Strike timing window':'Ventana de golpe')))throw Error(`Wrong ${locale} timing ARIA labels: ${JSON.stringify(result)}`);
    if(state==='ready'&&(!/10\s*\/\s*10/.test(result.text)||!result.text.toLowerCase().includes(locale==='en'?'credit':'crédito')))throw Error('Ready reward/credit not visible: '+result.text);
    if(state==='storage'&&(!result.text.toLowerCase().includes(locale==='en'?'first storage build paid':'primera bodega cubierta')||!result.actionEnabled))throw Error('First storage credit not available: '+JSON.stringify(result));
    if(state==='kit'&&(!result.text.toLowerCase().includes(locale==='en'?'crate kit':'kit de caja')||!result.actionEnabled))throw Error('Kit cost not available: '+JSON.stringify(result));

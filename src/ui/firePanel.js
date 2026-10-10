@@ -65,6 +65,7 @@ export class FirePanel {
   constructor({ parent, client = () => null, locale = () => 'es', toast = () => {}, onOpen = () => {}, onClose = () => {}, now = () => performance.now() } = {}) {
     this.parent = parent; this.client = client; this.localeSource = locale; this.toast = toast; this.onOpen = onOpen; this.onClose = onClose; this.now = now;
     this.active = false; this.pending = null; this.target = null; this.owner = null; this.entity = null; this.renderKey = '';
+    this.statusKey = ''; this.statusReason = '';
     const doc = parent?.ownerDocument || globalThis.document;
     if (!doc?.createElement || !parent?.appendChild) return;
     this.doc = doc;
@@ -154,7 +155,7 @@ export class FirePanel {
     if (this.pending) {
       const elapsed = this.now() - this.pending.sentAt;
       if (elapsed >= TIMEOUT_MS) {
-        this.pending = null; this.setStatus(this.copy().delayed);
+        this.pending = null; this.setStatus('delayed');
       } else if (!this.pending.retried && elapsed >= RETRY_MS) {
         this.pending.retried = true;
         try { c.send(this.pending.command); } catch { /* Retry this immutable request only once. */ }
@@ -176,8 +177,8 @@ export class FirePanel {
     if (!command) return false;
     this.pending = { command, sentAt: this.now(), retried: false };
     try { c.send(command); }
-    catch { this.pending = null; this.setStatus(this.copy().generic); this.render(); return false; }
-    this.setStatus(this.copy().waiting); this.render(); return true;
+    catch { this.pending = null; this.setStatus('generic'); this.render(); return false; }
+    this.setStatus('waiting'); this.render(); return true;
   }
   load() {
     const slot = this.currentSlot(), stock = this.stock();
@@ -189,7 +190,14 @@ export class FirePanel {
     if (slot.seconds <= 0 || slot.lit === lit) return false;
     return this.send('set', !!lit);
   }
-  setStatus(message) { if (this.root) this.$('.fire-status').textContent = message || ''; }
+  setStatus(key, reason = '') {
+    this.statusKey = key || '';
+    this.statusReason = reason || '';
+    if (this.root) {
+      const c = this.copy();
+      this.$('.fire-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || '';
+    }
+  }
 
   acknowledge(ev) {
     this.updateClockOnly();
@@ -197,8 +205,8 @@ export class FirePanel {
     if (!ev || ev.type !== 'fire' || !pending || ev.opId !== pending.command.opId || ev.op !== pending.command.op) return false;
     this.pending = null;
     const c = this.copy();
-    if (ev.ok === true) this.setStatus(pending.command.op === 'load' ? c.loaded : pending.command.lit ? c.on : c.off);
-    else this.setStatus(c[ev.why] || c.generic);
+    if (ev.ok === true) this.setStatus(pending.command.op === 'load' ? 'loaded' : pending.command.lit ? 'on' : 'off');
+    else this.setStatus('', ev.why || 'generic');
     this.render(); return true;
   }
   updateClockOnly() {
@@ -227,7 +235,8 @@ export class FirePanel {
     this.$('.fire-toggle').disabled = pending || !enabled || !hasFuel;
     this.$('.fire-close').textContent = '×';
     this.$('.fire-close').setAttribute('aria-label', c.close);
-    if (!enabled && this.active && !pending) this.setStatus(c.disabled);
+    if (!enabled && this.active && !pending) this.setStatus('disabled');
+    this.$('.fire-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || '';
     this.root.hidden = !this.active;
   }
 }

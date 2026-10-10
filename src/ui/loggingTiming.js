@@ -24,11 +24,15 @@ export class LoggingTimingPanel {
   show(challenge, elapsedTicks = 0) {
     this.ensure();
     this.challenge = challenge; this.receivedAt = this.now() - Math.max(0, elapsedTicks) * DT * 1000; this.root.hidden = false;
-    this.root.querySelector('[data-title]').textContent = this.locale() === 'en' ? 'Logging rhythm' : 'Ritmo de tala';
-    this.root.querySelector('[data-hint]').textContent = this.locale() === 'en'
+    const english = String(this.locale()).toLowerCase().startsWith('en');
+    this.root.setAttribute('aria-label', english ? 'Logging timing challenge' : 'Desafío de ritmo de tala');
+    this.root.querySelector('.logging-timing__track').setAttribute('aria-label', english ? 'Strike timing window' : 'Ventana de golpe');
+    this.root.querySelector('[data-title]').textContent = english ? 'Logging rhythm' : 'Ritmo de tala';
+    this.root.querySelector('[data-hint]').textContent = english
       ? 'Press F or tap at the marker. The server confirms the hit.'
       : 'Pulsa F o toca al llegar la marca. El servidor confirma el golpe.';
-    this.root.querySelector('[data-hit]').textContent = this.locale() === 'en' ? 'Strike' : 'Golpear';
+    this.root.querySelector('[data-hit]').textContent = english ? 'Strike' : 'Golpear';
+    this.root.querySelector('[data-hit]').setAttribute('aria-label', english ? 'Strike now' : 'Golpear ahora');
     const targetPercent = (challenge.targetTick - challenge.startTick) / (challenge.endTick - challenge.startTick) * 100;
     const perfectWidth = challenge.width / (challenge.endTick - challenge.startTick) * 100;
     const perfect = this.root.querySelector('[data-perfect]');

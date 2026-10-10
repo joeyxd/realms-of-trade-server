@@ -19,6 +19,12 @@ const PROVIDER_ERRORS = Object.freeze({
   over_email_send_rate_limit: 'Demasiados intentos. Espera un momento y vuelve a probar.',
   over_request_rate_limit: 'Demasiados intentos. Espera un momento y vuelve a probar.',
 });
+const ERROR_KEYS = Object.freeze({
+  offline: 'auth.error.offline', config: 'auth.error.config', sdk: 'auth.error.sdk', credentials: 'auth.error.credentials',
+  signup: 'auth.error.signup', resend: 'auth.error.resend', logout: 'auth.error.logout', session: 'auth.error.session',
+  email_not_confirmed: 'auth.error.emailNotConfirmed', weak_password: 'auth.error.weakPassword',
+  over_email_send_rate_limit: 'auth.error.rateLimit', over_request_rate_limit: 'auth.error.rateLimit',
+});
 
 function normalizedBase(value) {
   const base = String(value || '');
@@ -56,6 +62,7 @@ export class AccountAuth {
   }
 
   publish(patch) {
+    if (Object.hasOwn(patch, 'error') && !Object.hasOwn(patch, 'errorKey')) patch = { ...patch, errorKey: '' };
     if (patch.signedIn === false) patch = { ...patch, accountId: '' };
     this.state = { ...this.state, ...patch };
     const snapshot = { ...this.state };
@@ -64,7 +71,7 @@ export class AccountAuth {
 
   async bootstrap({ online = false } = {}) {
     if (!online) {
-      this.publish({ enabled: false, guestChoice: true, signedIn: false, email: '', error: ERRORS.offline });
+      this.publish({ enabled: false, guestChoice: true, signedIn: false, email: '', error: ERRORS.offline, errorKey: ERROR_KEYS.offline });
       return false;
     }
     if (this.bootstrapPromise) return this.bootstrapPromise;
@@ -75,7 +82,7 @@ export class AccountAuth {
 
   async loadConfig() {
     if (!this.fetchImpl || !this.httpBase) {
-      this.publish({ enabled: false, error: ERRORS.config });
+      this.publish({ enabled: false, error: ERRORS.config, errorKey: ERROR_KEYS.config });
       return false;
     }
     this.publish({ error: '' });
@@ -89,12 +96,12 @@ export class AccountAuth {
       if (!config.enabled) return false;
       try { await this.ensureClient(); }
       catch {
-        this.publish({ enabled: true, error: ERRORS.sdk });
+        this.publish({ enabled: true, error: ERRORS.sdk, errorKey: ERROR_KEYS.sdk });
       }
       return true;
     } catch {
       this.config = null;
-      this.publish({ enabled: false, guestChoice: false, signedIn: false, email: '', error: ERRORS.config });
+      this.publish({ enabled: false, guestChoice: false, signedIn: false, email: '', error: ERRORS.config, errorKey: ERROR_KEYS.config });
       return false;
     }
   }
@@ -173,8 +180,8 @@ export class AccountAuth {
       return { ok: true, ...operation(result) };
     } catch (error) {
       const code = typeof error?.code === 'string' ? error.code : '';
-      const message = code === 'user_already_exists' && failKey === 'signup' ? ERRORS.signup : (PROVIDER_ERRORS[code] || ERRORS[failKey]);
-      this.publish({ error: message });
+      const errorKey = code === 'user_already_exists' && failKey === 'signup' ? ERROR_KEYS.signup : (ERROR_KEYS[code] || ERROR_KEYS[failKey]);
+      this.publish({ errorKey, error: PROVIDER_ERRORS[code] || ERRORS[failKey] });
       return { ok: false };
     } finally {
       this.publish({ busy: false });
@@ -228,7 +235,7 @@ export class AccountAuth {
       this.publish({ signedIn: false, email: '', guestChoice: true, error: '' });
       return { ok: true };
     } catch {
-      this.publish({ error: ERRORS.logout });
+      this.publish({ error: ERRORS.logout, errorKey: ERROR_KEYS.logout });
       return { ok: false };
     } finally {
       this.publish({ busy: false });
@@ -250,7 +257,7 @@ export class AccountAuth {
   async token() {
     if (this.state.guestChoice) return null;
     if (!this.state.enabled) {
-      this.publish({ error: ERRORS.session });
+      this.publish({ error: ERRORS.session, errorKey: ERROR_KEYS.session });
       throw new Error(ERRORS.session);
     }
     try {
@@ -262,7 +269,7 @@ export class AccountAuth {
       this.applySession(session || null);
       return session?.access_token || null;
     } catch {
-      this.publish({ error: ERRORS.session });
+      this.publish({ error: ERRORS.session, errorKey: ERROR_KEYS.session });
       throw new Error(ERRORS.session);
     }
   }

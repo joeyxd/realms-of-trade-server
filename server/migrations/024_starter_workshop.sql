@@ -1,4 +1,5 @@
 -- Starter workshop, carried-capacity, raft crate, and timed palm receipts.
+-- Apply after 001-023. Installing this migration does not enable host gameplay or adopt a world.
 -- This migration wraps SQL022 in place so old operation envelopes and receipts stay byte-for-byte replayable.
 BEGIN;
 

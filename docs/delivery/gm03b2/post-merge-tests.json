@@ -1,0 +1,23 @@
+﻿{
+  "schema": "gm03b2-post-merge-tests/v1",
+  "at": "2026-10-10T22:50:33Z",
+  "commit": "dbd103cfa5f018b7fadf907233262e877f8f36d9",
+  "protocol": 43,
+  "command": "node --test tests/companions-client.test.mjs tests/companions-network.test.mjs tests/companions-ui.test.mjs tests/gm-content-client.test.mjs tests/gm-content-http.test.mjs tests/gm-content-check.test.mjs tests/gm-editor-i18n.test.mjs",
+  "files": [
+    "tests/companions-client.test.mjs",
+    "tests/companions-network.test.mjs",
+    "tests/companions-ui.test.mjs",
+    "tests/gm-content-client.test.mjs",
+    "tests/gm-content-http.test.mjs",
+    "tests/gm-content-check.test.mjs",
+    "tests/gm-editor-i18n.test.mjs"
+  ],
+  "exitCode": 0,
+  "counts": { "tests": 46, "pass": 46, "fail": 0, "skipped": 0 },
+  "durationMs": 23433,
+  "notes": [
+    "Release checker accepted the current artifact and active base pointer.",
+    "Release checker rejected incompatible runtime metadata and tampered retained bytes without source changes."
+  ]
+}

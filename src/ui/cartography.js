@@ -1,5 +1,6 @@
 // Pure display adapter for world maps. Keep world geometry separate from map UI and rendering.
 import { toUV, toWorld, ZONES } from '../sim/worldgen.js';
+import { t } from '../core/i18n.js';
 
 const SQRT_HALF = Math.SQRT1_2;
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
@@ -44,7 +45,7 @@ function legacyData(map) {
   add('village', zone('aldea'), 'town', L.village);
   if (Array.isArray(L.path) && L.path.length) add('path', zone('camino'), 'route', L.path[Math.floor(L.path.length / 2)]);
   add('arena', zone('caldera'), 'arena', L.arena);
-  add('ship', 'Barco', 'ship', L.ship);
+  add('ship', t('systems.map.boat'), 'ship', L.ship);
   for (const n of Array.isArray(map?.npcs) ? map.npcs : []) add(n?.id, n?.name, 'npc', n);
   for (const rack of (Array.isArray(map?.racks) ? map.racks : [])) add(rack?.id, rack?.name, 'rack', rack);
   const arenaR = L.arenaR;
@@ -77,11 +78,11 @@ export function describeMap(map) {
     }
   }
   if (explicit) {
-    return { title: safeText(explicit.title, 'Mapa del mundo'), revision: revisionText(explicit.revision ?? map?.terrainRevision), frame,
+    return { title: safeText(explicit.title, t('systems.map.title')), revision: revisionText(explicit.revision ?? map?.terrainRevision), frame,
       points, regions };
   }
   const legacy = legacyData(map || {});
-  return { title: map?.landmarks ? 'Isla de la Caldera' : 'Mapa del mundo',
+  return { title: map?.landmarks ? t('systems.map.island') : t('systems.map.title'),
     revision: revisionText(map?.terrainRevision), frame, points: legacy.points, regions: legacy.regions };
 }
 

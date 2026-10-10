@@ -1,5 +1,6 @@
 import { NAVAL_NAVIGATION as N } from '../data/navalNavigation.js';
 import { NAVAL_STEP } from '../data/navalHandling.js';
+import { t } from '../core/i18n.js';
 
 const clamp01 = (value) => Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0));
 const finiteOr = (value, fallback = 0) => Number.isFinite(value) ? value : fallback;
@@ -19,11 +20,11 @@ export function confirmedNavalCapacity(client, raft, voyage = client?.voyage || 
 }
 
 const RESULT_TEXT = Object.freeze({
-  perfect: '¡PERFECTO! La vela ruge.',
-  capture: '¡Ráfaga atrapada! Sigue dando vela.',
-  early: 'Demasiado pronto. Espera la siguiente.',
-  angle: 'Orienta la proa a favor del viento.',
-  miss: 'Abre la vela y suelta el freno.',
+  perfect: () => t('systems.naval.result.perfect'),
+  capture: () => t('systems.naval.gust.caught'),
+  early: () => t('systems.naval.result.early'),
+  angle: () => t('systems.naval.result.angle'),
+  miss: () => t('systems.naval.result.miss'),
 });
 
 /** Build display-only values from the current deterministic lab tick. */
@@ -41,7 +42,7 @@ export function navalHudState({ state, rig, wind, gust, activity, current, pause
   const boostSeconds = boostTicks * NAVAL_STEP;
   const boostActive = boostTicks > 0;
   const resultIsLive = Boolean(activity?.result) && tick < finiteOr(activity?.resultUntil);
-  const resultText = resultIsLive ? (RESULT_TEXT[activity.result] || '') : '';
+  const resultText = resultIsLive ? (RESULT_TEXT[activity.result]?.() || '') : '';
   const captureDisabled = Boolean(paused || !gusts || !(windStrength > 0) || attempted);
   const phase = gust?.phase || 'idle';
   const gustProgress = clamp01(gust?.progress);
@@ -59,25 +60,25 @@ export function navalHudState({ state, rig, wind, gust, activity, current, pause
     perfectStart: trackMark(N.windowStart + N.windowTicks / 2 - N.perfectTicks),
     perfectEnd: trackMark(N.windowStart + N.windowTicks / 2 + N.perfectTicks),
   };
-  const gustText = !gusts || !(windStrength > 0) ? 'Sin ráfagas' : boostActive
-    ? `¡VELA CARGADA! ${oneDecimal(boostSeconds)} s`
-    : phase === 'window' ? (attempted ? 'Ráfaga resuelta' : '¡AHORA! CAZA LA RÁFAGA')
-      : phase === 'approach' ? `Prepara la vela · ${oneDecimal(remaining)} s`
-        : `Próxima ráfaga · ${Math.ceil(remaining)} s`;
-  const flowText = !currents ? 'Corrientes apagadas'
-    : currentVisible ? `CORRIENTE · ${oneDecimal(currentStrength)} u/s` : 'Busca las flechas de agua';
+  const gustText = !gusts || !(windStrength > 0) ? t('systems.naval.gust.none') : boostActive
+    ? t('systems.naval.gust.boost', { seconds: oneDecimal(boostSeconds) })
+    : phase === 'window' ? (attempted ? t('systems.naval.gust.resolved') : t('systems.naval.gust.now'))
+      : phase === 'approach' ? t('systems.naval.gust.prepare', { seconds: oneDecimal(remaining) })
+        : t('systems.naval.gust.next', { seconds: Math.ceil(remaining) });
+  const flowText = !currents ? t('systems.naval.flow.off')
+    : currentVisible ? t('systems.naval.flow.current', { speed: oneDecimal(currentStrength) }) : t('systems.naval.flow.seek');
 
   let calloutText = '', calloutTone = '', calloutDetail = '';
   if (resultIsLive && activity.result === 'perfect') {
-    calloutText = '¡PERFECTO!'; calloutTone = 'gold';
+    calloutText = t('systems.naval.result.perfectShort'); calloutTone = 'gold';
     if (boostActive) calloutDetail = `${oneDecimal(boostSeconds)} s`;
   } else if (resultIsLive && activity.result === 'capture') {
-    calloutText = '¡RÁFAGA CAZADA!'; calloutTone = 'mint';
+    calloutText = t('systems.naval.gust.callout'); calloutTone = 'mint';
     if (boostActive) calloutDetail = `${oneDecimal(boostSeconds)} s`;
   } else if (boostActive) {
-    calloutText = 'VELA CARGADA'; calloutTone = 'mint'; calloutDetail = `${oneDecimal(boostSeconds)} s`;
+    calloutText = t('systems.naval.gust.boostLabel'); calloutTone = 'mint'; calloutDetail = `${oneDecimal(boostSeconds)} s`;
   } else if (currentVisible) {
-    calloutText = 'CORRIENTE ACTIVA'; calloutTone = 'cyan'; calloutDetail = `${oneDecimal(currentStrength)} u/s`;
+    calloutText = t('systems.naval.flow.active'); calloutTone = 'cyan'; calloutDetail = `${oneDecimal(currentStrength)} u/s`;
   }
 
   return {

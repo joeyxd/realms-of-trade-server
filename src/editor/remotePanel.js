@@ -1,3 +1,7 @@
+import { GmContentClient } from './contentClient.js';
+import { editorMessage } from './messages.js';
+import { onLocaleChange, setLocale } from '../core/locale.js';
+
 const text = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -5,8 +9,12 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 export class RemoteDraftPanel {
   constructor(editor, client) {
     this.editor = editor; this.client = client; this.head = null; this.state = 'idle'; this.review = null; this.generation = 0;
+    this.contentClient = client ? new GmContentClient({ auth: client.auth, accountId: client.accountId,
+      httpBase: new URL('../../', client.url), localScope: client.key, source: client.source, fetchImpl: client.fetchImpl }) : null;
+    this.content = null; this.contentReview = null; this.contentError = ''; this.contentBusy = false;
     this.button = editor.ui.querySelector('[data-action="remote"]');
     this.dialog = document.createElement('dialog'); this.dialog.className = 'gm-remote-dialog';
+    this.unsubscribeLocale = onLocaleChange(() => this.render());
     this.dialog.setAttribute('aria-label', 'Borrador online / Online draft');
     editor.ui.appendChild(this.dialog);
     this.dialog.addEventListener('cancel', (event) => { event.preventDefault(); this.hide(); });
@@ -14,30 +22,40 @@ export class RemoteDraftPanel {
       event.stopPropagation();
       const action = event.target.closest('[data-remote]')?.dataset.remote;
       if (action === 'close') this.hide();
-      if (action === 'language') { editor.lang = editor.lang === 'es' ? 'en' : 'es'; editor._setLanguage(); }
+      if (action === 'language') setLocale(editor.lang === 'es' ? 'en' : 'es');
       if (action === 'refresh') void this.refresh();
       if (action === 'export') editor._exportCurrent();
-      if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: this.t('Server copy exported.', 'Se exportó la copia online.') });
+      if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: editorMessage('Server copy exported.', 'Se exportó la copia online.') });
       if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
       if (action === 'cancel-review') { this.review = null; this.render(); }
       if (action === 'confirm') { if (this.review === 'save') void this.save(); else if (this.review === 'load') void this.load(); }
       if (action === 'retry') void this.save(true);
       if (action === 'prepare') void this.prepare();
       if (action === 'download-revision') this.downloadRevision();
+      if (action === 'content-refresh') void this.refreshContent();
+      if (action === 'content-register') void this.registerContent();
+      if (action === 'content-activate') {
+        const value = this.dialog.querySelector('[data-content-revision]')?.value;
+        this.contentReview = { revisionId: value || null, expectedGeneration: this.content.active.generation }; this.render();
+      }
+      if (action === 'content-cancel') { this.contentReview = null; this.render(); }
+      if (action === 'content-confirm') void this.activateContent();
+      if (action === 'content-retry') void this.activateContent(true);
+      if (action === 'content-reload') void editor.saveNow().then((saved) => { if (saved) location.reload(); });
       if (action === 'focus-issue') { this.hide(); editor.select(event.target.closest('[data-object-id]').dataset.objectId); editor._focusSelection(); }
     });
     this.render();
   }
 
   t(en, es) { return this.editor._t(en, es); }
-  get busy() { return ['loading', 'saving', 'applying', 'preparing'].includes(this.state); }
+  get busy() { return this.contentBusy || ['loading', 'saving', 'applying', 'preparing'].includes(this.state); }
   get open() { return this.dialog.open; }
   async start() {
     this.generation++; this.head = null; this.state = 'idle'; this.review = null; this.error = ''; this.prepared = null;
-    this.client?.resume(); this.render();
-    if (this.client) await this.refresh();
+    this.client?.resume(); this.contentClient?.resume(); this.content = null; this.contentReview = null; this.contentApplied = null; this.contentError = ''; this.render();
+    if (this.client) { await this.refresh(); await this.refreshContent(); }
   }
-  stop() { this.generation++; this.client?.cancel(); this.hide(); }
+  stop() { this.generation++; this.client?.cancel(); this.contentClient?.cancel(); this.contentBusy = false; this.hide(); }
   show() {
     if (this.editor.walkPreview?.active) return;
     this.editor._cancelTransform(); this.editor.cameraController.disable(); this.editor.transform.enabled = false;
@@ -46,7 +64,7 @@ export class RemoteDraftPanel {
   }
   hide() {
     if (this.open) this.dialog.close();
-    this.review = null;
+    this.review = null; this.contentReview = null;
     if (this.editor.active && !this.editor.walkPreview?.active) { this.editor.cameraController.enable(); this.editor.transform.enabled = true; }
   }
   errorText(code) {
@@ -76,6 +94,7 @@ export class RemoteDraftPanel {
       this.state = this.client.pending ? 'pending' : !this.runtimeMatches ? 'incompatible' : 'ready';
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code; this.state = this.client.pending ? 'pending' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -93,6 +112,7 @@ export class RemoteDraftPanel {
       if (result.replay) await this.refresh();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code; this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -113,6 +133,7 @@ export class RemoteDraftPanel {
       await this.editor.saveNow();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code || 'base'; this.state = 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -128,6 +149,7 @@ export class RemoteDraftPanel {
       this.state = 'ready';
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code;
       this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'ready';
     } finally { if (generation === this.generation) this.render(); }
@@ -145,6 +167,77 @@ export class RemoteDraftPanel {
     const url = URL.createObjectURL(blob), link = document.createElement('a');
     link.href = url; link.download = `gm-prepared-${revision.revisionId.slice(0, 12)}.json`;
     document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async contentAction(action) {
+    if (this.busy || !this.contentClient) return;
+    const generation = this.generation;
+    this.contentBusy = true; this.contentError = ''; this.render();
+    try {
+      await action();
+    } catch (error) {
+      if (generation === this.generation && this.editor.active) this.contentError = error.code || 'gm_content_unavailable';
+    } finally {
+      if (generation === this.generation) { this.contentBusy = false; this.render(); }
+    }
+  }
+  refreshContent() {
+    const generation = this.generation;
+    return this.contentAction(async () => {
+      const result = await this.contentClient.inspect();
+      if (generation === this.generation && this.editor.active) this.content = result;
+    });
+  }
+  registerContent() {
+    if (!this.canPrepare || !this.prepared?.revision) return;
+    const generation = this.generation, id = this.prepared.revision.revisionId, revision = this.head.revision;
+    return this.contentAction(async () => {
+      const result = await this.contentClient.register(revision, id);
+      if (generation === this.generation && this.editor.active) this.content = result;
+    });
+  }
+  activateContent(retry = false) {
+    if (!retry && !this.contentReview) return;
+    const generation = this.generation, input = this.contentReview;
+    this.contentReview = null;
+    return this.contentAction(async () => {
+      if (!await this.editor.saveNow()) throw Object.assign(new Error(), { code: 'local_recovery_unavailable' });
+      const result = retry ? await this.contentClient.retry() : await this.contentClient.activate(input.revisionId, input.expectedGeneration);
+      if (generation !== this.generation || !this.editor.active) return;
+      this.content = await this.contentClient.inspect(); this.contentApplied = result;
+    });
+  }
+  contentHtml(button) {
+    if (!this.contentClient) return '';
+    const data = this.content;
+    const messages = {
+      gm_content_busy: ['Players, a save, or an update are active. Try again when the world is empty.', 'Hay jugadores, un guardado o una actualización en curso. Reintenta cuando el mundo esté vacío.'],
+      gm_content_conflict: ['The active revision changed. Refresh before choosing again.', 'Cambió la revisión activa. Actualiza antes de elegir otra vez.'],
+      gm_content_changed: ['The preparation changed. Validate the saved design again.', 'La preparación cambió. Vuelve a validar el diseño guardado.'],
+      gm_content_incompatible: ['This revision belongs to another code version. Activate the base before updating code.', 'Esta revisión pertenece a otra versión de código. Activa la base antes de actualizar el código.'],
+      gm_content_candidate: ['This revision includes art candidates. Use integrated models for activation.', 'Esta revisión incluye candidatos de arte. Usa modelos integrados para activar.'],
+      gm_content_routes: ['The revision blocks a protected route.', 'La revisión bloquea una ruta protegida.'],
+      gm_content_occupied: ['The revision overlaps a saved boat or an item on the ground.', 'La revisión invade un barco guardado o un objeto en el suelo.'],
+      gm_content_limit: ['Revision storage is full. Contact the server operator.', 'El archivo de revisiones está lleno. Contacta al operador del servidor.'],
+    };
+    const message = messages[this.contentError] || ['Revision storage is unavailable. Your draft is preserved.', 'El archivo de revisiones no está disponible. Tu borrador se conserva.'];
+    const selected = this.contentSelection ?? data?.active.revisionId ?? '';
+    return `<section class="gm-publication gm-content"><h3>${text(this.t('Published world', 'Mundo publicado'))}</h3>
+      <p>${text(this.t('Activate only when no one is playing. Characters, goods and progress are preserved. Open tabs must reload.', 'Activa cuando nadie esté jugando. Se conservan personajes, bienes y progreso. Las pestañas abiertas deben recargar.'))}</p>
+      ${this.contentError ? `<p class="gm-remote-error" role="alert">${text(this.t(...message))}</p>` : ''}
+      ${data ? `<p data-content-active>${text(this.t('Active', 'Activa'))}: ${text(data.active.revisionId?.slice(0, 12) || this.t('Base map', 'Mapa base'))} · g${data.active.generation}</p>` : ''}
+      ${button('content-refresh', this.t('Refresh revisions', 'Actualizar revisiones'), this.busy)}
+      ${button('content-register', this.t('Save prepared revision', 'Guardar revisión preparada'), this.busy || !this.canPrepare || !this.prepared?.revision || !!this.contentClient.pending)}
+      ${data ? `<label>${text(this.t('Saved revision', 'Revisión guardada'))}<select data-content-revision ${this.busy ? 'disabled' : ''}>
+        <option value="">${text(this.t('Base map', 'Mapa base'))}</option>
+        ${data.revisions.map((row) => `<option value="${row.revisionId}" ${selected === row.revisionId ? 'selected' : ''}>${row.revisionId.slice(0, 12)} · ${row.objects} ${text(this.t('models', 'modelos'))} · ${row.baseChanges} ${text(this.t('base changes', 'cambios'))}</option>`).join('')}</select></label>
+        ${button('content-activate', this.t('Activate / roll back…', 'Activar / volver atrás…'), this.busy || !!this.contentClient.pending)}
+        <p>${text(this.t('Saved revisions keep their files. Code updates require returning to the base if the runtime changes.', 'Las revisiones guardadas conservan sus archivos. Si cambia el runtime, hay que volver a la base para actualizar el código.'))}</p>` : ''}
+      ${this.contentReview ? `<div class="gm-remote-review"><b>${text(this.t('Activate this revision for everyone?', '¿Activar esta revisión para todos?'))}</b>
+        <p>${text(this.contentReview.revisionId?.slice(0, 12) || this.t('Base map', 'Mapa base'))} · g${this.contentReview.expectedGeneration}</p>
+        ${button('content-confirm', this.t('Activate now', 'Activar ahora'), this.busy)} ${button('content-cancel', this.t('Cancel', 'Cancelar'), this.busy)}</div>` : ''}
+      ${this.contentClient.pending ? `<p>${text(this.t('An activation response is pending. Retry the exact attempt before choosing another revision.', 'Hay una respuesta de activación pendiente. Reintenta el intento exacto antes de elegir otra revisión.'))}</p>${button('content-retry', this.t('Resolve pending activation', 'Resolver activación pendiente'), this.busy)}` : ''}
+      ${this.contentApplied ? `<p role="status">${text(this.t('Activation confirmed. Reload to see the shared world.', 'Activación confirmada. Recarga para ver el mundo compartido.'))}</p>${button('content-reload', this.t('Save local draft and reload', 'Guardar borrador local y recargar'), this.busy)}` : ''}</section>`;
   }
 
   issueText(code) {
@@ -212,9 +305,10 @@ export class RemoteDraftPanel {
         ${button('load', this.t('Load online…', 'Cargar online…'), !this.head?.document || this.busy || !!this.client?.pending || this.state !== 'ready' || !this.compatible)}
         ${button('export', this.t('Export local copy', 'Exportar copia local'))}
         ${this.head?.document ? button('export-remote', this.t('Export server copy', 'Exportar copia online')) : ''}</footer>`}
-      ${!this.review ? this.preparationHtml(button) : ''}`;
+      ${!this.review ? this.preparationHtml(button) + this.contentHtml(button) : ''}`;
+    this.dialog.querySelector('[data-content-revision]')?.addEventListener('change', (event) => { this.contentSelection = event.target.value; this.contentReview = null; });
   }
   get runtimeMatches() { return !!this.remoteScope && this.remoteScope.seed === this.editor.map.seed && this.remoteScope.baseRevision === this.editor.baseRevision; }
   get compatible() { return this.runtimeMatches && (!this.head?.document || (this.head.document.base.seed === this.editor.map.seed && this.head.document.base.revision === this.editor.baseRevision)); }
-  dispose() { this.stop(); this.dialog.remove(); }
+  dispose() { this.unsubscribeLocale?.(); this.stop(); this.dialog.remove(); }
 }

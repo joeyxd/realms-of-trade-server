@@ -1,3 +1,5 @@
+import { EditorStatus, editorErrorMessage, editorMessage } from './messages.js';
+
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 }[ch]));
@@ -9,11 +11,12 @@ const labelFor = (entry, lang = 'es') => {
 
 /** Manifest-backed, on-demand catalog for models that are safe to place as decoration. */
 export class EditorCatalog {
-  constructor({ root, assets, onSelect = () => {}, entries = null, t = (en, es) => es } = {}) {
+  constructor({ root, assets, onSelect = () => {}, onError = () => {}, entries = null, t = (en, es) => es } = {}) {
     if (!root || !assets) throw new TypeError('EditorCatalog requires root and assets');
     this.root = root;
     this.assets = assets;
     this.onSelect = onSelect;
+    this.onError = onError;
     this.entries = entries;
     this.t = t;
     this.query = '';
@@ -40,6 +43,7 @@ export class EditorCatalog {
     this.list = this.root.querySelector('.gm-catalog-list');
     this.count = this.root.querySelector('.gm-catalog-count');
     this.statusNode = this.root.querySelector('.gm-catalog-status');
+    this.status = new EditorStatus(this.statusNode, this.lang);
     this.title = this.root.querySelector('[data-role="catalog-title"]');
     this.searchLabel = this.root.querySelector('[data-role="search-label"]');
     this.search.addEventListener('input', this.onInput);
@@ -92,13 +96,13 @@ export class EditorCatalog {
   }
 
   setStatus(message, kind = '') {
-    this.status = message;
-    this.statusNode.textContent = message;
-    this.statusNode.dataset.kind = kind;
+    if (kind !== 'error') this.onError(null);
+    this.status.set(typeof message === 'string' ? editorMessage(message, message) : message, kind);
   }
 
   setLanguage(lang) {
     this.lang = lang === 'en' ? 'en' : 'es';
+    this.status.setLocale(this.lang);
     this.title.textContent = this.t('Library', 'Biblioteca');
     this.searchLabel.textContent = this.t('Search models', 'Buscar modelos');
     this.search.placeholder = this.t('Name or ID', 'Nombre o ID');
@@ -139,7 +143,7 @@ export class EditorCatalog {
     if (!item || this.busy.has(id)) return;
     const generation = this.generation;
     this.busy.add(id); this.renderList();
-    this.setStatus(this.t('Preparing model…', 'Preparando modelo…'));
+    this.setStatus(editorMessage('Preparing model…', 'Preparando modelo…'));
     try {
       const state = this.assets.list?.().find((record) => record.id === id)?.state;
       if (state !== 'ok' && this.assets.ensureModel) {
@@ -149,10 +153,10 @@ export class EditorCatalog {
       const object = this.assets.model(id);
       if (!object) throw new Error(this.t('Model is not ready.', 'El modelo no está listo.'));
       if (generation !== this.generation) return;
-      this.setStatus(this.t('Ready to place.', 'Listo para colocar.'), 'ok');
+      this.setStatus(editorMessage('Ready to place.', 'Listo para colocar.'), 'ok');
       this.onSelect({ entry: item, object });
     } catch (error) {
-      if (generation === this.generation) this.setStatus(error?.message || this.t('Model could not be loaded.', 'No se pudo cargar el modelo.'), 'error');
+      if (generation === this.generation) { this.onError(error); this.setStatus(editorErrorMessage(error, this.lang, 'asset'), 'error'); }
     } finally {
       this.busy.delete(id); this.renderList();
     }

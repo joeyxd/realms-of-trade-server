@@ -1,3 +1,4 @@
+import { text as ltext, dataText } from '../core/i18n.js';
 // F4 debug panel (DESIGN §16, M2 fun test): live tuning of the combat numbers (applied to the local
 // prediction and to the local server at once), spawns, god mode, hitboxes. The local server accepts
 // these 'dev' commands; a public server never would.
@@ -61,48 +62,48 @@ export class DevPanel {
     root.className = 'devpanel frame-dark interactive';
     root.hidden = true;
     root.innerHTML = `
-      <h3>Depuración <span class="kbd">F4</span></h3>
+      <h3>${ltext('dev.label0')} <span class="kbd">F4</span></h3>
       <div class="dv-row dv-btns">
-        <button data-op="spawn" data-kind="archer">+ Arquero</button>
-        <button data-op="spawn" data-kind="sentinel">+ Centinela</button>
-        <button data-op="spawn" data-kind="dummy">+ Muñeco</button>
-        <button data-op="clear">Limpiar</button>
+        <button data-op="spawn" data-kind="archer">${ltext('dev.label1')}</button>
+        <button data-op="spawn" data-kind="sentinel">${ltext('dev.label2')}</button>
+        <button data-op="spawn" data-kind="dummy">${ltext('dev.label3')}</button>
+        <button data-op="clear">${ltext('dev.label4')}</button>
       </div>
       <div class="dv-row dv-btns">
-        <button data-op="spawn" data-kind="grunt" data-n="4">+ 4 Grumetes</button>
-        <button data-op="spawn" data-kind="imp">+ Diablillo</button>
-        <button data-op="spawn" data-kind="shaman">+ Chamán</button>
-        <button data-op="spawn" data-kind="crab">+ Cangrejo</button>
+        <button data-op="spawn" data-kind="grunt" data-n="4">${ltext('dev.label5')}</button>
+        <button data-op="spawn" data-kind="imp">${ltext('dev.label6')}</button>
+        <button data-op="spawn" data-kind="shaman">${ltext('dev.label7')}</button>
+        <button data-op="spawn" data-kind="crab">${ltext('dev.label8')}</button>
       </div>
       <div class="dv-row dv-btns">
-        <button data-op="enc" data-sub="start">Prueba: iniciar</button>
-        <button data-op="enc" data-sub="wave">Oleada ✓</button>
-        <button data-op="enc" data-sub="boss">Jefe</button>
-        <button data-op="enc" data-sub="phase2">Fase 2</button>
-        <button data-op="enc" data-sub="phase3">Fase 3</button>
-        <button data-op="enc" data-sub="win">Ganar</button>
-        <button data-op="enc" data-sub="reset">Reiniciar</button>
+        <button data-op="enc" data-sub="start">${ltext('dev.label9')}</button>
+        <button data-op="enc" data-sub="wave">${ltext('dev.label10')}</button>
+        <button data-op="enc" data-sub="boss">${ltext('dev.label11')}</button>
+        <button data-op="enc" data-sub="phase2">${ltext('dev.label12')}</button>
+        <button data-op="enc" data-sub="phase3">${ltext('dev.label13')}</button>
+        <button data-op="enc" data-sub="win">${ltext('dev.label14')}</button>
+        <button data-op="enc" data-sub="reset">${ltext('dev.label15')}</button>
       </div>
       <div class="dv-row dv-btns">
-        <button data-op="heal">Curar</button>
-        <button data-op="riposte">Riposte lleno</button>
-        <button data-op="pearl">+ Perla de Brasa</button>
-        <button data-op="pearl" data-kind="escarcha">+ Perla de Escarcha</button>
-        <button data-op="pearl" data-kind="tormenta">+ Perla de Tormenta</button>
-        <button data-op="pearl" data-kind="tinta">+ Perla de Tinta</button>
-        <button data-op="clock" data-hours="12">Hora del mundo: día</button>
-        <button data-op="clock" data-hours="22">Hora del mundo: noche</button>
-        <button data-op="lvdown">Nv −</button>
-        <button data-op="lvup">Nv +</button>
-        <button data-op="weapon">Arma: cambiar</button>
+        <button data-op="heal">${ltext('dev.label16')}</button>
+        <button data-op="riposte">${ltext('dev.label17')}</button>
+        <button data-op="pearl">${ltext('dev.label18')}</button>
+        <button data-op="pearl" data-kind="escarcha">${ltext('dev.label19')}</button>
+        <button data-op="pearl" data-kind="tormenta">${ltext('dev.label20')}</button>
+        <button data-op="pearl" data-kind="tinta">${ltext('dev.label21')}</button>
+        <button data-op="clock" data-hours="12">${ltext('dev.label22')}</button>
+        <button data-op="clock" data-hours="22">${ltext('dev.label23')}</button>
+        <button data-op="lvdown">${ltext('dev.label24')}</button>
+        <button data-op="lvup">${ltext('dev.label25')}</button>
+        <button data-op="weapon">${ltext('dev.label26')}</button>
       </div>
-      <label class="dv-check"><input type="checkbox" data-flag="god"> Modo dios (sin daño)</label>
-      <label class="dv-check"><input type="checkbox" data-flag="hitboxes"> Mostrar hitboxes</label>
+      <label class="dv-check"><input type="checkbox" data-flag="god"> ${ltext('dev.label27')}</label>
+      <label class="dv-check"><input type="checkbox" data-flag="hitboxes"> ${ltext('dev.label28')}</label>
       <div class="dv-sliders">${SLIDERS.map(([label, rootName, path, min, max, step], i) => `
-        <label class="dv-slider"><span>${label} <b data-v="${i}"></b></span>
+        <label class="dv-slider"><span>${dataText(label)} <b data-v="${i}"></b></span>
         <input type="range" data-i="${i}" min="${min}" max="${max}" step="${step}"></label>`).join('')}
       </div>
-      <p class="dv-note">Los cambios se aplican al momento (cliente y servidor local). Se pierden al recargar.</p>`;
+      <p class="dv-note">${ltext('dev.label29')}</p>`;
     root.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => this.button(b.dataset)));
     root.querySelectorAll('input[data-flag]').forEach((el) => el.addEventListener('change', () => this.flag(el.dataset.flag, el.checked)));
     root.querySelectorAll('input[data-i]').forEach((el) => el.addEventListener('input', () => this.slide(+el.dataset.i, +el.value)));

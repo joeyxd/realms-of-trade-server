@@ -162,6 +162,12 @@ export function createMemoryStore() {
       if (!current || current.version !== row.expectedVersion || row.before &&
           canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
       if (!fireMutation(request.command) && canonicalEconomicText(current.data.fire ?? null) !== canonicalEconomicText(row.profile.fire ?? null)) return conflict();
+      const workshopEdit = request.command.type === 'artisan' && ['contribute', 'craftCrate', 'upgradePack'].includes(request.command.op)
+        || request.command.type === 'raft' && request.command.rules === 2 && ['place', 'remove'].includes(request.command.op);
+      if (currentWorld.data.resources?.v === 3 && !workshopEdit && ['carry', 'workshop'].some(field =>
+          canonicalEconomicText(current.data[field] ?? null) !== canonicalEconomicText(row.profile[field] ?? null))) return conflict();
+      if (currentWorld.data.resources?.v === 3 && !workshopEdit && ['cap', 'maxMass'].some(field =>
+          current.data.eco.pack[field] !== row.profile.eco.pack[field])) return conflict();
       nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
     }
     assertManagedPearls(nextProfiles, uniques);
@@ -180,6 +186,13 @@ export function createMemoryStore() {
     ...gmDraftMethods,
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
+    async listGmContentProfiles({ after = null, limit = 100 } = {}) {
+      if (after !== null) after = playerKey(after);
+      if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) throw new StoreError('page');
+      return [...profiles.entries()].filter(([id]) => after === null || id > after)
+        .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).slice(0, limit)
+        .map(([accountId, row]) => ({ accountId, profile: structuredClone(row.data) }));
+    },
     async saveProfile(id, data, expected) { return save(profiles, playerKey(id), profile(data), version(expected, 0, MAX_VERSION - 1)); },
     async initializeProfile(id, data, importedKey = null) {
       id = playerKey(id);
@@ -588,6 +601,27 @@ export function createSupabaseStore(client) {
       }), operationId);
     },
     async loadProfile(id) { return record(await rpc('mn_load_profile', { p_player_id: playerKey(id) }), profile); },
+    async listGmContentProfiles({ after = null, limit = 100 } = {}) {
+      if (after !== null) after = playerKey(after);
+      if (!Number.isSafeInteger(limit) || limit < 1 || limit > 100) throw new StoreError('page');
+      try {
+        let query = client.from('mn_profiles').select('player_id,data');
+        if (after !== null) query = query.gt('player_id', after);
+        const reply = await query.order('player_id', { ascending: true }).limit(limit);
+        if (!reply || reply.error || !Array.isArray(reply.data) || reply.data.length > limit) throw new Error('read');
+        let previous = after;
+        return reply.data.map((row) => {
+          const accountId = playerKey(row?.player_id);
+          if (previous !== null && accountId <= previous) throw new Error('order');
+          previous = accountId;
+          // Keep the checked JSON DTO raw so content validation can fail closed on malformed durable fields.
+          return { accountId, profile: json(row.data, 128 * 1024) };
+        });
+      } catch (error) {
+        if (error instanceof StoreError && ['page', 'identity'].includes(error.code)) throw error;
+        throw new StoreError('unavailable');
+      }
+    },
     async initializeProfile(id, data, importedKey = null) {
       if (importedKey !== null) importedKey = legacyKey(importedKey);
       const raw = await rpc('mn_initialize_profile', {
