@@ -175,7 +175,7 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
     async consumeLink() {
       if (!linkPending || disposed) return;
       try {
-        if (!/^[a-f0-9]{64}$/i.test(setupToken || '')) throw new Error('link');
+        if (!/^[a-f0-9]{32,128}$/i.test(setupToken || '')) throw new Error('link');
         const client = await auth.ensureClient();
         const result = await client.auth.verifyOtp({ token_hash: setupToken, type: 'recovery' });
         if (result.error || !result.data?.session?.access_token) throw new Error('link');

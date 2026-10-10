@@ -34,7 +34,7 @@ async function setup(context, { accountId = GM, token = 'gm-fixture' } = {}) {
       getSession: async () => ({ data: { session }, error: null }),
       onAuthStateChange: (cb) => { listener = cb; },
       signInWithPassword: async () => ({ data: { session }, error: null }),
-      verifyOtp: async ({ token_hash, type }) => { window.__gmFixtureLinkChecks = (window.__gmFixtureLinkChecks || 0) + 1; return { data: { session }, error: token_hash === 'a'.repeat(64) && type === 'recovery' ? null : new Error('fixture-link') }; },
+      verifyOtp: async ({ token_hash, type }) => { window.__gmFixtureLinkChecks = (window.__gmFixtureLinkChecks || 0) + 1; return { data: { session }, error: token_hash === 'a'.repeat(56) && type === 'recovery' ? null : new Error('fixture-link') }; },
       updateUser: async ({ password }) => { window.__gmFixturePasswordUpdates = (window.__gmFixturePasswordUpdates || 0) + 1; return { data: { user: session.user }, error: password.length >= 12 ? null : new Error('fixture-password') }; },
       signUp: async () => ({ data: { session }, error: null }), signOut: async () => ({ error: null }),
     } }) };
@@ -47,7 +47,7 @@ async function setup(context, { accountId = GM, token = 'gm-fixture' } = {}) {
   });
 }
 async function ready(page, setupPassword = false) {
-  await page.goto(`${origin}/?q=low&tod=day${setupPassword ? '&account-setup=1#gm_setup_token=' + 'a'.repeat(64) : ''}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${origin}/?q=low&tod=day${setupPassword ? '&account-setup=1#gm_setup_token=' + 'a'.repeat(56) : ''}`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-gm-editor').disabled, null, { timeout: 90000 });
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
 }

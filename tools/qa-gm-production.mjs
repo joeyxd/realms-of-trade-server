@@ -1,7 +1,7 @@
 // Public deployment smoke test; no account credentials or fixture auth.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
+import { readFile, unlink, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const origin = 'https://marea.62.171.136.148.sslip.io';
@@ -35,6 +35,37 @@ try {
   await page.waitForFunction(() => __mn.st.mode === 'playing' && __mn.client.joined, null, { timeout: 30000 });
   await page.screenshot({ path: resolve('docs/delivery/gm01/production-gameplay.png') });
   evidence.checks.push('real_public_browser_guest_join');
+  if (process.env.MN_GM_SETUP_FILE) {
+    const file = process.env.MN_GM_SETUP_FILE;
+    const { tokenHash } = JSON.parse(await readFile(file, 'utf8'));
+    await unlink(file);
+    assert.match(tokenHash, /^[a-f0-9]{32,128}$/i);
+    const gmContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+    const gmPage = await gmContext.newPage();
+    gmPage.on('pageerror', () => evidence.errors.push('production_gm_page_error'));
+    await gmPage.goto(origin + '/?q=low&tod=day&account-setup=1#gm_setup_token=' + tokenHash, { waitUntil: 'domcontentloaded' });
+    await gmPage.waitForFunction(() => window.__mn?.gmEntry.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 90000 });
+    assert.equal(await gmPage.evaluate(() => location.hash), '');
+    await gmPage.screenshot({ path: resolve('docs/delivery/gm01/production-account-setup.png') });
+    await gmPage.locator('.gm-account-setup-card [data-action="cancel"]').click();
+    await gmPage.locator('#btn-gm-editor').click();
+    await gmPage.waitForFunction(() => __mn.st.mode === 'editor');
+    await gmPage.locator('[data-editor-asset="model:gm-rock-1k"]').click();
+    await gmPage.waitForFunction(() => !!__mn.gmEditor.ghost);
+    await gmPage.mouse.move(700, 420); await gmPage.mouse.click(700, 420);
+    await gmPage.waitForFunction(() => __mn.gmEditor.history.current().objects.length === 1);
+    await gmPage.keyboard.press('Escape');
+    await gmPage.evaluate(() => { __mn.gmEditor.select(__mn.gmEditor.history.current().objects[0].id); const p=__mn.gmEditor.records.get(__mn.gmEditor.selectedId).root.position; __mn.world.camera.position.set(p.x+12,p.y+8,p.z+12); __mn.gmEditor._focusSelection(); });
+    await gmPage.locator('[data-action="save"]').click();
+    await gmPage.waitForFunction(() => !__mn.gmEditor.dirty);
+    assert.equal(await gmPage.evaluate(() => __mn.client.joined), false);
+    await gmPage.screenshot({ path: resolve('docs/delivery/gm01/production-gm-editor.png') });
+    evidence.checks.push('real_owner_recovery_session_password_prompt_gm_placement_and_local_save');
+    await gmPage.evaluate(async () => { const client=await __mn.gmEntry.auth.ensureClient(); await client.auth.signOut({scope:'local'}); });
+    await gmPage.waitForFunction(() => __mn.st.mode === 'title' && !__mn.gmEditor.active);
+    evidence.checks.push('real_owner_signout_closes_editor');
+    await gmContext.close();
+  }
   assert.deepEqual(evidence.errors, []);
   await context.close();
 } catch (error) { evidence.errors.push(error.stack || String(error)); process.exitCode = 1; }
