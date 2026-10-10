@@ -6,12 +6,13 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
-**Checkpoint AREA17, 2026-10-10 — L03d-a local:** [frontera de uso nativo](docs/delivery/l03d-native-metering.md)
+**Checkpoint AREA17, 2026-10-10 — L03d-a publicado:** [frontera de uso nativo](docs/delivery/l03d-native-metering.md)
 separa ledger v2 y tarifas/modelo declarados del historial simulado v1. Reservas y uso desconocido
 son durables; liquidación deriva cargo desde contadores nativos de confianza, sin llamarlo factura.
 CLI de administración explícito, panel/runner habituales simulados. Sin proveedor ni consumo real;
 L03d sigue pendiente de selección de proveedor/modelo, adaptador y canario social/PvE/memoria/coste.
-Integra alpha.27/protocolo 39, sin SQL ni cambio de gameplay. Pruebas/publicación en la entrega.
+Fuente `e614ca4` integrada con alpha.28/protocolo 40, sin SQL ni cambio de gameplay propios.
+Pruebas/publicación en la entrega; no se distribuye `tools/agent` en la imagen VPS.
 
 **Checkpoint AREA17, 2026-10-10 — L06b-2b:** [comercio explícito](docs/delivery/l06b-agent-trade.md)
 añade compra/venta con capacidades separadas y mandato durable SQL017. Oro y bienes pertenecen al
