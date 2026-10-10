@@ -204,6 +204,8 @@ try {
     evidence.checks.push('real_owner_gm02_base_duplicate_inherits_proxy_and_circle_radius_autosizes');
 
     await runGm03ProductionChecks({ gmPage, browser, origin, out, evidence });
+    assert.deepEqual(evidence.gm03a.errors, []);
+    assert.equal(evidence.gm03a.remoteRestore.status, 'restored');
 
     const walkCamera = await gmPage.evaluate((id) => {
       const editor = __mn.gmEditor, record = editor.records.get(id), point = record.root.position;
@@ -264,14 +266,21 @@ try {
     await gmPage.locator('[data-action="walk"]').click();
     await gmPage.waitForFunction(() => __mn.gmEditor.walkPreview.active);
     await gmPage.evaluate(async () => {
+      // Observe restoration synchronously, before the title's next frame animates its own camera.
+      const preview = __mn.gmEditor.walkPreview, stop = preview.stop;
+      preview.stop = function (...args) {
+        stop.apply(this, args); this.stop = stop;
+        window.__gmLogoutStopCamera = { position: __mn.world.camera.position.toArray(),
+          quaternion: __mn.world.camera.quaternion.toArray() };
+      };
       const client = await __mn.gmEntry.auth.ensureClient();
       await client.auth.signOut({ scope: 'local' });
     });
     await gmPage.waitForFunction(() => __mn.st.mode === 'title' && !__mn.gmEditor.active && !__mn.gmEditor.walkPreview.active);
     const revokedWalk = await gmPage.evaluate(() => ({
       viewExists: __mn.world.views.has('gm-private-walker'), body: __mn.gmEditor.walkPreview.body,
-      joined: __mn.client.joined, cameraPosition: __mn.world.camera.position.toArray(),
-      cameraQuaternion: __mn.world.camera.quaternion.toArray(), document: __mn.gmEditor.history.current(),
+      joined: __mn.client.joined, cameraPosition: window.__gmLogoutStopCamera?.position,
+      cameraQuaternion: window.__gmLogoutStopCamera?.quaternion, document: __mn.gmEditor.history.current(),
       errors: [...__mn.errors], props: structuredClone(__mn.map.props), colliders: structuredClone(__mn.map.colliders),
     }));
     assert.equal(revokedWalk.viewExists, false);

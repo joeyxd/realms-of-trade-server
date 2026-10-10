@@ -9,13 +9,12 @@ de navegador ES/EN. SQL021 después de 001–020 y `MN_ARTISAN_OPERATIONS=1` sig
 aplicación/activación y canario real; la feature queda apagada. Se conservan noche/faroles, GM remoto
 y SQL019 del upstream. El resto del editor sigue CAS anterior. Publicación efectiva en la entrega.
 
-**GM03a, 2026-10-10 — migración GM `020_gm_drafts.sql` aplicada; runtime sin publicar:** el almacenamiento remoto de borradores privados
-por cuenta/mundo está listo en base de datos, con CAS y recibos idempotentes; no toca mapa activo ni autoridad
-M5. Readiness live `version: 1` a `2026-10-10T20:41:47Z`; hash aplicado de migración GM `020_gm_drafts.sql`
-`601d45004c2daba734f92ada44a6300d741b490eeea14ea2d5e69f5babdbc9e4`. Suite local SQL/store de este corte:
-6/6. Falta publicar el runtime, verificar canario remoto y completar aceptación browser/GM. GM03b
-(publicación, activación y rollback) sigue pendiente. [Entrega GM03a](delivery/gm03a/DELIVERY.md) ·
-[brief](briefs/gm03a-remote-drafts.md) · [plan GM](../PLAN-GM-EDITOR.md).
+**GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](delivery/gm03a/DELIVERY.md).
+Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de
+ambas copias; conflictos conservan el diseño local. SQL020 aplicada y canario real 14/14. Suites locales
+102/102 y regresión 113/113 (solapadas), navegador local 35/35, imagen 107/107 y navegador Supabase real
+17/17, cero errores. Runtime `9f23be3` sano; copia remota previa restaurada por CAS. No activa mapas ni
+escribe gameplay; sigue GM03b publicación/activación/rollback bajo M5.
 
 **AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
 prepara un ledger v2 separado con tarifas/modelo declarados e inmutables, reserva previa, uso nativo

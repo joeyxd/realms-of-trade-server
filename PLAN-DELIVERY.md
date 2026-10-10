@@ -7,6 +7,13 @@ SQL021 después de 001–020; feature apagada hasta readiness, activación y can
 precio inicial de lección dos maderas provisional. El resto del editor conserva CAS anterior.
 Siguiente cierre AREA03: aceptación live de este ciclo antes de minería.
 
+**GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](docs/delivery/gm03a/DELIVERY.md).
+Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de
+ambas copias; conflictos conservan el diseño local. SQL020 aplicada y canario real 14/14. Suites locales
+102/102 y regresión 113/113 (solapadas), navegador local 35/35, imagen 107/107 y navegador Supabase real
+17/17, cero errores. Runtime `9f23be3` sano; copia remota previa restaurada por CAS. No activa mapas ni
+escribe gameplay; sigue GM03b publicación/activación/rollback bajo M5.
+
 **AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](docs/delivery/l03d-native-metering.md)
 prepara el canario L03d con ledger v2 separado, tarifa/modelo declarados fijados, uso desconocido
 retenido y cargo derivado distinto de factura. Sin proveedor ni inferencia real; panel/runner

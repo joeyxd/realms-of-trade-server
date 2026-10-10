@@ -7,6 +7,13 @@ después de 001–020; `MN_ARTISAN_OPERATIONS` sigue apagado hasta verificar SQL
 autenticado. No amplía la aceptación a todas las piezas del editor, perlas/muerte/botín o persistencia
 global. Entrega separa pruebas, publicación y activación. Precio de enseñanza dos maderas provisional.
 
+**GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](delivery/gm03a/DELIVERY.md).
+Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de
+ambas copias; conflictos conservan el diseño local. SQL020 aplicada y canario real 14/14. Suites locales
+102/102 y regresión 113/113 (solapadas), navegador local 35/35, imagen 107/107 y navegador Supabase real
+17/17, cero errores. Runtime `9f23be3` sano; copia remota previa restaurada por CAS. No activa mapas ni
+escribe gameplay; sigue GM03b publicación/activación/rollback bajo M5.
+
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
 **AREA07 RNV03 observado, 2026-10-10 20:56:35 UTC:** alpha.28/protocolo 40, `9f23be3`.
@@ -61,7 +68,7 @@ Node 22 y entrada pública 6/6. Coordinadores opcionales `null`; sin activación
 | Puertas y faroles operativos | RNV01/RNV02: identidad/condición y estado en perfil del dueño por CAS; visitantes reciben ACK privado y snapshot público | Ventana antes del save confirmado y aceptación autenticada específica; no aportan presencia offline ni nuevo recibo económico |
 | Perlas/muerte/botín | Contratos M5 opcionales y transacción común SQL018 local; no compuestos con economía activa | Dueño común de tick, diario del sobre, adopción legacy y aceptación VPS |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
-| Borrador del editor GM | [GM02](delivery/gm02-draft-walk.md): IndexedDB privado por navegador/cuenta/mundo, documento v2 con migración v1, CAS y recuperación/export local | GM03 debe integrar guardado remoto y publicación con M5; preview caminando descartable, sin bienes ni progreso |
+| Borrador del editor GM | [GM03a](delivery/gm03a/DELIVERY.md): SQL020 remoto privado por cuenta/mundo, CAS y recibos/retry exactos; UI explícita, local 35/35, público real 17/17, canario 14/14 | GM03b publicación/activación/rollback coordinados con M5; preview caminando descartable, sin bienes ni progreso |
 
 **Runtime actual observado, 2026-10-10 19:58:30 UTC:** `cafff18208235b7149682e5ce6de34c3fc0704b5`,
 alpha.26/protocolo 38 con [L06b-2b inerte](delivery/l06b-agent-trade.md), conservando GM02/refugio/Tala.
