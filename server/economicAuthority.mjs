@@ -113,8 +113,11 @@ export class EconomicAuthority {
       opId: typeof command.opId === 'string' ? command.opId.slice(0, 64) : '', ok: false, why, rev: 0, ...extra } });
   }
 
-  handle(sock, msg) {
+  handle(sock, msg, agent = null) {
     if (msg.t !== MSG.CMD) return false;
+    // This internal adapter is the only managed-agent mutation lane. Raw CMD stays closed.
+    if (sock.agentIdentity && !agent) return true;
+    const reject = (why, extra = {}) => agent ? agent.finish({ denial: why, ...extra }) : this.reply(sock.id, msg, why, extra);
     // Older clients must use the quoted, idempotent commerce command; never bypass the durable path.
     if (msg.type === 'market' && ['buy', 'sell'].includes(msg.op)) {
       this.host.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'tradeDenied', to: this.host.server.clients.get(sock.id)?.entity, why: 'command' } });
@@ -124,7 +127,7 @@ export class EconomicAuthority {
         msg.type === 'raft' && msg.op === 'supply' || this.host.resourceOperations && msg.type === 'resource')) return false;
     let command;
     try { command = economicCommand(msg); }
-    catch { this.reply(sock.id, msg, 'command'); return true; }
+    catch { reject('command'); return true; }
     const h = this.host, c = h.server.clients.get(sock.id), s = h.profiles.clients.get(sock.id);
     if (!c?.entity) return true;
     if (command.op === 'list') {
@@ -133,14 +136,14 @@ export class EconomicAuthority {
         project: publicCommunity(h.worldState.community), durable: h.store.durable === true });
       return true;
     }
-    if (!c.serverProfile || !s || s.closed || s.failed) { this.reply(sock.id, command, 'account_required'); return true; }
+    if (!c.serverProfile || !s || s.closed || s.failed) { reject('account_required'); return true; }
     if (this.busy) {
       // A retry of the in-flight immutable command waits for its original result.
-      if (this.active.id !== sock.id || canonicalText(this.active.command) !== canonicalText(command)) this.reply(sock.id, command, 'busy');
+      if (this.active.id !== sock.id || canonicalText(this.active.command) !== canonicalText(command)) reject('busy');
       return true;
     }
     if (c.paused || h.pendingJoins || this.failed || !h.healthy() || !h.commandAvailable(sock.id, c.entity, { world: true, target: null })) {
-      this.reply(sock.id, command, 'busy'); return true;
+      reject('busy'); return true;
     }
     try {
       const profile = capturePearlProfile(h.server.world, c.entity);
@@ -157,10 +160,11 @@ export class EconomicAuthority {
       }
       const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(lanes);
       const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate,
-        members, operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null };
+        members, operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null, agent };
       this.active = a; h.worldState.operationBusy = true;
+      if (agent) h.clearAgentInputs(sock.id);
       a.task = this.prepare(a).catch(() => { this.fence(a); });
-    } catch { this.reply(sock.id, command, 'storage'); }
+    } catch { reject('storage'); }
     return true;
   }
 
@@ -173,27 +177,61 @@ export class EconomicAuthority {
       a.gate.active(a.reservation);
   }
 
+  cancelAgent(a, why = null) {
+    if (!a.agent) return false;
+    why ??= a.agent.check();
+    if (!why) return false;
+    a.denial = why; a.replay = true; a.ready = true;
+    return true;
+  }
+
+  async agentBudget(a) {
+    if (!a.agent) return null;
+    return this.host.store.loadAgentGoodsBudget({ world: this.host.worldState.id,
+      ownerId: a.agent.ownerId, characterId: a.s.key });
+  }
+
   async prepare(a) {
     const h = this.host;
     // Settle old CAS writes before taking either version. New autosaves cannot enter this account/world.
     for (const m of a.members.values()) while (m.s?.running) await m.s.running;
     await h.worldState.flush();
     if (!this.valid(a)) throw new StoreError('cancelled');
-    const prior = await h.store.loadEconomicOperation(a.operationId);
+    if (this.cancelAgent(a)) return;
+    const prior = await (a.agent ? h.store.loadAgentTradeOperation(a.operationId) : h.store.loadEconomicOperation(a.operationId));
     if (!this.valid(a)) throw new StoreError('cancelled');
+    if (this.cancelAgent(a)) return;
     if (prior) {
+      // Historical evidence must retain the exact durable mandate identity, including after
+      // revocation. Loading its current projection never installs a historical gameplay snapshot.
+      if (a.agent) {
+        a.budget = await this.agentBudget(a);
+        if (!this.valid(a)) throw new StoreError('cancelled');
+        if (this.cancelAgent(a)) return;
+      }
       if (prior.request.world !== h.worldState.id || prior.request.account !== a.s.key ||
+          a.agent && (prior.ownerId !== a.agent.ownerId || prior.budgetId !== a.budget?.budgetId) ||
           canonicalText(prior.request.command) !== canonicalText(a.command)) {
         a.ack = { type: a.command.type === 'raft' ? 'raftEdit' : a.command.type,
           ...(a.command.type === 'raft' ? { id: a.command.id } : {}),
           op: a.command.op, opId: a.command.opId, ok: false, why: 'duplicate', rev: a.profile.eco.tradeRev };
+        if (a.agent) a.denial = 'duplicate';
       } else {
         a.ack = { ...clone(prior.result.ack), replay: true, historical: true };
+        if (a.agent) a.agentReceipted = true;
         // Current project state is a separate observation; never hydrate from a historical receipt.
         if (a.command.type === 'community') a.ack.currentProject = publicCommunity(h.worldState.community);
         this.replays++;
       }
       a.replay = true; a.ready = true; return;
+    }
+    if (a.agent) {
+      // A human receipt cannot be reinterpreted as agent spending, even with an identical command.
+      if (await h.store.loadEconomicOperation(a.operationId)) { this.cancelAgent(a, 'duplicate'); return; }
+      a.budget = await this.agentBudget(a);
+      if (this.cancelAgent(a)) return;
+      if (!a.budget?.enabled) { this.cancelAgent(a, 'budget'); return; }
+      a.agent.budgetId = a.budget.budgetId;
     }
     // Persist the current baseline before the operation, using M5's existing writer and reservation.
     for (const m of a.members.values()) {
@@ -211,6 +249,7 @@ export class EconomicAuthority {
       }
     }
     if (!this.valid(a)) throw new StoreError('cancelled');
+    if (this.cancelAgent(a)) return;
     let proposal;
     if (a.command.type === 'resource') {
       proposal = draftResource(h.server.world, a.entity, a.command, a.profile, h.worldState.resources, a.s.key,
@@ -246,19 +285,35 @@ export class EconomicAuthority {
         return { account, expectedVersion: member.version, before: clone(member.profile), profile: clone(profile) };
       });
     }
+    // Last revocable preparation boundary. After dispatch an unknown commit must be reconciled,
+    // even after stop; it may already have consumed the goods allowance atomically in M5.
+    if (this.cancelAgent(a)) return;
+    const commit = () => a.agent ? h.store.commitAgentTrade({ operationId: a.operationId, request: a.request,
+      ownerId: a.agent.ownerId, budgetId: a.agent.budgetId }) :
+      h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request });
     let result;
-    try { result = await h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request }); }
+    try { result = await commit(); }
     catch {
       // A timeout is ambiguous. Read evidence, then resend only the identical CAS request.
-      const receipt = await h.store.loadEconomicOperation(a.operationId);
+      const receipt = await (a.agent ? h.store.loadAgentTradeOperation(a.operationId) : h.store.loadEconomicOperation(a.operationId));
       if (receipt) {
-        if (canonicalText(receipt.request) !== canonicalText(a.request)) throw new StoreError('operation');
+        if (canonicalText(receipt.request) !== canonicalText(a.request) || a.agent &&
+            (receipt.ownerId !== a.agent.ownerId || receipt.budgetId !== a.agent.budgetId)) throw new StoreError('operation');
         result = receipt.result;
-      } else result = await h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request });
+      } else result = await commit();
+    }
+    if (a.agent && result?.ok === false && ['budget', 'operation'].includes(result.why)) {
+      this.cancelAgent(a, result.why === 'budget' ? 'budget' : 'duplicate'); return;
     }
     if (!this.valid(a) || result?.ok !== true || result.profileVersion !== a.request.expectedProfileVersion + 1 ||
         result.worldVersion !== a.request.expectedWorldVersion + 1 || canonicalText(result.ack) !== canonicalText(a.request.ack)) throw new StoreError('conflict');
-    a.result = result; a.ack = clone(result.ack); a.ready = true;
+    a.result = result; a.ack = clone(result.ack);
+    if (a.agent) {
+      a.agentReceipted = true;
+      // A projection failure cannot discard an already committed receipt or its gameplay apply.
+      try { a.budget = await this.agentBudget(a); } catch { a.budget = null; }
+    }
+    a.ready = true;
   }
 
   drain() {
@@ -307,7 +362,8 @@ export class EconomicAuthority {
         const member = a.members.get(row.account);
         if (member.s && member.s !== a.s) h.server.sendProfile(member.s.id, member.c);
       }
-      h.sendTo(a.id, { t: MSG.EVENT, ev: { ...a.ack, to: a.entity, durable: h.store.durable === true } });
+      if (a.agent) a.agent.finish(a);
+      else h.sendTo(a.id, { t: MSG.EVENT, ev: { ...a.ack, to: a.entity, durable: h.store.durable === true } });
       this.closeDeferred();
       return true;
     } catch { this.fence(a); return false; }

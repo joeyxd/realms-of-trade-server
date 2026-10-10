@@ -1,5 +1,9 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, corte local 2026-10-10:** [SQL018: operación, mundo y reloj en un commit](docs/delivery/m5-ground-transactions.md).
+Reutiliza familias M5, valida recibos y conserva pausa offline con sesión/drain detenidos. No monta
+GameHost ni activa SQL; sigue composición de tick/diario/legacy y aceptación real de perlas/muerte/botín.
+
 **Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](docs/delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
 
 **Hotfix GM01 publicado (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
@@ -17,6 +21,13 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   Editor doce piezas, V/toque, luz móvil cálida y estado por instancia en perfil del dueño, con daño/reparación.
   Sin SQL ni combustible. Implementación local; pruebas/publicación en la entrega. Sigue noche casi negra.
 
+- AREA17 L06b-2b (2026-10-10), **alpha.26/protocolo 38**: [comercio explícito y presupuesto](docs/delivery/l06b-agent-trade.md).
+  Compra/venta con capacidades separadas, cuenta/ciudad derivadas y mandato acumulado SQL017 sin refill;
+  consumo y recibo en la misma M5 humana. Recuperación exacta, stop y revocación cubiertos localmente.
+  917 aprobadas, cero fallos y cinco omisiones Windows; suplemento SQL/host 20/20. Publicado en `cafff18`,
+  sano desde 19:58:06 UTC; VPS 107/107 y público 10/10. Piloto/comercio/proveedor de agentes apagados. SQL017 y canario
+  autenticado live pendientes. Conserva Tala/refugio del upstream. Sigue L03d social/PvE con proveedor,
+  memoria y coste medidos, con activación económica independiente.
 
 - AREA07 RNV01 (2026-10-10), **alpha.24/protocolo 37**: [refugio naval](docs/delivery/rnv01-naval-refuge.md),
   techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
@@ -55,8 +66,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   Introducido en alpha.20/protocolo 35, publicado en `4c6743b`/alpha.23/protocolo 36, con
   46/46 pruebas de integración, 107/107 del VPS y 8/8 públicas; revisión/imagen/entrada WSS verificadas.
   Integra prerrequisitos locales L05/L06a/L06b-1; piloto público apagado.
-  Sin proveedor real, SQL nuevo ni movimiento de bienes. Sigue L06b-2b: compra/venta con permisos
-  y presupuesto durable propio en `EconomicAuthority`/M5; después canario social/PvE con proveedor.
+  Sin proveedor real, SQL nuevo ni movimiento de bienes por 2a. Compra/venta local 2b queda registrada
+  arriba; después sigue canario social/PvE con proveedor y su puerta económica independiente.
   Implementación, pruebas y despliegue se distinguen en la entrega.
 
 - Revisión A1/M5 del autor (2026-10-09): continuidad tiene otro dueño. **M5 mantiene la única

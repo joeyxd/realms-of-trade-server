@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 
-const CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve', 'body_pve', 'chat', 'inventory_read', 'market_read']);
+const CAPABILITIES = Object.freeze(['move', 'aim', 'attack_pve', 'body_pve', 'chat', 'inventory_read', 'market_read', 'trade_buy', 'trade_sell']);
 const TYPES = new Set(['move', 'aim', 'attack_pve', 'go_to', 'follow', 'keep_distance', 'body_pve']);
 const PRIORITIES = Object.freeze(['reflex', 'goal', 'direct']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -117,6 +117,11 @@ export class AgentControl {
   binding(identity) {
     const binding = this.#bindings.get(identity);
     return !!binding;
+  }
+
+  ownedBinding(ownerId, characterId) {
+    const binding = this.#bindings.get(characterId);
+    return binding?.ownerId === ownerId ? copy({ ownerId, characterId, capabilities: binding.capabilities }) : null;
   }
 
   admit(identity, clientId, entity) {

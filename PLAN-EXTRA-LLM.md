@@ -6,15 +6,26 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
-**Checkpoint AREA17, 2026-10-10:** [L06b-2a](docs/delivery/l06b-agent-market.md) implementa inventario
+**Checkpoint AREA17, 2026-10-10 — L06b-2b:** [comercio explícito](docs/delivery/l06b-agent-trade.md)
+añade compra/venta con capacidades separadas y mandato durable SQL017. Oro y bienes pertenecen al
+personaje agente; límites acumulados por mundo/dueño/personaje, sin refill ni reemplazo, con revocación
+definitiva. Perfil/mundo/recibo/consumo se confirman en la misma autoridad M5. Replay, pérdida de respuesta,
+reentrada, stop y ACL se comprueban localmente. 917 aprobadas, cero fallos y cinco omisiones Windows;
+suplemento SQL/host 20/20. Publicado en `cafff18`, sano desde 19:58:06 UTC, VPS 107/107 y público 10/10.
+Fuente conjunta alpha.26/protocolo 38 con Tala, refugio y GM02 conservados. `npm start` mantiene piloto/comercio/
+proveedor de agentes apagados: SQL017 y canario autenticado live siguen pendientes. La mente simulada
+conserva sus herramientas sin gasto. Sigue L03d: proveedor real y canario social/PvE con memoria/coste
+medidos; activación económica tiene una puerta independiente. Después L03e/L04c y operación del dueño.
+
+**Checkpoint anterior — L06b-2a:** [lecturas de mercado](docs/delivery/l06b-agent-market.md) implementa inventario
 vigente/contexto y mercado privado list/quote, con localidad, caducidad y retiro al cambiar autoridad.
 CLI y mente usan el mismo ensamblador; [montaje explícito](docs/agents/market-read.md). Se integran
 los prerrequisitos locales de presupuesto/panel simulados L05, piloto L06a e inventario L06b-1.
 Introducido en alpha.20/protocolo 35; publicado en `4c6743b`/alpha.23/protocolo 36, con revisión,
 imagen/salud y entrada WSS verificadas: 46/46 integración, 107/107 VPS y 8/8 públicas.
 No hay agente público, proveedor, SQL ni compras/ventas nuevos por este corte.
-L06b sigue parcial: continúa L06b-2b con presupuesto durable de bienes y operaciones sobre la misma
-autoridad M5 económica humana. Proveedor, tokenizer, facturación y aceptación humana permanecen abiertos.
+L06b sigue parcial: compra/venta local 2b se registra arriba; activación y aceptación reales siguen abiertas.
+Proveedor, tokenizer, facturación y aceptación humana permanecen abiertos.
 
 Contexto recuperado el 2026-10-07: conversación del 2026-10-05, documentada en el commit `1b5c2fa`.
 El autor reafirma la interfaz para que agentes LLM jueguen con humanos: mente que conversa y decide,
@@ -337,7 +348,7 @@ L04 y L05 podrán prepararse en paralelo después de L03; la tabla deja un orden
 | L05a | El usuario fija límites de gasto de inferencia; reservamos presupuesto antes de cada operación, incluido compactado, y reconciliamos su consumo. Sin presupuesto suficiente no se inicia una nueva llamada y se avisa al dueño; las claves de inferencia permanecen fuera del juego. | Configuración, reserva/reconciliación, revocación y límite agotado se prueban en un canario consentido; se distinguen uso medido, estimaciones y coste desconocido. Una operación no se inicia si no puede acotarse su coste máximo dentro del presupuesto disponible. | Implementación local simulada integrada; reservas/reconciliación/recuperación y límites verificados por la regresión L06b-2a. Proveedor, uso/coste reales y canario pendientes |
 | L05b | Un panel del dueño muestra modelo, estado, actividad, tarea, consumo y límites, distinguiendo consumo medido, estimado o desconocido; permite consultar los archivos reales del agente, ajustar límites y detenerlo. | El dueño lee el contenido vigente de personalidad/memoria/objetivos y distingue gasto de inferencia de bienes del juego; stop y cambios de límites muestran su estado confirmado y se comprueban con la autoridad correspondiente. | Panel loopback y runner simulados integrados como prerrequisito local; sin servicio público ni activación nueva. Operación/provisioning remotos pendientes |
 | L06a | Abrimos un piloto social y PvE a un grupo pequeño, con agentes identificables; el servidor exige percepción y permisos del personaje y comprobamos aislamiento y carga antes de ampliar acceso. | La observabilidad tiene autoridad real, aislamiento y admisión se prueban, y carga/tick/chat se comparan con agentes deshabilitados. | Piloto autenticado local opt-in y percepción exigida por servidor integrados; dos agentes/cuatro plazas. Agentes públicos y aceptación humana/modelo real pendientes |
-| L06b | El agente gestiona su inventario y compra/vende dentro de permisos de propiedad y presupuesto de bienes del juego, separado del gasto de inferencia; usa los mismos contratos durables que los humanos, sin duplicar cobros ni objetos al reintentar o reconectar. | Compra/venta y operaciones admitidas conservan bienes ante rechazo, respuesta perdida, replay y reinicio; depende de D09/M5 aceptado para cada operación antes de habilitarla al agente. | Parcial: inventario propio/contexto y mercado list/quote L06b-2a implementados; compra/venta y presupuesto durable de bienes siguen en L06b-2b sobre M5 |
+| L06b | El agente gestiona su inventario y compra/vende dentro de permisos de propiedad y presupuesto de bienes del juego, separado del gasto de inferencia; usa los mismos contratos durables que los humanos, sin duplicar cobros ni objetos al reintentar o reconectar. | Compra/venta y operaciones admitidas conservan bienes ante rechazo, respuesta perdida, replay y reinicio; depende de D09/M5 aceptado para cada operación antes de habilitarla al agente. | Parcial: lecturas 2a y compra/venta explícitas 2b con presupuesto SQL017 implementadas localmente; evidencia/publicación en la entrega. SQL017 live, activación y aceptación autenticada pendientes |
 | L06c | El agente construye mediante el cuerpo y los mismos comandos del jugador, con plano válido, permisos de propiedad y límites de materiales/gasto; retirar o destruir requiere una capacidad autorizada aparte. | Una obra acotada valida plano, materiales, permisos y resultado sin duplicar gasto; retirar o destruir requiere su permiso específico. Los permisos son por capacidad y alcance, sin pedir aprobación por cada acción ya autorizada. | Principio acordado; construcción/permisos/pruebas por construir / pendiente |
 | L06d | El agente realiza tareas autorizadas de tripulación y navegación: la mente elige destino/táctica y el cuerpo opera los mismos mandos que los humanos, respetando permisos del barco, carga y colisiones. Empezamos con una ruta costera y una tarea de cubierta. | La ruta y la tarea funcionan con autoridad, carga y colisiones normales; riesgo persistente espera los contratos navales/D09 correspondientes. | Principio y escenario acordados; cuerpo naval/permisos/pruebas por construir / pendiente |
 | L06e | Antes de ampliar agentes, economía o mundos compartidos, evaluamos el conjunto con humanos: experiencia, recuperación, efectos económicos, coste de inferencia y carga del servidor. Con esa evidencia decidimos ampliar o ajustar el piloto. | Experiencia humana, recuperación, efectos económicos, consumo de inferencia y presupuesto/carga del host tienen evidencia y una decisión explícita de ampliar o ajustar el piloto. | Principio acordado; evaluación/evidencia/decisión por realizar / pendiente |

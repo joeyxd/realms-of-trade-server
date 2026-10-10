@@ -2,23 +2,29 @@
 
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
+**Siguiente corte implementado localmente:** [SQL018: gameplay, mundo y reloj juntos](delivery/m5-ground-transactions.md),
+con sesión detenida/recibos/reconciliación y pruebas de proceso. No montado ni aplicado live. SQL017
+conserva su función de presupuesto de agentes; continúa integración de un dueño de tick/diario/legacy.
+
 | Recorrido | Cobertura | Próximo cierre |
 |---|---|---|
 | Comercio, materiales de balsa, carga y aportes | SQL014, perfil/mundo/recibo y aceptación publicada | Caída VPS y nuevas operaciones |
+| Comercio autorizado de agentes | [L06b-2b/SQL017](delivery/l06b-agent-trade.md), código publicado inerte en alpha.26: mandato + consumo + vínculo al recibo SQL014/015/016 | SQL017 y canario autenticado live; agentes/comercio públicos apagados |
 | Recolección, golpes parciales, crafting y herramientas | [SQL015/alpha.23](delivery/m5-resource-authority.md), activa en Supabase; 57/57 runtime, 107/107 offline VPS, 8 acciones confirmadas y 23 replays tras dos reinicios ordenados y SIGKILL | Otras operaciones/features M5; la durabilidad de recursos no acredita cortes eléctricos ni restauración de disco |
 | Reloj de recursos | Tick lógico en commit/checkpoint; reinicio ordenado con pausa offline real de 12 918 ms y espera recalculada exacta de 43,9 s | El tiempo de simulación sin checkpoint puede retroceder ante caída abrupta |
-| Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md): Tala, troncos y hasta tres perfiles actuales en el mismo recibo M5; legacy/pilotaje preservados | SQL016 y activación/aceptación VPS; después enseñanza del artesano |
+| Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md): Tala, troncos y hasta tres perfiles actuales en el mismo recibo M5; legacy/pilotaje preservados | Aceptación específica live en la entrega PRG01b2; después enseñanza del artesano |
 | Mercados y producción autónoma | Snapshot periódico y operaciones económicas cubiertas | Ventana desde último checkpoint |
 | Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
-| Perlas/muerte/botín | Contratos M5 opcionales; no compuestos con economía activa | Dueño común de tick y transacciones de gameplay |
+| Perlas/muerte/botín | Contratos M5 opcionales y transacción común SQL018 local; no compuestos con economía activa | Dueño común de tick, diario del sobre, adopción legacy y aceptación VPS |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
 | Borrador del editor GM | [GM02](delivery/gm02-draft-walk.md): IndexedDB privado por navegador/cuenta/mundo, documento v2 con migración v1, CAS y recuperación/export local | GM03 debe integrar guardado remoto y publicación con M5; preview caminando descartable, sin bienes ni progreso |
 
-**Runtime actual observado, 2026-10-10 19:39:17 UTC:** `e2ff69ecf814056dbeaed4d202c5cdd6d5d67d61`,
-alpha.25/protocolo 37 con [GM02](delivery/gm02-draft-walk.md), conservando refugio RNV01 y Tala. Imagen
-sana, una autoridad, 107/107 offline y navegador público real 12/12, incluida entrada normal WSS y GM.
-Recursos/economía siguen activos. Tala publicada pero apagada, SQL016 pendiente; no constituye todavía
-aceptación de aprendizaje durable público. [Evidencia PRG01b2](delivery/prg01b2-logging.md).
+**Runtime actual observado, 2026-10-10 19:58:30 UTC:** `cafff18208235b7149682e5ce6de34c3fc0704b5`,
+alpha.26/protocolo 38 con [L06b-2b inerte](delivery/l06b-agent-trade.md), conservando GM02/refugio/Tala.
+Imagen sana, una autoridad, 107/107 offline y smoke público 10/10 con entrada normal WSS; M5 económico
+y recursos habilitados/listos. Tala figura activa en status por el otro frente: su aceptación específica
+se registra en [PRG01b2](delivery/prg01b2-logging.md). AREA17 no cambió flags, SQL ni secretos.
+SQL017 y canario económico de agentes pendientes; piloto/comercio/proveedor públicos apagados.
 
 La aceptación anterior de recursos usó `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; la
 activación inicial fue en `4c6743b87b71ba765e316cd1652d1e4f23991501`. El status de esa aceptación confirma `/health` 200, un
@@ -50,3 +56,10 @@ su práctica con nodo/reloj/recibo. Ausencia legacy sigue representando cero sin
 recursos v1 se adoptan una vez sin inventar autoría en ciclos parciales. Replay histórico no instala
 estado antiguo y la recuperación local se comprueba terminando el proceso antes/después del commit.
 Scope por personaje/mundo/época y aceptación de una caída real del VPS permanecen pendientes.
+
+L06b-2b registra `buyGoldUsed` y `sellUnitsUsed` en SQL017, con defaults cero y scope
+mundo/dueño/personaje. `budgetId` no cambia y los límites no se renuevan; revocar es definitivo.
+`economicOperationId(world,character,opId)` conserva la identidad existente: el mismo commit confirma
+perfil, mercado y consumo, y un vínculo inmutable añade dueño/presupuesto. Replay no concede bienes
+ni hidrata perfiles históricos. La reapertura PGlite prueba almacenamiento local; SQL017 live y caída
+de proceso/disco de esta nueva política requieren evidencia aparte. Publicación inerte no activa grants.

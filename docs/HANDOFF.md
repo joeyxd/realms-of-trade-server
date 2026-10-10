@@ -8,8 +8,22 @@ reparación pagada y encendido explícito. Estado por instancia en perfil M5 del
 replay acotado, sin SQL, combustible ni otro writer. Implementación local; verificación/publicación
 final se registran en la entrega. Sigue noche casi negra sin luz, después agua costera/reembarque.
 
+**AREA15, corte local 2026-10-10:** [SQL018, gameplay/mundo/reloj atómicos](delivery/m5-ground-transactions.md)
+y sesión detenida con recuperación exacta, sobre alpha.26/protocolo 38. SQL017 pertenece al comercio de
+agentes; no colisionar migraciones. Sin montaje GameHost ni SQL018 live. Continúa un solo dueño de tick,
+diario del sobre y adopción legacy antes de aceptar perlas/muerte/botín con la economía activa.
 
 **Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
+
+**AREA17 L06b-2b, 2026-10-10 — alpha.26/protocolo 38:** [compra/venta explícitas](delivery/l06b-agent-trade.md)
+con presupuesto acumulado y revocable SQL017, separado de inferencia. Se reutilizan perfil/mundo/recibo
+M5 humanos; no hay otra autoridad ni transferencia desde el dueño. Reentrada/replay no restauran saldo;
+stop cancela preparación y reconcilia commits enviados. [Contrato/CLI ES/EN](agents/trade.md).
+917 aprobadas, cero fallos y cinco omisiones Windows; suplemento SQL/host 20/20. Publicado en `cafff18`,
+sano desde 19:58:06 UTC; VPS 107/107 y público 10/10. `npm start` conserva agentes/comercio/proveedor apagados.
+SQL017 live y canario autenticado pendientes. Integra Tala SQL016 y refugio sin cambiar sus flags.
+Sigue L03d proveedor real/conversación/PvE con memoria y gasto medidos; luego autonomía por eventos
+y operación del dueño. Publicación inerte no equivale a activación o aceptación de economía agente.
 
 **AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
 Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y apertura por instancia.

@@ -139,7 +139,7 @@ function checkedCommand(raw) {
   fail('input');
 }
 
-function checkedWorldData(raw) {
+export function checkedWorldData(raw) {
   if (!object(raw)) fail('input');
   const fields = Object.keys(raw).sort();
   const expected = ['economy', 'seed', 'v', ...(Object.hasOwn(raw, 'community') ? ['community'] : []),

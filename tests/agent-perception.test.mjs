@@ -97,6 +97,17 @@ test('self is never despawned and dead self receives no other entity perception'
   assert.ok(deadOut.some((m) => m.t === MSG.DESPAWN && m.id === other));
 });
 
+test('late despawn cannot retire a reused live self but a destroyed self still retires', () => {
+  const { world, entity } = fixture();
+  const self = entity(KIND.PLAYER, 0), p = new AgentPerception();
+  p.project({ t: MSG.SPAWN, e: { id: self } }, world, self);
+  const oldLife = { t: MSG.DESPAWN, id: self };
+  assert.deepEqual(p.project(oldLife, world, self), [], 'old numeric id cannot terminate the current body');
+  assert.equal(messages(p, snap(), world, self).some(m => m.t === MSG.DESPAWN && m.id === self), false);
+  world.ecs.destroy(self);
+  assert.deepEqual(p.project(oldLife, world, self), [oldLife], 'real despawn remains terminal');
+});
+
 test('static circles block interior crossings, allow tangents, and ignore endpoint-contained circles', () => {
   const { world, entity } = fixture();
   const self = entity(KIND.PLAYER, -5, 0, 1);
