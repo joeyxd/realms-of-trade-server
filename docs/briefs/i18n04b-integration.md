@@ -26,6 +26,13 @@ Se mantienen GM02 (mapa generado, vista caminable y `BaseDecorationLayer`), GM03
 CAS, exportación y conflictos) y GM03b1 (revisiones de preparación, errores de foco, identidad hash y
 permisos). No cambian SQL, feature flags ni autoridad de gameplay.
 
+## Reutilización
+
+Se cruzó este pase con el [inventario Unreal](../research/unreal-assets/SUMMARY.md).
+ActionRPG aporta patrones de inventario/UI, pero sus widgets no son una dependencia portable para
+localizar el DOM actual. Se reutilizan los paneles, catálogo y CSS del juego; no se genera arte ni
+se modifican las fuentes Unreal.
+
 ## Checks y pendientes
 
 La repetición limpia de release, 14 archivos, terminó **107/107 PASS en 70.7 s** después de una primera
