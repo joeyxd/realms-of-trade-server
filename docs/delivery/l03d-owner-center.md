@@ -15,9 +15,10 @@ que aún no se conectó. El control actual vive en memoria de proceso; **reinici
 la detención**, como indica el panel. Logout, cambio de cuenta y desconexión limpian la proyección.
 No reenvía mutaciones después de un timeout ni acepta respuestas de otra sesión.
 
-Versión alpha.33, protocolo 42 revisado: dos mensajes opcionales; no cambia snapshots/`you`, perfil,
-SQL o flags. Integra AREA15 `5df2e88`, combustible AREA07 `c9d3bbf` e idioma global AREA12 `1f0f158`;
-conserva M5/GameHost y sus activaciones independientes. Compañeros usa el selector global ES/EN.
+Introducido en alpha.33/protocolo 42 con dos mensajes opcionales; no cambia snapshots/`you`, perfil,
+SQL o flags propios. La composición final alpha.34/protocolo 43 integra AREA15 `5df2e88`, combustible
+AREA07 `c9d3bbf`, idioma global AREA12 `1f0f158` y GM/adopción opcional `9266c40`.
+Conserva M5/GameHost y sus activaciones independientes. Compañeros usa el selector global ES/EN.
 La configuración de conexiones aún no está disponible en el juego. No configura proveedor/modelo,
 instala Hermes, consume inferencia, concede presupuesto ni activa agentes públicos.
 
@@ -35,6 +36,14 @@ La [selección final de integración](l03d-owner-center/final-integration.tap) s
 **76/76**: Compañeros cliente/red/UI, autenticación, panel del dueño, Fuego e idioma global.
 La revisión del enlace a HELLO/`you:ready`, fallos de entrada y cambio de idioma no encontró incidencias.
 
+La composición alpha.34 detectó una regresión del runner local: `GameClient.join` consultaba `map`
+en un delegado que no lo tiene ([75/76](l03d-owner-center/publication-integration.tap),
+[reproducción 12/13](l03d-owner-center/publication-owner-panel.tap)). Se corrigió esa lectura opcional,
+sin inventar una identidad de contenido ni omitir la guarda del servidor. La
+[regresión corregida](l03d-owner-center/publication-fixed.tap) pasó **111/111**, incluyendo
+red de agentes y cliente GM. Un caso nuevo prueba que un agente sin proyección verificada es
+rechazado ante contenido GM activo, sin personaje ni grant. Soportar ese mapa en el runner queda pendiente.
+
 Tras integrar combustible, la [selección adicional](l03d-owner-center/integration-tests.tap) pasó
 82/83: falló la aserción temporizada de predicción en `tests/net.test.mjs`. Su repetición aislada
 pasó [2/2 en el corte actual](l03d-owner-center/net-current.tap) y
@@ -42,7 +51,7 @@ pasó [2/2 en el corte actual](l03d-owner-center/net-current.tap) y
 El [diagnóstico de baseline](l03d-owner-center/net-baseline.json) conserva también su primer timeout.
 No se modificó la predicción ni se convierte este resultado en aceptación de rendimiento bajo carga.
 
-**14/14 comprobaciones de [navegador local](l03d-owner-center/browser-evidence.json)**, reproducibles con
+**14/14 comprobaciones de [navegador local alpha.34](l03d-owner-center/browser-evidence.json)**, reproducibles con
 `node tools/qa-companions.mjs`, usa identidades/auth locales simuladas y memoria de fixture.
 Incluye cambio mutuo Fuego/Compañeros, foco y bloqueo de entradas; seis capturas inspeccionadas,
 ES/EN y móvil horizontal/vertical, sin errores de página o del juego. Los probes GM de la fixture

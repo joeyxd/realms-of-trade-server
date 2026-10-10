@@ -1,0 +1,105 @@
+TAP version 13
+# Subtest: owner API requires the bearer key and rejects foreign origins and hosts
+ok 1 - owner API requires the bearer key and rejects foreign origins and hosts
+  ---
+  duration_ms: 68.1353
+  type: 'test'
+  ...
+# Subtest: view is fresh, reports exact file byte hashes, and never serializes filesystem or secret data
+ok 2 - view is fresh, reports exact file byte hashes, and never serializes filesystem or secret data
+  ---
+  duration_ms: 59.7057
+  type: 'test'
+  ...
+# Subtest: fixed downloads preserve BOM, CRLF, UTF-8 bytes, and reject traversal names
+ok 3 - fixed downloads preserve BOM, CRLF, UTF-8 bytes, and reject traversal names
+  ---
+  duration_ms: 49.0927
+  type: 'test'
+  ...
+# Subtest: personality and objective content stays inert while static app serves only its three assets
+ok 4 - personality and objective content stays inert while static app serves only its three assets
+  ---
+  duration_ms: 35.7764
+  type: 'test'
+  ...
+# Subtest: scope mismatch and unavailable budget fail closed without exposing paths or becoming zero
+ok 5 - scope mismatch and unavailable budget fail closed without exposing paths or becoming zero
+  ---
+  duration_ms: 46.5074
+  type: 'test'
+  ...
+# Subtest: configuration uses exact JSON contracts, CAS, and durable serialized concurrent writes
+ok 6 - configuration uses exact JSON contracts, CAS, and durable serialized concurrent writes
+  ---
+  duration_ms: 54.3979
+  type: 'test'
+  ...
+# Subtest: revocation preserves unknown usage and held reservations through owner configure
+ok 7 - revocation preserves unknown usage and held reservations through owner configure
+  ---
+  duration_ms: 76.6705
+  type: 'test'
+  ...
+# Subtest: control endpoints forward only exact empty bodies and do not enable CORS or query authentication
+ok 8 - control endpoints forward only exact empty bodies and do not enable CORS or query authentication
+  ---
+  duration_ms: 32.3571
+  type: 'test'
+  ...
+# Subtest: runner errors and private connection details are sanitized at the HTTP boundary
+ok 9 - runner errors and private connection details are sanitized at the HTTP boundary
+  ---
+  duration_ms: 17.7549
+  type: 'test'
+  ...
+# Subtest: view never starts or thinks, and an unconfirmed stop remains explicitly unproven
+ok 10 - view never starts or thinks, and an unconfirmed stop remains explicitly unproven
+  ---
+  duration_ms: 25.5834
+  type: 'test'
+  ...
+# Subtest: POST requires Origin and streamed bodies over 16 KiB are rejected without Content-Length
+ok 11 - POST requires Origin and streamed bodies over 16 KiB are rejected without Content-Length
+  ---
+  duration_ms: 17.9328
+  type: 'test'
+  ...
+# Subtest: invalid or likely-secret owner files clear the files section and never echo content or paths
+ok 12 - invalid or likely-secret owner files clear the files section and never echo content or paths
+  ---
+  duration_ms: 25.2894
+  type: 'test'
+  ...
+# Subtest: production owned runner starts, thinks, stops, and revokes its game control grant
+not ok 13 - production owned runner starts, thinks, stops, and revokes its game control grant
+  ---
+  duration_ms: 608.8629
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area17-market\\tests\\agent-owner-panel.test.mjs:289:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    409 !== 200
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 200
+  actual: 409
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area17-market/tests/agent-owner-panel.test.mjs:312:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 12
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1709.077

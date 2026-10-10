@@ -90,7 +90,7 @@ export class GameClient {
   // save: the blob the server sent last time (M4), '' for a fresh start.
   join(name, skin, weapon = 0, save = '', account = null) {
     this.t.send({ t: MSG.HELLO, v: PROTOCOL_VERSION, name, skin, weapon, save,
-      ...(this.map.gmContentIdentity ? { content: { ...this.map.gmContentIdentity } } : {}),
+      ...(this.map?.gmContentIdentity ? { content: { ...this.map.gmContentIdentity } } : {}),
       ...(account ? { token: account.token, importSave: account.importSave === true } : {}) });
   }
 

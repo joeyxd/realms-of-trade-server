@@ -6,5 +6,6 @@
 #bootstrap-locale[hidden]{display:none}
 .title-actions>.language-picker{margin:4px auto}
 #pause .language-picker{margin:8px 0 14px}
+html[lang="en"] .party .pm.dead .pn::after{content:' · fallen'}
 @media(max-height:500px){.language-picker button{min-height:32px;padding:5px 12px}}
 @media(pointer:coarse){.language-picker button{min-height:44px}}

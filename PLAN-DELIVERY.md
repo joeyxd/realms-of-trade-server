@@ -2,11 +2,13 @@
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
-tick de recursos y recibo inmutable sin reescribir mundo. Cerco SQL de escritores legacy por mundo;
-adopción v1 rechaza suelo/perlas/botín previo. 235/235 en 34 archivos; 22 casos nuevos y dos
-SIGKILL de adopción; regresión repetida tras integrar I18N04b y L03d. SQL022/alpha.33/protocolo 42. SQL023 aún por aplicar;
-no se adopta el mundo real ni se activa el montaje. Sigue composición perlas/muerte/botín y
-transición detenida con exclusión del writer anterior y canario autenticado VPS.
+tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
+V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
+solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
+VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
+pública 6/6. SQL023 aún por aplicar; no se adopta el mundo real ni se activa el montaje.
+Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
+recuperación y canario autenticado VPS.
 
 
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
@@ -14,20 +16,22 @@ transición detenida con exclusión del writer anterior y canario autenticado VP
 ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
 sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
 
-**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
-[Entrega y evidencia](docs/delivery/i18n04b.md), [plan bilingüe](PLAN-I18N.md).
-Cliente y editor GM ES/EN, selector temprano y cambio en caliente conservando datos/solicitudes;
-integra fuego/fuel de `c9d3bbf`. Navegador local: 11 grupos cliente y 6 editor, capturas revisadas;
-IndexedDB real, servicios/auth/CAS remoto simulados. Publicación y recorrido público pendientes.
-Sin SQL ni flags propios. Sigue aceptación pública de I18N04b y materiales de I18N04c.
+**AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
+[Entrega/evidencia](docs/delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
+conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
+ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
+11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
+Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
+IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
 Mano 20 min, faroles/antorchas privadas 60 min por madera, fogata/parrilla 30 min provisionales;
 municipales infinitas. Un slot y apagado conservador; panel ES/EN, N/V y tres piezas construibles.
 SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composición común 33/33
-solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicación/activación y entrada
-autenticada VPS se registrarán tras comprobarlas. Otros flags conservados. Sigue agua/reembarque.
+solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicado y activo en `fe50ab1`,
+alpha.32/protocolo 42: imagen 107/107 y 30/30 de fuego, navegador autenticado público 9/9 con
+saldo/madera tras recargar y mapa/minimapa. Otros flags conservados. Sigue agua/reembarque.
 
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).

@@ -1,0 +1,90 @@
+{
+  "recordedAt": "2026-10-10T22:57:02.245Z",
+  "version": "0.6.0-alpha.34",
+  "protocol": 43,
+  "checks": [
+    "health_200",
+    "M5_economy_resources_healthy",
+    "published_protocol",
+    "ordinary_public_WSS_entry",
+    "world_snapshot",
+    "ordinary_profile"
+  ],
+  "count": 6,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.34",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 1281,
+    "uptime": 26,
+    "stepMs": 1.267,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 0,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1676,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "content": {
+    "generation": 0,
+    "revisionId": null
+  },
+  "scope": "Public read-only health, current content identity and ordinary guest entry; no durable gameplay action, GM activation or common GameHost activation."
+}

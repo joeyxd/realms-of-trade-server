@@ -1,11 +1,11 @@
 # Español e inglés para el alfa y la campaña
 
-Fecha: 2026-10-09. Actualizado 2026-10-10: I18N04b integra la localización del cliente y el editor GM;
-se incorpora upstream `c9d3bbf` (fuego/fuel), código `b5d5565`, alpha32/protocol42. QA browser local y
-release/editor/deployGM/firepanel suites pasan; recorrido público y aceptación de deployment pendientes.
-Se conservan como
-antecedentes locales [I18N01](docs/delivery/i18n01.md), [I18N04a](docs/delivery/i18n04a.md) y el
-[glosario común](docs/i18n/glossary.md). Revisión pública y promoción pendientes.
+Fecha: 2026-10-09. Actualizado 2026-10-10: **I18N04b publicado y verificado como invitado**,
+primera revisión pública `1f0f158` (alpha.32 / protocolo 42), integración posterior de compañeros
+`6861636` (alpha.33 / protocolo 42). Selector global, cliente y editor GM ES/EN; entrada y
+reconexión públicas comprobadas. [Evidencia y límites](docs/delivery/i18n04b.md).
+Antecedentes locales [I18N01](docs/delivery/i18n01.md), [I18N04a](docs/delivery/i18n04a.md)
+y [glosario común](docs/i18n/glossary.md). Sigue I18N04c, materiales de lanzamiento/promoción.
 
 Todo el alfa y la campaña de lanzamiento/promoción deben estar en **español e inglés**, con elección de idioma desde la
 entrada al juego y cambio disponible en ajustes. Ambas versiones comparten mundo, personajes, progreso,
@@ -171,11 +171,10 @@ equipo/tatuajes/perlas, mapas, recursos/fabricación, comercio/comunidad, constr
 Cambio en caliente conserva formularios y operaciones. Nombres/chat de personas y mensaje exacto de firma
 se preservan. [Cobertura, pruebas, capturas y límites](docs/delivery/i18n01.md).
 
-I18N04b tiene QA browser local aprobado para cliente y editor, y suites locales de release, editor/deployGM
-y firepanel/actions aprobadas. Sigue pendiente la aceptación pública y el deployment. Después se
-comprobarán los recorridos de invitado y autenticados en el runtime desplegado, y se revisarán
-editorialmente el alfa y las piezas de lanzamiento cuando existan. No se declara alfa público bilingüe
-ni rendimiento físico móvil a partir de pruebas locales.
+I18N04b tiene QA local y publicación comprobada: once grupos cliente, seis editor, captura pública,
+entrada invitado ES/EN y reconexión real que conserva el idioma. Imagen VPS 107/107, health sano y
+Supabase disponible. Login/firma, permisos GM y operaciones durables conservan aceptación específica;
+el QA local de esas respuestas es simulado. No se acredita rendimiento físico móvil ni toda la campaña.
 
 ## 8 Registro del avance y próxima entrega
 
@@ -185,23 +184,18 @@ ni rendimiento físico móvil a partir de pruebas locales.
 | I18N02 | Textos actuales implementados y probados localmente | HUD/touch, tutorial, NPC, siete misiones y recompensas; IDs y perfil conservados |
 | I18N03 | Textos de sistemas actuales implementados localmente | Personaje/equipo/tatuajes/perlas, recursos/crafting, comercio/carga/comunidad, balsa, mapas/naval/chat y editor. Fixtures de operaciones pendientes; no equivalen a aceptación de todos los recorridos online |
 | I18N04a | Implementado y probado localmente | [Brief](docs/briefs/i18n04a-editorial.md), [informe y capturas](docs/delivery/i18n04a.md), glosario y avisos GM ES/EN, categorías de mercado y revisión de etiquetas. Conflicto real de IndexedDB local entre dos pestañas sin sobrescritura |
-| I18N04b | Integración en verificación | Cliente completo y editor GM ES/EN; upstream `c9d3bbf` (fuego/fuel), código `b5d5565`, alpha32/protocol42; sin cambios SQL/flags, no push. Cliente local browser: PASS, 11 grupos, 20 PNG, errors[]; siete misiones/nueve ramas tattoo. Editor local browser: PASS, seis grupos, ocho PNG, errors[] (22:26:49Z), IndexedDB real en dos pestañas y remoto simulado. Release limpia 107/107 PASS, 14 archivos (70.7 s), tras primer run 106/107 por timeout `servermovement`; editor+deployGM 122/122 PASS (51.5 s), firepanel/actions 13/13 PASS y enfocado i18n/editor/chat/raft 49/49 PASS. Suites se solapan, no sumar. Sin diff server/src/sim/src/net respecto a c9d3bbf. Invitado público, capturas públicas, auth/permisos reales, reconexión y deployment pendientes; [informe y evidencias](docs/delivery/i18n04b.md) |
+| I18N04b | Publicado; aceptación local e invitado público | Cliente/editor ES/EN; once grupos cliente, seis editor, entrada y reconexión reales. Release/imagen 107/107, editor 122/122, foco 49/49, fuego 13/13; integración posterior compañeros 60/60 (solapadas). Primera revisión pública `1f0f158`, alpha.32/protocolo 42; mantiene `6861636` alpha.33. Auth/firma, permisos GM y operaciones durables aparte; [informe/evidencia](docs/delivery/i18n04b.md) |
 | I18N04c | Pendiente | Inventariar/redactar página, FAQ, convocatoria y anuncios concretos en ambos idiomas; revisar promesas contra features publicadas. Sin calendario ni canales fijados |
 
-**I18N04b, integración en curso:** cliente completo y editor GM ES/EN; upstream `c9d3bbf` (fuego/fuel),
-código `b5d5565`, alpha32/protocol42. Se preservan comunidad/editor, autoridad M5 y los contratos
-GM02/GM03a/GM03b1, sin cambios SQL ni feature flags; todavía no hay push. QA browser local de cliente:
-11 grupos/20 PNG, `errors: []`; QA local de editor: seis grupos/ocho PNG, `errors: []`, con IndexedDB real
-para el conflicto de dos pestañas y cliente remoto simulado para respuestas CAS. La evidencia del cliente
-no usa servidor desplegado, wallet ni auth real. Release limpia 107/107 (14 archivos, 70.7 s), tras el
-primer 106/107 por timeout de `servermovement`; editor+deployGM 122/122 (51.5 s), firepanel/actions 13/13
-y enfocado i18n/editor/chat/raft 49/49. Las suites se solapan, no se suman. No hay diff de `server/`,
-`src/sim/` ni `src/net/` respecto a c9d3bbf. Faltan invitado público, capturas públicas, auth/permisos
-reales, reconexión y deployment. No enviar arte/dependencias o cambios de servidor ajenos.
+**I18N04b publicado:** selector global desde arranque/cuenta/ajustes y cambio en caliente sin borrar
+formularios, progreso o solicitudes. Cliente/editor, fuego, comunidad, construcción y contratos
+GM02/GM03a/GM03b1 conservados. Código `b5d5565`, primera imagen pública `1f0f158`; después
+favicon y compañeros integrados sin reemplazar los catálogos globales. Pruebas, runtime, capturas y
+límites en [la entrega](docs/delivery/i18n04b.md). Sin SQL ni flags propios de localización.
 
-La publicación de este corte de textos no requiere migraciones ni activar M5/Web3; la aceptación sí
-requiere confirmar la revisión realmente activa, salud y recorrido browser ES/EN. Registrar commit,
-pruebas, runtime y recorrido en el informe de I18N04b una vez concluya la verificación.
+**Sigue I18N04c:** preparar página de lanzamiento, FAQ, convocatoria y anuncios equivalentes ES/EN,
+con las mismas condiciones/promesas contrastadas con features publicadas. No inventar canales,
+calendario, regiones o features pendientes. I18N04 completo sigue abierto hasta esa aceptación.
 
 **Cobertura aparte:** `tools/agent/owner-panel` y laboratorios de arte son herramientas locales de dueño/
 desarrollo, con textos todavía en español. No se anuncian como parte del alfa bilingüe. Si se exponen al

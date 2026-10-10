@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Public TLS acceptance for account-backed paid handheld fire. Never mutates shared world state.
+// Public TLS acceptance through normal game commands; seeds only a disposable profile.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -317,6 +317,17 @@ async function runBrowser() {
 async function cleanup() {
   if (browser) await browser.close().catch(() => {});
   if (!accountId) return;
+  // Let the normal disconnect CAS settle before removing the disposable profile.
+  let drained = false;
+  const drainDeadline = Date.now() + 30000;
+  while (!drained && Date.now() < drainDeadline) {
+    const response = await fetch(url('/status'), { cache: 'no-store', signal: AbortSignal.timeout(10000) });
+    ensure(response.ok, 'cleanup stopped: public storage status unavailable');
+    const state = (await response.json()).storage;
+    drained = state?.profileWrites === 0 && state?.unsaved === 0 && state?.economic?.pending === 0;
+    if (!drained) await sleep(500);
+  }
+  ensure(drained, 'cleanup stopped: profile writes have not drained');
   const auth = unwrap(await admin.auth.admin.getUserById(accountId));
   ensure(auth.user?.email === email && auth.user?.user_metadata?.mn_qa_marker === authMarker,
     'cleanup stopped: Auth identity marker mismatch');

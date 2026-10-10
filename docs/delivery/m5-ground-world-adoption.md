@@ -1,6 +1,6 @@
 # AREA15 — adopción atómica y cerco persistente del mundo
 
-2026-10-10. Base final integrada `6861636`, alpha.33/protocolo 42. Conserva RNV04, I18N04b y L03d;
+2026-10-10. Base final integrada `9266c40`, alpha.34/protocolo 43. Conserva RNV04, I18N04b, L03d y GM03b2;
 la regresión de servidor se ejecutó primero en `c9d3bbf`, alpha.31/protocolo 42. SQL022 corresponde
 al combustible; esta entrega añade SQL023. [Contrato](../briefs/m5-ground-world-adoption.md).
 
@@ -51,6 +51,16 @@ Los resultados anteriores 213/213 y 22/22 se solapan con esta última suite; no 
 La detención de compañeros sigue en memoria según su propia entrega; no se vuelve permanente
 por este corte ni se activa su integración con el montaje común.
 
+La integración posterior GM03b2 (`9266c40`, alpha.34/protocolo 43) conserva el contrato de
+adopción. Se revisaron admisión/cierre, store y updater; la prueba de entrada consulta ahora la
+identidad publicada de `/api/world/content` y la envía en HELLO. **74/74 en doce archivos** tras
+esa integración, con fuentes congeladas: adopción completa (22), GroundHostAuthority, store,
+mundo/economía, contenido GM y compatibilidad de release. [Manifest](m5-ground-world-adoption/gm-integration.json),
+[TAP](m5-ground-world-adoption/gm-integration.tap), [fuentes](m5-ground-world-adoption/gm-source-check.json).
+Esta suite final y la regresión anterior 235/235 se solapan; no se suman. La API runtime SQL023
+permanece idéntica al corte publicado; [normalización de evidencia](m5-ground-world-adoption/published-source-check.json)
+registra únicamente finales de línea y una línea vacía final de un test, sin cambios de assertions.
+
 - Conflictos de snapshot/versión/reloj, suelo previo, intenciones pendientes, colisión UUID,
   permisos y rechazo legacy sin mutación; error inyectado después de crear el reloj revierte todo.
 - GameHost autenticado con catálogo completo y Tala v2; ACK sólo después del drain común,
@@ -70,9 +80,24 @@ death drops/estados e intenciones pendientes legacy/comunes. SQL023 aún ausente
 Es una lectura informativa, no un candidato de adopción: la transición debe volver a obtener y
 comprobar el snapshot exacto después de detener al writer anterior.
 
-Publicación y verificación de la nueva revisión se registran al cerrar este informe. No hay
-credencial SQL de administración ni navegador conectado en esta sesión; SQL023 queda preparada
-para aplicar después de 001–022. No se ejecuta adopción ni se cambia ningún flag del VPS.
+Código propio publicado `5c35d70`, normalización `c21f946`; integrado y verificado en la release
+`9266c40f367dfa1a8aa1e786b57a23fcb8e4898c`. A las 2026-10-10T22:56:46.559283+00:00 el contenedor `71634cb5c0b0` y
+la imagen `sha256:14ae83fab1550f1f9a327866f2e2ef206ccf59876ef9d8ed72e6e1ea9d178a79` estaban sanos. [Estado](m5-ground-world-adoption/live-status.json).
+El updater confirmó **107/107** offline antes de sustituir la autoridad; el adaptador pasó **11/11**
+en la misma imagen Node 22.23.3, sin red ni credenciales/SQL reales. [Gate de imagen](m5-ground-world-adoption/updater-validation.json),
+[focal de imagen](m5-ground-world-adoption/image-tests.json). Se verificaron **6/6** lecturas/entrada
+WSS pública con identidad de contenido actual, WELCOME/SNAPSHOT/PROFILE y cierre del socket.
+[Entrada pública](m5-ground-world-adoption/public-smoke.json). No es canario autenticado de durabilidad
+ni aceptación visual/activación de GM03b2, que conserva su propia entrega.
+
+La [lectura final](m5-ground-world-adoption/final-legacy-domain.json) a las 2026-10-10T22:57:14.461344+00:00
+mantiene cero filas de suelo/perlas/botín, sin reloj común, mundo v1676/recursos tick 882753 y SQL023
+ausente (`PGRST202`). Economía, recursos/Tala y combustible existentes siguen activos; montaje
+común y artesano apagados. No se ejecutó adopción ni se cambiaron flags de gameplay por este corte.
+
+No hay credencial SQL de administración ni navegador conectado en esta sesión; SQL023 queda lista
+para aplicar después de 001–022. Instalarla es independiente de adoptar/activar el mundo. El editor
+SQL no está accesible desde esta sesión; por eso esa aplicación sigue pendiente del autor.
 
 ## Continuación
 

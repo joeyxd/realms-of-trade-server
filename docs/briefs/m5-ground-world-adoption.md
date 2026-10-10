@@ -1,7 +1,7 @@
 # AREA15 — adopción explícita del mundo de recursos
 
-Continúa el [dueño común GameHost](m5-ground-host-authority.md). Base final integrada `6861636`,
-alpha.33/protocolo 42; regresión inicial en `c9d3bbf`. SQL022 pertenece al combustible RNV04; esta entrega añade SQL023,
+Continúa el [dueño común GameHost](m5-ground-host-authority.md). Base final integrada `9266c40`,
+alpha.34/protocolo 43; regresión inicial en `c9d3bbf`. SQL022 pertenece al combustible RNV04; esta entrega añade SQL023,
 después de 001–022. Instalar SQL023 no adopta mundos ni activa features.
 
 ## Contrato aceptado de este corte

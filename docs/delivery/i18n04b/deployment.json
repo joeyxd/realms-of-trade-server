@@ -1,0 +1,18 @@
+{
+  "schema": "i18n04b-deployment/v1",
+  "at": "2026-10-10T22:46:25.959Z",
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "revision": "1f0f158db56061888378f99603aca27cf5ae0436",
+  "image": "marea-negra:alpha-1f0f158db560",
+  "imageId": "sha256:09f9be8101c59335f7f17061b6780184f91ceae2cb58b6c07df5d5bf49e7b6e1",
+  "version": "0.6.0-alpha.32",
+  "protocol": 42,
+  "container": "8c458955eff4",
+  "health": "healthy",
+  "activeAuthorityCount": 1,
+  "offlineImageTests": {
+    "pass": 107,
+    "fail": 0
+  },
+  "scope": "Existing single VPS authority, unchanged secrets and feature flags; UI localization only. Public browser evidence recorded separately."
+}

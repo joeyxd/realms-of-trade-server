@@ -18,6 +18,7 @@ RUNTIME_FILES = (
     'src/client/companions.js',
     'src/ui/companions.js',
     'src/main.js',
+    'src/client/gameClient.js',
     'src/net/protocol.js',
 )
 COUNT_NAMES = ('tests', 'pass', 'fail', 'cancelled', 'skipped')
