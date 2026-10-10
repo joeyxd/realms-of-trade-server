@@ -46,6 +46,7 @@ try {
     await gmPage.goto(origin + '/?q=low&tod=day&account-setup=1#gm_setup_token=' + tokenHash, { waitUntil: 'domcontentloaded' });
     await gmPage.waitForFunction(() => window.__mn?.gmEntry.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 90000 });
     assert.equal(await gmPage.evaluate(() => location.hash), '');
+    await gmPage.addStyleTag({ content: '.account-status, .account-email { visibility: hidden !important; }' });
     await gmPage.screenshot({ path: resolve('docs/delivery/gm01/production-account-setup.png') });
     await gmPage.locator('.gm-account-setup-card [data-action="cancel"]').click();
     await gmPage.locator('#btn-gm-editor').click();
@@ -68,7 +69,7 @@ try {
   }
   assert.deepEqual(evidence.errors, []);
   await context.close();
-} catch (error) { evidence.errors.push(error.stack || String(error)); process.exitCode = 1; }
+} catch (error) { evidence.errors.push(String(error.stack || error).replace(/gm_setup_token=[^\s"']+/g, 'gm_setup_token=[redacted]')); process.exitCode = 1; }
 finally {
   await browser.close();
   await writeFile(resolve('docs/delivery/gm01/public-evidence.json'), JSON.stringify(evidence, null, 2) + '\n');

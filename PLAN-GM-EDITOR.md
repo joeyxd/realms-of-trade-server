@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-Fecha: 2026-10-10, hora de México. Estado: **GM01 implementado y verificado localmente en 0.6.0-alpha.18; sin publicación ni despliegue**. El alcance y evidencia de GM01 están en [docs/delivery/gm01-world-editor.md](docs/delivery/gm01-world-editor.md).
+Fecha: 2026-10-10, hora de México. Estado: **GM01 desplegado y verificado en producción en alpha.18; el borrador sigue local y no hay publicación de mapas**. Imagen activa `marea-negra:alpha-d3159949f9ef` (`d3159949f9ef6fbbab51ce7e7a1b928d25f428a0`), sana desde 2026-10-10T16:20:39Z. [Informe y evidencias](docs/delivery/gm01-world-editor.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -11,15 +11,13 @@ modelos y texturas en contenido fácil de encontrar y adecuado para jugar en nav
 reducir el peso de los modelos descargados con texturas 2K/4K conservando su apariencia tanto como sea posible.
 Los originales se conservan; las optimizaciones producen derivados comparables y reversibles.
 
-**Corte local ya implementado (GM01):** entrar al editor dentro del juego con capacidad GM en línea o en
-modo local `?solo`, volar, colocar y transformar decoraciones nuevas, deshacer/rehacer y guardar, exportar
-e importar un borrador local. El documento está separado del mapa base y del estado M5. Draft y recuperación
-aislada usan IndexedDB del navegador con CAS; si la cuota impide guardar, hay fallback en memoria de sesión.
-La recuperación conserva la revisión base y evita promover cambios sobre una revisión normal más reciente.
-GM01 está verificado con 100/100 pruebas pertinentes (30 GM) y 13/13 comprobaciones de navegador con
-autenticación simulada. La cuenta GM se provisionó y la allowlist privada está preparada, sin exponer su
-identificador; falta despliegue y prueba positiva en producción. GM02 aún debe añadir edición de decoración
-base y prueba caminando; publicar el diseño compartido será un corte posterior.
+**Corte implementado (GM01):** la imagen del servidor está desplegada y sana; en producción se verificaron
+6/6 comprobaciones con Supabase real, incluida autorización de la cuenta GM, colocación/guardado local y
+revocación al cerrar sesión. El editor permite colocar y transformar decoraciones nuevas, pero el documento
+y su recuperación siguen privados en IndexedDB por navegador/cuenta/mundo, con CAS y fallback de memoria
+durante la sesión ante cuota agotada. No existe guardado remoto ni publicación de mapas. QA local separado:
+100/100 pruebas pertinentes (30 GM) y navegador 13/13 con autenticación simulada. GM02 aún debe añadir
+edición de decoración base y prueba caminando; GM03 añade borradores remotos durables y publicación controlada.
 
 Las decisiones técnicas futuras siguientes son propuestas de implementación, sujetas a la revisión del autor.
 Este plan continúa AREA01/AREA14 de la guía de áreas `PLAN-MASTER.md` del workspace compartido, no incluida
@@ -330,11 +328,12 @@ cambios quedan fuera hasta diseñar una autoridad compartida.
 contra la lista explícita `GM_ACCOUNT_IDS` y solo concede la capacidad `gm-editor`. La ruta no concede
 administración general ni poder de escritura en el servidor: los borradores solo se guardan en IndexedDB y
 no existe endpoint remoto de guardado/publicación. Parámetros de URL, invitados y `DEV` no conceden permiso.
-La evidencia de navegador alpha.18 empleó autenticación simulada; la suite seleccionada pasó 100/100 pruebas
-pertinentes, incluidas 30 GM, y el recorrido de navegador 13/13 comprobaciones. Los tests locales del endpoint
-verifican bearer, allowlist y rechazo. La cuenta GM fue provisionada y la allowlist privada está preparada,
-pero no se ha desplegado ni verificado el permiso positivo en producción. GM03 debe autorizar cada operación
-durable/publicación, mantener `DEV=0` y definir registro y recuperación antes de ofrecerlas.
+El navegador local alpha.18 empleó autenticación simulada y pasó 13/13; la suite seleccionada pasó 100/100
+pruebas pertinentes, incluidas 30 GM. El navegador real de producción pasó 6/6 con Supabase real, invitado
+denegado y sesión GM autorizada; [evidencia](docs/delivery/gm01/public-evidence.json) y
+[despliegue](docs/delivery/gm01/deployment-evidence.json). La autorización positiva de GM ya está verificada
+en el host activo. GM03 debe autorizar las operaciones remotas durables/publicación, mantener `DEV=0` y definir
+registro y recuperación antes de ofrecerlas.
 
 GM01 usa IndexedDB local, con clave separada por navegador/cuenta/mundo y CAS. La propuesta futura de
 persistencia online sigue sin implementar: evaluar el almacenamiento durable existente para documentos
@@ -451,7 +450,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | Corte | Resultado visible y alcance | Prueba que permite cerrarlo |
 |---|---|---|
 | GM00 | Cuatro candidatos de optimización local: roca 2K/1K y coral 200K/50K triángulos; originales intactos | [Comparación visual local](docs/art/gm00/visual-review.md) con loader real, 14 capturas y dos ángulos; roca 1K casi idéntica, coral 200K mantiene silueta/color con pérdida de detalle fino, 50K se ve más facetado. Sin rendimiento físico móvil ni aceptación gameplay; recibo conserva `visualReview: pending` |
-| GM01 | **Implementado y verificado localmente en alpha.18:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, snap/apoyo, historial, recuperación aislada y borrador local | [Informe local](docs/delivery/gm01-world-editor.md): suite pertinente 100/100 (30 GM), navegador 13/13; setup de cuenta incluido. Autenticación de navegador simulada. Cuenta y allowlist privadas preparadas; despliegue/permiso positivo de producción pendientes |
+| GM01 | **Implementado; imagen alpha.18 desplegada y sana:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, historial, recuperación local y borrador | [Informe](docs/delivery/gm01-world-editor.md): suite local 100/100 (30 GM), navegador local 13/13 simulado y navegador real Supabase 6/6; cuenta GM autorizada en host. El borrador continúa local; publicación de mapas no implementada |
 | GM02 | Selección y edición de decoración existente, proxies compatibles y prueba caminando | Recorrido/colisiones en borrador aislado sin tocar M5; edición del mapa base bien delimitada |
 | GM03 | Persistencia online durable, publicación controlada, contenido versionado, permisos para operaciones de escritura y recuperación | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
 | GM04 | Grupos/prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Editar un conjunto; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
@@ -486,8 +485,9 @@ persistencia durable, autorización de publicación y la referencia activa con e
 - **Publicación:** contenido accesible, runtime compatible, host vacío y drenado, una autoridad activa,
   dos clientes y entrada tardía con revisión correcta, rollback compatible sin revertir economía.
 
-No se ejecutan estas pruebas por redactar el plan. Cada corte registrará implementación, evidencia local,
-aceptación visual y publicación por separado, con el siguiente paso concreto.
+La matriz es aceptación pendiente de GM02/GM03, no un registro de pruebas ejecutadas. GM01 tiene evidencia
+local y de producción separada en su [informe de entrega](docs/delivery/gm01-world-editor.md). Cada corte
+registrará implementación, evidencia, aceptación visual y publicación por separado.
 
 ## 13 Base revisada y decisiones pendientes
 
@@ -502,9 +502,11 @@ Referencias de continuidad: [HANDOFF](docs/HANDOFF.md), [ASSETS](docs/ASSETS.md)
 El código actual prevalece sobre notas históricas que todavía describen el manifiesto como vacío.
 
 Quedan por cerrar en los briefs, sin cambiar la dirección confirmada: presupuesto y dispositivo de referencia,
-recetas de los pilotos, esquema/permisos del almacenamiento propuesto, plantillas iniciales de colisión y
-cuentas con permiso. Recomendación: autor como único GM inicial, escritorio para editar, assets estáticos preparados y
-decoración existente primero, publicación con mundo vacío y terreno por fases.
+esquema/permisos del almacenamiento remoto propuesto y plantillas iniciales de colisión. Las recetas de los
+cuatro pilotos están fijadas y sus derivados verificados por hash.
+La cuenta GM y su permiso en el host ya están verificados; la persistencia remota/publicación siguen pendientes.
+Recomendación: autor como único GM inicial, escritorio para editar, assets estáticos preparados y decoración
+existente primero, publicación con mundo vacío y terreno por fases.
 
 Fuera de esta primera entrega: moderación/ban, regalar oro o items, poderes de combate, editor de rigs,
 IA de generación, marketplace/UGC, terreno voxel y edición colaborativa en vivo. Pueden usar contratos

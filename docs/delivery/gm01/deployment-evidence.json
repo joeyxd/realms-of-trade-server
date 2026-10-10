@@ -1,0 +1,53 @@
+{
+  "schema": "gm01-deployment/v1",
+  "version": "0.6.0-alpha.18",
+  "verifiedAt": "2026-10-10T16:23:12.847500+00:00",
+  "codeRevision": "d3159949f9ef6fbbab51ce7e7a1b928d25f428a0",
+  "activeRelease": "/opt/marea-negra/releases/d3159949f9ef6fbbab51ce7e7a1b928d25f428a0",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "image": "marea-negra:alpha-d3159949f9ef",
+  "running": true,
+  "health": "healthy",
+  "checks": {
+    "updater": {
+      "passed": 107,
+      "failed": 0,
+      "cancelled": 0
+    },
+    "publicHealth": {
+      "status": 200,
+      "source": "public-evidence.json"
+    },
+    "ownerSession": {
+      "codeRevision": "13b171598be1bcf50d9223a975256f67711e12c1",
+      "at": "2026-10-10T16:03:19.779Z",
+      "production": true,
+      "simulatedAuth": false,
+      "httpStatus": 200,
+      "identityMatched": true,
+      "capabilities": [
+        "gm-editor"
+      ],
+      "testSessionClosed": true
+    },
+    "productionBrowser": {
+      "passed": 6,
+      "failed": 0,
+      "simulatedAuth": false,
+      "source": "public-evidence.json"
+    },
+    "visualReview": {
+      "inspectedByRoot": true,
+      "files": [
+        "production-gameplay.png",
+        "production-account-setup.png",
+        "production-gm-editor.png"
+      ]
+    }
+  },
+  "limits": [
+    "GM drafts are local IndexedDB; no remote world write/publication.",
+    "Owner password update exercised in local browser with simulated auth only; production verified actual recovery session and password prompt without choosing a password.",
+    "No physical mobile performance measurement or gameplay asset acceptance."
+  ]
+}
