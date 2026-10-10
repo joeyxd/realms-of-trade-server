@@ -1,5 +1,10 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, diario del sobre 2026-10-10:** [SQL019](docs/delivery/m5-ground-transaction-journal.md),
+petición completa antes del efecto y cierre atómico con SQL018; recuperación detenida desde filas actuales.
+266/266 pruebas y tres SIGKILL locales; no montado en GameHost ni aplicado SQL018/019 live. Sigue dueño de tick/época/legacy,
+sin ampliar la aceptación a perlas/muerte/botín públicos.
+
 **AREA15, corte local 2026-10-10:** [SQL018: operación, mundo y reloj en un commit](docs/delivery/m5-ground-transactions.md).
 Reutiliza familias M5, valida recibos y conserva pausa offline con sesión/drain detenidos. No monta
 GameHost ni activa SQL; sigue composición de tick/diario/legacy y aceptación real de perlas/muerte/botín.
