@@ -65,6 +65,10 @@ conservando recibos e historial del mundo. El [status final](prg01b2-logging/fin
 a las 20:08:38 UTC verifica revisión/imagen, una instancia sana, timer activo y cero errores o pendientes.
 El [smoke activo](prg01b2-logging/public-active-smoke.json) pasó 6/6 con entrada pública real.
 
+Tras el relevo concurrente de faroles a `e648d1b`, el [smoke de integración](prg01b2-logging/post-integration-smoke.json)
+volvió a pasar 6/6 en alpha.27/protocolo 39 a las 20:12:36 UTC, con Tala habilitada y entrada WSS.
+La aceptación autenticada/replay anterior sigue identificada con la revisión `454e2da` usada en esa prueba.
+
 La [regresión sobre upstream integrado](prg01b2-logging/activation-validation.json) pasó 31/31 sin
 omitidas; las 230 pruebas y ocho comprobaciones visuales anteriores conservan su evidencia histórica.
 Este reinicio tuvo 19 875 ms de indisponibilidad medida. El plazo de la palmera ya había transcurrido
