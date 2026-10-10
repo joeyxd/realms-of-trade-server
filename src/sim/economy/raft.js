@@ -16,7 +16,7 @@ const NB = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 
 // Lookup tables of a piece list (rebuilt on change; rafts are small).
 export function indexRaft(parts) {
-  const ix = { base: new Set(), floor: new Set(), pillar: new Set(), roof: new Set(), tile: new Map(), edge: new Map(), minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+  const ix = { base: new Set(), floor: new Set(), pillar: new Set(), roof: new Set(), tile: new Map(), edge: new Map(), mount: new Map(), minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
   let first = true;
   parts.forEach((p, i) => {
     const [id, x, z, l, d] = p, P = RAFT_PARTS[id];
@@ -28,6 +28,7 @@ export function indexRaft(parts) {
     } else if (P.layer === 'floor') ix.floor.add(key(x, z, l));
     else if (P.layer === 'pillar') ix.pillar.add(key(x, z, l));
     else if (P.layer === 'roof') ix.roof.add(key(x, z, l));
+    else if (P.layer === 'mount') ix.mount.set(edgeKey(x, z, l, d), i);
     else if (P.layer === 'edge') ix.edge.set(edgeKey(x, z, l, d), i);
     else if (P.layer === 'tile') { const [w, dd] = P.size || [1, 1]; for (let a = 0; a < w; a++) for (let b = 0; b < dd; b++) ix.tile.set(key(x + a, z + b, l), i); }
   });
@@ -77,6 +78,12 @@ export function canPlace(parts, piece, ix = indexRaft(parts)) {
     if (P.layer === 'roof' && !heldUp(ix, parts, x, z, l + 1) &&
         !NB.some(([a, b]) => ix.roof.has(key(x + a, z + b, l)) && heldUp(ix, parts, x + a, z + b, l + 1))) return 'support';
     return '';
+  }
+  if (P.layer === 'mount') {
+    if (!(d >= 0 && d <= 3)) return 'level';
+    const edge = edgeKey(x, z, l, d), support = ix.edge.get(edge);
+    if (ix.mount.has(edge)) return 'overlap';
+    return support !== undefined && parts[support][0] === 'wall' ? '' : 'support';
   }
   if (P.layer === 'edge') {
     if (!(d >= 0 && d <= 3)) return 'level';

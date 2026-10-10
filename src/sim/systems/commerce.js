@@ -8,6 +8,7 @@ import { raftGangplank } from '../raftGeometry.js';
 import { publicRafts } from './rafts.js';
 import { townAt, TRADE } from './trade.js';
 import { CLOCK } from '../../data/clock.js';
+import { poweredFireKeys } from './fire.js';
 import { productionRows } from '../economy/raftProduction.js';
 import { ownerRaftCapacity } from './raftCapacity.js';
 import { holdLoadIncreases } from '../economy/raftCapacity.js';
@@ -114,7 +115,7 @@ function cargoState(w, e, profile, active) {
     pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
     gold: profile.gold, stats: raftStats(ship.grid, ship.hold), raftRev: ship.rev,
     capacity: ownerRaftCapacity(w, e),
-    production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked: active.productionBlocked || '' }),
+    production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked: active.productionBlocked || '', poweredKeys: poweredFireKeys(w, active) }),
     productionBlocked: active.productionBlocked || '', daySec: CLOCK.daySec };
 }
 

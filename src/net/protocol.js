@@ -1,7 +1,7 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 41; // Artisan/storage receipts integrated with the session-owned portable lantern flag; reload peers.
-// Owner companion list/stop adds optional messages only; snapshots, you and existing DTOs retain v41.
+export const PROTOCOL_VERSION = 42; // Private fire fuel status and paid fire commands; reload peers.
+// Owner companion list/stop adds optional messages only; existing DTOs retain v42.
 
 export const MSG = {
   // client -> server

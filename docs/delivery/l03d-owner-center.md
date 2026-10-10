@@ -15,8 +15,8 @@ que aún no se conectó. El control actual vive en memoria de proceso; **reinici
 la detención**, como indica el panel. Logout, cambio de cuenta y desconexión limpian la proyección.
 No reenvía mutaciones después de un timeout ni acepta respuestas de otra sesión.
 
-Versión alpha.31, protocolo 41 revisado: dos mensajes opcionales; no cambia snapshots/`you`, perfil,
-SQL o flags. Integra AREA15 `5df2e88` con el montaje común y artesano apagados. Conserva M5/GameHost.
+Versión alpha.32, protocolo 42 revisado: dos mensajes opcionales; no cambia snapshots/`you`, perfil,
+SQL o flags. Integra AREA15 `5df2e88` y combustible AREA07 `c9d3bbf`; conserva M5/GameHost y sus activaciones independientes.
 La configuración de conexiones aún no está disponible en el juego. No configura proveedor/modelo,
 instala Hermes, consume inferencia, concede presupuesto ni activa agentes públicos.
 
