@@ -18,14 +18,21 @@ CLI de administración añade `initialize_native`. El panel de ensayo rechaza pr
 en lectura/configure/start/think y conserva stop. El runner normal continúa simulado/desactivado.
 No cambia SQL, protocolo ni perfiles; integra el upstream alpha.27/protocolo 39 y conserva M5/GameHost
 como única autoridad de gameplay. La contabilidad local no es un tope global de facturación externa.
+El empaquetado VPS no incorpora `tools/agent`: este ledger se publica como herramienta del operador
+en el repositorio. Comprobar la imagen/alfa acredita continuidad del juego, no ejecución del ledger allí.
 
 ## Verificación
 
 [Verificador reproducible](l03d-native-metering/verify.mjs),
 [resultado y hashes de fuentes](l03d-native-metering/verification.json) y
 [TAP](l03d-native-metering/verification.tap): **569 aprobadas, cero fallos y cinco omisiones de
-symlinks Windows**, 64 archivos y hashes estables durante la ejecución sobre base `91957a3`.
+symlinks Windows**, 64 archivos y hashes estables durante la ejecución sobre integración `535f316`
+(fuente L03d-a `e614ca4` y upstream SQL019 `6748f9a`).
 Contadores/tarifas de fixture, sin proveedor externo ni gasto. Pruebas de red usan localhost.
+
+El [suplemento de integración](l03d-native-metering/verify-integration.mjs) verifica los 27 casos
+SQL019 de contrato, SQL y SIGKILL de proceso, sin montar ni activar su coordinador.
+[Resultado](l03d-native-metering/integration.json) · [TAP](l03d-native-metering/integration.tap).
 
 Revisión independiente detectó y cerró la liberación manual de una reserva todavía en curso;
 el ensayo verifica hold intacto, respuesta nativa posterior y rechazo de replay manipulado.
