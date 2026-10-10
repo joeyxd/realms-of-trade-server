@@ -131,6 +131,9 @@ test('ordered lesson objectives reach returning, but completion requires an actu
   assert.equal(lessonCommand(f, 'dock'), true);
   assert.equal(run().status, 'complete');
   assert.equal(run().reason, 'dock');
+  assert.equal(run().learning.learned, true);
+  assert.equal(f.world.profiles.get(f.owner).progression.v, 2);
+  assert.deepEqual(f.world.profiles.get(f.owner).progression.milestones, ['pilot_coastal']);
   assert.equal(JSON.stringify(f.ship.grid), blueprint);
   assert.equal(JSON.stringify(f.ship.hold.goods), goods);
   assert.equal(JSON.stringify(f.source.condition), condition, 'the noncombat lesson does not change hull HP');
@@ -143,6 +146,7 @@ test('docking before the lesson objectives aborts instead of granting completion
   const lesson = f.world.navalLesson.snapshot(f.owner);
   assert.equal(lesson.status, 'aborted');
   assert.equal(lesson.reason, 'dock');
+  assert.equal(lesson.learning.learned, false);
 });
 
 test('walking on deck pauses practice and the current helm can still cancel after returning', () => {

@@ -74,6 +74,7 @@
 .ln-route-trial b { font-size: 10px; }
 .ln-route-trial small { color: rgb(222 225 205 / 68%); font-size: 9px; white-space: nowrap; }
 .ln-route-trial .ln-route-rules { max-width: 280px; color: rgb(239 204 125 / 78%); font-size: 8px; line-height: 1.1; white-space: normal; }
+.ln-route-trial .ln-pilot-learning { color: #93ddc5; }
 .ln-route-trial button { min-height: 32px; padding: 0 11px; border: 1px solid rgb(130 223 198 / 36%); border-radius: 8px; color: #e7f5eb; background: rgb(130 223 198 / 12%); font: inherit; font-size: 10px; cursor: pointer; }
 .ln-route-trial > span { min-width: 0; }
 .ln-route-trial small { white-space: normal; line-height: 1.35; }

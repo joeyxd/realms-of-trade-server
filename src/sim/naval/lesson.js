@@ -1,6 +1,7 @@
 // A short, server-owned coastal handling lesson. Plans are pure until the fixed tick commits.
 import { NAVAL_LESSON as L } from '../../data/navalLesson.js';
 import { navalRouteLayout } from './route.js';
+import { learnCoastalPilot, pilotingStatus } from '../systems/progression.js';
 
 const active = (status) => status === 'outbound' || status === 'maneuver' || status === 'returning';
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -62,8 +63,15 @@ export class NavalLesson {
     if (why === 'detach' || why === 'close') { this.#runs.delete(owner); return; }
     if (!active(run.status)) return;
     const tick = this.#world.tick;
+    const complete = why === 'dock' && run.status === 'returning';
+    const profile = complete && this.#world.profiles?.get(owner);
+    const grant = profile ? learnCoastalPilot(profile.progression) : null;
+    if (grant?.learned) {
+      profile.progression = grant.progression;
+      this.#world.profileDirty?.add(owner);
+    }
     this.#runs.set(owner, { ...run,
-      status: why === 'dock' && run.status === 'returning' ? 'complete' : 'aborted',
+      status: complete ? 'complete' : 'aborted',
       reason: why, tick, elapsedTicks: tick - run.startTick });
   }
 
@@ -114,7 +122,7 @@ export class NavalLesson {
     return true;
   }
 
-  snapshot(player) {
+  snapshot(player, persistence = 'local') {
     let run = this.#runs.get(player);
     let ownerView = !!run;
     if (!run) for (const candidate of this.#runs.values()) {
@@ -124,6 +132,7 @@ export class NavalLesson {
     }
     const ctx = this.#context(player);
     const runActive = active(run?.status);
+    const learning = pilotingStatus(this.#world.profiles?.get(player)?.progression);
     const target = !runActive ? null : run.status === 'outbound' ? copyBuoy(run.buoys[0]) :
       run.status === 'maneuver' ? copyBuoy(run.buoys[1]) : point(run.home);
     return {
@@ -133,6 +142,7 @@ export class NavalLesson {
       stableTicks: run?.stableTicks || 0, requiredStableTicks: L.stableTicks, target,
       buoys: (run?.buoys || this.#layout?.buoys || []).map(copyBuoy), home: run ? point(run.home) : null,
       elapsedTicks: run?.elapsedTicks || 0, reason: run?.reason || '',
+      learning: { ...learning, persistence: learning.learned ? persistence : 'unlearned' },
       canStart: !runActive && this.#canStart(player, ctx, this.#runs.get(player)),
       canAbort: ownerView && runActive && !!ctx?.helm && !ctx.ashore,
     };

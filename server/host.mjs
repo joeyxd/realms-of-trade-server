@@ -124,6 +124,11 @@ export class GameHost {
       tickAccess: () => this.tickAvailable(),
       beforeDetach: (id, entity) => this.beforeProfileDetach(id, entity),
       onSave: (id, p) => this.saveProfile(id, p),
+      progressionPersistence: (id, milestone) => {
+        const session = this.profiles.clients.get(id);
+        if (!session || this.store.durable !== true) return 'local';
+        return session.confirmed?.progression?.milestones?.includes(milestone) ? 'saved' : 'pending';
+      },
     });
     if (this.agentControl) this.server.inputAccess = (...args) => this.agentInputAllowed(...args);
     if (this.agentPilot) {

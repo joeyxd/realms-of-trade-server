@@ -51,6 +51,7 @@ test('new or cleared route sessions reset shot presentation IDs without phantom 
     ['.ln-route-trial', { hidden: false }], ['[data-route-title]', { textContent: '' }],
     ['[data-route-score]', { textContent: '' }], ['[data-route-action]', { hidden: false, disabled: false,
       setAttribute() {}, textContent: '' }],
+    ['[data-pilot-learning]', { hidden: false, textContent: '' }],
   ]);
   const effects = [], sounds = [];
   const view = Object.create(LiveNavigationView.prototype);

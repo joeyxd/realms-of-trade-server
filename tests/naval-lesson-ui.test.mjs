@@ -56,3 +56,12 @@ test('commands require availability, a valid epoch, and the matching capability'
   assert.equal(lessonCommand(state({ canStart: false }), 12), null);
   assert.equal(lessonCommand(state({ active: true, canAbort: false }), 12), null);
 });
+
+test('learning copy separates available technique, local learning, pending save and confirmed save', () => {
+  assert.match(lessonPresentation(state(), 'es').learningLabel, /Pilotaje II.*15 %/);
+  const learned = persistence => state({ status: 'complete', learning: { learned: true, rank: 2, persistence } });
+  assert.match(lessonPresentation(learned('pending'), 'es').learningLabel, /Guardado pendiente/);
+  assert.match(lessonPresentation(learned('saved'), 'en').learningLabel, /Piloting II.*15%.*Learning saved/);
+  assert.match(lessonPresentation(learned('local'), 'en').learningLabel, /Learned in this game/);
+  assert.doesNotMatch(lessonPresentation(learned('pending'), 'en').learningLabel, /Learning saved/);
+});

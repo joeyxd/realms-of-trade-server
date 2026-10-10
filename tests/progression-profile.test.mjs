@@ -79,7 +79,7 @@ test('present malformed or future progression rejects the profile', () => {
   const invalid = [
     null,
     undefined,
-    { ...progression(), v: 2 },
+    { ...progression(), v: 3 },
     { ...progression(), extra: true },
     { ...progression(), practice: { logging: -1 } },
     { ...progression(), practice: { logging: 1.5 } },

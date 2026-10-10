@@ -12,6 +12,7 @@ import { persistRaftCondition } from './condition.js';
 import { RAFT, RAFT_PARTS, RAFT_LOAD } from '../../data/raftparts.js';
 import { GOODS } from '../../data/goods.js';
 import { goodMass } from '../economy/cargo.js';
+import { pilotingStatus } from '../systems/progression.js';
 
 const NEUTRAL = Object.freeze({ throttle: 0, brake: 1, steer: 0 });
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
@@ -133,7 +134,8 @@ export class NavalTrial {
           pack, packGoods: pack.goods, packSignature: goodsSignature(pack.goods),
           holdCargo, packCargo, crewCargo, payloadSignature: JSON.stringify(payload) };
         body = createTrialBody(source.ship.grid.parts, pose, `trial:${this.#nextInstance}`, bodyTick,
-          { navigation: true, cargo, flowOrigin: this.#flowOrigin, wind: T.wind, structure: source.condition });
+          { navigation: true, cargo, flowOrigin: this.#flowOrigin, wind: T.wind, structure: source.condition,
+            helmResponse: pilotingStatus(profile.progression).helmResponse });
       } else body = createTrialBody(source.ship.grid.parts, pose, `trial:${this.#nextInstance}`, bodyTick);
     }
     catch (error) { if (error instanceof TypeError || error instanceof RangeError) return null; throw error; }

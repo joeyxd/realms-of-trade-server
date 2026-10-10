@@ -3,6 +3,12 @@
 import { RESOURCE_KINDS } from './resources.js';
 
 export const PROGRESSION_VERSION = 1;
+// Keep v1 profiles byte-compatible until this first pilot milestone is actually learned.
+export const PILOTING = Object.freeze({
+  version: 2,
+  milestone: 'pilot_coastal',
+  rudderMultiplier: 1.15,
+});
 export const LOGGING = Object.freeze({
   practicePerPalm: 10,
   firstMilestoneAt: 60,

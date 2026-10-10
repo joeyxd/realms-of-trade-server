@@ -46,7 +46,7 @@ test('logging contract constants and empty progression are stable and JSON-safe'
 test('progression parsing rejects malformed, unknown, duplicate, extra, and out-of-bound state', () => {
   const invalid = [
     null,
-    { ...practice(), v: 2 },
+    { ...practice(), v: 3 },
     { ...practice(), extra: true },
     { ...practice(), practice: { logging: 1, mining: 2 } },
     { ...practice(), practice: { logging: 1.5 } },
@@ -241,7 +241,7 @@ test('malformed contributions and node, command, beneficiary, and stale revision
     { actor: A, progression: newProgression() }, { actor: A, progression: newProgression() },
   ]), errorCode('beneficiary'));
   assert.throws(() => hit(node, A, 1, [
-    { actor: A, progression: { v: 2, practice: { logging: 0 }, milestones: [], knowledge: [] } },
+    { actor: A, progression: { v: 3, practice: { logging: 0 }, milestones: [], knowledge: [] } },
   ]), errorCode('beneficiary'));
   assert.throws(() => hit(node, A, 1, [
     { actor: A, progression: newProgression() }, { actor: B, progression: newProgression() },

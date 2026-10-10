@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// PRG02a acceptance on the isolated GameHost/WebSocket/UI. Objective movement is a declared QA fixture.
+// Coastal lesson acceptance on isolated GameHost/WebSocket/UI. Objective movement is a declared QA fixture.
 import fs from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -14,7 +14,7 @@ import { NAVAL_LESSON } from '../src/data/navalLesson.js';
 import { GAME } from '../src/data/meta.js';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const out = resolve(repo, 'docs/delivery/prg02a-naval-lesson');
+const out = resolve(repo, process.env.MN_QA_OUT || 'docs/delivery/prg02b-pilot-learning');
 await mkdir(out, { recursive: true });
 const playwrightFile = resolve(process.env.MN_PLAYWRIGHT || resolve(repo, '.scratch/pilot-browser/node_modules/playwright/index.mjs'));
 const { chromium } = await import(pathToFileURL(playwrightFile).href);
@@ -22,10 +22,10 @@ const gsapRoot = resolve(process.env.MN_GSAP || resolve(repo, '.scratch/gsap-loc
 const threeRoot = resolve(repo, 'node_modules/three');
 const evidence = {
   generatedAt: new Date().toISOString(),
-  purpose: 'Verify the voluntary PRG02a coastal lesson through the isolated GameHost snapshot and UI: start, follow ordered buoys, hold the second maneuver, return, and dock through the normal prompt; cancel and retry once.',
+  purpose: 'Verify PRG02b coastal lesson and pilot learning through isolated GameHost snapshot and UI: ordered buoys, maneuver, real dock, one common profile milestone and visible learned benefit; cancel and retry once.',
   harness: 'Fresh ephemeral GameHost per viewport, real browser WebSocket and DOM/UI, in-memory profile store, local Three.js/GSAP/font routes. No .env, database, external host, production service, or device-performance claim.',
   fixture: 'After the owner mounts the real server-created raft through the UI, QA wraps only world.navalRoute.plan to relocate that owner’s fixed-tick candidate body to server-issued lesson waypoints. NavalLesson start/plan/commit, snapshots, lesson progress, cancel/retry, cargo, hull condition, and completion through the real pilot.dock command remain live server behavior. This does not verify unaided sailing or physical-device performance.',
-  expected: { orderedBuoys: 2, maneuverStableTicks: NAVAL_LESSON.stableTicks, completedBy: 'actual navalPilot dock command', cancelAndRetry: true, noPracticeSalvos: true, persistentProgressionCredit: false },
+  expected: { orderedBuoys: 2, maneuverStableTicks: NAVAL_LESSON.stableTicks, completedBy: 'actual navalPilot dock command', cancelAndRetry: true, noPracticeSalvos: true, profileMilestone: 'pilot_coastal', durableStorageAcceptance: false },
   protocolVersion: PROTOCOL_VERSION,
   viewports: [],
   failures: [],
@@ -147,7 +147,7 @@ async function run(spec) {
       const pose = { x: fixturePose.x, y: body.pose.y, z: fixturePose.z, yaw: body.pose.yaw };
       const relocated = createTrialBody(ship.grid.parts, pose, `qa-lesson:${spec.name}`, body.state.tick,
         { navigation: true, structure: body.structure, cargo: body.cargo, flowOrigin: body.flowOrigin,
-          wind: body.wind, activity: body.activity });
+          wind: body.wind, activity: body.activity, helmResponse: body.helmResponse });
       return { qaFixture: true, body: relocated, state: { owner } };
     };
     world.navalRoute.commit = (plan) => plan?.qaFixture ? true : originalCommit(plan);
@@ -283,6 +283,15 @@ async function run(spec) {
       dockedPilotActive: world.navalPilot.snapshot(entity).active, prompt: dockVerb };
     await page.waitForFunction(() => document.querySelector('[data-route-title]')?.textContent === 'Lesson complete',
       null, { timeout: 10000 });
+    await page.waitForFunction(() => window.__mn.client.lesson?.learning?.learned &&
+      /Piloting II.*15%/.test(document.querySelector('[data-pilot-learning]')?.textContent),
+      null, { timeout: 10000 });
+    result.learning = { profile: structuredClone(world.profiles.get(entity).progression),
+      wire: await page.evaluate(() => window.__mn.client.lesson.learning),
+      label: await page.locator('[data-pilot-learning]').textContent() };
+    check(result.learning.profile.v === 2 && result.learning.profile.milestones.filter(id => id === 'pilot_coastal').length === 1,
+      'real dock did not add exactly one pilot milestone');
+    check(result.learning.wire.persistence === 'local', 'ephemeral QA must not claim a durable save');
     await screenshot('07-complete');
 
     const after = {

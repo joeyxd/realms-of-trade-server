@@ -35,6 +35,7 @@ import { NavalTrial } from '../sim/naval/trial.js';
 import { NavalPilot } from '../sim/naval/pilot.js';
 import { NavalRoute } from '../sim/naval/route.js';
 import { NavalLesson } from '../sim/naval/lesson.js';
+import { PILOTING } from '../data/progression.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
 const CATCHUP_CMDS = 4;      // when a client's queue backs up
@@ -56,10 +57,12 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, now = () => performance.now(), chat = {}, navigation = true }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
+    if (progressionPersistence !== null && typeof progressionPersistence !== 'function') throw new TypeError('progression hook');
+    this.progressionPersistence = progressionPersistence; // Read confirmed storage evidence; never dispatch I/O.
     if ([profileAccess, beforeDetach].some((hook) => hook !== null && typeof hook !== 'function')) throw new TypeError('profile hook');
     this.profileAccess = profileAccess;
     this.beforeDetach = beforeDetach;
@@ -357,6 +360,12 @@ export class LocalServer {
       ? pilot.loadCapacity(msg.shipId, msg.op === 'board' ? e : null) : null;
     this.world.emit({ type: 'navalPilot', to: e, op: msg.op, ok,
       ...(load?.status === 'overloaded' ? { why: 'capacity' } : {}), ...pilot.snapshot(e) });
+    if (ok && ['dock', 'leave'].includes(msg.op)) {
+      // This set-add has no economic side effect. Use the existing profile CAS writer immediately;
+      // queued is not saved: the separate trusted snapshot getter observes confirmed storage.
+      this.sendSave(this.clientOf(e), c);
+      this.sendProfile(this.clientOf(e), c);
+    }
     // Publish the transition immediately so a rapid shore/reboard cannot race an obsolete epoch.
     this.broadcastSnapshot();
     return ok;
@@ -794,7 +803,7 @@ export class LocalServer {
         capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
         ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
           voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null,
-          lesson: w.navalLesson?.snapshot(c.entity) || null } : {}) });
+          lesson: w.navalLesson?.snapshot(c.entity, this.progressionPersistence?.(id, PILOTING.milestone) || 'local') || null } : {}) });
       c.resourceSignature = resourceSignature;
     }
   }

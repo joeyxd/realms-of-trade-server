@@ -1,5 +1,5 @@
 // Pure, ephemeral trial body that binds a blueprint, operational damage and fixed-tick handling.
-import { navalPose, newNavalState, stepNaval } from './handling.js';
+import { isValidHelmResponse, navalPose, newNavalState, stepNaval } from './handling.js';
 import { operationalNavalRig, rebaseNavalState } from './operational.js';
 import { applyPartDamage, createNavalStructure, hullIntegrity } from './structure.js';
 import { resolveNavalCoast } from './coastContact.js';
@@ -40,6 +40,7 @@ function validateBody(body) {
   if (body.navigation !== undefined) {
     const a = body.activity, g = body.gust, f = body.flow, o = body.flowOrigin, w = body.wind;
     if (body.navigation !== true || !Array.isArray(body.cargo) || body.cargo.length > 600 ||
+        !Object.hasOwn(body, 'helmResponse') || !isValidHelmResponse(body.helmResponse) ||
         body.cargo.some((item) => !item || !['mass', 'x', 'z', 'height'].every((key) => finite(item[key])) ||
           item.mass <= 0 || item.mass > 10000 || Math.abs(item.x) > 26 || Math.abs(item.z) > 26 || item.height < 0 || item.height > 8) ||
         !o || !['x', 'z', 'yaw'].every((key) => finite(o[key])) || Math.abs(o.x) > 1e9 || Math.abs(o.z) > 1e9 ||
@@ -51,7 +52,7 @@ function validateBody(body) {
           !Number.isSafeInteger(a.resultUntil) || a.resultUntil < 0 ||
         typeof body.parked !== 'boolean' || !w || !finite(w.yaw) || !finite(w.strength) || w.strength < 0 || w.strength > 1)
       fail('Invalid trial navigation state');
-  }
+  } else if (Object.hasOwn(body, 'helmResponse')) fail('Inactive helm response');
 }
 
 function freezeState(state) { return freeze({ ...state }); }
@@ -109,11 +110,17 @@ function makeBody(structure, operational, state, poseOffsetY, pose, impacts = []
   const activity = navigation ? freezeActivity(options.activity || newSailingActivity()) : null;
   const wind = navigation ? freezeWind(options.wind || { yaw: 0, strength: 0 }) : null;
   const parked = navigation ? options.parked === true : false;
+  const helmResponse = navigation
+    ? Object.hasOwn(options, 'helmResponse') ? options.helmResponse : 1
+    : undefined;
+  if (navigation && !isValidHelmResponse(helmResponse)) fail('Invalid helm response');
+  if (!navigation && Object.hasOwn(options, 'helmResponse')) fail('Inactive helm response');
   const frame = navigation ? navigationFrame(state, flowOrigin, activity, wind, true)
     : { flow: null, gust: null };
   const body = freeze({ structure, operational, state: freezeState(state), pose: freezePose(pose), poseOffsetY,
     impacts: freeze(impacts.map((impact) => freeze({ ...impact }))),
-    ...(navigation ? { navigation: true, cargo, flowOrigin, flow: frame.flow, activity, gust: frame.gust, parked, wind } : {}) });
+    ...(navigation ? { navigation: true, cargo, flowOrigin, flow: frame.flow, activity, gust: frame.gust,
+      parked, wind, helmResponse } : {}) });
   validateBody(body);
   return body;
 }
@@ -130,9 +137,12 @@ export function createTrialBody(parts, pose, instanceNamespace, tick = 0, option
   if (typeof instanceNamespace !== 'string' || !/^[a-zA-Z0-9:_-]{1,100}$/.test(instanceNamespace))
     fail('Invalid trial namespace');
   if (!options || typeof options !== 'object' || Array.isArray(options) ||
-      Object.keys(options).some((key) => !['cargo', 'navigation', 'flowOrigin', 'activity', 'parked', 'wind', 'structure'].includes(key)) ||
+      Object.keys(options).some((key) => !['cargo', 'navigation', 'flowOrigin', 'activity', 'parked', 'wind', 'structure', 'helmResponse'].includes(key)) ||
       (options.navigation !== undefined && typeof options.navigation !== 'boolean')) fail('Invalid trial options');
   const navigation = options.navigation === true;
+  if (Object.hasOwn(options, 'helmResponse') && options.navigation !== true) fail('Inactive helm response');
+  const helmResponse = Object.hasOwn(options, 'helmResponse') ? options.helmResponse : 1;
+  if (!isValidHelmResponse(helmResponse)) fail('Invalid helm response');
   const cargo = freezeCargo(options.cargo || []);
   const flowOrigin = navigation ? freezeOrigin(options.flowOrigin) : null;
   const wind = options.wind || { yaw: 0, strength: 0 };
@@ -156,6 +166,7 @@ export function createTrialBody(parts, pose, instanceNamespace, tick = 0, option
   const poseOffsetY = pose.y - hydroPose.y;
   return makeBody(structure, operational, state, poseOffsetY, pose, [], {
     navigation, cargo, flowOrigin, activity: options.activity || newSailingActivity(), parked: options.parked, wind,
+    ...(navigation ? { helmResponse } : {}),
   });
 }
 
@@ -168,7 +179,8 @@ export function stepTrialBody(body, input, wind, coast = null, { parked = body?.
     ? stepSailingActivity(body.activity, body.state, parked ? { ...input, capture: false } : input, body.operational.rig || { sail: 0 }, wind, true)
     : { activity: null, event: null };
   const common = { navigation: body.navigation, cargo: body.cargo, flowOrigin: body.flowOrigin,
-    activity: activityStep.activity || undefined, parked, wind };
+    activity: activityStep.activity || undefined, parked, wind,
+    ...(body.navigation ? { helmResponse: body.helmResponse } : {}) };
   if (parked) {
     const state = { ...body.state, tick: body.state.tick + 1, vx: 0, vz: 0, omega: 0 };
     const frame = navigationFrame(state, body.flowOrigin, activityStep.activity, wind, true);
@@ -179,7 +191,8 @@ export function stepTrialBody(body, input, wind, coast = null, { parked = body?.
     return makeBody(body.structure, body.operational, state, body.poseOffsetY, body.pose, [], common);
   }
   const frame = body.navigation ? navigationFrame(body.state, body.flowOrigin, activityStep.activity, wind, true) : null;
-  const environment = body.navigation ? { ...sailingEnvironment(activityStep.activity, body.state, true), current: frame.flow } : {};
+  const environment = body.navigation ? { ...sailingEnvironment(activityStep.activity, body.state, true),
+    current: frame.flow, rudderMultiplier: body.helmResponse } : {};
   let state = stepNaval(body.state, input, body.operational.rig, wind, environment);
   const contact = coast ? resolveNavalCoast(body.state, state, body.operational.rig, body.operational.parts, coast) : null;
   if (contact) state = contact.state;

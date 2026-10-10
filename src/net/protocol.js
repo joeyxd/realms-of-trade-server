@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 35; // Session-only coastal lesson and private epoch-bound inventory/market reads.
+export const PROTOCOL_VERSION = 36; // Pilot learning/save evidence and helm response; retains private epoch-bound agent reads.
 
 export const MSG = {
   // client -> server
@@ -18,7 +18,7 @@ export const MSG = {
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
-  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?, route?, lesson?: private session activity}
+  SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?, route?, lesson?: private activity/learning}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}
   EVENT: 'event',     // {ev: {type, ...}}  pattern, aoe, windup, parry, destroy, hurt, damage, kill, shot, time… (see sim/)

@@ -60,7 +60,7 @@ export class LiveNavigationView {
       <div class="ln-route"><span class="ln-route-arrow" aria-hidden="true">↑</span><span><small data-target-label>RUTA</small><b data-target>Puerto</b><i><span data-heading>000°</span> · <span data-distance>—</span></i></span></div>
       <button class="ln-center" type="button" data-action="center" aria-label="Centrar cámara">Centrar</button>
     </div>
-    <div class="ln-route-trial" hidden><span><b data-route-title role="status">Lección costera</b><small data-route-score></small><progress class="ln-lesson-progress" data-lesson-progress max="1" value="0" hidden></progress><small class="ln-route-rules" data-route-rules></small></span><div class="ln-activity-actions"><button type="button" data-route-action>Empezar lección</button><button type="button" data-route-switch>Ensayo con salvas</button></div></div>
+    <div class="ln-route-trial" hidden><span><b data-route-title role="status">Lección costera</b><small data-route-score></small><small class="ln-pilot-learning" data-pilot-learning></small><progress class="ln-lesson-progress" data-lesson-progress max="1" value="0" hidden></progress><small class="ln-route-rules" data-route-rules></small></span><div class="ln-activity-actions"><button type="button" data-route-action>Empezar lección</button><button type="button" data-route-switch>Ensayo con salvas</button></div></div>
     <div class="ln-prompt" aria-live="polite" hidden><kbd data-key>F</kbd><span data-prompt>Preparar timón</span><button type="button" data-run>Usar</button></div>
     <div class="ln-notice" aria-live="polite" hidden></div>
     <div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>EXPLORA LA COSTA</span></b><span data-touch-load>Carga 0%</span></div>
@@ -415,6 +415,7 @@ export class LiveNavigationView {
     }
     const rules = this.$('[data-route-rules]');
     if (rules) rules.textContent = 'Sin botín ni XP · hasta 24 HP reparables · tu carga se conserva';
+    this.$('[data-pilot-learning]').hidden = true;
     const progress = this.$('[data-lesson-progress]');
     if (progress) progress.hidden = true;
     const box = this.$('.ln-route-trial');
@@ -480,6 +481,8 @@ export class LiveNavigationView {
     this.$('[data-route-title]').textContent = view.stage;
     this.$('[data-route-score]').textContent = view.detail;
     this.$('[data-route-rules]').textContent = view.rules;
+    const learning = this.$('[data-pilot-learning]');
+    learning.hidden = false; learning.textContent = view.learningLabel;
     const button = this.$('[data-route-action]');
     button.hidden = !helm; button.textContent = view.button;
     button.disabled = !helm || !(lesson.active ? lesson.canAbort : lesson.canStart);

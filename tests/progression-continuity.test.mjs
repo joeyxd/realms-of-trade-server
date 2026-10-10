@@ -145,7 +145,7 @@ test('SQL014 keeps a legacy immutable receipt replayable after newer progression
 test('malformed and future progression reject session admission without saving over the row', async () => {
   const corruptions = [
     { v: 1, practice: { logging: -1 }, milestones: [], knowledge: [] },
-    { v: 2, practice: { logging: 60 }, milestones: ['logging_steady'], knowledge: [] },
+    { v: 3, practice: { logging: 60 }, milestones: ['logging_steady'], knowledge: [] },
   ];
   for (const progression of corruptions) {
     const raw = newProfile(); raw.progression = progression;

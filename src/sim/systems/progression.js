@@ -1,7 +1,7 @@
 // Pure PRG01a logging plans. No live profile/node mutation, I/O, receipts or gameplay activation.
 // Only a trusted host may call this after validating a hit (tool, range, calm, capacity, etc.).
 // A plan is not a durable reward. M5 must commit the final node + all profiles + receipt together.
-import { LOGGING, LOGGING_LESSON, PROGRESSION_VERSION } from '../../data/progression.js';
+import { LOGGING, LOGGING_LESSON, PROGRESSION_VERSION, PILOTING } from '../../data/progression.js';
 import { HARVEST, RESOURCE_KINDS } from '../../data/resources.js';
 
 const PALM = RESOURCE_KINDS.palm;
@@ -42,9 +42,11 @@ export function newProgression() {
 // PRG01b1 preserves legacy omission in the profile DTO; activity integration follows separately.
 export function readProgression(raw) {
   if (raw === undefined) return newProgression();
-  if (!exact(raw, ['v', 'practice', 'milestones', 'knowledge']) || raw.v !== PROGRESSION_VERSION
+  if (!exact(raw, ['v', 'practice', 'milestones', 'knowledge']) || ![PROGRESSION_VERSION, PILOTING.version].includes(raw.v)
       || !exact(raw.practice, ['logging']) || !integer(raw.practice.logging, 0, LOGGING.maxPractice)
-      || !list(raw.milestones, 1) || raw.milestones.some(id => id !== LOGGING.milestone)
+      || !list(raw.milestones, raw.v === PROGRESSION_VERSION ? 1 : 2)
+      || raw.milestones.some(id => id !== LOGGING.milestone && !(raw.v === PILOTING.version && id === PILOTING.milestone))
+      || new Set(raw.milestones).size !== raw.milestones.length
       || !list(raw.knowledge, 1) || raw.knowledge.some(id => id !== LOGGING_LESSON.id)) fail('progression');
   return { v: raw.v, practice: { logging: raw.practice.logging },
     milestones: [...raw.milestones], knowledge: [...raw.knowledge] };
@@ -57,6 +59,21 @@ export function loggingStatus(raw) {
     actionTicks: trained ? LOGGING.learnedActionTicks : LOGGING.baseActionTicks,
     nextAt: trained ? null : LOGGING.firstMilestoneAt,
     canLearnStorage: trained && !p.knowledge.includes(LOGGING_LESSON.id) };
+}
+
+export function pilotingStatus(raw) {
+  const p = readProgression(raw), learned = p.milestones.includes(PILOTING.milestone);
+  return { learned, rank: learned ? 2 : 1, helmResponse: learned ? PILOTING.rudderMultiplier : 1 };
+}
+
+// Trusted eligibility is the accepted dock after the server-owned lesson, never a client claim.
+// This profile-only set-add grants no goods, currency, combat XP or repeatable practice budget.
+export function learnCoastalPilot(raw) {
+  const progression = readProgression(raw);
+  if (progression.milestones.includes(PILOTING.milestone)) return { learned: false, progression };
+  progression.v = PILOTING.version;
+  progression.milestones.push(PILOTING.milestone);
+  return { learned: true, progression };
 }
 
 function contributions(raw, total, code) {

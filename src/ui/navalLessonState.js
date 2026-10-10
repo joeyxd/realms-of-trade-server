@@ -1,5 +1,6 @@
 import { NAVAL_LESSON as L } from '../data/navalLesson.js';
 import { DT } from '../data/tuning.js';
+import { PILOTING } from '../data/progression.js';
 
 const COPY = {
   es: {
@@ -12,6 +13,9 @@ const COPY = {
     start: 'Comenzar lección', repeat: 'Repetir lección', cancel: 'Cancelar lección',
     helm: 'Vuelve al timón para continuar.', switch: 'Ensayo con salvas',
     rules: 'Sin salvas de práctica; chocar con la costa daña el casco.',
+    unlock: 'Primer recorrido: Pilotaje II · timón +{bonus} %.',
+    learned: 'Pilotaje II · timón +{bonus} %.',
+    saved: 'Aprendizaje guardado.', pending: 'Guardado pendiente.', local: 'Aprendido en esta partida.',
     brakeKey: 'S para frenar.', brakeTouch: 'Timón hacia abajo para frenar.',
     targets: { outbound: 'Boya de salida', maneuver: 'Boya de maniobra', returning: 'Puerto · amarrar' },
     reasons: { cancelled: 'Cancelaste la lección; vuelve al puerto para repetir.', shore: 'La balsa llegó a la costa; vuelve al puerto.',
@@ -28,6 +32,9 @@ const COPY = {
     start: 'Start lesson', repeat: 'Repeat lesson', cancel: 'Cancel lesson',
     helm: 'Return to the helm to continue.', switch: 'Cannon practice',
     rules: 'No practice salvos; coast collisions still damage the hull.',
+    unlock: 'First route: Piloting II · helm +{bonus}%.',
+    learned: 'Piloting II · helm +{bonus}%.',
+    saved: 'Learning saved.', pending: 'Save pending.', local: 'Learned in this game.',
     brakeKey: 'S to brake.', brakeTouch: 'Pull the helm stick down to brake.',
     targets: { outbound: 'Departure buoy', maneuver: 'Maneuver buoy', returning: 'Harbor · dock' },
     reasons: { cancelled: 'Lesson cancelled; return to harbor to try again.', shore: 'The raft reached the coast; return to harbor.',
@@ -51,7 +58,13 @@ export function lessonPresentation(lesson, language = 'es', { atHelm = true, isT
     ? lesson.requiredStableTicks : L.stableTicks;
   const progress = status === 'maneuver'
     ? Math.max(0, Math.min(1, (Number.isFinite(lesson?.stableTicks) ? lesson.stableTicks : 0) / required)) : 0;
+  const bonus = Math.round((PILOTING.rudderMultiplier - 1) * 100);
+  const learning = lesson?.learning;
+  const learningLabel = learning?.learned
+    ? `${copy.learned.replace('{bonus}', bonus)} ${copy[['saved', 'pending'].includes(learning.persistence) ? learning.persistence : 'local']}`
+    : copy.unlock.replace('{bonus}', bonus);
   return { stage, detail, rules: `${isTouch ? copy.brakeTouch : copy.brakeKey} ${copy.rules}`,
+    learningLabel,
     button: lesson?.active ? atHelm ? copy.cancel : copy.helm : status === 'ready' ? copy.start : copy.repeat,
     switchLabel: copy.switch, targetLabel: copy.targets[status] || '', progress };
 }

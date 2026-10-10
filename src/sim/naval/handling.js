@@ -3,11 +3,13 @@
 import { RAFT, RAFT_PARTS } from '../../data/raftparts.js';
 import { NAVAL_HANDLING as H, NAVAL_STEP } from '../../data/navalHandling.js';
 import { NAVAL_NAVIGATION as N } from '../../data/navalNavigation.js';
+import { PILOTING } from '../../data/progression.js';
 export { NAVAL_STEP };
 
 const clamp = (n, a, b) => Math.max(a, Math.min(b, Number.isFinite(n) ? n : 0));
 const wrap = (n) => Math.atan2(Math.sin(n), Math.cos(n));
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
+export const isValidHelmResponse = (value) => value === 1 || value === PILOTING.rudderMultiplier;
 
 export function buildNavalRig(parts, cargo = []) {
   if (!Array.isArray(parts) || !parts.length || parts.length > 600 || !Array.isArray(cargo) || cargo.length > 600)
@@ -73,6 +75,9 @@ export function stepNaval(state, input, rig, wind, environment = {}) {
     !rig || !['mass', 'inertia', 'sail', 'flotation', 'wetted', 'stability', 'cells'].every((k) => finite(rig[k])) ||
     rig.mass <= 0 || rig.inertia <= 0 || rig.sail < 0 || rig.flotation <= 0 || rig.wetted <= 0 || rig.stability <= 0 || rig.cells < 1)
     throw new TypeError('Invalid naval body');
+  const helmResponse = environment && Object.hasOwn(environment, 'rudderMultiplier')
+    ? environment.rudderMultiplier : 1;
+  if (!isValidHelmResponse(helmResponse)) throw new TypeError('Invalid helm response');
   const throttle = clamp(input?.throttle, 0, 1), brake = clamp(input?.brake, 0, 1), steer = clamp(input?.steer, -1, 1);
   const s = Math.sin(state.yaw), c = Math.cos(state.yaw);
   let waterX = clamp(environment.current?.x, -N.maxCurrentSpeed, N.maxCurrentSpeed), waterZ = clamp(environment.current?.z, -N.maxCurrentSpeed, N.maxCurrentSpeed);
@@ -93,7 +98,7 @@ export function stepNaval(state, input, rig, wind, environment = {}) {
   const flow = H.lowSpeedHelm + (1 - H.lowSpeedHelm) * Math.min(1, Math.abs(forward) / 3);
   // A larger hull has more control surface and leverage, while its much larger yaw inertia
   // still makes it slower to turn. A single fixed-size rudder made the house nearly unsteerable.
-  const torque = steer * H.rudderTorque * (rig.cells / 4) ** 1.5 * flow * rig.stability * rig.flotation;
+  const torque = steer * H.rudderTorque * (rig.cells / 4) ** 1.5 * flow * rig.stability * rig.flotation * helmResponse;
   const omega = clamp(state.omega * Math.exp(-H.yawDamping * NAVAL_STEP) + torque / rig.inertia * NAVAL_STEP,
     -H.maxTurnRate, H.maxTurnRate);
   let vx = nextForward * s + nextSide * c + waterX, vz = nextForward * c - nextSide * s + waterZ;
