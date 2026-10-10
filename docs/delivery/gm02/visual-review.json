@@ -1,0 +1,18 @@
+{
+  "schema": "gm02-visual-review/v1",
+  "version": "0.6.0-alpha.25",
+  "reviewed": [
+    "editor-low.png",
+    "editor-medium.png",
+    "editor-high.png",
+    "editor-ultra.png",
+    "gm02-base-edit-es.png",
+    "gm02-walk-preview-en.png"
+  ],
+  "result": "accepted for scoped desktop editor: base model framed, gizmo and scaled circle visible, walker outside new proxy, no stale gameplay nameplates",
+  "limits": [
+    "No physical mobile FPS acceptance",
+    "Circle proxies are XZ cylinders, not model surfaces",
+    "No map publication"
+  ]
+}

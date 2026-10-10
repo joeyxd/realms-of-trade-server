@@ -1,7 +1,8 @@
 # GM02 — decoración existente y prueba caminando
 
-Estado: **implementado y validado localmente; publicación pendiente**. El corte parte de `883d35e`
-(alpha.23/protocolo 36); la release final integra los cortes concurrentes antes de publicarse.
+Estado: **implementado y validado localmente en alpha.25/protocolo 37; publicación pendiente**.
+El corte parte de `883d35e` (alpha.23/protocolo 36); la integración `c4ada55` conserva refugio naval
+y Tala de upstream `7ca767e`, sin activar SQL016 ni cambiar flags.
 [Brief previo](../briefs/gm02-draft-walk.md) · [Plan GM](../../PLAN-GM-EDITOR.md).
 
 ## Resultado
@@ -43,7 +44,7 @@ radios heredados extremos. No se midieron FPS en hardware móvil físico ni se h
 
 ## Evidencia local
 
-- Suite seleccionada: pendiente de recibo final integrado en [test-evidence.json](gm02/test-evidence.json).
+- Suite seleccionada integrada: **162/162**, incluidas **51 GM**, en [test-evidence.json](gm02/test-evidence.json).
   Cubre Three.js real, matrices exactas, duplicación, propiedad ambigua de colliders, migración v1,
   historial/CAS/recuperación, movimiento real y limpieza del preview.
 - Navegador: **28/28** con autenticación simulada y servidor loopback. Cuatro calidades por tres modos
