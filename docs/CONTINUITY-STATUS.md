@@ -14,7 +14,7 @@ Node 22 y entrada pública 6/6. Coordinadores opcionales `null`; sin activación
 | Comercio autorizado de agentes | [L06b-2b/SQL017](delivery/l06b-agent-trade.md), código publicado inerte en alpha.26: mandato + consumo + vínculo al recibo SQL014/015/016 | SQL017 y canario autenticado live; agentes/comercio públicos apagados |
 | Recolección, golpes parciales, crafting y herramientas | [SQL015/alpha.23](delivery/m5-resource-authority.md), activa en Supabase; 57/57 runtime, 107/107 offline VPS, 8 acciones confirmadas y 23 replays tras dos reinicios ordenados y SIGKILL | Otras operaciones/features M5; la durabilidad de recursos no acredita cortes eléctricos ni restauración de disco |
 | Reloj de recursos | Tick lógico en commit/checkpoint; reinicio ordenado con pausa offline real de 12 918 ms y espera recalculada exacta de 43,9 s | El tiempo de simulación sin checkpoint puede retroceder ante caída abrupta |
-| Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md): Tala, troncos y hasta tres perfiles actuales en el mismo recibo M5; legacy/pilotaje preservados | Aceptación específica live en la entrega PRG01b2; después enseñanza del artesano |
+| Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md) activa: reparto 7/3 y beneficiario offline, hito/cadencia, perfiles/nodos/ledger tras reinicio y nueve replays sin duplicación; cleanup conserva nueve recibos | Enseñanza personal del artesano PRG01c; scope por personaje/mundo/época pendiente |
 | Mercados y producción autónoma | Snapshot periódico y operaciones económicas cubiertas | Ventana desde último checkpoint |
 | Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
 | Perlas/muerte/botín | Contratos M5 opcionales y transacción común SQL018 local; no compuestos con economía activa | Dueño común de tick, diario del sobre, adopción legacy y aceptación VPS |
@@ -27,6 +27,13 @@ Imagen sana, una autoridad, 107/107 offline y smoke público 10/10 con entrada n
 y recursos habilitados/listos. Tala figura activa en status por el otro frente: su aceptación específica
 se registra en [PRG01b2](delivery/prg01b2-logging.md). AREA17 no cambió flags, SQL ni secretos.
 SQL017 y canario económico de agentes pendientes; piloto/comercio/proveedor públicos apagados.
+
+**Checkpoint específico Tala, 2026-10-10 20:08:38 UTC:** `454e2dabf44a1f97b1f7d514fda3844b980c8348`,
+alpha.26/protocolo 38; una instancia sana, Tala activa, timer activo y cero errores/pendientes.
+[Activación](delivery/prg01b2-logging/activation.json), [reinicio](delivery/prg01b2-logging/restart.json)
+y [canario/cleanup](delivery/prg01b2-logging/logging-live-acceptance.json) verifican SQL016 y nueve replays.
+El plazo de la palmera ya había vencido al apagar: este corte verifica consistencia del plazo, sin una
+nueva medición de pausa offline v2. La pausa medida anteriormente en AREA15 conserva su alcance.
 
 La aceptación anterior de recursos usó `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; la
 activación inicial fue en `4c6743b87b71ba765e316cd1652d1e4f23991501`. El status de esa aceptación confirma `/health` 200, un

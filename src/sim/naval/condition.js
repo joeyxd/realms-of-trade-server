@@ -3,6 +3,7 @@
 import { RAFT_PARTS } from '../../data/raftparts.js';
 import { createNavalStructure, hullIntegrity, liveStructureParts } from './structure.js';
 import { sanitizeOpenDoors } from './shelter.js';
+import { sanitizeLitLanterns } from './lantern.js';
 
 const same = (a, b) => a?.[0] === b?.[0] && a.slice(1, 4).every((v, i) => v === b[i + 1]) && (a[4] || 0) === (b[4] || 0);
 const MAX_NEXT = 1e9;
@@ -59,6 +60,11 @@ export function persistRaftCondition(source) {
     const open = sanitizeOpenDoors(source.ship.openDoors, source.ship.condition);
     if (open.length) source.ship.openDoors = open;
     else delete source.ship.openDoors;
+  }
+  if (Object.hasOwn(source.ship, 'litLanterns')) {
+    const lit = sanitizeLitLanterns(source.ship.litLanterns, source.ship.condition);
+    if (lit.length) source.ship.litLanterns = lit;
+    else delete source.ship.litLanterns;
   }
 }
 

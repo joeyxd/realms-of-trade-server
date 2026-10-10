@@ -301,6 +301,7 @@ export class GameScene {
     if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus, ctx.clockPhase);
     this.applyPreset(this.lighting.cur);
+    this.lights.setRafts(ctx.rafts || [], ctx.lightRaftId ?? ctx.shelterId ?? null);
     this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);
     this.sky.position.copy(this.camera.position);
     // Combat-timed pieces follow instance time (they freeze in the hitstop with the characters).

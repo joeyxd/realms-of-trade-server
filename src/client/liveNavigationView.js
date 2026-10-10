@@ -19,8 +19,8 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Number.isFinite(v) ? v : 
 const finite = (v, fallback = 0) => Number.isFinite(v) ? v : fallback;
 const distance = (a, b) => Math.hypot((a?.x || 0) - (b?.x || 0), (a?.z || 0) - (b?.z || 0));
 const axesNeutral = Object.freeze({ x: 0, y: 0 });
-export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E', center: 'V', map: 'M',
-  land: 'G', dock: 'G', recall: 'G', reboard: 'F', mount: 'F', leave: 'E' });
+export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E', center: 'Y', map: 'M',
+  land: 'G', dock: 'G', recall: 'G', reboard: 'F', mount: 'F', leave: 'E', lantern: 'V' });
 
 export function shoreRouteTarget(voyage, raft, dock) {
   if (voyage?.recovery) {
@@ -37,7 +37,8 @@ export function shoreRouteTarget(voyage, raft, dock) {
 
 export class LiveNavigationView {
   constructor({ world, client, input, isTouch = false, stage, parent, onClosePanels = () => {}, active = () => true,
-    locale = () => document.documentElement.lang || 'es', doorInteraction = () => null } = {}) {
+    locale = () => document.documentElement.lang || 'es', doorInteraction = () => null,
+    lanternInteraction = () => null } = {}) {
     if (!world?.scene || !world?.camera || typeof client !== 'function' || !input || !parent)
       throw new TypeError('LiveNavigationView needs the game scene, client getter, input, and parent.');
     this.world = world; this.getClient = client; this.input = input; this.isTouch = !!isTouch;
@@ -48,6 +49,7 @@ export class LiveNavigationView {
     this.lastNotice = ''; this.disposed = false; this.paused = false; this.effectsWasActive = false;
     this.locale = locale; this.activityMode = 'lesson'; this.currentActivity = 'lesson';
     this.doorInteraction = doorInteraction;
+    this.lanternInteraction = lanternInteraction;
 
     this.root = document.createElement('section');
     this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
@@ -323,8 +325,12 @@ export class LiveNavigationView {
   interaction() {
     const navigation = this.navigationInteraction();
     const door = this.isActive() && this.client()?.joined ? this.doorInteraction?.() : null;
-    if (!door) return navigation;
-    return this.actionSet([{ ...door, key: 'V', door: true }, ...(navigation?.actions || [])]);
+    const lantern = this.isActive() && this.client()?.joined ? this.lanternInteraction?.() : null;
+    let context = door;
+    if (lantern && (!door || Number.isFinite(door.distance) && lantern.distance < door.distance)) context = lantern;
+    if (!context) return navigation;
+    return this.actionSet([{ ...context, key: 'V', ...(context === door ? { door: true } : { lantern: true }) },
+      ...(navigation?.actions || [])]);
   }
 
   navigationInteraction() {
@@ -530,7 +536,7 @@ export class LiveNavigationView {
       this.captureHeld = true; return true;
     }
     if (id === 'context') { this.interaction()?.run?.(); return; }
-    if (id === 'door') { this.keyAction('V')?.run?.(); return; }
+    if (id === 'door' || id === 'lantern') { this.keyAction('V')?.run?.(); return; }
     if (id === 'land' || id === 'dock' || id === 'recall') { this.keyAction('G')?.run?.(); return; }
     if (id === 'reboard' || id === 'mount') { this.keyAction('F')?.run?.(); return; }
     if (id === 'mode' || id === 'leave') { this.keyAction('E')?.run?.(); return; }
@@ -541,8 +547,8 @@ export class LiveNavigationView {
   updateActions() {
     if (!this.touch) return;
     const c = this.client(), i = this.interaction(), actions = [];
-    const door = i?.actions?.find((action) => action.door);
-    if (door) actions.push({ id: 'door', label: door.verb, icon: 'crew', kind: 'action', shortcut: 'V' });
+    const context = i?.actions?.find((action) => action.door || action.lantern);
+    if (context) actions.push({ id: context.lantern ? 'lantern' : 'door', label: context.verb, icon: 'crew', kind: 'action', shortcut: 'V' });
     if (c?.naval?.active && !c?.deck?.active && c.voyage?.phase === 'sailing')
       actions.push({ id: 'capture', label: 'Ráfaga', icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
     actions.push({ id: 'bag', label: 'Mochila', icon: 'cargo', kind: 'item' });

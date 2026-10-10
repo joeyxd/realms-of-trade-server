@@ -11,6 +11,7 @@ import { activeRaftParts, persistRaftCondition, restoreRaftCondition } from '../
 import { hullIntegrity } from '../naval/structure.js';
 import { restoredRaftPose } from '../naval/recovery.js';
 import { openDoorParts } from '../naval/shelter.js';
+import { litLanternParts } from '../naval/lantern.js';
 
 export function installRafts(w, namespace) {
   w.rafts = new Map(); // stable ship id -> active vehicle, profile reference is server-only
@@ -118,6 +119,7 @@ export function detachRafts(w, owner) {
   w.navalTrial?.removeOwner(owner);
   w.raftEditReceipts?.delete(owner);
   w.raftDoorReceipts?.delete(owner);
+  w.raftLanternReceipts?.delete(owner);
   const removed = new Set([...w.rafts.values()].filter((r) => r.owner === owner).map((r) => r.ship.id));
   // A guest must not remain hovering over deep water after the owner's logout removes the moored deck.
   const guests = [...w.ecs.each(C.PLAYER)].filter((e) => {
@@ -157,7 +159,7 @@ export function publicRafts(w) {
   const records = [...w.rafts.entries()].map(([id, r]) => ({ id, entity: r.entity, owner: r.owner, rev: r.ship.rev,
     name: r.ship.n, berth: r.ship.berth, x: ecs.x[r.entity], y: ecs.y[r.entity], z: ecs.z[r.entity],
     yaw: ecs.facing[r.entity], parts: activeRaftParts(r).map((p) => [...p]),
-    helm: liveHelmAnchor(activeRaftParts(r)), openDoors: openDoorParts(r),
+    helm: liveHelmAnchor(activeRaftParts(r)), openDoors: openDoorParts(r), litLanterns: litLanternParts(r),
     ...(r.condition ? { hull: { ...hullIntegrity(r.condition) }, partHealth: r.condition.entries.map((p) =>
       ({ id: p.id, part: [...p.part], hp: p.hp, maxHp: p.maxHp })) } : {}),
     look: r.ship.look ? { banner: r.ship.look.banner, paint: r.ship.look.paint } : null }));

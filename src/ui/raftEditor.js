@@ -17,7 +17,7 @@ const fmtGoods = (goods = {}) => Object.entries(goods).filter(([, n]) => n > 0).
 const fmtHp = (n) => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 1 });
 const partMeta = (id) => RAFT_PARTS[id] || {};
 const shelterName = (id) => document.documentElement.lang.startsWith('en')
-  ? ({ door: 'Door', roof: 'Roof' }[id] || partMeta(id).name) : partMeta(id).name;
+  ? ({ door: 'Door', roof: 'Roof', lantern: 'Lantern' }[id] || partMeta(id).name) : partMeta(id).name;
 const reasonText = (why) => EDITOR_REASONS[why] || ({ '': 'Lugar válido', goods: 'Faltan materiales', materials: 'Faltan materiales.', condition: 'El estado de la pieza cambió; actualiza el diagnóstico.', damage: 'La pieza ya no necesita reparación.', gold: 'No tienes oro suficiente.', market: 'El mercado no ofrece ese material.', stock: 'No queda material en Aldea.', calm: 'Espera a estar en calma para comprar.' })[why] || 'Lugar no válido';
 const fromLocal = (r, x, z) => ({ x: r.x + Math.cos(r.yaw) * x + Math.sin(r.yaw) * z,
   z: r.z - Math.sin(r.yaw) * x + Math.cos(r.yaw) * z });
@@ -71,7 +71,7 @@ export class RaftEditor {
 
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
-    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', net: '▩', grill: '♨' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
+    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', net: '▩', grill: '♨', lantern: '☼' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
     this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (partMeta(this.selected).layer === 'floor' && this.level === 0) this.level = 1; if (partMeta(this.selected).layer === 'base' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
 
@@ -138,6 +138,10 @@ export class RaftEditor {
     return valid && indexes.size === parts.length ? condition : null;
   }
   conditionEntries(c) { return this.conditionFor(c)?.entries || []; }
+  placementReason(c, piece = this.proposed(c)) {
+    return canPlace(this.gridParts(c), piece) || (['roof', 'lantern'].includes(piece[0])
+      ? canPlace(c.record.parts || this.gridParts(c), piece) : '');
+  }
   repairCost(entry) {
     return entry?.cost && typeof entry.cost === 'object' ? entry.cost
       : repairPartCost({ ...entry, part: entry?.piece });
@@ -188,8 +192,7 @@ export class RaftEditor {
       return { before, after, state: 'valid', target };
     }
     if (!this.target) return { before, after: null, state: 'idle' };
-    const piece = this.proposed(c), why = canPlace(parts, piece) ||
-      (piece[0] === 'roof' ? canPlace(liveParts, piece) : '');
+    const piece = this.proposed(c), why = this.placementReason(c, piece);
     if (why) return { before, after: null, state: 'invalid', reason: reasonText(why) };
     const cost = partMeta(piece[0]).cost || {}, holdGoods = { ...(hold.goods || {}) }, packGoods = { ...(pack.goods || {}) };
     for (const [g, count] of Object.entries(cost)) {
@@ -261,7 +264,7 @@ export class RaftEditor {
       this.pending = { id, expectedRev: c.record.rev, op: 'repair', message, sentAt: performance.now() }; this.send(message);
     } else {
       const piece = this.proposed(c); if (!piece) return;
-      const why = canPlace(this.gridParts(c), piece); if (why) { this.lastResult = reasonText(why); this.render(); return; }
+      const why = this.placementReason(c, piece); if (why) { this.lastResult = reasonText(why); this.render(); return; }
       const id = crypto.randomUUID(); const message = { type: 'raft', op: 'place', id: c.record.id, expectedRev: c.record.rev, opId: id, piece };
       this.pending = { id, expectedRev: c.record.rev, op: 'place', message, sentAt: performance.now() }; this.send(message);
     }
@@ -312,8 +315,11 @@ export class RaftEditor {
       : this.mode === 'reinforce' ? `<b>${reinforcement ? 'Refuerzo · Cimiento básico' : 'Selecciona un cimiento básico'}</b><small>Coste incremental: ${fmtGoods(RAFT_REINFORCEMENT)} · reemplazo 1:1${reinforcement?.condition && reinforcement.condition.hp < reinforcement.condition.maxHp ? ` · conservará ${Math.round(reinforcement.condition.hp / reinforcement.condition.maxHp * 100)}% de su vida` : ''}</small>`
       : `<b>${esc(shelterName(this.selected))}</b><small>Coste: ${fmtGoods(cost)} · ${direction(this.selected, this.dir)}</small>`;
     const shelterHelp = this.$('.re-shelter-help'), english = document.documentElement.lang.startsWith('en');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof'].includes(this.selected);
-    shelterHelp.textContent = this.selected === 'roof'
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern'].includes(this.selected);
+    shelterHelp.textContent = this.selected === 'lantern'
+      ? english ? 'Starts off. Use V or touch nearby to switch its warm light on or off. A broken lantern stops lighting; repair it and switch it on again. No fuel in this slice.'
+        : 'Empieza apagado. Usa V o toca cerca para encender o apagar su luz cálida. Si se rompe deja de alumbrar; repáralo y enciéndelo otra vez. Sin combustible en este corte.'
+      : this.selected === 'roof'
       ? english ? 'Needs a wall or pillar; one supported neighbour permits one cell of overhang. The roof lifts from view while you are inside.'
         : 'Necesita pared o pilar; un vecino soportado permite una casilla de voladizo. El techo se oculta al entrar debajo.'
       : english ? 'Unlocked door: anyone nearby can open it. Use V or the door button; keep the leaf clear.'
@@ -355,7 +361,7 @@ export class RaftEditor {
       return `<button type="button" data-supply="${esc(offer.g)}" ${disabled || offer.stock < 1 || gold < offer.price || room < 1 ? 'disabled' : ''}>${offer.g === 'madera' ? 'Madera' : 'Hierro'} +1 · ${offer.price} oro</button>`;
     }).join('');
     let reason = this.lastResult;
-    if (!reason && c && this.mode === 'place' && this.target) reason = reasonText(canPlace(allParts, this.proposed(c)));
+    if (!reason && c && this.mode === 'place' && this.target) reason = reasonText(this.placementReason(c));
     if (!reason && this.mode === 'remove' && selection) reason = 'Confirma para retirar; se valida soporte y ocupantes en servidor.';
     if (!reason && this.mode === 'reinforce' && reinforcement) reason = 'Confirma para sustituir este cimiento en su misma casilla.';
     if (!reason && this.mode === 'repair' && repair) reason = this.repairAffordable(c, repair) ? 'Revisa la pieza y confirma para repararla.' : `Faltan materiales: ${fmtGoods(Object.fromEntries(Object.entries(repairCost).map(([g, n]) => [g, Math.max(0, n - (stock[g] || 0))])))}`;
@@ -367,7 +373,7 @@ export class RaftEditor {
     this.$('.re-status').textContent = this.pending ? `${coord} · ${this.pending.ack ? 'Esperando snapshot e inventario…' : 'Enviando intención…'}${this.lastResult ? ` · ${this.lastResult}` : ''}` : `${coord} · ${reason || 'Listo'}`;
     this.$('.re-retry').hidden = !this.pending || performance.now() - this.pending.sentAt < 5000;
     this.$('.re-action').textContent = this.mode === 'remove' ? 'Confirmar retiro' : this.mode === 'repair' ? 'Confirmar reparación' : this.mode === 'reinforce' ? 'Confirmar refuerzo' : 'Colocar';
-    this.$('.re-action').disabled = disabled || c.record.rev !== c.ship.rev || (this.mode === 'place' ? !this.target || !!canPlace(allParts, this.proposed(c)) : this.mode === 'reinforce' ? !reinforcement : this.mode === 'repair' ? !repair || !conditionReady || !this.repairAffordable(c, repair) : !selection);
+    this.$('.re-action').disabled = disabled || c.record.rev !== c.ship.rev || (this.mode === 'place' ? !this.target || !!this.placementReason(c) : this.mode === 'reinforce' ? !reinforcement : this.mode === 'repair' ? !repair || !conditionReady || !this.repairAffordable(c, repair) : !selection);
     this.$('.re-cycle').hidden = this.mode !== 'remove';
     this.$('.re-remove-choice span').textContent = selection ? `#${selection.index} · ${esc(partMeta(selection.p[0]).name)} · ${selection.p[1]}, ${selection.p[2]}, nivel ${selection.p[3]}` : 'Apunta a una pieza';
     if (this.target && c && this.mode !== 'repair') {
@@ -379,12 +385,13 @@ export class RaftEditor {
       const edgeOffset = def.layer === 'edge' ? { x: DIR[placeDir][0] * RAFT.cell / 2, z: DIR[placeDir][1] * RAFT.cell / 2 } : { x: 0, z: 0 };
       this.ghost.position.set(p.x + Math.cos(c.record.yaw) * edgeOffset.x + Math.sin(c.record.yaw) * edgeOffset.z, c.record.y + this.target.level * RAFT.levelHeight + 0.08, p.z - Math.sin(c.record.yaw) * edgeOffset.x + Math.cos(c.record.yaw) * edgeOffset.z);
       this.ghost.rotation.set(0, c.record.yaw + placeDir * Math.PI / 2, 0);
-      const valid = this.mode === 'place' && !canPlace(allParts, this.proposed(c)) || this.mode === 'reinforce' && !!reinforcement || this.mode === 'repair' && !!repair;
+      const valid = this.mode === 'place' && !this.placementReason(c) || this.mode === 'reinforce' && !!reinforcement || this.mode === 'repair' && !!repair;
       this.ghostCell.material.color.setHex(valid ? 0x70e47a : 0xf06454);
       const layer = def.layer;
       const dims = layer === 'pillar' ? [0.28, RAFT.levelHeight * 0.92, 0.28]
         : layer === 'edge' ? [RAFT.cell * 0.88, previewId === 'railing' ? 0.75 : RAFT.levelHeight * 0.82, 0.12]
           : this.selected === 'crate' || this.mode === 'remove' && selection?.p[0] === 'crate' ? [0.75, 0.72, 0.75]
+            : previewId === 'lantern' ? [0.5, 1.6, 0.5]
             : layer === 'roof' ? [RAFT.cell * 0.99, 0.16, RAFT.cell * 0.99]
             : layer === 'floor' || layer === 'base' ? [RAFT.cell * 0.9, 0.12, RAFT.cell * 0.9]
               : [RAFT.cell * 0.72, 0.28, RAFT.cell * 0.72];

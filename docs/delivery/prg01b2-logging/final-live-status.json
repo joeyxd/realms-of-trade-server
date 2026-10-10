@@ -1,0 +1,54 @@
+{
+  "schema": "mn.logging.final.v1",
+  "at": "2026-10-10T20:08:38.217862+00:00",
+  "revision": "454e2dabf44a1f97b1f7d514fda3844b980c8348",
+  "version": "0.6.0-alpha.26",
+  "protocol": 38,
+  "image": "marea-negra:alpha-454e2dabf44a",
+  "imageId": "sha256:23ee6ba0fdf893febe0b733dab790b09a7f81741aeb91619e25b6c6fe46ab584",
+  "container": "7716ba1cb605",
+  "containerHealth": "healthy",
+  "singleAuthority": true,
+  "publicHealth": true,
+  "players": 0,
+  "sockets": 0,
+  "errors": 0,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "tickBlocked": false,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 9
+    },
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1467,
+      "errors": 0
+    }
+  },
+  "updaterTimerActive": true,
+  "syntheticAuthAndProfilesRemoved": true,
+  "privateOperatorFixtureRemoved": true,
+  "retainedReceipts": 9,
+  "imageValidation": {
+    "revision": "454e2dabf44a1f97b1f7d514fda3844b980c8348",
+    "image_id": "sha256:23ee6ba0fdf893febe0b733dab790b09a7f81741aeb91619e25b6c6fe46ab584",
+    "tests_passed": true
+  }
+}
