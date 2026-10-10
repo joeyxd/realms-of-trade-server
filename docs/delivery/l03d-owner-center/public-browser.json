@@ -1,0 +1,42 @@
+{
+  "schema": "l03d-companions-public-browser/v1",
+  "at": "2026-10-10T23:04:30.872Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "public_tls_health_and_game_version",
+    "real_guest_has_signed_out_empty_panel_and_no_stop_control_es",
+    "guest_dialog_tab_wrap_escape_and_focus_return",
+    "guest_panel_tracks_document_language_en",
+    "public_guest_panel_fits_mobile_viewport",
+    "public_guest_panel_fits_portrait_viewport",
+    "public_browser_runtime_and_page_errors_empty"
+  ],
+  "screenshots": [
+    "public-companions-desktop-es.png",
+    "public-companions-desktop-en.png",
+    "public-companions-mobile-844x390.png",
+    "public-companions-mobile-portrait.png"
+  ],
+  "errors": [],
+  "version": "0.6.0-alpha.34",
+  "guestBoot": {
+    "online": true,
+    "transport": "ws",
+    "serverMarked": true,
+    "companionStatus": "signed_out"
+  },
+  "final": {
+    "mode": "playing",
+    "joined": true,
+    "state": {
+      "status": "signed_out",
+      "enabled": false,
+      "companions": [],
+      "pendingStop": null,
+      "message": ""
+    },
+    "errors": []
+  }
+}

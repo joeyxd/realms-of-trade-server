@@ -6,11 +6,14 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
-**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](docs/delivery/l03d-owner-center.md). Panel ingame por cuenta con estado y detención de
 personajes ya vinculados, aislamiento/logout/revisión exacta y UI ES/EN. Control de proceso, sin
 persistencia de stop tras reinicio. Sin proveedor, consumo, SQL o activación pública de agentes.
 Sigue configuración/vínculos durables, conexión/modelo/límites conjuntos y canario L03d.
+VPS `ee88690` sano, una autoridad y temporizador activo; imagen 107/107 y focales 22/22 con hashes
+Git; WSS público 12/12 y navegador público 7/7. Regresión local corregida 111/111, navegador local
+14/14 con auth simulada. Esta publicación no acredita memoria inteligente ni stop durable.
 
 **Evaluación inicial AREA17, 2026-10-10 — Inference Center y Hermes:** [arquitectura](docs/briefs/l03d-inference-center.md)
 para un centro ingame por cuenta y ficha del compañero, adaptando Nitro sin Nango.

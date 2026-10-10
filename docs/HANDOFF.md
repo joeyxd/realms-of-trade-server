@@ -20,12 +20,15 @@ Sigue composición perlas/muerte/botín, transición detenida con exclusión del
 recuperación y canario autenticado VPS.
 
 
-**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](delivery/l03d-owner-center.md), [contrato](briefs/l03d-owner-center.md). Entrada ingame
 ES/EN para listar y detener personajes ya vinculados a la cuenta autenticada. Revisión exacta,
 cola de entradas vaciada y proyección privada retirada al cerrar sesión. Stop es de proceso y se
 pierde al reiniciar; no hay provisioning, proveedor/inferencia o SQL nuevo. El siguiente tramo es
 configuración durable por cuenta/conexión/personaje y límites conjuntos antes del canario L03d.
+VPS `ee88690` sano, una autoridad y temporizador activo; 107/107 de release, 22/22 en esa imagen
+con hashes Git, WSS público 12/12 y navegador público 7/7. Regresión local corregida 111/111;
+navegador local 14/14. Stop entre dos dueños usa auth simulada; no es activación de agentes públicos.
 
 **AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
 [Entrega/evidencia](delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
@@ -45,6 +48,8 @@ aceptados localmente. VPS `fe50ab1`, alpha.32/protocolo 42, publicado y fuego ha
 107/107 y 30/30 focales. Navegador público autenticado 9/9: combustible/madera persistentes,
 reencendido sin repetir cobro y mapa/minimapa. Cuenta/perfil QA eliminados; recibos retenidos.
 No activa artesano ni montaje de reloj común. Sigue agua costera/reembarque y después provisiones/hogar.
+Revalidado públicamente en `ee88690`, alpha.34/protocolo 43: 9/9 con capturas inspeccionadas,
+cuenta/perfil QA eliminados y cuatro recibos retenidos. Identidad cliente/agente 35/35.
 
 **AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**
 [entrega](delivery/m5-ground-host-authority.md), [contrato](briefs/m5-ground-host-authority.md).
