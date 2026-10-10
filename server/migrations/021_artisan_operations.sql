@@ -1,5 +1,5 @@
 -- Personal raft-storage learning and construction edits share the M5 economic receipt.
--- Apply after 001-019. Candidate construction and gameplay eligibility remain host-owned.
+-- Apply after 001-020. Candidate construction and gameplay eligibility remain host-owned.
 BEGIN;
 
 DO $rename$
