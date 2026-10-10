@@ -9,8 +9,10 @@ proveedor/modelo y operación reales siguen pendientes.
 **Checkpoint AREA17, 2026-10-10:** [L06b-2a](docs/delivery/l06b-agent-market.md) implementa inventario
 vigente/contexto y mercado privado list/quote, con localidad, caducidad y retiro al cambiar autoridad.
 CLI y mente usan el mismo ensamblador; [montaje explícito](docs/agents/market-read.md). Se integran
-los prerrequisitos locales de presupuesto/panel simulados L05, piloto L06a e inventario L06b-1;
-alpha.20/protocolo 35. No hay agente público, proveedor, SQL ni compras/ventas nuevos por este corte.
+los prerrequisitos locales de presupuesto/panel simulados L05, piloto L06a e inventario L06b-1.
+Introducido en alpha.20/protocolo 35; publicado en `4c6743b`/alpha.23/protocolo 36, con revisión,
+imagen/salud y entrada WSS verificadas: 46/46 integración, 107/107 VPS y 8/8 públicas.
+No hay agente público, proveedor, SQL ni compras/ventas nuevos por este corte.
 L06b sigue parcial: continúa L06b-2b con presupuesto durable de bienes y operaciones sobre la misma
 autoridad M5 económica humana. Proveedor, tokenizer, facturación y aceptación humana permanecen abiertos.
 

@@ -25,7 +25,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 - AREA17, 2026-10-10: [L06b-2a](docs/delivery/l06b-agent-market.md) conecta inventario vigente y
   mercado/cotización autorizada al contexto de mente y CLI, sobre las reglas humanas existentes.
-  Alpha.20/protocolo 35; integración de prerrequisitos locales L05/L06a/L06b-1, piloto público apagado.
+  Introducido en alpha.20/protocolo 35, publicado en `4c6743b`/alpha.23/protocolo 36, con
+  46/46 pruebas de integración, 107/107 del VPS y 8/8 públicas; revisión/imagen/entrada WSS verificadas.
+  Integra prerrequisitos locales L05/L06a/L06b-1; piloto público apagado.
   Sin proveedor real, SQL nuevo ni movimiento de bienes. Sigue L06b-2b: compra/venta con permisos
   y presupuesto durable propio en `EconomicAuthority`/M5; después canario social/PvE con proveedor.
   Implementación, pruebas y despliegue se distinguen en la entrega.

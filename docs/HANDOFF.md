@@ -21,11 +21,13 @@ pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo. Despliegu
 **AREA17 L06b-2a, 2026-10-10:** [inventario/contexto y mercado privado](delivery/l06b-agent-market.md).
 Lecturas tipadas `inventory_read`/`market_read`, pueblo derivado del servidor, list/quote sin mutación,
 frescura y retiro de vistas ante movimiento, denegación, stop/revocación o nueva sesión. CLI y mente
-comparten el snapshot; protocolo 35 y alpha.20. Se integran prerrequisitos locales L05/L06a/L06b-1
+comparten el snapshot; introducidos en protocolo 35 y alpha.20. Se integran prerrequisitos locales L05/L06a/L06b-1
 sobre upstream `70205bd`; piloto y proveedor siguen apagados en `npm start`. Sin SQL nuevo ni gastos
 de bienes/inferencia. Sigue L06b-2b: compra/venta y presupuesto durable de bienes en la misma M5.
-Ver [uso opt-in](agents/market-read.md) y la evidencia de publicación en la entrega; código presente
-no implica agentes habilitados públicamente.
+Publicado dentro de `4c6743b`/alpha.23/protocolo 36: revisión/imagen/health y entrada WSS real
+verificadas el 2026-10-10, 18:44–18:45 UTC; 46/46 integración, 107/107 VPS y 8/8 públicas.
+Ver [uso opt-in](agents/market-read.md) y evidencia en la entrega. Agentes/proveedor públicos apagados;
+la autoridad de recursos del otro frente reporta habilitada/lista, sin activación por AREA17.
 
 **AREA03 PRG01b1, 2026-10-10:** [perfil compatible para aprendizaje](briefs/prg01b1-profile-continuity.md)
 y [entrega](delivery/prg01b1-profile-continuity.md). Nuevos perfiles con progreso vacío; legacy conserva
