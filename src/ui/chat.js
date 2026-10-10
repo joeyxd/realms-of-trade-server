@@ -1,3 +1,4 @@
+import { t, text as ltext, rich, attr, setText, setDataText, translateData, dataText, getLocale, onLocaleChange, initI18n, messageKey, setAttributeText } from '../core/i18n.js';
 // Compact multiplayer chat UI. The host owns delivery, channel eligibility and rate limits.
 import { GAME } from '../data/meta.js';
 
@@ -43,20 +44,20 @@ function safeText(value, limit = 160) {
 
 function errorText(code) {
   const messages = {
-    RATE_LIMIT: 'Vas demasiado rápido. Espera un momento.',
-    rate: 'Vas demasiado rápido. Espera un momento.',
-    OFFLINE: 'Sin conexión. El mensaje no se envió.',
-    TOO_LONG: 'El mensaje supera el límite permitido.',
-    INVALID_TARGET: 'Ese jugador ya no está disponible.',
-    recipient: 'Ese jugador ya no está disponible.',
-    INVALID_CHANNEL: 'Ese canal no está disponible.',
-    channel: 'Ese canal no está disponible.',
-    disabled: 'El chat está desactivado en esta sesión.',
-    invalid: 'El mensaje no es válido.',
-    conflict: 'El identificador del mensaje ya se usó con otro contenido.',
-    session: 'La sesión de chat ya no está disponible.',
+    RATE_LIMIT: t('chat.rate'),
+    rate: t('chat.rate'),
+    OFFLINE: t('chat.offline'),
+    TOO_LONG: t('chat.long'),
+    INVALID_TARGET: t('chat.targetGone'),
+    recipient: t('chat.targetGone'),
+    INVALID_CHANNEL: t('chat.channelGone'),
+    channel: t('chat.channelGone'),
+    disabled: t('chat.disabled'),
+    invalid: t('chat.invalid'),
+    conflict: t('chat.conflict'),
+    session: t('chat.sessionGone'),
   };
-  return messages[code] || 'No se pudo enviar el mensaje.';
+  return messages[code] || t('chat.failed');
 }
 
 export class ChatPanel {
@@ -80,11 +81,11 @@ export class ChatPanel {
     this.focused = false;
 
     this.container = element('section', 'mn-chat');
-    this.container.setAttribute('aria-label', 'Chat del juego');
+    setAttributeText(this.container, 'aria-label', 'chat.game');
     this.container.dataset.channel = 'local';
     this.toggle = element('button', 'mn-chat-toggle');
     this.toggle.type = 'button';
-    this.toggle.setAttribute('aria-label', 'Abrir chat');
+    setAttributeText(this.toggle, 'aria-label', 'chat.open');
     this.toggle.setAttribute('aria-expanded', 'false');
     this.badge = element('span', 'mn-chat-badge');
     this.badge.setAttribute('aria-hidden', 'true');
@@ -94,24 +95,24 @@ export class ChatPanel {
     this.panel.hidden = true;
     const header = element('header', 'mn-chat-header');
     const heading = element('div', 'mn-chat-heading');
-    heading.append(element('span', 'mn-chat-eyebrow', GAME.title), element('strong', '', 'Mensajes'));
+    heading.append(element('span', 'mn-chat-eyebrow', GAME.title), setText(element('strong', ''), 'chat.messages'));
     header.append(heading);
     this.closeButton = element('button', 'mn-chat-close');
     this.closeButton.type = 'button';
-    this.closeButton.setAttribute('aria-label', 'Cerrar chat');
-    this.closeButton.title = 'Cerrar · Esc';
+    setAttributeText(this.closeButton, 'aria-label', 'chat.close');
+    setAttributeText(this.closeButton, 'title', 'chat.closeTip');
     this.closeButton.append(icon('close'));
     header.append(this.closeButton);
 
     this.log = element('ol', 'mn-chat-log');
     this.log.setAttribute('role', 'log');
-    this.log.setAttribute('aria-label', 'Conversación');
+    setAttributeText(this.log, 'aria-label', 'chat.conversation');
     this.log.setAttribute('aria-live', 'polite');
     this.log.setAttribute('aria-relevant', 'additions');
     const conversation = element('div', 'mn-chat-conversation');
     this.empty = element('div', 'mn-chat-empty');
-    this.empty.append(icon('chat'), element('strong', '', 'Que corra la voz'),
-      element('small', '', 'Mundo · Cerca · Privado'));
+    this.empty.append(icon('chat'), setText(element('strong', ''), 'chat.empty'),
+      setText(element('small', ''), 'chat.channels'));
     conversation.append(this.log, this.empty);
 
     this.status = element('p', 'mn-chat-status');
@@ -120,32 +121,32 @@ export class ChatPanel {
 
     this.form = element('form', 'mn-chat-form');
     this.channel = element('select', 'mn-chat-channel');
-    this.channel.setAttribute('aria-label', 'Canal de chat');
-    for (const [value, label] of [['world', 'Mundo'], ['local', 'Cerca'], ['whisper', 'Privado']]) {
-      const option = element('option', '', label);
+    setAttributeText(this.channel, 'aria-label', 'chat.channel');
+    for (const [value, label] of [['world', t('chat.world')], ['local', t('chat.local')], ['whisper', t('chat.whisper')]]) {
+      const option = setText(element('option', ''), `chat.${value}`);
       option.value = value;
       this.channel.append(option);
     }
     this.channel.value = 'local';
     this.target = element('select', 'mn-chat-target');
-    this.target.setAttribute('aria-label', 'Destinatario del mensaje privado');
+    setAttributeText(this.target, 'aria-label', 'chat.recipient');
     this.target.hidden = true;
 
     this.input = element('input', 'mn-chat-input');
     this.input.type = 'text';
     this.input.autocomplete = 'off';
     this.input.maxLength = this.maxPoints * 2;
-    this.input.placeholder = 'Escribe un mensaje…';
-    this.input.setAttribute('aria-label', 'Escribe un mensaje');
+    setAttributeText(this.input, 'placeholder', 'chat.placeholder');
+    setAttributeText(this.input, 'aria-label', 'chat.write');
 
-    this.sendButton = element('button', 'mn-chat-send', 'Enviar');
+    this.sendButton = element('button', 'mn-chat-send'); this.sendButton.append(setText(element('span', ''), 'chat.send'));
     this.sendButton.type = 'submit';
-    this.sendButton.setAttribute('aria-label', 'Enviar mensaje');
+    setAttributeText(this.sendButton, 'aria-label', 'chat.sendLabel');
     this.sendButton.append(icon('send'));
-    this.retryButton = element('button', 'mn-chat-retry', 'Reintentar');
+    this.retryButton = element('button', 'mn-chat-retry'); this.retryButton.append(setText(element('span', ''), 'chat.retry'));
     this.retryButton.type = 'button';
     this.retryButton.hidden = true;
-    this.retryButton.setAttribute('aria-label', 'Reintentar el mismo mensaje');
+    setAttributeText(this.retryButton, 'aria-label', 'chat.retryLabel');
     this.retryButton.prepend(icon('retry'));
     const routing = element('div', 'mn-chat-routing');
     routing.append(this.channel, this.target);
@@ -185,6 +186,7 @@ export class ChatPanel {
     });
     this.logResize.observe(this.log);
     this.setVisible(false);
+    onLocaleChange(() => { const scroll = this.log.scrollTop; this.renderLog(); this.log.scrollTop = scroll; this.updateUnread(); setAttributeText(this.toggle, 'aria-label', this.opened ? 'chat.close' : this.unread ? 'chat.unread' : 'chat.open', {count:this.unread}); });
   }
 
   get typing() { return this.focused; }
@@ -210,7 +212,7 @@ export class ChatPanel {
     this.opened = true;
     this.panel.hidden = false;
     this.toggle.setAttribute('aria-expanded', 'true');
-    this.toggle.setAttribute('aria-label', 'Cerrar chat');
+    setAttributeText(this.toggle, 'aria-label', 'chat.close');
     this.unread = 0;
     this.updateUnread();
     this.updateControls();
@@ -223,7 +225,7 @@ export class ChatPanel {
     if (this.panel) this.panel.hidden = true;
     if (this.toggle) {
       this.toggle.setAttribute('aria-expanded', 'false');
-      this.toggle.setAttribute('aria-label', this.unread ? `Abrir chat, ${this.unread} mensajes nuevos` : 'Abrir chat');
+      setAttributeText(this.toggle,'aria-label',this.opened?'chat.close':this.unread?'chat.unread':'chat.open',{count:this.unread});
     }
     if (this.input && document.activeElement === this.input) this.input.blur();
     this.setFocused(false);
@@ -243,7 +245,7 @@ export class ChatPanel {
       this.log.replaceChildren();
       this.empty.hidden = false;
       this.updateUnread();
-      this.setStatus('La sesión cambió; se descartaron el historial y las confirmaciones anteriores.');
+      this.setStatus(t('chat.changed'));
     }
     this.state = nextState;
     const configured = Number(this.state?.config?.maxLength);
@@ -254,9 +256,9 @@ export class ChatPanel {
     if (Array.isArray(this.state?.history)) {
       for (const message of this.state.history.slice(-MAX_LOG)) this.onMessage(message, { fromHistory: true });
     }
-    if (this.state?.config?.enabled === false) this.setStatus('El chat está desactivado en esta sesión.');
-    else if (this.pending?.uncertain) this.setStatus('Aún no hay confirmación. Puedes reintentar el mismo mensaje.');
-    else if (sessionChanged) this.setStatus('La sesión cambió; se descartaron el historial y las confirmaciones anteriores.');
+    if (this.state?.config?.enabled === false) this.setStatus(t('chat.disabled'));
+    else if (this.pending?.uncertain) this.setStatus(t('chat.unconfirmed'));
+    else if (sessionChanged) this.setStatus(t('chat.changed'));
     this.updateControls();
   }
 
@@ -265,12 +267,12 @@ export class ChatPanel {
     const self = this.state?.self;
     const peers = Array.isArray(this.state?.peers) ? this.state.peers : [];
     const fragment = document.createDocumentFragment();
-    const placeholder = element('option', '', 'Elige destinatario');
+    const placeholder = setText(element('option', ''), 'chat.choose');
     placeholder.value = '';
     fragment.append(placeholder);
     for (const peer of peers) {
       if (!peer || typeof peer.id !== 'string' || !peer.id || peer.id === self) continue;
-      const option = element('option', '', safeText(peer.name || `Jugador ${peer.entity ?? ''}`, 80));
+      const option = element('option', '', safeText(peer.name || t('chat.player',{id:peer.entity??''}), 80));
       option.value = peer.id;
       fragment.append(option);
     }
@@ -298,15 +300,16 @@ export class ChatPanel {
     }
     const sender = message.sender && typeof message.sender === 'object' ? message.sender : {};
     const own = !!self && sender.id === self;
-    const label = safeText(sender.name || 'Alguien', 80);
+    const label = safeText(sender.name || t('chat.someone'), 80);
     const targetName = safeText(message.target?.name, 80);
     const text = safeText(message.text, 2000);
     if (!text) return;
     const entry = {
       channel: message.channel,
       own,
-      label: own ? 'Tú' : label,
-      target: message.channel === 'whisper' ? (own ? targetName : 'ti') : '',
+      label,
+      incomingWhisper: message.channel === 'whisper' && !own,
+      target: message.channel === 'whisper' ? targetName : '',
       text,
       tick: Number.isFinite(message.tick) ? message.tick : null,
     };
@@ -323,8 +326,10 @@ export class ChatPanel {
     const fragment = document.createDocumentFragment();
     for (const entry of this.entries) {
       const row = element('li', `mn-chat-line mn-chat-${entry.channel}${entry.own ? ' is-own' : ''}`);
-      const meta = element('span', 'mn-chat-meta', entry.channel === 'world' ? 'Mundo' : entry.channel === 'local' ? 'Cerca' : 'Privado');
-      const who = element('strong', 'mn-chat-who', entry.target ? `${entry.label} → ${entry.target}` : entry.label);
+      const meta = element('span', 'mn-chat-meta', entry.channel === 'world' ? t('chat.world') : entry.channel === 'local' ? t('chat.local') : t('chat.whisper'));
+      const label = entry.own ? t('chat.you') : entry.label;
+      const target = entry.incomingWhisper ? t('chat.toYou') : entry.target;
+      const who = element('strong', 'mn-chat-who', target ? `${label} → ${target}` : label);
       const body = element('span', 'mn-chat-text', entry.text);
       row.append(meta, who, body);
       fragment.append(row);
@@ -337,20 +342,20 @@ export class ChatPanel {
   submit() {
     if (!this.allowed() || !this.connected) {
       if (this.state?.config?.enabled === false) {
-        this.setStatus('El chat está desactivado en esta sesión.');
+        this.setStatus(t('chat.disabled'));
         return;
       }
-      this.setStatus('Sin conexión. El mensaje no se envió.');
+      this.setStatus(t('chat.offline'));
       return;
     }
     if (this.pending) {
-      this.setStatus(this.pending.uncertain ? 'Confirma o reintenta el mensaje pendiente antes de enviar otro.' : 'Esperando confirmación del mensaje…');
+      this.setStatus(this.pending.uncertain ? t('chat.pending') : t('chat.wait'));
       return;
     }
     const text = this.input.value.trim().normalize('NFC');
     if (!text) return;
     if (Array.from(text.normalize('NFC')).length > this.maxPoints) {
-      this.setStatus('El mensaje supera el límite permitido.');
+      this.setStatus(t('chat.long'));
       return;
     }
     const channel = this.channel.value;
@@ -360,7 +365,7 @@ export class ChatPanel {
       const target = this.target.value;
       const known = this.state?.peers?.some((peer) => peer?.id === target && peer.id !== this.state.self);
       if (!target || !known) {
-        this.setStatus('Elige un destinatario disponible.');
+        this.setStatus(t('chat.chooseAvailable'));
         return;
       }
       payload.target = target;
@@ -371,14 +376,14 @@ export class ChatPanel {
 
   transmit(payload) {
     this.pending = { payload, uncertain: false };
-    this.setStatus('Enviando…', 'pending');
+    this.setStatus(t('chat.sending'), 'pending');
     this.updateControls();
     try {
       this.send(payload);
     } catch {
       this.pending.uncertain = true;
       this.connected = false;
-      this.setStatus('Sin conexión; no sabemos si el mensaje llegó.', 'warning');
+      this.setStatus(t('chat.unknown'), 'warning');
       this.updateControls();
       return;
     }
@@ -388,7 +393,7 @@ export class ChatPanel {
     this.timer = setTimeout(() => {
       if (!this.pending) return;
       this.pending.uncertain = true;
-      this.setStatus('Sin confirmación. Puedes reintentar el mismo mensaje.', 'warning');
+      this.setStatus(t('chat.noAck'), 'warning');
       this.updateControls();
     }, MAX_PENDING_MS);
   }
@@ -405,7 +410,7 @@ export class ChatPanel {
     this.clearTimer();
     if (result.ok) {
       this.pending = null;
-      this.setStatus(result.duplicate ? 'Mensaje ya recibido; reintento confirmado.' : 'Mensaje confirmado.', 'success');
+      this.setStatus(result.duplicate ? t('chat.duplicate') : t('chat.confirmed'), 'success');
     } else {
       this.pending = null;
       this.setStatus(errorText(safeText(result.code, 40)), 'error');
@@ -418,22 +423,23 @@ export class ChatPanel {
     this.clearTimer();
     if (this.pending) {
       this.pending.uncertain = true;
-      this.setStatus('Desconectado. No sabemos si el mensaje llegó; revisa el chat antes de volver a enviarlo.', 'warning');
+      this.setStatus(t('chat.disconnectedPending'), 'warning');
     } else {
-      this.setStatus('Desconectado.', 'warning');
+      this.setStatus(t('chat.disconnected'), 'warning');
     }
     this.updateControls();
   }
 
   setStatus(text, tone = 'neutral') {
-    this.status.textContent = safeText(text, 220);
+    const key = messageKey(text);
+    if(key) setText(this.status,key); else { delete this.status.dataset.l10nKey; this.status.textContent = safeText(text, 220); }
     this.status.dataset.tone = tone;
   }
 
   updateUnread() {
     this.badge.textContent = this.unread ? String(Math.min(this.unread, 99)) : '';
     this.badge.hidden = !this.unread;
-    this.toggle.setAttribute('aria-label', this.unread ? `Abrir chat, ${this.unread} mensajes nuevos` : 'Abrir chat');
+    setAttributeText(this.toggle, 'aria-label', this.opened ? 'chat.close' : this.unread ? 'chat.unread' : 'chat.open', { count: this.unread });
   }
 
   updateControls() {

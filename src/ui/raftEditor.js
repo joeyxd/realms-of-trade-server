@@ -10,6 +10,7 @@ import { raftCapacity } from '../sim/economy/raftCapacity.js';
 import { repairPartCost, salvagePartCost } from '../sim/naval/structure.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
 import { stage } from './stage.js';
+import { onLocaleChange } from '../core/i18n.js';
 
 const IDS = EDITOR_PARTS;
 const DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
@@ -87,6 +88,7 @@ export class RaftEditor {
     this.parent.appendChild(this.root);
     this.$ = (s) => this.root.querySelector(s);
     this.bind(); this.renderPalette(); this.render();
+    this.unsubscribeLocale = onLocaleChange(() => { this.launcher.textContent = english() ? 'Build · B' : 'Construir · B'; this.renderPalette(); this.render(); });
     this.onPointerMove = (e) => { if (!this.active) return; this.pointer(e); };
     this.onPointerDown = (e) => { if (!this.active || e.button !== 0 || e.target.closest('.raft-editor')) return; e.preventDefault(); this.pointer(e); if (this.mode !== 'place' || e.pointerType === 'touch') { this.render(); if (this.mode === 'reinforce') this.revealDecision(); } else this.act(); };
     this.canvas.addEventListener('pointermove', this.onPointerMove);
@@ -538,5 +540,5 @@ export class RaftEditor {
       this.pending && [this.pending.id, this.pending.ack, this.pending.resultRev, this.pending.sentAt], this.removeChoice]);
   }
 
-  destroy() { this.close(); this.canvas.removeEventListener('pointermove', this.onPointerMove); this.canvas.removeEventListener('pointerdown', this.onPointerDown); this.ghost.removeFromParent(); this.ghostCell.geometry.dispose(); this.ghostCell.material.dispose(); this.ghostPart.geometry.dispose(); this.ghostPart.material.dispose(); this.ghostArrow.geometry.dispose(); this.ghostArrow.material.dispose(); this.root.remove(); this.launcher.remove(); }
+  destroy() { this.unsubscribeLocale?.(); this.close(); this.canvas.removeEventListener('pointermove', this.onPointerMove); this.canvas.removeEventListener('pointerdown', this.onPointerDown); this.ghost.removeFromParent(); this.ghostCell.geometry.dispose(); this.ghostCell.material.dispose(); this.ghostPart.geometry.dispose(); this.ghostPart.material.dispose(); this.ghostArrow.geometry.dispose(); this.ghostArrow.material.dispose(); this.root.remove(); this.launcher.remove(); }
 }

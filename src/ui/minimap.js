@@ -1,6 +1,7 @@
 // Local chart reads the same terrain and known markers as the full map; it grants no gameplay knowledge.
 import { mapAtlas, atlasProjection, drawMapRegions, drawChartMarkers, drawPlayer, MAP_COLORS } from './mapCanvas.js';
 import { mapDirection } from './cartography.js';
+import { t, onLocaleChange, translateData } from '../core/i18n.js';
 
 const SIZE = 192;
 export class MiniMap {
@@ -8,14 +9,20 @@ export class MiniMap {
     this.map = map; this.elapsed = 1; this.disposed = false; this.range = isTouch ? 65 : 80;
     this.root = parent.ownerDocument.createElement('button'); this.root.type = 'button';
     this.root.className = `world-minimap ${isTouch ? 'is-touch' : 'is-desktop'}`;
-    this.root.setAttribute('aria-label', 'Minimapa · abrir mapa del mundo'); this.root.title = 'Abrir mapa (M)';
-    this.root.innerHTML = `<canvas width="${SIZE}" height="${SIZE}" aria-hidden="true"></canvas><span class="minimap-cardinals" aria-hidden="true"></span><b class="minimap-caption">MAPA</b>`;
+    this.root.setAttribute('aria-label', t('systems.minimap.aria')); this.root.title = t('systems.minimap.title');
+    this.root.innerHTML = `<canvas width="${SIZE}" height="${SIZE}" aria-hidden="true"></canvas><span class="minimap-cardinals" aria-hidden="true"></span><b class="minimap-caption">${t('systems.minimap.caption')}</b>`;
     this.root.addEventListener('click', onOpen); this.canvas = this.root.querySelector('canvas');
     this.caption = this.root.querySelector('.minimap-caption');
+    this.compassLabels = [];
+    this.unsubscribeLocale = onLocaleChange(() => {
+      this.root.setAttribute('aria-label', t('systems.minimap.aria')); this.root.title = t('systems.minimap.title');
+      this.caption.textContent = translateData(this.lastTargetLabel) || t('systems.minimap.caption');
+      this.compassLabels.forEach((span, index) => { span.textContent = index === 3 ? t('systems.map.westInitial') : ['N', 'E', 'S'][index]; });
+    });
     const rose = this.root.querySelector('.minimap-cardinals');
-    for (const [name, facing] of [['N', Math.PI], ['E', Math.PI / 2], ['S', 0], ['O', -Math.PI / 2]]) {
+    for (const [index, facing] of [Math.PI, Math.PI / 2, 0, -Math.PI / 2].entries()) {
       const span = parent.ownerDocument.createElement('span'), angle = mapDirection(facing);
-      span.textContent = name; span.style.left = `${50 + 54 * Math.cos(angle)}%`; span.style.top = `${50 + 54 * Math.sin(angle)}%`;
+      span.textContent = index === 3 ? t('systems.map.westInitial') : ['N', 'E', 'S'][index]; this.compassLabels.push(span); span.style.left = `${50 + 54 * Math.cos(angle)}%`; span.style.top = `${50 + 54 * Math.sin(angle)}%`;
       rose.appendChild(span);
     }
     parent.appendChild(this.root);
@@ -48,10 +55,11 @@ export class MiniMap {
       }
     }
     drawPlayer(ctx, project, player, 10); ctx.restore();
-    this.caption.textContent = markers.target?.label || atlas.description.title;
+    this.lastTargetLabel = markers.target?.label || '';
+    this.caption.textContent = translateData(this.lastTargetLabel || atlas.description.title);
     this.root.dataset.revision = atlas.description.revision;
     this.root.dataset.x = player.x.toFixed(2); this.root.dataset.z = player.z.toFixed(2);
   }
 
-  dispose() { this.disposed = true; this.root.remove(); }
+  dispose() { this.disposed = true; this.unsubscribeLocale?.(); this.root.remove(); }
 }

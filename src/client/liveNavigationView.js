@@ -1,3 +1,4 @@
+import { t, text, attr, translateData, messageKey, setText, setAttributeText } from '../core/i18n.js';
 // Live presentation and input adapter for the server-owned coastal voyage.
 import { NavalLabCamera } from '../render/naval/camera.js';
 import { NavalLabEffects } from '../render/naval/effects.js';
@@ -24,13 +25,13 @@ export const NAVAL_SHORTCUTS = Object.freeze({ capture: 'Q', bag: 'I', mode: 'E'
 
 export function shoreRouteTarget(voyage, raft, dock) {
   if (voyage?.recovery) {
-    if (voyage.landing) return { ...voyage.landing, label: 'Balsa' };
-    if (voyage.home) return { ...voyage.home, label: 'Puerto' };
+    if (voyage.landing) return { ...voyage.landing, label: t('nav.raft') };
+    if (voyage.home) return { ...voyage.home, label: t('nav.port') };
     if (dock?.base && dock?.dir) return {
       x: dock.base.x + dock.dir.x * Math.max(0, dock.len - 10),
-      z: dock.base.z + dock.dir.z * Math.max(0, dock.len - 10), label: 'Puerto',
+      z: dock.base.z + dock.dir.z * Math.max(0, dock.len - 10), label: t('nav.port'),
     };
-    return raft ? { x: raft.x, z: raft.z, label: 'Balsa' } : null;
+    return raft ? { x: raft.x, z: raft.z, label: t('nav.raft') } : null;
   }
   return voyage?.target || voyage?.landing || voyage?.home || null;
 }
@@ -53,23 +54,23 @@ export class LiveNavigationView {
 
     this.root = document.createElement('section');
     this.root.className = `live-navigation is-reference${isTouch ? ' is-touch' : ' is-desktop'}`; this.root.hidden = true;
-    this.root.setAttribute('aria-label', 'Navegación de la balsa');
+    setAttributeText(this.root, 'aria-label', 'nav.title');
     this.root.innerHTML = `<div class="ln-strip">
-      <div class="ln-brand"><span class="ln-mark">MN</span><span><b>TRAVESÍA</b><small class="ln-phase">LISTA PARA ZARPAR</small></span></div>
-      <div class="ln-readout ln-speed"><small>VELOCIDAD</small><div class="ln-dial" role="meter" aria-label="Velocidad de la balsa" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="ln-speed-fire"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient></defs><circle class="ln-dial-track" cx="26" cy="26" r="21" pathLength="100"/><circle class="ln-dial-arc" data-speed-arc cx="26" cy="26" r="21" pathLength="100"/></svg><span class="ln-dial-value" data-speed>0.0</span><i>u/s</i></div></div>
-      <div class="ln-readout"><small>CASCO</small><div class="ln-hull" role="meter" aria-label="Integridad del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-hull></i></div><b data-hull-text>—</b></div>
-      <div class="ln-readout ln-wind"><small>VIENTO</small><b data-wind>—</b><span data-gust>Vela lista</span><div class="ln-gust-track" role="meter" aria-label="Ventana de ráfaga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-gust-marker></b></div></div>
-      <div class="ln-readout ln-flow"><small>AGUA</small><b data-flow>—</b><span data-load>—</span></div>
-      <div class="ln-route"><span class="ln-route-arrow" aria-hidden="true">↑</span><span><small data-target-label>RUTA</small><b data-target>Puerto</b><i><span data-heading>000°</span> · <span data-distance>—</span></i></span></div>
-      <button class="ln-center" type="button" data-action="center" aria-label="Centrar cámara">Centrar</button>
+      <div class="ln-brand"><span class="ln-mark">MN</span><span><b>${text('nav.voyage')}</b><small class="ln-phase">${text('nav.ready')}</small></span></div>
+      <div class="ln-readout ln-speed"><small>${text('nav.speed')}</small><div class="ln-dial" role="meter" data-l10n-aria-label="nav.speedLabel" aria-label="${attr('nav.speedLabel')}" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0"><svg viewBox="0 0 52 52" aria-hidden="true"><defs><linearGradient id="ln-speed-fire"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient></defs><circle class="ln-dial-track" cx="26" cy="26" r="21" pathLength="100"/><circle class="ln-dial-arc" data-speed-arc cx="26" cy="26" r="21" pathLength="100"/></svg><span class="ln-dial-value" data-speed>0.0</span><i>u/s</i></div></div>
+      <div class="ln-readout"><small>${text('nav.hull')}</small><div class="ln-hull" role="meter" data-l10n-aria-label="nav.hullLabel" aria-label="${attr('nav.hullLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-hull></i></div><b data-hull-text>—</b></div>
+      <div class="ln-readout ln-wind"><small>${text('nav.wind')}</small><b data-wind>—</b><span data-gust>${text('nav.sailReady')}</span><div class="ln-gust-track" role="meter" data-l10n-aria-label="nav.gustLabel" aria-label="${attr('nav.gustLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-gust-marker></b></div></div>
+      <div class="ln-readout ln-flow"><small>${text('nav.water')}</small><b data-flow>—</b><span data-load>—</span></div>
+      <div class="ln-route"><span class="ln-route-arrow" aria-hidden="true">↑</span><span><small data-target-label>${text('nav.route')}</small><b data-target>${text('nav.port')}</b><i><span data-heading>000°</span> · <span data-distance>—</span></i></span></div>
+      <button class="ln-center" type="button" data-action="center" data-l10n-aria-label="nav.centerCamera" aria-label="${attr('nav.centerCamera')}">${text('nav.center')}</button>
     </div>
-    <div class="ln-route-trial" hidden><span><b data-route-title role="status">Lección costera</b><small data-route-score></small><small class="ln-pilot-learning" data-pilot-learning></small><progress class="ln-lesson-progress" data-lesson-progress max="1" value="0" hidden></progress><small class="ln-route-rules" data-route-rules></small></span><div class="ln-activity-actions"><button type="button" data-route-action>Empezar lección</button><button type="button" data-route-switch>Ensayo con salvas</button></div></div>
-    <div class="ln-prompt" aria-live="polite" hidden><kbd data-key>F</kbd><span data-prompt>Preparar timón</span><button type="button" data-run>Usar</button></div>
+    <div class="ln-route-trial" hidden><span><b data-route-title role="status">${text('nav.coastalLesson')}</b><small data-route-score></small><small class="ln-pilot-learning" data-pilot-learning></small><progress class="ln-lesson-progress" data-lesson-progress max="1" value="0" hidden></progress><small class="ln-route-rules" data-route-rules></small></span><div class="ln-activity-actions"><button type="button" data-route-action>${text('nav.startLesson')}</button><button type="button" data-route-switch>${text('nav.salvoTrial')}</button></div></div>
+    <div class="ln-prompt" aria-live="polite" hidden><kbd data-key>F</kbd><span data-prompt>${text('nav.prepare')}</span><button type="button" data-run>${text('nav.use')}</button></div>
     <div class="ln-notice" aria-live="polite" hidden></div>
-    <div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>EXPLORA LA COSTA</span></b><span data-touch-load>Carga 0%</span></div>
-    <div class="ln-touch-compass" aria-label="Rumbo y destino"><div class="ln-compass-rose" data-touch-north><span class="ln-compass-n">N</span><span class="ln-compass-e">E</span><span class="ln-compass-s">S</span><span class="ln-compass-w">O</span></div><i class="ln-compass-course" data-touch-course>➤</i><b data-touch-heading>000°</b><small data-touch-distance>Puerto</small></div>
-    <div class="ln-touch-wind" aria-label="Viento y ventana de ráfaga"><div class="ln-touch-wind-value"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h11c4 0 4-5 1-5-2 0-3 1-3 2M3 12h16c3 0 3 5 0 5-2 0-3-1-3-2M3 16h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b data-touch-wind>0<span>%</span></b><i data-touch-wind-direction aria-hidden="true">↑</i></div><div class="ln-gust-track" role="meter" aria-label="Ventana de ráfaga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-touch-gust-marker></b></div><small data-touch-gust-text>Vela lista</small></div>
-    <div class="ln-touch-hull" aria-label="Integridad de la embarcación"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18l-4 6H7zM8 12V8h8v4M12 8V3m-3 0h6M2 21l3-1 4 1 3-1 4 1 5-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ln-touch-hull-value"><small>CASCO</small><b data-touch-hull-text>—</b></span><div class="ln-touch-hull-meter" role="meter" aria-label="Integridad del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-touch-hull></i></div></div>
+    <div class="ln-touch-objective"><b><i>◆</i> <span data-touch-objective>${text('nav.explore')}</span></b><span data-touch-load>${text('nav.loadZero')}</span></div>
+    <div class="ln-touch-compass" data-l10n-aria-label="nav.compass" aria-label="${attr('nav.compass')}"><div class="ln-compass-rose" data-touch-north><span class="ln-compass-n">N</span><span class="ln-compass-e">E</span><span class="ln-compass-s">S</span><span class="ln-compass-w">${text('nav.west')}</span></div><i class="ln-compass-course" data-touch-course>➤</i><b data-touch-heading>000°</b><small data-touch-distance>${text('nav.port')}</small></div>
+    <div class="ln-touch-wind" data-l10n-aria-label="nav.windLabel" aria-label="${attr('nav.windLabel')}"><div class="ln-touch-wind-value"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h11c4 0 4-5 1-5-2 0-3 1-3 2M3 12h16c3 0 3 5 0 5-2 0-3-1-3-2M3 16h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><b data-touch-wind>0<span>%</span></b><i data-touch-wind-direction aria-hidden="true">↑</i></div><div class="ln-gust-track" role="meter" data-l10n-aria-label="nav.gustLabel" aria-label="${attr('nav.gustLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="ln-gust-window"></i><i class="ln-gust-perfect"></i><b data-touch-gust-marker></b></div><small data-touch-gust-text>${text('nav.sailReady')}</small></div>
+    <div class="ln-touch-hull" data-l10n-aria-label="nav.vessel" aria-label="${attr('nav.vessel')}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18l-4 6H7zM8 12V8h8v4M12 8V3m-3 0h6M2 21l3-1 4 1 3-1 4 1 5-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ln-touch-hull-value"><small>${text('nav.hull')}</small><b data-touch-hull-text>—</b></span><div class="ln-touch-hull-meter" role="meter" data-l10n-aria-label="nav.hullLabel" aria-label="${attr('nav.hullLabel')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i data-touch-hull></i></div></div>
     <div class="ln-touch-callout" hidden><b data-touch-callout></b><span data-touch-detail></span></div>`;
     parent.appendChild(this.root);
     this.$ = (selector) => this.root.querySelector(selector);
@@ -107,11 +108,11 @@ export class LiveNavigationView {
       onLook: (value) => this.sceneCamera.setLook(value), onGesture: () => { this.sound.unlock(); onClosePanels(); },
       onAction: (id) => this.runAction(id), actions: [] });
     this.touch.wrapper.classList.toggle('is-desktop', !isTouch);
-    this.touch.wrapper.setAttribute('aria-label', isTouch ? 'Controles táctiles de navegación' : 'Maniobras de navegación');
+    setAttributeText(this.touch.wrapper, 'aria-label', isTouch ? 'nav.controls' : 'nav.manoeuvres');
     this.buildTouchGauge();
     if (!isTouch) {
       const hints = document.createElement('small'); hints.className = 'ln-desktop-controls';
-      hints.textContent = 'WASD · navegar   Q · ráfaga   E · cubierta   G · amarrar';
+      setText(hints, 'nav.sailKeys');
       this.touch.instrument.appendChild(hints);
     }
     this.onBlur = () => this.clearInput(true);
@@ -342,29 +343,29 @@ export class LiveNavigationView {
         const player = c.youServer && c.cur;
         const actions = [];
         if (player && voyage.landing && distance(player, voyage.landing) <= 4)
-          actions.push({ key: 'F', prompt: 'Balsa · volver a bordo', verb: 'Reembarcar', run: () => this.command('reboard', voyage.shipId) });
+          actions.push({ key: 'F', prompt: t('nav.reboardPrompt'), verb: t('nav.reboard'), run: () => this.command('reboard', voyage.shipId) });
         const dock = this.world.map?.dock;
         if (player && dock) {
           const home = { x: dock.base.x + dock.dir.x * Math.max(0, dock.len - 10), z: dock.base.z + dock.dir.z * Math.max(0, dock.len - 10) };
-          if (distance(player, home) <= 6) actions.push({ key: 'G', prompt: 'Puerto · recuperar la balsa',
-            verb: voyage.recovery ? 'Recuperar en puerto' : 'Recuperar', run: () => this.command('recall') });
+          if (distance(player, home) <= 6) actions.push({ key: 'G', prompt: t('nav.recallPrompt'),
+            verb: voyage.recovery ? t('nav.recallPort') : t('nav.recall'), run: () => this.command('recall') });
         }
         return this.actionSet(actions);
       }
       const options = [];
-      if (voyage.canDock) options.push({ key: 'G', prompt: 'Puerto · amarrar y cerrar travesía', verb: 'Amarrar', run: () => this.command('dock') });
+      if (voyage.canDock) options.push({ id: 'dock', key: 'G', prompt: t('nav.dockPrompt'), verb: t('nav.dock'), run: () => this.command('dock') });
       if (c.deck?.active) {
         const player = c.youServer && c.cur;
         const raft = (c.renderRafts?.(1) || c.pred?.rafts || []).find((r) => String(r.id) === String(voyage.shipId));
         const helm = raft?.helm && pilotPoint(raft, raft.helm);
         if (player && helm && distance(player, helm) <= 2)
-          options.push({ key: 'E', prompt: 'Cubierta · volver al timón', verb: 'Timón', run: () => c.helmNaval?.() });
+          options.push({ key: 'E', prompt: t('nav.helmPrompt'), verb: t('nav.helm'), run: () => c.helmNaval?.() });
       }
-      else if (c.naval?.active) options.push({ key: 'E', prompt: 'Timón · caminar por cubierta', verb: 'Caminar', run: () => c.walkNaval?.() });
-      else if (voyage.canLand) options.push({ key: 'G', prompt: 'Costa · bajar con seguridad', verb: 'Desembarcar', run: () => this.command('land') });
+      else if (c.naval?.active) options.push({ key: 'E', prompt: t('nav.walkPrompt'), verb: t('nav.walk'), run: () => c.walkNaval?.() });
+      else if (voyage.canLand) options.push({ id: 'land', key: 'G', prompt: t('nav.landPrompt'), verb: t('nav.land'), run: () => this.command('land') });
       return this.actionSet(options);
     }
-    if (c.deck?.active) return this.actionSet([{ key: 'E', prompt: 'Pasajero · bajar de la balsa', verb: 'Bajar', run: () => c.leaveDeck?.() }]);
+    if (c.deck?.active) return this.actionSet([{ key: 'E', prompt: t('nav.leavePrompt'), verb: t('nav.leave'), run: () => c.leaveDeck?.() }]);
     const player = c.youServer && c.cur;
     if (!player) return null;
     const raft = (c.pred?.rafts || []).find((r) => r.owner === c.youServer && r.helm);
@@ -373,10 +374,10 @@ export class LiveNavigationView {
     if (distance(player, helm) > 2) return null;
     const capacity = c.capacity?.id === raft.id && c.capacity.raftRev === raft.rev &&
       c.capacity.tradeRev === c.profile?.eco?.tradeRev ? c.capacity : null;
-    const prompt = capacity?.status === 'overloaded' ? `Sobrecargada · exceso ${capacity.overMass.toFixed(1)} uM · refuerza o reduce carga`
-      : capacity?.status === 'heavy' ? `Balsa pesada · ${capacity.freeMass.toFixed(1)} uM libres · iniciar travesía`
-        : 'Puesto de mando · iniciar travesía';
-    return this.actionSet([{ key: 'F', prompt, verb: 'Pilotar', run: () => { this.onClosePanels(); c.mountNaval(raft.id); } }]);
+    const prompt = capacity?.status === 'overloaded' ? t('nav.overloaded',{mass:capacity.overMass.toFixed(1)})
+      : capacity?.status === 'heavy' ? t('nav.heavyStart',{mass:capacity.freeMass.toFixed(1)})
+        : t('nav.startPrompt');
+    return this.actionSet([{ key: 'F', prompt, verb: t('nav.pilot'), run: () => { this.onClosePanels(); c.mountNaval(raft.id); } }]);
   }
 
   canAct() { return !this.disposed && !!this.isActive() && !!this.input.enabled && !this.paused; }
@@ -425,10 +426,10 @@ export class LiveNavigationView {
     const swap = this.$('[data-route-switch]');
     if (swap) {
       swap.hidden = !lesson?.available || !!route?.active;
-      swap.textContent = this.locale?.().startsWith('en') ? 'Coastal lesson' : 'Lección costera';
+      swap.textContent = t('nav.coastalLesson');
     }
     const rules = this.$('[data-route-rules]');
-    if (rules) rules.textContent = 'Sin botín ni XP · hasta 24 HP reparables · tu carga se conserva';
+    if (rules) rules.textContent = t('nav.trialRules');
     this.$('[data-pilot-learning]').hidden = true;
     const progress = this.$('[data-lesson-progress]');
     if (progress) progress.hidden = true;
@@ -448,8 +449,8 @@ export class LiveNavigationView {
     this.$('[data-route-score]').textContent = view.score;
     const button = this.$('[data-route-action]');
     button.hidden = !helm;
-    button.textContent = route.active ? 'Salir del ensayo'
-      : route.status === 'complete' || route.status === 'aborted' ? 'Repetir ruta' : 'Probar ruta';
+    button.textContent = route.active ? t('nav.stopTrial')
+      : route.status === 'complete' || route.status === 'aborted' ? t('nav.repeatRoute') : t('nav.tryRoute');
     button.disabled = !helm || (route.active ? !route.canAbort : !route.canStart);
     button.setAttribute('aria-label', button.textContent);
     if (route.runId !== this.routeVisualRunId) {
@@ -550,21 +551,21 @@ export class LiveNavigationView {
     const context = i?.actions?.find((action) => action.door || action.lantern);
     if (context) actions.push({ id: context.lantern ? 'lantern' : 'door', label: context.verb, icon: 'crew', kind: 'action', shortcut: 'V' });
     if (c?.naval?.active && !c?.deck?.active && c.voyage?.phase === 'sailing')
-      actions.push({ id: 'capture', label: 'Ráfaga', icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
-    actions.push({ id: 'bag', label: 'Mochila', icon: 'cargo', kind: 'item' });
+      actions.push({ id: 'capture', label: t('nav.gust'), icon: 'wind', kind: 'skill', disabled: !!this.lastHud?.captureDisabled });
+    actions.push({ id: 'bag', label: t('nav.bag'), icon: 'cargo', kind: 'item' });
     if (c?.naval?.active || c?.deck?.active)
-      actions.push({ id: 'mode', label: c?.deck?.active ? 'Timón' : 'Cubierta', icon: c?.deck?.active ? 'helm' : 'crew', kind: 'action', disabled: !i?.actions?.some(a => a.key === 'E') });
-    actions.push({ id: 'center', label: 'Centrar', icon: 'center', kind: 'action' }, { id: 'map', label: 'Mapa', icon: 'map', kind: 'action' });
+      actions.push({ id: 'mode', label: c?.deck?.active ? t('nav.helm') : t('nav.deck'), icon: c?.deck?.active ? 'helm' : 'crew', kind: 'action', disabled: !i?.actions?.some(a => a.key === 'E') });
+    actions.push({ id: 'center', label: t('nav.center'), icon: 'center', kind: 'action' }, { id: 'map', label: t('nav.map'), icon: 'map', kind: 'action' });
     for (const action of i?.actions || []) if (action.key === 'G' || action.key === 'F')
-      actions.push({ id: action.key === 'F' ? 'reboard' : action.verb === 'Amarrar' ? 'dock' : action.verb === 'Desembarcar' ? 'land' : 'recall',
+      actions.push({ id: action.key === 'F' ? 'reboard' : action.id === 'dock' ? 'dock' : action.id === 'land' ? 'land' : 'recall',
         label: action.verb, icon: action.key === 'G' ? 'helm' : 'crew', kind: 'action' });
     const keyedActions = actions.map((action) => ({ ...action, shortcut: action.shortcut || NAVAL_SHORTCUTS[action.id] }));
     const signature = JSON.stringify(keyedActions);
     if (signature !== this.actionSignature) { this.actionSignature = signature; this.touch.setActions(keyedActions); }
     const hints = this.touch.instrument.querySelector('.ln-desktop-controls');
     if (hints) hints.textContent = c?.deck?.active
-      ? 'WASD · caminar   E · timón   G · amarrar'
-      : 'WASD · navegar   Q · ráfaga   E · cubierta   G · amarrar';
+      ? t('nav.walkKeys')
+      : t('nav.sailKeys');
   }
 
   updateHud({ body, state, rig, wind, gust, activity, current, voyage, pose, speed }) {
@@ -577,10 +578,10 @@ export class LiveNavigationView {
     $('[data-speed]').textContent = speed.toFixed(1);
     $('[data-speed-arc]').setAttribute('stroke-dasharray', `${stateHud.speedFraction * 75} 100`);
     $('.ln-dial').setAttribute('aria-valuenow', String(Math.round(speed * 10) / 10));
-    $('[data-hull-text]').textContent = hull ? `${Math.ceil(hull.hp)} / ${Math.ceil(hull.maxHp)} HP${hull.disabled ? ' · INUTILIZADA' : ''}` : 'Sin lectura';
+    $('[data-hull-text]').textContent = hull ? `${Math.ceil(hull.hp)} / ${Math.ceil(hull.maxHp)} HP${hull.disabled ? t('nav.disabled') : ''}` : t('nav.noReading');
     $('[data-hull]').style.width = `${pct}%`;
     $('.ln-hull').setAttribute('aria-valuenow', String(Math.round(pct)));
-    $('.ln-hull').setAttribute('aria-valuetext', hull ? `${Math.round(pct)} por ciento` : 'Sin lectura');
+    $('.ln-hull').setAttribute('aria-valuetext', hull ? t('nav.percent',{count:Math.round(pct)}) : t('nav.noReading'));
     $('[data-wind]').textContent = `${Math.round((wind.strength || 0) * 100)}% · ${Math.round(((wind.yaw || 0) * 180 / Math.PI + 360) % 360)}°`;
     $('[data-gust]').textContent = stateHud.gustText;
     for (const track of [$('.ln-gust-track'), $('.ln-touch-wind .ln-gust-track')].filter(Boolean)) {
@@ -591,22 +592,22 @@ export class LiveNavigationView {
       track.style.setProperty('--ln-gust-perfect-start', `${stateHud.gustMarks.perfectStart * 100}%`);
       track.style.setProperty('--ln-gust-perfect-end', `${stateHud.gustMarks.perfectEnd * 100}%`);
     }
-    $('[data-flow]').textContent = current?.strength > 0.08 ? `${current.strength.toFixed(1)} u/s` : 'Agua calma';
+    $('[data-flow]').textContent = current?.strength > 0.08 ? `${current.strength.toFixed(1)} u/s` : t('nav.calm');
     const capacity = confirmedNavalCapacity(this.client(), this.lastRaft, voyage);
-    const carryingText = capacity ? capacity.status === 'overloaded' ? `Exceso ${capacity.overMass.toFixed(1)} uM · regresa para descargar`
-      : `${capacity.status === 'heavy' ? 'Pesada · ' : ''}Porte libre ${capacity.freeMass.toFixed(1)} uM` : 'Actualizando porte…';
-    $('[data-load]').textContent = capacity ? `${carryingText} · bodega ${capacity.holdVolume}/${capacity.holdCap} uV` : carryingText;
+    const carryingText = capacity ? capacity.status === 'overloaded' ? t('nav.excess', { mass: capacity.overMass.toFixed(1) })
+      : `${capacity.status === 'heavy' ? t('nav.heavy') : ''}${t('nav.capacity', { mass: capacity.freeMass.toFixed(1) })}` : t('nav.capacityUpdating');
+    $('[data-load]').textContent = capacity ? carryingText + t('nav.hold', { volume: capacity.holdVolume, capacity: capacity.holdCap }) : carryingText;
     const lesson = this.client()?.lesson;
     const route = lesson?.active ? lesson : this.client()?.route;
     const target = voyage.phase === 'shore' ? shoreRouteTarget(voyage, this.lastRaft, this.world.map?.dock)
       : routeTarget(route, voyage);
     this.mapTarget = target;
     const label = lesson?.active && voyage.phase !== 'shore' ? lessonPresentation(lesson, this.locale()).targetLabel
-      : target?.label || (voyage.phase === 'shore' ? 'Balsa' : 'Puerto');
+      : translateData(target?.label) || (voyage.phase === 'shore' ? t('nav.raft') : t('nav.port'));
     const routeOrigin = voyage.phase === 'shore' ? this.client()?.cur || pose : pose;
     const metres = target ? distance(routeOrigin, target) : (voyage.distanceHome ?? 0);
     $('[data-target-label]').textContent = voyage.phase === 'shore'
-      ? voyage.recovery && !voyage.landing ? 'RECUPERAR EN PUERTO' : 'REEMBARQUE' : 'RUMBO';
+      ? voyage.recovery && !voyage.landing ? t('nav.recoverPort') : t('nav.reboarding') : t('nav.heading');
     $('[data-target]').textContent = label;
     $('[data-distance]').textContent = target ? `${metres.toFixed(0)} m` : '—';
     $('[data-heading]').textContent = `${stateHud.headingText}°`;
@@ -614,23 +615,23 @@ export class LiveNavigationView {
     const bearing = target ? Math.atan2(target.x - routeOrigin.x, target.z - routeOrigin.z) : yaw;
     this.$('.ln-route-arrow').style.transform = `rotate(${(bearing - yaw) * 180 / Math.PI}deg)`;
     $('.ln-phase').textContent = voyage.phase === 'shore'
-      ? voyage.recovery ? 'BALSA RECUPERABLE · POSICIÓN GUARDADA' : 'EXPLORANDO LA COSTA'
-      : body ? 'EN EL MAR' : 'EN CUBIERTA';
+      ? voyage.recovery ? t('nav.recoverableSaved') : t('nav.exploring')
+      : body ? t('nav.atSea') : t('nav.onDeck');
     $('.ln-route').classList.toggle('is-shore', voyage.phase === 'shore');
     if (this.touch) {
       $('[data-touch-wind]').firstChild.textContent = String(Math.round((wind.strength || 0) * 100));
       $('[data-touch-wind-direction]').style.transform = `rotate(${((wind.yaw || 0) - yaw) * 180 / Math.PI}deg)`;
       $('.ln-touch-wind').dataset.ready = gust?.phase === 'window' && !stateHud.captureDisabled && !this.client()?.deck?.active ? 'true' : 'false';
       const gustText = $('[data-touch-gust-text]');
-      gustText.textContent = this.client()?.deck?.active ? 'Toma el timón' : stateHud.boostActive ? `BOOST ${stateHud.boostSeconds.toFixed(1)} s`
-        : !(wind.strength > 0) ? 'Sin viento' : stateHud.captureDisabled ? 'Ráfaga resuelta'
-          : gust?.phase === 'window' ? '¡AHORA!'
-            : `Ráfaga ${Math.ceil(gust?.remaining || 0)} s`;
+      gustText.textContent = this.client()?.deck?.active ? t('nav.takeHelm') : stateHud.boostActive ? t('nav.boost',{seconds:stateHud.boostSeconds.toFixed(1)})
+        : !(wind.strength > 0) ? t('nav.noWind') : stateHud.captureDisabled ? t('nav.gustResolved')
+          : gust?.phase === 'window' ? t('nav.now')
+            : t('nav.gustTime',{seconds:Math.ceil(gust?.remaining||0)});
       gustText.title = stateHud.gustText;
       this.touchHullFill.style.width = `${pct}%`;
       this.touchHullValue.textContent = hull ? `${Math.ceil(hull.hp)} / ${Math.ceil(hull.maxHp)}` : '—';
       this.touchHullMeter.setAttribute('aria-valuenow', String(Math.round(pct)));
-      this.touchHullMeter.setAttribute('aria-valuetext', hull ? `${Math.ceil(hull.hp)} de ${Math.ceil(hull.maxHp)} HP` : 'Sin lectura');
+      this.touchHullMeter.setAttribute('aria-valuetext', hull ? t('nav.hp',{hp:Math.ceil(hull.hp),max:Math.ceil(hull.maxHp)}) : t('nav.noReading'));
       this.touchHull.dataset.danger = pct <= 25 || hull?.disabled ? 'true' : 'false';
       const gauge = this.touch.instrument.querySelector('.naval-touch-gauge');
       gauge.setAttribute('aria-valuenow', String(Math.round(speed * 10) / 10));
@@ -638,13 +639,13 @@ export class LiveNavigationView {
       gauge.querySelector('[data-touch-speed]').textContent = speed.toFixed(1);
       gauge.querySelector('[data-touch-speed-arc]').setAttribute('stroke-dasharray', `${stateHud.speedFraction * 100} 100`);
       gauge.querySelector('[data-touch-boost-arc]').setAttribute('stroke-dasharray', `${stateHud.boostFraction * 100} 100`);
-      gauge.querySelector('[data-touch-speed-state]').textContent = stateHud.boostActive ? `BOOST ${stateHud.boostSeconds.toFixed(1)} s` : 'VELOCIDAD';
+      gauge.querySelector('[data-touch-speed-state]').textContent = stateHud.boostActive ? t('nav.boost',{seconds:stateHud.boostSeconds.toFixed(1)}) : t('nav.speed');
       $('[data-touch-objective]').textContent = voyage.phase === 'shore'
-        ? voyage.recovery ? 'BALSA RECUPERABLE' : 'VUELVE A TU BALSA'
-        : lesson?.active ? lessonPresentation(lesson, this.locale()).stage : 'EXPLORA LA COSTA';
+        ? voyage.recovery ? t('nav.recoverable') : t('nav.return')
+        : lesson?.active ? lessonPresentation(lesson, this.locale()).stage : t('nav.explore');
       $('[data-touch-load]').textContent = voyage.phase === 'shore' && voyage.recovery
-        ? `Posición guardada · ${label} ${metres.toFixed(0)} m`
-        : `${carryingText}${!this.isTouch && capacity ? ` · bodega ${capacity.holdVolume}/${capacity.holdCap} uV` : ''} · ${label} ${metres.toFixed(0)} m`;
+        ? t('nav.position',{label,metres:metres.toFixed(0)})
+        : `${carryingText}${!this.isTouch && capacity ? t('nav.hold',{volume:capacity.holdVolume,capacity:capacity.holdCap}) : ''} · ${label} ${metres.toFixed(0)} m`;
       $('[data-touch-heading]').textContent = `${stateHud.headingText}°`;
       $('[data-touch-distance]').textContent = label;
       $('[data-touch-north]').style.transform = `rotate(${-yaw * 180 / Math.PI}deg)`;
@@ -659,7 +660,7 @@ export class LiveNavigationView {
   buildTouchGauge() {
     const gauge = this.root.ownerDocument.createElement('div');
     gauge.className = 'naval-touch-gauge'; gauge.setAttribute('role', 'meter');
-    gauge.setAttribute('aria-label', 'Velocidad de la balsa en unidades por segundo');
+    setAttributeText(gauge, 'aria-label', 'nav.speedAria');
     gauge.setAttribute('aria-valuemin', '0'); gauge.setAttribute('aria-valuemax', '13'); gauge.setAttribute('aria-valuenow', '0');
     gauge.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs>
       <linearGradient id="nt-speed-fire" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#ffe79b"/><stop offset=".45" stop-color="#ffab3d"/><stop offset="1" stop-color="#ec4c30"/></linearGradient>
@@ -673,7 +674,7 @@ export class LiveNavigationView {
       <path data-touch-speed-arc d="M28.2 91.8A45 45 0 1 1 91.8 91.8" fill="none" stroke="url(#nt-speed-fire)" stroke-width="7" pathLength="100" stroke-dasharray="0 100"/>
       <path d="M20.6 68l-7.8 1.5M26.7 37.8l-6.7-4.4M45.3 22l-3.1-7.4M74.7 22l3.1-7.4M93.3 37.8l6.7-4.4M99.4 68l7.8 1.5M91.8 91.8l5.6 5.6" stroke="#10191c" stroke-width="1.8"/>
       <path data-touch-boost-arc d="M35.3 84.7A35 35 0 1 1 84.7 84.7" fill="none" stroke="#ffe6a5" stroke-width="1.5" pathLength="100" stroke-dasharray="0 100"/></svg>
-      <div class="nt-dial-number"><strong data-touch-speed>0.0</strong><span>u/s</span></div><b class="nt-dial-state" data-touch-speed-state>VELOCIDAD</b>`;
+      <div class="nt-dial-number"><strong data-touch-speed>0.0</strong><span>u/s</span></div><b class="nt-dial-state" data-touch-speed-state>${text('nav.speed')}</b>`;
     this.touch.instrument.appendChild(gauge);
   }
 
@@ -681,7 +682,7 @@ export class LiveNavigationView {
     if (!ev) return false;
     const type = ev.type || ev.kind;
     if (type === 'navalPilot' && ev.ok === false && ev.why === 'capacity') {
-      this.notice('Porte excedido. Reduce carga o amplía/refuerza el casco antes de zarpar.');
+      this.notice(t('nav.overloadHint'));
       return true;
     }
     const body = this.body(), state = body?.state, rig = body?.operational?.rig;
@@ -690,7 +691,7 @@ export class LiveNavigationView {
       if (ev.source === 'corsair' && ev.shotId) this.routeImpactEvents.add(String(ev.shotId));
       const visual = this.effects.event(ev.destroyed ? 'destroy' : 'impact', state, rig, ev);
       const sound = this.sound.event('impact');
-      this.notice(ev.partType ? `${ev.destroyed ? 'Pieza destruida' : 'Daño en pieza'} · ${ev.partType}` : 'Daño de casco');
+      this.noticeKey(ev.partType ? ev.destroyed ? 'nav.destroyedPart' : 'nav.damagedPart' : 'nav.hullDamage', { part: translateData(ev.partType) });
       return !!(visual || sound);
     }
     if (type === 'navalGust' || type === 'sailingActivity') {
@@ -704,9 +705,14 @@ export class LiveNavigationView {
     return false;
   }
 
+  noticeKey(key, params = {}) {
+    const element = this.$('.ln-notice');
+    setText(element, key, params); element.hidden = false;
+  }
+
   notice(text) {
     const element = this.$('.ln-notice');
-    element.textContent = String(text || ''); element.hidden = !text;
+    const key = messageKey(text); if (key) setText(element,key); else {delete element.dataset.l10nKey; element.textContent = String(text || '');} element.hidden = !text;
   }
 
   dispose() {

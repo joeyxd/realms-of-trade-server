@@ -1,3 +1,4 @@
+import { t, text as ltext, rich, attr, setText, setDataText, translateData, dataText, getLocale, onLocaleChange, initI18n } from '../core/i18n.js';
 // Mobile controls (M4.6): tinted-glass buttons in a thumb arc at the bottom right, one colour per function.
 // A floating joystick on the left half; on the right ATK (hold: the pistols keep firing), GUARDIA (hold), DASH,
 // the contextual action button and the weapon's Q / E / R. Q, E and R can be dragged to aim: a tap uses the
@@ -42,16 +43,16 @@ export const ICONS = {
 
 // What a skill in Q / E looks like on its button: [icon, label] (the arts as in KITS; the tattoos, M4.7).
 const SKILL_FACE = {
-  lunge: ['thrust', 'ESTOC'], wave: ['crescent', 'HOJA'], blast: ['burst', 'DESC'], blink: ['cloud', 'HUMO'],
-  tromba: ['spout', 'TROMBA'], leap: ['leap', 'ABORD'], wheel: ['helm', 'TIMÓN'],
+  lunge: ['thrust', 'touch.lunge'], wave: ['crescent', 'touch.blade'], blast: ['burst', 'touch.blast'], blink: ['cloud', 'touch.smoke'],
+  tromba: ['spout', 'touch.spout'], leap: ['leap', 'touch.board'], wheel: ['helm', 'touch.wheel'],
 };
 // What each weapon puts on the ATK / Q / E / R buttons: [icon, label].
 const KITS = {
-  sable: { atk: ['sword', 'ATK'], q: ['thrust', 'ESTOC'], e: ['crescent', 'HOJA'], r: ['spiral', 'TORM'] },
-  pistolas: { atk: ['pistol', 'FUEGO'], q: ['burst', 'DESC'], e: ['cloud', 'HUMO'], r: ['rain', 'LLUVIA'] },
+  sable: { atk: ['sword', 'ATK'], q: ['thrust', 'touch.lunge'], e: ['crescent', 'touch.blade'], r: ['spiral', 'touch.storm'] },
+  pistolas: { atk: ['pistol', 'touch.fire'], q: ['burst', 'touch.blast'], e: ['cloud', 'touch.smoke'], r: ['rain', 'touch.rain'] },
 };
 
-const face = (icon, label) => `<span class="ico">${ICONS[icon]}</span>${label == null ? '' : `<span class="lbl">${label}</span>`}`;
+const face = (icon, label) => `<span class="ico">${ICONS[icon]}</span>${label == null ? '' : `<span class="lbl">${label?.startsWith('touch.') ? ltext(label) : label}</span>`}`;
 const BUZZ = { 't-dash': 9, 't-pot': 12, 't-act': 7, 't-parry': 6 }; // ms
 const SWEEP_INK = 'rgb(10 6 24 / 0.58)';
 const cone = (deg) => `conic-gradient(transparent 0deg ${deg}deg, ${SWEEP_INK} ${deg}deg 360deg)`;
@@ -63,15 +64,15 @@ export class TouchControls {
     this.user = 1; this.tb = 1; this.locked = {}; this.lbls = {};
     root.innerHTML = `<div class="joy-zone"></div><div class="joy-rest"></div><div class="joy"><i></i></div><div class="aimline"><i></i></div>
       <div class="t-cluster">
-        <button class="tbtn t-atk" aria-label="Atacar">${face('sword', 'ATK')}</button>
+        <button class="tbtn t-atk" data-l10n-aria-label="touch.attack" aria-label="${attr('touch.attack')}">${face('sword', 'ATK')}</button>
         <button class="tbtn t-dash" aria-label="Dash"><span class="sweep"></span>${face('dash', 'DASH')}<span class="pips"></span></button>
-        <button class="tbtn t-parry" aria-label="Guardia (mantener)">${face('shield', 'GUARDIA')}</button>
-        <button class="tbtn t-skill t-q" aria-label="Habilidad Q"><span class="sweep"></span>${face('thrust', 'ESTOC')}</button>
-        <button class="tbtn t-skill t-e" aria-label="Habilidad E"><span class="sweep"></span>${face('crescent', 'HOJA')}</button>
-        <button class="tbtn t-skill t-r" aria-label="Riposte"><span class="sweep"></span>${face('spiral', 'TORM')}</button>
-        <button class="tbtn t-skill t-g" aria-label="Poder de la perla" hidden><span class="sweep"></span>${face('comet', 'COMETA')}</button>
-        <button class="tbtn t-pot" aria-label="Poción"><span class="sweep"></span>${face('flask', null)}<b class="cnt">0</b></button>
-        <button class="tbtn t-act" aria-label="Interactuar" hidden>${face('talk', '')}</button>
+        <button class="tbtn t-parry" data-l10n-aria-label="touch.guard" aria-label="${attr('touch.guard')}">${face('shield', 'touch.guardFace')}</button>
+        <button class="tbtn t-skill t-q" data-l10n-aria-label="touch.q" aria-label="${attr('touch.q')}"><span class="sweep"></span>${face('thrust', 'touch.lunge')}</button>
+        <button class="tbtn t-skill t-e" data-l10n-aria-label="touch.e" aria-label="${attr('touch.e')}"><span class="sweep"></span>${face('crescent', 'touch.blade')}</button>
+        <button class="tbtn t-skill t-r" data-l10n-aria-label="touch.r" aria-label="${attr('touch.r')}"><span class="sweep"></span>${face('spiral', 'touch.storm')}</button>
+        <button class="tbtn t-skill t-g" data-l10n-aria-label="touch.pearl" aria-label="${attr('touch.pearl')}" hidden><span class="sweep"></span>${face('comet', 'touch.comet')}</button>
+        <button class="tbtn t-pot" data-l10n-aria-label="touch.potion" aria-label="${attr('touch.potion')}"><span class="sweep"></span>${face('flask', null)}<b class="cnt">0</b></button>
+        <button class="tbtn t-act" data-l10n-aria-label="touch.interact" aria-label="${attr('touch.interact')}" hidden>${face('talk', '')}</button>
       </div>`;
     this.update();
     stage.onChange(() => this.update());
@@ -215,23 +216,23 @@ export class TouchControls {
   // Icon + label of a button; a locked skill shows the padlock in place of its label.
   setFace(key, [icon, label]) {
     const b = this.btns[key];
-    if (this.lbls[key] === icon + label) return;
-    this.lbls[key] = icon + label;
+    if (this.lbls[key] === getLocale() + icon + label) return;
+    this.lbls[key] = getLocale() + icon + label;
     b.querySelector('.ico').innerHTML = ICONS[icon];
-    b.querySelector('.lbl').innerHTML = this.locked[key] ? ICONS.lock : label;
+    b.querySelector('.lbl').innerHTML = this.locked[key] ? ICONS.lock : label.startsWith('touch.') ? ltext(label) : label;
     b.querySelector('.lbl').dataset.t = label;
   }
 
   setWeapon(kind) {
-    if (kind === this.weapon) return;
-    this.weapon = kind;
+    if (kind + getLocale() === this.weapon) return;
+    this.weapon = kind + getLocale();
     const K = KITS[kind] || KITS.sable;
     for (const k of ['atk', 'r']) this.setFace(k, K[k]);
   }
 
   // What Q / E hold (M4.7): ids; «Parpadeo» (the Abordaje's form A) gets its own label.
   setSlots(q, e, qForm = 0, eForm = 0) {
-    const face = (id, form) => (id === 'leap' && form === 1 ? ['leap', 'PARP'] : SKILL_FACE[id] || SKILL_FACE.lunge);
+    const face = (id, form) => (id === 'leap' && form === 1 ? ['leap', 'touch.blink'] : SKILL_FACE[id] || SKILL_FACE.lunge);
     this.setFace('q', face(q, qForm));
     this.setFace('e', face(e, eForm));
   }
@@ -240,13 +241,13 @@ export class TouchControls {
   setPearl(id, cd01) {
     this.gBtn.hidden = id === 'none';
     this.kinds.g = id === 'iceanchor' || id === 'inkcloud' ? 'ground' : id === 'mastbolt' ? 'charge' : 'dir';
-    if (this.pearlFace !== id) {
-      this.pearlFace = id;
+    if (this.pearlFace !== id + getLocale()) {
+      this.pearlFace = id + getLocale();
       const icon = id === 'inkcloud' ? 'inkcloud' : id === 'iceanchor' ? 'iceanchor' : id === 'mastbolt' ? 'mastbolt' : 'comet';
-      const label = id === 'inkcloud' ? 'NUBE' : id === 'iceanchor' ? 'ANCLA' : id === 'mastbolt' ? 'RAYO' : 'COMETA';
+      const label = id === 'inkcloud' ? t('touch.cloud') : id === 'iceanchor' ? t('touch.anchor') : id === 'mastbolt' ? t('touch.bolt') : t('touch.comet');
       this.gBtn.querySelector('.ico').innerHTML = ICONS[icon];
       this.gBtn.querySelector('.lbl').textContent = label;
-      this.gBtn.setAttribute('aria-label', id === 'inkcloud' ? 'Nube de tinta' : id === 'iceanchor' ? 'Ancla de hielo' : id === 'mastbolt' ? 'Rayo de mástil' : 'Cometa');
+      this.gBtn.setAttribute('aria-label', id === 'inkcloud' ? translateData('Nube de tinta') : id === 'iceanchor' ? translateData('Ancla de hielo') : id === 'mastbolt' ? translateData('Rayo de mástil') : translateData('Cometa'));
       this.gBtn.style.setProperty('--c', id === 'inkcloud' ? '170 112 237' : id === 'iceanchor' ? '131 221 255' : id === 'mastbolt' ? '255 223 59' : '255 121 59');
     }
     const k = Math.round(Math.max(0, Math.min(1, cd01)) * 40);
@@ -317,7 +318,7 @@ export class TouchControls {
       this.locked[k] = on;
       const b = this.btns[k], l = b.querySelector('.lbl');
       b.classList.toggle('locked', on);
-      l.innerHTML = on ? ICONS.lock : (l.dataset.t || '');
+      l.innerHTML = on ? ICONS.lock : l.dataset.t?.startsWith('touch.') ? ltext(l.dataset.t) : (l.dataset.t || '');
     }
   }
 

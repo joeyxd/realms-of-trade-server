@@ -3,6 +3,7 @@ import { ARTISAN } from '../data/artisan.js';
 import { LOGGING, LOGGING_LESSON } from '../data/progression.js';
 import { RAFT_PARTS } from '../data/raftparts.js';
 import { loggingStatus } from '../sim/systems/progression.js';
+import { onLocaleChange, t } from '../core/i18n.js';
 
 const COPY = {
   es: {
@@ -116,12 +117,34 @@ export class ArtisanPanel {
       <div class="artisan-actions"><button type="button" class="artisan-learn" data-learn></button><button type="button" class="artisan-community" data-community></button><button type="button" class="artisan-refresh" data-refresh></button></div></div>`;
     parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector);
     this.bind(); this.render();
+    this.unsubscribeLocale = onLocaleChange(() => this.render());
   }
 
   contextNow() { return call(this.context); }
   canUse() { return this.enabled?.() === true && !!this.contextNow(); }
   locale() { return langOf(this.getLocale); }
-  copy() { return COPY[this.locale()]; }
+  copy() {
+    const copy = { ...COPY[this.locale()] };
+    const keys = {
+      title: 'title', eyebrow: 'eyebrow', close: 'close', intro: 'intro', learn: 'learn',
+      learnedSuccess: 'learned', known: 'known', lessonLocked: 'locked', projectLabel: 'project',
+      projectIncomplete: 'projectIncomplete', projectComplete: 'projectComplete', loading: 'loading', ready: 'ready',
+      waiting: 'waiting', waitingProfile: 'waitingProfile', retry: 'retry', community: 'contribute', refresh: 'refresh',
+      send: 'sendFailed', account_required: 'account', storage: 'storage', busy: 'busy', far: 'far', bench: 'bench',
+      dead: 'dead', combat: 'combat', goods: 'goods', materials: 'goods', revision: 'revision', land: 'land',
+      disabled: 'disabled', generic: 'generic',
+    };
+    for (const [field, suffix] of Object.entries(keys)) copy[field] = t(`systems.artisan.${suffix}`);
+    return copy;
+  }
+  localizedStatus() {
+    const current = this.status, copy = this.copy();
+    for (const key of Object.keys(COPY.es)) {
+      const es = COPY.es[key], en = COPY.en[key];
+      if (typeof es === 'string' && typeof en === 'string' && (current === es || current === en)) return copy[key];
+    }
+    return current;
+  }
   profileNow() { return this.contextNow()?.profile || call(this.profile); }
   update() { this.render(); }
   notifyContext(active) { if (this._contextNotified === active) return; this._contextNotified = active; this.onContext?.(active); }
@@ -143,6 +166,7 @@ export class ArtisanPanel {
     this.opener = null;
   }
   reset() { this.pending = null; this.project = null; this.durable = null; this.status = ''; this.close(); this.render(); }
+  dispose() { this.unsubscribeLocale?.(); this.close(); this.root.remove(); }
   bind() {
     this.root.addEventListener('keydown', event => { if (event.code === 'Escape') { event.preventDefault(); event.stopPropagation(); this.close(); } });
     this.$('[data-close]').addEventListener('click', () => this.close());
@@ -239,7 +263,7 @@ export class ArtisanPanel {
     const rows = state.project?.rows || [];
     this.$('[data-project]').textContent = rows.length
       ? `${state.project.complete ? `${c.projectComplete} · ` : ''}${rows.map(row => `${row.good === 'madera' ? c.woodGoodLabel : row.good === 'piedra' ? c.stoneGoodLabel : row.good}: ${c.projectProgress(row.current, row.required)}`).join(' · ')}`
-      : (this.status || c.loading);
+      : (this.localizedStatus() || c.loading);
     const projectPct = rows.length ? Math.round(rows.reduce((sum, row) => sum + row.percent, 0) / rows.length) : 0;
     this.$('[data-project-bar]').setAttribute('aria-valuemin', '0'); this.$('[data-project-bar]').setAttribute('aria-valuemax', '100');
     this.$('[data-project-bar]').setAttribute('aria-valuenow', String(projectPct)); this.$('[data-project-bar] i').style.width = `${projectPct}%`;
@@ -252,7 +276,7 @@ export class ArtisanPanel {
     const retryReady = busy && performance.now() - this.pending.sentAt >= 5000;
     const retry = this.$('[data-retry]'); retry.hidden = !retryReady; retry.disabled = !retryReady || !ctx; retry.textContent = c.retry;
     this.$('[data-status]').textContent = busy ? (this.pending.ackRev === null && this.pending.op === 'learn' ? c.waiting : this.status || c.loading)
-      : this.status || this.reason(state, c);
+      : this.localizedStatus() || this.reason(state, c);
     this.root.classList.toggle('is-pending', busy);
   }
 }

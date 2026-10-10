@@ -21,10 +21,11 @@ import { stage } from './stage.js';
 import { pearlHtml } from './pearlpanel.js';
 import { packInventoryHtml } from './packInventory.js';
 import { loggingSkillHtml } from './loggingSkill.js';
+import { dataText, translateData, t, formatNumber, onLocaleChange } from '../core/i18n.js';
 
-const TABS = [['gear', 'Equipo', 'I'], ['stats', 'Atributos', 'C'], ['quests', 'Misiones', 'L'], ['tattoo', 'Tatuajes', 'T'], ['pearl', 'Perlas', 'P'], ['logging', 'Oficios', '']];
+const TABS = [['gear', 'adventure.tab.gear', 'I'], ['stats', 'adventure.tab.stats', 'C'], ['quests', 'adventure.tab.quests', 'L'], ['tattoo', 'adventure.tab.tattoos', 'T'], ['pearl', 'adventure.tab.pearls', 'P'], ['logging', 'systems.logging.tab', '']];
 const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1', 'right'], ['ring2', 'right2'], ['boots', 'bottom']];
-const pct = (v, d = 0) => (v * 100).toLocaleString('es-ES', { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
+const pct = (v, d = 0) => formatNumber(v * 100, { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
 export class CharPanel {
   constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, locale = 'es' }) {
@@ -36,6 +37,7 @@ export class CharPanel {
     this.confirm = 0;
     this.seen = new Set(); // uids already shown (the rest get «NUEVO»)
     this.isOpen = false;
+    this.unsubscribeLocale = onLocaleChange(() => this.refresh());
     root.addEventListener('click', (e) => this.onClick(e));
     root.addEventListener('dblclick', (e) => { const c = e.target.closest('[data-bag]'); if (c) this.equip(+c.dataset.bag); });
     root.addEventListener('pointerover', (e) => {
@@ -65,7 +67,22 @@ export class CharPanel {
   toggle(tab) { if (this.isOpen && this.tab === tab && !this.shop) this.close(); else this.open(tab); }
   // Something unseen in the bag (the HUD's dot).
   hasNew() { const p = this.profile(); return !!p && p.bag.some((it) => !this.seen.has(it.u)); }
-  refresh() { if (this.isOpen) this.render(); }
+  refresh() {
+    if (!this.isOpen) return;
+    const active = this.root.contains(document.activeElement) ? document.activeElement : null;
+    const identity = active && ['tab', 'bag', 'slot', 'buy', 'act', 'pearlOp'].find((key) => active.hasAttribute(`data-${key}`));
+    const value = active && 'value' in active ? active.value : null;
+    const start = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+    const end = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
+    this.render();
+    if (!active) return;
+    const replacement = identity ? [...this.root.querySelectorAll(`[data-${identity}]`)].find((node) => node.dataset[identity] === active.dataset[identity])
+      : this.root.querySelector(active.matches('[data-close]') ? '[data-close]' : '.cp');
+    if (!replacement) return;
+    if (value !== null && 'value' in replacement) replacement.value = value;
+    replacement.focus({ preventScroll: true });
+    if (start !== null && typeof replacement.setSelectionRange === 'function') replacement.setSelectionRange(start, end);
+  }
 
   // ---- Actions ---------------------------------------------------------------------------------------------
   equip(uid, slot) { this.send({ type: 'equip', uid, ...(slot ? { slot } : {}) }); this.pinned = null; sfx.click(); }
@@ -104,10 +121,10 @@ export class CharPanel {
   render() {
     const p = this.profile();
     const locale = typeof this.locale === 'function' ? this.locale() : this.locale;
-    const tabs = TABS.map(([id, name, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${id === 'logging' ? (locale === 'en' ? 'Trades' : 'Oficios') : name}${key ? ` <span class="kbd">${key}</span>` : ''}</button>`).join('');
-    const html = `<div class="cp frame interactive" role="dialog" aria-label="Personaje">
-      <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="Cerrar">✕</button></div>
-      <div class="cp-body">${!p ? '<p class="cp-empty">Aún no has subido a bordo.</p>' : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.tab === 'logging' ? loggingSkillHtml(p.progression, locale) : this.questsHtml(p)}</div>
+    const tabs = TABS.map(([id, label, key]) => `<button class="tab" data-tab="${id}" aria-selected="${this.tab === id}">${t(label)}${key ? ` <span class="kbd">${key}</span>` : ''}</button>`).join('');
+    const html = `<div class="cp frame interactive" role="dialog" aria-label="${t('adventure.aria.character')}">
+      <div class="cp-head"><div class="tabs" role="tablist">${tabs}</div><button class="icon-btn cp-x" data-close aria-label="${t('adventure.aria.close')}">✕</button></div>
+      <div class="cp-body">${!p ? `<p class="cp-empty">${dataText('Aún no has subido a bordo.')}</p>` : this.tab === 'gear' ? this.gearHtml(p) : this.tab === 'stats' ? this.statsHtml(p) : this.tab === 'tattoo' ? this.tattooHtml(p) : this.tab === 'pearl' ? pearlHtml(p, null, this.nearby?.() || []) : this.tab === 'logging' ? loggingSkillHtml(p.progression, locale) : this.questsHtml(p)}</div>
     </div>`;
     // Profiles come often (mastery XP in a fight): the DOM is only touched when what it shows changes, so a
     // click or the hover never lands on a cell that was rebuilt under the pointer.
@@ -140,23 +157,23 @@ export class CharPanel {
 
   cell(it) {
     const fresh = !this.seen.has(it.u);
-    return `<button class="bag-cell r${it.r}" data-bag="${it.u}" style="--rc:var(--r-${['common', 'uncommon', 'rare', 'epic', 'legend'][it.r]})" aria-label="${esc(BASES[it.b].name)}">${itemIcon(it)}<i class="lv">${it.l}</i>${fresh ? '<b class="new">NUEVO</b>' : ''}</button>`;
+    return `<button class="bag-cell r${it.r}" data-bag="${it.u}" style="--rc:var(--r-${['common', 'uncommon', 'rare', 'epic', 'legend'][it.r]})" aria-label="${esc(translateData(BASES[it.b].name))}">${itemIcon(it)}<i class="lv">${it.l}</i>${fresh ? `<b class="new">${dataText('NUEVO')}</b>` : ''}</button>`;
   }
 
   gearHtml(p) {
     const st = this.stats();
     const doll = DOLL.map(([slot, pos]) => {
       const it = p.eq[slot];
-      return `<button class="doll-slot ${pos}${it ? ' r' + it.r : ' empty'}" data-slot="${slot}" title="${SLOT_NAMES[slot]}" style="${it ? `--rc:var(--r-${['common', 'uncommon', 'rare', 'epic', 'legend'][it.r]})` : ''}">${it ? itemIcon(it) : slotIcon(slot)}<span>${SLOT_NAMES[slot]}</span></button>`;
+      return `<button class="doll-slot ${pos}${it ? ' r' + it.r : ' empty'}" data-slot="${slot}" title="${translateData(SLOT_NAMES[slot])}" style="${it ? `--rc:var(--r-${['common', 'uncommon', 'rare', 'epic', 'legend'][it.r]})` : ''}">${it ? itemIcon(it) : slotIcon(slot)}<span>${dataText(SLOT_NAMES[slot])}</span></button>`;
     }).join('');
     const left = this.shop ? this.shopHtml(p) : `<div class="doll">${doll}<div class="cp-portrait"><canvas width="160" height="160"></canvas></div></div>
-      <div class="cp-mini"><span>ATK <b>${st.atk}</b></span><span>DEF <b>${st.def}</b></span><span>VIDA <b>${st.maxHp}</b></span></div>`;
+      <div class="cp-mini"><span>ATK <b>${st.atk}</b></span><span>DEF <b>${st.def}</b></span><span>${dataText('Vida')} <b>${st.maxHp}</b></span></div>`;
     const cells = p.bag.map((it) => this.cell(it)).join('') + Array.from({ length: Math.max(0, ITEMS.bag - p.bag.length) }, () => '<span class="bag-cell empty"></span>').join('');
     const backpack = this.backpack?.() || { pack: p.eco?.pack, pendingGoods: {} };
     return `<div class="cp-gear">
       <div class="cp-left">${left}</div>
       <div class="cp-right">
-        <div class="bag-head"><b>Bolsa</b> <small>${p.bag.length}/${ITEMS.bag}</small><span class="cp-gold">${st.gold} oro</span><span class="cp-pot">🧪 ${st.potions}/${CONSUMABLES.potion.max}</span></div>
+        <div class="bag-head"><b>${dataText('Bolsa')}</b> <small>${p.bag.length}/${ITEMS.bag}</small><span class="cp-gold">${st.gold} ${dataText('oro')}</span><span class="cp-pot">🧪 ${st.potions}/${CONSUMABLES.potion.max}</span></div>
         <div class="bag-grid">${cells}</div>
         ${packInventoryHtml(p, backpack, typeof this.locale === 'function' ? this.locale() : this.locale)}
         <div class="cp-detail"></div>

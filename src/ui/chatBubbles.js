@@ -1,4 +1,6 @@
 // Render only live messages already delivered to this session and audience by the server.
+import { t } from '../core/i18n.js';
+
 const MAX_SEEN = 200;
 const MAX_TEXT_POINTS = 180;
 
@@ -36,10 +38,12 @@ export class ChatBubbles {
     const validPeers = new Map();
     for (const peer of peers) {
       if (typeof peer?.id !== 'string' || !peer.id || !validEntity(peer.entity)) continue;
+      const hasName = typeof peer.name === 'string' && Boolean(peer.name);
       validPeers.set(peer.id, {
         id: peer.id,
         entity: peer.entity,
-        name: typeof peer.name === 'string' && peer.name ? peer.name : 'Alguien',
+        name: hasName ? peer.name : t('chat.someone'),
+        nameKey: hasName ? null : 'chat.someone',
       });
     }
 
@@ -72,16 +76,26 @@ export class ChatBubbles {
 
     const own = sender.id === this.self;
     let label;
+    let labelKey;
+    let labelParams = {};
+    let labelNameKey = null;
     if (channel === 'whisper') {
       const target = message.target;
       const currentTarget = typeof target?.id === 'string' ? this.peers.get(target.id) : null;
       if (!currentTarget || currentTarget.entity !== target.entity || !validEntity(target.entity)) return;
       if (!own && target.id !== this.self) return;
-      label = own
-        ? `Privado · Tú → ${currentTarget.name}`
-        : `Privado · ${currentSender.name} → ti`;
+      const peer = own ? currentTarget : currentSender;
+      labelKey = own ? 'chatBubble.whisper_you' : 'chatBubble.whisper_to_you';
+      labelParams = { name: peer.name };
+      labelNameKey = peer.nameKey;
+      label = t(labelKey, labelParams);
     } else {
-      label = `Cerca · ${own ? 'Tú' : currentSender.name}`;
+      labelKey = own ? 'chatBubble.local_you' : 'chatBubble.local_sender';
+      if (!own) {
+        labelParams = { name: currentSender.name };
+        labelNameKey = currentSender.nameKey;
+      }
+      label = t(labelKey, labelParams);
     }
 
     if (this.seen.has(message.id)) return;
@@ -90,13 +104,17 @@ export class ChatBubbles {
     this.seenOrder.push(message.id);
     if (this.seenOrder.length > MAX_SEEN) this.seen.delete(this.seenOrder.shift());
 
-    this.callbacks.show?.(currentSender.entity, {
+    const presentation = {
       text,
       channel,
       label,
       own,
       range: this.localRadius,
-    }, lifeFor(text));
+      labelKey,
+      labelParams,
+      labelNameKey,
+    };
+    this.callbacks.show?.(currentSender.entity, presentation, lifeFor(text));
     this.visible.add(currentSender.entity);
   }
 

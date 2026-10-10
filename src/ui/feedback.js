@@ -13,6 +13,7 @@ import { comic } from './comic.js';
 import { formed } from '../data/weapons.js';
 import { skillId } from '../data/tattoos.js';
 import { elementVisual } from '../data/elements.js';
+import { rich, t, setText } from '../core/i18n.js';
 
 const AMBER = [1, 0.72, 0.25], AMBER1 = [0.95, 0.3, 0.05];
 const CYAN = [0.65, 1, 1], CYAN1 = [0.1, 0.75, 1];
@@ -55,6 +56,13 @@ export class Feedback {
   screen(amount, rgb = [1, 1, 1]) { if (amount > this.flash) { this.flash = amount; this.flashColor = rgb; } }
   y(x, z) { return this.map.groundAt(x, z); }
   teach(key, html, ms = 5200) { if (this.taught.has(key)) return; this.taught.add(key); this.hud.toast(html, ms); }
+
+  zone(nameKey, nameParams, subKey, subParams, reduced = false) {
+    const name = t(nameKey, nameParams), sub = t(subKey, subParams);
+    this.hud.showZone(name, sub, true, reduced);
+    setText(this.hud.banner.querySelector('.zname'), nameKey, nameParams);
+    setText(this.hud.banner.querySelector('.zsub'), subKey, subParams);
+  }
 
   float(x, z, h, html, cls, o) { return this.worldUI.float(x, this.y(x, z) + h, z, html, cls, o); }
   overMe(html, cls, o) { return this.worldUI.float(this.ps.x, this.ps.y + 2.15, this.ps.z, html, cls, { rise: 34, spread: 6, life: 1, ...o }); }
@@ -109,7 +117,7 @@ export class Feedback {
         W.combatFx.ring(ev.x, y - 0.9, ev.z, 0.9, 0xfff1c8, 0.22, 0.2, 0.7);
         if (v) { v.flash(0xffffff, 1); this.flinch(v, ev.x, ev.z); }
         sfx.hit(this.material(rec), false);
-        if (ev.stage === 3) comic.hit(ev.x, y + 0.5, ev.z, { word: '¡ZAS!', color: 0xfff1c8 });
+        if (ev.stage === 3) comic.hit(ev.x, y + 0.5, ev.z, { word: t('feedback.comic.zas'), color: 0xfff1c8 });
         this.loop.addHitstop(F.hitstopMelee);
         this.shake(ev.stage === 3 ? 0.22 : 0.12);
         W.rig.punchIn(ev.stage === 3 ? 0.4 : 0.2);
@@ -120,19 +128,19 @@ export class Feedback {
         const x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
         const h = (v ? v.height : 1.8) + 0.25;
         if (ev.immune) {
-          this.float(x, z, h, ev.kind === 'shot' ? '¡BLANCO!' : '¡CLANC!', ev.kind === 'shot' ? 'perfect' : 'immune', { life: 1 });
+          this.float(x, z, h, rich(ev.kind === 'shot' ? 'feedback.call.white' : 'feedback.call.clank'), ev.kind === 'shot' ? 'perfect' : 'immune', { life: 1 });
           if (v && v.hit) v.hit(1);
           sfx.clunk();
           if (ev.kind === 'shot' && ev.by === this.client.youServer) this.onTutorial('target');
           break;
         }
-        this.float(x, z, h, ev.crit ? `<small>¡CRÍTICO!</small> ${ev.dmg}` : String(ev.dmg), ev.crit ? 'crit' : 'dmg');
-        if (ev.crit && ev.by === this.client.youServer) this.comicAt(x, z, h * 0.7, { word: '¡CRAC!', color: 0xffe14d });
+        this.float(x, z, h, ev.crit ? `${rich('feedback.call.critical')} ${ev.dmg}` : String(ev.dmg), ev.crit ? 'crit' : 'dmg');
+        if (ev.crit && ev.by === this.client.youServer) this.comicAt(x, z, h * 0.7, { word: t('feedback.comic.crac'), color: 0xffe14d });
         if (ev.armor) {
           // The crab's iron plate: show it, and teach the flank once.
-          this.float(x, z, h + 0.45, 'BLINDADO', 'immune', { life: 0.8 });
+          this.float(x, z, h + 0.45, rich('feedback.call.armored'), 'immune', { life: 0.8 });
           sfx.armor(this.vol(x, z));
-          if (ev.by === this.client.youServer) this.teach('crabArmor', '<b>Cangrejo blindado:</b> de frente apenas le haces daño. Rodéalo con un dash y golpéale por detrás, o <b>devuélvele las balas</b>: los reflejos atraviesan la placa.', 6500);
+          if (ev.by === this.client.youServer) this.teach('crabArmor', rich('feedback.crab_armor'), 6500);
         }
         const hitPalette = this.palette(ev.elem);
         if (v) { v.flash(elementVisual(ev.elem)?.accent ?? 0xffffff, 1); if (!ev.predictedHit) this.flinch(v, ps.x, ps.z, ev.heavy ? 1.4 : 1); }
@@ -170,7 +178,7 @@ export class Feedback {
         if (ev.by === this.client.youServer) { this.shake(0.25); this.onTutorial('kill', rec); }
         // The boss falling, or an elite (140+ life: Centinela, Desalmados) by your hand.
         if (ev.boss || (ev.by === this.client.youServer && rec && rec.def && !rec.def.practice && rec.def.hp >= 100)) {
-          comic.hit(x, y + (v ? v.height : 1.8) * 0.6, z, { word: '¡KABUM!', big: true, frame: true, lines: true, color: 0xff7a2a });
+          comic.hit(x, y + (v ? v.height : 1.8) * 0.6, z, { word: t('feedback.comic.kabum'), big: true, frame: true, lines: true, color: 0xff7a2a });
         }
         break;
       }
@@ -183,27 +191,27 @@ export class Feedback {
           if (tier === 3) {
             sfx.parry(true, ev.chain);
             W.combatFx.shockwave(ps.x, ps.y, ps.z, this.accent);
-            this.overMe('¡EXCELENTE!', 'perfect', { life: 1.1 });
+            this.overMe(rich('feedback.call.excellent'), 'perfect', { life: 1.1 });
             this.screen(0.5);
             this.shake(0.35);
             W.rig.punchIn(0.6);
             if (v) v.flash(this.accent, 0.8);
             W.lights.flash(ps.x, ps.y + 1.3, ps.z, this.accent, 7, 4.5, 0.4);
             this.sparks(ev.x, y, ev.z, 18, CYAN, CYAN1, { up: 3, spread: 4.5 });
-            comic.hit(ev.x, y + 0.4, ev.z, { word: '¡PING!', lines: true, color: this.accent });
-            if (ev.heavy) this.teach('heavyBack', '<b>¡Orbe devuelto!</b> Solo un golpe EXCELENTE (o atraparlo con la guardia) devuelve los orbes pesados.');
+            comic.hit(ev.x, y + 0.4, ev.z, { word: t('feedback.comic.ping'), lines: true, color: this.accent });
+            if (ev.heavy) this.teach('heavyBack', rich('feedback.heavy_back'));
           } else if (tier === 2) {
             sfx.parry(false, ev.chain);
             W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 1.8, this.accent, 0.3, 0.14, 0.8);
             this.sparks(ev.x, y, ev.z, 10, CYAN, CYAN1);
             W.lights.flash(ps.x, ps.y + 1.3, ps.z, this.accent, 5, 2.5, 0.25);
             this.shake(0.15);
-            this.overMe(ev.coyote ? '¡JUSTO!' : 'BUENO', 'parry', { life: 0.8 });
+            this.overMe(rich(ev.coyote ? 'feedback.call.just' : 'feedback.call.good'), 'parry', { life: 0.8 });
           } else {
             sfx.parry(false, 1, true);
             this.sparks(ev.x, y, ev.z, 6, CYAN, CYAN1, { up: 1.2 });
-            this.overMe(ev.coyote ? '¡JUSTO!' : 'POBRE', 'graze', { life: 0.7, spread: 20 });
-            this.teach('poor', '<b>Reflejo POBRE:</b> golpeaste la bala demasiado pronto. Espera a que esté casi encima: <b>EXCELENTE</b> sale recta a tu cursor y hace el triple.', 5200);
+            this.overMe(rich(ev.coyote ? 'feedback.call.just' : 'feedback.call.poor'), 'graze', { life: 0.7, spread: 20 });
+            this.teach('poor', rich('feedback.poor'), 5200);
           }
           if (ev.chain >= 2 && tier >= 2) this.overMe(`x${ev.chain}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
           this.onTutorial('parry', ev);
@@ -225,36 +233,36 @@ export class Feedback {
           W.combatFx.setGuard(v, true, true);
           W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 2.6, 0xffc46a, 0.35, 0.12, 0.9);
           W.combatFx.ring(ps.x, ps.y + 0.12, ps.z, 1.6, 0xffffff, 0.25, 0.06, 1);
-          this.overMe(ev.pid ? '¡ATRAPADA!' : '¡GUARDIA PERFECTA!', 'perfect', { life: 1 });
+          this.overMe(rich(ev.pid ? 'feedback.call.caught' : 'feedback.call.perfect_guard'), 'perfect', { life: 1 });
           if (ev.pid && ev.n > 1) this.overMe(`x${ev.n}`, 'parry', { life: 0.7, rise: 20, spread: 30 });
           this.sparks(ev.x, y, ev.z, 14, AMBER, AMBER1, { up: 2.5, spread: 3 });
-          comic.hit(ev.x, y + 0.4, ev.z, { word: '¡CLANG!', frame: true, lines: true, color: 0xffc46a });
+          comic.hit(ev.x, y + 0.4, ev.z, { word: t('feedback.comic.clang'), frame: true, lines: true, color: 0xffc46a });
           W.lights.flash(ps.x, ps.y + 1.3, ps.z, 0xffc46a, 6, 3.5, 0.3);
           this.shake(0.25);
           if (v) v.flash(0xffe2a0, 0.6);
           this.hud.pulse('rmb');
-          if (ev.pid) this.teach('catch', '<b>¡Bala atrapada!</b> Tu siguiente golpe (<span class="kbd">LMB</span>) la devuelve a tu cursor. Atrapa hasta 3.', 5200);
+          if (ev.pid) this.teach('catch', rich('feedback.catch'), 5200);
           this.onTutorial('guard', ev);
         } else if (ev.st === 'block') {
           sfx.block();
           W.combatFx.setGuard(v, true, true);
           this.sparks(ev.x, y, ev.z, ev.heavy ? 12 : 6, [0.8, 0.95, 1], CYAN1, { up: 1.8 });
           this.shake(ev.heavy ? 0.3 : 0.1);
-          if (ev.coyote) this.overMe('¡JUSTO!', 'info', { life: 0.7 });
-          this.teach('block', '<b>Guardia:</b> frena casi todo el daño de frente pero gasta aguante. Súbela <b>justo antes</b> del impacto para ATRAPAR la bala.', 5200);
+          if (ev.coyote) this.overMe(rich('feedback.call.just'), 'info', { life: 0.7 });
+          this.teach('block', rich('feedback.block'), 5200);
         } else if (ev.st === 'break') {
           sfx.guardBreak();
-          this.overMe('¡GUARDIA ROTA!', 'hurt', { life: 1.1 });
+          this.overMe(rich('feedback.call.guard_broken'), 'hurt', { life: 1.1 });
           this.shake(0.45);
           this.screen(0.25, [1, 0.45, 0.2]);
-          this.teach('guardBreak', '<b>Guardia rota:</b> te quedaste sin aguante. Suéltala para que se recupere, o esquiva con un dash.', 5200);
+          this.teach('guardBreak', rich('feedback.guard_break'), 5200);
         }
         break;
       }
       case 'release': {
         if (!me) break;
         sfx.release(ev.n, !!ev.heavy);
-        this.overMe(ev.n > 1 ? `¡x${ev.n} DEVUELTAS!` : '¡DEVUELTA!', 'perfect', { life: 0.9 });
+        this.overMe(ev.n > 1 ? rich('feedback.call.returned_many', { count: ev.n }) : rich('feedback.call.returned'), 'perfect', { life: 0.9 });
         W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 1.4, this.accent, 0.25, 0.16, 0.9);
         break;
       }
@@ -262,7 +270,7 @@ export class Feedback {
         const rec = this.client.entities.get(ev.id), v = this.viewOf(ev.id);
         const x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
         if (v) { v.attack = null; v.hit && v.hit(1.2); }
-        this.float(x, z, (v ? v.height : 1.8) + 0.3, '¡ATURDIDO!', 'immune', { life: 0.9 });
+        this.float(x, z, (v ? v.height : 1.8) + 0.3, rich('feedback.call.stunned'), 'immune', { life: 0.9 });
         break;
       }
       case 'destroy': {
@@ -368,7 +376,7 @@ export class Feedback {
         if (v) v.flash(0xc9f8ff, 0.95);
         W.combatFx.ring(ev.x, y + 0.08, ev.z, 1.25, 0x9cefff, 0.8, 0.1, 0.65);
         this.sparks(ev.x, y + 1, ev.z, 12, FROST, [1, 1, 1], { gravity: -1.2, life: 0.65, spread: 2.1, up: 1.8, size: 0.22, size1: 0.09 });
-        this.float(ev.x, ev.z, (v ? v.height : 1.8) + 0.55, 'CONGELADO', 'immune', { life: 1.05, rise: 16, spread: 4 });
+        this.float(ev.x, ev.z, (v ? v.height : 1.8) + 0.55, rich('feedback.call.frozen'), 'immune', { life: 1.05, rise: 16, spread: 4 });
         sfx.freeze(vol);
         if (me) this.shake(0.18);
         break;
@@ -395,7 +403,7 @@ export class Feedback {
         if (me) {
           this.shake(0.22);
           const n = this.enemiesNear(ev.x, ev.z, ev.r);
-          if (n > 0) this.comicAt(ev.x, ev.z, 2.2, { word: '¡CHOF!', color: 0x7fe0ff, big: n >= 3, frame: n >= 3, lines: n >= 3 });
+          if (n > 0) this.comicAt(ev.x, ev.z, 2.2, { word: t('feedback.comic.chof'), color: 0x7fe0ff, big: n >= 3, frame: n >= 3, lines: n >= 3 });
         }
         break;
       }
@@ -406,7 +414,7 @@ export class Feedback {
         sfx.boardSlam(vol, big);
         if (me) {
           this.shake(big ? 0.55 : 0.38); W.rig.punchIn(big ? 0.5 : 0.35);
-          if (this.enemiesNear(ev.x, ev.z, ev.r) > 0 || big) this.comicAt(ev.x, ev.z, 1.6, { word: '¡PATAPÚM!', color: 0xffc46a, big, frame: big, lines: true });
+          if (this.enemiesNear(ev.x, ev.z, ev.r) > 0 || big) this.comicAt(ev.x, ev.z, 1.6, { word: t('feedback.comic.patapum'), color: 0xffc46a, big, frame: big, lines: true });
         }
         break;
       }
@@ -414,13 +422,13 @@ export class Feedback {
         W.skillFx.wheel(ev);
         sfx.wheelThrow(ev.k, me ? 1 : this.vol(ev.x, ev.z));
         sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.45);
-        if (me) { this.hud.pulse(ev.slot || 'q'); if (ev.k >= 1) this.comicAt(ev.x, ev.z, 1.4, { word: '¡ZUUUM!', color: 0xffe08a, lines: true }); }
+        if (me) { this.hud.pulse(ev.slot || 'q'); if (ev.k >= 1) this.comicAt(ev.x, ev.z, 1.4, { word: t('feedback.comic.zuum'), color: 0xffe08a, lines: true }); }
         break;
       }
       case 'wheelBack': W.skillFx.wheelBack(ev); break;
       case 'wheelCatch':
         W.skillFx.wheelEnd(ev, true);
-        if (me) { sfx.wheelCatch(); this.overMe('¡Atrapado!', 'xp', { life: 0.9 }); }
+        if (me) { sfx.wheelCatch(); this.overMe(rich('feedback.call.caught_masc'), 'xp', { life: 0.9 }); }
         break;
       case 'wheelDrop': W.skillFx.wheelEnd(ev, false); break;
       case 'wave': W.weaponFx.wave(ev, this.colorOf(ev.e, ev.elem)); sfx.crescent(me ? 1 : this.vol(ev.x, ev.z)); sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3); break;
@@ -428,7 +436,7 @@ export class Feedback {
         W.weaponFx.rain(ev, this.colorOf(ev.e, ev.elem));
         sfx.rainCall(me ? 1 : this.vol(ev.x, ev.z));
         sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
-        if (me) { this.hud.pulse('r'); this.comicAt(ev.x, ev.z, 1.6, { word: '¡RA-TA-TA!', color: 0xffd27a }); }
+        if (me) { this.hud.pulse('r'); this.comicAt(ev.x, ev.z, 1.6, { word: t('feedback.comic.ratata'), color: 0xffd27a }); }
         break;
       case 'equip': {
         const v = me ? this.me() : this.viewOf(ev.e);
@@ -443,7 +451,7 @@ export class Feedback {
         sfx.clunk();
         this.sparks(ev.x, ps.y + 1.1, ev.z, 5, [0.8, 0.8, 0.8], [0.4, 0.4, 0.45], { up: 1.5 });
         this.float(ev.x, ev.z, 1.6, '✘', 'immune', { life: 0.6 });
-        this.teach('clunk', '<b>Orbe pesado:</b> la espada no lo rompe. Golpéalo cuando esté encima (EXCELENTE), atrápalo con la guardia justo a tiempo, o esquívalo.');
+        this.teach('clunk', rich('feedback.clunk'));
         break;
       case 'phit':
         if (me) this.sparks(ev.x, ps.y + 1.1, ev.z, 5, AMBER, AMBER1, { up: 1.5 });
@@ -455,63 +463,63 @@ export class Feedback {
           // Your blow on another pirate (the Cala Calavera, M4.5): its number, like an enemy's.
           if (ev.by === this.client.youServer && ev.dmg > 0) {
             const rec = this.client.entities.get(ev.e), x = rec && rec.ready ? rec.r.x : ev.x, z = rec && rec.ready ? rec.r.z : ev.z;
-            this.float(x, z, (v ? v.height : 1.8) + 0.25, ev.crit ? `<small>¡CRÍTICO!</small> ${ev.dmg}` : String(ev.dmg), ev.kind === 'block' ? 'graze' : ev.crit ? 'crit' : 'dmg');
-            if (ev.crit) this.comicAt(x, z, (v ? v.height : 1.8) * 0.7, { word: '¡CRAC!', color: 0xffe14d });
+            this.float(x, z, (v ? v.height : 1.8) + 0.25, ev.crit ? `${rich('feedback.call.critical')} ${ev.dmg}` : String(ev.dmg), ev.kind === 'block' ? 'graze' : ev.crit ? 'crit' : 'dmg');
+            if (ev.crit) this.comicAt(x, z, (v ? v.height : 1.8) * 0.7, { word: t('feedback.comic.crac'), color: 0xffe14d });
             sfx.hit('flesh', !!ev.crit, this.vol(x, z));
           }
           break;
         }
         const v = this.me();
         if (ev.practice) {
-          this.overMe('¡Te dio!', 'info', { life: 0.9 });
+          this.overMe(rich('feedback.call.hit'), 'info', { life: 0.9 });
           sfx.hurt(false);
           if (v) { v.flash(0xffffff, 0.7); v.hit(0.6); }
-          this.teach('practiceHit', '<b>¡Casi!</b> Golpea con <span class="kbd">LMB</span> justo antes de que la bala te toque.');
+          this.teach('practiceHit', rich('feedback.practice_hit'));
           break;
         }
         if (ev.dmg <= 0) break;
         if (ev.kind === 'block') { this.overMe(`-${ev.dmg}`, 'graze', { life: 0.6, spread: 24 }); break; }
         sfx.hurt(ev.kind === 'aoe' || ev.dmg >= 18);
-        this.overMe(ev.crit ? `<small>¡CRÍTICO!</small> -${ev.dmg}` : `-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
+        this.overMe(ev.crit ? `${rich('feedback.call.critical')} -${ev.dmg}` : `-${ev.dmg}`, 'hurt', { life: 0.9, spread: 24 });
         if (v) { v.flash(0xff4d5e, 1); v.hit(1); }
         this.shake(Math.min(0.55, 0.22 + ev.dmg / 60));
         this.screen(0.28, [1, 0.25, 0.25]);
         if (ev.kind === 'punish') {
           sfx.punish();
-          this.overMe('¡IMPARABLE!', 'ghost', { life: 1 });
-          this.teach('punish', '<b>Púas violetas (✕):</b> atraviesan la guardia y la espada. Atraviésalas con un dash: <b>FANTASMA</b>.');
+          this.overMe(rich('feedback.call.unstoppable'), 'ghost', { life: 1 });
+          this.teach('punish', rich('feedback.punish'));
         }
-        if (ev.kind === 'aoe') this.teach('aoe', '<b>Círculos rojos:</b> estallan cuando se llenan. Sal de ellos o haz un dash a tiempo.');
+        if (ev.kind === 'aoe') this.teach('aoe', rich('feedback.aoe'));
         break;
       }
       case 'graze':
         if (!me) break;
         sfx.graze();
-        this.overMe('ROCE', 'graze', { life: 0.7, spread: 30 });
+        this.overMe(rich('feedback.call.graze'), 'graze', { life: 0.7, spread: 30 });
         this.sparks(ev.x, ps.y + 1.1, ev.z, 4, CYAN, CYAN1, { up: 1 });
         break;
       case 'dodge': {
         if (!me) break;
         // A dash through a curtain can pass many bullets: one float, counting them.
         const now = performance.now();
-        if (this.dodgeT && now - this.dodgeT < 350) { this.dodgeN++; if (this.dodgeF && this.dodgeF.active && this.dodgeF.el.classList.contains('dodge')) this.dodgeF.el.textContent = `ESQUIVA x${this.dodgeN}`; }
-        else { this.dodgeN = 1; sfx.dodge(); this.dodgeF = this.overMe('ESQUIVA', 'dodge', { life: 0.8, spread: 24 }); }
+        if (this.dodgeT && now - this.dodgeT < 350) { this.dodgeN++; if (this.dodgeF && this.dodgeF.active && this.dodgeF.el.classList.contains('dodge')) this.dodgeF.el.innerHTML = rich('feedback.call.dodge_count', { count: this.dodgeN }); }
+        else { this.dodgeN = 1; sfx.dodge(); this.dodgeF = this.overMe(rich('feedback.call.dodge'), 'dodge', { life: 0.8, spread: 24 }); }
         this.dodgeT = now;
         this.sparks(ev.x, ps.y + 1.1, ev.z, 3, CYAN, CYAN1, { up: 0.8 });
-        this.teach('dodge', '<b>¡ESQUIVA!</b> El dash te hace invulnerable: atraviesa las cortinas de balas (+RIPOSTE).', 4200);
+        this.teach('dodge', rich('feedback.dodge'), 4200);
         break;
       }
       case 'bounce': {
         if (Math.hypot(ev.x - ps.x, ev.z - ps.z) > 24) break;
         sfx.bounce(this.vol(ev.x, ev.z));
         this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 8, CYAN, CYAN1, { up: 1.5, spread: 2 });
-        if (ev.owner === this.client.youServer) this.float(ev.x, ev.z, 2.2, 'REBOTE', 'bounce', { life: 0.7, rise: 30 });
+        if (ev.owner === this.client.youServer) this.float(ev.x, ev.z, 2.2, rich('feedback.call.bounce'), 'bounce', { life: 0.7, rise: 30 });
         break;
       }
       case 'ghost': {
         if (!me) break;
         sfx.ghost();
-        this.overMe('FANTASMA', 'ghost', { life: 0.9 });
+        this.overMe(rich('feedback.call.ghost'), 'ghost', { life: 0.9 });
         const v = this.me();
         if (v) W.after.capture(v, 0x9b4dff, 0.35, 0.8);
         this.sparks(ev.x, ps.y + 1.1, ev.z, 8, VIOLET, VIOLET1, { up: 1.5 });
@@ -524,8 +532,8 @@ export class Feedback {
         W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, R * 1.15, this.accent, 0.6, 0.25, 0.45);
         W.combatFx.ring(ps.x, ps.y + 0.12, ps.z, R, 0xffffff, 0.45, 0.08, 1);
         W.combatFx.ring(ps.x, ps.y + 0.14, ps.z, R * 0.6, this.accent, 0.35, 0.14, 0.8);
-        this.overMe('¡TORMENTA!', 'perfect', { life: 1.2 });
-        comic.hit(ps.x, ps.y + 1.4, ps.z, { word: '¡FUAAA!', big: true, frame: true, lines: true, color: this.accent });
+        this.overMe(rich('feedback.call.storm'), 'perfect', { life: 1.2 });
+        comic.hit(ps.x, ps.y + 1.4, ps.z, { word: t('feedback.comic.fuaaa'), big: true, frame: true, lines: true, color: this.accent });
         this.screen(0.55);
         this.shake(0.6);
         W.rig.punchIn(0.8);
@@ -557,12 +565,12 @@ export class Feedback {
       case 'level': {
         if (!me) break;
         sfx.levelUp();
-        this.overMe(`¡NIVEL ${ev.level}!`, 'level', { life: 1.6, rise: 60 });
+        this.overMe(rich('feedback.call.level', { level: ev.level }), 'level', { life: 1.6, rise: 60 });
         W.combatFx.ring(ps.x, ps.y + 0.1, ps.z, 2.8, 0xffc23d, 0.7, 0.12, 1);
         W.combatFx.ring(ps.x, ps.y + 0.12, ps.z, 1.8, 0xfff1c8, 0.5, 0.08, 1);
         this.screen(0.3, [1, 0.85, 0.5]);
         const L = ev.level;
-        this.hud.toast(`<b>Nivel ${L}.</b> ▲ +${tuning.stats.hp[1]} HP · ▲ +${tuning.stats.atk[1]} ATK · ▲ +${tuning.stats.def[1]} DEF${L === 2 ? ' · <b>¡Segunda carga de dash!</b>' : ''}`, 5200);
+        this.hud.toast(`${rich('feedback.level_toast', { level: L, hp: tuning.stats.hp[1], atk: tuning.stats.atk[1], def: tuning.stats.def[1] })}${L === 2 ? rich('feedback.level_dash') : ''}`, 5200);
         break;
       }
       case 'windup': {
@@ -577,8 +585,8 @@ export class Feedback {
         sfx.windup(ev.atk, this.vol(x, z));
         const c = ev.atk === 'volley' ? 0x8dffb0 : ev.atk === 'orb' ? 0xff5a1f : ev.atk === 'spikes' ? 0x9b4dff : ev.atk === 'ball' ? 0xffc46a : 0xff3b30;
         W.lights.flash(x, rec.r.y + 1.6, z, c, ev.atk === 'orb' ? 6 : 4, ev.atk === 'orb' ? 3.5 : 2, ev.dur + 0.15);
-        if (ev.atk === 'orb') this.teach('orbWarn', '<b>¡Orbe pesado!</b> Grande y lento: solo un golpe EXCELENTE o una guardia perfecta lo devuelven. Si no, esquívalo.');
-        if (ev.atk === 'spikes') this.teach('spikeWarn', '<b>Púas violetas (✕):</b> imparables. Dash a través de ellas.');
+        if (ev.atk === 'orb') this.teach('orbWarn', rich('feedback.orb_warn'));
+        if (ev.atk === 'spikes') this.teach('spikeWarn', rich('feedback.spike_warn'));
         break;
       }
       case 'pattern': {
@@ -618,13 +626,13 @@ export class Feedback {
         const near = !A || Math.hypot(ps.x - A.x, ps.z - A.z) < 40;
         if (!near) break;
         const H = this.hud, red = !!this.settings.reducedMotion;
-        if (ev.wipe) { H.toast('<b>La Caldera te ha vencido.</b> Pisa las runas del centro para volver a intentarlo.', 5200); break; }
-        if (ev.late) { H.toast('<b>¡Refuerzos!</b>', 1800); sfx.wake(0.7); break; }
-        if (ev.st === 'intro') { H.showZone('LA PRUEBA DE FUEGO', `Sobrevive a ${ev.waves} oleadas… y a lo que venga después`, true, red); sfx.gong(); this.shake(0.3); }
-        else if (ev.st === 'wave' && this.lastWave !== ev.wave) { H.showZone(`OLEADA ${ev.wave + 1}/${ev.waves}`, WAVE_SUB[ev.wave] || '', true, red); sfx.gong(0.8); }
-        else if (ev.st === 'rest') H.toast('<b>Oleada superada.</b> Respira: la siguiente llega en unos segundos.', 3200);
-        else if (ev.st === 'bossIntro' && ev.boss) { H.showZone('HELLFIRE', 'Señor de La Caldera', true, red); sfx.roar(); this.shake(0.6); }
-        else if (ev.st === 'victory') { H.showZone('¡VICTORIA!', 'Has superado La Prueba de Fuego', true, red); sfx.fanfare(); }
+        if (ev.wipe) { H.toast(rich('feedback.wipe'), 5200); break; }
+        if (ev.late) { H.toast(rich('feedback.reinforcements'), 1800); sfx.wake(0.7); break; }
+        if (ev.st === 'intro') { this.zone('feedback.enc_title', {}, 'feedback.enc_intro', { waves: ev.waves }, red); sfx.gong(); this.shake(0.3); }
+        else if (ev.st === 'wave' && this.lastWave !== ev.wave) { this.zone('feedback.wave', { wave: ev.wave + 1, waves: ev.waves }, `feedback.wave_sub.${ev.wave}`, {}, red); sfx.gong(0.8); }
+        else if (ev.st === 'rest') H.toast(rich('feedback.rest'), 3200);
+        else if (ev.st === 'bossIntro' && ev.boss) { this.zone('feedback.boss_name', {}, 'feedback.boss_title', {}, red); sfx.roar(); this.shake(0.6); }
+        else if (ev.st === 'victory') { this.zone('feedback.victory_title', {}, 'feedback.enc_victory', {}, red); sfx.fanfare(); }
         this.lastWave = ev.st === 'wave' || ev.st === 'rest' ? ev.wave : -1;
         break;
       }
@@ -636,11 +644,11 @@ export class Feedback {
         W.lights.flash(ev.x, this.y(ev.x, ev.z) + 3, ev.z, 0xff3b1f, 14, 6, 1.6);
         W.combatFx.ring(ev.x, this.y(ev.x, ev.z) + 0.1, ev.z, 9, 0xff7a2a, 0.9, 0.1, 1.0);
         this.sparks(ev.x, this.y(ev.x, ev.z) + 2, ev.z, 40, [1, 0.6, 0.2], [0.9, 0.16, 0.04], { up: 6, spread: 6 });
-        if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) this.comicAt(ev.x, ev.z, 3.2, { word: '¡KABUM!', big: true, frame: true, lines: true, color: 0xff4d2a });
-        if (ev.last) this.hud.showZone('¡HELLFIRE DESATADO!', 'La lava devora La Caldera: no te alejes del centro', true, !!this.settings.reducedMotion);
-        else this.hud.showZone(`FASE ${ev.phase}`, ev.shield ? 'Su escudo solo cede ante tus reflejos' : '¡Hellfire se enfurece!', true, !!this.settings.reducedMotion);
-        if (ev.shield) this.teach('bossShield', '<b>Escudo:</b> tus golpes apenas le hacen daño. <b>Refleja</b> sus balas con la espada, y devuélvele el <b>orbe pesado</b> (golpe EXCELENTE o atrapándolo con la guardia) para romperlo.', 6500);
-        if (ev.last) { this.shake(1.1); this.teach('bossLast', '<b>Última fase:</b> meteoros, carriles de fuego y cortinas de balas. Sus llamas frenan tus golpes: <b>refleja</b> la cortina contra él, y devuélvele su <b>orbe pesado</b> (EXCELENTE o guardia perfecta) para aturdirlo.', 7000); }
+        if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 45) this.comicAt(ev.x, ev.z, 3.2, { word: t('feedback.comic.kabum'), big: true, frame: true, lines: true, color: 0xff4d2a });
+        if (ev.last) this.zone('feedback.boss_last_title', {}, 'feedback.boss_last_sub', {}, !!this.settings.reducedMotion);
+        else this.zone('feedback.phase_title', { phase: ev.phase }, ev.shield ? 'feedback.phase_shield' : 'feedback.phase_angry', {}, !!this.settings.reducedMotion);
+        if (ev.shield) this.teach('bossShield', rich('feedback.boss_shield'), 6500);
+        if (ev.last) { this.shake(1.1); this.teach('bossLast', rich('feedback.boss_last'), 7000); }
         break;
       }
       case 'beam': {
@@ -649,18 +657,18 @@ export class Feedback {
         if (ev.kind === 'laser' && this.lastLaser !== ev.tick) {
           this.lastLaser = ev.tick;
           sfx.laser(this.vol(ev.x0, ev.z0));
-          this.teach('laser', '<b>Láser giratorio:</b> te persigue en círculo. Cruza el rayo con un <b>dash</b> (FANTASMA) en vez de huir de él.', 6000);
+          this.teach('laser', rich('feedback.laser'), 6000);
         } else if (ev.kind === 'lane' && this.lastLane !== ev.tick) {
           this.lastLane = ev.tick;
           sfx.lane(0.8);
-          this.teach('lanes', '<b>Carriles de fuego:</b> barren la arena. Atraviesa la banda con un <b>dash</b> o quédate entre dos.', 6000);
+          this.teach('lanes', rich('feedback.lanes'), 6000);
         }
         break;
       }
       case 'lava': {
         if (ev.off) break;
         sfx.lava();
-        this.hud.toast('<b>¡La lava sube!</b> El borde de La Caldera arde: quédate cerca del centro.', 4200);
+        this.hud.toast(rich('feedback.lava'), 4200);
         break;
       }
       case 'shield': {
@@ -672,7 +680,7 @@ export class Feedback {
         this.sparks(x, this.y(x, z) + 2, z, 30, CYAN, CYAN1, { up: 4, spread: 5 });
         W.combatFx.ring(x, this.y(x, z) + 0.1, z, 5, 0x3bf0ff, 0.6, 0.12, 0.7);
         const ph = this.client.enc && this.client.enc[0] ? this.client.enc[0][6] : 0;
-        this.float(x, z, 4.4, ph >= 2 ? '¡ATURDIDO!' : '¡ESCUDO ROTO!', 'perfect', { life: 1.4, rise: 40 });
+        this.float(x, z, 4.4, rich(ph >= 2 ? 'feedback.call.stunned' : 'feedback.call.shield_broken'), 'perfect', { life: 1.4, rise: 40 });
         break;
       }
       case 'rise': {
@@ -682,9 +690,9 @@ export class Feedback {
         this.sparks(ev.x, y + 0.3, ev.z, boss ? 40 : 12, c0, c1, { up: boss ? 5 : 2.5, spread: boss ? 5 : 2 });
         W.combatFx.ring(ev.x, y + 0.08, ev.z, boss ? 5 : 1.6, imp || boss ? 0xff7a2a : 0xfff1c8, 0.5, 0.15, 0.7);
         if (Math.hypot(ev.x - ps.x, ev.z - ps.z) < 22) sfx.wake(this.vol(ev.x, ev.z) * 0.6);
-        if (ev.kind === 'grunt') this.teach('grunt', '<b>Grumetes ahogados:</b> te persiguen en manada y muerden. Golpéalos (salen volando) o dashea fuera del círculo.', 4800);
-        if (imp) this.teach('imp', '<b>Diablillos:</b> disparan espirales. Refleja sus orbes contra la manada.', 4800);
-        if (ev.kind === 'shaman') this.teach('shaman', '<b>Chamán de coral:</b> anillos de ámbar y violeta. Parrea los ámbar, dashea los violeta.', 4800);
+        if (ev.kind === 'grunt') this.teach('grunt', rich('feedback.grunt'), 4800);
+        if (imp) this.teach('imp', rich('feedback.imp'), 4800);
+        if (ev.kind === 'shaman') this.teach('shaman', rich('feedback.shaman'), 4800);
         break;
       }
       case 'wake': {
@@ -693,7 +701,7 @@ export class Feedback {
         sfx.wake(this.vol(rec.r.x, rec.r.z));
         this.float(rec.r.x, rec.r.z, 2.6, '!', 'hurt', { life: 1, rise: 30 });
         W.lights.flash(rec.r.x, rec.r.y + 2, rec.r.z, 0x6ff0ff, 6, 3, 1.2);
-        this.teach('wake', '<b>¡Centinelas!</b> Lanzan orbes pesados, púas imparables y tajos de área.', 4800);
+        this.teach('wake', rich('feedback.wake'), 4800);
         break;
       }
       default: break;

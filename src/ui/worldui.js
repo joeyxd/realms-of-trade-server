@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { clamp } from '../core/math.js';
 import { stage } from './stage.js';
+import { dataText, onLocaleChange, setText, t } from '../core/i18n.js';
 
 const v = new THREE.Vector3();
 
@@ -17,6 +18,14 @@ export class WorldUI {
     this.prompts = new Map();
     this.bubbles = new Map();
     this.chatBubbles = new Map();
+    this._localeUnsubscribe = onLocaleChange(() => {
+      for (const b of this.chatBubbles.values()) {
+        if (!b.labelKey) continue;
+        const params = { ...b.labelParams };
+        if (b.labelNameKey && Object.hasOwn(params, 'name')) params.name = t(b.labelNameKey);
+        setText(b.labelEl, b.labelKey, params);
+      }
+    });
     this.labels = new Map(); // loot on the ground (M4): its name in its rarity's colour
     this.w = stage.w; this.h = stage.h;
     this.playerRect = { x: 0, y: 0, w: 0, h: 0 };
@@ -71,7 +80,7 @@ export class WorldUI {
       const fr = maxHp > 0 ? Math.max(0, Math.min(1, hp / maxHp)) : 1;
       if (fr !== p.fr) { p.hpEl.style.width = (fr * 100).toFixed(1) + '%'; p.fr = fr; }
     }
-    if (level !== undefined && p.lvEl && level !== p.level) { p.lvEl.textContent = 'Nv ' + level; p.level = level; }
+    if (level !== undefined && p.lvEl && level !== p.level) { p.lvEl.innerHTML = `${dataText('Nv')} ${level}`; p.level = level; }
   }
 
   // A pirate who can hurt you right now (both inside the Cala Calavera, M4.5): red, with a skull.
@@ -96,8 +105,10 @@ export class WorldUI {
     const el = document.createElement('div');
     // ally: another human pirate (online); player: a bot.
     el.className = 'nameplate' + (kind === 'npc' ? ' npc' : kind === 'enemy' ? ' enemy' : kind === 'minor' ? ' enemy minor' : kind === 'practice' ? ' practice' : kind === 'ally' ? ' ally' : '');
-    name = esc(name); title = esc(title);
-    const lv = kind === 'npc' || kind === 'practice' ? '' : 'Nv ' + level;
+    const authored = kind === 'ally';
+    name = authored ? esc(name) : dataText(name);
+    title = title ? (authored ? esc(title) : dataText(title)) : '';
+    const lv = kind === 'npc' || kind === 'practice' ? '' : `${dataText('Nv')} ${level}`;
     // Minor (swarm) enemies: just the HP bar, so a pack of ten stays readable.
     const nameRow = kind === 'minor' ? '<span class="lv" hidden></span>' : `<div class="np-name"><span class="lv">${lv}</span>${name}</div>`;
     el.innerHTML = `${title ? `<div class="np-title">«${title}»</div>` : ''}${nameRow}${kind === 'npc' || kind === 'practice' ? '' : '<div class="np-hp"><i style="width:100%"></i></div>'}`;
@@ -158,7 +169,7 @@ export class WorldUI {
   }
 
   // Player chat uses text nodes so message content and labels are never interpreted as markup.
-  chatBubble(entity, { text = '', channel = 'world', label = '', own = false, range = 42 } = {}, lifeMs = 4500) {
+  chatBubble(entity, { text = '', channel = 'world', label = '', own = false, range = 42, labelKey = null, labelParams = {}, labelNameKey = null } = {}, lifeMs = 4500) {
     this.removeChatBubble(entity);
     const el = document.createElement('div');
     el.className = 'mn-chat-bubble';
@@ -167,13 +178,17 @@ export class WorldUI {
     if (own) el.classList.add('is-own');
     const labelEl = document.createElement('div');
     labelEl.className = 'mn-chat-bubble-label';
-    labelEl.textContent = String(label ?? '');
+    if (typeof labelKey === 'string' && labelKey) {
+      const params = { ...labelParams };
+      if (labelNameKey && Object.hasOwn(params, 'name')) params.name = t(labelNameKey);
+      setText(labelEl, labelKey, params);
+    } else labelEl.textContent = String(label ?? '');
     const textEl = document.createElement('div');
     textEl.className = 'mn-chat-bubble-text';
     textEl.textContent = String(text ?? '');
     el.append(labelEl, textEl);
     this.root.appendChild(el);
-    this.chatBubbles.set(entity, { el, p: { x: 0, y: 0, vis: false }, range: Math.max(0, Number(range) || 0), until: performance.now() + Math.max(0, Number(lifeMs) || 0), shown: false });
+    this.chatBubbles.set(entity, { el, labelEl, labelKey, labelParams: { ...labelParams }, labelNameKey, p: { x: 0, y: 0, vis: false }, range: Math.max(0, Number(range) || 0), until: performance.now() + Math.max(0, Number(lifeMs) || 0), shown: false });
     return this.chatBubbles.get(entity);
   }
 
@@ -218,7 +233,7 @@ export class WorldUI {
       const a = anchors.get(id);
       if (!a) { pm.el.hidden = true; continue; }
       this.project(a.pos, pm.p);
-      if (!pm.p.vis) continue;
+      if (!pm.p.vis) { pm.el.hidden = true; continue; }
       this.place(pm.el, pm.p, 1, pm.below ? -14 : 12, pm.below);
       if (pm.w === undefined || pm.wHtml !== pm.html) { pm.w = pm.el.offsetWidth; pm.h = pm.el.offsetHeight; pm.wHtml = pm.html; }
       const top = pm.below ? pm.p.y + 14 : pm.p.y - 12 - pm.h;

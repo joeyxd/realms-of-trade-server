@@ -1,3 +1,4 @@
+import { t, text as ltext, rich, attr, setText, setDataText, setAttributeText, translateData, dataText, getLocale, onLocaleChange, initI18n } from '../core/i18n.js';
 // MMO HUD: portrait + bars (HP with a damage trail, RIPOSTE meter, XP), action bar (attack, parry with its
 // whiff lock, dash charges with radial recharge, riposte fill), chain counter, zone banner, objective
 // tracker, toasts and the "fallen" screen. Plain DOM over the canvas; GSAP for the choreography.
@@ -77,15 +78,15 @@ export class Hud {
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
           <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
-          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden title="Cala Calavera: fuego amigo y botín completo">☠ SIN LEY</span></div>
+          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden data-l10n-title="hud.lawTip" title="${attr('hud.lawTip')}">${ltext('hud.law')}</span></div>
         </div>
       </div>
       <div class="hud-top-right">
         <div class="net-chip" hidden><i></i><span class="ms"></span><span class="pl"></span></div>
-        <button class="icon-btn interactive" id="hud-bag" aria-label="Bolsa y personaje (I)" title="Bolsa y personaje (I)">${ICONS.bag}<span class="dot" hidden></span></button>
-        <button class="icon-btn interactive" id="hud-map" aria-label="Mapa (M)" title="Mapa (M)">${ICONS.map}</button>
-        <button class="icon-btn interactive" id="hud-mute" aria-label="Silenciar">${ICONS.sound}</button>
-        <button class="icon-btn interactive" id="hud-settings" aria-label="Ajustes">${ICONS.gear}</button>
+        <button class="icon-btn interactive" id="hud-bag" data-l10n-aria-label="hud.bag" aria-label="${attr('hud.bag')}" data-l10n-title="hud.bag" title="${attr('hud.bag')}">${ICONS.bag}<span class="dot" hidden></span></button>
+        <button class="icon-btn interactive" id="hud-map" data-l10n-aria-label="hud.map" aria-label="${attr('hud.map')}" data-l10n-title="hud.map" title="${attr('hud.map')}">${ICONS.map}</button>
+        <button class="icon-btn interactive" id="hud-mute" data-l10n-aria-label="hud.mute" aria-label="${attr('hud.mute')}">${ICONS.sound}</button>
+        <button class="icon-btn interactive" id="hud-settings" data-l10n-aria-label="hud.settings" aria-label="${attr('hud.settings')}">${ICONS.gear}</button>
       </div>
       <div id="boss-bar" hidden>
         <div class="bname outlined"><span class="n"></span><span class="t"></span></div>
@@ -95,21 +96,21 @@ export class Hud {
       <div id="enc-info" class="outlined" hidden></div>
       <div id="zone-banner"><div class="zname outlined"></div><div class="zsub"></div><div class="zline"></div></div>
       <div id="toasts"></div>
-      <div class="tracker frame-dark"><h3>Primeros pasos</h3><ul></ul></div>
-      <div id="chain" class="outlined" hidden><span class="x">CADENA</span><b>x2</b></div>
+      <div class="tracker frame-dark"><h3>${ltext('tutorial.first')}</h3><ul></ul></div>
+      <div id="chain" class="outlined" hidden><span class="x">${ltext('hud.chain')}</span><b>x2</b></div>
       <div class="actionbar frame">
         <div class="wname"></div>
         <div class="mast" title=""><div class="mfill"></div><span class="mtxt"></span></div>
-        <div class="slot lmb-slot" data-slot="lmb" title="Combo de 3 golpes: destruye proyectiles ámbar"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
-        <div class="slot rmb-slot" data-slot="rmb" title="Guardia (mantener): bloquea de frente. Súbela justo a tiempo para ATRAPAR la bala; el siguiente golpe la devuelve"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
+        <div class="slot lmb-slot" data-slot="lmb" data-l10n-title="hud.comboTip" title="${attr('hud.comboTip')}"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
+        <div class="slot rmb-slot" data-slot="rmb" data-l10n-title="hud.guardTip" title="${attr('hud.guardTip')}"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.lunge)}
         ${this.slot('e', 'E', ICONS.crescent)}
         ${this.slot('g', 'G', ICONS.comet)}
-        <div class="slot r-slot" data-slot="r" title="Riposte Tormenta: con el medidor lleno, refleja todo a tu alrededor"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>
-        <div class="slot pot-slot" data-slot="pot" title="Poción de ron-coco: cura el 40 % de tu vida"><span class="kbd key">1</span><span class="ico">${ICONS.potion}</span><div class="sweep"></div><b class="cnt">0</b></div>
+        <div class="slot r-slot" data-slot="r" data-l10n-title="hud.riposteTip" title="${attr('hud.riposteTip')}"><span class="kbd key">R</span><div class="rfill"></div><span class="ico">${ICONS.storm}</span><span class="lock" hidden>${ICONS.lock}<em></em></span></div>
+        <div class="slot pot-slot" data-slot="pot" data-l10n-title="hud.potionTip" title="${attr('hud.potionTip')}"><span class="kbd key">1</span><span class="ico">${ICONS.potion}</span><div class="sweep"></div><b class="cnt">0</b></div>
       </div>
-      <div id="fallen" hidden><div class="ftitle outlined">HAS CAÍDO</div><div class="fsub">Reapareces en <b>3</b>…</div></div>`;
+      <div id="fallen" hidden><div class="ftitle outlined">${ltext('hud.fallen')}</div><div class="fsub">${ltext('hud.respawn')}<b>3</b>…</div></div>`;
     this.portrait = root.querySelector('.portrait canvas');
     this.lvl = root.querySelector('.lvl-badge');
     this.pname = root.querySelector('.pname');
@@ -126,7 +127,7 @@ export class Hud {
     this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip'); this.lawChip = root.querySelector('.law-chip');
     this.clockEl = document.createElement('div');
     this.clockEl.className = 'world-clock outlined';
-    this.clockEl.setAttribute('aria-label', 'Hora del mundo');
+    setAttributeText(this.clockEl, 'aria-label', 'hud.clock');
     this.clockEl.style.cssText = 'display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;padding:3px 8px;border:1px solid rgba(170,112,237,.65);border-radius:999px;background:rgba(20,12,36,.82);color:#f1ddff;font:800 10px/1.2 var(--font-ui);font-variant-numeric:tabular-nums';
     this.clockTime = document.createElement('span');
     this.clockPeriod = document.createElement('span');
@@ -172,7 +173,7 @@ export class Hud {
   // Boss bar (top centre): {name, title, hp, maxHp, phase (0-based), phases, marks (hp fractions of the
   // phases still to come), shield (0 off · 1 up · 2 broken), inv} or null to hide.
   setBoss(b) {
-    const key = b ? [b.name, Math.ceil(b.hp), b.maxHp, b.phase, b.shield, b.inv].join('|') : '';
+    const key = b ? getLocale() + '|' + [b.name, Math.ceil(b.hp), b.maxHp, b.phase, b.shield, b.inv].join('|') : '';
     if (key === this.lastBoss) return;
     const was = !!this.lastBoss;
     this.lastBoss = key;
@@ -180,8 +181,8 @@ export class Hud {
     this.root.classList.toggle('boss-on', !!b);
     if (!b) return;
     if (!was) {
-      this.bossEl.querySelector('.n').textContent = b.name;
-      this.bossEl.querySelector('.t').textContent = b.title || '';
+      setDataText(this.bossEl.querySelector('.n'), b.name);
+      setDataText(this.bossEl.querySelector('.t'), b.title || '');
       gsap.fromTo(this.bossEl, { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'back.out(1.6)' });
     }
     const fr = Math.max(0, Math.min(1, b.hp / b.maxHp));
@@ -196,7 +197,7 @@ export class Hud {
     this.bossEl.classList.toggle('shield', b.shield === 1);
     this.bossEl.classList.toggle('broken', b.shield === 2);
     this.bossEl.classList.toggle('inv', !!b.inv);
-    this.bossState.innerHTML = `FASE ${b.phase + 1}/${b.phases}` + (b.inv ? ' · <b>INVULNERABLE</b>' : b.shield === 2 ? (b.phase >= 2 ? ' · <b class="br">¡ATURDIDO! ×1,4</b>' : ' · <b class="br">¡ESCUDO ROTO! ×1,5</b>') : b.shield === 1 ? ' · <b class="sh">ESCUDO: solo los reflejos lo atraviesan</b>' : b.phase >= 2 ? ' · <b class="br">EN LLAMAS: los reflejos duelen más</b>' : '');
+    this.bossState.innerHTML = ltext('hud.phase',{phase:b.phase+1,phases:b.phases}) + (b.inv ? rich('hud.invulnerable') : b.shield === 2 ? (b.phase >= 2 ? rich('hud.stunned') : rich('hud.broken')) : b.shield === 1 ? rich('hud.shield') : b.phase >= 2 ? rich('hud.fire') : '');
   }
 
   // Encounter line under the boss bar / top centre ("OLEADA 2/3 · Enemigos 9"), or null.
@@ -224,7 +225,8 @@ export class Hud {
     const rp = Math.floor(riposte);
     if (rp !== L.rp) {
       this.rpFill.style.width = rp + '%';
-      this.rpNum.textContent = rp >= 100 ? 'RIPOSTE LISTO · R' : `RIPOSTE ${rp} %`;
+      if (rp >= 100) setText(this.rpNum, 'hud.ready');
+      else { delete this.rpNum.dataset.l10nKey; this.rpNum.textContent = `RIPOSTE ${rp} %`; }
       this.rpBar.classList.toggle('full', rp >= 100);
       this.rSlot.classList.toggle('ready', rp >= 100);
       this.rFill.style.height = rp + '%';
@@ -296,7 +298,7 @@ export class Hud {
   // What Q / E hold (M4.7): {id, form, rank} each. A tattoo shows its rank (I–V) and its form letter (A / B) and
   // its slot a violet rim; the title says name · form · rank and what it does.
   setSlots(q, e) {
-    const key = `${q.id}:${q.form}:${q.rank}|${e.id}:${e.form}:${e.rank}`;
+    const key = getLocale() + '|' + `${q.id}:${q.form}:${q.rank}|${e.id}:${e.form}:${e.rank}`;
     if (key === this.last.slots) return;
     this.last.slots = key;
     for (const [el, d] of [[this.qSlot, q], [this.eSlot, e]]) {
@@ -309,17 +311,17 @@ export class Hud {
         const f = T.forms[d.form] || T.forms[0];
         rk.textContent = ROMAN[d.rank] || 'I';
         fm.textContent = d.form === 2 ? 'B' : 'A';
-        el.title = `${T.name}${d.form ? ' · ' + f.name : ''} · rango ${ROMAN[d.rank] || 'I'}: ${f.hint}${S && S.cd ? ` · ${formed(d.id, d.form).cd} s` : ''}`;
-      } else el.title = `${S.name}: ${S.hint}${S.cd ? ` · ${S.cd} s` : ''}`;
+        el.title = t('hud.rankTip',{name:translateData(T.name),form:d.form ? ' · '+translateData(f.name):'',rank:ROMAN[d.rank]||'I',hint:translateData(f.hint),cooldown:S?.cd ? ` · ${formed(d.id,d.form).cd} s`:''});
+      } else el.title = `${translateData(S.name)}: ${translateData(S.hint)}${S.cd ? ` · ${S.cd} s` : ''}`;
     }
   }
 
   // ---- M4: gold, potions, mastery, locks, quests ---------------------------------------------------------
   setPearl(id) {
-    if (id === this.last.pearl) return;
-    this.last.pearl = id;
+    if (id + getLocale() === this.last.pearl) return;
+    this.last.pearl = id + getLocale();
     const S = SKILLS[id] || SKILLS.none, empty = id === 'none';
-    this.gSlot.title = `${S.name}: ${S.hint}`;
+    this.gSlot.title = `${translateData(S.name)}: ${translateData(S.hint)}`;
     this.gSlot.classList.toggle('empty', empty);
     this.gSlot.querySelector('.lock').hidden = !empty;
     this.gSlot.querySelector('.ico').innerHTML = ICONS[id] || ICONS.comet;
@@ -332,8 +334,8 @@ export class Hud {
     if (!Number.isFinite(hour)) return;
     const minuteOfDay = ((Math.floor(hour * 60) % 1440) + 1440) % 1440;
     const time = `${String(Math.floor(minuteOfDay / 60)).padStart(2, '0')}:${String(minuteOfDay % 60).padStart(2, '0')}`;
-    const period = night ? 'Noche' : 'Día';
-    const curse = elem === 4 ? (night ? 'Daño +10 %' : 'Pociones 70 %') : '';
+    const period = night ? t('hud.night') : t('hud.day');
+    const curse = elem === 4 ? (night ? t('hud.curseNight') : t('hud.curseDay')) : '';
     if (this.clockEl.dataset.time !== time) { this.clockTime.textContent = time; this.clockEl.dataset.time = time; }
     if (this.clockEl.dataset.period !== period) { this.clockPeriod.textContent = period; this.clockEl.dataset.period = period; }
     if (this.clockEl.dataset.curse !== curse) {
@@ -350,13 +352,13 @@ export class Hud {
       this.goldEl.textContent = String(n);
       this.last.gold = n;
     }
-    if (tierName !== this.last.tierName) { this.tierChip.hidden = !tierName; this.tierChip.textContent = tierName; this.last.tierName = tierName; }
+    if (tierName !== this.last.tierName) { this.tierChip.hidden = !tierName; setDataText(this.tierChip,tierName); this.last.tierName = tierName; }
   }
 
   // Potions you carry, and the cooldown left (s) out of max.
   setPotions(n, cd = 0, max = 2) {
     const f = max > 0 ? Math.max(0, Math.min(1, cd / max)) : 0;
-    const key = n + ':' + Math.round(f * 40);
+    const key = getLocale() + '|' + n + ':' + Math.round(f * 40);
     if (key === this.last.pot) return;
     this.last.pot = key;
     this.potSlot.querySelector('.cnt').textContent = String(n);
@@ -367,27 +369,27 @@ export class Hud {
 
   // Locked Q / E / R (the weapon's mastery has not opened them): {q: level needed | 0, e, r}, and the kit name.
   setLocks(need, kitName = '') {
-    const key = `${need.q}|${need.e}|${need.r}|${kitName}`;
+    const key = getLocale() + '|' + `${need.q}|${need.e}|${need.r}|${kitName}`;
     if (key === this.last.locks) return;
     this.last.locks = key;
     for (const [el, k] of [[this.qSlot, 'q'], [this.eSlot, 'e'], [this.rSlot, 'r']]) {
       const lk = el.querySelector('.lock'), n = need[k];
       el.classList.toggle('locked', !!n);
       lk.hidden = !n;
-      if (n) { lk.querySelector('em').textContent = 'M' + n; lk.title = `Se desbloquea con Maestría ${n} de ${kitName}`; }
+      if (n) { lk.querySelector('em').textContent = 'M' + n; lk.title = t('hud.unlock',{level:n,name:translateData(kitName)}); }
     }
   }
 
   // The weapon's mastery: level, progress to the next (0..1), at the top.
   setMastery(level, frac, top, title = '') {
-    const key = level + ':' + Math.round(frac * 50);
+    const key = getLocale() + '|' + level + ':' + Math.round(frac * 50);
     if (key === this.last.mast) return;
     const up = this.last.mastLevel !== undefined && level > this.last.mastLevel;
     this.last.mast = key; this.last.mastLevel = level;
     this.mastEl.hidden = !level;
     if (!level) return;
     this.mastEl.querySelector('.mfill').style.width = (top ? 100 : frac * 100).toFixed(1) + '%';
-    this.mastEl.querySelector('.mtxt').textContent = top ? `Maestría ${level} · máxima` : `Maestría ${level}`;
+    this.mastEl.querySelector('.mtxt').textContent = t(top?'hud.masteryMax':'hud.mastery',{level});
     this.mastEl.title = title;
     if (up) gsap.fromTo(this.mastEl, { scale: 1.2 }, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.4)' });
   }
@@ -403,7 +405,7 @@ export class Hud {
 
   // The tracker shows the beach tutorial first, then your quests: [{id, text, done, ready}].
   setQuests(title, items) {
-    const key = title + '|' + items.map((it) => `${it.id}:${it.text}:${it.done ? 1 : 0}:${it.ready ? 1 : 0}`).join('|');
+    const key = getLocale() + '|' + title + '|' + items.map((it) => `${it.id}:${it.text}:${it.done ? 1 : 0}:${it.ready ? 1 : 0}`).join('|');
     if (key === this.last.quests) return;
     const was = this.last.quests;
     this.last.quests = key;
@@ -414,16 +416,16 @@ export class Hud {
 
   // The weapon decides LMB and Q / E / R: icons, tooltips and the name over the bar.
   setWeapon(kind) {
-    if (kind === this.last.weapon) return;
-    this.last.weapon = kind;
+    if (kind + getLocale() === this.last.weapon) return;
+    this.last.weapon = kind + getLocale();
     const W = WEAPONS[kind] || WEAPONS.sable, pist = W.basic === 'pistol';
     const icon = { combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
     this.lmbSlot.querySelector('.ico').innerHTML = icon[W.basic];
-    this.lmbSlot.title = pist ? 'Disparo (mantener): balas rectas; no refleja. Atrapa con la guardia y el siguiente disparo devuelve lo atrapado' : 'Combo de 3 golpes: golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE)';
+    this.lmbSlot.title = pist ? t('hud.pistolTip') : t('hud.swordTip');
     this.lmbSlot.querySelector('.combo').hidden = pist;
     this.rSlot.querySelector('.ico').innerHTML = icon[W.r];
-    this.rSlot.title = W.r === 'rain' ? 'Lluvia de plomo: con el medidor lleno, una zona de balas en el cursor' : 'Tormenta: con el medidor lleno, refleja todo a tu alrededor';
-    this.wname.textContent = W.name;
+    this.rSlot.title = W.r === 'rain' ? t('hud.rainTip') : t('hud.stormTip');
+    setDataText(this.wname, W.name);
     gsap.fromTo(this.wname, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
   }
 
@@ -431,7 +433,7 @@ export class Hud {
   setCooldowns(q, qMax, e, eMax, g = 0, gMax = 0) {
     for (const [el, t, max, k] of [[this.qSlot, q, qMax, 'cq'], [this.eSlot, e, eMax, 'ce'], [this.gSlot, g, gMax, 'cg']]) {
       const f = max > 0 ? Math.max(0, Math.min(1, t / max)) : 0;
-      const key = Math.round(f * 60) + ':' + Math.ceil(t);
+      const key = getLocale() + '|' + Math.round(f * 60) + ':' + Math.ceil(t);
       if (key === this.last[k]) continue;
       if (this.last[k] && f === 0) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
       this.last[k] = key;
@@ -453,7 +455,7 @@ export class Hud {
   // Online: round trip to the server (green < 90 ms, amber < 180, red beyond) and pirates aboard; null hides it.
   setNet(n) {
     if (!this.netChip) { this.netChip = this.root.querySelector('.net-chip'); this.netKey = ''; }
-    const key = n ? Math.round(n.rtt / 5) + '/' + n.players : '';
+    const key = n ? getLocale() + '|' + Math.round(n.rtt / 5) + '/' + n.players : '';
     if (key === this.netKey) return;
     this.netKey = key;
     this.netChip.hidden = !n;
@@ -461,14 +463,14 @@ export class Hud {
     const ms = Math.round(n.rtt);
     this.netChip.className = 'net-chip ' + (ms < 90 ? 'good' : ms < 180 ? 'ok' : 'bad');
     this.netChip.querySelector('.ms').textContent = ms + ' ms';
-    this.netChip.querySelector('.pl').textContent = '· ' + n.players + (n.players === 1 ? ' pirata' : ' piratas');
-    this.netChip.title = `Latencia con el servidor: ${ms} ms (ida y vuelta)`;
+    this.netChip.querySelector('.pl').textContent = t('hud.pirates',{count:n.players});
+    this.netChip.title = t('hud.latency',{ms});
   }
 
   // Party frames under yours: the other human pirates (name, level, HP, weapon, fallen).
   setParty(list) {
     if (!this.partyEl) { this.partyEl = document.createElement('div'); this.partyEl.className = 'party'; this.root.querySelector('.hud-player').after(this.partyEl); this.partyKey = ''; }
-    const key = list.map((p) => `${p.id}:${p.level}:${Math.round((p.hp / Math.max(1, p.maxHp)) * 40)}:${p.weapon}:${p.dead ? 1 : 0}`).join('|');
+    const key = getLocale() + '|' + list.map((p) => `${p.id}:${p.level}:${Math.round((p.hp / Math.max(1, p.maxHp)) * 40)}:${p.weapon}:${p.dead ? 1 : 0}`).join('|');
     if (key === this.partyKey) return;
     this.partyKey = key;
     this.partyEl.hidden = !list.length;
@@ -481,7 +483,7 @@ export class Hud {
     }).join('');
   }
 
-  setMuted(m) { this.muteBtn.innerHTML = m ? ICONS.mute : ICONS.sound; this.muteBtn.setAttribute('aria-label', m ? 'Activar sonido' : 'Silenciar'); }
+  setMuted(m) { this.muteBtn.innerHTML = m ? ICONS.mute : ICONS.sound; setAttributeText(this.muteBtn, 'aria-label', m ? 'hud.unmute' : 'hud.mute'); }
 
   setPlayer({ name, level, skin, portrait }) {
     this.pname.textContent = name;
@@ -521,8 +523,8 @@ export class Hud {
   showZone(name, sub, look = '', reduced = false) {
     const b = this.banner;
     if (look === true) look = 'caldera';
-    b.querySelector('.zname').textContent = name;
-    b.querySelector('.zsub').textContent = sub;
+    setDataText(b.querySelector('.zname'), name);
+    setDataText(b.querySelector('.zsub'), sub);
     b.querySelector('.zname').style.color = look === 'caldera' ? '#ffb36b' : look === 'lawless' ? '#ff5a4a' : '';
     b.classList.toggle('lawless', look === 'lawless');
     if (this.bannerTl) this.bannerTl.kill();

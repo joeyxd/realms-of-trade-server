@@ -4,9 +4,10 @@
 import { gsap } from 'gsap';
 import { QUESTS, NPC_TALK } from '../data/quests.js';
 import { sfx } from '../audio/sfx.js';
+import { dataText, text as ltext, formatNumber } from '../core/i18n.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const reward = (R = {}) => [R.xp && `${R.xp} XP`, R.gold && `${R.gold} oro`, R.potions && `${R.potions} ${R.potions > 1 ? 'pociones' : 'poción'}`, R.item && 'un objeto'].filter(Boolean).join(' · ');
+const reward = (R = {}) => [R.xp && `${formatNumber(R.xp)} XP`, R.gold && ltext('adventure.reward_gold', { amount: formatNumber(R.gold) }), R.potions && ltext(R.potions > 1 ? 'adventure.reward_potions' : 'adventure.reward_potion', { amount: formatNumber(R.potions) }), R.item && ltext('adventure.reward_item')].filter(Boolean).join(' · ');
 
 export class Dialog {
   constructor(root, { send, onShop, onTattoo, onMarket }) {
@@ -30,25 +31,25 @@ export class Dialog {
 
   render() {
     const ev = this.ev, T = NPC_TALK[ev.npc] || { name: '?', quests: {} };
-    let text = this.line || '', opts = '';
+    let text = dataText(this.line || ''), opts = '';
     if (this.focus) {
       const Q = QUESTS[this.focus], say = T.quests && T.quests[this.focus];
-      text = `${say && say.offer ? esc(say.offer) : ''}<span class="dlg-q"><b>${esc(Q.name)}</b>${esc(Q.text)}${reward(Q.reward) ? `<small>Recompensa: ${reward(Q.reward)}</small>` : ''}</span>`;
-      opts = `<button class="btn" data-accept="${this.focus}">Aceptar</button><button class="btn secondary" data-back>Ahora no</button>`;
+      text = `${say && say.offer ? dataText(say.offer) : ''}<span class="dlg-q"><b>${dataText(Q.name)}</b>${dataText(Q.text)}${reward(Q.reward) ? `<small>${ltext('adventure.reward')} ${reward(Q.reward)}</small>` : ''}</span>`;
+      opts = `<button class="btn" data-accept="${this.focus}">${ltext('adventure.accept')}</button><button class="btn secondary" data-back>${ltext('adventure.back')}</button>`;
     } else {
       const ready = ev.ready.map((id) => {
         const say = T.quests && T.quests[id];
-        if (say && say.ready) text = esc(say.ready);
-        return `<button class="btn" data-turnin="${id}">Entregar: ${esc(QUESTS[id].name)}</button>`;
+        if (say && say.ready) text = dataText(say.ready);
+        return `<button class="btn" data-turnin="${id}">${ltext('adventure.turn_in')} ${dataText(QUESTS[id].name)}</button>`;
       }).join('');
-      const offer = ev.offer.map((id) => `<button class="btn" data-read="${id}">Misión: ${esc(QUESTS[id].name)}</button>`).join('');
-      const shop = ev.shop ? '<button class="btn" data-shop>Comerciar</button>' : '';
-      const ink = T.tattoo ? '<button class="btn" data-tattoo>Tatuar</button>' : '';
-      const market = T.market ? '<button class="btn" data-market>Comerciar mercancías</button>' : '';
-      opts = `${ready}${offer}${shop}${ink}${market}<button class="btn secondary" data-bye>Adiós</button>`;
+      const offer = ev.offer.map((id) => `<button class="btn" data-read="${id}">${ltext('adventure.quest_mission')} ${dataText(QUESTS[id].name)}</button>`).join('');
+      const shop = ev.shop ? `<button class="btn" data-shop>${ltext('adventure.trade')}</button>` : '';
+      const ink = T.tattoo ? `<button class="btn" data-tattoo>${ltext('adventure.tattoo')}</button>` : '';
+      const market = T.market ? `<button class="btn" data-market>${ltext('adventure.trade_goods')}</button>` : '';
+      opts = `${ready}${offer}${shop}${ink}${market}<button class="btn secondary" data-bye>${ltext('adventure.goodbye')}</button>`;
     }
     this.root.innerHTML = `<div class="dlg frame interactive" role="dialog" aria-label="${esc(T.name)}">
-      <div class="dlg-who outlined">${esc(T.name)}</div><p class="dlg-line">${text}</p><div class="dlg-opts">${opts}</div></div>`;
+      <div class="dlg-who outlined">${dataText(T.name)}</div><p class="dlg-line">${text}</p><div class="dlg-opts">${opts}</div></div>`;
   }
 
   onClick(e) {
