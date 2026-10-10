@@ -102,6 +102,8 @@ async function screenshot(page, name) {
   assert.ok(layout.contentWidth <= layout.width + 1 && Math.abs(layout.scrollLeft) < 1,
     `editor has horizontal overflow in ${name}: ${JSON.stringify(layout)}`);
   await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  // Let the browser compositor finish its scroll/locale repaint before capturing the WebGL page.
+  await page.waitForTimeout(250);
   const geometry = await page.locator('.mn-companion-config').evaluate(node => {
     const rect = node.getBoundingClientRect();
     const selectors = ['.mn-companion-config-header h3', '.mn-companion-config-status',

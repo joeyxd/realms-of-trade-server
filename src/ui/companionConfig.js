@@ -51,8 +51,8 @@ const node = (tag, className = '', text = '') => {
 };
 const clone = (value) => structuredClone(value);
 const blankConfig = () => ({ v: 1, personality: '', goals: [] });
-// Keep save/conflict feedback visible while the owner is near the form's lower actions.
-const STATUS_CSS = '.mn-companion-config{grid-template-columns:minmax(0,1fr)}.mn-companion-config>*,.mn-companion-config label,.mn-companion-config-header h3{min-width:0;overflow-wrap:anywhere}.mn-companion-config-status{position:sticky;top:0;z-index:1;padding:6px 0;background:#171512}';
+// Keep one scroll container and avoid sticky paint layers inside the owner dialog.
+const STATUS_CSS = '.mn-companions-panel:has(.mn-companion-config:not([hidden])){overflow:hidden}.mn-companion-config{grid-template-columns:minmax(0,1fr)}.mn-companion-config>*,.mn-companion-config label,.mn-companion-config-header h3{min-width:0;overflow-wrap:anywhere}.mn-companion-config-status{padding:6px 0}';
 
 const CSS = `.mn-companion-config{display:grid;gap:12px;min-width:0;width:100%;max-width:100%;max-height:min(70cqh,520px);overflow:auto;box-sizing:border-box}.mn-companion-config[hidden]{display:none}.mn-companion-config-header,.mn-companion-config-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.mn-companion-config-header h3{margin:0;font-size:1.05rem}.mn-companion-config label{display:grid;gap:6px;font-weight:650}.mn-companion-config textarea,.mn-companion-config select{box-sizing:border-box;width:100%;min-width:0;border:1px solid #78674f;border-radius:8px;background:#211e19;color:#f4ead6;padding:10px;font:500 14px/1.4 system-ui,sans-serif}.mn-companion-config textarea{resize:vertical}.mn-companion-config-personality{min-height:84px}.mn-companion-config-goal-text{min-height:64px}.mn-companion-config-constraints{min-height:52px}.mn-companion-config-goals{display:grid;gap:10px;margin:0;padding:0;list-style:none}.mn-companion-config-goal{display:grid;gap:8px;padding:10px;border:1px solid #514736;border-radius:10px;background:#211e19}.mn-companion-config button{min-height:44px;border:1px solid #8c7656;border-radius:9px;background:#29241e;color:#f4ead6;padding:9px 12px;font:600 14px/1.3 system-ui,sans-serif;cursor:pointer}.mn-companion-config button:hover{background:#393126}.mn-companion-config button:focus-visible,.mn-companion-config textarea:focus-visible,.mn-companion-config select:focus-visible{outline:2px solid #e5c477;outline-offset:2px}.mn-companion-config button:disabled{opacity:.6;cursor:wait}.mn-companion-config-note,.mn-companion-config-status{margin:0;color:#d6c6aa}.mn-companion-config-status{min-height:1.4em}.mn-companion-config-goal-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}@media(max-width:600px){.mn-companion-config-header,.mn-companion-config-actions{align-items:stretch;flex-direction:column}.mn-companion-config-header button,.mn-companion-config-actions button,.mn-companion-config-goal-top button,.mn-companion-config-add{width:100%}.mn-companion-config-goal-top{grid-template-columns:1fr}.mn-companion-config textarea{font-size:16px}}`;
 
@@ -183,6 +183,8 @@ export class CompanionConfigUI {
       this.statusKey = 'saving';
     }
     this.render();
+    // Bring the result into view without keeping a sticky compositor layer over the form.
+    if (!['loading', 'saving'].includes(state.status)) this.container.scrollTop = 0;
   }
 
   save() {
