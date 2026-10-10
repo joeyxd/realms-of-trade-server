@@ -1,0 +1,129 @@
+{
+  "schema": "mn.m5-resource-live.v1",
+  "target": "public-tls",
+  "phases": [
+    {
+      "phase": "before",
+      "checks": [
+        {
+          "check": "temporary Auth account created and confirmed without email delivery",
+          "pass": true,
+          "at": "2026-10-10T18:43:44.352Z"
+        },
+        {
+          "check": "normal account token admitted over public TLS with resource authority ready",
+          "pass": true,
+          "at": "2026-10-10T18:43:47.013Z",
+          "phase": "before",
+          "protocol": 36
+        },
+        {
+          "check": "gathered declared inputs, crafted madera and hacha_piedra, and persisted one partial palm hit",
+          "pass": true,
+          "at": "2026-10-10T18:44:37.227Z",
+          "profileVersion": 11,
+          "worldVersion": 1368,
+          "operations": 7,
+          "nodes": 206
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "checks": [
+        {
+          "check": "normal account token admitted over public TLS with resource authority ready",
+          "pass": true,
+          "at": "2026-10-10T18:48:38.106Z",
+          "phase": "after",
+          "protocol": 36
+        },
+        {
+          "check": "restart restored profile, tools, nodes, and cooldowns; exact retries did not duplicate effects",
+          "pass": true,
+          "at": "2026-10-10T18:48:47.724Z",
+          "profileVersion": 11,
+          "worldVersion": 1371,
+          "replayed": 7
+        },
+        {
+          "check": "offline resource clock paused through host downtime",
+          "pass": true,
+          "at": "2026-10-10T18:50:36.555Z",
+          "clockNode": "coast-11",
+          "offlineMs": 12918,
+          "resourceTickAtShutdown": 18447,
+          "snapshotTick": 573,
+          "readyAt": 21654,
+          "remainingTicks": 2634,
+          "expectedWaitSeconds": 43.9,
+          "publicWaitSeconds": 43.9,
+          "toleranceSeconds": 0.016666666666666666
+        },
+        {
+          "check": "normal account token admitted over public TLS with resource authority ready",
+          "pass": true,
+          "at": "2026-10-10T18:50:36.557Z",
+          "phase": "after",
+          "protocol": 36
+        },
+        {
+          "check": "restart restored profile, tools, nodes, and cooldowns; exact retries did not duplicate effects",
+          "pass": true,
+          "at": "2026-10-10T18:50:46.171Z",
+          "profileVersion": 12,
+          "worldVersion": 1374,
+          "replayed": 8
+        },
+        {
+          "check": "normal account token admitted over public TLS with resource authority ready",
+          "pass": true,
+          "at": "2026-10-10T18:55:42.941Z",
+          "phase": "after",
+          "protocol": 36
+        },
+        {
+          "check": "restart restored profile, tools, nodes, and cooldowns; exact retries did not duplicate effects",
+          "pass": true,
+          "at": "2026-10-10T18:55:54.589Z",
+          "profileVersion": 12,
+          "worldVersion": 1379,
+          "replayed": 8
+        }
+      ]
+    },
+    {
+      "phase": "checkpoint",
+      "checks": [
+        {
+          "check": "normal account token admitted over public TLS with resource authority ready",
+          "pass": true,
+          "at": "2026-10-10T18:49:51.631Z",
+          "phase": "checkpoint",
+          "protocol": 36
+        },
+        {
+          "check": "resource clock checkpoint refreshed with one additional durable wood gather",
+          "pass": true,
+          "at": "2026-10-10T18:50:00.962Z",
+          "profileVersion": 12,
+          "worldVersion": 1373,
+          "clockNode": "coast-11",
+          "clockReadyAt": 21654,
+          "partialPalmNode": "palm-127",
+          "commandCount": 8
+        }
+      ]
+    },
+    {
+      "phase": "cleanup",
+      "checks": [
+        {
+          "check": "temporary account and its profile removed; world resource history and receipts retained",
+          "pass": true,
+          "at": "2026-10-10T18:56:12.949Z"
+        }
+      ]
+    }
+  ]
+}

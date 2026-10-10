@@ -8,11 +8,17 @@ aprobadas; recursos M5 y continuidad también pasan juntos (22 casos, con solapa
 VPS en la entrega; una conexión abierta aplaza el relevo. Sigue refugio con techo/puerta, después farol;
 disponer de fuentes utilizables antes de reducir la luz nocturna. PRG02a sin aprendizaje queda histórico.
 
-**AREA15, 2026-10-10:** [recursos/crafting M5](delivery/m5-resource-authority.md) en release aislada
-alpha.22: nodos, golpes, herramientas, inventario, reloj y recibo en una transacción. Pausa offline
-aprobada; 176 pruebas tras integrar upstream y ocho verificaciones UI. SQL015 confirmado por el autor; consultar la
-entrega para distinguir publicación, activación y aceptación VPS. Con recursos adoptados, todo rollback
-necesita runtime compatible y `MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado.
+**AREA15, 2026-10-10 — live:** [recursos/crafting M5](delivery/m5-resource-authority.md) en
+`a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; activación inicial en 4c,
+SQL015 y flags económico/recursos activos, status listo, 107/107 offline. Ocho operaciones reales confirmadas y reproducidas tras reinicios ordenados;
+pausa offline de 12 918 ms respetada. Release 57/57; los ocho recibos se reprodujeron 23 veces en total,
+incluido SIGKILL post-ACK en VPS. Proceso exit 137, luego `docker start` manual; no asumir autoreinicio
+del contenedor. El test usó el runtime a5b8f127. Cleanup QA confirma Auth/perfil ausentes y ocho recibos/recursos conservados.
+Estado/crash/cleanup: [status final](delivery/m5-resource-authority/final-live-status.json),
+[SIGKILL](delivery/m5-resource-authority/crash-restart.json), [cleanup](delivery/m5-resource-authority/cleanup-verification.json).
+No prueba corte eléctrico ni restauración de disco; AREA15 no completa todo M5. Ver evidencia/límites en la entrega. Con recursos adoptados, todo rollback necesita runtime compatible y
+`MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado. El aprendizaje naval AREA07
+es perfil/progresión; no constituye grant de recursos.
 
 **Hotfix GM01 publicado (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) corregido
 en `e78c2c3`, incluido en alpha.23 (`4c6743b`, imagen sana desde 18:43:12Z). Validación local alpha.21:
