@@ -109,12 +109,14 @@ test('failed walker creation restores the swimmer and preserves drowning grace',
   assert.equal(pilot.mount(owner, ship.id), true);
   assert.equal(pilot.swim(owner, pilot.snapshot(owner).epoch), true);
   const epoch = pilot.snapshot(owner).epoch, prior = w.ecs.swimDrown[owner], speed = w.ecs.speed[owner];
+  const position = [w.ecs.x[owner], w.ecs.y[owner], w.ecs.z[owner]];
   w.ecs.swimDrown[owner] = 1.25;
   w.ecs.speed[owner] = Number.NaN; // DeckWalkEngine rejects this after the climb geometry succeeds.
   assert.equal(pilot.reboard(owner, ship.id), false);
   assert.equal(pilot.snapshot(owner).epoch, epoch);
   assert.equal(w.ecs.swim[owner], 1);
   assert.equal(w.ecs.swimDrown[owner], 1.25);
+  assert.deepEqual([w.ecs.x[owner], w.ecs.y[owner], w.ecs.z[owner]], position);
   assert.equal(pilot.voyageSnapshot(owner).swimming, true);
   w.ecs.speed[owner] = speed;
 });

@@ -378,6 +378,7 @@ export class NavalPilot {
     const source = w.rafts.get(r.shipId), parts = r.body.operational.parts;
     if (!source || source.owner !== owner || source.ship !== r.ship || source.ship.rev !== r.shipRev ||
         JSON.stringify(source.ship.grid.parts) !== r.blueprint ||
+        !ecs.alive[source.entity] || ecs.kind[source.entity] !== KIND.SHIP || source.ship.hp <= 0 || source.ship.at !== 'aldea' ||
         w.profiles.get(owner)?.eco?.ships?.includes(r.ship) !== true) return false;
     const exit = findRaftWaterExit(w, { shipId: r.shipId, pose: r.body.pose, parts,
       from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] }, radius: ecs.radius[owner] });
@@ -475,7 +476,7 @@ export class NavalPilot {
       return false;
     }
     const prior = { body: r.body, ack: r.ack, ashore: r.ashore, waterExit: r.waterExit, helm: r.helm,
-      anchor: r.anchor, x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] };
+      anchor: r.anchor, x: swimmer.x, y: swimmer.y, z: swimmer.z };
     r.body = resumed.body; r.ack = resumed.ack; r.ashore = false; r.waterExit = false; r.helm = false;
     ecs.x[owner] = board.deck.x; ecs.y[owner] = board.y; ecs.z[owner] = board.deck.z;
     if (!this.#addWalker(owner, shipId)) {
