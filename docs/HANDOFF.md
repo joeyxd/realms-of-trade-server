@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 PRG01b1, 2026-10-10:** [perfil compatible para aprendizaje](briefs/prg01b1-profile-continuity.md)
+y [entrega](delivery/prg01b1-profile-continuity.md). Nuevos perfiles con progreso vacío; legacy conserva
+su forma exacta y sus recibos. Aprendizaje válido se conserva en saves, muerte y reentrada; corrupción
+o versión futura rechaza admisión sin reemplazar la fila. 140 pruebas focales y 107 de release locales.
+Sin SQL nuevo ni cambio del protocolo de esta rama. El cálculo puro de Tala está disponible, pero
+todavía no concede práctica jugando: sigue integración M5 cooperativa, cadencia y ficha ES/EN en PRG01b2.
+Publicación efectiva se verifica aparte; los planes y recursos en el checkout compartido avanzan en paralelo.
+
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
 (orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
 

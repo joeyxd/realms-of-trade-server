@@ -21,6 +21,7 @@ import { LAWLESS } from '../../data/lawless.js';
 import { newEco, sanitizeEco } from './trade.js';
 import { syncRaftProfiles } from './rafts.js';
 import { newTools, sanitizeTools } from '../../data/resources.js';
+import { newProgression, readProgression } from './progression.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -35,7 +36,7 @@ export function newProfile({ weapon = 0 } = {}) {
     mast: WEAPON_KINDS.map(() => [1, 0]), sk: newSk(), quests: {}, flags: { tut: 0, tier: 1, tierSel: 1 }, items: {}, cp: 'spawn',
     stats: { kills: 0, wins: 0, gold: 0, items: 0, pk: 0, deaths: 0 },
     eco: newEco(), // trade (M7): pack, ships, deeds (systems/trade.js)
-    pirateId: '', pearls: newPearls(), tools: newTools(),
+    pirateId: '', pearls: newPearls(), tools: newTools(), progression: newProgression(),
   };
   for (const s of SLOTS) p.eq[s] = null;
   p.eq.weapon = starterItem(p, WEAPON_KINDS[weapon] || 'sable');
@@ -45,9 +46,27 @@ export function newProfile({ weapon = 0 } = {}) {
 // of ours (an unknown version). The save is signed online, so this is about old builds and bugs, not cheats.
 export function sanitizeProfile(raw) {
   if (!raw || typeof raw !== 'object' || raw.v !== PROFILE_VERSION) return null;
+  // Keep the legacy DTO shape intact: profile operations compare canonical snapshots,
+  // so zero progression is materialized only when a later operation explicitly earns it.
+  // Read only an own data property so progression accessors never run during validation.
+  let progression, hasProgression = false;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(raw, 'progression');
+    if (descriptor) {
+      if (!descriptor.enumerable || !Object.hasOwn(descriptor, 'value') || descriptor.value === undefined) return null;
+      progression = readProgression(descriptor.value);
+      hasProgression = true;
+    } else {
+      // An inherited progression field is ambiguous data, not a legacy omission.
+      for (let prototype = Object.getPrototypeOf(raw); prototype; prototype = Object.getPrototypeOf(prototype)) {
+        if (Object.getOwnPropertyDescriptor(prototype, 'progression')) return null;
+      }
+    }
+  } catch { return null; }
   const int = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, Math.floor(v))) : d);
   const num = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d);
   const p = newProfile();
+  if (!hasProgression) delete p.progression;
   p.lvl = int(raw.lvl, 1, tuning.stats.maxLevel, 1);
   p.xp = num(raw.xp, 0, 1e6, 0);
   p.gold = int(raw.gold, 0, 1e9, 0);
@@ -78,6 +97,7 @@ export function sanitizeProfile(raw) {
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
   p.eco = sanitizeEco(raw.eco);
   p.tools = sanitizeTools(raw.tools);
+  if (hasProgression) p.progression = progression;
   if (raw.quests && typeof raw.quests === 'object') {
     for (const [id, q] of Object.entries(raw.quests)) {
       if (typeof id === 'string' && id.length <= 24 && Array.isArray(q)) p.quests[id] = [int(q[0], 0, 9, 0), int(q[1], 0, 1e6, 0)];
