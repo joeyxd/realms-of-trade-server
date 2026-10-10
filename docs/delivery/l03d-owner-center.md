@@ -15,8 +15,9 @@ que aún no se conectó. El control actual vive en memoria de proceso; **reinici
 la detención**, como indica el panel. Logout, cambio de cuenta y desconexión limpian la proyección.
 No reenvía mutaciones después de un timeout ni acepta respuestas de otra sesión.
 
-Versión alpha.32, protocolo 42 revisado: dos mensajes opcionales; no cambia snapshots/`you`, perfil,
-SQL o flags. Integra AREA15 `5df2e88` y combustible AREA07 `c9d3bbf`; conserva M5/GameHost y sus activaciones independientes.
+Versión alpha.33, protocolo 42 revisado: dos mensajes opcionales; no cambia snapshots/`you`, perfil,
+SQL o flags. Integra AREA15 `5df2e88`, combustible AREA07 `c9d3bbf` e idioma global AREA12 `1f0f158`;
+conserva M5/GameHost y sus activaciones independientes. Compañeros usa el selector global ES/EN.
 La configuración de conexiones aún no está disponible en el juego. No configura proveedor/modelo,
 instala Hermes, consume inferencia, concede presupuesto ni activa agentes públicos.
 

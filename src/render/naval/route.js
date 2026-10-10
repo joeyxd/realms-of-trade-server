@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { LAYER, FXU, GLSL_FX_DEPTH } from '../pipeline.js';
 import { toon } from '../toon.js';
+import { t } from '../../core/i18n.js';
 
 const MAX_SHOTS = 2;
 const material = (color, opts = {}) => new THREE.MeshBasicMaterial({ color, ...opts });
@@ -87,10 +88,12 @@ export function routePresentation(route) {
   const status = route?.status || 'ready';
   const next = Math.max(0, Number(route?.next) || 0);
   const hits = Math.max(0, Number(route?.hits) || 0), dodged = Math.max(0, Number(route?.dodged) || 0);
-  const stage = status === 'outbound' ? `Boyas ${Math.min(3, next + 1)}/3`
-    : status === 'returning' ? 'Regresa al puerto' : status === 'complete' ? 'Ensayo completado'
-      : status === 'aborted' ? 'Ensayo cancelado' : 'Práctica opcional';
-  return { stage, score: `${hits} ${hits === 1 ? 'impacto' : 'impactos'} · ${dodged} esquivados · ${Math.max(0, Number(route?.damage) || 0)} HP`, active: !!route?.active };
+  const stage = status === 'outbound' ? t('systems.naval.route.buoys', { next: Math.min(3, next + 1) })
+    : status === 'returning' ? t('systems.naval.route.return') : status === 'complete' ? t('systems.naval.route.complete')
+      : status === 'aborted' ? t('systems.naval.route.aborted') : t('nav.practice');
+  const damage = Math.max(0, Number(route?.damage) || 0);
+  const score = `${hits} ${t(hits === 1 ? 'systems.naval.route.hit.one' : 'systems.naval.route.hit.other')} · ${dodged} ${t(dodged === 1 ? 'systems.naval.route.dodge.one' : 'systems.naval.route.dodge.other')} · ${damage} HP`;
+  return { stage, score, active: !!route?.active };
 }
 
 export function routeTarget(route, voyage) {

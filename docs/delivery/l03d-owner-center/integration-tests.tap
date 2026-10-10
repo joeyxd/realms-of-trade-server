@@ -422,9 +422,9 @@ not ok 70 - two players at 100 ms RTT: prediction holds, they see each other wal
   failureType: 'testCodeFailure'
   error: |-
     no prediction corrections while walking
-    
+
     10 !== 0
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: 0

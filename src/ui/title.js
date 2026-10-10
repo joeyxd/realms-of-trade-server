@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { GAME } from '../data/meta.js';
 import { SKINS } from '../render/characters.js';
 import { sfx } from '../audio/sfx.js';
+import { t, text, createLanguagePicker, onLocaleChange } from '../core/i18n.js';
 
 const hex = (n) => '#' + n.toString(16).padStart(6, '0');
 
@@ -12,6 +13,7 @@ export class TitleScreen {
   constructor(root, settings, { onPlay, onSettings, onControls, onMode }) {
     this.root = root;
     this.settings = settings;
+    this.languagePicker = createLanguagePicker();
     const words = GAME.title.split(' ');
     root.innerHTML = `
       <div class="title-card">
@@ -19,30 +21,32 @@ export class TitleScreen {
           <h1 class="title-logo" aria-label="${GAME.title}">
             ${words.map((w, i) => `<span class="word ${i === words.length - 1 ? 'black' : ''}">${[...w].map((c) => `<span class="ch">${c}</span>`).join('')}</span>`).join('')}
           </h1>
-          <div class="title-sub outlined">${GAME.subtitle}</div>
+          <div class="title-sub outlined">${text('title.subtitle')}</div>
           <div class="rope" aria-hidden="true"></div>
         </div>
         <div aria-hidden="true"></div>
         <div class="title-actions">
           <div class="title-net" hidden><span class="net-pill"><i></i><span class="txt"></span></span><button id="btn-mode" class="link-btn interactive" hidden></button></div>
-          <button id="btn-play" class="btn interactive" disabled><span class="loading">PREPARANDO LA ISLA…</span></button>
+          <button id="btn-play" class="btn interactive" disabled><span class="loading">${text('title.loading')}</span></button>
           <div class="title-who">
-          <label class="name-field frame-dark interactive"><span class="label outlined">Nombre</span><input id="title-name" maxlength="16" autocomplete="off" spellcheck="false" enterkeyhint="go"></label>
-          <div class="skin-picker frame-dark interactive" role="group" aria-label="Aspecto">
-            <span class="label outlined">Aspecto</span>
+          <label class="name-field frame-dark interactive"><span class="label outlined">${text('title.name')}</span><input id="title-name" maxlength="16" autocomplete="off" spellcheck="false" enterkeyhint="go"></label>
+          <div class="skin-picker frame-dark interactive" role="group" aria-label="Aspecto" data-l10n-aria-label="title.look">
+            <span class="label outlined">${text('title.look')}</span>
             ${SKINS.slice(0, 5).map((s, i) => `<button class="skin-dot" data-skin="${i}" aria-label="${s.name}" aria-pressed="false" style="background:linear-gradient(180deg, ${hex(s.swatch[0])} 55%, ${hex(s.swatch[1])} 55%)"></button>`).join('')}
             <span class="skin-name"></span>
           </div>
           </div>
           <div class="title-row">
-            <button id="btn-settings" class="btn secondary interactive">Ajustes</button>
-            <button id="btn-controls" class="btn secondary interactive">Controles</button>
+            <button id="btn-settings" class="btn secondary interactive">${text('title.settings')}</button>
+            <button id="btn-controls" class="btn secondary interactive">${text('title.controls')}</button>
           </div>
-          <div class="title-hint">${document.body.classList.contains('touch') ? 'Joystick a la izquierda para moverte · DASH para esquivar' : 'WASD para moverte · ESPACIO para hacer dash · rueda para zoom'}</div>
+          <div class="title-hint">${text(document.body.classList.contains('touch') ? 'title.touchHint' : 'title.keyboardHint')}</div>
+          <div class="title-language"></div>
         </div>
       </div>
-      <div class="title-foot"><span>${GAME.slice}</span><span>v${GAME.version}</span></div>`;
+      <div class="title-foot"><span>${text('title.slice')}</span><span>v${GAME.version}</span></div>`;
     this.play = root.querySelector('#btn-play');
+    root.querySelector('.title-language').append(this.languagePicker);
     this.play.addEventListener('click', () => { if (!this.play.disabled) { sfx.click(); onPlay(); } });
     root.querySelector('#btn-settings').addEventListener('click', () => { sfx.click(); onSettings(); });
     root.querySelector('#btn-controls').addEventListener('click', () => { sfx.click(); onControls(); });
@@ -55,7 +59,7 @@ export class TitleScreen {
     this.name = root.querySelector('#title-name');
     this.name.value = settings.name || '';
     this.name.addEventListener('input', () => { settings.name = this.name.value.slice(0, 16); if (this.onName) this.onName(); });
-    this.name.addEventListener('change', () => { if (!this.name.value.trim()) { this.name.value = settings.name = 'Grumete'; if (this.onName) this.onName(); } });
+    this.name.addEventListener('change', () => { if (!this.name.value.trim()) { this.name.value = settings.name = t('account.defaultName'); if (this.onName) this.onName(); } });
     this.name.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Enter') { this.name.blur(); if (!this.play.disabled) this.play.click(); } });
     this.skinName = root.querySelector('.skin-name');
     root.querySelectorAll('.skin-dot').forEach((b) => {
@@ -63,6 +67,11 @@ export class TitleScreen {
     });
     root.querySelectorAll('button').forEach((b) => b.addEventListener('pointerenter', () => sfx.hover()));
     this.selectSkin(settings.skin || 0);
+    this.unsubscribeLocale = onLocaleChange(() => {
+      if (this.lastNet) this.setNet(this.lastNet);
+      this.play.textContent = t(this.isBoarding ? 'title.boarding' : 'title.play');
+      this.refreshSkinText();
+    });
   }
 
   // Replace the color swatches with portraits of the real models. render(i) → canvas.
@@ -78,22 +87,31 @@ export class TitleScreen {
   selectSkin(i) {
     this.settings.skin = i;
     this.root.querySelectorAll('.skin-dot').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.skin === i)));
-    this.skinName.textContent = SKINS[i].name;
+    this.refreshSkinText();
     if (this.onSkin) this.onSkin(i);
+  }
+
+  refreshSkinText() {
+    this.root.querySelectorAll('.skin-dot').forEach((button) => {
+      const name = t(`look.${SKINS[+button.dataset.skin].name}`);
+      button.setAttribute('aria-label', name);
+    });
+    this.skinName.textContent = t(`look.${SKINS[this.settings.skin || 0].name}`);
   }
 
   // Mode pill. online: {players, max} from the server; solo: {server} when a game server could be joined.
   setNet({ mode, players = 0, max = 4, server = null, full = false }) {
+    this.lastNet = { mode, players, max, server, full };
     this.net.hidden = false;
     const on = mode === 'online';
     this.pill.classList.toggle('online', on);
     this.pill.classList.toggle('full', on && (full || players >= max));
-    this.pill.querySelector('.txt').textContent = on
-      ? `EN LÍNEA · ${players}/${max} ${players === 1 ? 'pirata' : 'piratas'} a bordo`
-      : 'SOLO · tu propia isla';
+    this.pill.querySelector('.txt').innerHTML = on
+      ? text(`title.online.${players === 1 ? 'one' : 'many'}`, { players, max })
+      : text('title.solo');
     this.modeBtn.hidden = !on && !server;
     this.modeBtn.dataset.to = on ? 'solo' : 'online';
-    this.modeBtn.textContent = on ? 'Jugar solo' : `Jugar en línea · ${server ? server.players + '/' + server.max : ''}`;
+    this.modeBtn.textContent = on ? t('title.playSolo') : t('title.playOnline', { players: server?.players ?? 0, max: server?.max ?? 0 });
   }
 
   // A line under JUGAR (the instance is full, the server is gone…); null clears it.
@@ -105,8 +123,9 @@ export class TitleScreen {
 
   // While the server answers the hello.
   boarding(on) {
+    this.isBoarding = Boolean(on);
     this.play.disabled = on;
-    this.play.textContent = on ? 'SUBIENDO A BORDO…' : 'JUGAR';
+    this.play.textContent = t(on ? 'title.boarding' : 'title.play');
     if (on && this.pulse) this.pulse.pause(); else if (this.pulse) this.pulse.resume();
   }
 
@@ -131,7 +150,7 @@ export class TitleScreen {
 
   ready() {
     this.play.disabled = false;
-    this.play.textContent = 'JUGAR';
+    this.play.textContent = t('title.play');
     gsap.fromTo(this.play, { scale: 0.85 }, { scale: 1, duration: 0.55, ease: 'elastic.out(1, 0.45)' });
     this.pulse = gsap.to(this.play, { scale: 1.05, duration: 0.8, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 0.6 });
     this.play.focus({ preventScroll: true });

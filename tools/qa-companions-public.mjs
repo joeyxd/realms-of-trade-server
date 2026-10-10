@@ -76,7 +76,7 @@ try {
 
   await page.locator('.mn-companions-toggle').click();
   await page.waitForFunction(() => document.querySelector('.mn-companions-close') === document.activeElement);
-  await page.evaluate(() => { document.documentElement.lang = 'en'; });
+  await page.evaluate(async () => { const { setLocale } = await import('/src/core/i18n.js'); setLocale('en'); });
   await page.waitForFunction(() => document.querySelector('.mn-companions-panel h2')?.textContent === 'My companions');
   const english = await page.locator('.mn-companions-status').textContent();
   assert.match(english, /sign in/i);

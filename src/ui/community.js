@@ -1,7 +1,8 @@
 // Community projects use private server receipts; the panel never edits a profile locally.
 import { GOODS } from '../data/goods.js';
+import { t, formatNumber, messageKey, onLocaleChange, translateData } from '../core/i18n.js';
 
-const fmt = (value) => Math.max(0, Number.isFinite(value) ? value : 0).toLocaleString('es-MX');
+const fmt = (value) => formatNumber(Math.max(0, Number.isFinite(value) ? value : 0));
 const REASONS = {
   schema: 'La solicitud no es válida. Revisa el material y la cantidad.',
   amount: 'Elige una cantidad entre 1 y 500.',
@@ -30,7 +31,7 @@ const REASONS = {
 function call(getter, fallback = null) { try { return typeof getter === 'function' ? getter() : fallback; } catch { return fallback; } }
 
 export function communityReason(why) {
-  return REASONS[why] || 'No se pudo completar el aporte. Revisa la obra e inténtalo otra vez.';
+  return REASONS[why] ? t(`systems.community.reason.${why}`) : t('systems.community.unknown');
 }
 
 function amountMap(value) {
@@ -45,7 +46,7 @@ export function communityRows(project, profile) {
   const goods = profile?.eco?.pack?.goods || {};
   return Object.entries(requirements).map(([good, required]) => {
     const current = Math.min(required, contributed[good] || 0);
-    return { good, name: GOODS[good]?.name || good, required, current, remaining: required - current,
+    return { good, name: translateData(GOODS[good]?.name || good), required, current, remaining: required - current,
       owned: Number.isSafeInteger(goods[good]) && goods[good] > 0 ? goods[good] : 0,
       percent: required > 0 ? Math.round(current / required * 100) : 100 };
   });
@@ -61,16 +62,27 @@ export class CommunityPanel {
     this.active = false; this.pending = null; this.project = null; this.durable = null;
     this.status = ''; this.loadId = null; this.loadSentAt = 0; this.lastView = null; this.qty = 1; this.good = '';
     this.root = document.createElement('section'); this.root.className = 'community-panel'; this.root.hidden = true;
-    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'false'); this.root.setAttribute('aria-label', 'Obra comunitaria');
-    this.root.innerHTML = `<header class="community-head"><div class="community-mark" aria-hidden="true">✦</div><div><small>TRABAJO DE LA ALDEA</small><h2>Obra comunitaria</h2></div><button type="button" data-close aria-label="Cerrar obra comunitaria">×</button></header>
-      <div class="community-body"><p class="community-intro">Aporta materiales desde tu mochila. El servidor limita el aporte a lo que aún necesita la obra.</p>
-      <section class="community-project" aria-live="polite"><div class="community-project-name" data-project-name>Consultando la obra…</div><div data-project-list>${projectMarkup()}</div></section>
-      <section class="community-give"><label for="community-good">Material que llevas</label><select id="community-good" data-good></select><div class="community-owned" data-owned></div>
-      <label for="community-qty">Cantidad</label><input id="community-qty" data-qty type="number" inputmode="numeric" min="1" max="500" step="1" value="1">
-      <button type="button" class="community-contribute" data-contribute>Aportar</button></section>
-      <p class="community-status" data-status aria-live="polite"></p><button type="button" class="community-retry" data-retry hidden>Reintentar el mismo aporte</button>
-      <button type="button" class="community-refresh" data-refresh>Consultar avance</button></div>`;
+    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'false'); this.root.setAttribute('aria-label', t('systems.community.title'));
+    this.root.innerHTML = `<header class="community-head"><div class="community-mark" aria-hidden="true">✦</div><div><small>${t('systems.community.kicker')}</small><h2>${t('systems.community.title')}</h2></div><button type="button" data-close aria-label="${t('systems.community.close')}">×</button></header>
+      <div class="community-body"><p class="community-intro">${t('systems.community.intro')}</p>
+      <section class="community-project" aria-live="polite"><div class="community-project-name" data-project-name>${t('systems.community.loadingProject')}</div><div data-project-list>${projectMarkup()}</div></section>
+      <section class="community-give"><label for="community-good">${t('systems.community.materialLabel')}</label><select id="community-good" data-good></select><div class="community-owned" data-owned></div>
+      <label for="community-qty">${t('systems.community.quantityLabel')}</label><input id="community-qty" data-qty type="number" inputmode="numeric" min="1" max="500" step="1" value="1">
+      <button type="button" class="community-contribute" data-contribute>${t('systems.community.contribute')}</button></section>
+      <p class="community-status" data-status aria-live="polite"></p><button type="button" class="community-retry" data-retry hidden>${t('systems.community.retry')}</button>
+      <button type="button" class="community-refresh" data-refresh>${t('systems.community.refresh')}</button></div>`;
     parent.appendChild(this.root); this.$ = (selector) => this.root.querySelector(selector); this.bind(); this.update();
+    this.unsubscribeLocale = onLocaleChange(() => { this.lastView = null; this.renderLabels(); this.update(); });
+  }
+
+  renderLabels() {
+    this.root.setAttribute('aria-label', t('systems.community.title'));
+    this.$('.community-head small').textContent = t('systems.community.kicker');
+    this.$('.community-head h2').textContent = t('systems.community.title');
+    this.$('[data-close]').setAttribute('aria-label', t('systems.community.close'));
+    this.$('.community-intro').textContent = t('systems.community.intro');
+    this.$('label[for="community-good"]').textContent = t('systems.community.materialLabel');
+    this.$('label[for="community-qty"]').textContent = t('systems.community.quantityLabel');
   }
 
   bind() {
@@ -97,9 +109,9 @@ export class CommunityPanel {
 
   list() {
     if (!this.active || !this.canUse() || this.pending || (this.loadId && performance.now() - this.loadSentAt < 5000)) return false;
-    const opId = globalThis.crypto.randomUUID(); this.loadId = opId; this.loadSentAt = performance.now(); this.project = null; this.durable = null; this.status = 'Consultando el avance guardado…';
+    const opId = globalThis.crypto.randomUUID(); this.loadId = opId; this.loadSentAt = performance.now(); this.project = null; this.durable = null; this.status = t('systems.community.loadingSaved');
     let sent = false; try { sent = this.submitCommand?.({ t: 'cmd', type: 'community', op: 'list', opId }) === true; } catch {}
-    if (!sent) { this.loadId = null; this.status = 'No hay conexión con el mundo compartido.'; this.update(); return false; }
+    if (!sent) { this.loadId = null; this.status = t('systems.community.noConnection'); this.update(); return false; }
     this.update(); return true;
   }
 
@@ -124,21 +136,30 @@ export class CommunityPanel {
     if (choices.some((row) => row.good === (prior || this.good))) select.value = prior || this.good;
     select.disabled = !ctx || !!this.pending || !choices.length;
     input.disabled = !ctx || !!this.pending || !choices.length;
-    this.$('[data-owned]').textContent = selected ? `En tu mochila: ${fmt(selected.owned)} · faltan ${fmt(selected.remaining)} para la obra` : 'No llevas materiales que esta obra necesite.';
-    this.$('[data-project-name]').textContent = this.project?.name || (this.project ? 'Obra de Salty Shore' : this.status ? 'Obra comunitaria' : 'Consultando la obra…');
+    this.$('[data-owned]').textContent = selected ? t('systems.community.backpack', { owned: fmt(selected.owned), remaining: fmt(selected.remaining) }) : t('systems.community.noUsefulMaterials');
+    this.$('[data-project-name]').textContent = translateData(this.project?.name) || (this.project ? t('systems.community.projectName') : this.status ? t('systems.community.title') : t('systems.community.loadingProject'));
     const list = this.$('[data-project-rows]');
-    if (!this.project) list.innerHTML = `<p class="community-empty">${this.durable === false ? 'La obra aún no está disponible en este mundo.' : 'Esperando los requisitos del servidor.'}</p>`;
-    else if (!rows.length) list.innerHTML = '<p class="community-empty">Esta obra no tiene materiales pendientes.</p>';
-    else list.innerHTML = rows.map((row) => `<div class="community-row"><div><span>${row.name}</span><b>${fmt(row.current)} / ${fmt(row.required)}</b></div><div class="community-track" role="progressbar" aria-label="${row.name}" aria-valuemin="0" aria-valuemax="${row.required}" aria-valuenow="${row.current}"><i style="width:${row.percent}%"></i></div><small>En tu mochila: ${fmt(row.owned)} · faltan ${fmt(row.remaining)}</small></div>`).join('');
+    if (!this.project) list.innerHTML = `<p class="community-empty">${this.durable === false ? t('systems.community.empty') : t('systems.community.waitingRequirements')}</p>`;
+    else if (!rows.length) list.innerHTML = `<p class="community-empty">${t('systems.community.noMaterials')}</p>`;
+    else list.innerHTML = rows.map((row) => `<div class="community-row"><div><span>${row.name}</span><b>${fmt(row.current)} / ${fmt(row.required)}</b></div><div class="community-track" role="progressbar" aria-label="${row.name}" aria-valuemin="0" aria-valuemax="${row.required}" aria-valuenow="${row.current}"><i style="width:${row.percent}%"></i></div><small>${t('systems.community.rowBackpack', { owned: fmt(row.owned), remaining: fmt(row.remaining) })}</small></div>`).join('');
     const canContribute = !!selected && Number.isSafeInteger(this.qty) && this.qty >= 1 && this.qty <= 500 && this.qty <= selected.owned;
     this.$('[data-contribute]').disabled = !ctx || !!p || !!this.loadId || !canContribute;
-    this.$('[data-contribute]').textContent = p?.command.op === 'contribute' ? 'Esperando respuesta…' : 'Aportar';
+    this.$('[data-contribute]').textContent = p?.command.op === 'contribute' ? t('systems.community.waiting') : t('systems.community.contribute');
     this.$('[data-refresh]').disabled = !!p || !ctx || (!!this.loadId && !loadReady);
-    this.$('[data-refresh]').textContent = this.loadId ? (loadReady ? 'Consultar de nuevo' : 'Consultando…') : 'Consultar avance';
+    this.$('[data-refresh]').textContent = this.loadId ? (loadReady ? t('systems.community.refreshAgain') : t('systems.community.loading')) : t('systems.community.refresh');
     this.$('[data-retry]').hidden = !retryReady || p?.command.op !== 'contribute';
     this.$('[data-retry]').disabled = !retryReady || !ctx;
-    this.$('[data-status]').textContent = p?.command.op === 'contribute' ? 'El servidor está validando el material y la cantidad…' : this.status;
+    this.$('[data-status]').textContent = p?.command.op === 'contribute' ? t('systems.community.validating') : this.translateStatus(this.status);
     this.root.classList.toggle('is-pending', !!p);
+  }
+
+  translateStatus(value) {
+    const data = this.statusTextData;
+    if (data && value === data.value) return t(data.key, { accepted: fmt(data.accepted), good: translateData(data.good) });
+    const reason = Object.keys(REASONS).find((key) => REASONS[key] === value);
+    if (reason) return communityReason(reason);
+    const key = messageKey(value);
+    return key ? t(key) : value;
   }
 
   contribute() {
@@ -149,7 +170,7 @@ export class CommunityPanel {
       good: this.good, amount: this.qty, expectedRev: this.project.version });
     this.pending = { command, sentAt: performance.now() }; this.status = '';
     let sent = false; try { sent = this.submitCommand?.(command) === true; } catch {}
-    if (!sent) { this.pending = null; this.status = 'No se pudo enviar el aporte. Vuelve a intentarlo.'; this.update(); return false; }
+    if (!sent) { this.pending = null; this.status = t('systems.community.sendFailed'); this.update(); return false; }
     this.update(); return true;
   }
 
@@ -181,10 +202,13 @@ export class CommunityPanel {
     const accepted = Number.isSafeInteger(ev.accepted) && ev.accepted >= 0 ? ev.accepted : null;
     if (ev.project) this.project = ev.project;
     this.durable = ev.durable === true;
+    this.statusTextData = accepted > 0 ? { value: '', key: 'systems.community.confirmed', accepted, good: GOODS[pending.command.good]?.name || pending.command.good } : null;
     this.status = accepted === null ? 'Respuesta incompleta del servidor; consulta el avance actual.' : accepted > 0
-      ? `El servidor confirmó ${fmt(accepted)} ${GOODS[pending.command.good]?.name || pending.command.good}.`
+      ? (this.statusTextData.value = t(this.statusTextData.key, { accepted: fmt(accepted), good: translateData(this.statusTextData.good) }))
       : 'La obra ya no necesita más de ese material.';
     this.update();
     if (accepted === null || !ev.project) this.list();
   }
+
+  dispose() { this.unsubscribeLocale?.(); this.close(); this.root.remove(); }
 }

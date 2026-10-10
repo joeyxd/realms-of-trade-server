@@ -203,7 +203,7 @@ try {
   });
   await ownerPage.locator('.mn-companions-toggle').click();
   await ownerPage.waitForSelector('.mn-companions-panel:not([hidden])');
-  await ownerPage.evaluate(() => { document.documentElement.lang = 'en'; });
+  await ownerPage.evaluate(async () => { const { setLocale } = await import('/src/core/i18n.js'); setLocale('en'); });
   await ownerPage.waitForFunction(() => document.querySelector('.mn-companions-panel h2')?.textContent === 'My companions');
   const activeEpoch = await ownerPage.evaluate(() => __mn.companions.snapshot().companions[0].epoch);
   await ownerPage.locator('.mn-companions-stop').click();

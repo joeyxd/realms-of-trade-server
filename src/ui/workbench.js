@@ -2,9 +2,10 @@
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
 import { GOODS } from '../data/goods.js';
 import { goodVolume, holdUsed } from '../sim/economy/cargo.js';
+import { t, formatNumber, translateData, onLocaleChange } from '../core/i18n.js';
 
 const MAX_CRAFT = () => Number.isSafeInteger(HARVEST.craftMax) && HARVEST.craftMax > 0 ? HARVEST.craftMax : 10;
-const fmt = (value) => Math.max(0, Number.isFinite(value) ? value : 0).toLocaleString('es-MX');
+const fmt = (value) => formatNumber(Math.max(0, Number.isFinite(value) ? value : 0));
 const recipeFor = (id = WOOD_RECIPE.id) => CRAFT_RECIPES?.[id] || CRAFT_RECIPES?.[WOOD_RECIPE.id] || WOOD_RECIPE;
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
@@ -85,17 +86,40 @@ export class WorkbenchPanel {
     parent.appendChild(this.root); this.$ = (selector) => this.root.querySelector(selector);
     this.$('[data-recipe-list]').style.gridTemplateColumns = `repeat(${Object.keys(CRAFT_RECIPES).length}, minmax(0, 1fr))`;
     for (const recipe of Object.values(CRAFT_RECIPES)) { const button = document.createElement('button'); button.type = 'button'; button.dataset.recipe = recipe.id; button.textContent = recipe.name; this.$('[data-recipe-list]').appendChild(button); }
-    this.bind(); this.renderKey = ''; this.update();
+    this.bind(); this.renderKey = ''; this.renderLabels();
+    this.unsubscribeLocale = onLocaleChange(() => { this.renderLabels(); this.renderKey = ''; this.update(); });
+    this.update();
+  }
+  renderLabels() {
+    const set = (selector, value) => { const el = this.$(selector); if (el) el.textContent = value; };
+    this.root.setAttribute('aria-label', t('systems.workbench.title'));
+    set('.wb-heading small', t('systems.workbench.kicker')); set('.wb-heading h2', t('systems.workbench.title'));
+    this.$('.wb-close').setAttribute('aria-label', t('systems.workbench.close'));
+    this.$('[data-recipe-list]').setAttribute('aria-label', t('systems.workbench.recipe'));
+    this.$('.wb-recipe').setAttribute('aria-label', t('systems.workbench.currentRecipe'));
+    this.$('.wb-material:not(.wb-result) small').textContent = t('systems.workbench.need');
+    this.$('.wb-result small').textContent = t('systems.workbench.make');
+    this.$('#wb-amount-title').textContent = t('systems.workbench.quantity');
+    this.$('.wb-qty-input span').textContent = t('systems.workbench.prepareQuantity');
+    this.$('[data-qty-input]').setAttribute('aria-label', t('systems.workbench.prepareQuantity'));
+    const stockRows = this.root.querySelectorAll('.wb-stock-row span');
+    if (stockRows[0]) stockRows[0].textContent = t('systems.workbench.spaceUsed');
+    if (stockRows[1]) stockRows[1].textContent = t('systems.workbench.utilityBelt');
+    this.$('.wb-stock > small').textContent = t('systems.workbench.toolSlotsHint');
+    this.$('.wb-amounts[aria-label]')?.setAttribute('aria-label', t('systems.workbench.quickQuantity'));
+    this.$('[data-qty="max"]').textContent = t('systems.commerce.max');
+    this.$('.wb-retry').textContent = t('systems.workbench.retry'); this.$('.wb-next').textContent = t('systems.workbench.routeHint');
+    this.root.querySelectorAll('[data-recipe]').forEach((button) => { const recipe = recipeFor(button.dataset.recipe); button.textContent = translateData(recipe.name); });
   }
   bind() {
     this.root.addEventListener('keydown', (event) => { if (event.code === 'Escape') { event.preventDefault(); event.stopPropagation(); this.close(); } else if (event.code === 'Enter') { event.stopPropagation(); if (event.target.matches('[data-qty-input]')) { event.preventDefault(); this.confirm(); } } });
     this.$('.wb-close').addEventListener('click', () => this.close()); this.$('.wb-confirm').addEventListener('click', () => this.confirm()); this.$('.wb-retry').addEventListener('click', () => this.retry());
-    this.$('[data-qty-input]').addEventListener('input', (event) => { this.qty = event.currentTarget.value === '' ? 0 : Number(event.currentTarget.value); this.lastResult = ''; this.update(); });
+    this.$('[data-qty-input]').addEventListener('input', (event) => { this.qty = event.currentTarget.value === '' ? 0 : Number(event.currentTarget.value); this.setResult(''); this.update(); });
     this.root.addEventListener('click', (event) => {
       const recipeButton = event.target.closest('[data-recipe]');
-      if (recipeButton && !this.pending) { this.recipe = recipeButton.dataset.recipe; this.qty = 1; this.lastResult = ''; this.update(); return; }
+      if (recipeButton && !this.pending) { this.recipe = recipeButton.dataset.recipe; this.qty = 1; this.setResult(''); this.update(); return; }
       const button = event.target.closest('[data-qty]'); if (!button || button.disabled || this.pending) return;
-      this.qty = button.dataset.qty === 'max' ? workbenchPreview(call(this.profile), 1, this.recipe).maxCraftable : Number(button.dataset.qty); this.lastResult = ''; this.update();
+      this.qty = button.dataset.qty === 'max' ? workbenchPreview(call(this.profile), 1, this.recipe).maxCraftable : Number(button.dataset.qty); this.setResult(''); this.update();
     });
   }
   context() {
@@ -107,10 +131,20 @@ export class WorkbenchPanel {
   open() { if (!this.context()) return false; this.active = true; this.root.hidden = false; this.notifyContext(true); this.update(); this.$('.wb-close').focus({ preventScroll: true }); return true; }
   close() { if (!this.active && this.root.hidden) return; this.active = false; this.root.hidden = true; this.notifyContext(false); }
   notifyContext(active) { if (this._contextNotified === active) return; this._contextNotified = active; this.onContext?.(active); }
-  reset() { this.pending = null; this.qty = 1; this.recipe = WOOD_RECIPE.id; this.lastResult = ''; this.close(); this.update(); }
+  setResult(value, data = null) { this.lastResult = value; this.lastResultData = data; }
+  resultMessage() {
+    const data = this.lastResultData;
+    if (!data) return this.lastResult;
+    if (data.kind === 'reason') return t(`systems.workbench.reason.${Object.hasOwn(REASONS, data.why) || Object.hasOwn(STORAGE_REASONS.es, data.why) ? data.why : 'unknown'}`);
+    if (data.kind === 'sendFailed') return t('systems.workbench.sendFailed');
+    if (data.kind === 'tool') return t('systems.workbench.resultTool', { name: translateData(data.name) });
+    if (data.kind === 'wood') return t('systems.workbench.resultWood', { label: this.qtyLabel(data.count) });
+    return this.lastResult;
+  }
+  reset() { this.pending = null; this.qty = 1; this.recipe = WOOD_RECIPE.id; this.setResult(''); this.close(); this.update(); }
   update() {
     const ctx = this.context(); if (this.active && !ctx) this.close(); const profile = ctx?.profile || call(this.profile);
-    if (this.pending?.ackRev !== undefined && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= this.pending.ackRev) { const done = this.pending; this.pending = null; this.lastResult = done.tool ? `${done.label} fabricado.` : `Preparaste ${done.label}.`; }
+    if (this.pending?.ackRev !== undefined && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= this.pending.ackRev) { const done = this.pending; this.pending = null; this.setResult(done.tool ? t('systems.workbench.resultTool', { name: translateData(done.label) }) : t('systems.workbench.resultWood', { label: this.qtyLabel(done.count) }), done.tool ? { kind: 'tool', name: done.label } : { kind: 'wood', count: done.count }); }
     if (!this.active) return;
     const preview = workbenchPreview(profile, this.qty, this.recipe), pending = this.pending;
     const retryReady = !!pending && performance.now() - pending.sentAt >= 5000;
@@ -118,29 +152,29 @@ export class WorkbenchPanel {
     const input = this.$('[data-qty-input]'), toolRecipe = !!preview.tool;
     if (document.activeElement !== input && input.value !== String(this.qty)) input.value = String(this.qty);
     input.hidden = toolRecipe; input.max = String(preview.craftMax); this.$('[data-craft-max]').textContent = String(preview.craftMax);
-    this.$('[data-input-name]').textContent = preview.inputs.map((i) => i.name).join(' + '); this.$('[data-output-name]').textContent = preview.outputName;
-    this.$('[data-input-count]').textContent = preview.inputs.map((i) => `${fmt(i.count * preview.n)} ${i.name.toLowerCase()}`).join(' + ');
-    this.$('[data-output-count]').textContent = toolRecipe ? '1 herramienta' : `${fmt(preview.outputAmount)} ${preview.outputAmount === 1 ? 'unidad' : 'unidades'}`;
-    this.$('[data-needs]').innerHTML = preview.inputs.map((i) => `<div class="wb-stock-row"><span>${i.name} que llevas</span><b>${fmt(i.owned)}</b></div><div class="wb-stock-row"><span>Necesitas</span><b>${fmt(i.count * preview.n)}</b></div>`).join('');
-    this.$('[data-pack-used]').textContent = `${fmt(preview.usedBefore)} / ${fmt(preview.packCapacity)}`; this.$('[data-pack-after]').textContent = `Después de fabricar: ${fmt(preview.usedAfter)} / ${fmt(preview.packCapacity)}`;
+    this.$('[data-input-name]').textContent = preview.inputs.map((i) => translateData(i.name)).join(' + '); this.$('[data-output-name]').textContent = translateData(preview.outputName);
+    this.$('[data-input-count]').textContent = preview.inputs.map((i) => `${fmt(i.count * preview.n)} ${translateData(i.name).toLowerCase()}`).join(' + ');
+    this.$('[data-output-count]').textContent = toolRecipe ? t('systems.workbench.toolCount') : `${fmt(preview.outputAmount)} ${t(preview.outputAmount === 1 ? 'systems.workbench.unit.one' : 'systems.workbench.unit.other')}`;
+    this.$('[data-needs]').innerHTML = preview.inputs.map((i) => `<div class="wb-stock-row"><span>${translateData(i.name)} ${document.documentElement.lang.startsWith('en') ? 'carried' : 'que llevas'}</span><b>${fmt(i.owned)}</b></div><div class="wb-stock-row"><span>${t('systems.workbench.needAmount')}</span><b>${fmt(i.count * preview.n)}</b></div>`).join('');
+    this.$('[data-pack-used]').textContent = `${fmt(preview.usedBefore)} / ${fmt(preview.packCapacity)}`; this.$('[data-pack-after]').textContent = t('systems.workbench.afterCraft', { used: fmt(preview.usedAfter), capacity: fmt(preview.packCapacity) });
     this.$('[data-pack-bar]').style.width = `${preview.packCapacity > 0 ? Math.max(0, Math.min(100, preview.usedBefore / preview.packCapacity * 100)) : 0}%`;
-    const tools = profile?.tools || {}; this.$('[data-tools]').textContent = `Hacha: ${tools.axe === 1 ? 'sí' : 'no'} · Pico: ${tools.pickaxe === 1 ? 'sí' : 'no'}`;
+    const tools = profile?.tools || {}; this.$('[data-tools]').textContent = t('systems.workbench.toolSlots', { axe: tools.axe === 1 ? (document.documentElement.lang.startsWith('en') ? 'yes' : 'sí') : 'no', pickaxe: tools.pickaxe === 1 ? (document.documentElement.lang.startsWith('en') ? 'yes' : 'sí') : 'no' });
     for (const b of this.root.querySelectorAll('[data-recipe]')) { b.disabled = !!pending; b.classList.toggle('on', b.dataset.recipe === this.recipe); b.setAttribute('aria-pressed', b.dataset.recipe === this.recipe ? 'true' : 'false'); }
     for (const b of this.root.querySelectorAll('[data-qty]')) { const q = b.dataset.qty === 'max' ? preview.maxCraftable : Number(b.dataset.qty); b.disabled = !!pending || !ctx || (b.dataset.qty === 'max' ? q < 1 : q > preview.craftMax); b.classList.toggle('on', b.dataset.qty !== 'max' && q === this.qty); b.setAttribute('aria-pressed', b.dataset.qty !== 'max' && q === this.qty ? 'true' : 'false'); }
-    input.disabled = !!pending || !ctx; this.$('.wb-confirm').disabled = !!pending || !ctx || !preview.canCraft; this.$('.wb-confirm').textContent = toolRecipe ? `Fabricar ${preview.outputName}` : `Preparar ${preview.outputName}`;
+    input.disabled = !!pending || !ctx; this.$('.wb-confirm').disabled = !!pending || !ctx || !preview.canCraft; this.$('.wb-confirm').textContent = `${toolRecipe ? t('systems.workbench.craft') : t('systems.workbench.prepare')} ${translateData(preview.outputName)}`;
     this.$('.wb-retry').hidden = !retryReady; this.$('.wb-retry').disabled = !retryReady || !ctx;
-    this.$('[data-feedback]').textContent = pending?.ackRev !== undefined ? 'Preparación recibida; esperando actualizar tu mochila…' : pending ? 'Esperando confirmación del banco…' : this.lastResult || this.previewMessage(preview, ctx);
+    this.$('[data-feedback]').textContent = pending?.ackRev !== undefined ? t('systems.workbench.received') : pending ? t('systems.workbench.waiting') : this.resultMessage() || this.previewMessage(preview, ctx);
     this.root.classList.toggle('is-pending', !!pending);
   }
-  previewMessage(p, ctx) { if (!ctx) return 'Acércate al banco para preparar materiales.'; if (p.ownedTool) return 'Ya llevas esta herramienta en el cinturón.'; if (!p.packKnown) return 'La mochila no está disponible.'; if (!p.qtyValid) return `Elige una cantidad entre 1 y ${p.craftMax}.`; if (!p.materialsFit) return 'No llevas suficientes materiales para esa receta.'; if (!p.spaceFits) return 'La mochila no tiene espacio para el resultado.'; return 'Todo listo para fabricar.'; }
-  qtyLabel(n) { return `${fmt(n)} ${n === 1 ? 'tabla' : 'tablas'}`; }
+  previewMessage(p, ctx) { if (!ctx) return t('systems.workbench.far'); if (p.ownedTool) return t('systems.workbench.ownedTool'); if (!p.packKnown) return t('systems.workbench.noBackpack'); if (!p.qtyValid) return t('systems.workbench.badQuantity', { max: p.craftMax }); if (!p.materialsFit) return t('systems.workbench.notEnough'); if (!p.spaceFits) return t('systems.workbench.noSpace'); return t('systems.workbench.ready'); }
+  qtyLabel(n) { return `${fmt(n)} ${t(n === 1 ? 'systems.workbench.plank.one' : 'systems.workbench.plank.other')}`; }
   confirm() {
     const ctx = this.context(), preview = workbenchPreview(ctx?.profile, this.qty, this.recipe);
     if (this.pending || !ctx || !preview.canCraft || typeof this.submitCommand !== 'function') return false;
     const recipe = recipeFor(this.recipe), command = Object.freeze({ t: 'cmd', type: 'resource', op: 'craft', opId: globalThis.crypto.randomUUID(), recipe: recipe.id, n: preview.n, expectedRev: ctx.profile.eco.tradeRev });
     this.pending = { command, sentAt: performance.now(), count: preview.outputAmount, recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, label: recipe.tool ? recipe.name || preview.outputName : this.qtyLabel(preview.outputAmount) };
-    this.lastResult = ''; let accepted = false; try { accepted = this.submitCommand(command) === true; } catch {}
-    if (!accepted) { this.pending = null; this.lastResult = 'No se pudo enviar la preparación. Acércate al banco e inténtalo otra vez.'; this.update(); return false; }
+    this.setResult(''); let accepted = false; try { accepted = this.submitCommand(command) === true; } catch {}
+    if (!accepted) { this.pending = null; this.setResult(t('systems.workbench.sendFailed'), { kind: 'sendFailed' }); this.update(); return false; }
     this.update(); return true;
   }
   retry() { const p = this.pending; if (!p || performance.now() - p.sentAt < 5000 || !this.context() || typeof this.submitCommand !== 'function') return false; let accepted = false; try { accepted = this.submitCommand(p.command) === true; } catch {} if (accepted) p.sentAt = performance.now(); this.update(); return accepted; }
@@ -148,10 +182,10 @@ export class WorkbenchPanel {
     const p = this.pending; if (!p || !ev || ev.type !== 'resource' || ev.opId !== p.command.opId || ev.op !== 'craft') return;
     if (ev.ok === false) {
       const locale = document.documentElement?.lang?.startsWith('en') ? 'en' : 'es';
-      this.pending = null; this.lastResult = STORAGE_REASONS[locale][ev.why] || REASONS[ev.why] || 'El banco no pudo completar la receta. Revisa tu mochila e inténtalo otra vez.';
+      this.pending = null; this.setResult(STORAGE_REASONS[locale][ev.why] || REASONS[ev.why] || 'El banco no pudo completar la receta. Revisa tu mochila e inténtalo otra vez.', { kind: 'reason', why: ev.why });
       this.update(); return;
     }
     if (!craftAcknowledgementMatches(p, ev)) return;
-    p.ackRev = ev.rev; this.lastResult = ''; this.update();
+    p.ackRev = ev.rev; this.setResult(''); this.update();
   }
 }

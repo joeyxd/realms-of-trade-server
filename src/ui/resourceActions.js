@@ -3,6 +3,7 @@ import { HARVEST, RESOURCE_KINDS } from '../data/resources.js';
 import { DT } from '../data/tuning.js';
 import { holdUsed, load } from '../sim/economy/cargo.js';
 import { loggingStatus } from '../sim/systems/progression.js';
+import { t } from '../core/i18n.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
 const COPY = {
@@ -214,15 +215,16 @@ export class ResourceActions {
     } else this.craftPending = null;
     if (!event.ok) {
       this.toast(event.why === 'tool'
-        ? `Necesitas ${event.tool === 'pickaxe' ? 'un pico' : 'un hacha'} para trabajar este recurso.`
+        ? t('systems.resource.needToolToast', { tool: t(event.tool === 'pickaxe' ? 'systems.resource.pickaxe' : 'systems.resource.axe') })
         : event.why === 'full' && node?.kind === 'palm'
-        ? `Necesitas espacio para ${HARVEST.palmYield} troncos. Deposita materiales en tu balsa.`
-        : this.copy[event.why] || REASONS[event.why] || 'No se pudo completar la acción.');
+        ? t('systems.resource.fullPalmYield', { count: HARVEST.palmYield })
+        : this.copy[event.why] || (REASONS[event.why] ? t(`systems.resource.reason.${event.why}`) : t('systems.resource.unknown')));
       return;
     }
     if (event.op === 'gather' && event.count === 0) {
       const mining = node?.kind === 'rock' || node?.kind === 'iron_ore';
-      this.toast(`<b>¡TAC!</b> · ${event.remaining === 1 ? `Un golpe más para ${mining ? 'romperla' : 'talarla'}.` : mining ? 'La roca empieza a ceder.' : 'La palmera empieza a ceder.'}`);
+      this.toast(t(mining ? (event.remaining === 1 ? 'systems.resource.toast.hitLastRock' : 'systems.resource.toast.rockCracking')
+        : (event.remaining === 1 ? 'systems.resource.toast.hitLastPalm' : 'systems.resource.toast.palmBending')));
       return;
     }
     if (gather) return;

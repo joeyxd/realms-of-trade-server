@@ -1,3 +1,6 @@
+import { editorMessage } from './messages.js';
+import { onLocaleChange, setLocale } from '../core/locale.js';
+
 const text = (value) => String(value).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -7,6 +10,7 @@ export class RemoteDraftPanel {
     this.editor = editor; this.client = client; this.head = null; this.state = 'idle'; this.review = null; this.generation = 0;
     this.button = editor.ui.querySelector('[data-action="remote"]');
     this.dialog = document.createElement('dialog'); this.dialog.className = 'gm-remote-dialog';
+    this.unsubscribeLocale = onLocaleChange(() => this.render());
     this.dialog.setAttribute('aria-label', 'Borrador online / Online draft');
     editor.ui.appendChild(this.dialog);
     this.dialog.addEventListener('cancel', (event) => { event.preventDefault(); this.hide(); });
@@ -14,10 +18,10 @@ export class RemoteDraftPanel {
       event.stopPropagation();
       const action = event.target.closest('[data-remote]')?.dataset.remote;
       if (action === 'close') this.hide();
-      if (action === 'language') { editor.lang = editor.lang === 'es' ? 'en' : 'es'; editor._setLanguage(); }
+      if (action === 'language') setLocale(editor.lang === 'es' ? 'en' : 'es');
       if (action === 'refresh') void this.refresh();
       if (action === 'export') editor._exportCurrent();
-      if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: this.t('Server copy exported.', 'Se exportó la copia online.') });
+      if (action === 'export-remote') editor._exportDocument(this.head?.document, { name: `${editor.worldId}-online-r${this.head.revision}`, status: editorMessage('Server copy exported.', 'Se exportó la copia online.') });
       if (action === 'save' || action === 'load') { this.review = action; this.reviewDocument = editor.history.current(); this.render(); }
       if (action === 'cancel-review') { this.review = null; this.render(); }
       if (action === 'confirm') { if (this.review === 'save') void this.save(); else if (this.review === 'load') void this.load(); }
@@ -76,6 +80,7 @@ export class RemoteDraftPanel {
       this.state = this.client.pending ? 'pending' : !this.runtimeMatches ? 'incompatible' : 'ready';
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code; this.state = this.client.pending ? 'pending' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -93,6 +98,7 @@ export class RemoteDraftPanel {
       if (result.replay) await this.refresh();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code; this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -113,6 +119,7 @@ export class RemoteDraftPanel {
       await this.editor.saveNow();
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code || 'base'; this.state = 'unavailable';
     } finally { if (generation === this.generation) this.render(); }
   }
@@ -128,6 +135,7 @@ export class RemoteDraftPanel {
       this.state = 'ready';
     } catch (error) {
       if (generation !== this.generation || !this.editor.active) return;
+      this.editor.lastError = error;
       this.error = error.code;
       this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'ready';
     } finally { if (generation === this.generation) this.render(); }
@@ -216,5 +224,5 @@ export class RemoteDraftPanel {
   }
   get runtimeMatches() { return !!this.remoteScope && this.remoteScope.seed === this.editor.map.seed && this.remoteScope.baseRevision === this.editor.baseRevision; }
   get compatible() { return this.runtimeMatches && (!this.head?.document || (this.head.document.base.seed === this.editor.map.seed && this.head.document.base.revision === this.editor.baseRevision)); }
-  dispose() { this.stop(); this.dialog.remove(); }
+  dispose() { this.unsubscribeLocale?.(); this.stop(); this.dialog.remove(); }
 }

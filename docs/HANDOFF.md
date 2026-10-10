@@ -7,6 +7,15 @@ cola de entradas vaciada y proyección privada retirada al cerrar sesión. Stop 
 pierde al reiniciar; no hay provisioning, proveedor/inferencia o SQL nuevo. El siguiente tramo es
 configuración durable por cuenta/conexión/personaje y límites conjuntos antes del canario L03d.
 
+**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
+[Entrega y evidencia](delivery/i18n04b.md), [plan bilingüe](../PLAN-I18N.md).
+Selector global desde arranque/cuenta/ajustes; cliente y editor GM ES/EN sobre `c9d3bbf`,
+conservando fuego, comunidad, construcción y contratos GM02/GM03a/GM03b1. El idioma no altera
+formularios, progreso ni solicitudes pendientes. Navegador local: 11 grupos/20 capturas cliente y
+6 grupos/8 capturas editor, incluidas dos pestañas IndexedDB reales y CAS remoto simulado.
+Publicación y entrada/reconexión pública aún pendientes; aceptación autenticada aparte.
+Sin SQL ni activaciones propias. Sigue I18N04c: página/FAQ/convocatoria ES/EN.
+
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](delivery/rnv04-fire-fuel.md), [contrato](briefs/RNV04-fire-fuel.md).
 Luces municipales infinitas; antorcha de mano 20 min, faroles/antorchas privadas 60 min por madera,

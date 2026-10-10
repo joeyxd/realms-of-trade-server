@@ -198,7 +198,7 @@
 
 /* F3 stats */
 #perf {
-  position: absolute; left: calc(14px + var(--safe-l)); bottom: calc(14px + var(--safe-b));
+  position: absolute; left: calc(14px + var(--safe-l)); bottom: calc(156px + var(--safe-b));
   padding: 8px 10px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: #d6ffe6;
   background: rgba(10, 6, 24, 0.78); border: 1px solid #3a2a5a; border-radius: 8px; white-space: pre;
   font-variant-numeric: tabular-nums;
