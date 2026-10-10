@@ -4,6 +4,8 @@
 y sesión detenida con recuperación exacta, sobre alpha.26/protocolo 38. SQL017 pertenece al comercio de
 agentes; no colisionar migraciones. Sin montaje GameHost ni SQL018 live. Continúa un solo dueño de tick,
 diario del sobre y adopción legacy antes de aceptar perlas/muerte/botín con la economía activa.
+Código publicado y comprobado dentro de `e648d1b`/alpha.27/protocolo 39, con 107/107 de imagen y 6/6
+públicas. Los coordinadores siguen sin montar; aceptar la API publicada no cierra gameplay durable.
 
 **Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
 

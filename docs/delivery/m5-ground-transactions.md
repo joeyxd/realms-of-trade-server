@@ -32,7 +32,20 @@ entre backends PostgreSQL reales ni caída del GameHost/VPS con esta composició
 
 ## Publicación y siguiente cierre
 
-SQL018 no está aplicada ni activada en Supabase por este corte. Publicar sus APIs dormidas no activa
-la feature. La verificación de runtime/imagen y entrada pública se registra aquí cuando corresponda.
+Código aceptado `5bcf866`, publicado con la integración `dfbf9e7`. El 2026-10-10 a las 20:12 UTC se
+verificó activa su descendiente **`e648d1be69d9320d88ac1e980ae4d699a4675b79`**, alpha.27/protocolo 39,
+que también incorpora el farol AREA07. Los cinco archivos M5 del corte son idénticos al publicado.
+Imagen `sha256:d6d66c961e4dc60895bac5aa14a0df820334501206a72d57c4e82f77d228f1a2`, una autoridad sana,
+timer activo, cero errores y **107/107 comprobaciones offline** en esa misma imagen. Los módulos nuevos
+importan correctamente en Node 22. [Revisión/imagen/API](m5-ground-transactions/deployment.json) y
+[validación de imagen](m5-ground-transactions/vps-validation.json).
+
+El [smoke público](m5-ground-transactions/public-smoke.json) pasó **6/6**: health, M5 de economía/recursos,
+protocolo publicado y entrada normal WSS con snapshot/perfil. [Sonda reproducible](m5-ground-transactions/public-smoke.mjs).
+Es entrada de invitado sin acciones económicas; no acredita gameplay durable nuevo. La observación
+registró Tala habilitada por el otro frente; este corte no cambió sus flags ni aplicó su SQL.
+
+Este corte no aplica ni activa SQL018 en Supabase. Publicar sus APIs dormidas no activa
+la feature. Los coordinadores de perlas/muerte/botín siguen `null` en el status del runtime aceptado.
 Perlas/muerte/botín permanecen pendientes de composición en el host: un dueño de tick, diario del sobre,
 adopción explícita legacy y aceptación en servidor real. Inventario/supervivencia conserva su plan propio.

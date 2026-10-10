@@ -5,6 +5,8 @@
 **Siguiente corte implementado localmente:** [SQL018: gameplay, mundo y reloj juntos](delivery/m5-ground-transactions.md),
 con sesión detenida/recibos/reconciliación y pruebas de proceso. No montado ni aplicado live. SQL017
 conserva su función de presupuesto de agentes; continúa integración de un dueño de tick/diario/legacy.
+Código publicado, presente en imagen sana `e648d1b`/alpha.27/protocolo 39: 107/107 de imagen, import
+Node 22 y entrada pública 6/6. Coordinadores opcionales `null`; sin activación SQL018 por este corte.
 
 | Recorrido | Cobertura | Próximo cierre |
 |---|---|---|

@@ -4,6 +4,8 @@
 en un commit](docs/delivery/m5-ground-transactions.md), con sesión detenida, recibo exacto y recuperación.
 No montado en GameHost ni activado en Supabase. Sigue dueño común de tick/diario/adopción legacy antes
 de aceptar perlas/muerte/botín junto a economía; [frontera](docs/briefs/m5-ground-transactions.md).
+Código publicado y presente en imagen sana `e648d1b`, alpha.27/protocolo 39; 107/107 de imagen y 6/6
+públicas. Es publicación de APIs sin montaje de gameplay; evidencia y límites en la entrega.
 
 **AREA15, 2026-10-10 — activo:** [recursos/crafting M5](docs/delivery/m5-resource-authority.md),
 desplegado en `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36 (activación inicial 4c;

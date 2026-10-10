@@ -1,0 +1,12 @@
+{
+  "revision": "e648d1be69d9320d88ac1e980ae4d699a4675b79",
+  "counts": {
+    "tests": 107,
+    "pass": 107,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "scope": "Offline checks in the exact production Docker image before replacement."
+}
