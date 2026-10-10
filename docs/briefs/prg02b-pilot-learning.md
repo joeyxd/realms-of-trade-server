@@ -28,4 +28,3 @@ No incluye concesión de práctica de Tala, recetas, premios económicos, XP por
 - Pruebas de GameHost: boyas bajo control del servidor, atraque normal, guardado pendiente/confirmado, repetición, reconexión, respuesta ambigua y preservación de bienes/práctica.
 - Pruebas de navegación: `1.0` frente a `1.15` de respuesta de timón con carga vacía y cargada; mantener intacto el contrato físico de masa y maniobra.
 - QA visual en escritorio, táctil apaisado y retrato; verificar el rótulo ES/EN, estados de persistencia y ausencia de desbordamiento.
-

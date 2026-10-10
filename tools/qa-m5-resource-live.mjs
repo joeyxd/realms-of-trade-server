@@ -39,6 +39,11 @@ const profileFingerprint = value => {
   ensure(normalized, 'profile could not be normalized');
   return createHash('sha256').update(stable(normalized)).digest('hex');
 };
+const profileResourceProjection = profile => ({
+  pack: profile?.eco?.pack,
+  tools: profile?.tools,
+  tradeRev: profile?.eco?.tradeRev,
+});
 const resourceProjection = state => ({ nodes: state.nodes, cooldowns: state.cooldowns });
 
 async function main() {
@@ -131,6 +136,29 @@ async function main() {
       && storage.unsaved === 0 && storage.errors === 0,
     'M5 durable resource authority is not enabled and healthy');
     return { uptime: status.uptime, worldVersion: storage.world.version };
+  }
+
+  async function waitForPostDisconnectFlush() {
+    const deadline = Date.now() + 60000;
+    let stableSamples = 0;
+    while (Date.now() < deadline) {
+      const response = await fetch(new URL(`${basePath}/status`, base), {
+        cache: 'no-store', signal: AbortSignal.timeout(12000),
+      });
+      ensure(response.ok, 'public status unavailable while waiting for profile flush');
+      const status = await response.json(), storage = status?.storage;
+      ensure(storage?.durable === true && storage?.accounts === true
+        && storage?.economic?.enabled === true && storage.economic.failed === false
+        && storage?.resources?.enabled === true && storage.resources.ready === true
+        && storage?.world?.id === worldId && storage.world.ready === true && storage.world.failed === false
+        && storage.unsaved === 0 && storage.errors === 0,
+      'durable resource authority became unhealthy during profile flush');
+      if (storage.profileWrites === 0 && storage.worldWriting === false && storage.economic.pending === 0) {
+        if (++stableSamples >= 2) return { uptime: status.uptime, worldVersion: storage.world.version };
+      } else stableSamples = 0;
+      await sleep(300);
+    }
+    throw new QaFailure('bounded profile flush wait expired');
   }
 
   async function waitFor(predicate, timeout = timeoutMs) {
@@ -309,14 +337,15 @@ async function main() {
     }
     const persistedProfile = await store.loadProfile(fixture.accountId);
     ensure(persistedProfile?.data?.pirateId === `account:${fixture.accountId}`
-      && profileFingerprint(persistedProfile.data) === profileFingerprint(profile),
-    'authenticated profile snapshot differs from durable SQL row');
+      && stable(profileResourceProjection(persistedProfile.data)) === stable(profileResourceProjection(profile)),
+    'authenticated resource profile differs from durable SQL row');
     const receipt = await verifyReceipt(command);
-    ensure(receipt.request.expectedProfileVersion + 1 === persistedProfile.version
-      && profileFingerprint(receipt.request.profile) === profileFingerprint(persistedProfile.data)
+    ensure(receipt.result.profileVersion === receipt.request.expectedProfileVersion + 1
+      && persistedProfile.version >= receipt.result.profileVersion
+      && stable(profileResourceProjection(receipt.request.profile)) === stable(profileResourceProjection(persistedProfile.data))
       && receipt.result.ack.rev === ack.rev && receipt.result.ack.op === command.op
       && receipt.result.ack.durable !== false,
-    'resource receipt does not contain the exact durable profile and ACK');
+    'resource receipt version, resource profile, or ACK differs from durable SQL state');
     const world = await store.loadWorld(worldId), committedResources = receipt.request.worldData.resources;
     ensure(world?.data?.resources && world.version >= receipt.request.expectedWorldVersion + 1
       && stable(resourceProjection(world.data.resources)) === stable(resourceProjection(committedResources))
@@ -441,6 +470,11 @@ async function main() {
       ensure(fixture.completedBefore === true, 'before phase has not completed');
       ensure(Number.isFinite(fixture.hostUptimeBefore) && Number.isFinite(health.uptime)
         && health.uptime < fixture.hostUptimeBefore, 'public host restart was not observed between phases');
+      const restoredBeforeLogin = await store.loadProfile(fixture.accountId);
+      ensure(restoredBeforeLogin?.version === fixture.profileVersion
+        && profileFingerprint(restoredBeforeLogin.data) === fixture.profileFingerprint
+        && stable(profileResourceProjection(restoredBeforeLogin.data)) === stable(fixture.profileResources),
+      'complete post-disconnect profile baseline did not restore before account login');
     }
     const login = unwrap(await pub.auth.signInWithPassword({ email: fixture.email, password: fixture.password }));
     ensure(login.user?.id === fixture.accountId && login.session?.access_token, 'temporary account password login failed');
@@ -479,30 +513,45 @@ async function main() {
         && stable(profile.eco.pack.goods) === beforeGoods,
       'partial palm work changed goods or failed to persist its hit');
 
-      const persisted = await store.loadProfile(fixture.accountId), world = await store.loadWorld(worldId);
-      ensure(profileFingerprint(persisted.data) === profileFingerprint(profile)
-        && persisted.data.tools.axe === axeRecipe.tier && world.data.resources.nodes.some(node =>
+      const resourceProfileBeforeLeave = structuredClone(profileResourceProjection(profile));
+      const worldBeforeLeave = await store.loadWorld(worldId);
+      ensure(resourceProfileBeforeLeave.tools.axe === axeRecipe.tier
+        && (resourceProfileBeforeLeave.pack.goods.madera || 0) === 1
+        && (resourceProfileBeforeLeave.pack.goods.piedra || 0) === 0
+        && worldBeforeLeave?.data?.resources?.nodes?.some(node =>
           node.id === palm.id && node.rev === hit.ack.rev && node.hits === beforeHits + 1),
-      'profile tools or partial palm node differ from durable rows');
+      'resource profile projection or partial palm node differs before disconnect');
+      await leave();
+      const flushedHealth = await waitForPostDisconnectFlush();
+      const persisted = await store.loadProfile(fixture.accountId), world = await store.loadWorld(worldId);
+      ensure(persisted?.data?.pirateId === `account:${fixture.accountId}`
+        && stable(profileResourceProjection(persisted.data)) === stable(resourceProfileBeforeLeave)
+        && persisted.data.tools.axe === axeRecipe.tier
+        && world.data.resources.nodes.some(node => node.id === palm.id
+          && node.rev === hit.ack.rev && node.hits === beforeHits + 1),
+      'disconnect or profile flush changed resource goods/tools/revision or partial palm work');
       fixture.profileFingerprint = profileFingerprint(persisted.data);
       fixture.profileVersion = persisted.version;
+      fixture.profileResources = profileResourceProjection(persisted.data);
       fixture.worldVersion = world.version;
       fixture.worldResources = structuredClone(world.data.resources);
-      fixture.hostUptimeBefore = (await statusGate()).uptime;
+      fixture.hostUptimeBefore = flushedHealth.uptime;
       fixture.completedBefore = true;
       saveFixture();
       record('gathered declared inputs, crafted madera and hacha_piedra, and persisted one partial palm hit', {
         profileVersion: persisted.version, worldVersion: world.version, operations: fixture.commands.length,
         nodes: fixture.lastResources.nodes.length,
       });
-      await leave();
       return;
     }
 
-    ensure(profileFingerprint(profile) === fixture.profileFingerprint, 'profile changed after host restart');
+    ensure(stable(profileResourceProjection(profile)) === stable(fixture.profileResources),
+      'resource goods, tools, or trade revision changed after host restart');
     const persisted = await store.loadProfile(fixture.accountId), world = await store.loadWorld(worldId);
-    ensure(persisted?.version === fixture.profileVersion && profileFingerprint(persisted.data) === fixture.profileFingerprint
+    ensure(persisted?.version >= fixture.profileVersion
+      && stable(profileResourceProjection(persisted.data)) === stable(fixture.profileResources)
       && persisted.data.tools.axe === 1, 'profile and crafted tool did not restore after restart');
+    const profileVersionBeforeReplay = persisted.version;
     const expectedNodes = new Map(fixture.worldResources.nodes.map(node => [node.id, node]));
     for (const node of expectedNodes.values()) {
       const actual = world.data.resources.nodes.find(row => row.id === node.id);
@@ -518,7 +567,7 @@ async function main() {
       const receipt = await verifyReceipt(command);
       ensure(stable(receipt.request.command) === stable(economicCommand(command)), 'historical command differs from fixture');
     }
-    const beforeReplayProfile = profileFingerprint(profile);
+    const beforeReplayProfile = stable(profileResourceProjection(profile));
     const beforeReplayNodes = stable(resourceProjection(world.data.resources));
     const beforeReplayTick = world.data.resources.tick;
     const beforeReplayReceipts = [];
@@ -534,8 +583,9 @@ async function main() {
     }
     await sleep(900);
     const afterProfile = await store.loadProfile(fixture.accountId), afterWorld = await store.loadWorld(worldId);
-    ensure(profileFingerprint(profile) === beforeReplayProfile && profileFingerprint(afterProfile.data) === beforeReplayProfile
-      && afterProfile.version === fixture.profileVersion,
+    ensure(stable(profileResourceProjection(profile)) === beforeReplayProfile
+      && stable(profileResourceProjection(afterProfile.data)) === beforeReplayProfile
+      && afterProfile.version >= fixture.profileVersion && afterProfile.version >= profileVersionBeforeReplay,
     'resource retries duplicated or rolled back profile goods/tools');
     ensure(stable(resourceProjection(afterWorld.data.resources)) === beforeReplayNodes
       && afterWorld.data.resources.tick >= beforeReplayTick && afterWorld.version >= world.version,

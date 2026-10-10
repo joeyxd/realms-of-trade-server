@@ -11,7 +11,16 @@
   "clock": "logical ticks, paused offline",
   "inheritedGameplay": "upstream recipe inputs, pack capacity, progression and navigation preserved",
   "uiCases": 8,
-  "publication": "prepared, not yet activated",
+  "publication": {
+    "revision": "922295ba5585d9c526ad81a4458b476e8a570fc3",
+    "version": "0.6.0-alpha.22",
+    "codePublished": true,
+    "vpsImageValidated": true,
+    "vpsOfflineTests": 107,
+    "resourcesActivated": false,
+    "reason": "open WebSocket connection; zero players",
+    "evidence": "deployment-pending.json"
+  },
   "sha256": {
     "server/resourceState.mjs": "285d3617146cc8bbfb66357eb2416b4ea9baa99bb049d1f5d311644f40e773d2",
     "server/economicAuthority.mjs": "47a50287c18134e9c2b6547b5004937a35b12855a0c50095173c3e554f4372f6",

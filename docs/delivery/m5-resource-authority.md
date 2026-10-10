@@ -1,6 +1,7 @@
 # AREA15 — recursos y crafting durables
 
-2026-10-10, hora de México. Release aislada alpha.22 preparada; activación y aceptación VPS pendientes.
+2026-10-10, hora de México. Código publicado `922295b`, alpha.22; imagen comprobada en VPS.
+Activación y aceptación autenticada VPS pendientes por una conexión abierta.
 
 Recolección, golpes parciales y fabricación pueden usar la misma transacción M5 de perfil/mundo/recibo
 que comercio y aportes. El inventario y el estado del nodo ya no se confirman por caminos separados
@@ -43,6 +44,14 @@ Las pruebas anteriores de reinicio ordenado económico siguen distinguiéndose d
 
 ## Estado público observado
 
+La release `922295ba5585d9c526ad81a4458b476e8a570fc3` se publicó en la rama de continuidad y se
+construyó en el VPS como `marea-negra:alpha-922295ba5585`. Su imagen identificada pasó **107/107**
+pruebas en un contenedor sin red ni credenciales del mundo. El cierre bajo el lock del actualizador
+confirmó cero jugadores, una conexión y ninguna escritura pendiente; aplazó la sustitución.
+[Revisión, imagen, checks y estado público](m5-resource-authority/deployment-pending.json).
+El flag de recursos sigue apagado. No se ejecutaron las fases autenticadas de recursos ni un reinicio
+del VPS para este corte; las herramientas `qa-m5-resource-live.mjs before|after|cleanup` quedan preparadas.
+
 Antes de este despliegue, `/health` público respondió 200; `/status` mostró `0.6.0-alpha.18`, Supabase
 durable, cuentas habilitadas, cero jugadores, cero errores y autoridad económica activa. La única
 autoridad ejecutaba la revisión `b84c2daa3107139cb4022b176357db7d59e4caca`, imagen
@@ -58,7 +67,9 @@ idiomas, arte y planes; el worktree aislado no empaqueta el árbol dirty compart
 
 ## Pendiente
 
-Publicar/aceptar este flujo con SQL015 y configuración revisadas. Después, composición única de economía
+Cerrar la conexión, activar la release compatible y aceptar este flujo con SQL015 y configuración
+revisadas. Primero verificar la release con flag apagado; después recrear la única autoridad con ambos
+flags activos, conservando cuentas/secretos/world ID. Después, composición única de economía
 y perlas/muerte/botín: hoy reclaman montajes incompatibles de `beforeTick`. Hace falta el dueño común
 del reloj y su frontera atómica antes de activarlas juntas. XP/misiones, producción autónoma, cambios
 de construcción, custodia offline, scope personaje/mundo y backups/restauración conservan sus cortes.
