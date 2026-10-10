@@ -17,6 +17,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA07 RNV02 (2026-10-10), **integración alpha.27/protocolo 39**: [farol funcional](docs/delivery/rnv02-naval-lantern.md).
+  Editor doce piezas, V/toque, luz móvil cálida y estado por instancia en perfil del dueño, con daño/reparación.
+  Sin SQL ni combustible. 631/631 integradas, 107/107 release con solapamiento, cuatro vistas y probe F/E/V.
+  Aceptado localmente; publicación en la entrega. Sigue noche casi negra.
+
 - AREA17 L06b-2b (2026-10-10), **alpha.26/protocolo 38**: [comercio explícito y presupuesto](docs/delivery/l06b-agent-trade.md).
   Compra/venta con capacidades separadas, cuenta/ciudad derivadas y mandato acumulado SQL017 sin refill;
   consumo y recibo en la misma M5 humana. Recuperación exacta, stop y revocación cubiertos localmente.

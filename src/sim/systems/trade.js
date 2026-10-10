@@ -17,6 +17,7 @@ import { newRaft, raftStats, sanitizeRaft } from '../economy/raft.js';
 import { sanitizeRaftCondition } from '../naval/condition.js';
 import { sanitizeRaftVoyage } from '../naval/recovery.js';
 import { sanitizeOpenDoors } from '../naval/shelter.js';
+import { sanitizeLitLanterns } from '../naval/lantern.js';
 
 // p.eco: id (stable owner key for plots and ships; '' until first needed), pack (what you carry on foot), ships
 // (vessels or rafts), raftV (one-time starter migration), deeds ([[town, plot index]]; M8).
@@ -51,10 +52,11 @@ export function sanitizeEco(raw) {
         const grid = sanitizeRaft(s.grid);
         const condition = sanitizeRaftCondition(s.condition, grid.parts);
         const openDoors = sanitizeOpenDoors(s.openDoors, condition);
+        const litLanterns = sanitizeLitLanterns(s.litLanterns, condition);
         const hold = sanitizeHold(s.hold, 1e6);
         hold.cap = raftStats(grid).hold;
         return { kind: 'raft', id, rev, berth, berthBasis, n: String(s.n || 'La Balsa').slice(0, 24), grid,
-          condition, ...(openDoors.length ? { openDoors } : {}), voyage: sanitizeRaftVoyage(s.voyage),
+          condition, ...(openDoors.length ? { openDoors } : {}), ...(litLanterns.length ? { litLanterns } : {}), voyage: sanitizeRaftVoyage(s.voyage),
           hold, at: TOWNS[s.at] ? s.at : '', hp: Math.max(0, Math.min(1, hp)), look: s.look && typeof s.look === 'object' ? { banner: String(s.look.banner || '').slice(0, 16), paint: s.look.paint | 0 } : null };
       }
       const mods = (Array.isArray(s.mods) ? s.mods : []).filter((m) => MODULES[m]).slice(0, 32);

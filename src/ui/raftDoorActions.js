@@ -80,7 +80,7 @@ export class RaftDoorActions {
     if (this.pending) {
       const opening = this.pending.command.open;
       const progress = opening ? this.copy.opening : this.copy.closing;
-      return { key: 'F', prompt: progress, verb: progress, icon: 'door', run() {} };
+      return { key: 'F', prompt: progress, verb: progress, icon: 'door', distance: -Infinity, run() {} };
     }
 
     let nearest = null, distance = Infinity;
@@ -96,7 +96,7 @@ export class RaftDoorActions {
     const { record, part } = nearest;
     const open = isDoorOpen(record.openDoors, part.part);
     const prompt = open ? this.copy.close : this.copy.open;
-    return { key: 'F', prompt, verb: prompt, icon: 'door', run: () => this.send(record, part, open) };
+    return { key: 'F', prompt, verb: prompt, icon: 'door', distance, run: () => this.send(record, part, open) };
   }
 
   send(record, part, expectedOpen) {

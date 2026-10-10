@@ -5,6 +5,7 @@
 // left out gets as close as it, so a swap happens at zero weight.
 import * as THREE from 'three';
 import { U, MAX_LIGHTS } from './toon.js';
+import { lanternPoint } from '../sim/naval/lantern.js';
 
 export { MAX_LIGHTS };
 
@@ -43,6 +44,9 @@ export function lavaPoints(map) {
 export class LocalLights {
   constructor(map) {
     this.sources = [];
+    this.staticSources = this.sources;
+    this.raftSources = new Map();
+    this.wantedRaftSources = new Set();
     this.flashes = [];
     this.max = 8;
     this.time = 0;
@@ -81,6 +85,50 @@ export class LocalLights {
     this.bossLight = this.sources[this.sources.length - 1];
   }
 
+  // Dynamic raft lights reuse the same bounded shader slots as the map's static lights.
+  // Updating snapshots mutates source transforms in place and only rebuilds the source list when
+  // lantern membership changes; no Three.js light objects or per-frame source allocations are used.
+  setRafts(records, activeRaftId = null) {
+    const wanted = this.wantedRaftSources;
+    wanted.clear();
+    const active = activeRaftId == null ? '' : String(activeRaftId);
+    let membershipChanged = false;
+    for (const record of Array.isArray(records) ? records : []) {
+      if (!record || record.id == null || !Array.isArray(record.parts) || !Array.isArray(record.litLanterns)) continue;
+      const raftId = String(record.id);
+      for (const part of record.litLanterns) {
+        const point = lanternPoint(record, part);
+        if (!point ||
+            !record.parts.some((p) => Array.isArray(p) && p.length === 5 && p.every((v, i) => v === part[i]))) continue;
+        // A placed, destroyed lantern is absent from public live parts. Explicit health data also
+        // guards callers that pass blueprint parts rather than the server's live part list.
+        const health = Array.isArray(record.partHealth) && record.partHealth.find((p) =>
+          p?.part?.length === 5 && p.part.every((v, i) => v === part[i]));
+        if (health && !(health.hp > 0)) continue;
+        const key = `${raftId}|${JSON.stringify(part)}`;
+        wanted.add(key);
+        let source = this.raftSources.get(key);
+        if (!source) {
+          const k = KINDS.lantern;
+          source = { kind: 'lantern', raftId, part: [...part], x: 0, y: 0, z: 0,
+            r: k.r, i: k.i, color: new THREE.Color(k.color), flicker: k.flicker, speed: k.speed,
+            wrap: k.wrap, knob: k.knob, seed: sourceSeed(key), d: 0, w: 0, priority: 0 };
+          this.raftSources.set(key, source);
+          membershipChanged = true;
+        }
+        source.x = point.x;
+        source.y = point.y + 1.24;
+        source.z = point.z;
+        source.priority = raftId === active ? 1 : 0;
+      }
+    }
+    for (const key of this.raftSources.keys()) if (!wanted.has(key)) {
+      this.raftSources.delete(key);
+      membershipChanged = true;
+    }
+    if (membershipChanged) this.sources = [...this.staticSources, ...this.raftSources.values()];
+  }
+
   // Short-lived light (dash, hits). Fades with (1 - t)^2.
   flash(x, y, z, color, radius = 5, intensity = 3, life = 0.3) {
     let f = this.flashes.find((q) => q.t >= q.life);
@@ -115,11 +163,12 @@ export class LocalLights {
       if (s.d > 40) continue;
       list.push(s);
     }
-    list.sort((a, b) => a.d - b.d);
+    list.sort((a, b) => (b.priority || 0) - (a.priority || 0) || a.d - b.d);
     const cut = list.length > slots ? list[slots].d : 40;
     for (let i = 0; i < Math.min(slots, list.length); i++) {
       const s = list[i];
-      const fade = Math.min(1, (cut - s.d) / 6) * (1 - THREE.MathUtils.smoothstep(s.d, 30, 40));
+      const fade = Math.max(s.priority ? 0.65 : 0, Math.min(1, (cut - s.d) / 6)) *
+        (1 - THREE.MathUtils.smoothstep(s.d, 30, 40));
       if (fade <= 0) continue;
       s.w = fade;
       // Flicker: two incommensurate sines + a faster jitter, never below 1 - 2*amount.
@@ -136,4 +185,10 @@ export class LocalLights {
     }
     U.mnLightCount.value = n;
   }
+}
+
+function sourceSeed(key) {
+  let hash = 2166136261;
+  for (let i = 0; i < key.length; i++) hash = Math.imul(hash ^ key.charCodeAt(i), 16777619);
+  return ((hash >>> 0) / 0xffffffff) * Math.PI * 2;
 }
