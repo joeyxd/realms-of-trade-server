@@ -16,6 +16,7 @@ const DATA_ES_EN = {
   'Mar Turquesa':'Turquoise Sea',
   'Corsario':'Corsair','Exploradora':'Explorer','Bucanero':'Buccaneer','Brasa':'Ember',
   'Capitana':'Captain','Vendedora':'Shopkeeper','Arquero':'Archer','Tatuadora':'Tattooist',
+  'Mercader de mercancías':'Goods merchant','Mercader de la Cala':'Cove merchant','Capitana del puerto':'Harbor captain',
   'Filo templado':'Tempered Edge','+15 ms a las ventanas de EXCELENTE y BUENO':'+15 ms to EXCELLENT and GOOD timing windows',
   'Ojo del huracán':'Eye of the Hurricane','La Tormenta alcanza 8 u en lugar de 6':'Storm reaches 8 u instead of 6',
   'Gatillo fácil':'Quick Trigger','Disparas un 15 % más rápido':'Fire 15% faster',
