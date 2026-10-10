@@ -384,7 +384,8 @@ test('removing raft support while standing over deep water cannot leave the play
   w.raftDeck.update([]);
   assert.equal(canStand(w, p.x, p.z, tuning.player.radius, r.y), false);
   moveWithCollision(w, e, 0.15, 0);
-  assert.equal(w.ecs.x[e], p.x, 'movement does not retain stale raft support');
-  assert.equal(w.ecs.y[e], w.map.groundAt(p.x, p.z), 'stale deck height is discarded after support removal');
+  assert.ok(w.ecs.x[e] > p.x, 'unsupported player now swims instead of standing on stale support');
+  assert.equal(w.ecs.y[e], tuning.world.waterLevel - tuning.swim.bodyDepth, 'removed support falls back to the swim surface');
+  assert.equal(w.ecs.swim[e], 1);
   assert.notEqual(w.ecs.y[e], r.y);
 });

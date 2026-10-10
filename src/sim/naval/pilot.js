@@ -12,6 +12,8 @@ import { activeRaftParts } from './condition.js';
 import { openDoorParts } from './shelter.js';
 import { encodeRaftVoyage } from './recovery.js';
 import { distanceToNavalHull, isNavalLandingValid, nearestNavalLanding } from './landing.js';
+import { findRaftBoardingPoint, findRaftWaterExit, SWIM_BOARDING_RANGE } from './swimBoarding.js';
+import { refreshSwimming, swimmingAt } from '../systems/swimming.js';
 
 export class NavalPilot {
   #world;
@@ -53,7 +55,8 @@ export class NavalPilot {
     if (!this.#liveVoyages || !source || source.owner !== owner || !source.ship.voyage ||
         this.#records.has(owner) || this.#recoveries.has(owner)) return false;
     const pose = this.#pose(shipId), parts = activeRaftParts(source);
-    this.#recoveries.set(owner, { owner, shipId, source, home: source.home, pose,
+    this.#recoveries.set(owner, { owner, shipId, source, ship: source.ship, shipRev: source.ship.rev,
+      blueprint: JSON.stringify(source.ship.grid.parts), home: source.home, pose,
       landing: nearestNavalLanding(w, pose, parts, 6) });
     return true;
   }
@@ -126,10 +129,19 @@ export class NavalPilot {
       (r.helm || this.#walkers.has(owner)) ? this.#findLanding(r) : null;
     const canLand = this.#liveVoyages && !r.ashore && (r.helm || this.#walkers.has(owner)) && !guests && r.visited && speed <= 0.8 && !!landing;
     const canDock = this.#liveVoyages && !r.ashore && r.helm && speed <= 0.8 && distanceHome <= 12;
+    const ecs = this.#world.ecs;
+    const swimming = !!(r.waterExit && ecs.swim?.[owner]);
+    const canSwim = this.#liveVoyages && !r.ashore && (r.helm || this.#walkers.has(owner)) && !guests && speed <= 0.8 &&
+      !!findRaftWaterExit(this.#world, { shipId: r.shipId, pose, parts: r.body.operational.parts,
+        from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] }, radius: ecs.radius[owner] });
+    const canReboard = this.#liveVoyages && r.ashore && !!r.waterExit && swimming && this.#idle(owner) &&
+      !this.#guests(r.shipId, owner).length && !!findRaftBoardingPoint(this.#world, { shipId: r.shipId, pose,
+        parts: r.body.operational.parts, from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] },
+        radius: ecs.radius[owner], maxDistance: SWIM_BOARDING_RANGE });
     return Object.freeze({ active: true, shipId: r.shipId, phase: r.ashore ? 'shore' : 'sailing',
       home: Object.freeze({ x: home.x, y: home.y, z: home.z }),
       landing: landing ? Object.freeze({ x: landing.x, y: landing.y, z: landing.z }) : null,
-      canLand, canDock, distanceHome, visited: r.visited,
+      canLand, canDock, canSwim, swimming, canReboard, distanceHome, visited: r.visited,
       target: landing ? Object.freeze({ x: landing.x, y: landing.y, z: landing.z, label: r.ashore ? 'Balsa' : 'Costa' }) :
         Object.freeze({ x: home.x, y: home.y, z: home.z, label: 'Puerto' }) });
   }
@@ -290,7 +302,8 @@ export class NavalPilot {
     } else anchor = pilotLocal(snapshot.body.pose, { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner], f: ecs.facing[owner] });
     this.#records.set(owner, { owner, shipId, handle, epoch, anchor, helm: true, body: snapshot.body,
       ack: 0, clientId: ecs.clientId[owner], ship: source.ship, home: Object.freeze({ ...(source.home || snapshot.body.pose) }),
-      landing: null, ashore: false, visited: false, inputSeq: 0 });
+      shipRev: source.ship.rev, blueprint: JSON.stringify(source.ship.grid.parts),
+      landing: null, ashore: false, waterExit: false, visited: false, inputSeq: 0 });
     this.#epochs.set(owner, epoch);
     ecs.vx[owner] = ecs.vz[owner] = ecs.kbx[owner] = ecs.kbz[owner] = 0;
     ecs.moveMag[owner] = 0;
@@ -355,12 +368,48 @@ export class NavalPilot {
     return true;
   }
 
+  // G leaves the owner's own slow, uncrewed voyage through a reachable level-zero edge.
+  swim(owner, epoch) {
+    const r = this.#records.get(owner), w = this.#world, ecs = w.ecs;
+    if (!this.#liveVoyages || !r || r.ashore || epoch !== r.epoch || !this.#idle(owner) ||
+        (!r.helm && !this.#walkers.has(owner)) || this.#guests(r.shipId, owner).length ||
+        Math.hypot(r.body.state.vx, r.body.state.vz) > 0.8 || !this.#live(owner) || ecs.clientId[owner] !== r.clientId)
+      return false;
+    const source = w.rafts.get(r.shipId), parts = r.body.operational.parts;
+    if (!source || source.owner !== owner || source.ship !== r.ship || source.ship.rev !== r.shipRev ||
+        JSON.stringify(source.ship.grid.parts) !== r.blueprint ||
+        !ecs.alive[source.entity] || ecs.kind[source.entity] !== KIND.SHIP || source.ship.hp <= 0 || source.ship.at !== 'aldea' ||
+        w.profiles.get(owner)?.eco?.ships?.includes(r.ship) !== true) return false;
+    const exit = findRaftWaterExit(w, { shipId: r.shipId, pose: r.body.pose, parts,
+      from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] }, radius: ecs.radius[owner] });
+    if (!exit || this.#nextEpoch >= Number.MAX_SAFE_INTEGER || !w.navalTrial.park(r.handle, true)) return false;
+    const parked = w.navalTrial.snapshot(r.handle);
+    if (!parked?.body) { w.navalTrial.park(r.handle, false); return false; }
+    r.body = parked.body; r.ack = parked.ack;
+    this.neutral(owner);
+    const walker = this.#walkers.get(owner);
+    if (walker) this.#removeWalker(walker, 'swim', false);
+    r.ashore = true; r.helm = false; r.waterExit = true; r.landing = null;
+    r.epoch = this.#nextEpoch++; this.#epochs.set(owner, r.epoch);
+    this.#placePlayer(owner, { x: exit.water.x, y: exit.y, z: exit.water.z });
+    refreshSwimming(w, owner);
+    w.navalRoute?.end(owner, 'swim'); w.navalLesson?.end(owner, 'swim');
+    w.raftDeck.update(publicRafts(w));
+    this.persist(owner);
+    w.emit({ type: 'navalPilot', to: owner, active: false, epoch: r.epoch - 1, why: 'swim' });
+    w.profileDirty?.add(owner);
+    return true;
+  }
+
   reboard(owner, shipId) {
     const r = this.#records.get(owner), w = this.#world, ecs = w.ecs;
+    if (r?.ashore && r.waterExit) return this.#reboardFromWater(r, owner, shipId);
     const recovery = this.#recoveries.get(owner);
     if (recovery) {
       const source = w.rafts.get(shipId), parts = source && activeRaftParts(source), landing = recovery.landing;
-      if (!this.#liveVoyages || recovery.shipId !== shipId || source !== recovery.source || !landing ||
+      if (!this.#liveVoyages || recovery.shipId !== shipId || source !== recovery.source ||
+          source.ship !== recovery.ship || source.ship.rev !== recovery.shipRev ||
+          JSON.stringify(source.ship.grid.parts) !== recovery.blueprint || !landing ||
           !this.#idle(owner) || this.#records.size >= 4 || this.#walkers.has(owner) ||
           this.#nextEpoch >= Number.MAX_SAFE_INTEGER || Math.hypot(ecs.x[owner] - landing.x, ecs.z[owner] - landing.z) > 4 ||
           distanceToNavalHull(ecs.x[owner], ecs.z[owner], recovery.pose, parts) > 6 ||
@@ -373,7 +422,8 @@ export class NavalPilot {
       this.#recoveries.delete(owner);
       this.#records.set(owner, { owner, shipId, handle, epoch, anchor: Object.freeze({ ...helm }), helm: true,
         body: snapshot.body, ack: 0, clientId: ecs.clientId[owner], ship: source.ship, home: source.home,
-        landing: null, ashore: false, visited: true, inputSeq: 0 });
+        shipRev: source.ship.rev, blueprint: JSON.stringify(source.ship.grid.parts),
+        landing: null, ashore: false, waterExit: false, visited: true, inputSeq: 0 });
       this.#epochs.set(owner, epoch);
       this.#placePlayer(owner, pilotPoint(snapshot.body.pose, helm));
       this.persist(owner); w.profileDirty?.add(owner); w.raftDeck.update(publicRafts(w));
@@ -396,6 +446,53 @@ export class NavalPilot {
     this.#placePlayer(owner, pilotPoint(r.body.pose, r.anchor));
     w.raftDeck.update(publicRafts(w));
     w.emit({ type: 'navalPilot', to: owner, active: true, epoch: r.epoch, shipId, mode: 'helm' });
+    return true;
+  }
+
+  #reboardFromWater(r, owner, shipId) {
+    const w = this.#world, ecs = w.ecs, source = w.rafts.get(shipId);
+    if (!this.#liveVoyages || r.shipId !== shipId || !this.#idle(owner) || !ecs.swim?.[owner] ||
+        !swimmingAt(w, ecs.x[owner], ecs.z[owner], ecs.y[owner]) || this.#guests(shipId, owner).length ||
+        this.#walkers.has(owner) || this.#nextEpoch >= Number.MAX_SAFE_INTEGER || !this.#live(owner) ||
+        ecs.clientId[owner] !== r.clientId || !source || source.owner !== owner || source.ship !== r.ship ||
+        source.ship.rev !== r.shipRev || JSON.stringify(source.ship.grid.parts) !== r.blueprint ||
+        !ecs.alive[source.entity] || ecs.kind[source.entity] !== KIND.SHIP || source.ship.hp <= 0 ||
+        source.ship.at !== 'aldea' || w.profiles.get(owner)?.eco?.ships?.includes(source.ship) !== true) return false;
+    const parts = r.body.operational.parts, pose = r.body.pose;
+    const board = findRaftBoardingPoint(w, { shipId, pose, parts,
+      from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] }, radius: ecs.radius[owner],
+      maxDistance: SWIM_BOARDING_RANGE });
+    if (!board) return false;
+    const swimmer = { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] };
+    ecs.x[owner] = board.deck.x; ecs.y[owner] = board.y; ecs.z[owner] = board.deck.z;
+    if (!w.navalTrial.park(r.handle, false)) {
+      ecs.x[owner] = swimmer.x; ecs.y[owner] = swimmer.y; ecs.z[owner] = swimmer.z;
+      return false;
+    }
+    const resumed = w.navalTrial.snapshot(r.handle);
+    if (!resumed?.body) {
+      w.navalTrial.park(r.handle, true);
+      ecs.x[owner] = swimmer.x; ecs.y[owner] = swimmer.y; ecs.z[owner] = swimmer.z;
+      return false;
+    }
+    const prior = { body: r.body, ack: r.ack, ashore: r.ashore, waterExit: r.waterExit, helm: r.helm,
+      anchor: r.anchor, x: swimmer.x, y: swimmer.y, z: swimmer.z };
+    r.body = resumed.body; r.ack = resumed.ack; r.ashore = false; r.waterExit = false; r.helm = false;
+    ecs.x[owner] = board.deck.x; ecs.y[owner] = board.y; ecs.z[owner] = board.deck.z;
+    if (!this.#addWalker(owner, shipId)) {
+      r.body = prior.body; r.ack = prior.ack; r.ashore = prior.ashore; r.waterExit = prior.waterExit;
+      r.helm = prior.helm; r.anchor = prior.anchor;
+      ecs.x[owner] = prior.x; ecs.y[owner] = prior.y; ecs.z[owner] = prior.z;
+      w.navalTrial.park(r.handle, true); return false;
+    }
+    r.epoch = this.#nextEpoch++; this.#epochs.set(owner, r.epoch);
+    this.#placePlayer(owner, { x: board.deck.x, y: board.y, z: board.deck.z });
+    // prepare() also validates the retained voyage anchor; keep it at the admitted deck walker frame.
+    r.anchor = this.#walkers.get(owner).state;
+    this.neutral(owner);
+    w.raftDeck.update(publicRafts(w));
+    w.profileDirty?.add(owner);
+    w.emit({ type: 'navalPilot', to: owner, active: true, epoch: r.epoch, shipId, mode: 'walk' });
     return true;
   }
 
@@ -430,6 +527,8 @@ export class NavalPilot {
     ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = ecs.moveMag[e] = 0;
     ecs.dashT[e] = -1;
     ecs.castK[e] = ecs.castT[e] = ecs.castLock[e] = ecs.chg[e] = 0;
+    if (ecs.swim) ecs.swim[e] = 0;
+    if (ecs.swimDrown) ecs.swimDrown[e] = 0;
   }
 
   project(records) {

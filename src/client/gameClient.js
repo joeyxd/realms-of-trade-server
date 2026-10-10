@@ -18,6 +18,7 @@ import { lerp, wrapAngle } from '../core/math.js';
 import { NavalPilotPrediction } from './navalPilotPrediction.js';
 import { NavalDeckPrediction } from './navalDeckPrediction.js';
 import { interpolatePilotPose, pilotPoint } from '../sim/naval/pilotGeometry.js';
+import { swimLoadOf } from '../sim/systems/swimming.js';
 
 const BUF_MAX = 40;
 const KILL_EVENTS = { parry: KILL.REFLECT, destroy: KILL.DESTROY, phit: KILL.HIT, guard: KILL.BLOCK };
@@ -149,7 +150,10 @@ export class GameClient {
         // with the same numbers as the server's.
         this.profile = m.p;
         if (!this.pred.profiles) this.pred.profiles = new Map();
-        if (this.youLocal) this.pred.profiles.set(this.youLocal, m.p);
+        if (this.youLocal) {
+          this.pred.profiles.set(this.youLocal, m.p);
+          this.pred.ecs.swimLoad[this.youLocal] = swimLoadOf(m.p);
+        }
         this.bus.emit('profile', m.p);
         break;
       case MSG.SAVE: this.bus.emit('save', m); break;
@@ -631,6 +635,7 @@ export class GameClient {
     this.replaying = true;
     const e = this.youLocal;
     for (const c of this.pending) this.pred.applyCommand(e, c);
+    this.cur.swim = ecs.swim[e];
     this.replaying = false;
     // Predicted shots that the replay no longer produces (and the server never adopted) go away.
     for (let s = 0; s < S.cap; s++) if (S.id[s] && S.pred[s] > ack && !this.keepShots.has(s)) S.free(s);
@@ -670,6 +675,7 @@ export class GameClient {
     this.pred.events.length = 0;
     this.pred.applyCommand(e, cmd);
     this.cur.x = ecs.x[e]; this.cur.y = ecs.y[e]; this.cur.z = ecs.z[e]; this.cur.f = ecs.facing[e];
+    this.cur.swim = ecs.swim[e];
     if (!wasDash && ecs.dashT[e] >= 0) {
       this.bus.emit('local:dash', { x: ecs.x[e], z: ecs.z[e], dx: ecs.dashDirX[e], dz: ecs.dashDirZ[e] });
     } else if ((cmd.prs & 1) && ch < 1 && ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0) {
@@ -826,6 +832,7 @@ export class GameClient {
     } else if (this.naval.active) Object.assign(out, this.naval.position(alpha));
     out.vx = ecs.vx[e]; out.vz = ecs.vz[e];
     out.st = ecs.state[e]; out.mag = this.deck.active ? this.deck.state.mag : ecs.moveMag[e]; out.wade = ecs.wade[e];
+    out.swim = ecs.swim[e]; out.swimStamina = ecs.swimStamina[e]; out.swimDrown = ecs.swimDrown[e]; out.swimLoad = ecs.swimLoad[e];
     out.dashT = ecs.dashT[e]; out.dashes = ecs.dashCount[e];
     out.charges = ecs.dashCharges[e]; out.maxCharges = ecs.dashMax[e]; out.recharge = ecs.dashRecharge[e];
     out.iframes = ecs.iframes[e];

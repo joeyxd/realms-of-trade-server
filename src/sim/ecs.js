@@ -1,5 +1,6 @@
 // ECS-lite: entities are indices, components are typed-array columns + a bitmask.
 // Float64 columns so the client's prediction and the server produce bit-identical results.
+import { tuning } from '../data/tuning.js';
 
 export const C = {
   POS: 1 << 0,
@@ -15,7 +16,7 @@ export const C = {
 
 export const KIND = { NONE: 0, PLAYER: 1, NPC: 2, ENEMY: 3, SHIP: 4 };
 export const TEAM = { NEUTRAL: 0, PLAYERS: 1, ENEMIES: 2 };
-export const STATE = { MOVE: 0, DASH: 1 };
+export const STATE = { MOVE: 0, DASH: 1, SWIM: 2 };
 // What an entity is doing, for animation (snapshots carry it with the time spent in it).
 // GUARD (M3.5) took the parry's slot: RMB raises the guard (PARRY kept as an alias for old tools).
 export const ACT = {
@@ -48,6 +49,7 @@ export class ECS {
     // MOVER
     this.vx = f(); this.vz = f(); this.speed = f(); this.radius = f(); this.moveMag = f(); this.wade = f();
     this.state = new Uint8Array(cap);
+    this.swim = f(); this.swimStamina = f(); this.swimDrown = f(); this.swimLoad = f();
     this.moveMul = f(); this.faceLock = f(); this.kbx = f(); this.kbz = f();
     // DASH
     this.dashT = f(); this.dashDirX = f(); this.dashDirZ = f(); this.dashCovered = f();
@@ -125,6 +127,7 @@ export class ECS {
     this.vx[id] = this.vz[id] = this.moveMag[id] = this.wade[id] = 0;
     this.moveMul[id] = 1; this.faceLock[id] = 0; this.kbx[id] = this.kbz[id] = 0;
     this.state[id] = 0;
+    this.swim[id] = this.swimDrown[id] = this.swimLoad[id] = 0; this.swimStamina[id] = tuning.swim.stamina;
     this.dashT[id] = -1;
     this.dashDirX[id] = this.dashDirZ[id] = this.dashCovered[id] = 0;
     this.dashCharges[id] = this.dashMax[id] = 1;
@@ -180,6 +183,7 @@ export class ECS {
 export const MOVER_FIELDS = [
   'x', 'y', 'z', 'facing', 'vx', 'vz', 'moveMag', 'wade', 'dashT', 'dashDirX', 'dashDirZ', 'dashCovered',
   'dashCharges', 'dashMax', 'dashRecharge', 'dashBuffer', 'iframes', 'moveMul', 'faceLock', 'kbx', 'kbz',
+  'swim', 'swimStamina', 'swimDrown', 'swimLoad',
 ];
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [

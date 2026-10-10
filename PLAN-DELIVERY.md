@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA07 RNV05, 2026-10-10 — natación costera integrada, alpha.36/protocolo 45; publicación pendiente:**
+[Contrato](docs/briefs/RNV05-coastal-swimming.md) y [entrega](docs/delivery/rnv05-coastal-swimming.md).
+Playa/agua/playa, resistencia y carga autoritativas/predichas, aviso de agotamiento y daño gradual
+con muerte actual y compatibilidad M5 probada localmente, sin activar ese montaje VPS. G baja por
+un borde cercano del viaje propio detenido; F devuelve a cubierta
+como caminante. Sin SQL/writer nuevo. Integración 121/121 en 17 archivos; regresión previa 104/104,
+selecciones solapadas. PC ES y móvil EN emulado recorren costa/agua/tierra y G/F desde balsa propia;
+revisión activa VPS pendiente. Sigue RNV06: un purificador útil para provisiones/hogar.
+
 **AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
 [entrega](docs/delivery/gm03b2/DELIVERY.md), [evidencia pública](docs/delivery/gm03b2/public-evidence.json) y [despliegue](docs/delivery/gm03b2/deployment.json).
 Online registra revisiones y activa o vuelve atrás con mundo vacío, CAS y exclusión del actualizador.

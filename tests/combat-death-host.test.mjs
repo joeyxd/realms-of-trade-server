@@ -234,6 +234,23 @@ test('actual swallowed Brasa water curse enters the same automatic receipt path'
   } finally {await f.close();}
 });
 
+test('drowning uses the mounted M5 receipt and preserves ordinary death drops',async()=>{
+  const f=await fixture();
+  try {
+    f.w.map.onDock=()=>false; f.w.map.groundAt=()=>-2; f.w.raftDeck.update([]);
+    f.w.ecs.elem[f.e]=0; f.w.ecs.swim[f.e]=1; f.w.ecs.y[f.e]=tuning.world.waterLevel-tuning.swim.bodyDepth;
+    f.w.ecs.hp[f.e]=1; f.w.ecs.swimStamina[f.e]=0; f.w.ecs.swimDrown[f.e]=5.99;
+    f.c.queue.push(neutral(1)); f.h.server.step();
+    assert.equal(f.h.combatDeaths.count,1); assert.equal(f.p.stats.deaths,0); assert.equal(f.p.xp,80);
+    assert.equal(f.p.bag.length,1); assert.equal(f.w.drops.size,0); assert.equal(events(f,'death').length,0);
+    await settleAll(f);
+    assert.equal(f.p.stats.deaths,1); assert.equal(f.p.xp,72); assert.equal(f.p.gold,73);
+    assert.equal(f.p.bag.length,0); assert.equal(f.p.pearls.swallowed,null); assert.ok(f.w.drops.size>0);
+    assert.equal(events(f,'hurt').filter(m=>m.ev.kind==='drowning').length,1);
+    assert.equal(events(f,'death').length,1);
+  } finally {await f.close();}
+});
+
 test('an unreserved later victim changing while the first receipt waits fences the entire host',async()=>{
   const entered=deferred(),reply=deferred(),f=await fixture({tokens:['v','k','t'],wrap:s=>({...s,async commitDeath(r){const v=await s.commitDeath(r);entered.resolve();await reply.promise;return v;}})});
   try {

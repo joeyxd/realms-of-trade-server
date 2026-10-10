@@ -13,7 +13,7 @@ export const tuning = {
     gridRes: 1, // sim heightfield samples per unit
     waterLevel: 0,
     wadeStart: 0.15,
-    wadeMax: 0.65, // deeper than this blocks movement
+    wadeMax: 0.65, // deeper than this requires player swimming; enemies stay on foot
     wadeSlow: 0.35,
     maxSlope: 1.0,
   },
@@ -28,6 +28,12 @@ export const tuning = {
     radius: 0.4,
     hurtRadius: 0.36,
     inputBuffer: 0.13,
+  },
+
+  swim: {
+    stamina: 30, speed: 3.2, bodyDepth: 0.8, heavyMass: 20,
+    loadSlow: 0.4, drain: 1, idleDrain: 0.5, recovery: 6,
+    exhaustedSpeed: 1.2, grace: 5, damageEvery: 1, damageFraction: 0.1,
   },
 
   dash: {
