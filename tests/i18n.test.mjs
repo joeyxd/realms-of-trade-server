@@ -216,7 +216,7 @@ test('source contains no invalid $5 i18n placeholder aliases', () => {
 test('community, naval HUD, and cartography display the selected locale', () => {
   withLocale('es', () => {
     const rows = communityRows({ requirements: { madera: 2 }, contributed: {} }, { eco: { pack: { goods: { madera: 1 } } } });
-    assert.equal(rows[0].name, 'Madera');
+    assert.equal(rows[0].name, 'Tabla básica');
     assert.equal(navalHudState({ wind: { strength: 0 }, current: { strength: 0 } }).gustText, 'Sin ráfagas');
     assert.equal(describeMap(null).title, 'Mapa del mundo');
     assert.equal(routePresentation({ status: 'outbound', next: 1, hits: 2, dodged: 3, damage: 7 }).stage, 'Boyas 2/3');
@@ -225,7 +225,7 @@ test('community, naval HUD, and cartography display the selected locale', () => 
   });
   withLocale('en', () => {
     const rows = communityRows({ requirements: { madera: 2 }, contributed: {} }, { eco: { pack: { goods: { madera: 1 } } } });
-    assert.equal(rows[0].name, 'Timber');
+    assert.equal(rows[0].name, 'Basic plank');
     assert.equal(navalHudState({ wind: { strength: 0 }, current: { strength: 0 } }).gustText, 'No gusts');
     assert.equal(describeMap(null).title, 'World map');
     assert.equal(routePresentation({ status: 'outbound', next: 1, hits: 2, dodged: 3, damage: 7 }).stage, 'Buoys 2/3');

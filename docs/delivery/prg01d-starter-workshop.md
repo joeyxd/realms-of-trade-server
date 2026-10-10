@@ -14,7 +14,15 @@
 
 ## Verificación local registrada
 
-La [batería runtime integrada](prg01d-starter-workshop/runtime.tap) terminó con 188/188 aprobadas. La ejecución actual de las pruebas SQL (nueve pruebas en curso) y las baterías finales de QA de internacionalización y release siguen pendientes de resultado; sus conteos finales se añadirán después de concluir. El [QA visual local](prg01d-starter-workshop/ui/evidence.json) conserva 39 comprobaciones locales y 36 capturas para desktop, landscape y portrait, en español e inglés y con estados parciales/listos. Son fixtures locales: no demuestran aprobación del host autenticado, durabilidad de una base viva ni funcionamiento en un teléfono físico.
+Las ejecuciones se solapan y no se suman:
+
+- [Runtime integrado](prg01d-starter-workshop/runtime.tap): **188/188**.
+- [SQL001–024](prg01d-starter-workshop/sql.tap): **9/9**, con reaplicación de SQL024, recibos históricos, rechazo de datos falsificados y cerco/adopción común.
+- [Selección de release más autoridad del taller](prg01d-starter-workshop/release.tap): **117/117**; incluye el nuevo rechazo de modificaciones de capacidad fuera del taller.
+- [Integración final de idiomas, admisión GM y compañeros](prg01d-starter-workshop/post-merge.tap): **71/71**.
+- [QA visual local](prg01d-starter-workshop/ui/evidence.json): **39/39 comprobaciones y 36 capturas**, escritorio/portrait/landscape, ES/EN, estados parcial/listo, reintento y rechazo.
+
+Son fixtures locales PGlite/host/navegador: no demuestran durabilidad en una base viva ni funcionamiento en un teléfono físico. Las pruebas de recuperación por proceso del flujo SQL021 conservan su alcance histórico; este corte no afirma una aceptación SIGKILL propia de SQL024.
 
 ## Evidencia visual
 
@@ -27,6 +35,10 @@ El [índice de evidencia visual](prg01d-starter-workshop/ui/README.md) explica e
 - [Banco de trabajo, escritorio EN](prg01d-starter-workshop/ui/desktop-en-workbench.png)
 - [Panel de Tala, portrait EN](prg01d-starter-workshop/ui/portrait-en-timing.png)
 
-## Pendiente para publicación
+## Publicación y activación
 
-Completar las ejecuciones SQL, QA de internacionalización y release y registrar sus resultados. Después, mantener la función apagada hasta que SQL024 y su readiness estén verificados en el entorno destino; publicar el mismo corte y hacer un canario autenticado que confirme recibos durables, reintentos idempotentes, carga y colocación/desguace. Hasta completar esos pasos, esta entrega describe implementación y pruebas locales, no disponibilidad en vivo.
+Integrado con las entregas concurrentes GM03b2, I18N04b, L03d y RNV04, alpha.35/protocolo 44. Publicación todavía en curso. La función permanece apagada hasta aplicar SQL023 (si falta) y SQL024 y verificar `mn_starter_workshop_ready`. Instalar SQL023 no adopta el mundo por sí solo. No volver a ejecutar SQL021.
+
+La activación exige `MN_ECONOMIC_OPERATIONS=1`, `MN_RESOURCE_OPERATIONS=1`, `MN_LOGGING_OPERATIONS=1`, `MN_ARTISAN_OPERATIONS=1` y `MN_STARTER_WORKSHOP=1`, transición con el servidor vacío y canario autenticado. Verificar entregas parciales/reconexión, primera bodega sin doble cobro, segunda bodega, kit de caja, aciertos server-owned, capacidad y desguace. Si el mundo ya está adoptado, no se intenta convertir recursos v2→v3 por la ruta legacy; coordinar la transición común antes de activar.
+
+La ampliación INV01–03 de huecos/pilas, Carga con puntos y sobrepeso es posterior: este corte aporta el contrato inicial de volumen/masa, sin implementar esa interfaz ni cerrar su tuning.

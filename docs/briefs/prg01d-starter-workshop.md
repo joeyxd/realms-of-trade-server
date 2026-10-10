@@ -28,6 +28,8 @@ Tuning inicial de capacidad: mochila básica 18 uV; mejoras 30/42 uV. Fuerza = 1
 
 ## Entregas y aceptación
 
+La ampliación posterior INV01–03 se está planificando en el checkout compartido: huecos/pilas, stat Carga con puntos de nivel y lentitud por sobrepeso. Este corte conserva su contrato inicial de volumen/masa; no implementa ni cierra ese diseño posterior. Su migración y aceptación deben coordinarse antes de sustituir estos límites.
+
 1. Contratos puros y pruebas de compatibilidad: desafío/rendimiento, encargo parcial/crédito/kit y mochila/Fuerza.
 2. Montaje en la autoridad y UI ES/EN: flujo completo desde palmera hasta bodega y mejora de mochila, incluidos reintentos y rechazo por capacidad.
 3. Migración aditiva, sin reinterpretar SQL016/021 ni recibos anteriores; caída antes/después del commit y adopción del mundo actual.

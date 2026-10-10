@@ -39,7 +39,7 @@ const challenge=createLoggingChallenge({node:'palm-qa',rev:1,startTick:100,pract
 const client={joined:true,t:{closed:false},profile,resources:{timing:true,logicalTick:100,bench:{x:0,y:0,z:0},nodes:[{id:'palm-qa',kind:'palm',x:0,y:0,z:0,rev:1,ready:true,hits:0,remaining:3}]},resourceTick:100,serverTick:()=>100,send:m=>requests.push(m)};
 const toasts=[]; const actions=new ResourceActions({client:()=>client,player:()=>player,enabled:()=>true,toast:m=>toasts.push(m),sound(){},locale:()=>document.documentElement.lang});
 const pack=document.querySelector('.proof-pack');
-window.qa={profile,workshop,bench,editor,actions,client,requests,toasts,async state(name,lang){setLocale(lang);document.documentElement.lang=lang;workshop.close();bench.close();editor.close();actions.reset();
+window.qa={profile,workshop,bench,editor,actions,client,requests,toasts,async state(name,lang){document.documentElement.lang=lang;setLocale(lang);workshop.close();bench.close();editor.close();actions.reset();
  if(name==='partial'){profile.workshop={v:1,boards:5,storageCredit:false,crateKits:0};profile.eco.pack.goods={madera:5};workshop.open();}
  if(name==='ready'){profile.workshop={v:1,boards:10,storageCredit:true,crateKits:2};profile.progression.knowledge=['raft_storage'];profile.eco.pack.goods={madera:4,lona:3};workshop.open();}
  if(name==='workbench'){profile.eco.pack.goods={tronco:4,piedra:1};bench.open();}
@@ -70,6 +70,7 @@ try{
    if(state==='storage'&&(!result.text.toLowerCase().includes(locale==='en'?'first storage build paid':'primera bodega cubierta')||!result.actionEnabled))throw Error('First storage credit not available: '+JSON.stringify(result));
    if(state==='kit'&&(!result.text.toLowerCase().includes(locale==='en'?'crate kit':'kit de caja')||!result.actionEnabled))throw Error('Kit cost not available: '+JSON.stringify(result));
    if(state==='workbench'&&(!result.inputCount?.trim().startsWith('2')||!result.outputCount?.trim().startsWith('1')))throw Error('Expected approved 2 logs to 1 board recipe: '+JSON.stringify(result));
+   if(state==='workbench'&&locale==='en'&&(result.text.includes('Tabla básica')||result.text.includes('Máximo')))throw Error('English workbench retained Spanish recipe text: '+result.text);
    if(state==='timing'&&!result.text.toLowerCase().includes(locale==='en'?'logging rhythm':'ritmo de tala'))throw Error('Timing challenge UI missing');
    const screenshot=`${device}-${locale}-${state}.png`;await page.screenshot({path:resolve(out,screenshot)});report.checks.push({device,locale,state,...result,screenshot});
   }

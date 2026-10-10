@@ -42,7 +42,12 @@ try {
   const ui = await get('/src/ui/companions.js'); assert.equal(ui.status, 200);
   assert.ok((await ui.text()).includes('serverDisabled')); record('published_companions_panel');
   assert.equal((await get('/tools/agent/run.mjs')).status, 404); record('operator_tools_not_public');
-  const hello = { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'PRG01d QA', skin: 0, weapon: 0 };
+  const contentResponse = await get('/api/world/content'); assert.equal(contentResponse.status, 200);
+  const content = await contentResponse.json(); assert.equal(content.ok, true);
+  assert.equal(Number.isSafeInteger(content.generation) && content.generation >= 0, true);
+  assert.equal(content.revisionId === null || /^[0-9a-f]{64}$/.test(content.revisionId), true);
+  const hello = { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'PRG01d QA', skin: 0, weapon: 0,
+    content: { generation: content.generation, revisionId: content.revisionId } };
   await wire(hello, async ({ ws, wait }) => {
     const welcome = await wait(m => [MSG.WELCOME, MSG.ERROR, MSG.FULL].includes(m.t));
     assert.equal(welcome.t, MSG.WELCOME); assert.equal(welcome.control, undefined);
@@ -72,6 +77,6 @@ try {
     assert.equal(denied.t, MSG.ERROR); record('old_protocol_requires_reload');
   });
   const report = { schema: 'mn.prg01d.public.v1', at: new Date().toISOString(), target: 'public TLS', pass: true, checks,
-    limits: ['Guest wire entry only; authenticated two-owner stop is verified with local auth fixtures.', 'Starter workshop flag remains off; SQL024 and authenticated new-gameplay acceptance remain pending.'] };
+    limits: ['Guest wire entry only; this does not verify authenticated workshop gameplay.', 'Starter workshop flag remains off; SQL024 and authenticated new-gameplay acceptance remain pending.'] };
   await writeFile(new URL('./public-smoke.json', import.meta.url), JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report));
 } catch { console.error(JSON.stringify({ pass: false, checks, why: 'bounded public smoke failed' })); process.exitCode = 1; }

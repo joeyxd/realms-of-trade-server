@@ -122,7 +122,8 @@ export class WorkbenchPanel {
     this.$('.wb-amounts[aria-label]')?.setAttribute('aria-label', t('systems.workbench.quickQuantity'));
     this.$('[data-qty="max"]').textContent = t('systems.commerce.max');
     this.$('.wb-retry').textContent = t('systems.workbench.retry'); this.$('.wb-next').textContent = t('systems.workbench.routeHint');
-    this.root.querySelectorAll('[data-recipe]').forEach((button) => { const recipe = recipeFor(button.dataset.recipe); button.textContent = translateData(recipe.name); });
+    this.root.querySelectorAll('[data-recipe]').forEach((button) => { const recipe = recipeFor(button.dataset.recipe); button.textContent = recipe.id === WOOD_RECIPE.id
+      ? (document.documentElement.lang.toLowerCase().startsWith('en') ? 'Basic plank' : 'Tabla básica') : translateData(recipe.name); });
   }
   bind() {
     this.root.addEventListener('keydown', (event) => { if (event.code === 'Escape') { event.preventDefault(); event.stopPropagation(); this.close(); } else if (event.code === 'Enter') { event.stopPropagation(); if (event.target.matches('[data-qty-input]')) { event.preventDefault(); this.confirm(); } } });
@@ -160,11 +161,12 @@ export class WorkbenchPanel {
     if (this.pending?.ackRev !== undefined && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= this.pending.ackRev) { const done = this.pending; this.pending = null; this.setResult(done.tool ? t('systems.workbench.resultTool', { name: translateData(done.label) }) : t('systems.workbench.resultWood', { label: this.qtyLabel(done.count) }), done.tool ? { kind: 'tool', name: done.label } : { kind: 'wood', count: done.count }); }
     if (!this.active) return;
     const preview = workbenchPreview(profile, this.qty, this.recipe), pending = this.pending;
+    this.$('.wb-section-title small').textContent = t('systems.workbench.maxBatch', { max: preview.craftMax });
     const retryReady = !!pending && performance.now() - pending.sentAt >= 5000;
     const renderKey = JSON.stringify([preview, !!ctx, pending?.command.opId, pending?.ackRev, retryReady, this.lastResult, this.recipe]); if (renderKey === this.renderKey) return; this.renderKey = renderKey;
     const input = this.$('[data-qty-input]'), toolRecipe = !!preview.tool;
     if (document.activeElement !== input && input.value !== String(this.qty)) input.value = String(this.qty);
-    input.hidden = toolRecipe; input.max = String(preview.craftMax); this.$('[data-craft-max]').textContent = String(preview.craftMax);
+    input.hidden = toolRecipe; input.max = String(preview.craftMax);
     this.$('[data-input-name]').textContent = preview.inputs.map((i) => translateData(i.name)).join(' + '); this.$('[data-output-name]').textContent = translateData(preview.outputName);
     this.$('[data-input-count]').textContent = preview.inputs.map((i) => `${fmt(i.count * preview.n)} ${translateData(i.name).toLowerCase()}`).join(' + ');
     this.$('[data-output-count]').textContent = toolRecipe ? t('systems.workbench.toolCount') : `${fmt(preview.outputAmount)} ${t(preview.outputAmount === 1 ? 'systems.workbench.unit.one' : 'systems.workbench.unit.other')}`;
