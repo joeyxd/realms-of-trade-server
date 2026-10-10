@@ -5,7 +5,8 @@ Editor B añade techo/puerta; soporte vivo, materiales/HP, V/toque, colisión y 
 Dueño/visitante usan puertas sin cerradura; guarda el perfil M5 del dueño, sin SQL ni otro writer.
 Techo se oculta al entrar y vuelve al salir. Cubierta/predicción admiten cambios de puerta en el mismo tick.
 516 pruebas tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas/inspeccionadas.
-Publicación/imagen/entrada VPS en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
+Activo en VPS `29a9e46`, sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo
+comprobados; evidencia/límites en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
 actualizados; sigue RNV02 farol usable, después oscuridad. No acredita clima/descanso/colapso estructural.
 
 **AREA03 PRG01b2, 2026-10-10 — corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37:** [Tala cooperativa](delivery/prg01b2-logging.md)

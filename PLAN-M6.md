@@ -7,9 +7,11 @@ PRG02a/b completan lección y Pilotaje II permanente (+15 % al timón desde el s
 una sola concesión y CAS M5 existente); [entrega alpha.23/protocolo 36](docs/delivery/prg02b-pilot-learning.md).
 174 pruebas integradas, 38 de agentes y tres vistas UI; 22 recursos/naval con solapamiento.
 Git `4c6743b` publicado; VPS observado en `a5b8f12` a las 19:02 UTC, sano y libre.
-**RNV01 implementado, alpha.24/protocolo 37:** [techo/puerta funcionales](docs/delivery/rnv01-naval-refuge.md),
+**RNV01 implementado y activo, alpha.24/protocolo 37:** [techo/puerta funcionales](docs/delivery/rnv01-naval-refuge.md),
 soporte vivo, materiales/HP, V/toque, colisión/predicción, apertura por instancia y perfil del dueño.
-478 casos seleccionados, 107 del actualizador con solapamiento y tres vistas UI; publicación/VPS en la entrega.
+516 casos tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas;
+VPS `29a9e46` sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo comprobados.
+Tala conserva su activación opt-in aparte del refugio; detalle y límites en la entrega.
 **Sigue RNV02:** farol usable.
 No oscurecer la noche antes de disponer de luces. Luego natación, provisiones/hogar, rutas, rival y cooperación.
 

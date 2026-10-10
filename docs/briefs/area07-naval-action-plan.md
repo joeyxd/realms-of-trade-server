@@ -16,9 +16,10 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
   Perfil común v2, CAS M5 existente y HUD local/pendiente/confirmado.
   [Entrega/evidencia](../delivery/prg02b-pilot-learning.md): 174 casos integrados, 38 de agentes, tres vistas UI;
   22 recursos/naval con solapamiento. Una caída antes de confirmar el save puede requerir repetir la lección.
-- **Activación observada:** a las 19:02 UTC el VPS estaba sano en `a5b8f12`, que contiene PRG02a/b;
-  página/health 200, sin jugadores/sockets/guardados pendientes. RNV01 se verifica aparte.
-- **RNV01 implementado, alpha.24/protocolo 37: refugio construible.** Techo soportado y puerta real, coste/materiales/daño del catálogo,
+- **Activación observada:** a las 19:24:26 UTC el VPS estaba sano en `29a9e46`, que contiene PRG02a/b y
+  RNV01: una autoridad, imagen comprobada, página/health 200, recursos listos y cero errores/pendientes.
+  Entrada real de invitado, mapa/minimapa y protocolo 37 comprobados en navegador nuevo.
+- **RNV01 implementado y activo, alpha.24/protocolo 37: refugio construible.** Techo soportado y puerta real, coste/materiales/daño del catálogo,
   sin cambiar origen/amarre. Puerta sin cerradura usable por personajes cercanos desde ambos lados.
   Apertura por instancia en el perfil del dueño, colisión/predicción compartidas y techo con vista interior.
   [Contrato](rnv01-naval-refuge.md) y [entrega](../delivery/rnv01-naval-refuge.md): 516 casos tras integrar Tala,
@@ -106,15 +107,16 @@ wipe necesitamos amarres/presencia persistentes y reglas offline explícitas. No
 como consecuencia accidental de conservar la nave visible.
 [Ciclo de vida actual](../../src/sim/systems/rafts.js).
 
-## 4 Secuencia propuesta
+## 4 Secuencia aprobada
 
 **Aprobada por el autor, 2026-10-10.** Se comienza por PRG02. Nueva regla del mundo:
 [noche casi negra fuera de fuentes de luz](../NAVAL-ROADMAP.md#noche-y-fuentes-de-luz). El farol del
 primer refugio debe ser funcional para explorar/navegar de noche, también en calidad baja/móvil.
 La UI permanece legible; luz automática y presets cosméticos actuales deberán adaptarse en ese corte.
 
-La orientación PRG02 del plan maestro se conserva. Los siguientes son paquetes de producto propuestos;
-los números de balance, el contrato y los archivos de cada implementación se cierran antes de comenzar.
+La orientación PRG02 del plan maestro se conserva. La secuencia está aprobada; los números de balance,
+el contrato y los archivos de cada implementación se cierran antes de comenzar. PRG02a/b están completados;
+RNV01 entrega techo/puerta y RNV02 completa el refugio con luz, antes de oscurecer las noches.
 
 | Orden | Entrega | Resultado observable y dependencia |
 |---|---|---|
@@ -130,7 +132,7 @@ La prioridad posterior a PRG02 puede cambiar por el resultado del prototipo. El 
 carencia visible de la promesa «barco hogar»; natación es la mayor carencia de interacción con el mar.
 Ninguna requiere terminar todos los pueblos, un MMO regional o una simulación naval compleja.
 
-### Alcance mínimo del siguiente corte PRG02
+### Alcance original PRG02 — completado; se conserva como contrato
 
 Una lección costera parte del amarre actual, llega a un destino cercano identificable y vuelve a atracar.
 El servidor decide qué maniobra/tramo cuenta y registra una finalización; se propone un hito inicial
@@ -144,6 +146,31 @@ preparar objetivo/feedback del recorrido sin declarar un nivel naval permanente.
 Aceptación: PC/touch, rechazo de finalización falsa o repetida, cancelación/desconexión, reentrada,
 beneficio comparable, carga/daño conservados y textos ES/EN. El crédito y la conservación publicados
 necesitan pruebas de su operación M5 concreta; el prototipo de recorrido no acredita esa permanencia.
+
+### Siguiente corte RNV02 — farol utilizable (preparado, aún no implementado)
+
+Objetivo: colocar un farol, encenderlo/apagarlo y ver su luz acompañar la nave; conservar su estado al
+reentrar y perder su servicio cuando se rompe. Mantener la iluminación nocturna actual hasta aceptar
+esta fuente también en calidad baja/móvil. Luego se cambia la noche, en un checkpoint visual propio.
+
+- Reutilizar `lantern` del [catálogo](../../src/data/raftparts.js): 1 madera + 1 hierro, masa 1 y HP 10.
+  Ya tiene [malla procedural](../../src/render/rafts.js); falta habilitarla en el editor y cerrar interacción,
+  soporte/ocupantes, daño/reparación, identidad de instancia y saneado del estado encendido/apagado.
+- El servidor decide el estado; cliente envía intención explícita, con revisión/estado esperado y reintento
+  estable, como la puerta. Conservar el perfil M5 del dueño y revisar el protocolo del snapshot; no añadir
+  otro writer. Permisos, combustible/duración y balance se cierran al implementar, sin activar consumo oculto.
+- [LocalLights](../../src/render/lights.js) actualmente deriva fuentes de `map.props`; hay que incorporar
+  faroles operativos de balsas con coordenadas transformadas al mover/girar la cubierta, y retirarlos al
+  apagar/destruir/desconectar. Reutilizar la selección cercana por uniforms y el presupuesto de calidad
+  existente de 4/8/12 luces; no crear una luz Three.js por pieza ni rehacer toda la geometría cada frame.
+- Luz cálida, núcleo visible encendido/apagado y acción ES/EN en PC/touch. Verificar interior con techo
+  oculto, costa/agua, varias naves y mucha decoración cercana sin desplazar la luz útil del jugador.
+- Arte: referencia inventariada `Dreamrise_SMSK` `SM_Torch` / `BP_Building_Torch`, según
+  [investigación](../research/unreal-assets/survival/FINDINGS.md). Requiere conversión y no aporta lógica
+  portable. Se propone reutilizar el farol actual; validar el candidato concreto antes de decidir exportación.
+- Aceptación: construcción/materiales, interacción/replay/visitante, persistencia, daño/reparación, traslado
+  y giro, límite de fuentes y capturas ES/EN en bajo/alto y móvil emulado. No declarar FPS físico, combustible,
+  antorcha portátil ni noche casi negra por tener un icono o núcleo emissive.
 
 ## 5 Más allá del alfa
 

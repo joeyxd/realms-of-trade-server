@@ -53,10 +53,24 @@ inspeccionado no aporta piezas navales exportadas/modulares; las fuentes permane
 
 ## Publicación y continuación
 
-Preparado para el actualizador de `claude/loving-lovelace-ptbif7`; revisión Git, imagen y entrada pública
-se registran tras el envío. La sonda previa de las 19:02 UTC observó una autoridad sana en `a5b8f12`,
-página/health 200, Supabase durable y sin jugadores/sockets/guardados pendientes. No prueba RNV01 activo.
-No se cambian SQL, flags de recursos ni configuración del servicio.
+Código `10da016`, merge concurrente `a05878f` y envío de evidencia `29a9e46` publicados en
+`claude/loving-lovelace-ptbif7`. El actualizador sustituyó la autoridad libre después de pasar sus
+**107/107 casos offline en la imagen candidata**. A las **19:24:26 UTC del 2026-10-10** se verificaron:
+revisión activa **`29a9e46e41169119a9547e47acc88ca56e3eae0c`**, una sola instancia sana, imagen
+`sha256:914cd316ccd6df14908269c4844298cc8f01bd0968568357f99392f2e1b09e7e`, página/health 200,
+tick avanzando y Supabase durable/cuentas/recursos listos. Cero errores, sockets, jugadores o guardados
+pendientes al cerrar la sonda; timer activo. [Revisión/imagen/status/validación](rnv01-naval-refuge/deployment.json).
+
+La [entrada pública de navegador](rnv01-naval-refuge/public-browser.json) pasó desde un contexto nuevo:
+invitado en partida, minimapa visible, mapa M abierto, alpha.24/protocolo 37 y once piezas del editor
+servidas, incluidas puerta/techo. Sin excepciones de página ni peticiones fallidas; capturas de
+[partida](rnv01-naval-refuge/public-gameplay.png) y [mapa](rnv01-naval-refuge/public-map.png) inspeccionadas.
+No modifica recursos del mundo ni construye una cabina en producción; no acredita guardado/reentrada
+autenticados de puerta en Supabase. Ese recorrido funcional se verificó en el GameHost local declarado.
+
+Se conservaron SQL, flags y configuración del servicio. Economía/recursos activos; **Tala apagada**,
+con SQL016 y aceptación autenticada pendientes de AREA03/15. Los commits documentales posteriores no
+cambian este runtime; esta evidencia fija la revisión realmente observada, no promete que sea el HEAD futuro.
 
 Sigue **RNV02: farol utilizable**, después noche casi negra sin luz. Aún no aplica lluvia, temperatura,
 descanso, cerraduras ni colapso en cadena al destruir soportes; un techo existente no se derrumba por

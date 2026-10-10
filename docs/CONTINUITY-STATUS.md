@@ -13,8 +13,9 @@
 | Perlas/muerte/botín | Contratos M5 opcionales; no compuestos con economía activa | Dueño común de tick y transacciones de gameplay |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
 
-**Runtime actual observado, 2026-10-10 19:19 UTC:** `56e4345b0b83ba58521d91f55b71891e126b0988`,
-alpha.24/protocolo 36, imagen sana, una autoridad y 107/107 offline; smoke público 6/6 con entrada WSS.
+**Runtime actual observado, 2026-10-10 19:24:26 UTC:** `29a9e46e41169119a9547e47acc88ca56e3eae0c`,
+alpha.24/protocolo 37 con [refugio RNV01](delivery/rnv01-naval-refuge.md), imagen sana, una autoridad y
+107/107 offline en esa imagen; entrada real de invitado/mapa/minimapa y protocolo comprobados en navegador.
 Recursos/economía siguen activos. Tala publicada pero apagada, SQL016 pendiente; no constituye todavía
 aceptación de aprendizaje durable público. [Evidencia PRG01b2](delivery/prg01b2-logging.md).
 

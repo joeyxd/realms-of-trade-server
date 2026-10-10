@@ -15,7 +15,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
   del dueño. Editor de once piezas; coste/HP existentes, visitantes sin cerradura y vista interior.
   516 pruebas tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas.
-  Publicación/activación en la entrega. Sigue farol, luego noche oscura.
+  Activo en VPS `29a9e46`, sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo
+  comprobados; evidencia/límites en la entrega. Sigue farol, luego noche oscura.
 
 - AREA03 PRG01b2 (2026-10-10), **corte alpha.24/protocolo 36, integrado con RNV01 en protocolo 37**: [Tala cooperativa](docs/delivery/prg01b2-logging.md)
   integra práctica proporcional, beneficiarios offline, nodo, troncos y recibo en la misma M5.
