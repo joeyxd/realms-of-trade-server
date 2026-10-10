@@ -29,7 +29,7 @@ try {
   evidence.checks.push('public_tls_health_and_game_version');
 
   // A fresh browser context has no prior auth storage; the user explicitly chooses guest in-game.
-  context = await browser.newContext({ viewport: { width: 1440, height: 900 }, isMobile: true, hasTouch: true });
+  context = await browser.newContext({ locale: 'es-MX', viewport: { width: 1440, height: 900 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   page.on('pageerror', (error) => evidence.errors.push(error.stack || error.message));
   await page.goto(`${origin}/?q=low&tod=day`, { waitUntil: 'domcontentloaded' });

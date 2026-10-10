@@ -31,6 +31,10 @@ integrar combustible pasó 589 de 594 casos, con cinco omisiones de plataforma y
 La [regresión de release](l03d-owner-center/release-tests.tap) previa pasó 107/107; conservan sus resultados separados;
 los casos se solapan y no se suman como aceptación independiente.
 
+La [selección final de integración](l03d-owner-center/final-integration.tap) sobre alpha.33 pasó
+**76/76**: Compañeros cliente/red/UI, autenticación, panel del dueño, Fuego e idioma global.
+La revisión del enlace a HELLO/`you:ready`, fallos de entrada y cambio de idioma no encontró incidencias.
+
 Tras integrar combustible, la [selección adicional](l03d-owner-center/integration-tests.tap) pasó
 82/83: falló la aserción temporizada de predicción en `tests/net.test.mjs`. Su repetición aislada
 pasó [2/2 en el corte actual](l03d-owner-center/net-current.tap) y
