@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: refresh projects a validated owner response and stop uses the displayed epoch
+ok 1 - refresh projects a validated owner response and stop uses the displayed epoch
+  ---
+  duration_ms: 5.2826
+  type: 'test'
+  ...
+# Subtest: logout/account switch clears rows and late response cannot restore them
+ok 2 - logout/account switch clears rows and late response cannot restore them
+  ---
+  duration_ms: 0.6847
+  type: 'test'
+  ...
+# Subtest: logout and relogin to the same account cannot reuse the old gameplay binding
+ok 3 - logout and relogin to the same account cannot reuse the old gameplay binding
+  ---
+  duration_ms: 0.4284
+  type: 'test'
+  ...
+# Subtest: timeout is bounded and does not retry; transport close clears projection
+ok 4 - timeout is bounded and does not retry; transport close clears projection
+  ---
+  duration_ms: 24.8089
+  type: 'test'
+  ...
+# Subtest: account session mismatch and loss of joined state reject requests and late results
+ok 5 - account session mismatch and loss of joined state reject requests and late results
+  ---
+  duration_ms: 0.6112
+  type: 'test'
+  ...
+# Subtest: server errors use fixed safe copy and malformed projections are ignored
+ok 6 - server errors use fixed safe copy and malformed projections are ignored
+  ---
+  duration_ms: 0.6259
+  type: 'test'
+  ...
+# Subtest: stale stop retains a valid safe projection then deliberately refreshes
+ok 7 - stale stop retains a valid safe projection then deliberately refreshes
+  ---
+  duration_ms: 0.6468
+  type: 'test'
+  ...
+# Subtest: stale-control refresh queued before logout cannot target a later session
+ok 8 - stale-control refresh queued before logout cannot target a later session
+  ---
+  duration_ms: 0.5676
+  type: 'test'
+  ...
+# Subtest: offline provisioned companion can still be stopped with nullable baseline epoch
+ok 9 - offline provisioned companion can still be stopped with nullable baseline epoch
+  ---
+  duration_ms: 0.3708
+  type: 'test'
+  ...
+# Subtest: owner list is private, bounded and available as an honest empty state when controls are off
+ok 10 - owner list is private, bounded and available as an honest empty state when controls are off
+  ---
+  duration_ms: 713.5722
+  type: 'test'
+  ...
+# Subtest: two authenticated owners see only their configured characters, never grants/tasks or another account
+ok 11 - two authenticated owners see only their configured characters, never grants/tasks or another account
+  ---
+  duration_ms: 609.7928
+  type: 'test'
+  ...
+# Subtest: stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+ok 12 - stop fences queued input and old epoch, stays idempotent, and refuses to stop a new session from stale UI
+  ---
+  duration_ms: 469.0926
+  type: 'test'
+  ...
+# Subtest: a null baseline cannot stop a newly connected character
+ok 13 - a null baseline cannot stop a newly connected character
+  ---
+  duration_ms: 1232.7288
+  type: 'test'
+  ...
+# Subtest: owner can stop a configured character that has never been admitted with its null baseline
+ok 14 - owner can stop a configured character that has never been admitted with its null baseline
+  ---
+  duration_ms: 1237.1241
+  type: 'test'
+  ...
+# Subtest: signed-out and offline snapshots discard companion rows and language changes update labels
+ok 15 - signed-out and offline snapshots discard companion rows and language changes update labels
+  ---
+  duration_ms: 4.928
+  type: 'test'
+  ...
+# Subtest: stop is single-flight, keeps rows visible while pending, and never renders callback errors
+ok 16 - stop is single-flight, keeps rows visible while pending, and never renders callback errors
+  ---
+  duration_ms: 1.8463
+  type: 'test'
+  ...
+# Subtest: unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+ok 17 - unconfigured or inactive rows have no stop action and refresh errors use fixed copy
+  ---
+  duration_ms: 0.6901
+  type: 'test'
+  ...
+# Subtest: panel visibility callback fires only on transitions and stopped is distinct from offline
+ok 18 - panel visibility callback fires only on transitions and stopped is distinct from offline
+  ---
+  duration_ms: 0.5363
+  type: 'test'
+  ...
+# Subtest: ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+ok 19 - ready has a truthful label, setup note persists, and known error codes use fixed localized copy
+  ---
+  duration_ms: 0.3769
+  type: 'test'
+  ...
+# Subtest: modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+ok 20 - modal keyboard flow traps Tab at both ends while native traversal and Escape remain available
+  ---
+  duration_ms: 0.5915
+  type: 'test'
+  ...
+# Subtest: dialog portals to the stage UI and the HUD toggle opens and closes it
+ok 21 - dialog portals to the stage UI and the HUD toggle opens and closes it
+  ---
+  duration_ms: 0.4757
+  type: 'test'
+  ...
+# Subtest: refresh focus moves to close before the refresh button becomes disabled
+ok 22 - refresh focus moves to close before the refresh button becomes disabled
+  ---
+  duration_ms: 0.4955
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5306.5619

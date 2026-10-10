@@ -92,10 +92,32 @@ async function setup(context, { accountId = OWNER, token = 'owner-fixture', sign
 async function openGame(context, { width = 1440, height = 900, gameOrigin = origin } = {}) {
   const page = await context.newPage();
   await page.setViewportSize({ width, height });
-  page.on('pageerror', (error) => evidence.errors.push(error.stack || error.message));
+  const diag = { url: '', console: [], failedRequests: [], pageErrors: [], responses: [] };
+  evidence.bootstrapDiagnostics ||= [];
+  evidence.bootstrapDiagnostics.push(diag);
+  page.on('console', (message) => { if (message.type() === 'error') diag.console.push(message.text()); });
+  page.on('requestfailed', (request) => diag.failedRequests.push({ url: request.url(), failure: request.failure()?.errorText }));
+  page.on('response', (response) => {
+    if (/\/(?:src\/main\.js|main\.js|style\.css|assets\/manifest\.json)/.test(response.url()))
+      diag.responses.push({ url: response.url(), status: response.status() });
+  });
+  page.on('pageerror', (error) => { evidence.errors.push(error.stack || error.message); diag.pageErrors.push(error.stack || error.message); });
   await page.goto(`${gameOrigin}/?q=low&noassets`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__mn && window.__mn.companions &&
-    !document.querySelector('#btn-play').disabled, null, { timeout: 90000 });
+  try {
+    await page.waitForFunction(() => window.__mn && window.__mn.companions &&
+      !document.querySelector('#btn-play').disabled, null, { timeout: 90000 });
+  } catch (error) {
+    diag.url = page.url();
+    diag.dom = await page.evaluate(() => ({ readyState: document.readyState,
+      title: document.title, mn: Boolean(window.__mn), companions: Boolean(window.__mn?.companions),
+      button: (() => { const button = document.querySelector('#btn-play'); return button && { disabled: button.disabled, text: button.textContent }; })(),
+      fade: document.getElementById('fade') && getComputedStyle(document.getElementById('fade')).display,
+      runtimeErrors: window.__mn?.errors ? [...window.__mn.errors] : null,
+      bodyText: document.body?.innerText?.slice(0, 800),
+      scripts: [...document.scripts].map((script) => ({ src: script.src, type: script.type })) }));
+    diag.fixtureStatus = game.game.status();
+    throw error;
+  }
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
   return page;
 }
@@ -163,6 +185,22 @@ try {
     assert.equal(await ownerPage.locator('.mn-companions-panel').isHidden(), true);
     assert.equal(await toggle.evaluate((node) => node === document.activeElement), true);
   });
+  await check('fire_and_companions_close_each_other_and_block_gameplay_input', async () => {
+    await ownerPage.locator('.mn-companions-toggle').click();
+    await ownerPage.waitForFunction(() => !document.querySelector('.mn-companions-panel').hidden &&
+      document.activeElement?.matches('.mn-companions-close'));
+    const fireOpened = await ownerPage.evaluate(() => __mn.panels.firePanel.open());
+    assert.equal(fireOpened, true);
+    await ownerPage.waitForFunction(() => __mn.panels.firePanel.active &&
+      document.querySelector('.mn-companions-panel').hidden &&
+      document.activeElement?.matches('.fire-close') && __mn.input.buildContext === true);
+    await ownerPage.locator('.mn-companions-toggle').click();
+    await ownerPage.waitForFunction(() => !document.querySelector('.mn-companions-panel').hidden &&
+      !__mn.panels.firePanel.active && document.activeElement?.matches('.mn-companions-close') &&
+      __mn.input.enabled === false);
+    await ownerPage.keyboard.press('Escape');
+    await ownerPage.waitForFunction(() => document.querySelector('.mn-companions-panel').hidden);
+  });
   await ownerPage.locator('.mn-companions-toggle').click();
   await ownerPage.waitForSelector('.mn-companions-panel:not([hidden])');
   await ownerPage.evaluate(() => { document.documentElement.lang = 'en'; });
@@ -224,6 +262,7 @@ try {
     assert.equal(JSON.stringify(state).includes(CHARACTER), false);
     assert.ok(stale.characterKey === CHARACTER);
   });
+  await owner.close(); ownerContext = null;
 
   const other = await browser.newContext({ viewport: { width: 1440, height: 900 } }); otherContext = other;
   await setup(other, { accountId: OTHER, token: 'other-fixture' });
@@ -319,7 +358,6 @@ try {
   await shot(disabledPage, 'companions-disabled-host.png');
 
   await check('disconnect_clears_state_without_client_errors', async () => {
-    await ownerPage.close();
     await mobilePage.evaluate(() => __mn.transport.close());
     await mobilePage.waitForFunction(() => ['offline', 'signed_out'].includes(__mn.companions.snapshot().status));
     assert.deepEqual(await mobilePage.evaluate(() => __mn.companions.snapshot().companions), []);
@@ -327,7 +365,7 @@ try {
       assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
   });
   agent.close();
-  await Promise.all([owner.close(), otherContext?.close(), guest.close(), unboundContext?.close(), mobile.close(), disabledContext.close()]);
+  await Promise.all([ownerContext?.close(), otherContext?.close(), guest.close(), unboundContext?.close(), mobile.close(), disabledContext.close()]);
 } catch (error) {
   evidence.errors.push(error.stack || String(error)); process.exitCode = 1;
 } finally {

@@ -1,0 +1,118 @@
+{
+  "schema": "l03d-companions-browser/v1",
+  "version": "0.6.0-alpha.32",
+  "at": "2026-10-10T22:39:21.599Z",
+  "simulatedAuth": true,
+  "production": false,
+  "checks": [
+    "authenticated_owner_sees_only_owned_live_companion_and_public_name",
+    "toggle_keyboard_escape_and_focus_return",
+    "fire_and_companions_close_each_other_and_block_gameplay_input",
+    "stop_revokes_server_grant_and_updates_owner_projection",
+    "stale_epoch_stop_is_rejected_after_revocation",
+    "logout_clears_rows_and_ignores_delayed_list_response",
+    "second_owner_sees_only_their_offline_binding",
+    "authenticated_unbound_account_gets_valid_empty_owned_list",
+    "actual_guest_has_no_companion_authority_or_rows",
+    "mobile_panel_fits_viewport_and_keeps_stop_reachable",
+    "mobile_offline_binding_can_be_stopped_and_keyboard_reached",
+    "portrait_rotated_stage_keeps_panel_on_screen",
+    "disabled_host_reports_honest_unconfigured_empty_state",
+    "disconnect_clears_state_without_client_errors"
+  ],
+  "screenshots": [
+    "companions-es-active.png",
+    "companions-en-stopped.png",
+    "companions-guest.png",
+    "companions-mobile.png",
+    "companions-mobile-portrait.png",
+    "companions-disabled-host.png"
+  ],
+  "errors": [],
+  "fixtures": {
+    "owner": "22222222-2222-4222-8222-222222222222",
+    "companion": "33333333-3333-4333-8333-333333333333",
+    "other": "44444444-4444-4444-8444-444444444444",
+    "otherCompanion": "66666666-6666-4666-8666-666666666666"
+  },
+  "bootstrapDiagnostics": [
+    {
+      "url": "",
+      "console": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": [],
+      "pageErrors": [],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:62143/src/main.js",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "url": "",
+      "console": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": [
+        {
+          "url": "http://127.0.0.1:62143/api/gm/session",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "pageErrors": [],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:62143/src/main.js",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "url": "",
+      "console": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": [],
+      "pageErrors": [],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:62143/src/main.js",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "url": "",
+      "console": [],
+      "failedRequests": [],
+      "pageErrors": [],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:56340/src/main.js",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "url": "",
+      "console": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": [
+        {
+          "url": "http://127.0.0.1:62143/api/gm/session",
+          "failure": "net::ERR_ABORTED"
+        }
+      ],
+      "pageErrors": [],
+      "responses": [
+        {
+          "url": "http://127.0.0.1:62143/src/main.js",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

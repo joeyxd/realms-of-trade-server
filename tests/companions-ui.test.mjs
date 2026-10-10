@@ -84,10 +84,15 @@ test('unconfigured or inactive rows have no stop action and refresh errors use f
 
 test('panel visibility callback fires only on transitions and stopped is distinct from offline', () => {
   const changes = [];
-  const { ui, restore } = setup({ onVisibilityChange: (open) => changes.push(open) });
+  const { ui, restore } = setup({ onVisibilityChange: (open) => {
+    changes.push(open);
+    // Closing another game panel may return focus to the stage during the open hook.
+    if (open) globalThis.document.ui.focus();
+  } });
   try {
     ui.setVisible(true);
     assert.equal(ui.open(), true);
+    assert.equal(globalThis.document.activeElement, ui.closeButton, 'opening restores dialog focus after closing another panel');
     assert.equal(ui.open(), true);
     ui.setState({ status: 'ready', enabled: true, companions: [{ characterKey: 'brisa', online: false, active: false, stopped: true }] });
     ui.setLanguage('en');
@@ -121,6 +126,7 @@ test('modal keyboard flow traps Tab at both ends while native traversal and Esca
     ui.setState({ status: 'ready', enabled: true, companions: [{ characterKey: 'b', name: 'Brisa', active: true }] });
     ui.open();
     assert.equal(ui.closeButton.focused, true);
+    assert.equal(globalThis.document.activeElement, ui.closeButton);
     assert.equal(ui.closeButton.textContent, '×');
     assert.equal(ui.closeButton.attributes['aria-label'], 'Cerrar panel');
     let stopped = false;
