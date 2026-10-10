@@ -42,3 +42,5 @@ Integrado con las entregas concurrentes GM03b2, I18N04b, L03d y RNV04, alpha.35/
 La activación exige `MN_ECONOMIC_OPERATIONS=1`, `MN_RESOURCE_OPERATIONS=1`, `MN_LOGGING_OPERATIONS=1`, `MN_ARTISAN_OPERATIONS=1` y `MN_STARTER_WORKSHOP=1`, transición con el servidor vacío y canario autenticado. Verificar entregas parciales/reconexión, primera bodega sin doble cobro, segunda bodega, kit de caja, aciertos server-owned, capacidad y desguace. Si el mundo ya está adoptado, no se intenta convertir recursos v2→v3 por la ruta legacy; coordinar la transición común antes de activar.
 
 La ampliación INV01–03 de huecos/pilas, Carga con puntos y sobrepeso es posterior: este corte aporta el contrato inicial de volumen/masa, sin implementar esa interfaz ni cerrar su tuning.
+
+La [consulta real de readiness](prg01d-starter-workshop/readiness.json) encontró SQL023/024 ausentes a las 23:06 UTC. El [procedimiento de aceptación autenticada](prg01d-starter-workshop/live-acceptance.md) deja preparado el siguiente corte con cuenta desechable, flujo normal, recibos/reconexión y limpieza exacta; aún no se ha ejecutado.
