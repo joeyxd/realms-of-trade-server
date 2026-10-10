@@ -1,0 +1,144 @@
+TAP version 13
+# Subtest: adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+ok 1 - adopted SQL023 world enters the real GameHost, gathers through its common journal, and restarts on the same clock
+  ---
+  duration_ms: 7308.5465
+  type: 'test'
+  ...
+# Subtest: world adoption, initial resource clock and fences recover after SIGKILL before-commit
+ok 2 - world adoption, initial resource clock and fences recover after SIGKILL before-commit
+  ---
+  duration_ms: 4572.5988
+  type: 'test'
+  ...
+# PGlite file-backed SIGKILL proof for SQL001-023; process recovery and persistence fences only.
+# Subtest: world adoption, initial resource clock and fences recover after SIGKILL after-commit
+ok 3 - world adoption, initial resource clock and fences recover after SIGKILL after-commit
+  ---
+  duration_ms: 4231.6007
+  type: 'test'
+  ...
+# PGlite file-backed SIGKILL proof for SQL001-023; process recovery and persistence fences only.
+# Subtest: SQL023 readiness, exact legacy adoption, immutable replay, and checkpoint continuation
+ok 4 - SQL023 readiness, exact legacy adoption, immutable replay, and checkpoint continuation
+  ---
+  duration_ms: 1426.8306
+  type: 'test'
+  ...
+# Subtest: SQL023 stale, malformed, tick-mismatched, and pre-clocked worlds fail without partial adoption
+ok 5 - SQL023 stale, malformed, tick-mismatched, and pre-clocked worlds fail without partial adoption
+  ---
+  duration_ms: 993.2298
+  type: 'test'
+  ...
+# Subtest: SQL023 rejects existing legacy pearl locations and death-drop rows, including held pearls
+ok 6 - SQL023 rejects existing legacy pearl locations and death-drop rows, including held pearls
+  ---
+  duration_ms: 1771.7957
+  type: 'test'
+  ...
+# Subtest: SQL023 refuses pending and committed pre-adoption identities, including UUID collision from another world
+ok 7 - SQL023 refuses pending and committed pre-adoption identities, including UUID collision from another world
+  ---
+  duration_ms: 1717.2778
+  type: 'test'
+  ...
+# Subtest: SQL023 keeps economic family commits inside the common wrapper after adoption
+ok 8 - SQL023 keeps economic family commits inside the common wrapper after adoption
+  ---
+  duration_ms: 1988.9314
+  type: 'test'
+  ...
+# Subtest: SQL023 persistent fence rejects legacy world, clock, and direct ground-row writes while unadopted worlds retain legacy behavior
+ok 9 - SQL023 persistent fence rejects legacy world, clock, and direct ground-row writes while unadopted worlds retain legacy behavior
+  ---
+  duration_ms: 1765.2953
+  type: 'test'
+  ...
+# Subtest: SQL023 RPCs and private adoption state obey service-only permissions
+ok 10 - SQL023 RPCs and private adoption state obey service-only permissions
+  ---
+  duration_ms: 1776.5021
+  type: 'test'
+  ...
+# Subtest: SQL023 write guards reject repeatable-read and serializable legacy saves for adopted and legacy worlds
+ok 11 - SQL023 write guards reject repeatable-read and serializable legacy saves for adopted and legacy worlds
+  ---
+  duration_ms: 1749.2728
+  type: 'test'
+  ...
+# Subtest: readiness and per-world receipt use exact RPC parameters and validate persisted identity
+ok 12 - readiness and per-world receipt use exact RPC parameters and validate persisted identity
+  ---
+  duration_ms: 5.2379
+  type: 'test'
+  ...
+# Subtest: readiness rejects a malformed capability response
+ok 13 - readiness rejects a malformed capability response
+  ---
+  duration_ms: 0.5019
+  type: 'test'
+  ...
+# Subtest: adoption validates exact IDs, version, resource snapshot, and hostile input before RPC
+ok 14 - adoption validates exact IDs, version, resource snapshot, and hostile input before RPC
+  ---
+  duration_ms: 5.6192
+  type: 'test'
+  ...
+# Subtest: adoption sends a detached snapshot and accepts the exact clock-only result
+ok 15 - adoption sends a detached snapshot and accepts the exact clock-only result
+  ---
+  duration_ms: 2.0489
+  type: 'test'
+  ...
+# Subtest: SQL conflict and operation rejections are returned as exact domain outcomes
+ok 16 - SQL conflict and operation rejections are returned as exact domain outcomes
+  ---
+  duration_ms: 3.3953
+  type: 'test'
+  ...
+# Subtest: an ambiguous committed response resolves through the exact durable receipt without a second write
+ok 17 - an ambiguous committed response resolves through the exact durable receipt without a second write
+  ---
+  duration_ms: 2.806
+  type: 'test'
+  ...
+# Subtest: malformed success is terminal and never triggers receipt recovery or a second write
+ok 18 - malformed success is terminal and never triggers receipt recovery or a second write
+  ---
+  duration_ms: 1.4505
+  type: 'test'
+  ...
+# Subtest: malformed durable evidence after a lost reply fails closed without retry
+ok 19 - malformed durable evidence after a lost reply fails closed without retry
+  ---
+  duration_ms: 2.9356
+  type: 'test'
+  ...
+# Subtest: an absent receipt retries the same frozen operation once and accepts SQL replay
+ok 20 - an absent receipt retries the same frozen operation once and accepts SQL replay
+  ---
+  duration_ms: 1.89
+  type: 'test'
+  ...
+# Subtest: a receipt for another candidate conflicts and an unknown post-retry outcome stays unavailable
+ok 21 - a receipt for another candidate conflicts and an unknown post-retry outcome stays unavailable
+  ---
+  duration_ms: 4.6003
+  type: 'test'
+  ...
+# Subtest: malformed or mismatched persisted receipts fail closed
+ok 22 - malformed or mismatched persisted receipts fail closed
+  ---
+  duration_ms: 2.8274
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21834.1681
