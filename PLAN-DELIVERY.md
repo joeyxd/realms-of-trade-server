@@ -31,6 +31,8 @@ SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composi
 solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicado y activo en `fe50ab1`,
 alpha.32/protocolo 42: imagen 107/107 y 30/30 de fuego, navegador autenticado público 9/9 con
 saldo/madera tras recargar y mapa/minimapa. Otros flags conservados. Sigue agua/reembarque.
+Revalidación pública final `ee88690`, alpha.34/protocolo 43: 9/9 y capturas inspeccionadas;
+cuenta/perfil QA eliminados, cuatro recibos retenidos y 35/35 de identidad cliente/agente.
 
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).

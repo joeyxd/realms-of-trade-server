@@ -1,7 +1,7 @@
 # RNV04 — combustible y fuego privado
 
 Entrega AREA07 del 2026-10-10, implementación inicial alpha.31 / protocolo 42. [Contrato](../briefs/RNV04-fire-fuel.md).
-Publicado y activo; aceptación pública en alpha.32 / protocolo 42, con las traducciones concurrentes conservadas.
+Publicado y activo; aceptación pública repetida en alpha.34 / protocolo 43, conservando traducciones, compañeros y contenido GM concurrentes.
 
 ## Comportamiento
 
@@ -96,6 +96,29 @@ alpha.32 exacta; las pruebas locales no se presentan como un recorrido público 
 La integración siguiente conserva GM03b2 alpha.34/protocolo 43: los once archivos anteriores más
 cliente/HTTP/servicio de contenido GM pasaron **82/82** en catorce archivos:
 [salida](rnv04-fire-fuel/gm-integration.tap). No activa revisiones GM ni cambia flags de gameplay.
+
+**Revalidación pública final, 23:04 UTC:** alpha.34/protocolo 43 en `ee886903066016dee9752d8571aea382d717e073`,
+imagen `sha256:208bc57038efbb8341811df48804a9266c59a417702b25b756bbce8b904856a5`.
+El recorrido completo volvió a pasar **9/9**: entrada normal/WSS, una madera por antorcha, apagado,
+reencendido, sesión/saldo/madera tras reload, nuevo encendido sin cobro y mapa/minimapa renderizados.
+Cero errores de página/consola/peticiones fallidas; cinco denegaciones GM 403 esperadas por separado.
+[Resultado](rnv04-fire-fuel/public-accepted-alpha34/public-c69c2585-2deb-4c9d-baf4-5cd83c16f459.json).
+Cuenta/perfil desechables eliminados tras drenar escrituras y cuatro recibos retenidos. Se inspeccionaron
+[panel](rnv04-fire-fuel/public-accepted-alpha34/02-public-fire-panel.png),
+[carga](rnv04-fire-fuel/public-accepted-alpha34/03-public-hand-torch-lit.png),
+[reentrada](rnv04-fire-fuel/public-accepted-alpha34/05-public-hand-torch-reconnected.png) y
+[mapa](rnv04-fire-fuel/public-accepted-alpha34/06-public-map.png). La hora fue 05:08–05:31, cerca del
+amanecer; esta repetición comprueba la mano y persistencia, no oscuridad profunda ni navegación naval.
+La guarda de identidad GM de cliente/agente también pasó **35/35** en dos archivos:
+[salida](rnv04-fire-fuel/final-client.txt), solapada con las selecciones anteriores.
+
+La [instantánea del VPS](rnv04-fire-fuel/vps-integration-alpha34.json) registra una autoridad saludable,
+fuego y Supabase listos y cero escrituras pendientes. Registra también un jugador concurrente y el timer
+pausado durante el mantenimiento GM; no se atribuye ese jugador a la cuenta QA ya eliminada ni se presenta
+esa instantánea como prueba de actualizaciones automáticas activas.
+El [intento previo de esta integración](rnv04-fire-fuel/public-gm-interruption.json) queda fallido:
+una activación GM concurrente cerró WSS con `1012/content_revision` durante el reload. No se debilitó
+la comprobación; se repitió el recorrido completo con la revisión estable y pasó como se documenta arriba.
 
 Sigue agua costera/reembarque, después provisiones/hogar; carga, agotamiento, rescate y relación con Brasa
 deben cerrar su contrato antes de activar natación. Carbón y construcción privada en tierra siguen pendientes.

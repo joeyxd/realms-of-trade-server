@@ -37,6 +37,8 @@ aceptados localmente. VPS `fe50ab1`, alpha.32/protocolo 42, publicado y fuego ha
 107/107 y 30/30 focales. Navegador público autenticado 9/9: combustible/madera persistentes,
 reencendido sin repetir cobro y mapa/minimapa. Cuenta/perfil QA eliminados; recibos retenidos.
 No activa artesano ni montaje de reloj común. Sigue agua costera/reembarque y después provisiones/hogar.
+Revalidado públicamente en `ee88690`, alpha.34/protocolo 43: 9/9 con capturas inspeccionadas,
+cuenta/perfil QA eliminados y cuatro recibos retenidos. Identidad cliente/agente 35/35.
 
 **AREA15, 2026-10-10 — código común económico/checkpoint publicado, montaje apagado:**
 [entrega](delivery/m5-ground-host-authority.md), [contrato](briefs/m5-ground-host-authority.md).
