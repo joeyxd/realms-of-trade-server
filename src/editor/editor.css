@@ -150,3 +150,11 @@
   .gm-sidebar { grid-column: 1; grid-row: 1; }
   .gm-canvas-note { display: none; }
 }
+.gm-publication { border-top: 1px solid #62716b; margin-top: 1rem; padding-top: .7rem; }
+.gm-publication h3 { margin: 0 0 .5rem; }
+.gm-publication-report { margin-top: .8rem; border-left: 3px solid #8cba89; padding-left: .8rem; }
+.gm-publication-report[data-valid="false"] { border-color: #e3927b; }
+.gm-publication-report ul { max-height: 12rem; overflow-y: auto; padding-left: 1.2rem; }
+.gm-publication-report li { margin-bottom: .45rem; }
+.gm-publication-report li button { margin-left: .4rem; font-size: .8rem; overflow-wrap: anywhere; }
+.gm-revision-id { display: block; overflow-wrap: anywhere; font-size: .75rem; }

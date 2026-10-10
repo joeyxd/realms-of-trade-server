@@ -1,5 +1,24 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
+[entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).
+Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/reloj juntos.
+355/355 pruebas en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost; integra GM03b1.
+SQL018–021 readiness real confirmada; dominio legacy sin reloj común. Sin activación de esta API
+ni artesano; sigue adopción atómica y composición perlas/muerte/botín, luego canario autenticado VPS.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 del montaje
+sin red en Node 22 y entrada pública 6/6. Regresiones solapadas; no se activa esta API por publicar código.
+
+**GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
+[preparar revisión](docs/delivery/gm03b1/DELIVERY.md), [contrato](docs/briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión, navegador local simulado 41/41, actualizador 107/107 y
+navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionados y borrador previo
+restaurado por CAS r6→r13. [Evidencia pública](docs/delivery/gm03b1/public-evidence.json).
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
 **AREA03 PRG01c, código publicado 2026-10-10:** [artesano/Bodega](docs/delivery/prg01c-artisan.md), alpha.29/protocolo 41.
 Lección personal tras Tala y carpintería, colocación/retiro de Bodega por recibo M5 exacto, sin otro
 writer. 114/114 integración, 107/107 release con solapamiento y 32 checks UI ES/EN/banco existente.

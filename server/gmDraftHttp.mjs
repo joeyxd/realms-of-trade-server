@@ -55,7 +55,7 @@ function checkedHead(raw) {
 }
 
 export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId, seed, baseRevision = 'terrain-s21-v1',
-  validateReferences, allowMemory = false, timeoutMs = 10_000 } = {}) {
+  validateReferences, publication = null, allowMemory = false, timeoutMs = 10_000 } = {}) {
   if (!store || typeof resolvePlayer !== 'function' || typeof worldId !== 'string' || !worldId.trim() || worldId.length > 100 ||
       !Number.isSafeInteger(seed) || seed < 0 || seed > 0xffffffff || typeof baseRevision !== 'string' ||
       !baseRevision || baseRevision.length > 128 || typeof validateReferences !== 'function' ||
@@ -63,6 +63,7 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
 
   const requests = new Map();
   let ready = false;
+  let preparationReady = false, preparing = false;
   const scope = Object.freeze({ worldId, seed, baseRevision });
   const send = (res, status, value) => {
     if (res.destroyed || res.writableEnded) return;
@@ -87,9 +88,13 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         const result = await bounded(store.checkGmDrafts(), timeoutMs);
         ready = result?.version === 1;
       } catch { ready = false; }
+      preparationReady = false;
+      if (ready && publication) {
+        try { await bounded(publication.prepare(), timeoutMs); preparationReady = true; } catch { /* Draft saves stay available. */ }
+      }
       return ready;
     },
-    async handle(req, res) {
+    async handle(req, res, { prepareRevision = false } = {}) {
       req.on?.('error', () => {});
       const controller = new AbortController();
       const abort = () => controller.abort();
@@ -100,7 +105,8 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         if (auth.aborted || res.destroyed || res.writableEnded || req.aborted) return true;
         if (auth.status !== 200) { send(res, auth.status, auth.body); return true; }
         const method = req.method;
-        if (method !== 'GET' && method !== 'PUT') { res.writeHead(405, { ...JSON_HEADERS, allow: 'GET, PUT' }); res.end(JSON.stringify({ ok: false, code: 'method' })); return true; }
+        const allowed = prepareRevision ? ['POST'] : ['GET', 'PUT'];
+        if (!allowed.includes(method)) { res.writeHead(405, { ...JSON_HEADERS, allow: allowed.join(', ') }); res.end(JSON.stringify({ ok: false, code: 'method' })); return true; }
         if (!ready) { send(res, 503, unavailable()); return true; }
         let accountId;
         try { accountId = playerKey(auth.body.accountId); } catch { send(res, 503, unavailable()); return true; }
@@ -123,6 +129,41 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
           const code = error?.code;
           send(res, code === 'size' ? 413 : code === 'timeout' ? 408 : 400,
             { ok: false, code: code === 'size' ? 'size' : code === 'timeout' ? 'timeout' : 'input' }); return true;
+        }
+        if (prepareRevision) {
+          if (!exactKeys(input, ['expectedRevision']) || !Number.isSafeInteger(input.expectedRevision) ||
+              input.expectedRevision < 1 || input.expectedRevision > MAX_REVISION) {
+            send(res, 400, { ok: false, code: 'operation' }); return true;
+          }
+          if (!preparationReady) { send(res, 503, { ok: false, code: 'gm_preparation_unavailable' }); return true; }
+          if (preparing) { send(res, 503, { ok: false, code: 'gm_preparation_busy' }); return true; }
+          if (controller.signal.aborted || req.aborted) return true;
+          preparing = true;
+          let buildStarted = false;
+          try {
+            const head = checkedHead(await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs));
+            if (!head?.document || head.revision !== input.expectedRevision) {
+              send(res, 409, { ok: false, code: 'gm_draft_conflict', revision: head?.revision ?? 0 }); return true;
+            }
+            let document;
+            try { document = validateReferences(head.document); }
+            catch { send(res, 400, { ok: false, code: 'document' }); return true; }
+            if (controller.signal.aborted || req.aborted) return true;
+            // Keep exclusion until the build actually finishes, including after HTTP timeout.
+            buildStarted = true;
+            const building = Promise.resolve().then(() => publication.build({ document, draftRevision: head.revision }));
+            building.finally(() => { preparing = false; }).catch(() => {});
+            let preparation;
+            try { preparation = await bounded(building, timeoutMs); }
+            catch { send(res, 503, { ok: false, code: 'gm_preparation_unavailable' }); return true; }
+            if (controller.signal.aborted || req.aborted) return true;
+            const current = checkedHead(await bounded(store.loadGmDraft({ world: worldId, owner: accountId }), timeoutMs));
+            if (current?.revision !== head.revision) {
+              send(res, 409, { ok: false, code: 'gm_draft_conflict', revision: current?.revision ?? 0 }); return true;
+            }
+            send(res, 200, { ok: true, durable: store.durable === true, scope, headRevision: head.revision, preparation });
+          } finally { if (!buildStarted) preparing = false; }
+          return true;
         }
         if (!exactKeys(input, ['operationId', 'expectedRevision', 'document']) || typeof input.operationId !== 'string' ||
             !UUID.test(input.operationId) || /^0{8}-0{4}-0{4}-0{4}-0{12}$/i.test(input.operationId) ||

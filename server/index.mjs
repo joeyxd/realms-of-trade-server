@@ -18,6 +18,8 @@ import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
 import { createGmSessionHandler, parseGmAccountIds } from './gmSession.mjs';
 import { createGmDraftHandler } from './gmDraftHttp.mjs';
 import { createGmDraftValidator } from './gmDraftValidation.mjs';
+import { createGmPublicationService } from './gmPublication.mjs';
+import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -34,7 +36,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, fireOperations = false, agentTrade = false,
-  gmDraftsAllowMemory = false } = {}) {
+  gmDraftsAllowMemory = false, groundTransactions = null } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
@@ -47,7 +49,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, fireOperations, agentTrade });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, fireOperations, agentTrade, groundTransactions });
   let gmDrafts = null;
   if (resolvePlayer && gmAccountIds?.length && worldId !== null) {
     const baseRevision = 'terrain-s21-v1';
@@ -55,7 +57,9 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       manifest: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/manifest.json'), 'utf8')),
       editorCatalog: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/editor/catalog.json'), 'utf8')) });
     gmDrafts = createGmDraftHandler({ store: game.store, resolvePlayer, accountIds: gmAccountIds,
-      worldId, seed: game.server.world.seed, baseRevision, validateReferences, allowMemory: gmDraftsAllowMemory });
+      worldId, seed: game.server.world.seed, baseRevision, validateReferences, allowMemory: gmDraftsAllowMemory,
+      publication: createGmPublicationService({ root: ROOT, map: game.server.world.map, baseRevision, worldId,
+        validateReferences, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) });
   }
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
@@ -67,8 +71,8 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
     if (p === '/api/gm/session') { void gmSession(req, res); return; }
-    if (p === '/api/gm/draft') {
-      if (gmDrafts) void gmDrafts.handle(req, res);
+    if (p === '/api/gm/draft' || p === '/api/gm/prepare') {
+      if (gmDrafts) void gmDrafts.handle(req, res, { prepareRevision: p === '/api/gm/prepare' });
       else { res.writeHead(503, { 'content-type': MIME['.json'], 'cache-control': 'no-store' }).end(JSON.stringify({ ok: false, code: 'gm_drafts_unavailable' })); }
       return;
     }

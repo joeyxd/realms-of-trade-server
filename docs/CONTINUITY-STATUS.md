@@ -1,5 +1,25 @@
 # Continuidad de servidor — AREA15
 
+**AREA15, 2026-10-10 — GameHost común publicado, montaje apagado:**
+[economía y checkpoints](delivery/m5-ground-host-authority.md). Un dueño de tick/época y sesión
+SQL018/019, con I/O separado del drain síncrono/ACK; WorldState escribe mundo/reloj juntos.
+355/355 en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost. Readiness SQL018–021
+real confirmada; el dominio actual tiene recursos v2 y aún carece de reloj común. El montaje exige
+filas coherentes existentes y queda sin activar. Sigue adopción atómica legacy y perlas/muerte/botín,
+sin otro writer ni creación de reloj a cero. Artesano continúa apagado; SQL021 ya está disponible.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: 107/107 de imagen, 8/8 del montaje
+sin red en Node 22.23.3 y entrada pública 6/6; pruebas solapadas, sin canario durable del nuevo montaje.
+
+**GM03b1, 2026-10-10 — publicado alpha.30/protocolo 41, release `6e6f421` sana:**
+[preparar revisión](delivery/gm03b1/DELIVERY.md), [contrato](briefs/gm03b1-prepared-revision.md).
+Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
+Errores enfocan objetos; cambios invalidan el paquete y conflictos conservan diseños. Proyección de
+colisiones compartida con caminar, todos los assets base y variantes móviles fijados, sin escrituras
+de gameplay/SQL/flags. 183/183 regresión, navegador local simulado 41/41, actualizador 107/107 y
+navegador público Supabase real 23/23. 57 dependencias base; ES/EN inspeccionados y borrador previo
+restaurado por CAS r6→r13. [Evidencia pública](delivery/gm03b1/public-evidence.json).
+Sigue GM03b2: registro durable, activación/rollback con admisión exacta y exclusión del actualizador.
+
 **AREA03 PRG01c, código publicado, mecánica apagada:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
 Recibo económico con baseline de perfil exacto para aprender/colocar/retirar storage; coste, cargo,
 condición e IDs conservados. 114/114 integradas y 32 checks de navegador. Nueva migración SQL021

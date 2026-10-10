@@ -8,6 +8,7 @@ import { createEditorModels } from './modelFactory.js';
 import { createBaseDecorationLayer } from './baseDecoration.js';
 import { EditorWalkPreview } from './walkPreview.js';
 import { RemoteDraftPanel } from './remotePanel.js';
+import { compileGmColliders } from './publicationValidation.js';
 import { LAYER } from '../render/pipeline.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -638,10 +639,7 @@ export class WorldEditor {
   _startWalking() {
     if (!this.active || !this.walkPreview || this.importTask) return;
     this._cancelTransform(); this._clearGhost();
-    const doc = this.history.current(), colliders = this.baseLayer.colliders(doc.baseOverrides);
-    for (const item of doc.objects) if (item.collider !== 'none') colliders.push({
-      x: item.transform.position.x, z: item.transform.position.z, r: item.collider.radius * item.transform.scale,
-    });
+    const doc = this.history.current(), colliders = compileGmColliders(this.map, doc, this.baseRevision);
     let point = this.records.get(this.selectedId)?.root.position || this._terrainHits()[0]?.point || this.map.landmarks.village;
     const selected = this._selectedItem();
     if (selected && !selected.hidden && selected.collider !== 'none') {

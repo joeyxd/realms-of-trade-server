@@ -22,15 +22,18 @@ export class RemoteDraftPanel {
       if (action === 'cancel-review') { this.review = null; this.render(); }
       if (action === 'confirm') { if (this.review === 'save') void this.save(); else if (this.review === 'load') void this.load(); }
       if (action === 'retry') void this.save(true);
+      if (action === 'prepare') void this.prepare();
+      if (action === 'download-revision') this.downloadRevision();
+      if (action === 'focus-issue') { this.hide(); editor.select(event.target.closest('[data-object-id]').dataset.objectId); editor._focusSelection(); }
     });
     this.render();
   }
 
   t(en, es) { return this.editor._t(en, es); }
-  get busy() { return ['loading', 'saving', 'applying'].includes(this.state); }
+  get busy() { return ['loading', 'saving', 'applying', 'preparing'].includes(this.state); }
   get open() { return this.dialog.open; }
   async start() {
-    this.generation++; this.head = null; this.state = 'idle'; this.review = null; this.error = '';
+    this.generation++; this.head = null; this.state = 'idle'; this.review = null; this.error = ''; this.prepared = null;
     this.client?.resume(); this.render();
     if (this.client) await this.refresh();
   }
@@ -56,6 +59,8 @@ export class RemoteDraftPanel {
       base: ['This draft belongs to another base map. Export it for recovery.', 'Este borrador pertenece a otra base del mapa. Expórtalo para recuperarlo.'],
       document: ['The server rejected the document or its model references. Export it for review.', 'El servidor rechazó el documento o sus modelos. Expórtalo para revisarlo.'],
       gm_draft_rate: ['Too many requests. Wait a moment and try again.', 'Demasiadas solicitudes. Espera un momento y vuelve a intentar.'],
+      gm_preparation_unavailable: ['Preparation is unavailable or a model could not be verified. Your drafts are preserved.', 'La preparación no está disponible o no se pudo verificar un modelo. Tus borradores se conservan.'],
+      gm_preparation_busy: ['The server is preparing another revision. Try again shortly.', 'El servidor está preparando otra revisión. Vuelve a intentar en un momento.'],
     };
     const message = messages[code];
     return message ? this.t(...message) : this.t('The server could not confirm this request. Your local design is preserved.', 'El servidor no pudo confirmar la solicitud. Tu diseño local se conserva.');
@@ -112,12 +117,74 @@ export class RemoteDraftPanel {
     } finally { if (generation === this.generation) this.render(); }
   }
 
+  async prepare() {
+    if (this.busy || !this.canPrepare) return;
+    const generation = this.generation, snapshot = this.head.document, revision = this.head.revision;
+    this.prepared = null; this.review = null; this.state = 'preparing'; this.error = ''; this.render();
+    try {
+      const result = await this.client.prepareRevision(revision, snapshot);
+      if (generation !== this.generation || !this.editor.active) return;
+      this.prepared = { ...result.preparation, headRevision: revision, document: snapshot };
+      this.state = 'ready';
+    } catch (error) {
+      if (generation !== this.generation || !this.editor.active) return;
+      this.error = error.code;
+      this.state = this.client.pending ? 'pending' : error.code === 'gm_draft_conflict' ? 'conflict' : 'ready';
+    } finally { if (generation === this.generation) this.render(); }
+  }
+
+  get canPrepare() {
+    return !!this.client && !!this.head?.document && this.head.revision > 0 && this.compatible &&
+      this.state === 'ready' && !this.client.pending && same(this.head.document, this.editor.history.current());
+  }
+
+  downloadRevision() {
+    if (!this.prepared?.revision || !this.canPrepare) return;
+    const revision = this.prepared.revision;
+    const blob = new Blob([JSON.stringify(revision, null, 2) + '\n'], { type: 'application/json' });
+    const url = URL.createObjectURL(blob), link = document.createElement('a');
+    link.href = url; link.download = `gm-prepared-${revision.revisionId.slice(0, 12)}.json`;
+    document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  issueText(code) {
+    const labels = {
+      edit_limit: ['More than 1,000 edits', 'Más de 1.000 ediciones'], scale_limit: ['Scale exceeds 20', 'La escala supera 20'],
+      radius_limit: ['Collision radius exceeds 20', 'El radio de colisión supera 20'], map_bounds: ['Outside the playable bounds', 'Fuera de los límites jugables'],
+      unsupported_height: ['Too far above or below ground', 'Demasiado lejos del suelo'],
+      protected_anchor_collision: ['Blocks a protected access', 'Bloquea un acceso protegido'],
+      resource_collision: ['Blocks a resource or workbench', 'Bloquea un recurso o banco de trabajo'],
+      path_collision: ['Blocks the main path', 'Bloquea el camino principal'],
+      visual_only_objects: ['Some models have no collision', 'Hay modelos sin colisión'],
+      circle_rotation_ignored: ['Circle collisions ignore tilt', 'Las colisiones circulares ignoran la inclinación'],
+      candidate_assets: ['Includes art candidates awaiting review', 'Incluye candidatos de arte pendientes de revisión'],
+    };
+    return labels[code] ? this.t(...labels[code]) : this.t('Review this placement', 'Revisa esta colocación');
+  }
+
+  preparationHtml(button) {
+    const result = this.prepared;
+    const report = result?.report;
+    return `<section class="gm-publication"><h3>${text(this.t('Prepare for publication', 'Preparar para publicar'))}</h3>
+      <p>${text(this.t('Validate the saved design and download a revision with its exact models. Review the report before preparing a copy. The active world stays unchanged.', 'Valida el diseño guardado y descarga una revisión con sus modelos exactos. Revisa el informe antes de preparar una copia. El mundo activo se conserva.'))}</p>
+      ${!this.canPrepare && this.state !== 'preparing' ? `<p>${text(this.t('Save your current design online before preparing it.', 'Guarda tu diseño actual online antes de prepararlo.'))}</p>` : ''}
+      ${button('prepare', this.state === 'preparing' ? this.t('Validating…', 'Validando…') : this.t('Validate for publication', 'Validar para publicar'), this.busy || !this.canPrepare)}
+      ${report ? `<div class="gm-publication-report" data-valid="${report.valid}" role="status"><b>${text(report.valid ? this.t('Revision prepared · not activated', 'Revisión preparada · sin activar') : this.t('Fix these problems before preparing', 'Corrige estos problemas antes de preparar'))}</b>
+        <p>${report.summary.errors} ${text(report.summary.errors === 1 ? this.t('error', 'error') : this.t('errors', 'errores'))} · ${report.summary.warnings} ${text(report.summary.warnings === 1 ? this.t('warning', 'advertencia') : this.t('warnings', 'advertencias'))}</p>
+        <ul>${report.issues.map((issue) => `<li data-severity="${issue.severity}">${text(this.issueText(issue.code))}${issue.anchorId ? ` · ${text(issue.anchorId)}` : ''}
+          ${issue.objectId ? `<button type="button" data-remote="focus-issue" data-object-id="${text(issue.objectId)}" title="${text(this.t('Focus object', 'Enfocar objeto'))}">${text(issue.objectId)}</button>` : ''}</li>`).join('')}</ul>
+        ${report.summary.omittedIssues ? `<p>${text(this.t('Additional findings:', 'Problemas adicionales:'))} ${report.summary.omittedIssues}</p>` : ''}
+        ${result.revision ? `<code class="gm-revision-id">${text(result.revision.revisionId)}</code><p>${text(this.t('Metadata and hashes only. Models remain in the release assets. This package does not change the active world.', 'Solo metadatos y hashes. Los modelos permanecen en los assets de la release. Este paquete no cambia el mundo activo.'))}</p>${button('download-revision', this.t('Download prepared revision', 'Descargar revisión preparada'), !this.canPrepare)}` : ''}</div>` : ''}</section>`;
+  }
+
   render() {
     const current = this.editor.history?.current();
     const matches = !!this.head?.document && same(current, this.head.document);
+    if (this.prepared && (!matches || this.prepared.headRevision !== this.head?.revision)) this.prepared = null;
     const labels = {
       idle: this.t('Local workspace', 'Espacio local'), loading: this.t('Checking server…', 'Consultando servidor…'),
       saving: this.t('Waiting for confirmation…', 'Esperando confirmación…'), applying: this.t('Loading design…', 'Cargando diseño…'),
+      preparing: this.t('Validating saved revision…', 'Validando revisión guardada…'),
       ready: matches ? this.durable ? this.t('Saved on server', 'Guardado en servidor') : this.t('Saved in server memory (temporary)', 'Guardado en memoria del servidor (temporal)')
         : this.t('Local changes · server differs', 'Cambios locales · servidor distinto'),
       pending: this.t('Save response pending', 'Respuesta de guardado pendiente'), conflict: this.t('Version conflict', 'Conflicto de versión'),
@@ -144,7 +211,8 @@ export class RemoteDraftPanel {
         ${button('save', this.t('Save online…', 'Guardar online…'), !this.head || this.busy || !!this.client?.pending || this.state !== 'ready')}
         ${button('load', this.t('Load online…', 'Cargar online…'), !this.head?.document || this.busy || !!this.client?.pending || this.state !== 'ready' || !this.compatible)}
         ${button('export', this.t('Export local copy', 'Exportar copia local'))}
-        ${this.head?.document ? button('export-remote', this.t('Export server copy', 'Exportar copia online')) : ''}</footer>`}`;
+        ${this.head?.document ? button('export-remote', this.t('Export server copy', 'Exportar copia online')) : ''}</footer>`}
+      ${!this.review ? this.preparationHtml(button) : ''}`;
   }
   get runtimeMatches() { return !!this.remoteScope && this.remoteScope.seed === this.editor.map.seed && this.remoteScope.baseRevision === this.editor.baseRevision; }
   get compatible() { return this.runtimeMatches && (!this.head?.document || (this.head.document.base.seed === this.editor.map.seed && this.head.document.base.revision === this.editor.baseRevision)); }

@@ -19,6 +19,8 @@ function object(value) {
 export function shouldRecoverWorldFailure(healthStatus, status) {
   if (healthStatus !== 503 || !object(status) || !object(status.storage) || !object(status.storage.world)) return false;
   const storage = status.storage;
+  // The common journal has its own stopped recovery; legacy autosave recovery cannot own it.
+  if (Object.hasOwn(storage, 'groundTransactions') && storage.groundTransactions !== null) return false;
   if (Object.hasOwn(storage, 'economic') && storage.economic !== null &&
       (!object(storage.economic) || storage.economic.enabled !== true ||
        storage.economic.pending !== 0 || storage.economic.failed !== false)) return false;

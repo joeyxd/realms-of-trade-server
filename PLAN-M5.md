@@ -1,5 +1,15 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-10 — dueño común GameHost publicado, montaje apagado:**
+[economía/checkpoints y diario](docs/delivery/m5-ground-host-authority.md),
+[contrato](docs/briefs/m5-ground-host-authority.md). API de confianza accounts-only/cero bots,
+sin flag: un epoch y un `beforeTick`, ACK tras drain confirmado y checkpoint atómico mundo/reloj.
+355/355 pruebas, doce casos nuevos y dos SIGKILL nuevos de GameHost. SQL018–021 readiness real
+confirmada; mundo legacy sin reloj común. Sigue adopción atómica del snapshot/reloj/suelo, luego
+composición perlas/muerte/botín y canario VPS. Montaje común y artesano continúan sin activar.
+VPS `cf5857f` sano a 22:04:34 UTC, alpha.30/protocolo 41: imagen 107/107, montaje focal 8/8
+en Node 22 sin red y entrada pública 6/6; regresiones solapadas. Evidencia en la entrega.
+
 **AREA15, diario del sobre 2026-10-10:** [SQL019 y recuperación al arrancar](docs/delivery/m5-ground-transaction-journal.md).
 Preparación exacta previa; cierre junto a operación/mundo/reloj; sesión opt-in carga filas actuales,
 sin reaplicar snapshots históricos. 266/266 pruebas; tres SIGKILL locales cubren pending, commit provisional y confirmado.
