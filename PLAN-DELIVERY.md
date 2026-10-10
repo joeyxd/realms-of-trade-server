@@ -20,7 +20,8 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - AREA17 L06b-2b (2026-10-10), **alpha.26/protocolo 38**: [comercio explícito y presupuesto](docs/delivery/l06b-agent-trade.md).
   Compra/venta con capacidades separadas, cuenta/ciudad derivadas y mandato acumulado SQL017 sin refill;
   consumo y recibo en la misma M5 humana. Recuperación exacta, stop y revocación cubiertos localmente.
-  Regresión y publicación en la entrega; piloto/comercio/proveedor de agentes apagados. SQL017 y canario
+  917 aprobadas, cero fallos y cinco omisiones Windows; suplemento SQL/host 20/20. Publicado en `cafff18`,
+  sano desde 19:58:06 UTC; VPS 107/107 y público 10/10. Piloto/comercio/proveedor de agentes apagados. SQL017 y canario
   autenticado live pendientes. Conserva Tala/refugio del upstream. Sigue L03d social/PvE con proveedor,
   memoria y coste medidos, con activación económica independiente.
 

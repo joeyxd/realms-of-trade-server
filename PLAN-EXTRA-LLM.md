@@ -10,7 +10,8 @@ proveedor/modelo y operación reales siguen pendientes.
 añade compra/venta con capacidades separadas y mandato durable SQL017. Oro y bienes pertenecen al
 personaje agente; límites acumulados por mundo/dueño/personaje, sin refill ni reemplazo, con revocación
 definitiva. Perfil/mundo/recibo/consumo se confirman en la misma autoridad M5. Replay, pérdida de respuesta,
-reentrada, stop y ACL se comprueban localmente; regresión/publicación se registran en la entrega.
+reentrada, stop y ACL se comprueban localmente. 917 aprobadas, cero fallos y cinco omisiones Windows;
+suplemento SQL/host 20/20. Publicado en `cafff18`, sano desde 19:58:06 UTC, VPS 107/107 y público 10/10.
 Fuente conjunta alpha.26/protocolo 38 con Tala, refugio y GM02 conservados. `npm start` mantiene piloto/comercio/
 proveedor de agentes apagados: SQL017 y canario autenticado live siguen pendientes. La mente simulada
 conserva sus herramientas sin gasto. Sigue L03d: proveedor real y canario social/PvE con memoria/coste

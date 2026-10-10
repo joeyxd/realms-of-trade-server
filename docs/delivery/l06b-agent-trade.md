@@ -27,9 +27,13 @@ Estas pruebas usan memoria y PGlite local. La reapertura comprueba persistencia 
 
 ## Publicación
 
-Pendiente tras la regresión final: envío de este corte aislado a la rama de continuidad y relevo mediante el actualizador existente cuando el mundo esté vacío. Se verifican revisión/imagen activa, salud M5/recursos, entrada WSS real y rechazo de los canales nuevos para invitados. El protocolo 38 requiere recargar clientes anteriores.
+Fuente `a2b48d2`, integrada con la evidencia GM02 de upstream en **`cafff18208235b7149682e5ce6de34c3fc0704b5`**, enviada a la rama de continuidad. Tras esperar a las conexiones activas, el actualizador existente sustituyó la única autoridad con el mundo vacío. Imagen sana desde **19:58:06 UTC**, alpha.26/protocolo 38; requiere recargar clientes anteriores.
 
-El montaje conserva los flags vigentes de recursos/Tala y no cambia SQL, secretos ni configuración. `npm start` mantiene piloto, comercio y proveedor de agentes apagados. El smoke público es de invitado: no acredita una compra/venta autenticada ni permisos SQL017 en el proyecto Supabase real.
+- [Revisión, contenedor e imagen activa](l06b-agent-trade/deployment.json): `sha256:abff4bd7de15141b930802e83dfb2310727ed6cf8519b19a7ca83818bfe81eaf`, sin OOM.
+- [Validación offline del VPS](l06b-agent-trade/vps-validation.json): **107/107**, cero fallos.
+- [Smoke público TLS/WSS](l06b-agent-trade/public-smoke.json), 19:58:30 UTC: **10/10**. Salud pública, Supabase durable/cuentas, economía y recursos listos; Tala aparece activa por el otro frente. Entrada real WELCOME/SNAPSHOT/PROFILE, protocolo servido 38, herramientas operativas no expuestas, canales privados denegados a invitados, admisión agente no configurada y protocolo anterior rechazados.
+
+El montaje conserva los flags vigentes de recursos/Tala y no cambia SQL, secretos ni configuración. `npm start` mantiene piloto, comercio y proveedor de agentes apagados. El smoke público es de invitado: no acredita una compra/venta autenticada ni permisos SQL017 en el proyecto Supabase real. La activación/aceptación específica de Tala pertenece a su frente; no fue realizada por AREA17.
 
 ## Siguiente corte y límites
 
