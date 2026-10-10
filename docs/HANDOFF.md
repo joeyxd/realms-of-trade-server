@@ -6,7 +6,8 @@
 con presupuesto acumulado y revocable SQL017, separado de inferencia. Se reutilizan perfil/mundo/recibo
 M5 humanos; no hay otra autoridad ni transferencia desde el dueño. Reentrada/replay no restauran saldo;
 stop cancela preparación y reconcilia commits enviados. [Contrato/CLI ES/EN](agents/trade.md).
-Pruebas y publicación en la entrega; `npm start` conserva agentes/comercio/proveedor apagados.
+917 aprobadas, cero fallos y cinco omisiones Windows; suplemento SQL/host 20/20. Publicado en `cafff18`,
+sano desde 19:58:06 UTC; VPS 107/107 y público 10/10. `npm start` conserva agentes/comercio/proveedor apagados.
 SQL017 live y canario autenticado pendientes. Integra Tala SQL016 y refugio sin cambiar sus flags.
 Sigue L03d proveedor real/conversación/PvE con memoria y gasto medidos; luego autonomía por eventos
 y operación del dueño. Publicación inerte no equivale a activación o aceptación de economía agente.
