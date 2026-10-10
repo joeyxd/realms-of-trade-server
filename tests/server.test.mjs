@@ -81,7 +81,12 @@ test('two players join the same island, see each other move, and leaving despawn
     let seq = 0, snap = b.msgs.find(moved);
     const movementDeadline = Date.now() + 15000;
     while (!snap && Date.now() < movementDeadline) {
-      a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt: 0 })) });
+      // `pt` is the server tick the client is playing against. A constant zero is
+      // immediately behind the server's filler watermark, so those commands are
+      // acknowledged as late without ever reaching movement simulation.
+      const latestSnapshot = [...a.msgs].reverse().find((m) => m.t === MSG.SNAPSHOT);
+      const pt = Math.max(1, latestSnapshot?.tick ?? 1);
+      a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt })) });
       await sleep(100);
       snap = b.msgs.find(moved);
     }

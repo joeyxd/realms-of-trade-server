@@ -8,6 +8,7 @@ import { generateWorld } from '../src/sim/worldgen.js';
 import { economicCommand, economicOperationId } from '../server/economicAuthority.mjs';
 import { storeFromEnv } from '../server/store.mjs';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
+import { raftGangplank } from '../src/sim/raftGeometry.js';
 
 try { if (fs.existsSync('.env')) process.loadEnvFile('.env'); }
 catch { console.log(JSON.stringify({ pass: false, reason: 'environment unavailable' })); process.exit(1); }
@@ -32,6 +33,7 @@ const profileFingerprint = value => {
   return createHash('sha256').update(stable(normalized)).digest('hex');
 };
 const stable = value => JSON.stringify(sort(value));
+const shipRevisionFingerprint = value => stable((value?.eco?.ships || []).map(ship => [ship.id, ship.rev]).sort(([a], [b]) => a.localeCompare(b)));
 function sort(value) {
   if (Array.isArray(value)) return value.map(sort);
   if (!value || typeof value !== 'object') return value;
@@ -62,7 +64,7 @@ catch { console.log(JSON.stringify({ phase, pass: false, reason: 'durable store 
 
 let fixture = fs.existsSync(fixturePath) ? JSON.parse(fs.readFileSync(fixturePath, 'utf8')) : null;
 let ws = null, profile = null, entity = null, tick = 0, sentTick = 0, seq = 0;
-let position = null, resources = null, map = null;
+let position = null, resources = null, map = null, rafts = [];
 let messages = [];
 const evidence = fs.existsSync(evidencePath)
   ? JSON.parse(fs.readFileSync(evidencePath, 'utf8'))
@@ -122,7 +124,7 @@ function inputs(mx, mz) {
 }
 
 async function enter(token) {
-  messages = []; profile = null; entity = null; position = null; resources = null; map = null; tick = 0; sentTick = 0;
+  messages = []; profile = null; entity = null; position = null; resources = null; map = null; rafts = []; tick = 0; sentTick = 0;
   ws = new WebSocket(wsUrl, { origin: base.origin, handshakeTimeout: 10000 });
   ws.on('message', raw => {
     let message;
@@ -135,7 +137,10 @@ async function enter(token) {
       if (Number.isSafeInteger(message.seed)) map = generateWorld(message.seed);
     }
     if (message.t === 'profile') profile = message.p;
-    if (message.t === 'snap' && message.resources) resources = message.resources;
+    if (message.t === 'snap') {
+      if (message.resources) resources = message.resources;
+      if (Array.isArray(message.rafts)) rafts = message.rafts;
+    }
     const own = message.ents?.find(row => row[0] === entity);
     if (own) position = { x: own[2], z: own[4] };
   });
@@ -181,12 +186,23 @@ async function waitProfileRevision(revision) {
   throw new QaFailure('profile revision did not arrive');
 }
 
+async function waitForProfile(predicate, label = 'profile update did not arrive', timeout = 15000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    if (profile && predicate(profile)) return profile;
+    await sleep(50);
+  }
+  throw new QaFailure(label);
+}
+
 async function resourceCommand(op, fields) {
+  const shipRevisions = shipRevisionFingerprint(profile);
   const command = { t: 'cmd', type: 'resource', op, opId: `m5qa_${randomUUID()}`, ...fields };
   send(command);
   const response = await waitFor(message => message.t === 'event' && message.ev?.type === 'resource' && message.ev.opId === command.opId);
   ensure(response.ev.ok === true, `normal resource ${op} rejected`);
   await waitProfileRevision(response.ev.rev);
+  ensure(shipRevisionFingerprint(profile) === shipRevisions, `normal resource ${op} changed a raft revision`);
   await sleep(900);
   return response.ev;
 }
@@ -202,6 +218,13 @@ async function communityList() {
 async function commerceReply(command) {
   send(command);
   const response = await waitFor(message => message.t === 'event' && message.ev?.type === 'commerce' && message.ev.opId === command.opId);
+  return response.ev;
+}
+
+async function raftReply(command) {
+  send(command);
+  const response = await waitFor(message => message.t === 'event' && message.ev?.type === 'raftEdit'
+    && message.ev.opId === command.opId);
   return response.ev;
 }
 
@@ -224,28 +247,134 @@ async function gatherLogs(count) {
     ensure(candidates?.length, 'no ready wood resource in public world');
     const node = candidates[0];
     await walk(node, 1.8);
+    const before = profile.eco.pack.goods.tronco || 0;
     await resourceCommand('gather', { node: node.id, expectedRev: node.rev });
-    ensure((profile.eco.pack.goods.tronco || 0) >= index + 1, 'gathered log missing from profile');
+    ensure((profile.eco.pack.goods.tronco || 0) === before + 1, 'gather did not add exactly one log to the profile');
   }
 }
 
-async function secureGoldForFruit(town, firstSellCommand) {
-  let ack = await commerceReply(firstSellCommand);
-  ensure(ack.ok === true && ack.n === 1, 'quoted madera sale rejected');
+async function sellOneMadera(town) {
+  const expectedTotal = await quote(town, 'madera', 1, 'sell');
+  const command = { t: 'cmd', type: 'commerce', op: 'sell', town, g: 'madera', n: 1,
+    expectedTotal, opId: `m5qa_${randomUUID()}` };
+  fixture.commands.sells.push(command);
+  fixture.operationIds.sells.push(economicOperationId(worldId, fixture.accountId, command.opId));
+  saveFixture();
+  const before = profile;
+  const beforeShipRevisions = shipRevisionFingerprint(before);
+  const ack = await commerceReply(command);
+  ensure(ack.ok === true && ack.n === 1 && ack.total === expectedTotal, 'quoted one-madera sale rejected');
   await waitProfileRevision(ack.rev);
-  let total = await quote(town, 'fruta', 1, 'buy');
-  if (profile.gold < total && (profile.eco.pack.goods.madera || 0) > 0) {
-    const extraSell = { t: 'cmd', type: 'commerce', op: 'sell', town, g: 'madera', n: 1,
-      expectedTotal: await quote(town, 'madera', 1, 'sell'), opId: `m5qa_${randomUUID()}` };
-    fixture.commands.extraSell = extraSell; fixture.operationIds.extraSell = economicOperationId(worldId, fixture.accountId, extraSell.opId);
-    saveFixture();
-    ack = await commerceReply(extraSell);
-    ensure(ack.ok === true && ack.n === 1, 'additional quoted madera sale rejected');
-    await waitProfileRevision(ack.rev);
-    total = await quote(town, 'fruta', 1, 'buy');
+  ensure((profile.eco.pack.goods.madera || 0) === (before.eco.pack.goods.madera || 0) - 1
+    && profile.gold === before.gold + ack.total && shipRevisionFingerprint(profile) === beforeShipRevisions,
+  'madera sale did not conserve exact pack, gold, and raft revision');
+  return { command, ack };
+}
+
+async function secureGoldForFruitAndRaft(town) {
+  ensure((profile.eco.pack.goods.madera || 0) >= 2, 'need one madera reserved for the raft deposit and one for sale');
+  let frutaTotal = await quote(town, 'fruta', 1, 'buy');
+  let maderaTotal = await quote(town, 'madera', 1, 'buy');
+  let sales = 0;
+  while (profile.gold < frutaTotal + maderaTotal && sales < 5
+      && (profile.eco.pack.goods.madera || 0) > 1) {
+    await sellOneMadera(town);
+    sales++;
+    frutaTotal = await quote(town, 'fruta', 1, 'buy');
+    maderaTotal = await quote(town, 'madera', 1, 'buy');
   }
-  ensure(profile.gold >= total, 'madera proceeds cannot fund one quoted market purchase');
-  return total;
+  ensure(profile.gold >= frutaTotal + maderaTotal, 'madera proceeds cannot fund fruit, raft supply, and one reserved deposit');
+  return { frutaTotal, maderaTotal, sales };
+}
+
+function ownPublicRaft() {
+  const ship = profile?.eco?.ships?.find(row => row.kind === 'raft' && row.at === 'aldea' && row.hp > 0);
+  const visible = ship && rafts.find(row => row.id === ship.id && row.owner === entity);
+  ensure(ship && visible && visible.parts?.length, 'owned moored raft is not present in public snapshots');
+  const plank = raftGangplank({ ...visible, pilot: null, parts: visible.parts }, map?.dock);
+  ensure(plank, 'owned raft has no normal dock gangplank approach');
+  return { ship, visible, plank };
+}
+
+async function goToRaft() {
+  const raft = ownPublicRaft();
+  await walk(raft.plank, 1.0);
+  await waitAtRest();
+  ensure(position && Math.hypot(position.x - raft.plank.x, position.z - raft.plank.z) <= 1.5,
+    'player did not reach the public gangplank approach');
+  return ownPublicRaft();
+}
+
+async function raftSupplyQuote(id, expectedRev) {
+  const opId = `m5qa_${randomUUID()}`;
+  send({ t: 'cmd', type: 'raft', op: 'quote', id, expectedRev, opId });
+  const response = await waitFor(message => message.t === 'event' && message.ev?.type === 'raftEdit'
+    && message.ev.op === 'quote' && message.ev.id === id && message.ev.opId === opId);
+  const madera = response.ev.supplies?.find(row => row.g === 'madera');
+  ensure(response.ev.ok === true && response.ev.rev === expectedRev && madera?.n === 1
+    && Number.isSafeInteger(madera.price) && madera.price > 0 && madera.stock > 0,
+  'normal gangplank raft supply quote is unavailable');
+  return madera;
+}
+
+function amount(goods, good = 'madera') { return goods?.[good] || 0; }
+
+async function transferMadera(id, side, expectedRev) {
+  const command = { t: 'cmd', type: 'commerce', op: 'transfer', id, expectedRev,
+    g: 'madera', n: 1, side, opId: `m5qa_${randomUUID()}` };
+  const operationId = economicOperationId(worldId, fixture.accountId, command.opId);
+  fixture.commands[side] = command;
+  fixture.operationIds[side] = operationId;
+  saveFixture();
+  const before = profile;
+  const beforePack = amount(before.eco.pack.goods);
+  const beforeHold = amount(before.eco.ships.find(ship => ship.id === id)?.hold?.goods);
+  const ack = await commerceReply(command);
+  ensure(ack.ok === true && ack.op === 'transfer' && ack.id === id && ack.raftRev === expectedRev + 1
+    && amount(ack.pack?.goods) === beforePack + (side === 'withdraw' ? 1 : -1)
+    && amount(ack.hold?.goods) === beforeHold + (side === 'deposit' ? 1 : -1),
+  `raft ${side} did not report exact one-madera transfer`);
+  await waitProfileRevision(ack.rev);
+  const afterShip = profile.eco.ships.find(ship => ship.id === id);
+  ensure(amount(profile.eco.pack.goods) === beforePack + (side === 'withdraw' ? 1 : -1)
+    && amount(afterShip?.hold?.goods) === beforeHold + (side === 'deposit' ? 1 : -1)
+    && afterShip.rev === expectedRev + 1 && profile.gold === before.gold,
+  `raft ${side} did not conserve profile, hold, gold, and revision`);
+  await verifyReceipt(command, operationId, 'commerce');
+  return ack;
+}
+
+async function supplyOneMadera(id, expectedRev) {
+  const quoteRow = await raftSupplyQuote(id, expectedRev);
+  const command = { t: 'cmd', type: 'raft', op: 'supply', id, expectedRev, g: 'madera', n: 1,
+    opId: `m5qa_${randomUUID()}` };
+  const operationId = economicOperationId(worldId, fixture.accountId, command.opId);
+  fixture.commands.supply = command;
+  fixture.operationIds.supply = operationId;
+  saveFixture();
+  const worldBefore = await store.loadWorld(worldId);
+  const stockBefore = worldBefore?.data?.economy?.markets?.aldea?.stock?.madera;
+  ensure(Number.isSafeInteger(stockBefore) && stockBefore > 0, 'durable raft supply stock unavailable');
+  const before = profile;
+  const beforePack = amount(before.eco.pack.goods);
+  const beforeHold = amount(before.eco.ships.find(ship => ship.id === id)?.hold?.goods);
+  const ack = await raftReply(command);
+  ensure(ack.ok === true && ack.op === 'supply' && ack.id === id && ack.rev === expectedRev + 1
+    && ack.g === 'madera' && ack.n === 1 && ack.total === quoteRow.price && ack.gold === before.gold - ack.total,
+  'one-unit raft supply did not return the quoted raftEdit revision and exact gold delta');
+  await waitForProfile(next => next.eco?.ships?.find(ship => ship.id === id)?.rev === expectedRev + 1
+    && next.gold === before.gold - ack.total, 'raft supply profile persistence did not arrive');
+  const afterShip = profile.eco.ships.find(ship => ship.id === id);
+  const afterOwned = amount(profile.eco.pack.goods) + amount(afterShip?.hold?.goods);
+  ensure(profile.gold === before.gold - ack.total && afterOwned === beforePack + beforeHold + 1
+    && afterShip.rev === ack.rev, 'raft supply did not conserve one material and exact profile revision');
+  const worldAfter = await store.loadWorld(worldId);
+  ensure(worldAfter?.data?.economy?.markets?.aldea?.stock?.madera === stockBefore - 1,
+    'durable market stock did not debit exactly one supplied madera');
+  fixture.marketMaderaAfterSupply = stockBefore - 1;
+  saveFixture();
+  await verifyReceipt(command, operationId, 'raftEdit');
+  return ack;
 }
 
 async function verifyReceipt(command, operationId, expectedType) {
@@ -297,16 +426,22 @@ try {
       ensure(map?.landmarks?.village && resources?.bench, 'public welcome map or workbench unavailable');
       const bench = resources.bench;
       await walk(bench);
-      await gatherLogs(3);
+      const goldBeforeCraft = profile.gold;
+      await gatherLogs(7);
       await walk(bench);
-      await resourceCommand('craft', { recipe: 'madera', n: 3, expectedRev: profile.eco.tradeRev });
-      ensure((profile.eco.pack.goods.madera || 0) === 3 && !(profile.eco.pack.goods.tronco || 0), 'normal bench craft did not make three madera');
-      record('wood gathered and madera crafted through ordinary gameplay commands');
+      const packBeforeCraft = { ...profile.eco.pack.goods };
+      const craft = await resourceCommand('craft', { recipe: 'madera', n: 7, expectedRev: profile.eco.tradeRev });
+      ensure((profile.eco.pack.goods.madera || 0) === (packBeforeCraft.madera || 0) + 7
+        && (profile.eco.pack.goods.tronco || 0) === (packBeforeCraft.tronco || 0) - 7
+        && profile.gold === goldBeforeCraft, 'normal bench craft did not conserve exactly seven madera');
+      record('wood gathered and seven madera crafted through ordinary gameplay commands', { profileRevision: craft.rev });
 
       const projectBefore = await communityList();
       ensure(projectBefore.contributed.madera < projectBefore.requirements.madera, 'community madera requirement already complete');
       const contribute = { t: 'cmd', type: 'community', op: 'contribute', opId: `m5qa_${randomUUID()}`,
         projectId: projectBefore.id, good: 'madera', amount: 1, expectedRev: projectBefore.version };
+      const woodBeforeContribution = profile.eco.pack.goods.madera || 0;
+      const shipRevisionsBeforeContribution = shipRevisionFingerprint(profile);
       fixture.commands.contribute = contribute;
       fixture.operationIds.contribute = economicOperationId(worldId, fixture.accountId, contribute.opId);
       fixture.projectBefore = { version: projectBefore.version, contributed: projectBefore.contributed };
@@ -317,7 +452,10 @@ try {
       ensure(contribution.ok === true && contribution.accepted === 1 && contribution.good === 'madera'
         && contribution.project?.contributed?.madera === projectBefore.contributed.madera + 1, 'one madera contribution failed');
       await waitProfileRevision(contribution.rev);
-      ensure((profile.eco.pack.goods.madera || 0) === 2, 'contribution did not debit exactly one madera');
+      ensure((profile.eco.pack.goods.madera || 0) === woodBeforeContribution - contribution.accepted,
+        'contribution did not debit exactly its accepted madera');
+      ensure(shipRevisionFingerprint(profile) === shipRevisionsBeforeContribution,
+        'community contribution unexpectedly changed a raft revision');
       fixture.projectAfter = { version: contribution.project.version, contributed: contribution.project.contributed };
       record('one madera debited and credited to the shared community project', { projectVersion: contribution.project.version });
 
@@ -326,39 +464,80 @@ try {
       const sellQuote = await quote('aldea', 'madera', 1, 'sell');
       const sell = { t: 'cmd', type: 'commerce', op: 'sell', town: 'aldea', g: 'madera', n: 1,
         expectedTotal: sellQuote, opId: `m5qa_${randomUUID()}` };
-      fixture.commands.sell = sell; fixture.operationIds.sell = economicOperationId(worldId, fixture.accountId, sell.opId);
+      fixture.commands.sells = []; fixture.operationIds.sells = [];
+      fixture.commands.sells.push(sell); fixture.operationIds.sells.push(economicOperationId(worldId, fixture.accountId, sell.opId));
+      fixture.commands.sell = sell; fixture.operationIds.sell = fixture.operationIds.sells[0];
       saveFixture();
-      const frutaCost = await secureGoldForFruit('aldea', sell);
+      const saleBefore = profile;
+      const shipRevisionsBeforeSale = shipRevisionFingerprint(saleBefore);
+      const firstSellAck = await commerceReply(sell);
+      ensure(firstSellAck.ok === true && firstSellAck.n === 1 && firstSellAck.total === sellQuote,
+        'initial quoted madera sale rejected');
+      await waitProfileRevision(firstSellAck.rev);
+      ensure((profile.eco.pack.goods.madera || 0) === (saleBefore.eco.pack.goods.madera || 0) - 1
+        && profile.gold === saleBefore.gold + firstSellAck.total
+        && shipRevisionFingerprint(profile) === shipRevisionsBeforeSale,
+      'initial sale did not conserve exact madera, gold, and raft revision');
+      const funding = await secureGoldForFruitAndRaft('aldea');
       const buy = { t: 'cmd', type: 'commerce', op: 'buy', town: 'aldea', g: 'fruta', n: 1,
-        expectedTotal: frutaCost, opId: `m5qa_${randomUUID()}` };
+        expectedTotal: funding.frutaTotal, opId: `m5qa_${randomUUID()}` };
       fixture.commands.buy = buy; fixture.operationIds.buy = economicOperationId(worldId, fixture.accountId, buy.opId);
       saveFixture();
+      const buyBefore = profile;
+      const shipRevisionsBeforeBuy = shipRevisionFingerprint(buyBefore);
       const buyAck = await commerceReply(buy);
-      ensure(buyAck.ok === true && buyAck.n === 1 && buyAck.side === 'buy', 'quoted one-fruta purchase failed');
+      ensure(buyAck.ok === true && buyAck.n === 1 && buyAck.side === 'buy' && buyAck.total === funding.frutaTotal,
+        'quoted one-fruta purchase failed');
       await waitProfileRevision(buyAck.rev);
-      ensure((profile.eco.pack.goods.fruta || 0) >= 1, 'bought fruit missing from profile');
-      record('quoted one-unit sale and one-unit purchase completed through M5 authority', { profileRevision: profile.eco.tradeRev });
+      ensure((profile.eco.pack.goods.fruta || 0) === (buyBefore.eco.pack.goods.fruta || 0) + 1
+        && profile.gold === buyBefore.gold - buyAck.total
+        && shipRevisionFingerprint(profile) === shipRevisionsBeforeBuy,
+      'fruit purchase did not conserve exact fruit, gold, and raft revision');
+      record('quoted one-unit sales funded one fruit and a raft supply while reserving one madera', {
+        profileRevision: profile.eco.tradeRev, maderaSales: fixture.commands.sells.length,
+      });
 
-      if (fixture.commands.extraSell) await verifyReceipt(fixture.commands.extraSell, fixture.operationIds.extraSell, 'commerce');
+      const approach = await goToRaft();
+      const raftBefore = await raftSupplyQuote(approach.ship.id, approach.ship.rev);
+      ensure(raftBefore.price === funding.maderaTotal, 'raft editor quote differs from the market quote used for funding');
+      const deposit = await transferMadera(approach.ship.id, 'deposit', approach.ship.rev);
+      const afterDeposit = profile.eco.ships.find(ship => ship.id === approach.ship.id);
+      const supplyAck = await supplyOneMadera(approach.ship.id, afterDeposit.rev);
+      const afterSupply = profile.eco.ships.find(ship => ship.id === approach.ship.id);
+      const withdraw = await transferMadera(approach.ship.id, 'withdraw', afterSupply.rev);
+      const afterWithdraw = profile.eco.ships.find(ship => ship.id === approach.ship.id);
+      ensure(deposit.raftRev + 1 === supplyAck.rev && supplyAck.rev + 1 === withdraw.raftRev
+        && afterWithdraw.rev === withdraw.raftRev && amount(afterWithdraw.hold?.goods) === 1,
+      'raft transfer and supply revisions did not advance independently and exactly');
+      record('one madera deposited, one quoted madera supplied, then the deposited unit withdrawn at the public gangplank', {
+        raftRevision: afterWithdraw.rev, transferRevision: profile.eco.tradeRev,
+      });
+
+      for (let index = 0; index < fixture.commands.sells.length; index++)
+        await verifyReceipt(fixture.commands.sells[index], fixture.operationIds.sells[index], 'commerce');
       const contributeReceipt = await verifyReceipt(contribute, fixture.operationIds.contribute, 'community');
-      const sellReceipt = await verifyReceipt(sell, fixture.operationIds.sell, 'commerce');
       const buyReceipt = await verifyReceipt(buy, fixture.operationIds.buy, 'commerce');
-      ensure(contributeReceipt.result.ack.accepted === 1 && sellReceipt.result.ack.n === 1 && buyReceipt.result.ack.n === 1,
+      await verifyReceipt(fixture.commands.deposit, fixture.operationIds.deposit, 'commerce');
+      await verifyReceipt(fixture.commands.supply, fixture.operationIds.supply, 'raftEdit');
+      await verifyReceipt(fixture.commands.withdraw, fixture.operationIds.withdraw, 'commerce');
+      ensure(contributeReceipt.result.ack.accepted === 1 && fixture.commands.sells.length === fixture.operationIds.sells.length
+        && fixture.commands.sells.every((_, index) => fixture.operationIds.sells[index]) && buyReceipt.result.ack.n === 1,
         'durable gameplay receipts do not match accepted quantities');
       const persisted = await store.loadProfile(fixture.accountId);
-      fixture.expectedMadera = fixture.commands.extraSell ? 0 : 1;
       ensure(persisted?.data?.pirateId === `account:${fixture.accountId}`
-        && (persisted.data.eco.pack.goods.madera || 0) === fixture.expectedMadera
-        && (persisted.data.eco.pack.goods.fruta || 0) >= 1
+        && profile.eco.pack.goods.madera === persisted.data.eco.pack.goods.madera
+        && profile.eco.pack.goods.fruta === persisted.data.eco.pack.goods.fruta
         && profileFingerprint(profile) === profileFingerprint(persisted.data),
-      'authoritative profile row differs from the live profile or expected inventory');
+      'authoritative profile row differs from the live profile or ACK-conserved inventory');
       const world = await store.loadWorld(worldId);
       ensure(world?.data?.community?.project?.version === fixture.projectAfter.version
         && world.data.community.project.contributed.madera === fixture.projectAfter.contributed.madera, 'authoritative world row lacks community contribution');
       fixture.profileFingerprint = profileFingerprint(persisted.data);
       fixture.profileVersion = persisted.version;
-      fixture.economicReceipts = [fixture.operationIds.contribute, fixture.operationIds.sell, fixture.operationIds.buy,
-        ...(fixture.operationIds.extraSell ? [fixture.operationIds.extraSell] : [])];
+      fixture.raftAfterBeforeRestart = { id: afterWithdraw.id, rev: afterWithdraw.rev,
+        holdMadera: amount(afterWithdraw.hold?.goods), tradeRev: profile.eco.tradeRev };
+      fixture.economicReceipts = [fixture.operationIds.contribute, ...fixture.operationIds.sells,
+        fixture.operationIds.buy, fixture.operationIds.deposit, fixture.operationIds.supply, fixture.operationIds.withdraw];
       fixture.completedBefore = true;
       saveFixture();
       record('profile, world contribution, and exact economic receipts verified in durable rows', {
@@ -366,7 +545,8 @@ try {
       });
       await leave();
     } else if (phase === 'after') {
-      ensure(fixture.completedBefore === true && fixture.commands.contribute && fixture.commands.sell && fixture.commands.buy,
+      ensure(fixture.completedBefore === true && fixture.commands.contribute && fixture.commands.sell && fixture.commands.buy
+        && Array.isArray(fixture.commands.sells) && fixture.commands.deposit && fixture.commands.supply && fixture.commands.withdraw,
         'before phase has not completed');
       ensure(Number.isFinite(fixture.hostUptimeBefore) && Number.isFinite(health.uptime)
         && health.uptime < fixture.hostUptimeBefore, 'host restart was not observed between phases');
@@ -377,8 +557,12 @@ try {
         'durable profile did not restore after host restart');
       const worldBefore = await store.loadWorld(worldId);
       ensure(worldBefore?.data?.community?.project?.version === fixture.projectAfter.version
-        && worldBefore.data.community.project.contributed.madera === fixture.projectAfter.contributed.madera,
-      'community progress did not restore after host restart');
+        && worldBefore.data.community.project.contributed.madera === fixture.projectAfter.contributed.madera
+        && worldBefore.data.economy.markets.aldea.stock.madera === fixture.marketMaderaAfterSupply,
+      'community progress or raft supply stock did not restore after host restart');
+      ensure(profile.eco.ships.find(ship => ship.id === fixture.raftAfterBeforeRestart.id)?.rev === fixture.raftAfterBeforeRestart.rev
+        && amount(profile.eco.ships.find(ship => ship.id === fixture.raftAfterBeforeRestart.id)?.hold?.goods) === fixture.raftAfterBeforeRestart.holdMadera,
+      'raft cargo or ship revision did not restore after host restart');
       record('crafted inventory and community project restored after real host restart', {
         profileVersion: persisted.version, projectVersion: fixture.projectAfter.version,
       });
@@ -388,13 +572,14 @@ try {
       ensure(currentProject.version === fixture.projectAfter.version
         && currentProject.contributed.madera === fixture.projectAfter.contributed.madera, 'live project list does not match persisted progress');
       const beforeReplayFingerprint = profileFingerprint(profile);
-      const replayCommands = [fixture.commands.contribute, fixture.commands.sell, fixture.commands.buy,
-        ...(fixture.commands.extraSell ? [fixture.commands.extraSell] : [])];
+      const replayCommands = [fixture.commands.contribute, ...fixture.commands.sells, fixture.commands.buy,
+        fixture.commands.deposit, fixture.commands.supply, fixture.commands.withdraw];
       const observed = [];
       for (const command of replayCommands) {
         if (command.type === 'community') await walk(resources.bench);
+        else if (command.op === 'transfer' || command.type === 'raft') await goToRaft();
         else { await walk(map.landmarks.village, 8); await waitAtRest(); }
-        const ack = await commerceOrCommunity(command);
+        const ack = await replayEconomicCommand(command);
         ensure(ack.ok === true && (ack.historical === true || ack.replay === true), 'exact retry did not return a historical receipt');
         if (command.type === 'community') ensure(ack.currentProject?.version === fixture.projectAfter.version
           && ack.currentProject.contributed.madera === fixture.projectAfter.contributed.madera,
@@ -407,9 +592,13 @@ try {
       const worldAfterReplay = await store.loadWorld(worldId);
       ensure(profileFingerprint(persistedAfterReplay.data) === fixture.profileFingerprint
         && worldAfterReplay.data.community.project.version === fixture.projectAfter.version
-        && worldAfterReplay.data.community.project.contributed.madera === fixture.projectAfter.contributed.madera,
-      'exact retries changed current durable profile or project rows');
-      for (const command of replayCommands) await verifyReceipt(command, economicOperationId(worldId, fixture.accountId, command.opId), command.type === 'community' ? 'community' : 'commerce');
+        && worldAfterReplay.data.community.project.contributed.madera === fixture.projectAfter.contributed.madera
+        && worldAfterReplay.data.economy.markets.aldea.stock.madera === fixture.marketMaderaAfterSupply
+        && profile.eco.ships.find(ship => ship.id === fixture.raftAfterBeforeRestart.id)?.rev === fixture.raftAfterBeforeRestart.rev,
+      'exact retries changed current durable profile, raft, market, or project rows');
+      for (const command of replayCommands) await verifyReceipt(command,
+        economicOperationId(worldId, fixture.accountId, command.opId), command.type === 'community' ? 'community'
+          : command.type === 'raft' ? 'raftEdit' : 'commerce');
       record('exact post-restart retries replay receipts without another debit or historical rollback', {
         replayed: observed.length, profileVersion: persistedAfterReplay.version, projectVersion: fixture.projectAfter.version,
       });
@@ -423,9 +612,10 @@ try {
   await leave();
 }
 
-async function commerceOrCommunity(command) {
+async function replayEconomicCommand(command) {
   send(command);
-  const type = command.type;
-  const response = await waitFor(message => message.t === 'event' && message.ev?.type === type && message.ev.opId === command.opId);
+  const type = command.type === 'raft' ? 'raftEdit' : command.type;
+  const response = await waitFor(message => message.t === 'event' && message.ev?.type === type
+    && message.ev.opId === command.opId);
   return response.ev;
 }
