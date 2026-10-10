@@ -15,14 +15,18 @@ import { bakeCharacter, sizedCharacter } from './rebind.js';
 import { worldToon } from './toonmat.js';
 import { LOOKS, buildLook, buildWeaponOnly } from '../charlooks.js';
 
-const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(`${what}: timed out after ${ms / 1000} s`)), ms))]);
+const withTimeout = async (p, ms, what) => {
+  let timer;
+  try { return await Promise.race([p, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`${what}: timed out after ${ms / 1000} s`)), ms); })]); }
+  finally { clearTimeout(timer); }
+};
 
 function coarsePointerDefault() {
   try { return globalThis.matchMedia?.('(pointer: coarse)')?.matches === true; }
   catch { return false; }
 }
 
-class Assets {
+export class Assets {
   constructor() {
     this.base = '';
     this.man = normalizeManifest(null);
@@ -30,6 +34,7 @@ class Assets {
     this.errors = [];
     this.loaded = false;
     this.chars = new Map(); // lookIdx + wpn → sized character
+    this.pendingModels = new Map();
   }
 
   // Load the manifest and every asset in it. Resolves when all are done or failed (never rejects).
@@ -91,6 +96,34 @@ class Assets {
     l.setDRACOLoader(draco);
     l.setMeshoptDecoder(MeshoptDecoder);
     return l;
+  }
+
+  // Editor-only catalog entries are indexed separately and fetched when selected. They never
+  // replace the manifest's prop bindings or add work to the normal boot download.
+  async ensureModel(raw, { base = 'assets/', timeoutMs = 60000 } = {}) {
+    const normalized = normalizeManifest({ assets: [raw] });
+    const entry = normalized.entries.get(raw?.id);
+    if (!entry || !['model', 'prop'].includes(entry.kind) || normalized.errors.length) return false;
+    const prior = this.entry(entry.id);
+    if (prior && JSON.stringify(prior) !== JSON.stringify(entry)) return false;
+    if (this.has(entry.id)) return true;
+    if (this.pendingModels.has(entry.id)) return this.pendingModels.get(entry.id);
+    this.man.entries.set(entry.id, entry);
+    const source = new URL(entry.src, new URL(base, globalThis.location?.href || 'http://localhost/')).href;
+    const pending = (async () => {
+      this.state.set(entry.id, { state: 'loading', selectedSrc: entry.src });
+      try {
+        const loader = await this.gltfLoader();
+        const gltf = await withTimeout(loader.loadAsync(source), timeoutMs, entry.src);
+        this.state.set(entry.id, { state: 'ok', selectedSrc: entry.src, data: prepStatic(gltf.scene, entry) });
+        return true;
+      } catch (error) {
+        this.state.set(entry.id, { state: 'error', selectedSrc: entry.src, error: String(error.message || error) });
+        return false;
+      } finally { this.pendingModels.delete(entry.id); }
+    })();
+    this.pendingModels.set(entry.id, pending);
+    return pending;
   }
 
   prepTexture(t, e) {

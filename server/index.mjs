@@ -15,6 +15,7 @@ import { GAME } from '../src/data/meta.js';
 import { chatFromEnv } from '../src/data/chat.js';
 import { createWalletHttpHandler } from './web3/walletHttp.mjs';
 import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
+import { createGmSessionHandler, parseGmAccountIds } from './gmSession.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -30,13 +31,14 @@ const PUBLIC = ['src', 'styles', 'assets'];
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null,
-  economicOperations = false, communityRequirements = null } = {}) {
+  economicOperations = false, communityRequirements = null, gmAccountIds = null } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
   if (authConfig.enabled && !resolvePlayer) throw new Error('Account verifier is required');
   if (walletLink?.prepare !== undefined && typeof walletLink.prepare !== 'function') throw new StoreError('configuration');
   const walletHttp = walletLink === null ? null : createWalletHttpHandler({ service: walletLink, resolvePlayer });
+  const gmSession = createGmSessionHandler({ resolvePlayer, accountIds: gmAccountIds });
   if (pearlStartup !== null && (!pearlStartup || typeof pearlStartup !== 'object' || Array.isArray(pearlStartup) ||
       !pearlStartup.journal || pearlStaging === null || worldId === undefined ||
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
@@ -52,6 +54,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   const server = http.createServer((req, res) => {
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
+    if (p === '/api/gm/session') { void gmSession(req, res); return; }
     if (walletHttp?.handles(p)) { void walletHttp.handle(req, res, p); return; }
     if (p === '/web3/wallet/config') {
       res.writeHead(req.method === 'GET' ? 200 : 405, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
@@ -143,6 +146,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       dev: env.DEV === '1', lagMs: num(env.LAG_MS, 0), jitterMs: num(env.JITTER_MS, 0),
       origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
       store, resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig, walletLink,
+      gmAccountIds: parseGmAccountIds(env.GM_ACCOUNT_IDS),
       initializeAccounts: auth.publicConfig.enabled,
       economicOperations: env.MN_ECONOMIC_OPERATIONS === '1',
       communityRequirements: env.MN_COMMUNITY_REQUIREMENTS ? JSON.parse(env.MN_COMMUNITY_REQUIREMENTS) : null,

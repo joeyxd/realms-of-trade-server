@@ -1,4 +1,4 @@
-# Traspaso: cómo seguir con MAREA NEGRA
+﻿# Traspaso: cómo seguir con MAREA NEGRA
 
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
 (orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
@@ -1324,3 +1324,5 @@ SQL014 y permisos verificados en Supabase; alfa público 0.6.0-alpha.17. Diez op
 diez replays tras reconexión y diez tras reinicio real, sin segundo débito ni retroceso.
 [Contrato](briefs/m5-economic-authority.md) · [Entrega](delivery/m5-economic-authority.md).
 No cierra recursos/crafting, todo M5 ni crecimiento automático del edificio.
+
+**Checkpoint GM01 (0.6.0-alpha.18, implementación local; no publicado ni desplegado):** editor dentro del juego para decoraciones nuevas con borradores privados en IndexedDB, control CAS y recuperación separada ante cierre forzado/recarga, preservando la revisión base. QA: 100/100 pruebas pertinentes, incluidas 30 GM; navegador 13/13, cero errores, autenticación simulada. La cuenta GM fue provisionada y la allowlist privada preparada sin guardar identificadores aquí; configuración desplegada y permiso positivo en producción siguen pendientes. GM00 tiene comparación visual local con loader real, 14 capturas y dos ángulos, pero sin medición física móvil ni aceptación de assets para gameplay. [Entrega GM01](delivery/gm01-world-editor.md) · [Revisión visual GM00](art/gm00/visual-review.md). Próximo: GM02 edición de decoración base y walktest; GM03 almacenamiento/publicación/rollback; terreno después.

@@ -66,6 +66,7 @@ import { Music } from './audio/music.js';
 import { assets } from './render/assets/registry.js';
 import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
 import { LiveNavigationView } from './client/liveNavigationView.js';
+import { GmEntry } from './editor/entry.js';
 
 const errors = new Map();
 function safe(name, fn) {
@@ -406,6 +407,10 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  if (st.online && params.get('account-setup') === '1') {
+    const { mountAccountSetup } = await import('./editor/accountSetup.js');
+    mountAccountSetup({ auth: accountAuth });
+  }
   const walletLink = st.online ? new WalletLink({ auth: accountAuth, httpBase: httpUrlFor(transport.url) }) : null;
   const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, {
     wallet: walletLink,
@@ -421,6 +426,64 @@ async function boot() {
   }) : null;
   let accountReady;
   const initializeAccount = () => accountReady ??= accountAuth.bootstrap({ online: st.online });
+  let gmEditor = null;
+  let gmOwner = null;
+  let gmCameraPose = null;
+  const gmRecoveries = new Map();
+  const gmEntry = new GmEntry({
+    parent: title.root.querySelector('.title-actions'), auth: accountAuth, online: st.online,
+    httpBase: st.online ? httpUrlFor(transport.url) : location.href,
+    available: () => st.mode === 'title' && !st.boarding && !st.gmOpening && !client.joined && !pause.open,
+    onRevoke: () => { if (gmEditor?.active) void gmEditor.close({ force: true }); },
+    onOpen: async (accountId) => {
+      if (st.mode !== 'title' || st.boarding || client.joined) return;
+      st.gmOpening = true;
+      try {
+        const { WorldEditor } = await import('./editor/editor.js');
+        if (gmOwner !== accountId) { await gmEditor?.dispose?.(); gmEditor = null; gmOwner = accountId; }
+        if (!gmEditor) {
+          let serverHash = 2166136261;
+          for (const ch of (st.online ? httpUrlFor(transport.url) : 'solo')) serverHash = Math.imul(serverHash ^ ch.charCodeAt(0), 16777619) >>> 0;
+          gmEditor = new WorldEditor({
+            scene: world.scene, camera: world.camera, canvas, map, assets, parent: $('#ui'),
+            draftWorldId: `gm-${serverHash}-${GAME.seed}-${accountId || 'local'}`, baseRevision: 'terrain-s21-v1',
+            invalidate: () => { world.pipeline.markDirty(); world.renderer.shadowMap.needsUpdate = true; },
+            onClose: ({ saved, recoveryDocument }) => {
+              if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
+              else gmRecoveries.delete(gmOwner);
+              gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
+              st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+              world.setTitleShadows(true); gmEntry.closed(); input.clearActions(); input.keys.clear();
+              canvas.focus({ preventScroll: true });
+            },
+          });
+          const recovery = gmRecoveries.get(accountId);
+          if (recovery) { gmEditor.resumeDocument = recovery.document; gmEditor.revision = recovery.revision; }
+        }
+        input.enabled = false; input.clearActions(); input.keys.clear(); aimCtl.reset();
+        if (gmCameraPose) {
+          world.camera.position.copy(gmCameraPose.position); world.camera.quaternion.copy(gmCameraPose.quaternion);
+        } else {
+          const village = map.landmarks.village;
+          const y = map.groundAt(village.x, village.z);
+          world.camera.position.set(village.x + 16, y + 18, village.z + 20);
+          world.camera.lookAt(village.x, y + 1, village.z);
+        }
+        world.camera.updateMatrixWorld();
+        await gmEditor.open();
+        if (!gmEditor.active) throw new Error('GM editor could not open');
+        st.mode = 'editor'; title.root.hidden = true; title.pulse?.pause();
+        world.setTitleShadows(false); world.nearFade(false);
+      } catch (error) {
+        st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+        world.setTitleShadows(true); input.enabled = false;
+        title.message(escHtml('No se pudo abrir el editor / Could not open editor: ' + (gmEditor?.error?.message || error.message)) +
+          (gmEditor?.rejectedDocument ? '<button type="button" class="btn secondary" id="btn-gm-recover">Exportar borrador / Export draft</button>' : ''));
+        document.getElementById('btn-gm-recover')?.addEventListener('click', () => gmEditor.exportRecovery());
+        throw error;
+      } finally { st.gmOpening = false; }
+    },
+  });
   bus.on('save', (m) => { if (m && typeof m.blob === 'string') storeSave(saveSlot(), m.blob); });
   addEventListener('pagehide', () => safe('save', () => {
     if (st.online || !client.joined || !client.profile) return;
@@ -440,6 +503,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost() {
+    if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
     workbench.close();
@@ -708,7 +772,7 @@ async function boot() {
 
   // ---- Play ------------------------------------------------------------------------------------
   async function startPlaying() {
-    if (st.boarding || st.mode !== 'title' || accountAuth.state.busy) return;
+    if (st.boarding || st.gmOpening || st.mode !== 'title' || accountAuth.state.busy) return;
     st.boarding = true;
     title.boarding(true);
     accountPanel?.setBoarding(true);
@@ -1004,6 +1068,18 @@ async function boot() {
         hud.setParty(st.mode === 'playing' ? party : []);
       });
       const playing = st.mode === 'playing' && client.joined;
+      if (st.mode === 'editor' && gmEditor?.active) {
+        safe('gmEditor', () => {
+          gmEditor.update(realDt);
+          world.camera.getWorldDirection(tmpV);
+          const distance = tmpV.y < -0.05 ? Math.min(180, Math.max(1, world.camera.position.y / -tmpV.y)) : 35;
+          focus.copy(world.camera.position).addScaledVector(tmpV, distance);
+          focus.y = map.groundAt(focus.x, focus.z);
+          world.update(realDt, { focus, shadowFocus: focus, playing: false, simDt: 0 });
+          world.render();
+        });
+        return;
+      }
       if (playing) safe('local', () => client.localState(alpha, ps));
       // Inside the Cala Calavera (M4.5): no law.
       st.lawless = playing && map.lawlessAt(ps.x, ps.z);
@@ -1324,9 +1400,10 @@ async function boot() {
   gsap.to('#fade', { opacity: 0, duration: reduced() ? 0.3 : 1.2, ease: 'power2.out', onComplete: () => { $('#fade').style.display = 'none'; } });
   title.show(reduced());
   title.ready();
+  gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount();
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, gmEntry, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

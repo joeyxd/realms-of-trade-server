@@ -853,3 +853,5 @@ SQL014 y permisos verificados en Supabase; alfa público 0.6.0-alpha.17. Diez op
 diez replays tras reconexión y diez tras reinicio real, sin segundo débito ni retroceso.
 [Contrato](docs/briefs/m5-economic-authority.md) · [Entrega](docs/delivery/m5-economic-authority.md).
 No cierra recursos/crafting, todo M5 ni crecimiento automático del edificio.
+
+**Checkpoint GM01 (0.6.0-alpha.18, local; sin publicación/despliegue):** 100/100 pruebas pertinentes (30 GM) y navegador 13/13 sin errores; autenticación de navegador simulada. Recuperación local separada en IndexedDB conserva revisión base y evita sobrescritura tras cierre forzado/recarga. Cuenta GM provisionada y allowlist privada preparada; acceso positivo en producción pendiente. GM00: 14 capturas/dos ángulos con loader real; sin FPS móvil físico ni aceptación de gameplay. [Informe GM01](docs/delivery/gm01-world-editor.md) · [Revisión visual GM00](docs/art/gm00/visual-review.md). Siguiente GM02: edición de decoración existente y walktest; GM03: publicación y rollback; terreno en GM05–GM06.
