@@ -95,6 +95,10 @@ class VpsUpdateTests(unittest.TestCase):
             args = call.args[0]
             self.assertEqual(args[-2:], ["origin", "--stdin"])
             self.assertIn("--no-write-fetch-head", args)
+            self.assertIn("--no-filter", args)
+            self.assertLess(args.index("--no-filter"), args.index("origin"))
+            self.assertIn("fetch.negotiationAlgorithm=noop", args)
+            self.assertLess(args.index("fetch.negotiationAlgorithm=noop"), args.index("fetch"))
             self.assertNotIn("--force", args)
 
     def test_prefetch_rejects_malformed_blob_id_and_ignores_non_blob_entries(self):
