@@ -1,4 +1,4 @@
-﻿✔ refresh projects a validated owner response and stop uses the displayed epoch (12.6179ms)
+✔ refresh projects a validated owner response and stop uses the displayed epoch (12.6179ms)
 ✔ logout/account switch clears rows and late response cannot restore them (0.7515ms)
 ✔ logout and relogin to the same account cannot reuse the old gameplay binding (0.4572ms)
 ✔ timeout is bounded and does not retry; transport close clears projection (21.779ms)
