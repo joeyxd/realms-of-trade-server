@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 39; // Raft lantern state and switches, integrated with private agent trade/budgets; reload peers.
+export const PROTOCOL_VERSION = 40; // Personal artisan lesson and receipted raft-storage edits; reload peers.
 
 export const MSG = {
   // client -> server

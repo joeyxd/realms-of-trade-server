@@ -12,6 +12,10 @@ import { communityAccess, draftCommunity, publicCommunity } from './communityPro
 import { StoreError } from './store.mjs';
 import { CRAFT_RECIPES, HARVEST } from '../src/data/resources.js';
 import { draftResource, applyResource, loggingAccounts } from './resourceState.mjs';
+import { ARTISAN } from '../src/data/artisan.js';
+import { artisanMutation, draftArtisan } from './artisanOperation.mjs';
+import { restoreRaftCondition } from '../src/sim/naval/condition.js';
+import { publicRafts } from '../src/sim/systems/rafts.js';
 
 const clone = structuredClone;
 const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -26,7 +30,10 @@ export function economicCommand(msg) {
   const fields = msg.type === 'commerce' ? {
     buy: ['town', 'g', 'n', 'expectedTotal'], sell: ['town', 'g', 'n', 'expectedTotal'],
     transfer: ['id', 'expectedRev', 'g', 'n', 'side'],
-  }[msg.op] : msg.type === 'raft' && msg.op === 'supply' ? ['id', 'expectedRev', 'g', 'n'] : msg.type === 'community' ? {
+  }[msg.op] : msg.type === 'raft' ? { supply: ['id', 'expectedRev', 'g', 'n'],
+    place: ['id', 'expectedRev', 'piece'], remove: ['id', 'expectedRev', 'piece', 'index'] }[msg.op] : msg.type === 'artisan' ? {
+    list: [], learn: ['lesson', 'expectedRev', 'expectedProjectRev'],
+  }[msg.op] : msg.type === 'community' ? {
     list: [], contribute: ['projectId', 'good', 'amount', 'expectedRev'],
   }[msg.op] : msg.type === 'resource' ? {
     gather: ['node', 'expectedRev'], craft: ['recipe', 'expectedRev', 'n'],
@@ -52,9 +59,17 @@ export function economicCommand(msg) {
        !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 1 || msg.expectedRev >= 2147483647)) throw new StoreError('operation');
   if (msg.type === 'raft') {
     if (typeof msg.id !== 'string' || !/^[A-Za-z0-9:_-]{1,120}$/.test(msg.id) ||
-        !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 1 || msg.expectedRev >= 2147483647 ||
-        !['madera', 'hierro'].includes(msg.g) || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 10) throw new StoreError('operation');
+        !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 1 || msg.expectedRev >= 2147483647) throw new StoreError('operation');
+    if (msg.op === 'supply') {
+      if (!['madera', 'hierro'].includes(msg.g) || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 10) throw new StoreError('operation');
+    } else if (!Array.isArray(msg.piece) || msg.piece.length !== 5 || msg.piece[0] !== ARTISAN.part ||
+        msg.piece.slice(1).some(v => !Number.isSafeInteger(v)) || Math.abs(msg.piece[1]) > 128 || Math.abs(msg.piece[2]) > 128 ||
+        msg.piece[3] < 0 || msg.piece[3] > 2 || msg.piece[4] < 0 || msg.piece[4] > 3 ||
+        msg.op === 'remove' && (!Number.isSafeInteger(msg.index) || msg.index < 0 || msg.index > 599)) throw new StoreError('operation');
   }
+  if (msg.type === 'artisan' && msg.op === 'learn' && (msg.lesson !== ARTISAN.lesson ||
+      !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 0 || msg.expectedRev >= 2147483647 ||
+      !Number.isSafeInteger(msg.expectedProjectRev) || msg.expectedProjectRev < 1 || msg.expectedProjectRev >= 2147483647)) throw new StoreError('operation');
   if (msg.type === 'commerce') {
     if (typeof msg.g !== 'string' || !/^[a-z_]{1,40}$/.test(msg.g) ||
         !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 500) throw new StoreError('operation');
@@ -74,13 +89,14 @@ function draftCommerce(world, entity, command, profile) {
   draft.economy = Economy.from(world.economy.serialize(), world.seed);
   draft.commerceReceipts = new Map(); draft.profileDirty = new Set();
   draft.raftEditReceipts = new Map();
-  // The supply helper may refresh deck projections. Candidate construction must never touch
-  // the live deck; its footprint is unchanged by a material purchase.
-  draft.raftDeck = { surface: (...args) => world.raftDeck.surface(...args), update: () => {} };
+  // Candidate construction needs the real geometry API for support/occupant checks, with an
+  // independent projection so no preview can mutate the live deck before its receipt commits.
+  draft.raftDeck = new world.raftDeck.constructor(world.map);
+  draft.raftDeck.update(publicRafts(world));
   draft.rafts = new Map([...world.rafts].map(([id, record]) => {
     if (record.owner !== entity) return [id, record];
     const ship = draft.profiles.get(entity).eco.ships.find(s => s.id === id);
-    return [id, { ...record, ship }];
+    return [id, { ...record, ship, condition: record.condition && clone(record.condition) }];
   }));
   const events = []; draft.emit = ev => events.push(clone(ev));
   // The ordinary helper owns prices, law, ownership, capacity and all gameplay preconditions.
@@ -123,13 +139,14 @@ export class EconomicAuthority {
       this.host.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'tradeDenied', to: this.host.server.clients.get(sock.id)?.entity, why: 'command' } });
       return true;
     }
-    if (!(msg.type === 'community' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
-        msg.type === 'raft' && msg.op === 'supply' || this.host.resourceOperations && msg.type === 'resource')) return false;
+    if (!(msg.type === 'community' || msg.type === 'artisan' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
+        msg.type === 'raft' && (msg.op === 'supply' || artisanMutation(msg)) || this.host.resourceOperations && msg.type === 'resource')) return false;
     let command;
     try { command = economicCommand(msg); }
     catch { reject('command'); return true; }
     const h = this.host, c = h.server.clients.get(sock.id), s = h.profiles.clients.get(sock.id);
     if (!c?.entity) return true;
+    if ((command.type === 'artisan' || artisanMutation(command)) && !h.artisanOperations) { reject('disabled'); return true; }
     if (command.op === 'list') {
       const why = this.busy ? 'busy' : !h.worldState.community ? 'disabled' : communityAccess(h.server.world, c.entity);
       this.reply(sock.id, command, why, { ok: !why, rev: h.server.world.profiles.get(c.entity)?.eco.tradeRev ?? 0,
@@ -161,7 +178,12 @@ export class EconomicAuthority {
       const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(lanes);
       const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate,
         members, operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null, agent };
-      this.active = a; h.worldState.operationBusy = true;
+      this.active = a;
+      // Freeze the live economy/resource clock as this operation's confirmed baseline through
+      // the existing world writer. A lesson/edit cannot change markets, nor restore an older
+      // autosave's accumulator when ordinary ticks advanced since the last checkpoint.
+      if (artisanMutation(command)) h.worldState.save(h.server.world.economy);
+      h.worldState.operationBusy = true;
       if (agent) h.clearAgentInputs(sock.id);
       a.task = this.prepare(a).catch(() => { this.fence(a); });
     } catch { reject('storage'); }
@@ -255,6 +277,10 @@ export class EconomicAuthority {
       proposal = draftResource(h.server.world, a.entity, a.command, a.profile, h.worldState.resources, a.s.key,
         h.worldState.resourceTick(), new Map([...a.members].map(([key, member]) => [key, member.profile])));
       proposal.community = clone(h.worldState.community);
+    } else if (a.command.type === 'artisan') {
+      proposal = draftArtisan({ command: a.command, profile: clone(a.profile), state: clone(h.worldState.community),
+        world: h.server.world, entity: a.entity });
+      proposal.economy = h.server.world.economy;
     } else if (a.command.type === 'community') {
       proposal = draftCommunity({ command: a.command, profile: clone(a.profile), state: clone(h.worldState.community),
         world: h.server.world, entity: a.entity, worldId: h.worldState.id, account: a.s.key,
@@ -277,6 +303,7 @@ export class EconomicAuthority {
     a.request = { world: h.worldState.id, account: a.s.key, command: a.command,
       expectedProfileVersion: a.s.version, expectedWorldVersion: h.worldState.version,
       profile: proposal.profile, worldData: data, ack: proposal.ack };
+    if (artisanMutation(a.command)) a.request.before = clone(a.profile);
     if (h.loggingOperations && a.command.type === 'resource' && a.command.op === 'gather'
         && data.resources.nodes.find(n => n.id === a.command.node)?.kind === 'palm') {
       a.request.beneficiaries = [...proposal.profiles].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([account, profile]) => {
@@ -332,8 +359,19 @@ export class EconomicAuthority {
         if (Object.hasOwn(next, 'progression')) p.progression = clone(next.progression);
         for (const ship of p.eco.ships) {
           const candidate = next.eco.ships.find(s => s.id === ship.id);
-          if (candidate?.kind === 'raft') { ship.hold = clone(candidate.hold); ship.rev = candidate.rev; }
+          if (candidate?.kind === 'raft') {
+            ship.hold = clone(candidate.hold); ship.rev = candidate.rev;
+            if (artisanMutation(a.command) && a.command.type === 'raft' && ship.id === a.command.id) {
+              ship.grid = clone(candidate.grid);
+              if (candidate.condition) {
+                ship.condition = clone(candidate.condition);
+                const active = w.rafts.get(ship.id), restored = restoreRaftCondition(ship.condition, ship.grid.parts);
+                active.condition = restored.structure; active.conditionNext = restored.nextId;
+              }
+            }
+          }
         }
+        if (artisanMutation(a.command) && a.command.type === 'raft') w.raftDeck.update(publicRafts(w));
         const economy = Economy.from(a.request.worldData.economy, w.seed);
         economy.payUpkeep = w.economy.payUpkeep; economy.onAdvance = w.economy.onAdvance;
         w.economy = economy;

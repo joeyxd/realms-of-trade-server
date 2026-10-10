@@ -6,15 +6,17 @@ const COPY = {
   es: {
     title: 'Tala', practice: 'Práctica', rank: 'Rango', benefit: 'Ritmo de trabajo',
     milestone: 'Hito: tala constante', reached: 'Alcanzado', pending: 'Por alcanzar',
-    storage: 'Lección de carpintería: próximamente; aún no está disponible.',
-    storageLocked: 'Al llegar al hito podrás ver aquí la próxima lección de carpintería. Aún no está disponible.',
+    storage: 'Habla con la artesana del banco de Salty Shore para aprender Bodega.',
+    storageLocked: 'Al llegar a 60 puntos de tala podrás aprender Bodega con la artesana del banco.',
+    storageKnown: 'Receta conocida: Bodega.',
     seconds: 's entre golpes',
   },
   en: {
     title: 'Logging', practice: 'Practice', rank: 'Rank', benefit: 'Work pace',
     milestone: 'Milestone: steady logging', reached: 'Reached', pending: 'In progress',
-    storage: 'Carpentry lesson: coming later; it is not available yet.',
-    storageLocked: 'Reach the milestone to see the upcoming carpentry lesson here. It is not available yet.',
+    storage: 'Visit the Salty Shore workbench artisan to learn Storage Hold.',
+    storageLocked: 'Reach 60 logging points to learn Storage Hold from the artisan.',
+    storageKnown: 'Recipe learned: Storage Hold.',
     seconds: 's between hits',
   },
 };
@@ -30,7 +32,8 @@ export function loggingSkillHtml(progression, locale = 'es') {
   const practice = Number.isSafeInteger(status.practice) ? Math.max(0, status.practice) : 0;
   const reached = status.rank >= 2;
   const width = Math.max(0, Math.min(100, practice / LOGGING.firstMilestoneAt * 100));
-  const storageNote = status.canLearnStorage ? copy.storage : copy.storageLocked;
+  const known = Array.isArray(progression?.knowledge) && progression.knowledge.includes('raft_storage');
+  const storageNote = known ? copy.storageKnown : status.canLearnStorage ? copy.storage : copy.storageLocked;
 
   return `<div class="cp-logging"><div class="mast-card">
     <div class="mc-head"><b>${copy.title}</b><span>${copy.rank} ${Number.isSafeInteger(status.rank) ? status.rank : 1}</span></div>
