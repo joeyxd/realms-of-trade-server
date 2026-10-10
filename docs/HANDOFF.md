@@ -8,13 +8,23 @@ readiness de servicio desde VPS y canario transaccional real aprobados; fixture 
 de código en curso. No conecta la ficha a la mente, crea bindings/conexiones, memorias o presupuesto;
 stop permanece de proceso. Sigue conexión/modelo/límites conjuntos y memoria con fuentes.
 
-**AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
+**AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
+[entrega](delivery/gm03b2/DELIVERY.md), [evidencia pública](delivery/gm03b2/public-evidence.json) y [despliegue](delivery/gm03b2/deployment.json).
+Online registra revisiones y activa o vuelve atrás con mundo vacío, CAS y exclusión del actualizador.
+Dos clientes nuevos verificaron el mismo modelo/colisiones antes de entrar; canario real 6/6 sin errores,
+incluidos rechazo con jugadores, rollback y generación antigua. Borrador restaurado por CAS r19→r21.
+Runtime `2006667` sano; gen3 canaria → gen4/mapa base, volumen durable y timer activo.
+Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualizador Linux 22/22 independiente.
+Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
+para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
+
+**AREA03 PRG01d, 2026-10-10 — publicado alpha.35/protocolo 44; taller apagado:**
 [contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
 caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
 Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
 no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
 con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
-Publicación en curso; no activar `MN_STARTER_WORKSHOP` hasta verificar readiness SQL024 y el canario durable.
+VPS `33ddf2d` sano: imagen 109/109 y entrada pública 14/14. SQL023/024 ausentes; aplicar en orden y verificar readiness/canario durable antes de activar `MN_STARTER_WORKSHOP`.
 INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
