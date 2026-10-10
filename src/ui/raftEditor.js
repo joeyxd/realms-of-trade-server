@@ -2,6 +2,8 @@
 import * as THREE from 'three';
 import { RAFT, RAFT_LOAD, RAFT_PARTS, RAFT_REINFORCEMENT } from '../data/raftparts.js';
 import { EDITOR_PARTS, EDITOR_REASONS, EDITOR_RADIUS } from '../data/raftEditor.js';
+import { ARTISAN } from '../data/artisan.js';
+import { readProgression } from '../sim/systems/progression.js';
 import { canPlace } from '../sim/economy/raft.js';
 import { holdUsed, roomFor, goodMass } from '../sim/economy/cargo.js';
 import { raftCapacity } from '../sim/economy/raftCapacity.js';
@@ -14,11 +16,49 @@ const DIR = [[0, -1], [1, 0], [0, 1], [-1, 0]];
 const direction = (id, dir) => (id === 'stairs' ? ['Sur', 'Este', 'Norte', 'Oeste'] : ['Norte', 'Este', 'Sur', 'Oeste'])[dir];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const fmtGoods = (goods = {}) => Object.entries(goods).filter(([, n]) => n > 0).map(([g, n]) => `${n} ${g}`).join(' · ') || '0 materiales';
+const fmtStorageGoods = (goods = {}) => Object.entries(goods).filter(([, n]) => n > 0).map(([g, n]) => `${n} ${{ madera: english() ? 'wood' : 'madera', hierro: english() ? 'iron' : 'hierro', piedra: english() ? 'stone' : 'piedra' }[g] || g}`).join(' · ') || (english() ? '0 materials' : '0 materiales');
 const fmtHp = (n) => Number(n).toLocaleString('es-MX', { maximumFractionDigits: 1 });
 const partMeta = (id) => RAFT_PARTS[id] || {};
-const shelterName = (id) => document.documentElement.lang.startsWith('en')
-  ? ({ door: 'Door', roof: 'Roof', lantern: 'Lantern' }[id] || partMeta(id).name) : partMeta(id).name;
+const english = () => globalThis.document?.documentElement?.lang?.startsWith('en') === true;
+const shelterName = (id) => english()
+  ? ({ door: 'Door', roof: 'Roof', lantern: 'Lantern', storage: 'Storage' }[id] || partMeta(id).name) : partMeta(id).name;
 const reasonText = (why) => EDITOR_REASONS[why] || ({ '': 'Lugar válido', goods: 'Faltan materiales', materials: 'Faltan materiales.', condition: 'El estado de la pieza cambió; actualiza el diagnóstico.', damage: 'La pieza ya no necesita reparación.', gold: 'No tienes oro suficiente.', market: 'El mercado no ofrece ese material.', stock: 'No queda material en Aldea.', calm: 'Espera a estar en calma para comprar.' })[why] || 'Lugar no válido';
+const STORAGE_REASONS = {
+  '': { es: 'Lugar válido.', en: 'Valid placement.' },
+  knowledge: { es: 'Aprende Bodega con la artesana del banco antes de construirla.', en: 'Learn Storage from the workbench artisan before building it.' },
+  practice: { es: 'Alcanza 60 puntos de tala para aprender Bodega.', en: 'Reach 60 logging points to learn Storage.' },
+  learned: { es: 'Ya conoces la receta Bodega.', en: 'You already know the Storage recipe.' },
+  land: { es: 'La obra comunitaria de carpintería aún no está completa.', en: 'The community carpentry project is not complete yet.' },
+  disabled: { es: 'La construcción de bodega no está disponible en este mundo.', en: 'Storage construction is not available in this world.' },
+  account_required: { es: 'Vincula una cuenta para guardar la construcción de forma duradera.', en: 'Link an account to save this build durably.' },
+  busy: { es: 'Ya hay una acción pendiente. Espera su respuesta.', en: 'Another action is pending. Wait for its response.' },
+  storage: { es: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.', en: 'The save could not be confirmed. Reconnect to continue.' },
+  duplicate: { es: 'La solicitud ya corresponde a otra acción.', en: 'This request already belongs to another action.' },
+  command: { es: 'La solicitud de construcción no es válida.', en: 'The storage placement request is invalid.' },
+  goods: { es: 'Faltan materiales en la bodega y la mochila.', en: 'The hold and pack do not contain enough materials.' },
+  materials: { es: 'Faltan materiales en la bodega y la mochila.', en: 'The hold and pack do not contain enough materials.' },
+  full: { es: 'No hay espacio suficiente para conservar la carga.', en: 'There is not enough room to preserve the cargo.' },
+  room: { es: 'No cabe toda la carga en la bodega y la mochila.', en: 'The hold and pack cannot fit all cargo.' },
+  capacity: { es: 'La carga excede el límite de peso de la balsa.', en: 'The cargo exceeds the raft mass limit.' },
+  unknown: { es: 'Pieza desconocida.', en: 'Unknown piece.' }, size: { es: 'La balsa alcanzó su tamaño máximo.', en: 'The raft reached its size limit.' },
+  adjacent: { es: 'El cimiento debe tocar la balsa.', en: 'The foundation must touch the raft.' }, overlap: { es: 'Ese espacio ya está ocupado.', en: 'That space is already occupied.' },
+  deck: { es: 'Coloca la pieza sobre una cubierta.', en: 'Place this piece on a free deck or floor cell.' }, edge: { es: 'La pieza debe estar junto a una cubierta.', en: 'Place this piece beside a deck or floor cell.' },
+  level: { es: 'Nivel o dirección inválidos.', en: 'Invalid level or direction.' }, support: { es: 'La pieza necesita soporte.', en: 'This piece needs structural support.' },
+  owner: { es: 'Esa balsa no es tuya.', en: 'That raft does not belong to you.' },
+  revision: { es: 'El plano cambió. Revisa la balsa antes de intentarlo otra vez.', en: 'The blueprint changed. Review the raft and try again.' },
+  revisionLimit: { es: 'El plano alcanzó su límite de cambios.', en: 'The blueprint reached its change limit.' },
+};
+export const storageEditorReason = (why, lang = globalThis.document?.documentElement?.lang || 'es') =>
+  STORAGE_REASONS[why]?.[String(lang).startsWith('en') ? 'en' : 'es'] || reasonText(why);
+export const knowsRaftStorage = (profile) => {
+  try { return readProgression(profile?.progression).knowledge.includes(ARTISAN.lesson); }
+  catch { return false; }
+};
+export function raftPlacementReason(profile, parts, piece) {
+  if (piece?.[0] === ARTISAN.part && !knowsRaftStorage(profile)) return 'knowledge';
+  return canPlace(parts, piece);
+}
+
 const fromLocal = (r, x, z) => ({ x: r.x + Math.cos(r.yaw) * x + Math.sin(r.yaw) * z,
   z: r.z - Math.sin(r.yaw) * x + Math.cos(r.yaw) * z });
 const toLocal = (r, x, z) => { const dx = x - r.x, dz = z - r.z; return [Math.cos(r.yaw) * dx - Math.sin(r.yaw) * dz, Math.sin(r.yaw) * dx + Math.cos(r.yaw) * dz]; };
@@ -69,9 +109,23 @@ export class RaftEditor {
     this.root.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => { this.mode = b.dataset.mode; if (this.mode !== 'repair') this.repairChoiceId = null; if (this.mode === 'reinforce' || this.mode === 'repair' || this.mode === 'place' && partMeta(this.selected).layer === 'base') this.level = 0; this.target = null; this.removeChoice = 0; this.reproject(); this.render(); }));
   }
 
+  knowsStorage(c = null) { return knowsRaftStorage(c?.profile || this.profile?.()); }
+
+  syncStoragePalette() {
+    const button = this.$('.re-pieces [data-part="storage"]');
+    if (!button) return;
+    const learned = this.knowsStorage();
+    const text = learned
+      ? (english() ? 'Storage' : 'Bodega')
+      : (english() ? 'Storage · learn from the workbench artisan' : 'Bodega · aprende con la artesana del banco');
+    button.title = text; button.setAttribute('aria-label', text); button.querySelector('span').textContent = english() ? 'Storage' : 'Bodega'; button.classList.toggle('is-locked', !learned);
+    button.dataset.locked = String(!learned);
+  }
+
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
-    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', net: '▩', grill: '♨', lantern: '☼' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
+    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(shelterName(id))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', lantern: '☼' })[id]}</i><span>${esc(shelterName(id))}</span></button>`).join('');
+    this.syncStoragePalette();
     this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (partMeta(this.selected).layer === 'floor' && this.level === 0) this.level = 1; if (partMeta(this.selected).layer === 'base' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
 
@@ -139,7 +193,7 @@ export class RaftEditor {
   }
   conditionEntries(c) { return this.conditionFor(c)?.entries || []; }
   placementReason(c, piece = this.proposed(c)) {
-    return canPlace(this.gridParts(c), piece) || (['roof', 'lantern'].includes(piece[0])
+    return raftPlacementReason(c?.profile, this.gridParts(c), piece) || (['roof', 'lantern'].includes(piece[0])
       ? canPlace(c.record.parts || this.gridParts(c), piece) : '');
   }
   repairCost(entry) {
@@ -193,7 +247,7 @@ export class RaftEditor {
     }
     if (!this.target) return { before, after: null, state: 'idle' };
     const piece = this.proposed(c), why = this.placementReason(c, piece);
-    if (why) return { before, after: null, state: 'invalid', reason: reasonText(why) };
+    if (why) return { before, after: null, state: 'invalid', reason: piece[0] === ARTISAN.part ? storageEditorReason(why) : reasonText(why) };
     const cost = partMeta(piece[0]).cost || {}, holdGoods = { ...(hold.goods || {}) }, packGoods = { ...(pack.goods || {}) };
     for (const [g, count] of Object.entries(cost)) {
       let remaining = count;
@@ -264,7 +318,7 @@ export class RaftEditor {
       this.pending = { id, expectedRev: c.record.rev, op: 'repair', message, sentAt: performance.now() }; this.send(message);
     } else {
       const piece = this.proposed(c); if (!piece) return;
-      const why = this.placementReason(c, piece); if (why) { this.lastResult = reasonText(why); this.render(); return; }
+      const why = this.placementReason(c, piece); if (why) { this.lastResult = piece[0] === ARTISAN.part ? storageEditorReason(why) : reasonText(why); this.render(); return; }
       const id = crypto.randomUUID(); const message = { type: 'raft', op: 'place', id: c.record.id, expectedRev: c.record.rev, opId: id, piece };
       this.pending = { id, expectedRev: c.record.rev, op: 'place', message, sentAt: performance.now() }; this.send(message);
     }
@@ -281,20 +335,39 @@ export class RaftEditor {
     if (buttonEnd > panelEnd) this.root.scrollTop += buttonEnd - panelEnd + 8;
   }
   onResult(ev) {
-    if (!this.active || !ev) return;
+    if (!ev) return;
     if (ev.type === 'raftEdit' && (ev.op === 'quote' || Array.isArray(ev.supplies) && !ev.opId)) {
       const c = this.context(); if (!c || ev.id !== c.record.id || ev.rev !== c.record.rev) return;
       this.quotePending = null; if (ev.ok) this.quote = { rev: ev.rev, supplies: ev.supplies || [] }; else this.lastResult = reasonText(ev.why || 'market'); this.render(); return;
     }
     if (!this.pending || ev.opId !== this.pending.id || ev.id !== this.pending.message.id || ev.op && ev.op !== this.pending.op) return;
+    const storagePlace = this.pending.op === 'place' && this.pending.message.piece?.[0] === ARTISAN.part;
+    if (storagePlace && (ev.historical || ev.replay)) { this.pending.historical = true; this.pending.ack = true; this.pending.durable = true; this.pending.resultRev = this.pending.expectedRev + 1; this.lastResult = storageEditorReason('storage'); if (this.active) this.render(); return; }
     const denied = ev.type === 'raftDenied' || ev.ok === false || !!ev.why;
-    if (denied) { this.lastResult = reasonText(ev.why || 'invalid'); this.pending = null; }
-    else { this.pending.ack = true; this.pending.resultRev = ev.rev; this.lastResult = this.pending.op === 'supply' ? 'Compra aceptada; esperando inventario actualizado…' : this.pending.op === 'repair' ? 'Reparación aceptada; esperando el estado actualizado…' : 'Servidor aceptó; esperando el plano actualizado…'; }
-    this.render();
+    if (denied) { this.lastResult = storagePlace ? storageEditorReason(ev.why || 'storage') : reasonText(ev.why || 'invalid'); this.pending = null; }
+    else if (storagePlace && (ev.durable !== true || !Number.isSafeInteger(ev.rev) || ev.rev !== this.pending.expectedRev + 1)) {
+      this.lastResult = storageEditorReason('storage'); this.pending = null;
+    } else { this.pending.ack = true; this.pending.durable = ev.durable === true; this.pending.resultRev = ev.rev; this.lastResult = storagePlace ? (english() ? 'Storage accepted; waiting for raft and profile updates…' : 'Bodega aceptada; esperando la balsa y el perfil…') : this.pending.op === 'supply' ? 'Compra aceptada; esperando inventario actualizado…' : this.pending.op === 'repair' ? 'Reparación aceptada; esperando el estado actualizado…' : this.pending.op === 'reinforce' ? 'Refuerzo aceptado; esperando el plano actualizado…' : 'Servidor aceptó; esperando el plano actualizado…'; }
+    if (this.active) this.render();
   }
 
   render() {
     const c = this.context(); if (this.active && !c) { this.close(); return; }
+    const storageFlow = this.selected === ARTISAN.part || this.pending?.message?.piece?.[0] === ARTISAN.part;
+    const isEnglish = english();
+    this.syncStoragePalette();
+    this.$('.re-head b').textContent = storageFlow && isEnglish ? 'RAFT DECKYARD' : 'ASTILLERO DE CUBIERTA';
+    this.$('.re-close').setAttribute('aria-label', storageFlow && isEnglish ? 'Close' : 'Salir');
+    const modeNames = storageFlow && isEnglish ? { place: 'Build', repair: 'Repair', reinforce: 'Reinforce', remove: 'Remove' } : { place: 'Construir', repair: 'Reparar', reinforce: 'Reforzar', remove: 'Retirar' };
+    this.root.querySelectorAll('[data-mode]').forEach((button) => { button.textContent = modeNames[button.dataset.mode]; });
+    const levelLabel = this.$('.re-level').parentElement;
+    levelLabel.firstChild.textContent = storageFlow && isEnglish ? 'Level ' : 'Nivel ';
+    const options = this.$('.re-level').options;
+    if (storageFlow && isEnglish) { options[0].textContent = 'Deck'; options[1].textContent = 'Level 1'; options[2].textContent = 'Level 2'; }
+    else { options[0].textContent = 'Cubierta'; options[1].textContent = 'Nivel 1'; options[2].textContent = 'Nivel 2'; }
+    this.$('.re-rotate').textContent = storageFlow && isEnglish ? 'Rotate · R' : 'Girar · R';
+    this.$('.re-retry').textContent = storageFlow && isEnglish ? 'Retry the same request' : 'Reenviar misma solicitud';
+    this.$('.re-cycle').textContent = storageFlow && isEnglish ? 'Change piece' : 'Cambiar pieza';
     const disabled = !c || !!this.pending;
     this.root.classList.toggle('is-reinforce', this.mode === 'reinforce');
     this.root.classList.toggle('is-repair', this.mode === 'repair');
@@ -310,19 +383,24 @@ export class RaftEditor {
     const repairCost = repair ? this.repairCost(repair) : {};
     const refund = selection ? salvagePartCost(selection.condition || { part: selection.p, hp: partMeta(selection.p[0]).hp, maxHp: partMeta(selection.p[0]).hp }) : {};
     this.$('.re-details').innerHTML = this.mode === 'remove'
-      ? `<b>${selection ? esc(partMeta(selection.p[0]).name) : 'Elige una pieza'}</b><small>Devolución prevista: ${fmtGoods(refund)}</small>`
+      ? `<b>${selection ? esc(partMeta(selection.p[0]).name) : storageFlow && isEnglish ? 'Choose a piece' : 'Elige una pieza'}</b><small>${storageFlow && isEnglish ? `Estimated refund: ${fmtStorageGoods(refund)}` : `Devolución prevista: ${fmtGoods(refund)}`}</small>`
       : this.mode === 'repair' ? `<b>${repair ? `${esc(partMeta(repair.piece[0]).name)} · ${fmtHp(repair.hp)}/${fmtHp(repair.maxHp)} HP` : 'Elige una pieza dañada'}</b><small>${repair ? `Reparar: ${fmtGoods(repairCost)} · casilla ${repair.piece[1]}, ${repair.piece[2]} · nivel ${repair.piece[3]}` : 'Elige una pieza de la lista para revisar su coste.'}</small>`
       : this.mode === 'reinforce' ? `<b>${reinforcement ? 'Refuerzo · Cimiento básico' : 'Selecciona un cimiento básico'}</b><small>Coste incremental: ${fmtGoods(RAFT_REINFORCEMENT)} · reemplazo 1:1${reinforcement?.condition && reinforcement.condition.hp < reinforcement.condition.maxHp ? ` · conservará ${Math.round(reinforcement.condition.hp / reinforcement.condition.maxHp * 100)}% de su vida` : ''}</small>`
-      : `<b>${esc(shelterName(this.selected))}</b><small>Coste: ${fmtGoods(cost)} · ${direction(this.selected, this.dir)}</small>`;
-    const shelterHelp = this.$('.re-shelter-help'), english = document.documentElement.lang.startsWith('en');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern'].includes(this.selected);
-    shelterHelp.textContent = this.selected === 'lantern'
-      ? english ? 'Starts off. Use V or touch nearby to switch its warm light on or off. A broken lantern stops lighting; repair it and switch it on again. No fuel in this slice.'
+      : this.selected === ARTISAN.part
+        ? `<b>${esc(shelterName(this.selected))}</b><small>${english() ? `Build cost: ${cost.madera || 6} wood · +${partMeta(this.selected).hold} hold capacity` : `Coste: ${cost.madera || 6} madera · +${partMeta(this.selected).hold} de capacidad de bodega`}</small>`
+        : `<b>${esc(shelterName(this.selected))}</b><small>Coste: ${fmtGoods(cost)} · ${direction(this.selected, this.dir)}</small>`;
+    const shelterHelp = this.$('.re-shelter-help');
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', ARTISAN.part].includes(this.selected);
+    shelterHelp.textContent = this.selected === ARTISAN.part
+      ? this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
+        : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
+      : this.selected === 'lantern'
+      ? isEnglish ? 'Starts off. Use V or touch nearby to switch its warm light on or off. A broken lantern stops lighting; repair it and switch it on again. No fuel in this slice.'
         : 'Empieza apagado. Usa V o toca cerca para encender o apagar su luz cálida. Si se rompe deja de alumbrar; repáralo y enciéndelo otra vez. Sin combustible en este corte.'
       : this.selected === 'roof'
-      ? english ? 'Needs a wall or pillar; one supported neighbour permits one cell of overhang. The roof lifts from view while you are inside.'
+      ? isEnglish ? 'Needs a wall or pillar; one supported neighbour permits one cell of overhang. The roof lifts from view while you are inside.'
         : 'Necesita pared o pilar; un vecino soportado permite una casilla de voladizo. El techo se oculta al entrar debajo.'
-      : english ? 'Unlocked door: anyone nearby can open it. Use V or the door button; keep the leaf clear.'
+      : isEnglish ? 'Unlocked door: anyone nearby can open it. Use V or the door button; keep the leaf clear.'
         : 'Puerta sin cerradura: cualquiera cerca puede abrirla. Usa V o el botón de puerta; deja libre la hoja.';
     const damaged = this.mode === 'repair' ? this.damagedEntries(c) : [];
     const conditionReady = !!this.conditionFor(c);
@@ -332,7 +410,7 @@ export class RaftEditor {
         : '<small class="re-repair-empty">No hay piezas dañadas en este plano.</small>';
     const forecast = this.placementForecast(c);
     const num = (value) => value.toLocaleString('es-MX', { maximumFractionDigits: 2 });
-    const capFmt = (cap) => cap ? `${num(cap.totalMass)} / ${num(cap.totalLimit)} uM · ${cap.overMass > 0 ? `exceso ${num(cap.overMass)}` : `${num(cap.freeMass)} libres`}` : 'Capacidad no disponible';
+    const capFmt = (cap) => cap ? `${num(cap.totalMass)} / ${num(cap.totalLimit)} uM · ${cap.overMass > 0 ? `${isEnglish ? 'over by' : 'exceso'} ${num(cap.overMass)}` : `${num(cap.freeMass)} ${isEnglish ? 'free' : 'libres'}`}` : (isEnglish ? 'Capacity unavailable' : 'Capacidad no disponible');
     const serverCapacity = this.capacity?.();
     const tradeRev = c?.profile?.eco?.tradeRev;
     const confirmed = serverCapacity && c?.record?.rev === c?.ship?.rev && serverCapacity.id === c?.record?.id && serverCapacity.raftRev === c?.ship?.rev
@@ -344,14 +422,16 @@ export class RaftEditor {
       && Number.isFinite(serverCapacity.holdFree) && Number.isFinite(serverCapacity.holdCap);
     const liveCapacity = confirmed ? serverCapacity : forecast?.before;
     const heavyPct = (RAFT_LOAD.heavyFraction * 100).toLocaleString('es-MX', { maximumFractionDigits: 0 });
-    const capacityStatus = ({ ready: 'LISTA', heavy: 'PESADA', overloaded: 'SOBRECARGADA' })[liveCapacity?.status];
-    this.$('.re-capacity').innerHTML = forecast ? `<small class="re-capacity-kicker">${confirmed ? 'ACTUAL' : 'ACTUAL · ESTIMADO'}${capacityStatus ? ` · ${capacityStatus}` : ''}</small><div><span>Tu balsa</span><b>${capFmt(liveCapacity)}</b></div>${forecast.after ? `<small class="re-capacity-kicker">VISTA PREVIA · ${this.mode === 'reinforce' ? 'REFUERZO' : 'COLOCACIÓN'}</small><div><span>Con la pieza</span><b>${capFmt(forecast.after)}</b></div><small class="re-capacity-note">Incluye la pieza y sus materiales.</small>` : `<small class="re-capacity-note">${forecast.state === 'idle' ? 'Elige una casilla válida para comparar.' : forecast.state === 'remove' ? 'Confirma el retiro para ver el resultado.' : forecast.state === 'repair' ? 'La reparación restaura una pieza sin añadir módulos.' : forecast.reason || 'Sin previsión para esta colocación.'}</small>`}<small class="re-capacity-note">Estructura ${num(liveCapacity?.structuralLimit || 0)} · desplazamiento seguro ${num(liveCapacity?.safeDisplacement || 0)} uM.</small><small class="re-capacity-note">Tripulación ${num(liveCapacity?.crewMass || 0)} uM (${num(liveCapacity?.crewCount || 0)}) · invitados ${num(liveCapacity?.guestMass || 0)} uM · pesado desde ${heavyPct}%.</small>${liveCapacity?.status === 'overloaded' ? '<small class="re-capacity-warning">Sobrecargada: no puede zarpar hasta quedar bajo el límite.</small>' : ''}${confirmed ? '' : '<small class="re-capacity-note">Actualizando el estado de tu balsa…</small>'}` : '';
+    const capacityStatus = (isEnglish ? { ready: 'READY', heavy: 'HEAVY', overloaded: 'OVERLOADED' } : { ready: 'LISTA', heavy: 'PESADA', overloaded: 'SOBRECARGADA' })[liveCapacity?.status];
+    this.$('.re-capacity').innerHTML = forecast ? `<small class="re-capacity-kicker">${confirmed ? (isEnglish ? 'CURRENT' : 'ACTUAL') : (isEnglish ? 'CURRENT · ESTIMATED' : 'ACTUAL · ESTIMADO')}${capacityStatus ? ` · ${capacityStatus}` : ''}</small><div><span>${isEnglish ? 'Your raft' : 'Tu balsa'}</span><b>${capFmt(liveCapacity)}</b></div>${forecast.after ? `<small class="re-capacity-kicker">${isEnglish ? 'PREVIEW' : 'VISTA PREVIA'} · ${this.mode === 'reinforce' ? (isEnglish ? 'REINFORCEMENT' : 'REFUERZO') : (isEnglish ? 'PLACEMENT' : 'COLOCACIÓN')}</small><div><span>${isEnglish ? 'With this piece' : 'Con la pieza'}</span><b>${capFmt(forecast.after)}</b></div><small class="re-capacity-note">${isEnglish ? 'Includes the piece and its materials.' : 'Incluye la pieza y sus materiales.'}</small>` : `<small class="re-capacity-note">${forecast.state === 'idle' ? (isEnglish ? 'Choose a valid cell to compare.' : 'Elige una casilla válida para comparar.') : forecast.state === 'remove' ? (isEnglish ? 'Confirm removal to see the result.' : 'Confirma el retiro para ver el resultado.') : forecast.state === 'repair' ? (isEnglish ? 'Repair restores a piece without adding modules.' : 'La reparación restaura una pieza sin añadir módulos.') : forecast.reason || (isEnglish ? 'No preview for this placement.' : 'Sin previsión para esta colocación.')}</small>`}<small class="re-capacity-note">${isEnglish ? 'Structure' : 'Estructura'} ${num(liveCapacity?.structuralLimit || 0)} · ${isEnglish ? 'safe displacement' : 'desplazamiento seguro'} ${num(liveCapacity?.safeDisplacement || 0)} uM.</small><small class="re-capacity-note">${isEnglish ? 'Crew' : 'Tripulación'} ${num(liveCapacity?.crewMass || 0)} uM (${num(liveCapacity?.crewCount || 0)}) · ${isEnglish ? 'guests' : 'invitados'} ${num(liveCapacity?.guestMass || 0)} uM · ${isEnglish ? 'heavy from' : 'pesado desde'} ${heavyPct}%.</small>${liveCapacity?.status === 'overloaded' ? `<small class="re-capacity-warning">${isEnglish ? 'Overloaded: cannot sail until below the limit.' : 'Sobrecargada: no puede zarpar hasta quedar bajo el límite.'}</small>` : ''}${confirmed ? '' : `<small class="re-capacity-note">${isEnglish ? 'Updating raft status…' : 'Actualizando el estado de tu balsa…'}</small>`}` : '';
     const pack = c?.ship?.hold?.goods || {}, bag = c?.ship && this.profile()?.eco?.pack?.goods || {};
     const stock = Object.fromEntries([...new Set([...Object.keys(pack), ...Object.keys(bag), ...Object.keys(cost)])].map((g) => [g, (pack[g] || 0) + (bag[g] || 0)]));
     const hold = c?.ship?.hold || { cap: 0, goods: {} }, packStore = c?.profile?.eco?.pack || { cap: 0, goods: {} };
     const allParts = this.gridParts(c);
     const baseCount = allParts.filter((p) => partMeta(p[0]).layer === 'base').length || 0;
-    this.$('.re-route').textContent = `Tienes ${fmtGoods(stock)} · bodega ${holdUsed(hold)}/${hold.cap} · mochila ${holdUsed(packStore)}/${packStore.cap}. ${baseCount}/${RAFT.maxCells} cimientos; ${allParts.length}/600 piezas. Compra/obra: bodega → mochila. Retiro: según estado.`;
+    this.$('.re-route').textContent = storageFlow && isEnglish
+      ? `You carry ${fmtStorageGoods(stock)} · raft hold ${holdUsed(hold)}/${hold.cap} · pack ${holdUsed(packStore)}/${packStore.cap}. ${baseCount}/${RAFT.maxCells} foundations; ${allParts.length}/600 pieces. Build uses hold → pack; removal refunds by condition.`
+      : `Tienes ${storageFlow ? fmtStorageGoods(stock) : fmtGoods(stock)} · bodega ${holdUsed(hold)}/${hold.cap} · mochila ${holdUsed(packStore)}/${packStore.cap}. ${baseCount}/${RAFT.maxCells} cimientos; ${allParts.length}/600 piezas. Compra/obra: bodega → mochila. Retiro: según estado.`;
     const gold = c?.profile?.gold ?? 0;
     const offers = c && this.quote?.rev === c.record.rev ? this.quote.supplies : [];
     this.$('.re-supplies').innerHTML = offers.map((offer) => {
@@ -361,21 +441,23 @@ export class RaftEditor {
       return `<button type="button" data-supply="${esc(offer.g)}" ${disabled || offer.stock < 1 || gold < offer.price || room < 1 ? 'disabled' : ''}>${offer.g === 'madera' ? 'Madera' : 'Hierro'} +1 · ${offer.price} oro</button>`;
     }).join('');
     let reason = this.lastResult;
-    if (!reason && c && this.mode === 'place' && this.target) reason = reasonText(this.placementReason(c));
+    if (!reason && c && this.mode === 'place' && this.target) { const why = this.placementReason(c); reason = this.selected === ARTISAN.part ? storageEditorReason(why) : reasonText(why); }
     if (!reason && this.mode === 'remove' && selection) reason = 'Confirma para retirar; se valida soporte y ocupantes en servidor.';
     if (!reason && this.mode === 'reinforce' && reinforcement) reason = 'Confirma para sustituir este cimiento en su misma casilla.';
     if (!reason && this.mode === 'repair' && repair) reason = this.repairAffordable(c, repair) ? 'Revisa la pieza y confirma para repararla.' : `Faltan materiales: ${fmtGoods(Object.fromEntries(Object.entries(repairCost).map(([g, n]) => [g, Math.max(0, n - (stock[g] || 0))])))}`;
     if (!reason && this.mode === 'repair' && conditionReady && !damaged.length) reason = 'El plano está en buen estado.';
     if (!reason && this.mode === 'repair' && !conditionReady) reason = 'Esperando el estado confirmado de las piezas.';
+    const storageDirection = ['North', 'East', 'South', 'West'][this.dir];
     const coord = this.mode === 'repair'
       ? repair ? `${partMeta(repair.piece[0]).name} · ${fmtHp(repair.hp)}/${fmtHp(repair.maxHp)} HP · casilla ${repair.piece[1]}, ${repair.piece[2]}` : 'Reparación · elige una pieza dañada'
-        : `Casilla ${this.target ? `${this.target.x}, ${this.target.z}` : '—'} · nivel ${this.target?.level ?? this.level} · ${direction(this.selected, this.dir)}`;
-    this.$('.re-status').textContent = this.pending ? `${coord} · ${this.pending.ack ? 'Esperando snapshot e inventario…' : 'Enviando intención…'}${this.lastResult ? ` · ${this.lastResult}` : ''}` : `${coord} · ${reason || 'Listo'}`;
+        : `${storageFlow && isEnglish ? 'Cell' : 'Casilla'} ${this.target ? `${this.target.x}, ${this.target.z}` : '—'} · ${storageFlow && isEnglish ? 'level' : 'nivel'} ${this.target?.level ?? this.level} · ${storageFlow && isEnglish ? storageDirection : direction(this.selected, this.dir)}`;
+    const waiting = english() ? (this.pending?.ack ? 'Waiting for raft and profile updates…' : 'Sending placement…') : (this.pending?.ack ? 'Esperando la balsa y el perfil…' : 'Enviando colocación…');
+    this.$('.re-status').textContent = this.pending ? `${coord} · ${storageFlow ? waiting : this.pending.ack ? 'Esperando snapshot e inventario…' : 'Enviando intención…'}${this.lastResult ? ` · ${this.lastResult}` : ''}` : `${coord} · ${reason || (english() ? 'Ready' : 'Listo')}`;
     this.$('.re-retry').hidden = !this.pending || performance.now() - this.pending.sentAt < 5000;
-    this.$('.re-action').textContent = this.mode === 'remove' ? 'Confirmar retiro' : this.mode === 'repair' ? 'Confirmar reparación' : this.mode === 'reinforce' ? 'Confirmar refuerzo' : 'Colocar';
+    this.$('.re-action').textContent = this.mode === 'remove' ? (storageFlow && isEnglish ? 'Confirm removal' : 'Confirmar retiro') : this.mode === 'repair' ? (storageFlow && isEnglish ? 'Confirm repair' : 'Confirmar reparación') : this.mode === 'reinforce' ? (storageFlow && isEnglish ? 'Confirm reinforcement' : 'Confirmar refuerzo') : storageFlow && isEnglish ? 'Place' : 'Colocar';
     this.$('.re-action').disabled = disabled || c.record.rev !== c.ship.rev || (this.mode === 'place' ? !this.target || !!this.placementReason(c) : this.mode === 'reinforce' ? !reinforcement : this.mode === 'repair' ? !repair || !conditionReady || !this.repairAffordable(c, repair) : !selection);
     this.$('.re-cycle').hidden = this.mode !== 'remove';
-    this.$('.re-remove-choice span').textContent = selection ? `#${selection.index} · ${esc(partMeta(selection.p[0]).name)} · ${selection.p[1]}, ${selection.p[2]}, nivel ${selection.p[3]}` : 'Apunta a una pieza';
+    this.$('.re-remove-choice span').textContent = selection ? `#${selection.index} · ${esc(partMeta(selection.p[0]).name)} · ${selection.p[1]}, ${selection.p[2]}, ${storageFlow && isEnglish ? 'level' : 'nivel'} ${selection.p[3]}` : storageFlow && isEnglish ? 'Point at a piece' : 'Apunta a una pieza';
     if (this.target && c && this.mode !== 'repair') {
       const p = fromLocal(c.record, (this.target.x + 0.5) * RAFT.cell, (this.target.z + 0.5) * RAFT.cell);
       const targetPiece = this.mode === 'remove' ? selection?.p : this.mode === 'reinforce' ? reinforcement?.p : this.mode === 'repair' ? repair?.piece : null;
@@ -409,15 +491,18 @@ export class RaftEditor {
   update() {
     const canOpen = !!this.context() && (!this.enabled || this.enabled());
     this.launcher.hidden = this.active || !canOpen;
+    this.syncStoragePalette();
+    const c = this.context();
+    if (this.pending?.ack && c && Number.isSafeInteger(this.pending.resultRev) && c.record.rev >= this.pending.resultRev && c.ship.rev >= this.pending.resultRev
+        && (!this.pending.durable || this.pending.op !== 'place' || this.pending.message.piece?.[0] !== ARTISAN.part || this.knowsStorage(c))) {
+      const op = this.pending.op, storagePlace = op === 'place' && this.pending.message.piece?.[0] === ARTISAN.part;
+      this.pending = null; this.quote = null; this.quotePending = null;
+      this.lastResult = storagePlace ? (english() ? 'Storage confirmed by raft and profile.' : 'Bodega confirmada por la balsa y el perfil.') : op === 'supply' ? 'Compra confirmada por snapshot.' : op === 'repair' ? 'Reparación confirmada por snapshot.' : op === 'reinforce' ? 'Refuerzo confirmado por snapshot.' : 'Plano confirmado por snapshot.';
+    }
     if (!this.active) return;
     if (this.enabled && !this.enabled()) { this.close(); return; }
-    const c = this.context(); if (!c) { this.close(); this.launcher.hidden = true; return; }
+    if (!c) { this.close(); this.launcher.hidden = true; return; }
     if (this.lastPointer) this.pointerLocal(this.lastPointer, false);
-    if (this.pending?.ack && Number.isSafeInteger(this.pending.resultRev) && c.record.rev >= this.pending.resultRev && c.ship.rev >= this.pending.resultRev) {
-      const op = this.pending.op; this.pending = null; this.quote = null; this.quotePending = null;
-      this.lastResult = op === 'supply' ? 'Compra confirmada por snapshot.' : op === 'repair' ? 'Reparación confirmada por snapshot.' : op === 'reinforce' ? 'Refuerzo confirmado por snapshot.' : 'Plano confirmado por snapshot.';
-      this.requestQuote(); this.render();
-    }
     if (this.pending && performance.now() - this.pending.sentAt >= 5000 && this.$('.re-retry').hidden) this.render();
     if (!this.pending) this.requestQuote();
     const sig = this.signature(); if (sig !== this.renderKey) this.render();
@@ -438,13 +523,13 @@ export class RaftEditor {
     this.pending = { id, expectedRev: c.record.rev, op: 'supply', message, sentAt: performance.now() }; this.send(message); this.render();
   }
 
-  retryPending() { if (!this.active || !this.pending?.message) return; this.pending.sentAt = performance.now(); this.send(this.pending.message); this.render(); }
+  retryPending() { if (!this.pending?.message) return; this.pending.sentAt = performance.now(); this.send(this.pending.message); if (this.active) this.render(); }
   reproject() { if (this.lastPointer) this.pointerLocal(this.lastPointer, false); }
 
   signature() {
     const c = this.context(); if (!c) return 'off';
     const capacity = this.capacity?.();
-    return JSON.stringify([c.record.rev, c.ship.rev, c.ship.hold?.goods, c.profile.gold, c.profile.eco?.pack?.goods,
+    return JSON.stringify([c.record.rev, c.ship.rev, c.ship.hold?.goods, c.profile.gold, c.profile.eco?.pack?.goods, c.profile.progression?.knowledge, globalThis.document?.documentElement?.lang,
       capacity && [capacity.id, capacity.raftRev, capacity.tradeRev, capacity.mode, capacity.freeMass, capacity.holdFree,
         capacity.crewMass, capacity.crewCount, capacity.guestMass, capacity.status,
         capacity.condition && [capacity.condition.hull, capacity.condition.entries?.filter((entry) => entry.hp < entry.maxHp)

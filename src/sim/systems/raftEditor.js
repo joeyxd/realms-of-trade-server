@@ -11,7 +11,9 @@ import { publicRafts } from './rafts.js';
 import { raftGangplank } from '../raftGeometry.js';
 import { sanitizeProduction, productionKey } from '../economy/raftProduction.js';
 import { repairPart, repairPartCost, salvagePartCost, liveStructureParts } from '../naval/structure.js';
-import { activeRaftParts, encodeRaftCondition, persistRaftCondition, raftConditionEntry, refitRaftCondition } from '../naval/condition.js';
+import { activeRaftParts, encodeRaftCondition, persistRaftCondition, raftConditionEntry, refitRaftCondition, restoreRaftCondition } from '../naval/condition.js';
+import { ARTISAN } from '../../data/artisan.js';
+import { readProgression } from './progression.js';
 
 const allowed = new Set(EDITOR_PARTS);
 const MAX_REV = 2147483647;
@@ -23,6 +25,11 @@ const tuple = (p) => Array.isArray(p) && p.length === 5 && typeof p[0] === 'stri
 const sameTuple = (a, b) => tuple(a) && tuple(b) && a.every((v, i) => v === b[i]);
 const cloneHold = (h) => ({ cap: h.cap, goods: { ...h.goods } });
 const copyTuple = (p) => [...p];
+
+// An existing hold remains usable/removable without teaching. Only a new placement requires knowledge.
+export function knowsStorage(profile) {
+  try { return readProgression(profile?.progression).knowledge.includes(ARTISAN.lesson); } catch { return false; }
+}
 
 function answer(w, e, msg, ok, why, rev, record = null, extra = null) {
   const out = { type: 'raftEdit', to: e,
@@ -377,6 +384,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   } else if (msg.op === 'place') {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
     const [id, x, z, level, dir] = msg.piece;
+    if (id === ARTISAN.part && !knowsStorage(profile)) return reject(w, e, msg, 'knowledge', ship);
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
@@ -435,4 +443,40 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   cache.set(msg.opId, { signature, ack });
   while (cache.size > RECEIPTS_PER_OWNER) cache.delete(cache.keys().next().value);
   return ack;
+}
+
+// Exact profile effect shared with the M5 receipt boundary. World access/layout/occupancy are checked
+// by raftCmd before this candidate can be submitted; this pure check adds no second gameplay authority.
+export function storageProfileDelta(before, command) {
+  const profile = structuredClone(before), ship = profile.eco?.ships?.find(s => s.id === command.id);
+  const fail = why => ({ why });
+  if (!ship || ship.kind !== 'raft' || ship.at !== 'aldea' || !(ship.hp > 0)) return fail('owner');
+  if (command.expectedRev !== ship.rev || ship.rev >= MAX_REV) return fail('revision');
+  if (command.piece?.[0] !== ARTISAN.part || !tuple(command.piece)) return fail('piece');
+  const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
+  const hold = cloneHold(ship.hold), pack = cloneHold(profile.eco.pack);
+  const restored = ship.condition ? restoreRaftCondition(ship.condition, grid.parts) : null;
+  const active = { ship, condition: restored?.structure, conditionNext: restored?.nextId };
+  let why;
+  if (command.op === 'place') {
+    if (!knowsStorage(profile)) return fail('knowledge');
+    const virtual = newHold(1e9);
+    for (const g of new Set([...Object.keys(hold.goods), ...Object.keys(pack.goods)])) virtual.goods[g] = (hold.goods[g] || 0) + (pack.goods[g] || 0);
+    why = place(grid, command.piece, virtual); if (why) return fail(why);
+    if (!debit(RAFT_PARTS.storage.cost, hold, pack)) return fail('goods');
+    hold.cap = raftStats(grid).hold;
+  } else if (command.op === 'remove') {
+    if (!sameTuple(grid.parts[command.index], command.piece)) return fail('piece');
+    const refund = salvagePartCost(raftConditionEntry(active, command.index));
+    delete grid.work[productionKey(command.piece)];
+    why = remove(grid, command.index, null); if (why) return fail(why);
+    if (!creditAfterRemoval(hold, pack, raftStats(grid).hold, refund)) return fail('room');
+  } else return fail('command');
+  grid.work = sanitizeProduction(grid.parts, grid.work);
+  if (restored) {
+    const next = refitRaftCondition(active, grid.parts);
+    ship.condition = encodeRaftCondition(next.structure, next.nextId);
+  }
+  ship.grid = grid; ship.hold = hold; ship.rev++; profile.eco.pack = pack;
+  return { profile, why: '' };
 }

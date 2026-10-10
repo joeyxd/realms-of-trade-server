@@ -15,14 +15,21 @@ test('logging card localizes all new copy, handles legacy profiles, and caps onl
   assert.match(legacy.replace(/<[^>]*>/g, ''), /Práctica0 \/ 60/);
   assert.match(legacy, /width:0\.0%/);
   assert.match(legacy, /0.9 → 0.75 s entre golpes/);
-  assert.match(legacy, /Aún no está disponible/);
+  assert.match(legacy, /Al llegar a 60 puntos de tala podrás aprender Bodega/);
 
   const english = loggingSkillHtml(practiced(95), () => 'en');
   assert.match(english, /Logging/);
   assert.match(english.replace(/<[^>]*>/g, ''), /Practice95 \/ 60/);
   assert.match(english, /width:100\.0%/);
-  assert.match(english, /Carpentry lesson: coming later; it is not available yet/);
+  assert.match(english, /Visit the Salty Shore workbench artisan to learn Storage Hold/);
   assert.doesNotMatch(english, />[^<]*\bXP\b|>[^<]*recipe/i);
+});
+
+test('logging card distinguishes an available artisan lesson from a learned recipe', () => {
+  const ready = loggingSkillHtml(practiced(60), 'es');
+  assert.match(ready, /Habla con la artesana del banco de Salty Shore para aprender Bodega/);
+  const known = loggingSkillHtml({ ...practiced(60), knowledge: ['raft_storage'] }, () => 'en');
+  assert.match(known, /Recipe learned: Storage Hold/);
 });
 
 test('logging card reads pilot progression v2 without turning its unrelated milestone into a logging reward', () => {

@@ -6,6 +6,7 @@ import { CRAFT_RECIPES } from '../src/data/resources.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { checkedResourceState } from './resourceState.mjs';
 import { loggingParticipants, loggingResultProfiles } from './loggingOperation.mjs';
+import { artisanMutation } from './artisanOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -122,6 +123,21 @@ function checkedCommand(raw) {
     return { type: 'raft', op: 'supply', opId: id, id: raw.id, expectedRev: raw.expectedRev,
       g: raw.g, n: raw.n };
   }
+  if (raw.type === 'artisan' && raw.op === 'learn') {
+    exact(raw, ['type', 'op', 'opId', 'lesson', 'expectedRev', 'expectedProjectRev']);
+    if (raw.lesson !== 'raft_storage') fail('input');
+    integer(raw.expectedRev, 0, MAX_VERSION - 1); integer(raw.expectedProjectRev, 1, MAX_VERSION - 1);
+    return { ...raw };
+  }
+  if (raw.type === 'raft' && ['place', 'remove'].includes(raw.op)) {
+    exact(raw, ['type', 'op', 'opId', 'id', 'expectedRev', 'piece', ...(raw.op === 'remove' ? ['index'] : [])]);
+    key(raw.id, 120); integer(raw.expectedRev, 1, MAX_VERSION - 1);
+    if (!Array.isArray(raw.piece) || raw.piece.length !== 5 || raw.piece[0] !== 'storage') fail('input');
+    integer(raw.piece[1], -128, 128); integer(raw.piece[2], -128, 128);
+    integer(raw.piece[3], 0, 2); integer(raw.piece[4], 0, 3);
+    if (raw.op === 'remove') integer(raw.index, 0, 599);
+    return jsonCopy(raw);
+  }
   if (raw.type === 'resource' && raw.op === 'gather') {
     exact(raw, RESOURCE_GATHER_FIELDS);
     if (typeof raw.node !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(raw.node)) fail('input');
@@ -173,7 +189,8 @@ function checkedAck(raw, command) {
 }
 
 function checkedRequest(input) {
-  exact(input, [...REQUEST_FIELDS, ...(Object.hasOwn(input, 'beneficiaries') ? ['beneficiaries'] : [])]);
+  exact(input, [...REQUEST_FIELDS, ...(Object.hasOwn(input, 'beneficiaries') ? ['beneficiaries'] : []),
+    ...(Object.hasOwn(input, 'before') ? ['before'] : [])]);
   // Validate every descriptor and aggregate bound before traversing optional participant data.
   bytes(input, MAX_WORLD_BYTES + 8 * MAX_PROFILE_BYTES);
   const world = key(input.world), account = uuid(input.account);
@@ -189,6 +206,12 @@ function checkedRequest(input) {
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
+  if (artisanMutation(command)) {
+    if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
+    const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
+    if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');
+    request.before = before;
+  } else if (Object.hasOwn(input, 'before')) fail('input');
   if (Object.hasOwn(input, 'beneficiaries')) {
     request.beneficiaries = jsonCopy(input.beneficiaries);
     try { loggingParticipants(request); } catch { fail('input'); }

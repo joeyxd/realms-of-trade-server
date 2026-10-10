@@ -68,11 +68,13 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, agentTrade = false } = {}) {
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, agentTrade = false } = {}) {
     if (typeof resourceOperations !== 'boolean' || resourceOperations && !economicOperations) throw new StoreError('configuration');
     this.resourceOperations = resourceOperations;
     if (typeof loggingOperations !== 'boolean' || loggingOperations && !resourceOperations) throw new StoreError('configuration');
     this.loggingOperations = loggingOperations;
+    if (typeof artisanOperations !== 'boolean' || artisanOperations && !loggingOperations) throw new StoreError('configuration');
+    this.artisanOperations = artisanOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -456,6 +458,8 @@ export class GameHost {
           (await this.store.checkResourceOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.loggingOperations && (typeof this.store.checkLoggingOperations !== 'function' ||
           (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
+          (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
@@ -535,6 +539,7 @@ export class GameHost {
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
         resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
           logging: this.loggingOperations },
+        artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -585,8 +590,8 @@ export class GameHost {
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
     }
     if (this.economicAuthority?.handle(sock, msg)) return;
-    if (msg.t === MSG.CMD && msg.type === 'community') {
-      this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'community', to: this.server.clients.get(sock.id)?.entity,
+    if (msg.t === MSG.CMD && ['community', 'artisan'].includes(msg.type)) {
+      this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: msg.type, to: this.server.clients.get(sock.id)?.entity,
         op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
       return;
     }

@@ -1,4 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
+
+**AREA03 PRG01c, 2026-10-10 — integración alpha.29/protocolo 41:**
+[artesano y bodega personal](delivery/prg01c-artisan.md), [contrato](briefs/prg01c-artisan-storage.md).
+Carpintería completa + Tala 60/hito permiten aprender `raft_storage` pagando dos maderas en mochila
+(tuning provisional). Colocar/retirar Bodega usa el recibo M5 común; coste seis, volumen +20,
+condición/IDs/carga conservados. 114/114 de integración, 107/107 release con solapamiento y 32 checks
+de navegador ES/EN. SQL021 después de 001–020 y `MN_ARTISAN_OPERATIONS=1` siguen pendientes de
+aplicación/activación y canario real; la feature queda apagada. Se conservan noche/faroles, GM remoto
+y SQL019 del upstream. El resto del editor sigue CAS anterior. Publicación efectiva en la entrega.
+
 **GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](delivery/gm03a/DELIVERY.md).
 Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de
 ambas copias; conflictos conservan el diseño local. SQL020 aplicada y canario real 14/14. Suites locales

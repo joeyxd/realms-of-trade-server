@@ -1,11 +1,14 @@
 // The first construction pass is deliberately limited to pieces already useful on the starter raft.
 export const EDITOR_PARTS = Object.freeze([
-  'foundation', 'floor', 'pillar', 'wall', 'door', 'roof', 'railing', 'stairs', 'crate', 'net', 'grill', 'lantern',
+  'foundation', 'floor', 'pillar', 'wall', 'door', 'roof', 'railing', 'stairs', 'crate', 'net', 'grill', 'lantern', 'storage',
 ]);
 
 export const EDITOR_RADIUS = 8;
 
 export const EDITOR_REASONS = Object.freeze({
+  knowledge: 'Aprende la bodega con el artesano del banco de Salty Shore.',
+  disabled: 'La enseñanza de bodega todavía no está activada en este mundo.',
+  account_required: 'Vincula una cuenta para guardar esta construcción.',
   healthy: 'Esa pieza ya tiene todos sus HP.',
   condition: 'Cambió el daño de esa pieza. Selecciónala de nuevo.',
   capacity: 'Ese peso excede el porte de la balsa. Reduce carga o amplía/refuerza el casco.',
