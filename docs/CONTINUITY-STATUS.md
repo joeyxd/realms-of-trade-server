@@ -2,6 +2,14 @@
 
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
+**AREA17 L03d-a, corte local 2026-10-10:** [ledger de inferencia nativa](delivery/l03d-native-metering.md),
+separado de M5 y de la factura externa. `agent-inference-budget/v2` persiste `metering` con IDs
+de proveedor/modelo declarados, unidad nano USD, tarifas/referencia/fecha fijadas y hash por reserva/
+liquidación. V1 sigue simulado, sin migración automática. Contadores `adapter_native` o manuales
+`owner_supplied`, cargo derivado y `invoiceCostUnits:null` quedan diferenciados. Uso desconocido
+retiene reserva tras reinicio; configure no renueva saldo ni tarifa. No añade campos de gameplay,
+SQL, flags ni activación de proveedor; canario y calidad de memoria siguen pendientes.
+
 **AREA07 RNV02 observado, 2026-10-10 20:12:06 UTC:** `e648d1b`, alpha.27/protocolo 39.
 Farol por instancia en el perfil del dueño y CAS ordinario, sin SQL ni diario nuevo. Una imagen sana,
 107/107 offline, recursos/economía listos, `logging:true` ya presente antes de este despliegue,

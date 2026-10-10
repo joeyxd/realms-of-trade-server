@@ -1,5 +1,11 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L03d-a, corte local 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
+prepara un ledger v2 separado con tarifas/modelo declarados e inmutables, reserva previa, uso nativo
+y conciliación sin confundir cargo calculado con factura. V1/panel/runner siguen simulados; sin
+proveedor, SDK, credencial ni SQL nuevo. Falta elegir proveedor/modelo y aceptar transporte, memoria,
+conversación/PvE y coste reales. Fuente integrada alpha.27/protocolo 39; publicación en la entrega.
+
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).
 Editor B con doce piezas; una madera/un hierro, HP 10, apagado inicial y soporte vivo.

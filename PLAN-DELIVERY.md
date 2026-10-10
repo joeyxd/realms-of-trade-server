@@ -1,5 +1,11 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-a, corte local 2026-10-10:** [contabilidad nativa durable](docs/delivery/l03d-native-metering.md)
+prepara el canario L03d con ledger v2 separado, tarifa/modelo declarados fijados, uso desconocido
+retenido y cargo derivado distinto de factura. Sin proveedor ni inferencia real; panel/runner
+conservan modo simulado. Falta elegir proveedor/modelo y aceptar transporte, memoria/conversación/PvE
+y coste reales. Integra alpha.27/protocolo 39 sin SQL ni cambio de gameplay; evidencia en la entrega.
+
 **AREA15, corte local 2026-10-10:** [SQL018: operación, mundo y reloj en un commit](docs/delivery/m5-ground-transactions.md).
 Reutiliza familias M5, valida recibos y conserva pausa offline con sesión/drain detenidos. No monta
 GameHost ni activa SQL; sigue composición de tick/diario/legacy y aceptación real de perlas/muerte/botín.
