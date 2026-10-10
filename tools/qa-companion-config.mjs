@@ -101,6 +101,21 @@ async function screenshot(page, name) {
   });
   assert.ok(layout.contentWidth <= layout.width + 1 && Math.abs(layout.scrollLeft) < 1,
     `editor has horizontal overflow in ${name}: ${JSON.stringify(layout)}`);
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const geometry = await page.locator('.mn-companion-config').evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    const selectors = ['.mn-companion-config-header h3', '.mn-companion-config-status',
+      'label span', '.mn-companion-config-personality'];
+    return { name: node.className, x: rect.x, width: rect.width, scrollLeft: node.scrollLeft,
+      elements: selectors.map(selector => {
+        const el = node.querySelector(selector), r = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return { selector, x: r.x, width: r.width, transform: style.transform, scrollLeft: el.scrollLeft };
+      }) };
+  });
+  assert.ok(geometry.elements.every(el => el.x >= geometry.x - 1 && el.x + el.width <= geometry.x + geometry.width + 1),
+    `editor child clips horizontally in ${name}: ${JSON.stringify(geometry)}`);
+  (evidence.layout ??= []).push({ screenshot: name, ...geometry });
   await page.screenshot({ path: resolve(OUTPUT, name), fullPage: false }); evidence.screenshots.push(name);
 }
 

@@ -39,8 +39,9 @@ omisiones; incluyen SQL, WebSocket real, privacidad, CAS, sesiones tardías y re
 [Navegador local](l03d-companion-config/browser.json): **13 comprobaciones** con autenticación simulada
 y SQL025 en disco. Guardado, recarga, reentrada, conflicto, borrador, aislamiento, cierre de sesión,
 teclado y vistas ES/EN en escritorio y móvil; la base reabierta conserva la revisión. Las cuatro
-capturas se inspeccionaron. Sin errores de página/juego; el fixture registra tres respuestas 503
-de servicios no disponibles. Esta prueba no acredita autenticación ni guardado en el navegador público.
+capturas se inspeccionaron. Sin errores de página/juego; el fixture registra tres respuestas HTTP 503
+en consola, cuya causa no acredita este recorrido. Esta prueba no acredita autenticación ni guardado
+en el navegador público.
 
 SQL025 se aplicó desde la sesión administrativa existente de Supabase. [Readiness](l03d-companion-config/readiness.json)
 respondió `{version:1}` por HTTP desde el contenedor activo con su entorno de servicio. El

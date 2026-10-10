@@ -1,7 +1,7 @@
 {
   "schema": "l03d-companion-config-browser/v1",
   "version": "0.6.0-alpha.36",
-  "at": "2026-10-10T23:37:27.293Z",
+  "at": "2026-10-10T23:44:17.693Z",
   "simulatedAuth": true,
   "public": false,
   "production": false,
@@ -40,6 +40,156 @@
     "otherCharacter": "66666666-6666-4666-8666-666666666666",
     "world": "companion-config-browser-fixture"
   },
+  "layout": [
+    {
+      "screenshot": "companion-config-desktop-es.png",
+      "name": "mn-companion-config",
+      "x": 525,
+      "width": 390,
+      "scrollLeft": 0,
+      "elements": [
+        {
+          "selector": ".mn-companion-config-header h3",
+          "x": 525,
+          "width": 176.21875,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-status",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": "label span",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-personality",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        }
+      ]
+    },
+    {
+      "screenshot": "companion-config-desktop-en.png",
+      "name": "mn-companion-config",
+      "x": 525,
+      "width": 390,
+      "scrollLeft": 0,
+      "elements": [
+        {
+          "selector": ".mn-companion-config-header h3",
+          "x": 525,
+          "width": 155.859375,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-status",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": "label span",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-personality",
+          "x": 525,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        }
+      ]
+    },
+    {
+      "screenshot": "companion-config-mobile-landscape.png",
+      "name": "mn-companion-config",
+      "x": 227,
+      "width": 390,
+      "scrollLeft": 0,
+      "elements": [
+        {
+          "selector": ".mn-companion-config-header h3",
+          "x": 227,
+          "width": 209.171875,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-status",
+          "x": 227,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": "label span",
+          "x": 227,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-personality",
+          "x": 227,
+          "width": 390,
+          "transform": "none",
+          "scrollLeft": 0
+        }
+      ]
+    },
+    {
+      "screenshot": "companion-config-mobile-portrait.png",
+      "name": "mn-companion-config",
+      "x": 27,
+      "width": 336,
+      "scrollLeft": 0,
+      "elements": [
+        {
+          "selector": ".mn-companion-config-header h3",
+          "x": 27,
+          "width": 336,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-status",
+          "x": 27,
+          "width": 336,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": "label span",
+          "x": 27,
+          "width": 336,
+          "transform": "none",
+          "scrollLeft": 0
+        },
+        {
+          "selector": ".mn-companion-config-personality",
+          "x": 27,
+          "width": 336,
+          "transform": "none",
+          "scrollLeft": 0
+        }
+      ]
+    }
+  ],
   "diagnostics": [
     {
       "pageErrors": [],
