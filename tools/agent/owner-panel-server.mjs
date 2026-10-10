@@ -21,6 +21,12 @@ const inert = { inspect: async () => unavailable(), start: async () => fail('run
 export async function createOwnerPanel({ directory, budgetDirectory, scope, runner, runnerOptions } = {}) {
   const fixedScope = structuredClone(scope);
   const budget = createBudgetAdministration({ directory: budgetDirectory, scope: fixedScope });
+  const panelBudget = async () => {
+    const result = await budget.inspect();
+    // This panel and its child runner still describe lab units and simulated inference only.
+    return result.ok && result.snapshot.persistence.schema !== 'agent-inference-budget/v1' ?
+      fail('native_budget_panel_unsupported') : result;
+  };
   const memory = createMemoryAdministration({ directory, scope: fixedScope });
   const owned = runner ?? (runnerOptions ? createOwnedRunner({ ...runnerOptions, directory, budgetDirectory, scope: fixedScope }) : inert);
   if (['inspect', 'start', 'stop', 'think', 'close'].some((method) => typeof owned[method] !== 'function')) throw new Error('invalid_runner_configuration');
@@ -74,7 +80,7 @@ export async function createOwnerPanel({ directory, budgetDirectory, scope, runn
       if (!authenticated(request)) { request.resume(); json(response, 401, fail('owner_access_required')); return; }
       if (raw.includes('?') || raw.includes('#')) { request.resume(); json(response, 400, fail('invalid_route')); return; }
       if (request.method === 'GET' && raw === '/api/view') {
-        const [runnerView, budgetView, fileView] = await Promise.all([owned.inspect(), budget.inspect(), files()]);
+        const [runnerView, budgetView, fileView] = await Promise.all([owned.inspect(), panelBudget(), files()]);
         json(response, 200, { ok: true, scope: fixedScope, capturedAtMs: Date.now(), runner: runnerView, budget: budgetView, files: fileView }); return;
       }
       if (request.method === 'GET' && Object.keys(NAMES).some((kind) => raw === `/api/download/${kind}`)) {
@@ -94,11 +100,16 @@ export async function createOwnerPanel({ directory, budgetDirectory, scope, runn
         json(response, 400, fail('invalid_request')); return;
       }
       let result;
-      if (raw === '/api/configure') result = await serial(() => budget.configure(input));
+      if (raw === '/api/configure') result = await serial(async () => {
+        const current = await panelBudget();
+        return current.ok ? budget.configure(input) : current;
+      });
       else if (raw === '/api/start') {
-        const [fileView, budgetView] = await Promise.all([files(), budget.inspect()]);
+        const [fileView, budgetView] = await Promise.all([files(), panelBudget()]);
         result = !fileView.ok ? fileView : !budgetView.ok ? budgetView : await owned.start();
-      } else result = await owned[raw === '/api/stop' ? 'stop' : 'think']();
+      } else if (raw === '/api/think') {
+        const current = await panelBudget(); result = current.ok ? await owned.think() : current;
+      } else result = await owned.stop();
       json(response, result.ok ? 200 : 409, result);
     } catch (error) {
       const why = ['invalid_content_type', 'request_too_large', 'invalid_json'].includes(error?.message) ? error.message : 'owner_panel_unavailable';

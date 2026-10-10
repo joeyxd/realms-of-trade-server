@@ -1,0 +1,72 @@
+{
+  "recordedAt": "2026-10-10T20:47:23.411Z",
+  "version": "0.6.0-alpha.27",
+  "protocol": 39,
+  "checks": [
+    "health_200",
+    "M5_economy_resources_healthy",
+    "published_protocol",
+    "ordinary_public_WSS_entry",
+    "world_snapshot",
+    "ordinary_profile"
+  ],
+  "count": 6,
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.27",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 2058,
+    "uptime": 36,
+    "stepMs": 1.248,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1508,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "scope": "Public read-only health and ordinary guest entry; no durable gameplay action or SQL018/019 activation."
+}

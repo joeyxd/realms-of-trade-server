@@ -7,10 +7,18 @@ M5. Readiness live `version: 1` a `2026-10-10T20:41:47Z`; hash aplicado de migra
 (publicación, activación y rollback) sigue pendiente. [Entrega GM03a](delivery/gm03a/DELIVERY.md) ·
 [brief](briefs/gm03a-remote-drafts.md) · [plan GM](../PLAN-GM-EDITOR.md).
 
+**AREA17 L03d-a, corte local 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
+prepara un ledger v2 separado con tarifas/modelo declarados e inmutables, reserva previa, uso nativo
+y conciliación sin confundir cargo calculado con factura. V1/panel/runner siguen simulados; sin
+proveedor, SDK, credencial ni SQL nuevo. Falta elegir proveedor/modelo y aceptar transporte, memoria,
+conversación/PvE y coste reales. Fuente integrada alpha.27/protocolo 39; publicación en la entrega.
+
 **AREA15, 2026-10-10 — diario del sobre:** [SQL019 y recuperación](delivery/m5-ground-transaction-journal.md).
 UUID/petición exactos antes del efecto; intención y SQL018 se cierran juntos. La sesión opt-in resuelve
 pending antes de cargar reloj/mundo actuales, sin instalar perfiles históricos ni emitir ACK al recuperar.
 266/266 pruebas y tres SIGKILL locales. Sin montaje GameHost, SQL018/019 live ni flags; sigue dueño común de tick/legacy.
+Publicado `6748f9a`, alpha.27/protocolo 39: una imagen sana, 107/107 offline y entrada pública 6/6.
+Se verifican imports del journal/recovery en Node 22; este corte no activa SQL018/019.
 
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).
