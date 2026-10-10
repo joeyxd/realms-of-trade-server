@@ -1,11 +1,12 @@
 # Continuidad de servidor — AREA15
 
-**AREA03 PRG01c, integración local:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
+**AREA03 PRG01c, código publicado, mecánica apagada:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
 Recibo económico con baseline de perfil exacto para aprender/colocar/retirar storage; coste, cargo,
 condición e IDs conservados. 114/114 integradas y 32 checks de navegador. Nueva migración SQL021
 después de 001–020; `MN_ARTISAN_OPERATIONS` sigue apagado hasta verificar SQL y aceptar canario
 autenticado. No amplía la aceptación a todas las piezas del editor, perlas/muerte/botín o persistencia
-global. Entrega separa pruebas, publicación y activación. Precio de enseñanza dos maderas provisional.
+global. VPS `67e307e` sano a 2026-10-10 21:12 UTC: una autoridad, imagen 107/107 y entrada pública 8/8.
+Entrega separa pruebas, publicación y activación. Precio de enseñanza dos maderas provisional.
 
 **GM03a publicado, 2026-10-10 — alpha.28 / protocolo 40 integrado:** [borradores remotos privados](delivery/gm03a/DELIVERY.md).
 Online permite guardar/cargar explícitamente por cuenta/mundo, CAS, recuperación exacta y exportación de

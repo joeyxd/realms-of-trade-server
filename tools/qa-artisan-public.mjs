@@ -38,13 +38,27 @@ const {chromium}=await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT||'
 const browser=await chromium.launch({channel:'chrome',headless:true,args:['--use-gl=angle','--use-angle=default','--enable-webgl','--ignore-gpu-blocklist']});
 try{
   const page=await browser.newPage({viewport:{width:1280,height:800}});page.on('pageerror',e=>report.errors.push(e.message));
+  const requestsFailed=[],consoleErrors=[];
+  page.on('requestfailed',r=>requestsFailed.push({url:r.url(),error:r.failure()?.errorText}));
+  page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});
   await page.goto(origin+'/?q=low',{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>!!window.__mn,null,{timeout:90000});
+  try{await page.waitForFunction(()=>!!window.__mn,null,{timeout:90000});}
+  catch(error){
+    await writeFile(resolve(out,'public-browser-attempt.json'),JSON.stringify({at:new Date().toISOString(),pass:false,
+      stage:'startup',error:error.message,errors:report.errors,requestsFailed,consoleErrors},null,2)+'\n');
+    console.error(JSON.stringify({errors:report.errors,requestsFailed,consoleErrors}));throw error;
+  }
+  await page.waitForFunction(()=>!document.querySelector('#btn-play').disabled,null,{timeout:90000});
+  // The title deliberately pulses this button; readiness is checked before the animated click.
   await page.locator('#btn-play').click({force:true});
   await page.waitForFunction(()=>__mn.st.mode==='playing'&&__mn.client.joined,null,{timeout:30000});
+  await page.waitForFunction(()=>document.querySelector('#title').hidden&&!document.querySelector('#hud').hidden&&
+    ['.hud-player','.actionbar','.hud-top-right'].every(selector=>Number(getComputedStyle(document.querySelector(selector)).opacity)>.99),null,{timeout:15000});
   const state=await page.evaluate(()=>({online:__mn.st.online,transport:__mn.transport.kind,
-    artisan:!!__mn.panels.artisan,storagePalette:!!document.querySelector('[data-part="storage"]'),errors:[...__mn.errors]}));
+    artisan:!!__mn.panels.artisan,storagePalette:!!document.querySelector('[data-part="storage"]'),
+    hudVisible:!document.querySelector('#hud').hidden,titleHidden:document.querySelector('#title').hidden,errors:[...__mn.errors]}));
   assert.equal(state.online,true);assert.equal(state.transport,'ws');assert.equal(state.artisan,true);assert.equal(state.storagePalette,true);
+  assert.equal(state.hudVisible,true);assert.equal(state.titleHidden,true);
   assert.deepEqual(state.errors,[]);assert.deepEqual(report.errors,[]);check('real_browser_guest_entry',state);
   await page.screenshot({path:resolve(out,'public-gameplay.png')});
 }finally{await browser.close();}

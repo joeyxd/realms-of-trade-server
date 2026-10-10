@@ -52,6 +52,7 @@ async function fixture(t, { legacy = false } = {}) {
     const request = { world: worldId, account, command: cmd, expectedProfileVersion: 1, expectedWorldVersion: 1,
       profile: p, worldData: newWorld(), ack: { type: 'commerce', op: 'buy', opId: 'old-buy', ok: true, why: '', rev: 0 } };
     assert.equal((await f.db.query('select public.mn_commit_economic_operation($1::uuid,$2::jsonb) as r', [oldId, request])).rows[0].r.ok, true);
+    f.legacyOperationId = oldId; f.legacyRequest = request;
   }
   await f.db.exec('RESET ROLE');
   await f.db.exec(migration);
@@ -176,8 +177,20 @@ test('SQL021 rejects incomplete carpentry, ineligible practice, wrong project re
 
 test('SQL021 keeps old economic receipts valid and the new readiness RPC service-only', async t => {
   const f = await fixture(t, { legacy: true });
-  const oldId = id(702);
-  assert.ok((await f.db.query('select public.mn_load_economic_operation($1::uuid) as r', [oldId])).rows[0].r);
+  const oldId = f.legacyOperationId;
+  const storedBefore = (await f.db.query('select public.mn_load_economic_operation($1::uuid) as r', [oldId])).rows[0].r;
+  assert.ok(storedBefore);
+  const profileBefore = (await f.db.query('select data,version from public.mn_profiles where player_id=$1::uuid', [account])).rows[0];
+  const worldBefore = (await f.db.query('select economy,version from public.mn_worlds where world=$1', [worldId])).rows[0];
+  const replay = (await f.db.query('select public.mn_commit_economic_operation($1::uuid,$2::jsonb) as r',
+    [oldId, f.legacyRequest])).rows[0].r;
+  assert.deepEqual(replay, { ...storedBefore.result, replay: true }, 'the original legacy request replays after SQL021 installation');
+  assert.deepEqual((await f.db.query('select data,version from public.mn_profiles where player_id=$1::uuid', [account])).rows[0],
+    profileBefore, 'legacy replay leaves the current profile and version untouched');
+  assert.deepEqual((await f.db.query('select economy,version from public.mn_worlds where world=$1', [worldId])).rows[0],
+    worldBefore, 'legacy replay leaves the current world and version untouched');
+  assert.deepEqual((await f.db.query('select public.mn_load_economic_operation($1::uuid) as r', [oldId])).rows[0].r,
+    storedBefore, 'replay does not rewrite the immutable legacy receipt');
   assert.deepEqual((await f.db.query('select public.mn_artisan_operations_ready() as r')).rows[0].r, { version: 1 });
   await assert.rejects(f.db.query('select public.mn_commit_economic_operation_artisan_base($1::uuid,$2::jsonb)',
     [id(714), {}]));

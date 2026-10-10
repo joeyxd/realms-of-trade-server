@@ -40,13 +40,34 @@ y [S19](../briefs/visual-s19-town-furniture.md); no modificó las fuentes Unreal
   Es una caída local de proceso; no acredita corte eléctrico, disco restaurado o PostgreSQL live.
 - Navegador con los paneles reales y fixtures explícitos: [evidencia](prg01c-artisan/ui/evidence.json),
   capturas ES/EN en escritorio, compacto y apaisado. No acredita dispositivo físico, balance o FPS.
-- El SQL se aplica dos veces en la fixture y conserva recibos económicos anteriores. Se prueban
+- El SQL se aplica dos veces en la fixture y conserva recibos económicos anteriores. El suplemento
+  `legacy-replay.tap` pasó **5/5** (solapado): repetir el request/UUID anterior devuelve replay sin
+  cambiar el perfil, mundo, versiones o recibo almacenado. Se prueban
   acceso service-only, base de commit no invocable directamente, delta material/condición y forgeries.
 
 ## Publicación y activación
 
-La publicación de código y la activación de la mecánica son pasos distintos. Estado del despliegue:
-pendiente de verificar tras el push de este corte. **El artesano permanece apagado por defecto.**
+Código publicado y comprobado a **2026-10-10 21:12 UTC**, revisión
+`67e307e75240833ea174c5f38c1439cd6ab7e2d7`, alpha.29/protocolo 41. La
+[identidad del despliegue](prg01c-artisan/deployment.json) vincula revisión, imagen validada y
+contenedor sano: **107/107** offline, una autoridad, sin OOM y timer activo. El primer intento se
+aplazó por la condición genérica de mundo ocupado/guardado pendiente; el siguiente ciclo publicó
+sin forzar esa barrera ni cambiar SQL, secretos o flags.
+
+La [aceptación pública](prg01c-artisan/public-smoke.json) pasó **8/8**: salud/almacenamiento M5,
+protocolo, módulos nuevos, SQL inaccesible por HTTP, bienvenida/perfil/snapshot WSS, rechazo
+`disabled` del artesano y entrada real de Chrome con HUD visible y cero errores. Se inspeccionó
+la [captura de juego](prg01c-artisan/public-gameplay.png). Esta entrada usa invitado, no prueba
+enseñanza o construcción durable autenticadas ni un teléfono físico.
+La pasada final es de 21:16 UTC. En intentos previos hubo un timeout de arranque de 90 segundos
+sin diagnóstico capturado y otro de automatización al esperar que el botón animado dejara de
+moverse; la sonda final comprueba readiness antes de pulsarlo y espera el HUD. No se deduce
+disponibilidad prolongada de este resultado. La captura también conserva la superposición previa
+del minimapa sobre el tracker en la esquina derecha; queda fuera del panel nuevo del artesano.
+
+**El artesano permanece apagado por defecto y en el runtime observado.** Publicación de código
+y activación de la mecánica son pasos distintos. La evidencia fija la revisión comprobada;
+commits posteriores de documentación y tests no implican una nueva aceptación de gameplay.
 
 Aplicar [SQL021](../../server/migrations/021_artisan_operations.sql) después de 001–020. SQL017–020
 pertenecen a otros cortes; si la base solo llegó a 016, respetar esa cadena completa y no saltar
