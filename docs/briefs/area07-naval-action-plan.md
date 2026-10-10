@@ -3,7 +3,7 @@
 Plan operativo de AREA07, aprobado por el autor el 2026-10-10. La auditoría inicial se conserva como
 base histórica; los checkpoints siguientes distinguen implementación, pruebas, publicación y activación.
 
-[Guía maestra](../../PLAN-MASTER.md#area07-barcos-y-vida-en-el-mar) ·
+Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demás áreas). ·
 [M6](../../PLAN-M6.md) · [Dirección naval](../NAVAL-ROADMAP.md) ·
 [Progresión](../../PLAN-PROGRESSION.md#5-navegación-natación-y-poderes) ·
 [Mundo del alfa](../../PLAN-ALFA-MUNDO.md) · [Continuidad M5](../../PLAN-M5.md).

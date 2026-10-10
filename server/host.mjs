@@ -30,7 +30,7 @@ import { INVENTORY_QUERY_LIMIT, inventoryId } from '../src/net/agentInventory.js
 import { MARKET_QUERY_LIMIT, MARKET_FAILURES, validMarketQuery, validMarketProjection } from '../src/net/agentMarket.js';
 import { readCommerce } from '../src/sim/systems/commerce.js';
 import { townAt } from '../src/sim/systems/trade.js';
-import { newResourceState, restoreResourceState } from './resourceState.mjs';
+import { newResourceState, restoreResourceState, upgradeLoggingState } from './resourceState.mjs';
 import { BTN } from '../src/sim/systems/movement.js';
 import { types } from 'node:util';
 import { EconomicAuthority } from './economicAuthority.mjs';
@@ -67,9 +67,11 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false } = {}) {
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false } = {}) {
     if (typeof resourceOperations !== 'boolean' || resourceOperations && !economicOperations) throw new StoreError('configuration');
     this.resourceOperations = resourceOperations;
+    if (typeof loggingOperations !== 'boolean' || loggingOperations && !resourceOperations) throw new StoreError('configuration');
+    this.loggingOperations = loggingOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -447,6 +449,8 @@ export class GameHost {
       // Verify SQL015 before any world creation/admission. A missing migration cannot fall back.
       if (this.resourceOperations && (typeof this.store.checkResourceOperations !== 'function' ||
           (await this.store.checkResourceOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.loggingOperations && (typeof this.store.checkLoggingOperations !== 'function' ||
+          (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
       // Preserve the current authority's callbacks while restoring its economic clock/RNG first.
@@ -454,13 +458,15 @@ export class GameHost {
       economy.onAdvance = this.server.world.economy.onAdvance;
       this.server.world.economy = economy;
       if (this.worldState.resources && !this.resourceOperations) throw new StoreError('configuration');
+      if (this.worldState.resources?.v === 2 && !this.loggingOperations) throw new StoreError('configuration');
       if (this.resourceOperations) {
-        const adopting = !this.worldState.resources;
+        const adopting = !this.worldState.resources || this.loggingOperations && this.worldState.resources.v === 1;
         if (this.worldState.resources) restoreResourceState(this.server.world, this.worldState.resources);
         else {
           // Adopt a legacy world's deterministic layout before admitting any player.
           this.worldState.resources = newResourceState(this.server.world);
         }
+        if (this.loggingOperations) this.worldState.resources = upgradeLoggingState(this.worldState.resources);
         // Only successful simulation steps advance this clock, never wall time or downtime.
         const epoch = this.worldState.resources.tick - this.server.world.tick;
         this.worldState.resourceTick = () => epoch + this.server.world.tick;
@@ -521,7 +527,8 @@ export class GameHost {
         combatDeaths: this.#combatDeaths ? { enabled: true, failed: this.#combatDeaths.failed,
           pending: this.#combatDeaths.count } : null,
         startup: this.#pearlStartup ? { state: this.#pearlStartup.state, ready: this.#pearlStartup.ready } : null,
-        resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready },
+        resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
+          logging: this.loggingOperations },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };

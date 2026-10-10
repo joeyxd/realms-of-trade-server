@@ -33,6 +33,8 @@ try {
   page.on('pageerror', (error) => evidence.errors.push(error.message));
   await page.goto(origin + '/?q=high&tod=day', { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => !!window.__mn, null, { timeout: 90000 });
+  evidence.guestBoot = await page.evaluate(() => ({ online: __mn.st.online, transport: __mn.transport.kind,
+    serverMarked: !!document.querySelector('meta[name="mn-server"]'), signedIn: __mn.gmEntry.auth.state.signedIn }));
   assert.equal(await page.evaluate(() => __mn.gmEntry.button.hidden), true);
   await page.locator('#btn-play').click({ force: true });
   await page.waitForFunction(() => __mn.st.mode === 'playing' && __mn.client.joined, null, { timeout: 30000 });

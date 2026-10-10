@@ -1,0 +1,77 @@
+{
+  "scope": "actual CharPanel with local profiles, GSAP animation stub; no host or physical phone",
+  "checks": [
+    {
+      "device": "desktop",
+      "locale": "es",
+      "practice": "Práctica30 / 60",
+      "text": "TalaRango 1 Práctica30 / 60 Ritmo de trabajo0.9 → 0.75 s entre golpes Hito: tala constantePor alcanzar Al llegar al hito podrás ver aquí la próxima lección de carpintería. Aún no está disponible.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "desktop-es-30.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "es",
+      "practice": "Práctica60 / 60",
+      "text": "TalaRango 2 Práctica60 / 60 Ritmo de trabajo0.9 → 0.75 s entre golpes Hito: tala constanteAlcanzado Lección de carpintería: próximamente; aún no está disponible.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "desktop-es-60.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "practice": "Practice30 / 60",
+      "text": "LoggingRank 1 Practice30 / 60 Work pace0.9 → 0.75 s between hits Milestone: steady loggingIn progress Reach the milestone to see the upcoming carpentry lesson here. It is not available yet.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "desktop-en-30.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "practice": "Practice60 / 60",
+      "text": "LoggingRank 2 Practice60 / 60 Work pace0.9 → 0.75 s between hits Milestone: steady loggingReached Carpentry lesson: coming later; it is not available yet.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "desktop-en-60.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "practice": "Práctica30 / 60",
+      "text": "TalaRango 1 Práctica30 / 60 Ritmo de trabajo0.9 → 0.75 s entre golpes Hito: tala constantePor alcanzar Al llegar al hito podrás ver aquí la próxima lección de carpintería. Aún no está disponible.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "compact-es-30.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "practice": "Práctica60 / 60",
+      "text": "TalaRango 2 Práctica60 / 60 Ritmo de trabajo0.9 → 0.75 s entre golpes Hito: tala constanteAlcanzado Lección de carpintería: próximamente; aún no está disponible.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "compact-es-60.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "practice": "Practice30 / 60",
+      "text": "LoggingRank 1 Practice30 / 60 Work pace0.9 → 0.75 s between hits Milestone: steady loggingIn progress Reach the milestone to see the upcoming carpentry lesson here. It is not available yet.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "compact-en-30.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "practice": "Practice60 / 60",
+      "text": "LoggingRank 2 Practice60 / 60 Work pace0.9 → 0.75 s between hits Milestone: steady loggingReached Carpentry lesson: coming later; it is not available yet.",
+      "fits": true,
+      "noOverflow": true,
+      "screenshot": "compact-en-60.png"
+    }
+  ]
+}

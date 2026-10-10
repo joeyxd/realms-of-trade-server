@@ -1,8 +1,9 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
-corregido y probado localmente: 102/102 pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo.
-Despliegue y recorrido público pendientes.
+**Hotfix GM01 publicado (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
+corregido en `e78c2c3`, integrado sin cambios en alpha.23 (`4c6743b`, sana desde 18:43:12Z). Local alpha.21:
+102/102 pruebas y navegador 16/16, cuatro calidades/arrastre. Actualizador 107/107; navegador público 7/7
+con Supabase real, GM en calidad alta con contornos, colocación/guardado local y logout sin errores de render.
 
 Fecha: 2026-10-04. Este es el **orden operativo** para avanzar paso a paso desde el juego actual hacia
 casas/barcos habitables, comercio, combate naval y ciudades productivas. Integra mecánicas y pruebas de assets;
@@ -16,6 +17,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   478 pruebas seleccionadas, 107 del actualizador con solapamiento y tres vistas UI.
   Publicación/activación en la entrega. Sigue farol, luego noche oscura.
 
+- AREA03 PRG01b2 (2026-10-10), **alpha.24/protocolo 36**: [Tala cooperativa](docs/delivery/prg01b2-logging.md)
+  integra práctica proporcional, beneficiarios offline, nodo, troncos y recibo en la misma M5.
+  Primer hito 60, cadencia 54→45 desde el siguiente golpe y ficha ES/EN. SQL016 y flag opt-in;
+  publicación, pruebas y activación se registran separadamente en la entrega. Sigue artesano/bodega PRG01c.
+
 - AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
   primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
   Reutiliza CAS M5 y distingue aprendizaje local/pendiente/confirmado; sin SQL ni premio repetible.
@@ -23,15 +29,22 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
   pasan juntos con solapamiento. Publicación/VPS se registran en la entrega. Sigue techo/puerta funcionales,
   después farol; no oscurecer la noche antes de tener luces utilizables.
 
-- AREA15, 2026-10-10: [recursos/crafting M5](docs/delivery/m5-resource-authority.md), release alpha.22
-  aislada con nodos/perfil/reloj/recibo, pausa offline y 139 pruebas. Estado de SQL015, publicación,
-  activación y prueba real separado en la entrega; [contrato para cada feature](docs/briefs/m5-resource-authority.md).
+- AREA15, 2026-10-10: [recursos/crafting M5](docs/delivery/m5-resource-authority.md), live en
+  `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98` (alpha.23/protocolo 36; activación inicial 4c), SQL015
+  y recursos listos; 107/107 offline.
+  Suite runtime 57/57; ocho operaciones públicas confirmadas y 23 replays exactos tras dos reinicios ordenados
+  y un SIGKILL post-ACK. Pausa offline de 12 918 ms verificada. SIGKILL comprobado desde `a5b8f127`
+  (solo docs/tools GM/AREA17, runtime equivalente a 4c); proceso exit 137 y reinicio manual del
+  contenedor, no autoreinicio Docker. Cleanup QA comprobado; AREA15 no cierra todo M5. Alcance y evidencia
+  en la entrega. [Contrato](docs/briefs/m5-resource-authority.md).
 
 - Checkpoint PRG02a (2026-10-10), **alpha.19/protocolo 33**: lección naval voluntaria con salida, boya de maniobra (radio 9 m, ≤0,8 u/s durante 0,75 s) y atraque real. Estado de sesión server-owned; sin XP/rango/perfil/SQL ni salvas. **219/219 pruebas seleccionadas y 3/3 vistas de navegador aprobadas**, capturas representativas inspeccionadas. [Contrato](docs/briefs/prg02a-coastal-lesson.md) · [entrega](docs/delivery/prg02a-coastal-lesson.md). Frenado local: 85 ticks/3,32 m vacío y 112/4,37 m con cuatro maderas desde 4 u/s. La fixture de navegador reubica candidatos y no acredita pilotaje humano. Sigue PRG02b de aprendizaje común; la regla de oscuridad AREA07 requiere faroles disponibles antes de bajar la luz ambiente. Publicación/despliegue se registran en la entrega.
 
 - AREA17, 2026-10-10: [L06b-2a](docs/delivery/l06b-agent-market.md) conecta inventario vigente y
   mercado/cotización autorizada al contexto de mente y CLI, sobre las reglas humanas existentes.
-  Alpha.20/protocolo 35; integración de prerrequisitos locales L05/L06a/L06b-1, piloto público apagado.
+  Introducido en alpha.20/protocolo 35, publicado en `4c6743b`/alpha.23/protocolo 36, con
+  46/46 pruebas de integración, 107/107 del VPS y 8/8 públicas; revisión/imagen/entrada WSS verificadas.
+  Integra prerrequisitos locales L05/L06a/L06b-1; piloto público apagado.
   Sin proveedor real, SQL nuevo ni movimiento de bienes. Sigue L06b-2b: compra/venta con permisos
   y presupuesto durable propio en `EconomicAuthority`/M5; después canario social/PvE con proveedor.
   Implementación, pruebas y despliegue se distinguen en la entrega.

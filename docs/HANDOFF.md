@@ -8,6 +8,13 @@ Techo se oculta al entrar y vuelve al salir. Cubierta/predicción admiten cambio
 Publicación/imagen/entrada VPS en la entrega. [Plan AREA07](briefs/area07-naval-action-plan.md) y M6
 actualizados; sigue RNV02 farol usable, después oscuridad. No acredita clima/descanso/colapso estructural.
 
+**AREA03 PRG01b2, 2026-10-10 — alpha.24/protocolo 36:** [Tala cooperativa](delivery/prg01b2-logging.md)
+implementada sobre la única autoridad M5: palmera, troncos, práctica proporcional y hasta tres perfiles
+actuales en una transacción. Incluye participantes offline, hito 60, cadencia 54→45 desde el siguiente
+golpe y ficha Oficios/Trades ES/EN. SQL016 y flag opt-in; no confundir publicación del runtime con
+activación de Tala. Pruebas, revisión/imagen/entrada pública y paso pendiente de SQL en la entrega.
+Sigue PRG01c: artesano y enseñanza personal `raft_storage`; no se concede automáticamente con el hito.
+
 **AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
 concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
 embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger
@@ -16,24 +23,33 @@ aprobadas; recursos M5 y continuidad también pasan juntos (22 casos, con solapa
 VPS en la entrega; una conexión abierta aplaza el relevo. Sigue refugio con techo/puerta, después farol;
 disponer de fuentes utilizables antes de reducir la luz nocturna. PRG02a sin aprendizaje queda histórico.
 
-**AREA15, 2026-10-10:** [recursos/crafting M5](delivery/m5-resource-authority.md) en release aislada
-alpha.22: nodos, golpes, herramientas, inventario, reloj y recibo en una transacción. Pausa offline
-aprobada; 176 pruebas tras integrar upstream y ocho verificaciones UI. SQL015 confirmado por el autor; consultar la
-entrega para distinguir publicación, activación y aceptación VPS. Con recursos adoptados, todo rollback
-necesita runtime compatible y `MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado.
+**AREA15, 2026-10-10 — live:** [recursos/crafting M5](delivery/m5-resource-authority.md) en
+`a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; activación inicial en 4c,
+SQL015 y flags económico/recursos activos, status listo, 107/107 offline. Ocho operaciones reales confirmadas y reproducidas tras reinicios ordenados;
+pausa offline de 12 918 ms respetada. Release 57/57; los ocho recibos se reprodujeron 23 veces en total,
+incluido SIGKILL post-ACK en VPS. Proceso exit 137, luego `docker start` manual; no asumir autoreinicio
+del contenedor. El test usó el runtime a5b8f127. Cleanup QA confirma Auth/perfil ausentes y ocho recibos/recursos conservados.
+Estado/crash/cleanup: [status final](delivery/m5-resource-authority/final-live-status.json),
+[SIGKILL](delivery/m5-resource-authority/crash-restart.json), [cleanup](delivery/m5-resource-authority/cleanup-verification.json).
+No prueba corte eléctrico ni restauración de disco; AREA15 no completa todo M5. Ver evidencia/límites en la entrega. Con recursos adoptados, todo rollback necesita runtime compatible y
+`MN_RESOURCE_OPERATIONS=1`. Perlas/reloj .40 sigue como corte separado. El aprendizaje naval AREA07
+es perfil/progresión; no constituye grant de recursos.
 
-**Hotfix GM01, alpha.21 (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) reproducido
-en calidad alta y corregido separando sus materiales de la pasada de normales. Validación local: 102/102
-pruebas y navegador 16/16, cuatro calidades y arrastre real del gizmo. Despliegue y recorrido público pendientes.
+**Hotfix GM01 publicado (2026-10-10):** [bloqueo del gizmo](delivery/gm01-render-fix.md) corregido
+en `e78c2c3`, incluido en alpha.23 (`4c6743b`, imagen sana desde 18:43:12Z). Validación local alpha.21:
+102/102 pruebas y navegador 16/16, cuatro calidades y arrastre real. Actualizador 107/107; navegador público
+7/7 con Supabase real, GM en calidad alta con contornos, colocación/guardado local y logout sin errores de render.
 
 **AREA17 L06b-2a, 2026-10-10:** [inventario/contexto y mercado privado](delivery/l06b-agent-market.md).
 Lecturas tipadas `inventory_read`/`market_read`, pueblo derivado del servidor, list/quote sin mutación,
 frescura y retiro de vistas ante movimiento, denegación, stop/revocación o nueva sesión. CLI y mente
-comparten el snapshot; protocolo 35 y alpha.20. Se integran prerrequisitos locales L05/L06a/L06b-1
+comparten el snapshot; introducidos en protocolo 35 y alpha.20. Se integran prerrequisitos locales L05/L06a/L06b-1
 sobre upstream `70205bd`; piloto y proveedor siguen apagados en `npm start`. Sin SQL nuevo ni gastos
 de bienes/inferencia. Sigue L06b-2b: compra/venta y presupuesto durable de bienes en la misma M5.
-Ver [uso opt-in](agents/market-read.md) y la evidencia de publicación en la entrega; código presente
-no implica agentes habilitados públicamente.
+Publicado dentro de `4c6743b`/alpha.23/protocolo 36: revisión/imagen/health y entrada WSS real
+verificadas el 2026-10-10, 18:44–18:45 UTC; 46/46 integración, 107/107 VPS y 8/8 públicas.
+Ver [uso opt-in](agents/market-read.md) y evidencia en la entrega. Agentes/proveedor públicos apagados;
+la autoridad de recursos del otro frente reporta habilitada/lista, sin activación por AREA17.
 
 **AREA03 PRG01b1, 2026-10-10:** [perfil compatible para aprendizaje](briefs/prg01b1-profile-continuity.md)
 y [entrega](delivery/prg01b1-profile-continuity.md). Nuevos perfiles con progreso vacío; legacy conserva

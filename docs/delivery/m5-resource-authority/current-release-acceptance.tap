@@ -1,0 +1,357 @@
+TAP version 13
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 1 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 502.1278
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 2 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 353.3891
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 3 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 298.3825
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 4 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 499.2628
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 5 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 266.8043
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 6 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 261.4006
+  type: 'test'
+  ...
+# Subtest: resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+ok 7 - resource gather and craft contracts accept exact fields and preserve helper acknowledgement extras
+  ---
+  duration_ms: 6.6545
+  type: 'test'
+  ...
+# Subtest: resource command schemas and revision/count bounds are strict
+ok 8 - resource command schemas and revision/count bounds are strict
+  ---
+  duration_ms: 1.9671
+  type: 'test'
+  ...
+# Subtest: resource world state is mandatory for resource commands and strictly checked
+ok 9 - resource world state is mandatory for resource commands and strictly checked
+  ---
+  duration_ms: 3.4766
+  type: 'test'
+  ...
+# Subtest: community and resources can coexist in an economic world snapshot
+ok 10 - community and resources can coexist in an economic world snapshot
+  ---
+  duration_ms: 1.773
+  type: 'test'
+  ...
+# Subtest: memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+ok 11 - memory storage accepts logical checkpoint advances but rejects rewinds and ordinary node changes
+  ---
+  duration_ms: 5.5955
+  type: 'test'
+  ...
+# Subtest: SQL015 is reapplicable and exposes resource capability only to service_role
+ok 12 - SQL015 is reapplicable and exposes resource capability only to service_role
+  ---
+  duration_ms: 1537.4423
+  type: 'test'
+  ...
+# Subtest: SQL015 validates historical SQL014 receipts without rewriting legacy or progressed profiles on replay
+ok 13 - SQL015 validates historical SQL014 receipts without rewriting legacy or progressed profiles on replay
+  ---
+  duration_ms: 1433.2447
+  type: 'test'
+  ...
+# Subtest: SQL015 atomically commits resource profile, world state and exact receipt; replay survives
+ok 14 - SQL015 atomically commits resource profile, world state and exact receipt; replay survives
+  ---
+  duration_ms: 1037.1406
+  type: 'test'
+  ...
+# Subtest: SQL015 accepts strict craft/gather bounds and rejects malformed resource snapshots
+ok 15 - SQL015 accepts strict craft/gather bounds and rejects malformed resource snapshots
+  ---
+  duration_ms: 1207.4854
+  type: 'test'
+  ...
+# Subtest: ordinary economic writes preserve bootstrapped resources and saveWorld cannot erase or rewrite them
+ok 16 - ordinary economic writes preserve bootstrapped resources and saveWorld cannot erase or rewrite them
+  ---
+  duration_ms: 1112.8181
+  type: 'test'
+  ...
+# Subtest: first-lesson rudder authority improves turning while empty and loaded hull differences remain
+ok 17 - first-lesson rudder authority improves turning while empty and loaded hull differences remain
+  ---
+  duration_ms: 13.1652
+  type: 'test'
+  ...
+# Subtest: neutral and legacy handling remain unchanged; only the configured helm response is accepted
+ok 18 - neutral and legacy handling remain unchanged; only the configured helm response is accepted
+  ---
+  duration_ms: 1.4785
+  type: 'test'
+  ...
+# Subtest: trusted helm response survives prediction steps, damage, parking and payload refresh
+ok 19 - trusted helm response survives prediction steps, damage, parking and payload refresh
+  ---
+  duration_ms: 0.7703
+  type: 'test'
+  ...
+# Subtest: accepted coastal dock saves one profile-only milestone and publishes pending then saved
+ok 20 - accepted coastal dock saves one profile-only milestone and publishes pending then saved
+  ---
+  duration_ms: 722.5331
+  type: 'test'
+  ...
+# Subtest: confirmed coastal milestone survives account close and a new GameHost, and changes helm response
+ok 21 - confirmed coastal milestone survives account close and a new GameHost, and changes helm response
+  ---
+  duration_ms: 670.9879
+  type: 'test'
+  ...
+# Subtest: unknown save response never claims saved before confirmation; reconnect trusts the canonical row
+ok 22 - unknown save response never claims saved before confirmation; reconnect trusts the canonical row
+  ---
+  duration_ms: 541.4053
+  type: 'test'
+  ...
+# Subtest: malformed and future progression versions reject the profile without rewriting it
+ok 23 - malformed and future progression versions reject the profile without rewriting it
+  ---
+  duration_ms: 0.4678
+  type: 'test'
+  ...
+# Subtest: legacy profile sanitation keeps the old shape while absent progression reads as zero
+ok 24 - legacy profile sanitation keeps the old shape while absent progression reads as zero
+  ---
+  duration_ms: 3.0669
+  type: 'test'
+  ...
+# Subtest: memory store round-trips progression and current economic commands preserve it
+ok 25 - memory store round-trips progression and current economic commands preserve it
+  ---
+  duration_ms: 4.7419
+  type: 'test'
+  ...
+# Subtest: SQL014 keeps a legacy immutable receipt replayable after newer progression is saved
+ok 26 - SQL014 keeps a legacy immutable receipt replayable after newer progression is saved
+  ---
+  duration_ms: 1584.7865
+  type: 'test'
+  ...
+# Subtest: malformed and future progression reject session admission without saving over the row
+ok 27 - malformed and future progression reject session admission without saving over the row
+  ---
+  duration_ms: 2.2256
+  type: 'test'
+  ...
+# Subtest: GameHost preserves current progression through an economic buy and historical replay after reopen
+ok 28 - GameHost preserves current progression through an economic buy and historical replay after reopen
+  ---
+  duration_ms: 642.2285
+  type: 'test'
+  ...
+# Memory-store host reopen/replay only; this is not durable crash-recovery evidence.
+# Subtest: only learning upgrades legacy/v1; parsing keeps old receipt shapes exact
+ok 29 - only learning upgrades legacy/v1; parsing keeps old receipt shapes exact
+  ---
+  duration_ms: 1.4496
+  type: 'test'
+  ...
+# Subtest: piloting preserves common logging/recipe data and round-trips through profile signed saves
+ok 30 - piloting preserves common logging/recipe data and round-trips through profile signed saves
+  ---
+  duration_ms: 4.0119
+  type: 'test'
+  ...
+# Subtest: later logging practice retains piloting version and milestone
+ok 31 - later logging practice retains piloting version and milestone
+  ---
+  duration_ms: 0.8118
+  type: 'test'
+  ...
+# Subtest: v1 cannot claim a future technique; malformed v2 and future versions fail closed
+ok 32 - v1 cannot claim a future technique; malformed v2 and future versions fail closed
+  ---
+  duration_ms: 1.0039
+  type: 'test'
+  ...
+# Subtest: new profiles and signed saves preserve a detached progression value
+ok 33 - new profiles and signed saves preserve a detached progression value
+  ---
+  duration_ms: 4.162
+  type: 'test'
+  ...
+# Subtest: legacy profiles default missing progression without changing their source
+ok 34 - legacy profiles default missing progression without changing their source
+  ---
+  duration_ms: 0.6855
+  type: 'test'
+  ...
+# Subtest: legacy signed saves and M5 receipt readers preserve the absent progression field
+ok 35 - legacy signed saves and M5 receipt readers preserve the absent progression field
+  ---
+  duration_ms: 7.4653
+  type: 'test'
+  ...
+# Subtest: present malformed or future progression rejects the profile
+ok 36 - present malformed or future progression rejects the profile
+  ---
+  duration_ms: 0.5183
+  type: 'test'
+  ...
+# Subtest: progression accessors are rejected without invoking them
+ok 37 - progression accessors are rejected without invoking them
+  ---
+  duration_ms: 0.3637
+  type: 'test'
+  ...
+# Subtest: inherited progression data is rejected without reading accessors
+ok 38 - inherited progression data is rejected without reading accessors
+  ---
+  duration_ms: 0.1638
+  type: 'test'
+  ...
+# Subtest: progression survives attach, ECS sync, detach, and re-entry
+ok 39 - progression survives attach, ECS sync, detach, and re-entry
+  ---
+  duration_ms: 3.7535
+  type: 'test'
+  ...
+# Subtest: death planning preserves progression exactly while applying the existing death delta
+ok 40 - death planning preserves progression exactly while applying the existing death delta
+  ---
+  duration_ms: 6.318
+  type: 'test'
+  ...
+# Subtest: confirmed gathering commits profile and resource-node state through the M5 receipt
+ok 41 - confirmed gathering commits profile and resource-node state through the M5 receipt
+  ---
+  duration_ms: 404.7384
+  type: 'test'
+  ...
+# Subtest: crafting a stone axe consumes materials once, persists the tool, and exact replay does not debit again
+ok 42 - crafting a stone axe consumes materials once, persists the tool, and exact replay does not debit again
+  ---
+  duration_ms: 344.8499
+  type: 'test'
+  ...
+# Subtest: partial palm work persists node revision and hits without granting logs until the final hit
+ok 43 - partial palm work persists node revision and hits without granting logs until the final hit
+  ---
+  duration_ms: 274.294
+  type: 'test'
+  ...
+# Subtest: a second host restores node progress and inventory from the same store without respawning it
+ok 44 - a second host restores node progress and inventory from the same store without respawning it
+  ---
+  duration_ms: 529.9615
+  type: 'test'
+  ...
+# Subtest: resource cooldown resumes with the same logical remainder after a long offline period
+ok 45 - resource cooldown resumes with the same logical remainder after a long offline period
+  ---
+  duration_ms: 593.5025
+  type: 'test'
+  ...
+# Subtest: lost resource commit reply stays behind the tick gate until the exact receipt is recovered
+ok 46 - lost resource commit reply stays behind the tick gate until the exact receipt is recovered
+  ---
+  duration_ms: 280.6963
+  type: 'test'
+  ...
+# Subtest: two accounts contending for one node can produce only one gather result
+ok 47 - two accounts contending for one node can produce only one gather result
+  ---
+  duration_ms: 385.0524
+  type: 'test'
+  ...
+# Subtest: guest gathering is denied and a reused opId cannot be rebound to another resource request
+ok 48 - guest gathering is denied and a reused opId cannot be rebound to another resource request
+  ---
+  duration_ms: 278.4648
+  type: 'test'
+  ...
+# Subtest: gather resource operation recovers after SIGKILL before-commit
+ok 49 - gather resource operation recovers after SIGKILL before-commit
+  ---
+  duration_ms: 5414.8191
+  type: 'test'
+  ...
+# File-backed PGlite restart proof for SQL001–015 and GameHost; it does not simulate VM or power loss.
+# Subtest: gather resource operation recovers after SIGKILL after-commit
+ok 50 - gather resource operation recovers after SIGKILL after-commit
+  ---
+  duration_ms: 4887.0025
+  type: 'test'
+  ...
+# File-backed PGlite restart proof for SQL001–015 and GameHost; it does not simulate VM or power loss.
+# Subtest: craft resource operation recovers after SIGKILL before-commit
+ok 51 - craft resource operation recovers after SIGKILL before-commit
+  ---
+  duration_ms: 4865.6997
+  type: 'test'
+  ...
+# File-backed PGlite restart proof for SQL001–015 and GameHost; it does not simulate VM or power loss.
+# Subtest: craft resource operation recovers after SIGKILL after-commit
+ok 52 - craft resource operation recovers after SIGKILL after-commit
+  ---
+  duration_ms: 4403.4602
+  type: 'test'
+  ...
+# File-backed PGlite restart proof for SQL001–015 and GameHost; it does not simulate VM or power loss.
+# Subtest: resource restore pauses offline, keeps partial work, and retains revisions
+ok 53 - resource restore pauses offline, keeps partial work, and retains revisions
+  ---
+  duration_ms: 432.3809
+  type: 'test'
+  ...
+# Subtest: invalid or incompatible resource snapshots fail before changing any live node
+ok 54 - invalid or incompatible resource snapshots fail before changing any live node
+  ---
+  duration_ms: 317.5191
+  type: 'test'
+  ...
+# Subtest: resource migration must pass before world creation and cannot silently fall back
+ok 55 - resource migration must pass before world creation and cannot silently fall back
+  ---
+  duration_ms: 269.6949
+  type: 'test'
+  ...
+# Subtest: worlds with durable resources refuse an old snapshot-only resource host
+ok 56 - worlds with durable resources refuse an old snapshot-only resource host
+  ---
+  duration_ms: 507.1047
+  type: 'test'
+  ...
+# Subtest: world autosaves checkpoint only monotonic resource time and preserve the epoch across restarts
+ok 57 - world autosaves checkpoint only monotonic resource time and preserve the epoch across restarts
+  ---
+  duration_ms: 768.2666
+  type: 'test'
+  ...
+1..57
+# tests 57
+# suites 0
+# pass 57
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 29317.4626

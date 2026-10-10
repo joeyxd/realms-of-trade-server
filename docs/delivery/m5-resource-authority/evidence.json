@@ -12,14 +12,35 @@
   "inheritedGameplay": "upstream recipe inputs, pack capacity, progression and navigation preserved",
   "uiCases": 8,
   "publication": {
-    "revision": "922295ba5585d9c526ad81a4458b476e8a570fc3",
-    "version": "0.6.0-alpha.22",
-    "codePublished": true,
-    "vpsImageValidated": true,
-    "vpsOfflineTests": 107,
-    "resourcesActivated": false,
-    "reason": "open WebSocket connection; zero players",
-    "evidence": "deployment-pending.json"
+    "initialCodeRevision": "922295ba5585d9c526ad81a4458b476e8a570fc3",
+    "activationRevision": "4c6743b87b71ba765e316cd1652d1e4f23991501",
+    "acceptedRuntimeRevision": "a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98",
+    "version": "0.6.0-alpha.23",
+    "protocol": 36,
+    "resourcesActivated": true,
+    "serviceSql015Verified": true,
+    "publicHealth": 200,
+    "singleHealthyContainer": true,
+    "timerRestored": true,
+    "offlineVpsTests": 107,
+    "latestLocalChecks": 57,
+    "authenticatedOperations": 8,
+    "exactReplays": 23,
+    "orderedRestarts": 2,
+    "sigkillAfterAck": 1,
+    "offlineClockPauseMs": 12918,
+    "expectedAndObservedWaitSeconds": 43.9,
+    "cleanupVerified": true,
+    "evidence": [
+      "activation.json",
+      "current-release-acceptance.json",
+      "live-acceptance.json",
+      "ordered-restart-first.json",
+      "ordered-restart-clock.json",
+      "crash-restart.json",
+      "cleanup-verification.json",
+      "final-live-status.json"
+    ]
   },
   "sha256": {
     "server/resourceState.mjs": "285d3617146cc8bbfb66357eb2416b4ea9baa99bb049d1f5d311644f40e773d2",
@@ -75,5 +96,15 @@
       "tests/economic-resource-contract.test.mjs": "2dc15bd7da8836cdbecf592d5795feeab0bd7742da09a907df9d8e62b532ec72",
       "tests/economic-resource-sql.test.mjs": "7f1bfeb49f54e12591fee2332bed87ae0995c272d2addced2cc10972b803bf2e"
     }
+  },
+  "priorPublication": {
+    "revision": "922295ba5585d9c526ad81a4458b476e8a570fc3",
+    "version": "0.6.0-alpha.22",
+    "codePublished": true,
+    "vpsImageValidated": true,
+    "vpsOfflineTests": 107,
+    "resourcesActivated": false,
+    "reason": "open WebSocket connection; zero players",
+    "evidence": "deployment-pending.json"
   }
 }

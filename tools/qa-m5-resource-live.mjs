@@ -7,14 +7,14 @@ import WebSocket from 'ws';
 import { PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { canStand } from '../src/sim/systems/movement.js';
-import { tuning } from '../src/data/tuning.js';
+import { DT, tuning } from '../src/data/tuning.js';
 import { CRAFT_RECIPES, HARVEST, RESOURCE_KINDS } from '../src/data/resources.js';
 import { economicCommand, economicOperationId } from '../server/economicAuthority.mjs';
 import { storeFromEnv } from '../server/store.mjs';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { roomFor } from '../src/sim/economy/cargo.js';
 
-const usage = 'usage: node tools/qa-m5-resource-live.mjs before|after|cleanup [--env-file PATH]';
+const usage = 'usage: node tools/qa-m5-resource-live.mjs before|after|checkpoint|cleanup [--env-file PATH]';
 const phaseArg = process.argv[2];
 if (phaseArg === '--help' || phaseArg === '-h') {
   console.log(usage);
@@ -48,7 +48,7 @@ const resourceProjection = state => ({ nodes: state.nodes, cooldowns: state.cool
 
 async function main() {
   const phase = phaseArg;
-  if (!['before', 'after', 'cleanup'].includes(phase)) throw new QaFailure(usage);
+  if (!['before', 'after', 'checkpoint', 'cleanup'].includes(phase)) throw new QaFailure(usage);
   let envFile = null;
   for (let index = 3; index < process.argv.length; index++) {
     if (process.argv[index] !== '--env-file' || !process.argv[index + 1] || envFile) throw new QaFailure(usage);
@@ -159,6 +159,31 @@ async function main() {
       await sleep(300);
     }
     throw new QaFailure('bounded profile flush wait expired');
+  }
+
+  async function verifyOfflineResourcePause() {
+    const checkpoint = fixture.restartCheckpoint;
+    if (checkpoint == null) return;
+    ensure(Number.isSafeInteger(checkpoint?.resourceTick) && checkpoint.resourceTick >= 0
+      && Number.isFinite(checkpoint?.offlineMs) && checkpoint.offlineMs > 0
+      && typeof fixture.clockNode === 'string', 'offline resource clock checkpoint is invalid');
+    const snapshot = [...messages].reverse().find(message => message.t === 'snap'
+      && Number.isSafeInteger(message.tick) && message.resources?.nodes?.some(node => node.id === fixture.clockNode));
+    ensure(snapshot, 'resource respawn node is missing from post-restart public snapshots');
+    const publicNode = snapshot.resources.nodes.find(node => node.id === fixture.clockNode);
+    const world = await store.loadWorld(worldId);
+    const durableNode = world?.data?.resources?.nodes?.find(node => node.id === fixture.clockNode);
+    ensure(durableNode && Number.isSafeInteger(durableNode.readyAt), 'resource respawn checkpoint node is missing from durable world');
+    const remainingTicks = Math.max(0, durableNode.readyAt - checkpoint.resourceTick - snapshot.tick);
+    const expectedWait = remainingTicks * DT;
+    ensure(remainingTicks > 0 && publicNode.wait > 0, 'resource respawn was not still pending in the post-restart snapshot');
+    ensure(Math.abs(publicNode.wait - expectedWait) <= DT + 1e-9,
+      'post-restart public respawn wait differs from the paused logical resource clock');
+    record('offline resource clock paused through host downtime', {
+      clockNode: fixture.clockNode, offlineMs: checkpoint.offlineMs, resourceTickAtShutdown: checkpoint.resourceTick,
+      snapshotTick: snapshot.tick, readyAt: durableNode.readyAt, remainingTicks,
+      expectedWaitSeconds: expectedWait, publicWaitSeconds: publicNode.wait, toleranceSeconds: DT,
+    });
   }
 
   async function waitFor(predicate, timeout = timeoutMs) {
@@ -461,6 +486,10 @@ async function main() {
       if (ws) await leave();
       if (profileRow) unwrap(await admin.from('mn_profiles').delete().eq('player_id', fixture.accountId));
       unwrap(await admin.auth.admin.deleteUser(fixture.accountId));
+      const absent = await admin.auth.admin.getUserById(fixture.accountId);
+      ensure(!absent.data?.user && absent.error?.status === 404
+        && await store.loadProfile(fixture.accountId) === null,
+      'temporary account or profile still exists after cleanup');
       fs.unlinkSync(fixturePath);
       record('temporary account and its profile removed; world resource history and receipts retained');
       return;
@@ -481,7 +510,65 @@ async function main() {
     const denied = await pub.rpc('mn_load_profile', { p_player_id: fixture.accountId });
     ensure(denied.error?.code === '42501', 'authenticated direct profile RPC was not denied');
     await enter(login.session.access_token);
+    if (phase === 'after') await verifyOfflineResourcePause();
     record('normal account token admitted over public TLS with resource authority ready', { phase, protocol: PROTOCOL_VERSION });
+
+    if (phase === 'checkpoint') {
+      ensure(fixture.completedBefore === true && typeof fixture.partialPalmNode === 'string',
+        'completed resource fixture or original partial palm reference is missing');
+      ensure(stable(profileResourceProjection(profile)) === stable(fixture.profileResources),
+        'resource goods, tools, or trade revision changed before checkpoint refresh');
+      const rowBefore = await store.loadProfile(fixture.accountId), worldBefore = await store.loadWorld(worldId);
+      ensure(rowBefore?.version >= fixture.profileVersion
+        && stable(profileResourceProjection(rowBefore.data)) === stable(fixture.profileResources),
+      'durable resource profile changed before checkpoint refresh');
+      const originalPalm = fixture.worldResources.nodes.find(node => node.id === fixture.partialPalmNode);
+      const durablePalmBefore = worldBefore?.data?.resources?.nodes?.find(node => node.id === fixture.partialPalmNode);
+      ensure(originalPalm && durablePalmBefore && durablePalmBefore.rev === originalPalm.rev
+        && durablePalmBefore.hits === originalPalm.hits && durablePalmBefore.readyAt === originalPalm.readyAt,
+      'original partial palm state changed before checkpoint refresh');
+
+      const prior = structuredClone(profileResourceProjection(profile));
+      ensure(roomFor(prior.pack, 'tronco') >= 1, 'backpack has no room for checkpoint wood');
+      const [gathered] = await gather('wood', 1);
+      const expectedGoods = { ...prior.pack.goods, tronco: (prior.pack.goods.tronco || 0) + 1 };
+      const refreshed = profileResourceProjection(profile);
+      ensure(gathered?.ack?.count === 1 && gathered.ack.good === 'tronco'
+        && refreshed.pack.cap === prior.pack.cap && stable(refreshed.pack.goods) === stable(expectedGoods)
+        && stable(refreshed.tools) === stable(prior.tools) && refreshed.tradeRev === prior.tradeRev + 1,
+      'checkpoint gather did not add exactly one log while preserving pack capacity and tools');
+      ensure(profile.tools.axe === 1, 'checkpoint gather changed the crafted axe');
+      await verifyReceipt(gathered.command);
+      fixture.clockNode = gathered.command.node;
+
+      await leave();
+      const flushedHealth = await waitForPostDisconnectFlush();
+      const persisted = await store.loadProfile(fixture.accountId), world = await store.loadWorld(worldId);
+      const palmAfter = world?.data?.resources?.nodes?.find(node => node.id === fixture.partialPalmNode);
+      const clockAfter = world?.data?.resources?.nodes?.find(node => node.id === fixture.clockNode);
+      ensure(persisted?.data?.pirateId === `account:${fixture.accountId}`
+        && stable(profileResourceProjection(persisted.data)) === stable(refreshed)
+        && persisted.data.tools.axe === 1
+        && palmAfter && palmAfter.rev === originalPalm.rev && palmAfter.hits === originalPalm.hits
+        && palmAfter.readyAt === originalPalm.readyAt
+        && clockAfter && clockAfter.rev === gathered.ack.rev && clockAfter.readyAt > world.data.resources.tick,
+      'checkpoint disconnect/flush changed resources, axe, partial palm, or respawn timer');
+      fixture.profileFingerprint = profileFingerprint(persisted.data);
+      fixture.profileVersion = persisted.version;
+      fixture.profileResources = profileResourceProjection(persisted.data);
+      fixture.worldVersion = world.version;
+      fixture.worldResources = structuredClone(world.data.resources);
+      fixture.hostUptimeBefore = flushedHealth.uptime;
+      fixture.completedBefore = true;
+      delete fixture.restartCheckpoint;
+      saveFixture();
+      record('resource clock checkpoint refreshed with one additional durable wood gather', {
+        profileVersion: persisted.version, worldVersion: world.version, clockNode: fixture.clockNode,
+        clockReadyAt: clockAfter.readyAt, partialPalmNode: fixture.partialPalmNode,
+        commandCount: fixture.commands.length,
+      });
+      return;
+    }
 
     if (phase === 'before') {
       ensure(map?.landmarks?.spawn && resources?.bench, 'public map spawn or bench is unavailable');
@@ -512,14 +599,25 @@ async function main() {
       ensure(durablePalm.hits === beforeHits + 1 && durablePalm.readyAt === 0
         && stable(profile.eco.pack.goods) === beforeGoods,
       'partial palm work changed goods or failed to persist its hit');
+      fixture.partialPalmNode = palm.id;
+
+      ensure(roomFor(profile.eco.pack, 'tronco') >= 1, 'backpack has no room for the respawn-clock resource');
+      const clockGather = (await gather('wood', 1))[0];
+      ensure(clockGather?.command?.node && (profile.eco.pack.goods.tronco || 0) === 1
+        && profile.tools.axe === axeRecipe.tier,
+      'extra wood gather for the offline respawn clock did not preserve the resource profile');
+      fixture.clockNode = clockGather.command.node;
 
       const resourceProfileBeforeLeave = structuredClone(profileResourceProjection(profile));
       const worldBeforeLeave = await store.loadWorld(worldId);
       ensure(resourceProfileBeforeLeave.tools.axe === axeRecipe.tier
         && (resourceProfileBeforeLeave.pack.goods.madera || 0) === 1
+        && (resourceProfileBeforeLeave.pack.goods.tronco || 0) === 1
         && (resourceProfileBeforeLeave.pack.goods.piedra || 0) === 0
         && worldBeforeLeave?.data?.resources?.nodes?.some(node =>
-          node.id === palm.id && node.rev === hit.ack.rev && node.hits === beforeHits + 1),
+          node.id === fixture.partialPalmNode && node.rev === hit.ack.rev && node.hits === beforeHits + 1)
+        && worldBeforeLeave?.data?.resources?.nodes?.some(node =>
+          node.id === fixture.clockNode && node.rev === clockGather.ack.rev && node.readyAt > worldBeforeLeave.data.resources.tick),
       'resource profile projection or partial palm node differs before disconnect');
       await leave();
       const flushedHealth = await waitForPostDisconnectFlush();
@@ -527,8 +625,10 @@ async function main() {
       ensure(persisted?.data?.pirateId === `account:${fixture.accountId}`
         && stable(profileResourceProjection(persisted.data)) === stable(resourceProfileBeforeLeave)
         && persisted.data.tools.axe === axeRecipe.tier
-        && world.data.resources.nodes.some(node => node.id === palm.id
-          && node.rev === hit.ack.rev && node.hits === beforeHits + 1),
+        && world.data.resources.nodes.some(node => node.id === fixture.partialPalmNode
+          && node.rev === hit.ack.rev && node.hits === beforeHits + 1)
+        && world.data.resources.nodes.some(node => node.id === fixture.clockNode
+          && node.rev === clockGather.ack.rev && node.readyAt > world.data.resources.tick),
       'disconnect or profile flush changed resource goods/tools/revision or partial palm work');
       fixture.profileFingerprint = profileFingerprint(persisted.data);
       fixture.profileVersion = persisted.version;

@@ -1,6 +1,6 @@
 ﻿# GM01 — borrador local del editor del mundo
 
-Estado: **GM01 está desplegado en el host y verificado en producción; el borrador sigue siendo local y no hay publicación de mapas**. Imagen activa `marea-negra:alpha-d3159949f9ef` (`d3159949f9ef6fbbab51ce7e7a1b928d25f428a0`), sana desde 2026-10-10T16:20:39Z.
+Checkpoint inicial: **GM01 desplegado y verificado en producción en alpha.18, con borrador local y sin publicación de mapas**. Imagen observada `marea-negra:alpha-d3159949f9ef` (`d3159949f9ef6fbbab51ce7e7a1b928d25f428a0`), sana desde 2026-10-10T16:20:39Z. Este recorrido inicial usaba calidad baja; el [hotfix posterior](gm01-render-fix.md) corrige el gizmo en media/alta/ultra y registra la revisión pública alpha.23 comprobada en calidad alta.
 
 GM01 incorpora una entrada de editor del mundo dentro del juego. El editor crea y modifica un documento de borrador aislado con instancias decorativas nuevas; no cambia el mapa base ni el estado de gameplay. Permite volar por la escena, buscar los assets preparados, colocar un fantasma sobre el terreno, transformar objetos con gizmo o campos numéricos, ajustar snap, apoyar el objeto en el terreno y deshacer/rehacer. El editor y sus mensajes están disponibles en español e inglés.
 

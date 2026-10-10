@@ -5,6 +5,7 @@ import { TOWN_IDS } from '../src/data/towns.js';
 import { CRAFT_RECIPES } from '../src/data/resources.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { checkedResourceState } from './resourceState.mjs';
+import { loggingParticipants, loggingResultProfiles } from './loggingOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -172,7 +173,9 @@ function checkedAck(raw, command) {
 }
 
 function checkedRequest(input) {
-  exact(input, REQUEST_FIELDS);
+  exact(input, [...REQUEST_FIELDS, ...(Object.hasOwn(input, 'beneficiaries') ? ['beneficiaries'] : [])]);
+  // Validate every descriptor and aggregate bound before traversing optional participant data.
+  bytes(input, MAX_WORLD_BYTES + 8 * MAX_PROFILE_BYTES);
   const world = key(input.world), account = uuid(input.account);
   integer(input.expectedProfileVersion, 1, MAX_VERSION - 1);
   integer(input.expectedWorldVersion, 1, MAX_VERSION - 1);
@@ -186,6 +189,10 @@ function checkedRequest(input) {
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
+  if (Object.hasOwn(input, 'beneficiaries')) {
+    request.beneficiaries = jsonCopy(input.beneficiaries);
+    try { loggingParticipants(request); } catch { fail('input'); }
+  }
   return request;
 }
 
@@ -201,9 +208,10 @@ function resultShape(raw, request, replay) {
     if (!['conflict', 'operation'].includes(raw.why)) fail('response');
     return jsonCopy(raw);
   }
-  exact(raw, ['ok', 'replay', 'profileVersion', 'worldVersion', 'ack']);
+  exact(raw, ['ok', 'replay', 'profileVersion', 'worldVersion', 'ack', ...(request.beneficiaries ? ['profiles'] : [])]);
   if (raw.ok !== true || raw.replay !== replay || raw.profileVersion !== request.expectedProfileVersion + 1 ||
-    raw.worldVersion !== request.expectedWorldVersion + 1 || canonicalEconomicText(raw.ack) !== canonicalEconomicText(request.ack)) fail('response');
+    raw.worldVersion !== request.expectedWorldVersion + 1 || canonicalEconomicText(raw.ack) !== canonicalEconomicText(request.ack)
+    || request.beneficiaries && canonicalEconomicText(raw.profiles) !== canonicalEconomicText(loggingResultProfiles(request))) fail('response');
   return jsonCopy(raw);
 }
 
