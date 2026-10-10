@@ -1,8 +1,9 @@
 # PRG01b2 — Tala compartida y aprendizaje confirmado
 
 2026-10-10. Continuación de [PRG01b1](prg01b1-profile-continuity.md) sobre la
-[autoridad de recursos](m5-resource-authority.md). Implementación local; activación pública pendiente
-de SQL016 y aceptación del runtime/configuración. SQL015 aplicado fue confirmado por el autor.
+[autoridad de recursos](m5-resource-authority.md). Código/runtime alpha.24 publicado y verificado;
+activación pública pendiente de SQL016 y aceptación del montaje autenticado. SQL015 aplicado fue
+confirmado por el autor. Revisión/imagen/entrada pública y límites en la [entrega](../delivery/prg01b2-logging.md).
 
 ## Resultado jugable
 

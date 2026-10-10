@@ -13,9 +13,13 @@
 | Perlas/muerte/botín | Contratos M5 opcionales; no compuestos con economía activa | Dueño común de tick y transacciones de gameplay |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
 
-La revisión desplegada es `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; la
-activación inicial fue en `4c6743b87b71ba765e316cd1652d1e4f23991501`. El commit actual solo añade
-docs/herramientas GM/AREA17 sobre el mismo runtime. El status final confirma `/health` 200, un
+**Runtime actual observado, 2026-10-10 19:19 UTC:** `56e4345b0b83ba58521d91f55b71891e126b0988`,
+alpha.24/protocolo 36, imagen sana, una autoridad y 107/107 offline; smoke público 6/6 con entrada WSS.
+Recursos/economía siguen activos. Tala publicada pero apagada, SQL016 pendiente; no constituye todavía
+aceptación de aprendizaje durable público. [Evidencia PRG01b2](delivery/prg01b2-logging.md).
+
+La aceptación anterior de recursos usó `a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98`, alpha.23/protocolo 36; la
+activación inicial fue en `4c6743b87b71ba765e316cd1652d1e4f23991501`. El status de esa aceptación confirma `/health` 200, un
 contenedor sano, timer activo, tick avanzando, ambos flags habilitados y cero errores, jugadores,
 sockets, operaciones pendientes o guardados sin confirmar. La imagen pasa 107/107 offline.
 Los ocho gathers/crafts

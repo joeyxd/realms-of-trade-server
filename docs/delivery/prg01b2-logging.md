@@ -33,10 +33,22 @@ capturas representativas inspeccionadas. No es una sesión pública ni prueba de
 
 ## Publicación y activación
 
-Pendiente de revisión final y publicación selectiva. No se aplicó SQL016 ni se modificaron secretos,
-flags o el mundo del VPS en este corte. La confirmación del autor de SQL015 no se interpreta como
-aplicación de SQL016. Se entrega el archivo nuevo después de validarlo; después se acepta el runtime
-compatible y el flujo autenticado antes de declarar Tala activa públicamente.
+Código `00d38c5`, integrado con el cierre concurrente de AREA15 en `56e4345`. El 2026-10-10 a las
+19:19 UTC se verificó la revisión activa **`56e4345b0b83ba58521d91f55b71891e126b0988`**, imagen
+`marea-negra:alpha-56e4345b0b83`, una instancia sana y health público 200. El actualizador pasó
+**107/107 pruebas offline** en esa misma imagen antes del relevo. Supabase, cuentas y recursos
+permanecen habilitados/listos, sin bloqueo de tick ni errores de storage; timer activo.
+[Revisión, imagen y status](prg01b2-logging/live-release.json).
+
+El [smoke público](prg01b2-logging/public-smoke.json) pasó **6/6**: salud, alpha.24 compatible con
+Tala apagada, protocolo 36, módulo de ficha publicado, SQL privado y entrada real de invitado por WSS
+con perfil/snapshot. Esa entrada no acredita un premio de Tala autenticado.
+
+**Pendiente: aplicar [SQL016](../../server/migrations/016_logging_operations.sql) completo tras SQL015.**
+No se aplicó SQL016 ni se cambiaron secretos o flags en este corte. `MN_LOGGING_OPERATIONS` continúa
+apagado; no se adoptó el ledger v2 del mundo público. La confirmación de SQL015 no se interpreta como
+aplicación de SQL016. Después se activa el montaje compatible y se acepta el flujo autenticado,
+incluidos cooperación, desconexión y recuperación, antes de declarar Tala activa públicamente.
 
 Sigue PRG01c: artesano, enseñanza personal y primera bodega; aislamiento de personajes/mundos y
 composición completa con perlas/muerte/botín continúan en AREA15.

@@ -14,7 +14,9 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 - AREA03 PRG01b2 (2026-10-10), **alpha.24/protocolo 36**: [Tala cooperativa](docs/delivery/prg01b2-logging.md)
   integra práctica proporcional, beneficiarios offline, nodo, troncos y recibo en la misma M5.
   Primer hito 60, cadencia 54→45 desde el siguiente golpe y ficha ES/EN. SQL016 y flag opt-in;
-  publicación, pruebas y activación se registran separadamente en la entrega. Sigue artesano/bodega PRG01c.
+  publicado en runtime `56e4345` sano, imagen 107/107 y smoke público 6/6 con entrada WSS (19:19 UTC).
+  SQL016 pendiente y Tala apagada. 230 pruebas integradas y ocho comprobaciones visuales; evidencia en
+  la entrega. Sigue activar/aceptar Tala y después artesano/bodega PRG01c.
 
 - AREA07 PRG02b (2026-10-10), **alpha.23/protocolo 36**: [Pilotaje II](docs/delivery/prg02b-pilot-learning.md),
   primer hito único `pilot_coastal` tras atraque real de la lección, timón +15 % y progreso común v2.
