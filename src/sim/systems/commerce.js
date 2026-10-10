@@ -136,6 +136,51 @@ function readTradeRev(eco) {
   return Number.isSafeInteger(eco.tradeRev) && eco.tradeRev >= 0 && eco.tradeRev <= MAX_REV ? eco.tradeRev : 0;
 }
 
+function exactReadMessage(msg) {
+  if (!msg || typeof msg !== 'object' || Array.isArray(msg) ||
+      ![Object.prototype, null].includes(Object.getPrototypeOf(msg))) return false;
+  const keys = Reflect.ownKeys(Object.getOwnPropertyDescriptors(msg));
+  const descriptors = Object.getOwnPropertyDescriptors(msg), op = descriptors.op?.value;
+  if (!descriptors.op?.enumerable || !Object.hasOwn(descriptors.op, 'value')) return false;
+  const expected = op === 'list' ? ['op', 'town'] : op === 'quote'
+    ? ['op', 'town', 'g', 'n', 'side'] : [];
+  if (!expected.length || keys.length !== expected.length ||
+      keys.some((key) => typeof key !== 'string' || !expected.includes(key))) return false;
+  return expected.every((key) => descriptors[key].enumerable && Object.hasOwn(descriptors[key], 'value'));
+}
+
+// Pure private read projection shared by local commerce and trusted host adapters.
+// The caller owns transport and authorization; this function enforces physical service.
+export function readCommerce(w, e, msg) {
+  const fail = (why, rev = 0, extra = {}) => ({ ok: false, why, rev, ...extra });
+  if (!exactReadMessage(msg)) return fail('command');
+
+  const profile = w.profiles?.get(e);
+  const tradeRev = readTradeRev(profile?.eco || {});
+  if (w.navalPilot?.locked?.(e)) return fail('busy', tradeRev);
+  if (!profile?.eco || !alive(w, e)) return fail('dead', tradeRev);
+
+  const town = msg.town;
+  if (!validTown(town) || town.length > 32 || !TOWNS[town].walkable || townAt(w, e) !== town)
+    return fail('far', tradeRev);
+  if (msg.op === 'list') {
+    return { ok: true, why: '', rev: tradeRev, town,
+      rows: marketRows(w, town).map(({ g, stock, buy, sell, trend, illegal }) =>
+        ({ g, stock, buy, sell, trend, illegal })),
+      pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
+      used: holdUsed(profile.eco.pack), gold: profile.gold };
+  }
+
+  if (!validGood(msg.g) || !['buy', 'sell'].includes(msg.side) ||
+      !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 500)
+    return fail('command', tradeRev);
+  const q = w.economy?.quote(town, msg.g, msg.n, msg.side);
+  if (!q?.ok) return fail(q?.why || 'market', tradeRev,
+    { town, g: msg.g, n: msg.n, side: msg.side, total: q?.total || 0 });
+  return { ok: true, why: '', rev: tradeRev, town, g: msg.g, n: q.n,
+    side: msg.side, total: q.total, avg: q.avg, law: q.law };
+}
+
 function cargoCommand(w, e, msg, profile, active, saveFits) {
   const ship = active.ship, rev = ship.rev;
   if (!Number.isSafeInteger(msg.expectedRev) || msg.expectedRev !== rev)
@@ -224,24 +269,20 @@ export function commerceCmd(w, e, msg, saveFits = () => true) {
   }
 
   const town = msg.town;
+  if (msg.op === 'list' || msg.op === 'quote') {
+    const read = readCommerce(w, e, msg.op === 'list'
+      ? { op: msg.op, town }
+      : { op: msg.op, town, g: msg.g, n: msg.n, side: msg.side });
+    const { ok, why, rev, ...extra } = read;
+    return emit(w, e, msg, ok, why, rev, extra);
+  }
   if (!validTown(town) || !TOWNS[town].walkable || townAt(w, e) !== town)
     return fail('far', tradeRev);
-  if (msg.op === 'list') {
-    return emit(w, e, msg, true, '', tradeRev, { town, rows: marketRows(w, town),
-      pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
-      used: holdUsed(profile.eco.pack), gold: profile.gold });
-  }
-  if (!validGood(msg.g) || (msg.op === 'quote' && !['buy', 'sell'].includes(msg.side))
-      || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 500
-      || (msg.op !== 'quote' && !['buy', 'sell'].includes(msg.op)))
+  if (!validGood(msg.g) || !['buy', 'sell'].includes(msg.op)
+      || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 500)
     return fail('command', tradeRev);
-  const side = msg.op === 'quote' ? msg.side : msg.op;
+  const side = msg.op;
   const q = w.economy?.quote(town, msg.g, msg.n, side);
-  if (msg.op === 'quote') {
-    if (!q?.ok) return emit(w, e, msg, false, q?.why || 'market', tradeRev, { town, g: msg.g, n: msg.n, side, total: q?.total || 0 });
-    return emit(w, e, msg, true, '', tradeRev, { town, g: msg.g, n: q.n, side,
-      total: q.total, avg: q.avg, law: q.law });
-  }
 
   if (!Number.isSafeInteger(msg.expectedTotal) || msg.expectedTotal < 0 || msg.expectedTotal > 1e9)
     return fail('command', tradeRev);

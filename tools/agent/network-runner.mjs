@@ -32,10 +32,13 @@ export class AgentNetworkRunner {
   #archive(client) {
     const sessionId = client.grant.scope.sessionId;
     if (this.#archives.some((a) => a.scope.sessionId === sessionId)) return;
-    const actions = client.actions, requests = client.chat.requests;
+    const actions = client.actions, requests = client.chat.requests, inventoryRequests = client.inventoryRequests,
+      marketRequests = client.marketRequests;
     for (const entry of [...actions, ...requests]) this.#retiredIds.add(entry.order.actionId);
+    for (const entry of inventoryRequests) this.#retiredIds.add(entry.requestId);
+    for (const entry of marketRequests) this.#retiredIds.add(entry.requestId);
     this.#archives.push(copy({ scope: client.grant.scope, controlRevision: client.grant.controlRevision,
-      identity: client.identity, termination: client.termination, actions, chatRequests: requests }));
+      identity: client.identity, termination: client.termination, actions, chatRequests: requests, inventoryRequests, marketRequests }));
   }
   get state() { return this.#active.state; }
   get closed() { return this.#closed; }
@@ -45,6 +48,12 @@ export class AgentNetworkRunner {
   get grant() { return this.#active.grant; }
   get actions() { return this.#active.actions; }
   get chat() { return this.#active.chat; }
+  get inventory() { return this.#active.inventory; }
+  get inventoryRequests() { return this.#active.inventoryRequests; }
+  get market() { return this.#active.market; }
+  get marketRequests() { return this.#active.marketRequests; }
+  get nowMs() { return this.#active.nowMs; }
+  get maxObservationAgeMs() { return this.#active.maxObservationAgeMs; }
   get viewReport() { return this.#active.viewReport; }
   waitClosed(timeoutMs = 2000) { return this.#active.waitClosed(timeoutMs); }
   get lifecycle() {
@@ -60,6 +69,12 @@ export class AgentNetworkRunner {
       ...s.chatRequests.filter((r) => r.state === 'uncertain').map((r) => ({ sessionId: s.scope.sessionId,
         actionId: r.order.actionId, kind: 'chat', state: r.state, why: r.why, attempts: r.attempts,
         result: r.result, read: 'unknown' })),
+      ...s.inventoryRequests.filter((r) => r.state === 'uncertain').map((r) => ({ sessionId: s.scope.sessionId,
+        requestId: r.requestId, kind: 'inventory', state: r.state, why: r.why, result: r.result,
+        read: 'unknown', retryAllowed: false })),
+      ...s.marketRequests.filter((r) => r.state === 'uncertain').map((r) => ({ sessionId: s.scope.sessionId,
+        requestId: r.requestId, kind: 'market', state: r.state, why: r.why, result: r.result,
+        read: 'unknown', retryAllowed: false })),
     ]).map((v) => ({ ...copy(v), retryAllowed: false, active: false }));
   }
   async connect(options = {}) {
@@ -109,6 +124,8 @@ export class AgentNetworkRunner {
   order(order) { return this.#retired(order) ? { ok: false, why: 'retired_action_id' } : this.#active.order(order); }
   sendChat(order) { return this.#retired(order) ? { ok: false, why: 'retired_action_id' } : this.#active.sendChat(order); }
   retryChat(requestId) { return this.#retiredIds.has(requestId) ? { ok: false, why: 'retired_action_id' } : this.#active.retryChat(requestId); }
+  readInventory(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readInventory(query); }
+  readMarket(query) { return this.#retiredIds.has(query?.requestId) ? { ok: false, why: 'retired_request_id' } : this.#active.readMarket(query); }
   cancel(actionId, ownerId) { return this.#active.cancel(actionId, ownerId); }
   pump() { return this.#active.pump(); }
   stop(ownerId) {

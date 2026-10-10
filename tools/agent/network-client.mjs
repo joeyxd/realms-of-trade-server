@@ -8,6 +8,8 @@ import { generateWorld } from '../../src/sim/worldgen.js';
 import { DT } from '../../src/data/tuning.js';
 import { AgentSession } from './session.mjs';
 import { AgentChat } from './chat.mjs';
+import { AgentInventory } from './inventory.mjs';
+import { AgentMarket } from './market.mjs';
 import { labLimits, validGrant, integer } from './contract.mjs';
 
 const fields = Object.fromEntries(PLAYER_FIELDS.map((name, i) => [name, i]));
@@ -22,12 +24,13 @@ export class AgentNetworkClient {
   #metadata = new Map(); #birth = 0; #revision = 0; #lastTick = -1; #initial = [];
   #identity = null; #timer = null; #settle = null; #reject = null; #readyTimer = null;
   #viewReport = null;
+  #serverPerception = null;
   #nearbyPlayer = false;
   #life = randomUUID(); #termination = null; #closedPromise; #closedResolve;
-  #actionMeta = new Map(); #receipt = 0; #name; #skin; #weapon; #facade;
+  #actionMeta = new Map(); #receipt = 0; #name; #skin; #weapon; #facade; #inventory; #market;
   #authorization; #authority = null; #controlAwaiting = null; #directPending = null;
   constructor({ url, grant, name = 'Brisa [IA]', skin = 0, weapon = 0, now = clock,
-    onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, authorization = null, transportFactory = (address) => new WsTransport(address) }) {
+    onFeedback = () => {}, limits = {}, chatTimeoutMs = 6000, inventoryTimeoutMs = 3000, marketTimeoutMs = 3000, authorization = null, transportFactory = (address) => new WsTransport(address) }) {
     const address = new URL(url);
     if (!['ws:', 'wss:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) throw new TypeError('invalid game URL');
     if (!validGrant(grant) || typeof now !== 'function' || typeof onFeedback !== 'function') throw new TypeError('invalid agent configuration');
@@ -44,6 +47,17 @@ export class AgentNetworkClient {
         this.#t.send(this.#authority ? { ...message, control: { epoch: this.grant.controlRevision } } : message);
       } });
     this.#t = transportFactory(address.href);
+    this.#inventory = new AgentInventory({ now, limits: this.#limits, timeoutMs: inventoryTimeoutMs,
+      onFeedback: (type, data) => this.#emit(type, data),
+      send: (message) => {
+        if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
+        this.#t.send(message);
+      } });
+    this.#market = new AgentMarket({ now, limits: this.#limits, timeoutMs: marketTimeoutMs,
+      onFeedback: (type, data) => this.#emit(type, data), send: (message) => {
+        if (this.#state !== 'ready' || this.#t.closed || this.#t.ws.readyState !== 1) throw new Error('transport_closed');
+        this.#t.send(message);
+      } });
     this.#closedPromise = new Promise((resolve) => { this.#closedResolve = resolve; });
     // GameClient receives only this private facade. Chat has its own validated private send lane.
     const messages = [], snapshots = [];
@@ -67,6 +81,12 @@ export class AgentNetworkClient {
   get observation() { return this.#session.observation; }
   get actions() { return this.#session.actions; }
   get chat() { return this.#chat.state; }
+  get inventory() { return this.#inventory.state; }
+  get inventoryRequests() { return this.#inventory.requests; }
+  get market() { return this.#market.state; }
+  get marketRequests() { return this.#market.requests; }
+  get nowMs() { return this.#now(); }
+  get maxObservationAgeMs() { return this.#limits.maxObservationAgeMs; }
   get grant() { return this.#session.grant; }
   get termination() { return copy(this.#termination); }
   async waitClosed(timeoutMs = 2000) {
@@ -104,11 +124,14 @@ export class AgentNetworkClient {
   #message(m) {
     if (m?.t === MSG.AGENT_STATE && this.#authorization) { this.#serverControl(m); return; }
     if (!m || typeof m !== 'object' || this.#state === 'stopped') return;
+    if (m.t === MSG.AGENT_INVENTORY_RESULT) { this.#inventory.receive(m); return; }
+    if (m.t === MSG.AGENT_MARKET_RESULT) { this.#market.receive(m); return; }
     if (m.t === MSG.FULL || m.t === MSG.ERROR) { this.#fail(m.t === MSG.FULL ? 'full' : `server_${m.code || 'error'}`); return; }
     if (m.t === MSG.SPAWN && integer(m.e?.id) && kinds[m.e.kind]) {
       if (!this.#metadata.has(m.e.id) && this.#metadata.size >= 4096) { this.#fail('entity_capacity'); return; }
       this.#retireTarget(m.e.id);
-      this.#metadata.set(m.e.id, { life: `life-${this.#life}-${++this.#birth}`, kind: kinds[m.e.kind] });
+      this.#metadata.set(m.e.id, { life: this.#authorization && typeof m.e.life === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(m.e.life)
+        ? m.e.life : `life-${this.#life}-${++this.#birth}`, kind: kinds[m.e.kind] });
     }
     if (m.t === MSG.DESPAWN) {
       if (m.id === this.#identity?.entityId) { this.#halt('disconnect', true); return; }
@@ -131,6 +154,9 @@ export class AgentNetworkClient {
       }
       this.#identity = { entityId: m.you, serverSeed: m.seed, protocol: m.v,
         authorization: this.#authority ? 'server' : 'local', mode: this.#authority ? 'agent' : 'guest' };
+      if (this.#authority && m.perception?.v === 1 && m.perception.serverEnforced === true &&
+          m.perception.policy === 'server_radius_colliders' && m.perception.radius === 24 && m.perception.maxEntities === 64)
+        this.#serverPerception = copy(m.perception);
       this.#client = new GameClient(this.#facade, generateWorld(m.seed), { emit() {} });
       for (const prior of this.#initial) {
         if (this.#chat.receive(prior, this.#identity.entityId)) { this.#halt('revoked', true); return; }
@@ -170,7 +196,7 @@ export class AgentNetworkClient {
       if (!meta || e[ENT.ID] === this.#identity.entityId || e.length < ENT.ELEM + 1) return [];
       const position = { x: e[ENT.X], y: e[ENT.Y], z: e[ENT.Z] };
       const distance = Math.hypot(position.x - self.position.x, position.y - self.position.y, position.z - self.position.z);
-      // Development relevance filter, not server-enforced visibility or occlusion.
+      // Guest relevance filter; the opt-in managed pilot already limits data before transport.
       return distance <= 24 ? [{ ref: { entityId: e[ENT.ID], life: meta.life }, kind: meta.kind, position, hp: e[ENT.HP], distance }] : [];
     }).sort((a, b) => a.distance - b.distance || a.ref.entityId - b.ref.entityId);
     const nearbyPlayer = entities.some((e) => e.kind === 'player' && e.distance < 8);
@@ -185,8 +211,12 @@ export class AgentNetworkClient {
     const accepted = this.#session.observe(observation, observation.receivedAtMs);
     if (!accepted.ok) { if (accepted.why === 'dead' || accepted.why === 'authorization_expired') this.#halt(accepted.why === 'dead' ? 'death' : 'expired', true); return; }
     this.#lastTick = s.tick; this.#revision++;
+    this.#updateReads();
     this.#nearbyPlayer = nearbyPlayer;
-    this.#viewReport = { policy: 'local_radius_filter', radius: 24, omittedEntities: Math.max(0, entities.length - this.#limits.maxEntities), serverEnforced: false };
+    this.#viewReport = this.#serverPerception && s.perception?.policy === this.#serverPerception.policy &&
+      s.perception.serverEnforced === true && s.perception.tick === s.tick ?
+      { ...copy(s.perception), localOmittedEntities: Math.max(0, entities.length - this.#limits.maxEntities) } :
+      { policy: 'local_radius_filter', radius: 24, omittedEntities: Math.max(0, entities.length - this.#limits.maxEntities), serverEnforced: false };
     for (const action of this.actions) {
       if (action.body) {
         const meta = this.#actionMeta.get(action.order.actionId);
@@ -226,6 +256,7 @@ export class AgentNetworkClient {
     this.#emit('observation', { observation: this.observation, inputAck: s.ack, viewReport: this.viewReport });
     if (this.#state === 'connecting') {
       this.#state = 'ready'; clearTimeout(this.#readyTimer);
+      this.#updateReads();
       this.#settle?.(); this.#settle = this.#reject = null;
     }
     this.#applyDirect();
@@ -242,6 +273,7 @@ export class AgentNetworkClient {
         state.grant.controlRevision < prior.grant.controlRevision ||
         (state.grant.controlRevision === prior.grant.controlRevision && state.taskRevision < prior.taskRevision)) return;
     this.#authority = { ...copy(state), receipt: copy(message.receipt ?? null) };
+    this.#updateReads();
     if (state.state === 'revoked') {
       this.#halt(['stop', 'death', 'expired', 'disconnect'].includes(state.why) ? state.why : 'revoked', false); return;
     }
@@ -338,6 +370,13 @@ export class AgentNetworkClient {
     const result = this.#chat.send(order, { grant: this.grant, observation: this.observation, ready: this.#state === 'ready' });
     this.#emit('chat_response', result); return result;
   }
+  #updateReads() {
+    const context = { ready: this.#state === 'ready', authenticated: !!this.#authorization,
+      grant: this.grant, authority: this.#authority, observation: this.observation };
+    this.#inventory.updateContext(context); this.#market.updateContext(context);
+  }
+  readInventory(query) { return this.#inventory.read(query); }
+  readMarket(query) { return this.#market.read(query); }
   retryChat(requestId) {
     const result = this.#chat.retry(requestId, { grant: this.grant, observation: this.observation, ready: this.#state === 'ready' });
     this.#emit('chat_retry_response', result); return result;
@@ -362,6 +401,8 @@ export class AgentNetworkClient {
   }
   pump() {
     if (this.#state !== 'ready') return { ok: false, why: 'not_ready' };
+    this.#inventory.expire();
+    this.#market.expire();
     if (this.#t.closed || this.#t.ws.readyState !== 1) { this.#halt('disconnect', false); return { ok: false, why: 'transport_closed' }; }
     if (this.#authority && (this.#controlAwaiting || !this.#authority.task || this.#authority.state !== 'active')) {
       if (this.#now() >= this.grant.expiresAtMs) this.#halt('expired', false);
@@ -399,6 +440,8 @@ export class AgentNetworkClient {
     clearInterval(this.#timer); clearTimeout(this.#readyTimer);
     this.#state = 'stopped';
     this.#chat.stop(reason);
+    this.#inventory.stop(reason);
+    this.#market.stop(reason);
     // Drop any unsent outbox before sending a final neutral command on the live socket.
     this.#t.outbox.length = 0;
     if (sendNeutral && !this.#authority && this.#client?.joined && this.#t.ws.readyState === 1) {
@@ -422,6 +465,8 @@ export class AgentNetworkClient {
     if (this.#authority?.state === 'active' && this.#state === 'ready') {
       const epoch = this.#authority.grant.controlRevision;
       clearInterval(this.#timer); this.#session.interrupt('stop', this.#now()); this.#chat.stop('stop');
+      this.#inventory.stop('stop');
+      this.#market.stop('stop');
       this.#t.outbox.length = 0; this.#client.pending.length = 0; this.#client.predicted.clear(); this.#state = 'stopping';
       this.#t.send({ t: MSG.AGENT_RELEASE, epoch });
       this.#readyTimer = setTimeout(() => this.#halt('stop', false), 1000);

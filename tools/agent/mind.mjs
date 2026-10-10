@@ -70,7 +70,7 @@ export class AgentMind {
     flight.timer = setTimeout(() => this.#interrupt(flight, 'inference_timeout'), this.#limits.timeoutMs);
     // Keep the slot occupied even if an adapter ignores abort. No overlapping paid calls.
     void this.#work(flight).catch(() => {
-      if (flight.dispatched) this.#budget.markUnknown(flight.requestId, 'inference_error');
+      if (flight.dispatched) this.#unknown(flight, 'inference_error');
       this.#finish(flight, { ok: false, why: 'inference_error' });
     }).finally(() => { clearTimeout(flight.timer); if (this.#flight === flight) this.#flight = null; });
     return result;
@@ -87,10 +87,11 @@ export class AgentMind {
   #interrupt(flight, why) {
     if (flight.completed) return;
     flight.cancelled = true;
-    if (flight.dispatched) this.#budget.markUnknown(flight.requestId, why);
+    if (flight.dispatched) this.#unknown(flight, why);
     if (flight.goalCommitStarted) this.#goalsUncertain = true;
     if (flight.memoryCommitStarted) this.#memoryUncertain = true;
     flight.controller.abort(); this.#finish(flight, { ok: false, why,
+      ...(this.#budget.checkActive && flight.dispatched ? { budgetReconciliation: 'pending' } : {}),
       ...(flight.goalCommitStarted ? { objective: { state: 'uncertain', retryAllowed: false } } : {}),
       ...(flight.memoryCommitStarted ? { memory: { state: 'uncertain', retryAllowed: false } } : {}) });
   }
@@ -99,6 +100,10 @@ export class AgentMind {
     return { ok: true, inFlight: !!this.#flight };
   }
   close() { this.#closed = true; this.cancel(); }
+  #unknown(flight, why) {
+    // A persisted inflight reservation already retains capacity if this update fails.
+    try { const result = this.#budget.markUnknown(flight.requestId, why); if (result?.then) void result.catch(() => {}); } catch {}
+  }
   #snapshotWhy(snapshot, nowMs) {
     const grant = snapshot?.grant, observation = snapshot?.observation;
     if (snapshot?.state !== 'ready' || !validGrant(grant) || !validObservation(observation, LAB_LIMITS, 'server')) return 'not_ready';
@@ -187,26 +192,50 @@ export class AgentMind {
     const expired = this.#snapshotWhy(snapshot, this.#now());
     if (expired) { this.#finish(flight, { ok: false, why: expired }); return; }
     if (snapshot.memoryValidUntilMs !== null && this.#now() >= snapshot.memoryValidUntilMs) { this.#finish(flight, { ok: false, why: 'memory_expired' }); return; }
-    const reserved = this.#budget.reserve({ requestId: flight.requestId, kind: flight.mode === 'compaction' ? 'compaction' : 'decision', inputTokens: context.prepared.inputTokens,
+    const reserved = await this.#budget.reserve({ requestId: flight.requestId, kind: flight.mode === 'compaction' ? 'compaction' : 'decision', inputTokens: context.prepared.inputTokens,
       outputTokens: this.#limits.maxOutputTokens, maxCostUnits: context.prepared.maxCostUnits, countMode: this.#adapter.countMode });
     if (!reserved.ok) { this.#finish(flight, { ok: false, why: reserved.why }); return; }
-    if (!this.#budget.markDispatched(flight.requestId).ok) {
-      this.#budget.cancelBeforeDispatch(flight.requestId);
-      this.#finish(flight, { ok: false, why: 'reservation_unavailable' }); return;
+    if (this.#deadline(flight)) { await this.#budget.cancelBeforeDispatch(flight.requestId); return; }
+    const dispatchSnapshot = copy(await this.#read());
+    const dispatchFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now());
+    if (this.#deadline(flight) || dispatchFence) {
+      await this.#budget.cancelBeforeDispatch(flight.requestId);
+      this.#finish(flight, { ok: false, why: dispatchFence }); return;
+    }
+    const dispatched = await this.#budget.markDispatched(flight.requestId);
+    if (!dispatched.ok) {
+      await this.#budget.cancelBeforeDispatch(flight.requestId);
+      this.#finish(flight, { ok: false, why: dispatched.why ?? 'reservation_unavailable' }); return;
     }
     flight.dispatched = true;
+    if (this.#deadline(flight)) { await this.#budget.markUnknown(flight.requestId, 'inference_cancelled'); return; }
+    if (this.#budget.checkActive) {
+      const admitted = await this.#budget.checkActive(flight.requestId);
+      if (!admitted.ok || this.#deadline(flight)) {
+        await this.#budget.markUnknown(flight.requestId, 'inference_cancelled');
+        this.#finish(flight, { ok: false, why: admitted.why }); return;
+      }
+    }
+    const boundaryFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now());
+    if (boundaryFence) {
+      await this.#budget.markUnknown(flight.requestId, 'inference_cancelled');
+      this.#finish(flight, { ok: false, why: boundaryFence }); return;
+    }
     let response;
     try {
       response = await this.#adapter.complete({ body: context.prepared.body, signal: flight.controller.signal,
         requestId: flight.requestId, maxOutputTokens: this.#limits.maxOutputTokens, maxResponseBytes: this.#limits.maxResponseBytes });
     } catch {
-      this.#budget.markUnknown(flight.requestId, 'inference_error');
+      await this.#budget.markUnknown(flight.requestId, 'inference_error');
       this.#finish(flight, { ok: false, why: 'inference_error' }); return;
     }
     // Reconcile native usage even for malformed, cancelled, superseded or late responses.
     // The adapter, not generated JSON text, is the trusted usage source.
-    const settlement = response?.usage ? this.#budget.settle(flight.requestId, response.usage) : { ok: false };
-    if (!settlement.ok) this.#budget.markUnknown(flight.requestId, 'usage_unknown');
+    const settlement = response?.usage ? await this.#budget.settle(flight.requestId, response.usage) : { ok: false };
+    if (!settlement.ok) {
+      const unknown = await this.#budget.markUnknown(flight.requestId, 'usage_unknown');
+      if (!unknown.ok) { this.#finish(flight, { ok: false, why: 'budget_reconciliation_unavailable' }); return; }
+    }
     if (this.#deadline(flight)) return;
     if (settlement.overrun) { this.#finish(flight, { ok: false, why: 'provider_limit_overrun' }); return; }
     const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode);
@@ -219,6 +248,11 @@ export class AgentMind {
     if (this.#deadline(flight)) return;
     const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs);
     if (fence) { this.#finish(flight, { ok: false, why: fence }); return; }
+    if (this.#budget.checkActive) {
+      const active = await this.#budget.checkActive(flight.requestId);
+      if (this.#deadline(flight)) return;
+      if (!active.ok) { this.#finish(flight, { ok: false, why: active.why }); return; }
+    }
     if (flight.mode === 'compaction') {
       if (decision.type === 'wait') { this.#finish(flight, { ok: true, action: null, memory: null }); return; }
       const result = createMemorySummary(decision, flight.turn, snapshot.scope, nowMs);

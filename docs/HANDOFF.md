@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L06b-2a, 2026-10-10:** [inventario/contexto y mercado privado](delivery/l06b-agent-market.md).
+Lecturas tipadas `inventory_read`/`market_read`, pueblo derivado del servidor, list/quote sin mutación,
+frescura y retiro de vistas ante movimiento, denegación, stop/revocación o nueva sesión. CLI y mente
+comparten el snapshot; protocolo 35 y alpha.20. Se integran prerrequisitos locales L05/L06a/L06b-1
+sobre upstream `70205bd`; piloto y proveedor siguen apagados en `npm start`. Sin SQL nuevo ni gastos
+de bienes/inferencia. Sigue L06b-2b: compra/venta y presupuesto durable de bienes en la misma M5.
+Ver [uso opt-in](agents/market-read.md) y la evidencia de publicación en la entrega; código presente
+no implica agentes habilitados públicamente.
+
 **AREA03 PRG01b1, 2026-10-10:** [perfil compatible para aprendizaje](briefs/prg01b1-profile-continuity.md)
 y [entrega](delivery/prg01b1-profile-continuity.md). Nuevos perfiles con progreso vacío; legacy conserva
 su forma exacta y sus recibos. Aprendizaje válido se conserva en saves, muerte y reentrada; corrupción

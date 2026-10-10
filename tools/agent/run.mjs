@@ -8,6 +8,7 @@ import { buildRunnerContext } from './runner-context.mjs';
 import { NETWORK_CAPABILITIES, validGrant } from './contract.mjs';
 import { AgentMind } from './mind.mjs';
 import { InferenceBudget } from './inference-budget.mjs';
+import { PersistentInferenceBudget } from './persistent-budget.mjs';
 import { runnerMindSnapshot } from './mind-snapshot.mjs';
 import { createSimulatedMind } from './simulated-mind.mjs';
 
@@ -18,6 +19,7 @@ Opcional autenticado: --account-token-env NOMBRE_VARIABLE. El valor secreto se l
 En modo autenticado, --owner y --character deben ser UUID del dueño autenticado y personaje administrado; --world debe coincidir con la política server-owned.
 Opcionales: --name "Brisa [IA]" --capabilities move,aim,attack_pve,body_pve,chat --minutes 5 --inspect --stay-open
 JSON por stdin: observe, files, context, actions, chat, lifecycle, stop, exit; order/chat_send con campo order (sobre v1); chat_retry con requestId; cancel con actionId.
+Lecturas privadas / Private reads: inventory_read y market_read con query v1; inventory y market inspeccionan el ledger. Requieren inventory_read/market_read en el grant autenticado; market_read solo admite list o quote, sin mover bienes / only list or quote, no goods movement.
 Movimiento con capacidad move: go_to, follow, keep_distance; rutas directas locales y resultados inspeccionables, sin navegación global.
 body_pve requiere move,aim,attack_pve,body_pve; modos aggressive/defensive/support, reservas propias y ataque suprimido cerca de otros jugadores.
 Con --stay-open: reenter explícito tras cierre; modo invitado crea un cuerpo local nuevo. Modo autenticado pide un grant nuevo al servidor y nunca reanuda tareas; self-stop libera el lease y permite conexión fresca, mientras stop/revoke del dueño requiere resume explícito y conexión fresca.
@@ -25,6 +27,7 @@ L03a opt-in: --mind simulated; think inicia una consulta simulada, mind inspecci
 L03b: respond con messageId responde una vez a un mensaje entregado, con una línea de fixture; no hay escucha/respuesta automática. Requiere capacidad chat.
 L03c: --mind-goals habilita revise_goals para actualizar objectives.json desde feedback con una política simulada. No modifica personalidad/memoria ni declara encuentros completados.
 L04a: --mind-memory habilita remember (episodio sin inferencia) y compact_memory con sourceIds (resumen simulado presupuestado). memory.jsonl conserva fuentes originales y resúmenes; lectura/búsqueda acotada entre sesiones. No hay captura por tick ni repetición automática.
+L05a: --mind-budget C:/ruta/presupuesto usa el archivo ya inicializado por manage-budget.mjs; no reinicia límites al reentrar. inference_budget refresca uso/límites; avisos inference_budget_notice bloquean nuevas consultas sin parar el cuerpo. Sin esta opción, el ledger de ensayo sigue por proceso.
 Política de ensayo: --conversation-channels local,whisper --conversation-max-turns 32 --conversation-max-replies 1 --conversation-cooldown 5000. Mundo requiere incluir world explícitamente.
 Límites de ensayo configurables: --mind-max-calls 8 --mind-max-tokens 100000 --mind-max-cost 100000 --mind-timeout 1000. Tokens/coste son unidades simuladas, sin proveedor ni cobro real.
 El modo invitado usa identificadores locales y una plaza normal. El token no se imprime ni se guarda en archivos del dueño.\n`;
@@ -38,7 +41,7 @@ async function main() {
     if (key === '--stay-open') { args.stayOpen = true; continue; }
     if (key === '--mind-goals') { args['mind-goals'] = true; continue; }
     if (key === '--mind-memory') { args['mind-memory'] = true; continue; }
-    if (!['--url', '--files', '--owner', '--character', '--world', '--name', '--capabilities', '--minutes', '--account-token-env', '--mind', '--mind-max-calls', '--mind-max-tokens', '--mind-max-cost', '--mind-timeout', '--conversation-channels', '--conversation-max-turns', '--conversation-max-replies', '--conversation-cooldown'].includes(key) || !process.argv[i + 1] || Object.hasOwn(args, key.slice(2))) throw new Error('invalid_arguments');
+    if (!['--url', '--files', '--owner', '--character', '--world', '--name', '--capabilities', '--minutes', '--account-token-env', '--mind', '--mind-budget', '--mind-max-calls', '--mind-max-tokens', '--mind-max-cost', '--mind-timeout', '--conversation-channels', '--conversation-max-turns', '--conversation-max-replies', '--conversation-cooldown'].includes(key) || !process.argv[i + 1] || Object.hasOwn(args, key.slice(2))) throw new Error('invalid_arguments');
     args[key.slice(2)] = process.argv[++i];
   }
   const scope = { ownerId: args.owner, characterId: args.character, worldId: args.world, sessionId: randomUUID() };
@@ -63,14 +66,18 @@ async function main() {
   write('owner_files', files);
   if (args.inspect) return;
   let mind = null;
+  let budget = null;
+  if (args['mind-budget'] && ['mind-max-calls', 'mind-max-tokens', 'mind-max-cost'].some((k) => Object.hasOwn(args, k))) throw new Error('durable_budget_has_owner_limits');
+  if (args['mind-budget']) budget = await PersistentInferenceBudget.open({ directory: resolve(args['mind-budget']), scope: memoryScope });
   const agent = new AgentNetworkRunner({ url: args.url, grant, ...(authorization ? { authorization } : {}), name: args.name ?? 'Brisa [IA]', onFeedback: (event) => {
     // Idle input ticks are routine; observations and action-bearing inputs remain reviewable.
     if (event.type !== 'input' || event.data.actionId) write(event.type, event.data);
     if (event.type === 'stopped') { mind?.cancel(); if (!args.stayOpen) process.stdin.destroy(); }
   } });
   if (args.mind) {
-    const budget = new InferenceBudget({ scope: memoryScope, limits: { maxCalls: Number(args['mind-max-calls'] ?? 8),
-      maxTokens: Number(args['mind-max-tokens'] ?? 100000), maxCostUnits: Number(args['mind-max-cost'] ?? 100000), maxEntries: 64 } });
+    budget = budget ??
+      new InferenceBudget({ scope: memoryScope, limits: { maxCalls: Number(args['mind-max-calls'] ?? 8),
+        maxTokens: Number(args['mind-max-tokens'] ?? 100000), maxCostUnits: Number(args['mind-max-cost'] ?? 100000), maxEntries: 64 } });
     mind = new AgentMind({ adapter: createSimulatedMind({ conversationReply: 'Con calma, compañero. Te escucho.', goalPolicy: args['mind-goals'] === true, memoryPolicy: args['mind-memory'] === true }), budget,
       readSnapshot: async () => { files = await loadOwnerFiles({ directory, scope: memoryScope }); return runnerMindSnapshot(agent, files); },
       submitOrder: (order) => agent.order(order), sendChat: (order) => agent.sendChat(order),
@@ -89,16 +96,25 @@ async function main() {
     const ready = await agent.connect();
     write('ready', { ...ready, grant: agent.grant, authority: agent.authority?.grant ? 'server_controller' : 'local_runner_only', inferenceCalls: 0, gameSpendingEnabled: false });
     if (mind) write('mind', mind.state);
+    const publishMind = (type, result) => {
+      write(type, result);
+      if (!result.ok && /^(?:budget_|max_calls|max_tokens|max_cost_units|entry_capacity|reservation_unavailable|provider_limit_overrun)/.test(result.why ?? ''))
+        write('inference_budget_notice', { why: result.why, requestBlocked: true, bodyStoppedByBudget: false, ledger: budget.snapshot });
+    };
     const handle = async (raw) => {
       let message;
       try { message = JSON.parse(raw); } catch { write('rejected', { why: 'invalid_json' }); return; }
       if (!message || typeof message !== 'object' || Array.isArray(message)) { write('rejected', { why: 'invalid_message' }); return; }
-      const keys = ['order', 'chat_send'].includes(message.type) ? ['type', 'order'] : message.type === 'respond' ? ['type', 'messageId'] : message.type === 'compact_memory' ? ['type', 'sourceIds'] : message.type === 'chat_retry' ? ['type', 'requestId'] : message.type === 'cancel' ? ['type', 'actionId'] : ['type'];
+      const keys = ['inventory_read', 'market_read'].includes(message.type) ? ['type', 'query'] : ['order', 'chat_send'].includes(message.type) ? ['type', 'order'] : message.type === 'respond' ? ['type', 'messageId'] : message.type === 'compact_memory' ? ['type', 'sourceIds'] : message.type === 'chat_retry' ? ['type', 'requestId'] : message.type === 'cancel' ? ['type', 'actionId'] : ['type'];
       if (Object.keys(message).length !== keys.length || !keys.every((key) => Object.hasOwn(message, key))) { write('rejected', { why: 'invalid_message' }); return; }
       switch (message.type) {
         case 'order': mind?.cancel(); write('order_response', agent.order(message.order)); break;
         case 'observe': write('current', { state: agent.state, observation: agent.observation }); break;
         case 'actions': write('actions', agent.actions); break;
+        case 'inventory': write('inventory', agent.inventory); break;
+        case 'market': write('market', agent.market); break;
+        case 'inventory_read': write('inventory_read_response', agent.readInventory(message.query)); break;
+        case 'market_read': write('market_read_response', agent.readMarket(message.query)); break;
         case 'cancel': mind?.cancel(); write('cancel_response', agent.cancel(message.actionId, scope.ownerId)); break;
         case 'chat': write('chat', agent.chat); break;
         case 'chat_send': write('chat_send_response', agent.sendChat(message.order)); break;
@@ -107,11 +123,11 @@ async function main() {
         case 'think':
           if (!mind) write('rejected', { why: 'mind_disabled' });
           // Do not await inference in the stdin loop: stop/exit stay responsive during I/O.
-          else void mind.decide().then((result) => write('mind_result', result));
+          else void mind.decide().then((result) => publishMind('mind_result', result));
           break;
         case 'revise_goals':
           if (!mind) write('rejected', { why: 'mind_disabled' });
-          else void mind.reviseGoals().then((result) => write('goals_result', result));
+          else void mind.reviseGoals().then((result) => publishMind('goals_result', result));
           break;
         case 'remember':
           if (!mind) write('rejected', { why: 'mind_disabled' });
@@ -119,13 +135,17 @@ async function main() {
           break;
         case 'compact_memory':
           if (!mind) write('rejected', { why: 'mind_disabled' });
-          else void mind.compactMemory({ sourceIds: message.sourceIds }).then((result) => write('compaction_result', result));
+          else void mind.compactMemory({ sourceIds: message.sourceIds }).then((result) => publishMind('compaction_result', result));
           break;
         case 'respond':
           if (!mind) write('rejected', { why: 'mind_disabled' });
-          else void mind.converse({ messageId: message.messageId }).then((result) => write('conversation_result', result));
+          else void mind.converse({ messageId: message.messageId }).then((result) => publishMind('conversation_result', result));
           break;
         case 'mind': if (mind) write('mind', mind.state); else write('rejected', { why: 'mind_disabled' }); break;
+        case 'inference_budget':
+          if (!budget) write('rejected', { why: 'mind_disabled' });
+          else write('inference_budget', budget.refresh ? await budget.refresh() : { ok: true, snapshot: budget.snapshot });
+          break;
         case 'mind_cancel': write('mind_cancel', mind ? mind.cancel() : { ok: false, why: 'mind_disabled' }); break;
         case 'reenter': {
           if (!args.stayOpen) { write('rejected', { why: 'reentry_disabled' }); break; }
@@ -145,21 +165,9 @@ async function main() {
           // Always refresh the actual files before assembling a context. Never call a provider.
           try { files = await loadOwnerFiles({ directory, scope: memoryScope }); }
           catch (error) { write('rejected', { why: error.code ?? 'owner_files_unavailable' }); break; }
-          const chat = agent.chat;
-          const authority = agent.authority?.grant ? 'server_controller' : 'local_runner_only';
-          const required = { rules: { grant: agent.grant, controlStatus: agent.state, authority, inferenceEnabled: false, gameSpendingEnabled: false, chatTextIsUntrusted: true },
-            personality: files.files.personality.content, tools: { capabilities: agent.state === 'ready' ? agent.grant.capabilities : [],
-              chat: { self: chat.self, available: chat.available, config: chat.config, peers: chat.peers.slice(0, 32), omittedPeers: Math.max(0, chat.peers.length - 32),
-              historyBeforeSession: chat.historyBeforeSession, pending: chat.requests.filter((r) => ['sent', 'uncertain'].includes(r.state)).map((r) => ({
-                requestId: r.order.actionId, channel: r.payload.channel, target: r.payload.target ?? null, text: r.payload.text,
-                state: r.state, attempts: r.attempts, why: r.why })) } },
-            observation: agent.observation, goals: { revision: files.files.objectives.revision, goals: files.files.objectives.goals },
-            pending: [
-              ...agent.actions.filter((a) => !['confirmed', 'rejected', 'cancelled'].includes(a.state)).map((a) => ({ actionId: a.order.actionId, state: a.state, effects: a.effects, inputRange: a.inputRange, ...(a.navigation ? { navigation: a.navigation } : {}), ...(a.body ? { body: a.body } : {}) })),
-              ...agent.priorUncertainty.filter((a) => a.sessionId !== agent.grant.scope.sessionId),
-            ] };
           const memorySnapshot = runnerMindSnapshot(agent, files);
-          required.pending = memorySnapshot.required.pending;
+          const required = memorySnapshot.required;
+          required.rules.inferenceEnabled = false;
           const context = buildRunnerContext({ required, memory: memorySnapshot.memory, queryTags: memorySnapshot.queryTags,
             candidateRanks: memorySnapshot.candidateRanks ?? null, scope: memoryScope, nowMs: Date.now() });
           write('context', { ...context, ownerFileHashes: Object.fromEntries(Object.entries(files.files).map(([key, file]) => [key, file.sha256])), ownerHistory: files.files.memory.report,

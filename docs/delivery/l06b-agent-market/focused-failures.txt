@@ -1,0 +1,40 @@
+✔ opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents (431.8525ms)
+✔ owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume (636.7785ms)
+✔ agent authority gate requires authenticated identity resolution and a matching configured world (0.5582ms)
+✔ agent HELLO remains denied when the opt-in server gate is absent (253.3685ms)
+✔ partial agent admission failure closes the managed socket and leaves no entity or active grant (253.9274ms)
+✔ a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages (451.5479ms)
+✔ PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick (266.5418ms)
+✔ task and grant expiration are swept with the host timer stopped (5249.8635ms)
+✔ death invalidates an active grant, task, and queued input before any next tick (260.1635ms)
+✔ disconnect retires its queue and a reentered agent receives a different grant (375.5593ms)
+✔ run.mjs uses durable budget across restarts, reports adapter usage, and keeps network body active on denial (1645.4308ms)
+✔ missing durable budget and conflicting process-local limits fail before readiness without resetting files (604.6968ms)
+✔ AgentChat rejects malformed deliveries and a changed C01 session identity (1.3254ms)
+✔ real guests share world, local, and private chat through C01 routing (1248.5365ms)
+✔ server rate and recipient rejections return visible chat outcomes (836.9753ms)
+✔ same-ID retry recovers a lost C01 reply without duplicating delivery (773.9335ms)
+✔ chat and body orders share action IDs, and server chat accepts 281–300 code points (774.5145ms)
+✔ real chat history is bounded, replay deduplicated, and control text is cleaned (1076.0534ms)
+✔ chat send requires a fresh observation and the chat capability (666.6069ms)
+✔ chat has one unresolved request and caps explicit uncertainty retries at three attempts (909.0887ms)
+✔ foreign whispers and malformed receipts cannot create delivered context or routing proof (0.5335ms)
+✔ closed IDs remain replay-only, capacity is explicit, and stop keeps uncertainty without resend (0.4835ms)
+✔ localhost runner feeds correlated body feedback into goal turns while the body keeps moving and commits real revisions (976.9087ms)
+✔ managed owner stop during objective commit rejects the final guard without writing the real owner file (533.287ms)
+✔ CLI goal permission is opt-in, writes only objectives, keeps credentials private and exits on owner stop (805.8027ms)
+✔ fake wire decodes only confirmed combat reserves and predicts no reserve change from input ACK (335.3489ms)
+✔ fake wire body uses confirmed busy state and cadence; support guards near its ally without attacking (293.9034ms)
+✔ fake wire target retirement cancels before a fresh snapshot and late observations cannot resume the body (207.4019ms)
+✔ fake wire partial swings, potion receipts, ACK and guard observation never claim a completed encounter (205.0123ms)
+✔ fake wire cancel, expiry and stop stay neutral and never resume a previously emitted body (228.181ms)
+✔ real WS body attacks with authoritative damage, retreats on confirmed low HP, consumes one potion, and respects the map boundary (5108.9018ms)
+✔ real WS support covers its protected player and the host blocks a directed projectile (4010.9619ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36947.8509

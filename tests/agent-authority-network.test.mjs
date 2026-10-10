@@ -456,7 +456,7 @@ test('PvE ATTACK carried from a late command is revalidated after merge if a liv
 });
 
 test('task and grant expiration are swept with the host timer stopped', { timeout: 10000 }, async (t) => {
-  const { server, url } = await room(t, { ttlMs: 1200 });
+  const { server, url } = await room(t, { ttlMs: 5000 });
   const agent = await connect(url, 'agent-token', { agent: true });
   t.after(() => agent.client.close());
   assert.equal(agent.result.t, MSG.WELCOME);
@@ -465,10 +465,12 @@ test('task and grant expiration are swept with the host timer stopped', { timeou
   const stoppedTick = server.game.status().tick;
   const epoch = agent.result.control.grant.controlRevision;
   const afterTask = agent.client.messages.length;
-  await agent.client.send({ t: MSG.AGENT_TASK, ...task(epoch, 0, 'expires-first', 'goal', { ...move, durationMs: 60 }) });
+  await agent.client.send({ t: MSG.AGENT_TASK, ...task(epoch, 0, 'expires-first', 'goal'),
+    args: { ...move, durationMs: 60 } });
   const accepted = await agent.client.waitFor((message) => agent.client.messages.indexOf(message) >= afterTask &&
     message.t === MSG.AGENT_STATE && message.state?.task?.actionId === 'expires-first');
   assert.equal(accepted.ok, true);
+  assert.equal(accepted.state.task.args.durationMs, 60, 'the short task expires before the longer grant');
   await sleep(Math.max(0, accepted.state.task.expiresAtMs - Date.now() + 5));
   const afterTaskSweep = agent.client.messages.length;
   server.game.sweepAgentControl();

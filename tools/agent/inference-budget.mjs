@@ -72,6 +72,15 @@ export class InferenceBudget {
     return { ok: true, entry: this.#copyEntry(entry) };
   }
 
+  // Owner policy changes retain every request identity, hold and measured usage.
+  // Lower limits block admission; raising them never clears a provider overrun.
+  setLimits(limits) {
+    const checked = new InferenceBudget({ scope: this.#scope, limits });
+    if (limits.maxEntries < this.#entries.size) return { ok: false, why: 'entry_capacity' };
+    this.#limits = checked.snapshot.limits;
+    return { ok: true };
+  }
+
   markDispatched(requestId) {
     const entry = this.#entries.get(requestId);
     if (!entry || entry.state !== 'reserved') return { ok: false, why: 'not_reserved' };

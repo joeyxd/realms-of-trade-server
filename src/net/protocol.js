@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 33; // Adds private, session-only coastal lesson snapshots and scoped commands.
+export const PROTOCOL_VERSION = 35; // Session-only coastal lesson and private epoch-bound inventory/market reads.
 
 export const MSG = {
   // client -> server
@@ -13,6 +13,8 @@ export const MSG = {
   AGENT_CANCEL: 'agent_cancel', // managed controller: {epoch,expectedTaskRevision}
   AGENT_RELEASE: 'agent_release', // managed controller relinquishes its lease: {epoch}
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
+  AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
+  AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
   WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
@@ -27,6 +29,8 @@ export const MSG = {
   CHAT_MESSAGE: 'chat_message', // {id,requestId,channel,sender,target?,text,tick}; identity comes from server
   CHAT_RESULT: 'chat_result', // {requestId,ok,code?,messageId?,duplicate?}; routed, not a read receipt
   AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
+  AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
+  AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
   PROFILE: 'profile', // {p}: your profile (bag, equipment, gold, masteries, quests…), private (M4)
   SAVE: 'save',       // {blob}: keep this and send it back in your next hello (M4, P3)
   // Session-owned helm and relative deck input; the remaining naval/trade messages stay reserved.

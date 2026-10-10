@@ -5,13 +5,13 @@ import { WebSocketServer } from 'ws';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
-import { C } from '../src/sim/ecs.js';
+import { C, KIND } from '../src/sim/ecs.js';
 import { createMemoryStore, StoreError } from './store.mjs';
 import { ProfileSessions } from './profileSessions.mjs';
 import { legacyKey } from './legacy.mjs';
 import { WorldState } from './worldState.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
-import { profilePearls, canonicalText } from './pearlOperations.mjs';
+import { profilePearls } from './pearlOperations.mjs';
 import { syncProfile } from '../src/sim/systems/inventory.js';
 import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 import { PearlStaging } from './pearlStaging.mjs';
@@ -24,10 +24,17 @@ import { PearlLifecycle } from './pearlLifecycle.mjs';
 import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { groundKey } from './pearlGround.mjs';
 import { AgentControl } from './agentControl.mjs';
-import { EconomicAuthority } from './economicAuthority.mjs';
-import { newCommunityState } from './communityProject.mjs';
+import { AgentPerception, AGENT_PILOT_POLICY } from './agentPerception.mjs';
+import { captureAgentInventory } from './agentInventory.mjs';
+import { INVENTORY_QUERY_LIMIT, inventoryId } from '../src/net/agentInventory.js';
+import { MARKET_QUERY_LIMIT, MARKET_FAILURES, validMarketQuery, validMarketProjection } from '../src/net/agentMarket.js';
+import { readCommerce } from '../src/sim/systems/commerce.js';
+import { townAt } from '../src/sim/systems/trade.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { types } from 'node:util';
+import { EconomicAuthority } from './economicAuthority.mjs';
+import { newCommunityState } from './communityProject.mjs';
+import { canonicalText } from './pearlOperations.mjs';
 
 function assemblyOptions(raw, keys) {
   if (!raw || types.isProxy(raw) || ![Object.prototype, null].includes(Object.getPrototypeOf(raw))) throw new StoreError('configuration');
@@ -53,10 +60,12 @@ export class GameHost {
   #deathDropStaging = null; #deathDrops = null; #managedDropHook = null;
   #pearlStartup = null; #prepareTask = null; #requiresPearlStartup = false;
   #deadlineClock = null; #pearlGround = null;
+  #inventoryQueries = new WeakMap();
+  #marketQueries = new WeakMap();
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
-    worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null,
+    worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null } = {}) {
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
@@ -64,6 +73,14 @@ export class GameHost {
     if (agentControl !== null && !resolvePlayer) throw new StoreError('configuration');
     if (agentControl !== null && worldId !== null && agentControl.worldId !== worldId) throw new StoreError('configuration');
     this.agentControl = agentControl === null ? null : new AgentControl(agentControl);
+    this.agentPilot = null;
+    if (agentPilot !== null) {
+      const pilot = assemblyOptions(agentPilot, ['maxAgents']);
+      if (!this.agentControl || Object.keys(pilot).length !== 1 || !Number.isSafeInteger(pilot.maxAgents) ||
+          pilot.maxAgents < 1 || pilot.maxAgents > 2 || !Number.isSafeInteger(maxPlayers) ||
+          maxPlayers < 2 || maxPlayers > 4 || pilot.maxAgents >= maxPlayers) throw new StoreError('configuration');
+      this.agentPilot = Object.freeze({ maxAgents: pilot.maxAgents });
+    }
     if (!Number.isFinite(joinTimeoutMs) || joinTimeoutMs <= 0 || joinTimeoutMs > 60000) throw new StoreError('configuration');
     if (initializeAccounts && (!resolvePlayer || !saves || typeof store.initializeProfile !== 'function' || typeof store.legacyClaimed !== 'function')) throw new StoreError('configuration');
     if (!Number.isFinite(worldSaveMs) || worldSaveMs <= 0 || worldSaveMs > 2147483647) throw new StoreError('configuration');
@@ -106,6 +123,20 @@ export class GameHost {
       onSave: (id, p) => this.saveProfile(id, p),
     });
     if (this.agentControl) this.server.inputAccess = (...args) => this.agentInputAllowed(...args);
+    if (this.agentPilot) {
+      // Resolve every hit against the live exposure, including windups and secondary targets.
+      // This synchronous transport policy adds no provider work or clock to the simulation.
+      const world = this.server.world, canHit = world.canHit.bind(world), strike = world.strike.bind(world),
+        despawn = world.despawn.bind(world);
+      world.canHit = (attacker, target) => canHit(attacker, target) && this.agentHitAllowed(attacker, target);
+      world.strike = (target, damage, options) => this.agentHitAllowed(options.by || 0, target)
+        ? strike(target, damage, options) : 0;
+      world.despawn = (entity) => {
+        const connection = this.server.clients.get(world.ecs.clientId[entity]);
+        if (connection?.agentManaged && connection.entity === entity) this.clearAgentEffects(entity);
+        return despawn(entity);
+      };
+    }
     this.worldSaveMs = worldSaveMs;
     this.worldState = worldId === null ? null : new WorldState(store, { id: worldId, seed: this.server.world.seed,
       onFailure: (code) => this.fenceWorld(code) });
@@ -495,6 +526,8 @@ export class GameHost {
   receive(sock, msg) {
     if (this.closing || sock.economicClosing || !this.sockets.has(sock.id)) return;
     this.sweepAgentControl();
+    if (msg.t === MSG.AGENT_INVENTORY) { this.agentInventoryMessage(sock, msg); return; }
+    if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }
@@ -551,6 +584,108 @@ export class GameHost {
     return { tick: this.server.world.tick, queueCleared: count, neutralPending: !!c?.controlNeutral, ack: c?.ack ?? 0 };
   }
 
+  agentInventoryMessage(sock, msg) {
+    const reply = (why, inventory = null, replay = false, tick = this.server.world.tick) => {
+      const result = { t: MSG.AGENT_INVENTORY_RESULT,
+        requestId: inventoryId(msg.requestId) ? msg.requestId : null,
+        epoch: Number.isSafeInteger(msg.epoch) && msg.epoch > 0 ? msg.epoch : null,
+        sessionId: inventoryId(msg.sessionId) ? msg.sessionId : null,
+        ok: why === null, why, tick, replay, inventory };
+      this.sendTo(sock.id, result);
+      return result;
+    };
+    if (Object.keys(msg).length !== 4 || !['t', 'requestId', 'epoch', 'sessionId'].every(key => Object.hasOwn(msg, key)) ||
+        !inventoryId(msg.requestId) || !Number.isSafeInteger(msg.epoch) || msg.epoch < 1 || !inventoryId(msg.sessionId)) {
+      reply('invalid_request'); return;
+    }
+    // The socket and authenticated session select the profile. No payload identity can select another owner.
+    if (!this.agentPilot || !sock.agentIdentity || !sock.worldAdmitted) { reply('forbidden'); return; }
+    const state = this.agentControl.byClient(sock.id), c = this.server.clients.get(sock.id),
+      session = this.profiles.clients.get(sock.id), w = this.server.world, e = c?.entity;
+    if (!state || state.grant.scope.characterId !== sock.agentIdentity || state.grant.scope.sessionId !== sock.agentSessionId ||
+        msg.sessionId !== state.grant.scope.sessionId || !this.agentControl.authorize(sock.id, msg.epoch)) {
+      reply('control_mismatch'); return;
+    }
+    if (!state.grant.capabilities.includes('inventory_read')) { reply('forbidden'); return; }
+    if (!e || !c.serverProfile || !c.agentManaged || !session || session.key !== sock.agentIdentity ||
+        session.closed || session.failed || this.profiles.accounts.get(session.key) !== session ||
+        w.ecs.clientId[e] !== sock.id || w.ecs.kind[e] !== KIND.PLAYER || !(w.ecs.mask[e] & C.PLAYER)) {
+      reply('unavailable'); return;
+    }
+    if (!w.ecs.alive[e] || w.ecs.hp[e] <= 0 || w.ecs.dead[e] > 0) { reply('dead'); return; }
+    if (!this.profileAvailable(sock.id, e)) { reply('unavailable'); return; }
+    let history = this.#inventoryQueries.get(sock);
+    if (!history || history.sessionId !== msg.sessionId || history.epoch !== msg.epoch) {
+      history = { sessionId: msg.sessionId, epoch: msg.epoch, results: new Map() };
+      this.#inventoryQueries.set(sock, history);
+    }
+    // A repeated read keeps its original tick and data. A new ID is required to observe later state.
+    const prior = history.results.get(msg.requestId);
+    if (prior) { reply(null, structuredClone(prior.inventory), true, prior.tick); return; }
+    if (history.results.size >= INVENTORY_QUERY_LIMIT) { reply('query_limit'); return; }
+    const inventory = captureAgentInventory(w, e);
+    if (inventory === null) { reply('unavailable'); return; }
+    const result = reply(null, inventory);
+    history.results.set(msg.requestId, structuredClone(result));
+  }
+
+  agentMarketMessage(sock, msg) {
+    const reply = (why, market = null, replay = false, tick = this.server.world.tick) => {
+      const result = { t: MSG.AGENT_MARKET_RESULT,
+        requestId: inventoryId(msg.requestId) ? msg.requestId : null,
+        epoch: Number.isSafeInteger(msg.epoch) && msg.epoch > 0 ? msg.epoch : null,
+        sessionId: inventoryId(msg.sessionId) ? msg.sessionId : null,
+        ok: why === null, why, tick, replay, market };
+      this.sendTo(sock.id, result); return result;
+    };
+    if (!validMarketQuery(msg)) { reply('invalid_request'); return; }
+    if (!this.agentPilot || !sock.agentIdentity || !sock.worldAdmitted) { reply('forbidden'); return; }
+    const state = this.agentControl.byClient(sock.id), c = this.server.clients.get(sock.id),
+      session = this.profiles.clients.get(sock.id), w = this.server.world, e = c?.entity;
+    if (!state || state.grant.scope.characterId !== sock.agentIdentity || state.grant.scope.sessionId !== sock.agentSessionId ||
+        msg.sessionId !== state.grant.scope.sessionId || !this.agentControl.authorize(sock.id, msg.epoch)) {
+      reply('control_mismatch'); return;
+    }
+    if (!state.grant.capabilities.includes('market_read')) { reply('forbidden'); return; }
+    if (!e || !c.serverProfile || !c.agentManaged || !session || session.key !== sock.agentIdentity ||
+        session.closed || session.failed || this.profiles.accounts.get(session.key) !== session ||
+        w.ecs.clientId[e] !== sock.id || w.ecs.kind[e] !== KIND.PLAYER || !(w.ecs.mask[e] & C.PLAYER)) {
+      reply('unavailable'); return;
+    }
+    if (!w.ecs.alive[e] || w.ecs.hp[e] <= 0 || w.ecs.dead[e] > 0) { reply('dead'); return; }
+    if (!this.profileAvailable(sock.id, e)) { reply('unavailable'); return; }
+    // Recheck the physical service before exposing even a historical result.
+    if (w.navalPilot?.locked?.(e)) { reply('busy'); return; }
+    const town = townAt(w, e);
+    if (!town) { reply('far'); return; }
+    let history = this.#marketQueries.get(sock);
+    if (!history || history.sessionId !== msg.sessionId || history.epoch !== msg.epoch) {
+      history = { sessionId: msg.sessionId, epoch: msg.epoch, results: new Map() };
+      this.#marketQueries.set(sock, history);
+    }
+    const signature = JSON.stringify([msg.op, msg.g ?? null, msg.n ?? null, msg.side ?? null]),
+      prior = history.results.get(msg.requestId);
+    if (prior) {
+      if (prior.signature !== signature) { reply('request_id_conflict'); return; }
+      if (prior.town !== town) { reply('far'); return; }
+      reply(prior.result.why, structuredClone(prior.result.market), true, prior.result.tick); return;
+    }
+    if (history.results.size >= MARKET_QUERY_LIMIT) { reply('query_limit'); return; }
+    let market = null, why = 'unavailable';
+    try {
+      const read = readCommerce(w, e, msg.op === 'list' ? { op: 'list', town } :
+        { op: 'quote', town, g: msg.g, n: msg.n, side: msg.side });
+      if (read.ok) {
+        market = msg.op === 'list' ? { v: 1, op: 'list', town, rows: read.rows } :
+          { v: 1, op: 'quote', town, g: read.g, n: read.n, side: read.side, total: read.total, avg: read.avg, law: read.law };
+        why = validMarketProjection(market) ? null : 'unavailable';
+        if (why !== null) market = null;
+      } else why = MARKET_FAILURES.includes(read.why) ? read.why : 'market';
+    } catch { /* A corrupt projection cannot escape the private read boundary. */ }
+    const result = reply(why, market);
+    history.results.set(msg.requestId, { signature, town, result: structuredClone(result) });
+  }
+
   publishAgentState(result, requester = null, invalidate = false) {
     const state = result.state ?? null;
     const controller = state && [...this.sockets.values()].find((sock) => sock.agentIdentity === state.grant.scope.characterId &&
@@ -572,6 +707,13 @@ export class GameHost {
       if (c?.entity && (!ecs.alive[c.entity] || ecs.hp[c.entity] <= 0) && this.agentControl.byClient(sock.id)) {
         const state = this.agentControl.retire(sock.id, 'death');
         this.publishAgentState({ ok: true, state }, null, true);
+      } else {
+        const state = this.agentControl.byClient(sock.id);
+        if (state?.state === 'active' && state.task && !this.agentTargetAllowed(sock.id, state.task)) {
+          const cancelled = this.agentControl.cancelOwner(state.grant.scope.ownerId, state.grant.scope.characterId,
+            { epoch: state.grant.controlRevision, expectedTaskRevision: state.taskRevision });
+          this.publishAgentState({ ...cancelled, why: 'target_unavailable' }, null, true);
+        }
       }
     }
   }
@@ -591,6 +733,9 @@ export class GameHost {
         this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: true, state: this.agentControl.byCharacter(msg.characterId), resumed: true }); return;
       }
       if (['direct', 'cancel'].includes(msg.op)) {
+        const targetSocket = [...this.sockets.values()].find((candidate) => candidate.agentIdentity === msg.characterId);
+        if (msg.op === 'direct' && this.agentControl.byCharacter(msg.characterId)?.grant.scope.ownerId === s.key &&
+            !this.agentTargetAllowed(targetSocket?.id, msg.task)) { fail('target_unavailable'); return; }
         const result = msg.op === 'direct' ? this.agentControl.direct(s.key, msg.characterId, msg.task) :
           this.agentControl.cancelOwner(s.key, msg.characterId, msg.task);
         if (!result.ok) { fail(result.why); return; }
@@ -609,6 +754,7 @@ export class GameHost {
       ['t', 'epoch', 'expectedTaskRevision'];
     if (!exact(keys)) { fail('invalid_task'); return; }
     const { t, ...request } = msg;
+    if (t === MSG.AGENT_TASK && !this.agentTargetAllowed(sock.id, request)) { fail('target_unavailable'); return; }
     const result = t === MSG.AGENT_TASK ? this.agentControl.task(sock.id, request) : this.agentControl.cancel(sock.id, request);
     this.publishAgentState(result, sock.id, result.ok);
   }
@@ -618,12 +764,14 @@ export class GameHost {
     if (!sock?.agentIdentity && !this.server.clients.get(id)?.agentManaged) return true;
     if (!sock?.agentIdentity) return false;
     const state = this.agentControl.byClient(id);
-    if (phase === 'active') return !!state && this.agentControl.authorize(id, state.grant.controlRevision);
+    if (phase === 'active') return !!state && this.agentControl.authorize(id, state.grant.controlRevision) &&
+      (!state.task || this.agentTargetAllowed(id, state.task));
     if (!control || Object.keys(control).length !== 2 || !Object.hasOwn(control, 'epoch') ||
         !Object.hasOwn(control, 'taskRevision') || !Number.isSafeInteger(control.epoch) || control.epoch < 1 ||
         !Number.isSafeInteger(control.taskRevision) || control.taskRevision < 1 ||
         !this.agentControl.authorize(id, control.epoch, control.taskRevision)) return false;
     if (!cmd) return true;
+    if (!this.agentTargetAllowed(id, state.task)) return false;
     const caps = state.grant.capabilities, type = state.task.type;
     const moving = ['move', 'go_to', 'follow', 'keep_distance', 'body_pve'].includes(type);
     if ((cmd.mx || cmd.mz) && (!moving || !caps.includes('move'))) return false;
@@ -637,10 +785,41 @@ export class GameHost {
     if ((cmd.btn | cmd.prs) & BTN.ATTACK) {
       const e = this.server.clients.get(id)?.entity, ecs = this.server.world.ecs;
       if (!e || ecs.weapon[e] !== 0) return false;
+      if (this.agentPilot && !sock.agentView?.hasEnemy(this.server.world, e)) return false;
       for (let other = 1; other < ecs.cap; other++) if (other !== e && ecs.alive[other] && ecs.kind[other] === 1 &&
           Math.hypot(ecs.x[other] - ecs.x[e], ecs.z[other] - ecs.z[e]) < 8) return false;
     }
     return true;
+  }
+
+  agentTargetAllowed(id, task) {
+    if (!this.agentPilot) return true;
+    const sock = this.sockets.get(id), entity = this.server.clients.get(id)?.entity;
+    const ref = ['attack_pve', 'follow', 'keep_distance'].includes(task?.type) ? task.args?.target :
+      task?.type === 'body_pve' && task.args?.mode === 'support' ? task.args?.protect : null;
+    if (ref === null) return true;
+    const kind = task?.type === 'attack_pve' ? KIND.ENEMY : KIND.PLAYER;
+    return !!sock?.agentView && sock.agentView.target(ref, this.server.world, entity, kind);
+  }
+
+  agentHitAllowed(attacker, target) {
+    const world = this.server.world, id = world.ecs.clientId[attacker], connection = this.server.clients.get(id);
+    if (!connection?.agentManaged || connection.entity !== attacker) return true;
+    const sock = this.sockets.get(id);
+    return !!sock?.worldAdmitted && !!sock.agentIdentity &&
+      sock.agentView?.canHitEnemy(target, world, attacker) === true;
+  }
+
+  clearAgentEffects(entity) {
+    const world = this.server.world, shots = world.shots;
+    // Source ids are reusable. Remove retained effects before despawn loses their provenance.
+    for (let slot = 0; slot < shots.cap; slot++) if (shots.id[slot] && shots.owner[slot] === entity) {
+      const event = { type: 'shotEnd', sid: shots.id[slot], owner: entity, elem: shots.elem[slot],
+        x: shots.x[slot], z: shots.z[slot], hit: 0 };
+      shots.free(slot); world.emit(event);
+    }
+    for (const [target, burn] of world.burns || []) if (burn.by === entity) world.burns.delete(target);
+    if (world.fireTrails) world.fireTrails = world.fireTrails.filter((trail) => trail.e !== entity);
   }
 
   async join(sock, msg, signal) {
@@ -648,14 +827,18 @@ export class GameHost {
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (msg.agent === true) {
+        // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
+        if (this.agentPilot && [...this.sockets.values()].filter((s) => s.agentIdentity).length >= this.agentPilot.maxAgents)
+          throw new StoreError('auth');
         const admitted = this.agentControl?.admit(identity, sock.id, 0);
         if (!admitted?.ok) throw new StoreError('auth');
         sock.agentIdentity = identity;
         sock.agentSessionId = admitted.state.grant.scope.sessionId;
+        if (this.agentPilot) sock.agentView = new AgentPerception();
         this.server.clients.get(sock.id).agentManaged = true;
       } else if (this.agentControl?.binding(identity)) throw new StoreError('auth');
       // This explicitly mounted recovery pilot has no guest/backfill authority.
-      if ((this.#requiresPearlStartup || this.#combatDeaths) && identity === null) throw new StoreError('auth');
+      if ((this.agentPilot || this.#requiresPearlStartup || this.#combatDeaths) && identity === null) throw new StoreError('auth');
       if (this.#requiresPearlStartup && msg.importSave === true) throw new StoreError('legacy');
       let profile;
       if (identity !== null) {
@@ -674,7 +857,9 @@ export class GameHost {
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
       if (sock.agentIdentity && !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) throw new StoreError('auth');
       if (this.closing || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('busy');
-      this.server.receive(sock.id, msg, profile);
+      const admittedMessage = this.agentPilot && sock.agentIdentity ?
+        { ...msg, name: `${String(msg.name ?? 'Brisa').replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u2028-\u202e\u2066-\u2069<>]/g, '').replace(/\[IA\]/gi, '').trim().slice(0, 11)} [IA]` } : msg;
+      this.server.receive(sock.id, admittedMessage, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
         this.profiles.close(sock.id);
         this.releaseLegacy(sock.id);
@@ -893,7 +1078,37 @@ export class GameHost {
   sendTo(id, msg) {
     const sock = this.sockets.get(id);
     if (!sock) return;
-    if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id) };
+    if (this.agentPilot) {
+      const inventoryDenial = (msg.t === MSG.AGENT_INVENTORY_RESULT && msg.ok === false && msg.inventory === null) ||
+        (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null);
+      // Identity is unresolved before HELLO/profile admission: no spectator lane may leak the world.
+      if (!sock.worldAdmitted && !inventoryDenial && ![MSG.WELCOME, MSG.ERROR, MSG.FULL, MSG.PONG, MSG.AGENT_STATE].includes(msg.t) &&
+          !(msg.t === MSG.SPAWN && msg.e?.id === this.server.clients.get(id)?.entity)) return;
+      if (msg.t === MSG.WELCOME) {
+        sock.worldAdmitted = true;
+        if (!sock.agentIdentity) {
+          // Initial spectator metadata was withheld. Restore the ordinary human catalogue now.
+          const ecs = this.server.world.ecs;
+          for (let e = 1; e < ecs.cap; e++) if (ecs.alive[e] && !(ecs.mask[e] & C.VEHICLE))
+            this.sendTo(id, { t: MSG.SPAWN, e: this.server.world.describe(e) });
+        }
+      }
+      if (sock.agentIdentity && !inventoryDenial && ![MSG.WELCOME, MSG.AGENT_STATE, MSG.ERROR, MSG.FULL, MSG.PONG].includes(msg.t) &&
+          !this.agentControl.authorize(id, this.agentControl.byClient(id)?.grant.controlRevision)) return;
+    }
+    if (msg.t === MSG.WELCOME && sock.agentIdentity) msg = { ...msg, control: this.agentControl.byClient(id),
+      ...(this.agentPilot ? { perception: AGENT_PILOT_POLICY } : {}) };
+    const messages = sock.agentView ? sock.agentView.project(msg, this.server.world, this.server.clients.get(id)?.entity) : [msg];
+    for (let message of messages) {
+      if (this.agentPilot && message.t === MSG.SPAWN) {
+        const clientId = this.server.world.ecs.clientId[message.e.id];
+        if (this.sockets.get(clientId)?.agentIdentity) message = { ...message, e: { ...message.e, controller: 'agent' } };
+      }
+      this.sendWire(sock, message);
+    }
+  }
+
+  sendWire(sock, msg) {
     // A broadcast hands every client the same object: serialize it once.
     let data;
     if (msg === this.lastMsg) data = this.lastData;
