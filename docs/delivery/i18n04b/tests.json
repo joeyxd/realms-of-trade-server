@@ -1,6 +1,6 @@
 {
   "schema": "i18n04b-local/v1",
-  "at": "2026-10-10T22:39:25.815Z",
+  "at": "2026-10-10T23:44:15.473Z",
   "runtimeCommit": "b5d5565",
   "version": "0.6.0-alpha.32",
   "protocol": 42,
@@ -67,7 +67,31 @@
       "fail": 0,
       "exitCode": 0,
       "evidence": "alpha35-focused.tap"
+    },
+    {
+      "scope": "After HUD animation cleanup, personal lantern clearance and immediate network label localization: localization core, live systems and new panels and all generated NPC role labels",
+      "source": "95bd0ee",
+      "pass": 20,
+      "fail": 0,
+      "exitCode": 0,
+      "evidence": "hud-regression.tap",
+      "integrationRevision": "822ddc27b788d2108f09ae836fc305d8770910ae",
+      "note": "20 tests ran on 95bd0ee; 822ddc2 only merges upstream documentation/evidence and retains identical tested runtime."
     }
   ],
-  "note": "Selections overlap; do not add totals. Initial updater run during WebGL software rendering had one movement timeout (106/107); isolated server rerun passed 5/5 and complete clean rerun passed 107/107. At b5d5565, no runtime server, simulation or protocol diff against c9d3bbf. Later concurrent features retain their own changes and acceptance."
+  "note": "Selections overlap; do not add totals. Initial updater run during WebGL software rendering had one movement timeout (106/107); isolated server rerun passed 5/5 and complete clean rerun passed 107/107. At b5d5565, no runtime server, simulation or protocol diff against c9d3bbf. Later concurrent features retain their own changes and acceptance.",
+  "finalRuntimeCommit": "822ddc27b788d2108f09ae836fc305d8770910ae",
+  "finalRuntimeVersion": "0.6.0-alpha.35",
+  "finalRuntimeProtocol": 44,
+  "browserLayout": {
+    "pass": 6,
+    "fail": 0,
+    "evidence": "hud-scale/layout-metrics.json",
+    "scope": "Real Hud.show, locale/title transitions, MiniMap and visible PersonalLanternActions under production #ui parent in a UI fixture. No 3D scene, WebGL or game connection. Actual scale assertions at ES/EN 1280x800/1, 1280x500/1.3 and 844x390/1; public scene acceptance recorded separately."
+  },
+  "networkLabel": {
+    "evidence": "hud-scale/network-locale.json",
+    "pass": true,
+    "scope": "Real Hud.setNet and locale change without another update or animation frame; count, plural and latency title follow ES/EN"
+  }
 }

@@ -69,6 +69,7 @@ try {
       el.value = String(scale); el.dispatchEvent(new Event('input', { bubbles: true }));
     }, viewport.scale);
     await page.locator('#btn-resume').click();
+    await page.locator('.personal-lantern').waitFor({ state: 'visible' });
     await page.waitForFunction(({ width, height }) => {
       const b = document.querySelector('#stage').getBoundingClientRect();
       return Math.abs(b.width - width) < 1 && Math.abs(b.height - height) < 1;

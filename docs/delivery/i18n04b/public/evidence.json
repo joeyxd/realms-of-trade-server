@@ -1,10 +1,11 @@
 {
-  "at": "2026-10-10T22:50:42.722Z",
+  "at": "2026-10-10T23:36:10.300Z",
   "url": "https://marea.62.171.136.148.sslip.io",
   "scope": "Public guest entry, locale persistence and real WebSocket reconnect; no login, signing or durable economic commands",
   "checks": [
     "Public English entry, real guest WebSocket, Spanish settings and live character panel switch",
-    "Actual socket close, bilingual disconnect overlay, reconnect reload retains Spanish and rejoins authority"
+    "Actual socket close, bilingual disconnect overlay, reconnect reload retains Spanish and rejoins authority",
+    "Deployed objectives clear minimap/caption, actions and personal lantern after live UI scaling at 1280x800, 844x390 and 1280x500 with maximum UI scale; CSS fallen label follows ES/EN"
   ],
   "errors": [],
   "screenshots": [
@@ -12,10 +13,16 @@
     "02-settings-es.png",
     "03-character-en.png",
     "04-disconnect-es.png",
-    "05-reconnected-es.png"
+    "05-reconnected-es.png",
+    "hud-1280x800-es.png",
+    "hud-1280x800-en.png",
+    "hud-844x390-es.png",
+    "hud-844x390-en.png",
+    "hud-1280x500-es.png",
+    "hud-1280x500-en.png"
   ],
   "status": {
-    "version": "0.6.0-alpha.32",
+    "version": "0.6.0-alpha.35",
     "players": 0,
     "errors": 0,
     "storage": {
@@ -25,5 +32,328 @@
       "unsaved": 0,
       "tickBlocked": false
     }
-  }
+  },
+  "hud": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1
+      },
+      "locale": "es",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 458.015625,
+          "left": 1016,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 704,
+          "bottom": 786,
+          "left": 367,
+          "right": 913,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 608,
+          "bottom": 656,
+          "left": 1164.859375,
+          "right": 1262,
+          "visible": true
+        }
+      },
+      "fallen": "\" · caído\"",
+      "scroll": {
+        "height": 260,
+        "contentHeight": 260,
+        "scrollTop": 0,
+        "lastVisible": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "scale": 1
+      },
+      "locale": "en",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 458.015625,
+          "left": 1016,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 704,
+          "bottom": 786,
+          "left": 367,
+          "right": 913,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 608,
+          "bottom": 656,
+          "left": 1187.1875,
+          "right": 1262,
+          "visible": true
+        }
+      },
+      "fallen": "\" · fallen\"",
+      "scroll": {
+        "height": 260,
+        "contentHeight": 260,
+        "scrollTop": 0,
+        "lastVisible": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "scale": 1
+      },
+      "locale": "es",
+      "boxes": {
+        ".tracker": {
+          "top": 118,
+          "bottom": 148,
+          "left": 10,
+          "right": 260,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 688,
+          "right": 814,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 665,
+          "right": 837,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 294,
+          "bottom": 376,
+          "left": 149,
+          "right": 695,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 111,
+          "bottom": 159,
+          "left": 737.859375,
+          "right": 835,
+          "visible": true
+        }
+      },
+      "fallen": "\" · caído\"",
+      "scroll": {
+        "height": 26,
+        "contentHeight": 26,
+        "scrollTop": 0,
+        "lastVisible": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "scale": 1
+      },
+      "locale": "en",
+      "boxes": {
+        ".tracker": {
+          "top": 118,
+          "bottom": 148,
+          "left": 10,
+          "right": 260,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 688,
+          "right": 814,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 665,
+          "right": 837,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 294,
+          "bottom": 376,
+          "left": 149,
+          "right": 695,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 111,
+          "bottom": 159,
+          "left": 760.1875,
+          "right": 835,
+          "visible": true
+        }
+      },
+      "fallen": "\" · fallen\"",
+      "scroll": {
+        "height": 26,
+        "contentHeight": 26,
+        "scrollTop": 0,
+        "lastVisible": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 500,
+        "scale": 1.3
+      },
+      "locale": "es",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 295.98907470703125,
+          "left": 941,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 379.3999938964844,
+          "bottom": 486,
+          "left": 285.1000061035156,
+          "right": 994.9000549316406,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 308,
+          "bottom": 356,
+          "left": 1164.859375,
+          "right": 1262,
+          "visible": true
+        }
+      },
+      "fallen": "\" · caído\"",
+      "scroll": {
+        "height": 74,
+        "contentHeight": 260,
+        "scrollTop": 186,
+        "lastVisible": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 500,
+        "scale": 1.3
+      },
+      "locale": "en",
+      "boxes": {
+        ".tracker": {
+          "top": 194,
+          "bottom": 295.98907470703125,
+          "left": 941,
+          "right": 1266,
+          "visible": true
+        },
+        ".world-minimap": {
+          "top": 28,
+          "bottom": 154,
+          "left": 1124,
+          "right": 1250,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "top": 162,
+          "bottom": 174.09375,
+          "left": 1101,
+          "right": 1273,
+          "visible": true
+        },
+        ".actionbar": {
+          "top": 379.3999938964844,
+          "bottom": 486,
+          "left": 285.1000061035156,
+          "right": 994.9000549316406,
+          "visible": true
+        },
+        ".personal-lantern": {
+          "top": 308,
+          "bottom": 356,
+          "left": 1187.1875,
+          "right": 1262,
+          "visible": true
+        }
+      },
+      "fallen": "\" · fallen\"",
+      "scroll": {
+        "height": 74,
+        "contentHeight": 260,
+        "scrollTop": 186,
+        "lastVisible": true
+      }
+    }
+  ],
+  "pass": true,
+  "revision": "bbbf39e2891e25f3316f4e246db065d1353fe5d6",
+  "imageId": "sha256:3d8a1310401b27c22844bc66e1c0cef7e35692b4de11bb487652865a2e7ee783",
+  "reviewedScreenshots": [
+    "05-reconnected-es.png",
+    "hud-1280x800-en.png",
+    "hud-1280x500-en.png",
+    "hud-1280x500-es.png"
+  ]
 }

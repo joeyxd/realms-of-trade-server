@@ -41,12 +41,18 @@ con hashes Git, WSS público 12/12 y navegador público 7/7. Regresión local co
 navegador local 14/14. Stop entre dos dueños usa auth simulada; no es activación de agentes públicos.
 
 **AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
-[Entrega/evidencia](delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
-conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
-ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
-11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
-Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
-IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
+[Entrega/evidencia](delivery/i18n04b.md).
+Cierre público `822ddc2`, alpha.35/protocolo 44; primera aceptación histórica `1f0f158` alpha.32.
+Selector desde arranque/cuenta/ajustes; cliente/editor GM y feedback en caliente conservan datos y
+solicitudes. QA local: 11 grupos cliente/20 capturas y 6 editor/8 capturas; integración 86/86 y
+regresión final 20/20 (solapadas). HUD real post-intro: seis combinaciones ES/EN, escala 1.3, scroll
+y antorcha sin solapes. Público: tres grupos, once capturas, WebSocket/reconexión y ajuste real de
+tamaño, cero errores; imagen 109/109 y salud/Supabase verificadas. Auth/firma, permisos GM y
+operaciones durables conservan aceptación propia; CAS remoto local simulado. Sin SQL/flags propios.
+Sigue I18N04c: promoción ES/EN.
+
+El recorrido completo pertenece a `bbbf39e`; `822ddc2` añade tres traducciones de oficios,
+con [muestreo público NPC propio](delivery/i18n04b/public-npc/evidence.json) y nombres intactos.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](delivery/rnv04-fire-fuel.md), [contrato](briefs/RNV04-fire-fuel.md).
