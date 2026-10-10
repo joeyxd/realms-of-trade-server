@@ -15,9 +15,13 @@ body:has(.world-minimap.is-touch) #hud .hud-top-right { right: calc(120px + var(
 @container stage (min-height: 481px) {
   #hud:has(.world-minimap.is-desktop) { --tracker-map-top: 194px; --tracker-bar-space: 90px; }
   #hud:has(.world-minimap.is-touch) { --tracker-map-top: 140px; --tracker-bar-space: 0px; }
+  #hud:has(.personal-lantern:not([hidden])) { --tracker-lantern-space: 204px; }
   #hud:has(.world-minimap) .tracker {
     top: calc(var(--tracker-map-top) + var(--safe-t));
-    max-height: calc((100cqh - var(--tracker-map-top) - 16px - var(--safe-t) - var(--safe-b)) / var(--ui-scale) - var(--tracker-bar-space));
+    max-height: min(
+      calc((100cqh - var(--tracker-map-top) - 16px - var(--safe-t) - var(--safe-b)) / var(--ui-scale) - var(--tracker-bar-space)),
+      calc((100cqh - var(--tracker-map-top) - var(--tracker-lantern-space, 0px) - var(--safe-t) - var(--safe-b)) / var(--ui-scale))
+    );
     overflow: auto; pointer-events: auto;
   }
 }

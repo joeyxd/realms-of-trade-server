@@ -411,7 +411,7 @@ export class Hud {
     this.last.quests = key;
     this.root.querySelector('.tracker h3').textContent = title;
     this.trackerUl.innerHTML = items.map((it) => `<li class="${it.done ? 'done' : ''}${it.ready ? ' ready' : ''}" data-id="${esc(it.id)}"><span class="chk"></span><span class="txt">${it.text}</span></li>`).join('');
-    if (was && was.split('|')[0] !== title) gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.5, ease: 'back.out(2)' });
+    if (was && was.split('|')[0] !== title) gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform,opacity' });
   }
 
   // The weapon decides LMB and Q / E / R: icons, tooltips and the name over the bar.
@@ -446,10 +446,11 @@ export class Hud {
 
   show() {
     this.root.hidden = false;
-    gsap.from(this.root.querySelector('.hud-player'), { x: -40, opacity: 0, duration: 0.6, ease: 'back.out(2)' });
-    gsap.from(this.root.querySelector('.actionbar'), { y: 60, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.1 });
-    gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 0.2 });
-    gsap.from(this.root.querySelector('.hud-top-right'), { y: -30, opacity: 0, duration: 0.5, ease: 'back.out(2)', delay: 0.25 });
+    // Return transforms to CSS so live UI-size changes keep working after the entrance.
+    gsap.from(this.root.querySelector('.hud-player'), { x: -40, opacity: 0, duration: 0.6, ease: 'back.out(2)', clearProps: 'transform,opacity' });
+    gsap.from(this.root.querySelector('.actionbar'), { y: 60, opacity: 0, duration: 0.6, ease: 'back.out(2)', clearProps: 'transform,opacity', delay: 0.1 });
+    gsap.from(this.root.querySelector('.tracker'), { x: 40, opacity: 0, duration: 0.6, ease: 'back.out(2)', clearProps: 'transform,opacity', delay: 0.2 });
+    gsap.from(this.root.querySelector('.hud-top-right'), { y: -30, opacity: 0, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform,opacity', delay: 0.25 });
   }
 
   // Online: round trip to the server (green < 90 ms, amber < 180, red beyond) and pirates aboard; null hides it.

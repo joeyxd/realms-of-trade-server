@@ -64,7 +64,11 @@ try {
   report.hud = [];
   for (const viewport of [{ width: 1280, height: 800, scale: 1 }, { width: 844, height: 390, scale: 1 }, { width: 1280, height: 500, scale: 1.3 }]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await page.evaluate(scale => document.documentElement.style.setProperty('--ui-scale', String(scale)), viewport.scale);
+    await page.locator('#hud-settings').click();
+    await page.locator('#set-ui').evaluate((el, scale) => {
+      el.value = String(scale); el.dispatchEvent(new Event('input', { bubbles: true }));
+    }, viewport.scale);
+    await page.locator('#btn-resume').click();
     await page.waitForFunction(({ width, height }) => {
       const b = document.querySelector('#stage').getBoundingClientRect();
       return Math.abs(b.width - width) < 1 && Math.abs(b.height - height) < 1;
@@ -72,14 +76,18 @@ try {
     for (const locale of ['es', 'en']) {
       await page.evaluate(async locale => (await import('/src/core/i18n.js')).setLocale(locale), locale);
       await page.waitForTimeout(800);
-      const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption', '.actionbar'].map(selector => {
+      const boxes = await page.evaluate(() => Object.fromEntries(['.tracker', '.world-minimap', '.minimap-caption', '.actionbar', '.personal-lantern'].map(selector => {
         const el = document.querySelector(selector), b = el.getBoundingClientRect();
-        return [selector, { top: b.top, bottom: b.bottom, left: b.left, right: b.right, visible: getComputedStyle(el).display !== 'none' }];
+        return [selector, { top: b.top, bottom: b.bottom, left: b.left, right: b.right, visible: !el.hidden && getComputedStyle(el).display !== 'none' }];
       })));
       const a = boxes['.tracker'];
+      assert.ok(Math.abs((a.right - a.left) / 250 - viewport.scale) < 0.01, 'HUD follows the live UI-size setting after entrance');
       assert.equal(a.visible, true);
-      for (const selector of ['.world-minimap', '.minimap-caption', '.actionbar']) {
+      const bar = boxes['.actionbar'];
+      assert.ok(Math.abs((bar.bottom - bar.top) / 82 - viewport.scale) < 0.01, 'Action bar follows live UI size');
+      for (const selector of ['.world-minimap', '.minimap-caption', '.actionbar', '.personal-lantern']) {
         const b = boxes[selector];
+        if (!b.visible) continue;
         assert.ok(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right, 'Objectives clear ' + selector);
       }
       assert.ok(a.bottom <= viewport.height && a.right <= viewport.width, 'Objectives remain inside the stage');
@@ -103,7 +111,7 @@ try {
       await shot(page, `hud-${viewport.width}x${viewport.height}-${locale}`);
     }
   }
-  report.checks.push('Deployed objectives clear minimap/caption at 1280x800, 844x390 and 1280x500 with maximum UI scale; CSS fallen label follows ES/EN');
+  report.checks.push('Deployed objectives clear minimap/caption, actions and personal lantern after live UI scaling at 1280x800, 844x390 and 1280x500 with maximum UI scale; CSS fallen label follows ES/EN');
   assert.deepEqual(report.errors, []);
   report.pass = true;
   await context.close();
