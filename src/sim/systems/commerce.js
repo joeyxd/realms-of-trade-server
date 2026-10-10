@@ -20,7 +20,7 @@ const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
 const has = (object, key) => Object.hasOwn(object, key);
 const validGood = (g) => typeof g === 'string' && has(GOODS, g);
 const validTown = (town) => typeof town === 'string' && has(TOWNS, town);
-const cloneHold = (h) => ({ cap: h.cap, goods: { ...h.goods } });
+const cloneHold = (h) => ({ ...h, goods: { ...h.goods } });
 const cloneAck = (ack) => JSON.parse(JSON.stringify(ack));
 
 function emit(w, e, msg, ok, why = '', rev = 0, extra = null) {
@@ -111,7 +111,7 @@ function ownRaft(w, e, profile, id) {
 function cargoState(w, e, profile, active) {
   const ship = active.ship;
   return { id: ship.id, hold: { cap: ship.hold.cap, goods: { ...ship.hold.goods } },
-    pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
+    pack: { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } },
     gold: profile.gold, stats: raftStats(ship.grid, ship.hold), raftRev: ship.rev,
     capacity: ownerRaftCapacity(w, e),
     production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked: active.productionBlocked || '' }),
@@ -167,7 +167,7 @@ export function readCommerce(w, e, msg) {
     return { ok: true, why: '', rev: tradeRev, town,
       rows: marketRows(w, town).map(({ g, stock, buy, sell, trend, illegal }) =>
         ({ g, stock, buy, sell, trend, illegal })),
-      pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } },
+      pack: { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } },
       used: holdUsed(profile.eco.pack), gold: profile.gold };
   }
 
@@ -313,7 +313,7 @@ export function commerceCmd(w, e, msg, saveFits = () => true) {
   w.profileDirty?.add(e);
   const ack = emit(w, e, msg, true, '', profile.eco.tradeRev, { town, g: msg.g, n: result.n, side,
     total: result.total, avg: result.avg, gold: profile.gold,
-    pack: { cap: profile.eco.pack.cap, goods: { ...profile.eco.pack.goods } }, rows: marketRows(w, town) });
+    pack: { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } }, rows: marketRows(w, town) });
   cache.set(msg.opId, { signature: sig, ack: cloneAck(ack) });
   while (cache.size > MAX_OPS) cache.delete(cache.keys().next().value);
   return ack;

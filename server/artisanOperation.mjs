@@ -3,13 +3,16 @@ import { ARTISAN } from '../src/data/artisan.js';
 import { loggingStatus, readProgression } from '../src/sim/systems/progression.js';
 import { communityAccess, publicCommunity } from './communityProject.mjs';
 import { storageProfileDelta } from '../src/sim/systems/raftEditor.js';
+import { draftWorkshop, workshopProfileDelta } from './workshopOperation.mjs';
 
 const clone = structuredClone;
 const text = value => JSON.stringify(value, (_key, v) => v && typeof v === 'object' && !Array.isArray(v)
   ? Object.fromEntries(Object.keys(v).sort().map(k => [k, v[k]])) : v);
 export function artisanMutation(command) {
   return command?.type === 'artisan' && command.op === 'learn' ||
-    command?.type === 'raft' && ['place', 'remove'].includes(command.op) && command.piece?.[0] === ARTISAN.part;
+    command?.type === 'artisan' && ['contribute', 'craftCrate', 'upgradePack'].includes(command.op) ||
+    command?.type === 'raft' && ['place', 'remove'].includes(command.op) &&
+      (command.piece?.[0] === 'storage' || command.rules === 2 && command.piece?.[0] === 'crate');
 }
 export function teachStorage(profile) {
   const progression = readProgression(profile.progression);
@@ -27,6 +30,7 @@ export function teachStorage(profile) {
   return { profile: next, why: '' };
 }
 export function draftArtisan({ command, profile, state, world, entity }) {
+  if (['contribute', 'craftCrate', 'upgradePack'].includes(command.op)) return draftWorkshop({ command, profile, state, world, entity });
   const ack = { type: 'artisan', op: command.op, opId: command.opId, lesson: ARTISAN.lesson,
     ok: false, why: '', rev: profile.eco.tradeRev, project: publicCommunity(state) };
   let why = state ? communityAccess(world, entity) : 'disabled';
@@ -44,6 +48,11 @@ export function artisanWorldTransition(current, request) {
   if (old.resources && next.resources) { old.resources.tick = 0; next.resources.tick = 0; }
   if (text(old) !== text(next)) return false;
   if (!request.ack.ok) return text(request.before) === text(request.profile);
+  if (request.command.type === 'artisan' && ['contribute', 'craftCrate', 'upgradePack'].includes(request.command.op)) {
+    const planned = workshopProfileDelta(request.before, request.command);
+    return !planned.why && text(planned.profile) === text(request.profile) && request.ack.rev === planned.profile.eco.tradeRev
+      && text(planned.workshop) === text(request.ack.workshop) && text(planned.carry) === text(request.ack.carry);
+  }
   if (request.command.type !== 'artisan') {
     const changed = storageProfileDelta(request.before, request.command);
     const ship = changed.profile?.eco.ships.find(s => s.id === request.command.id);

@@ -1,10 +1,11 @@
 // The shore workbench batches wood and offers fixed utility tools; the server remains authoritative.
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
 import { GOODS } from '../data/goods.js';
-import { goodVolume, holdUsed } from '../sim/economy/cargo.js';
+import { goodMass, goodVolume, holdMass, holdUsed } from '../sim/economy/cargo.js';
 
 const MAX_CRAFT = () => Number.isSafeInteger(HARVEST.craftMax) && HARVEST.craftMax > 0 ? HARVEST.craftMax : 10;
 const fmt = (value) => Math.max(0, Number.isFinite(value) ? value : 0).toLocaleString('es-MX');
+const english = () => globalThis.document?.documentElement?.lang?.toLowerCase().startsWith('en') === true;
 const recipeFor = (id = WOOD_RECIPE.id) => CRAFT_RECIPES?.[id] || CRAFT_RECIPES?.[WOOD_RECIPE.id] || WOOD_RECIPE;
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
@@ -28,7 +29,8 @@ const REASONS = {
 };
 
 function validPack(pack) {
-  if (!pack || !Number.isFinite(pack.cap) || pack.cap < 0 || !pack.goods || typeof pack.goods !== 'object' || Array.isArray(pack.goods)) return false;
+  if (!pack || !Number.isFinite(pack.cap) || pack.cap < 0 || pack.maxMass !== undefined && (!Number.isFinite(pack.maxMass) || pack.maxMass < 0)
+      || !pack.goods || typeof pack.goods !== 'object' || Array.isArray(pack.goods)) return false;
   return Object.entries(pack.goods).every(([good, count]) => Object.hasOwn(GOODS, good) && Number.isSafeInteger(count) && count > 0);
 }
 
@@ -36,28 +38,37 @@ function validPack(pack) {
 export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id) {
   const recipe = recipeFor(recipeId), pack = profile?.eco?.pack, inputs = recipeInputs(recipe);
   const tool = isToolRecipe(recipe), craftMax = tool ? 1 : Math.min(MAX_CRAFT(), recipe.max || MAX_CRAFT());
-  let packKnown = validPack(pack), usedBefore = 0;
-  if (packKnown) { try { usedBefore = holdUsed(pack); packKnown = Number.isFinite(usedBefore) && usedBefore <= pack.cap; } catch { packKnown = false; } }
+  let packKnown = validPack(pack), usedBefore = 0, massBefore = 0;
+  if (packKnown) { try { usedBefore = holdUsed(pack); massBefore = holdMass(pack); packKnown = Number.isFinite(usedBefore) && usedBefore <= pack.cap && Number.isFinite(massBefore)
+      && (pack.maxMass === undefined || massBefore <= pack.maxMass); } catch { packKnown = false; } }
   const needs = Object.entries(inputs).map(([good, each]) => ({ good, count: each, owned: packKnown ? (pack.goods[good] || 0) : 0,
     name: GOODS[good]?.name || good }));
   const materialsFit = needs.every((item) => Number.isSafeInteger(item.owned) && item.owned >= item.count * (Number.isSafeInteger(n) && n > 0 ? n : 0));
   const ownedTool = tool ? (profile?.tools?.[recipe.tool] === 1) : false;
   const output = recipeOutput(recipe), outputCount = recipe.count || 1;
   const deltaPerBatch = (tool ? 0 : outputCount * goodVolume(output)) - needs.reduce((sum, item) => sum + item.count * goodVolume(item.good), 0);
+  const massDeltaPerBatch = (tool ? 0 : outputCount * goodMass(output)) - needs.reduce((sum, item) => sum + item.count * goodMass(item.good), 0);
   const maxBySpace = !packKnown || deltaPerBatch > 0 ? (packKnown ? Math.floor(Math.max(0, pack.cap - usedBefore) / deltaPerBatch) : 0) : craftMax;
-  const maxCraftable = ownedTool ? 0 : Math.max(0, Math.min(craftMax, ...needs.map((item) => Math.floor(item.owned / item.count)), maxBySpace));
+  const maxByMass = !packKnown || pack.maxMass === undefined || massDeltaPerBatch <= 0 ? craftMax
+    : Math.floor(Math.max(0, pack.maxMass - massBefore) / massDeltaPerBatch);
+  const maxCraftable = ownedTool ? 0 : Math.max(0, Math.min(craftMax, ...needs.map((item) => Math.floor(item.owned / item.count)), maxBySpace, maxByMass));
   const qtyValid = Number.isSafeInteger(n) && n >= 1 && n <= craftMax;
   const requested = qtyValid ? n : 0, outputAmount = requested * outputCount;
   const usedAfter = packKnown ? usedBefore + requested * deltaPerBatch : 0;
+  const massAfter = packKnown ? massBefore + requested * massDeltaPerBatch : 0;
   const spaceAfter = packKnown ? pack.cap - usedAfter : 0;
   const spaceFits = tool || (packKnown && spaceAfter >= -1e-8);
+  const massFits = tool || (packKnown && (pack.maxMass === undefined || massAfter <= pack.maxMass + 1e-8));
+  const english = globalThis.document?.documentElement?.lang?.toLowerCase().startsWith('en') === true;
+  const plankName = recipe.id === WOOD_RECIPE.id ? (english ? 'Basic plank' : 'Tabla bÃ¡sica') : GOODS[output]?.name || output;
   return { recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, inputs: needs,
-    input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: tool ? recipe.name : GOODS[output]?.name || output,
+    input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: tool ? recipe.name : plankName,
     n: requested, craftMax, packKnown, qtyValid, inputOwned: needs[0]?.owned || 0,
-    inputNeeded: needs[0]?.count * requested || 0, outputAmount, usedBefore, usedAfter,
+    inputNeeded: needs[0]?.count * requested || 0, outputAmount, usedBefore, usedAfter, massBefore, massAfter,
+    massLimit: packKnown && Number.isFinite(pack.maxMass) ? pack.maxMass : null, massDeltaPerBatch,
     packCapacity: packKnown ? pack.cap : 0, spaceBefore: packKnown ? Math.max(0, pack.cap - usedBefore) : 0,
     spaceAfter: Math.max(0, spaceAfter), maxCraftable, materialsFit: qtyValid && materialsFit,
-    spaceFits, ownedTool, canCraft: packKnown && qtyValid && materialsFit && spaceFits && !ownedTool };
+    spaceFits, massFits, ownedTool, canCraft: packKnown && qtyValid && materialsFit && spaceFits && massFits && !ownedTool };
 }
 
 function call(getter, fallback = null) { try { return typeof getter === 'function' ? getter() : fallback; } catch { return fallback; } }
@@ -84,6 +95,9 @@ export class WorkbenchPanel {
       <p class="wb-feedback" data-feedback aria-live="polite"></p><button class="wb-retry" type="button" hidden>Reintentar la misma preparación</button><p class="wb-next">Lleva la madera a tu balsa para construir o reparar.</p></div><footer class="wb-foot"><button class="wb-confirm" type="button">Preparar</button></footer>`;
     parent.appendChild(this.root); this.$ = (selector) => this.root.querySelector(selector);
     this.$('[data-recipe-list]').style.gridTemplateColumns = `repeat(${Object.keys(CRAFT_RECIPES).length}, minmax(0, 1fr))`;
+    const massRow = document.createElement('div'); massRow.className = 'wb-mass';
+    massRow.innerHTML = '<div class="wb-stock-row"><span data-mass-label>Mass / strength</span><b data-pack-mass>0 / 0</b></div><small data-pack-mass-after>After crafting: 0 / 0 uM</small>';
+    this.$('.wb-stock').appendChild(massRow);
     for (const recipe of Object.values(CRAFT_RECIPES)) { const button = document.createElement('button'); button.type = 'button'; button.dataset.recipe = recipe.id; button.textContent = recipe.name; this.$('[data-recipe-list]').appendChild(button); }
     this.bind(); this.renderKey = ''; this.update();
   }
@@ -122,18 +136,25 @@ export class WorkbenchPanel {
     this.$('[data-input-count]').textContent = preview.inputs.map((i) => `${fmt(i.count * preview.n)} ${i.name.toLowerCase()}`).join(' + ');
     this.$('[data-output-count]').textContent = toolRecipe ? '1 herramienta' : `${fmt(preview.outputAmount)} ${preview.outputAmount === 1 ? 'unidad' : 'unidades'}`;
     this.$('[data-needs]').innerHTML = preview.inputs.map((i) => `<div class="wb-stock-row"><span>${i.name} que llevas</span><b>${fmt(i.owned)}</b></div><div class="wb-stock-row"><span>Necesitas</span><b>${fmt(i.count * preview.n)}</b></div>`).join('');
-    this.$('[data-pack-used]').textContent = `${fmt(preview.usedBefore)} / ${fmt(preview.packCapacity)}`; this.$('[data-pack-after]').textContent = `Después de fabricar: ${fmt(preview.usedAfter)} / ${fmt(preview.packCapacity)}`;
     this.$('[data-pack-bar]').style.width = `${preview.packCapacity > 0 ? Math.max(0, Math.min(100, preview.usedBefore / preview.packCapacity * 100)) : 0}%`;
+    const isEnglish = english();
+    this.$('.wb-stock-row b[data-pack-used]').parentElement.firstElementChild.textContent = isEnglish ? 'Space used' : 'Espacio usado';
+    this.$('[data-pack-used]').textContent = `${fmt(preview.usedBefore)} / ${fmt(preview.packCapacity)} uV`;
+    this.$('[data-pack-after]').textContent = `${isEnglish ? 'After crafting' : 'Después de fabricar'}: ${fmt(preview.usedAfter)} / ${fmt(preview.packCapacity)} uV`;
+    this.$('[data-mass-label]').textContent = isEnglish ? 'Mass / strength' : 'Masa / fuerza';
+    this.$('[data-pack-mass]').textContent = `${fmt(preview.massBefore)} / ${preview.massLimit === null ? '∞' : fmt(preview.massLimit)} uM`;
+    this.$('[data-pack-mass-after]').textContent = `${isEnglish ? 'After crafting' : 'Después de fabricar'}: ${fmt(preview.massAfter)} / ${preview.massLimit === null ? '∞' : fmt(preview.massLimit)} uM`;
     const tools = profile?.tools || {}; this.$('[data-tools]').textContent = `Hacha: ${tools.axe === 1 ? 'sí' : 'no'} · Pico: ${tools.pickaxe === 1 ? 'sí' : 'no'}`;
     for (const b of this.root.querySelectorAll('[data-recipe]')) { b.disabled = !!pending; b.classList.toggle('on', b.dataset.recipe === this.recipe); b.setAttribute('aria-pressed', b.dataset.recipe === this.recipe ? 'true' : 'false'); }
     for (const b of this.root.querySelectorAll('[data-qty]')) { const q = b.dataset.qty === 'max' ? preview.maxCraftable : Number(b.dataset.qty); b.disabled = !!pending || !ctx || (b.dataset.qty === 'max' ? q < 1 : q > preview.craftMax); b.classList.toggle('on', b.dataset.qty !== 'max' && q === this.qty); b.setAttribute('aria-pressed', b.dataset.qty !== 'max' && q === this.qty ? 'true' : 'false'); }
-    input.disabled = !!pending || !ctx; this.$('.wb-confirm').disabled = !!pending || !ctx || !preview.canCraft; this.$('.wb-confirm').textContent = toolRecipe ? `Fabricar ${preview.outputName}` : `Preparar ${preview.outputName}`;
+    input.disabled = !!pending || !ctx; this.$('.wb-confirm').disabled = !!pending || !ctx || !preview.canCraft;
+    this.$('.wb-confirm').textContent = isEnglish ? `${toolRecipe ? 'Craft' : 'Prepare'} ${preview.outputName}` : `${toolRecipe ? 'Fabricar' : 'Preparar'} ${preview.outputName}`;
     this.$('.wb-retry').hidden = !retryReady; this.$('.wb-retry').disabled = !retryReady || !ctx;
     this.$('[data-feedback]').textContent = pending?.ackRev !== undefined ? 'Preparación recibida; esperando actualizar tu mochila…' : pending ? 'Esperando confirmación del banco…' : this.lastResult || this.previewMessage(preview, ctx);
     this.root.classList.toggle('is-pending', !!pending);
   }
-  previewMessage(p, ctx) { if (!ctx) return 'Acércate al banco para preparar materiales.'; if (p.ownedTool) return 'Ya llevas esta herramienta en el cinturón.'; if (!p.packKnown) return 'La mochila no está disponible.'; if (!p.qtyValid) return `Elige una cantidad entre 1 y ${p.craftMax}.`; if (!p.materialsFit) return 'No llevas suficientes materiales para esa receta.'; if (!p.spaceFits) return 'La mochila no tiene espacio para el resultado.'; return 'Todo listo para fabricar.'; }
-  qtyLabel(n) { return `${fmt(n)} ${n === 1 ? 'tabla' : 'tablas'}`; }
+  previewMessage(p, ctx) { const en = english(); if (!ctx) return en ? 'Move to the workbench to craft materials.' : 'Acércate al banco para preparar materiales.'; if (p.ownedTool) return en ? 'You already carry this tool.' : 'Ya llevas esta herramienta en el cinturón.'; if (!p.packKnown) return en ? 'The backpack is unavailable.' : 'La mochila no está disponible.'; if (!p.qtyValid) return en ? `Choose a quantity from 1 to ${p.craftMax}.` : `Elige una cantidad entre 1 y ${p.craftMax}.`; if (!p.materialsFit) return en ? 'You do not carry the materials for this recipe.' : 'No llevas suficientes materiales para esa receta.'; if (!p.spaceFits) return en ? 'The backpack has no room for the result.' : 'La mochila no tiene espacio para el resultado.'; if (!p.massFits) return en ? 'The pack load would exceed your strength limit.' : 'La carga superaría el límite de fuerza de tu mochila.'; return en ? 'Ready to craft.' : 'Todo listo para fabricar.'; }
+  qtyLabel(n) { const en = english(); return en ? `${fmt(n)} ${n === 1 ? 'basic plank' : 'basic planks'}` : `${fmt(n)} ${n === 1 ? 'tabla básica' : 'tablas básicas'}`; }
   confirm() {
     const ctx = this.context(), preview = workbenchPreview(ctx?.profile, this.qty, this.recipe);
     if (this.pending || !ctx || !preview.canCraft || typeof this.submitCommand !== 'function') return false;

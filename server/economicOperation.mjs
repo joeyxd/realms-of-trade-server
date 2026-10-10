@@ -129,20 +129,29 @@ function checkedCommand(raw) {
     integer(raw.expectedRev, 0, MAX_VERSION - 1); integer(raw.expectedProjectRev, 1, MAX_VERSION - 1);
     return { ...raw };
   }
+  if (raw.type === 'artisan' && ['contribute', 'craftCrate', 'upgradePack'].includes(raw.op)) {
+    exact(raw, ['type', 'op', 'opId', 'expectedRev', ...(raw.op === 'contribute' ? ['amount'] : [])]);
+    integer(raw.expectedRev, 0, MAX_VERSION - 1);
+    if (raw.op === 'contribute') integer(raw.amount, 1, 10);
+    return { ...raw };
+  }
   if (raw.type === 'raft' && ['place', 'remove'].includes(raw.op)) {
-    exact(raw, ['type', 'op', 'opId', 'id', 'expectedRev', 'piece', ...(raw.op === 'remove' ? ['index'] : [])]);
+    exact(raw, ['type', 'op', 'opId', 'id', 'expectedRev', 'piece', ...(raw.op === 'remove' ? ['index'] : []), ...(Object.hasOwn(raw, 'rules') ? ['rules'] : [])]);
+    if (Object.hasOwn(raw, 'rules') && raw.rules !== 2) fail('input');
     key(raw.id, 120); integer(raw.expectedRev, 1, MAX_VERSION - 1);
-    if (!Array.isArray(raw.piece) || raw.piece.length !== 5 || raw.piece[0] !== 'storage') fail('input');
+    if (!Array.isArray(raw.piece) || raw.piece.length !== 5 || !['storage', ...(raw.rules === 2 ? ['crate'] : [])].includes(raw.piece[0])) fail('input');
     integer(raw.piece[1], -128, 128); integer(raw.piece[2], -128, 128);
     integer(raw.piece[3], 0, 2); integer(raw.piece[4], 0, 3);
     if (raw.op === 'remove') integer(raw.index, 0, 599);
     return jsonCopy(raw);
   }
   if (raw.type === 'resource' && raw.op === 'gather') {
-    exact(raw, RESOURCE_GATHER_FIELDS);
+    exact(raw, [...RESOURCE_GATHER_FIELDS, ...(Object.hasOwn(raw, 'challenge') ? ['challenge'] : [])]);
+    if (Object.hasOwn(raw, 'challenge')) commandId(raw.challenge);
     if (typeof raw.node !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(raw.node)) fail('input');
     integer(raw.expectedRev, 1, MAX_VERSION - 1);
-    return { type: 'resource', op: 'gather', opId: id, node: raw.node, expectedRev: raw.expectedRev };
+    return { type: 'resource', op: 'gather', opId: id, node: raw.node, expectedRev: raw.expectedRev,
+      ...(Object.hasOwn(raw, 'challenge') ? { challenge: raw.challenge } : {}) };
   }
   if (raw.type === 'resource' && raw.op === 'craft') {
     exact(raw, RESOURCE_CRAFT_FIELDS);

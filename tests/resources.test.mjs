@@ -5,6 +5,7 @@ import { DT } from '../src/data/tuning.js';
 import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { C } from '../src/sim/ecs.js';
 import { clearResourceReceipts, installResources, publicResources, resourceCmd } from '../src/sim/systems/resources.js';
+import { ResourceActions } from '../src/ui/resourceActions.js';
 
 function fixture({ players = 1 } = {}) {
   const map = {
@@ -116,9 +117,41 @@ test('gathering requires calm, a live player entity, and a node revision below t
   assert.equal(resourceCmd(w, 1, gather('dead-hp')), false); assert.equal(last(w).why, 'dead');
 });
 
+test('gather capacity keeps maxMass and rejects a stone heavier than the remaining pack allowance', () => {
+  const w = fixture(), profile = w.profiles.get(1), node = w.resources.nodes.get('stone-1');
+  profile.eco.pack = { cap: 10, maxMass: 3, goods: {} };
+  w.ecs.x[1] = node.x;
+  assert.equal(resourceCmd(w, 1, gather('mass-limit', 1, node.id)), false);
+  assert.equal(last(w).why, 'full');
+  assert.deepEqual(profile.eco.pack.goods, {});
+  assert.equal(node.rev, 1);
+});
+
+test('logging aim retry reuses the exact request and a correlated denial clears pending UI state', () => {
+  let now = 100, messages = [], notice = '';
+  const client = { joined: true, send(message) { messages.push(message); } };
+  const actions = new ResourceActions({ client: () => client, player: () => 1, enabled: () => true,
+    toast: (message) => { notice = message; }, sound: () => {}, now: () => now, locale: () => 'en' });
+  const node = { id: 'palm-a', rev: 7 };
+  assert.equal(actions.requestTiming(node), true);
+  const original = messages[0];
+  now += 4999;
+  assert.equal(actions.requestTiming(node), false);
+  assert.equal(messages.length, 1);
+  now += 1;
+  assert.equal(actions.requestTiming(node), true);
+  assert.equal(messages.length, 2);
+  assert.equal(messages[1], original, 'retry reuses the exact command and idempotency context');
+  assert.equal(actions.onAim({ type: 'loggingAim', ok: false, why: 'tool', node: node.id, rev: node.rev }), true);
+  assert.equal(actions.aimRequest, null);
+  assert.equal(notice, 'You need an axe to log.');
+  assert.equal(actions.onAim({ type: 'loggingAim', ok: false, why: 'tool', node: node.id, rev: 6 }), false,
+    'unmatched/stale denials cannot clear a newer request');
+});
+
 test('craft requires calm, bench proximity, and no naval lock; pack mutation conserves units', () => {
   const w = fixture();
-  w.profiles.get(1).eco.pack.goods = { tronco: 1 };
+  w.profiles.get(1).eco.pack.goods = { tronco: 2 };
   w.navalPilot = { locked: () => true };
   assert.equal(resourceCmd(w, 1, craft('locked')), false); assert.equal(last(w).why, 'busy');
   w.navalPilot.locked = () => false; w.ecs.regenT[1] = 0;
@@ -183,11 +216,11 @@ test('bench crafting rejects missing materials, full output capacity, and revisi
   const w = fixture();
   assert.equal(resourceCmd(w, 1, craft('none')), false); assert.equal(last(w).why, 'materials');
   const p = w.profiles.get(1);
-  p.eco.pack = { cap: 5, goods: { tronco: 1, piedra: 1 } };
+  p.eco.pack = { cap: 8, goods: { tronco: 2, piedra: 1 } };
   assert.equal(resourceCmd(w, 1, craft('full-but-fits')), true);
   assert.equal(p.eco.pack.goods.madera, 1);
   assert.equal(p.eco.pack.goods.piedra, 1);
   w.tick += HARVEST.actionTicks;
-  p.eco.pack = { cap: 10, goods: { tronco: 1 } }; p.eco.tradeRev = HARVEST.maxRev;
+  p.eco.pack = { cap: 10, goods: { tronco: 2 } }; p.eco.tradeRev = HARVEST.maxRev;
   assert.equal(resourceCmd(w, 1, craft('limit', HARVEST.maxRev)), false); assert.equal(last(w).why, 'revisionLimit');
 });

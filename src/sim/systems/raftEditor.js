@@ -4,7 +4,7 @@ import { SLOTS, slotSkill } from '../../data/tattoos.js';
 import { RAFT, RAFT_PARTS, RAFT_REINFORCEMENT } from '../../data/raftparts.js';
 import { tuning } from '../../data/tuning.js';
 import { EDITOR_PARTS, EDITOR_RADIUS } from '../../data/raftEditor.js';
-import { load, unload, holdUsed, roomFor, newHold, goodMass } from '../economy/cargo.js';
+import { load, unload, holdUsed, holdMass, roomFor, newHold, goodMass } from '../economy/cargo.js';
 import { raftCapacity } from '../economy/raftCapacity.js';
 import { canPlace, place, remove, raftStats } from '../economy/raft.js';
 import { publicRafts } from './rafts.js';
@@ -14,6 +14,7 @@ import { repairPart, repairPartCost, salvagePartCost, liveStructureParts } from 
 import { activeRaftParts, encodeRaftCondition, persistRaftCondition, raftConditionEntry, refitRaftCondition, restoreRaftCondition } from '../naval/condition.js';
 import { ARTISAN } from '../../data/artisan.js';
 import { readProgression } from './progression.js';
+import { workshopBuildPayment } from './workshopBuild.js';
 
 const allowed = new Set(EDITOR_PARTS);
 const MAX_REV = 2147483647;
@@ -23,7 +24,7 @@ const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
 const tuple = (p) => Array.isArray(p) && p.length === 5 && typeof p[0] === 'string'
   && p.slice(1).every(Number.isSafeInteger);
 const sameTuple = (a, b) => tuple(a) && tuple(b) && a.every((v, i) => v === b[i]);
-const cloneHold = (h) => ({ cap: h.cap, goods: { ...h.goods } });
+const cloneHold = (h) => ({ ...h, goods: { ...h.goods } });
 const copyTuple = (p) => [...p];
 
 // An existing hold remains usable/removable without teaching. Only a new placement requires knowledge.
@@ -224,8 +225,8 @@ function debit(cost, hold, pack) {
 }
 
 function creditAfterRemoval(shipHold, pack, cap, cost) {
-  // The sanitized pack has ten weight slots. Search its bounded transfer weights so insertion order
-  // cannot force a heavy cargo transfer that leaves no room for the refund when lighter cargo would fit.
+  // For each volume keep the lightest transfer. This preserves a feasible split when volume
+  // is equal but mass differs, and never unloads goods that the destination rejected.
   const free = Math.max(0, Math.floor(pack.cap - holdUsed(pack)));
   let transfers = new Map([[0, {}]]);
   for (const [g, count] of Object.entries(shipHold.goods)) {
@@ -234,7 +235,8 @@ function creditAfterRemoval(shipHold, pack, cap, cost) {
       const max = Math.min(count, Math.floor((free - used) / weight));
       for (let n = 1; n <= max; n++) {
         const total = used + n * weight;
-        if (!next.has(total)) next.set(total, { ...goods, [g]: n });
+        const candidate = { ...goods, [g]: n };
+        if (!next.has(total) || holdMass({ goods: candidate }) < holdMass({ goods: next.get(total) })) next.set(total, candidate);
       }
     }
     transfers = next;
@@ -242,7 +244,12 @@ function creditAfterRemoval(shipHold, pack, cap, cost) {
   for (const [weight, goods] of [...transfers].sort((a, b) => a[0] - b[0])) {
     if (holdUsed(shipHold) - weight > cap) continue;
     const nextHold = cloneHold(shipHold), nextPack = cloneHold(pack);
-    for (const [g, n] of Object.entries(goods)) { unload(nextHold, g, n); load(nextPack, g, n); }
+    let admitted = true;
+    for (const [g, n] of Object.entries(goods)) {
+      if (!load(nextPack, g, n)) { admitted = false; break; }
+      unload(nextHold, g, n);
+    }
+    if (!admitted) continue;
     nextHold.cap = cap;
     let fits = true;
     for (const [g, n] of Object.entries(cost)) {
@@ -373,7 +380,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     return ack;
   }
   const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
-  let why = '';
+  let why = '', workshopPayment = null;
   if (msg.op === 'reinforce') {
     if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !sameTuple(ship.grid.parts[msg.index], msg.piece))
       return reject(w, e, msg, 'piece', ship);
@@ -385,6 +392,8 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
     const [id, x, z, level, dir] = msg.piece;
     if (id === ARTISAN.part && !knowsStorage(profile)) return reject(w, e, msg, 'knowledge', ship);
+    workshopPayment = workshopBuildPayment(profile, msg.piece, msg.rules);
+    if (workshopPayment?.why) return reject(w, e, msg, workshopPayment.why, ship);
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
@@ -395,9 +404,10 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     const virtual = newHold(1e9);
     for (const g of new Set([...Object.keys(hold.goods), ...Object.keys(pack.goods)]))
       virtual.goods[g] = (hold.goods[g] || 0) + (pack.goods[g] || 0);
+    if (workshopPayment) virtual.goods.madera = Math.max(virtual.goods.madera || 0, RAFT_PARTS[id].cost.madera || 0);
     why = place(grid, msg.piece, virtual);
     if (why) return reject(w, e, msg, why, ship);
-    if (!debit(RAFT_PARTS[id].cost, hold, pack)) return reject(w, e, msg, 'goods', ship);
+    if (!debit(workshopPayment?.cost || RAFT_PARTS[id].cost, hold, pack)) return reject(w, e, msg, 'goods', ship);
     const cap = raftStats(grid).hold;
     if (holdUsed(hold) > cap) return reject(w, e, msg, 'room', ship);
     hold.cap = cap;
@@ -425,7 +435,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     return reject(w, e, msg, 'layout', ship);
   if (!fitsLayout(w, active, grid.parts)) return reject(w, e, msg, 'layout', ship);
   if (!safeForOccupants(w, active, liveParts)) return reject(w, e, msg, 'occupied', ship);
-  const candidate = { ...profile, eco: { ...profile.eco, pack,
+  const candidate = { ...profile, ...(workshopPayment?.workshop ? { workshop: workshopPayment.workshop } : {}), eco: { ...profile.eco, pack,
     ships: profile.eco.ships.map((s) => s === ship ? { ...s, grid, hold, rev: s.rev + 1,
       ...(condition ? { condition: encodeRaftCondition(condition.structure, condition.nextId) } : {}) } : s) } };
   if (!saveFits(candidate)) return reject(w, e, msg, 'saveSize', ship);
@@ -437,6 +447,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   ship.hold = hold;
   ship.rev++;
   profile.eco.pack = pack;
+  if (workshopPayment?.workshop) profile.workshop = workshopPayment.workshop;
   w.raftDeck.update(publicRafts(w));
   w.profileDirty?.add(e);
   const ack = answer(w, e, msg, true, '', ship.rev);
@@ -452,18 +463,22 @@ export function storageProfileDelta(before, command) {
   const fail = why => ({ why });
   if (!ship || ship.kind !== 'raft' || ship.at !== 'aldea' || !(ship.hp > 0)) return fail('owner');
   if (command.expectedRev !== ship.rev || ship.rev >= MAX_REV) return fail('revision');
-  if (command.piece?.[0] !== ARTISAN.part || !tuple(command.piece)) return fail('piece');
+  if (!['storage', ...(command.rules === 2 ? ['crate'] : [])].includes(command.piece?.[0]) || !tuple(command.piece)) return fail('piece');
   const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
   const hold = cloneHold(ship.hold), pack = cloneHold(profile.eco.pack);
   const restored = ship.condition ? restoreRaftCondition(ship.condition, grid.parts) : null;
   const active = { ship, condition: restored?.structure, conditionNext: restored?.nextId };
   let why;
   if (command.op === 'place') {
-    if (!knowsStorage(profile)) return fail('knowledge');
+    if (command.piece[0] === 'storage' && !knowsStorage(profile)) return fail('knowledge');
+    const payment = workshopBuildPayment(profile, command.piece, command.rules);
+    if (payment?.why) return fail(payment.why);
     const virtual = newHold(1e9);
     for (const g of new Set([...Object.keys(hold.goods), ...Object.keys(pack.goods)])) virtual.goods[g] = (hold.goods[g] || 0) + (pack.goods[g] || 0);
+    if (payment) virtual.goods.madera = Math.max(virtual.goods.madera || 0, RAFT_PARTS[command.piece[0]].cost.madera || 0);
     why = place(grid, command.piece, virtual); if (why) return fail(why);
-    if (!debit(RAFT_PARTS.storage.cost, hold, pack)) return fail('goods');
+    if (!debit(payment?.cost || RAFT_PARTS.storage.cost, hold, pack)) return fail('goods');
+    if (payment?.workshop) profile.workshop = payment.workshop;
     hold.cap = raftStats(grid).hold;
   } else if (command.op === 'remove') {
     if (!sameTuple(grid.parts[command.index], command.piece)) return fail('piece');
