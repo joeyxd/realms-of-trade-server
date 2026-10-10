@@ -158,3 +158,5 @@
 .gm-publication-report li { margin-bottom: .45rem; }
 .gm-publication-report li button { margin-left: .4rem; font-size: .8rem; overflow-wrap: anywhere; }
 .gm-revision-id { display: block; overflow-wrap: anywhere; font-size: .75rem; }
+.gm-content label { display: block; margin: .7rem 0; }
+.gm-content select { display: block; width: 100%; margin-top: .3rem; padding: .5rem; color: inherit; background: #203338; border: 1px solid #62716b; border-radius: .3rem; }

@@ -17,6 +17,9 @@ services:
       WORLD_ID: ${WORLD_ID:?Set a stable WORLD_ID for this single authority}
       ORIGINS: https://${GAME_HOSTNAME:?Set GAME_HOSTNAME to the public HTTPS hostname}
       NODE_OPTIONS: --max-old-space-size=640
+      MN_GM_CONTENT_DIR: /var/lib/marea-content
+    volumes:
+      - /opt/marea-negra/content:/var/lib/marea-content
     init: true
     restart: unless-stopped
     stop_grace_period: 90s
