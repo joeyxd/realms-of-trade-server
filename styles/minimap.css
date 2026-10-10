@@ -15,7 +15,7 @@ body:has(.world-minimap.is-touch) #hud .hud-top-right { right: calc(120px + var(
 @container stage (min-height: 481px) {
   #hud:has(.world-minimap.is-desktop) { --tracker-map-top: 194px; --tracker-bar-space: 90px; }
   #hud:has(.world-minimap.is-touch) { --tracker-map-top: 140px; --tracker-bar-space: 0px; }
-  #hud:has(.personal-lantern:not([hidden])) { --tracker-lantern-space: 204px; }
+  #ui:has(.personal-lantern:not([hidden])) #hud { --tracker-lantern-space: 204px; }
   #hud:has(.world-minimap) .tracker {
     top: calc(var(--tracker-map-top) + var(--safe-t));
     max-height: min(
