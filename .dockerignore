@@ -13,6 +13,7 @@
 !deploy/
 deploy/**
 !deploy/Dockerfile
+!deploy/runtime.mjs
 
 .git
 .scratch

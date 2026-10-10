@@ -4,6 +4,42 @@ Esta guía instala MAREA NEGRA como una aplicación Compose independiente en el 
 
 El objetivo de esta primera entrega es el commit `5fa9658b5f2265bd1ea8c58b3e59722fcbe4603d` (versión `0.6.0-alpha.16`) y la imagen local `marea-negra:alpha-5fa9658`. La URL provisional es <https://marea.62.171.136.148.sslip.io>. Coolify conserva la red externa `coolify`; Traefik enruta los entrypoints `http` y `https`, redirige HTTP a HTTPS y obtiene TLS con el resolver `letsencrypt`.
 
+## Actualizaciones continuas y recuperación
+
+El autor pidió mantener este mismo deploy actualizado. El servicio `marea-negra-update.timer` revisa cada
+dos minutos los pushes a `claude/loving-lovelace-ptbif7`. Solo usa archivos del commit remoto: cambios sin
+commit del checkout compartido no se publican. El script [vps-update.py](../deploy/vps-update.py) construye
+la imagen y ejecuta regresiones sin credenciales ni conexión de base de datos antes de detener el servidor.
+Si hay jugadores o estado pendiente, espera al siguiente ciclo. Detiene la autoridad anterior antes de
+arrancar la nueva, comprueba revisión/salud/almacenamiento y vuelve a la imagen anterior si falla.
+Conserva `/etc/marea-negra/alpha.env`, `SAVE_SECRET` y `WORLD_ID`; no ejecuta migraciones ni activa M5/Web3.
+Cambios que requieren SQL o configuración necesitan su integración específica antes de publicarse.
+
+El enlace `/opt/marea-negra/current` identifica la release aceptada. El código del actualizador instalado
+en `/opt/marea-negra/ops/vps-update.py` no se sustituye a sí mismo desde Git. Para actualizar el propio
+actualizador, revisar/copiar su nueva versión y unidades; el runtime sí se actualiza en cada imagen.
+
+```bash
+systemctl status marea-negra-update.timer --no-pager
+journalctl -u marea-negra-update.service -n 30 --no-pager
+python3 /opt/marea-negra/ops/vps-update.py --check
+readlink -f /opt/marea-negra/current
+```
+
+`--check` consulta revisiones sin construir ni reiniciar. Para publicar inmediatamente un push terminado,
+ejecutar `systemctl start marea-negra-update.service`; respeta el mismo bloqueo y espera si hay jugadores.
+Para mantenimiento manual, detener primero el timer y esperar que el servicio termine; reactivarlo al
+cerrar. No levantar otra réplica. El cierre requiere unos segundos y los clientes deben recargar al cambiar
+el protocolo. Una revisión rechazada conserva la release anterior y queda registrada con espera entre intentos.
+
+La incidencia del 9 de octubre dejó el contenedor vivo pero con el mundo bloqueado tras un error de guardado.
+Docker no reinicia un proceso únicamente por estar `unhealthy`. El [runtime](../deploy/runtime.mjs) ahora
+supervisa al proceso del juego y solicita cierre ordenado tras cuatro comprobaciones consecutivas de ese
+fallo concreto, sin jugadores/perfiles pendientes y sin coordinadores opcionales activos. Docker reinicia
+el contenedor y el juego vuelve a cargar la base de datos. No elimina el bloqueo de seguridad ni reenvía
+un guardado ambiguo. Estados desconocidos, perfiles pendientes o M5 opcional activo requieren diagnóstico;
+este supervisor no acredita recuperación completa de todas las acciones.
+
 El paquete Compose usa un contenedor, un máximo de cuatro jugadores, límite de 1 CPU, 1 GiB de memoria y swap combinados, heap Node limitado a 640 MiB y reserva inicial de 0,25 CPU/256 MiB. Usa Node 22, usuario sin privilegios, filesystem de solo lectura, `/tmp` temporal, cierre con 90 segundos de gracia y no publica puertos en el host. Las etiquetas de Traefik son exclusivas de `mn-alpha`; el juego no requiere modificar el proxy compartido.
 
 ## Estado y alcance comprobado
@@ -21,27 +57,28 @@ Los invitados conservan su partida en el navegador mediante una firma HMAC; `SAV
 Ejecuta el empaquetado desde un equipo con el repositorio y SSH configurados. El archivo Git contiene solo los archivos de runtime del commit fijado; después se copian únicamente los tres archivos de empaquetado revisados. Así no se envían cambios dirty, `.env`, `.git`, documentación o materiales al VPS ni a la imagen. Sustituye `usuario-ssh` por la cuenta SSH ya autorizada para el host.
 
 ```bash
-commit=5fa9658b5f2265bd1ea8c58b3e59722fcbe4603d
+commit=$(git rev-parse HEAD)
 host=usuario-ssh@62.171.136.148 # sustituye usuario-ssh por la cuenta autorizada
 release=/opt/marea-negra/releases/$commit
 
 git archive --format=tar -o /tmp/marea-negra-$commit.tar "$commit" \
-  package.json package-lock.json index.html server src styles assets
+  package.json package-lock.json index.html server src styles assets .dockerignore deploy tests
 sha256sum /tmp/marea-negra-$commit.tar
 ssh "$host" "test ! -e '$release' && mkdir -p '$release/deploy'"
 scp /tmp/marea-negra-$commit.tar "$host:/tmp/marea-negra-$commit.tar"
 ssh "$host" "sha256sum /tmp/marea-negra-$commit.tar"
 ```
 
-Compara las dos sumas SHA-256 antes de extraer. Si difieren, elimina únicamente el archivo temporal de transferencia y repite; no uses una release parcial. Si el directorio de release ya existía, detente y verifica su contenido en vez de sobrescribirlo. Con sumas iguales, extrae el archivo y copia solo el empaquetado revisado:
+Compara las dos sumas SHA-256 antes de extraer. Si difieren, elimina únicamente el archivo temporal de transferencia y repite; no uses una release parcial. Si el directorio de release ya existía, detente y verifica su contenido en vez de sobrescribirlo. Con sumas iguales, extrae el archivo; el empaquetado procede del mismo commit:
 
 ```bash
 ssh "$host" "tar -xf /tmp/marea-negra-$commit.tar -C '$release' && rm /tmp/marea-negra-$commit.tar"
-scp .dockerignore "$host:$release/.dockerignore"
-scp deploy/Dockerfile deploy/compose.vps.yml "$host:$release/deploy/"
 ```
 
-Comprueba que el directorio solo contiene el runtime del commit y los archivos `.dockerignore`, `deploy/Dockerfile` y `deploy/compose.vps.yml`. El build ignora todo salvo `package.json`, `package-lock.json`, `index.html`, `server/`, `src/`, `styles/`, `assets/` y ese Dockerfile. Instala dependencias con `npm ci --omit=dev`; el cliente carga Three.js por el import map del navegador.
+Comprueba que el directorio solo contiene archivos del commit. El build ignora las pruebas y el actualizador:
+incluye el runtime del juego y `deploy/runtime.mjs`. Instala dependencias con `npm ci --omit=dev`; el cliente
+carga Three.js por el import map del navegador. Los ejemplos de imagen/release `5fa9658` debajo documentan
+la primera instalación; al preparar otra, usar su SHA/tag/versión propios. El actualizador hace esto automáticamente.
 
 En el VPS, confirma que la infraestructura compartida existe sin modificarla:
 

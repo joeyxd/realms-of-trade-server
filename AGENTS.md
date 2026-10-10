@@ -52,6 +52,14 @@
 
 ## Reglas técnicas
 
+- Decisión del autor, 2026-10-09: mantener los cambios aceptados publicados en el mismo VPS de amigos.
+  El actualizador sigue los commits enviados a `claude/loving-lovelace-ptbif7`, ejecuta comprobaciones
+  y espera a que no haya jugadores antes de sustituir la única autoridad. Ver `docs/DEPLOY-VPS.md`.
+  Completar y revisar cada corte antes del push; nunca empaquetar todo el árbol dirty compartido.
+  Confirmar revisión activa, salud pública y entrada real antes de declarar un cambio publicado.
+  SQL, secretos y activaciones opcionales de M5 conservan sus verificaciones específicas; el actualizador
+  no los aplica ni crea otra autoridad de guardado.
+
 - Simulación determinista y autoritativa en `src/sim/**`: sin reloj ni `Math.random`; usar RNG del mundo.
 - Todo campo nuevo de perfil requiere valores por defecto y saneado. Cambios de snapshots/`you` requieren revisar
   `PROTOCOL_VERSION`. No confiar en validación del cliente para inventarios, precios o propiedad.

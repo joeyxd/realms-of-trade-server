@@ -21,8 +21,9 @@ COPY --chown=node:node server/ ./server/
 COPY --chown=node:node src/ ./src/
 COPY --chown=node:node styles/ ./styles/
 COPY --chown=node:node assets/ ./assets/
+COPY --chown=node:node deploy/runtime.mjs ./deploy/runtime.mjs
 
 USER node
 EXPOSE 5173
 
-CMD ["node", "server/index.mjs"]
+CMD ["node", "deploy/runtime.mjs"]
