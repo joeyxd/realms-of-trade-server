@@ -313,4 +313,3 @@ test('SQL023 write guards reject repeatable-read and serializable legacy saves f
   }
   assert.deepEqual(await f.store.loadWorld(legacyName), { data: legacyData, version: 4 });
 });
-
