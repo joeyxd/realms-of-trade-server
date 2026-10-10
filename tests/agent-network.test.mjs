@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AgentNetworkClient } from '../tools/agent/network-client.mjs';
-import { fixtureGrant, fixtureOrder, fixtureObservation, fixtureEvidence } from '../tools/agent/fixtures.mjs';
+import { fixtureGrant, fixtureScope, fixtureOrder, fixtureObservation, fixtureEvidence } from '../tools/agent/fixtures.mjs';
 import { AgentSession, AgentLabSession } from '../tools/agent/session.mjs';
 import { MSG, ENT, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { KIND, TEAM, PLAYER_FIELDS } from '../src/sim/ecs.js';
@@ -9,6 +9,7 @@ import { enemyIndex } from '../src/data/enemies.js';
 import { GAME } from '../src/data/meta.js';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { createGameServer } from '../server/index.mjs';
+import { createMemoryStore } from '../server/store.mjs';
 
 const neutral = { mx: 0, mz: 0, ax: 0, az: 0, btn: 0, prs: 0 };
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -378,6 +379,32 @@ async function realServer(t, maxPlayers = 2) {
   t.after(() => server.close());
   return { server, url: `ws://127.0.0.1:${port}/ws` };
 }
+
+test('agent without a verified map projection is refused by an active GM content identity', { timeout: 10000 }, async (t) => {
+  const scope = fixtureScope({ ownerId: '22222222-2222-4222-8222-222222222222',
+    characterId: '33333333-3333-4333-8333-333333333333', worldId: 'l01-normal-network',
+    sessionId: 'session-content-unverified' });
+  const grant = fixtureGrant({ scope, expiresAtMs: Date.now() + 60000, capabilities: ['move', 'aim'] });
+  const token = `unprojected-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const server = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, maxPlayers: 2, dev: false,
+    worldId: scope.worldId, saveSecret: 'l01-content-unverified-test-secret', store: createMemoryStore(), log: () => {},
+    resolvePlayer: async (_request, message) => message.token === token ? scope.characterId : null,
+    agentControl: { worldId: scope.worldId, ttlMs: 60000,
+      bindings: [{ ownerId: scope.ownerId, characterId: scope.characterId, capabilities: ['move', 'aim'] }] },
+  });
+  const port = await server.listen();
+  server.game.contentIdentity = { generation: 1, revisionId: 'a'.repeat(64) };
+  const client = new AgentNetworkClient({ url: `ws://127.0.0.1:${port}/ws`, grant, name: 'Brisa [IA]',
+    authorization: { token } });
+  t.after(async () => { client.close(); await server.close(); });
+
+  await assert.rejects(client.connect({ timeoutMs: 1500 }), (error) => error.code === 'server_content_revision');
+  assert.equal(client.identity, null);
+  assert.equal(client.authority, null);
+  assert.equal(client.state, 'stopped');
+  assert.equal(server.game.status().players, 0);
+  assert.equal(server.game.agentControl.byCharacter(scope.characterId), null);
+});
 
 test('real guests occupy normal slots and another normal client observes confirmed movement', { timeout: 15000 }, async (t) => {
   const { server, url } = await realServer(t);
