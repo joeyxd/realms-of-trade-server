@@ -1,6 +1,6 @@
 # PRG01d — taller personal, bodega inicial y capacidad
 
-**Estado: implementación local; publicación y activación SQL en vivo pendientes.** El corte implementa la entrega personal de diez tablas, el crédito único de primera bodega, kits de caja y mochila con límites separados de volumen y masa. El host controla las operaciones. No se ha confirmado despliegue, activación en una base viva ni aceptación con una sesión autenticada.
+**Estado: código publicado y servidor sano; taller nuevo apagado por SQL pendiente.** El corte implementa la entrega personal de diez tablas, el crédito único de primera bodega, kits de caja y mochila con límites separados de volumen y masa. El host controla las operaciones. Alpha.35/protocolo 44 y la entrada pública están comprobados; la activación de esta mecánica y su aceptación con una sesión autenticada siguen pendientes.
 
 ## Comportamiento entregado
 
@@ -37,7 +37,9 @@ El [índice de evidencia visual](prg01d-starter-workshop/ui/README.md) explica e
 
 ## Publicación y activación
 
-Integrado con las entregas concurrentes GM03b2, I18N04b, L03d y RNV04, alpha.35/protocolo 44. Publicación todavía en curso. La función permanece apagada hasta aplicar SQL023 (si falta) y SQL024 y verificar `mn_starter_workshop_ready`. Instalar SQL023 no adopta el mundo por sí solo. No volver a ejecutar SQL021.
+Integrado con las entregas concurrentes GM03b2, I18N04b, L03d y RNV04, alpha.35/protocolo 44. El [snapshot real del VPS](prg01d-starter-workshop/deployment.json), tomado a las 23:15:58 UTC del 2026-10-10, confirma la revisión `33ddf2d52e3665253dcdab88020a18853426a7d2`, descendiente del corte `606286e`, en imagen `marea-negra:alpha-33ddf2d52e36` (`sha256:f6471812bc2f9c99431f86aa78ea5ddab0a23567c22678701ec49e54e735e014`). Contenedor sano, sin OOM, una sola autoridad y **109/109** pruebas de imagen. La [entrada pública TLS/WSS](prg01d-starter-workshop/public-smoke.json), comprobada a las 23:17:10 UTC, pasa **14/14**: versión/protocolo, panel publicado, entrada real de invitado, límites de admisión y recarga obligatoria del protocolo anterior. Esta prueba de invitado no verifica el taller autenticado.
+
+La función permanece apagada hasta aplicar SQL023 y SQL024, ausentes en la consulta de readiness registrada, y verificar `mn_starter_workshop_ready`. Instalar SQL023 no adopta el mundo por sí solo. No volver a ejecutar SQL021.
 
 La activación exige `MN_ECONOMIC_OPERATIONS=1`, `MN_RESOURCE_OPERATIONS=1`, `MN_LOGGING_OPERATIONS=1`, `MN_ARTISAN_OPERATIONS=1` y `MN_STARTER_WORKSHOP=1`, transición con el servidor vacío y canario autenticado. Verificar entregas parciales/reconexión, primera bodega sin doble cobro, segunda bodega, kit de caja, aciertos server-owned, capacidad y desguace. Si el mundo ya está adoptado, no se intenta convertir recursos v2→v3 por la ruta legacy; coordinar la transición común antes de activar.
 
