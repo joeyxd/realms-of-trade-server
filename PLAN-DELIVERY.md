@@ -1,6 +1,6 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**Checkpoint GM02 (2026-10-10):** [decoración existente y prueba caminando](docs/delivery/gm02-draft-walk.md), implementado localmente; publicación pendiente. Escena permite editar/ocultar/restaurar rocas naturales/costeras, flores y guijarros; documento v2 migra borradores v1, círculos XZ y recorrido privado sin entrar al servidor/M5. Navegador 28/28, cuatro calidades, cámara/restauración exactas y limpieza al revocar. Sigue GM03 de guardado remoto/publicación; terreno y objetos funcionales quedan fuera.
+**Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](docs/delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
 
 **Hotfix GM01 publicado (2026-10-10):** [bloqueo en calidad media/alta/ultra](docs/delivery/gm01-render-fix.md)
 corregido en `e78c2c3`, integrado sin cambios en alpha.23 (`4c6743b`, sana desde 18:43:12Z). Local alpha.21:

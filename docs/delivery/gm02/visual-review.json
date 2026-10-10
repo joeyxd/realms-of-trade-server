@@ -14,5 +14,13 @@
     "No physical mobile FPS acceptance",
     "Circle proxies are XZ cylinders, not model surfaces",
     "No map publication"
-  ]
+  ],
+  "productionReviewed": [
+    "production-account-setup.png",
+    "production-gameplay.png",
+    "production-gm-editor.png",
+    "production-gm02-base.png",
+    "production-gm02-walk.png"
+  ],
+  "productionResult": "accepted: base edit and circle/gizmo visible, private walker outside draft proxy, no gameplay nameplates, password fields empty"
 }
