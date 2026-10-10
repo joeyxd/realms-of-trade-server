@@ -1,6 +1,7 @@
 # RNV04 — combustible y fuego privado
 
-Entrega AREA07 del 2026-10-10, alpha.31 / protocolo 42. [Contrato](../briefs/RNV04-fire-fuel.md).
+Entrega AREA07 del 2026-10-10, implementación inicial alpha.31 / protocolo 42. [Contrato](../briefs/RNV04-fire-fuel.md).
+Publicado y activo; aceptación pública en alpha.32 / protocolo 42, con las traducciones concurrentes conservadas.
 
 ## Comportamiento
 
@@ -54,6 +55,38 @@ antorcha de suelo/bodega primero, conservación ante comercio y rechazo de enum 
 y quedan como evidencia QA, sin escribir cuentas reales. Un primer intento verificó mano/apagado,
 pero falló en una fixture sin grid: se corrigió la fixture y se repitió; sus dos recibos también se conservan.
 
-Publicación, activación de `MN_FIRE_OPERATIONS=1`, revisión/imagen sana y entrada pública autenticada
-se registrarán después de verificarlas. El actualizador mantiene una sola autoridad y espera mundo vacío.
-No se cambian los flags de otras áreas. Sigue agua costera/reembarque, después provisiones/hogar.
+**VPS aceptado a las 22:50:17 UTC:** `fe50ab19831a4e885474663aa1c4857a696210ff`, imagen
+`sha256:34d18b7681c7da151a3dc5717edab465dc2f8c9486ea4733e01e133c1ac51271`.
+Una autoridad saludable, página y `/health` 200, Supabase durable/cuentas y fuego listos, cero errores
+ni escrituras/perfiles pendientes al cerrar; cuatro operaciones económicas completadas durante QA.
+[Estado observado](rnv04-fire-fuel/vps-activation.json).
+Se activó únicamente `MN_FIRE_OPERATIONS=1`; artesano y montaje común conservan su estado apagado.
+El actualizador mantiene el reemplazo cuando el mundo está vacío y pasó **107/107** en la imagen.
+La selección adicional de fuego en esa misma imagen pasó **30/30** sin red ni credenciales:
+[salida](rnv04-fire-fuel/image-fire.tap). Tras integrar traducciones, panel/acciones y paneles nuevos
+pasaron **17/17** localmente. Todas estas selecciones se solapan; no se suman como casos únicos.
+
+**Navegador público: 9/9**, con una cuenta QA real y WSS, sin interceptar red ni mover el personaje,
+alterar el reloj o sembrar el mundo. Solo su perfil desechable empezó con dos maderas. N y el botón real
+crearon la antorcha por una madera; apagar conservó el saldo, reencender no cobró otra, y recargar restauró
+la sesión, la madera y el combustible con la antorcha apagada. Reencender después del reload tampoco
+repitió el cobro. Mapa y minimapa renderizados; cero errores de página/consola/peticiones fallidas.
+Los 403 de `/api/gm/session` son la denegación esperada de capacidades GM para esta cuenta ordinaria
+y quedan registrados por separado. [Resultado completo](rnv04-fire-fuel/public-accepted-alpha32/public-207f60df-d32c-4802-8916-6967151b5bcc.json).
+Cuenta/perfil QA eliminados tras drenar escrituras; cuatro recibos inmutables retenidos.
+
+Se inspeccionaron [panel vacío](rnv04-fire-fuel/public-accepted-alpha32/02-public-fire-panel.png),
+[carga confirmada](rnv04-fire-fuel/public-accepted-alpha32/03-public-hand-torch-lit.png),
+[reentrada](rnv04-fire-fuel/public-accepted-alpha32/05-public-hand-torch-reconnected.png) y
+[mapa](rnv04-fire-fuel/public-accepted-alpha32/06-public-map.png). La hora pública era de día; no se
+presentan estas capturas como prueba nocturna. La noche y los fuegos navales tienen la aceptación
+visual local anterior; el canario SQL también cubre una estación naval, no un recorrido público a bordo.
+
+Los [cinco intentos anteriores](rnv04-fire-fuel/public-attempts.json) se conservan como fallidos:
+una desconexión transitoria WSS, un timeout de carga y dos carreras de la automatización al entrar y
+restaurar sesión. El último pasó los ocho checks funcionales, pero detectó un favicon ausente; se añadió
+el icono real y se repitió el recorrido completo en la imagen final. Todas las cuentas/perfiles de esos
+intentos se limpiaron; los recibos permanecen. No se declara verde la suite global ni estabilidad 24/7.
+
+Sigue agua costera/reembarque, después provisiones/hogar; carga, agotamiento, rescate y relación con Brasa
+deben cerrar su contrato antes de activar natación. Carbón y construcción privada en tierra siguen pendientes.

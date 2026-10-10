@@ -12,8 +12,9 @@ Sin SQL ni flags propios. Sigue aceptación pública de I18N04b y materiales de 
 Mano 20 min, faroles/antorchas privadas 60 min por madera, fogata/parrilla 30 min provisionales;
 municipales infinitas. Un slot y apagado conservador; panel ES/EN, N/V y tres piezas construibles.
 SQL022 aplicada y canario real 8/8. Integración 91/91, imagen 107/107 y composición común 33/33
-solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicación/activación y entrada
-autenticada VPS se registrarán tras comprobarlas. Otros flags conservados. Sigue agua/reembarque.
+solapadas; cuatro vistas locales PC/móvil bajo/alto aceptadas. Publicado y activo en `fe50ab1`,
+alpha.32/protocolo 42: imagen 107/107 y 30/30 de fuego, navegador autenticado público 9/9 con
+saldo/madera tras recargar y mapa/minimapa. Otros flags conservados. Sigue agua/reembarque.
 
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).

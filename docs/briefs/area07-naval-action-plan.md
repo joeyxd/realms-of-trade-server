@@ -174,15 +174,17 @@ Usa el presupuesto existente y mantiene la luz propia; modelo/fuente siguen pose
 Costa/puerto, pie, farol naval e interior se verifican por navegador; publicación y revisión activa
 se documentan en la entrega. No hay sombras/oclusión por paredes ni prueba de FPS físico.
 
-[RNV04 — combustible privado y fuegos útiles (aceptado localmente; SQL022 aplicada)](RNV04-fire-fuel.md).
+[RNV04 — combustible privado y fuegos útiles (implementado y activo)](RNV04-fire-fuel.md).
 Las luces municipales siguen públicas e infinitas. La antorcha de mano consume una madera por 20 minutos
 de simulación; faroles/antorchas privados de balsa consumen una por 60 minutos y fogatas/parrilla por 30.
 Apagar conserva el saldo, no hay recarga automática y la parrilla usa únicamente la producción que ya tenía.
 El estado y los recibos se integran con el perfil y autoridad M5 existentes, con SQL022 opcional y apagado
 por defecto. La construcción cubre piezas de balsa; colocar hogares privados en tierra y añadir carbón
 quedan para después. Integración 91/91, imagen 107/107, composición común 33/33 (solapadas),
-cuatro vistas PC/móvil bajo/alto y canario SQL real 8/8 aceptados. Publicación, bandera y entrada
-autenticada VPS se registrarán en la [entrega](../delivery/rnv04-fire-fuel.md) tras comprobarlas.
+cuatro vistas PC/móvil bajo/alto y canario SQL real 8/8 aceptados. VPS `fe50ab1`, alpha.32/protocolo 42,
+activo con fuego habilitado, imagen 107/107 y 30/30 focales solapadas. Entrada autenticada pública 9/9:
+mano pagada, saldo y madera conservados tras recargar, reencendido sin cobro repetido y mapa/minimapa.
+Cuenta/perfil QA eliminados, recibos retenidos; límites/evidencia en la [entrega](../delivery/rnv04-fire-fuel.md).
 
 **Sigue agua costera/reembarque:** definir primero alcance, carga, agotamiento, rescate y pérdidas;
 usar la cubierta y autoridad actuales. Después provisiones/hogar.

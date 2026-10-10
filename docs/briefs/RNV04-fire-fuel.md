@@ -1,6 +1,6 @@
 # RNV04 — combustible privado y fuegos útiles
 
-Contrato AREA07, alpha.31 / protocolo 42. Implementación y aceptación local completadas; SQL022 aplicada y canario real 8/8. Publicación y entrada autenticada pendientes de registrar en la [entrega](../delivery/rnv04-fire-fuel.md). Este corte reutiliza la simulación, el perfil de personaje/balsa y la autoridad M5 existentes; no introduce otra autoridad de guardado.
+Contrato AREA07, alpha.31 / protocolo 42; integración pública final alpha.32 / protocolo 42. Implementado, probado y activo en el VPS: SQL022 aplicada, canario real 8/8 y navegador público 9/9. Evidencia y límites en la [entrega](../delivery/rnv04-fire-fuel.md). Este corte reutiliza la simulación, el perfil de personaje/balsa y la autoridad M5 existentes; no introduce otra autoridad de guardado.
 
 ## Reglas de producto
 
@@ -39,7 +39,7 @@ La implementación actual añade las fuentes privadas usando los presupuestos de
 
 **SQL real:** SQL022 aplicada mediante editor SQL autenticado; canario aislado 8/8, perfiles/mundos QA eliminados y recibos inmutables retenidos. Composición con SQL018/019 probada localmente sin activar el montaje de reloj común del mundo legacy.
 
-**Publicación:** bandera por defecto apagada; activación VPS y entrada autenticada por registrar en la [entrega](../delivery/rnv04-fire-fuel.md). No afirmar consumo durable público hasta cerrar esa evidencia.
+**Publicación:** bandera de ejemplo apagada; VPS activado expresamente y sano en `fe50ab1`, alpha.32/protocolo 42. Imagen 107/107 y 30/30 de fuego; navegador público autenticado 9/9 comprueba mano/cobro, apagar/reencender, recarga, madera y saldo persistentes, mapa/minimapa. Capturas inspeccionadas, cuenta/perfil QA eliminados y recibos retenidos. El recorrido público no cubre fuegos navales; su aceptación es local y SQL aislada. Evidencia en la [entrega](../delivery/rnv04-fire-fuel.md).
 
 ## Continuidad AREA07
 
