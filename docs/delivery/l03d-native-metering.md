@@ -26,12 +26,13 @@ en el repositorio. Comprobar la imagen/alfa acredita continuidad del juego, no e
 [Verificador reproducible](l03d-native-metering/verify.mjs),
 [resultado y hashes de fuentes](l03d-native-metering/verification.json) y
 [TAP](l03d-native-metering/verification.tap): **569 aprobadas, cero fallos y cinco omisiones de
-symlinks Windows**, 64 archivos y hashes estables durante la ejecución sobre integración `535f316`
-(fuente L03d-a `e614ca4` y upstream SQL019 `6748f9a`).
+symlinks Windows**, 64 archivos y hashes estables durante la ejecución final sobre `9f23be3`,
+alpha.28/protocolo 40 (fuente L03d-a `e614ca4`, publicada primero en `e319e81`).
 Contadores/tarifas de fixture, sin proveedor externo ni gasto. Pruebas de red usan localhost.
 
 El [suplemento de integración](l03d-native-metering/verify-integration.mjs) verifica los 27 casos
-SQL019 de contrato, SQL y SIGKILL de proceso, sin montar ni activar su coordinador.
+SQL019 de contrato, SQL y SIGKILL de proceso sobre `535f316`, sin montar ni activar su coordinador.
+Sus fuentes conservan los mismos hashes en la integración final.
 [Resultado](l03d-native-metering/integration.json) · [TAP](l03d-native-metering/integration.tap).
 
 Revisión independiente detectó y cerró la liberación manual de una reserva todavía en curso;
@@ -47,8 +48,17 @@ tokenizer, tarifa/dimensiones cobradas e integrar el transporte. Después canari
 recuerdos con fuentes/contradicciones, stop/reentrada, latencia, errores y coste real observado.
 No se acepta calidad semántica ni factura con fixtures. Sin activación pública de proveedor/agentes.
 
-Estado de publicación/despliegue se registrará con su evidencia. Este archivo describe el corte
-local hasta que exista revisión publicada y comprobación de la imagen.
+Fuente `e614ca4` enviada a continuidad en `e319e81`, integrada con los frentes naval/editor en
+`9f23be3`, alpha.28/protocolo 40. La [revisión/imagen/status](l03d-native-metering/deployment.json)
+fue comprobada el 2026-10-10 a las 20:56 UTC: una autoridad sana, timer activo, cero errores y
+107/107 pruebas offline en su imagen exacta. La [aceptación pública](l03d-native-metering/public-smoke.json)
+pasó 10/10: salud durable M5/recursos, protocolo, entrada WSS normal, herramientas privadas y
+admisión/comercio/presupuesto de agentes no autorizados cerrados. No repite un canario económico
+autenticado ni acredita SQL017/018/019/020 live o inferencia en el VPS.
+
+Reproducir: `node docs/delivery/l03d-native-metering/capture-deployment.mjs <revision-completa>` y
+`node docs/delivery/l03d-native-metering/public-smoke.mjs`. El cierre documental posterior no cambia
+las fuentes de runtime verificadas; nuevas revisiones de otros frentes requieren su propia aceptación.
 
 ## English
 

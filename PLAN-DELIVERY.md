@@ -1,10 +1,11 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA17 L03d-a, corte local 2026-10-10:** [contabilidad nativa durable](docs/delivery/l03d-native-metering.md)
+**AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](docs/delivery/l03d-native-metering.md)
 prepara el canario L03d con ledger v2 separado, tarifa/modelo declarados fijados, uso desconocido
 retenido y cargo derivado distinto de factura. Sin proveedor ni inferencia real; panel/runner
 conservan modo simulado. Falta elegir proveedor/modelo y aceptar transporte, memoria/conversación/PvE
-y coste reales. Integra alpha.27/protocolo 39 sin SQL ni cambio de gameplay; evidencia en la entrega.
+y coste reales. Fuente `e614ca4` integrada con alpha.28/protocolo 40, sin SQL ni cambio de gameplay
+propios; evidencia local y de continuidad del alfa en la entrega.
 
 **AREA15, diario del sobre 2026-10-10:** [SQL019](docs/delivery/m5-ground-transaction-journal.md),
 petición completa antes del efecto y cierre atómico con SQL018; recuperación detenida desde filas actuales.

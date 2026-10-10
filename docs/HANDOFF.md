@@ -7,11 +7,12 @@ M5. Readiness live `version: 1` a `2026-10-10T20:41:47Z`; hash aplicado de migra
 (publicación, activación y rollback) sigue pendiente. [Entrega GM03a](delivery/gm03a/DELIVERY.md) ·
 [brief](briefs/gm03a-remote-drafts.md) · [plan GM](../PLAN-GM-EDITOR.md).
 
-**AREA17 L03d-a, corte local 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
+**AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
 prepara un ledger v2 separado con tarifas/modelo declarados e inmutables, reserva previa, uso nativo
 y conciliación sin confundir cargo calculado con factura. V1/panel/runner siguen simulados; sin
 proveedor, SDK, credencial ni SQL nuevo. Falta elegir proveedor/modelo y aceptar transporte, memoria,
-conversación/PvE y coste reales. Fuente integrada alpha.27/protocolo 39; publicación en la entrega.
+conversación/PvE y coste reales. Fuente `e614ca4` integrada con alpha.28/protocolo 40; herramienta
+del repositorio, excluida de la imagen VPS. Pruebas/continuidad pública en la entrega.
 
 **AREA07 RNV03, 2026-10-10 — alpha.28/protocolo 40, implementado y activo:**
 [Contrato](briefs/rnv03-dark-night.md) y [entrega](delivery/rnv03-dark-night.md).
