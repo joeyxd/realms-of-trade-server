@@ -23,7 +23,8 @@ try {
   const ready = () => page.waitForFunction(() => window.__mn?.st.online && !document.querySelector('#btn-play').disabled, null, { timeout: 120000 });
   await ready(); assert.equal(await page.locator('html').getAttribute('lang'), 'en');
   await shot(page, '01-entry-en');
-  await page.locator('#btn-play').click();
+  await page.locator('#btn-play').focus();
+  await page.locator('#btn-play').press('Enter');
   await page.waitForFunction(() => window.__mn?.st.mode === 'playing');
   assert.equal(await page.evaluate(() => window.__mn.transport.kind), 'ws');
   await page.locator('#hud').waitFor({ state: 'visible' });
@@ -46,9 +47,16 @@ try {
   await shot(page, '04-disconnect-es');
   await page.locator('#btn-reconnect').click(); await ready();
   assert.equal(await page.locator('html').getAttribute('lang'), 'es');
-  await page.locator('#btn-play').click();
+  await page.locator('#btn-play').focus();
+  await page.locator('#btn-play').press('Enter');
   await page.waitForFunction(() => window.__mn?.st.mode === 'playing');
   assert.equal(await page.evaluate(() => window.__mn.transport.ws.readyState), 1);
+  await page.locator('#hud').waitFor({ state: 'visible' });
+  await page.waitForFunction(() => {
+    const player = document.querySelector('#hud .hud-player');
+    return player && Number(getComputedStyle(player).opacity) >= 0.99;
+  });
+  assert.match(await page.locator('#hud').innerText(), /Primeros pasos/);
   report.checks.push('Actual socket close, bilingual disconnect overlay, reconnect reload retains Spanish and rejoins authority');
   await shot(page, '05-reconnected-es');
   assert.deepEqual(report.errors, []);

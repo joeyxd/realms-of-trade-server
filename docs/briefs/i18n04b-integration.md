@@ -1,7 +1,8 @@
 # I18N04b — integración bilingüe del cliente y editor GM
 
-Fecha: 2026-10-10. Estado: **en verificación**. Se integra upstream `c9d3bbf` (fuego/fuel); código
-`b5d5565`, alpha32/protocol42. Aún no se hizo push. La publicación y aceptación pública siguen pendientes.
+Fecha: 2026-10-10. Estado: **publicado y verificado como invitado**. Código `b5d5565`,
+primera imagen `1f0f158` alpha.32/protocolo 42. Integración posterior de compañeros `6861636`
+alpha.33/protocolo 42 conservada. [Entrega/evidencia](../delivery/i18n04b.md).
 
 ## Alcance
 
@@ -33,7 +34,10 @@ ejecución **106/107** que agotó tiempo en `servermovement` bajo carga WebGL. E
 de i18n/editor/chat/raft **49/49 PASS**. Estos grupos se solapan; no se suman como un total. Se verificó
 que `server/`, `src/sim/` y `src/net/` no difieren de `c9d3bbf`.
 
-El recorrido del cliente es local, con Worker solo y sin servidor desplegado, wallet ni autenticación
-real. La prueba local de invitado no sustituye aceptación del sitio público; el recorrido público de
-invitado y sus capturas siguen pendientes. Login/autenticación real, permisos autenticados y
-reconexión pública también están pendientes. No hay aún aceptación de deployment.
+El recorrido local combina Worker solo real y respuestas simuladas para auth/servicios. El
+[QA público](../delivery/i18n04b/public/evidence.json) comprobó entrada invitado ES/EN, ajustes,
+atributos, cierre real del socket y reconexión conservando español, sin interceptar CDN.
+La [primera imagen aceptada](../delivery/i18n04b/deployment.json) pasó 107/107 y quedó sana. Tras integrar
+compañeros, la selección i18n/GM/companions/fire pasó 60/60. No sumar selecciones solapadas.
+Login/firma real, permisos/guardado GM y operaciones económicas durables conservan aceptación propia.
+Sigue I18N04c: materiales de lanzamiento/promoción ES/EN.

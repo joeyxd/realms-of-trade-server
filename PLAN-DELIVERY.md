@@ -5,12 +5,13 @@
 ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
 sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
 
-**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
-[Entrega y evidencia](docs/delivery/i18n04b.md), [plan bilingüe](PLAN-I18N.md).
-Cliente y editor GM ES/EN, selector temprano y cambio en caliente conservando datos/solicitudes;
-integra fuego/fuel de `c9d3bbf`. Navegador local: 11 grupos cliente y 6 editor, capturas revisadas;
-IndexedDB real, servicios/auth/CAS remoto simulados. Publicación y recorrido público pendientes.
-Sin SQL ni flags propios. Sigue aceptación pública de I18N04b y materiales de I18N04c.
+**AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
+[Entrega/evidencia](docs/delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
+conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
+ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
+11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
+Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
+IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
