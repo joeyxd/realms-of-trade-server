@@ -13,8 +13,13 @@
 body:has(.world-minimap.is-touch) #hud .hud-top-right { right: calc(120px + var(--safe-r)); }
 /* Leave the map caption clear above objectives; short stages use HUD's folded left column. */
 @container stage (min-height: 481px) {
-  #hud:has(.world-minimap.is-desktop) .tracker { top: calc(194px + var(--safe-t)); }
-  #hud:has(.world-minimap.is-touch) .tracker { top: calc(140px + var(--safe-t)); }
+  #hud:has(.world-minimap.is-desktop) { --tracker-map-top: 194px; }
+  #hud:has(.world-minimap.is-touch) { --tracker-map-top: 140px; }
+  #hud:has(.world-minimap) .tracker {
+    top: calc(var(--tracker-map-top) + var(--safe-t));
+    max-height: calc((100cqh - var(--tracker-map-top) - 16px - var(--safe-t) - var(--safe-b)) / var(--ui-scale));
+    overflow: auto; pointer-events: auto;
+  }
 }
 .mapv-legend { flex-wrap: wrap; gap: 7px 14px; }
 .mapv-legend .ship::before { background: #bd9671; }

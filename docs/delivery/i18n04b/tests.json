@@ -57,6 +57,16 @@
       "fail": 0,
       "exitCode": 0,
       "evidence": "alpha34-focused.tap"
+    },
+    {
+      "scope": "After starter workshop integration: prior 76 plus workshop panels",
+      "source": "82de6a7",
+      "version": "0.6.0-alpha.35",
+      "protocol": 44,
+      "pass": 86,
+      "fail": 0,
+      "exitCode": 0,
+      "evidence": "alpha35-focused.tap"
     }
   ],
   "note": "Selections overlap; do not add totals. Initial updater run during WebGL software rendering had one movement timeout (106/107); isolated server rerun passed 5/5 and complete clean rerun passed 107/107. At b5d5565, no runtime server, simulation or protocol diff against c9d3bbf. Later concurrent features retain their own changes and acceptance."
