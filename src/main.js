@@ -430,6 +430,7 @@ async function boot() {
   let gmEditor = null;
   let gmOwner = null;
   let gmCameraPose = null;
+  let gmWorldUIHidden = false;
   const gmRecoveries = new Map();
   const gmEntry = new GmEntry({
     parent: title.root.querySelector('.title-actions'), auth: accountAuth, online: st.online,
@@ -449,11 +450,22 @@ async function boot() {
             scene: world.scene, camera: world.camera, canvas, map, assets, parent: $('#ui'),
             draftWorldId: `gm-${serverHash}-${GAME.seed}-${accountId || 'local'}`, baseRevision: 'terrain-s21-v1',
             invalidate: () => { world.pipeline.markDirty(); world.renderer.shadowMap.needsUpdate = true; },
+            createWalkView: () => {
+              const id = 'gm-private-walker';
+              const view = world.addCharacter(id, 0);
+              view.onFootprint = null;
+              return { update: (dt, state) => view.update(dt, state), dispose: () => {
+                world.removeCharacter(id);
+                view.mesh.skeleton.dispose();
+                for (const material of new Set([view.material, ...(Array.isArray(view.mesh.material) ? view.mesh.material : [view.mesh.material])])) material.dispose();
+              } };
+            },
             onClose: ({ saved, recoveryDocument }) => {
               if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
               else gmRecoveries.delete(gmOwner);
               gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
               st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
+              worldUI.root.hidden = gmWorldUIHidden;
               world.setTitleShadows(true); gmEntry.closed(); input.clearActions(); input.keys.clear();
               canvas.focus({ preventScroll: true });
             },
@@ -474,6 +486,7 @@ async function boot() {
         await gmEditor.open();
         if (!gmEditor.active) throw new Error('GM editor could not open');
         st.mode = 'editor'; title.root.hidden = true; title.pulse?.pause();
+        gmWorldUIHidden = worldUI.root.hidden; worldUI.root.hidden = true;
         world.setTitleShadows(false); world.nearFade(false);
       } catch (error) {
         st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
@@ -1075,6 +1088,7 @@ async function boot() {
           world.camera.getWorldDirection(tmpV);
           const distance = tmpV.y < -0.05 ? Math.min(180, Math.max(1, world.camera.position.y / -tmpV.y)) : 35;
           focus.copy(world.camera.position).addScaledVector(tmpV, distance);
+          if (gmEditor.walkPreview?.active) focus.copy(gmEditor.walkPreview.position);
           focus.y = map.groundAt(focus.x, focus.z);
           world.update(realDt, { focus, shadowFocus: focus, playing: false, simDt: 0 });
           world.render();

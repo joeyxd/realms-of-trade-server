@@ -1,5 +1,7 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**Checkpoint GM02 (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), implementado localmente; publicación pendiente. Escena permite editar/ocultar/restaurar rocas naturales/costeras, flores y guijarros; documento v2 migra borradores v1, círculos XZ y recorrido privado sin entrar al servidor/M5. Navegador 28/28, cuatro calidades, cámara/restauración exactas y limpieza al revocar. Sigue GM03 de guardado remoto/publicación; terreno y objetos funcionales quedan fuera.
+
 **AREA07 PRG02b, 2026-10-10 — alpha.23/protocolo 36:** [Pilotaje II](delivery/prg02b-pilot-learning.md)
 concede una vez `pilot_coastal` al completar la lección con atraque real. Timón +15 % desde el siguiente
 embarque, progresión común v2 y guardado CAS M5 con estados local/pendiente/confirmado. Sin SQL ni ledger

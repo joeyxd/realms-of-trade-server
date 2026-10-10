@@ -37,7 +37,7 @@ class MemoryDraftSource {
   }
 }
 
-test('document v1 validates stable decorative instances and round-trips canonically', () => {
+test('document v2 validates stable decorative instances and round-trips canonically', () => {
   const doc = addDecoration(sourceDoc(), rock());
   const json = JSON.stringify(doc);
   assert.deepEqual(validateDocument(JSON.parse(json)), doc);

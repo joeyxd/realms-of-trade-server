@@ -144,6 +144,8 @@ function chunked(name, props, geo, mat, nm, place, colorOf, opts = {}) {
       if (colorOf) mesh.setColorAt(i, colorOf(p));
     });
     mesh.instanceMatrix.needsUpdate = true;
+    // Logical source identities let the GM draft overlay edit an instance without rebuilding batches.
+    if (opts.editorEditable) { mesh.name = name; mesh.userData.gmBaseProps = list.slice(); }
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
     if (opts.boundPad) mesh.boundingSphere.radius += opts.boundPad;
@@ -280,7 +282,7 @@ export function createVegetation(map) {
       return new THREE.Color(0xffffff).lerp(new THREE.Color(0x5b4b5e), volc);
     };
     // Keep volcanic, arena and lava stones on their existing paint and normal-pass contract.
-    group.add(chunked('rocks' + variant, list.filter(p => naturalSet.has(p)), geometry, naturalMat, rockNm, placeRock, tintRock));
+    group.add(chunked('rocks' + variant, list.filter(p => naturalSet.has(p)), geometry, naturalMat, rockNm, placeRock, tintRock, { editorEditable: true }));
     group.add(chunked('volcanicRocks' + variant, list.filter(p => !naturalSet.has(p)), geometry, rockMat, rockNm, placeRock, tintRock));
   }
 
@@ -293,7 +295,7 @@ export function createVegetation(map) {
       group.add(chunked('coastRocks' + variant, list, coastRockGeometry(coastSource, variant), coastMat, coastNm, (p, m) => {
         q.setFromAxisAngle(up, p.rot);
         m.compose(v.set(p.x, coastRockBase(map, p), p.z), q, sc.setScalar(p.scale));
-      }));
+      }, null, { editorEditable: true }));
     }
   }
   group.userData.coastRocks = { asset: coastRocks.length ? COAST_ROCK_ID : null, count: coastRocks.length, variants: 3 };
@@ -309,7 +311,7 @@ export function createVegetation(map) {
     group.add(chunked('flowers' + ci, list, flowerGeometry(c), flowerMat, null, (p, m) => {
       q.setFromAxisAngle(up, p.rot);
       m.compose(v.set(p.x, p.y - 0.02, p.z), q, sc.setScalar(p.scale * 1.4));
-    }, null, { castShadow: false, noOutline: true }));
+    }, null, { castShadow: false, noOutline: true, editorEditable: true }));
   });
 
   // Underwater ribbons use shared paint, spatial batches and distance LOD.
@@ -321,7 +323,7 @@ export function createVegetation(map) {
   group.add(chunked('pebbles', pebbles, pebbleGeometry(), pebbleMat, null, (p, m) => {
     q.setFromAxisAngle(up, p.rot);
     m.compose(v.set(p.x, p.y - 0.02, p.z), q, sc.setScalar(p.scale));
-  }, (p) => pebbleColors[Math.floor(p.v * pebbleColors.length)], { castShadow: false }));
+  }, (p) => pebbleColors[Math.floor(p.v * pebbleColors.length)], { castShadow: false, editorEditable: true }));
 
   // Independent beach silhouettes complement the tiny shells painted in S01's sand albedo.
   const detail = preserveTerrainSites(map, buildBeachDetails), detailYaw = new THREE.Quaternion(), detailUp = new THREE.Vector3();

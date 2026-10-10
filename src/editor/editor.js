@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 import { createEditorTransformControls } from './transformControls.js';
-import { addDecoration, createDecoration, createDocument, createDocumentHistory, removeDecoration, updateDecoration, validateDocument } from './document.js';
+import { addDecoration, createDecoration, createDocument, createDocumentHistory, removeDecoration, updateDecoration, validateDocument, setBaseOverride, removeBaseOverride } from './document.js';
 import { DraftStore, DRAFT_EXPORT_FORMAT, DRAFT_EXPORT_VERSION, MAX_DRAFT_EXPORT_BYTES } from './draftStore.js';
 import { EditorCatalog } from './catalog.js';
 import { EditorFreeCamera } from './freeCamera.js';
 import { createEditorModels } from './modelFactory.js';
+import { createBaseDecorationLayer } from './baseDecoration.js';
+import { EditorWalkPreview } from './walkPreview.js';
+import { LAYER } from '../render/pipeline.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -13,10 +16,10 @@ const uid = () => 'gm-' + (globalThis.crypto?.randomUUID?.() || (Date.now().toSt
 const typing = (target) => !!target?.closest?.('input,textarea,select,[contenteditable="true"]');
 const html = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 
-/** Local draft editor for new decorative objects. It never changes the base map or gameplay state. */
+/** Private decoration overlay. Generated map data and server gameplay remain untouched. */
 export class WorldEditor {
   constructor({ scene, camera, canvas, map, assets, parent, onClose = () => {}, draftWorldId = null,
-    baseRevision = 'terrain-s21-v1', invalidate = () => {}, onChanged = () => {} } = {}) {
+    baseRevision = 'terrain-s21-v1', invalidate = () => {}, onChanged = () => {}, createWalkView = null } = {}) {
     if (!scene || !camera || !canvas || !map || !assets || !parent) {
       throw new TypeError('WorldEditor requires scene, camera, canvas, map, assets, and parent');
     }
@@ -38,9 +41,19 @@ export class WorldEditor {
     this.pendingEntry = null; this.ghost = null; this.dragging = false; this.dragStart = null;
     this.pointerNdc = new THREE.Vector2(); this.pointerInside = false; this.error = null;
     this.snapEnabled = true; this.snapStep = 0.5;
+    this.baseLayer = createBaseDecorationLayer({ scene, map, baseRevision });
+    this.baseEntries = this.baseLayer.list().filter((entry) => entry.editable);
+    this.sceneTab = false;
 
     this._installStyles(); this._buildUI();
     this.cameraController = new EditorFreeCamera(camera, canvas, { ownsTarget: (target) => this.ui.contains(target) });
+    this.walkPreview = createWalkView ? new EditorWalkPreview({ camera, canvas, map, createView: createWalkView,
+      ownsTarget: (target) => this.ui.contains(target) }) : null;
+    this.footprint = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 64 }, (_, i) =>
+      new THREE.Vector3(Math.cos(i * Math.PI / 32), 0, Math.sin(i * Math.PI / 32)))),
+    new THREE.LineBasicMaterial({ color: 0xffd477, depthTest: false, transparent: true, opacity: .9 }));
+    this.footprint.name = 'gm-collision-footprint'; this.footprint.layers.set(LAYER.NO_OUTLINE);
+    this.footprint.renderOrder = 20; this.footprint.visible = false;
     this.transform = createEditorTransformControls(camera, canvas); this.transform.setSize(0.85);
     this._configureSnap();
     this.transform.addEventListener('dragging-changed', (e) => { this.dragging = e.value; });
@@ -56,13 +69,15 @@ export class WorldEditor {
     this.onLang = () => { this.lang = this.lang === 'es' ? 'en' : 'es'; this._setLanguage(); };
     this.onClick = (e) => this._toolbarAction(e);
     this.onChange = (e) => this._inspectorChange(e);
-    this.onBlur = () => { this.cameraController.onBlur(); if (this.active) this._cancelTransform(); };
+    this.onSceneSearch = () => this._renderSceneList();
+    this.onBlur = () => { this.cameraController.onBlur(); if (this.active && !this.walkPreview?.active) this._cancelTransform(); };
     this.onPointerLeave = () => { this.pointerInside = false; if (this.ghost) this.ghost.visible = false; this.invalidate(); };
     this.canvas.addEventListener('pointermove', this.onPointerMove);
     this.canvas.addEventListener('pointerdown', this.onPointerDown);
     this.canvas.addEventListener('pointerleave', this.onPointerLeave);
     this.ui.addEventListener('click', this.onClick);
     this.ui.addEventListener('change', this.onChange);
+    this.sceneSearch.addEventListener('input', this.onSceneSearch);
     this.langButton.addEventListener('click', this.onLang);
     this.onImport = () => this._importFile(this.importInput.files?.[0]);
     this.importInput.addEventListener('change', this.onImport);
@@ -91,10 +106,17 @@ export class WorldEditor {
       '<button type="button" data-action="place" data-i18n="place"></button>',
       '<button type="button" data-action="undo" data-i18n="undo"></button><button type="button" data-action="redo" data-i18n="redo"></button>',
       '<button type="button" data-action="duplicate" data-i18n="duplicate"></button><button type="button" data-action="delete" data-i18n="delete"></button>',
+      '<button type="button" data-action="walk" data-i18n="walk"></button>',
       '<button type="button" data-action="save" data-i18n="save"></button><button type="button" data-action="export" data-i18n="export"></button>',
       '<label class="gm-import-button"><span data-i18n="import"></span><input type="file" accept="application/json,.json" data-role="import"></label>',
       '<button type="button" data-role="language" aria-label="Language"></button><button type="button" data-action="close" class="gm-close" data-i18n="close"></button>',
-      '</div></header><div class="gm-workspace"><aside class="gm-sidebar" data-role="catalog"></aside>',
+      '</div></header><div class="gm-workspace"><aside class="gm-sidebar">',
+      '<nav class="gm-tabs"><button type="button" data-action="tab-library" data-i18n="library"></button>',
+      '<button type="button" data-action="tab-scene" data-i18n="scene"></button></nav>',
+      '<div class="gm-library" data-role="catalog"></div><section class="gm-scene-panel" data-role="scene-panel" hidden>',
+      '<label class="gm-search"><span data-i18n="sceneSearch"></span><input type="search" data-role="scene-search"></label>',
+      '<p class="gm-scene-note" data-i18n="sceneScope"></p><div class="gm-scene-count" data-role="scene-count"></div>',
+      '<div class="gm-scene-list" data-role="scene-list"></div></section></aside>',
       '<div class="gm-canvas-note" data-i18n="controls"></div><aside class="gm-inspector"><h2 data-i18n="inspector"></h2>',
       '<div class="gm-selection-name" data-role="selection-name"></div><div class="gm-transform-tools">',
       '<button type="button" data-action="mode-translate" data-i18n="move"></button><button type="button" data-action="mode-rotate" data-i18n="rotate"></button>',
@@ -108,6 +130,10 @@ export class WorldEditor {
       '<label><span>Rot Y°</span><input data-field="ry" type="number" step="5"></label><label><span>Rot Z°</span><input data-field="rz" type="number" step="5"></label>',
       '<label><span data-i18n="uniformScale"></span><input data-field="scale" type="number" min="0.001" max="1000" step="0.1"></label></div>',
       '<button type="button" data-action="ground" data-i18n="ground"></button>',
+      '<button type="button" data-action="restore-base" data-i18n="restoreBase"></button>',
+      '<div class="gm-collider-fields"><label><span data-i18n="collision"></span><select data-setting="collider">',
+      '<option value="none" data-i18n="noCollision"></option><option value="circle" data-i18n="circleCollision"></option></select></label>',
+      '<label><span data-i18n="radius"></span><input data-setting="radius" type="number" min="0.05" max="50" step="0.1"></label></div>',
       '<p class="gm-collider-note" data-i18n="colliderNote"></p><div class="gm-status" data-role="status" aria-live="polite"></div></aside></div>',
     ].join('');
     this.parent.appendChild(this.ui);
@@ -117,6 +143,12 @@ export class WorldEditor {
     this.statusNode = this.ui.querySelector('[data-role="status"]');
     this.fields = Object.fromEntries([...this.ui.querySelectorAll('[data-field]')].map((el) => [el.dataset.field, el]));
     this.importInput = this.ui.querySelector('[data-role="import"]');
+    this.scenePanel = this.ui.querySelector('[data-role="scene-panel"]');
+    this.sceneSearch = this.ui.querySelector('[data-role="scene-search"]');
+    this.sceneList = this.ui.querySelector('[data-role="scene-list"]');
+    this.sceneCount = this.ui.querySelector('[data-role="scene-count"]');
+    this.colliderSelect = this.ui.querySelector('[data-setting="collider"]');
+    this.colliderRadius = this.ui.querySelector('[data-setting="radius"]');
   }
 
   _t(en, es) { return this.lang === 'en' ? en : es; }
@@ -127,19 +159,29 @@ export class WorldEditor {
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
       delete: ['Delete', 'Eliminar'], save: ['Save draft', 'Guardar borrador'], export: ['Export', 'Exportar'],
       import: ['Import', 'Importar'], close: ['Close', 'Cerrar'],
+      library: ['Library', 'Biblioteca'], scene: ['Scene', 'Escena'], sceneSearch: ['Find placed decoration', 'Buscar decoración colocada'],
+      sceneScope: ['Natural rocks, flowers, pebbles and draft models. Functional objects stay protected.',
+        'Rocas naturales, flores, guijarros y modelos del borrador. Los objetos funcionales están protegidos.'],
+      walk: [this.walkPreview?.active ? 'Back to editor' : 'Walk test', this.walkPreview?.active ? 'Volver al editor' : 'Probar caminando'],
+      restoreBase: ['Restore original', 'Restaurar original'], collision: ['Walk test collision', 'Colisión de prueba'],
+      noCollision: ['None', 'Ninguna'], circleCollision: ['Circle in XZ', 'Círculo en XZ'], radius: ['Radius before scale (m)', 'Radio antes de escala (m)'],
       controls: ['RMB + mouse: look · WASD: fly · Q/E: height · Shift: fast · wheel: speed · F: focus',
         'Botón derecho + ratón: mirar · WASD: volar · Q/E: altura · Shift: rápido · rueda: velocidad · F: enfocar'],
       inspector: ['Inspector', 'Inspector'], move: ['Move', 'Mover'], rotate: ['Rotate', 'Girar'], scale: ['Scale', 'Escala'],
       uniformScale: ['Uniform scale', 'Escala uniforme'],
       snap: ['Snap', 'Rejilla'], world: ['World axes', 'Ejes del mundo'], local: ['Local axes', 'Ejes locales'],
       ground: ['Place on terrain', 'Apoyar en terreno'],
-      colliderNote: ['Draft decoration only. Proxy metadata has no gameplay collision.', 'Solo decoración de borrador. El proxy no tiene colisión de gameplay.'],
+      colliderNote: ['Circles block only the private walk test, at every height. Models are not walkable surfaces. Nothing is published.',
+        'Los círculos bloquean solo la prueba privada, a cualquier altura. Los modelos no crean superficies transitables. Nada se publica.'],
     };
     for (const el of this.ui.querySelectorAll('[data-i18n]')) {
       const value = words[el.dataset.i18n]; if (value) el.textContent = value[this.lang === 'en' ? 0 : 1];
     }
     this.langButton.textContent = this.lang === 'es' ? 'EN' : 'ES';
-    this.catalog?.setLanguage(this.lang); this._renderInspector();
+    this.catalog?.setLanguage(this.lang); this._renderInspector(); this._renderSceneList();
+    if (this.walkPreview?.active) this.ui.querySelector('[data-i18n="controls"]').textContent = this._t(
+      'PRIVATE WALK TEST · WASD: move · Escape: back to editor · no combat or progress',
+      'PRUEBA PRIVADA · WASD: caminar · Escape: volver al editor · sin combate ni progreso');
   }
 
   async open() {
@@ -168,6 +210,8 @@ export class WorldEditor {
       }
       this.revision = loaded.revision;
       const draft = loaded.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision });
+      try { this._validateBaseReferences(draft); }
+      catch (error) { this.rejectedDocument = draft; throw error; }
       this.history = createDocumentHistory(draft); this.document = clone(draft);
       this.lastSavedJson = JSON.stringify(normal.document || createDocument({ seed: this.map.seed >>> 0, baseRevision: this.baseRevision }));
       this.dirty = !!recovery && JSON.stringify(recovery) !== this.lastSavedJson;
@@ -187,9 +231,10 @@ export class WorldEditor {
     } catch (error) {
       if (session !== this.session) return false;
       this.active = false; this.ui.hidden = true; this.error = error;
+      this._stopWalking(); this.baseLayer.restore(); this.footprint.visible = false; this.scene.remove(this.footprint);
       this.cameraController.disable(); this._clearGhost(); this.transform.detach();
       if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
-      for (const record of this.records.values()) this.scene.remove(record.root);
+      this._clearRecords();
       this._setStatus(error?.message || this._t('Could not open draft.', 'No se pudo abrir el borrador.'), 'error');
       return false;
     }
@@ -197,10 +242,12 @@ export class WorldEditor {
 
   _addControls() {
     if (!this.controlsAdded) { this.scene.add(this.transformHelper); this.controlsAdded = true; }
+    this.scene.add(this.footprint);
   }
 
   async close({ force = false } = {}) {
     if (!this.active) return true;
+    this._stopWalking();
     if (this.importTask) await this.importTask;
     if (!this.active) return true;
     if (this.dirty) {
@@ -222,7 +269,8 @@ export class WorldEditor {
     this.active = false; this.session++; this.catalog.generation = this.session;
     clearTimeout(this.saveTimer); this.saveTimer = 0;
     this.cameraController.disable(); this._clearGhost(); this.transform.detach();
-    for (const record of this.records.values()) this.scene.remove(record.root);
+    this.baseLayer.restore(); this.scene.remove(this.footprint); this.footprint.visible = false;
+    this._clearRecords();
     if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
     this.ui.hidden = true; this.invalidate();
     this.onClose({ saved: !this.dirty, recoveryDocument: this.resumeDocument || (this.dirty ? this.history?.current() : null) });
@@ -231,6 +279,7 @@ export class WorldEditor {
 
   async _hydrate(document) {
     for (const item of document.objects) {
+      if (this.baseLayer.get(item.assetId)) continue;
       const entry = this.catalog.items.find((candidate) => candidate.id === item.assetId) || this.assets.entry?.(item.assetId);
       if (!entry) continue;
       try {
@@ -242,24 +291,49 @@ export class WorldEditor {
   }
 
   _renderDocument(document) {
+    this._validateBaseReferences(document);
     this.transform.detach();
-    for (const record of this.records.values()) this.scene.remove(record.root);
-    this.records.clear(); this.document = clone(document);
+    this._clearRecords(); this.document = clone(document);
+    this.baseLayer.apply(document.baseOverrides);
+    for (const entry of this.baseEntries) {
+      const override = document.baseOverrides.find((item) => item.id === entry.id);
+      const root = new THREE.Group(); root.name = entry.id; root.userData.gmDecorationId = entry.id;
+      this._applyTransform(root, override?.transform || entry.transform); this.scene.add(root);
+      this.records.set(entry.id, { id: entry.id, assetId: entry.id, entry, root, base: true, hidden: !!override?.hidden });
+    }
     for (const item of document.objects) {
-      const entry = this.catalog.items.find((candidate) => candidate.id === item.assetId) || this.assets.entry?.(item.assetId);
-      const model = this.assets.model(item.assetId);
+      const entry = this._entryForAsset(item.assetId);
+      const model = this.baseLayer.get(item.assetId) ? this.baseLayer.model(item.assetId) : this.assets.model(item.assetId);
       if (entry && model) this._addRecord(item, model);
     }
     this.selectedId = this.records.has(this.selectedId) ? this.selectedId : null;
-    if (this.selectedId) this.transform.attach(this.records.get(this.selectedId).root);
-    this._renderInspector(); this._updateButtons(); this.invalidate();
+    if (this.selectedId && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root);
+    this._renderInspector(); this._renderSceneList(); this._updateButtons(); this.invalidate();
+  }
+
+  _entryForAsset(id) { return this.baseLayer.get(id) || this.catalog.items.find((entry) => entry.id === id) || this.assets.entry?.(id); }
+
+  _validateBaseReferences(document) {
+    for (const id of [...document.baseOverrides.map((item) => item.id),
+      ...document.objects.filter((item) => item.assetId.startsWith('base:')).map((item) => item.assetId)]) {
+      if (!this.baseLayer.get(id)?.editable) throw new Error(this._t('Base decoration changed or is unavailable. Export this draft before rebasing.',
+        'La decoración base cambió o no está disponible. Exporta el borrador antes de cambiar su base.'));
+    }
   }
 
   _addRecord(item, model) {
     const root = new THREE.Group(); root.name = item.id; root.userData.gmDecorationId = item.id;
     root.add(model); this._applyTransform(root, item.transform); this.scene.add(root);
     this.records.set(item.id, { id: item.id, assetId: item.assetId,
-      entry: this.catalog.items.find((candidate) => candidate.id === item.assetId), root });
+      entry: this._entryForAsset(item.assetId), root });
+  }
+
+  _clearRecords() {
+    for (const record of this.records.values()) {
+      this.scene.remove(record.root);
+      record.root.traverse((object) => { for (const material of object.userData.gmOwnedMaterials || []) material.dispose(); });
+    }
+    this.records.clear();
   }
 
   _applyTransform(root, t) {
@@ -269,7 +343,7 @@ export class WorldEditor {
   }
 
   _selectAsset(entry, preparedModel) {
-    if (!this.active) return;
+    if (!this.active || this.walkPreview?.active) return;
     this._clearGhost(); this.pendingEntry = entry; this.ghost = preparedModel; this.ghost.name = 'gm-placement-ghost';
     this.ghost.traverse((object) => {
       if (!object.isMesh) return;
@@ -320,23 +394,30 @@ export class WorldEditor {
   }
 
   _pointerDown(event) {
-    if (!this.active || this.importTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
+    if (!this.active || this.walkPreview?.active || this.importTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
     const rect = this.canvas.getBoundingClientRect();
     this.pointerNdc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -(((event.clientY - rect.top) / rect.height) * 2 - 1));
     if (this.ghost && this.pendingEntry) {
       const hits = this._terrainHits(); if (hits.length) this._placeAt(hits[0].point); return;
     }
     const hit = this._pickPlaced();
-    this.select(hit ? hit.object.userData.gmDecorationId : null);
+    this.select(hit?.id || null);
   }
 
   _pickPlaced() {
-    const ray = new THREE.Raycaster(); ray.setFromCamera(this.pointerNdc, this.camera);
-    const roots = [...this.records.values()].map((record) => record.root);
-    const hit = ray.intersectObjects(roots, true)[0]; if (!hit) return null;
-    let object = hit.object;
-    while (object && !object.userData.gmDecorationId) object = object.parent;
-    return object ? { object } : null;
+    const ray = new THREE.Raycaster(); ray.layers.enable(LAYER.NO_OUTLINE); ray.setFromCamera(this.pointerNdc, this.camera);
+    const roots = [...this.records.values()].filter((record) => !record.base).map((record) => record.root);
+    const meshes = [...new Set(this.baseEntries.map((entry) => entry.mesh))];
+    const terrainDistance = this._terrainHits()[0]?.distance ?? Infinity;
+    for (const hit of ray.intersectObjects([...roots, ...meshes], true)) {
+      if (hit.distance > terrainDistance + .15) break;
+      const base = this.baseLayer.resolveHit(hit);
+      if (base) return { id: base.id };
+      let object = hit.object;
+      while (object && !object.userData.gmDecorationId) object = object.parent;
+      if (object) return { id: object.userData.gmDecorationId };
+    }
+    return null;
   }
 
   _placeAt(point) {
@@ -350,9 +431,21 @@ export class WorldEditor {
   }
 
   select(id) {
+    if (this.walkPreview?.active) return;
     this.selectedId = id && this.records.has(id) ? id : null;
-    if (this.selectedId) this.transform.attach(this.records.get(this.selectedId).root); else this.transform.detach();
-    this._renderInspector(); this._updateButtons();
+    if (this.selectedId && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root); else this.transform.detach();
+    this._renderInspector(); this._renderSceneList(); this._updateButtons(); this.invalidate();
+  }
+
+  _selectedItem() {
+    if (!this.selectedId || !this.history) return null;
+    const doc = this.history.current(), base = this.baseLayer.get(this.selectedId);
+    if (base) {
+      const override = doc.baseOverrides.find((item) => item.id === base.id);
+      return { id: base.id, assetId: base.id, transform: override?.transform || base.transform,
+        collider: base.collider, hidden: !!override?.hidden, base: true };
+    }
+    return doc.objects.find((obj) => obj.id === this.selectedId) || null;
   }
 
   _selectedTransform() {
@@ -372,6 +465,7 @@ export class WorldEditor {
     const limit = Math.PI * 200;
     root.rotation.x = clamp(root.rotation.x, -limit, limit); root.rotation.y = clamp(root.rotation.y, -limit, limit); root.rotation.z = clamp(root.rotation.z, -limit, limit);
     root.scale.setScalar(clamp((root.scale.x + root.scale.y + root.scale.z) / 3, 0.001, 1000));
+    if (this.records.get(this.selectedId).base) this.baseLayer.setTransform(this.selectedId, this._transformFromRoot(root));
     root.updateMatrixWorld(true); this.invalidate(); this._renderInspector();
   }
 
@@ -385,16 +479,21 @@ export class WorldEditor {
     if (this.dragStart && this.selectedId) {
       const root = this.records.get(this.selectedId)?.root;
       if (root) this._applyTransform(root, this.dragStart);
+      if (this.records.get(this.selectedId)?.base) this.baseLayer.setTransform(this.selectedId, this.dragStart);
     }
     this.dragStart = null; this.dragging = false; this.transform.dragging = false;
     this.transform.detach();
-    if (this.selectedId && this.records.has(this.selectedId)) this.transform.attach(this.records.get(this.selectedId).root);
+    if (this.selectedId && this.records.has(this.selectedId) && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root);
     this._renderInspector(); this.invalidate();
   }
 
   _setSelectedTransform(transform) {
     if (!this.selectedId) return;
-    try { this._commit(updateDecoration(this.history.current(), this.selectedId, { transform })); }
+    try {
+      const item = this._selectedItem();
+      this._commit(item?.base ? setBaseOverride(this.history.current(), { id: item.id, transform, hidden: item.hidden }) :
+        updateDecoration(this.history.current(), this.selectedId, { transform }));
+    }
     catch (error) {
       this._setStatus(this._t('Invalid transform: ' + (error.code || error.message), 'Transformación inválida: ' + (error.code || error.message)), 'error');
       this._renderDocument(this.history.current());
@@ -403,23 +502,36 @@ export class WorldEditor {
 
   _renderInspector() {
     if (!this.selectionName || !this.fields) return;
-    const item = this.selectedId ? this.history?.current().objects.find((obj) => obj.id === this.selectedId) : null;
+    const item = this._selectedItem();
     const record = item && this.records.get(item.id);
-    const label = this.catalog.items.find((entry) => entry.id === item?.assetId)?.label || record?.entry?.label;
+    const label = record?.entry?.label;
     const localized = typeof label === 'string' ? label : label?.[this.lang] || label?.es || label?.en || item?.assetId;
     this.selectionName.textContent = item ? (localized + ' · ' + item.id) : this._t('Nothing selected', 'Nada seleccionado');
-    const t = item?.transform;
+    const t = this.dragStart ? this._selectedTransform() : item?.transform;
     const values = t ? { x: t.position.x, y: t.position.y, z: t.position.z,
       rx: t.rotation.x * 180 / Math.PI, ry: t.rotation.y * 180 / Math.PI, rz: t.rotation.z * 180 / Math.PI, scale: t.scale } : {};
     for (const [key, input] of Object.entries(this.fields)) {
-      input.disabled = !item; input.value = Number.isFinite(values[key]) ? Number(values[key]).toFixed(key[0] === 'r' ? 1 : 2) : '';
+      input.disabled = !item || item.hidden || this.walkPreview?.active; input.value = Number.isFinite(values[key]) ? Number(values[key]).toFixed(key[0] === 'r' ? 1 : 2) : '';
     }
+    this.colliderSelect.disabled = !item || item.base || this.walkPreview?.active;
+    this.colliderSelect.value = item?.collider === 'none' || !item ? 'none' : 'circle';
+    this.colliderRadius.disabled = !item || item.base || item.collider === 'none' || this.walkPreview?.active;
+    this.colliderRadius.value = item && item.collider !== 'none' ? item.collider.radius : '';
+    this.ui.querySelector('[data-action="restore-base"]').hidden = !item?.base;
+    this.ui.querySelector('[data-action="restore-base"]').disabled = !item?.base || !this.history.current().baseOverrides.some((entry) => entry.id === item.id);
+    this.ui.querySelector('[data-action="delete"]').textContent = item?.base ? this._t('Hide', 'Ocultar') : this._t('Delete', 'Eliminar');
+    this._updateFootprint();
   }
 
   _inspectorChange(event) {
-    if (this.importTask) return;
+    if (this.importTask || this.walkPreview?.active) return;
     const setting = event.target?.dataset?.setting;
     if (setting) {
+      if (setting === 'collider' || setting === 'radius') {
+        const item = this._selectedItem(); if (!item || item.base) return;
+        const collider = this.colliderSelect.value === 'circle' ? { type: 'circle', radius: clamp(number(this.colliderRadius.value) || this._suggestColliderRadius(item), .05, 50) } : 'none';
+        this._commit(updateDecoration(this.history.current(), item.id, { collider })); return;
+      }
       if (setting === 'snap') this.snapEnabled = event.target.checked;
       if (setting === 'snapStep') this.snapStep = clamp(number(event.target.value) || .5, .05, 10);
       if (setting === 'space') this.transform.setSpace(event.target.value === 'local' ? 'local' : 'world');
@@ -472,6 +584,87 @@ export class WorldEditor {
 
   _setStatus(message, kind = '') { this.statusNode.textContent = message; this.statusNode.dataset.kind = kind; }
 
+  _setSceneTab(sceneTab) {
+    this.sceneTab = sceneTab; this.catalogRoot.hidden = sceneTab; this.scenePanel.hidden = !sceneTab;
+    this.ui.querySelector('[data-action="tab-scene"]').classList.toggle('is-active', sceneTab);
+    this.ui.querySelector('[data-action="tab-library"]').classList.toggle('is-active', !sceneTab);
+    this._renderSceneList();
+  }
+
+  _renderSceneList() {
+    if (!this.sceneList || !this.history) return;
+    const doc = this.history.current();
+    const items = [ ...doc.objects.map((item) => ({ ...item, label: this._entryForAsset(item.assetId)?.label || item.assetId })),
+      ...this.baseEntries.map((entry) => {
+        const override = doc.baseOverrides.find((item) => item.id === entry.id);
+        return { ...entry, transform: override?.transform || entry.transform, hidden: !!override?.hidden, changed: !!override, base: true };
+      }) ];
+    const labelFor = (item) => typeof item.label === 'string' ? item.label : item.label?.[this.lang] || item.label?.es || item.id;
+    const query = this.sceneSearch.value.trim().toLocaleLowerCase();
+    const filtered = items.filter((item) => `${labelFor(item)} ${item.id} ${item.kind || ''} ${item.label?.en || ''} ${item.label?.es || ''}`.toLocaleLowerCase().includes(query));
+    filtered.sort((a, b) => this.camera.position.distanceToSquared(a.transform.position) - this.camera.position.distanceToSquared(b.transform.position));
+    this.sceneCount.textContent = this._t(`Nearest ${Math.min(120, filtered.length)} of ${filtered.length}`, `Más cercanos: ${Math.min(120, filtered.length)} de ${filtered.length}`);
+    this.sceneList.innerHTML = filtered.slice(0, 120).map((item) => `<button type="button" data-scene-id="${html(item.id)}" class="gm-scene-item${item.id === this.selectedId ? ' is-active' : ''}"><b>${html(labelFor(item))}${item.base ? ' #' + item.index : ''}</b><small>${html(item.hidden ? this._t('Hidden · restore in inspector', 'Oculto · restaura en inspector') : item.base ? (item.changed ? this._t('Base · edited', 'Base · editado') : this._t('Base', 'Base')) : this._t('Draft', 'Borrador'))}</small></button>`).join('') || `<p class="gm-empty">${this._t('No matching decoration', 'No hay decoración coincidente')}</p>`;
+  }
+
+  _updateFootprint() {
+    const item = this._selectedItem(), root = this.records.get(this.selectedId)?.root;
+    const visible = this.active && !this.walkPreview?.active && item && !item.hidden && item.collider !== 'none' && root;
+    this.footprint.visible = !!visible;
+    if (!visible) return;
+    this.footprint.position.set(root.position.x, this.map.groundAt(root.position.x, root.position.z) + .08, root.position.z);
+    this.footprint.scale.setScalar(item.collider.radius * root.scale.x);
+    this.footprint.updateMatrixWorld(true);
+  }
+
+  _suggestColliderRadius(item) {
+    const root = this.records.get(item.id)?.root; if (!root) return 1;
+    root.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(root);
+    if (box.isEmpty()) return 1;
+    const dx = Math.max(Math.abs(box.min.x - root.position.x), Math.abs(box.max.x - root.position.x));
+    const dz = Math.max(Math.abs(box.min.z - root.position.z), Math.abs(box.max.z - root.position.z));
+    return Math.ceil(Math.hypot(dx, dz) / root.scale.x * 10) / 10;
+  }
+
+  _startWalking() {
+    if (!this.active || !this.walkPreview || this.importTask) return;
+    this._cancelTransform(); this._clearGhost();
+    const doc = this.history.current(), colliders = this.baseLayer.colliders(doc.baseOverrides);
+    for (const item of doc.objects) if (item.collider !== 'none') colliders.push({
+      x: item.transform.position.x, z: item.transform.position.z, r: item.collider.radius * item.transform.scale,
+    });
+    let point = this.records.get(this.selectedId)?.root.position || this._terrainHits()[0]?.point || this.map.landmarks.village;
+    const selected = this._selectedItem();
+    if (selected && !selected.hidden && selected.collider !== 'none') {
+      const direction = new THREE.Vector3(this.camera.position.x - point.x, 0, this.camera.position.z - point.z);
+      if (direction.lengthSq() < .001) direction.set(0, 0, 1);
+      direction.normalize().multiplyScalar(selected.collider.radius * selected.transform.scale + 1.5);
+      point = { x: point.x + direction.x, z: point.z + direction.z };
+    }
+    this.cameraController.disable(); this.transform.detach(); this.footprint.visible = false;
+    try {
+      this.walkPreview.start({ colliders, point });
+      this.canvas.focus({ preventScroll: true });
+      this._setLanguage(); this._updateButtons();
+    } catch (error) {
+      this.cameraController.enable(); this.select(this.selectedId);
+      this._setStatus(this._t('No walkable spot nearby. Select a clear area or reduce the proxy.',
+        'No hay espacio caminable cerca. Elige una zona libre o reduce el proxy.'), 'error');
+    }
+    this.invalidate();
+  }
+
+  _stopWalking() {
+    if (!this.walkPreview?.active) return;
+    try { this.walkPreview.stop(); }
+    finally {
+      if (this.active) this.cameraController.enable();
+      this._setLanguage(); this._updateButtons();
+      this.select(this.selectedId); this.invalidate();
+    }
+  }
+
   async _clearRecovery() {
     if (this.recoveryRevision === null) return;
     try {
@@ -482,15 +675,30 @@ export class WorldEditor {
 
   _updateButtons() {
     if (!this.ui) return;
+    for (const button of this.ui.querySelectorAll('[data-action]')) button.disabled = false;
     this.ui.querySelector('[data-action="undo"]').disabled = !this.history?.canUndo();
     this.ui.querySelector('[data-action="redo"]').disabled = !this.history?.canRedo();
-    this.ui.querySelector('[data-action="duplicate"]').disabled = !this.selectedId;
-    this.ui.querySelector('[data-action="delete"]').disabled = !this.selectedId;
+    const selected = this._selectedItem();
+    this.ui.querySelector('[data-action="duplicate"]').disabled = !selected || selected.hidden;
+    this.ui.querySelector('[data-action="delete"]').disabled = !selected || selected.hidden;
+    this.ui.querySelector('[data-action="restore-base"]').disabled = !selected?.base || !this.history.current().baseOverrides.some((entry) => entry.id === selected.id);
+    for (const action of ['ground', 'mode-translate', 'mode-rotate', 'mode-scale']) this.ui.querySelector(`[data-action="${action}"]`).disabled = !selected || selected.hidden;
     this.ui.querySelector('[data-action="place"]').classList.toggle('is-active', !!this.pendingEntry);
+    const walking = !!this.walkPreview?.active;
+    this.ui.classList.toggle('is-walking', walking);
+    this.ui.querySelector('[data-action="walk"]').disabled = !this.walkPreview;
+    this.ui.querySelector('[data-action="walk"]').textContent = walking ? this._t('Back to editor', 'Volver al editor') : this._t('Walk test', 'Probar caminando');
+    for (const button of this.ui.querySelectorAll('[data-action]')) {
+      if (walking && !['walk', 'close'].includes(button.dataset.action)) button.disabled = true;
+    }
+    this.importInput.disabled = walking;
   }
 
   _toolbarAction(event) {
+    const sceneId = event.target.closest('[data-scene-id]')?.dataset.sceneId;
+    if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId); this._focusSelection(); return; }
     const action = event.target.closest('[data-action]')?.dataset.action;
+    if (this.walkPreview?.active && !['walk', 'close'].includes(action)) return;
     if (this.importTask && !['close', 'export'].includes(action)) return;
     switch (action) {
       case 'place': if (this.pendingEntry) this._clearGhost(); else this._setStatus(this._t('Choose a model from the library.', 'Elige un modelo de la biblioteca.'), 'info'); break;
@@ -498,6 +706,15 @@ export class WorldEditor {
       case 'redo': this._restoreHistory('redo'); break;
       case 'duplicate': this._duplicate(); break;
       case 'delete': this._deleteSelected(); break;
+      case 'restore-base': {
+        if (this.history.current().baseOverrides.some((item) => item.id === this.selectedId)) {
+          this._commit(removeBaseOverride(this.history.current(), this.selectedId)); this.select(this.selectedId);
+        }
+        break;
+      }
+      case 'walk': if (this.walkPreview?.active) this._stopWalking(); else this._startWalking(); break;
+      case 'tab-library': this._setSceneTab(false); break;
+      case 'tab-scene': this._setSceneTab(true); break;
       case 'save': this.saveNow(); break;
       case 'export': this._exportCurrent(); break;
       case 'close': this.close(); break;
@@ -517,12 +734,13 @@ export class WorldEditor {
   _restoreHistory(kind) {
     if (!this.history) return;
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
-    this._renderDocument(doc); this._scheduleSave();
+    this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
   }
 
   _duplicate() {
-    const item = this.history?.current().objects.find((obj) => obj.id === this.selectedId); if (!item) return;
-    const copy = clone(item); copy.id = uid();
+    const item = this._selectedItem(); if (!item || item.hidden) return;
+    const copy = createDecoration({ id: uid(), assetId: item.assetId, position: item.transform.position,
+      rotation: item.transform.rotation, scale: item.transform.scale, collider: item.collider });
     copy.transform.position.x = clamp(copy.transform.position.x + 2, -280, 280);
     copy.transform.position.z = clamp(copy.transform.position.z + 2, -280, 280);
     this._commit(addDecoration(this.history.current(), copy)); this.select(copy.id);
@@ -530,11 +748,18 @@ export class WorldEditor {
 
   _deleteSelected() {
     if (!this.selectedId) return;
-    const id = this.selectedId; this._commit(removeDecoration(this.history.current(), id)); this.select(null);
+    const item = this._selectedItem(); if (!item) return;
+    if (item.base) { this._commit(setBaseOverride(this.history.current(), { id: item.id, transform: item.transform, hidden: true })); this.select(item.id); }
+    else { this._commit(removeDecoration(this.history.current(), item.id)); this.select(null); }
   }
 
   _keyDown(event) {
-    if (!this.active || event.repeat || typing(event.target)) return;
+    if (!this.active || event.repeat) return;
+    if (this.walkPreview?.active) {
+      if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this._stopWalking(); }
+      return;
+    }
+    if (typing(event.target)) return;
     if (this.importTask && event.code !== 'Escape') return;
     if (event.code === 'Escape') {
       event.preventDefault(); event.stopImmediatePropagation();
@@ -564,8 +789,24 @@ export class WorldEditor {
   }
 
   _focusSelection() {
-    const root = this.selectedId && this.records.get(this.selectedId)?.root;
-    const point = root?.position || this.map.landmarks?.village; if (point) this.cameraController.focus(point);
+    const record = this.selectedId && this.records.get(this.selectedId);
+    if (!record) { if (this.map.landmarks?.village) this.cameraController.focus(this.map.landmarks.village); return; }
+    let sphere;
+    if (record.base) {
+      const entry = record.entry, matrix = new THREE.Matrix4();
+      entry.mesh.getMatrixAt(entry.instanceIndex, matrix); entry.mesh.updateWorldMatrix(true, false);
+      entry.mesh.geometry.computeBoundingSphere();
+      sphere = entry.mesh.geometry.boundingSphere.clone().applyMatrix4(entry.mesh.matrixWorld.clone().multiply(matrix));
+    } else {
+      record.root.updateMatrixWorld(true);
+      sphere = new THREE.Box3().setFromObject(record.root).getBoundingSphere(new THREE.Sphere());
+    }
+    if (record.hidden || !Number.isFinite(sphere.radius) || sphere.radius < .01) sphere = new THREE.Sphere(record.root.position.clone(), 1);
+    const offset = this.camera.position.clone().sub(sphere.center);
+    if (offset.lengthSq() < .01) offset.set(1, 1, 1);
+    offset.y = Math.max(Math.abs(offset.y), Math.hypot(offset.x, offset.z) * .6);
+    this.camera.position.copy(sphere.center).add(offset.normalize().multiplyScalar(clamp(sphere.radius * 3.5, 6, 500)));
+    this.cameraController.focus(sphere.center); this.invalidate();
   }
 
   _configureSnap() {
@@ -594,7 +835,7 @@ export class WorldEditor {
   }
 
   async _importFile(file) {
-    if (!file || !this.store || !this.active || this.importTask) return;
+    if (!file || !this.store || !this.active || this.importTask || this.walkPreview?.active) return;
     const session = this.session;
     this.importTask = this._importFileForSession(file, session);
     try { await this.importTask; }
@@ -612,6 +853,7 @@ export class WorldEditor {
         throw new Error(this._t('Unsupported draft export format.', 'Formato de exportación no compatible.'));
       }
       const checked = validateDocument(envelope.document);
+      this._validateBaseReferences(checked);
       if (checked.base.seed !== (this.map.seed >>> 0) || checked.base.revision !== this.baseRevision) {
         throw new Error(this._t('Import belongs to a different base map.', 'La importación pertenece a otra base del mapa.'));
       }
@@ -631,6 +873,11 @@ export class WorldEditor {
 
   update(dt) {
     if (!this.active) return;
+    if (this.walkPreview?.active) {
+      try { this.walkPreview.update(dt); }
+      catch (error) { this._stopWalking(); this._setStatus(this._t('Walk test stopped: ', 'Prueba detenida: ') + error.message, 'error'); }
+      return;
+    }
     this.cameraController.update(dt);
     if (this.ghost) this._updateGhost();
     this.transform.camera = this.camera; this.transformHelper.updateMatrixWorld(true);
@@ -646,10 +893,12 @@ export class WorldEditor {
     this.langButton.removeEventListener('click', this.onLang); window.removeEventListener('keydown', this.onKeyDown, true);
     window.removeEventListener('blur', this.onBlur); this.catalog.dispose(); this.transform.detach(); this.transform.dispose();
     this.editorModels.dispose();
+    this.walkPreview?.dispose(); this.baseLayer.restore();
+    this.sceneSearch.removeEventListener('input', this.onSceneSearch);
+    this.scene.remove(this.footprint); this.footprint.geometry.dispose(); this.footprint.material.dispose();
     this.importInput.removeEventListener('change', this.onImport);
     this._clearGhost();
-    for (const record of this.records.values()) this.scene.remove(record.root);
-    this.records.clear(); this.ui.remove();
+    this._clearRecords(); this.ui.remove();
   }
 }
 

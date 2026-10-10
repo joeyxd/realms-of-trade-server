@@ -1,0 +1,112 @@
+{
+  "schema": "gm01-browser/v1",
+  "version": "0.6.0-alpha.24",
+  "at": "2026-10-10T19:22:57.873Z",
+  "simulatedAuth": true,
+  "production": false,
+  "checks": [
+    "account_setup_consumes_link_removes_token_checks_confirmation_and_clears_fields",
+    "editor_model_downloads_absent_during_game_boot",
+    "authorized_entry_has_no_gameplay_body_or_commands",
+    "editor_first_frames_render_without_caught_errors",
+    "free_camera_moves_and_blur_releases_keys",
+    "terrain_placement_fetches_only_selected_pilot",
+    "numeric_transform_and_undo_redo_round_trip",
+    "gizmo_renders_in_every_quality_and_transform_mode",
+    "pointer_drag_of_gizmo_moves_object_and_undo_restores_it",
+    "gm02_scene_list_numeric_edit_creates_base_override_without_mutating_map",
+    "gm02_hide_detaches_gizmo_and_undo_restores_base_instance",
+    "gm02_restore_base_removes_override_and_restores_exact_instance_matrix",
+    "gm02_projected_scene_click_selects_registered_base_rock",
+    "gm02_duplicate_base_uses_logical_world_pose_once",
+    "gm02_saved_base_override_survives_close_and_reopen",
+    "gm02_export_import_preserves_overrides_and_stale_target_import_is_rejected",
+    "gm02_original_circle_proxy_has_scaled_visible_footprint",
+    "gm02_walk_preview_uses_private_circle_collision_and_blur_releases_keys",
+    "gm02_escape_returns_to_editor_and_restores_camera_without_document_edits",
+    "gm02_repeated_walk_cycles_release_preview_view_and_gpu_textures",
+    "gm02_helper_leaves_original_one_object_draft_selected_for_existing_acceptance",
+    "incompatible_import_preserves_stored_draft",
+    "close_removes_every_draft_instance_and_keeps_base_map",
+    "reopen_keeps_saved_transforms_and_instances",
+    "two_real_tabs_report_conflict_without_overwriting_saved_draft",
+    "forced_close_conflict_recovers_after_full_page_reload_without_overwrite",
+    "auth_revocation_closes_editor_and_removes_instances",
+    "normal_gameplay_still_joins_after_editor"
+  ],
+  "screenshots": [
+    "account-setup.png",
+    "editor-es.png",
+    "editor-low.png",
+    "editor-medium.png",
+    "editor-high.png",
+    "editor-ultra.png",
+    "gm02-base-edit-es.png",
+    "gm02-walk-preview-en.png",
+    "editor-en-placed.png",
+    "draft-conflict.png"
+  ],
+  "errors": [],
+  "rendering": [
+    {
+      "quality": "low",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "low",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "low",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "medium",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "high",
+      "mode": "scale",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "translate",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "rotate",
+      "frames": 6
+    },
+    {
+      "quality": "ultra",
+      "mode": "scale",
+      "frames": 6
+    }
+  ]
+}

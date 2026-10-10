@@ -6,9 +6,10 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createGameServer } from '../server/index.mjs';
 import { GAME } from '../src/data/meta.js';
+import { runGm02Checks } from './qa-gm02-checks.mjs';
 
 const root = resolve('.');
-const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm01');
+const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm02');
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
 const GM = '77777777-7777-4777-8777-777777777777';
@@ -21,7 +22,7 @@ const port = await game.listen();
 const origin = `http://127.0.0.1:${port}`;
 const browser = await chromium.launch({ channel: 'chrome', headless: true,
   args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
-const evidence = { schema: 'gm01-browser/v1', version: GAME.version, at: new Date().toISOString(), simulatedAuth: true,
+const evidence = { schema: 'gm02-browser/v1', version: GAME.version, at: new Date().toISOString(), simulatedAuth: true,
   production: false, checks: [], screenshots: [], errors: [] };
 async function check(name, fn) { await fn(); evidence.checks.push(name); console.log(`PASS ${name}`); }
 async function shot(page, name) { await page.screenshot({ path: resolve(out, name) }); evidence.screenshots.push(name); }
@@ -179,6 +180,7 @@ try {
     assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), before);
     assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
   });
+  await runGm02Checks({ page, check, shot, game });
   await page.locator('[data-action="duplicate"]').click();
   assert.equal(await page.evaluate(() => __mn.gmEditor.history.current().objects.length), 2);
   await page.locator('[data-action="delete"]').click();
@@ -216,7 +218,7 @@ try {
   await page.waitForFunction(() => __mn.st.mode === 'editor');
   await check('reopen_keeps_saved_transforms_and_instances', async () => {
     assert.deepEqual(await page.evaluate(() => __mn.gmEditor.history.current()), saved);
-    assert.equal(await page.evaluate(() => __mn.gmEditor.records.size), 2);
+    assert.equal(await page.evaluate(() => [...__mn.gmEditor.records.values()].filter((record) => !record.base).length), 2);
   });
   const second = await context.newPage(); await ready(second); await second.locator('#btn-gm-editor').click();
   await second.waitForFunction(() => __mn.st.mode === 'editor');
@@ -243,10 +245,13 @@ try {
     assert.equal(await second.evaluate(() => __mn.gmEditor.dirty), true);
     assert.notDeepEqual(await second.evaluate(async () => (await __mn.gmEditor.store.load()).document), conflicted);
   });
+  await page.locator('[data-action="walk"]').click();
+  await page.waitForFunction(() => __mn.gmEditor.walkPreview.active);
   await page.evaluate(() => window.__gmFixtureSignOut());
   await page.waitForFunction(() => __mn.st.mode === 'title');
   await check('auth_revocation_closes_editor_and_removes_instances', async () => {
     assert.equal(await page.evaluate(() => __mn.gmEditor.active), false);
+    assert.equal(await page.evaluate(() => __mn.gmEditor.walkPreview.active || __mn.world.views.has('gm-private-walker')), false);
     assert.equal(await page.evaluate(() => __mn.world.scene.children.filter((o) => o.userData.gmDecorationId).length), 0);
     assert.equal(game.game.status().players, 0);
   });
