@@ -71,7 +71,7 @@ personaje/mundo/época todavía pendiente.
 ## Reutilización y aceptación
 
 Se reutilizan palmera, hacha, banco, golpes/pose y tarjetas de la ficha existentes. El cruce Unreal de
-[PRG01a](prg01a-logging-contract.md) sigue aplicando: este corte no necesita arte/exportaciones nuevos;
+PRG01a sigue aplicando: este corte no necesita arte/exportaciones nuevos;
 las fuentes Unreal permanecen intactas. No añade pesca, domesticación ni nuevas herramientas.
 
 La aceptación incluye cooperación y desconexión, baselines actuales, replay tras progreso posterior,
