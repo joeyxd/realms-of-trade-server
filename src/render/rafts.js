@@ -5,7 +5,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RAFT, RAFT_PARTS, RAFT_LOOKS } from '../data/raftparts.js';
 import { STAIR, raftGangplank } from '../sim/raftGeometry.js';
 import { isDoorOpen } from '../sim/naval/shelter.js';
-import { toon, normalMatFor } from './toon.js';
+import { glowBasic, toon, normalMatFor } from './toon.js';
 import { assets } from './assets/registry.js';
 import { RAFT_ATLAS_ID, surface, materialKey, mapRaftUV } from './raftMaterials.js';
 
@@ -33,6 +33,16 @@ function keyOf(record) {
   // Cargo/work revisions change private state without changing the silhouette or its mobile GPU buffers.
   const openDoors = Array.isArray(record.openDoors) ? record.openDoors : [];
   return `${JSON.stringify(record.parts || [])}|${JSON.stringify(record.look || null)}|${JSON.stringify(openDoors)}`;
+}
+
+function lanternStateKey(record) {
+  const lit = Array.isArray(record.litLanterns) ? record.litLanterns : [];
+  return JSON.stringify(lit.filter(validLanternTuple));
+}
+
+function validLanternTuple(part) {
+  return Array.isArray(part) && part.length === 5 && part[0] === 'lantern' &&
+    part.slice(1).every(Number.isSafeInteger) && part[3] >= 0 && part[3] < RAFT.levels && part[4] >= 0 && part[4] <= 3;
 }
 
 function paintColor(look) {
@@ -75,6 +85,7 @@ export class RaftLayer {
     this.atlas = skin ? assets.texture(RAFT_ATLAS_ID) : null;
     this.nm = normalMatFor({ occluder: true, lineW: 0.65 });
     this.clothNm = normalMatFor({ occluder: true, lineW: 0.65 }, THREE.DoubleSide);
+    this.lanternGlow = glowBasic({ color: 0xffb24e }, 0.9);
     this.tempMatrix = new THREE.Matrix4();
     this.tempQuaternion = new THREE.Quaternion();
     this.tempPosition = new THREE.Vector3();
@@ -315,6 +326,9 @@ export class RaftLayer {
     const external = [];
     const ownedGeometries = [];
     const sails = [];
+    const lanternCores = [];
+    const litLanterns = new Set((Array.isArray(record.litLanterns) ? record.litLanterns : [])
+      .filter(validLanternTuple).map((p) => JSON.stringify(p)));
     const addTo = (target, color, shape, x, y, z, rx = 0, ry = 0, rz = 0, order = 'XYZ') => {
       const spec = typeof color === 'object' ? color : { kind: 'solid', color: colorHex(color), tint: colorHex(color) };
       const key = materialKey(spec);
@@ -709,9 +723,21 @@ export class RaftLayer {
           if (id === 'bunk') for (const sx of [-1, 1]) box(WOOD_DARK, 0.12, 2.0, 0.12, cx + sx * 0.78, y + 1.0, cz);
         } else if (id === 'lantern') {
           cyl(WOOD_DARK, 0.07, 0.1, 1.05, cx, y + 0.52, cz, 8);
-          box(IRON, 0.46, 0.55, 0.46, cx, y + 1.24, cz);
-          box(FIRE, 0.24, 0.32, 0.24, cx, y + 1.24, cz);
+          box(IRON, 0.46, 0.055, 0.46, cx, y + 0.99, cz);
+          for (const sx of [-1, 1]) for (const sz of [-1, 1])
+            box(IRON, 0.055, 0.52, 0.055, cx + sx * 0.195, y + 1.26, cz + sz * 0.195);
           box(IRON_LIGHT, 0.5, 0.08, 0.5, cx, y + 1.55, cz);
+          const tuple = ['lantern', x, z, level, d];
+          const core = new THREE.Mesh(this.shape('raft-lantern-core', () => new THREE.SphereGeometry(0.145, 8, 6)).clone(), this.lanternGlow);
+          core.position.set(cx, y + 1.24, cz);
+          core.visible = litLanterns.has(JSON.stringify(tuple));
+          core.castShadow = false; core.receiveShadow = false;
+          core.userData.nm = this.nm;
+          core.userData.raftLanternPart = tuple;
+          core.name = `raft:lantern-core:${x}:${z}:${level}:${d}`;
+          visual.add(core);
+          lanternCores.push(core);
+          ownedGeometries.push(core.geometry);
         } else if (id === 'turret') {
           cyl(IRON, 0.48, 0.56, 0.42, cx, y + 0.24, cz, 10);
           cyl(IRON_LIGHT, 0.34, 0.34, 0.4, cx, y + 0.64, cz, 10);
@@ -745,6 +771,7 @@ export class RaftLayer {
     const view = {
       id: String(record.id), root, visual, revKey: keyOf(record), record,
       ownedGeometries, external, phase: hashPhase(record.id), isLocal: false,
+      lanternCores, lanternStateKey: lanternStateKey(record),
       gangplank: null, gangplankPoseKey: '', sails,
       x: NaN, y: NaN, z: NaN, yaw: NaN,
     };
@@ -802,6 +829,14 @@ export class RaftLayer {
       view.root.userData.berth = record.berth ?? '';
       view.root.userData.isLocal = local;
       view.record = record;
+      const stateKey = lanternStateKey(record);
+      if (stateKey !== view.lanternStateKey) {
+        const lit = new Set((Array.isArray(record.litLanterns) ? record.litLanterns : [])
+          .filter(validLanternTuple).map((p) => JSON.stringify(p)));
+        for (const core of view.lanternCores) core.visible = lit.has(JSON.stringify(core.userData.raftLanternPart));
+        view.lanternStateKey = stateKey;
+        changed = true;
+      }
       if (this.updateGangplank(view, record)) changed = true;
 
       const t = cleanNum(time);
@@ -827,6 +862,7 @@ export class RaftLayer {
     this.shapes.clear();
     for (const material of this.materials.values()) material.dispose();
     this.materials.clear();
+    this.lanternGlow.dispose();
     this.nm.dispose();
     this.clothNm.dispose();
   }

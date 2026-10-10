@@ -25,8 +25,9 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
   [Contrato](rnv01-naval-refuge.md) y [entrega](../delivery/rnv01-naval-refuge.md): 516 casos tras integrar Tala,
   107 del actualizador con solapamiento y tres vistas UI. V/toque, soporte destruido, retiro/reconstrucción,
   colisión, reintentos y CAS del dueño comprobados localmente.
-- **Sigue RNV02:** farol utilizable → noche oscura → agua costera/reembarque → provisiones/hogar → rutas → rival → cooperación.
-  Mantener fuentes actuales hasta disponer de luces reales; no activar oscuridad con este refugio.
+- **RNV02 implementado, aceptación en curso:** farol utilizable, coste/soporte vivo/HP, V/toque y guardado
+  del dueño. [Contrato](rnv02-naval-lantern.md) y [entrega](../delivery/rnv02-naval-lantern.md).
+  Sigue noche oscura → agua costera/reembarque → provisiones/hogar → rutas → rival → cooperación.
 
 ## 1 Visión y criterio de éxito
 
@@ -147,30 +148,23 @@ Aceptación: PC/touch, rechazo de finalización falsa o repetida, cancelación/d
 beneficio comparable, carga/daño conservados y textos ES/EN. El crédito y la conservación publicados
 necesitan pruebas de su operación M5 concreta; el prototipo de recorrido no acredita esa permanencia.
 
-### Siguiente corte RNV02 — farol utilizable (preparado, aún no implementado)
+### RNV02 — farol utilizable (implementado; aceptación/publicación en curso)
 
-Objetivo: colocar un farol, encenderlo/apagarlo y ver su luz acompañar la nave; conservar su estado al
-reentrar y perder su servicio cuando se rompe. Mantener la iluminación nocturna actual hasta aceptar
-esta fuente también en calidad baja/móvil. Luego se cambia la noche, en un checkpoint visual propio.
+[Contrato](rnv02-naval-lantern.md) · [entrega](../delivery/rnv02-naval-lantern.md). Integración alpha.27/protocolo 39,
+sobre GM02/refugio/Tala y comercio L06b. Editor B incorpora el farol: una madera + un hierro, HP 10, masa 1 y cubierta viva.
+Empieza apagado; V/toque elige el contexto cercano puerta/farol y conserva F/E/G. Y centra la cámara sin colisionar
+con V ni C (ficha del personaje). Dueño/visitantes usan intención explícita con revisión/estado esperado y replay acotado;
+conserva estado por ID en el perfil M5 del dueño, sin SQL ni nuevo writer. Roto deja de alumbrar; reparación pagada
+requiere encender otra vez. No consume combustible. El núcleo visible en jaula abierta y fuente cálida siguen
+pose/giro/nivel, con presupuesto 4/8/12 y prioridad para la nave ocupada; no reconstruye geometría al accionar.
+Arte procedural existente reutilizado tras verificar antorcha Unreal concreta, distinta y aún no portable.
+Pruebas/evidencia final se registran en entrega.
 
-- Reutilizar `lantern` del [catálogo](../../src/data/raftparts.js): 1 madera + 1 hierro, masa 1 y HP 10.
-  Ya tiene [malla procedural](../../src/render/rafts.js); falta habilitarla en el editor y cerrar interacción,
-  soporte/ocupantes, daño/reparación, identidad de instancia y saneado del estado encendido/apagado.
-- El servidor decide el estado; cliente envía intención explícita, con revisión/estado esperado y reintento
-  estable, como la puerta. Conservar el perfil M5 del dueño y revisar el protocolo del snapshot; no añadir
-  otro writer. Permisos, combustible/duración y balance se cierran al implementar, sin activar consumo oculto.
-- [LocalLights](../../src/render/lights.js) actualmente deriva fuentes de `map.props`; hay que incorporar
-  faroles operativos de balsas con coordenadas transformadas al mover/girar la cubierta, y retirarlos al
-  apagar/destruir/desconectar. Reutilizar la selección cercana por uniforms y el presupuesto de calidad
-  existente de 4/8/12 luces; no crear una luz Three.js por pieza ni rehacer toda la geometría cada frame.
-- Luz cálida, núcleo visible encendido/apagado y acción ES/EN en PC/touch. Verificar interior con techo
-  oculto, costa/agua, varias naves y mucha decoración cercana sin desplazar la luz útil del jugador.
-- Arte: referencia inventariada `Dreamrise_SMSK` `SM_Torch` / `BP_Building_Torch`, según
-  [investigación](../research/unreal-assets/survival/FINDINGS.md). Requiere conversión y no aporta lógica
-  portable. Se propone reutilizar el farol actual; validar el candidato concreto antes de decidir exportación.
-- Aceptación: construcción/materiales, interacción/replay/visitante, persistencia, daño/reparación, traslado
-  y giro, límite de fuentes y capturas ES/EN en bajo/alto y móvil emulado. No declarar FPS físico, combustible,
-  antorcha portátil ni noche casi negra por tener un icono o núcleo emissive.
+**Sigue noche oscura:** sustituir el relleno nocturno automático/presets cosméticos por una noche casi negra
+sin fuente de luz, respetada también en calidad baja/móvil y con UI legible. Verificar farol on/off en costa,
+mar e interior, sin hacer depender la visibilidad esencial de calidad alta. El farol naval no sustituye una
+fuente portátil a pie: disponer también de una luz utilizable fuera de cubierta antes de retirar la ayuda automática.
+Después agua costera/reembarque.
 
 ## 5 Más allá del alfa
 

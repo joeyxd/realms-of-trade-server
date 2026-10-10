@@ -13,6 +13,11 @@ no es otra lista de ideas ni anuncia que las entregas estén hechas.
 
 ## 1. Punto de partida y documentos que mandan
 
+- AREA07 RNV02 (2026-10-10), **integración alpha.27/protocolo 39**: [farol funcional](docs/delivery/rnv02-naval-lantern.md).
+  Editor doce piezas, V/toque, luz móvil cálida y estado por instancia en perfil del dueño, con daño/reparación.
+  Sin SQL ni combustible. Implementación local; pruebas/publicación en la entrega. Sigue noche casi negra.
+
+
 - AREA07 RNV01 (2026-10-10), **alpha.24/protocolo 37**: [refugio naval](docs/delivery/rnv01-naval-refuge.md),
   techo con soporte vivo, puerta abatible V/toque, colisión/predicción y apertura por instancia en perfil M5
   del dueño. Editor de once piezas; coste/HP existentes, visitantes sin cerradura y vista interior.

@@ -1,0 +1,827 @@
+{
+  "generatedAt": "2026-10-10T20:01:26.506Z",
+  "purpose": "Verify paid raft-lantern placement, default-off state, V/touch switching, local light movement, and damage/repair behavior.",
+  "harness": "Disposable GameHost, browser WebSocket, in-memory owner profile, local Three.js/GSAP/font routes. No production server or physical-device performance claim.",
+  "fixture": "Starting materials are seeded into the disposable profile. ECS relocation and a direct part-damage stimulus set up repeatable interaction/repair checks; placement, switching, and repair use the actual UI/server commands.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "lantern-desktop-low-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:65511/ws"
+        }
+      ],
+      "screenshots": [
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-01-off-prompt.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-02-lit.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-03-lit-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-04-lit-interior-cutaway.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-05-moved-rotated.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-06-off-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-07-on-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-01-26-506Z-08-repaired-off.jpg"
+      ],
+      "lanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": false,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        }
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "repair",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        }
+      ],
+      "nightFixture": {
+        "tod": "night",
+        "phase": 0.0950333333333333,
+        "lights": [
+          "lantern",
+          "lantern",
+          "lantern"
+        ]
+      },
+      "cutaway": {
+        "roofHiddenForInterior": true,
+        "lanternWarmSourcePresent": true,
+        "playerFixturePosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091
+        }
+      },
+      "movedLight": {
+        "initial": {
+          "x": 127.45321719171966,
+          "y": 1.96,
+          "z": 99.44100390528091,
+          "uniform": {
+            "p": [
+              127.45321719171966,
+              1.96,
+              99.44100390528091,
+              7.5
+            ],
+            "c": [
+              2.5818902707805367,
+              1.163879426890901,
+              0.26397693590479643,
+              0.35
+            ]
+          },
+          "count": 4
+        },
+        "moved": {
+          "x": 131.69874850044334,
+          "y": 0.72,
+          "z": 96.88189253269879
+        },
+        "rotatedYaw": 0.75,
+        "uniformFollowed": true
+      },
+      "damageFixture": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true
+      },
+      "damageRepair": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true,
+        "repairedHp": 10,
+        "remainsOff": true,
+        "paidUiRepair": true
+      },
+      "viewportCheck": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "low",
+        "websocketReady": true
+      },
+      "assertions": {
+        "paidPlacement": true,
+        "startsOff": true,
+        "localizedPrompt": true,
+        "vOrTouchToggle": true,
+        "warmSourceOnOff": true,
+        "movingAndRotatedSource": true,
+        "litInteriorCutaway": true,
+        "destroyedSourceRemoved": true,
+        "paidRepairStaysOff": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "lantern-desktop-high-en",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "high",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:63349/ws"
+        }
+      ],
+      "screenshots": [
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-01-off-prompt.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-02-lit.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-03-lit-same-frame.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-04-lit-interior-cutaway.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-05-moved-rotated.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-06-off-same-frame.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-07-on-same-frame.jpg",
+        "lantern-desktop-high-en-2026-10-10T20-01-26-506Z-08-repaired-off.jpg"
+      ],
+      "lanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": false,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        }
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "repair",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        }
+      ],
+      "nightFixture": {
+        "tod": "night",
+        "phase": 0.09957881944444424,
+        "lights": [
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern"
+        ]
+      },
+      "cutaway": {
+        "roofHiddenForInterior": true,
+        "lanternWarmSourcePresent": true,
+        "playerFixturePosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091
+        }
+      },
+      "movedLight": {
+        "initial": {
+          "x": 127.45321719171966,
+          "y": 1.96,
+          "z": 99.44100390528091,
+          "uniform": {
+            "p": [
+              127.45321719171966,
+              1.96,
+              99.44100390528091,
+              7.5
+            ],
+            "c": [
+              2.708846599668866,
+              1.2211095349938497,
+              0.2769571709957057,
+              0.35
+            ]
+          },
+          "count": 7
+        },
+        "moved": {
+          "x": 131.69874850044334,
+          "y": 0.72,
+          "z": 96.88189253269879
+        },
+        "rotatedYaw": 0.75,
+        "uniformFollowed": true
+      },
+      "damageFixture": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true
+      },
+      "damageRepair": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true,
+        "repairedHp": 10,
+        "remainsOff": true,
+        "paidUiRepair": true
+      },
+      "viewportCheck": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "high",
+        "websocketReady": true
+      },
+      "assertions": {
+        "paidPlacement": true,
+        "startsOff": true,
+        "localizedPrompt": true,
+        "vOrTouchToggle": true,
+        "warmSourceOnOff": true,
+        "movingAndRotatedSource": true,
+        "litInteriorCutaway": true,
+        "destroyedSourceRemoved": true,
+        "paidRepairStaysOff": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "lantern-mobile-low-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:64908/ws"
+        }
+      ],
+      "screenshots": [
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-01-off-prompt.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-02-lit.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-03-lit-same-frame.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-04-lit-interior-cutaway.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-05-moved-rotated.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-06-off-same-frame.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-07-on-same-frame.jpg",
+        "lantern-mobile-low-en-2026-10-10T20-01-26-506Z-08-repaired-off.jpg"
+      ],
+      "lanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": false,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        }
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "repair",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        }
+      ],
+      "nightFixture": {
+        "tod": "night",
+        "phase": 0.08957336805555549,
+        "lights": [
+          "lantern",
+          "lantern",
+          "lantern"
+        ]
+      },
+      "cutaway": {
+        "roofHiddenForInterior": true,
+        "lanternWarmSourcePresent": true,
+        "playerFixturePosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091
+        }
+      },
+      "movedLight": {
+        "initial": {
+          "x": 127.45321719171966,
+          "y": 1.96,
+          "z": 99.44100390528091,
+          "uniform": {
+            "p": [
+              127.45321719171966,
+              1.96,
+              99.44100390528091,
+              7.5
+            ],
+            "c": [
+              2.4267861914896103,
+              1.0939607130878586,
+              0.2481188260304463,
+              0.35
+            ]
+          },
+          "count": 4
+        },
+        "moved": {
+          "x": 131.69874850044334,
+          "y": 0.72,
+          "z": 96.88189253269879
+        },
+        "rotatedYaw": 0.75,
+        "uniformFollowed": true
+      },
+      "damageFixture": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true
+      },
+      "damageRepair": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true,
+        "repairedHp": 10,
+        "remainsOff": true,
+        "paidUiRepair": true
+      },
+      "viewportCheck": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "low",
+        "websocketReady": true
+      },
+      "assertions": {
+        "paidPlacement": true,
+        "startsOff": true,
+        "localizedPrompt": true,
+        "vOrTouchToggle": true,
+        "warmSourceOnOff": true,
+        "movingAndRotatedSource": true,
+        "litInteriorCutaway": true,
+        "destroyedSourceRemoved": true,
+        "paidRepairStaysOff": true,
+        "horizontalOverflow": false
+      }
+    },
+    {
+      "name": "lantern-mobile-high-es",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "high",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:50736/ws"
+        }
+      ],
+      "screenshots": [
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-01-off-prompt.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-02-lit.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-03-lit-same-frame.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-04-lit-interior-cutaway.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-05-moved-rotated.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-06-off-same-frame.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-07-on-same-frame.jpg",
+        "lantern-mobile-high-es-2026-10-10T20-01-26-506Z-08-repaired-off.jpg"
+      ],
+      "lanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": false,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        }
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "repair",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        }
+      ],
+      "nightFixture": {
+        "tod": "night",
+        "phase": 0.0889913194444445,
+        "lights": [
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern",
+          "lantern"
+        ]
+      },
+      "cutaway": {
+        "roofHiddenForInterior": true,
+        "lanternWarmSourcePresent": true,
+        "playerFixturePosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091
+        }
+      },
+      "movedLight": {
+        "initial": {
+          "x": 127.45321719171966,
+          "y": 1.96,
+          "z": 99.44100390528091,
+          "uniform": {
+            "p": [
+              127.45321719171966,
+              1.96,
+              99.44100390528091,
+              7.5
+            ],
+            "c": [
+              2.5757020772891126,
+              1.1610898772435756,
+              0.2633442442776041,
+              0.35
+            ]
+          },
+          "count": 7
+        },
+        "moved": {
+          "x": 131.69874850044334,
+          "y": 0.72,
+          "z": 96.88189253269879
+        },
+        "rotatedYaw": 0.75,
+        "uniformFollowed": true
+      },
+      "damageFixture": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true
+      },
+      "damageRepair": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true,
+        "repairedHp": 10,
+        "remainsOff": true,
+        "paidUiRepair": true
+      },
+      "viewportCheck": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "high",
+        "websocketReady": true
+      },
+      "assertions": {
+        "paidPlacement": true,
+        "startsOff": true,
+        "localizedPrompt": true,
+        "vOrTouchToggle": true,
+        "warmSourceOnOff": true,
+        "movingAndRotatedSource": true,
+        "litInteriorCutaway": true,
+        "destroyedSourceRemoved": true,
+        "paidRepairStaysOff": true,
+        "horizontalOverflow": false
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false
+}

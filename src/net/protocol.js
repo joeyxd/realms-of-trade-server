@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 37; // Instance-bound open doors on public rafts and moving-deck collision/prediction.
+export const PROTOCOL_VERSION = 38; // Instance-bound lantern switches and operational light tuples on public rafts.
 
 export const MSG = {
   // client -> server

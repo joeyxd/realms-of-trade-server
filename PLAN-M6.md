@@ -12,7 +12,10 @@ soporte vivo, materiales/HP, V/toque, colisión/predicción, apertura por instan
 516 casos tras integrar Tala, 107 del actualizador con solapamiento y tres vistas UI repetidas;
 VPS `29a9e46` sano a las 19:24:26 UTC, imagen 107/107 y entrada pública/mapa/protocolo comprobados.
 Tala conserva su activación opt-in aparte del refugio; detalle y límites en la entrega.
-**Sigue RNV02:** farol usable.
+**RNV02 implementado, aceptación/publicación en curso:** [farol funcional](docs/delivery/rnv02-naval-lantern.md),
+integración alpha.27/protocolo 39. Editor B con doce piezas, V/toque, luz móvil y estado por instancia en perfil M5.
+Coste/soporte vivo/HP, replay, visitante y reparación sin encendido automático; sin SQL ni consumo de combustible.
+**Sigue:** noche casi negra sin fuente de luz, luego agua costera/reembarque.
 No oscurecer la noche antes de disponer de luces. Luego natación, provisiones/hogar, rutas, rival y cooperación.
 
 Checkpoint 2026-10-08: **D08c.7d cierra herramientas y minería**, alpha.16/protocolo 32.

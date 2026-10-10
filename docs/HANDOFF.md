@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
+[contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).
+Editor B con doce piezas; una madera/un hierro, HP 10, apagado inicial y soporte vivo.
+V/toque elige puerta/farol cercano. Luz cálida sigue la nave y pierde servicio al romperse;
+reparación pagada y encendido explícito. Estado por instancia en perfil M5 del dueño, visitantes cercanos,
+replay acotado, sin SQL, combustible ni otro writer. Implementación local; verificación/publicación
+final se registran en la entrega. Sigue noche casi negra sin luz, después agua costera/reembarque.
+
+
 **Checkpoint GM02 publicado (2026-10-10):** [decoración existente y prueba caminando](delivery/gm02-draft-walk.md), alpha.25/protocolo 37, release `e2ff69e` sana desde 19:37:56Z. Escena edita/oculta/restaura rocas naturales/costeras, flores y guijarros; círculos XZ y recorrido privado. Documento v2 migra v1; IndexedDB/CAS/recuperación locales. 162/162 pruebas (51 GM), navegador local 28/28, actualizador 107/107 y público Supabase real 12/12. Sin escritura de mapas/M5 ni terreno; sigue GM03 guardado remoto/publicación.
 
 **AREA07 RNV01, 2026-10-10 — alpha.24/protocolo 37:** [refugio naval](delivery/rnv01-naval-refuge.md).
