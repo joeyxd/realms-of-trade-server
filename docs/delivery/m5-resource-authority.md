@@ -83,8 +83,9 @@ muerte/botín, mercados autónomos, construcción o progreso/recompensas.
 
 El autor confirmó haber aplicado SQL014 y SQL015. El [canario SQL real](m5-resource-authority/sql-live.json)
 verificó capacidad, formato con tick, permisos y guards mediante un mundo QA temporal, sin reescribir
-el mundo real. La verificación de [cleanup](m5-resource-authority/cleanup-verification.json) confirma
-cuenta Auth y perfil ausentes, cuenta QA eliminada, mundo/recursos conservados y ocho recibos inmutables.
+el mundo real; ese mundo temporal y su cuenta se eliminaron. Por separado, la verificación de
+[cleanup del canario público](m5-resource-authority/cleanup-verification.json) confirma Auth/perfil
+ausentes y conserva el mundo real, sus recursos y los ocho recibos inmutables.
 El despliegue anterior `922295ba5585d9c526ad81a4458b476e8a570fc3`/alpha.22 quedó históricamente
 preparado, pasó 107/107 offline y se difirió por una conexión abierta; véase
 [deployment-pending.json](m5-resource-authority/deployment-pending.json). Fue reemplazado por la
