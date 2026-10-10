@@ -5,6 +5,8 @@ import { snapshotDropData } from './deathDropApply.mjs';
 import { checkedWorldData } from './economicOperation.mjs';
 import { groundTransactionOperation, checkedGroundTransactionResult, checkedGroundTransactionReceipt } from './groundTransaction.mjs';
 import { GroundClockSession } from './groundClockSession.mjs';
+import { assertGroundTransactionJournal, prepareGroundTransactionIntent, confirmGroundTransactionIntent,
+  recoverGroundTransactionIntents } from './groundTransactionJournal.mjs';
 
 const MAX_VERSION = 2147483647;
 const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -33,9 +35,11 @@ function required(store) {
 export class GroundTransactionSession {
   #store; #world; #clockSession; #state = 'idle'; #generation = 0; #pending = null;
   #prepared = null; #clock = null; #epoch = null; #worldVersion = null; #worldData = null; #lastLocal = null; #inflight = null;
-  constructor({ store, worldId } = {}) {
+  #journal; #recovery = null;
+  constructor({ store, worldId, journal = null } = {}) {
     required(store);
     if (typeof worldId !== 'string' || !/^[a-zA-Z0-9:_-]{1,100}$/.test(worldId)) fail('configuration');
+    this.#journal = journal === null ? null : assertGroundTransactionJournal(journal, worldId);
     let worlds = owners.get(store);
     if (!worlds) { worlds = new Set(); owners.set(store, worlds); }
     if (worlds.has(worldId)) fail('configuration');
@@ -48,6 +52,7 @@ export class GroundTransactionSession {
   get worldVersion() { return this.#worldVersion; }
   get worldData() { return clone(this.#worldData); }
   get ready() { return this.#state === 'ready'; }
+  get recovery() { return clone(this.#recovery); }
   #live(generation) { if (generation !== this.#generation || this.#state === 'fenced') fail('cancelled'); }
   #local(tick) {
     if (!integer(tick) || (this.#lastLocal !== null && tick < this.#lastLocal)) fail('operation');
@@ -71,13 +76,17 @@ export class GroundTransactionSession {
     try {
       const capability = await this.#store.checkGroundTransactions(); this.#live(generation);
       if (!capability || capability.version !== 1 || Object.keys(capability).length !== 1) fail('response');
+      const recovery = this.#journal === null ? null : await recoverGroundTransactionIntents({
+        store: this.#store, journal: this.#journal, worldId: this.#world, assertActive: () => this.#live(generation),
+      });
+      this.#live(generation);
       const clockLoad = await this.#clockSession.load(localTick); this.#live(generation);
       const first = checkedRow(await this.#store.loadWorld(this.#world)); this.#live(generation);
       const second = checkedRow(await this.#store.loadWorld(this.#world)); this.#live(generation);
       if (!same(first, second)) fail('conflict');
       const clock = clockLoad.clock;
       if (clock && first.data.resources && first.data.resources.tick !== clock.tick) fail('operation');
-      this.#prepared = { kind: 'load', localTick, clock: clone(clock), worldVersion: first.version, worldData: clone(first.data) };
+      this.#prepared = { kind: 'load', localTick, clock: clone(clock), worldVersion: first.version, worldData: clone(first.data), recovery };
       this.#state = 'prepared';
       return { state: 'prepared' };
     } catch (error) {
@@ -113,8 +122,13 @@ export class GroundTransactionSession {
     if (!same(receipt.request, this.#pending.raw.request) || !receipt.result.ok || receipt.result.replay) fail('response');
     return receipt.result;
   }
-  #prepareResult(result, generation) {
+  async #prepareResult(result, generation) {
     this.#live(generation);
+    if (this.#journal !== null) {
+      await confirmGroundTransactionIntent(this.#store, this.#journal, this.#pending.raw, result,
+        () => this.#live(generation));
+      this.#live(generation);
+    }
     if (!result.ok) { this.#state = 'fenced'; fail(result.why); }
     this.#prepared = { kind: 'transaction', result: clone(result), raw: clone(this.#pending.raw), localTick: this.#pending.localTick };
     this.#state = 'prepared';
@@ -122,19 +136,28 @@ export class GroundTransactionSession {
   }
   async #transact(generation) {
     const pending = this.#pending;
+    if (this.#journal !== null && !pending.intentPrepared) {
+      try {
+        await prepareGroundTransactionIntent(this.#journal, pending.raw, () => this.#live(generation));
+        this.#live(generation); pending.intentPrepared = true;
+      } catch (error) {
+        if (generation !== this.#generation) throw new StoreError('cancelled');
+        this.#state = error instanceof StoreError && ['operation', 'response'].includes(error.code) ? 'fenced' : 'unresolved';
+        throw error instanceof StoreError ? error : new StoreError('unavailable');
+      }
+    }
     try {
       pending.sent = true;
       const result = checkedGroundTransactionResult(await this.#store.commitGroundTransaction(clone(pending.raw)),
         pending.raw.request, pending.raw.operationId);
       this.#live(generation);
-      if (!result.ok) { this.#state = 'fenced'; fail(result.why); }
-      return this.#prepareResult(result, generation);
+      return await this.#prepareResult(result, generation);
     } catch (error) {
       if (generation !== this.#generation) throw new StoreError('cancelled');
       if (this.#state === 'fenced') throw error instanceof StoreError ? error : new StoreError('operation');
       try {
         const receipt = await this.#receipt(); this.#live(generation);
-        if (receipt) return this.#prepareResult(receipt, generation);
+        if (receipt) return await this.#prepareResult(receipt, generation);
       } catch (receiptError) {
         if (generation !== this.#generation) throw new StoreError('cancelled');
         if (this.#state === 'fenced') throw receiptError instanceof StoreError ? receiptError : new StoreError('response');
@@ -146,12 +169,11 @@ export class GroundTransactionSession {
         const result = checkedGroundTransactionResult(await this.#store.commitGroundTransaction(clone(pending.raw)),
           pending.raw.request, pending.raw.operationId);
         this.#live(generation);
-        if (!result.ok) { this.#state = 'fenced'; fail(result.why); }
-        return this.#prepareResult(result, generation);
+        return await this.#prepareResult(result, generation);
       } catch (retryError) {
         if (generation !== this.#generation) throw new StoreError('cancelled');
         if (this.#state === 'fenced') throw retryError instanceof StoreError ? retryError : new StoreError('operation');
-        this.#state = 'unresolved';
+        this.#state = retryError instanceof StoreError && retryError.code === 'response' ? 'fenced' : 'unresolved';
         throw retryError instanceof StoreError ? retryError : new StoreError('unavailable');
       }
     }
@@ -164,6 +186,7 @@ export class GroundTransactionSession {
     return promise;
   }
   async #runReconcile(generation) {
+    if (this.#journal !== null && !this.#pending.intentPrepared) return this.#transact(generation);
     let receipt;
     try {
       receipt = await this.#receipt(); this.#live(generation);
@@ -173,13 +196,19 @@ export class GroundTransactionSession {
       else this.#state = 'unresolved';
       throw error instanceof StoreError ? error : new StoreError('unavailable');
     }
-    if (receipt) return this.#prepareResult(receipt, generation);
+    if (receipt) {
+      try { return await this.#prepareResult(receipt, generation); }
+      catch (error) {
+        if (generation !== this.#generation) throw new StoreError('cancelled');
+        if (this.#state !== 'fenced') this.#state = error instanceof StoreError && error.code === 'response' ? 'fenced' : 'unresolved';
+        throw error instanceof StoreError ? error : new StoreError('unavailable');
+      }
+    }
     try {
       const value = checkedGroundTransactionResult(await this.#store.commitGroundTransaction(clone(this.#pending.raw)),
         this.#pending.raw.request, this.#pending.raw.operationId);
       this.#live(generation);
-      if (!value.ok) { this.#state = 'fenced'; fail(value.why); }
-      return this.#prepareResult(value, generation);
+      return await this.#prepareResult(value, generation);
     } catch (error) {
       if (generation !== this.#generation) throw new StoreError('cancelled');
       if (this.#state === 'fenced') throw error instanceof StoreError ? error : new StoreError('operation');
@@ -198,6 +227,7 @@ export class GroundTransactionSession {
         if (adopted.state !== 'ready') fail('operation');
         this.#clock = clone(this.#prepared.clock); this.#worldVersion = this.#prepared.worldVersion;
         this.#worldData = clone(this.#prepared.worldData);
+        this.#recovery = clone(this.#prepared.recovery);
         this.#epoch = this.#clockSession.epoch;
         this.#lastLocal = localTick; this.#prepared = null; this.#state = 'ready';
         return { state: 'ready', clock: clone(this.#clock) };

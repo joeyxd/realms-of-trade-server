@@ -1,5 +1,11 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, diario del sobre 2026-10-10:** [SQL019 y recuperación al arrancar](docs/delivery/m5-ground-transaction-journal.md).
+Preparación exacta previa; cierre junto a operación/mundo/reloj; sesión opt-in carga filas actuales,
+sin reaplicar snapshots históricos. 266/266 pruebas; tres SIGKILL locales cubren pending, commit provisional y confirmado.
+Sin montaje GameHost ni activación SQL018/019. Sigue dueño de tick y adopción legacy;
+[contrato](docs/briefs/m5-ground-transaction-journal.md).
+
 **AREA15, siguiente corte 2026-10-10 — implementado localmente:** [SQL018, mundo/reloj/operación
 en un commit](docs/delivery/m5-ground-transactions.md), con sesión detenida, recibo exacto y recuperación.
 No montado en GameHost ni activado en Supabase. Sigue dueño común de tick/diario/adopción legacy antes
