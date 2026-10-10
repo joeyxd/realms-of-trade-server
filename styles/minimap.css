@@ -11,6 +11,11 @@
 .world-minimap.is-touch .minimap-cardinals > span { font-size: 10px; }
 .world-minimap.is-touch .minimap-caption { font-size: 9px; top: calc(100% + 10px); left: -16px; right: -16px; }
 body:has(.world-minimap.is-touch) #hud .hud-top-right { right: calc(120px + var(--safe-r)); }
+/* Leave the map caption clear above objectives; short stages use HUD's folded left column. */
+@container stage (min-height: 481px) {
+  #hud:has(.world-minimap.is-desktop) .tracker { top: calc(194px + var(--safe-t)); }
+  #hud:has(.world-minimap.is-touch) .tracker { top: calc(140px + var(--safe-t)); }
+}
 .mapv-legend { flex-wrap: wrap; gap: 7px 14px; }
 .mapv-legend .ship::before { background: #bd9671; }
 .mapv-labels span { max-width: 38%; overflow: hidden; text-overflow: ellipsis; }

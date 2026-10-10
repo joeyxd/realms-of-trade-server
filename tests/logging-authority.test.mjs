@@ -45,15 +45,15 @@ async function completePalm(f, account, node, prefix) {
 async function clearPalmYield(f, client, entity, prefix) {
   waitForAction(f.host);
   calmAt(f.host, entity, f.host.server.world.resources.bench);
-  const crafted = await submitAndApply(f.host, client, { type: 'resource', op: 'craft', recipe: 'madera', n: 2,
+  const crafted = await submitAndApply(f.host, client, { type: 'resource', op: 'craft', recipe: 'madera', n: 1,
     opId: `${prefix}-craft`, expectedRev: profileFor(f.host).eco.tradeRev });
   assert.equal(crafted?.ok, true, JSON.stringify(crafted));
   const town = TOWNS.aldea;
   const point = f.host.server.world.map.landmarks[town.landmark] || f.host.server.world.map[town.landmark];
   calmAt(f.host, entity, point);
-  const quote = f.host.server.world.economy.quote('aldea', 'madera', 2, 'sell');
+  const quote = f.host.server.world.economy.quote('aldea', 'madera', 1, 'sell');
   assert.equal(quote.ok, true, 'the test character can sell prepared wood');
-  const sold = await submitAndApply(f.host, client, { type: 'commerce', op: 'sell', town: 'aldea', g: 'madera', n: 2,
+  const sold = await submitAndApply(f.host, client, { type: 'commerce', op: 'sell', town: 'aldea', g: 'madera', n: 1,
     opId: `${prefix}-sell`, expectedTotal: quote.total });
   assert.equal(sold?.ok, true, JSON.stringify(sold));
   return sold;
@@ -289,7 +289,7 @@ test('logging readiness fails before loading or creating the world, and v2 world
 test('crafting and commerce on a logging v2 world preserve the contributor ledger and practice', async (t) => {
   const { store } = makeResourceStore();
   const initial = await seedProfile(store, ACCOUNT_ONE);
-  initial.eco.pack.goods.tronco = 1;
+  initial.eco.pack.goods.tronco = 2;
   await store.saveProfile(ACCOUNT_ONE, initial, 1);
   const f = await loggingHost(t, store), { host, client } = f, entity = f.entity();
   const node = findNode(host, 'palm'); calmAt(host, entity, node);

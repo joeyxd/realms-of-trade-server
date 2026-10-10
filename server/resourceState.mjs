@@ -4,6 +4,7 @@ import { HARVEST, RESOURCE_KINDS } from '../src/data/resources.js';
 import { resourceCmd } from '../src/sim/systems/resources.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { loggingStatus, planLoggingHit } from '../src/sim/systems/progression.js';
+import { evaluateLoggingChallenge } from '../src/sim/systems/loggingTiming.js';
 import { StoreError } from './store.mjs';
 
 const UUID = /^(?!00000000-0000-0000-0000-000000000000$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -63,14 +64,45 @@ function checkedV2(raw) {
   return structuredClone(raw);
 }
 
+function checkedV3(raw) {
+  const ids = validateBase({ ...raw, v: 2 }, 2), palms = raw.nodes.filter(n => n.kind === 'palm');
+  if (raw.v !== 3 || !exact(raw, ['v', 'tick', 'nodes', 'cooldowns', 'logging'])
+      || !exact(raw.logging, palms.map(n => n.id)) || Reflect.ownKeys(raw.logging).some(k => !ids.has(k))) fail();
+  for (const n of palms) {
+    const ledger = raw.logging[n.id];
+    if (ledger === null) {
+      if (n.hits < 1 || n.rev < n.hits + 1
+          || (n.rev - 1) % HARVEST.palmHits !== n.hits % HARVEST.palmHits
+          || (n.hits === HARVEST.palmHits) !== (n.readyAt > 0)) fail();
+      continue;
+    }
+    if (!exact(ledger, ['cycle', 'contributors', 'quality']) || !integer(ledger.cycle, 1, HARVEST.maxRev)
+        || !integer(ledger.quality, 0, HARVEST.palmHits) || !Array.isArray(ledger.contributors)
+        || ledger.contributors.length > HARVEST.palmHits
+        || Reflect.ownKeys(ledger.contributors).length !== ledger.contributors.length + 1) fail();
+    let sum = 0, previous = '';
+    for (const c of ledger.contributors) {
+      if (!exact(c, ['actor', 'hits']) || !UUID.test(c.actor) || c.actor <= previous
+          || !integer(c.hits, 1, HARVEST.palmHits)) fail();
+      previous = c.actor; sum += c.hits;
+    }
+    if (sum !== n.hits || ledger.quality > n.hits
+        || n.rev !== 1 + HARVEST.palmHits * (ledger.cycle - 1) + n.hits
+        || (n.hits === HARVEST.palmHits ? n.readyAt === 0 : n.readyAt !== 0)) fail();
+  }
+  return structuredClone(raw);
+}
+
 export function checkedResourceState(raw) {
   if (raw?.v === 1) return (validateBase(raw, 1), structuredClone(raw));
   if (raw?.v === 2) return checkedV2(raw);
+  if (raw?.v === 3) return checkedV3(raw);
   fail();
 }
 
 export function upgradeLoggingState(raw) {
   if (raw?.v === 2) return checkedV2(raw);
+  if (raw?.v === 3) return checkedV3(raw);
   validateBase(raw, 1, true);
   const logging = {};
   for (const n of raw.nodes) if (n.kind === 'palm') {
@@ -82,6 +114,29 @@ export function upgradeLoggingState(raw) {
     }
   }
   return checkedV2({ ...structuredClone(raw), v: 2, logging });
+}
+
+// Opt-in timing schema upgrade. Legacy partial/exhausted cycles stay null and receive no
+// retroactive quality; previously tracked v2 cycles start with zero perfect hits.
+export function upgradeTimingState(raw) {
+  if (raw?.v === 3) return checkedV3(raw);
+  if (raw?.v === 2) {
+    const v2 = checkedV2(raw), logging = {};
+    for (const [id, ledger] of Object.entries(v2.logging))
+      logging[id] = ledger === null ? null : { ...ledger, quality: 0 };
+    return checkedV3({ ...v2, v: 3, logging });
+  }
+  validateBase(raw, 1, true);
+  const logging = {};
+  for (const n of raw.nodes) if (n.kind === 'palm') {
+    if (n.hits > 0) logging[n.id] = null;
+    else {
+      const cycle = 1 + (n.rev - 1) / HARVEST.palmHits;
+      if (!integer(cycle, 1, HARVEST.maxRev)) fail();
+      logging[n.id] = { cycle, contributors: [], quality: 0 };
+    }
+  }
+  return checkedV3({ ...structuredClone(raw), v: 3, logging });
 }
 
 export function newResourceState(world) {
@@ -118,7 +173,17 @@ export function loggingAccounts(raw, command, account, tick) {
   return [...new Set([account, ...(expiredLegacy ? [] : ledger.contributors.map(c => c.actor))])].sort(cmp);
 }
 
-export function draftResource(world, entity, command, profile, state, account, tick = world.tick, profiles = new Map()) {
+function checkedTimingProof(proof, nodeId, rev) {
+  if (!exact(proof, ['challenge', 'receivedTick', 'quality']) || !exact(proof.challenge,
+      ['v', 'node', 'rev', 'startTick', 'targetTick', 'endTick', 'width'])) fail();
+  let result;
+  try { result = evaluateLoggingChallenge(proof.challenge, { rev, receivedTick: proof.receivedTick }); }
+  catch { fail(); }
+  if (proof.challenge.node !== nodeId || proof.challenge.rev !== rev || proof.quality !== result.quality) fail();
+  return { challenge: { ...proof.challenge }, receivedTick: proof.receivedTick, quality: result.quality };
+}
+
+export function draftResource(world, entity, command, profile, state, account, tick = world.tick, profiles = new Map(), timingProof = null) {
   if (!integer(tick) || tick < state.tick || !UUID.test(account)) fail();
   const resources = checkedResourceState(state), draft = Object.create(world);
   resources.tick = tick;
@@ -126,6 +191,9 @@ export function draftResource(world, entity, command, profile, state, account, t
   draft.profileDirty = new Set();
   draft.resources = { ...world.resources, nodes: new Map([...world.resources.nodes].map(([id, n]) => [id, { ...n }])),
     receipts: new Map(), cooldowns: new Map(world.resources.cooldowns) };
+  draft.loggingTimingVersion = resources.v;
+  draft.loggingState = resources;
+  draft.loggingProof = timingProof;
   const until = resources.cooldowns[account] || 0;
   if (until > tick && !draft.resources.cooldowns.has(entity))
     draft.resources.cooldowns.set(entity, world.tick + until - tick);
@@ -143,7 +211,7 @@ export function draftResource(world, entity, command, profile, state, account, t
       const sourceRow = { ...row };
       row.rev = next.rev; row.hits = next.hits || 0;
       row.readyAt = next.readyTick > world.tick ? tick + next.readyTick - world.tick : 0;
-      if (row.kind === 'palm' && resources.v === 2) {
+      if (row.kind === 'palm' && resources.v >= 2) {
         const preAwardStatus = loggingStatus(draft.profiles.get(entity).progression);
         ack.actionTicks = preAwardStatus.actionTicks; ack.loggingStatus = preAwardStatus;
         draft.resources.cooldowns.set(entity, world.tick + preAwardStatus.actionTicks);
@@ -154,7 +222,7 @@ export function draftResource(world, entity, command, profile, state, account, t
           } else if (sourceRow.readyAt <= tick) {
             const cycle = 1 + (sourceRow.rev - 1) / HARVEST.palmHits;
             if (!integer(cycle, 1, HARVEST.maxRev)) fail();
-            ledger = { cycle, contributors: [] };
+            ledger = resources.v === 3 ? { cycle, contributors: [], quality: 0 } : { cycle, contributors: [] };
           }
         }
         if (ledger && (ledger === resources.logging[row.id] || next.hits === 1)) {
@@ -170,7 +238,16 @@ export function draftResource(world, entity, command, profile, state, account, t
           const plan = planLoggingHit(rawNode, { actor: account, expectedRev: rawNode.rev, tick }, beneficiaries);
           if (plan.node.rev !== next.rev || plan.node.hits !== next.hits
               || plan.node.readyTick !== (next.hits === HARVEST.palmHits ? tick + HARVEST.respawnTicks : 0)) fail();
-          resources.logging[row.id] = { cycle: plan.node.cycle, contributors: plan.node.contributors };
+          let quality = 0;
+          if (resources.v === 3) {
+            const proof = checkedTimingProof(timingProof, row.id, sourceRow.rev);
+            const sameCycle = plan.node.cycle === ledger.cycle;
+            quality = (sameCycle ? ledger.quality : 0) + proof.quality;
+            if (quality > plan.node.hits || ack.count !== (plan.node.hits === HARVEST.palmHits ? 3 + quality : 0)
+                || !ack.timing || JSON.stringify(ack.timing) !== JSON.stringify(proof)) fail();
+          }
+          resources.logging[row.id] = { cycle: plan.node.cycle, contributors: plan.node.contributors,
+            ...(resources.v === 3 ? { quality } : {}) };
           loggingAwards = plan.awards;
           for (const award of plan.awards) {
             const base = award.actor === account ? draft.profiles.get(entity) : profiles.get(award.actor);
@@ -182,6 +259,10 @@ export function draftResource(world, entity, command, profile, state, account, t
           ack.actionTicks = plan.actionTicks;
           draft.resources.cooldowns.set(entity, world.tick + plan.actionTicks);
           if (resultingProfiles.has(account)) draft.profiles.set(entity, resultingProfiles.get(account));
+        } else if (resources.v === 3) {
+          const proof = checkedTimingProof(timingProof, row.id, sourceRow.rev);
+          if (ack.count !== (next.hits === HARVEST.palmHits ? 3 : 0)
+              || !ack.timing || JSON.stringify(ack.timing) !== JSON.stringify(proof)) fail();
         }
       }
     }

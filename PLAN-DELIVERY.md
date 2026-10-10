@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
+[contrato](docs/briefs/prg01d-starter-workshop.md) y [entrega/evidencia](docs/delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
+caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
+Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
+no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
+con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
+Publicación en curso; no activar `MN_STARTER_WORKSHOP` hasta verificar readiness SQL024 y el canario durable.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
+
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
 tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
@@ -16,12 +25,13 @@ recuperación y canario autenticado VPS.
 ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
 sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
 
-**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
-[Entrega y evidencia](docs/delivery/i18n04b.md), [plan bilingüe](PLAN-I18N.md).
-Cliente y editor GM ES/EN, selector temprano y cambio en caliente conservando datos/solicitudes;
-integra fuego/fuel de `c9d3bbf`. Navegador local: 11 grupos cliente y 6 editor, capturas revisadas;
-IndexedDB real, servicios/auth/CAS remoto simulados. Publicación y recorrido público pendientes.
-Sin SQL ni flags propios. Sigue aceptación pública de I18N04b y materiales de I18N04c.
+**AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
+[Entrega/evidencia](docs/delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
+conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
+ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
+11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
+Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
+IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).

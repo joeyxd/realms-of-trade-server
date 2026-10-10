@@ -211,10 +211,10 @@ test('empty signed guest must bootstrap materials, craft both tools, then save a
   assert.equal(palm.hits, 0);
 
   // Starter wood and loose stones can be collected by hand; the large rock nodes need a pickaxe.
-  const looseWood = [...world.resources.nodes.values()].filter((node) => node.kind === 'wood').slice(0, 2);
+  const looseWood = [...world.resources.nodes.values()].filter((node) => node.kind === 'wood').slice(0, 4);
   const looseStone = [...world.resources.nodes.values()].filter((node) => node.kind === 'stone').slice(0, 3);
-  assert.equal(looseWood.length, 2); assert.equal(looseStone.length, 3);
-  for (const [index, node] of looseWood.entries()) {
+  assert.equal(looseWood.length, 4); assert.equal(looseStone.length, 3);
+  for (const [index, node] of looseWood.slice(0, 2).entries()) {
     if (index) waitForWork(first.server, HARVEST.actionTicks);
     stand(first.server, entity, node);
     const ack = command(first.server, first.messages, 61,
@@ -242,6 +242,13 @@ test('empty signed guest must bootstrap materials, craft both tools, then save a
     { tool: 'axe', tier: 1, count: 1, rev: axeRev + 1 });
   assert.deepEqual(profile.tools, { axe: 1, pickaxe: 0 });
   waitForWork(first.server);
+  for (const [index, node] of looseWood.slice(2).entries()) {
+    stand(first.server, entity, node);
+    assert.equal(command(first.server, first.messages, 61,
+      { type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev, opId: `hand-extra-${index}` })?.ok, true);
+    waitForWork(first.server, HARVEST.actionTicks);
+  }
+  assert.equal(profile.eco.pack.goods.tronco, 2);
   assert.equal(craft('wood-two', 'madera')?.ok, true);
   waitForWork(first.server);
   for (const [index, node] of looseStone.slice(1).entries()) {

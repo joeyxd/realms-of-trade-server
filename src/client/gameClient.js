@@ -187,7 +187,7 @@ export class GameClient {
       if (ev.to === this.youServer) this.bus.emit('commerce', ev);
       return;
     }
-    if (ev.type === 'community' || ev.type === 'artisan') {
+    if (ev.type === 'community' || ev.type === 'artisan' || ev.type === 'loggingAim') {
       if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
       return;
     }

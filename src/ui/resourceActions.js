@@ -3,9 +3,21 @@ import { HARVEST, RESOURCE_KINDS } from '../data/resources.js';
 import { DT } from '../data/tuning.js';
 import { holdUsed, load } from '../sim/economy/cargo.js';
 import { loggingStatus } from '../sim/systems/progression.js';
+import { validateLoggingChallenge } from '../sim/systems/loggingTiming.js';
+import { LoggingTimingPanel } from './loggingTiming.js';
 import { t } from '../core/i18n.js';
 
 const MAX_GATHERS = 8, RETRY_MS = 5000;
+const TIMING_COPY = {
+  es: { aim_busy: 'No se pudo iniciar el ritmo. Espera un momento e int\u00e9ntalo de nuevo.',
+    aim_revision: 'La palmera cambi\u00f3. Ac\u00e9rcate e inicia otro ritmo.', aim_tool: 'Necesitas un hacha para talar.',
+    aim_cooldown: 'Espera a que termine tu acci\u00f3n antes de iniciar otro ritmo.',
+    timingExpired: 'Termin\u00f3 la ventana. Inicia otro intento.' },
+  en: { aim_busy: 'Could not start the timing challenge. Wait a moment and try again.',
+    aim_revision: 'The palm changed. Move closer and start a new challenge.', aim_tool: 'You need an axe to log.',
+    aim_cooldown: 'Wait for your action to finish before starting another challenge.',
+    timingExpired: 'The timing window expired. Start a new attempt.' },
+};
 const COPY = {
   es: { account_required: 'Inicia sesión para recoger o fabricar en este servidor.', storage: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.',
     collecting: 'Recogiendo', working: 'Trabajando', retry: 'Reintentar', retryAction: 'Reintentar la recogida',
@@ -35,19 +47,28 @@ const REASONS = {
   receiptLimit: 'No se pudo registrar la solicitud; vuelve a entrar.',
   pack: 'La mochila no está disponible.', node: 'Ese recurso ya no está disponible.',
   bench: 'El banco no está disponible en esta partida.',
+  aimRequired: 'Solicita un nuevo ritmo de tala antes de golpear.', timing: 'No se pudo validar el ritmo de tala. Inténtalo otra vez.',
 };
 
 export class ResourceActions {
   constructor({ client, player, enabled, toast, sound, onGather, onChange, locale = () => 'es', now = () => performance.now() }) {
     Object.assign(this, { client, player, enabled, toast, sound, onGather, onChange, locale, now });
     this.craftPending = null; this.gathers = new Map(); this.predictedHits = new Set(); this.openWorkbench = null; this.gatherUntil = 0; this.latestGather = null;
+    this.aim = null; this.aimRequest = null; this.timingPanel = null;
   }
   get pending() { return this.craftPending || this.gathers.values().next().value || null; }
-  get copy() { return COPY[this.locale()] || COPY.es; }
-  reset() { this.craftPending = null; this.gathers.clear(); this.predictedHits.clear(); this.gatherUntil = 0; this.latestGather = null; this.onChange?.(); }
+  get copy() { const locale = this.locale() === 'en' ? 'en' : 'es'; return { ...COPY[locale], ...TIMING_COPY[locale] }; }
+  reset() {
+    this.craftPending = null; this.gathers.clear(); this.predictedHits.clear(); this.gatherUntil = 0; this.latestGather = null;
+    this.aim = null; this.aimRequest = null; this.timingPanel?.close(); this.onChange?.();
+  }
   update() {
     const c = this.client();
-    if (c !== this.owner || c?.t?.closed) { if (this.pending) this.reset(); this.owner = c; return; }
+    if (c !== this.owner || c?.t?.closed) { if (this.pending || this.aim || this.aimRequest) this.reset(); this.owner = c; return; }
+    if (this.aim && this.now() - this.aim.receivedAt > 90 * DT * 1000) {
+      this.aim = null; this.timingPanel?.close();
+      this.toast(this.copy.timingExpired);
+    }
     let changed = false;
     for (const [id, pending] of this.gathers) {
       const node = c.resources?.nodes?.find((n) => n.id === pending.command.node);
@@ -64,7 +85,7 @@ export class ResourceActions {
   backpack() {
     const source = this.client()?.profile?.eco?.pack;
     if (!source) return { pack: null, pendingGoods: {} };
-    const pack = { cap: source.cap, goods: { ...source.goods } }, pendingGoods = {};
+    const pack = { ...source, goods: { ...source.goods } }, pendingGoods = {};
     for (const pending of this.gathers.values()) {
       if (pending.expired || !pending.count || pending.ack && this.client().profile.eco.tradeRev >= pending.ack.profileRev) continue;
       if (load(pack, pending.good, pending.count)) pendingGoods[pending.good] = (pendingGoods[pending.good] || 0) + pending.count;
@@ -117,6 +138,7 @@ export class ResourceActions {
       const pack = this.backpack().pack;
       const space = pack ? ` · mochila ${holdUsed(pack)}/${pack.cap}` : '';
       const cutting = node.kind === 'palm', working = !!def.tool;
+      const timingEnabled = cutting && (c.resources?.timing === true || node.timing === true);
       const maxHits = def.hits || HARVEST.palmHits;
       const hit = Math.min(maxHits, (node.hits || 0) + 1);
       const remainingHits = Number.isSafeInteger(node.remaining) ? node.remaining : maxHits - (node.hits || 0);
@@ -128,6 +150,17 @@ export class ResourceActions {
       if (needsTool) return { html: `${def.name} · necesitas ${def.tool === 'pickaxe' ? 'pico' : 'hacha'} (banco)`,
         verb: def.tool === 'pickaxe' ? 'Minar' : 'Cortar', icon,
         run: () => this.toast(`Necesitas ${def.tool === 'pickaxe' ? 'un pico' : 'un hacha'} para trabajar este recurso.`) };
+      if (timingEnabled) {
+        if (this.aim?.node === node.id && this.aim.rev === node.rev)
+          return { html: '<span class="kbd">F</span> Golpear al ritmo', verb: 'Talar', icon,
+            run: () => this.submitTiming() };
+        if (this.aimRequest?.node === node.id && this.aimRequest.rev === node.rev)
+          return { html: this.now() - this.aimRequest.sentAt >= RETRY_MS
+            ? '<span class="kbd">F</span> Reintentar ritmo' : 'Preparando el ritmo…',
+          verb: 'Talar', icon, run: () => { if (this.now() - this.aimRequest.sentAt >= RETRY_MS) this.requestTiming(node); } };
+        return { html: '<span class="kbd">F</span> Iniciar ritmo de tala', verb: 'Talar', icon,
+          run: () => this.requestTiming(node) };
+      }
       if (wait > 0) return { html: `${def.tool === 'pickaxe' ? 'Picando' : cutting ? 'Hachazo' : 'Recogiendo'} · ${(wait / 1000).toFixed(1)} s${working ? ` · ${Math.max(0, remainingHits)}/${maxHits}` : ''}`,
         verb: def.tool === 'pickaxe' ? 'Minar' : cutting ? 'Cortar' : 'Recoger', icon, run() {} };
       const quantityLabel = def.good === 'piedra' ? (expectedYield === 1 ? 'piedra' : 'piedras')
@@ -148,6 +181,62 @@ export class ResourceActions {
         run: () => this.send({ t: 'cmd', type: 'resource', op: 'craft', recipe: 'madera', expectedRev: c.profile?.eco?.tradeRev ?? 0 }) };
     }
     return null;
+  }
+  requestTiming(node) {
+    const c = this.client();
+    if (!this.enabled() || !c?.joined || c.t?.closed || this.aim) return false;
+    if (this.aimRequest) {
+      if (this.aimRequest.node !== node.id || this.aimRequest.rev !== node.rev
+          || this.now() - this.aimRequest.sentAt < RETRY_MS) return false;
+      try { c.send(this.aimRequest.command); } catch { return false; }
+      this.aimRequest.sentAt = this.now();
+      return true;
+    }
+    const command = { t: 'cmd', type: 'resource', op: 'aim', node: node.id, expectedRev: node.rev };
+    try { c.send(command); } catch { return false; }
+    this.aimRequest = { node: node.id, rev: node.rev, command, sentAt: this.now() };
+    return true;
+  }
+  onAim(event) {
+    const c = this.client();
+    if (!event || event.type !== 'loggingAim') return false;
+    if (event.ok !== true) {
+      if (this.aimRequest && event.node === this.aimRequest.node && event.rev === this.aimRequest.rev) {
+        this.aimRequest = null;
+        this.toast(this.copy[`aim_${event.why}`] || this.copy.aim_busy);
+        this.onChange?.();
+        return true;
+      }
+      return false;
+    }
+    if (typeof event.challengeId !== 'string'
+        || !/^[A-Za-z0-9_-]{1,64}$/.test(event.challengeId) || typeof event.node !== 'string'
+        || !Number.isSafeInteger(event.rev) || !this.aimRequest) return false;
+    let challenge;
+    try { challenge = validateLoggingChallenge(event.challenge); } catch { return false; }
+    const row = c?.resources?.nodes?.find(n => n.id === event.node);
+    if (!row || row.kind !== 'palm' || row.rev !== event.rev || challenge.node !== row.id || challenge.rev !== row.rev
+        || this.aimRequest.node !== row.id || this.aimRequest.rev !== row.rev) return false;
+    this.aimRequest = null;
+    this.aim = { node: row.id, rev: row.rev, challengeId: event.challengeId, challenge, receivedAt: this.now() };
+    this.timingPanel ||= new LoggingTimingPanel({ onHit: () => this.submitTiming(), locale: this.locale, now: this.now });
+    this.timingPanel.onHit = () => this.submitTiming();
+    this.timingPanel.locale = this.locale;
+    const logicalTick = c.resources?.logicalTick, resourceTick = c.resourceTick;
+    const serverTick = c.serverTick?.() ?? resourceTick;
+    const elapsedTicks = [logicalTick, resourceTick, serverTick].every(Number.isFinite)
+      ? Math.max(0, logicalTick + serverTick - resourceTick - challenge.startTick) : 0;
+    this.timingPanel.show(challenge, elapsedTicks);
+    this.onChange?.();
+    return true;
+  }
+  submitTiming() {
+    const aimed = this.aim, c = this.client();
+    if (!aimed || !c?.joined || c.t?.closed) return false;
+    const sent = this.send({ t: 'cmd', type: 'resource', op: 'gather', node: aimed.node,
+      expectedRev: aimed.rev, challenge: aimed.challengeId });
+    if (sent) { this.aim = null; this.timingPanel?.close(); this.onChange?.(); }
+    return sent;
   }
   send(command) {
     if (!this.enabled()) return false;
@@ -172,10 +261,11 @@ export class ResourceActions {
     const node = c.resources?.nodes?.find((n) => n.id === command.node), def = RESOURCE_KINDS[node?.kind];
     if (!node?.ready || !def || node.rev !== command.expectedRev || [...this.gathers.values()].some((p) => p.command.node === node.id)) return false;
     if (def.tool && c.profile?.tools?.[def.tool] !== 1) return false;
-    const pack = this.backpack().pack, yieldCount = def.yield || 1;
-    if (!pack || !load({ cap: pack.cap, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(this.copy.full); return false; }
-    const count = !def.hits || (node.hits || 0) + 1 >= def.hits ? yieldCount : 0;
-    const pending = { command: { ...command }, sentAt: this.now(), def, good: def.good, count };
+    const timedPalm = node.kind === 'palm' && (c.resources?.timing === true || node.timing === true);
+    const pack = this.backpack().pack, yieldCount = timedPalm ? 6 : (def.yield || 1);
+    if (!pack || !load({ ...pack, goods: { ...pack.goods } }, def.good, yieldCount)) { this.toast(this.copy.full); return false; }
+    const count = timedPalm ? 0 : (!def.hits || (node.hits || 0) + 1 >= def.hits ? yieldCount : 0);
+    const pending = { command: { ...command }, sentAt: this.now(), def, good: def.good, count, timing: timedPalm };
     this.gathers.set(command.opId, pending);
     try { c.send(command); } catch { this.gathers.delete(command.opId); return false; }
     this.latestGather = pending;
@@ -198,6 +288,7 @@ export class ResourceActions {
     if (gather) {
       if (!event.ok) {
         this.gathers.delete(event.opId); this.predictedHits.delete(`${pending.command.node}:${pending.command.expectedRev + 1}`);
+        if (pending.timing) { this.aim = null; this.timingPanel?.close(); }
         if (this.gatherUntil === pending.until) this.gatherUntil = 0;
       }
       else {
@@ -227,7 +318,12 @@ export class ResourceActions {
         : (event.remaining === 1 ? 'systems.resource.toast.hitLastPalm' : 'systems.resource.toast.palmBending')));
       return;
     }
-    if (gather) return;
+    if (gather) {
+      if (gather.timing) this.toast(this.locale() === 'en'
+        ? `<b>+${event.count} logs</b> · ${event.timing?.quality ? 'perfect hit' : 'logging complete'}`
+        : `<b>+${event.count} troncos</b> · ${event.timing?.quality ? 'golpe perfecto' : 'tala completada'}`);
+      return;
+    }
     this.sound?.();
     const count = Number.isSafeInteger(event.count) && event.count > 0 ? event.count : 1;
     this.toast(event.op === 'craft' ? (event.tool

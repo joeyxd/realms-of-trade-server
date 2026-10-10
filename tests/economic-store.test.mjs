@@ -4,6 +4,7 @@ import { Economy } from '../src/sim/economy/economy.js';
 import { newProfile } from '../src/sim/systems/inventory.js';
 import { createMemoryStore, StoreError } from '../server/store.mjs';
 import { EconomicOperationError, economicOperation } from '../server/economicOperation.mjs';
+import { upgradeTimingState } from '../server/resourceState.mjs';
 
 const id = n => `00000000-0000-4000-8000-${n.toString(16).padStart(12, '0')}`;
 const worldId = 'world:salty-shore';
@@ -28,6 +29,23 @@ async function seeded() {
   await store.saveWorld(worldId, world, 0);
   return { store, profile, world };
 }
+
+test('v3 economic receipts preserve workshop metadata and derived pack limits outside paid workshop edits', async () => {
+  const { store, profile, world } = await seeded();
+  world.resources = upgradeTimingState({ v: 1, tick: 100,
+    nodes: [{ id: 'palm-1', kind: 'palm', rev: 1, hits: 0, readyAt: 0 }], cooldowns: {} });
+  await store.saveWorld(worldId, world, 1);
+  for (const [i, mutate] of [
+    p => { p.workshop.boards = 10; p.workshop.storageCredit = true; },
+    p => { p.carry.backpack = 1; p.eco.pack.cap = 30; },
+  ].entries()) {
+    const next = structuredClone(profile); mutate(next);
+    const result = await store.commitEconomicOperation(request(id(110 + i), { profile: next, world, expectedWorldVersion: 2 }));
+    assert.equal(result.ok, false);
+    assert.deepEqual(await store.loadProfile(id(1)), { data: profile, version: 1 });
+    assert.equal(await store.loadEconomicOperation(id(110 + i)), null);
+  }
+});
 
 test('memory economic operation commits profile, world and immutable receipt together; exact replay is historical', async () => {
   const { store, profile, world } = await seeded(), opId = id(10);

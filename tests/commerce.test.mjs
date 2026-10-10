@@ -22,7 +22,7 @@ function makeServer(options = {}) {
 }
 
 function profileFixture({ gold = 1000, pack = {} } = {}) {
-  const p = newProfile(); p.gold = gold; p.eco.tradeRev = 0;
+  const p = newProfile({ starter: false }); p.gold = gold; p.eco.tradeRev = 0;
   p.eco.pack.goods = { ...pack };
   return p;
 }

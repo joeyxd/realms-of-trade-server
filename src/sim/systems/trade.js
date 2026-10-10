@@ -25,15 +25,15 @@ const starterRaft = () => {
   const grid = newRaft();
   return { kind: 'raft', id: '', rev: 1, berth: -1, berthBasis: null, n: 'La Balsa', grid, condition: null, voyage: null, hold: newHold(raftStats(grid).hold), at: 'aldea', hp: 1, look: null };
 };
-export const newEco = () => ({ id: '', pack: newHold(PACK_CAP), ships: [starterRaft()], raftV: 1, tradeRev: 0, deeds: [] });
-export function sanitizeEco(raw) {
-  const o = newEco();
+export const newEco = ({ packCap = PACK_CAP, packMaxMass } = {}) => ({ id: '', pack: newHold(packCap, packMaxMass), ships: [starterRaft()], raftV: 1, tradeRev: 0, deeds: [] });
+export function sanitizeEco(raw, { packCap = PACK_CAP, packMaxMass } = {}) {
+  const o = newEco({ packCap, packMaxMass });
   if (!raw || typeof raw !== 'object') return o;
   const legacyRaftState = raw.raftV !== 1;
   o.tradeRev = Number.isSafeInteger(raw.tradeRev) ? Math.max(0, Math.min(2147483647, raw.tradeRev)) : 0;
   o.ships = [];
   if (typeof raw.id === 'string' && /^[a-z0-9]{1,24}$/.test(raw.id)) o.id = raw.id;
-  o.pack = sanitizeHold(raw.pack, PACK_CAP);
+  o.pack = sanitizeHold(raw.pack, packCap, packMaxMass);
   if (Array.isArray(raw.ships)) {
     const raftIds = new Set();
     o.ships = raw.ships.slice(0, 8).filter((s) => s && (HULLS[s.hull] || s.kind === 'raft')).map((s) => {
@@ -119,7 +119,7 @@ export function marketCmd(world, e, msg, saveFits = () => true) {
   if (typeof g !== 'string' || !Object.hasOwn(GOODS, g)) return deny(world, e, 'good');
   const q = eco.quote(town, g, msg.n, op);
   if (!q.ok) return deny(world, e, q.why);
-  const hold = { cap: p.eco.pack.cap, goods: { ...p.eco.pack.goods } };
+  const hold = { ...p.eco.pack, goods: { ...p.eco.pack.goods } };
   const stock = { ...eco.markets[town].stock }, last = { ...eco.markets[town].last };
   // Use the existing settlement engine on a cloned market so save preflight precedes real stock changes.
   const staged = Object.create(eco);

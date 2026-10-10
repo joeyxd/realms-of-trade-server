@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 PRG01d, 2026-10-10 — integrado alpha.35/protocolo 44; taller apagado:**
+[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
+caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
+Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
+no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
+con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
+Publicación en curso; no activar `MN_STARTER_WORKSHOP` hasta verificar readiness SQL024 y el canario durable.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
+
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
 tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
@@ -18,14 +27,13 @@ cola de entradas vaciada y proyección privada retirada al cerrar sesión. Stop 
 pierde al reiniciar; no hay provisioning, proveedor/inferencia o SQL nuevo. El siguiente tramo es
 configuración durable por cuenta/conexión/personaje y límites conjuntos antes del canario L03d.
 
-**AREA12 I18N04b, 2026-10-10 — integración local alpha.32 / protocolo 42:**
-[Entrega y evidencia](delivery/i18n04b.md), [plan bilingüe](../PLAN-I18N.md).
-Selector global desde arranque/cuenta/ajustes; cliente y editor GM ES/EN sobre `c9d3bbf`,
-conservando fuego, comunidad, construcción y contratos GM02/GM03a/GM03b1. El idioma no altera
-formularios, progreso ni solicitudes pendientes. Navegador local: 11 grupos/20 capturas cliente y
-6 grupos/8 capturas editor, incluidas dos pestañas IndexedDB reales y CAS remoto simulado.
-Publicación y entrada/reconexión pública aún pendientes; aceptación autenticada aparte.
-Sin SQL ni activaciones propias. Sigue I18N04c: página/FAQ/convocatoria ES/EN.
+**AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
+[Entrega/evidencia](delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
+conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
+ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
+11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
+Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
+IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](delivery/rnv04-fire-fuel.md), [contrato](briefs/RNV04-fire-fuel.md).
