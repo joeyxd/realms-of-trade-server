@@ -2,11 +2,13 @@
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
-tick de recursos y recibo inmutable sin reescribir mundo. Cerco SQL de escritores legacy por mundo;
-adopción v1 rechaza suelo/perlas/botín previo. 235/235 en 34 archivos; 22 casos nuevos y dos
-SIGKILL de adopción; regresión repetida tras integrar I18N04b y L03d. SQL022/alpha.33/protocolo 42. SQL023 aún por aplicar;
-no se adopta el mundo real ni se activa el montaje. Sigue composición perlas/muerte/botín y
-transición detenida con exclusión del writer anterior y canario autenticado VPS.
+tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
+V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
+solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
+VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
+pública 6/6. SQL023 aún por aplicar; no se adopta el mundo real ni se activa el montaje.
+Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
+recuperación y canario autenticado VPS.
 
 
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
