@@ -60,7 +60,26 @@ persistencia de los bindings ni rendimiento de un teléfono físico. Capturas en
 
 ## Publicación y siguiente tramo
 
-Pendiente de registrar revisión/imagen exacta y entrada pública después de aceptar las pruebas locales.
+**Publicado en el alfa público**, alpha.34/protocolo 43, revisión
+`ee886903066016dee9752d8571aea382d717e073`. Imagen
+`sha256:208bc57038efbb8341811df48804a9266c59a417702b25b756bbce8b904856a5`.
+La [captura del VPS](l03d-owner-center/deployment.json) confirma contenedor sano, una autoridad,
+temporizador activo, Supabase durable, recursos listos y cero errores/guardados sin resolver.
+La revisión incorpora el arreglo de compatibilidad del runner y conserva los otros frentes.
+
+- Actualizador: **107/107**, ejecutadas en la imagen antes del relevo.
+- [Compañeros en esa imagen](l03d-owner-center/image-tests.json): **22/22** sin red externa;
+  siete archivos de runtime y tres de pruebas coinciden por SHA-256 con Git.
+- [Entrada pública TLS/WSS](l03d-owner-center/public-smoke.json): **12/12**, invitado real,
+  denegaciones de control/mercado/comercio/presupuesto y recarga por protocolo antiguo.
+- [Navegador público](l03d-owner-center/public-browser.json): **7/7**, invitado sin auth simulada,
+  ES/EN central, teclado y tamaños móvil horizontal/vertical; cuatro capturas inspeccionadas y cero errores.
+
+Resultados solapados, no acumulados. El smoke público comprueba invitado y continuidad real;
+aislamiento entre dos dueños y stop autenticado se aceptan con fixtures locales y en la imagen,
+no como canario de agentes públicos. Los scripts cierran sus sockets/navegadores.
+El actualizador aplazó inicialmente por una conexión abierta; no se forzó el cierre de terceros.
+La pausa observada del temporizador terminó antes de la captura final; este corte no modificó su estado.
 
 Sigue configuración durable por cuenta/personaje, conexión admitida con referencia privada, modelo
 y límites conjuntos. Después adaptador y canario L03d social/PvE/memoria con uso/coste observados.

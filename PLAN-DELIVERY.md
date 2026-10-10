@@ -11,10 +11,13 @@ Sigue composición perlas/muerte/botín, transición detenida con exclusión del
 recuperación y canario autenticado VPS.
 
 
-**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](docs/delivery/l03d-owner-center.md), [brief](docs/briefs/l03d-owner-center.md). Estado/stop
 ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
-sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
+sin proveedor, inferencia, SQL o activación propios. VPS `ee88690` sano, una autoridad: 107/107
+del actualizador, 22/22 en imagen con hashes Git, WSS público 12/12 y navegador público 7/7.
+Regresión local corregida 111/111 y navegador local 14/14; pruebas solapadas. Stop autenticado
+de dos dueños verificado con fixtures, no con agentes públicos. Sigue configuración durable y límites conjuntos.
 
 **AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
 [Entrega/evidencia](docs/delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;

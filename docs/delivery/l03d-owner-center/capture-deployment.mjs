@@ -18,7 +18,10 @@ child.stdin.end(await readFile(new URL('./deployment-snapshot.py', import.meta.u
 const [code] = await closed; clearTimeout(timer); assert.equal(code, 0, stderr);
 const deployment = JSON.parse(stdout);
 assert.equal(deployment.revision, expected); assert.equal(deployment.running, true);
-assert.equal(deployment.health, 'healthy'); assert.equal(deployment.timer, 'active');
+assert.equal(deployment.health, 'healthy');
+const allowPausedTimer = process.argv.includes('--allow-paused-timer');
+if (allowPausedTimer) assert.ok(['active', 'inactive'].includes(deployment.timer));
+else assert.equal(deployment.timer, 'active');
 assert.equal(deployment.authorities.length, 1);
 assert.equal(deployment.offlineCounts.pass, deployment.offlineCounts.tests);
 assert.equal(deployment.offlineCounts.fail, 0);
@@ -31,6 +34,7 @@ assert.equal(storage.kind, 'supabase'); assert.equal(storage.durable, true);
 assert.equal(storage.tickBlocked, false); assert.equal(storage.unsaved, 0);
 assert.equal(storage.economic.failed, false); assert.equal(storage.resources.ready, true);
 const report = { ...deployment, expectedRevision: expected, recordedAt: new Date().toISOString(),
+  timerPausedAtCapture: deployment.timer !== 'active',
   publicStatus: { game, version, players, sockets, errors, storage },
   scope: 'In-game owner companion status/stop and game continuity. No real provider, new SQL or public agent activation. Stop remains process-local.' };
 await writeFile(new URL('./deployment.json', import.meta.url), JSON.stringify(report, null, 2) + '\n');

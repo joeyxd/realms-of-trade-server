@@ -11,12 +11,15 @@ Sigue composición perlas/muerte/botín, transición detenida con exclusión del
 recuperación y canario autenticado VPS.
 
 
-**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](delivery/l03d-owner-center.md), [contrato](briefs/l03d-owner-center.md). Entrada ingame
 ES/EN para listar y detener personajes ya vinculados a la cuenta autenticada. Revisión exacta,
 cola de entradas vaciada y proyección privada retirada al cerrar sesión. Stop es de proceso y se
 pierde al reiniciar; no hay provisioning, proveedor/inferencia o SQL nuevo. El siguiente tramo es
 configuración durable por cuenta/conexión/personaje y límites conjuntos antes del canario L03d.
+VPS `ee88690` sano, una autoridad y temporizador activo; 107/107 de release, 22/22 en esa imagen
+con hashes Git, WSS público 12/12 y navegador público 7/7. Regresión local corregida 111/111;
+navegador local 14/14. Stop entre dos dueños usa auth simulada; no es activación de agentes públicos.
 
 **AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
 [Entrega/evidencia](delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
