@@ -3,7 +3,7 @@
 Fecha: 2026-10-10. Corte autorizado después de la auditoría AREA17. Implementación en
 `codex/area17-market`, worktree aislado desde `b95f49a`, actualizado a `b84c2da` para la primera regresión
 y a `70205bd` para integrar la lección naval.
-Alpha **0.6.0-alpha.20**, protocolo **35**. La verificación de publicación se añade abajo al terminar.
+Alpha **0.6.0-alpha.20**, protocolo **35**. Fuente enviada; estado real del despliegue debajo.
 
 ## Resultado
 
@@ -77,7 +77,14 @@ revisó código y evidencia, corrigió invalidez por movimiento/denegación y su
 
 ## Publicación y siguiente corte
 
-Publicación efectiva pendiente de verificar; el push no sustituye revisión/imagen/salud/entrada real.
+Fuente revisada enviada en `fc3c38a60a283a82faadae4956fb442662c412c7` a la rama de continuidad.
+El actualizador se ejecutó y **aplazó el despliegue** al detectar una conexión abierta sin personaje
+(`players:0`, `sockets:1`). Consulta del 2026-10-10, 16:58 UTC: revisión activa `b84c2da`,
+imagen `marea-negra:alpha-b84c2daa3107`, alpha.18, Docker healthy, HTTP 200 y Supabase/M5 económico
+sin errores ni operaciones pendientes. Esto acredita la salud anterior, no el despliegue de L06b-2a.
+El timer conserva el candidato y reintenta cuando el mundo queda libre; no se fuerza el cierre.
+[Estado del VPS y límites de la comprobación](l06b-agent-market/deployment-pending.json).
+Tras sustituirlo, faltan revisión/imagen/estado y entrada WSS real del protocolo 35.
 La configuración pública conserva el piloto apagado. Aceptación de agentes reales, proveedor,
 coste nativo, calidad del recuerdo y experiencia humana siguen pendientes.
 
