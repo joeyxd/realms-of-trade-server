@@ -18,6 +18,7 @@ import { checkedResourceState, upgradeLoggingState } from './resourceState.mjs';
 import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
 import { agentGoodsBudgetCreate, agentGoodsBudgetRevoke, agentGoodsBudgetScope, agentTradeInput, checkedAgentGoodsBudget,
   checkAgentTradeDelta } from './agentGoodsBudget.mjs';
+import { groundTransactionOperation, checkedGroundTransactionResult, checkedGroundTransactionReceipt } from './groundTransaction.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -550,6 +551,23 @@ export function createSupabaseStore(client) {
   }
   return {
     kind: 'supabase', durable: true,
+    async checkGroundTransactions() {
+      const raw = await rpc('mn_ground_transactions_ready', {});
+      if (!raw || Object.keys(raw).length !== 1 || raw.version !== 1) throw new StoreError('response');
+      return { version: 1 };
+    },
+    async commitGroundTransaction(raw) {
+      const { operationId, request } = groundTransactionOperation(raw);
+      return checkedGroundTransactionResult(await rpc('mn_commit_ground_transaction', {
+        p_operation_id: operationId, p_request: request,
+      }), request, operationId);
+    },
+    async loadGroundTransaction(operationId) {
+      operationId = playerKey(operationId);
+      return checkedGroundTransactionReceipt(await rpc('mn_load_ground_transaction', {
+        p_operation_id: operationId,
+      }), operationId);
+    },
     async loadProfile(id) { return record(await rpc('mn_load_profile', { p_player_id: playerKey(id) }), profile); },
     async initializeProfile(id, data, importedKey = null) {
       if (importedKey !== null) importedKey = legacyKey(importedKey);
