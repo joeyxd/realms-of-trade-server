@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
+[entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
+tick de recursos y recibo inmutable sin reescribir mundo. Cerco SQL de escritores legacy por mundo;
+adopción v1 rechaza suelo/perlas/botín previo. 235/235 en 34 archivos; 22 casos nuevos y dos
+SIGKILL de adopción; regresión repetida tras integrar I18N04b y L03d. SQL022/alpha.33/protocolo 42. SQL023 aún por aplicar;
+no se adopta el mundo real ni se activa el montaje. Sigue composición perlas/muerte/botín y
+transición detenida con exclusión del writer anterior y canario autenticado VPS.
+
+
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
 [entrega](delivery/l03d-owner-center.md), [contrato](briefs/l03d-owner-center.md). Entrada ingame
 ES/EN para listar y detener personajes ya vinculados a la cuenta autenticada. Revisión exacta,
