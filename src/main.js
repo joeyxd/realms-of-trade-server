@@ -461,6 +461,7 @@ async function boot() {
       st.gmOpening = true;
       try {
         const { WorldEditor } = await import('./editor/editor.js');
+        const { RemoteDraftClient } = await import('./editor/remoteDraft.js');
         if (gmOwner !== accountId) { await gmEditor?.dispose?.(); gmEditor = null; gmOwner = accountId; }
         if (!gmEditor) {
           let serverHash = 2166136261;
@@ -468,6 +469,8 @@ async function boot() {
           gmEditor = new WorldEditor({
             scene: world.scene, camera: world.camera, canvas, map, assets, parent: $('#ui'),
             draftWorldId: `gm-${serverHash}-${GAME.seed}-${accountId || 'local'}`, baseRevision: 'terrain-s21-v1',
+            remoteClient: st.online ? new RemoteDraftClient({ auth: accountAuth, accountId,
+              httpBase: httpUrlFor(transport.url), localScope: `gm-${serverHash}-${GAME.seed}-${accountId}` }) : null,
             invalidate: () => { world.pipeline.markDirty(); world.renderer.shadowMap.needsUpdate = true; },
             createWalkView: () => {
               const id = 'gm-private-walker';

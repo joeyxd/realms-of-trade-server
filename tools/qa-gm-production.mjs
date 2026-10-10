@@ -5,11 +5,12 @@ import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { GAME } from '../src/data/meta.js';
+import { runGm03ProductionChecks } from './qa-gm03-production-checks.mjs';
 const origin = 'https://marea.62.171.136.148.sslip.io';
-const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm02');
+const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm03a');
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
-const evidence = { schema: 'gm02-public/v1', at: new Date().toISOString(), production: true, simulatedAuth: false, checks: [], errors: [] };
+const evidence = { schema: 'gm03a-public/v1', at: new Date().toISOString(), production: true, simulatedAuth: false, checks: [], errors: [] };
 const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
 try {
   assert.equal((await fetch(origin + '/health')).status, 200);
@@ -201,6 +202,8 @@ try {
     assert.equal(circle.footprintVisible, true);
     assert.ok(Math.abs(circle.footprintScale - circle.item.collider.radius * circle.item.transform.scale) < 1e-5);
     evidence.checks.push('real_owner_gm02_base_duplicate_inherits_proxy_and_circle_radius_autosizes');
+
+    await runGm03ProductionChecks({ gmPage, browser, origin, out, evidence });
 
     const walkCamera = await gmPage.evaluate((id) => {
       const editor = __mn.gmEditor, record = editor.records.get(id), point = record.root.position;

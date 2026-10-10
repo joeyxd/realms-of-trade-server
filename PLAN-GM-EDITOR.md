@@ -1,6 +1,6 @@
 # Modo GM para construir el mundo
 
-Fecha: 2026-10-10, hora de México. Estado: **GM02 publicado y verificado en producción en alpha.25/protocolo 37**. Añade edición de decoración base segura, círculos de prueba y recorrido privado. Release `e2ff69e`, sana desde 19:37:56Z; público real 12/12. El borrador sigue local, sin publicación de mapas. [GM02 y evidencia](docs/delivery/gm02-draft-walk.md) · [Entrega GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
+Fecha: 2026-10-10, hora de México. Estado: **GM02 publicado y verificado en producción en alpha.25/protocolo 37; GM03a storage aplicado, runtime pendiente de publicación y aceptación en navegador**. GM03a añade persistencia remota privada por cuenta/mundo; GM03b publicación/rollback sigue pendiente. [Entrega GM03a y evidencia disponible](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -15,10 +15,11 @@ Los originales se conservan; las optimizaciones producen derivados comparables y
 6/6 comprobaciones iniciales en alpha.18 con Supabase real, incluida autorización de la cuenta GM, colocación/guardado local y
 revocación al cerrar sesión. El editor permite colocar y transformar decoraciones nuevas, pero el documento
 y su recuperación siguen privados en IndexedDB por navegador/cuenta/mundo, con CAS y fallback de memoria
-durante la sesión ante cuota agotada. No existe guardado remoto ni publicación de mapas. QA local separado:
+durante la sesión ante cuota agotada. En ese corte no existía guardado remoto ni publicación de mapas. QA local separado:
 100/100 pruebas pertinentes (30 GM) y navegador 13/13 con autenticación simulada. GM02 ya añade
 edición privada de rocas naturales/costeras, flores y guijarros, círculos compatibles y prueba caminando;
-GM03 añade borradores remotos durables y publicación controlada.
+GM03a ya tiene migración GM `020_gm_drafts.sql` aplicada para borradores remotos privados; falta publicar y aceptar el runtime.
+GM03b cubre publicación/activación/rollback controlados y permanece pendiente.
 El hotfix de render se validó localmente en alpha.21 (102 pruebas, navegador 16/16) y públicamente en alpha.23
 (7/7 con Supabase real y calidad alta con contornos). La entrega inicial solo había ejercitado calidad baja.
 
@@ -318,8 +319,10 @@ recargar con cambios; exportación/importación JSON validada, con IDs y referen
 credenciales. IndexedDB guarda por navegador, cuenta y mundo; CAS por revisión detecta dos pestañas en
 conflicto y no sobrescribe la versión más reciente. La recuperación guarda la revisión base esperada y su
 limpieza también usa CAS. Si falla una escritura por cuota, el fallback en memoria solo dura la sesión actual.
-Esto no es almacenamiento durable del servidor ni se presenta como guardado remoto. La persistencia online,
-backup y recuperación remota siguen pendientes de GM03.
+Este flujo local sigue disponible. GM03a añade una cabeza remota privada por cuenta/mundo, revisionado CAS
+y recibos de operación exactos; migración GM `020_gm_drafts.sql` ya está aplicada y readiness live reportó versión 1. El runtime
+todavía no se publica, así que la continuidad remota no está aceptada en producción. Backup/retención
+operativa y recuperación browser end-to-end siguen pendientes; GM03b cubre publicación de mapas.
 
 GM01 permite varios contextos locales, con control de revisión para que otra pestaña detecte conflicto y
 no sobrescriba silenciosamente. La colaboración simultánea en línea, cursores compartidos y mezcla de
@@ -329,20 +332,19 @@ cambios quedan fuera hasta diseñar una autoridad compartida.
 
 **Implementado en GM01:** `GET /api/gm/session` verifica la identidad resuelta por el autenticador existente
 contra la lista explícita `GM_ACCOUNT_IDS` y solo concede la capacidad `gm-editor`. La ruta no concede
-administración general ni poder de escritura en el servidor: los borradores solo se guardan en IndexedDB y
-no existe endpoint remoto de guardado/publicación. Parámetros de URL, invitados y `DEV` no conceden permiso.
+administración general ni poder de escritura en gameplay. Parámetros de URL, invitados y `DEV` no conceden permiso.
 El navegador local alpha.18 empleó autenticación simulada y pasó 13/13; la suite seleccionada pasó 100/100
 pruebas pertinentes, incluidas 30 GM. El navegador real de producción pasó 6/6 con Supabase real, invitado
 denegado y sesión GM autorizada; [evidencia](docs/delivery/gm01/public-evidence.json) y
 [despliegue](docs/delivery/gm01/deployment-evidence.json). La autorización positiva de GM ya está verificada
-en el host activo. GM03 debe autorizar las operaciones remotas durables/publicación, mantener `DEV=0` y definir
-registro y recuperación antes de ofrecerlas.
+en el host activo. GM03a añade endpoints y almacenamiento remoto con permisos de servicio; migración GM `020_gm_drafts.sql` está live,
+pero el runtime que los monta sigue sin publicarse y no se ofrece todavía en producción. GM03b definirá
+autorización de publicación, puntero M5, registro y recuperación antes de activar mapas.
 
-GM01 usa IndexedDB local, con clave separada por navegador/cuenta/mundo y CAS. La propuesta futura de
-persistencia online sigue sin implementar: evaluar el almacenamiento durable existente para documentos
-de borrador y revisiones inmutables, con tablas de contenido separadas de perfiles/economía y acceso por
-servicio autorizado. GM03 debe diseñar migración, permisos, backup y recuperación. Un borrador solo podrá
-marcarse durablemente guardado tras recibir confirmación del almacenamiento remoto.
+GM01 usa IndexedDB local, con clave separada por navegador/cuenta/mundo y CAS. GM03a persiste un borrador
+privado en tablas de contenido separadas de perfiles/economía y acceso de servicio autorizado; una operación
+solo podrá marcarse durable al recibir confirmación remota. Está implementada la capa de código local,
+pero su despliegue, prueba de canario, UI de adopción/conflicto y recuperación browser quedan pendientes.
 
 Los derivados aprobados se distribuyen inicialmente con los assets de la release, usando nombres/hash
 inmutables. La preparación local sincroniza índice y derivados por ese flujo; un asset aún no disponible
@@ -354,9 +356,9 @@ El contenido estático y los borradores tienen almacenamiento propio; M5 conserv
 economía, obras y demás sistemas que ya gobierna. El host es el único que activa el mapa. La persistencia
 de borradores no autoriza al editor a escribir directamente filas de gameplay.
 
-La revisión activa se registra como referencia de contenido del mundo, bajo su dueño M5 y control de
-versión, con valor por defecto equivalente al mapa actual. Los documentos inmutables no tienen otro
-puntero activo competidor. GM03 extiende/sanea ese contrato con su dueño y prueba la migración antes de uso.
+La revisión activa se registrará como referencia de contenido del mundo, bajo su dueño M5 y control de
+versión, con valor por defecto equivalente al mapa actual. Los documentos no deben crear otro puntero activo
+competidor. Esto queda para GM03b, que deberá acordar el contrato con el dueño M5 y probar la migración antes de uso.
 
 ### Activación inicial
 
@@ -455,21 +457,24 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM00 | Cuatro candidatos de optimización local: roca 2K/1K y coral 200K/50K triángulos; originales intactos | [Comparación visual local](docs/art/gm00/visual-review.md) con loader real, 14 capturas y dos ángulos; roca 1K casi idéntica, coral 200K mantiene silueta/color con pérdida de detalle fino, 50K se ve más facetado. Sin rendimiento físico móvil ni aceptación gameplay; recibo conserva `visualReview: pending` |
 | GM01 | **Implementado; hotfix de gizmo activo en alpha.23:** entrada GM, vuelo, catálogo inicial, fantasma, colocación de decoraciones nuevas, transformaciones, historial, recuperación local y borrador | [Hotfix](docs/delivery/gm01-render-fix.md): suite local 102/102 (32 GM), navegador local 16/16 con cuatro calidades/arrastre; público Supabase 7/7 con calidad alta/contornos. El borrador continúa local; publicación de mapas no implementada |
 | GM02 | **Publicado en alpha.25:** Escena, edición/ocultación/restauración de rocas naturales/costeras, flores y guijarros; duplicación, círculos XZ y prueba caminando | [Entrega](docs/delivery/gm02-draft-walk.md): navegador 28/28, matrices originales/restauración, documento v2 migrable, preview privado con movimiento real; 162/162 pruebas (51 GM), 107/107 VPS y público real 12/12 |
-| GM03 | Persistencia online durable, publicación controlada, contenido versionado, permisos para operaciones de escritura y recuperación | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
+| GM03a | **migración GM `020_gm_drafts.sql` aplicada; runtime aún no publicado:** borrador privado remoto por cuenta/mundo, CAS y recibo idempotente; sin cambiar mapa activo ni autoridad M5 | Readiness live versión 1 a 2026-10-10T20:41:47Z. Falta publicar runtime, canario remoto y aceptación browser/GM. [Entrega](docs/delivery/gm03a/DELIVERY.md) |
+| GM03b | Pendiente: preparar/publicar revisión, puntero activo coordinado con M5, validación, exclusión y rollback | Invitado rechazado; host y dos clientes coinciden; fallo/reintento/rollback conservan progreso; revisión activa verificada |
 | GM04 | Grupos/prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Editar un conjunto; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05 | Esculpir/pintar terreno existente con deltas y reconstrucción coordinada | Rampa caminable, agua/minimapa coherentes, undo exacto y zonas protegidas preservadas |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
 GM01 permite construir un borrador local de decoraciones nuevas y GM02 editar la decoración base segura
-y probar el recorrido. GM03 sigue siendo necesario para usar revisiones en el servidor compartido. No esperar a terreno, prefabs, multiedición
+y probar el recorrido. GM03a prepara continuidad de borradores en servidor una vez publicado y aceptado el runtime;
+GM03b seguirá siendo necesario para usar revisiones publicadas en el mundo compartido. No esperar a terreno, prefabs, multiedición
 o todos los assets para continuar construyendo el rincón.
 La ampliación del terreno se diseña ahora para que el formato la admita y se implementa después.
 
 Antes de cada corte, verificar base/upstream y archivo dueño: `src/main.js`, protocolo, manifiesto y host
 son puntos compartidos. Un escritor por archivo. Las rutas nuevas de la tabla son propuestas, no archivos creados.
-GM02 delimita la edición a decoración segura y el recorrido a círculos XZ privados. GM03 concreta
-persistencia durable, autorización de publicación y la referencia activa con el dueño M5.
+GM02 delimita la edición a decoración segura y el recorrido a círculos XZ privados. GM03a persiste
+borradores remotos privados sin escribir mapa activo ni gameplay. GM03b concretará autorización de publicación
+y la referencia activa con el dueño M5.
 
 ## 12 Matriz de comprobación
 
@@ -506,9 +511,11 @@ Referencias de continuidad: [HANDOFF](docs/HANDOFF.md), [ASSETS](docs/ASSETS.md)
 El código actual prevalece sobre notas históricas que todavía describen el manifiesto como vacío.
 
 Quedan por cerrar en los briefs, sin cambiar la dirección confirmada: presupuesto y dispositivo de referencia,
-esquema/permisos del almacenamiento remoto propuesto y plantillas iniciales de colisión. Las recetas de los
+retención/recuperación operativa y plantillas iniciales de colisión. GM03a ya fija y aplica esquema y permisos
+de borradores. Las recetas de los
 cuatro pilotos están fijadas y sus derivados verificados por hash.
-La cuenta GM y su permiso en el host ya están verificados; la persistencia remota/publicación siguen pendientes.
+La cuenta GM y su permiso en el host ya están verificados; migración GM `020_gm_drafts.sql` de GM03a está aplicada, pero falta publicar
+el runtime y aceptar el guardado remoto. La publicación/activación de GM03b sigue pendiente.
 Recomendación: autor como único GM inicial, escritorio para editar, assets estáticos preparados y decoración
 existente primero, publicación con mundo vacío y terreno por fases.
 

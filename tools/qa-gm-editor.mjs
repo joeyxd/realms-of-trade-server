@@ -7,14 +7,16 @@ import { pathToFileURL } from 'node:url';
 import { createGameServer } from '../server/index.mjs';
 import { GAME } from '../src/data/meta.js';
 import { runGm02Checks } from './qa-gm02-checks.mjs';
+import { runGm03Checks } from './qa-gm03-checks.mjs';
 
 const root = resolve('.');
-const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm02');
+const out = resolve(process.env.MN_GM_QA_OUTPUT || 'docs/delivery/gm03a');
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
 const GM = '77777777-7777-4777-8777-777777777777';
 const PLAYER = '88888888-8888-4888-8888-888888888888';
 const game = createGameServer({ port: 0, host: '127.0.0.1', bots: 0, dev: false, log() {}, saveSecret: 'gm-browser-fixture-only',
+  gmDraftsAllowMemory: true,
   gmAccountIds: [GM], publicAuth: { enabled: true, url: 'http://127.0.0.1:1', publicKey: 'sb_publishable_gm_fixture' },
   resolvePlayer: async (_req, hello) => hello.token === 'gm-fixture' ? GM : hello.token === 'player-fixture' ? PLAYER : null,
 });
@@ -22,7 +24,7 @@ const port = await game.listen();
 const origin = `http://127.0.0.1:${port}`;
 const browser = await chromium.launch({ channel: 'chrome', headless: true,
   args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
-const evidence = { schema: 'gm02-browser/v1', version: GAME.version, at: new Date().toISOString(), simulatedAuth: true,
+const evidence = { schema: 'gm03a-browser/v1', version: GAME.version, at: new Date().toISOString(), simulatedAuth: true,
   production: false, checks: [], screenshots: [], errors: [] };
 async function check(name, fn) { await fn(); evidence.checks.push(name); console.log(`PASS ${name}`); }
 async function shot(page, name) { await page.screenshot({ path: resolve(out, name) }); evidence.screenshots.push(name); }
@@ -181,6 +183,7 @@ try {
     assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
   });
   await runGm02Checks({ page, check, shot, game });
+  await runGm03Checks({ page, context, browser, setup, ready, origin, game, check, shot, out });
   await page.locator('[data-action="duplicate"]').click();
   assert.equal(await page.evaluate(() => __mn.gmEditor.history.current().objects.length), 2);
   await page.locator('[data-action="delete"]').click();
