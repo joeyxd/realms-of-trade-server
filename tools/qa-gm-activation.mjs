@@ -153,9 +153,9 @@ try {
       }, evidence.placement), [false, true]);
       await page.locator('#btn-play').click({ force: true }); await page.waitForFunction(() => __mn.client.joined, null, { timeout: 30000 });
       if (!i) {
-        await page.evaluate((p) => { __mn.loop.running = false; __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); __mn.world.camera.updateMatrixWorld(); for(let n=0;n<3;n++) __mn.world.render(); }, evidence.placement);
+        await page.evaluate((p) => { __mn.loop.running = false; __mn.world.nearFade(false); __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); __mn.world.camera.updateMatrixWorld(); for(let n=0;n<3;n++) __mn.world.render(); }, evidence.placement);
         await page.screenshot({ path: resolve(out, (production ? 'public' : 'local') + '-shared-crate.png') });
-        await page.evaluate(() => { __mn.loop.start(); });
+        await page.evaluate(() => { __mn.world.nearFade(true); __mn.loop.start(); });
       }
       assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
     }
