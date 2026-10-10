@@ -25,6 +25,8 @@ import { GameClient } from './client/gameClient.js';
 import { AccountAuth } from './client/accountAuth.js';
 import { WalletLink } from './client/walletLink.js';
 import { AccountPanel } from './ui/account.js';
+import { CompanionsClient } from './client/companions.js';
+import { CompanionsUI } from './ui/companions.js';
 import { GameScene } from './render/scene.js';
 import { SKINS, CharacterView, PortraitStudio } from './render/characters.js';
 import { Quality } from './render/quality.js';
@@ -308,7 +310,8 @@ async function boot() {
   artisanTrigger.addEventListener('click', () => artisan.open()); workbench.$('.wb-head').appendChild(artisanTrigger);
   bus.on('artisan', ev => safe('artisan', () => artisan.onResult(ev)));
   bus.on('profile', () => artisan.update()); bus.on('you:welcome', () => artisan.reset());
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
+  var companionsPanel = null;
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { companionsPanel?.close(); artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
@@ -346,7 +349,7 @@ async function boot() {
       input.clearActions();
       aimCtl.reset();
       st.wantWeapon = 0;
-      input.enabled = !focused && st.mode === 'playing' && !pause.open && !client?.t.closed;
+      input.enabled = !focused && !companionsPanel?.isOpen && st.mode === 'playing' && !pause.open && !client?.t.closed;
     },
   });
   bus.on('chat:state', (m) => safe('chat', () => chatPanel.onState(m)));
@@ -369,6 +372,7 @@ async function boot() {
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    companionsPanel?.close();
     chatPanel.close();
     artisan.close();
     workbench.close();
@@ -393,6 +397,7 @@ async function boot() {
     canvas.focus({ preventScroll: true });
   }
   input.onHotkey('Escape', () => {
+    if (companionsPanel?.isOpen) { companionsPanel.close(); return true; }
     if (chatPanel.opened) { chatPanel.close(); return true; }
     if (artisan.active) { artisan.close(); return true; }
     if (workbench.active) { workbench.close(); return true; }
@@ -447,6 +452,33 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  let joiningCompanionAccount = null;
+  const companions = new CompanionsClient({ transport, auth: accountAuth,
+    joined: () => st.online && st.mode === 'playing' && client.joined && !transport.closed });
+  let companionsPoll = null;
+  companionsPanel = new CompanionsUI(hud.root.querySelector('.hud-top-right'), {
+    getState: () => companions.snapshot(),
+    lang: document.documentElement.lang.startsWith('en') ? 'en' : 'es',
+    onRefresh: () => companions.refresh(), onStop: (key) => companions.stop(key),
+    onVisibilityChange: (open) => {
+      clearInterval(companionsPoll); companionsPoll = null;
+      if (open) {
+        chatPanel.close(); artisan.close(); community.close(); workbench.close(); commercePanel.close();
+        raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close();
+        companions.refresh();
+        companionsPoll = setInterval(() => { if (!document.hidden) companions.refresh(); }, 5000);
+      }
+      input.clearActions(); input.keys.clear(); aimCtl.reset(); st.wantWeapon = 0;
+      input.enabled = !open && st.mode === 'playing' && !pause.open && !chatPanel.typing && !transport.closed;
+    },
+  });
+  companions.subscribe((state) => companionsPanel.setState(state));
+  new MutationObserver(() => companionsPanel.setLanguage(document.documentElement.lang.startsWith('en') ? 'en' : 'es'))
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  document.addEventListener('pointerdown', (event) => {
+    if (companionsPanel.isOpen && !companionsPanel.container.contains(event.target) &&
+        !companionsPanel.panel.contains(event.target)) companionsPanel.close();
+  });
   let accountSetup = null;
   if (st.online && params.get('account-setup') === '1') {
     const { mountAccountSetup } = await import('./editor/accountSetup.js');
@@ -560,6 +592,7 @@ async function boot() {
   }
   // The server went away: a veil with a way back (reload = reconnect; settings and weapon are saved).
   function netLost() {
+    companionsPanel?.close(); companions.disconnect();
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
@@ -851,8 +884,9 @@ async function boot() {
       sfx.play();
       saveSettings();
       await initializeAccount();
-      const token = st.online ? await accountAuth.token() : null;
-      const account = token ? { token, importSave: accountPanel?.importRequested() } : null;
+      const identity = st.online && !accountAuth.state.guestChoice ? await accountAuth.sessionIdentity() : null;
+      const account = identity ? { token: identity.token, importSave: accountPanel?.importRequested() } : null;
+      joiningCompanionAccount = identity?.accountId ?? null;
       const saved = account && !account.importSave ? '' : loadSave(saveSlot());
       if (st.online) {
         // Wait for the server's answer: a place aboard, or why not.
@@ -863,6 +897,7 @@ async function boot() {
           client.join(settings.name, settings.skin, weaponIndex(settings.weapon), saved, account);
         });
         if (r.k !== 'ok') {
+          joiningCompanionAccount = null; companions.setSession(null);
           if (r.k === 'timeout') transport.close();
           const joinErrors = {
             version: 'Tu versión del juego es distinta a la del servidor: recarga la página.',
@@ -884,6 +919,7 @@ async function boot() {
       accountPanel?.hide();
       await title.hide();
     } catch {
+      joiningCompanionAccount = null; companions.setSession(null);
       title.message('No se pudo recuperar tu sesión. Abre Cuenta para volver a iniciar sesión.');
     } finally {
       st.boarding = false;
@@ -893,6 +929,9 @@ async function boot() {
   }
   bus.on('you:ready', () => {
     st.mode = 'playing';
+    companions.setSession(joiningCompanionAccount);
+    companionsPanel.setVisible(true);
+    companions.refresh();
     world.setTitleShadows(false);
     const rec = client.entities.get(client.youServer);
     hud.setPlayer({ name: rec ? rec.name : settings.name, level: rec ? rec.level : 1, skin: settings.skin, portrait: portrait(settings.skin) });
@@ -904,7 +943,7 @@ async function boot() {
     setTimeout(() => {
       hud.show();
       chatPanel.setVisible(true);
-      input.enabled = !chatPanel.typing;
+      input.enabled = !chatPanel.typing && !companionsPanel.isOpen;
       if (isTouch) touch.show();
       canvas.focus({ preventScroll: true });
     }, reduced() ? 300 : 1500);
@@ -1065,7 +1104,7 @@ async function boot() {
           : navalInput);
         return;
       }
-      if (chatPanel.typing) {
+      if (chatPanel.typing || companionsPanel?.isOpen) {
         client.tickInput({ mx: 0, mz: 0, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
         return;
       }
@@ -1479,7 +1518,7 @@ async function boot() {
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

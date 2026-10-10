@@ -1,5 +1,10 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-b, 2026-10-10 — Mis compañeros implementado, aceptación/publicación en curso:**
+[entrega](docs/delivery/l03d-owner-center.md), [brief](docs/briefs/l03d-owner-center.md). Estado/stop
+ingame por cuenta, revisión exacta, ES/EN y teclado/móvil. Stop de proceso sin duración tras reinicio;
+sin proveedor, inferencia, SQL o activación. Sigue configuración durable y límites conjuntos.
+
 **AREA15, 2026-10-10 — GameHost económico/checkpoint publicado, montaje apagado:**
 [entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).
 Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/reloj juntos.
