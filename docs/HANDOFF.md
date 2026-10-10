@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV03, 2026-10-10 — alpha.28/protocolo 40, implementación local en aceptación:**
+[Contrato](briefs/rnv03-dark-night.md) y [entrega](delivery/rnv03-dark-night.md).
+La noche respeta el reloj compartido, sin selector cosmético ni relleno automático del jugador.
+N/toque enciende el farol básico de cinturón; otros humanos aprovechan su luz y ven el accesorio.
+Estado de sesión, apagado al morir/reentrar, sin inventario/combustible/perfil/SQL nuevo ni otro writer.
+El transporte administrado de agentes conserva sus permisos actuales: no admite este interruptor.
+La entrega registra pruebas, capturas y revisión/imagen/entrada pública antes de marcar desplegado.
+Sigue agua costera/reembarque con reglas explícitas de carga/agotamiento/rescate, después provisiones/hogar.
+
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).
 Editor B con doce piezas; una madera/un hierro, HP 10, apagado inicial y soporte vivo.

@@ -18,8 +18,12 @@ Coste/soporte vivo/HP, replay, visitante y reparación sin encendido automático
 631/631 integradas, 107/107 release (solapamiento), cuatro vistas y probe real F/E/V aceptados localmente.
 VPS `e648d1b` sano hasta las 20:15:21 UTC; imagen 107/107, timer activo y entrada pública WSS,
 mapa/minimapa y catálogo comprobados. Evidencia/límites en la entrega.
-**Sigue:** noche casi negra sin fuente de luz, luego agua costera/reembarque.
-No oscurecer la noche antes de disponer de luces. Luego natación, provisiones/hogar, rutas, rival y cooperación.
+**RNV03 implementado localmente, en aceptación:** [noche oscura y farol portátil](docs/delivery/rnv03-dark-night.md),
+alpha.28/protocolo 40. La hora compartida manda sobre los presets; sin luz automática del jugador.
+Farol básico de cinturón N/toque, público, apagado en muerte/reentrada, sin coste/combustible/SQL ni perfil nuevo.
+Costa, puerto y farol naval se verifican en PC/móvil bajo/alto; la entrega registra pruebas y despliegue.
+**Sigue:** agua costera y reembarque, primero contrato de carga/agotamiento/rescate. Luego provisiones/hogar,
+rutas, rival y cooperación. Los faroles preceden a la noche casi negra.
 
 Checkpoint 2026-10-08: **D08c.7d cierra herramientas y minería**, alpha.16/protocolo 32.
 [Entrega](docs/delivery/d08c7d-tools.md): banco con madera/hacha/pico, dos ranuras de cinturón

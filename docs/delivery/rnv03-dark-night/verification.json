@@ -1,0 +1,37 @@
+{
+  "localAccepted": true,
+  "version": "0.6.0-alpha.28",
+  "protocol": 40,
+  "integrated": {
+    "passed": 650,
+    "failed": 0,
+    "path": "integrated.tap",
+    "serial": true
+  },
+  "release": {
+    "passed": 107,
+    "failed": 0,
+    "path": "release.tap",
+    "overlap": true
+  },
+  "browser": {
+    "footPort": 4,
+    "naval": 4,
+    "helmDeck": 2,
+    "physicalPerformanceClaim": false,
+    "representativeScreenshotsInspected": true,
+    "buttonBoundsAtLeast48": true
+  },
+  "limitations": {
+    "portableSessionOnly": true,
+    "fuel": false,
+    "newSQL": false,
+    "wallOcclusion": false,
+    "managedAgentToggle": false,
+    "authenticatedDurabilityClaim": false,
+    "openSeaHumanVoyage": false
+  },
+  "deployment": {
+    "status": "pending"
+  }
+}

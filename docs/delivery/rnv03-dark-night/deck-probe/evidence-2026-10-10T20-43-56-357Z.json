@@ -1,0 +1,390 @@
+{
+  "generatedAt": "2026-10-10T20:43:56.357Z",
+  "purpose": "Verify paid raft-lantern placement, default-off state, V/touch switching, local light movement, and damage/repair behavior.",
+  "harness": "Disposable GameHost, browser WebSocket, in-memory owner profile, local Three.js/GSAP/font routes. No production server or physical-device performance claim.",
+  "fixture": "Starting materials are seeded into the disposable profile. ECS relocation and a direct part-damage stimulus set up repeatable interaction/repair checks; placement, switching, and repair use the actual UI/server commands.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "lantern-desktop-low-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "failed",
+      "stage": "portable-lantern-at-helm",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:61941/ws"
+        }
+      ],
+      "screenshots": [
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-01-off-prompt.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-02-lit.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-03-lit-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-04-lit-interior-cutaway.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-05-moved-rotated.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-06-off-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-07-on-same-frame.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-08-repaired-off.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-09-personal-lantern-helm.jpg",
+        "lantern-desktop-low-es-2026-10-10T20-43-56-357Z-failure-portable-lantern-at-helm.jpg"
+      ],
+      "lanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": false,
+          "changed": true
+        },
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "changed": true
+        }
+      ],
+      "personalLanternAcks": [
+        {
+          "ok": true,
+          "why": "",
+          "lit": true,
+          "opId": "6d0be893-52ce-4882-82f0-e18eb1351516"
+        }
+      ],
+      "editAcks": [
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "place",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "repair",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "quote",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        }
+      ],
+      "nightFixture": {
+        "tod": "night",
+        "phase": 0.0951997916666667,
+        "lights": [
+          "lantern",
+          "lantern",
+          "lantern"
+        ]
+      },
+      "cutaway": {
+        "roofHiddenForInterior": true,
+        "lanternWarmSourcePresent": true,
+        "playerFixturePosition": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091
+        }
+      },
+      "movedLight": {
+        "initial": {
+          "x": 127.45321719171966,
+          "y": 1.96,
+          "z": 99.44100390528091,
+          "uniform": {
+            "p": [
+              127.45321719171966,
+              1.96,
+              99.44100390528091,
+              7.5
+            ],
+            "c": [
+              2.841497669244728,
+              1.2809067512356327,
+              0.29051964624394466,
+              0.35
+            ]
+          },
+          "count": 3
+        },
+        "moved": {
+          "x": 131.69874850044334,
+          "y": 0.72,
+          "z": 96.88189253269879
+        },
+        "rotatedYaw": 0.75,
+        "uniformFollowed": true
+      },
+      "damageFixture": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true
+      },
+      "damageRepair": {
+        "hpBefore": 10,
+        "damage": 10,
+        "hpAfter": 0,
+        "destroyedTupleRemoved": true,
+        "litTupleRemoved": true,
+        "warmSourceRemoved": true,
+        "repairedHp": 10,
+        "remainsOff": true,
+        "paidUiRepair": true
+      },
+      "personalLanternAtHelm": {
+        "entity": 26,
+        "source": {
+          "x": 128.12153540243162,
+          "y": 1.88,
+          "z": 102.16514611324854,
+          "w": 1
+        },
+        "expected": {
+          "x": 128.12153540243162,
+          "y": 1.88,
+          "z": 102.16514611324854
+        },
+        "coreVisible": true,
+        "anchored": true
+      },
+      "error": "page.waitForFunction: Timeout 12000ms exceeded.\n    at run (C:\\DEV\\real of trade\\area07-pilot\\tools\\qa-naval-lantern.mjs:341:18)\n    at async file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-naval-lantern.mjs:407:33",
+      "browserState": {
+        "url": "http://127.0.0.1:61941/?debug&q=low",
+        "bodyText": "1\nGrumete690\n100 / 100\nRIPOSTE 0 %\n0 / 100 XP\n0\n00:02\nNoche\nCASCO\n240 / 240\n21 ms\n· 1 pirata\nN\nE\nS\nO\nPuerto\nChat\nFarol N\nV\nEncender farol\nEncender farol\n◆ EXPLORA LA COSTA\nPorte libre 15.0 uM · bodega 0/6 uV · Puerto 0 m\n75%\n↑\nToma el timón\nEncender farol\nV\nMochila\nI\nTimón\nE\n0.0\nu/s\nVELOCIDAD\nWASD · caminar E · timón G · amarrar",
+        "quality": "low",
+        "joined": true,
+        "interaction": [
+          {
+            "verb": "Encender farol",
+            "lantern": true
+          }
+        ],
+        "appErrors": []
+      },
+      "final": {
+        "ship": {
+          "rev": 6,
+          "parts": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "lantern",
+              1,
+              0,
+              0,
+              0
+            ]
+          ],
+          "litLanterns": []
+        },
+        "lanternAcks": [
+          {
+            "ok": true,
+            "why": "",
+            "lit": true,
+            "changed": true
+          },
+          {
+            "ok": true,
+            "why": "",
+            "lit": false,
+            "changed": true
+          },
+          {
+            "ok": true,
+            "why": "",
+            "lit": true,
+            "changed": true
+          }
+        ],
+        "editAcks": [
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 1
+          },
+          {
+            "op": "place",
+            "ok": true,
+            "why": "",
+            "rev": 2
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 2
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 2
+          },
+          {
+            "op": "place",
+            "ok": true,
+            "why": "",
+            "rev": 3
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 3
+          },
+          {
+            "op": "place",
+            "ok": true,
+            "why": "",
+            "rev": 4
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 4
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 4
+          },
+          {
+            "op": "repair",
+            "ok": true,
+            "why": "",
+            "rev": 5
+          },
+          {
+            "op": "quote",
+            "ok": true,
+            "why": "",
+            "rev": 5
+          }
+        ],
+        "clients": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    }
+  ],
+  "failures": [
+    {
+      "viewport": "lantern-desktop-low-es",
+      "stage": "portable-lantern-at-helm",
+      "error": "page.waitForFunction: Timeout 12000ms exceeded."
+    }
+  ],
+  "performanceClaim": false
+}

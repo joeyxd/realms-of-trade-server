@@ -36,9 +36,6 @@ export class PauseMenu {
           ${['auto', 'low', 'medium', 'high', 'ultra'].map((q) => `<option value="${q}" ${s.quality === q ? 'selected' : ''}>${{ auto: 'Automática', low: 'Baja', medium: 'Media', high: 'Alta', ultra: 'Ultra · cómic dramático' }[q]}</option>`).join('')}
         </select></div>
         <div class="row-note" id="set-gpu">GPU: ${esc(gpu.name || '—')} · ${GPU_TIER[gpu.tier] || GPU_TIER.mid}</div>
-        <div class="row"><label for="set-tod">Luz del escenario</label><select id="set-tod">
-          ${['cycle', 'day', 'dusk', 'night'].map((q) => `<option value="${q}" ${s.timeOfDay === q ? 'selected' : ''}>${{ cycle: 'Ciclo día y noche', day: 'Día', dusk: 'Atardecer', night: 'Noche' }[q]}</option>`).join('')}
-        </select></div>
         ${range('set-shake', 'Sacudida de cámara', s.shake)}
         ${check('set-reduced', 'Reducir movimiento', s.reducedMotion)}
         ${check('set-rotate', 'Rotar cámara con Z / X', s.camRotate)}
@@ -59,6 +56,7 @@ export class PauseMenu {
         <span><span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span></span><span>Moverte (o flechas)</span>
         <span class="kbd">ESPACIO</span><span>Dash: invulnerable 0,22 s. Una carga en Nv 1, dos desde Nv 2</span>
         <span class="kbd">F</span><span>Hablar / interactuar. Junto a un armero: cambiar de arma (sable ↔ pistolas)</span>
+        <span class="kbd">N</span><span>${document.documentElement.lang.startsWith('en') ? 'Toggle your starter lantern' : 'Encender o apagar tu farol inicial'}</span>
         <span class="kbd">Rueda</span><span>Zoom (3 niveles)</span>
         <span><span class="kbd">Z</span> <span class="kbd">X</span></span><span>Rotar cámara 90° (actívalo en Ajustes)</span>
         <span class="kbd">ESC</span><span>Pausa</span>
@@ -96,7 +94,6 @@ export class PauseMenu {
     bind('set-master', 'master'); bind('set-sfx', 'sfx'); bind('set-music', 'music'); bind('set-amb', 'ambience');
     bind('set-muted', 'muted', (el) => el.checked);
     bind('set-quality', 'quality', (el) => el.value);
-    bind('set-tod', 'timeOfDay', (el) => el.value);
     bind('set-shake', 'shake');
     bind('set-reduced', 'reducedMotion', (el) => el.checked);
     bind('set-rotate', 'camRotate', (el) => el.checked);

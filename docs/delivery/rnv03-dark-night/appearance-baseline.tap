@@ -1,0 +1,63 @@
+✔ appearance catalog exposes the required options for both body bases (209.6657ms)
+✔ malformed and unknown appearance values normalize to a closed safe descriptor (0.3431ms)
+✔ none choices omit their geometry families (1.5762ms)
+✔ each recolor changes only its own family colors while geometry stays fixed (95.1097ms)
+✔ A to B to A swaps are deterministic in vertices, indices, and colors (141.5647ms)
+✖ appearance receipt preserves the v3 body and head source hashes (5.1056ms)
+✔ every look builds valid skinned geometry within budget (474.5079ms)
+✔ player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside) (0.2281ms)
+✔ midnight preset removes global fill while retaining independent local-source controls (1.3596ms)
+✔ live gameplay follows the supplied server phase even when saved TOD says day (2.4861ms)
+✔ Caldera night keeps local fire strength without restoring global ambient or water fill (0.5848ms)
+✔ belt lantern mesh and light use the same yawed character-local anchor (1.47ms)
+✔ portable source membership is stable while lit and disappears immediately when off (19.997ms)
+✔ owner lamp always occupies a uniform slot at low, high, and ultra light budgets (1.3664ms)
+✔ character belt lantern stays attached and toggles its emissive core without rebuilding (40.0092ms)
+✔ button follows confirmed state and sends an explicit toggle without optimistic lighting (4.5855ms)
+✔ only matching private ACK clears pending; server state controls the button and feedback (0.3306ms)
+✔ retries the exact command once at one second and stops after the five second timeout (0.1981ms)
+✔ unjoin, replacement client, entity change, and death invalidate a pending command (0.2119ms)
+✔ button visibility obeys the supplied play-context callback and cleanup removes its DOM node (0.1881ms)
+✔ denials and successful extinguish feedback are localized (0.1999ms)
+✔ worldgen is deterministic (353.1016ms)
+✔ landmarks sit in the right zones (0.6089ms)
+✔ run speed reaches 6.5 u/s with acceleration (8.3066ms)
+✔ dash: 5.5 u in 0.22 s with i-frames, then charges and buffer (2.1946ms)
+✔ level 2 gets a second dash charge (1.5352ms)
+✔ the sea blocks movement beyond wading depth (10.0575ms)
+✔ colliders are never penetrated (3.8355ms)
+✔ the beach → village → path → arena route is walkable (14.2786ms)
+✔ client prediction matches the authoritative server exactly (573.7057ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 29
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1717.0381
+
+✖ failing tests:
+
+test at tests\character-appearance.test.mjs:135:1
+✖ appearance receipt preserves the v3 body and head source hashes (5.1056ms)
+  AssertionError [ERR_ASSERTION]: head.mjs changed from the appearance receipt
+  + actual - expected
+  
+  + '7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060'
+  - '1622f2a52d787ecae6d870eaf48749cc941544a05a0320fd3e3d57f73964aa53'
+  
+      at TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area07-pilot/tests/character-appearance.test.mjs:138:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060',
+    expected: '1622f2a52d787ecae6d870eaf48749cc941544a05a0320fd3e3d57f73964aa53',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

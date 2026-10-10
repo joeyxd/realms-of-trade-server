@@ -793,6 +793,17 @@ llevan el ambiente completo de las referencias. Presupuesto igual que hoy: < 200
 
 **Paso 1 hecho: luces locales, presets y grading** — `lights.js` · `lighting.js` · `toon.js` · `pipeline.js`
 
+**RNV03 / alpha.28, protocolo 40:** [contrato de noche y farol portátil](docs/briefs/rnv03-dark-night.md).
+La partida respeta siempre la hora del servidor; se retira el selector cosmético y la luz automática
+del jugador. N/toque controla un farol inicial de cinturón, visible para los demás, apagado en muerte
+y reentrada y sin inventario/combustible/guardado propio. Tiene radio 7,5 y prioridad propia dentro
+del presupuesto 4/8/12; comparte los huecos ordinarios con faroles navales/fuentes fijas y reserva
+1/2 para destellos. La noche reduce sol/hemisférica a 0,018, elimina fill/rim y limita también el
+relleno volcánico y el brillo del agua. El farol usa dos mallas compartidas por personaje; no añade
+luces Three.js ni texturas. No hay oclusión local por paredes. Las filas siguientes conservan el
+detalle histórico del paso 1; sus menciones de luz automática, fill nocturno y selector quedan
+sustituidas por este contrato. Presets de depuración solo controlan título/editor fuera de partida.
+
 | Parte | Cómo |
 |---|---|
 | Luces locales | Sin luces de three.js (cambiar su número recompila todo): dos arrays de uniforms (`mnLightPos` xyz + radio, `mnLightCol` rgb·intensidad + *wrap*) y un contador. Toda superficie toon (terreno, props, vegetación, personajes) suma `mnLocalLight()` tras la luz del sol: caída en 3 bandas suaves mezcladas con una rampa (charcos pintados, no anillos) × cara hacia la luz con un mínimo por *wrap*. El agua refleja cada luz (destello en las olas + brillo suave) y la espuma se tiñe. Sin sombras. |

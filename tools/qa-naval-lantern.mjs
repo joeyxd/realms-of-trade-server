@@ -102,7 +102,7 @@ async function waitUntil(predicate, label, timeout = 20000) {
 
 async function run(spec) {
   const result = { ...spec, status: 'running', stage: 'setup', errors: [], consoleErrors: [], requestFailures: [], httpFailures: [],
-    externalRequests: [], websockets: [], screenshots: [], lanternAcks: [], editAcks: [] };
+    externalRequests: [], websockets: [], screenshots: [], lanternAcks: [], personalLanternAcks: [], editAcks: [] };
   evidence.viewports.push(result);
   const hostLogs = [];
   const host = createGameServer({ port: 0, host: '127.0.0.1', seed: GAME.seed, bots: 0, maxPlayers: 1, dev: true,
@@ -133,6 +133,7 @@ async function run(spec) {
     world.emit = (event) => {
       if (event?.type === 'raftEdit') result.editAcks.push({ op: event.op, ok: event.ok, why: event.why || '', rev: event.rev });
       if (event?.type === 'raftLantern') result.lanternAcks.push({ ok: event.ok, why: event.why || '', lit: event.lit, changed: event.changed });
+      if (event?.type === 'personalLantern') result.personalLanternAcks.push({ ok: event.ok, why: event.why || '', lit: event.lit, opId: event.opId });
       return originalEmit(event);
     };
     await page.evaluate((locale) => { document.documentElement.lang = locale; }, spec.locale);
@@ -166,6 +167,8 @@ async function run(spec) {
       ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = ecs.moveMag[e] = 0; server.broadcastSnapshot(); return e;
     };
     const player = relocateNearLamp();
+    // Gameplay lighting follows the host clock; a cosmetic preset no longer forces night in play.
+    world.economy.hours = 24; world.economy.acc = 0; server.broadcastSnapshot();
     const night = await page.evaluate(() => window.__mn.tod('night'));
     result.nightFixture = night;
     await page.waitForFunction((expected) => window.__mn.navigation.interaction()?.actions?.some((a) => a.lantern && a.verb === expected),
@@ -290,6 +293,27 @@ async function run(spec) {
       await page.keyboard.press('f');
       await page.waitForFunction((id) => window.__mn.client.naval.active && window.__mn.client.naval.shipId === id,
         ship.id, { timeout: 15000 });
+      result.stage = 'portable-lantern-at-helm';
+      if (spec.touch) await page.locator('#personal-lantern').tap(); else await page.keyboard.press('n');
+      await waitUntil(() => world.ecs.lantern[entity] === 1 && result.personalLanternAcks.some((ack) => ack.ok && ack.lit),
+        'personal lantern N command at actual helm');
+      await page.waitForFunction(() => {
+        const app = window.__mn, id = app.client.youServer, view = app.world.views.get(id);
+        return app.client.personalLantern === true && !!view?.personalLanternCore?.visible &&
+          app.world.lights.portableSources.get(String(id))?.w > 0.9;
+      }, null, { timeout: 15000 });
+      const helmLantern = await page.evaluate(async () => {
+        const app = window.__mn, id = app.client.youServer, view = app.world.views.get(id), root = view?.root;
+        const source = app.world.lights.portableSources.get(String(id));
+        const { personalLanternPoint } = await import('/src/render/personalLantern.js');
+        const expected = personalLanternPoint({ x: root.position.x, y: root.position.y, z: root.position.z, f: root.rotation.y });
+        return { entity: id, source: { x: source.x, y: source.y, z: source.z, w: source.w },
+          expected, coreVisible: !!view?.personalLanternCore?.visible,
+          anchored: Math.hypot(source.x - expected.x, source.y - expected.y, source.z - expected.z) < 0.08 };
+      });
+      check(helmLantern.anchored && helmLantern.coreVisible, `starter lantern was not anchored to the helm character: ${JSON.stringify(helmLantern)}`);
+      result.personalLanternAtHelm = helmLantern;
+      await screenshot('09-personal-lantern-helm');
       await page.keyboard.press('e');
       await page.waitForFunction((id) => window.__mn.client.deck.active && window.__mn.client.deck.shipId === id,
         ship.id, { timeout: 15000 });
@@ -311,15 +335,44 @@ async function run(spec) {
         await page.waitForTimeout(350);
         for (const key of keys) await page.keyboard.up(key);
       }
+      result.stage = 'personal-lantern-on-deck';
       await page.waitForFunction(() => window.__mn.client.deck.active &&
         window.__mn.navigation.interaction()?.actions?.some((action) => action.lantern && action.key === 'V'), null,
       { timeout: 12000 });
+      await page.waitForFunction(async () => {
+        const app = window.__mn, id = app.client.youServer, view = app.world.views.get(id), root = view?.root;
+        const source = app.world.lights.portableSources.get(String(id));
+        if (app.client.personalLantern !== true || !root || !(source?.w > 0.9) || !view?.personalLanternCore?.visible) return false;
+        const { personalLanternPoint } = await import('/src/render/personalLantern.js');
+        const expected = personalLanternPoint({ x: root.position.x, y: root.position.y, z: root.position.z, f: root.rotation.y });
+        return Math.hypot(source.x - expected.x, source.y - expected.y, source.z - expected.z) < 0.08;
+      }, null, { timeout: 12000 });
+      const deckLantern = await page.evaluate(async () => {
+        const app = window.__mn, id = app.client.youServer, view = app.world.views.get(id), root = view?.root;
+        const source = app.world.lights.portableSources.get(String(id));
+        const { personalLanternPoint } = await import('/src/render/personalLantern.js');
+        const expected = personalLanternPoint({ x: root.position.x, y: root.position.y, z: root.position.z, f: root.rotation.y });
+        return { source: { x: source.x, y: source.y, z: source.z, w: source.w }, expected,
+          coreVisible: !!view?.personalLanternCore?.visible,
+          anchored: Math.hypot(source.x - expected.x, source.y - expected.y, source.z - expected.z) < 0.08 };
+      });
+      check(deckLantern.anchored && deckLantern.coreVisible,
+        `starter lantern did not follow the deck character: ${JSON.stringify(deckLantern)}`);
+      result.personalLanternOnDeck = deckLantern;
+      await screenshot('10-personal-lantern-deck-walk');
       const deckAckStart = result.lanternAcks.length;
       await page.keyboard.press('v');
       await waitUntil(() => result.lanternAcks.slice(deckAckStart).some((ack) => ack.ok && ack.lit), 'V command while deck.active');
       check(await page.evaluate(() => window.__mn.client.deck.active), 'deck context ended before the V acknowledgement');
       result.deckModeV = { navalActive: true, deckActive: true, key: 'V', lanternAck: 'lit', deckWalkDistanceAtStop: remaining };
-      await screenshot('09-real-deck-active-v');
+      await screenshot('11-real-deck-active-v');
+      if (spec.touch) await page.locator('#personal-lantern').tap(); else await page.keyboard.press('n');
+      await waitUntil(() => world.ecs.lantern[entity] === 0 && result.personalLanternAcks.some((ack) => ack.ok && !ack.lit),
+        'personal lantern N command off on actual deck');
+      await page.waitForFunction((id) => window.__mn.client.personalLantern === false &&
+        !window.__mn.world.lights.portableSources.has(String(id)), entity, { timeout: 15000 });
+      result.personalLanternDeckOff = { authoritativeOff: world.ecs.lantern[entity] === 0, sourceRemoved: true };
+      await screenshot('12-personal-lantern-deck-off');
     }
     result.viewportCheck = await page.evaluate(() => ({ width: innerWidth, height: innerHeight,
       documentWidth: document.documentElement.scrollWidth, overflow: document.documentElement.scrollWidth > innerWidth,
@@ -332,7 +385,11 @@ async function run(spec) {
       `browser faults: ${JSON.stringify({ errors: result.errors, consoleErrors: result.consoleErrors, requestFailures: result.requestFailures, httpFailures: result.httpFailures, externalRequests: result.externalRequests })}`);
     result.assertions = { paidPlacement: true, startsOff: true, localizedPrompt: true, vOrTouchToggle: true,
       warmSourceOnOff: true, movingAndRotatedSource: true, litInteriorCutaway: true, destroyedSourceRemoved: true,
-      paidRepairStaysOff: true, horizontalOverflow: false };
+      paidRepairStaysOff: true,
+      ...(process.env.MN_QA_CHECK_DECK === '1' ? { personalLanternAtActualHelm: !!result.personalLanternAtHelm,
+        personalLanternFollowsDeckWalk: !!result.personalLanternOnDeck,
+        personalLanternCanTurnOffOnDeck: !!result.personalLanternDeckOff } : {}),
+      horizontalOverflow: false };
     result.status = 'passed'; result.stage = 'complete';
   } catch (error) {
     result.status = 'failed'; result.error = String(error?.stack || error); evidence.failures.push({ viewport: spec.name, stage: result.stage, error: error.message });

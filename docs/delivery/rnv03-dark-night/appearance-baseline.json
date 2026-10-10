@@ -1,0 +1,49 @@
+{
+  "schema": "appearance-baseline-diagnosis/v1",
+  "result": "baseline_hash_matches_after_lf_normalization",
+  "failing_check": "tests/character-appearance.test.mjs:135",
+  "failure": {
+    "message": "head.mjs changed from the appearance receipt",
+    "receiptSha256": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060",
+    "rawWorktreeSha256": "1622f2a52d787ecae6d870eaf48749cc941544a05a0320fd3e3d57f73964aa53"
+  },
+  "headBlob": {
+    "path": "tools/characters-base-v3/head.mjs",
+    "sha256": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060",
+    "bytes": 9249,
+    "crlf": 0
+  },
+  "worktreeFile": {
+    "path": "tools/characters-base-v3/head.mjs",
+    "rawSha256": "1622f2a52d787ecae6d870eaf48749cc941544a05a0320fd3e3d57f73964aa53",
+    "rawBytes": 9418,
+    "crlf": 169,
+    "sha256AfterCrlfToLf": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060",
+    "bytesAfterCrlfToLf": 9249
+  },
+  "appearanceReceipt": {
+    "path": "docs/art/source/character-appearance-v1/appearance-receipt.json",
+    "headSha256ForHeadSource": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060",
+    "worktreeSha256ForHeadSource": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060"
+  },
+  "lineEndingConfiguration": {
+    "coreAutocrlf": true,
+    "configOrigin": "C:/Program Files/Git/etc/gitconfig",
+    "gitAttributeText": "unspecified",
+    "gitAttributeEol": "unspecified"
+  },
+  "protocol40Assessment": {
+    "related": false,
+    "baselineProtocol": 39,
+    "currentProtocol": 40,
+    "change": "ENT.LANTERN appended at index 19; previous tuple indices unchanged",
+    "simTestResult": "node --test tests/sim.test.mjs passed 9/9"
+  },
+  "worktreeStatus": {
+    "headSourceModified": false,
+    "appearanceReceiptModified": false,
+    "simTestModified": false,
+    "artifactsOrTestsEdited": false
+  },
+  "note": "The TAP mismatch is raw-byte SHA-256 versus a CRLF-converted checkout. LF normalization reproduces both the baseline HEAD blob and the recorded receipt exactly. No source, receipt, or test fixture was changed."
+}

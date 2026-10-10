@@ -299,10 +299,12 @@ export class GameScene {
     // The close naval camera must keep the hull, sail and helm fully visible.
     U.mnOccOn.value = ctx.playing && !ctx.naval ? 1 : 0;
     if (ctx.occ2) U.mnOcc2.value.set(ctx.occ2.x, ctx.occ2.y + 0.6, ctx.occ2.z, 1); else U.mnOcc2.value.w = 0;
+    this.lighting.setGameplay(!!ctx.playing);
     this.lighting.update(dt, ctx.shadowFocus || ctx.focus, ctx.clockPhase);
     this.applyPreset(this.lighting.cur);
     this.lights.setRafts(ctx.rafts || [], ctx.lightRaftId ?? ctx.shelterId ?? null);
-    this.lights.update(dt, ctx.focus, ctx.playing ? ctx.focus : null);
+    this.lights.setPortableLights(ctx.playing ? (ctx.portableLights || []) : []);
+    this.lights.update(dt, ctx.focus);
     this.sky.position.copy(this.camera.position);
     // Combat-timed pieces follow instance time (they freeze in the hitstop with the characters).
     const sim = ctx.simDt ?? dt;
@@ -369,7 +371,7 @@ export class GameScene {
   // The preset's non-light parts: local-light knobs, water light, hut windows, grading.
   applyPreset(p) {
     const k = this.lights.knobs;
-    k.fire = p.fire; k.lava = p.lavaLight; k.night = p.windows; k.eyes = 0.4 + 0.6 * p.fire; k.player = p.player;
+    k.fire = p.fire; k.lava = p.lavaLight; k.night = p.windows; k.eyes = 0.4 + 0.6 * p.fire;
     WATER_LIGHT.uWaterLight.value.copy(p.water);
     WATER_LIGHT.uSparkle.value = p.sparkle;
     WATER_LIGHT.uFoamLight.value = p.foam;

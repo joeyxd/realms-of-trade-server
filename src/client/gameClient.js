@@ -29,6 +29,7 @@ export class GameClient {
     this.bus = bus;
     this.pred = new World(map.seed, { map });
     this.youServer = 0;
+    this.personalLantern = false;
     this.youLocal = 0;
     this.seq = 0;
     this.pending = [];
@@ -114,6 +115,7 @@ export class GameClient {
         break;
       }
       case MSG.WELCOME: {
+        this.personalLantern = false;
         this.naval = new NavalPilotPrediction(this.map);
         this.route = null;
         this.lesson = null;
@@ -196,6 +198,10 @@ export class GameClient {
     }
     if (ev.type === 'raftLantern') {
       if (ev.to === this.youServer) this.bus.emit('raftLantern', ev);
+      return;
+    }
+    if (ev.type === 'personalLantern') {
+      if (ev.to === this.youServer) this.bus.emit('personalLantern', ev);
       return;
     }
     const H = this.pred.hazards;
@@ -400,6 +406,8 @@ export class GameClient {
     for (const e of s.ents) {
       const rec = this.entities.get(e[ENT.ID]);
       if (!rec) continue;
+      rec.lantern = e[ENT.LANTERN] === 1 && e[ENT.HP] > 0;
+      if (e[ENT.ID] === this.youServer) this.personalLantern = rec.lantern;
       if (e[ENT.ID] === this.youServer) { rec.serverState = e; continue; }
       const sample = {
         time: st, x: e[ENT.X], y: e[ENT.Y], z: e[ENT.Z], f: e[ENT.F], vx: e[ENT.VX], vz: e[ENT.VZ],

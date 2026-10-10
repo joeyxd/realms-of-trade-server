@@ -1,0 +1,372 @@
+{
+  "generatedAt": "2026-10-10T20:35:34.538Z",
+  "purpose": "Verify a dark night with no automatic player fill, usable portable light on foot, authoritative light state, and day-preset resistance.",
+  "harness": "Disposable GameHost and memory store per viewport; local Three.js/GSAP/fonts; Chrome4viewports. No production server, SQL, external assets, or physical-device performance claim.",
+  "fixture": "The server clock is fixed to midnight, one test player is relocated to an isolated dry coastal point, and a second raw WebSocket guest is used for public light visibility and death reset.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "night-desktop-low-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "port": 62569,
+      "status": "failed",
+      "stage": "server-lit-portable-light",
+      "errors": [],
+      "consoleErrors": [
+        "[chars] TypeError: view.setLantern is not a function\n    at http://127.0.0.1:62569/src/main.js:1171:16\n    at safe (http://127.0.0.1:62569/src/main.js:76:16)\n    at Loop.frame (http://127.0.0.1:62569/src/main.js:1129:7)\n    at Loop.tick (http://127.0.0.1:62569/src/core/loop.js:56:10)\n    at Loop._tick (http://127.0.0.1:62569/src/core/loop.js:20:30)"
+      ],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:62569/ws"
+        }
+      ],
+      "screenshots": [
+        "night-desktop-low-es-2026-10-10T20-35-34-537Z-01-dark-no-personal-light.jpg",
+        "night-desktop-low-es-2026-10-10T20-35-34-537Z-failure-server-lit-portable-light.jpg"
+      ],
+      "acks": [],
+      "assertions": {},
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7500526388888886,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 1190,
+          "y": 182,
+          "width": 72,
+          "height": 48
+        },
+        "touchGeometry": null,
+        "text": "Farol N",
+        "ariaLabel": "Encender luz (N)"
+      },
+      "error": "Error: character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.670116230608429,1.9703065591842857,0.8628299274347537,0.35]},\"lightCount\":1}\n    at check (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:47:55)\n    at run (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:204:5)\n    at async file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:302:33",
+      "browserState": {
+        "url": "http://127.0.0.1:62569/?debug&q=low",
+        "bodyText": "ESPACIO\npara hacer dash\n1\nGrumete635\n100 / 100\nRIPOSTE 0 %\n0 / 100 XP\n0\n00:00\nNoche\n237 ms\n· 1 pirata\nPlaya de la Marea\nDONDE LA CORRIENTE DEJA A LOS NÁUFRAGOS\nLuz encendida.\n¡Bien! Ahora prueba el dash.\nNueva misión: Tierra firme\nSigue los faroles de la playa hasta la Aldea Coralina.\nPrimeros pasos\nMuévete con WASD o las flechas\nHaz un dash con ESPACIO\nGolpea al muñeco: combo de 3 golpes (clic izquierdo)\nEntra en el aro y devuelve un cañonazo con la espada (clic izquierdo a tiempo)\nAtrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo\nSable de cubierta\nMAESTRÍA 1\nLMB\nRMB\nESP\nQ\nE\nM2\nG\nR\nM3\n1\n2\nN\nE\nS\nO\nIsla de la Caldera\nChat\nFarol N",
+        "quality": "low",
+        "joined": true,
+        "lantern": true,
+        "ownSources": [
+          "26"
+        ],
+        "phase": 0.7502389236111111,
+        "sunIntensity": 0.018,
+        "appErrors": []
+      },
+      "serverState": {
+        "player": 26,
+        "playerLantern": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    },
+    {
+      "name": "night-desktop-high-en",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "high",
+      "locale": "en",
+      "port": 50858,
+      "status": "failed",
+      "stage": "server-lit-portable-light",
+      "errors": [],
+      "consoleErrors": [
+        "[chars] TypeError: view.setLantern is not a function\n    at http://127.0.0.1:50858/src/main.js:1171:16\n    at safe (http://127.0.0.1:50858/src/main.js:76:16)\n    at Loop.frame (http://127.0.0.1:50858/src/main.js:1129:7)\n    at Loop.tick (http://127.0.0.1:50858/src/core/loop.js:56:10)\n    at Loop._tick (http://127.0.0.1:50858/src/core/loop.js:20:30)"
+      ],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:50858/ws"
+        }
+      ],
+      "screenshots": [
+        "night-desktop-high-en-2026-10-10T20-35-34-537Z-01-dark-no-personal-light.jpg",
+        "night-desktop-high-en-2026-10-10T20-35-34-537Z-failure-server-lit-portable-light.jpg"
+      ],
+      "acks": [],
+      "assertions": {},
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7500084375,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 1174.859375,
+          "y": 182,
+          "width": 87.140625,
+          "height": 48
+        },
+        "touchGeometry": null,
+        "text": "Lantern N",
+        "ariaLabel": "Light lantern (N)"
+      },
+      "error": "Error: character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.66367250235929,1.9655516650379787,0.8607476804097444,0.35]},\"lightCount\":1}\n    at check (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:47:55)\n    at run (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:204:5)\n    at async file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:302:33",
+      "browserState": {
+        "url": "http://127.0.0.1:50858/?debug&q=high",
+        "bodyText": "ESPACIO\npara hacer dash\n1\nGrumete134\n100 / 100\nRIPOSTE 0 %\n0 / 100 XP\n0\n00:00\nNoche\n177 ms\n· 1 pirata\nPlaya de la Marea\nDONDE LA CORRIENTE DEJA A LOS NÁUFRAGOS\nLantern lit.\n¡Bien! Ahora prueba el dash.\nNueva misión: Tierra firme\nSigue los faroles de la playa hasta la Aldea Coralina.\nPrimeros pasos\nMuévete con WASD o las flechas\nHaz un dash con ESPACIO\nGolpea al muñeco: combo de 3 golpes (clic izquierdo)\nEntra en el aro y devuelve un cañonazo con la espada (clic izquierdo a tiempo)\nAtrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo\nSable de cubierta\nMAESTRÍA 1\nLMB\nRMB\nESP\nQ\nE\nM2\nG\nR\nM3\n1\n2\nN\nE\nS\nO\nIsla de la Caldera\nChat\nLantern N",
+        "quality": "high",
+        "joined": true,
+        "lantern": true,
+        "ownSources": [
+          "26"
+        ],
+        "phase": 0.7502385416666666,
+        "sunIntensity": 0.018,
+        "appErrors": []
+      },
+      "serverState": {
+        "player": 26,
+        "playerLantern": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    },
+    {
+      "name": "night-mobile-low-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "port": 62442,
+      "status": "failed",
+      "stage": "server-lit-portable-light",
+      "errors": [],
+      "consoleErrors": [
+        "[chars] TypeError: view.setLantern is not a function\n    at http://127.0.0.1:62442/src/main.js:1171:16\n    at safe (http://127.0.0.1:62442/src/main.js:76:16)\n    at Loop.frame (http://127.0.0.1:62442/src/main.js:1129:7)\n    at Loop.tick (http://127.0.0.1:62442/src/core/loop.js:56:10)\n    at Loop._tick (http://127.0.0.1:62442/src/core/loop.js:20:30)"
+      ],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:62442/ws"
+        }
+      ],
+      "screenshots": [
+        "night-mobile-low-en-2026-10-10T20-35-34-537Z-01-dark-no-personal-light.jpg",
+        "night-mobile-low-en-2026-10-10T20-35-34-537Z-failure-server-lit-portable-light.jpg"
+      ],
+      "acks": [],
+      "assertions": {},
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7500354861111109,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 231,
+          "y": 747.859375,
+          "width": 48,
+          "height": 87.140625
+        },
+        "touchGeometry": {
+          "control": {
+            "left": 231,
+            "top": 747.859375,
+            "right": 279,
+            "bottom": 835
+          },
+          "attackCluster": {
+            "left": 60.71875,
+            "top": 783.28125,
+            "right": 60.71875,
+            "bottom": 783.28125
+          },
+          "joystickZone": {
+            "left": 0,
+            "top": 0,
+            "right": 273,
+            "bottom": 422
+          },
+          "overlapsAttack": false
+        },
+        "text": "Lantern N",
+        "ariaLabel": "Light lantern (N)"
+      },
+      "error": "Error: character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.6186041418548704,1.9322952527156934,0.84618414576737,0.35]},\"lightCount\":1}\n    at check (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:47:55)\n    at run (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:204:5)\n    at async file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:302:33",
+      "browserState": {
+        "url": "http://127.0.0.1:62442/?debug&q=low",
+        "bodyText": "Toca\nDASH\npara esquivar\n1\nGrumete408\n100 / 100\nRIPOSTE 0 %\n0 / 100 XP\n0\n00:00\nNoche\n122 ms\n· 1 pirata\nPlaya de la Marea\nDONDE LA CORRIENTE DEJA A LOS NÁUFRAGOS\nLantern lit.\n¡Bien! Ahora prueba el dash.\nNueva misión: Tierra firme\nSigue los faroles de la playa hasta la Aldea Coralina.\nPrimeros pasos\nToca DASH para esquivar\nN\nE\nS\nO\nIsla de la Caldera\nATK\nDASH\nGUARDIA\nESTOC\n2\nChat\nLantern N",
+        "quality": "low",
+        "joined": true,
+        "lantern": true,
+        "ownSources": [
+          "26"
+        ],
+        "phase": 0.750226111111111,
+        "sunIntensity": 0.018,
+        "appErrors": []
+      },
+      "serverState": {
+        "player": 26,
+        "playerLantern": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    },
+    {
+      "name": "night-mobile-high-es",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "high",
+      "locale": "es",
+      "port": 56018,
+      "status": "failed",
+      "stage": "server-lit-portable-light",
+      "errors": [],
+      "consoleErrors": [
+        "[chars] TypeError: view.setLantern is not a function\n    at http://127.0.0.1:56018/src/main.js:1171:16\n    at safe (http://127.0.0.1:56018/src/main.js:76:16)\n    at Loop.frame (http://127.0.0.1:56018/src/main.js:1129:7)\n    at Loop.tick (http://127.0.0.1:56018/src/core/loop.js:56:10)\n    at Loop._tick (http://127.0.0.1:56018/src/core/loop.js:20:30)"
+      ],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:56018/ws"
+        }
+      ],
+      "screenshots": [
+        "night-mobile-high-es-2026-10-10T20-35-34-537Z-01-dark-no-personal-light.jpg",
+        "night-mobile-high-es-2026-10-10T20-35-34-537Z-failure-server-lit-portable-light.jpg"
+      ],
+      "acks": [],
+      "assertions": {},
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.750060798611111,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 231,
+          "y": 764.578125,
+          "width": 48,
+          "height": 70.421875
+        },
+        "touchGeometry": {
+          "control": {
+            "left": 231,
+            "top": 764.578125,
+            "right": 279,
+            "bottom": 835
+          },
+          "attackCluster": {
+            "left": 60.71875,
+            "top": 783.28125,
+            "right": 60.71875,
+            "bottom": 783.28125
+          },
+          "joystickZone": {
+            "left": 0,
+            "top": 0,
+            "right": 273,
+            "bottom": 422
+          },
+          "overlapsAttack": false
+        },
+        "text": "Farol N",
+        "ariaLabel": "Encender luz (N)"
+      },
+      "error": "Error: character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.594827654279566,1.9147503350499515,0.8385009352711069,0.35]},\"lightCount\":1}\n    at check (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:47:55)\n    at run (file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:204:5)\n    at async file:///C:/DEV/real%20of%20trade/area07-pilot/tools/qa-night-lantern.mjs:302:33",
+      "browserState": {
+        "url": "http://127.0.0.1:56018/?debug&q=high",
+        "bodyText": "Toca\nDASH\npara esquivar\n1\nGrumete658\n100 / 100\nRIPOSTE 0 %\n0 / 100 XP\n0\n00:00\nNoche\n146 ms\n· 1 pirata\nPlaya de la Marea\nDONDE LA CORRIENTE DEJA A LOS NÁUFRAGOS\nLuz encendida.\n¡Bien! Ahora prueba el dash.\nNueva misión: Tierra firme\nSigue los faroles de la playa hasta la Aldea Coralina.\nPrimeros pasos\nToca DASH para esquivar\nN\nE\nS\nO\nIsla de la Caldera\nATK\nDASH\nGUARDIA\nESTOC\n2\nChat\nFarol N",
+        "quality": "high",
+        "joined": true,
+        "lantern": true,
+        "ownSources": [
+          "26"
+        ],
+        "phase": 0.7504730902777776,
+        "sunIntensity": 0.018,
+        "appErrors": []
+      },
+      "serverState": {
+        "player": 26,
+        "playerLantern": 1,
+        "hostLogs": [
+          "[net] #1 connected (127.0.0.1) · sockets 1"
+        ]
+      }
+    }
+  ],
+  "failures": [
+    {
+      "viewport": "night-desktop-low-es",
+      "stage": "server-lit-portable-light",
+      "error": "character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.670116230608429,1.9703065591842857,0.8628299274347537,0.35]},\"lightCount\":1}"
+    },
+    {
+      "viewport": "night-desktop-high-en",
+      "stage": "server-lit-portable-light",
+      "error": "character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.66367250235929,1.9655516650379787,0.8607476804097444,0.35]},\"lightCount\":1}"
+    },
+    {
+      "viewport": "night-mobile-low-en",
+      "stage": "server-lit-portable-light",
+      "error": "character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.6186041418548704,1.9322952527156934,0.84618414576737,0.35]},\"lightCount\":1}"
+    },
+    {
+      "viewport": "night-mobile-high-es",
+      "stage": "server-lit-portable-light",
+      "error": "character prop or warm shader source missing: {\"x\":0.26,\"y\":1.16,\"z\":0.2,\"r\":7.5,\"w\":1,\"priority\":2,\"coreVisible\":false,\"uniform\":{\"p\":[0.26,1.16,0.2,7.5],\"c\":[2.594827654279566,1.9147503350499515,0.8385009352711069,0.35]},\"lightCount\":1}"
+    }
+  ],
+  "performanceClaim": false
+}

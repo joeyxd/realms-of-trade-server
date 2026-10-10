@@ -1,0 +1,58 @@
+{
+  "containers": 1,
+  "utc": "2026-10-10T20:39:09Z",
+  "active": "06caa9db9517e7f33e8e6362a7a366b7ea1a04196460a1d691a43a5ad5449aa4 sha256:87240001421543d32c409fcf0901cb12b3cd2d3cfd68a05e36c0fb9f3ee92139 healthy 91957a34100c97fed667f6bb100a0f32578d3253",
+  "command": "[\"node\",\"deploy/runtime.mjs\"]",
+  "status": {
+    "players": 0,
+    "sockets": 0,
+    "tick": 60394,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "unsaved": 0,
+      "errors": 0,
+      "tickBlocked": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "profileWrites": 0,
+      "worldWriting": false,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1499,
+        "errors": 0
+      }
+    }
+  },
+  "public_health": 200,
+  "public_page": 200,
+  "validation": {
+    "revision": "91957a34100c97fed667f6bb100a0f32578d3253",
+    "image_id": "sha256:87240001421543d32c409fcf0901cb12b3cd2d3cfd68a05e36c0fb9f3ee92139",
+    "tests_passed": true
+  },
+  "offline_summary": [
+    "# tests 107",
+    "# pass 107",
+    "# fail 0",
+    "# skipped 0"
+  ],
+  "current": "/opt/marea-negra/releases/91957a34100c97fed667f6bb100a0f32578d3253",
+  "timer": "active",
+  "service": "ExecMainStatus=0\nActiveState=inactive",
+  "updater_sha256": "1099aa4466087f588c2657c1cdaeec9acee2e27d2662f96940771fbb64611a43"
+}

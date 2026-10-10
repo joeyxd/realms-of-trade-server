@@ -46,6 +46,7 @@ import { MiniMap } from './ui/minimap.js';
 import { RaftEditor } from './ui/raftEditor.js';
 import { RaftDoorActions } from './ui/raftDoorActions.js';
 import { RaftLanternActions } from './ui/raftLanternActions.js';
+import { PersonalLanternActions } from './ui/personalLanternActions.js';
 import { CommercePanel } from './ui/commerce.js';
 import { ResourceActions } from './ui/resourceActions.js';
 import { WorkbenchPanel } from './ui/workbench.js';
@@ -115,9 +116,9 @@ async function boot() {
   const canvas = $('#game');
   await assetsP;
   const world = new GameScene(canvas, map, { raftSkin: await raftSkinP });
-  // ?tod=night|dusk|day|cycle and ?phase=0..1 for screenshots; otherwise the saved setting.
-  world.lighting.setTimeOfDay(params.get('tod') || settings.timeOfDay, 0);
-  if (params.get('phase')) world.lighting.setPhase(+params.get('phase'));
+  // Title/editor screenshots may select a preset. Playing always follows the shared world clock.
+  world.lighting.setTimeOfDay(debug ? params.get('tod') || 'cycle' : 'cycle', 0);
+  if (debug && params.get('phase')) world.lighting.setPhase(+params.get('phase'));
   const input = new Input(canvas);
   const worldUI = new WorldUI($('#world-ui'), world.camera);
   const ambience = new Ambience();
@@ -261,6 +262,13 @@ async function boot() {
     locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
   bus.on('raftLantern', (ev) => safe('raftLantern', () => raftLanterns.acknowledge(ev)));
   bus.on('you:welcome', () => raftLanterns.reset());
+  const personalLantern = new PersonalLanternActions({ client: () => client, parent: $('#ui'), player: () => ps,
+    enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && !chatPanel.typing && input.enabled &&
+      !raftEditor.active && !commercePanel.active && !workbench.active && !community.active && !mapView.isOpen && !st.sheet,
+    locale: () => document.documentElement.lang.startsWith('en') ? 'en' : 'es', toast: (text) => hud.toast(text, 2400) });
+  bus.on('personalLantern', (ev) => safe('personalLantern', () => personalLantern.acknowledge(ev)));
+  bus.on('you:welcome', () => personalLantern.reset());
+  input.onHotkey('KeyN', () => personalLantern.toggle());
   bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
   bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
   const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
@@ -307,7 +315,6 @@ async function boot() {
       if (key === 'landscape') stage.update();
       if (key === 'touchSize') touch.setScale(settings.touchSize);
       if (key === 'haptics') touch.setHaptics(settings.haptics);
-      if (key === 'timeOfDay') world.lighting.setTimeOfDay(settings.timeOfDay, 2.5);
     },
     onResume: () => closePause(),
     onNewGame: () => { resetSave(); location.reload(); },
@@ -1116,6 +1123,7 @@ async function boot() {
         paused: pause.open || chatPanel.typing || !input.enabled,
         reducedMotion: settings.reducedMotion, quality: quality.current, muted: settings.muted,
       }));
+      safe('personalLantern', () => personalLantern.update());
 
       // Characters.
       safe('chars', () => {
@@ -1160,6 +1168,7 @@ async function boot() {
           view.footprintDeck = !!client.pred.raftDeck.surface(s.x, s.z, s.y);
           view.update(simDt, s);
           navigation.poseCharacter(view, s, rec.id, simDt);
+          view.setLantern?.(playing && rec.lantern === true && s.hp > 0 && !s.dead, playing && rec.human);
           // The Timón rides at the shoulder while charging; Rayo de mástil only uses its ground aim preview.
           const mastboltCharge = rec.id === client.youServer
             ? ps.castK === 3 && skillId(ps.skG) === 'mastbolt'
@@ -1379,7 +1388,14 @@ async function boot() {
         else if (playing) { world.rig.forward(shadowFocus); shadowFocus.multiplyScalar(7).add(focus); }
         else shadowFocus.copy(focus);
         resources.update();
-        world.update(realDt, { focus, playing, resources: resources.renderResources(), lightRaftId: playing ? (client.deck?.shipId || client.naval?.shipId || client.pred.raftDeck.surface(ps.x, ps.z, ps.y)?.id) : null, shelterId: playing ? client.pred.raftDeck.shelterAt(ps.x, ps.z, ps.y)?.id : null, naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
+        const portableLights = [];
+        if (playing) for (const rec of client.entities.values()) {
+          const root = rec.view?.root;
+          if (!root?.visible || !rec.human || !rec.lantern || rec.dying || (rec.id === client.youServer && ps.dead)) continue;
+          portableLights.push({ id: rec.id, x: root.position.x, y: root.position.y, z: root.position.z,
+            f: root.rotation.y, lit: true, own: rec.id === client.youServer });
+        }
+        world.update(realDt, { focus, playing, portableLights, resources: resources.renderResources(), lightRaftId: playing ? (client.deck?.shipId || client.naval?.shipId || client.pred.raftDeck.surface(ps.x, ps.z, ps.y)?.id) : null, shelterId: playing ? client.pred.raftDeck.shelterAt(ps.x, ps.z, ps.y)?.id : null, naval: !!(client.naval?.active || client.deck?.active), shadowFocus, simDt, rafts: client.renderRafts(alpha), you: client.youServer, clockPhase: phaseAt(client.pred.gameHoursAt(viewTick)), occ2: playing ? rewards.focusPoint() : null, lawless: st.lawless, combat: { hazards: client.hazards, shots: client.shots, tick: viewTick, inkClouds: client.pred.inkClouds, inkMarks: client.pred.inkMarks, onShot: shotTrail, caught: playing && !ps.dead ? { view: views.get(client.youServer), n: ps.catchN, heavy: ps.catchHv } : null } });
         feedback.update(realDt, viewTick);
         if (devPanel.flags.hitboxes) drawHitboxes(viewTick);
         else debugDraw.end(false);
@@ -1431,7 +1447,7 @@ async function boot() {
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, gmEntry, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
+  window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.
