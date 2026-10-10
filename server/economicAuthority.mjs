@@ -315,12 +315,16 @@ export class EconomicAuthority {
     // Last revocable preparation boundary. After dispatch an unknown commit must be reconciled,
     // even after stop; it may already have consumed the goods allowance atomically in M5.
     if (this.cancelAgent(a)) return;
-    const commit = () => a.agent ? h.store.commitAgentTrade({ operationId: a.operationId, request: a.request,
+    const commit = () => h.groundAuthority ? h.groundAuthority.commitEconomic(a.operationId, a.request) :
+      a.agent ? h.store.commitAgentTrade({ operationId: a.operationId, request: a.request,
       ownerId: a.agent.ownerId, budgetId: a.agent.budgetId }) :
       h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request });
     let result;
     try { result = await commit(); }
-    catch {
+    catch (error) {
+      // The common session owns exact-envelope reconciliation. A nested economic receipt alone
+      // cannot prove the outer clock/journal committed, so never fall back to the old lane.
+      if (h.groundAuthority) throw error;
       // A timeout is ambiguous. Read evidence, then resend only the identical CAS request.
       const receipt = await (a.agent ? h.store.loadAgentTradeOperation(a.operationId) : h.store.loadEconomicOperation(a.operationId));
       if (receipt) {
@@ -350,7 +354,8 @@ export class EconomicAuthority {
     if (!this.valid(a)) { this.fence(a); return false; }
     const h = this.host, w = h.server.world;
     try {
-      if (!a.replay) {
+      const apply = () => {
+        if (a.replay) return;
         const p = w.profiles.get(a.entity), next = a.request.profile;
         if (a.command.type === 'resource') applyResource(w, a.entity, a.command, a.proposal);
         // Preserve live profile/raft object identities used by deterministic systems.
@@ -392,7 +397,9 @@ export class EconomicAuthority {
         h.worldState.pending = null;
         w.profileDirty.add(a.entity); this.completed++;
         for (const event of a.proposal?.events ?? []) w.emit(clone(event));
-      }
+      };
+      if (!a.replay && h.groundAuthority) h.groundAuthority.applyEconomic(a.operationId, apply);
+      else apply();
       a.gate.release(a.reservation); a.released = true; h.worldState.operationBusy = false; this.active = null;
       // Publication follows confirmed rows and the synchronous apply, never the provider continuation.
       h.server.sendProfile(a.id, a.c);

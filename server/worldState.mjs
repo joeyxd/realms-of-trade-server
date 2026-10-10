@@ -13,10 +13,13 @@ const object = (o) => !!o && typeof o === 'object' && !Array.isArray(o);
 const nonnegative = (n) => Number.isFinite(n) && n >= 0 && n <= Number.MAX_SAFE_INTEGER;
 
 export class WorldState {
-  constructor(store, { id, seed, onFailure = () => {} }) {
+  #commitWorld;
+  constructor(store, { id, seed, onFailure = () => {}, commitWorld = null }) {
     if (typeof id !== 'string' || !id.trim() || id.length > 100 || id.includes('\0') ||
       !Number.isInteger(seed) || seed < 0 || seed > 0xffffffff ||
-      typeof store?.loadWorld !== 'function' || typeof store?.saveWorld !== 'function') throw new StoreError('configuration');
+      typeof store?.loadWorld !== 'function' || typeof store?.saveWorld !== 'function' ||
+      commitWorld !== null && typeof commitWorld !== 'function') throw new StoreError('configuration');
+    this.#commitWorld = commitWorld ?? ((...args) => store.saveWorld(...args));
     this.store = store; this.id = id; this.seed = seed; this.onFailure = onFailure;
     this.version = 0; this.ready = false; this.failed = false; this.errors = 0;
     this.pending = null; this.running = null; this.last = null;
@@ -48,7 +51,7 @@ export class WorldState {
       }
       // Publish a new world's first generation before accepting any gameplay. Competing creation fails CAS.
       const data = this.snapshot(fresh);
-      const result = await this.store.saveWorld(this.id, data, 0);
+      const result = await this.#commitWorld(this.id, data, 0);
       this.accept(result);
       this.last = JSON.stringify(data); this.ready = true;
       return fresh;
@@ -92,7 +95,7 @@ export class WorldState {
       const next = this.pending; this.pending = null;
       if (next.text === this.last) continue;
       try {
-        this.accept(await this.store.saveWorld(this.id, next.data, this.version));
+        this.accept(await this.#commitWorld(this.id, next.data, this.version));
         if (next.data.resources) this.resources = structuredClone(next.data.resources);
         this.last = next.text;
       } catch (err) {

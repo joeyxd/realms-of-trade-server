@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, 2026-10-10 — GameHost económico/checkpoint implementado, publicación en curso:**
+[entrega](docs/delivery/m5-ground-host-authority.md), [contrato](docs/briefs/m5-ground-host-authority.md).
+Un dueño de tick/época/SQL018/019, drain antes del ACK y guardados de mundo/reloj juntos.
+355/355 pruebas en 44 archivos, doce casos nuevos y dos SIGKILL nuevos de GameHost; integra GM03b1.
+SQL018–021 readiness real confirmada; dominio legacy sin reloj común. Sin activación de esta API
+ni artesano; sigue adopción atómica y composición perlas/muerte/botín, luego canario autenticado VPS.
+
 **GM03b1, 2026-10-10 — local alpha.30/protocolo 41, publicación de código en curso:**
 [preparar revisión](docs/delivery/gm03b1/DELIVERY.md), [contrato](docs/briefs/gm03b1-prepared-revision.md).
 Online valida el head privado exacto y descarga documento/dependencias/base/colisiones por hash.
