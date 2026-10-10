@@ -104,7 +104,8 @@ export function stepBurns(w) {
 export function stepWaterCurse(w, e, dt, seq) {
   const s = w.ecs;
   if (s.elem[e] !== 1 || s.dead[e] > 0) { s.waterT[e] = 0; return; }
-  const wet = !w.map.onDock(s.x[e], s.z[e]) && tuning.world.waterLevel - w.map.groundAt(s.x[e], s.z[e]) > 0.05;
+  const wet = !w.map.onDock(s.x[e], s.z[e]) && !w.raftDeck?.surface(s.x[e], s.z[e], s.y[e]) &&
+    tuning.world.waterLevel - w.map.groundAt(s.x[e], s.z[e]) > 0.05;
   if (!wet) { s.waterT[e] = 0; return; }
   s.waterT[e] += dt;
   while (s.waterT[e] + 1e-9 >= PEARL.waterEvery && s.dead[e] <= 0) {

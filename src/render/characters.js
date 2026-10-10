@@ -14,6 +14,7 @@ import { LOOKS, buildLook } from './charlooks.js';
 import { assets } from './assets/registry.js';
 import { charToon } from './assets/toonmat.js';
 import { stepHarvestPose } from './harvestPose.js';
+import { applySwimPose } from './swimPose.js';
 import { damp, angleDelta, clamp, spring, easeOutCubic, wrapAngle } from '../core/math.js';
 import { tuning } from '../data/tuning.js';
 import { ACT } from '../sim/ecs.js';
@@ -218,7 +219,7 @@ export class CharacterView {
   // Flinch away from a hit (dir: +1 hit from the front).
   hit(k = 1, dir = 1) { this.hitK = Math.max(this.hitK, k); this.hitDir = dir; }
 
-  // s: {x, y, z, f, vx, vz, st (1 = dash), wade, act, actT, dead}
+  // s: {x, y, z, f, vx, vz, st (1 = dash, 2 = swim), wade, act, actT, dead}
   update(dt, s) {
     dt = Math.min(dt, 0.1);
     this.t += dt;
@@ -234,8 +235,9 @@ export class CharacterView {
     this.root.rotation.y = s.f;
 
     const speed = Math.hypot(s.vx, s.vz);
+    const swimming = s.st === 2;
     const dashing = s.st === 1;
-    this.run = damp(this.run, dashing ? 0.25 : clamp(speed / 6.5, 0, 1), 10, dt);
+    this.run = damp(this.run, swimming ? 0 : dashing ? 0.25 : clamp(speed / 6.5, 0, 1), 10, dt);
     this.dash = damp(this.dash, dashing ? 1 : 0, dashing ? 26 : 8, dt);
     if (dashing && !this.wasDash) { this.sz.v += 2.2; this.sy.v -= 1.6; }
     if (!dashing && this.wasDash) this.sy.v -= 1.4;
@@ -257,7 +259,7 @@ export class CharacterView {
     const prev = this.phase;
     this.phase += dt * (speed / this.stride) * TAU * (dashing ? 0.15 : 1) * (this.back ? -1 : 1);
     const H = Math.PI;
-    if (this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
+    if (!swimming && this.run > 0.3 && Math.floor((prev - H / 2) / H) !== Math.floor((this.phase - H / 2) / H)) {
       const foot = Math.floor((this.phase - H / 2) / H) & 1;
       if (this.onStep) this.onStep(foot);
       if (this.onFootprint) this.onFootprint(foot, s);
@@ -321,6 +323,7 @@ export class CharacterView {
 
     this.combat(dt, s);
     stepHarvestPose(this, dt, s);
+    if (swimming) applySwimPose(this, dt, this.t);
 
     // Cloth panels: the front rides the leading thigh, the back trails with speed (springs).
     const fT = clamp(Math.min(this.thighL.rotation.x, this.thighR.rotation.x) * 0.75 - 0.05 * r - 0.12 * d, -1, 0.15);

@@ -79,6 +79,7 @@ import { loadGmWorldContent } from './editor/activeContent.js';
 import { installGmContent } from './editor/contentProjection.js';
 import { loadNavalRaftSkin } from './render/naval/raft-skin.js';
 import { LiveNavigationView } from './client/liveNavigationView.js';
+import { SwimStatus } from './client/swimStatus.js';
 import { GmEntry } from './editor/entry.js';
 
 const errors = new Map();
@@ -480,6 +481,7 @@ async function boot() {
 
   // ---- Net / entities --------------------------------------------------------------------------
   var client = new GameClient(transport, map, bus); // var: the pause helpers above run before this line
+  const swimStatus = new SwimStatus($('#ui'), { locale: getLocale });
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),
     active: () => st.mode === 'playing' && client.joined && !client.t.closed,
@@ -1243,6 +1245,7 @@ async function boot() {
         return;
       }
       if (playing) safe('local', () => client.localState(alpha, ps));
+      safe('swimming HUD', () => swimStatus.update(playing && !ps.dead ? ps : {}));
       // Inside the Cala Calavera (M4.5): no law.
       st.lawless = playing && map.lawlessAt(ps.x, ps.z);
       hud.setLawless(st.lawless);
@@ -1350,7 +1353,7 @@ async function boot() {
           anchor('workbench', bench.x, bench.y + 1.5, bench.z, 0);
         }
         let act = null;
-        if (navalInteraction) act = null; // The navigation HUD owns this prompt.
+        if (navalInteraction || ps.swim) act = null; // Navigation/swimming HUDs own these prompts.
         else if (npc) act = `<span class="kbd">F</span> ${ltext('runtime.talk', {name:translateData(npc.name)})}`;
         else if (chest) act = rewards.chestPrompt(chest);
         else if (runes) act = `<b>${dataText(TIERS[tierSel - 1].name)}</b> · <span class="kbd">F</span> ${ltext('runtime.changeTier', {name:translateData(TIERS[tierNext - 1].name)})}`;

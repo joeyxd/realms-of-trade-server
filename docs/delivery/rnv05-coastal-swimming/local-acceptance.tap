@@ -1,0 +1,736 @@
+TAP version 13
+# Subtest: every look builds valid skinned geometry within budget
+ok 1 - every look builds valid skinned geometry within budget
+  ---
+  duration_ms: 435.1446
+  type: 'test'
+  ...
+# Subtest: player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside)
+ok 2 - player looks are adult-proportioned (head ≤ 1/6 of the body, hats aside)
+  ---
+  duration_ms: 0.2073
+  type: 'test'
+  ...
+# Subtest: memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 3 - memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 527.3199
+  type: 'test'
+  ...
+# Subtest: memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 4 - memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 385.9423
+  type: 'test'
+  ...
+# Subtest: memory: an already applied victim remains the causal killer of a later death
+ok 5 - memory: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 352.1581
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 6 - SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 2315.0041
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 7 - SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 1666.3456
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+ok 8 - SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 1772.2084
+  type: 'test'
+  ...
+# Subtest: exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+ok 9 - exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+  ---
+  duration_ms: 291.6874
+  type: 'test'
+  ...
+# Subtest: completed terminal baseline includes later same-tick XP without replaying the causal hit
+ok 10 - completed terminal baseline includes later same-tick XP without replaying the causal hit
+  ---
+  duration_ms: 309.714
+  type: 'test'
+  ...
+# Subtest: partial world fault freezes publication and closes without capturing or replaying a death
+ok 11 - partial world fault freezes publication and closes without capturing or replaying a death
+  ---
+  duration_ms: 305.4598
+  type: 'test'
+  ...
+# Subtest: second receipt failure retains the committed prefix, fences and never replays it
+ok 12 - second receipt failure retains the committed prefix, fences and never replays it
+  ---
+  duration_ms: 436.4771
+  type: 'test'
+  ...
+# Subtest: close settles storage without applying a queued terminal death or claiming a complete flush
+ok 13 - close settles storage without applying a queued terminal death or claiming a complete flush
+  ---
+  duration_ms: 427.5764
+  type: 'test'
+  ...
+# Subtest: detaching an unreserved queued participant invalidates the queue before actor mutation
+ok 14 - detaching an unreserved queued participant invalidates the queue before actor mutation
+  ---
+  duration_ms: 311.3356
+  type: 'test'
+  ...
+# Subtest: fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+ok 15 - fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+  ---
+  duration_ms: 311.6149
+  type: 'test'
+  ...
+# Subtest: default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+ok 16 - default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+  ---
+  duration_ms: 549.8471
+  type: 'test'
+  ...
+# Subtest: guest resolution is refused by explicit authenticated fatal mount
+ok 17 - guest resolution is refused by explicit authenticated fatal mount
+  ---
+  duration_ms: 260.6091
+  type: 'test'
+  ...
+# Subtest: actual swallowed Brasa water curse enters the same automatic receipt path
+ok 18 - actual swallowed Brasa water curse enters the same automatic receipt path
+  ---
+  duration_ms: 279.0966
+  type: 'test'
+  ...
+# Subtest: drowning uses the mounted M5 receipt and preserves ordinary death drops
+ok 19 - drowning uses the mounted M5 receipt and preserves ordinary death drops
+  ---
+  duration_ms: 306.7418
+  type: 'test'
+  ...
+# Subtest: an unreserved later victim changing while the first receipt waits fences the entire host
+ok 20 - an unreserved later victim changing while the first receipt waits fences the entire host
+  ---
+  duration_ms: 260.1114
+  type: 'test'
+  ...
+# Subtest: a join already awaiting authentication cannot spawn into a held terminal tick
+ok 21 - a join already awaiting authentication cannot spawn into a held terminal tick
+  ---
+  duration_ms: 318.5897
+  type: 'test'
+  ...
+# Subtest: afterTick async adapter cannot publish or replay a completed tick
+ok 22 - afterTick async adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 301.1584
+  type: 'test'
+  ...
+# Subtest: afterTick malformed adapter cannot publish or replay a completed tick
+ok 23 - afterTick malformed adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 252.4649
+  type: 'test'
+  ...
+# Subtest: afterTick reentrant adapter cannot publish or replay a completed tick
+ok 24 - afterTick reentrant adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 258.0425
+  type: 'test'
+  ...
+# Subtest: receipt advance independently checks exact applied profiles before refreshing the next baseline
+ok 25 - receipt advance independently checks exact applied profiles before refreshing the next baseline
+  ---
+  duration_ms: 297.3587
+  type: 'test'
+  ...
+# Subtest: boarding requires an owner invite, passenger consent, live deck support, and a fresh frame lease
+ok 26 - boarding requires an owner invite, passenger consent, live deck support, and a fresh frame lease
+  ---
+  duration_ms: 23.8703
+  type: 'test'
+  ...
+# Subtest: a turning helm carries a walking passenger in the same local frame without changing saved ship data
+ok 27 - a turning helm carries a walking passenger in the same local frame without changing saved ship data
+  ---
+  duration_ms: 12.6739
+  type: 'test'
+  ...
+# Subtest: owner can leave helm to walk, retains naval authority, and takes helm at the walked frame
+ok 28 - owner can leave helm to walk, retains naval authority, and takes helm at the walked frame
+  ---
+  duration_ms: 3.8904
+  type: 'test'
+  ...
+# Subtest: packet floods coalesce to one committed walk step and stale controls time out safely
+ok 29 - packet floods coalesce to one committed walk step and stale controls time out safely
+  ---
+  duration_ms: 12.2238
+  type: 'test'
+  ...
+# Subtest: death, disconnect, source edits, and owner detach release only live leases without reviving anyone
+ok 30 - death, disconnect, source edits, and owner detach release only live leases without reviving anyone
+  ---
+  duration_ms: 384.0567
+  type: 'test'
+  ...
+# Subtest: M5-held ticks publish cached crew frames without applying movement or ACKs
+ok 31 - M5-held ticks publish cached crew frames without applying movement or ACKs
+  ---
+  duration_ms: 344.5219
+  type: 'test'
+  ...
+# Subtest: returning to walk accepts a position inside an internally destroyed wall while saved blueprint stays intact
+ok 32 - returning to walk accepts a position inside an internally destroyed wall while saved blueprint stays intact
+  ---
+  duration_ms: 15.9491
+  type: 'test'
+  ...
+# Subtest: owner and passenger walking stay attached to their rendered raft as it moves and turns
+ok 33 - owner and passenger walking stay attached to their rendered raft as it moves and turns
+  ---
+  duration_ms: 553.6993
+  type: 'test'
+  ...
+# Subtest: deck ACK replay, delayed snapshots, leave epochs, and helm mode are fenced
+ok 34 - deck ACK replay, delayed snapshots, leave epochs, and helm mode are fenced
+  ---
+  duration_ms: 447.9195
+  type: 'test'
+  ...
+# Subtest: onSnapshot commits neither private stream when either the deck or naval stream is invalid
+ok 35 - onSnapshot commits neither private stream when either the deck or naval stream is invalid
+  ---
+  duration_ms: 373.1823
+  type: 'test'
+  ...
+# Subtest: held heartbeat updates unrelated public raft data without advancing the crew walker
+ok 36 - held heartbeat updates unrelated public raft data without advancing the crew walker
+  ---
+  duration_ms: 321.0471
+  type: 'test'
+  ...
+# Subtest: disabled navigation LocalServer snapshots and commands never activate private naval walk state
+ok 37 - disabled navigation LocalServer snapshots and commands never activate private naval walk state
+  ---
+  duration_ms: 305.0407
+  type: 'test'
+  ...
+# Subtest: ACK drops acknowledged steps and replays the remaining bounded walk commands
+ok 38 - ACK drops acknowledged steps and replays the remaining bounded walk commands
+  ---
+  duration_ms: 5.9165
+  type: 'test'
+  ...
+# Subtest: same-tick door changes reconcile collision data and replay pending steps without resetting the deck epoch
+ok 39 - same-tick door changes reconcile collision data and replay pending steps without resetting the deck epoch
+  ---
+  duration_ms: 4.3887
+  type: 'test'
+  ...
+# Subtest: neutral consumes a sequence without advancing prediction; invalid input leaves state untouched
+ok 40 - neutral consumes a sequence without advancing prediction; invalid input leaves state untouched
+  ---
+  duration_ms: 0.5373
+  type: 'test'
+  ...
+# Subtest: snapshot validation is atomic, including duplicate nested state and frozen cloned data
+ok 41 - snapshot validation is atomic, including duplicate nested state and frozen cloned data
+  ---
+  duration_ms: 0.5908
+  type: 'test'
+  ...
+# Subtest: epochs fence leave/remount and sequence storage remains bounded
+ok 42 - epochs fence leave/remount and sequence storage remains bounded
+  ---
+  duration_ms: 4.429
+  type: 'test'
+  ...
+# Subtest: local heading interpolates across the short angle and transforms through one raft pose
+ok 43 - local heading interpolates across the short angle and transforms through one raft pose
+  ---
+  duration_ms: 0.651
+  type: 'test'
+  ...
+# Subtest: GAME.seed raft sails from dock to real walkable coast, lands, parks, and reboards
+ok 44 - GAME.seed raft sails from dock to real walkable coast, lands, parks, and reboards
+  ---
+  duration_ms: 1214.1303
+  type: 'test'
+  ...
+# Subtest: ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+ok 45 - ordinary game admits the fixed helm and an observer sees the same moving raft and pilot
+  ---
+  duration_ms: 752.6935
+  type: 'test'
+  ...
+# Subtest: voyage owns its blueprint and cargo even through trusted economy helpers
+ok 46 - voyage owns its blueprint and cargo even through trusted economy helpers
+  ---
+  duration_ms: 396.1243
+  type: 'test'
+  ...
+# Subtest: storage holds reject new naval input and transitions without advancing ACK, pose or profile
+ok 47 - storage holds reject new naval input and transitions without advancing ACK, pose or profile
+  ---
+  duration_ms: 346.0746
+  type: 'test'
+  ...
+# Subtest: pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+ok 48 - pause cancels a queued helm command and reconnect restores one conserved ship at its berth
+  ---
+  duration_ms: 338.1951
+  type: 'test'
+  ...
+# Subtest: admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+ok 49 - admitted voyage parks the same body ashore, resumes with a fresh epoch and conserves its cargo
+  ---
+  duration_ms: 1107.2327
+  type: 'test'
+  ...
+# Subtest: live helm is a fixed station; pause neutralizes axes; nearby docking restores the saved raft
+ok 50 - live helm is a fixed station; pause neutralizes axes; nearby docking restores the saved raft
+  ---
+  duration_ms: 28.6149
+  type: 'test'
+  ...
+# Subtest: walking away from helm blocks reacquisition until the owner returns to the fixed station
+ok 51 - walking away from helm blocks reacquisition until the owner returns to the fixed station
+  ---
+  duration_ms: 7.7677
+  type: 'test'
+  ...
+# Subtest: coastal landing keeps the boat live while ashore, then reboards and returns without changing profile custody
+ok 52 - coastal landing keeps the boat live while ashore, then reboards and returns without changing profile custody
+  ---
+  duration_ms: 13.8046
+  type: 'test'
+  ...
+# Subtest: a full deck has no fixed helm station to seize
+ok 53 - a full deck has no fixed helm station to seize
+  ---
+  duration_ms: 4.4755
+  type: 'test'
+  ...
+# Subtest: death or source invalidation ashore ends only the transient voyage and never revives the owner
+ok 54 - death or source invalidation ashore ends only the transient voyage and never revives the owner
+  ---
+  duration_ms: 11.4746
+  type: 'test'
+  ...
+# Subtest: mount is session-bound; forged owner fields cannot control another session and pilot ACK advances on tick
+ok 55 - mount is session-bound; forged owner fields cannot control another session and pilot ACK advances on tick
+  ---
+  duration_ms: 513.5326
+  type: 'test'
+  ...
+# Subtest: pilot prediction keeps player and deck on the same anchor across a land-input replay and snapshot correction
+ok 56 - pilot prediction keeps player and deck on the same anchor across a land-input replay and snapshot correction
+  ---
+  duration_ms: 365.7438
+  type: 'test'
+  ...
+# Subtest: delayed old snapshots and old mount epochs cannot reattach the client
+ok 57 - delayed old snapshots and old mount epochs cannot reattach the client
+  ---
+  duration_ms: 333.8532
+  type: 'test'
+  ...
+# Subtest: two clients receive the same moving raft and remote pilot view remains attached
+ok 58 - two clients receive the same moving raft and remote pilot view remains attached
+  ---
+  duration_ms: 280.3996
+  type: 'test'
+  ...
+# Subtest: leave, disconnect and default-off LocalServer preserve the saved mooring and close transient bodies
+ok 59 - leave, disconnect and default-off LocalServer preserve the saved mooring and close transient bodies
+  ---
+  duration_ms: 625.2327
+  type: 'test'
+  ...
+# Subtest: private command gate denies mount and fatal World-step faults fence the dedicated harness without retry
+ok 60 - private command gate denies mount and fatal World-step faults fence the dedicated harness without retry
+  ---
+  duration_ms: 571.2942
+  type: 'test'
+  ...
+# Subtest: held M5 ticks publish cached pilot heartbeats without source checks or player movement
+ok 61 - held M5 ticks publish cached pilot heartbeats without source checks or player movement
+  ---
+  duration_ms: 266.019
+  type: 'test'
+  ...
+# Subtest: unchanged naval heartbeat still installs same-tick public changes from another owner
+ok 62 - unchanged naval heartbeat still installs same-tick public changes from another owner
+  ---
+  duration_ms: 293.3526
+  type: 'test'
+  ...
+# Subtest: reconciles delayed ACKs by dropping acknowledged input and replaying the remaining fixed steps
+ok 63 - reconciles delayed ACKs by dropping acknowledged input and replaying the remaining fixed steps
+  ---
+  duration_ms: 5.7198
+  type: 'test'
+  ...
+# Subtest: rejects invalid controls without mutation; neutral queues a command without predicting a tick
+ok 64 - rejects invalid controls without mutation; neutral queues a command without predicting a tick
+  ---
+  duration_ms: 0.7453
+  type: 'test'
+  ...
+# Subtest: classifies accepted, duplicate and rejected snapshots while accepting a new mount epoch
+ok 65 - classifies accepted, duplicate and rejected snapshots while accepting a new mount epoch
+  ---
+  duration_ms: 1.1552
+  type: 'test'
+  ...
+# Subtest: duplicate snapshots validate their nested body and never mutate prediction state
+ok 66 - duplicate snapshots validate their nested body and never mutate prediction state
+  ---
+  duration_ms: 0.7984
+  type: 'test'
+  ...
+# Subtest: leave clears prediction and fences reactivation until a higher epoch
+ok 67 - leave clears prediction and fences reactivation until a higher epoch
+  ---
+  duration_ms: 0.5303
+  type: 'test'
+  ...
+# Subtest: wire body and commands are isolated; projection and pilot position use the same interpolated pose
+ok 68 - wire body and commands are isolated; projection and pilot position use the same interpolated pose
+  ---
+  duration_ms: 0.7754
+  type: 'test'
+  ...
+# Subtest: pose interpolation follows the short angular path across the wrap boundary
+ok 69 - pose interpolation follows the short angular path across the wrap boundary
+  ---
+  duration_ms: 0.6964
+  type: 'test'
+  ...
+# Subtest: sequence and pending storage remain bounded
+ok 70 - sequence and pending storage remain bounded
+  ---
+  duration_ms: 4.018
+  type: 'test'
+  ...
+# Subtest: saved recovery without a landing routes to the harbor and offers recall only in range
+ok 71 - saved recovery without a landing routes to the harbor and offers recall only in range
+  ---
+  duration_ms: 1.9248
+  type: 'test'
+  ...
+# Subtest: normal shore routing and recovery with a landing continue to point at the raft
+ok 72 - normal shore routing and recovery with a landing continue to point at the raft
+  ---
+  duration_ms: 0.1763
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 73 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 16.2111
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 74 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 3.168
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 75 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 2.6261
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 76 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 3.5127
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 77 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 3.3623
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 78 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 16.3168
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 79 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 339.1941
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 80 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 2.877
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 81 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 2.6752
+  type: 'test'
+  ...
+# Subtest: two sticks own separate pointers and emit bounded independent analog values
+ok 82 - two sticks own separate pointers and emit bounded independent analog values
+  ---
+  duration_ms: 3.3845
+  type: 'test'
+  ...
+# Subtest: radial dead zone is neutral and positive stick y means braking
+ok 83 - radial dead zone is neutral and positive stick y means braking
+  ---
+  duration_ms: 0.4549
+  type: 'test'
+  ...
+# Subtest: cancel, lost capture, blur and hidden page neutralize without tap-stuck state and can rearm
+ok 84 - cancel, lost capture, blur and hidden page neutralize without tap-stuck state and can rearm
+  ---
+  duration_ms: 0.5468
+  type: 'test'
+  ...
+# Subtest: actions have keyboard clicks, pointer taps, disabled state, and disposal removes live controls
+ok 85 - actions have keyboard clicks, pointer taps, disabled state, and disposal removes live controls
+  ---
+  duration_ms: 1.2079
+  type: 'test'
+  ...
+# Subtest: reference layout long press opens an available-action picker without firing and rebinds a slot
+ok 86 - reference layout long press opens an available-action picker without firing and rebinds a slot
+  ---
+  duration_ms: 541.6765
+  type: 'test'
+  ...
+# Subtest: long-press release compatibility click cannot activate the old slot or hit the newly opened picker after a long hold
+ok 87 - long-press release compatibility click cannot activate the old slot or hit the newly opened picker after a long hold
+  ---
+  duration_ms: 2210.3284
+  type: 'test'
+  ...
+# Subtest: reference action movement cancels a hold, while a picker leaves independent sticks live and disabling clears all
+ok 88 - reference action movement cancels a hold, while a picker leaves independent sticks live and disabling clears all
+  ---
+  duration_ms: 1063.3734
+  type: 'test'
+  ...
+# Subtest: reference catalog changes close picker and retain only available bindings
+ok 89 - reference catalog changes close picker and retain only available bindings
+  ---
+  duration_ms: 0.7845
+  type: 'test'
+  ...
+# Subtest: reference shortcut follows the action when a slot is rebound or its metadata changes
+ok 90 - reference shortcut follows the action when a slot is rebound or its metadata changes
+  ---
+  duration_ms: 0.4665
+  type: 'test'
+  ...
+# Subtest: metadata-only catalog updates preserve a held slot and picker without replacing pressed options
+ok 91 - metadata-only catalog updates preserve a held slot and picker without replacing pressed options
+  ---
+  duration_ms: 544.5147
+  type: 'test'
+  ...
+# Subtest: a tap cannot activate a different fallback if its bound action becomes unavailable before release
+ok 92 - a tap cannot activate a different fallback if its bound action becomes unavailable before release
+  ---
+  duration_ms: 0.4747
+  type: 'test'
+  ...
+# Subtest: cooldown binding remains equipped and can be reassigned by long press without casting
+ok 93 - cooldown binding remains equipped and can be reassigned by long press without casting
+  ---
+  duration_ms: 527.9778
+  type: 'test'
+  ...
+# Subtest: reference bindings persist best effort and ignore IDs absent from the live catalog
+ok 94 - reference bindings persist best effort and ignore IDs absent from the live catalog
+  ---
+  duration_ms: 1.1873
+  type: 'test'
+  ...
+# Subtest: startup with an empty catalog and temporary shore actions preserves saved naval bindings through return aboard
+ok 95 - startup with an empty catalog and temporary shore actions preserves saved naval bindings through return aboard
+  ---
+  duration_ms: 0.8855
+  type: 'test'
+  ...
+# Subtest: joined starter raft carries the player across its dock gangplank and back
+ok 96 - joined starter raft carries the player across its dock gangplank and back
+  ---
+  duration_ms: 341.7274
+  type: 'test'
+  ...
+# Subtest: raft support is standable while nearby unsupported deep water is not
+ok 97 - raft support is standable while nearby unsupported deep water is not
+  ---
+  duration_ms: 1.8553
+  type: 'test'
+  ...
+# Subtest: wall, window, railing and closed door block body radius and a dash cannot tunnel through
+ok 98 - wall, window, railing and closed door block body radius and a dash cannot tunnel through
+  ---
+  duration_ms: 20.5913
+  type: 'test'
+  ...
+# Subtest: a closed door edge blocks correctly after rotating the raft
+ok 99 - a closed door edge blocks correctly after rotating the raft
+  ---
+  duration_ms: 2.2221
+  type: 'test'
+  ...
+# Subtest: a missing deck cell cannot be crossed by one large movement request
+ok 100 - a missing deck cell cannot be crossed by one large movement request
+  ---
+  duration_ms: 1.9635
+  type: 'test'
+  ...
+# Subtest: upper floor selection follows reconciled Y and ignores lower-level edge blockers
+ok 101 - upper floor selection follows reconciled Y and ignores lower-level edge blockers
+  ---
+  duration_ms: 1.6618
+  type: 'test'
+  ...
+# Subtest: stairs ascend and descend in each cardinal orientation between actual deck levels
+ok 102 - stairs ascend and descend in each cardinal orientation between actual deck levels
+  ---
+  duration_ms: 10.6597
+  type: 'test'
+  ...
+# Subtest: owner logout moves a guest off the removed raft and leaves the other owner raft active
+ok 103 - owner logout moves a guest off the removed raft and leaves the other owner raft active
+  ---
+  duration_ms: 293.6234
+  type: 'test'
+  ...
+# Subtest: owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+ok 104 - owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+  ---
+  duration_ms: 283.0982
+  type: 'test'
+  ...
+# Subtest: owner logout ignores a stale raft landing target while another skill is active
+ok 105 - owner logout ignores a stale raft landing target while another skill is active
+  ---
+  duration_ms: 287.4842
+  type: 'test'
+  ...
+# Subtest: authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+ok 106 - authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+  ---
+  duration_ms: 270.8671
+  type: 'test'
+  ...
+# Subtest: Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+ok 107 - Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+  ---
+  duration_ms: 8.4374
+  type: 'test'
+  ...
+# Subtest: Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+ok 108 - Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+  ---
+  duration_ms: 4.6209
+  type: 'test'
+  ...
+# Subtest: removing raft support while standing over deep water cannot leave the player floating
+ok 109 - removing raft support while standing over deep water cannot leave the player floating
+  ---
+  duration_ms: 2.5532
+  type: 'test'
+  ...
+# Subtest: swim status stays hidden on land and clamps its shared-state values
+ok 110 - swim status stays hidden on land and clamps its shared-state values
+  ---
+  duration_ms: 1.1923
+  type: 'test'
+  ...
+# Subtest: stamina meter reads its capacity and grace from swim tuning
+ok 111 - stamina meter reads its capacity and grace from swim tuning
+  ---
+  duration_ms: 0.4473
+  type: 'test'
+  ...
+# Subtest: low stamina and exhaustion present shore/own-boat advice in Spanish and English
+ok 112 - low stamina and exhaustion present shore/own-boat advice in Spanish and English
+  ---
+  duration_ms: 0.2826
+  type: 'test'
+  ...
+# Subtest: swim presentation catalogs provide Spanish and English UI copy
+ok 113 - swim presentation catalogs provide Spanish and English UI copy
+  ---
+  duration_ms: 0.1995
+  type: 'test'
+  ...
+# Subtest: live navigation offers G for swimming and F for a permitted water reboard
+ok 114 - live navigation offers G for swimming and F for a permitted water reboard
+  ---
+  duration_ms: 0.5526
+  type: 'test'
+  ...
+# Subtest: procedural swim pose is deterministic and bounded
+ok 115 - procedural swim pose is deterministic and bounded
+  ---
+  duration_ms: 0.2671
+  type: 'test'
+  ...
+# Subtest: beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+ok 116 - beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+  ---
+  duration_ms: 13.9102
+  type: 'test'
+  ...
+# Subtest: authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+ok 117 - authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+  ---
+  duration_ms: 7.2265
+  type: 'test'
+  ...
+# Subtest: exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+ok 118 - exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+  ---
+  duration_ms: 9.7755
+  type: 'test'
+  ...
+# Subtest: swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+ok 119 - swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+  ---
+  duration_ms: 2.9207
+  type: 'test'
+  ...
+# Subtest: reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+ok 120 - reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+  ---
+  duration_ms: 6.9938
+  type: 'test'
+  ...
+# Subtest: online standby filler continues drowning when a connected client sends no input
+ok 121 - online standby filler continues drowning when a connected client sends no input
+  ---
+  duration_ms: 332.8507
+  type: 'test'
+  ...
+1..121
+# tests 121
+# suites 0
+# pass 121
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 18386.6441

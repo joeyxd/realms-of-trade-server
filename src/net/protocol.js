@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 44; // Exact content admission, starter carry/workshop and timed logging; reload peers.
+export const PROTOCOL_VERSION = 45; // Predicted swimming reserve/load/drowning and SWIM animation; reload peers.
 // Owner companion list/stop uses optional messages; its authority contract is unchanged.
 
 export const MSG = {

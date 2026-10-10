@@ -1,12 +1,21 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 44:**
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 45:**
 [Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
 Personalidad/objetivos ingame por cuenta–mundo–personaje ya vinculado; CAS, replay y recuperación
 explícita sin pisar borrador. SQL025 aplicado con readiness desde VPS y canario de servicio real;
 datos de fixture revertidos. Código en publicación. Sin proveedor/inferencia, vínculo durable o
 memoria nueva; la ficha aún no alimenta la mente. Stop sigue de proceso. Sigue conexión/modelo y
 límites conjuntos antes del canario social/PvE/memoria/coste.
+
+**AREA07 RNV05, 2026-10-10 — natación costera integrada, alpha.36/protocolo 45; publicación pendiente:**
+[Contrato](docs/briefs/RNV05-coastal-swimming.md) y [entrega](docs/delivery/rnv05-coastal-swimming.md).
+Playa/agua/playa, resistencia y carga autoritativas/predichas, aviso de agotamiento y daño gradual
+con muerte actual y compatibilidad M5 probada localmente, sin activar ese montaje VPS. G baja por
+un borde cercano del viaje propio detenido; F devuelve a cubierta
+como caminante. Sin SQL/writer nuevo. Integración 121/121 en 17 archivos; regresión previa 104/104,
+selecciones solapadas. PC ES y móvil EN emulado recorren costa/agua/tierra y G/F desde balsa propia;
+revisión activa VPS pendiente. Sigue RNV06: un purificador útil para provisiones/hogar.
 
 **AREA01 GM03b2, 2026-10-10 — publicado alpha.35/protocolo 44, canario aceptado:**
 [entrega](docs/delivery/gm03b2/DELIVERY.md), [evidencia pública](docs/delivery/gm03b2/public-evidence.json) y [despliegue](docs/delivery/gm03b2/deployment.json).
@@ -47,12 +56,18 @@ Regresión local corregida 111/111 y navegador local 14/14; pruebas solapadas. S
 de dos dueños verificado con fixtures, no con agentes públicos. Sigue configuración durable y límites conjuntos.
 
 **AREA12 I18N04b, 2026-10-10 — publicado, invitado ES/EN y reconexión verificados:**
-[Entrega/evidencia](docs/delivery/i18n04b.md). Primera imagen `1f0f158`, alpha.32/protocolo 42;
-conserva las entregas posteriores de favicon y compañeros alpha.33. Selector desde arranque/cuenta/
-ajustes, cliente/editor GM y feedback en caliente sin borrar datos ni reenviar comandos. QA local:
-11 grupos cliente/20 capturas y 6 editor/8 capturas; público WebSocket y reconexión reales, cero errores.
-Imagen 107/107 y salud/Supabase verificadas. Auth/firma, permisos GM y operaciones durables aparte;
-IndexedDB local real y CAS remoto simulado. Sin SQL/flags propios. Sigue I18N04c: promoción ES/EN.
+[Entrega/evidencia](docs/delivery/i18n04b.md).
+Cierre público `822ddc2`, alpha.35/protocolo 44; primera aceptación histórica `1f0f158` alpha.32.
+Selector desde arranque/cuenta/ajustes; cliente/editor GM y feedback en caliente conservan datos y
+solicitudes. QA local: 11 grupos cliente/20 capturas y 6 editor/8 capturas; integración 86/86 y
+regresión final 20/20 (solapadas). HUD real post-intro: seis combinaciones ES/EN, escala 1.3, scroll
+y antorcha sin solapes. Público: tres grupos, once capturas, WebSocket/reconexión y ajuste real de
+tamaño, cero errores; imagen 109/109 y salud/Supabase verificadas. Auth/firma, permisos GM y
+operaciones durables conservan aceptación propia; CAS remoto local simulado. Sin SQL/flags propios.
+Sigue I18N04c: promoción ES/EN.
+
+El recorrido completo pertenece a `bbbf39e`; `822ddc2` añade tres traducciones de oficios,
+con [muestreo público NPC propio](docs/delivery/i18n04b/public-npc/evidence.json) y nombres intactos.
 
 **AREA07 RNV04, 2026-10-10 — combustible privado, alpha.31 / protocolo 42:**
 [Entrega](docs/delivery/rnv04-fire-fuel.md), [contrato](docs/briefs/RNV04-fire-fuel.md).
