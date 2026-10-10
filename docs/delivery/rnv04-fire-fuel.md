@@ -116,9 +116,18 @@ La [instantánea del VPS](rnv04-fire-fuel/vps-integration-alpha34.json) registra
 fuego y Supabase listos y cero escrituras pendientes. Registra también un jugador concurrente y el timer
 pausado durante el mantenimiento GM; no se atribuye ese jugador a la cuenta QA ya eliminada ni se presenta
 esa instantánea como prueba de actualizaciones automáticas activas.
+Una [segunda lectura a las 23:08:37 UTC](rnv04-fire-fuel/vps-updater-restored.json) confirmó el timer
+reactivado, cero jugadores/sockets y cero escrituras pendientes; el actualizador ya estaba ejecutando
+su ciclo normal. No fue necesario cambiarlo desde este corte.
 El [intento previo de esta integración](rnv04-fire-fuel/public-gm-interruption.json) queda fallido:
 una activación GM concurrente cerró WSS con `1012/content_revision` durante el reload. No se debilitó
 la comprobación; se repitió el recorrido completo con la revisión estable y pasó como se documenta arriba.
+
+El merge posterior `c28d11a` conserva el taller inicial alpha.35/protocolo 44 del otro agente.
+Fuego, su composición con diario común, capacidad/carry y la autoridad/sesión del taller pasaron
+**46/46** en diez archivos: [salida](rnv04-fire-fuel/workshop-integration.tap). Se solapan con las
+selecciones anteriores; esta integración local no sustituye ni cambia la revisión alpha.34 de la
+evidencia pública. SQL024 y la activación del taller corresponden a su entrega, sin cambios desde RNV04.
 
 Sigue agua costera/reembarque, después provisiones/hogar; carga, agotamiento, rescate y relación con Brasa
 deben cerrar su contrato antes de activar natación. Carbón y construcción privada en tierra siguen pendientes.

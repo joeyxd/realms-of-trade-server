@@ -1,0 +1,286 @@
+TAP version 13
+# Subtest: new pack carries four timber units or six logs within volume and mass limits
+ok 1 - new pack carries four timber units or six logs within volume and mass limits
+  ---
+  duration_ms: 2.4788
+  type: 'test'
+  ...
+# Subtest: mass can stop a dense item before volume, and strength raises only mass capacity
+ok 2 - mass can stop a dense item before volume, and strength raises only mass capacity
+  ---
+  duration_ms: 0.404
+  type: 'test'
+  ...
+# Subtest: backpack tiers increase volume without changing strength-based mass
+ok 3 - backpack tiers increase volume without changing strength-based mass
+  ---
+  duration_ms: 0.21
+  type: 'test'
+  ...
+# Subtest: legacy profiles retain the old cap and canonical pack shape without losing valid cargo
+ok 4 - legacy profiles retain the old cap and canonical pack shape without losing valid cargo
+  ---
+  duration_ms: 2.3826
+  type: 'test'
+  ...
+# Subtest: carry metadata reader rejects corrupt, future, accessor, and inherited forms
+ok 5 - carry metadata reader rejects corrupt, future, accessor, and inherited forms
+  ---
+  duration_ms: 0.3819
+  type: 'test'
+  ...
+# Subtest: N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+ok 6 - N opens the hand fuel panel while empty, and confirmed snapshots label torch duration
+  ---
+  duration_ms: 3.6735
+  type: 'test'
+  ...
+# Subtest: fueled hand torch sends exact immutable fire set command and waits for confirmation
+ok 7 - fueled hand torch sends exact immutable fire set command and waits for confirmation
+  ---
+  duration_ms: 4.6013
+  type: 'test'
+  ...
+# Subtest: fire command retries exact request once, times out, and denial feedback is localized
+ok 8 - fire command retries exact request once, times out, and denial feedback is localized
+  ---
+  duration_ms: 0.6679
+  type: 'test'
+  ...
+# Subtest: owner-only raft interaction opens fire panel for the nearest supported fixture kind
+ok 9 - owner-only raft interaction opens fire panel for the nearest supported fixture kind
+  ---
+  duration_ms: 2.3451
+  type: 'test'
+  ...
+# Subtest: fuelled fixture prompts from confirmed fire rows and still opens its station panel
+ok 10 - fuelled fixture prompts from confirmed fire rows and still opens its station panel
+  ---
+  duration_ms: 0.4095
+  type: 'test'
+  ...
+# Subtest: legacy lantern path remains unchanged when fire feature flag is absent
+ok 11 - legacy lantern path remains unchanged when fire feature flag is absent
+  ---
+  duration_ms: 1.5326
+  type: 'test'
+  ...
+# Subtest: fire paid operation commits through the optional ground journal and shared SQL receipt
+ok 12 - fire paid operation commits through the optional ground journal and shared SQL receipt
+  ---
+  duration_ms: 3849.8054
+  type: 'test'
+  ...
+# Subtest: paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+ok 13 - paid hand fuel is replay-safe, lit state is public, and simulation expiry clears the public flame
+  ---
+  duration_ms: 651.5252
+  type: 'test'
+  ...
+# Subtest: no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+ok 14 - no wood denies fuel without changing profile, and missing fire readiness blocks host startup
+  ---
+  duration_ms: 815.4435
+  type: 'test'
+  ...
+# Subtest: hand torch fuel load debits exactly one madera and increments both bounded revisions
+ok 15 - hand torch fuel load debits exactly one madera and increments both bounded revisions
+  ---
+  duration_ms: 3.259
+  type: 'test'
+  ...
+# Subtest: set settles elapsed fire time by flooring remaining fuel and never spends wood
+ok 16 - set settles elapsed fire time by flooring remaining fuel and never spends wood
+  ---
+  duration_ms: 0.494
+  type: 'test'
+  ...
+# Subtest: raft fuel uses only the owner profile and matching living condition identity
+ok 17 - raft fuel uses only the owner profile and matching living condition identity
+  ---
+  duration_ms: 0.9373
+  type: 'test'
+  ...
+# Subtest: malformed fire state and unauthorized profile deltas are rejected
+ok 18 - malformed fire state and unauthorized profile deltas are rejected
+  ---
+  duration_ms: 1.4271
+  type: 'test'
+  ...
+# Subtest: hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+ok 19 - hand slot has one visual fuel slot and sends an immutable one-wood craft-and-light intent
+  ---
+  duration_ms: 9.4698
+  type: 'test'
+  ...
+# Subtest: confirmed fire state controls load and toggle buttons; only one pending command is allowed
+ok 20 - confirmed fire state controls load and toggle buttons; only one pending command is allowed
+  ---
+  duration_ms: 1.0093
+  type: 'test'
+  ...
+# Subtest: station uses pack plus raft hold as available stock and emits its stable composite key tuple
+ok 21 - station uses pack plus raft hold as available stock and emits its stable composite key tuple
+  ---
+  duration_ms: 0.5455
+  type: 'test'
+  ...
+# Subtest: retry sends the exact same request once and times out without changing confirmed fuel
+ok 22 - retry sends the exact same request once and times out without changing confirmed fuel
+  ---
+  duration_ms: 0.5154
+  type: 'test'
+  ...
+# Subtest: denials localize server recovery reasons and session changes reset the active request
+ok 23 - denials localize server recovery reasons and session changes reset the active request
+  ---
+  duration_ms: 1.908
+  type: 'test'
+  ...
+# Subtest: English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+ok 24 - English labels, disabled-world guard, active-only Escape, and dispose lifecycle
+  ---
+  duration_ms: 0.7381
+  type: 'test'
+  ...
+# Subtest: hot locale refresh translates pending and acknowledged status without resending the command
+ok 25 - hot locale refresh translates pending and acknowledged status without resending the command
+  ---
+  duration_ms: 0.6073
+  type: 'test'
+  ...
+# Subtest: unlit grill reports fuel and preserves recipe progress and ingredients
+ok 26 - unlit grill reports fuel and preserves recipe progress and ingredients
+  ---
+  duration_ms: 6.9728
+  type: 'test'
+  ...
+# Subtest: expired grill fuel stops production without losing partial work or consuming fish
+ok 27 - expired grill fuel stops production without losing partial work or consuming fish
+  ---
+  duration_ms: 1.8272
+  type: 'test'
+  ...
+# Subtest: a lit grill resumes saved work and production does not debit another fire unit
+ok 28 - a lit grill resumes saved work and production does not debit another fire unit
+  ---
+  duration_ms: 1.7398
+  type: 'test'
+  ...
+# Subtest: central durations define one loaded unit for each private fire kind
+ok 29 - central durations define one loaded unit for each private fire kind
+  ---
+  duration_ms: 3.4827
+  type: 'test'
+  ...
+# Subtest: legacy omission reads as empty while malformed and future versions fail closed
+ok 30 - legacy omission reads as empty while malformed and future versions fail closed
+  ---
+  duration_ms: 1.2028
+  type: 'test'
+  ...
+# Subtest: load is one unit, refuses occupied slots, and does not extract wood automatically
+ok 31 - load is one unit, refuses occupied slots, and does not extract wood automatically
+  ---
+  duration_ms: 0.6704
+  type: 'test'
+  ...
+# Subtest: active-time countdown floors, pauses cleanly, and resumes without free fuel
+ok 32 - active-time countdown floors, pauses cleanly, and resumes without free fuel
+  ---
+  duration_ms: 0.5083
+  type: 'test'
+  ...
+# Subtest: an exhausted flame cannot relight; loading then creates a fresh unlit unit
+ok 33 - an exhausted flame cannot relight; loading then creates a fresh unlit unit
+  ---
+  duration_ms: 0.8695
+  type: 'test'
+  ...
+# Subtest: stable composite keys are bounded, detached, and prototype-safe
+ok 34 - stable composite keys are bounded, detached, and prototype-safe
+  ---
+  duration_ms: 5.2368
+  type: 'test'
+  ...
+# Subtest: invalid clocks and timestamps from the future fail instead of using wall time
+ok 35 - invalid clocks and timestamps from the future fail instead of using wall time
+  ---
+  duration_ms: 0.3521
+  type: 'test'
+  ...
+# Subtest: same command replay is effect-free and revision limits refuse mutations
+ok 36 - same command replay is effect-free and revision limits refuse mutations
+  ---
+  duration_ms: 0.2372
+  type: 'test'
+  ...
+# Subtest: starter-disabled fresh profiles keep the SQL021 legacy pack shape
+ok 37 - starter-disabled fresh profiles keep the SQL021 legacy pack shape
+  ---
+  duration_ms: 6.259
+  type: 'test'
+  ...
+# Subtest: profile sessions gate only fresh-profile defaults and preserve an existing legacy row
+ok 38 - profile sessions gate only fresh-profile defaults and preserve an existing legacy row
+  ---
+  duration_ms: 2.7554
+  type: 'test'
+  ...
+# Subtest: personal project accepts partial deliveries without practice or community completion and prepays one build
+ok 39 - personal project accepts partial deliveries without practice or community completion and prepays one build
+  ---
+  duration_ms: 638.7283
+  type: 'test'
+  ...
+# Subtest: crate is crafted at the bench and placed once from its kit without a second material debit
+ok 40 - crate is crafted at the bench and placed once from its kit without a second material debit
+  ---
+  duration_ms: 518.7337
+  type: 'test'
+  ...
+# Subtest: held and lost workshop commit cannot publish an early reward or charge a retry twice
+ok 41 - held and lost workshop commit cannot publish an early reward or charge a retry twice
+  ---
+  duration_ms: 424.4354
+  type: 'test'
+  ...
+# Subtest: authoritative timing produces exactly earned logs and rejects a made-up challenge token
+ok 42 - authoritative timing produces exactly earned logs and rejects a made-up challenge token
+  ---
+  duration_ms: 573.8445
+  type: 'test'
+  ...
+# Subtest: missing workshop SQL readiness blocks admission before world adoption
+ok 43 - missing workshop SQL readiness blocks admission before world adoption
+  ---
+  duration_ms: 273.7991
+  type: 'test'
+  ...
+# Subtest: paid second storage debits ten boards and an occupied tile preserves the prepaid credit
+ok 44 - paid second storage debits ten boards and an occupied tile preserves the prepaid credit
+  ---
+  duration_ms: 451.8241
+  type: 'test'
+  ...
+# Subtest: partial workshop progress survives host restart and shares the receipt authority with paid fire
+ok 45 - partial workshop progress survives host restart and shares the receipt authority with paid fire
+  ---
+  duration_ms: 892.5203
+  type: 'test'
+  ...
+# Subtest: an existing legacy pack adopts the basic carry limits inside its first successful workshop receipt
+ok 46 - an existing legacy pack adopts the basic carry limits inside its first successful workshop receipt
+  ---
+  duration_ms: 512.7979
+  type: 'test'
+  ...
+1..46
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5007.2712
