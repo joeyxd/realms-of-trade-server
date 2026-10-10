@@ -407,9 +407,10 @@ async function boot() {
   // progress changes; solo also keeps one when the page goes away (it trusts its own saves).
   const saveSlot = () => (st.online ? 'online.' + (() => { try { return new URL(transport.url).host; } catch { return 'server'; } })() : 'solo');
   const accountAuth = new AccountAuth({ httpBase: st.online ? httpUrlFor(transport.url) : null });
+  let accountSetup = null;
   if (st.online && params.get('account-setup') === '1') {
     const { mountAccountSetup } = await import('./editor/accountSetup.js');
-    mountAccountSetup({ auth: accountAuth });
+    accountSetup = mountAccountSetup({ auth: accountAuth });
   }
   const walletLink = st.online ? new WalletLink({ auth: accountAuth, httpBase: httpUrlFor(transport.url) }) : null;
   const accountPanel = st.online ? new AccountPanel($('#title'), accountAuth, {
@@ -1402,7 +1403,7 @@ async function boot() {
   title.ready();
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
-  initializeAccount();
+  initializeAccount().then(() => accountSetup?.consumeLink());
   window.__mn = { world, client, settings, st, ps, map, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, gmEntry, get gmEditor() { return gmEditor; }, panels: { charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });

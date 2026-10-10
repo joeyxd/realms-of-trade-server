@@ -34,6 +34,7 @@ async function setup(context, { accountId = GM, token = 'gm-fixture' } = {}) {
       getSession: async () => ({ data: { session }, error: null }),
       onAuthStateChange: (cb) => { listener = cb; },
       signInWithPassword: async () => ({ data: { session }, error: null }),
+      verifyOtp: async ({ token_hash, type }) => { window.__gmFixtureLinkChecks = (window.__gmFixtureLinkChecks || 0) + 1; return { data: { session }, error: token_hash === 'a'.repeat(64) && type === 'recovery' ? null : new Error('fixture-link') }; },
       updateUser: async ({ password }) => { window.__gmFixturePasswordUpdates = (window.__gmFixturePasswordUpdates || 0) + 1; return { data: { user: session.user }, error: password.length >= 12 ? null : new Error('fixture-password') }; },
       signUp: async () => ({ data: { session }, error: null }), signOut: async () => ({ error: null }),
     } }) };
@@ -46,7 +47,7 @@ async function setup(context, { accountId = GM, token = 'gm-fixture' } = {}) {
   });
 }
 async function ready(page, setupPassword = false) {
-  await page.goto(`${origin}/?q=low&tod=day${setupPassword ? '&account-setup=1' : ''}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${origin}/?q=low&tod=day${setupPassword ? '&account-setup=1#gm_setup_token=' + 'a'.repeat(64) : ''}`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-gm-editor').disabled, null, { timeout: 90000 });
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
 }
@@ -59,8 +60,10 @@ try {
   const modelRequests = [];
   page.on('request', (request) => { if (/\/assets\/editor\/.*\.glb/.test(request.url())) modelRequests.push(request.url()); });
   await ready(page, true);
-  await check('account_setup_checks_confirmation_updates_signed_in_user_and_clears_fields', async () => {
+  await check('account_setup_consumes_link_removes_token_checks_confirmation_and_clears_fields', async () => {
     await page.waitForSelector('.gm-account-setup-overlay:not([hidden])');
+    assert.equal(await page.evaluate(() => location.hash), '');
+    assert.equal(await page.evaluate(() => window.__gmFixtureLinkChecks), 1);
     await shot(page, 'account-setup.png');
     await page.locator('[name="new-password"]').fill('fixture-password-12');
     await page.locator('[name="confirm-password"]').fill('different-fixture-12');

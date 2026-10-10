@@ -24,6 +24,13 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   if (!auth || typeof auth.subscribe !== 'function' || typeof parent?.append !== 'function') {
     throw new TypeError('mountAccountSetup requires auth and a DOM parent');
   }
+  const fragment = new URLSearchParams(globalThis.location.hash.slice(1));
+  let setupToken = fragment.get('gm_setup_token');
+  if (setupToken !== null) {
+    fragment.delete('gm_setup_token');
+    const url = new URL(globalThis.location.href);
+    globalThis.history.replaceState(globalThis.history.state, '', `${url.pathname}${url.search}${fragment.size ? '#' + fragment.toString() : ''}`);
+  }
 
   const style = node('style');
   style.textContent = `
@@ -92,6 +99,7 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   let disposed = false;
   let wasVisible = false;
   let statusTimer = null;
+  let linkPending = setupToken !== null;
 
   const render = (state = auth.state) => {
     signedIn = state?.signedIn === true;
@@ -101,12 +109,12 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
       confirmation.value = '';
       message.textContent = '';
     }
-    const enabled = signedIn && !!accountId && !busy && !completed;
+    const enabled = signedIn && !!accountId && !busy && !completed && !linkPending;
     password.disabled = !enabled;
     confirmation.disabled = !enabled;
     submit.disabled = !enabled;
     cancel.disabled = busy;
-    overlay.hidden = !signedIn || dismissed || completed;
+    overlay.hidden = !signedIn || dismissed || completed || linkPending;
     if (!overlay.hidden && !wasVisible) password.focus({ preventScroll: true });
     wasVisible = !overlay.hidden;
   };
@@ -164,6 +172,20 @@ export function mountAccountSetup({ auth, parent = document.body } = {}) {
   const unsubscribe = auth.subscribe(render);
 
   return {
+    async consumeLink() {
+      if (!linkPending || disposed) return;
+      try {
+        if (!/^[a-f0-9]{64}$/i.test(setupToken || '')) throw new Error('link');
+        const client = await auth.ensureClient();
+        const result = await client.auth.verifyOtp({ token_hash: setupToken, type: 'recovery' });
+        if (result.error || !result.data?.session?.access_token) throw new Error('link');
+        if (disposed) return;
+        auth.publish({ guestChoice: false }); auth.applySession(result.data.session);
+      } catch {
+        dismissed = true; success.hidden = false;
+        success.textContent = 'El enlace caducó o no es válido. Solicita uno nuevo. / The link expired or is invalid. Request a new one.';
+      } finally { setupToken = null; linkPending = false; if (!disposed) render(); }
+    },
     dispose() {
       if (disposed) return;
       disposed = true;

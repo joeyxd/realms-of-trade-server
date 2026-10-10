@@ -31,3 +31,5 @@ GM00 preparó cuatro candidatos colocables a partir de dos originales: roca trop
 - **GM05–GM06:** edición y ampliación del terreno permanecen posteriores.
 
 La edición simultánea en línea no está habilitada. Los borradores de GM01 son privados al navegador y no hay mecanismo para compartirlos en directo ni para sincronizar cambios entre editores.
+
+La activaci?n inicial de cuenta usa un enlace de recuperaci?n de un solo uso en el fragmento del URL. El cliente retira ese fragmento antes de verificarlo con Supabase, habilita el formulario solo tras validar la sesi?n y permite elegir una contrase?a propia. No se env?an enlaces por correo desde este corte ni se guardan tokens, contrase?as o identificadores privados en Git. El permiso sigue resolvi?ndose en el servidor.

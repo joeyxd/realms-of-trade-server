@@ -1,11 +1,11 @@
 {
   "schema": "gm01-browser/v1",
   "version": "0.6.0-alpha.18",
-  "at": "2026-10-10T15:57:00.632Z",
+  "at": "2026-10-10T16:01:43.005Z",
   "simulatedAuth": true,
   "production": false,
   "checks": [
-    "account_setup_checks_confirmation_updates_signed_in_user_and_clears_fields",
+    "account_setup_consumes_link_removes_token_checks_confirmation_and_clears_fields",
     "editor_model_downloads_absent_during_game_boot",
     "authorized_entry_has_no_gameplay_body_or_commands",
     "free_camera_moves_and_blur_releases_keys",
