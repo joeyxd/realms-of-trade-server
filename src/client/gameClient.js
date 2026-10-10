@@ -176,6 +176,10 @@ export class GameClient {
       if (ev.to === this.youServer) this.bus.emit('commerce', ev);
       return;
     }
+    if (ev.type === 'community') {
+      if (ev.to === this.youServer) this.bus.emit('community', ev);
+      return;
+    }
     if (ev.type === 'resource') {
       if (ev.to === this.youServer) this.bus.emit('resource', ev);
       return;

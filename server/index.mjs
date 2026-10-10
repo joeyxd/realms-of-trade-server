@@ -29,7 +29,8 @@ const PUBLIC = ['src', 'styles', 'assets'];
 
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
-  worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null } = {}) {
+  worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null,
+  economicOperations = false, communityRequirements = null } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
@@ -41,7 +42,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, economicOperations, communityRequirements });
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
   if (pearlStartup !== null) {
@@ -143,6 +144,8 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       origins: (env.ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
       store, resolvePlayer: auth.resolvePlayer, publicAuth: auth.publicConfig, walletLink,
       initializeAccounts: auth.publicConfig.enabled,
+      economicOperations: env.MN_ECONOMIC_OPERATIONS === '1',
+      communityRequirements: env.MN_COMMUNITY_REQUIREMENTS ? JSON.parse(env.MN_COMMUNITY_REQUIREMENTS) : null,
       ...worldConfigFromEnv(env),
     });
     port = await gs.listen();

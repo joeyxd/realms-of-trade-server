@@ -1,6 +1,6 @@
 // M3.6 P1: the real Node server. The same LocalServer behind WebSockets (Node 22's global WebSocket is
 // the client here): joining, seeing each other, inputs, leaving, limits, junk, static files.
-import { test, after } from 'node:test';
+import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createGameServer } from '../server/index.mjs';
 import { MSG, ENT, PROTOCOL_VERSION } from '../src/net/protocol.js';
@@ -12,7 +12,7 @@ async function boot(o = {}) {
   servers.push(gs);
   return { gs, port, url: `ws://127.0.0.1:${port}/ws`, http: `http://127.0.0.1:${port}` };
 }
-after(async () => { for (const s of servers) await s.close(); });
+afterEach(async () => { for (const s of servers.splice(0)) await s.close(); });
 
 // A raw protocol client: collects every message, waits for the one you want.
 function connect(url) {
@@ -58,34 +58,46 @@ test('/health, /status and only the client files are served', async () => {
   }
 });
 
-test('two players join the same island, see each other move, and leaving despawns', async () => {
+test('two players join the same island, see each other move, and leaving despawns', { timeout: 30000 }, async () => {
   const { url } = await boot();
   const a = connect(url), b = connect(url);
-  await Promise.all([a.open, b.open]);
-  a.hello('Ana');
-  const wa = await a.wait((m) => m.t === MSG.WELCOME);
-  b.hello('Ana'); // same name: the server makes it unique
-  const wb = await b.wait((m) => m.t === MSG.WELCOME);
-  assert.notEqual(wa.you, wb.you);
-  // Each sees the other as a human player (B got A's spawn on connect, A gets B's when B joins).
-  const sa = await b.wait((m) => m.t === MSG.SPAWN && m.e.id === wa.you);
-  const sb = await a.wait((m) => m.t === MSG.SPAWN && m.e.id === wb.you);
-  assert.equal(sa.e.human, 1);
-  assert.equal(sb.e.name, 'Ana 2');
-  // A walks +x; B's snapshots show it.
-  const x0 = (await b.wait((m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you))).ents.find((e) => e[ENT.ID] === wa.you)[ENT.X];
-  let seq = 0;
-  for (let k = 0; k < 8; k++) {
-    a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt: 0 })) });
-    await sleep(100);
+  try {
+    await Promise.all([a.open, b.open]);
+    a.hello('Ana');
+    const wa = await a.wait((m) => m.t === MSG.WELCOME, 8000);
+    b.hello('Ana'); // same name: the server makes it unique
+    const wb = await b.wait((m) => m.t === MSG.WELCOME, 8000);
+    assert.notEqual(wa.you, wb.you);
+    // Each sees the other as a human player (B got A's spawn on connect, A gets B's when B joins).
+    const sa = await b.wait((m) => m.t === MSG.SPAWN && m.e.id === wa.you, 8000);
+    const sb = await a.wait((m) => m.t === MSG.SPAWN && m.e.id === wb.you, 8000);
+    assert.equal(sa.e.human, 1);
+    assert.equal(sb.e.name, 'Ana 2');
+    // A walks +x. Keep feeding bounded batches until a snapshot proves the full displacement;
+    // a fixed burst can all arrive between slow simulation ticks on the one-CPU offline runner.
+    const x0 = (await b.wait((m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you), 8000))
+      .ents.find((e) => e[ENT.ID] === wa.you)[ENT.X];
+    const moved = (m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you && e[ENT.X] > x0 + 3);
+    let seq = 0, snap = b.msgs.find(moved);
+    const movementDeadline = Date.now() + 15000;
+    while (!snap && Date.now() < movementDeadline) {
+      a.send({ t: MSG.INPUTS, cmds: Array.from({ length: 6 }, () => ({ seq: ++seq, mx: 1, mz: 0, ax: 0, az: 0, btn: 0, prs: 0, pt: 0 })) });
+      await sleep(100);
+      snap = b.msgs.find(moved);
+    }
+    assert.ok(snap, 'B observes A move more than three units before the bounded deadline');
+    const hasAck = (m) => m.t === MSG.SNAPSHOT && m.ack >= seq - 2;
+    let mine = a.msgs.find(hasAck);
+    const ackDeadline = Date.now() + 5000;
+    while (!mine && Date.now() < ackDeadline) { await sleep(100); mine = a.msgs.find(hasAck); }
+    assert.ok(mine, 'A receives acknowledgement for the submitted movement');
+    assert.ok(mine.you && mine.you.length > 10, 'A gets its own full state');
+    a.ws.close();
+    await b.wait((m) => m.t === MSG.DESPAWN && m.id === wa.you, 8000);
+  } finally {
+    if (a.ws.readyState !== WebSocket.CLOSED && a.ws.readyState !== WebSocket.CLOSING) a.ws.close();
+    if (b.ws.readyState !== WebSocket.CLOSED && b.ws.readyState !== WebSocket.CLOSING) b.ws.close();
   }
-  const snap = await b.wait((m) => m.t === MSG.SNAPSHOT && m.ents.some((e) => e[ENT.ID] === wa.you && e[ENT.X] > x0 + 3));
-  assert.ok(snap);
-  const mine = await a.wait((m) => m.t === MSG.SNAPSHOT && m.ack >= seq - 2);
-  assert.ok(mine.you && mine.you.length > 10, 'A gets its own full state');
-  a.ws.close();
-  await b.wait((m) => m.t === MSG.DESPAWN && m.id === wa.you);
-  b.ws.close();
 });
 
 test('a full instance and a wrong protocol version are refused politely', async () => {

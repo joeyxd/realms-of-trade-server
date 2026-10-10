@@ -1308,3 +1308,10 @@ Entrega de correo humano, P3 economía y publicación pendientes. Vista previa l
   necesita su `userData.nm` propio.
 - En el entorno de agentes, `cd` en Bash cambia el directorio de trabajo para siempre: usar rutas absolutas o
   `git -C`.
+
+**M5 econ?mico, 2026-10-09 ? integraci?n en aceptaci?n:** mercado cotizado, compra de materiales
+desde el editor de la balsa, transferencias de carga y aportes usan perfil/mundo/recibo en una
+transacci?n M5; sin montar otra autoridad A1. Meta provisional aprobada: 40 madera + 20 piedra.
+SQL014 aplicada y permisos verificados en Supabase; publicaci?n y recorrido p?blico con reinicio
+en curso. [Contrato](briefs/m5-economic-authority.md) ? [Entrega](delivery/m5-economic-authority.md).
+No cierra recursos/crafting, todo M5 ni crecimiento autom?tico del edificio.

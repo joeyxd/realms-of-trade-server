@@ -5,6 +5,7 @@ import { TOWN_IDS } from '../src/data/towns.js';
 import { BUILDINGS, RECIPES } from '../src/data/buildings.js';
 import { GOOD_IDS } from '../src/data/goods.js';
 import { StoreError } from './store.mjs';
+import { validateCommunityState } from './communityProject.mjs';
 
 const MAX_VERSION = 2147483647;
 const object = (o) => !!o && typeof o === 'object' && !Array.isArray(o);
@@ -18,6 +19,7 @@ export class WorldState {
     this.store = store; this.id = id; this.seed = seed; this.onFailure = onFailure;
     this.version = 0; this.ready = false; this.failed = false; this.errors = 0;
     this.pending = null; this.running = null; this.last = null;
+    this.community = null; this.operationBusy = false;
     this.loadAbort = new AbortController();
   }
 
@@ -34,6 +36,7 @@ export class WorldState {
         if (!object(row) || !Number.isSafeInteger(row.version) || row.version < 1 || row.version > MAX_VERSION ||
           !object(row.data) || row.data.v !== 1 || row.data.seed !== this.seed) throw new StoreError('world_format');
         validateEconomy(row.data.economy, this.seed);
+        this.community = validateCommunityState(row.data.community, this.id);
         const economy = Economy.from(row.data.economy, this.seed);
         this.version = row.version;
         this.last = JSON.stringify(this.snapshot(economy));
@@ -55,13 +58,14 @@ export class WorldState {
   }
 
   snapshot(economy) {
-    const data = structuredClone({ v: 1, seed: this.seed, economy: economy.serialize() });
+    const data = structuredClone({ v: 1, seed: this.seed, economy: economy.serialize(),
+      ...(this.community ? { community: this.community } : {}) });
     validateEconomy(data.economy, this.seed);
     return data;
   }
 
   save(economy) {
-    if (!this.ready || this.failed) return;
+    if (!this.ready || this.failed || this.operationBusy) return;
     try {
       const data = this.snapshot(economy);
       this.pending = { data, text: JSON.stringify(data) };

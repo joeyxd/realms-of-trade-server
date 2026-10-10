@@ -11,7 +11,7 @@ import { ProfileSessions } from './profileSessions.mjs';
 import { legacyKey } from './legacy.mjs';
 import { WorldState } from './worldState.mjs';
 import { pearlMutationGate } from './pearlMutationGate.mjs';
-import { profilePearls } from './pearlOperations.mjs';
+import { profilePearls, canonicalText } from './pearlOperations.mjs';
 import { syncProfile } from '../src/sim/systems/inventory.js';
 import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
 import { PearlStaging } from './pearlStaging.mjs';
@@ -24,6 +24,8 @@ import { PearlLifecycle } from './pearlLifecycle.mjs';
 import { assertGroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { groundKey } from './pearlGround.mjs';
 import { AgentControl } from './agentControl.mjs';
+import { EconomicAuthority } from './economicAuthority.mjs';
+import { newCommunityState } from './communityProject.mjs';
 import { BTN } from '../src/sim/systems/movement.js';
 import { types } from 'node:util';
 
@@ -54,7 +56,10 @@ export class GameHost {
 
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
-    worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null } = {}) {
+    worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null,
+    economicOperations = false, communityRequirements = null } = {}) {
+    if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
+        !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
     if (agentControl !== null && !resolvePlayer) throw new StoreError('configuration');
     if (agentControl !== null && worldId !== null && agentControl.worldId !== worldId) throw new StoreError('configuration');
@@ -104,6 +109,9 @@ export class GameHost {
     this.worldSaveMs = worldSaveMs;
     this.worldState = worldId === null ? null : new WorldState(store, { id: worldId, seed: this.server.world.seed,
       onFailure: (code) => this.fenceWorld(code) });
+    this.economicAuthority = economicOperations ? new EconomicAuthority(this) : null;
+    this.communityRequirements = communityRequirements === null ? null : structuredClone(communityRequirements);
+    if (this.economicAuthority) this.server.beforeTick = () => this.economicAuthority.drain();
     this.started = performance.now();
   }
 
@@ -119,7 +127,7 @@ export class GameHost {
   // Install before transport/admission; no caller callbacks may replace the three trusted adapters.
   mountPearlStaging(options = {}) {
     options = assemblyOptions(options, ['scope', 'limit', 'deadlineClock']);
-    if (!this.resolvePlayer || this.#pearlStaging || this.closing || this.wss || this.timer ||
+    if (!this.resolvePlayer || this.economicAuthority || this.#pearlStaging || this.closing || this.wss || this.timer ||
         this.nextId !== 1 || this.sockets.size || this.joins.size || this.pendingJoins || this.server.clients.size ||
         this.profiles.accounts.size || this.profiles.clients.size || this.profiles.tasks.size ||
         this.server.world.tick !== 0 || this.server.beforeTick !== null ||
@@ -332,7 +340,7 @@ export class GameHost {
       server: http, path, maxPayload: LIMITS.maxPayload, clientTracking: false,
       perMessageDeflate: { threshold: 256, zlibDeflateOptions: { level: 6 }, concurrencyLimit: 4 },
       verifyClient: (info, cb) => {
-        if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) return cb(false, 503, 'storage');
+        if (!this.healthy() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) return cb(false, 503, 'storage');
         if (this.origins.length && !this.origins.includes(info.origin)) return cb(false, 403, 'origin');
         if (this.sockets.size >= this.maxPlayers + 4) return cb(false, 503, 'busy'); // players + a few spectators
         cb(true);
@@ -402,6 +410,18 @@ export class GameHost {
       economy.payUpkeep = this.server.world.economy.payUpkeep;
       economy.onAdvance = this.server.world.economy.onAdvance;
       this.server.world.economy = economy;
+      if (this.economicAuthority) {
+        // Missing SQL014 must fail before admitting players, never silently fall back to snapshots.
+        await this.store.loadEconomicOperation('00000000-0000-4000-8000-000000000014');
+        if (this.communityRequirements !== null) {
+          if (this.worldState.community) {
+            if (canonicalText(this.communityRequirements) !== canonicalText(this.worldState.community.project.requirements)) throw new StoreError('configuration');
+          } else {
+            this.worldState.community = newCommunityState(this.worldState.id, this.communityRequirements);
+            this.worldState.save(economy); await this.worldState.flush();
+          }
+        }
+      }
     }
   }
 
@@ -429,6 +449,8 @@ export class GameHost {
       bots: countBots(s.world), names: playerNames(s), errors: this.errors,
       storage: { kind: this.store.kind, durable: this.store.durable === true, accounts: !!this.resolvePlayer,
         errors: this.profiles.errors + (this.worldState?.errors || 0), unsaved: this.unsavedProfiles.size,
+        profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
+        economic: this.economicAuthority?.status() ?? null,
         tickBlocked: s.tickBlocked,
         staging: this.#pearlStaging ? { enabled: true, failed: this.#pearlFailed,
           pending: this.#pearlStaging.tasks.size, completed: this.#pearlStaging.completed.length,
@@ -449,7 +471,7 @@ export class GameHost {
   }
 
   onConnection(ws, req) {
-    if (!this.healthy() || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
+    if (!this.healthy() || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) { try { ws.close(1013, 'storage'); } catch { /* gone */ } return; }
     const id = this.nextId++;
     const now = performance.now();
     const sock = {
@@ -471,7 +493,7 @@ export class GameHost {
   }
 
   receive(sock, msg) {
-    if (this.closing || !this.sockets.has(sock.id)) return;
+    if (this.closing || sock.economicClosing || !this.sockets.has(sock.id)) return;
     this.sweepAgentControl();
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
@@ -488,6 +510,13 @@ export class GameHost {
         const { control, ...chat } = msg; this.server.receive(sock.id, chat); return;
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
     }
+    if (this.economicAuthority?.handle(sock, msg)) return;
+    if (msg.t === MSG.CMD && msg.type === 'community') {
+      this.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'community', to: this.server.clients.get(sock.id)?.entity,
+        op: msg.op, opId: msg.opId, ok: false, why: 'disabled', rev: 0, project: null, durable: false } });
+      return;
+    }
+    if (msg.t === MSG.HELLO && this.economicAuthority?.busy) { this.sendTo(sock.id, { t: MSG.ERROR, code: 'storage' }); return; }
     if (msg.t === MSG.HELLO && Object.hasOwn(msg, 'agent') &&
         (msg.agent !== true || !this.agentControl || !this.resolvePlayer)) {
       this.sendTo(sock.id, { t: MSG.ERROR, code: 'auth' }); return;
@@ -644,7 +673,7 @@ export class GameHost {
       }
       if (!this.sockets.has(sock.id) || signal.aborted) { this.profiles.close(sock.id); return; }
       if (sock.agentIdentity && !this.agentControl.authorize(sock.id, this.agentControl.byClient(sock.id)?.grant.controlRevision)) throw new StoreError('auth');
-      if (this.closing || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('busy');
+      if (this.closing || this.economicAuthority?.busy || this.#combatDeaths?.pending || this.#deathDrops?.pending || this.#groundBusy()) throw new StoreError('busy');
       this.server.receive(sock.id, msg, profile);
       if (!this.server.clients.get(sock.id)?.entity) {
         this.profiles.close(sock.id);
@@ -738,7 +767,7 @@ export class GameHost {
   }
 
   commandAvailable(id, entity, plan) {
-    if (this.closing || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
+    if (this.closing || this.economicAuthority?.busy || this.economicAuthority?.failed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
       const gate = pearlMutationGate(this.profiles), lanes = this.profileLanes(id, entity);
       if (plan.target !== null) {
@@ -841,8 +870,13 @@ export class GameHost {
     if (++sock.strikes >= LIMITS.strikes) { this.log(`[net] #${sock.id} closed: malformed messages`); sock.ws.close(1008, 'malformed'); }
   }
 
-  onClose(sock) {
+  onClose(sock, force = false) {
     if (!this.sockets.has(sock.id)) return;
+    if (!force && this.economicAuthority?.busy && !this.economicAuthority.failed) {
+      // Keep the exact actor/profile alive until a confirmed operation is applied or fenced.
+      sock.economicClosing = true; sock.in.close(); sock.out.close();
+      this.economicAuthority.deferredCloses.add(sock); return;
+    }
     this.sockets.delete(sock.id);
     if (sock.agentIdentity) this.agentControl?.retire(sock.id, 'disconnect');
     sock.joinAbort?.abort();
@@ -889,6 +923,12 @@ export class GameHost {
     if (this.wss) this.wss.close();
     this.worldState?.save(this.server.world.economy);
     this.closePromise = (async () => {
+      if (this.economicAuthority) {
+        await this.economicAuthority.settle();
+        if (!this.economicAuthority.failed) this.economicAuthority.drain();
+        this.economicAuthority.closeDeferred();
+        this.worldState?.save(this.server.world.economy);
+      }
       await Promise.all([...this.joins]);
       // Cancelled reads may reconcile receipts, but never install ground or admit after close.
       if (this.#prepareTask) await this.#prepareTask.catch(() => {});
@@ -897,7 +937,7 @@ export class GameHost {
       await Promise.all([this.#pearlStaging?.settle(), this.#deathStaging?.settle(), this.#deathDropStaging?.settle(), this.#pearlGround?.settle()]);
       // Drain both authorities even if one reports failure; never abandon an in-flight profile write.
       const results = await Promise.allSettled([this.profiles.flush(), this.worldState?.flush()]);
-      if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size ||
+      if (results.some((r) => r.status === 'rejected') || this.unsavedProfiles.size || this.economicAuthority?.failed ||
           this.#pearlFailed || !this.#pearlsReady() || this.#pearlStaging?.operations.size || this.#deathStaging?.operations.size ||
           this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#deathDropStaging?.operations.size ||
           this.#groundBusy() || this.#pearlGround?.reserved) throw new StoreError('flush');

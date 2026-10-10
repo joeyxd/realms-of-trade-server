@@ -845,3 +845,10 @@ crear copias de proyecto. Actualizar este plan y HANDOFF en el mismo commit de c
 - Al redactar, Escarcha era la base commiteada y Tormenta trabajo ajeno/concurrente, sin aceptación aquí.
 - Investigación C:\Unreal permanece de solo lectura. No se exportaron/importaron recursos al redactar el plan.
 - Próximo paso operativo: primera ola §6, coordinada con el dueño del trabajo activo.
+
+**M5 econ?mico, 2026-10-09 ? integraci?n en aceptaci?n:** mercado cotizado, compra de materiales
+desde el editor de la balsa, transferencias de carga y aportes usan perfil/mundo/recibo en una
+transacci?n M5; sin montar otra autoridad A1. Meta provisional aprobada: 40 madera + 20 piedra.
+SQL014 aplicada y permisos verificados en Supabase; publicaci?n y recorrido p?blico con reinicio
+en curso. [Contrato](docs/briefs/m5-economic-authority.md) ? [Entrega](docs/delivery/m5-economic-authority.md).
+No cierra recursos/crafting, todo M5 ni crecimiento autom?tico del edificio.

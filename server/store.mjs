@@ -13,6 +13,7 @@ import { deathOperation, deathResult, checkedDeathResult, checkedDeathReceipt,
 import { deathDropOperation, deathDropResult, deathDropInWindow, deathDropKey, currentDeathDropPage,
   checkedDeathDropResult, checkedDeathDropReceipt, checkedCurrentDeathDrop, checkedCurrentDeathDropPage } from './deathDropOperation.mjs';
 import { registerMemoryPearlStore, permitsMemoryPearlReceipt } from './pearlMemoryIdentity.mjs';
+import { EconomicOperationError, economicOperation, canonicalEconomicText, checkedEconomicResult, checkedEconomicReceipt } from './economicOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -50,12 +51,21 @@ function legacyKey(value) {
   return value;
 }
 const conflict = () => ({ ok: false, why: 'conflict' });
+function checkedEconomicInput(raw) {
+  try { return economicOperation(raw); }
+  catch (error) { throw new StoreError(error instanceof EconomicOperationError ? error.code : 'operation'); }
+}
+function checkedEconomicOutput(raw, request, replay = false) {
+  try { return checkedEconomicResult(raw, request, replay); }
+  catch (error) { throw new StoreError(error instanceof EconomicOperationError ? error.code : 'response'); }
+}
 
 export function createMemoryStore() {
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
   const deathReceipts = new Map(), deathDrops = new Map(), dropReceipts = new Map(), deathDropStates = new Map();
   const groundClocks = new Map(), clockReceipts = new Map();
+  const economicReceipts = new Map();
   const intents = new Map();
   const load = (map, id) => map.has(id) ? structuredClone(map.get(id)) : null;
   const save = (map, id, data, expected) => {
@@ -107,7 +117,49 @@ export function createMemoryStore() {
     },
     async legacyClaimed(importedKey) { return legacyImports.has(legacyKey(importedKey)); },
     async loadWorld(id) { return load(worlds, key(id)); },
-    async saveWorld(id, data, expected) { return save(worlds, key(id), json(data), version(expected, 0, MAX_VERSION - 1)); },
+    async saveWorld(id, raw, expected) {
+      id = key(id); const data = json(raw), expectedVersion = version(expected, 0, MAX_VERSION - 1);
+      const current = worlds.get(id);
+      if (current && Object.hasOwn(current.data, 'community') &&
+          (!Object.hasOwn(data, 'community') || canonicalEconomicText(data.community) !== canonicalEconomicText(current.data.community))) return conflict();
+      return save(worlds, id, data, expectedVersion);
+    },
+    async commitEconomicOperation(raw) {
+      const { operationId, request } = checkedEconomicInput(raw), text = canonicalEconomicText(request);
+      const receipt = economicReceipts.get(operationId);
+      if (receipt) {
+        if (receipt.text !== text) return { ok: false, why: 'operation' };
+        return checkedEconomicOutput({ ...structuredClone(receipt.result), replay: true }, request, true);
+      }
+      if (intents.has(operationId) || [pearlReceipts, groundReceipts, batchReceipts, deathReceipts, dropReceipts, clockReceipts].some(r => r.has(operationId))) {
+        return { ok: false, why: 'operation' };
+      }
+      const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
+      if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
+          currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
+
+      const profileVersion = request.expectedProfileVersion + 1, worldVersion = request.expectedWorldVersion + 1;
+      version(profileVersion, 1); version(worldVersion, 1);
+      const nextProfiles = new Map(profiles);
+      nextProfiles.set(request.account, { data: request.profile, version: profileVersion });
+      assertManagedPearls(nextProfiles, uniques);
+      const result = checkedEconomicOutput({ ok: true, replay: false, profileVersion, worldVersion, ack: request.ack }, request);
+      const stored = { text, request: structuredClone(request), result };
+      const nextProfile = { data: structuredClone(request.profile), version: profileVersion };
+      const nextWorld = { data: structuredClone(request.worldData), version: worldVersion };
+      // All validation and cloning precedes this synchronous commit point.
+      profiles.set(request.account, nextProfile);
+      worlds.set(request.world, nextWorld);
+      economicReceipts.set(operationId, stored);
+      return structuredClone(result);
+    },
+    async loadEconomicOperation(operationId) {
+      operationId = playerKey(operationId);
+      const receipt = economicReceipts.get(operationId);
+      if (!receipt) return null;
+      try { return checkedEconomicReceipt({ request: receipt.request, result: receipt.result }, operationId); }
+      catch { throw new StoreError('response'); }
+    },
     async loadGroundClock(world) { world = groundKey(world); return structuredClone(groundClocks.get(world) ?? null); },
     async loadGroundClockOperation(operationId) {
       operationId = playerKey(operationId);
@@ -118,7 +170,7 @@ export function createMemoryStore() {
       const { operationId, request } = groundClockOperation(raw), text = canonicalText(request);
       const receipt = clockReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (intents.has(operationId) || [pearlReceipts,groundReceipts,batchReceipts,deathReceipts,dropReceipts].some(r => r.has(operationId))) {
+      if (intents.has(operationId) || [pearlReceipts,groundReceipts,batchReceipts,deathReceipts,dropReceipts,economicReceipts].some(r => r.has(operationId))) {
         return { ok: false, why: 'operation' };
       }
       const current = groundClocks.get(request.world);
@@ -136,9 +188,9 @@ export function createMemoryStore() {
     },
     async commitPearl(raw) {
       const { operationId, request } = pearlOperation(raw), text = canonicalText(request);
-      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (clockReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'pearl', request)) return { ok: false, why: 'operation' };
-      if (groundReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (groundReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = pearlReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       const candidate = preparePearl(request);
@@ -162,11 +214,11 @@ export function createMemoryStore() {
     },
     async commitPearlGround(raw) {
       const { operationId, request } = groundOperation(raw), text = canonicalText(request);
-      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (clockReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'ground', request)) return { ok: false, why: 'operation' };
       const receipt = groundReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || batchReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const nextLocations = new Map(locations);
       const location = { world: request.world, ground: request.ground, version: request.expectedVersion + 1 };
       nextLocations.set(request.uid, location);
@@ -193,11 +245,11 @@ export function createMemoryStore() {
     },
     async commitPearlBatch(raw) {
       const { operationId, request } = batchOperation(raw), text = canonicalText(request);
-      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (clockReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = batchReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
       if (!permitsMemoryPearlReceipt(intents, operationId, 'batch', request)) return { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || deathReceipts.has(operationId) || dropReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const p = request.profile, old = profiles.get(p.id);
       if (old?.version !== p.expectedVersion) return conflict();
       const nextProfiles = new Map(profiles), nextUniques = new Map(uniques), nextLocations = new Map(locations);
@@ -235,10 +287,10 @@ export function createMemoryStore() {
     },
     async commitDeath(raw) {
       const { operationId, request } = deathOperation(raw), text = canonicalText(request);
-      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (clockReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = deathReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) || dropReceipts.has(operationId) ||
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) || dropReceipts.has(operationId) || economicReceipts.has(operationId) ||
           !permitsMemoryPearlReceipt(intents, operationId, 'death', request)) return { ok: false, why: 'operation' };
       for (const p of request.profiles) {
         const old = profiles.get(p.id);
@@ -287,10 +339,10 @@ export function createMemoryStore() {
     },
     async commitDeathDrop(raw) {
       const { operationId, request } = deathDropOperation(raw), text = canonicalText(request);
-      if (clockReceipts.has(operationId)) return { ok: false, why: 'operation' };
+      if (clockReceipts.has(operationId) || economicReceipts.has(operationId)) return { ok: false, why: 'operation' };
       const receipt = dropReceipts.get(operationId);
       if (receipt) return receipt.text === text ? { ...structuredClone(receipt.result), replay: true } : { ok: false, why: 'operation' };
-      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) ||
+      if (pearlReceipts.has(operationId) || groundReceipts.has(operationId) || batchReceipts.has(operationId) || economicReceipts.has(operationId) ||
           deathReceipts.has(operationId) || !permitsMemoryPearlReceipt(intents, operationId, 'drop', request)) return { ok: false, why: 'operation' };
       const p = request.profile, old = p && profiles.get(p.id);
       if (p && (old?.version !== p.expectedVersion || canonicalText(old.data) !== canonicalText(p.before))) return conflict();
@@ -336,7 +388,10 @@ export function createMemoryStore() {
       return { ok: true, version: current.version };
     },
   };
-  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts, death: deathReceipts, drop: dropReceipts, clock: clockReceipts }, intents);
+  // The shared namespace check sees economic receipts when a later pearl intent is prepared.
+  const clockNamespace = { has: id => clockReceipts.has(id) || economicReceipts.has(id) };
+  registerMemoryPearlStore(store, { pearl: pearlReceipts, ground: groundReceipts, batch: batchReceipts,
+    death: deathReceipts, drop: dropReceipts, clock: clockNamespace }, intents);
   return store;
 }
 
@@ -389,6 +444,17 @@ export function createSupabaseStore(client) {
     async loadWorld(id) { return record(await rpc('mn_load_world', { p_world: key(id) }), json); },
     async saveWorld(id, data, expected) {
       return written(await rpc('mn_save_world', { p_world: key(id), p_data: json(data), p_expected_version: version(expected, 0, MAX_VERSION - 1) }));
+    },
+    async commitEconomicOperation(raw) {
+      const { operationId, request } = checkedEconomicInput(raw);
+      const result = await rpc('mn_commit_economic_operation', { p_operation_id: operationId, p_request: request });
+      return checkedEconomicOutput(result, request, result?.replay === true);
+    },
+    async loadEconomicOperation(operationId) {
+      operationId = playerKey(operationId);
+      const raw = await rpc('mn_load_economic_operation', { p_operation_id: operationId });
+      try { return checkedEconomicReceipt(raw, operationId); }
+      catch (error) { throw new StoreError(error instanceof EconomicOperationError ? error.code : 'response'); }
     },
     async loadGroundClock(world) {
       world = groundKey(world);

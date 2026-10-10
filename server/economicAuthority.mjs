@@ -1,0 +1,258 @@
+// One M5 authority for profile + world + exact economic receipts. I/O never enters the simulation.
+import { createHash } from 'node:crypto';
+import { commerceCmd } from '../src/sim/systems/commerce.js';
+import { raftCmd } from '../src/sim/systems/raftEditor.js';
+import { Economy } from '../src/sim/economy/economy.js';
+import { sanitizeProfile } from '../src/sim/systems/inventory.js';
+import { MSG } from '../src/net/protocol.js';
+import { pearlMutationGate } from './pearlMutationGate.mjs';
+import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
+import { canonicalText } from './pearlOperations.mjs';
+import { communityAccess, draftCommunity, publicCommunity } from './communityProject.mjs';
+import { StoreError } from './store.mjs';
+
+const clone = structuredClone;
+const OP_ID = /^[A-Za-z0-9_-]{1,64}$/;
+export function economicOperationId(world, account, opId) {
+  const h = createHash('sha256').update(JSON.stringify(['m5-economy-v1', world, account, opId])).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
+export function economicCommand(msg) {
+  if (!msg || typeof msg !== 'object' || Array.isArray(msg) || typeof msg.opId !== 'string' || !OP_ID.test(msg.opId) ||
+      (msg.t !== undefined && msg.t !== MSG.CMD)) throw new StoreError('operation');
+  const fields = msg.type === 'commerce' ? {
+    buy: ['town', 'g', 'n', 'expectedTotal'], sell: ['town', 'g', 'n', 'expectedTotal'],
+    transfer: ['id', 'expectedRev', 'g', 'n', 'side'],
+  }[msg.op] : msg.type === 'raft' && msg.op === 'supply' ? ['id', 'expectedRev', 'g', 'n'] : msg.type === 'community' ? {
+    list: [], contribute: ['projectId', 'good', 'amount', 'expectedRev'],
+  }[msg.op] : null;
+  if (!fields || Object.keys(msg).some(k => !['t', 'type', 'op', 'opId', ...fields].includes(k)) ||
+      fields.some(k => !Object.hasOwn(msg, k))) throw new StoreError('operation');
+  const out = Object.fromEntries(['type', 'op', 'opId', ...fields].map(k => [k, msg[k]]));
+  if (msg.type === 'community' && msg.op === 'contribute' &&
+      (typeof msg.projectId !== 'string' || !/^[A-Za-z0-9:_-]{1,100}$/.test(msg.projectId) ||
+       typeof msg.good !== 'string' || !/^[a-z_]{1,40}$/.test(msg.good) ||
+       !Number.isSafeInteger(msg.amount) || msg.amount < 1 || msg.amount > 500 ||
+       !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 1 || msg.expectedRev >= 2147483647)) throw new StoreError('operation');
+  if (msg.type === 'raft') {
+    if (typeof msg.id !== 'string' || !/^[A-Za-z0-9:_-]{1,120}$/.test(msg.id) ||
+        !Number.isSafeInteger(msg.expectedRev) || msg.expectedRev < 1 || msg.expectedRev >= 2147483647 ||
+        !['madera', 'hierro'].includes(msg.g) || !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 10) throw new StoreError('operation');
+  }
+  if (msg.type === 'commerce') {
+    if (typeof msg.g !== 'string' || !/^[a-z_]{1,40}$/.test(msg.g) ||
+        !Number.isSafeInteger(msg.n) || msg.n < 1 || msg.n > 500) throw new StoreError('operation');
+    if (msg.op === 'transfer') {
+      if (typeof msg.id !== 'string' || !/^[A-Za-z0-9:_-]{1,100}$/.test(msg.id) ||
+          !['deposit', 'withdraw'].includes(msg.side) || !Number.isSafeInteger(msg.expectedRev) ||
+          msg.expectedRev < 1 || msg.expectedRev >= 2147483647) throw new StoreError('operation');
+    } else if (typeof msg.town !== 'string' || !/^[a-z_]{1,32}$/.test(msg.town) ||
+        !Number.isSafeInteger(msg.expectedTotal) || msg.expectedTotal < 0 || msg.expectedTotal > 1e9) throw new StoreError('operation');
+  }
+  return clone(out);
+}
+
+function draftCommerce(world, entity, command, profile) {
+  const draft = Object.create(world);
+  draft.profiles = new Map([[entity, clone(profile)]]);
+  draft.economy = Economy.from(world.economy.serialize(), world.seed);
+  draft.commerceReceipts = new Map(); draft.profileDirty = new Set();
+  draft.raftEditReceipts = new Map();
+  // The supply helper may refresh deck projections. Candidate construction must never touch
+  // the live deck; its footprint is unchanged by a material purchase.
+  draft.raftDeck = { surface: (...args) => world.raftDeck.surface(...args), update: () => {} };
+  draft.rafts = new Map([...world.rafts].map(([id, record]) => {
+    if (record.owner !== entity) return [id, record];
+    const ship = draft.profiles.get(entity).eco.ships.find(s => s.id === id);
+    return [id, { ...record, ship }];
+  }));
+  const events = []; draft.emit = ev => events.push(clone(ev));
+  // The ordinary helper owns prices, law, ownership, capacity and all gameplay preconditions.
+  const helper = command.type === 'raft' ? raftCmd : commerceCmd;
+  helper(draft, entity, command, p => !!sanitizeProfile(p) && Buffer.byteLength(JSON.stringify(p)) <= 131072);
+  const ack = events.at(-1);
+  if (!ack || ack.type !== (command.type === 'raft' ? 'raftEdit' : 'commerce')) throw new StoreError('effect');
+  if (!Number.isSafeInteger(ack.rev)) ack.rev = 0;
+  delete ack.to;
+  return { profile: draft.profiles.get(entity), economy: draft.economy, ack };
+}
+
+export class EconomicAuthority {
+  constructor(host) {
+    if (!host.resolvePlayer || !host.worldState ||
+        !/^[A-Za-z0-9:_-]{1,100}$/.test(host.worldState.id) ||
+        !['loadEconomicOperation', 'commitEconomicOperation'].every(k => typeof host.store[k] === 'function')) throw new StoreError('configuration');
+    this.host = host; this.active = null; this.failed = false; this.completed = 0; this.replays = 0;
+    this.deferredCloses = new Set();
+  }
+
+  get busy() { return this.active !== null; }
+  status() { return { enabled: true, pending: this.busy ? 1 : 0, failed: this.failed, completed: this.completed, replays: this.replays }; }
+
+  reply(id, command, why, extra = {}) {
+    const c = this.host.server.clients.get(id);
+    if (!c?.entity) return;
+    this.host.sendTo(id, { t: MSG.EVENT, ev: { type: command.type === 'raft' ? 'raftEdit' : command.type, to: c.entity,
+      ...(command.type === 'raft' ? { id: command.id } : {}), op: command.op,
+      opId: typeof command.opId === 'string' ? command.opId.slice(0, 64) : '', ok: false, why, rev: 0, ...extra } });
+  }
+
+  handle(sock, msg) {
+    if (msg.t !== MSG.CMD) return false;
+    // Older clients must use the quoted, idempotent commerce command; never bypass the durable path.
+    if (msg.type === 'market' && ['buy', 'sell'].includes(msg.op)) {
+      this.host.sendTo(sock.id, { t: MSG.EVENT, ev: { type: 'tradeDenied', to: this.host.server.clients.get(sock.id)?.entity, why: 'command' } });
+      return true;
+    }
+    if (!(msg.type === 'community' || msg.type === 'commerce' && ['buy', 'sell', 'transfer'].includes(msg.op) ||
+        msg.type === 'raft' && msg.op === 'supply')) return false;
+    let command;
+    try { command = economicCommand(msg); }
+    catch { this.reply(sock.id, msg, 'command'); return true; }
+    const h = this.host, c = h.server.clients.get(sock.id), s = h.profiles.clients.get(sock.id);
+    if (!c?.entity) return true;
+    if (command.op === 'list') {
+      const why = this.busy ? 'busy' : !h.worldState.community ? 'disabled' : communityAccess(h.server.world, c.entity);
+      this.reply(sock.id, command, why, { ok: !why, rev: h.server.world.profiles.get(c.entity)?.eco.tradeRev ?? 0,
+        project: publicCommunity(h.worldState.community), durable: h.store.durable === true });
+      return true;
+    }
+    if (!c.serverProfile || !s || s.closed || s.failed) { this.reply(sock.id, command, 'account_required'); return true; }
+    if (this.busy) {
+      // A retry of the in-flight immutable command waits for its original result.
+      if (this.active.id !== sock.id || canonicalText(this.active.command) !== canonicalText(command)) this.reply(sock.id, command, 'busy');
+      return true;
+    }
+    if (c.paused || h.pendingJoins || this.failed || !h.healthy() || !h.commandAvailable(sock.id, c.entity, { world: true, target: null })) {
+      this.reply(sock.id, command, 'busy'); return true;
+    }
+    try {
+      const profile = capturePearlProfile(h.server.world, c.entity);
+      const gate = pearlMutationGate(h.profiles), reservation = gate.reserve(h.profileLanes(sock.id, c.entity));
+      const a = { id: sock.id, entity: c.entity, c, s, command, profile, reservation, gate,
+        operationId: economicOperationId(h.worldState.id, s.key, command.opId), ready: false, request: null };
+      this.active = a; h.worldState.operationBusy = true;
+      a.task = this.prepare(a).catch(() => { this.fence(a); });
+    } catch { this.reply(sock.id, command, 'storage'); }
+    return true;
+  }
+
+  valid(a) {
+    const h = this.host;
+    return this.active === a && !this.failed && h.profiles.clients.get(a.id) === a.s && !a.s.failed && !a.s.closed &&
+      h.server.clients.get(a.id) === a.c && a.c.entity === a.entity && h.server.world.profiles.has(a.entity) &&
+      a.gate.active(a.reservation);
+  }
+
+  async prepare(a) {
+    const h = this.host;
+    // Settle old CAS writes before taking either version. New autosaves cannot enter this account/world.
+    while (a.s.running) await a.s.running;
+    await h.worldState.flush();
+    if (!this.valid(a)) throw new StoreError('cancelled');
+    const prior = await h.store.loadEconomicOperation(a.operationId);
+    if (!this.valid(a)) throw new StoreError('cancelled');
+    if (prior) {
+      if (prior.request.world !== h.worldState.id || prior.request.account !== a.s.key ||
+          canonicalText(prior.request.command) !== canonicalText(a.command)) {
+        a.ack = { type: a.command.type === 'raft' ? 'raftEdit' : a.command.type,
+          ...(a.command.type === 'raft' ? { id: a.command.id } : {}),
+          op: a.command.op, opId: a.command.opId, ok: false, why: 'duplicate', rev: a.profile.eco.tradeRev };
+      } else {
+        a.ack = { ...clone(prior.result.ack), replay: true, historical: true };
+        // Current project state is a separate observation; never hydrate from a historical receipt.
+        if (a.command.type === 'community') a.ack.currentProject = publicCommunity(h.worldState.community);
+        this.replays++;
+      }
+      a.replay = true; a.ready = true; return;
+    }
+    // Persist the current baseline before the operation, using M5's existing writer and reservation.
+    h.profiles.save(a.id, a.profile, a.reservation);
+    while (a.s.running) await a.s.running;
+    if (!this.valid(a) || a.s.pending) throw new StoreError('cancelled');
+    let proposal;
+    if (a.command.type === 'community') {
+      proposal = draftCommunity({ command: a.command, profile: clone(a.profile), state: clone(h.worldState.community),
+        world: h.server.world, entity: a.entity, worldId: h.worldState.id, account: a.s.key,
+        profileVersion: a.s.version, operationId: a.operationId });
+      proposal.economy = h.server.world.economy;
+    } else {
+      proposal = draftCommerce(h.server.world, a.entity, a.command, a.profile);
+      proposal.community = clone(h.worldState.community);
+      if (h.server.world.navalPilot?.aboard?.(a.entity)) {
+        proposal.profile = clone(a.profile); proposal.economy = h.server.world.economy;
+        proposal.ack = { type: a.command.type === 'raft' ? 'raftEdit' : 'commerce',
+          ...(a.command.type === 'raft' ? { id: a.command.id } : {}),
+          op: a.command.op, opId: a.command.opId, ok: false, why: 'navigation', rev: a.profile.eco.tradeRev };
+      }
+    }
+    const data = h.worldState.snapshot(proposal.economy);
+    if (proposal.community) data.community = clone(proposal.community);
+    a.request = { world: h.worldState.id, account: a.s.key, command: a.command,
+      expectedProfileVersion: a.s.version, expectedWorldVersion: h.worldState.version,
+      profile: proposal.profile, worldData: data, ack: proposal.ack };
+    let result;
+    try { result = await h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request }); }
+    catch {
+      // A timeout is ambiguous. Read evidence, then resend only the identical CAS request.
+      const receipt = await h.store.loadEconomicOperation(a.operationId);
+      if (receipt) {
+        if (canonicalText(receipt.request) !== canonicalText(a.request)) throw new StoreError('operation');
+        result = receipt.result;
+      } else result = await h.store.commitEconomicOperation({ operationId: a.operationId, request: a.request });
+    }
+    if (!this.valid(a) || result?.ok !== true || result.profileVersion !== a.request.expectedProfileVersion + 1 ||
+        result.worldVersion !== a.request.expectedWorldVersion + 1 || canonicalText(result.ack) !== canonicalText(a.request.ack)) throw new StoreError('conflict');
+    a.result = result; a.ack = clone(result.ack); a.ready = true;
+  }
+
+  drain() {
+    const a = this.active;
+    if (!a) return !this.failed;
+    if (!a.ready) return false;
+    if (!this.valid(a)) { this.fence(a); return false; }
+    const h = this.host, w = h.server.world;
+    try {
+      if (!a.replay) {
+        const p = w.profiles.get(a.entity), next = a.request.profile;
+        // Preserve live profile/raft object identities used by deterministic systems.
+        p.gold = next.gold; p.eco.pack = clone(next.eco.pack); p.eco.tradeRev = next.eco.tradeRev;
+        for (const ship of p.eco.ships) {
+          const candidate = next.eco.ships.find(s => s.id === ship.id);
+          if (candidate?.kind === 'raft') { ship.hold = clone(candidate.hold); ship.rev = candidate.rev; }
+        }
+        const economy = Economy.from(a.request.worldData.economy, w.seed);
+        economy.payUpkeep = w.economy.payUpkeep; economy.onAdvance = w.economy.onAdvance;
+        w.economy = economy;
+        h.worldState.community = clone(a.request.worldData.community ?? null);
+        a.s.version = a.result.profileVersion; a.s.confirmed = clone(next); a.s.last = JSON.stringify(next); a.s.pending = null;
+        h.worldState.version = a.result.worldVersion; h.worldState.last = JSON.stringify(a.request.worldData);
+        h.worldState.pending = null;
+        w.profileDirty.add(a.entity); this.completed++;
+      }
+      a.gate.release(a.reservation); a.released = true; h.worldState.operationBusy = false; this.active = null;
+      // Publication follows confirmed rows and the synchronous apply, never the provider continuation.
+      h.server.sendProfile(a.id, a.c);
+      h.sendTo(a.id, { t: MSG.EVENT, ev: { ...a.ack, to: a.entity, durable: h.store.durable === true } });
+      this.closeDeferred();
+      return true;
+    } catch { this.fence(a); return false; }
+  }
+
+  fence(a) {
+    if (this.failed) return;
+    this.failed = true;
+    // Publication errors can occur after release; the world fence must still latch.
+    if (a && !a.released) a.gate.fence(a.reservation);
+    this.host.worldState.fail('operation');
+    this.closeDeferred();
+  }
+
+  closeDeferred() {
+    const sockets = [...this.deferredCloses]; this.deferredCloses.clear();
+    for (const sock of sockets) this.host.onClose(sock, true);
+  }
+
+  async settle() { if (this.active?.task) await this.active.task; }
+}

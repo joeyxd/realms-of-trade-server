@@ -1,0 +1,162 @@
+{
+  "schema": "marea-negra.vps-capacity-probe.v1",
+  "startedAt": "2026-10-10T04:22:23.201Z",
+  "finishedAt": "2026-10-10T04:22:55.610Z",
+  "protocolExpected": 32,
+  "plannedDurationMs": 30000,
+  "clients": {
+    "attempted": 4,
+    "transportOpen": 4,
+    "welcomed": 4,
+    "protocolErrors": 0,
+    "hostErrorCount": 0,
+    "full": 0,
+    "unexpectedDisconnects": 0,
+    "inputMessages": 1152,
+    "inputCommands": 6912,
+    "snapshots": 2457,
+    "snapshotsAfterWelcome": 2441,
+    "disconnects": 4,
+    "chatConfig": [
+      {
+        "client": 1,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 2,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 3,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      },
+      {
+        "client": 4,
+        "config": {
+          "enabled": true,
+          "maxLength": 300
+        }
+      }
+    ],
+    "chatResults": [
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      },
+      {
+        "ok": true,
+        "code": null
+      }
+    ],
+    "chatRejections": [],
+    "errors": []
+  },
+  "health": "ok",
+  "status": {
+    "samples": 32,
+    "sampleErrors": 0,
+    "medianStepMs": 2.616,
+    "p95StepMs": 3.152,
+    "maxStepMs": 3.289,
+    "first": {
+      "atMs": 1018,
+      "players": 0,
+      "max": 4,
+      "sockets": 0,
+      "tick": 24227,
+      "stepMs": 1.292,
+      "errors": 0,
+      "storageErrors": 0,
+      "storageDurable": true
+    },
+    "last": {
+      "atMs": 32242,
+      "players": 4,
+      "max": 4,
+      "sockets": 4,
+      "tick": 26101,
+      "stepMs": 2.651,
+      "errors": 0,
+      "storageErrors": 0,
+      "storageDurable": true
+    },
+    "finalStatusNoErrors": true,
+    "tickAdvanced": true
+  },
+  "acceptance": {
+    "ready": true,
+    "allReceivedSnapshots": true,
+    "finalStatusNoErrors": true,
+    "tickAdvanced": true,
+    "noProtocolErrors": true,
+    "noHostErrors": true
+  },
+  "fatal": null,
+  "processExitCode": 0,
+  "operational": {
+    "observedAt": "2026-10-10T04:23Z",
+    "preProbe": {
+      "healthHttp": 200,
+      "statusHttp": 200,
+      "players": 0,
+      "sockets": 0,
+      "capacity": 4,
+      "storageDurable": true,
+      "storageErrors": 0,
+      "worldReady": true,
+      "worldFailed": false,
+      "worldVersion": 471
+    },
+    "postProbe": {
+      "healthHttp": 200,
+      "statusHttp": 200,
+      "players": 0,
+      "sockets": 0,
+      "capacity": 4,
+      "storageDurable": true,
+      "storageErrors": 0,
+      "worldReady": true,
+      "worldFailed": false,
+      "worldVersion": 473
+    },
+    "container": {
+      "image": "marea-negra:alpha-5fa9658",
+      "revision": "5fa9658b5f2265bd1ea8c58b3e59722fcbe4603d",
+      "createdAt": "2026-10-09T22:38:35Z",
+      "lastStartedAt": "2026-10-10T04:15:18Z",
+      "state": "running",
+      "health": "healthy",
+      "restartCount": 0
+    },
+    "logs": {
+      "worldFailureObservedAt": "2026-10-10T00:06Z",
+      "failureCode": "unavailable",
+      "reportedFailedWorldVersion": 466,
+      "rootCause": "not exposed in container log; host logs only the mapped failure code"
+    },
+    "transition": {
+      "oneContainerIdDisappearedBetweenFilteredPsAndInspect": true,
+      "subsequentFilteredContainerHealthy": true,
+      "currentImageUnchanged": true,
+      "ongoingDeploymentObserved": false,
+      "scope": "Marea container only; cannot rule out external deployment automation"
+    }
+  }
+}

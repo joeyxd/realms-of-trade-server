@@ -47,6 +47,7 @@ import { RaftEditor } from './ui/raftEditor.js';
 import { CommercePanel } from './ui/commerce.js';
 import { ResourceActions } from './ui/resourceActions.js';
 import { WorkbenchPanel } from './ui/workbench.js';
+import { CommunityPanel } from './ui/community.js';
 import { ChatPanel } from './ui/chat.js';
 import { ChatBubbles } from './ui/chatBubbles.js';
 import { MSG } from './net/protocol.js';
@@ -174,8 +175,8 @@ async function boot() {
   const hud = new Hud($('#hud'), {
     onSettings: () => openPause('settings'),
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
-    onBag: () => { workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
-    onMap: () => { workbench.close(); commercePanel.close(); raftEditor.close(); mapView.toggle(); },
+    onBag: () => { workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
+    onMap: () => { workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); mapView.toggle(); },
   });
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
@@ -207,8 +208,8 @@ async function boot() {
     player: () => ps, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) { workbench.close(); commercePanel.close(); }
-      input.setBuildContext(active || commercePanel.active || workbench.active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) { workbench.close(); community.close(); commercePanel.close(); }
+      input.setBuildContext(active || commercePanel.active || workbench.active || community.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('building-raft', active);
       if (active) { charPanel.close(); dialog.hide(); mapView.close(); }
       canvas.focus({ preventScroll: true });
@@ -221,8 +222,8 @@ async function boot() {
     map, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) { workbench.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
-      input.setBuildContext(active || raftEditor.active || workbench.active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) { workbench.close(); community.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      input.setBuildContext(active || raftEditor.active || workbench.active || community.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('trading-goods', active);
       canvas.focus({ preventScroll: true });
     },
@@ -238,8 +239,8 @@ async function boot() {
     blocked: () => !!(client.naval.active || client.deck.active || client.voyage?.active),
     submit: (command) => resources.send(command),
     onContext: (active) => {
-      if (active) { commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
-      input.setBuildContext(active || raftEditor.active || commercePanel.active); aimCtl.reset(); st.wantWeapon = 0;
+      if (active) { community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      input.setBuildContext(active || raftEditor.active || commercePanel.active || community.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('working-materials', active);
       canvas.focus({ preventScroll: true });
     },
@@ -247,7 +248,25 @@ async function boot() {
   resources.openWorkbench = () => workbench.open();
   bus.on('resource', (ev) => safe('resource', () => { resources.onResult(ev); workbench.onResult(ev); }));
   bus.on('you:welcome', () => { resources.reset(); workbench.reset(); world.resources.reset(); });
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { workbench.close(); commercePanel.close(); raftEditor.close(); fn(); } };
+  const community = new CommunityPanel({ parent: $('#ui'), profile: () => client?.profile,
+    context: () => workbench.context(),
+    enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
+    submit: (command) => { if (!st.online || !client?.joined || client.t.closed) return false; client.send(command); return true; },
+    onContext: (active) => {
+      if (active) { workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
+      input.setBuildContext(active || workbench.active || commercePanel.active || raftEditor.active); aimCtl.reset(); st.wantWeapon = 0;
+      document.body.classList.toggle('building-community', active);
+      canvas.focus({ preventScroll: true });
+    },
+  });
+  const communityTrigger = document.createElement('button');
+  communityTrigger.type = 'button'; communityTrigger.className = 'community-trigger'; communityTrigger.textContent = 'Obra comunitaria';
+  communityTrigger.hidden = true; communityTrigger.setAttribute('aria-label', 'Consultar y aportar a la obra comunitaria');
+  communityTrigger.addEventListener('click', () => community.active ? community.close() : community.open());
+  workbench.$('.wb-head').appendChild(communityTrigger);
+  bus.on('community', (ev) => safe('community', () => community.onResult(ev)));
+  bus.on('profile', () => community.update());
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
@@ -303,7 +322,7 @@ async function boot() {
   }));
   input.onHotkey('Enter', () => {
     if (st.mode !== 'playing' || pause.open) return false;
-    workbench.close(); commercePanel.close(); raftEditor.close();
+    workbench.close(); community.close(); commercePanel.close(); raftEditor.close();
     return chatPanel.open();
   });
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
@@ -311,6 +330,7 @@ async function boot() {
     if (pause.open) return;
     chatPanel.close();
     workbench.close();
+    community.close();
     commercePanel.close();
     raftEditor.close();
     // Online the world never waits: the menu opens, your input goes neutral and the island carries on.
@@ -333,6 +353,7 @@ async function boot() {
   input.onHotkey('Escape', () => {
     if (chatPanel.opened) { chatPanel.close(); return true; }
     if (workbench.active) { workbench.close(); return true; }
+    if (community.active) { community.close(); return true; }
     if (commercePanel.active) { commercePanel.close(); return; }
     if (raftEditor.active) { raftEditor.close(); return; }
     if (aimCtl.preview && aimCtl.preview.kind === 'ground' && !pause.open) { input.cancelAim(); return; } // ESC drops an area being aimed
@@ -1258,6 +1279,11 @@ async function boot() {
       safe('raftEditor', () => raftEditor.update());
       safe('commerce', () => commercePanel.update());
       safe('workbench', () => workbench.update());
+      safe('community', () => {
+        community.update();
+        communityTrigger.hidden = !(st.online && st.mode === 'playing' && workbench.context());
+        communityTrigger.disabled = !!community.active;
+      });
       safe('render', () => world.render());
       safe('quality', () => quality.frame(realDt, playing && !st.paused));
       st.fps = st.fps * 0.9 + (1 / Math.max(loop.rawDt, 1e-3)) * 0.1;
