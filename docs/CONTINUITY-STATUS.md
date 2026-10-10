@@ -16,6 +16,8 @@ Sin campos de perfil ni defaults nuevos; migración SQL001–019 y opt-in de Gro
 Startup resuelve pending y carga filas actuales; no emite ACK ni instala snapshots históricos.
 266/266 pruebas y tres SIGKILL locales cubren preparación/commit/confirmación. No montado en GameHost ni aplicado live.
 Sigue dueño de tick/época/adopción legacy; preparación no es ACK ni lease frente a otros writers.
+Publicado/verificado en `6748f9a`, alpha.27/protocolo 39: imagen sana con APIs Node 22, 107/107 offline
+y entrada pública 6/6. Coordinadores opcionales siguen `null`; este corte no activa SQL018/019.
 
 **AREA07 RNV02 observado, 2026-10-10 20:12:06 UTC:** `e648d1b`, alpha.27/protocolo 39.
 Farol por instancia en el perfil del dueño y CAS ordinario, sin SQL ni diario nuevo. Una imagen sana,

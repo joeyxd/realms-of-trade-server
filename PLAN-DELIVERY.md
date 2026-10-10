@@ -10,6 +10,7 @@ y coste reales. Integra alpha.27/protocolo 39 sin SQL ni cambio de gameplay; evi
 petición completa antes del efecto y cierre atómico con SQL018; recuperación detenida desde filas actuales.
 266/266 pruebas y tres SIGKILL locales; no montado en GameHost ni aplicado SQL018/019 live. Sigue dueño de tick/época/legacy,
 sin ampliar la aceptación a perlas/muerte/botín públicos.
+Código/imagen `6748f9a` verificados, alpha.27/protocolo 39: 107/107 offline y 6/6 públicas.
 
 **AREA15, corte local 2026-10-10:** [SQL018: operación, mundo y reloj en un commit](docs/delivery/m5-ground-transactions.md).
 Reutiliza familias M5, valida recibos y conserva pausa offline con sesión/drain detenidos. No monta
