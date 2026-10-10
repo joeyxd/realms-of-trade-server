@@ -134,7 +134,12 @@ export class ArtisanPanel {
   close({ restoreFocus = true } = {}) {
     if (!this.active && this.root.hidden) return;
     this.active = false; this.root.hidden = true; this.notifyContext(false);
-    if (restoreFocus && this.opener?.isConnected) this.opener.focus({ preventScroll: true });
+    const opener = this.opener;
+    let openerVisible = !!opener?.isConnected;
+    if (openerVisible && typeof opener.getClientRects === 'function') {
+      try { openerVisible = opener.getClientRects().length > 0; } catch { openerVisible = false; }
+    }
+    if (restoreFocus && openerVisible) opener.focus({ preventScroll: true });
     this.opener = null;
   }
   reset() { this.pending = null; this.project = null; this.durable = null; this.status = ''; this.close(); this.render(); }

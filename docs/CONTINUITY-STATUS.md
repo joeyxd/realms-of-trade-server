@@ -1,5 +1,12 @@
 # Continuidad de servidor — AREA15
 
+**AREA03 PRG01c, integración local:** [enseñanza y Bodega](delivery/prg01c-artisan.md), alpha.29/protocolo 41.
+Recibo económico con baseline de perfil exacto para aprender/colocar/retirar storage; coste, cargo,
+condición e IDs conservados. 114/114 integradas y 32 checks de navegador. Nueva migración SQL021
+después de 001–020; `MN_ARTISAN_OPERATIONS` sigue apagado hasta verificar SQL y aceptar canario
+autenticado. No amplía la aceptación a todas las piezas del editor, perlas/muerte/botín o persistencia
+global. Entrega separa pruebas, publicación y activación. Precio de enseñanza dos maderas provisional.
+
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
 **AREA17 L03d-a, herramienta publicada 2026-10-10:** [ledger de inferencia nativa](delivery/l03d-native-metering.md),

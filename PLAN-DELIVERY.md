@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 PRG01c, 2026-10-10:** [artesano/Bodega](docs/delivery/prg01c-artisan.md), alpha.29/protocolo 41.
+Lección personal tras Tala y carpintería, colocación/retiro de Bodega por recibo M5 exacto, sin otro
+writer. 114/114 integración, 107/107 release con solapamiento y 32 checks UI ES/EN/banco existente.
+SQL021 después de 001–020; feature apagada hasta readiness, activación y canario autenticado;
+precio inicial de lección dos maderas provisional. El resto del editor conserva CAS anterior.
+Siguiente cierre AREA03: aceptación live de este ciclo antes de minería.
+
 **AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](docs/delivery/l03d-native-metering.md)
 prepara el canario L03d con ledger v2 separado, tarifa/modelo declarados fijados, uso desconocido
 retenido y cargo derivado distinto de factura. Sin proveedor ni inferencia real; panel/runner

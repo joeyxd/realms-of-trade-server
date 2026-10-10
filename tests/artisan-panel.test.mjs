@@ -86,3 +86,21 @@ test('lesson retry reuses the exact immutable command and historical ACK require
   assert.equal(panel.status, 'known');
   assert.equal(panel.pending, null);
 });
+
+test('closing skips an opener hidden with its parent and keeps callback focus; DOM stubs retain the connected-opener fallback', () => {
+  let canvasFocused = false, hiddenOpenerFocused = false;
+  const hiddenOpener = { isConnected: true, getClientRects: () => ({ length: 0 }), focus() { hiddenOpenerFocused = true; } };
+  const panel = Object.create(ArtisanPanel.prototype);
+  Object.assign(panel, { active: true, root: { hidden: false }, _contextNotified: true, opener: hiddenOpener,
+    onContext: active => { if (!active) canvasFocused = true; } });
+  panel.close();
+  assert.equal(canvasFocused, true);
+  assert.equal(hiddenOpenerFocused, false);
+  assert.equal(panel.opener, null);
+
+  let fallbackFocused = false;
+  Object.assign(panel, { active: true, root: { hidden: false }, _contextNotified: false,
+    opener: { isConnected: true, focus() { fallbackFocused = true; } }, onContext() {} });
+  panel.close();
+  assert.equal(fallbackFocused, true, 'DOM-free test doubles without getClientRects keep prior focus behavior');
+});
