@@ -43,7 +43,18 @@ el contenedor y el juego vuelve a cargar la base de datos. No elimina el bloqueo
 un guardado ambiguo. Estados desconocidos, perfiles pendientes o M5 opcional activo requieren diagnóstico;
 este supervisor no acredita recuperación completa de todas las acciones.
 
-El paquete Compose usa un contenedor, un máximo de cuatro jugadores, límite de 1 CPU, 1 GiB de memoria y swap combinados, heap Node limitado a 640 MiB y reserva inicial de 0,25 CPU/256 MiB. Usa Node 22, usuario sin privilegios, filesystem de solo lectura, `/tmp` temporal, cierre con 90 segundos de gracia y no publica puertos en el host. Las etiquetas de Traefik son exclusivas de `mn-alpha`; el juego no requiere modificar el proxy compartido.
+El paquete Compose usa un contenedor, un máximo de cuatro jugadores y un techo de 3 CPU compartidas,
+sin afinidad ni núcleos exclusivos: consume CPU según la demanda, hasta ese límite. Mantiene 1 GiB de
+memoria y swap combinados, heap Node limitado a 640 MiB y la reserva declarativa de 0,25 CPU/256 MiB.
+El actualizador y sus pruebas conservan su presupuesto separado de una CPU. Ampliar el techo no
+paraleliza por sí solo la simulación JavaScript ni acredita mayor capacidad de jugadores.
+Usa Node 22, usuario sin privilegios, filesystem de solo lectura, `/tmp` temporal, cierre con 90 segundos
+de gracia y no publica puertos en el host. Las etiquetas de Traefik son exclusivas de `mn-alpha`;
+el juego no requiere modificar el proxy compartido.
+
+El techo del contenedor activo puede aumentarse sin reiniciar con `docker update --cpus 3 <container>`.
+Debe coincidir con ambos límites de `deploy/compose.vps.yml` para conservarlo al recrear una release.
+Una vuelta a una release anterior conserva el límite de su manifiesto; comprobarlo tras un rollback.
 
 ## Estado y alcance comprobado
 
