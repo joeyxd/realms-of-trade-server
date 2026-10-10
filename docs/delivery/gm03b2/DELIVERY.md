@@ -1,39 +1,19 @@
-# GM03b2 — activar y recuperar el mundo compartido
+# GM03b2 — guardar, activar y volver atrás
 
-Fecha: 2026-10-10. Estado: implementación local; aceptación y despliegue en curso.
-[Contrato](../../briefs/gm03b2-content-activation.md).
+Fecha: 2026-10-10. Estado: **implementado en alpha.33 / protocolo 43; pruebas locales automáticas aprobadas. Aceptación de navegador local y pública pendiente. No desplegado.** Continúa el contrato de [GM03b2](../../briefs/gm03b2-content-activation.md) y conserva como historia la [entrega publicada de GM03b1](../gm03b1/DELIVERY.md).
 
-Online permite guardar la revisión preparada exacta, elegir una revisión guardada o el mapa base,
-revisar la selección y activarla cuando no hay personajes ni entradas/guardados pendientes.
-Los clientes nuevos cargan los modelos y círculos publicados antes de entrar. Una pestaña antigua
-recibe el aviso de recargar; el editor abierto conserva su diseño y permite terminar el trámite HTTP.
+El panel **Online** completa el ciclo de una revisión del mundo. El diseño se guarda como borrador privado; **Preparar revisión** valida esa copia; **Guardar revisión preparada** registra exactamente el artefacto con sus dependencias; luego se elige una revisión guardada o **Mapa base**, se revisa la selección y se confirma la activación. La activación y el rollback requieren el mundo vacío, el almacenamiento sano y ninguna operación pendiente. Las pestañas que ya estaban en el mundo deben recargar para recibir la nueva identidad.
 
-El registro vive en `/opt/marea-negra/content`, separado del estado económico M5 de Supabase.
-Retiene documentos y bytes por hash; puntero y recibo se guardan juntos con CAS, rename y fsync.
-Un reintento usa el mismo ID de operación incluso después de perder la respuesta o reiniciar.
-Rollback cambia contenido; nunca restaura perfiles, inventarios, relojes o progreso.
+Para volver atrás, abre **Online**, actualiza las revisiones, elige **Mapa base** o una revisión guardada anterior, pulsa **Activar / volver atrás…**, comprueba la revisión y generación que muestra la confirmación y activa solo cuando no haya personajes conectados. El rollback cambia la decoración publicada; no restaura perfiles, inventarios, economía, relojes ni progreso.
 
-GameHost pausa admisión/simulación/guardado durante la transición y exige almacenamiento sano,
-sin personajes, joins u operaciones pendientes. Verifica corredores protegidos, checkpoints,
-viajes/barcos guardados, atraques y objetos persistentes del suelo. El mapa conserva recursos y terreno;
-solo reemplaza decoración y colisiones estáticas, incluido su índice espacial.
+El registro append-only conserva documentos y bytes verificados por SHA-256 en `/opt/marea-negra/content`, separado del estado de gameplay M5. El puntero y el recibo de activación se escriben juntos con CAS, rename atómico y fsync. Un reintento repite el mismo ID de operación y resuelve una respuesta perdida incluso después de reiniciar. El lock Linux `flock` se comparte con el actualizador; la imagen candidata comprueba compatibilidad antes de detener la autoridad.
 
-Los navegadores reciben la base exacta enlazada por los hashes de la revisión. Primero comparan su
-generación local, permitiendo únicamente ruido numérico de hasta `1e-6`; después verifican los hashes
-y adoptan los arrays exactos del servidor. La aceptación detectó diferencias Node/Chrome de hasta
-`1.4210854715202004e-14` en 43 números: rechazar hashes locales exactos impedía abrir un cliente nuevo.
-No se redondean documentos, assets ni hashes. Los cambios estructurales o mayores siguen rechazados.
+GameHost pausa admisión, simulación y guardado periódico durante la transición. Verifica que no haya personajes, joins, guardados u operaciones pendientes y revisa rutas protegidas, checkpoints, barcos/viajes guardados, atraques y objetos persistentes en el suelo. El cliente instala y verifica la identidad y geometría publicadas antes de HELLO; una entrada con revisión vieja se rechaza antes de consultar identidad o perfil. Una pestaña antigua recibe el aviso de recargar. El corte integra también el runtime de combustible de fuego y los textos del flujo en español e inglés.
 
-La exclusión Linux `flock` se comparte con el actualizador. Este verifica la imagen candidata sin red
-y con volumen en solo lectura antes de detener la autoridad. Código incompatible con una revisión
-activa impide actualizar: activar base primero. Los modelos candidatos de arte pueden prepararse y
-guardarse, pero no activarse. Reutiliza `prop:storage-crate` integrado; fuentes y originales intactos.
+La base local y la del navegador pueden diferir por ruido de coma flotante. La evidencia Node/Chrome comparó 1.259 props, 773 colliders, 206 nodos de recursos y 296 IDs editables. Los 43 valores distintos tuvieron una diferencia máxima de `1.4210854715202004e-14`; recursos e IDs coincidieron exactamente. El cliente admite hasta `1e-6` para esa comparación, comprueba los hashes y adopta los arrays exactos enlazados por la revisión. No redondea documentos, assets ni hashes. [Evidencia de comparación](cross-runtime-evidence.json).
 
-Límites: 100 revisiones, 1 GiB de blobs, 4096 recibos; sin borrado automático. Escaneo de hasta 4096
-perfiles y filas por clase de objeto; error o límite impide activar. Corredores conservadores, sin
-garantizar conectividad completa de toda la isla. Sin terreno, superficies caminables nuevas ni
-edificios funcionales. La migración de revisiones entre runtimes queda pendiente.
+La regresión integrada más reciente pasó **272/272 pruebas**, incluidos los flujos HTTP/WebSocket de contenido. La suite separa ejecución del host, almacenamiento y respuestas locales simulados; no demuestra Supabase ni el VPS. El checker de compatibilidad de la imagen también debe pasar sus nuevas pruebas reales antes del cierre del corte. [Resultados de regresión](regression.json).
 
-La prueba local usa autenticación y almacenamiento de gameplay simulados, etiquetados en evidencia.
-La prueba pública utiliza la autoridad y Supabase existentes; restaura el puntero anterior y el borrador
-por CAS, conserva los recibos y la revisión canaria. Pendiente anexar sus resultados finales.
+El alcance se limita a decoraciones y sus colisiones estáticas sobre el terreno base. No modifica terreno, crea superficies caminables nuevas ni edita edificios funcionales, recursos, NPCs o anclas. Los assets candidatos se pueden preparar, pero no activar; tampoco se publican originales 2K/4K. Límites actuales: 100 revisiones, 1 GiB de blobs y 4096 recibos, sin recolección automática. Las lecturas para proteger posiciones tienen límite de 4096 filas por clase; un error o límite alcanzado impide activar. La migración explícita entre runtimes sigue pendiente.
+
+**Pendiente:** aceptación visual en navegador local, en español e inglés, y revisión de capturas; pruebas del checker contra el runtime de release; después, aceptación pública con la autenticación y Supabase existentes, activación canaria, rollback por CAS, borrador conservado, revisión activa y salud comprobadas. Hasta completar esos pasos, GM03b2 está implementado y probado localmente, pero no publicado ni desplegado.

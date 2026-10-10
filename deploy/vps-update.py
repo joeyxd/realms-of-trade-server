@@ -258,21 +258,45 @@ def content_exclusive_lock(content_dir=None, *, expected_uid=1000, expected_gid=
 
 
 def has_active_content():
-    """Fail closed on corrupt state; a missing initial registry means the legacy base."""
+    """Fail closed on corrupt state; a missing registry means the legacy base."""
     try:
         state = json.loads(CONTENT_STATE.read_text(encoding="utf-8"))
     except FileNotFoundError:
         return False
     except (OSError, ValueError) as exc:
         raise UpdateError("durable content state is unreadable") from exc
-    if not isinstance(state, dict) or state.get("worldId") != WORLD_ID or state.get("version") != 1:
+    expected_keys = {"version", "worldId", "generation", "revisionId", "operations"}
+    if not isinstance(state, dict) or set(state) != expected_keys:
         raise UpdateError("durable content state is invalid")
-    revision = state.get("revisionId")
-    if revision is None:
-        return False
-    if not isinstance(revision, str) or not re.fullmatch(r"[0-9a-f]{64}", revision):
-        raise UpdateError("durable content revision is invalid")
-    return True
+    generation = state["generation"]
+    revision = state["revisionId"]
+    operations = state["operations"]
+    max_safe_integer = 2**53 - 1
+    if (state["worldId"] != WORLD_ID or state["version"] != 1 or type(generation) is not int or
+            generation < 0 or generation > max_safe_integer or
+            not (revision is None or isinstance(revision, str) and re.fullmatch(r"[0-9a-f]{64}", revision)) or
+            not isinstance(operations, dict) or len(operations) > 4096):
+        raise UpdateError("durable content state is invalid")
+    operation_id = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+    for key, receipt in operations.items():
+        if (not operation_id.fullmatch(key) or not isinstance(receipt, dict) or
+                not {"expectedGeneration", "revisionId", "result"}.issubset(receipt) or
+                type(receipt.get("expectedGeneration")) is not int or
+                abs(receipt["expectedGeneration"]) > max_safe_integer or
+                not (receipt.get("revisionId") is None or
+                     isinstance(receipt.get("revisionId"), str) and
+                     re.fullmatch(r"[0-9a-f]{64}", receipt["revisionId"]))):
+            raise UpdateError("durable content state is invalid")
+        result = receipt.get("result")
+        if (not isinstance(result, dict) or not {"ok", "replay", "generation", "revisionId"}.issubset(result) or
+                type(result.get("ok")) is not bool or
+                type(result.get("replay")) is not bool or type(result.get("generation")) is not int or
+                abs(result["generation"]) > max_safe_integer or
+                not (result.get("revisionId") is None or
+                     isinstance(result.get("revisionId"), str) and
+                     re.fullmatch(r"[0-9a-f]{64}", result["revisionId"]))):
+            raise UpdateError("durable content state is invalid")
+    return revision is not None
 
 
 def check_candidate_content(release, image):

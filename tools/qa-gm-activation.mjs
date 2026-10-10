@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { createGameServer } from '../server/index.mjs';
 import { createMemoryStore } from '../server/store.mjs';
 import { GAME } from '../src/data/meta.js';
@@ -129,6 +130,13 @@ try {
     assert.equal(await gmPage.evaluate(() => __mn.gmEditor.active && __mn.st.contentStale), true);
     activation = await gmPage.evaluate(() => __mn.gmEditor.remotePanel.contentApplied);
     assert.deepEqual((await api('draft', 'GET')).body.head, lastDraft);
+    if (production && process.env.MN_GM_QA_CHECK_IMAGE === '1') {
+      const checked = spawnSync('ssh', ['-o', 'BatchMode=yes', 'root@62.171.136.148',
+        "flock -n /opt/marea-negra/content/switch.lock docker run --rm --network none --cpus 1 --memory 1g --volume /opt/marea-negra/content:/var/lib/marea-content:ro --env MN_GM_CONTENT_DIR=/var/lib/marea-content $(docker inspect -f '{{.Image}}' marea-negra-alpha-marea-negra-alpha-1) node server/gmContentCheck.mjs"],
+        { encoding: 'utf8', timeout: 120000 });
+      assert.equal(checked.status, 0, checked.stderr); assert.match(checked.stdout, /content compatible/);
+      evidence.offlineActiveImageCheck = checked.stdout.trim();
+    }
   });
   const readers = [];
   await check('two_real_clients_load_same_visible_document_and_collision_then_join', async () => {
@@ -139,13 +147,15 @@ try {
       assert.equal(await page.evaluate(() => !!__mn.world.scene.getObjectByName('gm:qa-shared-crate')), true);
       const collisionHash = await page.evaluate(async () => (await import('/src/editor/activeContent.js')).gmContentHash(__mn.map.colliders));
       assert.equal(collisionHash, lastContent.revision.content.collision.sha256);
+      assert.deepEqual(await page.evaluate(async (p) => {
+        const { canStand } = await import('/src/sim/systems/movement.js');
+        return [canStand(__mn.client.pred, p.x, p.z), canStand(__mn.client.pred, p.x+2.8, p.z)];
+      }, evidence.placement), [false, true]);
       await page.locator('#btn-play').click({ force: true }); await page.waitForFunction(() => __mn.client.joined, null, { timeout: 30000 });
       if (!i) {
-        await page.evaluate((p) => { __mn.st.mode = 'qa-camera'; __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); }, evidence.placement);
-        const frame = await page.evaluate(() => __mn.world.pipeline.frame);
-        await page.waitForFunction((f) => __mn.world.pipeline.frame >= f+3, frame);
+        await page.evaluate((p) => { __mn.loop.running = false; __mn.world.camera.position.set(p.x+6,p.y+5,p.z+6); __mn.world.camera.lookAt(p.x,p.y+.6,p.z); __mn.world.camera.updateMatrixWorld(); for(let n=0;n<3;n++) __mn.world.render(); }, evidence.placement);
         await page.screenshot({ path: resolve(out, (production ? 'public' : 'local') + '-shared-crate.png') });
-        await page.evaluate(() => { __mn.st.mode = 'playing'; });
+        await page.evaluate(() => { __mn.loop.start(); });
       }
       assert.deepEqual(await page.evaluate(() => [...__mn.errors]), []);
     }
@@ -191,7 +201,7 @@ try {
     for (const ctx of contexts.slice(1)) await ctx.close().catch(() => {});
     if (gmPage && baselineContent) {
       const current = await publicState();
-      if (current.revisionId === evidence.revisionId && current.generation === lastContent?.generation) {
+      if (current.revisionId === evidence.revisionId && current.generation === baselineContent.generation+1) {
         const r = await api('activate', 'POST', { operationId: randomUUID(), expectedGeneration: current.generation, revisionId: baselineContent.revisionId });
         evidence.emergencyRollback = r.status;
       }

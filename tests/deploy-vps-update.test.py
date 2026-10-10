@@ -82,13 +82,43 @@ class VpsUpdateTests(unittest.TestCase):
             state = content / "state.json"
             with mock.patch.object(update, "CONTENT", content), mock.patch.object(update, "CONTENT_STATE", state):
                 self.assertFalse(update.check_candidate_content(release, "image"))
-                state.write_text(json.dumps({"version": 1, "worldId": update.WORLD_ID, "revisionId": "a" * 64}))
+                base = {"version": 1, "worldId": update.WORLD_ID, "generation": 0,
+                        "revisionId": None, "operations": {}}
+                state.write_text(json.dumps(base))
+                self.assertFalse(update.check_candidate_content(release, "image"))
+
+                invalid_states = [
+                    {"version": 1, "worldId": update.WORLD_ID, "revisionId": None},
+                    {**base, "generation": -1},
+                    {**base, "generation": True},
+                    {**base, "generation": 2**53},
+                    {**base, "operations": []},
+                    {**base, "operations": {"bad/id": {}}},
+                    {**base, "operations": {"op-1": {"expectedGeneration": 0, "revisionId": None,
+                        "result": {"ok": True, "replay": False, "generation": 1}}}},
+                ]
+                for invalid in invalid_states:
+                    with self.subTest(invalid=invalid):
+                        state.write_text(json.dumps(invalid))
+                        with self.assertRaisesRegex(update.UpdateError, "state is invalid"):
+                            update.check_candidate_content(release, "image")
+
+                # A valid rollback-to-base receipt is part of a valid base pointer.
+                valid_base_with_receipt = {**base, "generation": 2, "operations": {
+                    "rollback-2": {"expectedGeneration": 1, "revisionId": None,
+                        "result": {"ok": True, "replay": False, "generation": 2, "revisionId": None}},
+                }}
+                state.write_text(json.dumps(valid_base_with_receipt))
+                self.assertFalse(update.check_candidate_content(release, "image"))
+
+                active_state = {**base, "generation": 1, "revisionId": "a" * 64}
+                state.write_text(json.dumps(active_state))
                 with self.assertRaisesRegex(update.UpdateError, "cannot verify"):
                     update.check_candidate_content(release, "image")
                 state.write_text("not-json")
                 with self.assertRaisesRegex(update.UpdateError, "state is unreadable"):
                     update.check_candidate_content(release, "image")
-                state.write_text(json.dumps({"version": 1, "worldId": update.WORLD_ID, "revisionId": "a" * 64}))
+                state.write_text(json.dumps(active_state))
                 (release / "server").mkdir()
                 (release / "server/gmContentCheck.mjs").write_text("// checker")
                 with mock.patch.object(update, "run", return_value=mock.Mock(returncode=0, stdout="")) as run:
@@ -111,7 +141,8 @@ class VpsUpdateTests(unittest.TestCase):
             content = base / "content"
             content.mkdir()
             state_file = content / "state.json"
-            state_file.write_text(json.dumps({"version": 1, "worldId": update.WORLD_ID, "revisionId": "b" * 64}))
+            state_file.write_text(json.dumps({"version": 1, "worldId": update.WORLD_ID, "generation": 1,
+                "revisionId": "b" * 64, "operations": {}}))
             with ExitStack() as stack:
                 stack.enter_context(mock.patch.object(update, "CONTENT", content))
                 stack.enter_context(mock.patch.object(update, "CONTENT_STATE", state_file))
