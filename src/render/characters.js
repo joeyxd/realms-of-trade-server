@@ -5,8 +5,9 @@
 // Combat (M2) is a layer on top: the 3-hit combo, the parry guard, flinches, staggers, falling,
 // the riposte, and the enemies' telegraphed attacks (bow draw, overhead cleave, spikes, orb).
 import * as THREE from 'three';
-import { blobTexture } from './geo.js';
+import { blobTexture, merge } from './geo.js';
 import { toon, U, charNormalMat } from './toon.js';
+import { PERSONAL_LANTERN_LOCAL } from './personalLantern.js';
 import { LAYER } from './pipeline.js';
 import { BONES, makeBones } from './charkit.js';
 import { LOOKS, buildLook } from './charlooks.js';
@@ -55,6 +56,38 @@ export function characterMaterial(kind = 'base') {
 }
 
 let blobGeo = null, blobMat = null;
+let lanternShellGeo = null, lanternCapGeo = null, lanternCoreGeo = null;
+let lanternShellMat = null, lanternCoreMat = null;
+
+function createPersonalLantern() {
+  if (!lanternShellGeo) {
+    lanternCapGeo = new THREE.CylinderGeometry(0.094, 0.094, 0.025, 6);
+    lanternCoreGeo = new THREE.SphereGeometry(0.045, 6, 5);
+    const top = lanternCapGeo.clone(); top.translate(0, 0.087, 0);
+    const bottom = lanternCapGeo.clone(); bottom.translate(0, -0.087, 0);
+    const cage = [top, bottom];
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3;
+      const bar = new THREE.CylinderGeometry(0.012, 0.012, 0.15, 5);
+      bar.translate(Math.cos(a) * 0.074, 0, Math.sin(a) * 0.074);
+      cage.push(bar);
+    }
+    lanternShellGeo = merge(cage);
+    lanternShellMat = toon({ color: 0x58412a });
+    lanternShellMat.userData.nm = charNormalMat();
+    lanternCoreMat = new THREE.MeshBasicMaterial({ color: 0xffcf78 });
+    lanternCoreMat.userData.nm = charNormalMat();
+  }
+  const group = new THREE.Group();
+  group.position.set(PERSONAL_LANTERN_LOCAL.x, PERSONAL_LANTERN_LOCAL.y, PERSONAL_LANTERN_LOCAL.z);
+  const shell = new THREE.Mesh(lanternShellGeo, lanternShellMat);
+  shell.userData.nm = charNormalMat();
+  const core = new THREE.Mesh(lanternCoreGeo, lanternCoreMat);
+  core.visible = false;
+  core.userData.nm = charNormalMat();
+  group.add(shell, core);
+  return { group, core };
+}
 
 export class CharacterView {
   constructor(skinIdx = 0, { sword = true, pose = null } = {}) {
@@ -87,6 +120,12 @@ export class CharacterView {
     this.mesh.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, built.height * 0.5, 0.1), built.height * 0.8);
     this.root.add(this.mesh);
     this.meshes = [this.mesh];
+    const personalLantern = createPersonalLantern();
+    this.personalLantern = personalLantern.group;
+    this.personalLanternCore = personalLantern.core;
+    this.lanternLit = false;
+    this.personalLantern.visible = false;
+    this.root.add(this.personalLantern);
     // Scaled looks (small imps, the big boss): the whole skinned mesh, bones included.
     this.scale = L.scale || 1;
     if (this.scale !== 1) { this.mesh.scale.setScalar(this.scale); this.height *= this.scale; }
@@ -152,6 +191,12 @@ export class CharacterView {
   recoil(hand) { if (hand > 0) this.recoilL = 1; else this.recoilR = 1; }
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
+
+  setLantern(lit, carried = true) {
+    this.lanternLit = !!lit;
+    this.personalLantern.visible = !!carried;
+    this.personalLanternCore.visible = this.lanternLit && this.personalLantern.visible;
+  }
 
   // The leap this view is flying (M4.7): its cast event's air time and height (a remote pirate's come from its
   // event; without one, the base Abordaje). How high the body is t s into the cast.

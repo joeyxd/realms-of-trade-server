@@ -108,6 +108,7 @@ export class ECS {
     this.level = new Uint8Array(cap);
     this.skin = new Uint8Array(cap);
     this.clientId = new Int32Array(cap).fill(-1);
+    this.lantern = new Uint8Array(cap); // Bound starter light: session state, never an inventory good.
     this.lastSeq = new Uint32Array(cap);
     this.names = new Array(cap).fill('');
     this.titles = new Array(cap).fill('');
@@ -155,6 +156,7 @@ export class ECS {
     this.critAdd[id] = this.critDAdd[id] = this.onKill[id] = 0; this.goldMul[id] = 1;
     this.enemy[id] = 0; this.brain[id] = null;
     this.level[id] = 1; this.skin[id] = 0; this.clientId[id] = -1; this.lastSeq[id] = 0;
+    this.lantern[id] = 0;
     this.names[id] = ''; this.titles[id] = ''; this.bot[id] = null;
     return id;
   }
@@ -164,6 +166,7 @@ export class ECS {
     this.alive[id] = 0;
     this.mask[id] = 0;
     this.kind[id] = 0;
+    this.lantern[id] = 0;
     this.brain[id] = null;
     this.free.push(id);
   }

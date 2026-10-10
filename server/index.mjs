@@ -16,6 +16,8 @@ import { chatFromEnv } from '../src/data/chat.js';
 import { createWalletHttpHandler } from './web3/walletHttp.mjs';
 import { walletLinkFromEnv } from './web3/walletRuntime.mjs';
 import { createGmSessionHandler, parseGmAccountIds } from './gmSession.mjs';
+import { createGmDraftHandler } from './gmDraftHttp.mjs';
+import { createGmDraftValidator } from './gmDraftValidation.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const AUTH_SDK = path.join(path.dirname(fileURLToPath(import.meta.resolve('@supabase/supabase-js'))), 'umd', 'supabase.js');
@@ -31,7 +33,8 @@ const PUBLIC = ['src', 'styles', 'assets'];
 export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, root = ROOT, saveSecret: secret,
   store, resolvePlayer, joinTimeoutMs, initializeAccounts = false, publicAuth,
   worldId, worldSaveMs = 60000, pearlStaging = null, pearlStartup = null, chat = chatFromEnv(process.env), walletLink = null, agentControl = null, agentPilot = null,
-  economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, agentTrade = false } = {}) {
+  economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, agentTrade = false,
+  gmDraftsAllowMemory = false } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
   const authConfig = publicAuthConfig(publicAuth);
@@ -45,6 +48,15 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
     pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, agentTrade });
+  let gmDrafts = null;
+  if (resolvePlayer && gmAccountIds?.length && worldId !== null) {
+    const baseRevision = 'terrain-s21-v1';
+    const validateReferences = createGmDraftValidator({ map: game.server.world.map, baseRevision,
+      manifest: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/manifest.json'), 'utf8')),
+      editorCatalog: JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/editor/catalog.json'), 'utf8')) });
+    gmDrafts = createGmDraftHandler({ store: game.store, resolvePlayer, accountIds: gmAccountIds,
+      worldId, seed: game.server.world.seed, baseRevision, validateReferences, allowMemory: gmDraftsAllowMemory });
+  }
   // Trusted API option only; npm start deliberately leaves durable gameplay dispatch disabled.
   if (pearlStaging !== null) game.mountPearlStaging(pearlStaging);
   if (pearlStartup !== null) {
@@ -55,6 +67,11 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
     let p;
     try { p = decodeURIComponent(new URL(req.url, 'http://x').pathname); } catch { res.writeHead(400).end(); return; }
     if (p === '/api/gm/session') { void gmSession(req, res); return; }
+    if (p === '/api/gm/draft') {
+      if (gmDrafts) void gmDrafts.handle(req, res);
+      else { res.writeHead(503, { 'content-type': MIME['.json'], 'cache-control': 'no-store' }).end(JSON.stringify({ ok: false, code: 'gm_drafts_unavailable' })); }
+      return;
+    }
     if (walletHttp?.handles(p)) { void walletHttp.handle(req, res, p); return; }
     if (p === '/web3/wallet/config') {
       res.writeHead(req.method === 'GET' ? 200 : 405, { 'content-type': MIME['.json'], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
@@ -112,6 +129,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
         if (walletLink?.prepare) await walletLink.prepare();
         if (game.closing) throw new Error('Server is closing');
         await game.prepare();
+        if (gmDrafts) await gmDrafts.prepare();
         if (game.closing) throw new Error('Server is closing');
         return new Promise((resolve, reject) => {
           const failed = (err) => { server.removeListener('error', failed); reject(err); };

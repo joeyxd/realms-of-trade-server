@@ -63,7 +63,7 @@ test('light selection fits every tier and never pops', opts, () => {
   }
 });
 
-test('flashes and the player light never push a static light out', opts, () => {
+test('combat flashes preserve static light budget; obsolete player knob emits no light', opts, () => {
   const lights = new mod.LocalLights(map);
   lights.max = 8;
   Object.assign(lights.knobs, { fire: 1, lava: 1, night: 1, eyes: 1, player: 0 });
@@ -71,6 +71,10 @@ test('flashes and the player light never push a static light out', opts, () => {
   lights.update(1 / 60, f, f);
   const before = lights.sources.map((s) => s.w);
   lights.knobs.player = 1;
+  lights.update(1 / 60, f, f);
+  assert.deepEqual(lights.sources.map((s) => s.w), before,
+    'the removed automatic player fill does not affect static lights, even when its old knob is set');
+  assert.equal(mod.U.mnLightCount.value, 6, 'only the ranked static source budget is emitted without flashes');
   lights.flash(f.x, 1, f.z, 0x3bf0ff);
   lights.flash(f.x + 1, 1, f.z, 0x3bf0ff);
   lights.update(1 / 60, f, f);

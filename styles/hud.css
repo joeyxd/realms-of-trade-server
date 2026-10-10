@@ -536,3 +536,17 @@ body.touch .actionbar { display: none; }
   background: #c9a8ff; box-shadow: 0 0 0 1.5px var(--ink);
 }
 .slot .rk[hidden], .slot .fm[hidden] { display: none; }
+
+/* Bound starter lantern. Separate from interaction and skill controls on every device. */
+.personal-lantern[hidden] { display: none; }
+.personal-lantern { position: absolute; z-index: 42; bottom: 144px; right: calc(18px + var(--safe-r));
+  min-height: 48px; min-width: 72px; padding: 0 10px; border: 2px solid #b99a63;
+  border-radius: 8px; background: #242326ee; color: #f4e6c5; font: 800 13px system-ui, sans-serif;
+  box-shadow: 0 3px 0 #101014, 0 5px 14px #0008; touch-action: manipulation; }
+.personal-lantern[aria-pressed="true"] { background: #624118; border-color: #ffd27b; color: #fff2bc; }
+.personal-lantern:focus-visible { outline: 3px solid #fff0c1; outline-offset: 3px; }
+.personal-lantern:disabled { opacity: .7; }
+body.is-naval:not(.is-naval-touch) .personal-lantern { bottom: 188px; }
+@container stage (max-height: 480px) {
+  .personal-lantern { top: 111px; bottom: auto; right: calc(9px + var(--safe-r)); min-width: 68px; }
+}

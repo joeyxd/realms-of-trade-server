@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { gmBaseId } from './baseIdentity.js';
 
 const KIND_LABELS = Object.freeze({
   rock: { en: 'Natural rock', es: 'Roca natural' },
@@ -8,17 +9,6 @@ const KIND_LABELS = Object.freeze({
 const RENDERER_WHITELIST = /^(?:rocks[01]|coastRocks\d+|flowers\d+|pebbles)$/;
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
 const clone = (value) => structuredClone(value);
-
-function fingerprint(seed, revision, prop, index) {
-  const text = JSON.stringify([seed, revision, index, prop.kind, prop.x, prop.y, prop.z,
-    prop.rot, prop.scale, prop.r, prop.v, prop.h]);
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < text.length; i++) {
-    hash ^= text.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0).toString(16).padStart(8, '0');
-}
 
 function checkedTransform(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value) ||
@@ -91,7 +81,7 @@ export class BaseDecorationLayer {
       const index = this.map.props.indexOf(prop);
       if (index < 0 || !KIND_LABELS[prop.kind] || ![prop.x, prop.y, prop.z, prop.rot, prop.scale, prop.r,
         prop.v, prop.h].every(finite) || prop.scale <= 0 || lookup.has(index)) continue;
-      const id = `base:${prop.kind}:${index}:${fingerprint(this.map.seed >>> 0, this.baseRevision, prop, index)}`;
+      const id = gmBaseId(this.map.seed >>> 0, this.baseRevision, prop, index);
       if (id.length > 96) continue;
       const originalLocal = new THREE.Matrix4();
       mesh.getMatrixAt(instanceIndex, originalLocal);

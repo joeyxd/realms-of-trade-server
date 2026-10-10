@@ -7,6 +7,7 @@ import { EditorFreeCamera } from './freeCamera.js';
 import { createEditorModels } from './modelFactory.js';
 import { createBaseDecorationLayer } from './baseDecoration.js';
 import { EditorWalkPreview } from './walkPreview.js';
+import { RemoteDraftPanel } from './remotePanel.js';
 import { LAYER } from '../render/pipeline.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -19,7 +20,7 @@ const html = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '
 /** Private decoration overlay. Generated map data and server gameplay remain untouched. */
 export class WorldEditor {
   constructor({ scene, camera, canvas, map, assets, parent, onClose = () => {}, draftWorldId = null,
-    baseRevision = 'terrain-s21-v1', invalidate = () => {}, onChanged = () => {}, createWalkView = null } = {}) {
+    baseRevision = 'terrain-s21-v1', invalidate = () => {}, onChanged = () => {}, createWalkView = null, remoteClient = null } = {}) {
     if (!scene || !camera || !canvas || !map || !assets || !parent) {
       throw new TypeError('WorldEditor requires scene, camera, canvas, map, assets, and parent');
     }
@@ -87,6 +88,8 @@ export class WorldEditor {
       root: this.catalogRoot, assets: this.assets, onSelect: ({ entry, object }) => this._selectAsset(entry, object),
       t: (en, es) => this._t(en, es),
     });
+    this.remoteClient = remoteClient;
+    this.remotePanel = new RemoteDraftPanel(this, remoteClient);
     this._setLanguage();
   }
 
@@ -108,6 +111,7 @@ export class WorldEditor {
       '<button type="button" data-action="duplicate" data-i18n="duplicate"></button><button type="button" data-action="delete" data-i18n="delete"></button>',
       '<button type="button" data-action="walk" data-i18n="walk"></button>',
       '<button type="button" data-action="save" data-i18n="save"></button><button type="button" data-action="export" data-i18n="export"></button>',
+      '<button type="button" data-action="remote">Online</button>',
       '<label class="gm-import-button"><span data-i18n="import"></span><input type="file" accept="application/json,.json" data-role="import"></label>',
       '<button type="button" data-role="language" aria-label="Language"></button><button type="button" data-action="close" class="gm-close" data-i18n="close"></button>',
       '</div></header><div class="gm-workspace"><aside class="gm-sidebar">',
@@ -155,9 +159,9 @@ export class WorldEditor {
 
   _setLanguage() {
     const words = {
-      brand: ['World editor', 'Editor del mundo'], draftLocal: ['LOCAL DRAFT · NO PUBLISH', 'BORRADOR LOCAL · SIN PUBLICAR'],
+      brand: ['World editor', 'Editor del mundo'], draftLocal: ['PRIVATE DRAFT · NO PUBLISH', 'BORRADOR PRIVADO · SIN PUBLICAR'],
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
-      delete: ['Delete', 'Eliminar'], save: ['Save draft', 'Guardar borrador'], export: ['Export', 'Exportar'],
+      delete: ['Delete', 'Eliminar'], save: ['Save locally', 'Guardar local'], export: ['Export', 'Exportar'],
       import: ['Import', 'Importar'], close: ['Close', 'Cerrar'],
       library: ['Library', 'Biblioteca'], scene: ['Scene', 'Escena'], sceneSearch: ['Find placed decoration', 'Buscar decoración colocada'],
       sceneScope: ['Natural rocks, flowers, pebbles and draft models. Functional objects stay protected.',
@@ -179,6 +183,7 @@ export class WorldEditor {
     }
     this.langButton.textContent = this.lang === 'es' ? 'EN' : 'ES';
     this.catalog?.setLanguage(this.lang); this._renderInspector(); this._renderSceneList();
+    this.remotePanel?.render();
     if (this.walkPreview?.active) this.ui.querySelector('[data-i18n="controls"]').textContent = this._t(
       'PRIVATE WALK TEST · WASD: move · Escape: back to editor · no combat or progress',
       'PRUEBA PRIVADA · WASD: caminar · Escape: volver al editor · sin combate ni progreso');
@@ -227,6 +232,7 @@ export class WorldEditor {
       if (!this.active || session !== this.session) return false;
       this._renderDocument(this.history.current()); this._updateButtons();
       this.onChanged({ document: clone(this.document), dirty: this.dirty });
+      void this.remotePanel.start();
       this.invalidate(); return true;
     } catch (error) {
       if (session !== this.session) return false;
@@ -247,12 +253,14 @@ export class WorldEditor {
 
   async close({ force = false } = {}) {
     if (!this.active) return true;
+    this.remotePanel?.stop();
     this._stopWalking();
     if (this.importTask) await this.importTask;
     if (!this.active) return true;
     if (this.dirty) {
       const saved = await this.saveNow();
       if (!saved && !force) {
+        void this.remotePanel?.start();
         this._setStatus(this._t('Draft remains open because local save failed. Export it or retry.',
           'El borrador sigue abierto porque falló el guardado. Expórtalo o vuelve a intentar.'), 'error');
         return false;
@@ -692,6 +700,7 @@ export class WorldEditor {
       if (walking && !['walk', 'close'].includes(button.dataset.action)) button.disabled = true;
     }
     this.importInput.disabled = walking;
+    this.remotePanel?.render();
   }
 
   _toolbarAction(event) {
@@ -716,6 +725,7 @@ export class WorldEditor {
       case 'tab-library': this._setSceneTab(false); break;
       case 'tab-scene': this._setSceneTab(true); break;
       case 'save': this.saveNow(); break;
+      case 'remote': this.remotePanel.show(); break;
       case 'export': this._exportCurrent(); break;
       case 'close': this.close(); break;
       case 'mode-translate': this.transform.setMode('translate'); break;
@@ -755,6 +765,10 @@ export class WorldEditor {
 
   _keyDown(event) {
     if (!this.active || event.repeat) return;
+    if (this.remotePanel?.open) {
+      if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this.remotePanel.hide(); }
+      return;
+    }
     if (this.walkPreview?.active) {
       if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this._stopWalking(); }
       return;
@@ -825,13 +839,13 @@ export class WorldEditor {
 
   _exportCurrent() { this._exportDocument(this.history?.current()); }
 
-  _exportDocument(doc) {
+  _exportDocument(doc, { name = this.worldId + '-draft', status = null } = {}) {
     if (!doc) return;
     const text = JSON.stringify({ format: DRAFT_EXPORT_FORMAT, version: DRAFT_EXPORT_VERSION, document: doc }, null, 2);
     const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-    const link = document.createElement('a'); link.href = url; link.download = this.worldId + '-draft.json'; link.click();
+    const link = document.createElement('a'); link.href = url; link.download = name + '.json'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 30000);
-    this._setStatus(this._t('Current in-memory draft exported.', 'Se exportó el borrador actual.'), 'ok');
+    this._setStatus(status || this._t('Current in-memory draft exported.', 'Se exportó el borrador actual.'), 'ok');
   }
 
   async _importFile(file) {
@@ -885,6 +899,7 @@ export class WorldEditor {
 
   async dispose() {
     if (this.active) await this.close({ force: true });
+    this.remotePanel?.dispose();
     clearTimeout(this.saveTimer); this.cameraController.dispose();
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);

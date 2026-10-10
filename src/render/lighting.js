@@ -18,7 +18,7 @@ const PRESETS = {
     skyTop: C(0x3a9fe6), skyHorizon: C(0xc4ecf7), skyBottom: C(0x7fd3e0), fog: C(0xb9e6f2), fogNear: 220, fogFar: 950,
     cloudCol: C(0xffffff), stars: 0, sunDisc: 1,
     rim: C(0xa8dcff), fill: CL(0, 0, 0), lava: 1.0, cloud: 0.32,
-    fire: 0.3, lavaLight: 0.6, windows: 0, player: 0,
+    fire: 0.3, lavaLight: 0.6, windows: 0,
     water: C(0xffffff), sparkle: 1, foam: 1,
     contrast: 0.16, sat: 1.12, vignette: 0.28, splitShadow: C(0x5a4aa0), splitHigh: C(0xffd9a0), split: 0.05,
     bloom: 0.35, glints: 0.15, fxLight: CL(1, 1, 1),
@@ -29,21 +29,21 @@ const PRESETS = {
     skyTop: C(0x5a6fd6), skyHorizon: C(0xffc28a), skyBottom: C(0xe79b7a), fog: C(0xf0b48c), fogNear: 200, fogFar: 900,
     cloudCol: C(0xffd2b8), stars: 0, sunDisc: 1,
     rim: C(0xff9ad1), fill: CL(0.12, 0.1, 0.08), lava: 1.35, cloud: 0.18,
-    fire: 0.55, lavaLight: 0.9, windows: 0.45, player: 0.1,
+    fire: 0.55, lavaLight: 0.9, windows: 0.45,
     water: C(0xffe2d0), sparkle: 1.1, foam: 1,
     contrast: 0.19, sat: 1.1, vignette: 0.33, splitShadow: C(0x5a3c9a), splitHigh: C(0xffb070), split: 0.08,
     bloom: 0.55, glints: 0.25, fxLight: CL(1, 0.8, 0.66),
   },
   night: {
-    sun: C(0x9fb2ff), sunI: 0.9, el: 58, az: -18,
-    hemiSky: C(0x3c4e8e), hemiGround: C(0x1e1a34), hemiI: 0.7,
-    skyTop: C(0x080c26), skyHorizon: C(0x26386a), skyBottom: C(0x0e1834), fog: C(0x18223f), fogNear: 160, fogFar: 700,
+    sun: C(0x25304a), sunI: 0.018, el: 58, az: -18,
+    hemiSky: C(0x111827), hemiGround: C(0x08090f), hemiI: 0.018,
+    skyTop: C(0x080c26), skyHorizon: C(0x10172a), skyBottom: C(0x080b13), fog: C(0x0a0e17), fogNear: 100, fogFar: 520,
     cloudCol: C(0x3a4a72), stars: 1, sunDisc: 0.8,
-    rim: C(0x86a2ff), fill: CL(0.5, 0.52, 0.72), lava: 1.25, cloud: 0.12,
-    fire: 1, lavaLight: 1, windows: 1, player: 0.3,
-    water: C(0x3a4c78), sparkle: 0.4, foam: 0.62,
-    contrast: 0.25, sat: 0.98, vignette: 0.44, splitShadow: C(0x3438b0), splitHigh: C(0xffb060), split: 0.16,
-    bloom: 0.9, glints: 0.6, fxLight: CL(0.24, 0.28, 0.45),
+    rim: C(0x000000), fill: CL(0, 0, 0), lava: 1.25, cloud: 0.04,
+    fire: 1, lavaLight: 1, windows: 1,
+    water: C(0x080d18), sparkle: 0.08, foam: 0.04,
+    contrast: 0.12, sat: 0.78, vignette: 0.34, splitShadow: C(0x101322), splitHigh: C(0x25202a), split: 0,
+    bloom: 0.45, glints: 0.05, fxLight: CL(0.025, 0.03, 0.045),
   },
   volcanic: {
     sun: C(0xff8c5a), sunI: 0.85, el: 40, az: 60,
@@ -51,7 +51,7 @@ const PRESETS = {
     skyTop: C(0x1c0e18), skyHorizon: C(0x7a2c16), skyBottom: C(0x2a120e), fog: C(0x3a1a16), fogNear: 50, fogFar: 260,
     cloudCol: C(0x2e2224), stars: 0, sunDisc: 0,
     rim: C(0xff7a4a), fill: CL(0.75, 0.48, 0.38), lava: 1.55, cloud: 0.42,
-    fire: 1, lavaLight: 1.2, windows: 0, player: 0.5,
+    fire: 1, lavaLight: 1.2, windows: 0,
     water: C(0x6a3a30), sparkle: 0.2, foam: 0.6,
     contrast: 0.28, sat: 1.12, vignette: 0.46, splitShadow: C(0x4a2a90), splitHigh: C(0xff9040), split: 0.18,
     bloom: 1.0, glints: 0.3, fxLight: CL(0.42, 0.27, 0.24),
@@ -104,6 +104,7 @@ export class Lighting {
     this.lavaU = null;
     // Time of day.
     this.tod = 'day';
+    this.gameplay = false;
     this.cycleSeconds = cycleSeconds;
     this.phase = 0.08; // morning
     this.base = clonePreset(PRESETS.day);
@@ -137,6 +138,10 @@ export class Lighting {
   // Jump the cycle (0 = dawn's end, 0.5 = dusk, 0.75 = midnight).
   setPhase(p) { this.phase = ((p % 1) + 1) % 1; }
 
+  // During play the server clock owns time of day, regardless of a saved menu preference.
+  // QA/menu fixtures can explicitly opt out and use setTimeOfDay/setPhase overrides.
+  setGameplay(active) { this.gameplay = !!active; }
+
   // Zone override: volcanic night inside La Caldera.
   setZone(volcanic, seconds = 2) {
     this.zoneTarget = volcanic ? 1 : 0;
@@ -147,7 +152,7 @@ export class Lighting {
   setPreset(name, seconds = 2) { this.setZone(name === 'golden' || name === 'volcanic', seconds); }
 
   baseTarget() {
-    if (this.tod !== 'cycle') return PRESETS[this.tod];
+    if (!this.gameplay && this.tod !== 'cycle') return PRESETS[this.tod];
     const ph = this.phase;
     let i = 0;
     while (i < CYCLE.length - 2 && ph >= CYCLE[i + 1][0]) i++;
@@ -190,7 +195,9 @@ export class Lighting {
   }
 
   update(dt, focus, clockPhase) {
-    if (this.tod === 'cycle') {
+    if (this.gameplay) {
+      if (Number.isFinite(clockPhase)) this.setPhase(clockPhase);
+    } else if (this.tod === 'cycle') {
       if (Number.isFinite(clockPhase)) this.setPhase(clockPhase);
       else this.phase = (this.phase + dt / this.cycleSeconds) % 1;
     }
@@ -203,7 +210,22 @@ export class Lighting {
       const s = this.zoneSpeed * dt;
       this.zoneW = Math.abs(this.zoneTarget - this.zoneW) <= s ? this.zoneTarget : this.zoneW + Math.sign(this.zoneTarget - this.zoneW) * s;
     }
-    blend(this.cur, this.base, PRESETS.volcanic, ease(this.zoneW));
+    const zoneW = ease(this.zoneW);
+    blend(this.cur, this.base, PRESETS.volcanic, zoneW);
+    // Keep the Caldera's warm sky/fog and local fire, but let its global fill recede with night.
+    // Without this cap its volcanic preset would wash out the intentionally dark world.
+    const dayW = 1 - THREE.MathUtils.clamp((2.45 - this.base.sunI) / 2.432, 0, 1);
+    const globalZoneW = zoneW * dayW;
+    this.cur.sunI = THREE.MathUtils.lerp(this.base.sunI, PRESETS.volcanic.sunI, globalZoneW);
+    this.cur.hemiI = THREE.MathUtils.lerp(this.base.hemiI, PRESETS.volcanic.hemiI, globalZoneW);
+    this.cur.fill.copy(this.base.fill).lerp(PRESETS.volcanic.fill, globalZoneW);
+    this.cur.rim.copy(this.base.rim).lerp(PRESETS.volcanic.rim, globalZoneW);
+    this.cur.water.copy(this.base.water).lerp(PRESETS.volcanic.water, globalZoneW);
+    this.cur.sparkle = THREE.MathUtils.lerp(this.base.sparkle, PRESETS.volcanic.sparkle, globalZoneW);
+    this.cur.foam = THREE.MathUtils.lerp(this.base.foam, PRESETS.volcanic.foam, globalZoneW);
+    this.cur.glints = THREE.MathUtils.lerp(this.base.glints, PRESETS.volcanic.glints, globalZoneW);
+    this.cur.bloom = THREE.MathUtils.lerp(this.base.bloom, PRESETS.volcanic.bloom, globalZoneW);
+    this.cur.fxLight.copy(this.base.fxLight).lerp(PRESETS.volcanic.fxLight, globalZoneW);
     this.apply();
     // Snap the shadow center to shadow-map texels (in light space) to kill shimmering.
     const texel = (this.shadowHalf * 2) / this.sun.shadow.mapSize.x;

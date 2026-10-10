@@ -13,12 +13,15 @@ const same = (a, b) => canonicalJson(a) === canonicalJson(b);
 
 // Inference is an async proposal producer. It never owns a tick, socket or gameplay grant.
 export class AgentMind {
-  #adapter; #budget; #read; #submit; #now; #limits; #contextLimits; #flight = null; #closed = false;
+  #adapter; #budget; #read; #submit; #now; #limits; #contextLimits; #flight = null; #closed = false; #nativeMetering = false;
   #requests = 0; #records = []; #sendChat; #conversation; #chatUncertain = false; #commitGoals; #readCommit; #goalsUncertain = false; #appendMemory; #memoryUncertain = false;
   constructor({ adapter, budget, readSnapshot, submitOrder, sendChat = null, conversationPolicy = {}, commitGoals = null, appendMemory = null, readCommitSnapshot = null, now = clock, limits = {}, contextLimits = {} }) {
     this.#adapter = validateAdapter(adapter); this.#limits = mindLimits(limits);
     if (!(budget instanceof InferenceBudget) || typeof readSnapshot !== 'function' || typeof submitOrder !== 'function' || typeof now !== 'function')
       throw new TypeError('invalid mind configuration');
+    if (adapter.metering !== undefined && typeof budget.assertAdapter !== 'function') throw new TypeError('native_metering_requires_durable_budget');
+    budget.assertAdapter?.(adapter);
+    this.#nativeMetering = adapter.metering !== undefined;
     if (sendChat !== null && typeof sendChat !== 'function') throw new TypeError('invalid chat submission');
     if (commitGoals !== null && (typeof commitGoals !== 'function' || typeof readCommitSnapshot !== 'function')) throw new TypeError('invalid goal commit configuration');
     if (appendMemory !== null && (typeof appendMemory !== 'function' || typeof readCommitSnapshot !== 'function')) throw new TypeError('invalid memory commit configuration');
@@ -178,6 +181,7 @@ export class AgentMind {
     }
     if (flight.mode !== 'compaction' && snapshot.memoryJournal) refreshMemoryRetrieval(snapshot,
       [flight.turn?.source?.text ?? '', snapshot.memoryQueryText ?? '', ...(snapshot.goalFeedback ?? []).map((f) => `${f.type} ${f.state}`)].join(' ').slice(0, 8000), this.#now());
+    this.#budget.assertAdapter?.(this.#adapter);
     const context = buildMindContext({ snapshot, adapter: this.#adapter, requestId: flight.requestId,
       limits: this.#limits, contextLimits: this.#contextLimits, nowMs: this.#now(), mode: flight.mode });
     flight.report = context.report ?? null;
@@ -221,6 +225,7 @@ export class AgentMind {
       await this.#budget.markUnknown(flight.requestId, 'inference_cancelled');
       this.#finish(flight, { ok: false, why: boundaryFence }); return;
     }
+    this.#budget.assertAdapter?.(this.#adapter);
     let response;
     try {
       response = await this.#adapter.complete({ body: context.prepared.body, signal: flight.controller.signal,
@@ -237,13 +242,17 @@ export class AgentMind {
       if (!unknown.ok) { this.#finish(flight, { ok: false, why: 'budget_reconciliation_unavailable' }); return; }
     }
     if (this.#deadline(flight)) return;
+    // Native usage is trusted adapter evidence, never generated JSON or a local text estimate.
+    // A rate-derived charge is not a provider invoice. Unknown usage keeps its full durable hold.
+    if (this.#nativeMetering && !settlement.ok) { this.#finish(flight, { ok: false, why: 'native_usage_unavailable' }); return; }
     if (settlement.overrun) { this.#finish(flight, { ok: false, why: 'provider_limit_overrun' }); return; }
     const decision = parseDecision(response?.text, this.#limits.maxResponseBytes, flight.mode);
     if (!decision) { this.#finish(flight, { ok: false, why: 'invalid_decision' }); return; }
-    const outputTokens = this.#adapter.countText(response.text);
+    const outputTokens = this.#nativeMetering ? settlement.entry.usage.outputTokens : this.#adapter.countText(response.text);
     if (!integer(outputTokens) || outputTokens > this.#limits.maxOutputTokens) {
       this.#finish(flight, { ok: false, why: 'response_over_budget' }); return;
     }
+    this.#budget.assertAdapter?.(this.#adapter);
     const current = copy(await this.#read());
     if (this.#deadline(flight)) return;
     const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs);

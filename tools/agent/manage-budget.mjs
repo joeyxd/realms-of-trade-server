@@ -2,13 +2,15 @@ import { resolve } from 'node:path';
 import { createBudgetAdministration } from './persistent-budget.mjs';
 
 const output = (data) => process.stdout.write(JSON.stringify({ type: 'inference_budget', data }) + '\n');
-const help = `Presupuesto local de inferencia simulada, sin proveedor ni red.
+const help = `Presupuesto local de inferencia, sin llamadas a proveedores ni red.
 node tools/agent/manage-budget.mjs --files C:/ruta/presupuesto --owner owner-lab --character brisa-lab --world world-lab
 JSON por stdin: initialize con allowanceId, period:{startsAtMs,endsAtMs}, limits:{maxCalls,maxTokens,maxCostUnits,maxEntries};
+initialize_native añade metering:{providerId,modelId,unit:"nano_usd",inputNanoUsdPerToken,outputNanoUsdPerToken,priceRef,priceCheckedAtMs} y crea un ledger v2 separado. Debes verificar las tarifas antes del canario; no se consultan ni se activan proveedores.
 inspect; configure con expectedRevision, enabled y limits; reconcile con requestId y usage:{inputTokens,outputTokens,costUnits};
 mark_unknown con requestId; cancel_reserved con requestId; exit.
 No se reinicia el periodo ni se borran recibos. Configure conserva consumo y reservas.
-Unidades de ensayo, no dinero. Reconcile declara evidencia del adaptador; no calcula costes ni llama un modelo.
+initialize conserva unidades de ensayo v1. initialize_native fija tarifas inmutables y expresa maxCostUnits en nano USD (1 USD = 1000000000 unidades); el cargo calculado no es una factura. No se mezclan historiales.
+Reconcile registra una declaración manual del dueño; en v2 costUnits debe coincidir con los contadores por las tarifas fijadas. No prueba consumo ni factura del proveedor. El panel/runner simulados no admiten v2.
 Acceso local al directorio del dueño; no autentica usuarios remotos.\n`;
 
 async function main() {
@@ -22,7 +24,7 @@ async function main() {
   if (Object.keys(args).length !== 4) throw new Error('invalid_arguments');
   const admin = createBudgetAdministration({ directory: resolve(args.files), scope: { ownerId: args.owner, characterId: args.character, worldId: args.world } });
   let ended = false;
-  const fields = { initialize: ['allowanceId', 'period', 'limits'], inspect: [], configure: ['expectedRevision', 'enabled', 'limits'],
+  const fields = { initialize: ['allowanceId', 'period', 'limits'], initialize_native: ['allowanceId', 'period', 'limits', 'metering'], inspect: [], configure: ['expectedRevision', 'enabled', 'limits'],
     reconcile: ['requestId', 'usage'], mark_unknown: ['requestId'], cancel_reserved: ['requestId'], exit: [] };
   async function handle(raw) {
     let message;
@@ -31,7 +33,8 @@ async function main() {
         !fields[message.type].every((key) => Object.hasOwn(message, key))) { output({ ok: false, why: 'invalid_message' }); return; }
     const { type, ...request } = message;
     if (type === 'exit') { ended = true; output({ ok: true, closed: true }); return; }
-    if (type === 'initialize' || type === 'configure') output(await admin[type](request));
+    if (type === 'initialize_native') output(await admin.initialize(request));
+    else if (type === 'initialize' || type === 'configure') output(await admin[type](request));
     else if (type === 'inspect') output(await admin.inspect());
     else if (type === 'reconcile') output(await admin.settle(request.requestId, request.usage));
     else if (type === 'mark_unknown') output(await admin.markUnknown(request.requestId, 'owner_reconciliation'));

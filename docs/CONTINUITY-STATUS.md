@@ -2,12 +2,23 @@
 
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
+**AREA17 L03d-a, herramienta publicada 2026-10-10:** [ledger de inferencia nativa](delivery/l03d-native-metering.md),
+separado de M5 y de la factura externa. `agent-inference-budget/v2` persiste `metering` con IDs
+de proveedor/modelo declarados, unidad nano USD, tarifas/referencia/fecha fijadas y hash por reserva/
+liquidación. V1 sigue simulado, sin migración automática. Contadores `adapter_native` o manuales
+`owner_supplied`, cargo derivado y `invoiceCostUnits:null` quedan diferenciados. Uso desconocido
+retiene reserva tras reinicio; configure no renueva saldo ni tarifa. No añade campos de gameplay,
+SQL, flags ni activación de proveedor; canario y calidad de memoria siguen pendientes. Fuente
+`e614ca4` integrada con alpha.28/protocolo 40; `tools/agent` no entra en la imagen VPS.
+
 **AREA15, diario SQL019:** [petición exacta y recuperación](delivery/m5-ground-transaction-journal.md).
 Dueño M5, scope mundo y una intención pending; confirmación con operación/mundo/reloj/recibos en un commit.
 Sin campos de perfil ni defaults nuevos; migración SQL001–019 y opt-in de GroundTransactionSession.
 Startup resuelve pending y carga filas actuales; no emite ACK ni instala snapshots históricos.
 266/266 pruebas y tres SIGKILL locales cubren preparación/commit/confirmación. No montado en GameHost ni aplicado live.
 Sigue dueño de tick/época/adopción legacy; preparación no es ACK ni lease frente a otros writers.
+Publicado/verificado en `6748f9a`, alpha.27/protocolo 39: imagen sana con APIs Node 22, 107/107 offline
+y entrada pública 6/6. Coordinadores opcionales siguen `null`; este corte no activa SQL018/019.
 
 **AREA07 RNV02 observado, 2026-10-10 20:12:06 UTC:** `e648d1b`, alpha.27/protocolo 39.
 Farol por instancia en el perfil del dueño y CAS ordinario, sin SQL ni diario nuevo. Una imagen sana,

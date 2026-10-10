@@ -10,6 +10,9 @@ Implementación: [mente](../../tools/agent/mind.mjs), [contexto completo](../../
 [presupuesto](../../tools/agent/inference-budget.mjs), [proyección](../../tools/agent/mind-snapshot.mjs).
 [Entrega y evidencia](../delivery/l03a-agent-mind.md).
 
+L03d-a prepara [contabilidad nativa durable separada](native-metering.md), sin transporte real
+ni cambio del CLI simulado. La aceptación con proveedor, memoria y coste reales sigue pendiente.
+
 ## Uso local
 
 La CLI habitual mantiene inferencia desactivada. Para ensayar el camino completo sin servicios externos:

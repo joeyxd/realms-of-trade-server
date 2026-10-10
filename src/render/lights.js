@@ -6,12 +6,14 @@
 import * as THREE from 'three';
 import { U, MAX_LIGHTS } from './toon.js';
 import { lanternPoint } from '../sim/naval/lantern.js';
+import { personalLanternPoint } from './personalLantern.js';
 
 export { MAX_LIGHTS };
 
 // Light kinds: base color, intensity, radius, flicker amount/speed, wrap, which preset knob scales it.
 const KINDS = {
   lantern: { color: 0xffb35a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'fire' },
+  portable: { color: 0xffdf9a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'portable' },
   brazier: { color: 0xff7a2a, i: 3.6, r: 9.5, flicker: 0.2, speed: 2.6, wrap: 0.35, knob: 'fire' },
   campfire: { color: 0xff8a32, i: 3.8, r: 10, flicker: 0.24, speed: 2.9, wrap: 0.35, knob: 'fire' },
   lava: { color: 0xff5a1e, i: 3.0, r: 12, flicker: 0.1, speed: 0.6, wrap: 0.5, knob: 'lava' },
@@ -46,13 +48,13 @@ export class LocalLights {
     this.sources = [];
     this.staticSources = this.sources;
     this.raftSources = new Map();
+    this.portableSources = new Map();
     this.wantedRaftSources = new Set();
+    this.wantedPortableSources = new Set();
     this.flashes = [];
     this.max = 8;
     this.time = 0;
-    this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, player: 0 };
-    this.playerColor = new THREE.Color(0xffe4c4);
-    this.playerPos = new THREE.Vector3();
+    this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, portable: 1 };
     this.picked = [];
     const add = (kind, x, y, z, extra = {}) => {
       const k = KINDS[kind];
@@ -126,7 +128,42 @@ export class LocalLights {
       this.raftSources.delete(key);
       membershipChanged = true;
     }
-    if (membershipChanged) this.sources = [...this.staticSources, ...this.raftSources.values()];
+    if (membershipChanged) this.refreshSources();
+  }
+
+  // Character belt lights share the fixed local-light shader slots with map and raft lights.
+  // The owner's live light has top priority so decoration can never hide it on the low tier.
+  setPortableLights(records) {
+    const wanted = this.wantedPortableSources;
+    wanted.clear();
+    let membershipChanged = false;
+    for (const record of Array.isArray(records) ? records : []) {
+      if (!record || record.id == null || record.lit !== true) continue;
+      const point = personalLanternPoint(record);
+      if (!point) continue;
+      const key = String(record.id);
+      wanted.add(key);
+      let source = this.portableSources.get(key);
+      if (!source) {
+        const k = KINDS.portable;
+        source = { kind: 'portable', id: key, x: point.x, y: point.y, z: point.z,
+          r: k.r, i: k.i, color: new THREE.Color(k.color), flicker: k.flicker, speed: k.speed,
+          wrap: k.wrap, knob: k.knob, seed: sourceSeed(`portable:${key}`), d: 0, w: 0, priority: 0 };
+        this.portableSources.set(key, source);
+        membershipChanged = true;
+      }
+      source.x = point.x; source.y = point.y; source.z = point.z;
+      source.priority = record.own === true ? 2 : 0;
+    }
+    for (const key of this.portableSources.keys()) if (!wanted.has(key)) {
+      this.portableSources.delete(key);
+      membershipChanged = true;
+    }
+    if (membershipChanged) this.refreshSources();
+  }
+
+  refreshSources() {
+    this.sources = [...this.staticSources, ...this.raftSources.values(), ...this.portableSources.values()];
   }
 
   // Short-lived light (dash, hits). Fades with (1 - t)^2.
@@ -137,7 +174,7 @@ export class LocalLights {
     f.color.set(color);
   }
 
-  update(dt, focus, playerPos) {
+  update(dt, focus) {
     this.time += dt;
     const t = this.time, K = this.knobs;
     let n = 0;
@@ -148,8 +185,7 @@ export class LocalLights {
       col[n].set(color.r * intensity, color.g * intensity, color.b * intensity, wrap);
       n++;
     };
-    // Static sources get a fixed number of slots (so a flash or the player light turning on never
-    // pushes one out abruptly); the player light and flashes use the reserved ones.
+    // Keep the prior static budget stable while reserving room for transient combat flashes.
     const reserve = this.max >= 8 ? 2 : 1;
     const slots = this.max - reserve;
     // Rank by distance from the focus minus part of the radius (big lights count from farther).
@@ -159,7 +195,7 @@ export class LocalLights {
       s.w = 0;
       const knob = K[s.knob] ?? 1;
       if (knob < 0.01) continue;
-      s.d = Math.hypot(s.x - focus.x, s.z - focus.z) - s.r * 0.5;
+      s.d = s.priority >= 2 ? -s.r * 0.5 : Math.hypot(s.x - focus.x, s.z - focus.z) - s.r * 0.5;
       if (s.d > 40) continue;
       list.push(s);
     }
@@ -167,7 +203,7 @@ export class LocalLights {
     const cut = list.length > slots ? list[slots].d : 40;
     for (let i = 0; i < Math.min(slots, list.length); i++) {
       const s = list[i];
-      const fade = Math.max(s.priority ? 0.65 : 0, Math.min(1, (cut - s.d) / 6)) *
+      const fade = s.priority >= 2 ? 1 : Math.max(s.priority ? 0.65 : 0, Math.min(1, (cut - s.d) / 6)) *
         (1 - THREE.MathUtils.smoothstep(s.d, 30, 40));
       if (fade <= 0) continue;
       s.w = fade;
@@ -175,8 +211,7 @@ export class LocalLights {
       const fl = 1 + s.flicker * (Math.sin(t * s.speed * 3.1 + s.seed * 7) * 0.6 + Math.sin(t * s.speed * 7.3 + s.seed * 3) * 0.4 + Math.sin(t * s.speed * 17 + s.seed) * 0.3);
       put(s.x, s.y + (s.flicker > 0.15 ? Math.sin(t * 9 + s.seed) * 0.08 : 0), s.z, s.r, s.color, s.i * fl * fade * K[s.knob], s.wrap);
     }
-    // Player light radius (dusk and night), then flashes while there is room.
-    if (playerPos && K.player > 0.01) put(playerPos.x, playerPos.y + 2.2, playerPos.z, 6, this.playerColor, 1.4 * K.player, 0.6);
+    // Flashes use the remaining reserved slot; portable lights are ordinary ranked sources above.
     for (const f of this.flashes) {
       if (f.t >= f.life) continue;
       f.t += dt;

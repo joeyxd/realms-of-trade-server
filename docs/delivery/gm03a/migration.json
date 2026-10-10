@@ -1,0 +1,22 @@
+{
+  "schema": "gm03a-migration/v1",
+  "at": "2026-10-10T20:41:47.482Z",
+  "file": "server/migrations/020_gm_drafts.sql",
+  "appliedSqlSha256": "601d45004c2daba734f92ada44a6300d741b490eeea14ea2d5e69f5babdbc9e4",
+  "localSha256": "601d45004c2daba734f92ada44a6300d741b490eeea14ea2d5e69f5babdbc9e4",
+  "bytes": 14591,
+  "method": "Authenticated Supabase SQL Editor, new query, transaction completed Success. No rows returned.",
+  "queryId": "d52e9275-4e1a-4c8c-ad7b-80c4901d0dca",
+  "readiness": {
+    "version": 1
+  },
+  "preRuntime": {
+    "version": "0.6.0-alpha.27",
+    "players": 0,
+    "sockets": 0,
+    "storageErrors": 0,
+    "logging": true,
+    "economic": true
+  },
+  "numbering": "Renamed from 019 to 020 after upstream occupied 019 with the M5 journal; SQL bytes unchanged. SQL019 M5 is not applied by this cut."
+}

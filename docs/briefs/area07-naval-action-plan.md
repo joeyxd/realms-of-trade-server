@@ -27,7 +27,9 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
   colisión, reintentos y CAS del dueño comprobados localmente.
 - **RNV02 implementado y activo:** farol utilizable, coste/soporte vivo/HP, V/toque y guardado
   del dueño. [Contrato](rnv02-naval-lantern.md) y [entrega](../delivery/rnv02-naval-lantern.md).
-  Sigue noche oscura → agua costera/reembarque → provisiones/hogar → rutas → rival → cooperación.
+- **RNV03 aceptado localmente:** [noche y farol portátil](../delivery/rnv03-dark-night.md), alpha.28/protocolo 40.
+  650/650 en serie, 107/107 release (solapamiento), cuatro vistas de pie/puerto, cuatro navales y dos probes
+  N/toque al timón/cubierta. Despliegue en comprobación; sigue agua costera/reembarque → provisiones/hogar.
 
 ## 1 Visión y criterio de éxito
 
@@ -162,11 +164,18 @@ Arte procedural existente reutilizado tras verificar antorcha Unreal concreta, d
 VPS `e648d1b` sano hasta las 20:15:21 UTC, imagen 107/107 y timer activo. Entrada pública WSS,
 mapa/minimapa y catálogo comprobados; evidencia/límites en entrega.
 
-**Sigue noche oscura:** sustituir el relleno nocturno automático/presets cosméticos por una noche casi negra
-sin fuente de luz, respetada también en calidad baja/móvil y con UI legible. Verificar farol on/off en costa,
-mar e interior, sin hacer depender la visibilidad esencial de calidad alta. El farol naval no sustituye una
-fuente portátil a pie: disponer también de una luz utilizable fuera de cubierta antes de retirar la ayuda automática.
-Después agua costera/reembarque.
+### RNV03 — noche oscura y farol portátil (implementado localmente, en aceptación)
+
+[Contrato](rnv03-dark-night.md) · [entrega](../delivery/rnv03-dark-night.md), alpha.28/protocolo 40.
+Noche casi negra sin fuentes, también en bajo/móvil; hora compartida obligatoria durante la partida,
+sin selector cosmético ni luz automática del jugador. Farol inicial de cinturón N/toque, público y
+apagado al morir/reentrar. Servicio de sesión sin objeto económico, combustible o perfil/SQL nuevo.
+Usa el presupuesto existente y mantiene la luz propia; modelo/fuente siguen pose, cubierta y giro.
+Costa/puerto, pie, farol naval e interior se verifican por navegador; publicación y revisión activa
+se documentan en la entrega. No hay sombras/oclusión por paredes ni prueba de FPS físico.
+
+**Sigue agua costera/reembarque:** definir primero alcance, carga, agotamiento, rescate y pérdidas;
+usar la cubierta y autoridad actuales. Después provisiones/hogar.
 
 ## 5 Más allá del alfa
 

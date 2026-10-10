@@ -1,9 +1,34 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
+**GM03a, 2026-10-10 — migración GM `020_gm_drafts.sql` aplicada; runtime sin publicar:** el almacenamiento remoto de borradores privados
+por cuenta/mundo está listo en base de datos, con CAS y recibos idempotentes; no toca mapa activo ni autoridad
+M5. Readiness live `version: 1` a `2026-10-10T20:41:47Z`; hash aplicado de migración GM `020_gm_drafts.sql`
+`601d45004c2daba734f92ada44a6300d741b490eeea14ea2d5e69f5babdbc9e4`. Suite local SQL/store de este corte:
+6/6. Falta publicar el runtime, verificar canario remoto y completar aceptación browser/GM. GM03b
+(publicación, activación y rollback) sigue pendiente. [Entrega GM03a](delivery/gm03a/DELIVERY.md) ·
+[brief](briefs/gm03a-remote-drafts.md) · [plan GM](../PLAN-GM-EDITOR.md).
+
+**AREA17 L03d-a, herramienta publicada 2026-10-10:** [contabilidad nativa durable](delivery/l03d-native-metering.md)
+prepara un ledger v2 separado con tarifas/modelo declarados e inmutables, reserva previa, uso nativo
+y conciliación sin confundir cargo calculado con factura. V1/panel/runner siguen simulados; sin
+proveedor, SDK, credencial ni SQL nuevo. Falta elegir proveedor/modelo y aceptar transporte, memoria,
+conversación/PvE y coste reales. Fuente `e614ca4` integrada con alpha.28/protocolo 40; herramienta
+del repositorio, excluida de la imagen VPS. Pruebas/continuidad pública en la entrega.
+
+**AREA07 RNV03, 2026-10-10 — alpha.28/protocolo 40, implementación local en aceptación:**
+[Contrato](briefs/rnv03-dark-night.md) y [entrega](delivery/rnv03-dark-night.md).
+La noche respeta el reloj compartido, sin selector cosmético ni relleno automático del jugador.
+N/toque enciende el farol básico de cinturón; otros humanos aprovechan su luz y ven el accesorio.
+Estado de sesión, apagado al morir/reentrar, sin inventario/combustible/perfil/SQL nuevo ni otro writer.
+El transporte administrado de agentes conserva sus permisos actuales: no admite este interruptor.
+La entrega registra pruebas, capturas y revisión/imagen/entrada pública antes de marcar desplegado.
+Sigue agua costera/reembarque con reglas explícitas de carga/agotamiento/rescate, después provisiones/hogar.
 
 **AREA15, 2026-10-10 — diario del sobre:** [SQL019 y recuperación](delivery/m5-ground-transaction-journal.md).
 UUID/petición exactos antes del efecto; intención y SQL018 se cierran juntos. La sesión opt-in resuelve
 pending antes de cargar reloj/mundo actuales, sin instalar perfiles históricos ni emitir ACK al recuperar.
 266/266 pruebas y tres SIGKILL locales. Sin montaje GameHost, SQL018/019 live ni flags; sigue dueño común de tick/legacy.
+Publicado `6748f9a`, alpha.27/protocolo 39: una imagen sana, 107/107 offline y entrada pública 6/6.
+Se verifican imports del journal/recovery en Node 22; este corte no activa SQL018/019.
 
 **AREA07 RNV02, 2026-10-10 — farol funcional, integración alpha.27/protocolo 39:**
 [contrato](briefs/rnv02-naval-lantern.md) y [entrega](delivery/rnv02-naval-lantern.md).

@@ -24,6 +24,7 @@ import { installRafts, prepareRaftProfile, attachRafts, detachRafts, publicRafts
 import { raftCmd } from '../sim/systems/raftEditor.js';
 import { raftDoorCmd } from '../sim/systems/raftDoors.js';
 import { raftLanternCmd } from '../sim/systems/raftLanterns.js';
+import { personalLanternCmd, clearPersonalLantern } from '../sim/systems/personalLantern.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
@@ -156,6 +157,7 @@ export class LocalServer {
       clearCommerceReceipts(this.world, c.entity);
       clearResourceReceipts(this.world, c.entity);
       detachRafts(this.world, c.entity);
+      clearPersonalLantern(this.world, c.entity);
       const p = detachProfile(this.world, c.entity);
       if (save && p && this.onSave) this.onSave(clientId, p);
       this.world.despawn(c.entity); this.flushEvents();
@@ -282,6 +284,7 @@ export class LocalServer {
     if (msg?.type === 'navalPilot') return this.navalCommand(c, msg);
     if (msg?.type === 'raftDoor') return this.doorCommand(c, msg);
     if (msg?.type === 'raftLantern') return this.lanternCommand(c, msg);
+    if (msg?.type === 'personalLantern') return this.personalLanternCommand(c, msg);
     if (!msg || !PLAYER_COMMANDS.has(msg.type) ||
         (msg.type === 'pearl' && !PEARL_COMMANDS.has(msg.op))) return false;
     // Classify without calling a helper: even talk/list/quote can change progress or receipt caches.
@@ -357,6 +360,13 @@ export class LocalServer {
       this.sendSave(ownerId, owner); this.sendProfile(ownerId, owner);
       this.broadcastSnapshot();
     }
+    return ack.ok;
+  }
+
+  personalLanternCommand(c, msg) {
+    if (c?.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
+    const ack = personalLanternCmd(this.world, c.entity, msg);
+    if (ack.ok && ack.changed) this.broadcastSnapshot();
     return ack.ok;
   }
 
