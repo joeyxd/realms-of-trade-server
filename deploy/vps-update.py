@@ -42,7 +42,8 @@ COMMAND_TIMEOUT = 120
 FETCH_TIMEOUT = 300
 BLOB_BATCH_SIZE = 128
 BUILD_TIMEOUT = 600
-TEST_TIMEOUT = 180
+# Persistence fixtures scan many candidate landing positions on the one-CPU test container.
+TEST_TIMEOUT = 600
 COOLDOWN = 600
 
 
