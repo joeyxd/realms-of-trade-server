@@ -2,6 +2,16 @@
 
 2026-10-10, hora de México. M5/GameHost mantiene una sola autoridad de persistencia.
 
+**AREA07 RNV02 observado, 2026-10-10 20:12:06 UTC:** `e648d1b`, alpha.27/protocolo 39.
+Farol por instancia en el perfil del dueño y CAS ordinario, sin SQL ni diario nuevo. Una imagen sana,
+107/107 offline, recursos/economía listos, `logging:true` ya presente antes de este despliegue,
+cero errores/guardados pendientes y timer activo. [Revisión/imagen/status](delivery/rnv02-naval-lantern/deployment.json).
+Este corte no aplica SQL016/017/018 ni activa flags. El status de Tala no sustituye su aceptación autenticada.
+El ACK del interruptor no demuestra commit durable; la prueba de reentrada del farol usa store de memoria.
+[Alcance, navegador y evidencia](delivery/rnv02-naval-lantern.md).
+Entrada pública real WSS, mapa/minimapa y catálogo doce piezas comprobados; status posterior
+20:15:21 UTC conserva revisión/imagen y cero jugadores/errores/pendientes tras cerrar QA.
+
 **Siguiente corte implementado localmente:** [SQL018: gameplay, mundo y reloj juntos](delivery/m5-ground-transactions.md),
 con sesión detenida/recibos/reconciliación y pruebas de proceso. No montado ni aplicado live. SQL017
 conserva su función de presupuesto de agentes; continúa integración de un dueño de tick/diario/legacy.
@@ -15,6 +25,7 @@ conserva su función de presupuesto de agentes; continúa integración de un due
 | Aprendizaje y otros campos del perfil | [PRG01b2/SQL016](delivery/prg01b2-logging.md): Tala, troncos y hasta tres perfiles actuales en el mismo recibo M5; legacy/pilotaje preservados | Aceptación específica live en la entrega PRG01b2; después enseñanza del artesano |
 | Mercados y producción autónoma | Snapshot periódico y operaciones económicas cubiertas | Ventana desde último checkpoint |
 | Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
+| Puertas y faroles operativos | RNV01/RNV02: identidad/condición y estado en perfil del dueño por CAS; visitantes reciben ACK privado y snapshot público | Ventana antes del save confirmado y aceptación autenticada específica; no aportan presencia offline ni nuevo recibo económico |
 | Perlas/muerte/botín | Contratos M5 opcionales y transacción común SQL018 local; no compuestos con economía activa | Dueño común de tick, diario del sobre, adopción legacy y aceptación VPS |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
 | Borrador del editor GM | [GM02](delivery/gm02-draft-walk.md): IndexedDB privado por navegador/cuenta/mundo, documento v2 con migración v1, CAS y recuperación/export local | GM03 debe integrar guardado remoto y publicación con M5; preview caminando descartable, sin bienes ni progreso |

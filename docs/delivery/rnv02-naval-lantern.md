@@ -31,7 +31,25 @@ Un [probe adicional](rnv02-naval-lantern/evidence-2026-10-10T20-05-48-998Z.json)
 E → cubierta activa, caminar y V → ACK de encendido. Su captura cercana deja ver núcleo/jaula abiertos.
 Las fixtures descargan el exceso de materiales antes de embarcar; el rechazo previo por porte era correcto.
 El test de conservación usa GameHost y store de memoria durable como fixture; no es una prueba autenticada
-de farol en Supabase público. Publicación efectiva pendiente de revisión/imagen/entrada pública.
+de farol en Supabase público.
+
+## Publicación
+
+Código `9f3a19e`, integración alpha.27/protocolo 39 `3dcd116` y aceptación `e648d1b` enviados a continuidad,
+conservando L06b y SQL018 no montado. VPS observado a las **20:12:06 UTC** en
+`e648d1be69d9320d88ac1e980ae4d699a4675b79`, imagen
+`sha256:d6d66c961e4dc60895bac5aa14a0df820334501206a72d57c4e82f77d228f1a2`.
+Una autoridad sana; la misma imagen pasó 107/107 offline antes del relevo. Página/health 200, Supabase
+durable/cuentas activas, economía y recursos listos, sin errores/guardados pendientes/bloqueo de tick;
+timer activo. [Revisión, imagen y status](rnv02-naval-lantern/deployment.json).
+`logging:true` ya estaba activo antes de este corte; no se aplicó SQL ni se cambió ningún flag.
+[Navegador público](rnv02-naval-lantern/public-browser.json): Chrome nuevo entra como invitado por
+`wss://marea.62.171.136.148.sslip.io/ws`; comprueba alpha.27/protocolo 39, doce piezas incluido farol,
+mapa M y minimapa, sin errores de página/juego ni requests fallidas. Capturas
+[partida](rnv02-naval-lantern/public-gameplay.png) y [mapa](rnv02-naval-lantern/public-map.png) inspeccionadas.
+[Status posterior](rnv02-naval-lantern/post-smoke.json), **20:15:21 UTC**: misma revisión/imagen sana,
+cero jugadores/sockets tras cerrar QA, tick avanzando, sin errores/guardados pendientes y timer activo.
+No acredita construcción/guardado autenticado del farol en Supabase ni latencia/FPS de usuarios reales.
 
 ## Límites y siguiente corte
 

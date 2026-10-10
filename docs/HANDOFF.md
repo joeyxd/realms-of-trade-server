@@ -6,8 +6,9 @@ Editor B con doce piezas; una madera/un hierro, HP 10, apagado inicial y soporte
 V/toque elige puerta/farol cercano. Luz cálida sigue la nave y pierde servicio al romperse;
 reparación pagada y encendido explícito. Estado por instancia en perfil M5 del dueño, visitantes cercanos,
 replay acotado, sin SQL, combustible ni otro writer. 631/631 integradas, 107/107 release (solapamiento),
-cuatro vistas y probe F/E/V real aceptados. Publicación final en la entrega; sigue noche casi negra sin luz,
-después agua costera/reembarque. Se conservan comercio L06b y SQL018 no montado del upstream.
+cuatro vistas y probe F/E/V real aceptados. VPS `e648d1b` sano hasta las 20:15:21 UTC, imagen 107/107 y timer activo.
+Entrada pública WSS, mapa/minimapa y catálogo comprobados; sigue noche casi negra sin luz, después agua costera/reembarque.
+Se conservan comercio L06b y SQL018 no montado del upstream; no se cambiaron SQL ni flags.
 
 **AREA15, corte local 2026-10-10:** [SQL018, gameplay/mundo/reloj atómicos](delivery/m5-ground-transactions.md)
 y sesión detenida con recuperación exacta, sobre alpha.26/protocolo 38. SQL017 pertenece al comercio de

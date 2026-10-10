@@ -232,5 +232,18 @@
     ],
     "physicalDevicePerformance": false,
     "publicAuthenticatedLanternSave": false
+  },
+  "public": {
+    "observedAt": "2026-10-10T20:15:21Z",
+    "activeRevision": "e648d1be69d9320d88ac1e980ae4d699a4675b79",
+    "image": "sha256:d6d66c961e4dc60895bac5aa14a0df820334501206a72d57c4e82f77d228f1a2",
+    "browserPassed": true,
+    "websockets": [
+      "wss://marea.62.171.136.148.sslip.io/ws"
+    ],
+    "deployment": "deployment.json",
+    "browser": "public-browser.json",
+    "postSmoke": "post-smoke.json",
+    "authenticatedLanternSave": false
   }
 }

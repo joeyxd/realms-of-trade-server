@@ -25,7 +25,7 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
   [Contrato](rnv01-naval-refuge.md) y [entrega](../delivery/rnv01-naval-refuge.md): 516 casos tras integrar Tala,
   107 del actualizador con solapamiento y tres vistas UI. V/toque, soporte destruido, retiro/reconstrucción,
   colisión, reintentos y CAS del dueño comprobados localmente.
-- **RNV02 aceptado localmente:** farol utilizable, coste/soporte vivo/HP, V/toque y guardado
+- **RNV02 implementado y activo:** farol utilizable, coste/soporte vivo/HP, V/toque y guardado
   del dueño. [Contrato](rnv02-naval-lantern.md) y [entrega](../delivery/rnv02-naval-lantern.md).
   Sigue noche oscura → agua costera/reembarque → provisiones/hogar → rutas → rival → cooperación.
 
@@ -148,7 +148,7 @@ Aceptación: PC/touch, rechazo de finalización falsa o repetida, cancelación/d
 beneficio comparable, carga/daño conservados y textos ES/EN. El crédito y la conservación publicados
 necesitan pruebas de su operación M5 concreta; el prototipo de recorrido no acredita esa permanencia.
 
-### RNV02 — farol utilizable (aceptado localmente; publicación en curso)
+### RNV02 — farol utilizable (implementado y activo)
 
 [Contrato](rnv02-naval-lantern.md) · [entrega](../delivery/rnv02-naval-lantern.md). Integración alpha.27/protocolo 39,
 sobre GM02/refugio/Tala y comercio L06b. Editor B incorpora el farol: una madera + un hierro, HP 10, masa 1 y cubierta viva.
@@ -159,7 +159,8 @@ requiere encender otra vez. No consume combustible. El núcleo visible en jaula 
 pose/giro/nivel, con presupuesto 4/8/12 y prioridad para la nave ocupada; no reconstruye geometría al accionar.
 Arte procedural existente reutilizado tras verificar antorcha Unreal concreta, distinta y aún no portable.
 631/631 pruebas integradas, 107/107 release con solapamiento, cuatro vistas y probe real F/E/V aceptados;
-publicación/evidencia final en entrega.
+VPS `e648d1b` sano hasta las 20:15:21 UTC, imagen 107/107 y timer activo. Entrada pública WSS,
+mapa/minimapa y catálogo comprobados; evidencia/límites en entrega.
 
 **Sigue noche oscura:** sustituir el relleno nocturno automático/presets cosméticos por una noche casi negra
 sin fuente de luz, respetada también en calidad baja/móvil y con UI legible. Verificar farol on/off en costa,
