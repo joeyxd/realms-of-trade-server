@@ -3,6 +3,14 @@
 Para quien retome el proyecto (persona o modelo). Leer `AGENTS.md` y esto primero, luego `PLAN-DELIVERY.md`
 (orden operativo de juego + assets + agentes), `DESIGN.md` y el `PLAN-M*.md` del milestone en curso.
 
+**Corrección de inventario/recogida, 2026-10-09:** [informe y capturas](delivery/inventory-feedback.md).
+F/táctil responde inmediatamente; ocultación y cantidades provisionales se reconcilian con la autoridad
+sin duplicar materiales. El tiempo de acción comienza al pulsar, sin sumar el viaje de la respuesta.
+I muestra `eco.pack.goods`, volumen/capacidad, masa y herramientas; contenido nuevo ES/EN.
+57/57 casos Node, 16 Python + 1 omitido en Windows y 3/3 vistas de navegador con 500 ms RTT.
+Protocolo 32 conservado (campo opcional en ACK privado); sin SQL ni otra autoridad de guardado.
+Corte integrado para publicación por el actualizador del VPS; revisión activa/entrada pública se verifican después.
+
 **Dirección de alfa del autor, 2026-10-08:** tres pueblos especializados que crecen con aportes de jugadores;
 primer pueblo **Salty Shore**, reconstruido en la isla existente por el agente de arte. Mecánicas y anclas
 funcionales/capacidad se detallan en [PLAN-ALFA-MUNDO](../PLAN-ALFA-MUNDO.md). Ocho personajes incluyendo
