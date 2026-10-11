@@ -19,6 +19,7 @@ SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las 
 267/267 casos acotados, imagen 37/37 y navegador público 11/11; capturas ES/EN escritorio/móvil inspeccionadas.
 Release `0a2dfc0` sana, 35/35 fuentes activas verificadas; cadena durable y entrada real aceptadas.
 Canario retirado: mapa base generación 8 y borrador original restaurado en r27. Sigue optimización/dispersión y GM06.
+Integración concurrente alpha.49/protocolo 54: público 11/11, suites focales 31/31 y entrada real verificadas; evidencia separada en la entrega.
 
 **AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
 [Entrega/evidencia](delivery/l04c-companion-continuity.md) y [brief](briefs/l04c-companion-continuity.md).

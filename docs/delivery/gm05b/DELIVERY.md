@@ -1,6 +1,7 @@
 # GM05b — pintura de terreno y formas de pincel
 
-Publicado y verificado en **alpha.48/protocolo 53**, release `0a2dfc0b6b8a9797f756b42e7b1d51a972393dd5`.
+Publicado y verificado inicialmente en **alpha.48/protocolo 53**, release `0a2dfc0b6b8a9797f756b42e7b1d51a972393dd5`.
+También verificado tras la integración concurrente en **alpha.49/protocolo 54**; evidencia separada abajo.
 Continúa [GM05a](../gm05a/DELIVERY.md) y el [contrato previo al código](../../briefs/gm05b-terrain-paint.md).
 
 La pestaña **Terreno** añade **Pintar** y **Borrar**, con hierba, tierra, arena y roca. Los pinceles
@@ -72,6 +73,23 @@ inactiva; no sustituye el mapa del autor. La sesión de QA no cambió contraseñ
 y guardados pendientes al cierre. La [entrada real posterior](public-entry.json) recibió bienvenida,
 snapshot y perfil sobre el mapa base restaurado. Las pruebas con navegador y móvil emulado acreditan
 este flujo funcional y visual; la medición de FPS en teléfono físico conserva su aceptación propia.
+
+La integración concurrente de INV02d y continuidad de muerte conserva los módulos de terreno,
+publicación y SQL033 sin cambios. Sobre el checkout integrado `6604e49`, cinco suites focales pasaron
+**31/31**, incluidas la cadena HTTP/WS de terreno y la exclusión explícita de cambios GM cuando la
+autoridad experimental de muerte está montada: [salida](regression/integrated-49.txt). No son casos
+únicos adicionales a las comprobaciones anteriores. Esa composición experimental sigue sin montar
+en el VPS; el contrato GM no se amplió para admitirla silenciosamente.
+
+El [navegador público integrado](public/integrated-49/public-browser-evidence.json) repitió **11/11**
+controles en alpha.49/protocolo 54, con siete capturas ES/EN inspeccionadas, sin errores de página/WebGL.
+Conserva el mismo evento aislado de lectura remota cancelada, con los límites de atribución ya descritos.
+Esta pasada no repite el canario de publicación ni modifica el borrador remoto. La [imagen activa](public-integration-runtime.json)
+`sha256:4ea631063a9ab6046c35c0e3c7c8eac02b8b5dde1ba3704372c90fd476020002`, release `8c9743a`,
+coincide con **35/35 archivos de su Git**; 32 coinciden además con alpha.48 y los otros tres son
+`src/main.js`, versión y protocolo de INV02d. [Salud posterior](public-integration-deployment.json)
+y [entrada WebSocket real](public-integration-entry.json): mapa base generación 8, bienvenida/snapshot/perfil,
+Supabase durable, cero errores o guardados pendientes y cero jugadores/sockets tras cerrar la entrada.
 
 Sigue optimización reutilizable de modelos y dispersión controlada; después, generación/importación
 de terreno por sectores y costa en GM06. El sistema de modelos optimizados existente permanece

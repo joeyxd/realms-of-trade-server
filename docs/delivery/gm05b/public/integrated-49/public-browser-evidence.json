@@ -1,0 +1,668 @@
+{
+  "schema": "gm05b-public-browser/v1",
+  "version": "0.6.0-alpha.49",
+  "production": true,
+  "localFixture": false,
+  "simulatedAuth": false,
+  "screenshots": [
+    "terrain-en-dirt-square-closeup-1440x900.png",
+    "terrain-en-sand-ellipse-closeup-1440x900.png",
+    "terrain-en-rock-circle-closeup-1440x900.png",
+    "terrain-en-1440x900.png",
+    "terrain-es-1440x900.png",
+    "terrain-en-844x390.png",
+    "terrain-es-844x390.png"
+  ],
+  "checks": [
+    "preflight_selects_four_policy_valid_dry_sites_for_the_four_ground_families_and_brush_shapes",
+    "real_pointer_paints_grass_dirt_sand_rock_with_circle_square_ellipse_cursor_shapes_and_updates_mini_chart",
+    "escape_cancels_the_real_pointer_paint_preview_without_history_change",
+    "erase_strength_controls_blend_pressure_over_real_pointer_strokes",
+    "undo_and_redo_restore_the_exact_material_blends",
+    "real_pointer_sculpt_after_paint_keeps_the_material_layer_and_adds_height_samples",
+    "private_walk_moves_over_the_painted_projection_then_returns_without_document_changes",
+    "save_now_and_editor_reopen_reload_the_exact_v4_document_from_indexeddb",
+    "leaving_editor_restores_original_terrain_geometry_arrays_height_sampler_and_water_textures",
+    "painted_overview_and_localized_desktop_mobile_closeup_captures_saved_with_active_paint_controls",
+    "browser_pageerrors_and_webgl_console_errors_are_empty_and_expected_local_store_503s_are_scoped"
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "errors": [
+    "requestfailed:/api/gm/draft:net::ERR_ABORTED"
+  ],
+  "localStore503": [],
+  "paint": [
+    {
+      "material": "grass",
+      "shape": "circle",
+      "point": {
+        "x": -136,
+        "z": -144
+      },
+      "width": 8,
+      "depth": 8,
+      "materials": 47
+    },
+    {
+      "material": "dirt",
+      "shape": "square",
+      "point": {
+        "x": -112,
+        "z": -144
+      },
+      "width": 8,
+      "depth": 8,
+      "materials": 96
+    },
+    {
+      "material": "sand",
+      "shape": "ellipse",
+      "point": {
+        "x": -88,
+        "z": -144
+      },
+      "width": 8,
+      "depth": 4,
+      "materials": 118
+    },
+    {
+      "material": "rock",
+      "shape": "circle",
+      "point": {
+        "x": -160,
+        "z": -136
+      },
+      "width": 8,
+      "depth": 8,
+      "materials": 165
+    }
+  ],
+  "erase": [
+    {
+      "strength": 0.25,
+      "sum": 0.7490196078431373
+    },
+    {
+      "strength": 0.5,
+      "sum": 0.3764705882352941
+    }
+  ],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.49",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 11787,
+    "uptime": 205,
+    "stepMs": 1.248,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2349,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 3235,
+      "late": 102,
+      "trimmed": 0,
+      "clamped": 1,
+      "kbOut": 94082.3,
+      "kbIn": 46.3,
+      "dropped": 0
+    }
+  },
+  "seed": 99282957,
+  "materialAssets": {
+    "schemas": {
+      "ground": 1,
+      "sand": 1
+    },
+    "verified": [
+      {
+        "id": "sand-grass-albedo-copy",
+        "path": "docs/art/source/ground-family-v1/sand-grass-albedo.png",
+        "byteLength": 3116135,
+        "sha256": "04f3040285c6ef6571fda2b874055cd710ea13ee62cf02f794ee4a6382c7156a"
+      },
+      {
+        "id": "sand-grass-normal-copy",
+        "path": "docs/art/source/ground-family-v1/sand-grass-normal.png",
+        "byteLength": 3292284,
+        "sha256": "125954ffce35b2cbfbdec375c055f81053dfe85e119d2321a8b9ee6154126f6d"
+      },
+      {
+        "id": "sand-dirt-albedo-copy",
+        "path": "docs/art/source/ground-family-v1/sand-dirt-albedo.png",
+        "byteLength": 3738440,
+        "sha256": "f48b6043228849d4d0da65def045c25dfe3c27582b3395822bc3cf1bc1c9c1b0"
+      },
+      {
+        "id": "sand-dirt-normal-copy",
+        "path": "docs/art/source/ground-family-v1/sand-dirt-normal.png",
+        "byteLength": 3196621,
+        "sha256": "1cc57c4ad08441ee31acc3963530823a68703bc83ee0f91cfc3488e6f99a08a7"
+      },
+      {
+        "id": "grass-albedo-copy",
+        "path": "docs/art/source/ground-family-v1/grass-albedo.png",
+        "byteLength": 3462273,
+        "sha256": "35c929fdba35316283c0bf4e25f923bd48169d8e8bb8b3495f0805d7317bf573"
+      },
+      {
+        "id": "grass-normal-copy",
+        "path": "docs/art/source/ground-family-v1/grass-normal.png",
+        "byteLength": 3548194,
+        "sha256": "6adc43419e47f112b67c3aec5c3ef1e603a6b51c01853328502533cb8ee48505"
+      },
+      {
+        "id": "dirt-albedo-copy",
+        "path": "docs/art/source/ground-family-v1/dirt-albedo.png",
+        "byteLength": 3909220,
+        "sha256": "2dcb8bed0e003aaef4f91d6096c76185f38f662aad7908195b01196847b713ab"
+      },
+      {
+        "id": "dirt-normal-copy",
+        "path": "docs/art/source/ground-family-v1/dirt-normal.png",
+        "byteLength": 3262544,
+        "sha256": "5de54a331ff95591bd6a925a96f40fae97bb55dbbec78dadb22ad66a80c280f6"
+      },
+      {
+        "id": "sand-grass-albedo",
+        "path": "docs/art/source/ground-family-v1/sand-grass-albedo.png",
+        "byteLength": 3116135,
+        "sha256": "04f3040285c6ef6571fda2b874055cd710ea13ee62cf02f794ee4a6382c7156a"
+      },
+      {
+        "id": "sand-grass-albedo",
+        "path": "materials/Transición de arena y pastizal pintada.png",
+        "byteLength": 3116135,
+        "sha256": "04f3040285c6ef6571fda2b874055cd710ea13ee62cf02f794ee4a6382c7156a"
+      },
+      {
+        "id": "sand-grass-normal",
+        "path": "docs/art/source/ground-family-v1/sand-grass-normal.png",
+        "byteLength": 3292284,
+        "sha256": "125954ffce35b2cbfbdec375c055f81053dfe85e119d2321a8b9ee6154126f6d"
+      },
+      {
+        "id": "sand-grass-normal",
+        "path": "materials/Mapa normal de transición arena y hierba.png",
+        "byteLength": 3292284,
+        "sha256": "125954ffce35b2cbfbdec375c055f81053dfe85e119d2321a8b9ee6154126f6d"
+      },
+      {
+        "id": "sand-dirt-albedo",
+        "path": "docs/art/source/ground-family-v1/sand-dirt-albedo.png",
+        "byteLength": 3738440,
+        "sha256": "f48b6043228849d4d0da65def045c25dfe3c27582b3395822bc3cf1bc1c9c1b0"
+      },
+      {
+        "id": "sand-dirt-albedo",
+        "path": "materials/Textura de Arena y Tierra Compactada.png",
+        "byteLength": 3738440,
+        "sha256": "f48b6043228849d4d0da65def045c25dfe3c27582b3395822bc3cf1bc1c9c1b0"
+      },
+      {
+        "id": "sand-dirt-normal",
+        "path": "docs/art/source/ground-family-v1/sand-dirt-normal.png",
+        "byteLength": 3196621,
+        "sha256": "1cc57c4ad08441ee31acc3963530823a68703bc83ee0f91cfc3488e6f99a08a7"
+      },
+      {
+        "id": "sand-dirt-normal",
+        "path": "materials/Mapa normal de arena y tierra pedregosa.png",
+        "byteLength": 3196621,
+        "sha256": "1cc57c4ad08441ee31acc3963530823a68703bc83ee0f91cfc3488e6f99a08a7"
+      },
+      {
+        "id": "grass-albedo",
+        "path": "docs/art/source/ground-family-v1/grass-albedo.png",
+        "byteLength": 3462273,
+        "sha256": "35c929fdba35316283c0bf4e25f923bd48169d8e8bb8b3495f0805d7317bf573"
+      },
+      {
+        "id": "grass-albedo",
+        "path": "materials/Textura de hierba tropical estilizada.png",
+        "byteLength": 3462273,
+        "sha256": "35c929fdba35316283c0bf4e25f923bd48169d8e8bb8b3495f0805d7317bf573"
+      },
+      {
+        "id": "grass-normal",
+        "path": "docs/art/source/ground-family-v1/grass-normal.png",
+        "byteLength": 3548194,
+        "sha256": "6adc43419e47f112b67c3aec5c3ef1e603a6b51c01853328502533cb8ee48505"
+      },
+      {
+        "id": "grass-normal",
+        "path": "materials/Textura normal de césped y tierra.png",
+        "byteLength": 3548194,
+        "sha256": "6adc43419e47f112b67c3aec5c3ef1e603a6b51c01853328502533cb8ee48505"
+      },
+      {
+        "id": "dirt-albedo",
+        "path": "docs/art/source/ground-family-v1/dirt-albedo.png",
+        "byteLength": 3909220,
+        "sha256": "2dcb8bed0e003aaef4f91d6096c76185f38f662aad7908195b01196847b713ab"
+      },
+      {
+        "id": "dirt-albedo",
+        "path": "materials/Textura de tierra seca con piedras y conchas.png",
+        "byteLength": 3909220,
+        "sha256": "2dcb8bed0e003aaef4f91d6096c76185f38f662aad7908195b01196847b713ab"
+      },
+      {
+        "id": "dirt-normal",
+        "path": "docs/art/source/ground-family-v1/dirt-normal.png",
+        "byteLength": 3262544,
+        "sha256": "5de54a331ff95591bd6a925a96f40fae97bb55dbbec78dadb22ad66a80c280f6"
+      },
+      {
+        "id": "dirt-normal",
+        "path": "materials/Textura normal de tierra agrietada con guijarros.png",
+        "byteLength": 3262544,
+        "sha256": "5de54a331ff95591bd6a925a96f40fae97bb55dbbec78dadb22ad66a80c280f6"
+      },
+      {
+        "id": "atlas-albedo-desktop",
+        "path": "assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+        "byteLength": 1412322,
+        "sha256": "b8f9ada423fdc076e44c134429268c63c84bfe7f0febc41fbb38529e399e6b6a"
+      },
+      {
+        "id": "atlas-albedo-mobile",
+        "path": "assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "byteLength": 338874,
+        "sha256": "7e80897384b77e685c06677e519d74deb2424b58bbeab6e66220f6381875bf28"
+      },
+      {
+        "id": "atlas-normal-desktop",
+        "path": "assets/textures/ground-family-v1/atlas-normal-desktop.webp",
+        "byteLength": 6954286,
+        "sha256": "d93e712e34ac70158c3ec17e3d753e3b62d04e0b3ae676a3b3aee8504b0bb49f"
+      },
+      {
+        "id": "atlas-normal-mobile",
+        "path": "assets/textures/ground-family-v1/atlas-normal-mobile.webp",
+        "byteLength": 1892466,
+        "sha256": "393ec807c425e6e31f973f8fe8cca0a6e992dcf93898a638b3d73e56c33e2b61"
+      },
+      {
+        "id": "dry-albedo",
+        "path": "docs/art/source/sand-family-v1/dry-albedo.png",
+        "byteLength": 3728793,
+        "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1"
+      },
+      {
+        "id": "dry-normal",
+        "path": "docs/art/source/sand-family-v1/dry-normal.png",
+        "byteLength": 3109600,
+        "sha256": "1fd8fa37cda57519a92ef82a40786bce1746a806fd066b05907f67327e83782b"
+      },
+      {
+        "id": "dry-albedo-copy",
+        "path": "docs/art/source/sand-family-v1/dry-albedo.png",
+        "byteLength": 3728793,
+        "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1"
+      },
+      {
+        "id": "dry-normal-copy",
+        "path": "docs/art/source/sand-family-v1/dry-normal.png",
+        "byteLength": 3109600,
+        "sha256": "1fd8fa37cda57519a92ef82a40786bce1746a806fd066b05907f67327e83782b"
+      },
+      {
+        "id": "dry-albedo-original",
+        "path": "materials/Textura de arena dorada con guijarros y conchas.png",
+        "byteLength": 3728793,
+        "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1"
+      },
+      {
+        "id": "dry-normal-original",
+        "path": "materials/Textura ormal de arena dorada con guijarros y conchas.png",
+        "byteLength": 3109600,
+        "sha256": "1fd8fa37cda57519a92ef82a40786bce1746a806fd066b05907f67327e83782b"
+      },
+      {
+        "id": "dry-albedo-desktop",
+        "path": "assets/textures/sand-family-v1/dry-albedo-desktop.webp",
+        "byteLength": 384736,
+        "sha256": "7e0d7a3335731656f67f45c6a4cecef2d34748b958547a607da92cb32ee18d33"
+      },
+      {
+        "id": "dry-albedo-mobile",
+        "path": "assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+        "byteLength": 88000,
+        "sha256": "bc74cc1ad448a170537c86293417e0e93eeea71b7104ae4517207b3dc8a2fb7e"
+      },
+      {
+        "id": "dry-normal-desktop",
+        "path": "assets/textures/sand-family-v1/dry-normal-desktop.webp",
+        "byteLength": 1829130,
+        "sha256": "c559b05bdd97f0b1743df3d8562deafef7f4b4fe54679a2991eb4d10f171758a"
+      },
+      {
+        "id": "dry-normal-mobile",
+        "path": "assets/textures/sand-family-v1/dry-normal-mobile.webp",
+        "byteLength": 496252,
+        "sha256": "afe210089b232a0eb79ef58cba371eeeebc2980c31bb3f4c4bfe006633d760cf"
+      }
+    ]
+  },
+  "realAuth": {
+    "recoverySetupCancelled": true,
+    "accountId": "fe6079e9-acd5-4eb5-bbbc-98a3fe3c279f"
+  },
+  "browserRuntime": {
+    "version": "0.6.0-alpha.49",
+    "protocolVersion": 54
+  },
+  "paintSites": [
+    {
+      "material": "grass",
+      "shape": "circle",
+      "x": -136,
+      "z": -144
+    },
+    {
+      "material": "dirt",
+      "shape": "square",
+      "x": -112,
+      "z": -144
+    },
+    {
+      "material": "sand",
+      "shape": "ellipse",
+      "x": -88,
+      "z": -144
+    },
+    {
+      "material": "rock",
+      "shape": "circle",
+      "x": -160,
+      "z": -136
+    }
+  ],
+  "walk": {
+    "start": {
+      "x": -136,
+      "z": -144,
+      "y": 3.247328996658325
+    },
+    "end": {
+      "x": -140.49602061704488,
+      "z": -148.49602061704488,
+      "y": 1.529506859689497
+    }
+  },
+  "document": {
+    "version": 4,
+    "terrainVersion": 2,
+    "heightSamples": 27,
+    "materialSamples": 165,
+    "materialAtPaintSites": [
+      "grass",
+      "dirt",
+      "sand",
+      "rock"
+    ]
+  },
+  "bufferRestore": {
+    "originalBuffers": {
+      "positionHash": 3615139985,
+      "heightHash": 1122279246,
+      "uniformCount": 1
+    },
+    "restored": {
+      "sameGeometry": true,
+      "samePositionArray": true,
+      "sameIndexArray": true,
+      "sameMap": true,
+      "sameHeights": true,
+      "positionHash": 3615139985,
+      "heightHash": 1122279246,
+      "uniformsRestored": true
+    }
+  },
+  "deviceTextures": {
+    "desktop": {
+      "device": "desktop",
+      "coarsePointer": false,
+      "records": [
+        {
+          "id": "tex:ground-atlas-albedo-v1",
+          "state": "ok",
+          "selectedSrc": "textures/ground-family-v1/atlas-albedo-desktop.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+          "desktopSrc": "textures/ground-family-v1/atlas-albedo-desktop.webp",
+          "mobileSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "id": "tex:ground-atlas-normal-v1",
+          "state": "ok",
+          "selectedSrc": "textures/ground-family-v1/atlas-normal-desktop.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/ground-family-v1/atlas-normal-desktop.webp",
+          "desktopSrc": "textures/ground-family-v1/atlas-normal-desktop.webp",
+          "mobileSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "id": "tex:sand-dry-albedo-v1",
+          "state": "ok",
+          "selectedSrc": "textures/sand-family-v1/dry-albedo-desktop.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/sand-family-v1/dry-albedo-desktop.webp",
+          "desktopSrc": "textures/sand-family-v1/dry-albedo-desktop.webp",
+          "mobileSrc": "textures/sand-family-v1/dry-albedo-mobile.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "id": "tex:sand-dry-normal-v1",
+          "state": "ok",
+          "selectedSrc": "textures/sand-family-v1/dry-normal-desktop.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/sand-family-v1/dry-normal-desktop.webp",
+          "desktopSrc": "textures/sand-family-v1/dry-normal-desktop.webp",
+          "mobileSrc": "textures/sand-family-v1/dry-normal-mobile.webp",
+          "width": 1024,
+          "height": 1024
+        }
+      ]
+    },
+    "mobile": {
+      "device": "mobile",
+      "coarsePointer": true,
+      "records": [
+        {
+          "id": "tex:ground-atlas-albedo-v1",
+          "state": "ok",
+          "selectedSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "desktopSrc": "textures/ground-family-v1/atlas-albedo-desktop.webp",
+          "mobileSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "id": "tex:ground-atlas-normal-v1",
+          "state": "ok",
+          "selectedSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/ground-family-v1/atlas-normal-mobile.webp",
+          "desktopSrc": "textures/ground-family-v1/atlas-normal-desktop.webp",
+          "mobileSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "id": "tex:sand-dry-albedo-v1",
+          "state": "ok",
+          "selectedSrc": "textures/sand-family-v1/dry-albedo-mobile.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+          "desktopSrc": "textures/sand-family-v1/dry-albedo-desktop.webp",
+          "mobileSrc": "textures/sand-family-v1/dry-albedo-mobile.webp",
+          "width": 512,
+          "height": 512
+        },
+        {
+          "id": "tex:sand-dry-normal-v1",
+          "state": "ok",
+          "selectedSrc": "textures/sand-family-v1/dry-normal-mobile.webp",
+          "selectedUrl": "https://marea.62.171.136.148.sslip.io/assets/textures/sand-family-v1/dry-normal-mobile.webp",
+          "desktopSrc": "textures/sand-family-v1/dry-normal-desktop.webp",
+          "mobileSrc": "textures/sand-family-v1/dry-normal-mobile.webp",
+          "width": 512,
+          "height": 512
+        }
+      ]
+    }
+  },
+  "captureControls": {
+    "tool": {
+      "present": true,
+      "hidden": false,
+      "top": -135.234375,
+      "bottom": -102.234375,
+      "withinPanelViewport": false,
+      "panelScrollTop": 402,
+      "panelScrollHeight": 1086,
+      "panelClientHeight": 178,
+      "value": "paint"
+    },
+    "material": {
+      "present": true,
+      "hidden": false,
+      "top": 92.953125,
+      "bottom": 125.953125,
+      "withinPanelViewport": false,
+      "panelScrollTop": 402,
+      "panelScrollHeight": 1086,
+      "panelClientHeight": 178,
+      "value": "sand"
+    },
+    "shape": {
+      "present": true,
+      "hidden": false,
+      "top": 159.75,
+      "bottom": 192.75,
+      "withinPanelViewport": false,
+      "panelScrollTop": 402,
+      "panelScrollHeight": 1086,
+      "panelClientHeight": 178,
+      "value": "ellipse"
+    },
+    "aspect": {
+      "present": true,
+      "hidden": false,
+      "top": 228.546875,
+      "bottom": 244.546875,
+      "withinPanelViewport": true,
+      "panelScrollTop": 402,
+      "panelScrollHeight": 1086,
+      "panelClientHeight": 178,
+      "value": "0.5"
+    },
+    "rotation": {
+      "present": true,
+      "hidden": false,
+      "top": 282.34375,
+      "bottom": 298.34375,
+      "withinPanelViewport": true,
+      "panelScrollTop": 402,
+      "panelScrollHeight": 1086,
+      "panelClientHeight": 178,
+      "value": "0"
+    }
+  },
+  "captureViewport": {
+    "width": 844,
+    "controlsWithinPanelViewport": {
+      "tool": false,
+      "material": false,
+      "shape": false,
+      "aspect": true,
+      "rotation": true
+    }
+  },
+  "captureFrame": {
+    "center": {
+      "x": -88,
+      "z": -144
+    },
+    "range": 11,
+    "width": 844,
+    "lang": "es"
+  },
+  "publicChain": {
+    "state": "not_run",
+    "reason": "MN_GM_CHAIN_MODULE release gate not supplied"
+  },
+  "consoleAssessment": {
+    "pageErrors": [],
+    "webglErrors": [],
+    "localDurableStore503": [],
+    "otherConsoleErrors": []
+  }
+}
