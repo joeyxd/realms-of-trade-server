@@ -7,6 +7,7 @@ import { assets } from './assets/registry.js';
 import { sandUniforms, SAND_PARS, SAND_COLOR, SAND_NORMAL_SAMPLE, SAND_NORMAL } from './sandMaterials.js';
 import { groundUniforms, GROUND_PARS, GROUND_SETUP, GROUND_EDGE_COLOR, GROUND_PATH_COLOR, GROUND_NORMAL_SAMPLE } from './groundMaterials.js';
 import { WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
+import { TERRAIN_PAINT_COLOR } from './terrainPaintMaterials.js';
 
 export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrainRevision ? 320 : 250, assetRegistry = assets } = {}) {
   const size = map.size, half = size / 2;
@@ -15,6 +16,7 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
   const pos = new Float32Array(n * n * 3);
   const nrm = new Float32Array(n * n * 3);
   const msk = new Float32Array(n * n * 4);
+  const paint = new Uint8Array(n * n * 4), paintWeights = [0, 0, 0, 0];
   const keep = new Uint8Array(n * n);
   for (let j = 0; j < n; j++) {
     for (let i = 0; i < n; i++) {
@@ -29,6 +31,10 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
       nrm[k * 3] = nx / l; nrm[k * 3 + 1] = (2 * e) / l; nrm[k * 3 + 2] = nz / l;
       const m = map.masks(x, z);
       msk[k * 4] = m.path; msk[k * 4 + 1] = m.volcanic; msk[k * 4 + 2] = m.arenaFloor; msk[k * 4 + 3] = m.lava;
+      if (map.materialWeightsAt) {
+        map.materialWeightsAt(x, z, paintWeights);
+        for (let c = 0; c < 4; c++) paint[k * 4 + c] = Math.round(paintWeights[c] * 255);
+      }
       keep[k] = h > -7.3 ? 1 : 0;
     }
   }
@@ -46,6 +52,7 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
   geo.setAttribute('aMask', new THREE.BufferAttribute(msk, 4));
+  geo.setAttribute('aPaint', new THREE.BufferAttribute(paint, 4, true));
   geo.setIndex(idx);
   geo.computeBoundingSphere();
   geo.computeBoundingBox();
@@ -58,10 +65,11 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
     glowMask: 'mnGlowSrc',
     // No comic hatching on lava, on the hot cracks or under water.
     hatchMask: '(1.0 - smoothstep(0.05, 0.35, vMask.w)) * (1.0 - smoothstep(0.0, 0.15, mnTerrainCrack)) * smoothstep(0.02, 0.12, vMnWorld.y)',
-    vertPars: 'attribute vec4 aMask;\nvarying vec4 vMask;\nvarying vec3 vTN;\n',
-    vertBody: 'vMask = aMask; vTN = normal;\n',
+    vertPars: 'attribute vec4 aMask;\nattribute vec4 aPaint;\nvarying vec4 vMask;\nvarying vec4 vPaint;\nvarying vec3 vTN;\n',
+    vertBody: 'vMask = aMask; vPaint = aPaint; vTN = normal;\n',
     fragPars: CAUSTIC_PARS + /* glsl */ `
       varying vec4 vMask;
+      varying vec4 vPaint;
       varying vec3 vTN;
       uniform float mnLavaPulse;
       uniform float mnTerrainCaustics;
@@ -160,6 +168,7 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
         // Dark rim where the grass meets the sand (contour of the grass mask at 0.5, ~0.25 u wide) so patches read as shapes.
         float tg = sqrt(max(1.0 - tn.y * tn.y, 0.0)) / max(tn.y, 0.3);
         col *= 1.0 - 0.35 * mnLine(abs(gh - 1.525) / max(tg, 0.1), 0.125) * plain * fade * (1.0 - mnGroundEnabled);
+        ${TERRAIN_PAINT_COLOR}
         // Arena floor: hexy basalt tiles with lava cracks. Seams become crisp ink with a light bevel, and an
         // outer band carries a greek-key border (polar cells, a whole number of periods around the circle).
         mnTerrainCrack = 0.0;
@@ -239,19 +248,24 @@ export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrai
 }
 
 /** Update a terrain mesh's existing canonical grid buffers from a projected map. */
-export function updateTerrainGeometry(mesh, map, { segments = 560 } = {}) {
+export function updateTerrainGeometry(mesh, map, { segments = 560, paintOnly = false } = {}) {
   const geometry = mesh?.geometry;
   const position = geometry?.getAttribute('position');
   const normal = geometry?.getAttribute('normal');
   const masks = geometry?.getAttribute('aMask');
+  const paint = geometry?.getAttribute('aPaint');
   const n = segments + 1;
-  if (!position || position.count !== n * n || !normal || !masks) {
+  if (!position || position.count !== n * n || !normal || !masks || !paint) {
     throw new RangeError('Terrain geometry does not match the canonical grid');
   }
   const size = map.size, half = size / 2, step = size / segments;
   const p = position.array, nr = normal.array, ms = masks.array;
+  const weights = [0, 0, 0, 0];
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
     const k = j * n + i, x = -half + i * step, z = -half + j * step;
+    weights.fill(0); map.materialWeightsAt?.(x, z, weights);
+    for (let c = 0; c < 4; c++) paint.array[k * 4 + c] = Math.round(weights[c] * 255);
+    if (paintOnly) continue;
     p[k * 3] = x; p[k * 3 + 1] = map.heightAt(x, z); p[k * 3 + 2] = z;
     const e = step * 0.5;
     const nx = map.heightAt(x - e, z) - map.heightAt(x + e, z);
@@ -261,8 +275,11 @@ export function updateTerrainGeometry(mesh, map, { segments = 560 } = {}) {
     const m = map.masks(x, z);
     ms[k * 4] = m.path; ms[k * 4 + 1] = m.volcanic; ms[k * 4 + 2] = m.arenaFloor; ms[k * 4 + 3] = m.lava;
   }
-  position.needsUpdate = true; normal.needsUpdate = true; masks.needsUpdate = true;
-  geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+  paint.needsUpdate = true;
+  if (!paintOnly) {
+    position.needsUpdate = true; normal.needsUpdate = true; masks.needsUpdate = true;
+    geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+  }
 }
 
 // Flat seabed under everything beyond the culled deep-ocean cells, so the water always has an

@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM05b, 2026-10-11 — pintura implementada localmente, alpha.48/protocolo 53:**
+[Contrato](docs/briefs/gm05b-terrain-paint.md) y [entrega](docs/delivery/gm05b/DELIVERY.md).
+Hierba/tierra/arena/roca, borrar gradual y pinceles circular/cuadrado/elíptico compartidos con escultura.
+Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores conservadas.
+SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
+Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
+
 **AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](docs/briefs/RNV07b-canteen-survival.md) y [entrega](docs/delivery/rnv07b-canteen.md).
 Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;

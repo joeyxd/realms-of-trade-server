@@ -122,6 +122,10 @@ export function createSupabaseGmDraftMethods(client) {
     },
     async saveGmDraft(raw) {
       const input = normalizedSave(raw);
+      if (input.document.version === 4) {
+        const ready = await rpc('mn_gm_material_drafts_ready', {});
+        if (ready?.version !== 1 || ready?.terrainVersion !== 2 || Object.keys(ready).length !== 2) throw new GmDraftStoreError('unavailable');
+      }
       const result = await rpc('mn_save_gm_draft', { p_operation_id: input.operationId, p_request: input.request });
       return checkedSaveResult(result);
     },

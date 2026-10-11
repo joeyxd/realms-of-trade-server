@@ -36,7 +36,8 @@ export function createGmPublicationService({ root, map, baseRevision, worldId, v
       const content = { compilerVersion: PUBLICATION_COMPILER_VERSION, worldId, sourceRevision: draftRevision, base,
         document: checked, documentHash: sha256(checked), runtime: { ...dependencies.runtime, gameVersion, protocolVersion }, assets, baselineAssets,
         collision: { count: colliders.length, sha256: sha256(colliders) }, validation: report };
-      if (projected) content.terrain = { gridSize: 561, sha256: sha256(Array.from(projected.heights)) };
+      if (projected) content.terrain = { gridSize: 561, sha256: sha256(Array.from(projected.heights)),
+        ...(checked.terrain.version === 2 ? { materialsSha256: sha256(checked.terrain.materials) } : {}) };
       const revision = { schema: PREPARATION_SCHEMA, version: 1, revisionId: sha256(content), content };
       return { report, revision };
     },

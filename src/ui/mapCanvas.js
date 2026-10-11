@@ -23,6 +23,12 @@ export function terrainColor(map, x, z) {
     else if (m.path > .5) { r = 190; g = 145; b = 95; }
     else if (h < 1.5) { r = 236; g = 214; b = 156; }
     else { const k = positive((h - 1.5) / 18); r = 95 - 30 * k; g = 172 - 40 * k; b = 90 - 20 * k; }
+    if (!dock && map.materialWeightsAt) {
+      const weights = map.materialWeightsAt(x, z), sum = weights.reduce((a, b) => a + b, 0);
+      const colors = [[95, 172, 90], [190, 145, 95], [236, 214, 156], [158, 145, 138]];
+      r *= 1 - sum; g *= 1 - sum; b *= 1 - sum;
+      for (let i = 0; i < 4; i++) { r += colors[i][0] * weights[i]; g += colors[i][1] * weights[i]; b += colors[i][2] * weights[i]; }
+    }
     const S = Math.SQRT1_2, e = 1.5;
     const slope = map.groundAt(x - S * e, z - S * e) - map.groundAt(x + S * e, z + S * e);
     const shade = Number.isFinite(slope) ? 1 + Math.max(-.35, Math.min(.35, slope * .08)) : 1;
@@ -35,7 +41,8 @@ export function mapAtlas(map, document) {
   const description = describeMap(map);
   const signature = JSON.stringify([description, map.terrainRevision]);
   const cached = atlases.get(map);
-  if (cached?.signature === signature && cached.groundAt === map.groundAt && cached.masks === map.masks && cached.onDock === map.onDock) return cached;
+  if (cached?.signature === signature && cached.groundAt === map.groundAt && cached.masks === map.masks &&
+      cached.onDock === map.onDock && cached.materialWeightsAt === map.materialWeightsAt) return cached;
   const base = document.createElement('canvas'); base.width = base.height = SIZE;
   const ctx = base.getContext('2d'), img = ctx.createImageData(SIZE, SIZE);
   for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) {
@@ -43,7 +50,7 @@ export function mapAtlas(map, document) {
     img.data.set(terrainColor(map, p.x, p.z), (y * SIZE + x) * 4);
   }
   ctx.putImageData(img, 0, 0);
-  const atlas = { signature, description, base, groundAt: map.groundAt, masks: map.masks, onDock: map.onDock };
+  const atlas = { signature, description, base, groundAt: map.groundAt, masks: map.masks, onDock: map.onDock, materialWeightsAt: map.materialWeightsAt };
   atlases.set(map, atlas); return atlas;
 }
 

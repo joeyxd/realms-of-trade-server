@@ -56,7 +56,7 @@ export function projectGmContent(baseMap, document = null, baseRevision = 'terra
   baseMap = immutableBase(baseMap);
   if (document?.terrain) validateTerrainForMap(baseMap, document.terrain);
   let terrainMap = document?.terrain ? compileTerrainMap(baseMap, document.terrain) : baseMap;
-  if (document?.terrain?.samples?.length) {
+  if (document?.terrain?.samples?.length || document?.terrain?.materials?.length) {
     terrainMap = { ...terrainMap, terrainResources: resourceLayout(baseMap) };
   }
   const colliders = document === null ? baseMap.colliders.map((c) => structuredClone(c))
@@ -72,6 +72,8 @@ export function installGmContent(map, baseMap, document = null, baseRevision = '
   map.heightAt = projected.heightAt;
   map.groundAt = projected.groundAt;
   map.materialAt = projected.materialAt;
+  if (projected.materialWeightsAt) map.materialWeightsAt = projected.materialWeightsAt;
+  else delete map.materialWeightsAt;
   map.props = projected.props;
   map.terrainProjection = projected.terrainProjection;
   map.terrainSource = projected.terrainSource;
