@@ -7,6 +7,7 @@ import { STATS, SLOTS } from '../../data/items.js';
 import { MASTERY, WEAPON_KINDS } from '../../data/weapons.js';
 import { ARTS, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
 import { PEARLS } from '../../data/pearls.js';
+import { needPenalty } from '../../data/survival.js';
 import { itemStats, emptyStats } from '../items.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -76,14 +77,16 @@ export function refreshStats(world, e) {
   const frac = ecs.maxHp[e] > 0 ? ecs.hp[e] / ecs.maxHp[e] : 1;
   ecs.atk[e] = Math.round((base.atk + g.atk) * (1 + MASTERY.dmg * Math.max(0, m - 1)));
   ecs.def[e] = base.def + g.def;
-  ecs.maxHp[e] = base.hp + g.hp;
+  // Needs lower both maxima. Hunger must never reduce HP below the survival floor.
+  const needMul = 1 - (ecs.needs[e] > 0 ? (ecs.needPen[e] || needPenalty(ecs.sat[e], ecs.hyd[e])) : 0);
+  ecs.maxHp[e] = Math.round((base.hp + g.hp) * needMul);
   ecs.hp[e] = ecs.dead[e] > 0 ? 0 : Math.min(ecs.maxHp[e], Math.max(1, frac * ecs.maxHp[e]));
   ecs.speed[e] = tuning.player.runSpeed * (1 + capped(g, 'spd'));
   ecs.cdr[e] = capped(g, 'cdr');
   ecs.ripMul[e] = 1 + g.rip;
   ecs.reflMul[e] = 1 + g.refl;
-  ecs.guardAdd[e] = g.guard;
-  ecs.guardSt[e] = Math.min(ecs.guardSt[e], tuning.guard.stamina + g.guard);
+  ecs.guardAdd[e] = g.guard - (1 - needMul) * (tuning.guard.stamina + g.guard);
+  ecs.guardSt[e] = Math.min(ecs.guardSt[e], tuning.guard.stamina + ecs.guardAdd[e]);
   ecs.dashRec[e] = 1 - capped(g, 'dash');
   ecs.winBonus[e] = g.win + passive(ecs, e, 'win');
   ecs.fireMul[e] = (1 + g.fire) * (passive(ecs, e, 'fire') || 1);

@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-11T05:40:41.888Z",
+  "base": "6c9aeeb",
+  "selection": [
+    "tests/canteen-host.test.mjs",
+    "tests/canteen-sql.test.mjs",
+    "tests/canteen-state.test.mjs",
+    "tests/canteen-panel.test.mjs",
+    "tests/survival-core.test.mjs",
+    "tests/freshwater-host.test.mjs",
+    "tests/freshwater-state.test.mjs",
+    "tests/freshwater-panel.test.mjs",
+    "tests/economic-host.test.mjs",
+    "tests/economic-raft-host.test.mjs",
+    "tests/attribute-authority.test.mjs",
+    "tests/attribute-client.test.mjs",
+    "tests/carry.test.mjs",
+    "tests/swimming.test.mjs",
+    "tests/naval-swim-boarding.test.mjs",
+    "tests/store-host.test.mjs",
+    "tests/ground-family-boundary.test.mjs",
+    "tests/fire-host.test.mjs"
+  ],
+  "tests": 117,
+  "pass": 117,
+  "fail": 0,
+  "skipped": 0,
+  "note": "Before final guardMax display correction; post-review focused selection includes new cross-layer regression."
+}

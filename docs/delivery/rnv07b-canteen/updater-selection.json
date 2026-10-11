@@ -1,0 +1,32 @@
+{
+  "start": "2026-10-11T05:41:34.921Z",
+  "completed": "2026-10-11T05:43:59.519Z",
+  "selection": [
+    "tests/store-host.test.mjs",
+    "tests/accounts-server.test.mjs",
+    "tests/world-state.test.mjs",
+    "tests/world-host.test.mjs",
+    "tests/raft-persistence.test.mjs",
+    "tests/harvest-tools.test.mjs",
+    "tests/server.test.mjs",
+    "tests/deploy-runtime.test.mjs",
+    "tests/economic-store.test.mjs",
+    "tests/economic-host.test.mjs",
+    "tests/economic-raft-host.test.mjs",
+    "tests/community-panel.test.mjs",
+    "tests/resource-feedback.test.mjs",
+    "tests/pack-inventory.test.mjs",
+    "tests/freshwater-state.test.mjs",
+    "tests/freshwater-host.test.mjs",
+    "tests/freshwater-panel.test.mjs",
+    "tests/survival-core.test.mjs",
+    "tests/canteen-state.test.mjs",
+    "tests/canteen-host.test.mjs",
+    "tests/canteen-panel.test.mjs"
+  ],
+  "exitCode": 0,
+  "tests": 153,
+  "pass": 153,
+  "fail": 0,
+  "skipped": 0
+}

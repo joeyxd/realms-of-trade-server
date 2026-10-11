@@ -1494,6 +1494,7 @@ async function boot() {
         const zw = input.consumeWheel();
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
+        hud.setNeeds({ needs: ps.needs, sat: ps.sat, hyd: ps.hyd, needPen: ps.needPen });
         hud.setStats({
           hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
           guard: ps.guardSt / (ps.guardMax || tuning.guard.stamina), catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,

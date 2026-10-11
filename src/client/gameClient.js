@@ -419,7 +419,10 @@ export class GameClient {
     }
     const st = s.tick * DT;
     if (s.fire) this.fire = structuredClone(s.fire);
-    if (Object.hasOwn(s, 'freshwater')) this.freshwaterStatus = s.freshwater ? structuredClone(s.freshwater) : null;
+    if (Object.hasOwn(s, 'freshwater')) {
+      this.freshwaterStatus = s.freshwater ? structuredClone(s.freshwater) : null;
+      this.pred.survivalEnabled = s.freshwater?.canteenEnabled === true;
+    }
     const off = st - this.clock;
     // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one
     // is the best clock sample; a slow device whose clock lags real time keeps up), late ones only
@@ -842,6 +845,7 @@ export class GameClient {
     out.vx = ecs.vx[e]; out.vz = ecs.vz[e];
     out.st = ecs.state[e]; out.mag = this.deck.active ? this.deck.state.mag : ecs.moveMag[e]; out.wade = ecs.wade[e];
     out.swim = ecs.swim[e]; out.swimStamina = ecs.swimStamina[e]; out.swimDrown = ecs.swimDrown[e]; out.swimLoad = ecs.swimLoad[e];
+    out.needs = ecs.needs[e]; out.sat = ecs.sat[e]; out.hyd = ecs.hyd[e]; out.needPen = ecs.needPen[e];
     out.dashT = ecs.dashT[e]; out.dashes = ecs.dashCount[e];
     out.charges = ecs.dashCharges[e]; out.maxCharges = ecs.dashMax[e]; out.recharge = ecs.dashRecharge[e];
     out.iframes = ecs.iframes[e];

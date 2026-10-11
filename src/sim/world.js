@@ -27,6 +27,7 @@ import { RaftDeck } from './raftGeometry.js';
 import { NavalTrial } from './naval/trial.js';
 import { NavalPilot } from './naval/pilot.js';
 import { recoverSwimming, swimLoadOf } from './systems/swimming.js';
+import { stepNeeds } from './systems/survival.js';
 
 const D2R = Math.PI / 180;
 
@@ -177,6 +178,8 @@ export class World {
   applyCommand(e, cmd) {
     if (!this.ecs.alive[e]) return;
     if (this.isServer) this.ecs.swimLoad[e] = swimLoadOf(this.profiles?.get(e));
+    // Needs advance with accepted commands while steering as well as on foot.
+    stepNeeds(this, e, cmd, DT);
     // The bounded helm parks land locomotion/combat. They cannot become a second pose authority.
     if (this.navalPilot?.aboard(e)) {
       if (!this.ecs.dead[e]) recoverSwimming(this.ecs, e, DT);

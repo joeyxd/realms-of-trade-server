@@ -50,6 +50,8 @@ export class ECS {
     this.vx = f(); this.vz = f(); this.speed = f(); this.radius = f(); this.moveMag = f(); this.wade = f();
     this.state = new Uint8Array(cap);
     this.swim = f(); this.swimStamina = f(); this.swimDrown = f(); this.swimLoad = f();
+    // SRV01 profile-backed meters and derived stat penalty; bots/non-profile players leave needs disabled.
+    this.needs = f(); this.sat = f(); this.hyd = f(); this.needPen = f();
     this.moveMul = f(); this.faceLock = f(); this.kbx = f(); this.kbz = f();
     // DASH
     this.dashT = f(); this.dashDirX = f(); this.dashDirZ = f(); this.dashCovered = f();
@@ -128,6 +130,7 @@ export class ECS {
     this.moveMul[id] = 1; this.faceLock[id] = 0; this.kbx[id] = this.kbz[id] = 0;
     this.state[id] = 0;
     this.swim[id] = this.swimDrown[id] = this.swimLoad[id] = 0; this.swimStamina[id] = tuning.swim.stamina;
+    this.needs[id] = this.sat[id] = this.hyd[id] = this.needPen[id] = 0;
     this.dashT[id] = -1;
     this.dashDirX[id] = this.dashDirZ[id] = this.dashCovered[id] = 0;
     this.dashCharges[id] = this.dashMax[id] = 1;
@@ -203,4 +206,6 @@ export const PLAYER_FIELDS = [
   ...PEARL_STATE,
   // M4: gear and mastery (speed included: boots change it).
   'speed', 'cdr', 'ripMul', 'reflMul', 'guardAdd', 'dashRec', 'winBonus', 'fireMul', 'potHeal', 'xpMul', 'mastery', 'potions', 'potCd',
+  // SRV01: profile-backed satiety, hydration and their shared prediction penalty.
+  'needs', 'sat', 'hyd', 'needPen',
 ];
