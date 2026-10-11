@@ -36,6 +36,7 @@ const ICONS = {
   potion: '<svg viewBox="0 0 32 32"><path d="M12 4h8v3l-1 1v4c4 1.5 7 5 7 9.5C26 26 21.5 29 16 29S6 26 6 21.5C6 17 9 13.5 13 12V8l-1-1z" fill="#cfeee8" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 20c2 1.5 4.5 2 7.5 2s5.5-.5 7.5-2c.3 4.5-3.5 6.5-7.5 6.5S8.2 24.5 8.5 20z" fill="#e2482c"/><rect x="11.5" y="2.5" width="9" height="3.5" rx="1" fill="#8a5a2e" stroke="#1a1033" stroke-width="1.6"/></svg>',
   lock: '<svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2" fill="#c9a44c" stroke="#1a1033" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="#1a1033" stroke-width="2.4"/><circle cx="12" cy="15.5" r="1.8" fill="#1a1033"/></svg>',
   coin: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#ffcf4a" stroke="#1a1033" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="#c8962a" stroke-width="1.8"/><path d="M12 8.5v7" stroke="#c8962a" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  craft: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M13.2 2.8 21.4 11l-2.3 2.3-2.5-2.5-1.3 1.3L5.9 21.5a2 2 0 0 1-2.8 0l-.6-.6a2 2 0 0 1 0-2.8l9.4-9.4 1.3-1.3-2.4-2.4z"/></svg>',
   bag: '<svg viewBox="0 0 24 24"><path d="M7 8c0-3 2.2-5 5-5s5 2 5 5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 8h16l-1.5 12.5a1.5 1.5 0 0 1-1.5 1.5H7a1.5 1.5 0 0 1-1.5-1.5z" fill="currentColor"/></svg>',
   map: '<svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" fill="currentColor"/><path d="M9 4v14M15 6v14" stroke="#1a1033" stroke-width="1.4" opacity="0.5"/></svg>',
   gear: '<svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 5.1l1.6 1.2-2 3.5-1.9-.7a7.6 7.6 0 0 1-1.8 1l-.3 2h-4l-.3-2a7.6 7.6 0 0 1-1.8-1l-1.9.7-2-3.5 1.6-1.2a7.7 7.7 0 0 1 0-2.1L2 10.3l2-3.5 1.9.7a7.6 7.6 0 0 1 1.8-1L8 4.5h4l.3 2a7.6 7.6 0 0 1 1.8 1l1.9-.7 2 3.5-1.6 1.2a7.7 7.7 0 0 1 0 2.1z" fill="currentColor"/></svg>',
@@ -68,7 +69,7 @@ export function drawPortrait(canvas, skinIdx, image) {
 }
 
 export class Hud {
-  constructor(root, { onSettings, onMute, onBag, onMap }) {
+  constructor(root, { onSettings, onMute, onBag, onMap, onCraft }) {
     this.root = root;
     root.innerHTML = `
       <div class="hud-player">
@@ -79,13 +80,14 @@ export class Hud {
           <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
           <div class="needs" hidden><div class="bar need food thin" title="Hambre"><div class="fill" style="width:100%"></div><div class="num"></div></div><div class="bar need water thin" title="Sed"><div class="fill" style="width:100%"></div><div class="num"></div></div></div>
-          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden data-l10n-title="hud.lawTip" title="${attr('hud.lawTip')}">${ltext('hud.law')}</span></div>
+          <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden data-l10n-title="hud.lawTip" title="${attr('hud.lawTip')}">${ltext('hud.law')}</span><span class="load-chip" hidden data-l10n-title="hud.heavyTip" title="${attr('hud.heavyTip')}">${ltext('hud.heavy')}</span></div>
         </div>
       </div>
       <div class="hud-top-right">
         <div class="net-chip" hidden><i></i><span class="ms"></span><span class="pl"></span></div>
         <button class="icon-btn interactive" id="hud-bag" data-l10n-aria-label="hud.bag" aria-label="${attr('hud.bag')}" data-l10n-title="hud.bag" title="${attr('hud.bag')}">${ICONS.bag}<span class="dot" hidden></span></button>
         <button class="icon-btn interactive" id="hud-map" data-l10n-aria-label="hud.map" aria-label="${attr('hud.map')}" data-l10n-title="hud.map" title="${attr('hud.map')}">${ICONS.map}</button>
+        <button class="icon-btn interactive" id="hud-craft" data-l10n-aria-label="hud.craft" aria-label="${attr('hud.craft')}" data-l10n-title="hud.craft" title="${attr('hud.craft')}">${ICONS.craft}</button>
         <button class="icon-btn interactive" id="hud-mute" data-l10n-aria-label="hud.mute" aria-label="${attr('hud.mute')}">${ICONS.sound}</button>
         <button class="icon-btn interactive" id="hud-settings" data-l10n-aria-label="hud.settings" aria-label="${attr('hud.settings')}">${ICONS.gear}</button>
       </div>
@@ -125,6 +127,7 @@ export class Hud {
     root.querySelector('#hud-settings').addEventListener('click', onSettings);
     if (onBag) root.querySelector('#hud-bag').addEventListener('click', onBag);
     if (onMap) root.querySelector('#hud-map').addEventListener('click', onMap);
+    if (onCraft) root.querySelector('#hud-craft').addEventListener('click', onCraft); else root.querySelector('#hud-craft').hidden = true;
     this.goldEl = root.querySelector('.gold-n'); this.tierChip = root.querySelector('.tier-chip'); this.lawChip = root.querySelector('.law-chip');
     this.clockEl = document.createElement('div');
     this.clockEl.className = 'world-clock outlined';
@@ -153,6 +156,7 @@ export class Hud {
     this.xpFill = root.querySelector('.bar.xp .fill'); this.xpNum = root.querySelector('.bar.xp .num');
     this.needsEl = root.querySelector('.needs');
     this.needBars = [...root.querySelectorAll('.bar.need')].map(bar => ({ bar, fill: bar.querySelector('.fill'), num: bar.querySelector('.num'), key: bar.classList.contains('food') ? 'sat' : 'hyd' }));
+    this.loadChip = root.querySelector('.load-chip'); // INV02d: heavy / overloaded pack
     this.rmbSlot = root.querySelector('.rmb-slot');
     this.rmbSweep = this.rmbSlot.querySelector('.sweep');
     this.catchPips = this.rmbSlot.querySelectorAll('.catch i');
@@ -349,6 +353,14 @@ export class Hud {
     }
   }
 
+  // INV02d: the pack's load tier (0 comfortable, 1 heavy, 2 above the ceiling).
+  setLoad(load = 0) {
+    const tier = load | 0;
+    if (tier === this.last.load) return;
+    this.loadChip.hidden = tier <= 0; this.loadChip.classList.toggle('over', tier >= 2);
+    setText(this.loadChip, tier >= 2 ? 'hud.overloaded' : 'hud.heavy');
+    this.last.load = tier;
+  }
   setGold(n, tierName = '') {
     if (n !== this.last.gold) {
       if (this.last.gold !== undefined && n > this.last.gold) gsap.fromTo(this.goldEl, { scale: 1.35 }, { scale: 1, duration: 0.4, ease: 'back.out(3)' });

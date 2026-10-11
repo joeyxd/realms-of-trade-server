@@ -292,6 +292,9 @@ export default {
     "Fabricación (TAB)",
     "Crafting (TAB)"
   ],
+  "hud.heavy": ["CARGADO", "HEAVY"],
+  "hud.overloaded": ["SOBRECARGADO", "OVERLOADED"],
+  "hud.heavyTip": ["Mochila pesada: caminas más lento y sin dash. Suelta carga o invierte puntos en Carga.", "Heavy backpack: you walk slower and cannot dash. Drop cargo or invest points in Carry."],
   "hud.map": [
     "Mapa (M)",
     "Map (M)"
