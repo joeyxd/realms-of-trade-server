@@ -10,6 +10,19 @@ auth simulada y memoria de juego simulada. SQL034 aplicado en Supabase por UI au
 enviados por continuidad. Falta validar revisión activa y flujo público. Sin modelo/inferencia,
 spawn ni permisos concedidos. Siguiente paso: emparejamiento local.
 
+**AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
+Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
+muerte primero, mints en orden y publicación al terminar todos. Aplicación síncrona reversible,
+filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelados, base ff45e49;
+único fallo Cometa/agua reproducido en upstream sin cambios, registrado en la entrega.
+Dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
+Integración alpha.56/protocolo 56: 137/137 en 24 archivos congelados (base c535e5d), conteos solapados.
+Alpha.57/protocolo 56: 28/28 en 6 archivos (base b89a2d9); core de servidor/suelo sin cambios.
+Sin SQL AREA15 nuevo ni activación/adopción pública; despliegue se registra en la entrega.
+El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
+Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
+
 **Bucanero, ficha animada — alpha.57/protocolo 56, sin SQL propio:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
 Idle auténtico en rig nativo independiente; giro/zoom, miniaturas quietas y gates de visibilidad.
 Un GLB por dispositivo, +353.260 B por clip; 42/42 CPU y 24/24 navegador. Tras integrar el corte

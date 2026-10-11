@@ -274,6 +274,7 @@ export class GroundHostAuthority {
       this.#host.groundDeaths?.assertWaiting();
       if (!this.#drainFamily()) return false;
       if (this.#host.groundDeaths && !this.#host.groundDeaths.drain()) return false;
+      if (this.#host.groundPearlMints && !this.#host.groundPearlMints.drain()) return false;
       return this.#economic.drain() && this.canMutate() &&
         (this.#host.groundPearls?.drain() ?? true) && this.canMutate();
     } catch { this.#fence(); return false; }

@@ -46,6 +46,7 @@ import { canonicalText } from './pearlOperations.mjs';
 import { GroundHostAuthority } from './groundHostAuthority.mjs';
 import { GroundPearlLifecycle } from './groundPearlLifecycle.mjs';
 import { GroundDeathCapture } from './groundDeathCapture.mjs';
+import { GroundPearlMints } from './groundPearlMints.mjs';
 import { sameContentIdentity } from './gmContent.mjs';
 
 function assemblyOptions(raw, keys) {
@@ -74,6 +75,7 @@ export class GameHost {
   #deadlineClock = null; #pearlGround = null;
   #groundPearls = null;
   #groundDeaths = null;
+  #groundPearlMints = null;
   #inventoryQueries = new WeakMap();
   #marketQueries = new WeakMap();
 
@@ -210,6 +212,7 @@ export class GameHost {
   get pearlGround() { return this.#pearlGround; }
   get groundPearls() { return this.#groundPearls; }
   get groundDeaths() { return this.#groundDeaths; }
+  get groundPearlMints() { return this.#groundPearlMints; }
 
   // Trusted, incomplete gameplay pilot only. No CLI flag or public adoption is inferred here.
   mountGroundPearls() {
@@ -237,6 +240,20 @@ export class GameHost {
     this.#groundDeaths = new GroundDeathCapture(this);
     this.mountCombatDeaths();
     return this.#groundDeaths;
+  }
+
+  // Fresh elite/chest pearl rolls only; no CLI flag, adoption or legacy authority replacement.
+  mountGroundPearlMints() {
+    const s = this.server, w = s.world;
+    if (arguments.length || !this.#groundDeaths || this.#groundPearlMints || this.#prepareTask ||
+        this.closing || this.wss || this.timer || this.nextId !== 1 || this.sockets.size || this.pendingJoins ||
+        this.joins.size || s.clients.size || this.profiles.accounts.size || this.profiles.clients.size ||
+        this.profiles.tasks.size || w.tick !== 0 || w.profiles.size || w.drops.size || w.pearlLedger.size ||
+        countBots(w) !== 0 || w.deferPearlMint != null) throw new StoreError('configuration');
+    this.#assertCombatOwner();
+    this.#groundPearlMints = new GroundPearlMints(this);
+    w.deferPearlMint = this.#groundPearlMints.hook;
+    return this.#groundPearlMints;
   }
 
   // Explicit, server-owned assembly only. It does not dispatch player commands or recover startup.
@@ -303,7 +320,8 @@ export class GameHost {
         this.#assertDropOwner();
         this.#assertPearlGroundOwner();
         combat.completeTick();
-        return !combat.pending;
+        const mintsComplete = this.#groundPearlMints?.completeTick() ?? true;
+        return !combat.pending && mintsComplete;
       } catch {
         this.errors++; combat.fail(); this.#stopPearls(); return false;
       } finally { this.#drainingPearls = false; }
@@ -345,7 +363,8 @@ export class GameHost {
     return this.#pearlGround;
   }
 
-  #groundBusy() { return this.#pearlGround?.pending || this.#pearlGround?.failed; }
+  #groundBusy() { return this.#pearlGround?.pending || this.#pearlGround?.failed ||
+    this.#groundPearlMints?.pending || this.#groundPearlMints?.failed; }
 
   #assertPearlGroundOwner() {
     if (this.#pearlGround && (this.server.world !== this.#pearlGround.world ||
@@ -362,6 +381,7 @@ export class GameHost {
   }
 
   #assertCombatOwner() {
+    this.#groundPearlMints?.assertOwner();
     if (this.#combatDeaths && (this.server.beforeTick !== (this.#groundDeaths ? this.groundAuthority.boundary : this.#stagingBoundary) ||
         this.server.afterTick !== this.#combatBoundary || this.server.world.deferPlayerDeath !== this.#fatalHook ||
         this.server.world.isPlayerDeathPending !== this.#pendingDeathHook || this.#combatDeaths.failed)) {
@@ -600,7 +620,7 @@ export class GameHost {
         storage.durable !== true || !storage.accounts || !storage.world?.ready || storage.world.failed ||
         storage.errors || s.errors || storage.unsaved || storage.profileWrites || storage.worldWriting || storage.tickBlocked ||
         storage.economic && (storage.economic.pending !== 0 || storage.economic.failed) ||
-        ['staging', 'deathStaging', 'deathDrops', 'pearlGround', 'groundPearls', 'groundDeaths', 'combatDeaths', 'startup'].some((key) => storage[key] !== null) ||
+        ['staging', 'deathStaging', 'deathDrops', 'pearlGround', 'groundPearls', 'groundDeaths', 'groundPearlMints', 'combatDeaths', 'startup'].some((key) => storage[key] !== null) ||
         this.groundAuthority && !this.groundAuthority.canMutate()) throw Object.assign(new Error('gm_content_busy'), { code: 'gm_content_busy' });
     this.contentSwitching = true;
     return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
@@ -644,6 +664,7 @@ export class GameHost {
         groundTransactions: this.groundAuthority?.status() ?? null,
         groundPearls: this.#groundPearls?.status() ?? null,
         groundDeaths: this.#groundDeaths?.status() ?? null,
+        groundPearlMints: this.#groundPearlMints?.status() ?? null,
         tickBlocked: s.tickBlocked,
         staging: this.#pearlStaging ? { enabled: true, failed: this.#pearlFailed,
           pending: this.#pearlStaging.tasks.size, completed: this.#pearlStaging.completed.length,
@@ -1275,6 +1296,7 @@ export class GameHost {
   }
 
   beforeProfileDetach(id, entity) {
+    if (this.#groundPearlMints?.invalidate()) this.#stopPearls();
     if (this.#groundPearls?.invalidate()) this.#stopPearls();
     if (this.#combatDeaths?.invalidate(id, entity)) this.#stopPearls();
     if (this.#deathDrops?.invalidate()) this.#stopPearls();
@@ -1417,6 +1439,7 @@ export class GameHost {
     this.groundAuthority?.stop();
     this.#groundPearls?.stop();
     this.#groundDeaths?.stop();
+    this.#groundPearlMints?.stop();
     if (this.#pearlStartup && !['idle', 'ready', 'fenced'].includes(this.#pearlStartup.state)) this.#pearlStartup.cancel();
     this.worldState?.cancelLoad();
     if (this.#deathDrops?.pending) this.#deathDrops.fail();
@@ -1434,6 +1457,7 @@ export class GameHost {
       await this.groundAuthority?.settle();
       await this.#groundPearls?.settle();
       await this.#groundDeaths?.settle();
+      await this.#groundPearlMints?.settle();
       await Promise.all([...this.joins]);
       // Cancelled reads may reconcile receipts, but never install ground or admit after close.
       if (this.#prepareTask) await this.#prepareTask.catch(() => {});

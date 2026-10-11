@@ -1,0 +1,867 @@
+TAP version 13
+# Subtest: durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+ok 1 - durable mode defaults stopped, isolates owners and requires explicit CAS permission to connect
+  ---
+  duration_ms: 562.8446
+  type: 'test'
+  ...
+# Subtest: stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+ok 2 - stop clears work immediately before storage confirms; old grants and legacy resume cannot bypass it
+  ---
+  duration_ms: 533.1059
+  type: 'test'
+  ...
+# Subtest: confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+ok 3 - confirmed stop hydrates on a new host and permission survives reentry without restoring old grants
+  ---
+  duration_ms: 887.1338
+  type: 'test'
+  ...
+# Subtest: readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+ok 4 - readiness failure keeps agent admission closed while ordinary gameplay and private projection stay healthy
+  ---
+  duration_ms: 284.7852
+  type: 'test'
+  ...
+# Subtest: an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+ok 5 - an uncertain resume holds its slot, never enables late, and read recovery needs explicit owner resume
+  ---
+  duration_ms: 456.6431
+  type: 'test'
+  ...
+# Subtest: storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+ok 6 - storage CAS conflict adopts evidence conservatively; routine reads do not pause a permitted agent
+  ---
+  duration_ms: 476.5222
+  type: 'test'
+  ...
+# Subtest: owner disconnect while a resume saves cannot enable the character or receive a late private reply
+ok 7 - owner disconnect while a resume saves cannot enable the character or receive a late private reply
+  ---
+  duration_ms: 387.961
+  type: 'test'
+  ...
+# Subtest: load and create use the authenticated owner session and exact creation contract
+ok 8 - load and create use the authenticated owner session and exact creation contract
+  ---
+  duration_ms: 3.9103
+  type: 'test'
+  ...
+# Subtest: creation is gated until the durable service is available and no record exists
+ok 9 - creation is gated until the durable service is available and no record exists
+  ---
+  duration_ms: 0.3099
+  type: 'test'
+  ...
+# Subtest: a pending load is reused and a definitive denial releases its idempotency intent
+ok 10 - a pending load is reused and a definitive denial releases its idempotency intent
+  ---
+  duration_ms: 0.4484
+  type: 'test'
+  ...
+# Subtest: uncertain creation retries the same creation id and preset; successful load recovers it
+ok 11 - uncertain creation retries the same creation id and preset; successful load recovers it
+  ---
+  duration_ms: 60.7642
+  type: 'test'
+  ...
+# Subtest: failure without durable readiness cannot create and malformed receipts stay pending
+ok 12 - failure without durable readiness cannot create and malformed receipts stay pending
+  ---
+  duration_ms: 0.4545
+  type: 'test'
+  ...
+# Subtest: account changes clear the private record and late responses cannot restore it
+ok 13 - account changes clear the private record and late responses cannot restore it
+  ---
+  duration_ms: 0.4936
+  type: 'test'
+  ...
+# Subtest: creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+ok 14 - creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+  ---
+  duration_ms: 590.2812
+  type: 'test'
+  ...
+# Subtest: missing readiness and opt-in keep creation unavailable without breaking gameplay
+ok 15 - missing readiness and opt-in keep creation unavailable without breaking gameplay
+  ---
+  duration_ms: 618.4562
+  type: 'test'
+  ...
+# Subtest: invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+ok 16 - invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+  ---
+  duration_ms: 329.5819
+  type: 'test'
+  ...
+# Subtest: uncertain create stays bounded; late commit is recovered after the original session closes
+ok 17 - uncertain create stays bounded; late commit is recovered after the original session closes
+  ---
+  duration_ms: 390.0347
+  type: 'test'
+  ...
+# Subtest: SQL034 is rerunnable, private, and gates readiness on ACLs, RLS, constraints, and RPC grants
+ok 18 - SQL034 is rerunnable, private, and gates readiness on ACLs, RLS, constraints, and RPC grants
+  ---
+  duration_ms: 1283.827
+  type: 'test'
+  ...
+# Subtest: SQL034 creates identity, SQL025 config, and stopped SQL027 control atomically with exact retry semantics
+ok 19 - SQL034 creates identity, SQL025 config, and stopped SQL027 control atomically with exact retry semantics
+  ---
+  duration_ms: 1169.1031
+  type: 'test'
+  ...
+# Subtest: SQL034 rolls back every row when the stopped-control insert fails
+ok 20 - SQL034 rolls back every row when the stopped-control insert fails
+  ---
+  duration_ms: 1049.8444
+  type: 'test'
+  ...
+# Subtest: SQL034 load and create fail closed when any registered operational row is missing
+ok 21 - SQL034 load and create fail closed when any registered operational row is missing
+  ---
+  duration_ms: 1328.9898
+  type: 'test'
+  ...
+# Subtest: SQL preset validator agrees on accents, NFC, Unicode character length, and trimmed whitespace
+ok 22 - SQL preset validator agrees on accents, NFC, Unicode character length, and trimmed whitespace
+  ---
+  duration_ms: 1015.6258
+  type: 'test'
+  ...
+# Subtest: SQL034 treats a registered companion UUID as an invalid future owner identity
+ok 23 - SQL034 treats a registered companion UUID as an invalid future owner identity
+  ---
+  duration_ms: 1111.8735
+  type: 'test'
+  ...
+# Subtest: SQL034 readiness checks the character uniqueness definition, not only its constraint name
+ok 24 - SQL034 readiness checks the character uniqueness definition, not only its constraint name
+  ---
+  duration_ms: 908.9415
+  type: 'test'
+  ...
+# Subtest: SQL034 enforces account/world scope and the 64 companion world cap
+ok 25 - SQL034 enforces account/world scope and the 64 companion world cap
+  ---
+  duration_ms: 7031.0051
+  type: 'test'
+  ...
+# Subtest: SQL034 durable creation survives a disk database reopen and rejects invalid inputs
+ok 26 - SQL034 durable creation survives a disk database reopen and rejects invalid inputs
+  ---
+  duration_ms: 2331.7637
+  type: 'test'
+  ...
+# Subtest: memory companion creation is private by scope, stopped by default, and idempotent only for exact creation input
+ok 27 - memory companion creation is private by scope, stopped by default, and idempotent only for exact creation input
+  ---
+  duration_ms: 6.1911
+  type: 'test'
+  ...
+# Subtest: memory store serializes concurrent create calls and rejects malformed contracts
+ok 28 - memory store serializes concurrent create calls and rejects malformed contracts
+  ---
+  duration_ms: 1.8833
+  type: 'test'
+  ...
+# Subtest: memory store enforces the 64-per-world limit and global character identity uniqueness
+ok 29 - memory store enforces the 64-per-world limit and global character identity uniqueness
+  ---
+  duration_ms: 15.7278
+  type: 'test'
+  ...
+# Subtest: Supabase methods use exact scoped RPCs, validate result shapes, and redact provider errors
+ok 30 - Supabase methods use exact scoped RPCs, validate result shapes, and redact provider errors
+  ---
+  duration_ms: 1.3416
+  type: 'test'
+  ...
+# Subtest: wizard loads durable availability, previews documents, and requires explicit confirmation
+ok 31 - wizard loads durable availability, previews documents, and requires explicit confirmation
+  ---
+  duration_ms: 4.6703
+  type: 'test'
+  ...
+# Subtest: saved owner row is read-only and shows identity, stopped status, and stored documents
+ok 32 - saved owner row is read-only and shows identity, stopped status, and stored documents
+  ---
+  duration_ms: 1.2302
+  type: 'test'
+  ...
+# Subtest: unavailable backend leaves reload and back usable and never enables creation
+ok 33 - unavailable backend leaves reload and back usable and never enables creation
+  ---
+  duration_ms: 0.4897
+  type: 'test'
+  ...
+# Subtest: randomize, language switch, and mobile layout preserve a single scroll area
+ok 34 - randomize, language switch, and mobile layout preserve a single scroll area
+  ---
+  duration_ms: 2.6948
+  type: 'test'
+  ...
+# Subtest: trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+ok 35 - trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+  ---
+  duration_ms: 0.8857
+  type: 'test'
+  ...
+# Subtest: deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+ok 36 - deferred response-lost commit has no precommit acknowledgement or mutation; tick and legacy mutation paths wait
+  ---
+  duration_ms: 410.5189
+  type: 'test'
+  ...
+# Subtest: commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+ok 37 - commerce buy/sell/cargo and community contribution use one profile, exact receipts, and capped conservation
+  ---
+  duration_ms: 355.2045
+  type: 'test'
+  ...
+# Subtest: same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+ok 38 - same pending submit is idempotent; guest cannot mutate; disconnect during blocked commit is finalized by close
+  ---
+  duration_ms: 251.1993
+  type: 'test'
+  ...
+# Subtest: same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+ok 39 - same-store host restart preserves community and replays prior commerce/contribution receipts without rollback
+  ---
+  duration_ms: 485.9058
+  type: 'test'
+  ...
+# Subtest: paused and malformed economic commands are denied without a receipt or authority fence
+ok 40 - paused and malformed economic commands are denied without a receipt or authority fence
+  ---
+  duration_ms: 265.1367
+  type: 'test'
+  ...
+# Subtest: ambiguous failed commit fences the host rather than reopening mutations
+ok 41 - ambiguous failed commit fences the host rather than reopening mutations
+  ---
+  duration_ms: 238.2159
+  type: 'test'
+  ...
+# Subtest: release checker accepts real current artifact and an active base pointer
+ok 42 - release checker accepts real current artifact and an active base pointer
+  ---
+  duration_ms: 3741.8745
+  type: 'test'
+  ...
+# Subtest: release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+ok 43 - release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+  ---
+  duration_ms: 5069.7394
+  type: 'test'
+  ...
+# Subtest: GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+ok 44 - GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+  ---
+  duration_ms: 3585.4479
+  type: 'test'
+  ...
+# Subtest: stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+ok 45 - stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+  ---
+  duration_ms: 3197.8172
+  type: 'test'
+  ...
+# Subtest: default server accepts a HELLO without content identity and welcomes with the base identity
+ok 46 - default server accepts a HELLO without content identity and welcomes with the base identity
+  ---
+  duration_ms: 281.1456
+  type: 'test'
+  ...
+# THREE.BufferGeometry.computeBoundingBox(): Computed min/max have NaN values. The "position" attribute is likely to have NaN values. BufferGeometry {
+#   isBufferGeometry: true,
+#   uuid: 'b0a0c71c-22a3-4d2f-a51b-10e08070b68f',
+#   name: '',
+#   type: 'BufferGeometry',
+#   index: null,
+#   attributes: {
+#     position: Float32BufferAttribute {
+#       isBufferAttribute: true,
+#       name: '',
+#       array: [Float32Array],
+#       itemSize: 3,
+#       count: 3,
+#       normalized: false,
+#       usage: 35044,
+#       _updateRange: [Object],
+#       updateRanges: [],
+#       gpuType: 1015,
+#       version: 0
+#     }
+#   },
+#   morphAttributes: {},
+#   morphTargetsRelative: false,
+#   groups: [],
+#   boundingBox: Box3 {
+#     isBox3: true,
+#     min: Vector3 { x: NaN, y: 0, z: 0 },
+#     max: Vector3 { x: NaN, y: 0, z: 1 }
+#   },
+#   boundingSphere: null,
+#   drawRange: { start: 0, count: Infinity },
+#   userData: {}
+# }
+# Subtest: measures indexed and non-indexed triangles with drawRange and group intersections
+ok 47 - measures indexed and non-indexed triangles with drawRange and group intersections
+  ---
+  duration_ms: 1.8354
+  type: 'test'
+  ...
+# Subtest: deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+ok 48 - deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+  ---
+  duration_ms: 0.6856
+  type: 'test'
+  ...
+# Subtest: uses conservative root-local XZ bounds after child transforms
+ok 49 - uses conservative root-local XZ bounds after child transforms
+  ---
+  duration_ms: 0.3605
+  type: 'test'
+  ...
+# Subtest: ignores invisible objects and material groups while retaining visible group cost
+ok 50 - ignores invisible objects and material groups while retaining visible group cost
+  ---
+  duration_ms: 0.2723
+  type: 'test'
+  ...
+# Subtest: fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+ok 51 - fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+  ---
+  duration_ms: 1.2435
+  type: 'test'
+  ...
+# Subtest: scatter is reproducible and uses only explicit seed and input data
+ok 52 - scatter is reproducible and uses only explicit seed and input data
+  ---
+  duration_ms: 4.7665
+  type: 'test'
+  ...
+# Subtest: circle, square, and rotated ellipse constrain candidates to their brush footprint
+ok 53 - circle, square, and rotated ellipse constrain candidates to their brush footprint
+  ---
+  duration_ms: 1.1695
+  type: 'test'
+  ...
+# Subtest: rotated square includes its corner footprint beyond the unrotated radius
+ok 54 - rotated square includes its corner footprint beyond the unrotated radius
+  ---
+  duration_ms: 3.3308
+  type: 'test'
+  ...
+# Subtest: rotated ellipse influence covers the union of resampled brush positions along a stroke
+ok 55 - rotated ellipse influence covers the union of resampled brush positions along a stroke
+  ---
+  duration_ms: 7.379
+  type: 'test'
+  ...
+# Subtest: per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+ok 56 - per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+  ---
+  duration_ms: 11.1015
+  type: 'test'
+  ...
+# Subtest: spacing holds against every prior decoration and every accepted point
+ok 57 - spacing holds against every prior decoration and every accepted point
+  ---
+  duration_ms: 0.7657
+  type: 'test'
+  ...
+# Subtest: policy exclusions and unsupported heights are omitted deterministically and counted
+ok 58 - policy exclusions and unsupported heights are omitted deterministically and counted
+  ---
+  duration_ms: 0.626
+  type: 'test'
+  ...
+# Subtest: model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+ok 59 - model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+  ---
+  duration_ms: 4.318
+  type: 'test'
+  ...
+# Subtest: existing authored cost participates in cumulative triangle and primitive budgets
+ok 60 - existing authored cost participates in cumulative triangle and primitive budgets
+  ---
+  duration_ms: 0.8767
+  type: 'test'
+  ...
+# Subtest: dense strokes stop invoking spatial policy as soon as object budget is exceeded
+ok 61 - dense strokes stop invoking spatial policy as soon as object budget is exceeded
+  ---
+  duration_ms: 2.2353
+  type: 'test'
+  ...
+# Subtest: application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+ok 62 - application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+  ---
+  duration_ms: 1.2986
+  type: 'test'
+  ...
+# Subtest: zero placements are a no-op and invalid IDs cannot partially change the source document
+ok 63 - zero placements are a no-op and invalid IDs cannot partially change the source document
+  ---
+  duration_ms: 0.4759
+  type: 'test'
+  ...
+# Subtest: Escape cancellation restores the private base and commits nothing
+ok 64 - Escape cancellation restores the private base and commits nothing
+  ---
+  duration_ms: 7.4021
+  type: 'test'
+  ...
+# Subtest: one matching pointer release commits once and reuses preview IDs
+ok 65 - one matching pointer release commits once and reuses preview IDs
+  ---
+  duration_ms: 6.1335
+  type: 'test'
+  ...
+# Subtest: nonmatching pointer and editor UI release cannot commit the gesture
+ok 66 - nonmatching pointer and editor UI release cannot commit the gesture
+  ---
+  duration_ms: 1.6363
+  type: 'test'
+  ...
+# Subtest: a second pointer cannot replace the active gesture or its ID cache
+ok 67 - a second pointer cannot replace the active gesture or its ID cache
+  ---
+  duration_ms: 3.5619
+  type: 'test'
+  ...
+# Subtest: a matching release without a terrain hit discards the preview
+ok 68 - a matching release without a terrain hit discards the preview
+  ---
+  duration_ms: 1.6281
+  type: 'test'
+  ...
+# Subtest: scatter gesture beyond 256 path points is rejected atomically
+ok 69 - scatter gesture beyond 256 path points is rejected atomically
+  ---
+  duration_ms: 7.649
+  type: 'test'
+  ...
+# Subtest: panel keeps measured costs above brush controls and uses an editable numeric seed
+ok 70 - panel keeps measured costs above brush controls and uses an editable numeric seed
+  ---
+  duration_ms: 16.2091
+  type: 'test'
+  ...
+# Subtest: cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+ok 71 - cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+  ---
+  duration_ms: 356.6115
+  type: 'test'
+  ...
+# Subtest: scatter rejects a footprint crossing the shoreline or a steep height break
+ok 72 - scatter rejects a footprint crossing the shoreline or a steep height break
+  ---
+  duration_ms: 287.8833
+  type: 'test'
+  ...
+# Subtest: real shrub scatter survives document and publication compilation without duplicating assets or world state
+ok 73 - real shrub scatter survives document and publication compilation without duplicating assets or world state
+  ---
+  duration_ms: 824.1493
+  type: 'test'
+  ...
+# Subtest: legacy host keeps death persistence and common family composition unmounted by default
+ok 74 - legacy host keeps death persistence and common family composition unmounted by default
+  ---
+  duration_ms: 317.6129
+  type: 'test'
+  ...
+# Subtest: GM content switching excludes a ready host with common death authorities mounted
+ok 75 - GM content switching excludes a ready host with common death authorities mounted
+  ---
+  duration_ms: 3541.9525
+  type: 'test'
+  ...
+# Subtest: Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+ok 76 - Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary
+  ---
+  duration_ms: 4483.6825
+  type: 'test'
+  ...
+# Subtest: exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+ok 77 - exterior zero-pearl fatal keeps the safe-zone death result without generating loot
+  ---
+  duration_ms: 3312.8629
+  type: 'test'
+  ...
+# Subtest: death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+ok 78 - death current rows hydrate after restart; an ordinary drop can be picked and another expired under the same owner
+  ---
+  duration_ms: 5184.1177
+  type: 'test'
+  ...
+# Subtest: fatal input inside a real server step neutralizes the remainder of its queued commands
+ok 79 - fatal input inside a real server step neutralizes the remainder of its queued commands
+  ---
+  duration_ms: 3674.1051
+  type: 'test'
+  ...
+# Subtest: fatal deaths from one terminal tick serialize profile and PK versions
+ok 80 - fatal deaths from one terminal tick serialize profile and PK versions
+  ---
+  duration_ms: 4046.9532
+  type: 'test'
+  ...
+# Subtest: a killer who dies later in the same terminal tick transfers the killer role serially
+ok 81 - a killer who dies later in the same terminal tick transfers the killer role serially
+  ---
+  duration_ms: 3904.0018
+  type: 'test'
+  ...
+# Subtest: disconnect after SQL commit but before beforeTick fences death without local apply
+ok 82 - disconnect after SQL commit but before beforeTick fences death without local apply
+  ---
+  duration_ms: 3612.2882
+  type: 'test'
+  ...
+# Subtest: close after SQL commit but before apply preserves the local pre-death snapshot
+ok 83 - close after SQL commit but before apply preserves the local pre-death snapshot
+  ---
+  duration_ms: 3521.3617
+  type: 'test'
+  ...
+# Subtest: apply failure after SQL commit restores the local death projection and fences the host
+ok 84 - apply failure after SQL commit restores the local death projection and fences the host
+  ---
+  duration_ms: 3603.7307
+  type: 'test'
+  ...
+# Subtest: the opt-in composes one ready ground owner while defaults keep the legacy host
+ok 85 - the opt-in composes one ready ground owner while defaults keep the legacy host
+  ---
+  duration_ms: 696.8951
+  type: 'test'
+  ...
+# Subtest: opt-in fails closed for an absent clock or a resource tick outside that clock
+ok 86 - opt-in fails closed for an absent clock or a resource tick outside that clock
+  ---
+  duration_ms: 516.9748
+  type: 'test'
+  ...
+# Subtest: a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+ok 87 - a pending checkpoint blocks ticks, commands, and new connections until its synchronous drain
+  ---
+  duration_ms: 277.2795
+  type: 'test'
+  ...
+# Subtest: coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+ok 88 - coalesced world snapshots keep the common boundary reserved until every checkpoint drains
+  ---
+  duration_ms: 273.7383
+  type: 'test'
+  ...
+# Subtest: shutdown settles and drains a pending checkpoint before the final world flush
+ok 89 - shutdown settles and drains a pending checkpoint before the final world flush
+  ---
+  duration_ms: 282.7571
+  type: 'test'
+  ...
+# Subtest: the trusted opt-in rejects accessors and the separate agent-trade lane
+ok 90 - the trusted opt-in rejects accessors and the separate agent-trade lane
+  ---
+  duration_ms: 0.5121
+  type: 'test'
+  ...
+# Subtest: accounts-only ground hosts reject guest admission
+ok 91 - accounts-only ground hosts reject guest admission
+  ---
+  duration_ms: 229.9766
+  type: 'test'
+  ...
+# Subtest: replacing the installed beforeTick owner fences the world
+ok 92 - replacing the installed beforeTick owner fences the world
+  ---
+  duration_ms: 245.3291
+  type: 'test'
+  ...
+# Subtest: unmounted lootOnKill and openChest still insert rolled pearls immediately
+ok 93 - unmounted lootOnKill and openChest still insert rolled pearls immediately
+  ---
+  duration_ms: 311.6757
+  type: 'test'
+  ...
+# Subtest: real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+ok 94 - real sentinel loot captures synchronously, retains its tick, commits SQL, then drains after same-tick death
+  ---
+  duration_ms: 4039.4732
+  type: 'test'
+  ...
+# Subtest: two real mint routes in one tick publish only after both SQL receipts drain
+ok 95 - two real mint routes in one tick publish only after both SQL receipts drain
+  ---
+  duration_ms: 3564.855
+  type: 'test'
+  ...
+# Subtest: closing with a captured mint before its first drain rejects flush without durable or local effects
+ok 96 - closing with a captured mint before its first drain rejects flush without durable or local effects
+  ---
+  duration_ms: 3263.6149
+  type: 'test'
+  ...
+# Subtest: closing after mint SQL commit fences the delayed apply and retains its current receipt
+ok 97 - closing after mint SQL commit fences the delayed apply and retains its current receipt
+  ---
+  duration_ms: 3190.4166
+  type: 'test'
+  ...
+# Subtest: replacing afterTick while a mint receipt is retained rejects late application
+ok 98 - replacing afterTick while a mint receipt is retained rejects late application
+  ---
+  duration_ms: 3154.0112
+  type: 'test'
+  ...
+# Subtest: mint ownership is explicit and closing or hook takeover prevents late authority use
+ok 99 - mint ownership is explicit and closing or hook takeover prevents late authority use
+  ---
+  duration_ms: 3242.949
+  type: 'test'
+  ...
+# Subtest: actual sentinel pearl mint recovers exactly once after SIGKILL after-journal-prepare
+ok 100 - actual sentinel pearl mint recovers exactly once after SIGKILL after-journal-prepare
+  ---
+  duration_ms: 6616.2503
+  type: 'test'
+  ...
+# SIGKILL after after-journal-prepare; reopened SQL018/019/023 without migrations, recovered the mint receipt, hydrated one current row, and picked it up once.
+# Subtest: actual sentinel pearl mint recovers exactly once after SIGKILL after-sql-commit
+ok 101 - actual sentinel pearl mint recovers exactly once after SIGKILL after-sql-commit
+  ---
+  duration_ms: 6576.2036
+  type: 'test'
+  ...
+# SIGKILL after after-sql-commit; reopened SQL018/019/023 without migrations, recovered the mint receipt, hydrated one current row, and picked it up once.
+# Subtest: mint planning is detached and applies a fresh checked ground receipt with projected deadlines
+ok 102 - mint planning is detached and applies a fresh checked ground receipt with projected deadlines
+  ---
+  duration_ms: 30.772
+  type: 'test'
+  ...
+# Subtest: uses the origin tick within the one tick capture window and rejects out of window candidates
+ok 103 - uses the origin tick within the one tick capture window and rejects out of window candidates
+  ---
+  duration_ms: 6.3316
+  type: 'test'
+  ...
+# Subtest: rejects UID collisions and duplicate live profile ownership
+ok 104 - rejects UID collisions and duplicate live profile ownership
+  ---
+  duration_ms: 5.8493
+  type: 'test'
+  ...
+# Subtest: cancels when profiles, RNG, or target geometry drift during the IO window
+ok 105 - cancels when profiles, RNG, or target geometry drift during the IO window
+  ---
+  duration_ms: 7.9762
+  type: 'test'
+  ...
+# Subtest: rejects replay and malformed receipts without applying; rolls back if publication throws
+ok 106 - rejects replay and malformed receipts without applying; rolls back if publication throws
+  ---
+  duration_ms: 24.0091
+  type: 'test'
+  ...
+# Subtest: a fault after drop insertion rolls back the mint allocator, ledger and drop
+ok 107 - a fault after drop insertion rolls back the mint allocator, ledger and drop
+  ---
+  duration_ms: 12.2771
+  type: 'test'
+  ...
+# Subtest: rolled-pearl seam stays synchronous and does not intercept existing pearl drops
+ok 108 - rolled-pearl seam stays synchronous and does not intercept existing pearl drops
+  ---
+  duration_ms: 16.4071
+  type: 'test'
+  ...
+# Subtest: SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+ok 109 - SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen
+  ---
+  duration_ms: 10543.7178
+  type: 'test'
+  ...
+# Subtest: private wire catalog/head derive owner and never leak across guests, characters or other accounts
+ok 110 - private wire catalog/head derive owner and never leak across guests, characters or other accounts
+  ---
+  duration_ms: 724.0482
+  type: 'test'
+  ...
+# Subtest: two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+ok 111 - two characters share one connection ceiling and atomic CAS head; metadata cannot mutate gameplay or resume
+  ---
+  duration_ms: 441.8944
+  type: 'test'
+  ...
+# Subtest: catalog eligibility, own character scope, explicit stop and exact schema gate saves
+ok 112 - catalog eligibility, own character scope, explicit stop and exact schema gate saves
+  ---
+  duration_ms: 448.8687
+  type: 'test'
+  ...
+# Subtest: timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+ok 113 - timeout holds the account slot across sessions until real save settles and cannot deliver a late result
+  ---
+  duration_ms: 524.4842
+  type: 'test'
+  ...
+# Subtest: SQL readiness absent closes only inference configuration
+ok 114 - SQL readiness absent closes only inference configuration
+  ---
+  duration_ms: 324.6101
+  type: 'test'
+  ...
+# Subtest: USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+ok 115 - USD parsing is exact with no implicit default, and catalog refuses URLs or secret fields
+  ---
+  duration_ms: 253.9878
+  type: 'test'
+  ...
+# Subtest: a fresh profile: a common starter weapon of the chosen kit, 2 potions, mastery 1; the client gets it
+ok 116 - a fresh profile: a common starter weapon of the chosen kit, 2 potions, mastery 1; the client gets it
+  ---
+  duration_ms: 307.2671
+  type: 'test'
+  ...
+# Subtest: personal loot: both pirates roll their own drops, see only theirs and pick up only theirs
+ok 117 - personal loot: both pirates roll their own drops, see only theirs and pick up only theirs
+  ---
+  duration_ms: 295.3336
+  type: 'test'
+  ...
+# Subtest: a full bag leaves items on the ground (said once); drops fade after their life
+ok 118 - a full bag leaves items on the ground (said once); drops fade after their life
+  ---
+  duration_ms: 1068.368
+  type: 'test'
+  ...
+# Subtest: the bag: equip swaps and changes the numbers (and the kit), unequip, salvage; starters are worth nothing
+ok 119 - the bag: equip swaps and changes the numbers (and the kit), unequip, salvage; starters are worth nothing
+  ---
+  duration_ms: 275.3481
+  type: 'test'
+  ...
+# Subtest: racks: the best weapon of that kit you carry, or the rack's common one; a full bag drops the old one at your feet
+ok 120 - racks: the best weapon of that kit you carry, or the rack's common one; a full bag drops the old one at your feet
+  ---
+  duration_ms: 244.4472
+  type: 'test'
+  ...
+# Subtest: mastery: XP with a weapon raises its mastery and opens E at 2, R at 3 (private event)
+ok 121 - mastery: XP with a weapon raises its mastery and opens E at 2, R at 3 (private event)
+  ---
+  duration_ms: 220.684
+  type: 'test'
+  ...
+# Subtest: the boss chest: one per pirate in the arena, opened with F, at least one Rare inside
+ok 122 - the boss chest: one per pirate in the arena, opened with F, at least one Rare inside
+  ---
+  duration_ms: 284.0295
+  type: 'test'
+  ...
+# Subtest: client prediction stays exact wearing speed boots and a cooldown ring (equipped through the bag)
+ok 123 - client prediction stays exact wearing speed boots and a cooldown ring (equipped through the bag)
+  ---
+  duration_ms: 323.7575
+  type: 'test'
+  ...
+# Subtest: authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+ok 124 - authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+  ---
+  duration_ms: 19.9523
+  type: 'test'
+  ...
+# Subtest: load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+ok 125 - load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+  ---
+  duration_ms: 0.6487
+  type: 'test'
+  ...
+# Subtest: the next authority command reflects profile and cargo changes, including water vessel mass
+ok 126 - the next authority command reflects profile and cargo changes, including water vessel mass
+  ---
+  duration_ms: 6.5716
+  type: 'test'
+  ...
+# Subtest: swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+ok 127 - swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+  ---
+  duration_ms: 11.7627
+  type: 'test'
+  ...
+# Subtest: gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+ok 128 - gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+  ---
+  duration_ms: 14.5649
+  type: 'test'
+  ...
+# Subtest: commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+ok 129 - commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+  ---
+  duration_ms: 293.5291
+  type: 'test'
+  ...
+# Subtest: HTTP listener and simulation wait for initial world load and creation CAS
+ok 130 - HTTP listener and simulation wait for initial world load and creation CAS
+  ---
+  duration_ms: 358.6611
+  type: 'test'
+  ...
+# Subtest: world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+ok 131 - world write conflict fences ticks and admissions, returns HTTP health 503, and close reports failure
+  ---
+  duration_ms: 368.0695
+  type: 'test'
+  ...
+# Subtest: ambiguous save failure fences the host and preserves the last confirmed world generation
+ok 132 - ambiguous save failure fences the host and preserves the last confirmed world generation
+  ---
+  duration_ms: 232.5219
+  type: 'test'
+  ...
+# Subtest: autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+ok 133 - autosave and shutdown serialize slow CAS writes and shutdown persists the final economy snapshot
+  ---
+  duration_ms: 280.7352
+  type: 'test'
+  ...
+# Subtest: load failure never opens the HTTP listener or manufactures a replacement world
+ok 134 - load failure never opens the HTTP listener or manufactures a replacement world
+  ---
+  duration_ms: 273.806
+  type: 'test'
+  ...
+# Subtest: shutdown aborts a stuck startup load and late null result cannot write a world
+ok 135 - shutdown aborts a stuck startup load and late null result cannot write a world
+  ---
+  duration_ms: 242.7716
+  type: 'test'
+  ...
+# Subtest: createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+ok 136 - createGameServer.close during a blocked pre-listen load leaves no listener or late world write
+  ---
+  duration_ms: 238.6357
+  type: 'test'
+  ...
+# Subtest: createGameServer can close cleanly before listen begins
+ok 137 - createGameServer can close cleanly before listen begins
+  ---
+  duration_ms: 214.738
+  type: 'test'
+  ...
+1..137
+# tests 137
+# suites 0
+# pass 137
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 72878.1192

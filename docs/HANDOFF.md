@@ -10,6 +10,19 @@ seguía el flujo seguro para jugadores probando `fb4276f`; no se forzó reinicio
 `d91bc66` se enviaron por continuidad. Falta verificar en producción la revisión activa y el flujo
 autenticado durable. Sin inferencia, spawn ni permisos concedidos; siguiente paso: emparejamiento local.
 
+**AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).
+Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
+muerte primero, mints en orden y publicación al terminar todos. Aplicación síncrona reversible,
+filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelados, base ff45e49;
+único fallo Cometa/agua reproducido en upstream sin cambios, registrado en la entrega.
+Dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
+Integración alpha.56/protocolo 56: 137/137 en 24 archivos congelados (base c535e5d), conteos solapados.
+Alpha.57/protocolo 56: 28/28 en 6 archivos (base b89a2d9); core de servidor/suelo sin cambios.
+Sin SQL AREA15 nuevo ni activación/adopción pública; despliegue se registra en la entrega.
+El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
+Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
+
 **Bucanero, idle original en la ficha — alpha.57/protocolo 56, sin SQL propio:**
 [Brief](briefs/buccaneer-sheet-idle.md) y [entrega](delivery/buccaneer-v1/idle/README.md).
 Vista nativa Mixamo con su clip idle, giro/zoom y miniaturas quietas; mundo conserva rig de 15 huesos y acciones.

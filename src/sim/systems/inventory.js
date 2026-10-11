@@ -10,7 +10,7 @@ import { LOOT, DROPS } from '../../data/loot.js';
 import { MASTERY, WEAPON_KINDS, weaponIndex } from '../../data/weapons.js';
 import { ARTS, TATTOO_IDS, TATTOO, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, isTattoo, formRank, tattooXpToNext } from '../../data/tattoos.js';
 import { PEARL, newPearls, sanitizePearls } from '../../data/pearls.js';
-import { installPearls, attachPearls, detachPearls, spillPearls, pickPearl, returnPearl, rollPearl, dropPearl } from './pearls.js';
+import { installPearls, attachPearls, detachPearls, spillPearls, pickPearl, returnPearl, rollPearl, dropRolledPearl } from './pearls.js';
 import { ENEMIES, ENEMY_KINDS } from '../../data/enemies.js';
 import { mulberry32 } from '../../core/rng.js';
 import { rollItem, itemValue, itemScore, sanitizeItem } from '../items.js';
@@ -474,7 +474,7 @@ export function lootOnKill(world, enemy, by, players) {
   if (roller && (def.boss || kind === 'sentinel' || def.renegade)) {
     const tide = world.encounters.find((q) => q.id === ecs.brain[enemy]?.enc)?.tier || 1;
     const pearl = rollPearl(world, def.boss ? PEARL.bossChance : PEARL.eliteChance, tide);
-    if (pearl) dropPearl(world, pearl, x, z);
+    if (pearl) dropRolledPearl(world, pearl, x, z);
   }
 }
 
@@ -542,7 +542,7 @@ export function openChest(world, e, id) {
   const list = [];
   for (const c of d.contents) addDrop(world, e, c.kind, d.x, d.z, c.item ? { item: c.item } : c.n ? { n: c.n } : {}, list);
   const pearl = rollPearl(world, PEARL.chestChance, d.tide || 1);
-  if (pearl) dropPearl(world, pearl, d.x, d.z);
+  if (pearl) dropRolledPearl(world, pearl, d.x, d.z);
   world.emit({ type: 'chest', to: e, e, id, x: d.x, z: d.z, r: d.rarity });
   announce(world, e, list, d.x, d.z);
   return true;

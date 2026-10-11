@@ -1,5 +1,18 @@
 # Continuidad de servidor — AREA15
 
+**AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
+[Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).
+Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
+muerte primero, mints en orden y publicación al terminar todos. Aplicación síncrona reversible,
+filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelados, base ff45e49;
+único fallo Cometa/agua reproducido en upstream sin cambios, registrado en la entrega.
+Dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
+Integración alpha.56/protocolo 56: 137/137 en 24 archivos congelados (base c535e5d), conteos solapados.
+Alpha.57/protocolo 56: 28/28 en 6 archivos (base b89a2d9); core de servidor/suelo sin cambios.
+Sin SQL AREA15 nuevo ni activación/adopción pública; despliegue se registra en la entrega.
+El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
+Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.
