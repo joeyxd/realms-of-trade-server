@@ -34,6 +34,12 @@ Una operación que supera el timeout mantiene su slot hasta terminar; no entrega
   por root. Chrome PC ES/EN, portrait poblado 390×844 y paisaje 844×390 ES; nueve controles alcanzables
   por scroll y objetivos de al menos 44 px. Autenticación simulada, gameplay/control en memoria;
   SQL028 en disco reabierto en revisión 2. Cero errores de página, consola o solicitudes.
+- [Integración tras los últimos merges](l03d-inference-config/integration-merged.json): 97/97 en
+  17 archivos; incluye los 70 anteriores, la frontera común de suelo y Carga todavía sin montar.
+  Los 39 hashes aceptados del centro/GM04b no cambiaron. Conteos solapados.
+- [Navegador con el HUD integrado](l03d-inference-config/final-hud-integration/browser.json):
+  12/12 y seis capturas; root revisó PC EN, móvil vertical poblado y paisaje ES. Sin errores;
+  conserva el alcance local con autenticación simulada y SQL028 en disco.
 - Publicación pendiente; el último runtime previo comprobado es `a7f9e6d`/alpha.40.
 
 Evidencia SQL en [sql-live.json](l03d-inference-config/sql-live.json). Los conteos de selecciones

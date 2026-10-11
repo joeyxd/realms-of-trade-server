@@ -7,6 +7,19 @@ import { fileURLToPath } from 'node:url';
 import { GAME } from '../../../src/data/meta.js';
 const expected = process.argv[2];
 assert.match(expected, /^[0-9a-f]{40}$/);
+const expectedRuntimeFiles = [
+  'server/agentControl.mjs', 'server/host.mjs', 'server/index.mjs', 'server/store.mjs',
+  'server/companionConfig.mjs', 'server/companionConfigStore.mjs', 'server/migrations/025_companion_config.sql',
+  'server/companionControl.mjs', 'server/companionControlStore.mjs', 'server/migrations/027_companion_control.sql',
+  'server/inferenceConfig.mjs', 'server/inferenceConfigStore.mjs', 'server/migrations/028_inference_config.sql',
+  'src/net/protocol.js', 'src/net/companionConfig.js', 'src/net/inferenceConfig.js',
+  'src/client/companions.js', 'src/client/companionConfig.js', 'src/client/inferenceConfig.js',
+  'src/ui/companions.js', 'src/ui/companionConfig.js', 'src/ui/inferenceConfig.js',
+  'src/main.js', 'src/client/gameClient.js',
+  'src/editor/editor.js', 'src/editor/editor.css', 'src/editor/templatePanel.js',
+  'src/editor/templateStore.js', 'src/editor/templates.js', 'styles/hud.css', 'styles/minimap.css',
+  'server/groundHostAuthority.mjs',
+];
 const execute = (program,args,options={}) => {
   const r=spawnSync(program,args,{encoding:'utf8',timeout:60000,...options});
   assert.equal(r.status,0,'bounded deployment probe failed');
@@ -17,9 +30,11 @@ const deployment = JSON.parse(execute('ssh',['-o','BatchMode=yes','root@62.171.1
 }));
 assert.equal(deployment.version,GAME.version);
 assert.equal(deployment.revision,expected);
+assert.equal(deployment.currentRelease,'/opt/marea-negra/releases/'+expected);
 assert.equal(deployment.timer,'active');
 assert.equal(deployment.readiness.version,1);
 assert.equal(deployment.readiness.durable,true);
+assert.deepEqual(Object.keys(deployment.sourceHashes).sort(),expectedRuntimeFiles.sort());
 for(const [file,hash] of Object.entries(deployment.sourceHashes)) {
   const bytes=spawnSync('git',['show',`${expected}:${file}`],{maxBuffer:4*1024*1024});
   assert.equal(bytes.status,0,'expected source not found');

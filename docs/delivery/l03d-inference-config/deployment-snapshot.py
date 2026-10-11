@@ -19,6 +19,8 @@ RUNTIME_FILES = (
     'src/main.js', 'src/client/gameClient.js',
     'src/editor/editor.js', 'src/editor/editor.css', 'src/editor/templatePanel.js',
     'src/editor/templateStore.js', 'src/editor/templates.js',
+    'styles/hud.css', 'styles/minimap.css',
+    'server/groundHostAuthority.mjs',
 )
 
 
