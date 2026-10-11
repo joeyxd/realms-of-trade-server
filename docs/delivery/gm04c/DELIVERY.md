@@ -47,7 +47,7 @@ derivados; expone los modelos ya optimizados para colocación individual y dispe
 
 ## Compatibilidad y evidencia
 
-Documento v2–v4/compiler 2, protocolo 55 y SQL033 conservados; **sin migración nueva**. La integración
+Documento v2–v4/compiler 2 y SQL033 conservados; **sin migración GM nueva ni mensajes propios**. La integración
 `gm-scatter-publication.test.mjs` usa el mapa y arbusto reales: valida referencias, compila ambos
 documentos, deduplica el GLB, reproduce el hash y conserva hash de recursos y colisiones. También
 hace explícita la diferencia entre la política del pincel y la colocación manual GM autorizada.
@@ -70,8 +70,14 @@ presupuestos densos. La [integración final](integration/summary.json) pasó **6
 alpha.55/protocolo 55, sin fuentes modificadas durante la ejecución; contiene hashes de fuentes/pruebas
 y [salida TAP](integration/regression.tap). Los conteos se solapan, no son 353 casos únicos.
 
-El [navegador local integrado](local/integrated/browser.json) pasó **10/10**, con ocho capturas ES/EN
-de escritorio/móvil y arrastre real; cero errores de página/WebGL y ninguna mutación remota.
+Una segunda integración conserva creación de compañeros de `d91bc66`, incluido su protocolo 56;
+ese corte conserva su instalación/activación SQL034 separada, sin habilitarla desde GM04c.
+La [aceptación de release](integration-release/summary.json) pasó **81/81 en 19 archivos**, alpha.56,
+con hashes y fuentes estables; incluye la cadena HTTP/WS GM, entry/session y clientes/red/UI de compañeros.
+Sus casos se solapan con las rondas anteriores. [Salida](integration-release/regression.tap).
+
+El [navegador local final](local/release/browser.json) pasó **10/10**, con ocho capturas ES/EN
+de escritorio/móvil inspeccionadas y arrastre real; cero errores de página/WebGL y ninguna mutación remota.
 Pendientes publicación y navegador público autenticado. No declarar desplegado hasta registrar
 revisión/imagen activas, salud y entrada real.
 
