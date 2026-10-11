@@ -84,7 +84,31 @@ huellas de perlas persistidas; no habilita la activación GM con el piloto monta
 [Preflight VPS](m5-ground-pearl-lifecycle/preflight-status.json) y
 [dominio SQL](m5-ground-pearl-lifecycle/preflight-domain.json) son lecturas sin mutación:
 SQL023 readiness 1, recursos v3, cero filas consultadas y mundo público sin reloj común.
-La verificación de publicación de este corte se registra por separado al terminar el actualizador.
+La verificación de publicación del código, con el montaje apagado, se registra abajo.
+
+## Publicación y dominio real
+
+Código aceptado publicado y verificado en **`ea982f8e5326308aed6ba0ab9a6bee447ee22a59`**, 0.6.0-alpha.45/protocolo 51.
+[Revisión/imagen y salud](m5-ground-pearl-lifecycle/final-status.json), capturada a 2026-10-11T05:05:07.566538+00:00:
+una autoridad sana, timer activo, almacenamiento Supabase y cero errores/bloqueo en la captura.
+El actualizador respeta la exclusión existente y la ausencia de jugadores antes del cambio.
+
+- **127/127** comprobaciones offline del actualizador en la imagen aceptada:
+  [log resumido](m5-ground-pearl-lifecycle/updater-validation.json).
+- **31/31** focales en la imagen exacta, sin red ni credenciales del dominio:
+  [evidencia](m5-ground-pearl-lifecycle/exact-image-tests.json). Los ocho módulos modificados
+  coinciden por SHA256 con Git, incluido el arreglo de captura/Carga. Son contratos en memoria;
+  la durabilidad SQL y SIGKILL corresponden a la aceptación local anterior.
+- **6/6** de entrada pública ordinaria con identidad del contenido vigente,
+  WELCOME/SNAPSHOT/PROFILE: [sonda](m5-ground-pearl-lifecycle/public-smoke.json).
+  Esta sonda invitada no realiza una operación durable autenticada.
+- [Consulta SQL final](m5-ground-pearl-lifecycle/final-domain.json): SQL023 readiness 1,
+  recursos v3, reloj común ausente y conteos de las familias registrados. **Montajes común y
+  groundPearls apagados**; el código está en la imagen, el piloto no se activa en el mundo real.
+
+[Comparación de fuentes](m5-ground-pearl-lifecycle/published-source-check.json) conserva hashes
+locales y de Git; normalizar CRLF a LF reproduce los bytes publicados. La aceptación de imagen
+usa los bytes Git. Esta publicación no aplica SQL, no adopta el mundo ni hace SIGKILL del VPS.
 
 ## Límites y continuación
 
