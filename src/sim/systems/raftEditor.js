@@ -398,7 +398,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
-    if (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(id)) {
+    if (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'purifier'].includes(id)) {
       const support = canPlace(activeRaftParts(active), msg.piece);
       if (support) return reject(w, e, msg, support, ship);
     }

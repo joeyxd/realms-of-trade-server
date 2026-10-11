@@ -80,7 +80,7 @@ test('LocalServer capacity is owner-private, detached, and refreshed by an autho
   const initialRead = reply(messages, 1, 'capacity-read');
   assert.ok(initialRead?.ok);
   assert.equal(initialRead.capacity.holdFree, 4);
-  assert.equal(initialRead.capacity.packFree, 8);
+  assert.equal(initialRead.capacity.packFree, 16, 'starter backpack holds 18 volume, minus one stone at volume 2');
 
   command(server, 1, 'commerce', { op: 'transfer', id: raftA.id, expectedRev: raftA.rev,
     g: 'piedra', n: 1, side: 'deposit', opId: 'capacity-deposit' });
