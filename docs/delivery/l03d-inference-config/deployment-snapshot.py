@@ -111,7 +111,9 @@ import { storeFromEnv } from './server/store.mjs';
 try {
   const store = storeFromEnv(process.env);
   const result = await store.checkInferenceConfig();
-  const report = { durable: store.durable === true, version: result?.version ?? null };
+  const catalog = JSON.parse(process.env.MN_INFERENCE_CATALOG || '[]');
+  const report = { durable: store.durable === true, version: result?.version ?? null,
+    catalogEmpty: Array.isArray(catalog) && catalog.length === 0 };
   console.log(JSON.stringify(report));
   if (report.durable !== true || report.version !== 1) process.exitCode = 1;
 } catch {
@@ -120,7 +122,7 @@ try {
 }
 """
     readiness = container_json(readiness_script)
-    if readiness != {'durable': True, 'version': 1}:
+    if readiness != {'durable': True, 'version': 1, 'catalogEmpty': True}:
         fail('sql028_store_readiness_failed')
 
     timer_probe = subprocess.run(['systemctl', 'is-active', 'marea-negra-update.timer'],

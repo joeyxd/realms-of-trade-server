@@ -34,12 +34,25 @@ assert.equal(deployment.currentRelease,'/opt/marea-negra/releases/'+expected);
 assert.equal(deployment.timer,'active');
 assert.equal(deployment.readiness.version,1);
 assert.equal(deployment.readiness.durable,true);
+assert.equal(deployment.readiness.catalogEmpty,true);
 assert.deepEqual(Object.keys(deployment.sourceHashes).sort(),expectedRuntimeFiles.sort());
 for(const [file,hash] of Object.entries(deployment.sourceHashes)) {
   const bytes=spawnSync('git',['show',`${expected}:${file}`],{maxBuffer:4*1024*1024});
   assert.equal(bytes.status,0,'expected source not found');
   assert.equal(createHash('sha256').update(bytes.stdout).digest('hex'),hash,`active source mismatch: ${file}`);
 }
+const accepted=JSON.parse(readFileSync(new URL('./integration-merged.json',import.meta.url),'utf8'));
+for(const [file,hash] of Object.entries(accepted.sha256)) {
+  const bytes=spawnSync('git',['show',`${expected}:${file}`],{maxBuffer:4*1024*1024});
+  assert.equal(bytes.status,0,'accepted test source not found');
+  const normalized=bytes.stdout.toString('utf8').replaceAll('\r\n','\n');
+  assert.equal(createHash('sha256').update(normalized).digest('hex'),hash,`accepted source changed: ${file}`);
+}
+writeFileSync(new URL('./tested-source-identity.json',import.meta.url),JSON.stringify({
+  at:new Date().toISOString(),revision:expected,testedSourceCommit:accepted.sourceCommit,
+  testCounts:accepted.counts,comparedFiles:Object.keys(accepted.sha256).length,hashNormalization:'UTF-8 LF',
+  pass:true,scope:'Accepted local source and test hashes match the published Git revision; active image hashes are recorded separately.'
+},null,2)+'\n');
 writeFileSync(new URL('./deployment.json',import.meta.url),JSON.stringify(deployment,null,2)+'\n');
 execute(process.execPath,[fileURLToPath(new URL('./public-smoke.mjs',import.meta.url))]);
 const smoke=JSON.parse(readFileSync(new URL('./public-smoke.json',import.meta.url),'utf8'));

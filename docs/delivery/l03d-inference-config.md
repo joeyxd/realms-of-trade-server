@@ -40,7 +40,14 @@ Una operación que supera el timeout mantiene su slot hasta terminar; no entrega
 - [Navegador con el HUD integrado](l03d-inference-config/final-hud-integration/browser.json):
   12/12 y seis capturas; root revisó PC EN, móvil vertical poblado y paisaje ES. Sin errores;
   conserva el alcance local con autenticación simulada y SQL028 en disco.
-- Publicación pendiente; el último runtime previo comprobado es `a7f9e6d`/alpha.40.
+- [Publicación comprobada](l03d-inference-config/deployment.json) en `8a779b5`/alpha.42, protocolo 48:
+  una autoridad sana y temporizador activo, 109/109 del actualizador y 32 hashes activos iguales a Git.
+  Los [49 hashes de fuentes y pruebas aceptadas](l03d-inference-config/tested-source-identity.json)
+  coinciden con esa revisión; los merges posteriores al 97/97 sólo incorporaron documentación/evidencia.
+- [WSS público](l03d-inference-config/public-smoke.json): 21/21, con entrada real de invitado,
+  recarga de protocolo antiguo y denegación de load/save privado sin metadata. [Estado M5](l03d-inference-config/status.json)
+  sin errores, pendientes ni bloqueo en la captura; SQL028 readiness 1 desde el store del contenedor.
+  Catálogo vacío comprobado sin emitir su contenido. No se probaron guardados públicos de un dueño real.
 
 Evidencia SQL en [sql-live.json](l03d-inference-config/sql-live.json). Los conteos de selecciones
 locales se solapan; no deben sumarse como cobertura independiente.

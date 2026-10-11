@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-11T03:34:06.794Z",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.42",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 1816,
+    "uptime": 37,
+    "stepMs": 1.46,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2103,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 112,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 2594.8,
+      "kbIn": 1.4,
+      "dropped": 0
+    }
+  }
+}
