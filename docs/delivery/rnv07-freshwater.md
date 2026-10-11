@@ -40,4 +40,6 @@ Se verificó el candidato concreto `C:\Unreal\MyProject\Content\_SplineVFX\Demo\
 
 ## Siguiente corte
 
+Comprobación posterior de compatibilidad con la autoridad común, 05:06Z: el runtime `ea982f8e5326308aed6ba0ab9a6bee447ee22a59` pasó 127/127 del actualizador. La suite local de agua pasó 6/6, incluida la nueva guarda tras la lectura asíncrona del recibo. El [canario público repetido](rnv07-freshwater/public-common-alpha45/acceptance.json) pasó las mismas seis comprobaciones acotadas de cubeta y reconexión; [estado e imagen](rnv07-freshwater/vps-common-alpha45.json). Un intento previo se detuvo sin crear cuenta porque había otra conexión; se esperó a que quedara libre. No se montó ni activó el piloto público de suelo común. Esta verificación no amplía el alcance de recolección/transporte/encuentro live.
+
 RNV07b: cantimplora reutilizable, rellenar/beber con supervivencia y aclarar consumo durante viaje activo. Después, el primer viaje Salty Shore–Puerto Sol; el purificador avanzado queda sujeto al acceso al componente de la tercera ciudad. No subir todavía su receta sin alternativa manual publicada y transición de patrimonio.
