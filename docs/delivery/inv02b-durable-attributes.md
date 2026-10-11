@@ -1,8 +1,9 @@
 # AREA03 INV02b — entrega de Carga durable
 
 Contrato: [adopción, asignación y reasignación](../briefs/inv02b-durable-attributes.md).
-Implementado y publicado sobre M5, protocolo 49/alpha.43. Código desplegado y verificado en
-`f281db1`, con Carga apagada. Activación pública pendiente de SQL029 y su canario.
+Implementado, publicado y activado sobre M5, protocolo 49/alpha.43. SQL029 aplicado y
+readiness verificado desde el contenedor. Carga activa en `024610b`; canario público
+autenticado **5/5**, con adopción, asignación, reset, replay, conflicto y reconexión.
 
 El perfil conserva `attr` al cargar/sincronizar, al mejorar mochila y al recibir Tala offline.
 Nivel 1 y packs previos al taller tienen adopción explícita sin perder objetos. El éxito se
@@ -45,16 +46,34 @@ Cuenta Auth/perfil temporales retirados. No es prueba de UI pública de asignaci
 [Revisión e imagen fijas](inv02b-public/20261011T042205Z-off/authority.ndjson) bajo locks del
 actualizador y contenido; 14 hashes de archivos de la imagen iguales a Git. Una autoridad,
 Supabase durable, cero errores/guardados pendientes antes y después, timer activo. Sin
-reinicio forzado ni otra autoridad. La evidencia verifica `f281db1`; los commits posteriores
-de documentación/herramientas no representan una activación de Carga.
+reinicio forzado ni otra autoridad. La evidencia con flag apagado verifica `f281db1` y
+conserva su alcance histórico.
+
+El autor confirmó SQL029 aplicado. [Activación](inv02b-public/20261011T044137Z-activation/activation.ndjson)
+en `024610b6df940cbf8cdfd5d6bb2ee06c84ed94d0`, imagen
+`sha256:0ec92e7a66f4858c84a5c4f4d2b584c4daa6055bdc1905f8279de1a4a3577777`.
+Con locks del actualizador/contenido y cero jugadores, se comprobó readiness SQL029 desde
+el contenedor y se cambió únicamente `MN_ATTRIBUTE_OPERATIONS=1`, preservando las demás
+variables privadas. Se detuvo la autoridad anterior antes de recrear el mismo servicio/imagen.
+
+[Canario activo y alcance](inv02b-public/20261011T044148Z-active/README.md): **5/5** por WSS
+público autenticado. Perfil temporal nivel 3: adopción explícita, asignación de dos puntos,
+reset gratuito, replay histórico sin rollback, conflicto durable por revisión atrasada sin
+fence, comparación base/snapshot y reconexión con Carga 0, reset usado y masa máxima 50.
+Cuenta Auth/perfil retirados; cuatro recibos económicos conservados. [Autoridad fija](inv02b-public/20261011T044148Z-active/authority.ndjson),
+14 hashes iguales a Git, Supabase durable, flag habilitado/listo, cero jugadores, errores o
+guardados pendientes antes/después y timer activo. Es aceptación del contrato público de
+comandos; la pantalla de asignación y el sobrepeso jugable siguen pendientes.
 
 ## Reanudar
 
-1. Ejecutar [SQL029](../../server/migrations/029_attribute_operations.sql) en Supabase después
-   de 001–028; comprobar readiness sin editar perfiles o recibos existentes.
-2. Activar por configuración con la única autoridad en reposo y comprobar canario autenticado
-   de adopción/asignación/reasignación, reconexión y replay, conservando sus recibos.
-3. INV02c: ficha ES/EN y controles de puntos con estado pendiente; después sobrepeso y dash.
+1. INV02c: ficha ES/EN y controles de puntos con estado pendiente/rechazado, adopción visible
+   y confirmación del perfil. Reutilizar el contrato activo; no introducir otro escritor.
+2. Después: sobrepeso y dash compartidos entre host/predicción.
+
+[SQL029](../../server/migrations/029_attribute_operations.sql) y la activación ya están
+comprobados; no requieren reaplicación para continuar INV02c. El flag sigue apagado por
+defecto en nuevas instalaciones y exige taller/readiness para activarse.
 
 El borrador vecino `inv02-survival` sigue separado. No ejecutar su SQL028 candidato:
 la rama integrada ya utiliza SQL028 para configuración de inferencia.

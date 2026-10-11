@@ -1,15 +1,18 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
+**AREA03 INV02b, 2026-10-10 — Carga durable activa y comprobada en público:**
 [Contrato](briefs/inv02b-durable-attributes.md) y [entrega](delivery/inv02b-durable-attributes.md).
-Adopción explícita nivel 1/legacy, asignación y un reset por la cola M5; conserva objetos,
-mochilas y crédito de Tala offline. 19/19 de atributos y 1/1 de composición SQL023/029
-con reapertura de base; regresión previa 106/106 y UI existente 6/6 ES/EN, conteos solapados.
-SQL029 aditivo listo, sin reescribir datos; flag `MN_ATTRIBUTE_OPERATIONS` apagado por defecto,
-exige readiness. Alpha.43/protocolo 49. Sigue aplicar SQL029, canario y ficha ES/EN INV02c;
-después movimiento/sobrepeso. No implica que la pantalla de atributos ya esté jugable.
-Código desplegado `f281db1` con flag apagado; canario público autenticado **5/5**, 14 hashes
-de imagen iguales a Git y una autoridad sana antes/después. Cuenta QA retirada, sin recibos.
+SQL029 aplicado por el autor; readiness comprobado desde el contenedor. Alpha.43/protocolo 49,
+`MN_ATTRIBUTE_OPERATIONS=1` en el VPS. Activación en reposo sobre `024610b`, misma imagen,
+una autoridad y demás variables privadas preservadas; flag apagado por defecto en instalaciones nuevas.
+[Canario activo](delivery/inv02b-public/20261011T044148Z-active/README.md) **5/5**:
+adopción, asignación, reset, replay histórico sin rollback, conflicto durable y reconexión.
+14 hashes de imagen iguales a Git; Supabase durable, cero errores/pendientes antes/después.
+Cuenta QA retirada y cuatro recibos conservados. Canario previo con flag apagado conservado aparte.
+Pruebas locales: atributos 19/19, composición SQL023/029 1/1 con reapertura, UI existente ES/EN 6/6
+y regresión previa 106/106 (conteos solapados). Taller y crédito de Tala offline conservan Carga.
+Sigue ficha ES/EN INV02c para administrar puntos; después movimiento/sobrepeso. La pantalla de
+atributos no está montada todavía. No se requiere otro SQL para comenzar INV02c.
 
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](delivery/hud-portrait/README.md), [contrato de Carga](briefs/inv02a-durable-carry.md)
