@@ -1,0 +1,41 @@
+{
+  "schema": "mn.companion-continuity-reopen.v1",
+  "at": "2026-10-11T06:02:27.054Z",
+  "production": false,
+  "realInferenceCallsThisCut": 0,
+  "state": "stopped",
+  "scopePreserved": true,
+  "memorySha256": "cd4a50839062a9967f227987f47e20403968e555484a2520d24fc32cd485001f",
+  "personalitySha256": "5f54da10ececb6f88973e16cae4c08f29d12d7a30ba292e31d9d6838282b65a5",
+  "ledgerRevision": 18,
+  "totals": {
+    "calls": 6,
+    "confirmedTokens": 19182,
+    "confirmedCostUnits": 19182,
+    "heldTokens": 0,
+    "heldCostUnits": 0,
+    "unresolvedTokens": 0,
+    "unresolvedCostUnits": 0,
+    "availableTokens": 180818,
+    "availableCostUnits": 180818,
+    "entries": 6,
+    "reservedEntries": 0,
+    "inflightEntries": 0,
+    "unknownEntries": 0,
+    "settledEntries": 6,
+    "cancelledEntries": 0,
+    "overrun": false
+  },
+  "autoCompact": false,
+  "automaticSummaryRemaining": 0,
+  "refresh": {
+    "ok": true,
+    "atMs": 1791698546613,
+    "reason": "manual_refresh",
+    "revision": 1,
+    "sessionId": null,
+    "state": "stopped",
+    "budgetReset": false,
+    "ordersResumed": false
+  }
+}

@@ -16,7 +16,12 @@ node tools/agent/run.mjs --url ws://127.0.0.1:5173/ws --files C:/ruta/brisa --ow
 {"type":"mind"}
 ```
 
-`remember` guarda un episodio de estado entregado por el servidor sin inferencia; `compact_memory` hace una consulta separada al adaptador para resumir de uno a ocho episodios concretos. La única implementación CLI es simulada y su resumen es una línea de ensayo, sin calidad lingüística aceptada. No hay captura por tick ni tareas automáticas. `--mind-goals` puede añadirse para revisar metas; personalidad, metas y memoria siguen siendo archivos separados.
+`remember` guarda un episodio de estado entregado por el servidor sin inferencia; `compact_memory` hace una consulta separada al adaptador para resumir de uno a ocho episodios concretos. La implementación CLI es simulada y su resumen es una línea de ensayo, sin calidad lingüística aceptada. En ese CLI la captura sigue explícita, sin captura por tick ni tareas automáticas. `--mind-goals` puede añadirse para revisar metas; personalidad, metas y memoria siguen siendo archivos separados.
+
+El [Studio local L04c](../delivery/l04c-companion-continuity.md) captura después de conversación confirmada,
+añade selección/resumen manual y refresco sin nueva sesión. Ofrece un resumen automático opt-in por presión
+y pausa, con máximo un intento por cuota durable compartida con los manuales; apagado tras reiniciar.
+No altera el CLI ni monta memoria pública. Conserva originales, incertidumbre y fences de archivos/autoridad.
 
 En código, `AgentMind` acepta `appendMemory` y `readCommitSnapshot` además de las dependencias L03. El writer confiable recibe `{expectedRevision,expectedHashes,entry,guard}` y debe ejecutar el guard síncrono, puro e idempotente antes de publicar. `createMemoryStore({directory,scope}).append` implementa ese contrato. Su recibo exitoso contiene `replay:false`, revisión siguiente, hash del archivo y `entryId`. Recepción tardía, cancelación o fallo ambiguo siguen el contrato de resultados inciertos, sin reintento automático.
 
@@ -36,7 +41,7 @@ La recuperación local escanea todo el journal validado, hasta 1 MiB por defecto
 
 El contexto final sigue limitado por los topes L03, con instrucciones, esquema, reglas, personalidad, observación actual, metas, pendientes, reserva de salida y margen medidos en el payload completo. Un resumen puede representar fuentes pertinentes cuando su puntuación es al menos igual; si no, puede seleccionarse el original. El reporte muestra consulta, puntuaciones, IDs, omisiones, bytes y conteo del adaptador. Es búsqueda léxica, sin embeddings ni prueba de comprensión semántica. La deduplicación mecánica no mezcla vigencias diferentes.
 
-Recuperar y capturar no hacen llamadas de proveedor. Resumir usa el ledger compartido con `kind:compaction`: reserva antes de I/O y reconcilia uso nativo aunque el texto sea inválido, se cancele o llegue tarde. Uso desconocido conserva una reserva sin convertirlo en cero. Un resumen válido puede guardarse mientras su coste permanece desconocido; esa reserva limita llamadas futuras. `mind` permite ver uso confirmado, incierto y reservado. El ledger de gasto sigue siendo por proceso; L05 debe dar continuidad durable.
+Recuperar y capturar no hacen llamadas de proveedor. Resumir usa el ledger compartido con `kind:compaction`: reserva antes de I/O y reconcilia uso nativo aunque el texto sea inválido, se cancele o llegue tarde. Uso desconocido conserva una reserva sin convertirlo en cero. Un resumen válido puede guardarse mientras su coste permanece desconocido; esa reserva limita llamadas futuras. `mind` permite ver uso confirmado, incierto y reservado. El ledger de la base CLI sigue siendo por proceso; el Studio local conserva reservas/uso entre procesos en su ledger de recursos. No es contabilidad central multiusuario ni factura monetaria; L05 conserva esa puerta.
 
 ## Escritura y límites
 

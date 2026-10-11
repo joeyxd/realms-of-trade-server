@@ -4,7 +4,16 @@ Origen: 2026-10-05. **Parte esencial del proyecto por decisión del autor, 2026-
 Sustituye la prioridad baja original. El nombre del archivo se conserva para mantener enlaces.
 Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat ingame**, luego **L00–L06**;
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
-integración del proveedor/modelo y operación ingame reales siguen pendientes.
+integración del proveedor/modelo y operación ingame reales siguen pendientes. La ruta Studio local
+tiene ensayo real propio; no equivale a ese montaje público.
+
+**AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
+[Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).
+Captura tras chat confirmado sin inferencia, continuación desde fuentes y refresco que cancela tardías
+sin renovar sesión/cuota ni reactivar stop. Resumen manual y automático opt-in por presión/pausa;
+máximo un intento automático por cuota durable compartida con compactados manuales, originales conservados.
+97 aprobadas/una omitida por symlink Windows; navegador 9/9 simulado con C01 real local y capturas inspeccionadas.
+Sin SQL, protocolo, JEV ni activación pública; calidad del modelo y vínculo/ledger central siguen pendientes.
 
 **AREA17 L03d-e2a, 2026-10-10 — transporte del modelo local probado, sin montaje:**
 [Entrega/evidencia](docs/delivery/l03d-local-model-probe.md) y [brief](docs/briefs/l03d-local-model-probe.md).
@@ -369,14 +378,17 @@ L01a/b/c tienen adaptador invitado/archivos reales/chat/reentrada verificados lo
 L02a/b añaden movimiento y PvE locales acotados verificados; L02c añade autoridad opt-in verificada
 por WebSocket local. L03a tiene API/ensayos simulados y L03b conversación simulada verificados;
 L03c tiene metas/archivos y ciclo local simulados; L04a tiene memoria local persistente y resúmenes
-simulados. L04b tiene administración local verificada; L05–L06 y aceptación humana/modelo real siguen pendientes.
+simulados. L04b tiene administración local verificada; [L04c](docs/delivery/l04c-companion-continuity.md)
+añade captura/refresco/resumen acotados del Studio local. Montaje central, L05–L06 y aceptación humana
+del modelo real conservan sus pruebas propias.
 [Contrato L00](docs/agents/interface-v1.md), [red L01a](docs/agents/network-runner.md).
 Siguiente: L05a, límites de inferencia del dueño, reserva y reconciliación durable;
 proveedor real y aceptación humana por verificar.
 [Movimiento L02a](docs/delivery/l02a-agent-movement.md), [PvE L02b](docs/delivery/l02b-agent-pve.md),
 [autoridad L02c](docs/delivery/l02c-agent-authority.md).
 
-La conexión a un modelo real permanece **pendiente**; L03a verifica su API y camino simulado.
+La conexión pública a un modelo real permanece **pendiente**; L03a verifica su API y camino simulado.
+El ensayo local real de Brisa está registrado aparte en L03d-e2b; no acepta calidad ni operación pública.
 C01 está [implementado y verificado localmente](docs/delivery/c01-chat.md):
 chat mundo/cerca/susurro, [pulido visual](docs/delivery/c01-chat-style.md) y
 [burbujas sobre personajes](docs/delivery/c01-chat-bubbles.md). Último corte: 18/18 pruebas pertinentes y

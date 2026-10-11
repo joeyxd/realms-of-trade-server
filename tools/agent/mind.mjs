@@ -135,7 +135,7 @@ export class AgentMind {
     if (!same(before.ownerFileHashes, current.ownerFileHashes)) return 'owner_files_changed';
     if (before.memoryValidUntilMs !== null && before.memoryValidUntilMs !== undefined && nowMs >= before.memoryValidUntilMs) return 'memory_expired';
     // A slow conversation may use historical context, but body decisions stay short lived.
-    const maxAge = ['conversation', 'goals', 'compaction'].includes(mode)
+    const maxAge = ['conversation', 'goals', 'compaction', 'remember'].includes(mode)
       ? this.#limits.maxReflectionAgeMs : this.#limits.maxDecisionAgeMs;
     if (nowMs - before.observation.receivedAtMs > maxAge) return 'stale_decision';
     return null;
