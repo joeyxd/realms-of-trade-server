@@ -1,5 +1,9 @@
 # Plan del creador de personajes modulares
 
+**Bucanero, idle en ficha, alpha.56:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
+Clip original sobre rig nativo solo en preview; fuente intacta, mundo15bones y gates modulares conservados.
+42/42 CPU; pruebas visuales y despliegue documentados por separado.
+
 **Revisión de tamaño del Bucanero, alpha.53:** autor confirma pequeño en mundo y ficha; altura
 visual 2,12 u (+12,2 %), encuadre 3D ×1,10 e icono centrado en la cara ×1,60. [Evidencia](docs/delivery/buccaneer-v1/size-review/README.md).
 Conserva las fuentes y los gates del creador; aceptación artística del autor pendiente.

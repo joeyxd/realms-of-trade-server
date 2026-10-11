@@ -1,5 +1,9 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Bucanero, ficha animada — alpha.56/protocolo 55, sin SQL:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
+Idle auténtico en rig nativo independiente; giro/zoom, miniaturas quietas y gates de visibilidad.
+Un GLB por dispositivo, +353.260 B por clip; 42/42 CPU. Navegador/publicación se registran aparte.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.

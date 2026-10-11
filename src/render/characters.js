@@ -555,6 +555,21 @@ export class PortraitStudio {
     this.rt.texture.colorSpace = THREE.SRGBColorSpace;
     this.buf = new Uint8Array(size * size * 4);
     this.views = new Map();
+    this.figures = new Map();
+  }
+
+  hasFigureAnimation(skinIdx) {
+    return this.figures.get(`${skinIdx}:main`) !== null && assets.hasCharacterFigure(skinIdx);
+  }
+
+  figureView(skinIdx, still) {
+    const key = `${skinIdx}:${still ? 'still' : 'main'}`;
+    if (!this.figures.has(key)) {
+      let figure = null;
+      try { figure = assets.characterFigure(skinIdx); } catch (e) { console.warn('[figure]', e); }
+      this.figures.set(key, figure);
+    }
+    return this.figures.get(key) || this.view(skinIdx);
   }
 
   view(skinIdx) {
@@ -570,22 +585,28 @@ export class PortraitStudio {
 
   // Studio light only: no cloud shadows, local lights or night fill; alpha is coverage, not glow.
   shoot(v, cam, rt, buf, w, h) {
+    const parent = v.root.parent;
     this.scene.add(v.root);
     v.root.updateMatrixWorld(true);
     const r = this.r, prevClear = r.getClearColor(new THREE.Color()), prevAlpha = r.getClearAlpha(), prevAuto = r.autoClear;
-    const cloud = U.mnCloud.value, nLights = U.mnLightCount.value, fill = U.mnCharFill.value.clone();
-    U.mnCloud.value = 0; U.mnLightCount.value = 0; U.mnGlowOut.value = 0; U.mnCharFill.value.setRGB(0, 0, 0);
-    r.autoClear = true;
-    r.setRenderTarget(rt);
-    r.setClearColor(0x000000, 0);
-    r.clear();
-    r.render(this.scene, cam);
-    r.readRenderTargetPixels(rt, 0, 0, w, h, buf);
-    r.setRenderTarget(null);
-    r.setClearColor(prevClear, prevAlpha);
-    r.autoClear = prevAuto;
-    U.mnCloud.value = cloud; U.mnLightCount.value = nLights; U.mnGlowOut.value = 1; U.mnCharFill.value.copy(fill);
-    this.scene.remove(v.root);
+    const prevTarget = r.getRenderTarget(), cloud = U.mnCloud.value, nLights = U.mnLightCount.value;
+    const glow = U.mnGlowOut.value, fill = U.mnCharFill.value.clone();
+    try {
+      U.mnCloud.value = 0; U.mnLightCount.value = 0; U.mnGlowOut.value = 0; U.mnCharFill.value.setRGB(0, 0, 0);
+      r.autoClear = true;
+      r.setRenderTarget(rt);
+      r.setClearColor(0x000000, 0);
+      r.clear();
+      r.render(this.scene, cam);
+      r.readRenderTargetPixels(rt, 0, 0, w, h, buf);
+    } finally {
+      r.setRenderTarget(prevTarget);
+      r.setClearColor(prevClear, prevAlpha);
+      r.autoClear = prevAuto;
+      U.mnCloud.value = cloud; U.mnLightCount.value = nLights; U.mnGlowOut.value = glow; U.mnCharFill.value.copy(fill);
+      this.scene.remove(v.root);
+      if (parent) parent.add(v.root);
+    }
   }
 
   // Copies a bottom-up readback into a 2D canvas.
@@ -631,8 +652,8 @@ export class PortraitStudio {
   }
 
   // Full body for the character screen, drawn into `canvas` at its pixel size: turntable yaw (radians) and zoom
-  // (1 = head to toe). Renders on demand (open, drag, zoom); one readback per call.
-  renderFigure(skinIdx, canvas, { yaw = 0, zoom = 1 } = {}) {
+  // (1 = head to toe). The UI requests idle frames while visible; one readback per call.
+  renderFigure(skinIdx, canvas, { yaw = 0, zoom = 1, idle = false, delta = 0, still = false } = {}) {
     const w = Math.max(16, canvas.width | 0), h = Math.max(16, canvas.height | 0);
     if (!this.frt || this.frt.width !== w || this.frt.height !== h) {
       this.frt?.dispose();
@@ -641,7 +662,8 @@ export class PortraitStudio {
       this.fbuf = new Uint8Array(w * h * 4);
       this.fcam = new THREE.PerspectiveCamera(20, w / h, 0.05, 60);
     }
-    const v = this.view(skinIdx), H = v.height || 1.88;
+    const v = idle ? this.figureView(skinIdx, still) : this.view(skinIdx), H = v.height || 1.88;
+    if (idle && !still) v.advance?.(delta);
     const fit = v.ext ? v.look.figureZoom || 1 : 1;
     const z = Math.max(0.8, Math.min(2.6, zoom * fit)), fov = THREE.MathUtils.degToRad(this.fcam.fov);
     // Fit the whole figure (plus a little floor) vertically, then push in; zooming aims a bit higher, at the chest.
@@ -652,8 +674,18 @@ export class PortraitStudio {
     this.fcam.lookAt(0, aimY, 0);
     const prevYaw = v.root.rotation.y;
     v.root.rotation.y = yaw;
-    this.shoot(v, this.fcam, this.frt, this.fbuf, w, h);
-    v.root.rotation.y = prevYaw;
+    try {
+      this.shoot(v, this.fcam, this.frt, this.fbuf, w, h);
+    } catch (error) {
+      if (!v.nativeIdle) throw error;
+      // A failed native preview must leave the world renderer and usable sheet intact.
+      this.figures.set(`${skinIdx}:${still ? 'still' : 'main'}`, null);
+      const fallback = this.view(skinIdx), fallbackYaw = fallback.root.rotation.y;
+      fallback.root.rotation.y = yaw;
+      try { this.shoot(fallback, this.fcam, this.frt, this.fbuf, w, h); }
+      finally { fallback.root.rotation.y = fallbackYaw; }
+      console.warn('[figure] native idle unavailable', error);
+    } finally { v.root.rotation.y = prevYaw; }
     PortraitStudio.blit(canvas, this.fbuf, w, h);
     return canvas;
   }

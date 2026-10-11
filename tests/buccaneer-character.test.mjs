@@ -119,6 +119,44 @@ function assertGeometryAndSkinPreserved(source, derived, label) {
   }
 }
 
+function assertIdleAnimationPreserved(source, derived, label) {
+  const sourceClips = source.json.animations || [];
+  const sourceIdle = sourceClips.filter((clip) => clip.name === 'idle');
+  const runtimeClips = derived.json.animations || [];
+  assert.equal(sourceIdle.length, 1, `${label}: source must contain exactly one idle clip`);
+  assert.deepEqual(runtimeClips.map((clip) => clip.name), ['idle'], `${label}: runtime GLB must contain only idle`);
+  const before = sourceIdle[0], after = runtimeClips[0];
+  assert.deepEqual(after.channels, before.channels, `${label}: idle channels/targets changed`);
+  assert.equal(after.samplers.length, before.samplers.length, `${label}: idle sampler count changed`);
+
+  const channelsByPath = { translation: 0, rotation: 0, scale: 0 };
+  for (const [index, [oldSampler, newSampler]] of [...before.samplers].map((old, i) => [i, [old, after.samplers[i]]])) {
+    assert.ok(newSampler, `${label}: missing idle sampler ${index}`);
+    for (const key of Object.keys(oldSampler).filter((name) => name !== 'input' && name !== 'output')) {
+      assert.deepEqual(newSampler[key], oldSampler[key], `${label}: idle sampler ${index} setting ${key} changed`);
+    }
+    assertAccessorPreserved(source, oldSampler.input, derived, newSampler.input, `${label}: idle sampler ${index} input`);
+    assertAccessorPreserved(source, oldSampler.output, derived, newSampler.output, `${label}: idle sampler ${index} output`);
+  }
+
+  for (const channel of after.channels) {
+    assert.ok(Number.isInteger(channel.sampler) && channel.sampler >= 0 && channel.sampler < after.samplers.length,
+      `${label}: idle channel has invalid sampler reference`);
+    const path = channel.target?.path;
+    assert.ok(Object.hasOwn(channelsByPath, path), `${label}: unexpected idle target path ${path}`);
+    assert.ok(Number.isInteger(channel.target?.node) && channel.target.node >= 0 && channel.target.node < derived.json.nodes.length,
+      `${label}: idle channel has invalid node target`);
+    channelsByPath[path]++;
+    const sampler = after.samplers[channel.sampler];
+    const input = derived.json.accessors[sampler.input], output = derived.json.accessors[sampler.output];
+    assert.equal(input.type, 'SCALAR', `${label}: animation input accessor must be SCALAR`);
+    assert.equal(input.componentType, 5126, `${label}: animation input accessor must use float32`);
+    assert.equal(output.type, path === 'rotation' ? 'VEC4' : 'VEC3', `${label}: wrong ${path} output accessor type`);
+    assert.equal(output.componentType, 5126, `${label}: animation output accessor must use float32`);
+  }
+  assert.deepEqual(channelsByPath, { translation: 65, rotation: 65, scale: 65 }, `${label}: idle bone channel coverage changed`);
+}
+
 test('Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant', async () => {
   assert.equal(LOOKS[2]?.name, 'Bucanero');
   const raw = JSON.parse(await readFile(file('assets/manifest.json'), 'utf8'));
@@ -153,7 +191,7 @@ test('Bucanero manifest binds only look 2 and selects one desktop/mobile charact
   }
 });
 
-test('source and both runtime GLBs retain the 9,164-triangle Mixamo skin without source clips or unused PBR maps', async () => {
+test('source and runtime GLBs retain idle only with exact Mixamo animation data and no unused PBR maps', async () => {
   const source = readGlb(await bytes(sourceGlbPath));
   const sourceSummary = summarize(source);
   assert.equal(sourceSummary.tris, 9164);
@@ -170,13 +208,19 @@ test('source and both runtime GLBs retain the 9,164-triangle Mixamo skin without
     assert.equal(summary.skins.length, 1, `${path}: skin count changed`);
     assert.equal(summary.skins[0].joints.length, 65, `${path}: joint count changed`);
     assert.deepEqual(mapBones(summary.skins[0].joints, summary.skins[0].parents).missing, [], `${path}: Mixamo bone map incomplete`);
-    assert.deepEqual(summary.animations, [], `${path}: runtime GLB retained source animation clips`);
+    assert.deepEqual(summary.animations, ['idle'], `${path}: runtime GLB must retain only idle`);
+    assert.equal(evidence.derived[path].animation_channels, 195, `${path}: evidence idle channel count changed`);
+    assert.equal(evidence.derived[path].animation_samplers, 195, `${path}: evidence idle sampler count changed`);
+    assert.ok(evidence.derived[path].animation_buffer_bytes > 0, `${path}: evidence omitted retained idle bytes`);
+    assertIdleAnimationPreserved(source, glb, path);
     for (const material of glb.json.materials || []) {
       assert.equal(material.normalTexture, undefined, `${path}: runtime material retained normal map`);
       assert.equal(material.pbrMetallicRoughness?.metallicRoughnessTexture, undefined, `${path}: runtime material retained metallic/roughness map`);
     }
     assertGeometryAndSkinPreserved(source, glb, path);
   }
+  assert.equal(evidence.invariants.runtime_animations, 1);
+  assert.deepEqual(evidence.invariants.runtime_animation_names, ['idle']);
 });
 
 test('preserved originals and generated runtime files match their SHA-256 evidence', async () => {

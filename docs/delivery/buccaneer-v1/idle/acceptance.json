@@ -1,0 +1,198 @@
+{
+  "generatedAt": "2026-10-11T17:19:40.405Z",
+  "sessions": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:52971/assets/models/buccaneer-v1-desktop.glb",
+        "http://127.0.0.1:52971/assets/models/buccaneer-v1-desktop.glb"
+      ],
+      "checks": [
+        "native idle / world rig isolated",
+        "single device GLB",
+        "animated idle frames",
+        "full-body framing",
+        "24 FPS limit / static thumbnails",
+        "native loop seam",
+        "zoom/reset/turntable",
+        "reduced motion stop/resume",
+        "visibility / pause menu stop/resume fixture",
+        "tab stop/resume",
+        "close stops idle",
+        "native render failure keeps renderer and fallback usable",
+        "actual GLB without idle keeps static fallback"
+      ],
+      "native": {
+        "clip": "idle",
+        "duration": 15.333333015441895,
+        "meshes": [
+          {
+            "bones": 65,
+            "map": 1024
+          }
+        ],
+        "worldBones": 15,
+        "height": 2.12
+      },
+      "frames": [
+        {
+          "hash": -1270876069,
+          "x0": 130,
+          "y0": 26,
+          "x1": 257,
+          "y1": 508,
+          "width": 398,
+          "height": 516,
+          "time": 1.266700000000001
+        },
+        {
+          "hash": -973991355,
+          "x0": 110,
+          "y0": 24,
+          "x1": 266,
+          "y1": 510,
+          "width": 398,
+          "height": 516,
+          "time": 5.937499999999994
+        },
+        {
+          "hash": -906009493,
+          "x0": 56,
+          "y0": 22,
+          "x1": 204,
+          "y1": 513,
+          "width": 398,
+          "height": 516,
+          "time": 10.291599999999997
+        },
+        {
+          "hash": -767119687,
+          "x0": 128,
+          "y0": 27,
+          "x1": 254,
+          "y1": 508,
+          "width": 398,
+          "height": 516,
+          "time": 14.828999999999997
+        },
+        {
+          "hash": 1261396312,
+          "x0": 126,
+          "y0": 26,
+          "x1": 259,
+          "y1": 508,
+          "width": 398,
+          "height": 516,
+          "time": 19.245600000000017
+        }
+      ],
+      "draws": {
+        "animated": 410,
+        "thumbs": 6,
+        "deltaMax": 0.1,
+        "averageFps": 20.551731068790513,
+        "minIntervalMs": 15.699999988079071
+      },
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "http://127.0.0.1:52971/assets/models/buccaneer-v1-mobile.glb"
+      ],
+      "checks": [
+        "native idle / world rig isolated",
+        "single device GLB",
+        "animated idle frames",
+        "full-body framing",
+        "24 FPS limit / static thumbnails",
+        "native loop seam",
+        "zoom/reset/turntable",
+        "reduced motion stop/resume",
+        "visibility / pause menu stop/resume fixture",
+        "tab stop/resume",
+        "close stops idle"
+      ],
+      "native": {
+        "clip": "idle",
+        "duration": 15.333333015441895,
+        "meshes": [
+          {
+            "bones": 65,
+            "map": 512
+          }
+        ],
+        "worldBones": 15,
+        "height": 2.12
+      },
+      "frames": [
+        {
+          "hash": -1286751526,
+          "x0": 57,
+          "y0": 17,
+          "x1": 141,
+          "y1": 336,
+          "width": 205,
+          "height": 342,
+          "time": 1.1625000000000005
+        },
+        {
+          "hash": -2031986977,
+          "x0": 51,
+          "y0": 16,
+          "x1": 148,
+          "y1": 337,
+          "width": 205,
+          "height": 342,
+          "time": 5.808299999999992
+        },
+        {
+          "hash": 1671000111,
+          "x0": 8,
+          "y0": 15,
+          "x1": 105,
+          "y1": 340,
+          "width": 205,
+          "height": 342,
+          "time": 10.137299999999987
+        },
+        {
+          "hash": -1605656547,
+          "x0": 44,
+          "y0": 18,
+          "x1": 137,
+          "y1": 338,
+          "width": 205,
+          "height": 342,
+          "time": 14.508099999999988
+        },
+        {
+          "hash": -672315163,
+          "x0": 54,
+          "y0": 18,
+          "x1": 143,
+          "y1": 336,
+          "width": 205,
+          "height": 342,
+          "time": 18.858100000000004
+        }
+      ],
+      "draws": {
+        "animated": 409,
+        "thumbs": 0,
+        "deltaMax": 0.1,
+        "averageFps": 21.345498872566704,
+        "minIntervalMs": 15.700000002980232
+      },
+      "passed": true
+    }
+  ]
+}

@@ -235,6 +235,8 @@ async function boot() {
     vitals: () => ({ name: settings.name, skin: settings.skin, level: ps.level, hp: ps.hp, maxHp: ps.maxHp, xp: ps.xp, xpNext: xpToNext(ps.level),
       guard: ps.guardSt, guardMax: ps.guardMax || tuning.guard.stamina, needs: ps.needs, sat: ps.sat, hyd: ps.hyd, needPen: ps.needPen }),
     figure: (canvas, view) => studio?.renderFigure(settings.skin, canvas, view),
+    figureAnimated: () => !st.paused && !pause.open && studio?.hasFigureAnimation(settings.skin) === true,
+    reducedMotion: () => settings.reducedMotion,
     slots: () => { const d = readSlots(); return { q: d.q.id, e: d.e.id, g: d.g.id, r: d.r.id }; },
     attributeEnabled: () => client?.joined === true && !client.t.closed && client.attributes?.enabled === true,
     onFood: () => freshwaterPanel?.open(), // RNV07b: eating and drinking are durable water/provisions operations
