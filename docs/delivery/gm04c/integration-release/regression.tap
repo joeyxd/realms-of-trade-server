@@ -1,0 +1,529 @@
+TAP version 13
+# Subtest: Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+ok 1 - Bucanero manifest binds only look 2 and selects one desktop/mobile character and portrait variant
+  ---
+  duration_ms: 8.0617
+  type: 'test'
+  ...
+# Subtest: source and both runtime GLBs retain the 9,164-triangle Mixamo skin without source clips or unused PBR maps
+ok 2 - source and both runtime GLBs retain the 9,164-triangle Mixamo skin without source clips or unused PBR maps
+  ---
+  duration_ms: 9.6
+  type: 'test'
+  ...
+# Subtest: preserved originals and generated runtime files match their SHA-256 evidence
+ok 3 - preserved originals and generated runtime files match their SHA-256 evidence
+  ---
+  duration_ms: 15.9586
+  type: 'test'
+  ...
+# Subtest: load and create use the authenticated owner session and exact creation contract
+ok 4 - load and create use the authenticated owner session and exact creation contract
+  ---
+  duration_ms: 3.6357
+  type: 'test'
+  ...
+# Subtest: creation is gated until the durable service is available and no record exists
+ok 5 - creation is gated until the durable service is available and no record exists
+  ---
+  duration_ms: 0.2699
+  type: 'test'
+  ...
+# Subtest: a pending load is reused and a definitive denial releases its idempotency intent
+ok 6 - a pending load is reused and a definitive denial releases its idempotency intent
+  ---
+  duration_ms: 0.3567
+  type: 'test'
+  ...
+# Subtest: uncertain creation retries the same creation id and preset; successful load recovers it
+ok 7 - uncertain creation retries the same creation id and preset; successful load recovers it
+  ---
+  duration_ms: 55.202
+  type: 'test'
+  ...
+# Subtest: failure without durable readiness cannot create and malformed receipts stay pending
+ok 8 - failure without durable readiness cannot create and malformed receipts stay pending
+  ---
+  duration_ms: 0.6863
+  type: 'test'
+  ...
+# Subtest: account changes clear the private record and late responses cannot restore it
+ok 9 - account changes clear the private record and late responses cannot restore it
+  ---
+  duration_ms: 1.1179
+  type: 'test'
+  ...
+# Subtest: creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+ok 10 - creation derives owner/world, survives reconnect, stays private and grants no profile or controller
+  ---
+  duration_ms: 576.2967
+  type: 'test'
+  ...
+# Subtest: missing readiness and opt-in keep creation unavailable without breaking gameplay
+ok 11 - missing readiness and opt-in keep creation unavailable without breaking gameplay
+  ---
+  duration_ms: 628.4995
+  type: 'test'
+  ...
+# Subtest: invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+ok 12 - invalid creation cannot pass a model URL, spoofed owner, extra fields or unsafe preset
+  ---
+  duration_ms: 322.5547
+  type: 'test'
+  ...
+# Subtest: uncertain create stays bounded; late commit is recovered after the original session closes
+ok 13 - uncertain create stays bounded; late commit is recovered after the original session closes
+  ---
+  duration_ms: 369.8456
+  type: 'test'
+  ...
+# Subtest: wizard loads durable availability, previews documents, and requires explicit confirmation
+ok 14 - wizard loads durable availability, previews documents, and requires explicit confirmation
+  ---
+  duration_ms: 6.7068
+  type: 'test'
+  ...
+# Subtest: saved owner row is read-only and shows identity, stopped status, and stored documents
+ok 15 - saved owner row is read-only and shows identity, stopped status, and stored documents
+  ---
+  duration_ms: 1.774
+  type: 'test'
+  ...
+# Subtest: unavailable backend leaves reload and back usable and never enables creation
+ok 16 - unavailable backend leaves reload and back usable and never enables creation
+  ---
+  duration_ms: 0.4343
+  type: 'test'
+  ...
+# Subtest: randomize, language switch, and mobile layout preserve a single scroll area
+ok 17 - randomize, language switch, and mobile layout preserve a single scroll area
+  ---
+  duration_ms: 2.5768
+  type: 'test'
+  ...
+# Subtest: trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+ok 18 - trait changes preserve keyboard focus and sign-out clears every saved private field without changing offline state
+  ---
+  duration_ms: 0.8648
+  type: 'test'
+  ...
+# Subtest: GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+ok 19 - GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+  ---
+  duration_ms: 3471.403
+  type: 'test'
+  ...
+# Subtest: stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+ok 20 - stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+  ---
+  duration_ms: 3335.1232
+  type: 'test'
+  ...
+# Subtest: default server accepts a HELLO without content identity and welcomes with the base identity
+ok 21 - default server accepts a HELLO without content identity and welcomes with the base identity
+  ---
+  duration_ms: 268.8714
+  type: 'test'
+  ...
+# Subtest: known draft and document errors become natural bilingual messages
+ok 22 - known draft and document errors become natural bilingual messages
+  ---
+  duration_ms: 0.6693
+  type: 'test'
+  ...
+# Subtest: unknown external error bytes never reach the visible status
+ok 23 - unknown external error bytes never reach the visible status
+  ---
+  duration_ms: 0.1619
+  type: 'test'
+  ...
+# Subtest: visible operation status retains its semantic source and severity across locale changes
+ok 24 - visible operation status retains its semantic source and severity across locale changes
+  ---
+  duration_ms: 0.1332
+  type: 'test'
+  ...
+# Subtest: editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+ok 25 - editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+  ---
+  duration_ms: 22.8595
+  type: 'test'
+  ...
+# Subtest: normal-pass failures restore world materials so the next frame can render
+ok 26 - normal-pass failures restore world materials so the next frame can render
+  ---
+  duration_ms: 8.67
+  type: 'test'
+  ...
+# Subtest: a real editor mixed selection can be captured without changing document objects
+ok 27 - a real editor mixed selection can be captured without changing document objects
+  ---
+  duration_ms: 2.9875
+  type: 'test'
+  ...
+# THREE.BufferGeometry.computeBoundingBox(): Computed min/max have NaN values. The "position" attribute is likely to have NaN values. BufferGeometry {
+#   isBufferGeometry: true,
+#   uuid: 'f22193d7-e321-43a1-805a-d3366090b8a7',
+#   name: '',
+#   type: 'BufferGeometry',
+#   index: null,
+#   attributes: {
+#     position: Float32BufferAttribute {
+#       isBufferAttribute: true,
+#       name: '',
+#       array: [Float32Array],
+#       itemSize: 3,
+#       count: 3,
+#       normalized: false,
+#       usage: 35044,
+#       _updateRange: [Object],
+#       updateRanges: [],
+#       gpuType: 1015,
+#       version: 0
+#     }
+#   },
+#   morphAttributes: {},
+#   morphTargetsRelative: false,
+#   groups: [],
+#   boundingBox: Box3 {
+#     isBox3: true,
+#     min: Vector3 { x: NaN, y: 0, z: 0 },
+#     max: Vector3 { x: NaN, y: 0, z: 1 }
+#   },
+#   boundingSphere: null,
+#   drawRange: { start: 0, count: Infinity },
+#   userData: {}
+# }
+# Subtest: measures indexed and non-indexed triangles with drawRange and group intersections
+ok 28 - measures indexed and non-indexed triangles with drawRange and group intersections
+  ---
+  duration_ms: 2.1568
+  type: 'test'
+  ...
+# Subtest: deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+ok 29 - deduplicates shared geometry, materials, and loaded texture maps in the cost estimate
+  ---
+  duration_ms: 0.9198
+  type: 'test'
+  ...
+# Subtest: uses conservative root-local XZ bounds after child transforms
+ok 30 - uses conservative root-local XZ bounds after child transforms
+  ---
+  duration_ms: 0.4407
+  type: 'test'
+  ...
+# Subtest: ignores invisible objects and material groups while retaining visible group cost
+ok 31 - ignores invisible objects and material groups while retaining visible group cost
+  ---
+  duration_ms: 0.3117
+  type: 'test'
+  ...
+# Subtest: fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+ok 32 - fails closed on empty, non-triangle, unbounded, and not-yet-loaded models
+  ---
+  duration_ms: 2.0674
+  type: 'test'
+  ...
+# Subtest: prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+ok 33 - prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+  ---
+  duration_ms: 44.8706
+  type: 'test'
+  ...
+# Subtest: uses actual bytes and rejects a declared digest mismatch
+ok 34 - uses actual bytes and rejects a declared digest mismatch
+  ---
+  duration_ms: 23.2183
+  type: 'test'
+  ...
+# Subtest: hashes the resolved file bytes instead of trusting stale index byte counts
+ok 35 - hashes the resolved file bytes instead of trusting stale index byte counts
+  ---
+  duration_ms: 23.1296
+  type: 'test'
+  ...
+# Subtest: rejects external glTF buffer and image URIs
+ok 36 - rejects external glTF buffer and image URIs
+  ---
+  duration_ms: 61.5216
+  type: 'test'
+  ...
+# Subtest: rejects traversal asset paths
+ok 37 - rejects traversal asset paths
+  ---
+  duration_ms: 16.5378
+  type: 'test'
+  ...
+# Subtest: rechecks bytes at resolution and ignores missing unused assets
+ok 38 - rechecks bytes at resolution and ignores missing unused assets
+  ---
+  duration_ms: 28.7742
+  type: 'test'
+  ...
+# Subtest: resolveBaseline hashes every normalized manifest model and texture variant
+ok 39 - resolveBaseline hashes every normalized manifest model and texture variant
+  ---
+  duration_ms: 34.3457
+  type: 'test'
+  ...
+# Subtest: resolveBaseline fails closed when an unused manifest source is missing
+ok 40 - resolveBaseline fails closed when an unused manifest source is missing
+  ---
+  duration_ms: 30.9294
+  type: 'test'
+  ...
+# Subtest: resolve rejects an assets directory junction that escapes the assets root
+ok 41 - resolve rejects an assets directory junction that escapes the assets root
+  ---
+  duration_ms: 30.3017
+  type: 'test'
+  ...
+# Subtest: scatter is reproducible and uses only explicit seed and input data
+ok 42 - scatter is reproducible and uses only explicit seed and input data
+  ---
+  duration_ms: 5.1481
+  type: 'test'
+  ...
+# Subtest: circle, square, and rotated ellipse constrain candidates to their brush footprint
+ok 43 - circle, square, and rotated ellipse constrain candidates to their brush footprint
+  ---
+  duration_ms: 1.2428
+  type: 'test'
+  ...
+# Subtest: rotated square includes its corner footprint beyond the unrotated radius
+ok 44 - rotated square includes its corner footprint beyond the unrotated radius
+  ---
+  duration_ms: 3.1417
+  type: 'test'
+  ...
+# Subtest: rotated ellipse influence covers the union of resampled brush positions along a stroke
+ok 45 - rotated ellipse influence covers the union of resampled brush positions along a stroke
+  ---
+  duration_ms: 6.6855
+  type: 'test'
+  ...
+# Subtest: per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+ok 46 - per-cell jitter, selection, rotation and scale stay fixed when the stroke footprint expands
+  ---
+  duration_ms: 10.8611
+  type: 'test'
+  ...
+# Subtest: spacing holds against every prior decoration and every accepted point
+ok 47 - spacing holds against every prior decoration and every accepted point
+  ---
+  duration_ms: 0.7662
+  type: 'test'
+  ...
+# Subtest: policy exclusions and unsupported heights are omitted deterministically and counted
+ok 48 - policy exclusions and unsupported heights are omitted deterministically and counted
+  ---
+  duration_ms: 0.5636
+  type: 'test'
+  ...
+# Subtest: model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+ok 49 - model metrics and hard object, triangle, primitive, and candidate limits reject whole plans
+  ---
+  duration_ms: 4.4785
+  type: 'test'
+  ...
+# Subtest: existing authored cost participates in cumulative triangle and primitive budgets
+ok 50 - existing authored cost participates in cumulative triangle and primitive budgets
+  ---
+  duration_ms: 0.5575
+  type: 'test'
+  ...
+# Subtest: dense strokes stop invoking spatial policy as soon as object budget is exceeded
+ok 51 - dense strokes stop invoking spatial policy as soon as object budget is exceeded
+  ---
+  duration_ms: 2.8164
+  type: 'test'
+  ...
+# Subtest: application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+ok 52 - application creates one schema-preserving atomic history entry with stable IDs and roundtrips
+  ---
+  duration_ms: 1.3681
+  type: 'test'
+  ...
+# Subtest: zero placements are a no-op and invalid IDs cannot partially change the source document
+ok 53 - zero placements are a no-op and invalid IDs cannot partially change the source document
+  ---
+  duration_ms: 0.3848
+  type: 'test'
+  ...
+# Subtest: Escape cancellation restores the private base and commits nothing
+ok 54 - Escape cancellation restores the private base and commits nothing
+  ---
+  duration_ms: 8.1459
+  type: 'test'
+  ...
+# Subtest: one matching pointer release commits once and reuses preview IDs
+ok 55 - one matching pointer release commits once and reuses preview IDs
+  ---
+  duration_ms: 6.6129
+  type: 'test'
+  ...
+# Subtest: nonmatching pointer and editor UI release cannot commit the gesture
+ok 56 - nonmatching pointer and editor UI release cannot commit the gesture
+  ---
+  duration_ms: 2.2763
+  type: 'test'
+  ...
+# Subtest: a second pointer cannot replace the active gesture or its ID cache
+ok 57 - a second pointer cannot replace the active gesture or its ID cache
+  ---
+  duration_ms: 3.9134
+  type: 'test'
+  ...
+# Subtest: a matching release without a terrain hit discards the preview
+ok 58 - a matching release without a terrain hit discards the preview
+  ---
+  duration_ms: 3.0027
+  type: 'test'
+  ...
+# Subtest: scatter gesture beyond 256 path points is rejected atomically
+ok 59 - scatter gesture beyond 256 path points is rejected atomically
+  ---
+  duration_ms: 9.8323
+  type: 'test'
+  ...
+# Subtest: panel keeps measured costs above brush controls and uses an editable numeric seed
+ok 60 - panel keeps measured costs above brush controls and uses an editable numeric seed
+  ---
+  duration_ms: 17.4126
+  type: 'test'
+  ...
+# Subtest: cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+ok 61 - cosmetic scatter policy admits safe dry ground and rejects protected gameplay sites
+  ---
+  duration_ms: 438.4148
+  type: 'test'
+  ...
+# Subtest: scatter rejects a footprint crossing the shoreline or a steep height break
+ok 62 - scatter rejects a footprint crossing the shoreline or a steep height break
+  ---
+  duration_ms: 330.8509
+  type: 'test'
+  ...
+# Subtest: real shrub scatter survives document and publication compilation without duplicating assets or world state
+ok 63 - real shrub scatter survives document and publication compilation without duplicating assets or world state
+  ---
+  duration_ms: 947.3704
+  type: 'test'
+  ...
+# Subtest: mounted HTTP GM session checks authenticated identity and ignores caller-supplied query grants
+ok 64 - mounted HTTP GM session checks authenticated identity and ignores caller-supplied query grants
+  ---
+  duration_ms: 714.8699
+  type: 'test'
+  ...
+# Subtest: mounted HTTP GM session is unavailable when the server has no allowlist
+ok 65 - mounted HTTP GM session is unavailable when the server has no allowlist
+  ---
+  duration_ms: 277.2484
+  type: 'test'
+  ...
+# Subtest: real HTTP client disconnect aborts a delayed account resolver without a late response
+ok 66 - real HTTP client disconnect aborts a delayed account resolver without a late response
+  ---
+  duration_ms: 476.341
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 67 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 392.8986
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 68 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 280.3417
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 69 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 271.5346
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 70 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 240.9706
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 71 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 269.6747
+  type: 'test'
+  ...
+# Subtest: painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+ok 72 - painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+  ---
+  duration_ms: 12694.8193
+  type: 'test'
+  ...
+# Subtest: authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+ok 73 - authority snapshots carry each adopted load tier into bit-identical predicted movement replay
+  ---
+  duration_ms: 21.6829
+  type: 'test'
+  ...
+# Subtest: load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+ok 74 - load boundaries use exact comfort/ceiling values, including level 10 Carga 9
+  ---
+  duration_ms: 0.664
+  type: 'test'
+  ...
+# Subtest: the next authority command reflects profile and cargo changes, including water vessel mass
+ok 75 - the next authority command reflects profile and cargo changes, including water vessel mass
+  ---
+  duration_ms: 4.3793
+  type: 'test'
+  ...
+# Subtest: swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+ok 76 - swimming applies its own saturated cargo slowdown without stacking the land tier multiplier
+  ---
+  duration_ms: 6.8695
+  type: 'test'
+  ...
+# Subtest: gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+ok 77 - gather capacity rejects over-ceiling cargo commands without consuming the node and accepts an exact-ceiling result
+  ---
+  duration_ms: 12.1074
+  type: 'test'
+  ...
+# Subtest: commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+ok 78 - commerce capacity rejects a buy cargo command above the ceiling without changing pack, gold, or market stock
+  ---
+  duration_ms: 302.5215
+  type: 'test'
+  ...
+# Subtest: the comfortable load is 80 % of the ceiling only with Carga adopted
+ok 79 - the comfortable load is 80 % of the ceiling only with Carga adopted
+  ---
+  duration_ms: 2.4174
+  type: 'test'
+  ...
+# Subtest: a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+ok 80 - a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the client predicts the server tier
+  ---
+  duration_ms: 28.4997
+  type: 'test'
+  ...
+# Subtest: an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+ok 81 - an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash
+  ---
+  duration_ms: 6.8644
+  type: 'test'
+  ...
+1..81
+# tests 81
+# suites 0
+# pass 81
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 32420.8559

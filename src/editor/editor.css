@@ -195,3 +195,12 @@
 .gm-terrain-panel output { grid-column: 2; grid-row: 2; min-width: 38px; }
 .gm-terrain-panel p { margin: 0; font-size: 11px; line-height: 1.5; }
 .gm-terrain-panel canvas { width: min(100%, 168px); height: auto; justify-self: center; border: 1px solid #52645d; border-radius: 5px; }
+.gm-sidebar > [data-role="scatter-panel"] { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.gm-scatter-panel { padding: 12px; display: grid; gap: 10px; color: #c5dad8; }
+.gm-scatter-panel h3 { margin: 0; font-size: 14px; color: #92e6cb; }
+.gm-scatter-panel label { display: grid; gap: 4px; font-size: 12px; }
+.gm-scatter-panel input, .gm-scatter-panel select { width: 100%; accent-color: #80d8bc; }
+.gm-scatter-panel select, .gm-scatter-panel input[type="number"] { background: #102129; color: #e3eeec; padding: 6px; border: 1px solid #52645d; border-radius: 5px; }
+.gm-scatter-panel p { margin: 0; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.gm-scatter-panel [data-scatter-cost] { border-left: 3px solid #80d8bc; padding: 6px 9px; background: #11252c; }
+.gm-scatter-panel [data-kind="error"] { color: #ff9e8c; }

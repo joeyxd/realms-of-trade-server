@@ -19,6 +19,9 @@ import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
 import { createTerrainPreview } from './terrainPreview.js';
 import { TerrainPanel } from './terrainPanel.js';
 import { TerrainInteraction } from './terrainInteraction.js';
+import { ScatterPanel } from './scatterPanel.js';
+import { ScatterInteraction } from './scatterInteraction.js';
+import { measureModelCost } from './modelCost.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -90,8 +93,8 @@ export class WorldEditor {
     this.onClick = (e) => this._toolbarAction(e);
     this.onChange = (e) => this._inspectorChange(e);
     this.onSceneSearch = () => this._renderSceneList();
-    this.onBlur = () => { this.cameraController.onBlur(); this.terrainInteraction?.cancel(); if (this.active && !this.walkPreview?.active) this._cancelTransform(); };
-    this.onPointerLeave = () => { this.pointerInside = false; if (this.ghost) this.ghost.visible = false; this.invalidate(); };
+    this.onBlur = () => { this.cameraController.onBlur(); this.terrainInteraction?.cancel(); this.scatterInteraction?.cancel(); if (this.active && !this.walkPreview?.active) this._cancelTransform(); };
+    this.onPointerLeave = () => { this.pointerInside = false; if (this.ghost) this.ghost.visible = false; this.scatterInteraction?.move(); this.invalidate(); };
     this.canvas.addEventListener('pointermove', this.onPointerMove);
     this.canvas.addEventListener('pointerdown', this.onPointerDown);
     this.canvas.addEventListener('pointerleave', this.onPointerLeave);
@@ -113,6 +116,12 @@ export class WorldEditor {
     this.terrainPanel = new TerrainPanel({ editor: this, root: this.terrainRoot,
       onTool: tool => this.terrainInteraction.select(tool) });
     this.terrainInteraction = new TerrainInteraction(this, this.terrainPanel);
+    this.scatterPanel = new ScatterPanel({ editor: this, root: this.scatterRoot,
+      onTool: enabled => {
+        this.terrainInteraction.select(null);
+        this.scatterInteraction.select(enabled);
+      } });
+    this.scatterInteraction = new ScatterInteraction(this, this.scatterPanel);
     this.unsubscribeLocale = onLocaleChange((lang) => { this.lang = lang; this._setLanguage(); });
     this._setLanguage();
   }
@@ -142,13 +151,14 @@ export class WorldEditor {
       '<nav class="gm-tabs"><button type="button" data-action="tab-library" data-i18n="library"></button>',
       '<button type="button" data-action="tab-scene" data-i18n="scene"></button>',
       '<button type="button" data-action="tab-templates" data-i18n="templates"></button>',
-      '<button type="button" data-action="tab-terrain" data-i18n="terrain"></button></nav>',
+      '<button type="button" data-action="tab-terrain" data-i18n="terrain"></button>',
+      '<button type="button" data-action="tab-scatter" data-i18n="scatter"></button></nav>',
       '<div class="gm-library" data-role="catalog"></div><section class="gm-scene-panel" data-role="scene-panel" hidden>',
       '<label class="gm-search"><span data-i18n="sceneSearch"></span><input type="search" data-role="scene-search"></label>',
       '<p class="gm-scene-note" data-i18n="sceneScope"></p><div class="gm-scene-count" data-role="scene-count"></div>',
       '<p class="gm-scene-note" data-i18n="multiHelp"></p><button type="button" data-action="clear-selection" data-i18n="clearSelection"></button>',
       '<div class="gm-scene-list" data-role="scene-list"></div></section><section class="gm-template-panel" data-role="template-panel" hidden></section>',
-      '<section data-role="terrain-panel" hidden></section></aside>',
+      '<section data-role="terrain-panel" hidden></section><section data-role="scatter-panel" hidden></section></aside>',
       '<div class="gm-canvas-note" data-i18n="controls"></div><aside class="gm-inspector"><h2 data-i18n="inspector"></h2>',
       '<div class="gm-selection-name" data-role="selection-name"></div><div class="gm-transform-tools">',
       '<button type="button" data-action="mode-translate" data-i18n="move"></button><button type="button" data-action="mode-rotate" data-i18n="rotate"></button>',
@@ -173,6 +183,7 @@ export class WorldEditor {
     this.catalogRoot = this.ui.querySelector('[data-role="catalog"]');
     this.templateRoot = this.ui.querySelector('[data-role="template-panel"]');
     this.terrainRoot = this.ui.querySelector('[data-role="terrain-panel"]');
+    this.scatterRoot = this.ui.querySelector('[data-role="scatter-panel"]');
     this.langButton = this.ui.querySelector('[data-role="language"]');
     this.selectionName = this.ui.querySelector('[data-role="selection-name"]');
     this.statusNode = this.ui.querySelector('[data-role="status"]');
@@ -192,7 +203,7 @@ export class WorldEditor {
   _setLanguage() {
     this.status?.setLocale(this.lang);
     const words = {
-      terrain: ['Terrain', 'Terreno'],
+      terrain: ['Terrain', 'Terreno'], scatter: ['Scatter', 'Dispersión'],
       brand: ['World editor', 'Editor del mundo'], draftLocal: ['PRIVATE DRAFT · NO PUBLISH', 'BORRADOR PRIVADO · SIN PUBLICAR'],
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
       delete: ['Delete', 'Eliminar'], save: ['Save locally', 'Guardar local'], export: ['Export', 'Exportar'],
@@ -224,6 +235,7 @@ export class WorldEditor {
     this.remotePanel?.render();
     this.templatePanel?.render();
     this.terrainPanel?.render();
+    this.scatterPanel?.render();
     if (this.walkPreview?.active) this.ui.querySelector('[data-i18n="controls"]').textContent = this._t(
       'PRIVATE WALK TEST · WASD: move · Escape: back to editor · no combat or progress',
       'PRUEBA PRIVADA · WASD: caminar · Escape: volver al editor · sin combate ni progreso');
@@ -297,6 +309,7 @@ export class WorldEditor {
   async close({ force = false } = {}) {
     if (!this.active) return true;
     this.terrainInteraction.select(null);
+    this.scatterInteraction.select(false);
     this.remotePanel?.stop();
     this._clearGhost();
     this._stopWalking();
@@ -409,6 +422,9 @@ export class WorldEditor {
 
   _selectAsset(entry, preparedModel) {
     if (!this.active || this.walkPreview?.active || this.dragging || this.importTask) return;
+    this.scatterInteraction.select(false); this.terrainInteraction.select(null);
+    try { this.scatterPanel.setAsset(entry, measureModelCost(preparedModel)); }
+    catch { this.scatterPanel.setAsset(null, null); }
     this._clearGhost(); this.pendingEntry = entry; this.ghost = preparedModel; this.ghost.name = 'gm-placement-ghost';
     this._prepareGhost(this.ghost);
     this.ghost.visible = false; this.scene.add(this.ghost);
@@ -433,7 +449,7 @@ export class WorldEditor {
 
   async _selectTemplate(raw) {
     if (!this.active || this.walkPreview?.active || this.dragging || this.importTask) return false;
-    this._clearGhost();
+    this.scatterInteraction.select(false); this.terrainInteraction.select(null); this._clearGhost();
     this.catalog.generation++;
     const epoch = this.templateLoadEpoch, session = this.session;
     this.templateLoading = true; this.transform.detach(); this._updateButtons();
@@ -505,6 +521,7 @@ export class WorldEditor {
     this.pointerNdc.set(x * 2 - 1, -(y * 2 - 1)); this.pointerInside = x >= 0 && x <= 1 && y >= 0 && y <= 1;
     if (this.ghost) this._updateGhost();
     this.terrainInteraction?.move();
+    this.scatterInteraction?.move(event);
   }
 
   _terrainHits() {
@@ -549,7 +566,7 @@ export class WorldEditor {
     const rect = this.canvas.getBoundingClientRect();
     this.pointerNdc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -(((event.clientY - rect.top) / rect.height) * 2 - 1));
     this.pointerInside = true;
-    if (this.terrainInteraction.down(event)) return;
+    if (this.scatterInteraction.down(event) || this.terrainInteraction.down(event)) return;
     if (this.templateLoading) return;
     if (this.ghost && (this.pendingEntry || this.pendingTemplate)) {
       const hits = this._terrainHits(); if (hits.length) this._placeAt(hits[0].point); return;
@@ -845,6 +862,7 @@ export class WorldEditor {
   }
 
   _setSceneTab(sceneTab) {
+    this._hideScatter();
     this.terrainInteraction?.select(null); this.terrainRoot.hidden = true;
     this.ui.querySelector('[data-action="tab-terrain"]').classList.remove('is-active');
     this.sceneTab = sceneTab; this.templateTab = false;
@@ -856,6 +874,7 @@ export class WorldEditor {
   }
 
   _setTemplateTab() {
+    this._hideScatter();
     this.terrainInteraction?.select(null); this.terrainRoot.hidden = true;
     this.ui.querySelector('[data-action="tab-terrain"]').classList.remove('is-active');
     this.sceneTab = false; this.templateTab = true;
@@ -865,6 +884,7 @@ export class WorldEditor {
   }
 
   _setTerrainTab() {
+    this._hideScatter();
     this._clearGhost(); this._cancelTransform(); this.select(null);
     this.sceneTab = false; this.templateTab = false;
     this.catalogRoot.hidden = this.scenePanel.hidden = this.templateRoot.hidden = true;
@@ -872,6 +892,33 @@ export class WorldEditor {
     for (const name of ['library', 'scene', 'templates', 'terrain'])
       this.ui.querySelector(`[data-action="tab-${name}"]`).classList.toggle('is-active', name === 'terrain');
     this.terrainPanel.render();
+  }
+
+  _hideScatter() {
+    this.scatterInteraction?.select(false); this.scatterRoot.hidden = true;
+    this.ui.querySelector('[data-action="tab-scatter"]').classList.remove('is-active');
+  }
+
+  _scatterExistingCost(document) {
+    const costs = new Map(); let triangles = 0, primitives = 0;
+    for (const object of document.objects) {
+      if (!costs.has(object.assetId)) {
+        const base = this.baseLayer.get(object.assetId);
+        const model = base ? this.baseLayer.model(object.assetId) : this.assets.model(object.assetId);
+        costs.set(object.assetId, measureModelCost(model));
+      }
+      const cost = costs.get(object.assetId); triangles += cost.triangles; primitives += cost.primitives;
+    }
+    return { triangles, primitives };
+  }
+
+  _setScatterTab() {
+    this.terrainInteraction.select(null); this._clearGhost(); this._cancelTransform(); this.select(null);
+    this.catalogRoot.hidden = this.scenePanel.hidden = this.templateRoot.hidden = this.terrainRoot.hidden = true;
+    this.scatterRoot.hidden = false; this.sceneTab = this.templateTab = false;
+    for (const name of ['library', 'scene', 'templates', 'terrain', 'scatter'])
+      this.ui.querySelector(`[data-action="tab-${name}"]`).classList.toggle('is-active', name === 'scatter');
+    this.scatterPanel.render();
   }
 
   _renderSceneList() {
@@ -914,6 +961,7 @@ export class WorldEditor {
 
   _startWalking() {
     if (!this.active || !this.walkPreview || this.importTask) return;
+    this.scatterInteraction.cancel(); this.scatterInteraction.cursor.visible = false;
     this.terrainInteraction.cancel(); this.terrainInteraction.cursor.visible = false;
     this._cancelTransform(); this._clearGhost();
     const doc = this.history.current(), colliders = compileGmColliders(this.map, doc, this.baseRevision);
@@ -983,7 +1031,7 @@ export class WorldEditor {
 
   _toolbarAction(event) {
     if (this.dragging || event.target.closest('[data-selection-id]')) return;
-    if (event.target.closest('[data-action]')) this.terrainInteraction?.cancel();
+    if (event.target.closest('[data-action]')) { this.terrainInteraction?.cancel(); this.scatterInteraction?.cancel(); }
     const sceneId = event.target.closest('[data-scene-id]')?.dataset.sceneId;
     if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId, { toggle: event.shiftKey }); if (!event.shiftKey) this._focusSelection(); return; }
     const action = event.target.closest('[data-action]')?.dataset.action;
@@ -1007,6 +1055,7 @@ export class WorldEditor {
       case 'tab-scene': this._setSceneTab(true); break;
       case 'tab-templates': this._setTemplateTab(); break;
       case 'tab-terrain': this._setTerrainTab(); break;
+      case 'tab-scatter': this._setScatterTab(); break;
       case 'save': this.saveNow(); break;
       case 'remote': this.remotePanel.show(); break;
       case 'export': this._exportCurrent(); break;
@@ -1036,6 +1085,7 @@ export class WorldEditor {
   _restoreHistory(kind) {
     if (!this.history || this.dragging) return;
     this.terrainInteraction?.cancel();
+    this.scatterInteraction?.cancel();
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
     this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
     if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
@@ -1062,6 +1112,12 @@ export class WorldEditor {
 
   _keyDown(event) {
     if (!this.active || event.repeat) return;
+    if (event.code === 'Escape' && this.scatterInteraction?.tool && !this.walkPreview?.active && !this.remotePanel?.open) {
+      event.preventDefault(); event.stopImmediatePropagation();
+      if (!this.scatterInteraction.cancel()) this.scatterInteraction.select(false);
+      return;
+    }
+    if (this.scatterInteraction?.stroke) return;
     if (event.code === 'Escape' && this.terrainInteraction?.tool && !this.walkPreview?.active && !this.remotePanel?.open) {
       event.preventDefault(); event.stopImmediatePropagation();
       if (!this.terrainInteraction.cancel()) this.terrainInteraction.select(null);
@@ -1207,6 +1263,7 @@ export class WorldEditor {
     }
     this.cameraController.update(dt);
     this.terrainInteraction.update();
+    this.scatterInteraction.update();
     if (this.ghost) this._updateGhost();
     this.transform.camera = this.camera; this.transformHelper.updateMatrixWorld(true);
   }
@@ -1216,6 +1273,7 @@ export class WorldEditor {
     this.remotePanel?.dispose();
     this.templatePanel?.dispose();
     this.terrainInteraction?.dispose(); this.terrainPanel?.dispose(); this.terrainPreview?.dispose();
+    this.scatterInteraction?.dispose(); this.scatterPanel?.dispose();
     this.unsubscribeLocale?.();
     clearTimeout(this.saveTimer); this.cameraController.dispose();
     this.canvas.removeEventListener('pointermove', this.onPointerMove);

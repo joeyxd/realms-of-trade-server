@@ -3,7 +3,7 @@
 2026-10-11. Implementado sobre `6fd7f68`; release alpha.52, protocolo 55 conservado, sin SQL.
 [Brief previo](../../briefs/buccaneer-character-v1.md).
 
-**Ficha con idle, alpha.56:** usa el clip original del autor con su rig Mixamo en una instancia
+**Ficha con idle, alpha.57:** usa el clip original del autor con su rig Mixamo en una instancia
 independiente. [Resultado, coste y verificación](idle/README.md). Miniaturas quietas, giro/zoom
 y movimiento reducido; el controlador de juego conserva las animaciones existentes.
 
@@ -22,7 +22,7 @@ byte por byte en `docs/art/source/buccaneer-v1/`, además de la carpeta entregad
 El GLB fuente Tripo tiene 9.164 triángulos, 65 huesos Mixamo, tres mapas 2048 y cuatro clips.
 El runtime reutiliza el rebind y las animaciones procedurales de 15 huesos del juego, con sable,
 pistolas, guardia, carrera, dash, impactos, recolección, natación y despiece. Los clips fuente
-siguen disponibles en el original; desde alpha.56 el derivado conserva solo `idle` para la ficha.
+siguen disponibles en el original; desde alpha.57 el derivado conserva solo `idle` para la ficha.
 No se cambia el controlador de combate por los clips Tripo.
 
 ## Preparación y coste

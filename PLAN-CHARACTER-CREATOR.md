@@ -1,6 +1,6 @@
 # Plan del creador de personajes modulares
 
-**Bucanero, idle en ficha, alpha.56:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
+**Bucanero, idle en ficha, alpha.57:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
 Clip original sobre rig nativo solo en preview; fuente intacta, mundo de 15 huesos y gates modulares conservados.
 42/42 CPU y 24/24 navegador; 57/57 focales tras integrar el corte concurrente. Publicación por separado.
 

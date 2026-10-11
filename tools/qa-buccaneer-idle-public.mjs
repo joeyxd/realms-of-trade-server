@@ -16,7 +16,7 @@ const status = async () => {
     storage: { kind: s.storage.kind, durable: s.storage.durable, accounts: s.storage.accounts,
       errors: s.storage.errors, unsaved: s.storage.unsaved, tickBlocked: s.storage.tickBlocked, worldReady: s.storage.world?.ready } };
 };
-evidence.before = await status(); check(evidence.before.version === '0.6.0-alpha.56', 'Wrong public version');
+evidence.before = await status(); check(evidence.before.version === '0.6.0-alpha.57', 'Wrong public version');
 for (const file of ['assets/manifest.json', 'src/data/meta.js', 'src/render/characters.js', 'src/render/charlooks.js', 'src/render/assets/manifest.js', 'src/render/assets/registry.js', 'src/render/assets/characterFigure.js', 'src/render/assets/rebind.js', 'src/ui/figureLoop.js', 'src/ui/characterScreen.js', 'src/main.js', 'assets/models/buccaneer-v1-desktop.glb', 'assets/models/buccaneer-v1-mobile.glb', 'assets/ui/portraits/buccaneer-v1-desktop.webp', 'assets/ui/portraits/buccaneer-v1-mobile.webp']) {
   const response = await fetch(`${base}/${file}`, { cache: 'no-cache' });
   check(response.ok, `Missing ${file}`);
