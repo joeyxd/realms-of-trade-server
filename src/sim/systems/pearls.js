@@ -57,6 +57,19 @@ export function givePearl(w, e, kind = PEARL_IDS[0]) {
   w.emit({ type: 'pickup', to: e, e, id: 0, kind: 'pearl', pearl });
   return pearl;
 }
+// Only fresh elite/chest rolls use this seam. Existing UIDs keep their transfer/death contracts.
+export function dropRolledPearl(w, pearl, x, z) {
+  if (w.deferPearlMint != null) {
+    if (typeof w.deferPearlMint !== 'function') throw new TypeError('pearl mint hook');
+    const deferred = w.deferPearlMint({ kind: pearl.kind, x, z });
+    if (typeof deferred !== 'boolean') {
+      if (deferred && typeof deferred.then === 'function') Promise.resolve(deferred).catch(() => {});
+      throw new TypeError('pearl mint hook must return a synchronous boolean');
+    }
+    if (deferred) return null;
+  }
+  return dropPearl(w, pearl, x, z);
+}
 export function dropPearl(w, pearl, x, z, from = 0, scatter = false) {
   const fx = x, fz = z;
   if (scatter && from) {

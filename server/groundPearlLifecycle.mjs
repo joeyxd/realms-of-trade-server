@@ -1,5 +1,5 @@
 // Explicit common-authority pilot: hydrate current rows, then select receipted pearl transitions.
-// Whole-death and ordinary-drop composition is an additional explicit mount; new mint remains separate.
+// Whole-death, ordinary drops and newly rolled pearls each require their additional explicit mount.
 import { randomUUID } from 'node:crypto';
 import { StoreError } from './store.mjs';
 import { GroundCurrentHydration } from './groundCurrentHydration.mjs';
@@ -8,7 +8,7 @@ import { prepareGroundPearlReturn } from './groundPearlReturn.mjs';
 import { snapshotDropData, assertDropContainers } from './deathDropApply.mjs';
 import { managedPearlDrop } from './pearlLifecycle.mjs';
 import { managedDeathDrop } from './deathDropLifecycle.mjs';
-import { groundOperation } from './pearlGround.mjs';
+import { groundOperation, checkedGroundResult } from './pearlGround.mjs';
 import { DROPS } from '../src/data/loot.js';
 import { PEARL } from '../src/data/pearls.js';
 import { prepareGroundDeathDrop } from './groundDeathDrop.mjs';
@@ -95,6 +95,25 @@ export class GroundPearlLifecycle {
     const plan = prepareGroundPearlReturn({ world: this.#world, deadlineClock: this.#clock,
       dropId, row: this.#row(dropId) });
     return this.#stage(dropId, plan, plan.targetDrop.id);
+  }
+  // The mint source index is installed in the same reversible synchronous boundary as its drop.
+  prepareMintSource(receipt, rawDrop) {
+    this.#server.assertDropApplyBoundary(); this.#owner();
+    if (!this.#host.groundPearlMints || !this.ready || this.pending || this.#stopping || this.#host.closing) fail('configuration');
+    const drop = snapshotDropData(rawDrop), ground = this.#clock.assertDrop(drop, 'pearl');
+    const operation = { ...drop.pearl, from: null, to: null, expectedVersion: 0,
+      world: this.#host.worldState.id, ground, profiles: [] };
+    const checked = checkedGroundResult(receipt, operation);
+    if (!checked.ok || checked.replay || this.#rows.has(drop.id) || this.#dropRows.has(drop.id)) fail('response');
+    const oldRows = this.#rows, rows = new Map(oldRows);
+    rows.set(drop.id, { ...drop.pearl, ...structuredClone(checked.location) });
+    let installed = false;
+    return { apply: () => {
+      if (installed || this.#rows !== oldRows) fail('cancelled');
+      this.#rows = rows; installed = true;
+    }, rollback: () => {
+      if (installed) { this.#rows = oldRows; installed = false; }
+    } };
   }
   // Source installation is paired reversibly with a checked death's synchronous ECS apply.
   prepareDeathSources(receipt, drops) {
