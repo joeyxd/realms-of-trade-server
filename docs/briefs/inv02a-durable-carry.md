@@ -5,9 +5,10 @@ El primer subcorte implementa un cálculo puro sin montarlo en gameplay. La sigu
 conectar ese cálculo a M5 antes de mostrar una asignación como confirmada.
 
 La dirección aprobada está en `PLAN-PROGRESSION.md`, §15.7, del checkout IDE compartido. El borrador
-`../inv02-survival` conserva trabajo de Carga, hambre/sed y comidas; no se copia ni publica entero.
+en el checkout vecino `inv02-survival` conserva trabajo de Carga, hambre/sed y comidas; no se copia ni publica entero.
 Su protocolo 47 ya lo utiliza el purificador publicado. Su SQL028 candidato tampoco constituye una
-operación durable de asignación: no aplicarlo para activar este contrato.
+operación durable de asignación: no aplicarlo para activar este contrato. La rama integrada ya usa
+SQL028 para configuración de inferencia y protocolo 48; reservar números nuevos al integrar Carga.
 
 ## Reglas adoptadas
 

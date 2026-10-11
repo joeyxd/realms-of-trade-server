@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 47; // Purifier production palette and broken/voyage status projections; reload peers.
+export const PROTOCOL_VERSION = 48; // Private inference configuration and catalog; reload peers.
 
 export const MSG = {
   // client -> server
@@ -15,6 +15,7 @@ export const MSG = {
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
   AGENT_OWNER: 'agent_owner', // private owner list/stop/resume: {requestId,op,characterKey?,epoch?,expectedRevision?}
   AGENT_COMPANION_CONFIG: 'agent_companion_config', // private metadata load/save; owner/world come from the admitted session
+  INFERENCE_CONFIG: 'inference_config', // private owner/world configuration only; no provider call or credentials
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town
   AGENT_TRADE: 'agent_trade', // managed trade: {opId,epoch,sessionId,op,g,n,expectedTotal}; server selects account/town
@@ -35,6 +36,7 @@ export const MSG = {
   AGENT_STATE: 'agent_state', // private controller/owner state and queue invalidation receipt
   AGENT_OWNER_RESULT: 'agent_owner_result', // correlated safe owned-character projection; no grant or task details
   AGENT_COMPANION_CONFIG_RESULT: 'agent_companion_config_result', // private CAS head; never a grant or running-mind ACK
+  INFERENCE_CONFIG_RESULT: 'inference_config_result', // private CAS head and admitted metadata; not a budget reservation
   AGENT_INVENTORY_RESULT: 'agent_inventory_result', // {requestId,epoch,sessionId,ok,why,tick,replay,inventory}
   AGENT_MARKET_RESULT: 'agent_market_result', // {requestId,epoch,sessionId,ok,why,tick,replay,market}; advisory only
   AGENT_TRADE_RESULT: 'agent_trade_result', // private durable receipt; historical results never hydrate current inventory

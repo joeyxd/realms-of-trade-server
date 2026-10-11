@@ -1,5 +1,8 @@
 # AREA17 — Inference Center y conexión local
 
+Continúa [L03d-e1, conexión/modelo/límites privados preparados](l03d-inference-config.md), SQL028.
+Sin proveedor elegido ni ledger central; el modelo local ofrecido servirá para otro corte.
+
 2026-10-10. Evaluación solicitada tras L03d-a: reutilizar Nitro sin Nango y considerar
 Hermes para una experiencia sencilla con muchos jugadores.
 **Estado: arquitectura contrastada; el autor aprobó comenzar su implementación.**

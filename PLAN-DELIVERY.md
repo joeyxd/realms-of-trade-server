@@ -1,5 +1,36 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
+[HUD y evidencia](docs/delivery/hud-portrait/README.md), [contrato de Carga](docs/briefs/inv02a-durable-carry.md)
+y [entrega INV02a](docs/delivery/inv02a-carry-contract.md). Pantalla vertical con filas separadas para jugador,
+controles, minimapa y avisos; horizontal compacto conserva espacio de combate. 36/36 casos locales,
+ES/EN, ratón/toque emulado, escala 100/130 %; capturas inspeccionadas. WSS público 36/36 en
+`6c42e84`, alpha.41/protocolo 47, revisión/imagen fijas y autoridad sana antes/después.
+Carga: asignación/reasignación pura, 11/11 propias y 21/21 con carry/taller/Tala (solapadas).
+Código publicado sin imports de gameplay: no cambia capacidad, movimiento ni perfiles públicos.
+Sigue recibo M5 y adopción explícita, después UI ES/EN y sobrepeso; conservar crédito offline de Tala.
+Sin SQL nuevo. El borrador anterior de supervivencia sigue separado.
+
+**AREA01 GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
+[Entrega](docs/delivery/gm04b/DELIVERY.md), [navegador público](docs/delivery/gm04b/public-browser-evidence.json)
+y [despliegue](docs/delivery/gm04b/deployment.json). Conjuntos de 1–120 decoraciones, fantasma completo,
+copias independientes y undo/redo por colocación. Biblioteca local por cuenta–servidor–mundo, 32 plantillas,
+CAS e import/export de 2 MiB; misma semilla/revisión base. Regresión GM 199/199 en 35 archivos;
+navegador local 17/17 y público autenticado 19/19, sin errores ni mutaciones remotas.
+Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4 conservado.
+Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
+Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
+
+**AREA17 L03d-e1, 2026-10-10 — centro de inferencia preparado, alpha.42/protocolo 48:**
+[Entrega](docs/delivery/l03d-inference-config.md) y [contrato](docs/briefs/l03d-inference-config.md).
+Configuración privada por mundo/cuenta: límite conjunto, límite único por conexión y modelo por
+compañero existente. SQL028 CAS/replay, aislamiento, stop obligatorio y borrador conservado ante
+conflicto/incertidumbre. Sin importe/modelo preseleccionados, proveedor ni generación.
+Integración final alpha.42 70/70 y navegador local 12/12; regresión anterior alpha.41 54/54
+(selecciones solapadas). SQL028 aplicado y canario de servicio revertido. Publicación pendiente.
+Los techos guardados aún no son ledger; la autenticación del navegador local es simulada.
+Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
+
 **AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-family-boundary.md), [contrato](docs/briefs/m5-ground-family-boundary.md).
 Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
@@ -106,7 +137,8 @@ revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, ti
 cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
 [Navegador autenticado alpha.40/protocolo 47](docs/delivery/prg01d-starter-workshop/activation/browser-alpha40-20261011-0247/README.md): 8/8,
 entrega UI durable y progreso tras recargar; perfil/Auth QA retirados y un recibo conservado.
-Capturas ES escritorio/EN portrait inspeccionadas: panel legible; HUD de fondo móvil superpuesto pendiente.
+Capturas ES escritorio/EN portrait inspeccionadas: panel legible; el solapamiento de fondo
+observado entonces quedó corregido en el [corte HUD posterior](docs/delivery/hud-portrait/README.md).
 Revisión `88f61ea` e imagen fijadas antes/después, cero errores/pendientes y una autoridad.
 Entrada pública histórica 14/14 conserva su alcance anterior.
 [Checkpoint](docs/delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
