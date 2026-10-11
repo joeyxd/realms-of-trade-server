@@ -65,7 +65,7 @@ function makeShieldBubble() {
 }
 
 export class GameScene {
-  constructor(canvas, map, { raftSkin = null } = {}) {
+  constructor(canvas, map, { raftSkin = null, terrainMap = map } = {}) {
     this.map = map;
     const r = (this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false }));
     r.outputColorSpace = THREE.SRGBColorSpace;
@@ -83,12 +83,12 @@ export class GameScene {
     this.sky = createSky();
     this.sky.layers.set(LAYER.NO_OUTLINE);
     this.scene.add(this.sky);
-    this.terrain = createTerrain(map);
+    this.terrain = createTerrain(terrainMap);
     this.scene.add(this.terrain);
     this.freshwaterSpring = createFreshwaterSpring(map);
     if (this.freshwaterSpring) this.scene.add(this.freshwaterSpring);
     this.scene.add(createSeabed(map));
-    this.water = createWater(map, createHeightTexture(map));
+    this.water = createWater(map, createHeightTexture(terrainMap));
     this.water.layers.set(LAYER.WATER);
     this.scene.add(this.water);
     this.pipeline.water = { setMode: (ssr) => this.water.userData.setMode(ssr) };

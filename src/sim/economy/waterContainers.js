@@ -156,4 +156,3 @@ export function freshwaterProfileDelta(profile, command) {
     return afterOverMass > beforeOverMass + 1e-8;
   }
 }
-

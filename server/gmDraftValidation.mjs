@@ -1,5 +1,6 @@
 import { validateDocument } from '../src/editor/document.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
+import { validateTerrainForMap } from '../src/editor/terrainData.js';
 
 const COAST_ROCK_ID = 'model:coast-rock-v1';
 
@@ -47,6 +48,10 @@ export function createGmDraftValidator({ map, baseRevision, manifest, editorCata
     catch (error) { throw new GmDraftValidationError(error?.code || 'document'); }
     if (checked.base.seed !== (map.seed >>> 0) || checked.base.revision !== baseRevision) {
       throw new GmDraftValidationError('base_mismatch');
+    }
+    if (checked.terrain) {
+      try { validateTerrainForMap(map, checked.terrain); }
+      catch (error) { throw new GmDraftValidationError(error?.code || 'terrain'); }
     }
     for (const item of checked.objects) {
       if (item.assetId.startsWith('base:')) {

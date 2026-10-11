@@ -23,7 +23,8 @@ async function fixture(t, { src = 'editor/rock.glb', catalogPriority = false, de
   for (const dir of ['assets/editor', 'src/core', 'src/data', 'src/sim', 'src/render', 'src/editor', 'src/net', 'server']) await mkdir(path.join(root, dir), { recursive: true });
   const runtime = ['src/editor/document.js', 'src/editor/baseIdentity.js', 'src/editor/publicationValidation.js',
     'src/editor/publicationArtifact.js', 'src/editor/modelFactory.js', 'src/net/protocol.js',
-    'server/gmPublication.mjs', 'server/gmPublicationAssets.mjs', 'index.html', 'package.json', 'package-lock.json'];
+    'server/gmPublication.mjs', 'server/gmPublicationAssets.mjs', 'server/gmDraftValidation.mjs',
+    'server/gmContentObstacles.mjs', 'index.html', 'package.json', 'package-lock.json'];
   for (const rel of runtime) await writeFile(path.join(root, rel), `fixture:${rel}`);
   await writeFile(path.join(root, 'assets/manifest.json'), JSON.stringify({ version: 1, assets: [
     { id: 'model:rock', kind: 'model', src: 'models/rock.glb', fit: 'height', height: 3, scale: 0.8 },

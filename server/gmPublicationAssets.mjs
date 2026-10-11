@@ -14,7 +14,8 @@ const RUNTIME_DIRS = ['src'];
 const RUNTIME_FILES = [
   'src/editor/document.js', 'src/editor/baseIdentity.js', 'src/editor/publicationValidation.js',
   'src/editor/publicationArtifact.js', 'src/editor/modelFactory.js', 'src/net/protocol.js',
-  'server/gmPublication.mjs', 'server/gmPublicationAssets.mjs',
+  'server/gmPublication.mjs', 'server/gmPublicationAssets.mjs', 'server/gmDraftValidation.mjs',
+  'server/gmContentObstacles.mjs',
   'index.html', 'package.json', 'package-lock.json',
   'assets/manifest.json', 'assets/editor/catalog.json',
 ];

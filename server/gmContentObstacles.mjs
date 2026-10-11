@@ -3,7 +3,7 @@ import { RAFT, RAFT_PARTS } from '../src/data/raftparts.js';
 import { sanitizeRaftVoyage } from '../src/sim/naval/recovery.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const MAX_ROWS = 4096, PAGE_SIZE = 100, DROP_RADIUS = 0.75;
+const MAX_ROWS = 4096, PAGE_SIZE = 100, DROP_RADIUS = 0.75, MAX_TERRAIN_DRIFT = 1e-5;
 
 export class GmContentObstacleError extends Error {
   constructor(code) { super(code); this.name = 'GmContentObstacleError'; this.code = code; }
@@ -32,6 +32,26 @@ function newCircles(currentMap, targetMap) {
 }
 function intersects(c, p, radius = 0) {
   return Math.hypot(c.x - p.x, c.z - p.z) <= c.r + radius;
+}
+function assertGroundStable(currentMap, targetMap, x, z) {
+  if (typeof currentMap?.groundAt !== 'function' || typeof targetMap?.groundAt !== 'function') throw unavailable();
+  const before = currentMap.groundAt(x, z), after = targetMap.groundAt(x, z);
+  if (!Number.isFinite(before) || !Number.isFinite(after)) throw unavailable();
+  if (Math.abs(before - after) > MAX_TERRAIN_DRIFT) throw occupied();
+}
+function assertStableCircle(currentMap, targetMap, point, radius) {
+  const step = 0.5;
+  for (let z = -radius; z <= radius + 1e-9; z += step) for (let x = -radius; x <= radius + 1e-9; x += step) {
+    if (x * x + z * z <= radius * radius + 1e-9) assertGroundStable(currentMap, targetMap, point.x + x, point.z + z);
+  }
+  assertGroundStable(currentMap, targetMap, point.x, point.z);
+}
+function assertStableRaft(currentMap, targetMap, raft) {
+  const cell = RAFT.cell, co = Math.cos(raft.pose.yaw), si = Math.sin(raft.pose.yaw);
+  for (let z = 0; z <= cell + 1e-9; z += 0.5) for (let x = 0; x <= cell + 1e-9; x += 0.5) {
+    const lx = raft.x * cell + x, lz = raft.z * cell + z;
+    assertGroundStable(currentMap, targetMap, raft.pose.x + co * lx + si * lz, raft.pose.z - si * lx + co * lz);
+  }
 }
 function profileCheckpoint(profile) {
   const cp = profile?.cp;
@@ -171,8 +191,8 @@ function hitsRaft(c, parts) {
 }
 
 /**
- * Reject newly-added static colliders that overlap persisted checkpoints, ground items,
- * death drops, saved same-seed raft voyages, or any possible home berth. Reads are bounded and have no gameplay writes.
+ * Reject new static colliders over persisted sites and terrain height changes under saved ground footprints.
+ * Reads are bounded and have no gameplay writes.
  */
 export async function validateGmContentObstacles({ store, map, currentMap, targetMap, worldId }) {
   if (!store || typeof worldId !== 'string' || !worldId || worldId.length > 100) throw unavailable();
@@ -190,6 +210,17 @@ export async function validateGmContentObstacles({ store, map, currentMap, targe
     if (cp !== null) {
       if (!finitePoint(checkpoints[cp])) throw unavailable();
       activeCheckpoints.add(cp);
+    }
+  }
+  const terrainChanged = currentMap.heights !== targetMap.heights &&
+    (currentMap.heights || targetMap.heights || currentMap.groundAt !== targetMap.groundAt);
+  if (terrainChanged) {
+    for (const cp of activeCheckpoints) assertStableCircle(currentMap, targetMap, checkpoints[cp], 2);
+    for (const p of ground) assertStableCircle(currentMap, targetMap, p, DROP_RADIUS);
+    for (const p of drops) assertStableCircle(currentMap, targetMap, p, DROP_RADIUS);
+    for (const raft of rafts) {
+      if (raft.pose) assertStableRaft(currentMap, targetMap, raft);
+      else if (raft.center) assertStableCircle(currentMap, targetMap, raft.center, raft.radius);
     }
   }
   for (const c of added) {

@@ -1,6 +1,8 @@
 import { validateDocument } from './document.js';
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
+import { freshwaterSource } from '../data/freshwater.js';
+import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
 
 const MAX_REPORTED_ISSUES = 200;
 const MAX_PUBLICATION_EDITS = 1000;
@@ -38,6 +40,7 @@ function resolve(map, document, baseRevision) {
     const error = new TypeError('GM publication base does not match the generated map');
     error.code = 'base_mismatch'; throw error;
   }
+  const terrainMap = doc.terrain ? (validateTerrainForMap(map, doc.terrain), compileTerrainMap(map, doc.terrain)) : map;
   const editable = gmEditableBaseProps(map, baseRevision);
   const byId = new Map(editable.map((entry) => [entry.id, entry]));
   for (const item of doc.baseOverrides) if (!byId.has(item.id)) {
@@ -48,7 +51,7 @@ function resolve(map, document, baseRevision) {
     const error = new TypeError('Unknown or non-editable GM base asset reference');
     error.code = 'base_reference'; throw error;
   }
-  return { doc, byId };
+  return { doc, byId, terrainMap };
 }
 
 /** Compile the static collision view used by publication and private walk preview. */
@@ -89,6 +92,7 @@ function anchorList(map) {
   add('dockBase', lm.dockBase, 3); add('dockEnd', lm.dockEnd, 3);
   add('arena', lm.arena, Number.isFinite(lm.arenaR) ? lm.arenaR : 19);
   add('volcano', lm.volcano, 12);
+  add('freshwater:salty-spring', freshwaterSource(map), 3);
   for (const [id, point] of Object.entries(map.checkpoints || {})) add(`checkpoint:${id}`, point, 2);
   for (const [kind, list] of [['npc', map.npcs], ['rack', map.racks], ['enemySpawn', map.enemySpawns]]) {
     for (let i = 0; i < (Array.isArray(list) ? list.length : 0); i++) add(`${kind}:${list[i].id || i}`, list[i], 2);
@@ -99,7 +103,7 @@ function anchorList(map) {
 
 /** Return bounded, deterministic warnings/errors for the conservative v1 publication policy. */
 export function validateGmPublication({ map, document, baseRevision } = {}) {
-  const { doc, byId } = resolve(map, document, baseRevision);
+  const { doc, byId, terrainMap } = resolve(map, document, baseRevision);
   const issues = [], counts = { errors: 0, warnings: 0 };
   const issue = (severity, code, objectId, anchorId) => {
     counts[severity === 'error' ? 'errors' : 'warnings']++;
@@ -132,7 +136,7 @@ export function validateGmPublication({ map, document, baseRevision } = {}) {
     if (radius > MAX_PUBLICATION_RADIUS) issue('error', 'radius_limit', id);
     if (Math.abs(x) + radius > map.half - 2 || Math.abs(z) + radius > map.half - 2)
       issue('error', 'map_bounds', id);
-    const ground = map.groundAt(x, z);
+    const ground = terrainMap.groundAt(x, z);
     if (!Number.isFinite(ground) || y - ground < -2 || y - ground > 20)
       issue('error', 'unsupported_height', id);
     if (item.collider === 'none') visualOnlyCount++;
