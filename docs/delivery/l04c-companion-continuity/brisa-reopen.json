@@ -1,6 +1,6 @@
 {
   "schema": "mn.companion-continuity-reopen.v1",
-  "at": "2026-10-11T06:02:27.054Z",
+  "at": "2026-10-11T06:14:21.585Z",
   "production": false,
   "realInferenceCallsThisCut": 0,
   "state": "stopped",
@@ -30,7 +30,7 @@
   "automaticSummaryRemaining": 0,
   "refresh": {
     "ok": true,
-    "atMs": 1791698546613,
+    "atMs": 1791699261585,
     "reason": "manual_refresh",
     "revision": 1,
     "sessionId": null,

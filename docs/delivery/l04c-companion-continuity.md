@@ -43,6 +43,38 @@ Capturas inspeccionadas: [contexto medido](l04c-companion-continuity/context-mea
 [landscape](l04c-companion-continuity/continuity-landscape.png).
 La estimación del adaptador no se presenta como tokenizer real.
 
+## Integración con el host concurrente
+
+Se incorporó `c33ed9c` (cantimplora/supervivencia) conservando ambos checkpoints; la fixture local
+mantiene esas capacidades desactivadas. La primera [selección integrada](l04c-companion-continuity/integration-tests.txt)
+dio 96 aprobadas, un fallo y un omitido; la [repetición del runtime](l04c-companion-continuity/integration-runtime-repeat.txt)
+dio 2/5. Los rechazos de frescura quedaron conservados; se observaron 104 procesos Node concurrentes.
+No se añadieron retries ni se amplió el límite de 1,5 s para el presente.
+
+La revisión detectó una frontera mejorable: se reutilizaba la observación anterior después de esperar
+I/O durable del presupuesto. AgentMind ahora relee después de admisión y antes de emitir efectos;
+la observación original conserva su límite por modo y stop/archivos/permisos se vuelven a comprobar.
+[Runtime final](l04c-companion-continuity/integration-runtime-final.txt): **5/5**.
+[Navegador integrado](l04c-companion-continuity/integration-browser/browser.json): **9/9**, cero errores;
+[desktop](l04c-companion-continuity/integration-browser/context-measured-desktop.png) y
+[portrait](l04c-companion-continuity/integration-browser/continuity-portrait.png) inspeccionados.
+Estas pruebas no convierten una observación realmente caducada en válida.
+
+[Regresión final integrada](l04c-companion-continuity/final-regression-tests.txt): **251 casos,
+250 aprobados, cero fallos y un omitido** por el mismo permiso de symlink Windows, en 29,7 s.
+Incluye los doce archivos focales y siete archivos de AgentMind, presupuesto durable/nativo,
+conversación, metas y las nuevas fronteras async. Los siete casos con reloj controlado prueban
+observación renovada tras I/O, caducidad corporal original y bloqueo por stop/cambio de archivos;
+una sola llamada al proveedor cuando corresponde. Los conteos anteriores se solapan con esta selección.
+
+La revisión final detectó además un aviso preexistente: cancelar mientras se comprueba admisión tras
+asentar el uso puede devolver `budgetReconciliation: pending` aunque el ledger ya esté confirmado.
+El uso permanece contabilizado; se conserva como pendiente de corrección del aviso, sin ampliar este corte.
+
+```powershell
+node --test --test-concurrency=1 tests/companion-continuity.test.mjs tests/local-companion-runtime.test.mjs tests/companion-studio-server.test.mjs tests/companion-studio-ui.test.mjs tests/companion-templates.test.mjs tests/local-openai-mind.test.mjs tests/agent-mind-context.test.mjs tests/agent-reflection-freshness.test.mjs tests/agent-memory-mind.test.mjs tests/agent-memory-journal.test.mjs tests/agent-memory-store.test.mjs tests/agent-memory-retrieval.test.mjs tests/agent-async-budget-freshness.test.mjs tests/agent-mind.test.mjs tests/agent-durable-mind.test.mjs tests/agent-conversation-mind.test.mjs tests/agent-goals-mind.test.mjs tests/agent-inference-metering.test.mjs tests/agent-native-budget.test.mjs
+```
+
 ## Brisa y alcance público
 
 La ficha existente sigue en `.scratch/companions/brisa-20261010` del checkout compartido.

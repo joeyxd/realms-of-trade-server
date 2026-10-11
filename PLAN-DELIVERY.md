@@ -5,7 +5,8 @@
 Captura tras chat confirmado sin inferencia; continuación desde fuentes y refresco que cancela tardías
 sin renovar sesión/cuota ni reactivar stop. Resumen manual y automático opt-in por presión/pausa;
 un intento automático por cuota durable compartida con compactados manuales, originales conservados.
-97 aprobadas/una omitida por symlink Windows; navegador 9/9 simulado con C01 real local y capturas inspeccionadas.
+Regresión integrada: 250 aprobadas/una omitida por symlink Windows; navegador 9/9 simulado con C01 real local.
+AgentMind relee observación tras I/O del presupuesto; stop/archivos y frescura corporal conservan sus límites.
 Sin SQL, protocolo, JEV ni activación pública. Sigue identidad/ledger central y wizard ingame;
 calidad del modelo, memoria semántica y compañía humana conservan aceptación propia.
 
