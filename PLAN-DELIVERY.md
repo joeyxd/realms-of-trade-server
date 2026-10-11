@@ -1,5 +1,16 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
+[HUD y evidencia](docs/delivery/hud-portrait/README.md), [contrato de Carga](docs/briefs/inv02a-durable-carry.md)
+y [entrega INV02a](docs/delivery/inv02a-carry-contract.md). Pantalla vertical con filas separadas para jugador,
+controles, minimapa y avisos; horizontal compacto conserva espacio de combate. 36/36 casos locales,
+ES/EN, ratón/toque emulado, escala 100/130 %; capturas inspeccionadas. WSS público 36/36 en
+`6c42e84`, alpha.41/protocolo 47, revisión/imagen fijas y autoridad sana antes/después.
+Carga: asignación/reasignación pura, 11/11 propias y 21/21 con carry/taller/Tala (solapadas).
+Código publicado sin imports de gameplay: no cambia capacidad, movimiento ni perfiles públicos.
+Sigue recibo M5 y adopción explícita, después UI ES/EN y sobrepeso; conservar crédito offline de Tala.
+Sin SQL nuevo. El borrador anterior de supervivencia sigue separado.
+
 **AREA07, revisión del autor 2026-10-10 — agua dulce manual → purificador avanzado:**
 [Dirección y cortes RNV07](docs/briefs/RNV07-freshwater-progression.md). Primero cubeta/fuente
 interior con enemigos/barril, después cantimplora con supervivencia; sigue viaje Salty Shore–Puerto Sol.
@@ -93,7 +104,8 @@ revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, ti
 cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
 [Navegador autenticado alpha.40/protocolo 47](docs/delivery/prg01d-starter-workshop/activation/browser-alpha40-20261011-0247/README.md): 8/8,
 entrega UI durable y progreso tras recargar; perfil/Auth QA retirados y un recibo conservado.
-Capturas ES escritorio/EN portrait inspeccionadas: panel legible; HUD de fondo móvil superpuesto pendiente.
+Capturas ES escritorio/EN portrait inspeccionadas: panel legible; el solapamiento de fondo
+observado entonces quedó corregido en el [corte HUD posterior](docs/delivery/hud-portrait/README.md).
 Revisión `88f61ea` e imagen fijadas antes/después, cero errores/pendientes y una autoridad.
 Entrada pública histórica 14/14 conserva su alcance anterior.
 [Checkpoint](docs/delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
