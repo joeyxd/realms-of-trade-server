@@ -125,6 +125,15 @@ Ampliación posterior del mismo día: línea esencial y chat primero.
 
 ## 1. Dirección y alcance
 
+**Dirección de compañía, 2026-10-10:** el autor quiere que quien juega solo pueda
+tener equipo, conversar y compartir aventuras con un personaje cálido y continuo.
+[Propósito, continuidad y reacciones](docs/briefs/companion-purpose-continuity.md)
+recoge esa intención, el comportamiento actual y las propuestas de refresco/compactado,
+JEV y actores patrocinados por el mundo. Las plantillas nuevas añaden propósito
+relacional; automatismos, JEV, autonomía offline y NPC constructores siguen propuestos,
+sin activación ni ampliación de herramientas. Renovar contexto no exige cambiar
+la sesión de juego ni reinicia presupuesto o pendientes.
+
 Explorar que las personas conecten su propio modelo y presupuesto de inferencia para tener personajes
 «vivos» en MAREA NEGRA: con objetivos, personalidad, recuerdos y decisiones que tengan consecuencias
 reales en el mundo. Los humanos ven al personaje en el juego 3D; el agente puede jugar completamente
