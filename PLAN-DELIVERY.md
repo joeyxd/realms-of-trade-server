@@ -8,6 +8,7 @@ se pierde al reaparecer. Operación freshwater/M5, sin segunda autoridad. Flag n
 194/194 grupo del actualizador, SQL 33/33 y UI local 6/6 ES/EN escritorio/móvil/rotado; conteos solapados.
 INV02d ya está incluido en VPS cd5df25/alpha.57; un jugador, sin forzar relevo. Sigue SQL035,
 readiness y aceptación autenticada. Después INV03/bolsas; no reimplementar sobrepeso.
+Enviado en `12c7339`; relevo normal diferido por jugador conectado, SQL035 RPC aún ausente.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).

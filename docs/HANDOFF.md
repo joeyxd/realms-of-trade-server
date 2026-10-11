@@ -8,6 +8,7 @@ limpieza al reaparecer. Recibo freshwater/M5; `MN_SPECIAL_MEAL_OPERATIONS=0` por
 alcance SQL, fotos y límites de evidencia. INV02d ya está incluido en VPS cd5df25/alpha.57;
 un jugador, sin forzar relevo. Aplicar SQL035, verificar readiness, desplegar/activar cuando
 esté idle/durable y aceptar consumo/replay/reentrada en público. Después INV03/bolsas.
+Enviado en `12c7339`; actualizador difirió el relevo, SQL035 RPC aún ausente (20:35Z).
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).

@@ -1,6 +1,6 @@
 # SRV02 — comidas especiales
 
-Implementado y probado localmente para alpha.58 / protocolo 57. Código sobre `cd5df25`, conservando los cortes concurrentes. SQL035, activación y aceptación pública se verifican por separado; no hay activación automática. [Contrato](../../briefs/srv02-special-meals.md).
+Implementado y probado localmente para alpha.58 / protocolo 57; enviado en `12c7339` a la rama del VPS. Código sobre `cd5df25`, conservando los cortes concurrentes. SQL035, activación y aceptación pública siguen pendientes; no hay activación automática. [Contrato](../../briefs/srv02-special-meals.md).
 
 ## Comportamiento
 
@@ -26,6 +26,8 @@ Panel ES/EN: tres recetas, coste, duración, aviso de reemplazo y motivo de bloq
 ## Estado operativo y siguiente paso
 
 INV02d ya estaba implementado: la corrección legacy está incluida en el VPS `cd5df25`, alpha.57. Lectura de este corte: un jugador/un socket, cero errores y pendientes; no se fuerza su relevo. Esta entrega agrega únicamente SRV02 sobre esa base.
+
+[Lectura operativa a las 20:35Z](deployment.json): imagen activa `sha256:ea028cc249a3a6ee773479d1d7c314e04781ffeef779624e8b6ebce8f46b45cd`, alpha.57/cd5df25; salud pública 200. Se solicitó el actualizador normal y difirió el relevo por el jugador conectado. SQL035 todavía devuelve `PGRST202` (RPC ausente), así que no se activa el flag. El actualizador operativo quedó sincronizado con el grupo de 194 pruebas, hash comprobado y copia previa conservada; no se cambió el runtime ni la configuración del juego. **SRV02 no se declara desplegado o aceptado públicamente.**
 
 1. Aplicar [SQL035](../../../server/migrations/035_special_meal_operations.sql) después de 001–034. Solo amplía funciones/validación; no reescribe perfiles ni recibos. El autor aplica SQL porque la sesión dispone de acceso de servicio, sin conexión administrativa SQL.
 2. Verificar readiness 1 y conservar `MN_SPECIAL_MEAL_OPERATIONS=0` hasta el relevo normal a un runtime compatible. Actualizador con una autoridad y mundo idle/durable; nunca desconectar al jugador para esta entrega.
