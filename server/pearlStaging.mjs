@@ -3,6 +3,7 @@
 import { randomUUID } from 'node:crypto';
 import { transferPearl, swallowPearl, leavePearl } from '../src/sim/systems/pearls.js';
 import { sanitizeProfile } from '../src/sim/systems/inventory.js';
+import { packLimitsForProfile } from '../src/sim/economy/carry.js';
 import { StoreError, playerKey } from './store.mjs';
 import { canonicalText, pearlKind } from './pearlOperations.mjs';
 import { groundKey, groundIntent, groundOperation, checkedGroundResult } from './pearlGround.mjs';
@@ -138,8 +139,18 @@ export class PearlStaging {
         Promise.resolve(raw).catch(() => {});
         throw new StoreError('profile');
       }
-      const captured = normalized(raw), comparable = { ...captured };
+      const captured = normalized(raw), comparable = clone(captured);
       for (const field of PEARL_PROFILE_ECS_FIELDS) comparable[field] = before[field];
+      // Level capture also projects bounded carry limits. Inventory, carry tier and spent
+      // attributes must remain exact; only the two limits derived from that level may differ.
+      if (before.carry) {
+        const limits = packLimitsForProfile({ ...before, lvl: captured.lvl });
+        if (!limits || captured.eco.pack.cap !== limits.volume || captured.eco.pack.maxMass !== limits.maxMass) {
+          throw new StoreError('profile');
+        }
+        comparable.eco.pack.cap = before.eco.pack.cap;
+        comparable.eco.pack.maxMass = before.eco.pack.maxMass;
+      }
       if (this.#captureViolation || canonicalText(comparable) !== beforeText ||
           canonicalText(normalized(endpoint.profile)) !== beforeText) throw new StoreError('profile');
       return captured;
@@ -461,6 +472,7 @@ export class PearlStaging {
           return { e, before: e.profile.pearls, after: clone(delta.after), dirty: w.profileDirty.has(e.entity),
             beforeText: canonicalText(before),
             progressBefore: Object.fromEntries(PEARL_PROFILE_ECS_FIELDS.map((field) => [field, before[field]])),
+            packBefore: before.carry ? { cap: before.eco.pack.cap, maxMass: before.eco.pack.maxMass } : null,
             save: normalized({ ...live, pearls: clone(delta.after) }) };
         });
         // Run event decoration against a detached buffer before changing live state. A publication
@@ -511,6 +523,10 @@ export class PearlStaging {
         for (const change of writes) {
           change.e.profile.pearls = change.after;
           for (const field of PEARL_PROFILE_ECS_FIELDS) change.e.profile[field] = change.save[field];
+          if (change.packBefore) {
+            change.e.profile.eco.pack.cap = change.save.eco.pack.cap;
+            change.e.profile.eco.pack.maxMass = change.save.eco.pack.maxMass;
+          }
           w.profileDirty.add(change.e.entity);
         }
         for (const { uid, data } of ledgers) w.pearlLedger.set(uid, clone(data));
@@ -542,6 +558,7 @@ export class PearlStaging {
             for (const change of writes) {
               change.e.profile.pearls = change.before;
               Object.assign(change.e.profile, change.progressBefore);
+              if (change.packBefore) Object.assign(change.e.profile.eco.pack, change.packBefore);
               if (!change.dirty) w.profileDirty.delete(change.e.entity);
             }
             for (const [uid, row] of ctx.ledgers) w.pearlLedger.set(uid, clone(row));

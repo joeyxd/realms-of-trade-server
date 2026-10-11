@@ -49,10 +49,14 @@ async function seed(base) {
 }
 
 async function fixture({ backend = async () => ({ store: createMemoryStore(), close: async () => {} }), wrap = (base) => base,
-  mounted = true } = {}) {
+  mounted = true, captureMutation = null } = {}) {
   const database = await backend(), base = database.store; await seed(base);
   const store = wrap(base), logs = [], host = new GameHost({ seed: 42, bots: 0, store,
     resolvePlayer: async (_req, msg) => accounts[Number(msg.token)], log: (text) => logs.push(text) });
+  if (captureMutation) {
+    const capture = host.capturePearlProfile.bind(host);
+    host.capturePearlProfile = (id, entity) => captureMutation(capture(id, entity));
+  }
   if (mounted) host.mountPearlStaging({ scope });
   const sockets = [], entities = [];
   for (let i = 0; i < accounts.length; i++) {
@@ -90,6 +94,8 @@ for (const [name, backend] of [['memory', undefined], ['SDK/SQL008 local', sql]]
       const h = f.staging.swallow({ uid, expectedVersion: 1, source: f.source });
       await entered.promise;
       assert.deepEqual(progress(request.profiles[0].data), { lvl: 3, xp: 31.13, pot: 3, cp: f.p.cp });
+      assert.equal(request.profiles[0].data.eco.pack.cap, 18);
+      assert.equal(request.profiles[0].data.eco.pack.maxMass, 22, 'level-three legacy carry limit is captured with progress');
       assert.equal(s.step(), false); assert.equal(f.w.tick, 0); assert.equal(f.c.ack, 0);
       assert.deepEqual({ queue: f.c.queue, carry: f.c.carry, last: f.c.last }, before);
       assert.equal(f.p.pearls.swallowed, null); assert.equal(output(f, 'pearlChanged').length, 0);
@@ -101,6 +107,8 @@ for (const [name, backend] of [['memory', undefined], ['SDK/SQL008 local', sql]]
       assert.equal(f.w.tick, 0); assert.equal(f.c.ack, 0); assert.equal(f.w.ecs.x[e], x);
       assert.equal(f.staging.operations.has(h.operationId), false); assert.equal(f.p.pearls.swallowed.uid, uid);
       assert.deepEqual(progress(f.p), { lvl: 4, xp: 49.13, pot: 4, cp: f.p.cp });
+      assert.equal(f.p.eco.pack.cap, 18);
+      assert.equal(f.p.eco.pack.maxMass, 24, 'live profile keeps the level-four derived carry limit');
       assert.equal(f.p.gold, 47); assert.deepEqual(f.p.mast[0], [2, 31]);
       for (const cmd of f.c.queue) assert.equal((cmd.btn | cmd.prs) & PEARL_ACTION_BITS, 0);
       assert.equal(f.c.carry, 0); assert.equal((f.c.last.btn | f.c.last.prs) & PEARL_ACTION_BITS, 0);
@@ -115,6 +123,28 @@ for (const [name, backend] of [['memory', undefined], ['SDK/SQL008 local', sql]]
       assert.equal((await f.base.loadUnique(uid)).version, 2);
       assert.deepEqual(f.host.status().storage.staging, { enabled: true, failed: false, pending: 0, completed: 0, reserved: 0 });
     } finally { reply.resolve(); await f.close(); }
+  });
+}
+
+for (const [label, mutate] of [
+  ['carry tier with matching derived limits', (profile) => {
+    profile.carry.backpack = 1; profile.eco.pack.cap = 30;
+  }],
+  ['attribute points', (profile) => { profile.attr = { v: 1, carga: 0, re: 0 }; }],
+  ['goods', (profile) => { profile.eco.pack.goods.madera = 1; }],
+]) {
+  test(`mounted staging rejects forged capture changes to ${label} before SQL`, async () => {
+    let commits = 0;
+    const f = await fixture({ captureMutation: mutate, wrap: (base) => ({ ...base, async commitPearlGround(...args) {
+      commits++; return base.commitPearlGround(...args);
+    } }) });
+    try {
+      const before = structuredClone(f.p);
+      assert.throws(() => f.staging.swallow({ uid, source: f.source, expectedVersion: 1 }), { code: 'profile' });
+      await f.staging.settle();
+      assert.equal(commits, 0); assert.deepEqual(f.p, before); assert.equal(f.staging.operations.size, 0);
+      assert.equal((await f.base.loadUnique(uid)).version, 1);
+    } finally { await f.close(); }
   });
 }
 
@@ -186,10 +216,14 @@ test('close waits for an in-flight mounted receipt, without applying, publishing
 test('apply failure rolls back before socket detach, stops admission/timers and retains the committed SQL authority', async () => {
   const f = await fixture();
   try {
+    const e = f.entities[0];
+    f.w.ecs.level[e] = 4; f.w.ecs.xp[e] = 49.126; f.w.ecs.potions[e] = 4;
+    const originalEco = f.p.eco, originalPack = f.p.eco.pack;
+    const originalProfile = structuredClone(f.p);
     const first = command(1); f.c.queue.push(first); f.c.carry = PEARL_ACTION_BITS;
-    f.w.ecs.qBuf[f.entities[0]] = 0.2;
+    f.w.ecs.qBuf[e] = 0.2;
     f.staging.swallow({ uid, source: f.source, expectedVersion: 1 }); await f.staging.settle();
-    const before = structuredClone(f.p.pearls), e = f.entities[0];
+    const before = structuredClone(f.p.pearls);
     // Fail after input filtering and profile writes, inside the same actual host apply callback.
     f.host.profiles.save = (id) => { f.host.profiles.fail(f.host.profiles.clients.get(id), 'unavailable'); };
     const closes = [];
@@ -199,7 +233,11 @@ test('apply failure rolls back before socket detach, stops admission/timers and 
     assert.equal(f.host.server.step(), false);
     assert.equal(f.host.closing, true); assert.equal(f.host.healthy(), false);
     assert.equal(f.sockets[0].readyState, 1, 'disconnect waits until beforeTick has unwound');
-    assert.deepEqual(f.p.pearls, before); assert.equal(f.c.queue[0], first); assert.equal(f.c.carry, PEARL_ACTION_BITS);
+    assert.deepEqual(f.p.pearls, before); assert.deepEqual(progress(f.p), progress(originalProfile));
+    assert.equal(f.p.eco, originalEco, 'failed save restores the original eco identity');
+    assert.equal(f.p.eco.pack, originalPack, 'failed save restores derived capacity in place');
+    assert.equal(f.p.eco.pack.cap, 18); assert.equal(f.p.eco.pack.maxMass, originalProfile.eco.pack.maxMass);
+    assert.equal(f.c.queue[0], first); assert.equal(f.c.carry, PEARL_ACTION_BITS);
     assert.equal(f.w.ecs.qBuf[e], 0.2); assert.equal(f.w.events.length, 0);
     await turn(); assert.equal(f.sockets[0].readyState, 3); assert.equal(closes.length, 1);
     assert.deepEqual(closes[0], { pearls: before, first, carry: PEARL_ACTION_BITS, qBuf: 0.2, events: 0 });
