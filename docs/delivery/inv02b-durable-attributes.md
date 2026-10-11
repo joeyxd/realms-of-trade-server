@@ -12,6 +12,8 @@ introducir o borrar puntos. No se añade UI de asignación ni penalización de m
 
 ## Verificación
 
+[Comandos y resultados](inv02b-tests.json). Los conteos posteriores incluyen los casos nuevos.
+
 - Regresión integrada previa: **106/106**, 14 archivos, host/store, carry/taller, Tala
   cooperativa y frontera común de suelo. Posteriormente se añadió el caso de revisión
   atrasada y se amplió el caso SQL de composición; esos archivos se verifican de nuevo abajo.
@@ -20,7 +22,7 @@ introducir o borrar puntos. No se añade UI de asignación ni penalización de m
   asignación directa, reset, masa, CAS/replay, ACK falsificado y sobreflujo de tick.
 - UI existente: **6/6** ES/EN × desktop/portrait/landscape, controles reales del taller,
   masa adoptada 60 y volumen mejorado 30. El ACK mantiene pendiente hasta el perfil confirmado.
-  [Capturas y alcance](inv02b-ui/2026-10-11T04-14-05-205Z-8556/README.md), inspección visual
+  [Capturas y alcance](inv02b-ui/2026-10-11T04-20-37-686Z-31696/README.md), inspección visual
   portrait ES y landscape EN. Taller con CSS real y scroll interno; el pack se posiciona/
   escala solo en el fixture para no taparlo. No es aceptación física de teléfono.
 - Composición final SQL023/029: **1/1** con GameHost y PGlite en disco. Adopta, asigna y
