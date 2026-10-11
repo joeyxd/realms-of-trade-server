@@ -710,6 +710,10 @@ export class GameHost {
       const begin = () => {
         if (this.sockets.get(sock.id)!==sock || this.profiles.clients.get(sock.id)!==session || session.failed || session.closed) return;
         if (this.economicAuthority.busy) { this.economicAuthority.handle(sock,msg); return; }
+        // Receipt lookup may yield while another authority reserves the world or account.
+        if (c.paused || this.pendingJoins || !this.commandAvailable(sock.id,c.entity,{world:true,target:null}) || !this.tickAvailable()) {
+          this.economicAuthority.reply(sock.id,command,'busy'); return;
+        }
         beginFreshwater(this.server.world,c.entity,command,ready=> {
           if (this.sockets.get(sock.id)!==sock || this.profiles.clients.get(sock.id)!==session) return;
           this.economicAuthority.handle(sock,{t:MSG.CMD,...ready});

@@ -4,6 +4,7 @@ import { freshwaterSource, FRESHWATER } from '../src/data/freshwater.js';
 import { holdMass, holdUsed } from '../src/sim/economy/cargo.js';
 import { createMemoryStore } from '../server/store.mjs';
 import { economicOperationId } from '../server/economicAuthority.mjs';
+import { pearlMutationGate } from '../server/pearlMutationGate.mjs';
 import { ACCOUNT_ONE, connect, makeResourceStore, makeResourceHost, startResourceHost, turn, submitAndApply, calmAt, copy, deferred } from './helpers/resource-authority-fixture.mjs';
 const options={freshwaterOperations:true};
 const cmd=(op,opId,expectedRev,extra={})=>({type:'freshwater',op,opId,expectedRev,source:'',ship:'',part:'',n:0,...extra});
@@ -47,6 +48,37 @@ test('paid bucket, interrupted gathering, exact fill retry and reconnect preserv
   const decant=await submitAndApply(host,resumed,cmd('decant','water-cargo',2,{n:4}));
   assert.equal(decant.ok,true);assert.equal(restored.eco.pack.goods.agua,4);assert.equal(restored.eco.pack.vessels[0].water,0);
 });
+
+test('fill rechecks the real account mutation gate after its asynchronous receipt lookup',async t=>{
+  const base=createMemoryStore(), entered=deferred(), release=deferred();let holdLookup=false,writes=0;
+  const store={...base,
+    async loadEconomicOperation(id){if(holdLookup){entered.resolve();await release.promise;}return base.loadEconomicOperation(id);},
+    async commitEconomicOperation(...args){writes++;return base.commitEconomicOperation(...args);},
+  };
+  const f=await startResourceHost(t,store,{goods:{madera:2},options});
+  const {host,client}=f,w=host.server.world,e=f.entity(),p=w.profiles.get(e);
+  const gate=pearlMutationGate(host.profiles);let reservation=null;
+  t.after(()=>{if(reservation&&gate.active(reservation))gate.release(reservation);});
+  assert.equal((await submitAndApply(host,client,cmd('craftBucket','bucket-race-init',0))).ok,true);
+  writes=0;const source=freshwaterSource(w.map),before=copy(p);calmAt(host,e,source);
+  const fill=cmd('fill','fill-gate-race',p.eco.tradeRev,{source:source.id,n:4});
+  holdLookup=true;client.send(fill);await entered.promise;
+  reservation=gate.reserve({accounts:[ACCOUNT_ONE]});
+  assert.equal(client.events(fill.opId).length,0,'the initial lookup is still pending');
+  release.resolve();await turn();await turn();
+  assert.equal(client.events(fill.opId).at(-1)?.why,'busy');
+  assert.equal(w.freshwaterGather?.has(e)??false,false,'a denied late continuation cannot start gathering');
+  assert.equal(client.events(fill.opId).some(event=>event.stage==='gathering'),false,'no gathering event escapes to the client');
+  assert.deepEqual(p,before);assert.equal(writes,0,'the denied fill writes no economic receipt');
+  gate.release(reservation);reservation=null;holdLookup=false;
+
+  client.send(fill);await turn();host.server.step();
+  assert.equal(client.events(fill.opId).at(-1)?.stage,'gathering','retry succeeds after the account lane is released');
+  w.tick=w.freshwaterGather.get(e).tick+FRESHWATER.collectTicks-1;host.server.step();host.server.step();
+  await turn();await host.economicAuthority.settle();host.server.step();
+  assert.equal(client.events(fill.opId).at(-1)?.ok,true);assert.equal(p.eco.pack.vessels[0].water,4);assert.equal(writes,1);
+});
+
 test('authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water',async t=>{
   const {store,base}=makeResourceStore();
   const f=await startResourceHost(t,store,{goods:{madera:2},options});
