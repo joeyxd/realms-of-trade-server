@@ -15,7 +15,7 @@ const status = async () => {
     storage: { kind: s.storage.kind, durable: s.storage.durable, errors: s.storage.errors, unsaved: s.storage.unsaved,
       tickBlocked: s.storage.tickBlocked, worldReady: s.storage.world?.ready }, pending: s.economic?.pending };
 };
-evidence.before = await status(); check(evidence.before.version === '0.6.0-alpha.58', 'Wrong public build');
+evidence.before = await status(); check(evidence.before.version === '0.6.0-alpha.59', 'Wrong public build');
 for (const file of ['src/data/meta.js', 'src/data/weapons.js', 'src/net/protocol.js', 'src/sim/ecs.js', 'src/sim/world.js',
   'src/sim/projectiles.js', 'src/sim/projectileClash.js', 'src/sim/systems/combat.js', 'src/sim/systems/skills.js',
   'src/client/gameClient.js', 'src/client/swimStatus.js', 'src/main.js', 'src/render/characters.js', 'src/render/charlooks.js',

@@ -27,8 +27,9 @@ import { readAttrField } from '../../data/attributes.js';
 import { newWorkshop, readWorkshop } from './workshop.js';
 import { readFire } from '../economy/fire.js';
 import { validProfileVessels } from '../economy/waterContainers.js';
-import { attachNeeds, syncNeeds } from './survival.js';
+import { attachNeeds, syncMeal, syncNeeds } from './survival.js';
 import { readSurvField } from '../../data/survival.js';
+import { readMealField } from '../../data/meals.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -60,6 +61,8 @@ export function sanitizeProfile(raw) {
   if (!raw || typeof raw !== 'object' || raw.v !== PROFILE_VERSION) return null;
   const survField = readSurvField(raw);
   if (survField.present && !survField.value) return null;
+  const mealField = readMealField(raw);
+  if (mealField.present && !mealField.value) return null;
   const carryField = readCarryField(raw), hasCarry = carryField.present, carry = carryField.value;
   if (hasCarry && !carry) return null;
   const attrField = readAttrField(raw);
@@ -97,6 +100,7 @@ export function sanitizeProfile(raw) {
   const num = (v, lo, hi, d = lo) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d);
   const p = newProfile();
   if (survField.present) p.surv = survField.value;
+  if (mealField.present) p.meal = mealField.value;
   if (!hasCarry) delete p.carry;
   if (hasWorkshop) p.workshop = workshop;
   else delete p.workshop;
@@ -234,6 +238,7 @@ export function syncProfile(world, e) {
   syncRaftProfiles(world, e);
   p.lvl = ecs.level[e]; p.xp = Math.round(ecs.xp[e] * 100) / 100; p.pot = ecs.potions[e];
   syncNeeds(p, ecs, e); // SRV01: detached saves/captures match the live profile's two-decimal meters.
+  syncMeal(p, ecs, e); // SRV02: persist remaining connected simulation ticks.
   if (p.carry) {
     const limits = packLimitsForProfile(p);
     if (!limits) return p;

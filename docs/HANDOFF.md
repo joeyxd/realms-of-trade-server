@@ -1,6 +1,6 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-**Bucanero a distancia y nado original — alpha.58/protocolo 57:**
+**Bucanero a distancia y nado original — alpha.59/protocolo 58:**
 [Brief](briefs/buccaneer-ranged-swim.md) y [entrega](delivery/buccaneer-v1/ranged-swim/README.md).
 LMB rápido / RMB potente, manos/modelos distintos y recargas independientes; ambos interceptan
 proyectiles por choque continuo 3D, solo el fuerte devuelve pesados. Sable conserva guardia.
@@ -8,6 +8,16 @@ Swim original en rig nativo de 65 huesos solo en agua, sin root motion; salida/m
 Perfiles guardados conservan equipo; sin SQL propio. 85/85 CPU, 27/27 recheck, assets19/19 y catálogo39/39,
 conteos solapados. Navegador local 20/20 escritorio/móvil; suite general no verde (ver entrega CPU).
 Publicación y aceptación pública pendientes de registrar al completar el actualizador habitual.
+
+**AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
+[Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
+Alpha.58/protocolo 57; tres comidas con un efecto durante 15 min conectados, pausa offline y
+limpieza al reaparecer. Recibo freshwater/M5; `MN_SPECIAL_MEAL_OPERATIONS=0` por defecto.
+194/194 grupo del actualizador, SQL 33/33; UI real local ES/EN 6/6, cliente simulado. Leer entrega para
+alcance SQL, fotos y límites de evidencia. INV02d ya está incluido en VPS cd5df25/alpha.57;
+un jugador, sin forzar relevo. Aplicar SQL035, verificar readiness, desplegar/activar cuando
+esté idle/durable y aceptar consumo/replay/reentrada en público. Después INV03/bolsas.
+Enviado en `12c7339`; actualizador difirió el relevo, SQL035 RPC aún ausente (20:35Z).
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).

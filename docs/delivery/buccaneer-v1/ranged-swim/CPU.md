@@ -6,4 +6,6 @@ La suite general de `npm test` no tiene resultado verde: el root la interrumpió
 
 El barrido de intercepción es acotado por las capacidades de pools: hasta 256 slots de `Shots` frente a 1.500 de `Hazards` (384.000 pares como techo teórico por tick, antes de filtrar slots vacíos, tipos no interceptables, propietario y ventana temporal). No se midió carga sostenida bajo pools llenos; conviene vigilar coste CPU en encuentros con alta densidad de proyectiles y optimizar candidatos si una medición real lo justifica. Este número describe el límite del scan, no el coste habitual observado.
 
+Tras integrar SRV02 desde `6fb3e20`, alpha.59/protocolo 58, la revisión de ECS/combat/world/GameClient y el grupo focal serial pasan **49/49**, incluyendo pistolas, choques/proyectiles 3D y comidas/caducidad de carga. El navegador real repitió **20/20** sobre este árbol integrado.
+
 Las pruebas CPU y la RTT aislada no miden FPS físico, consumo en un teléfono ni balance de armas. La aceptación local de acciones/nado está registrada en [acceptance.json](acceptance.json); estas comprobaciones no acreditan publicación ni rendimiento en hardware real.

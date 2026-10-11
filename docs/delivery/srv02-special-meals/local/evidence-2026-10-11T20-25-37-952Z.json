@@ -1,0 +1,296 @@
+{
+  "schema": "mn.srv02.special-meals.local.v1",
+  "generatedAt": "2026-10-11T20:25:37.952Z",
+  "purpose": "Exercise the real FreshwaterPanel DOM and freshwater stylesheet with a disposable local stub client.",
+  "scope": "Serial Chromium only; no game server, account, network service, or persistent player writes. Browser checks are visual/layout and client transport fixture evidence, not server authority acceptance.",
+  "viewports": [
+    {
+      "name": "desktop-es",
+      "locale": "es",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "width": 440,
+          "height": 680,
+          "scrollHeight": 985,
+          "clientHeight": 678,
+          "documentWidth": 1280,
+          "viewportWidth": 1280,
+          "viewportHeight": 900
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "scrollTop": 366,
+          "scrollHeight": 1044,
+          "clientHeight": 678,
+          "documentWidth": 1280
+        }
+      },
+      "screenshots": [
+        "desktop-es-2026-10-11T20-25-37-952Z-top.png",
+        "desktop-es-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    },
+    {
+      "name": "desktop-en",
+      "locale": "en",
+      "width": 1280,
+      "height": 900,
+      "mobile": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "width": 440,
+          "height": 680,
+          "scrollHeight": 950,
+          "clientHeight": 678,
+          "documentWidth": 1280,
+          "viewportWidth": 1280,
+          "viewportHeight": 900
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 804,
+          "y": 110,
+          "right": 1244,
+          "bottom": 790,
+          "scrollTop": 331,
+          "scrollHeight": 1009,
+          "clientHeight": 678,
+          "documentWidth": 1280
+        }
+      },
+      "screenshots": [
+        "desktop-en-2026-10-11T20-25-37-952Z-top.png",
+        "desktop-en-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 607.671875,
+          "scrollHeight": 1009,
+          "clientHeight": 606,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "scrollTop": 462,
+          "scrollHeight": 1068,
+          "clientHeight": 606,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-es-2026-10-11T20-25-37-952Z-top.png",
+        "mobile-es-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 607.671875,
+          "scrollHeight": 1009,
+          "clientHeight": 606,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 0,
+          "y": 236.328125,
+          "right": 390,
+          "bottom": 844,
+          "scrollTop": 462,
+          "scrollHeight": 1068,
+          "clientHeight": 606,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-en-2026-10-11T20-25-37-952Z-top.png",
+        "mobile-en-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-rotated-es",
+      "locale": "es",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 974,
+          "clientHeight": 279,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "scrollTop": 754,
+          "scrollHeight": 1033,
+          "clientHeight": 279,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-rotated-es-2026-10-11T20-25-37-952Z-top.png",
+        "mobile-rotated-es-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    },
+    {
+      "name": "mobile-rotated-en",
+      "locale": "en",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "rotated": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "externalRequests": [],
+      "assertions": {
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 940,
+          "clientHeight": 279,
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "viewportHeight": 844
+        },
+        "allThreeLocalizedRecipesAndDurations": true,
+        "heatAndGoodsDisabledThenEligibleEnabled": true,
+        "visibleHeatRequirement": true,
+        "sameCommandRetryAndNoOptimisticProfileMutation": true,
+        "replacementNoticeAndCountdown": true,
+        "bottomRecipeReachableWithScrollablePanel": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "scrollTop": 720,
+          "scrollHeight": 999,
+          "clientHeight": 279,
+          "documentWidth": 390
+        }
+      },
+      "screenshots": [
+        "mobile-rotated-en-2026-10-11T20-25-37-952Z-top.png",
+        "mobile-rotated-en-2026-10-11T20-25-37-952Z-bottom.png"
+      ]
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "desktop-es-2026-10-11T20-25-37-952Z-top.png",
+    "desktop-es-2026-10-11T20-25-37-952Z-bottom.png",
+    "desktop-en-2026-10-11T20-25-37-952Z-top.png",
+    "desktop-en-2026-10-11T20-25-37-952Z-bottom.png",
+    "mobile-es-2026-10-11T20-25-37-952Z-top.png",
+    "mobile-es-2026-10-11T20-25-37-952Z-bottom.png",
+    "mobile-en-2026-10-11T20-25-37-952Z-top.png",
+    "mobile-en-2026-10-11T20-25-37-952Z-bottom.png",
+    "mobile-rotated-es-2026-10-11T20-25-37-952Z-top.png",
+    "mobile-rotated-es-2026-10-11T20-25-37-952Z-bottom.png",
+    "mobile-rotated-en-2026-10-11T20-25-37-952Z-top.png",
+    "mobile-rotated-en-2026-10-11T20-25-37-952Z-bottom.png"
+  ],
+  "completedAt": "2026-10-11T20:25:43.187Z"
+}

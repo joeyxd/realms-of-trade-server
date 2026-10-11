@@ -5,7 +5,7 @@ import { canonicalEconomicText } from './economicOperation.mjs';
 export { freshwaterMutation };
 const same = (a,b) => canonicalEconomicText(a) === canonicalEconomicText(b);
 export function vesselsUnchanged(before, next) {
-  const projection = p => ({pack:p.eco.pack.vessels ?? null, ships:p.eco.ships.map(s=>[s.id,s.hold?.vessels ?? null])});
+  const projection = p => ({meal:p.meal ?? null, pack:p.eco.pack.vessels ?? null, ships:p.eco.ships.map(s=>[s.id,s.hold?.vessels ?? null])});
   return same(projection(before),projection(next));
 }
 export function freshwaterWorldTransition(current, request) {

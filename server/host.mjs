@@ -82,7 +82,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, specialMealOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
@@ -108,6 +108,8 @@ export class GameHost {
     this.freshwaterOperations = freshwaterOperations;
     if (typeof canteenOperations !== 'boolean' || canteenOperations && !freshwaterOperations) throw new StoreError('configuration');
     this.canteenOperations = canteenOperations;
+    if (typeof specialMealOperations !== 'boolean' || specialMealOperations && !canteenOperations) throw new StoreError('configuration');
+    this.specialMealOperations = specialMealOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -160,7 +162,7 @@ export class GameHost {
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
-    this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations, survival: canteenOperations,
+    this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations, survival: canteenOperations, meals: specialMealOperations,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -561,6 +563,8 @@ export class GameHost {
           (await this.store.checkFreshwaterOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.canteenOperations && (typeof this.store.checkCanteenOperations !== 'function' ||
           (await this.store.checkCanteenOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.specialMealOperations && (typeof this.store.checkSpecialMealOperations !== 'function' ||
+          (await this.store.checkSpecialMealOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.fireOperations && (typeof this.store.checkFireOperations !== 'function' ||
           (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
@@ -683,7 +687,7 @@ export class GameHost {
           logging: this.loggingOperations },
         fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
         freshwater: { enabled: this.freshwaterOperations, ready: this.freshwaterOperations && !!this.worldState?.ready,
-          canteen: this.canteenOperations },
+          canteen: this.canteenOperations, meals: this.specialMealOperations },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },

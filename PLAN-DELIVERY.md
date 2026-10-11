@@ -1,10 +1,20 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**Bucanero a distancia + swim, alpha.58/protocolo 57:**
+**Bucanero a distancia + swim, alpha.59/protocolo 58:**
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
 Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.
 85/85 focales CPU, 27/27 recheck, assets19/19 y catálogo39/39 (solapados); navegador local20/20.
 Suite general no verde, límites en CPU.md. Publicación/aceptación pública pendientes de registrar.
+
+**AREA03 SRV02, 2026-10-11 — comidas especiales implementadas; SQL035/activación pública pendientes:**
+[Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).
+Alpha.58/protocolo 57: pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
+galleta reforzada +10 unidades de carga cómoda; una activa por 15 min conectados, pausa offline,
+se pierde al reaparecer. Operación freshwater/M5, sin segunda autoridad. Flag nuevo apagado.
+194/194 grupo del actualizador, SQL 33/33 y UI local 6/6 ES/EN escritorio/móvil/rotado; conteos solapados.
+INV02d ya está incluido en VPS cd5df25/alpha.57; un jugador, sin forzar relevo. Sigue SQL035,
+readiness y aceptación autenticada. Después INV03/bolsas; no reimplementar sobrepeso.
+Enviado en `12c7339`; relevo normal diferido por jugador conectado, SQL035 RPC aún ausente.
 
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).

@@ -1,6 +1,7 @@
 import { CARRY, LOAD, carryLimits, comfortMass, loadTier, nextBackpack, readCarry, readCarryField } from '../../data/carry.js';
 import { readAttrField } from '../../data/attributes.js';
 import { holdMass } from './cargo.js';
+import { mealEffects, mealIndex, readMealField } from '../../data/meals.js';
 
 export { CARRY, LOAD, carryLimits, comfortMass, loadTier, nextBackpack, readCarry, readCarryField };
 
@@ -18,14 +19,18 @@ export function packLimitsForProfile(profile, carryOverride) {
 }
 
 /** The comfortable load of a profile's pack (bonus: a timed meal's extra comfort); null without a weight limit. */
-export function packComfort(profile, bonus = 0) {
+export function packComfort(profile, bonus) {
   const pack = profile?.eco?.pack;
   if (!pack || !Number.isFinite(pack.maxMass)) return null;
+  if (bonus === undefined) {
+    const meal = readMealField(profile).value;
+    bonus = meal ? mealEffects(mealIndex(meal.kind), meal.ticks).comfort : 0;
+  }
   return comfortMass(pack.maxMass, readAttrField(profile).value !== null, bonus);
 }
 
 /** Carga penalties are opt-in; legacy packs retain their capacity limit without movement penalties. */
-export function packLoadTier(profile, bonus = 0) {
+export function packLoadTier(profile, bonus) {
   if (!readAttrField(profile).value) return 0;
   const comfort = packComfort(profile, bonus);
   return comfort === null ? 0 : loadTier(holdMass(profile.eco.pack), profile.eco.pack.maxMass, comfort);

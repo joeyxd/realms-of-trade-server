@@ -1,6 +1,6 @@
 # Bucanero a distancia y nado original
 
-2026-10-11. Corte alpha.58, protocolo 57. [Diseño](../../../briefs/buccaneer-ranged-swim.md).
+2026-10-11. Corte alpha.59, protocolo 58. [Diseño](../../../briefs/buccaneer-ranged-swim.md).
 
 Izquierdo: pistola corta de latón, rápida, 0,20 s, 0,7 ATK y alcance de vuelo 18 u. Derecho:
 pistola larga de acero, potente, 0,60 s, 1,5 ATK y 24,7 u. Recargas independientes, ambos botones
@@ -29,6 +29,7 @@ véase CPU.md. [Navegador real](acceptance.json): 20/20 comprobaciones en Chrome
 emulado; LMB/RMB y touch CDP reales, choque por PATTERN/eventos de red, loop completo, modelo por
 dispositivo, salida/muerte/reentrada/fallo nativo. Capturas inspeccionadas. Aviso de nado y botón de
 compañeros compactos evitan tapar el centro en horizontal. [Script](../../../../tools/qa-buccaneer-ranged-swim.mjs).
+Tras integrar SRV02 (`6fb3e20`), 49/49 focales seriales y repetición del navegador 20/20 pasan en alpha.59/protocolo 58.
 
 Publicación: pendiente de revisión/imagen/salud y entrada pública verificadas.
 Sin SQL propio ni activaciones de persistencia. Balance y FPS en teléfono físico siguen pendientes;

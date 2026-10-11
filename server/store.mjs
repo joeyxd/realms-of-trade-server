@@ -245,6 +245,7 @@ export function createMemoryStore() {
     async checkFireOperations() { return { version: 1 }; },
     async checkFreshwaterOperations() { return { version: 1 }; },
     async checkCanteenOperations() { return { version: 1 }; },
+    async checkSpecialMealOperations() { return { version: 1 }; },
     async checkAgentTradeOperations() { return { version: 1 }; },
     async commitEconomicOperation(raw) {
       const { operationId, request } = checkedEconomicInput(raw);
@@ -729,6 +730,7 @@ export function createSupabaseStore(client) {
     },
     async checkFreshwaterOperations() { const raw = await rpc('mn_freshwater_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkCanteenOperations() { const raw = await rpc('mn_canteen_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
+    async checkSpecialMealOperations() { const raw = await rpc('mn_special_meal_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkFireOperations() { const raw = await rpc('mn_fire_operations_ready', {}); if (raw?.version !== 1) throw new StoreError('configuration'); return { version: 1 }; },
     async checkArtisanOperations() {
       const result = await rpc('mn_artisan_operations_ready', {});

@@ -77,3 +77,7 @@ Pendientes separados: comidas especiales SRV02 con operación durable y validaci
 SQL; mejoras de bolsas INV03 conservando volumen; claridad de la etiqueta antigua
 «Fuerza» en el inventario (no representa los puntos invertidos de Carga).
 Sensaciones y balance en un teléfono físico siguen requiriendo playtest.
+
+## Continuación SRV02 (2026-10-11)
+
+La corrección legacy ya está incluida en la revisión activa `cd5df25`, alpha.57, verificada por estado del host. Esto acredita versión/salud, no sustituye el playtest de carga pública. Continúa [SRV02/comidas especiales](srv02-special-meals/README.md) sobre el sistema existente; después INV03/bolsas.

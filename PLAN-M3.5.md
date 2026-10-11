@@ -6,7 +6,7 @@
 
 ## Extensión Bucanero, 2026-10-11
 
-Alpha.58/protocolo 57: pistola izquierda rápida y derecha potente con recargas independientes.
+Alpha.59/protocolo 58: pistola izquierda rápida y derecha potente con recargas independientes.
 RMB/K/LT pasa a tiro secundario solo con pistolas; sable conserva guardia. Ambas interceptan por contacto
 3D en el paso autoritativo de Shots (excepción explícita a la regla histórica de contactos instantáneos
 dentro del comando). Cliente predice fuego y espera confirmación del choque. Solo el fuerte devuelve

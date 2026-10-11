@@ -53,6 +53,7 @@ export class ECS {
     this.load = f(); // pack load tier on foot (0 comfortable, 1 heavy, 2 above the ceiling), set by the authority
     // SRV01 profile-backed meters and derived stat penalty; bots/non-profile players leave needs disabled.
     this.needs = f(); this.sat = f(); this.hyd = f(); this.needPen = f();
+    this.mealKind = f(); this.mealTicks = f(); // SRV02: one active meal, in accepted 60 Hz commands
     this.moveMul = f(); this.faceLock = f(); this.kbx = f(); this.kbz = f();
     // DASH
     this.dashT = f(); this.dashDirX = f(); this.dashDirZ = f(); this.dashCovered = f();
@@ -188,7 +189,7 @@ export class ECS {
 export const MOVER_FIELDS = [
   'x', 'y', 'z', 'facing', 'vx', 'vz', 'moveMag', 'wade', 'dashT', 'dashDirX', 'dashDirZ', 'dashCovered',
   'dashCharges', 'dashMax', 'dashRecharge', 'dashBuffer', 'iframes', 'moveMul', 'faceLock', 'kbx', 'kbz',
-  'swim', 'swimStamina', 'swimDrown', 'swimLoad', 'load',
+  'swim', 'swimStamina', 'swimDrown', 'swimLoad', 'load', 'mealKind', 'mealTicks',
 ];
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [

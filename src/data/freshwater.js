@@ -9,7 +9,7 @@ export const FRESHWATER = Object.freeze({
   maxVessels: 32, maxRevision: 2147483646,
 });
 
-const CANTEEN_OPS = new Set(['craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat']);
+const CANTEEN_OPS = new Set(['craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat', 'meal']);
 export function isCanteenCommand(command) {
   try {
     if (!command || typeof command !== 'object') return false;
