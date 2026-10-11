@@ -1,5 +1,14 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
+[entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
+Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
+bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
+594/594 en 58 archivos congelados, incluidos dos SIGKILL locales de pickup y devolución/reinicio;
+compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
+SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
+restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+
 **AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
 [Contrato](briefs/inv02b-durable-attributes.md) y [entrega](delivery/inv02b-durable-attributes.md).
 Adopción explícita nivel 1/legacy, asignación y un reset por la cola M5; conserva objetos,

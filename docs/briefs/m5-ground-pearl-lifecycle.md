@@ -1,6 +1,7 @@
 # AREA15 — recuperación y circulación de perlas en la autoridad común
 
-Base `2f5df93`, integrada con taller/recursos v3, HUD, navegación, GM e inferencia alpha.42.
+Base de aceptación `4edbf30`, integrada con taller/recursos v3, HUD, navegación, GM,
+inferencia y Carga/atributos INV02b alpha.43/protocolo 49.
 SQL023 ya instalado; el mundo público sigue sin adoptar. No añade SQL, protocolo ni flag público.
 
 Este corte conecta un piloto de confianza `GameHost.mountGroundPearls()` antes de `prepare()`.
@@ -41,4 +42,4 @@ Reutilización: GroundHostAuthority, SQL018/019/023, PearlGroundHydration, Groun
 PearlMutationGate y helpers de gameplay existentes. El candidato Unreal `BP_JigServerSave.uasset`
 en `C:\Unreal\ActionRPGMultiplayerStart\Content\ActionRPGStarterSystem\InventorySystem\SaveSystem`
 se volvió a comprobar como archivo existente; su Blueprint no ejecuta en Node/PostgreSQL.
-Se reutilizan los contratos actuales; no se porta código/arte ni se modifica la fuente Unreal.
+Archivo verificado: 580554 bytes. Se reutilizan los contratos actuales; no se porta código/arte ni se modifica la fuente Unreal.
