@@ -1,0 +1,458 @@
+{
+  "generatedAt": "2026-10-11T05:44:13.236Z",
+  "purpose": "Verify the RNV07b canteen panel, its bucket/provisions/barrel refills, direct spring channel, food actions, needs meters, reload persistence, and desktop/mobile panel bounds.",
+  "harness": "One serial Chromium launch; desktop ES 1280x720 followed by touch portrait EN 390x844; one disposable memory-backed GameHost/account per viewport; local Three.js/GSAP/font routes only. No SQL, external services, production writes, encounter acceptance, or physical-device performance claim.",
+  "fixture": "Authenticated profile begins with 7 wood, 2 canvas, 2 fruit, and saved satiety/hydration 20/20. It builds the bucket, canteen, and raft barrel through their UI. The local fixture removes nearby enemy entities and spawners for the water-source loop; it does not test the encounter or interruption behavior.",
+  "fixtureNeedsResets": "The harness resets meters between selected refill/drink stages to keep each UI source independently testable. It then reloads after the final server-confirmed drink; those reset values are written through the in-memory fixture and are not player actions.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "canteen-desktop-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:65514/ws"
+        },
+        {
+          "url": "ws://127.0.0.1:65514/ws"
+        }
+      ],
+      "screenshots": [
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-01-canteen-craft-needs.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-02-barrel-cost.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-03-spring-canteen-full.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-04-barrel-refill-available.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-05-food-actions.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-06-canteen-empty-retained.jpg",
+        "canteen-desktop-es-2026-10-11T05-44-13-236Z-07-reloaded-empty-canteen.jpg"
+      ],
+      "assertions": {
+        "normalPlayWssJoinAndSameAccountReload": true,
+        "localizedCanteenPanelAndNeeds": true,
+        "paidBucketCanteenAndBarrelThroughUi": true,
+        "directSpringCanteenChannelTwoSeconds": true,
+        "bucketProvisionsAndBarrelRefills": true,
+        "drinkAndFoodActionsServerConfirmed": true,
+        "finalDoseLeavesEmptyCanteenInPack": true,
+        "inventoryAndSurvivalSnapshotPersistOnReload": true,
+        "desktopPortraitPanelBoundsAndNoDocumentOverflow": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "encounterDamageInterruptionTested": false
+      },
+      "port": 65514,
+      "fixture": {
+        "account": "disposable memory-backed account",
+        "raftId": "qa-rnv07b-canteen-raft",
+        "goods": {
+          "madera": 7,
+          "lona": 2,
+          "fruta": 2
+        },
+        "surv": {
+          "sat": 20,
+          "hyd": 20
+        },
+        "spring": {
+          "id": "salty-spring",
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "nearbyEnemiesRemoved": 2
+      },
+      "crafts": {
+        "bucketWater": 0,
+        "canteenWater": 0,
+        "pack": {
+          "madera": 4,
+          "fruta": 2
+        },
+        "cost": {
+          "canteen": "2 lona + 1 madera"
+        }
+      },
+      "desktopOrTouchPanelBounds": {
+        "x": 804,
+        "y": 20,
+        "right": 1244,
+        "bottom": 700,
+        "width": 440,
+        "height": 680,
+        "scrollHeight": 681,
+        "clientHeight": 678,
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "documentWidth": 1280
+        }
+      },
+      "barrelConstruction": {
+        "cost": "Barril de agua\nCoste: 4 Tabla básica · Norte",
+        "part": [
+          "waterBarrel",
+          1,
+          0,
+          0,
+          0
+        ],
+        "condition": {
+          "id": "p7",
+          "part": [
+            "waterBarrel",
+            1,
+            0,
+            0,
+            0
+          ],
+          "maxHp": 25,
+          "hp": 25
+        },
+        "editorBounds": {
+          "x": 958,
+          "y": 12,
+          "right": 1268,
+          "bottom": 708,
+          "action": {
+            "x": 1132.265625,
+            "right": 1254,
+            "bottom": 694
+          },
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "documentWidth": 1280
+          }
+        }
+      },
+      "directSpring": {
+        "confirmedWater": 3,
+        "expectedSeconds": 2,
+        "elapsedMs": 2092,
+        "channelLabel": "Llenando en el manantial"
+      },
+      "bucketCollection": {
+        "confirmedWater": 4,
+        "expectedSeconds": 2,
+        "enemiesRemovedForFixture": 2
+      },
+      "barrelRefill": {
+        "canteen": 3,
+        "barrel": 3,
+        "conservedUnits": 6
+      },
+      "refillSources": {
+        "usedBucket": true,
+        "usedBarrel": true,
+        "usedProvisions": true,
+        "canteen": 3,
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 1
+      },
+      "eatFruit": {
+        "remaining": 1,
+        "satiety": 34.99,
+        "hydration": 29.99
+      },
+      "finalDrink": {
+        "canteenRetained": true,
+        "water": 0,
+        "surv": {
+          "v": 1,
+          "sat": 34.93,
+          "hyd": 59.99
+        },
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 4
+      },
+      "finalPanelBounds": {
+        "x": 804,
+        "y": 20,
+        "right": 1244,
+        "bottom": 700,
+        "width": 440,
+        "height": 680,
+        "scrollHeight": 811,
+        "clientHeight": 678,
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "documentWidth": 1280
+        }
+      },
+      "final": {
+        "restored": {
+          "canteen": 0,
+          "bucket": 0,
+          "barrel": 0,
+          "provisions": 4,
+          "surv": {
+            "v": 1,
+            "sat": 34.88,
+            "hyd": 59.92
+          }
+        },
+        "durableSurvBeforeReload": {
+          "v": 1,
+          "sat": 34.93,
+          "hyd": 59.99
+        },
+        "panelBounds": {
+          "x": 804,
+          "y": 20,
+          "right": 1244,
+          "bottom": 700,
+          "width": 440,
+          "height": 680,
+          "scrollHeight": 811,
+          "clientHeight": 678,
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "documentWidth": 1280
+          }
+        },
+        "harbor": {
+          "raftId": "qa-rnv07b-canteen-raft"
+        }
+      }
+    },
+    {
+      "name": "canteen-mobile-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:61528/ws"
+        },
+        {
+          "url": "ws://127.0.0.1:61528/ws"
+        }
+      ],
+      "screenshots": [
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-01-canteen-craft-needs.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-02-barrel-cost.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-03-spring-canteen-full.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-04-barrel-refill-available.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-05-food-actions.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-06-canteen-empty-retained.jpg",
+        "canteen-mobile-en-2026-10-11T05-44-13-236Z-07-reloaded-empty-canteen.jpg"
+      ],
+      "assertions": {
+        "normalPlayWssJoinAndSameAccountReload": true,
+        "localizedCanteenPanelAndNeeds": true,
+        "paidBucketCanteenAndBarrelThroughUi": true,
+        "directSpringCanteenChannelTwoSeconds": true,
+        "bucketProvisionsAndBarrelRefills": true,
+        "drinkAndFoodActionsServerConfirmed": true,
+        "finalDoseLeavesEmptyCanteenInPack": true,
+        "inventoryAndSurvivalSnapshotPersistOnReload": true,
+        "desktopPortraitPanelBoundsAndNoDocumentOverflow": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "encounterDamageInterruptionTested": false
+      },
+      "port": 61528,
+      "fixture": {
+        "account": "disposable memory-backed account",
+        "raftId": "qa-rnv07b-canteen-raft",
+        "goods": {
+          "madera": 7,
+          "lona": 2,
+          "fruta": 2
+        },
+        "surv": {
+          "sat": 20,
+          "hyd": 20
+        },
+        "spring": {
+          "id": "salty-spring",
+          "x": 59.396969619669996,
+          "y": 5.335283553727776,
+          "z": 38.18376618407357
+        },
+        "nearbyEnemiesRemoved": 2
+      },
+      "crafts": {
+        "bucketWater": 0,
+        "canteenWater": 0,
+        "pack": {
+          "madera": 4,
+          "fruta": 2
+        },
+        "cost": {
+          "canteen": "2 lona + 1 madera"
+        }
+      },
+      "desktopOrTouchPanelBounds": {
+        "x": 54.6015625,
+        "y": 392,
+        "right": 335.3984375,
+        "bottom": 832,
+        "width": 280.796875,
+        "height": 440,
+        "scrollHeight": 636,
+        "clientHeight": 279,
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "documentWidth": 390
+        }
+      },
+      "barrelConstruction": {
+        "cost": "Water barrel\nCost: 4 Basic plank · North",
+        "part": [
+          "waterBarrel",
+          1,
+          0,
+          0,
+          0
+        ],
+        "condition": {
+          "id": "p7",
+          "part": [
+            "waterBarrel",
+            1,
+            0,
+            0,
+            0
+          ],
+          "maxHp": 25,
+          "hp": 25
+        },
+        "editorBounds": {
+          "x": 5,
+          "y": 561,
+          "right": 385,
+          "bottom": 839,
+          "action": {
+            "x": 14,
+            "right": 64,
+            "bottom": 830
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390
+          }
+        }
+      },
+      "directSpring": {
+        "confirmedWater": 3,
+        "expectedSeconds": 2,
+        "elapsedMs": 2143,
+        "channelLabel": "Filling at spring"
+      },
+      "bucketCollection": {
+        "confirmedWater": 4,
+        "expectedSeconds": 2,
+        "enemiesRemovedForFixture": 2
+      },
+      "barrelRefill": {
+        "canteen": 3,
+        "barrel": 3,
+        "conservedUnits": 6
+      },
+      "refillSources": {
+        "usedBucket": true,
+        "usedBarrel": true,
+        "usedProvisions": true,
+        "canteen": 3,
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 1
+      },
+      "eatFruit": {
+        "remaining": 1,
+        "satiety": 34.98,
+        "hydration": 29.98
+      },
+      "finalDrink": {
+        "canteenRetained": true,
+        "water": 0,
+        "surv": {
+          "v": 1,
+          "sat": 34.92,
+          "hyd": 59.98
+        },
+        "bucket": 0,
+        "barrel": 0,
+        "provisions": 4
+      },
+      "finalPanelBounds": {
+        "x": 54.6015625,
+        "y": 392,
+        "right": 335.3984375,
+        "bottom": 832,
+        "width": 280.796875,
+        "height": 440,
+        "scrollHeight": 766,
+        "clientHeight": 279,
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "documentWidth": 390
+        }
+      },
+      "final": {
+        "restored": {
+          "canteen": 0,
+          "bucket": 0,
+          "barrel": 0,
+          "provisions": 4,
+          "surv": {
+            "v": 1,
+            "sat": 34.88,
+            "hyd": 59.92
+          }
+        },
+        "durableSurvBeforeReload": {
+          "v": 1,
+          "sat": 34.93,
+          "hyd": 59.99
+        },
+        "panelBounds": {
+          "x": 54.6015625,
+          "y": 392,
+          "right": 335.3984375,
+          "bottom": 832,
+          "width": 280.796875,
+          "height": 440,
+          "scrollHeight": 766,
+          "clientHeight": 279,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390
+          }
+        },
+        "harbor": {
+          "raftId": "qa-rnv07b-canteen-raft"
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false
+}

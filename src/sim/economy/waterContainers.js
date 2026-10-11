@@ -2,11 +2,13 @@
 // checks belong to the authoritative host before this module is called.
 import { FRESHWATER, readVessels, validProfileVessels, vesselsMass, vesselsVolume } from '../../data/freshwater.js';
 import { GOODS } from '../../data/goods.js';
+import { FOODS, readSurvField } from '../../data/survival.js';
+import { consumeNeeds } from '../systems/survival.js';
 import { RAFT, RAFT_LOAD, RAFT_PARTS } from '../../data/raftparts.js';
 
 export { readVessels, vesselsMass, vesselsVolume, validProfileVessels };
 
-const OPS = new Set(['craftBucket', 'fill', 'deposit', 'withdraw', 'decant']);
+const OPS = new Set(['craftBucket', 'fill', 'deposit', 'withdraw', 'decant', 'craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat']);
 const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const readStoredVessels = (holder) => {
   if (!holder || typeof holder !== 'object') return [];
@@ -34,8 +36,18 @@ export function checkedFreshwaterCommand(raw) {
       typeof c.source !== 'string' || c.source.length > 100 || typeof c.ship !== 'string' || c.ship.length > 120 ||
       typeof c.part !== 'string' || c.part.length > 100 || !Number.isSafeInteger(c.n)) return null;
   if (c.op === 'craftBucket') return c.source === '' && c.ship === '' && c.part === '' && c.n === 0 ? c : null;
+  if (c.op === 'craftCanteen') return c.source === '' && c.ship === '' && c.part === '' && c.n === 0 ? c : null;
   if (c.op === 'fill') return c.source === FRESHWATER.sourceId && c.ship === '' && c.part === '' && c.n >= 1 && c.n <= FRESHWATER.bucketCapacity ? c : null;
+  if (c.op === 'fillCanteen') return c.source === FRESHWATER.sourceId && c.ship === '' && c.part === '' && c.n >= 1 && c.n <= FRESHWATER.canteenCapacity ? c : null;
   if (c.op === 'decant') return c.source === '' && c.ship === '' && c.part === '' && c.n >= 1 && c.n <= FRESHWATER.bucketCapacity ? c : null;
+  if (c.op === 'drink') return c.source === '' && c.ship === '' && c.part === '' && c.n === 1 ? c : null;
+  if (c.op === 'eat') return Object.hasOwn(FOODS, c.source) && c.ship === '' && c.part === '' && c.n === 1 ? c : null;
+  if (c.op === 'refillCanteen') {
+    if (c.n < 1 || c.n > FRESHWATER.canteenCapacity) return null;
+    if (c.source === 'bucket' || c.source === 'provisions') return c.ship === '' && c.part === '' ? c : null;
+    if (c.source === 'barrel') return /^[A-Za-z0-9:_-]{1,120}$/.test(c.ship) && /^p[0-9]{1,10}$/.test(c.part) ? c : null;
+    return null;
+  }
   return c.source === '' && /^[A-Za-z0-9:_-]{1,120}$/.test(c.ship) && /^p[0-9]{1,10}$/.test(c.part) && c.n >= 1 && c.n <= FRESHWATER.barrelCapacity ? c : null;
 }
 
@@ -48,6 +60,8 @@ export function freshwaterProfileDelta(profile, command) {
   const eco = profile.eco, rev = Number.isSafeInteger(eco.tradeRev) ? eco.tradeRev : 0;
   if (cmd.expectedRev !== rev) return { profile: null, why: 'revision' };
   if (rev >= FRESHWATER.maxRevision) return { profile: null, why: 'revisionLimit' };
+  const survField = readSurvField(profile);
+  if (survField.present && !survField.value) return { profile: null, why: 'command' };
   let packV, ships;
   try {
     packV = readStoredVessels(eco.pack);
@@ -65,6 +79,7 @@ export function freshwaterProfileDelta(profile, command) {
   });
   const pack = out.eco.pack;
   const bucket = () => pack.vessels.find((v) => v.kind === 'bucket');
+  const canteen = () => pack.vessels.find((v) => v.kind === 'canteen');
   const packFits = () => {
     const used = Object.entries(pack.goods).reduce((n, [g, k]) => n + (GOODS[g]?.volume ?? GOODS[g]?.w ?? 1) * k, 0) + vesselsVolume(pack);
     const mass = Object.entries(pack.goods).reduce((n, [g, k]) => n + (GOODS[g]?.mass ?? GOODS[g]?.w ?? 1) * k, 0) + vesselsMass(pack);
@@ -77,11 +92,45 @@ export function freshwaterProfileDelta(profile, command) {
     pack.goods.madera -= 2; if (!pack.goods.madera) delete pack.goods.madera;
     pack.vessels.push({ id: 'bucket', kind: 'bucket', water: 0 });
     if (!packFits()) return fail('room');
+  } else if (cmd.op === 'craftCanteen') {
+    if (canteen()) return fail('full');
+    if ((pack.goods.lona || 0) < FRESHWATER.canteenLonaCost || (pack.goods.madera || 0) < FRESHWATER.canteenWoodCost) return fail('goods');
+    pack.goods.lona -= FRESHWATER.canteenLonaCost; if (!pack.goods.lona) delete pack.goods.lona;
+    pack.goods.madera -= FRESHWATER.canteenWoodCost; if (!pack.goods.madera) delete pack.goods.madera;
+    pack.vessels.push({ id: FRESHWATER.canteenId, kind: 'canteen', water: 0 });
+    if (!packFits()) return fail('room');
   } else if (cmd.op === 'fill') {
     const b = bucket(); if (!b) return fail('empty');
     if (b.water + cmd.n > FRESHWATER.bucketCapacity) return fail('full');
     b.water += cmd.n;
     if (!packFits()) return fail('room');
+  } else if (cmd.op === 'fillCanteen') {
+    const c = canteen(); if (!c) return fail('empty');
+    if (c.water + cmd.n > FRESHWATER.canteenCapacity) return fail('full');
+    c.water += cmd.n;
+    if (!packFits()) return fail('room');
+  } else if (cmd.op === 'refillCanteen' && cmd.source !== 'barrel') {
+    const c = canteen(); if (!c) return fail('empty');
+    if (c.water + cmd.n > FRESHWATER.canteenCapacity) return fail('full');
+    if (cmd.source === 'bucket') {
+      const b = bucket(); if (!b || b.water < cmd.n) return fail('empty');
+      b.water -= cmd.n;
+    } else {
+      if ((pack.goods.agua || 0) < cmd.n) return fail('empty');
+      pack.goods.agua -= cmd.n; if (!pack.goods.agua) delete pack.goods.agua;
+    }
+    c.water += cmd.n;
+    if (!packFits()) return fail('room');
+  } else if (cmd.op === 'drink') {
+    const c = canteen(); if (!c || c.water < 1) return fail('empty');
+    const needs = consumeNeeds(profile, 'agua'); if (!needs) return fail('full');
+    c.water -= 1;
+    out.surv = needs.surv;
+  } else if (cmd.op === 'eat') {
+    if ((pack.goods[cmd.source] || 0) < 1) return fail('empty');
+    const needs = consumeNeeds(profile, cmd.source); if (!needs) return fail('full');
+    pack.goods[cmd.source] -= 1; if (!pack.goods[cmd.source]) delete pack.goods[cmd.source];
+    out.surv = needs.surv;
   } else if (cmd.op === 'decant') {
     const b = bucket(); if (!b || b.water < cmd.n) return fail('empty');
     pack.goods.agua = (pack.goods.agua || 0) + cmd.n; b.water -= cmd.n;
@@ -98,7 +147,15 @@ export function freshwaterProfileDelta(profile, command) {
     if (!gridPart || !row) return fail('owner');
     if (!(row[6] > 0)) return fail('condition');
     let barrel = ship.hold.vessels.find((v) => v.kind === 'barrel' && v.id === cmd.part);
-    if (cmd.op === 'deposit') {
+    if (cmd.op === 'refillCanteen') {
+      if (!Number.isSafeInteger(ship.rev) || ship.rev < 1 || ship.rev >= 2147483647) return fail('revisionLimit');
+      const c = canteen();
+      if (!c || !barrel || barrel.water < cmd.n) return fail('empty');
+      if (c.water + cmd.n > FRESHWATER.canteenCapacity) return fail('full');
+      barrel.water -= cmd.n; c.water += cmd.n;
+      if (!packFits()) return fail('room');
+      if (raftWouldWorsen(ship, ships[shipIndex], eco.pack)) return fail('room');
+    } else if (cmd.op === 'deposit') {
       const b = bucket(); if (!b || b.water < cmd.n) return fail('empty');
       if (barrel && barrel.water + cmd.n > FRESHWATER.barrelCapacity) return fail('full');
       if (!barrel) {
@@ -119,7 +176,7 @@ export function freshwaterProfileDelta(profile, command) {
     }
   }
   out.eco.tradeRev = rev + 1;
-  if (cmd.op === 'deposit' || cmd.op === 'withdraw') {
+  if (cmd.op === 'deposit' || cmd.op === 'withdraw' || (cmd.op === 'refillCanteen' && cmd.source === 'barrel')) {
     const ship = out.eco.ships.find((s) => s?.id === cmd.ship);
     if (!Number.isSafeInteger(ship.rev) || ship.rev >= 2147483647) return fail('revisionLimit');
     ship.rev++;

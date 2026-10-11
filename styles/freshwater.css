@@ -17,6 +17,17 @@
 .fresh-title { margin: 2px 0 0; font-size: 23px; line-height: 1.15; }
 .fresh-close { flex: 0 0 42px; padding: 0 !important; font-size: 24px !important; background: transparent !important; }
 .fresh-pack, .fresh-source, .fresh-barrel, .fresh-decant { border: 1px solid #31524e; border-radius: 11px; padding: 12px; margin: 10px 0; background: #142b2c; }
+.fresh-canteen { border: 1px solid #48766f; border-radius: 11px; padding: 10px; margin: 10px 0; background: linear-gradient(145deg, #173638, #142b2c); }
+.fresh-canteen[hidden] { display: none; }
+.fresh-canteen-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.fresh-canteen-head > div { min-width: 0; }
+.fresh-canteen-label { display: block; font-weight: 800; }
+.fresh-canteen-count { display: block; color: #b7ded5; font-size: 12px; font-variant-numeric: tabular-nums; }
+.fresh-canteen-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-top: 8px; }
+.fresh-canteen-actions button, .fresh-foods button { min-width: 0; min-height: 38px; padding: 6px 8px; font-size: 12px; overflow-wrap: anywhere; }
+.fresh-canteen-needs { min-height: 1.5em; margin: 7px 2px 2px; color: #c5ded9; font-size: 12px; font-variant-numeric: tabular-nums; }
+.fresh-foods { display: flex; flex-wrap: wrap; gap: 6px; }
+.fresh-foods button { flex: 1 1 calc(33% - 6px); }
 .fresh-pack > div, .fresh-source > div, .fresh-decant > div { min-width: 0; }
 .fresh-bucket, .fresh-barrel-title b, .fresh-source-name, .fresh-decant-label { display: block; font-weight: 700; }
 .fresh-count { display: block; color: #b5c9c4; font-size: 12px; }
@@ -26,8 +37,8 @@
 .fresh-barrels { margin-top: 12px; }
 .fresh-barrel-title { align-items: baseline; }
 .fresh-barrel-title span { color: #b7ded5; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.fresh-barrel-actions { margin-top: 10px; }
-.fresh-barrel-actions button { flex: 1 1 0; }
+.fresh-barrel-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin-top: 10px; }
+.fresh-barrel-actions button { min-width: 0; padding: 7px; font-size: 12px; overflow-wrap: anywhere; }
 .fresh-decant { align-items: flex-start; }
 .fresh-note { padding: 2px 3px; }
 .fresh-status { min-height: 1.45em; margin: 10px 2px 0; color: #f1d387; }
@@ -38,7 +49,7 @@
   .fresh-title { font-size: 21px; }
   .fresh-pack, .fresh-source, .fresh-decant { gap: 8px; }
   .fresh-source button, .fresh-pack button, .fresh-decant button { max-width: 48%; }
-  .fresh-barrel-actions { gap: 8px; }
+  .fresh-barrel-actions { gap: 6px; }
   .fresh-barrel-actions button { padding-inline: 7px; font-size: 13px; }
 }
 /* In portrait touch mode #stage is rotated and uses the viewport's long edge as
