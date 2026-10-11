@@ -1,5 +1,16 @@
 # Continuidad de servidor — AREA15
 
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
+
 **AREA01 GM04a, 2026-10-10 — multiselección publicada, alpha.40/protocolo 47:**
 [Entrega](delivery/gm04a/DELIVERY.md), [navegador público](delivery/gm04a/public-browser-evidence.json)
 y [despliegue](delivery/gm04a/deployment.json). Shift/casillas, pivote común y movimiento/giro/escala,
@@ -151,7 +162,7 @@ Node 22 y entrada pública 6/6. Coordinadores opcionales `null`; sin activación
 | Mercados y producción autónoma | Snapshot periódico y operaciones económicas cubiertas | Ventana desde último checkpoint |
 | Construcción, pose y custodia de balsa | Perfil; carga y compra de materiales con recibo | Nuevas operaciones durables y custodia offline |
 | Puertas y faroles operativos | RNV01/RNV02: identidad/condición y estado en perfil del dueño por CAS; visitantes reciben ACK privado y snapshot público | Ventana antes del save confirmado y aceptación autenticada específica; no aportan presencia offline ni nuevo recibo económico |
-| Perlas/muerte/botín | Contratos M5 opcionales y transacción común SQL018 local; no compuestos con economía activa | Dueño común de tick, diario del sobre, adopción legacy y aceptación VPS |
+| Perlas/muerte/botín | SQL018/019/023 y entrada común GameHost de familias probados; montaje público apagado | Selectores/hidratación/coordinadores, transición detenida, adopción y canario de caída VPS |
 | Operación y respaldo | Updater de una autoridad, perfiles y mundo en Supabase | Ensayo de restauración y pérdida de disco |
 | Borrador del editor GM | [GM03a](delivery/gm03a/DELIVERY.md): SQL020 remoto privado por cuenta/mundo, CAS y recibos/retry exactos; UI explícita, local 35/35, público real 17/17, canario 14/14 | GM03b publicación/activación/rollback coordinados con M5; preview caminando descartable, sin bienes ni progreso |
 

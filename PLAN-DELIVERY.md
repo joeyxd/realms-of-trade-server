@@ -1,5 +1,16 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](docs/delivery/m5-ground-family-boundary.md), [contrato](docs/briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
+
 **AREA07, revisión del autor 2026-10-10 — agua dulce manual → purificador avanzado:**
 [Dirección y cortes RNV07](docs/briefs/RNV07-freshwater-progression.md). Primero cubeta/fuente
 interior con enemigos/barril, después cantimplora con supervivencia; sigue viaje Salty Shore–Puerto Sol.
