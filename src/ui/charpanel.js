@@ -21,6 +21,7 @@ import { stage } from './stage.js';
 import { pearlHtml } from './pearlpanel.js';
 import { packInventoryHtml } from './packInventory.js';
 import { loggingSkillHtml } from './loggingSkill.js';
+import { AttributeControls } from './attributeControls.js';
 import { dataText, dataParam, text as ltext, rich, translateData, t, formatNumber, onLocaleChange } from '../core/i18n.js';
 
 const TABS = [['gear', 'adventure.tab.gear', 'I'], ['stats', 'adventure.tab.stats', 'C'], ['quests', 'adventure.tab.quests', 'L'], ['tattoo', 'adventure.tab.tattoos', 'T'], ['pearl', 'adventure.tab.pearls', 'P'], ['logging', 'systems.logging.tab', '']];
@@ -28,7 +29,7 @@ const DOLL = [['head', 'top'], ['weapon', 'left'], ['chest', 'left2'], ['ring1',
 const pct = (v, d = 0) => formatNumber(v * 100, { maximumFractionDigits: d, minimumFractionDigits: d }) + ' %';
 
 export class CharPanel {
-  constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, locale = 'es' }) {
+  constructor(root, { send, profile, stats, portrait, onClose, nearby, backpack, attributeEnabled, locale = 'es' }) {
     Object.assign(this, { root, send, profile, stats, portrait, onClose, nearby, backpack, locale });
     this.tab = 'gear';
     this.shop = false;
@@ -37,6 +38,7 @@ export class CharPanel {
     this.confirm = 0;
     this.seen = new Set(); // uids already shown (the rest get «NUEVO»)
     this.isOpen = false;
+    this.attributes = new AttributeControls({ profile, enabled: attributeEnabled, submit: send, onChange: () => this.refresh() });
     this.unsubscribeLocale = onLocaleChange(() => this.refresh());
     root.addEventListener('click', (e) => this.onClick(e));
     root.addEventListener('dblclick', (e) => { const c = e.target.closest('[data-bag]'); if (c) this.equip(+c.dataset.bag); });
@@ -70,13 +72,13 @@ export class CharPanel {
   refresh() {
     if (!this.isOpen) return;
     const active = this.root.contains(document.activeElement) ? document.activeElement : null;
-    const identity = active && ['tab', 'bag', 'slot', 'buy', 'act', 'pearlOp'].find((key) => active.hasAttribute(`data-${key}`));
+    const identity = active && ['tab', 'bag', 'slot', 'buy', 'act', 'pearlOp', 'attributeOp'].find((key) => active.hasAttribute(`data-${key.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}`));
     const value = active && 'value' in active ? active.value : null;
     const start = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
     const end = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
     this.render();
     if (!active) return;
-    const replacement = identity ? [...this.root.querySelectorAll(`[data-${identity}]`)].find((node) => node.dataset[identity] === active.dataset[identity])
+    const replacement = identity ? [...this.root.querySelectorAll(`[data-${identity.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}]`)].find((node) => node.dataset[identity] === active.dataset[identity])
       : this.root.querySelector(active.matches('[data-close]') ? '[data-close]' : '.cp');
     if (!replacement) return;
     if (value !== null && 'value' in replacement) replacement.value = value;
@@ -91,6 +93,8 @@ export class CharPanel {
     if (t.closest('[data-close]')) { this.close(); sfx.click(); return; }
     const tab = t.closest('[data-tab]');
     if (tab) { this.tab = tab.dataset.tab; this.shop = this.shop && this.tab === 'gear'; this.learn = this.learn && this.tab === 'tattoo'; this.pinned = null; this.render(); sfx.click(); return; }
+    const attribute = t.closest('[data-attribute-op]');
+    if (attribute) { if (!attribute.disabled) this.attributes.act(attribute.dataset.attributeOp); return; }
     if (this.tab === 'tattoo' && this.tattooClick(t)) return;
     const pearl = t.closest('[data-pearl-op]');
     if (pearl) { this.pearlClick(pearl); return; }
@@ -259,7 +263,7 @@ export class CharPanel {
     }).join('');
     const T = ENCOUNTERS.caldera.tiers;
     const tiers = T.map((t, i) => `<span class="${i < p.flags.tier ? 'ok' : ''}">${dataText(t.name)}${i + 1 === p.flags.tierSel ? ' ✓' : ''}</span>`).join('');
-    return `<div class="cp-stats"><div class="st-table">${rows.map(([a, b, c, key]) => `<div class="st-row"><span>${key ? ltext(a) : dataText(a)}</span><b>${b}</b><small>${c}</small></div>`).join('')}</div>
+    return `${this.attributes.html(typeof this.locale === 'function' ? this.locale() : this.locale)}<div class="cp-stats"><div class="st-table">${rows.map(([a, b, c, key]) => `<div class="st-row"><span>${key ? ltext(a) : dataText(a)}</span><b>${b}</b><small>${c}</small></div>`).join('')}</div>
       <div class="st-side">${mast}<div class="mast-card"><div class="mc-head"><b>${ltext('adventure.caldera')}</b></div><div class="tiers">${tiers}</div>
       <small>${ltext('adventure.stats_caldera', { kills: formatNumber(p.stats.kills), wins: formatNumber(p.stats.wins), gold: formatNumber(p.stats.gold), items: formatNumber(p.stats.items) })}</small></div></div></div>`;
   }

@@ -106,6 +106,30 @@ test('level-three assignment and free reset preserve every carried good', async 
   assert.deepEqual(p.eco.pack.goods, goods);
 });
 
+test('M5 host adopts, assigns, and resets a bucket-carrying profile with durable water-preserving receipts', async t => {
+  const f = await fixture(t);
+  await level(f, 3);
+  const p = profileFor(f), bucket = [{ id: 'bucket', kind: 'bucket', water: 3 }];
+  p.eco.pack.vessels = copy(bucket);
+  f.host.profiles.save(f.client.id, p);
+  await f.host.profiles.flush();
+
+  for (const [op, opId, extra] of [
+    ['adopt', 'bucket-adopt', {}],
+    ['assign', 'bucket-assign', { stat: 'carga', n: 2 }],
+    ['reset', 'bucket-reset', {}],
+  ]) {
+    const ack = await submitAndApply(f.host, f.client, command(p, op, opId, extra));
+    assert.equal(ack?.ok, true, JSON.stringify(ack));
+    assert.deepEqual(p.eco.pack.vessels, bucket);
+    const receipt = await f.store.loadEconomicOperation(receiptId(opId));
+    assert.equal(receipt?.result.ack.ok, true);
+    assert.deepEqual(receipt.request.profile.eco.pack.vessels, bucket);
+  }
+  assert.deepEqual(p.attr, { v: 1, carga: 0, re: 1 });
+  assert.equal(p.eco.pack.maxMass, 50);
+});
+
 test('deferred commit and lost reply do not ACK early; identical retry replays the exact receipt', async t => {
   const { base, store } = makeResourceStore(), entered = deferred(), release = deferred();
   let commits = 0;

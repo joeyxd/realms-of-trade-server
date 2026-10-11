@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 51; // Carga, freshwater vessels and GM v3 terrain sampling; reload peers.
+export const PROTOCOL_VERSION = 52; // Private attribute capability and confirmed Carga controls; reload peers.
 
 export const MSG = {
   // client -> server
@@ -22,7 +22,7 @@ export const MSG = {
   AGENT_GOODS_BUDGET: 'agent_goods_budget', // authenticated owner: create/read/revoke for a configured character
   // server -> client
   READY: 'ready',     // transport is up (worker booted)
-  WELCOME: 'welcome', // {v,you,tick,seed,control?: server-owned managed grant/task state}
+  WELCOME: 'welcome', // {v,you,tick,seed,attributes?:{enabled},control?: server-owned managed grant/task state}
   SNAPSHOT: 'snap',   // {tick, ack, ents, you, rafts, resources, naval?, deck?, voyage?, route?, lesson?: private activity/learning}
   SPAWN: 'spawn',     // {e: {id, kind, name, title, skin, level}}
   DESPAWN: 'despawn', // {id}

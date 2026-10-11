@@ -33,7 +33,7 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 if (help) { console.log(usage); process.exit(0); }
 ensure(envFile && outArg, usage);
-ensure([49, 50].includes(PROTOCOL_VERSION), 'local protocol is outside the reviewed attribute canary versions (49/50)');
+ensure([49, 50, 51, 52].includes(PROTOCOL_VERSION), 'local protocol is outside the reviewed attribute canary versions (49-52)');
 if (envFile) { try { process.loadEnvFile(path.resolve(envFile)); } catch { throw new Error('environment file unavailable'); } }
 ensure(process.env.MN_QA_ALLOW_PUBLIC === '1', 'Public QA guard is active; set MN_QA_ALLOW_PUBLIC=1 for this bounded acceptance.');
 ensure(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY && process.env.SUPABASE_PUBLIC_KEY,
