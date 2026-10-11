@@ -20,7 +20,8 @@ filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelad
 Dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
 Integración alpha.56/protocolo 56: 137/137 en 24 archivos congelados (base c535e5d), conteos solapados.
 Alpha.57/protocolo 56: 28/28 en 6 archivos (base b89a2d9); core de servidor/suelo sin cambios.
-Sin SQL AREA15 nuevo ni activación/adopción pública; despliegue se registra en la entrega.
+VPS verificado en 056d275, alpha.57/protocolo 56: actualizador 176/176, imagen 78/78,
+14 módulos idénticos a Git y entrada pública 6/6. Sin SQL AREA15 nuevo ni activación/adopción pública.
 El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
 Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
 

@@ -57,10 +57,29 @@ Integración posterior **28/28 en 6 archivos**, fuentes congeladas, base `b89a2d
 la animación de ficha del Bucanero; el core de servidor/suelo/mint de la integración
 anterior permanece idéntico. No repite la aceptación visual del corte de personaje.
 
-Código listo para publicación; despliegue aún pendiente del actualizador en mundo vacío.
-El [estado inicial](m5-ground-pearl-mint/initial-status.json) y la
-[lectura inicial del dominio](m5-ground-pearl-mint/initial-domain.json) mantienen el piloto
-apagado. No se ejecutó SQL ni gameplay durable de QA en el VPS por este corte.
+Código publicado y desplegado por el actualizador con mundo vacío. La revisión activa
+`056d275bc858d1d29a758f218d301a0f9f75f786` sirve alpha.57/protocolo 56, con imagen
+`sha256:6ea3f02dc4a2b151975d41a9d7860d79e2c792f1b1ecdec483ffcf25d111c026` sana y
+timer activo: [estado final](m5-ground-pearl-mint/final-status.json).
+El actualizador pasó **176/176** comprobaciones antes de sustituir la autoridad:
+[registro](m5-ground-pearl-mint/updater-validation.json), extraído después del despliegue;
+su timestamp indica la lectura del log, no la ejecución de esas pruebas. La misma imagen instalada,
+aislada sin red ni credenciales, pasa **78/78** casos adicionales de mint/loot, suelo,
+muerte y límites comunes: [prueba de imagen](m5-ground-pearl-mint/exact-image-tests.json).
+Sus **14 módulos de runtime** coinciden por SHA256 con Git y con las fuentes locales
+normalizadas a LF: [comparación](m5-ground-pearl-mint/published-source-check.json).
+Estos casos de imagen usan fixtures de memoria; la durabilidad SQL corresponde a las
+pruebas locales de diario/SIGKILL, no a una activación en el VPS. Conteos solapados.
+La entrada pública pasa **6/6** comprobaciones de health, protocolo, WSS, snapshot y
+perfil ordinario: [smoke](m5-ground-pearl-mint/public-smoke.json).
+
+La [lectura final del dominio](m5-ground-pearl-mint/final-domain.json) conserva el
+piloto apagado: montajes comunes nulos, sin reloj común ni filas de perlas, botín o
+intenciones. No se ejecutó SQL ni gameplay durable de QA en el VPS por este corte.
+Los artefactos `initial-*`, `progress-*`, `prepublish-*` y `deployment-*` son lecturas
+históricas de la espera, anteriores a la aceptación final; sus revisiones diferentes
+no describen el código aceptado. Las publicaciones concurrentes posteriores se
+integraron conservando intactos los módulos de servidor/simulación de esta entrega.
 
 ## Límites y continuación
 

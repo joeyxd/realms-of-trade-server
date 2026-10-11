@@ -1,0 +1,42 @@
+{
+  "recordedAt": "2026-10-11T17:48:42.459681+00:00",
+  "revision": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "imageId": "sha256:6ea3f02dc4a2b151975d41a9d7860d79e2c792f1b1ecdec483ffcf25d111c026",
+  "runtimeSha256": {
+    "server/groundPearlMint.mjs": "7c8ed45b2770ba2b766a86a97a863e8b74a3b41bf7287fc7f5701eb14982d8df",
+    "server/groundPearlMints.mjs": "816ba35f0ca256310e72fa79893f856f75b7e74b5407d541dd221f2c164485e1",
+    "src/sim/systems/inventory.js": "76306ab5ed860eac7152883088abacf9bc31e39e1282082bcf02f3e54240e51a",
+    "src/sim/systems/pearls.js": "8bc6623804f23fd966a95437fbaf9716cc5bda15d050442a3a15fa776aa2b49f",
+    "server/groundHostAuthority.mjs": "cb50705c2245eda86b8178ceeefc23b897e655dd38f8f5ff4f575011429b64f3",
+    "server/groundCurrentHydration.mjs": "f7fa1d9952dd660f02649b12e8eb037f8eccc8223fc787d3cd33fe5d7b76b201",
+    "server/groundPearlLifecycle.mjs": "83c3a6a10a216659e7de446d12ca326dd282b8d243369f7878aea82b7d118d01",
+    "server/groundPearlPickup.mjs": "8e2e3e51f16140dfa9c068133835e1dc44c94f71f5605f41c660aa672179cda1",
+    "server/groundPearlReturn.mjs": "60197ca8bb1ff42832509d8a0a806afb23315f6837601b6561593e3812fd293d",
+    "server/pearlGroundHydration.mjs": "8aa015070ecaafbe2dce772bab2b822aa854b06fe13f708c93bb1c0debb0440b",
+    "server/host.mjs": "45bcfb894e5a2b8c8b87b8862c75ad009101f436c92d93fc71812917ad485739",
+    "server/groundDeathCapture.mjs": "14306d5ff27b6fcb1486c0c21d76aa5fbcdddddd5c3fca8662b560ff244ee8df",
+    "server/groundDeathDrop.mjs": "d1d408e8246922763807031a178fc590cd381aefb11deca5e1513b6fb6fa0aa8",
+    "server/groundProfileBaseline.mjs": "d49782812ed2ce35e60ee137c192a773cc9a21f1e222e145482fd70e31961176"
+  },
+  "counts": {
+    "tests": 78,
+    "pass": 78,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "tests": [
+    "tests/ground-pearl-mint.test.mjs",
+    "tests/loot.test.mjs",
+    "tests/ground-current-hydration.test.mjs",
+    "tests/ground-pearl-pickup.test.mjs",
+    "tests/ground-pearl-return.test.mjs",
+    "tests/ground-family-boundary.test.mjs",
+    "tests/ground-host-authority.test.mjs",
+    "tests/ground-death-drop.test.mjs",
+    "tests/death-plan.test.mjs",
+    "tests/death-apply.test.mjs"
+  ],
+  "scope": "Exact production image, no network or live credentials; New pearl mint planner and legacy loot, current hydration, pearl and ordinary drop adapters, death plan/apply and common-family boundaries. Memory fixtures do not establish SQL durability."
+}
