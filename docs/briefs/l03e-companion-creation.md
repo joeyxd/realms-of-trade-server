@@ -25,7 +25,7 @@ La ficha permanece privada: otro dueño, invitados y controladores no pueden con
 
 ## Reutilización
 
-Se reutilizan ROLE_TEMPLATES, PERSONALITY_PRESETS, TRAIT_OPTIONS, los documentos y aspectos
+Se reutilizan ROLE_TEMPLATES, PERSONALITY_TEMPLATES, TRAIT_TEMPLATES, COMPANION_LOOKS, los documentos y aspectos
 de companionTemplates y el panel ingame. No se necesita arte nuevo ni candidatos Unreal/FAB;
 se conserva el catálogo del personaje actual y no se accede a esas fuentes.
 

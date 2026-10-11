@@ -1,0 +1,19 @@
+{
+  "schema": "mn.companion-creation.migration.v1",
+  "at": "2026-10-11T17:23:14.191Z",
+  "migration": "SQL034",
+  "sourceCommit": "d91bc6650888c19e172f5523a9c0370c6d846d46",
+  "sourceBytes": 20455,
+  "sourceSha256": "570f53e201bdd66af07ae843afb2f500cdfdefc0487076180e257588a05e3d47",
+  "application": "signed-in Supabase SQL editor; published GitHub source copied through visible file text",
+  "uiResult": "Success. No rows returned",
+  "serviceRoleRPC": {
+    "name": "mn_companion_creation_ready",
+    "result": {
+      "version": 1
+    }
+  },
+  "gameplayDataRewritten": false,
+  "modelCalls": false,
+  "hostActivationVerified": false
+}

@@ -7,6 +7,17 @@ construcción/barcos/comercio y persistencia continúan con sus contratos. L03a 
 integración del proveedor/modelo y operación ingame reales siguen pendientes. La ruta Studio local
 tiene ensayo real propio; no equivale a ese montaje público.
 
+**L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
+[Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
+Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.
+Un compañero preparado por cuenta/mundo, con identidad, configuración SQL025 y control SQL027 detenido en SQL034.
+57/57 focales; navegador local 12/12 con SQL034 en PGlite persistido y auth simulada; recheck de integración 21/21
+solapado tras conservar los cambios concurrentes. Supabase SQL034 instalado/readiness 1 y flag de VPS habilitado.
+Aceptación autenticada pública 11/11 en 96af1aa, alpha.56: creación, documentos, recarga/reentrada y limpieza
+verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en 66fcf82, alpha.57:
+una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
+Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
+
 **AREA17, 2026-10-11 — disponibilidad pública aclarada:**
 [Entrega](docs/delivery/l03d-public-inference-availability.md), [contrato](docs/briefs/l03d-public-inference-availability.md).
 El formulario vacío de gasto se sustituye por disponibilidad y navegación; configuración previa conservada.
@@ -582,7 +593,7 @@ añade límites de contexto/tokens/gasto/tiempo, una consulta en curso y respues
 verificados con modelos simulados; el cuerpo continúa durante la espera. [L03b](docs/agents/conversation-runner.md)
 añade conversación explícita, audiencia fijada, personalidad/contexto inspeccionable y supresión acotada por proceso.
 [L03c](docs/agents/goals-runner.md) añade metas con feedback y revisión del archivo real.
-L04a añade memoria persistente y L04b su administración local. Sigue **L05a**. Los defaults de L00–L04 son de ensayo; no hay llamadas a proveedores, tarifas ni modalidad D-A3 cerrada.
+L04a añade memoria persistente y L04b su administración local. L03e tiene esquema instalado y aceptación pública 11/11 de creación/reentrada, sin llamadas de modelo/inferencia ni spawn. Los defaults de L00–L04 son de ensayo; no hay llamadas a proveedores, tarifas ni modalidad D-A3 cerrada. El siguiente trabajo inmediato es el emparejamiento local revocable.
 La revocación del control tiene prueba opt-in local en L02c. La observabilidad limitada y la
 correlación uniforme de resultados siguen por construir; no se deducen de snapshots, ACK ni epoch naval.
 
@@ -672,4 +683,4 @@ No fijar tarifas, prometer rentabilidad ni activar cobros como parte de este pla
 Medir si la gente quiere volver con ese personaje, calidad del compañero frente al cuerpo sin LLM,
 historias compartidas, retención y disposición a pagar en pruebas explícitas; contrastar con costes de
 infraestructura/soporte y perjuicio al jugador humano. Ajustar según evidencia dentro de los pilares
-del juego. **Siguiente entrega propia: L04a tras metas/feedback simulados L03c; modelo real, aceptación humana y despliegue pendientes.**
+del juego. **Siguiente paso inmediato: emparejamiento local revocable; creación L03e aceptada públicamente.** L04a conserva su estado e historial de memoria local simulada; conexión real del modelo, aceptación humana y despliegue de mente/memoria siguen pendientes.

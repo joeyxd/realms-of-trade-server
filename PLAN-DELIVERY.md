@@ -1,5 +1,16 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
+[Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
+Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.
+Un compañero preparado por cuenta/mundo, con identidad, configuración SQL025 y control SQL027 detenido en SQL034.
+57/57 focales; navegador local 12/12 con SQL034 en PGlite persistido y auth simulada; recheck de integración 21/21
+solapado tras conservar los cambios concurrentes. Supabase SQL034 instalado/readiness 1 y flag de VPS habilitado.
+Aceptación autenticada pública 11/11 en 96af1aa, alpha.56: creación, documentos, recarga/reentrada y limpieza
+verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en 66fcf82, alpha.57:
+una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
+Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
+
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
 Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
@@ -16,7 +27,8 @@ Siguen comandos restantes de perlas y loot completo; después transición deteni
 **Bucanero, ficha animada — alpha.57/protocolo 56, sin SQL propio:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
 Idle auténtico en rig nativo independiente; giro/zoom, miniaturas quietas y gates de visibilidad.
 Un GLB por dispositivo, +353.260 B por clip; 42/42 CPU y 24/24 navegador. Tras integrar el corte
-concurrente de compañeros: 57/57 focales; SQL034 conserva su activación separada. Publicación aparte.
+concurrente de compañeros: 57/57 focales; SQL034 conserva su activación separada.
+Publicado en `66fcf82`: 176/176 actualizador, 15 hashes y entrada pública escritorio/móvil verificados.
 
 **AREA01 GM04c, 2026-10-11 — dispersión decorativa publicada, alpha.57/protocolo 56, sin SQL GM nuevo:**
 [Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).

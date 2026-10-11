@@ -1,5 +1,16 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
+[Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
+Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.
+Un compañero preparado por cuenta/mundo, con identidad, configuración SQL025 y control SQL027 detenido en SQL034.
+57/57 focales; navegador local 12/12 con SQL034 en PGlite persistido y auth simulada; recheck de integración 21/21
+solapado tras conservar los cambios concurrentes. Supabase SQL034 instalado/readiness 1 y flag de VPS habilitado.
+Aceptación autenticada pública 11/11 en 96af1aa, alpha.56: creación, documentos, recarga/reentrada y limpieza
+verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en 66fcf82, alpha.57:
+una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
+Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
+
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).
 Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
@@ -20,7 +31,9 @@ Máximo 24 FPS solo con figura visible; pausa/cierre/pestaña/documento oculto/m
 el loop. GLB por dispositivo 1.965.360/1.394.284 B (+353.260 B), sin segunda descarga de modelo.
 42/42 focales CPU y 24/24 comprobaciones de navegador en escritorio/móvil; 57/57 tras integrar
 la creación de compañeros concurrente (protocolo 56, SQL034 conserva su activación separada).
-Publicación por separado.
+Publicado y verificado en `66fcf82`, alpha.57: 176/176 del actualizador, 15 hashes públicos
+iguales a Git y entrada real escritorio/móvil con idle avanzando; cero errores o pendientes.
+[Recibo](delivery/buccaneer-v1/idle/publication.json). Incluye el ajuste de tamaño de alpha.53.
 
 **AREA01 GM04c, 2026-10-11 — dispersión decorativa publicada, alpha.57/protocolo 56, sin SQL GM nuevo:**
 [Entrega/evidencia](delivery/gm04c/DELIVERY.md) y [contrato](briefs/gm04c-decoration-brush.md).

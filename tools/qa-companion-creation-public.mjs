@@ -29,6 +29,8 @@ for (let i = 2; i < process.argv.length; i++) {
 if (envFile) process.loadEnvFile(path.resolve(envFile));
 assert.equal(process.env.MN_QA_ALLOW_PUBLIC, '1', 'explicit public QA guard required');
 assert.equal(PROTOCOL_VERSION, 56, 'review the public canary after protocol changes');
+const expectedVersion = process.env.MN_QA_EXPECTED_VERSION || GAME.version;
+assert.match(expectedVersion, /^0\.6\.0-alpha\.[0-9]+$/, 'explicit public release version required');
 if (cleanupManifestPath) assert.ok(out && fs.existsSync(out), 'existing evidence directory required for cleanup mode');
 else assert.ok(out && !fs.existsSync(out), 'new evidence directory required');
 for (const key of ['SUPABASE_URL', 'SUPABASE_PUBLIC_KEY', 'SUPABASE_SERVICE_KEY']) assert.ok(process.env[key], 'private QA configuration unavailable');
@@ -53,13 +55,18 @@ const unwrap = result => {
   if (!result || result.error) throw new Error('private account operation failed');
   return result.data;
 };
-const redact = value => String(value)
-  .replaceAll(process.env.SUPABASE_SERVICE_KEY, '[redacted-key]')
-  .replaceAll(process.env.SUPABASE_PUBLIC_KEY, '[redacted-key]')
-  .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[redacted-token]')
-  .replace(/(bearer\s+)[A-Za-z0-9._~+\/-]+=*/gi, '$1[redacted]')
-  .replace(/(access_token|refresh_token|token_hash|hashed_token|token|password|apikey)([=:\s"%20]+)[^&\s"']+/gi, '$1$2[redacted]')
-  .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '[redacted-id]');
+const redact = value => {
+  let text = String(value);
+  for (const [secret, label] of [[email, '[redacted-email]'], [password, '[redacted-secret]'],
+    [marker, '[redacted-marker]'], [accountId, '[redacted-account]'],
+    [process.env.SUPABASE_SERVICE_KEY, '[redacted-key]'], [process.env.SUPABASE_PUBLIC_KEY, '[redacted-key]']]) {
+    if (secret) text = text.replaceAll(secret, label);
+  }
+  return text.replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[redacted-token]')
+    .replace(/(bearer\s+)[A-Za-z0-9._~+\/-]+=*/gi, '$1[redacted]')
+    .replace(/(access_token|refresh_token|token_hash|hashed_token|token|password|apikey)([=:\s"%20]+)[^&\s"']+/gi, '$1$2[redacted]')
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '[redacted-id]');
+};
 async function fetchJson(url, label) {
   const response = await bounded(timeoutFetch(url), label);
   const body = await bounded(response.json(), `${label} JSON`);
@@ -67,7 +74,7 @@ async function fetchJson(url, label) {
 }
 async function checkPublicReadiness() {
   const { response: statusResponse, body: status } = await fetchJson(new URL('/status', target), 'public status');
-  assert.ok(statusResponse.ok && status.version === GAME.version && status.errors === 0, 'public alpha release is not healthy/current');
+  assert.ok(statusResponse.ok && status.version === expectedVersion && status.errors === 0, 'public alpha release is not healthy/current');
   assert.equal(status.storage?.durable, true); assert.equal(status.storage?.accounts, true);
   assert.equal(status.storage?.world?.id, WORLD);
   const { response: authResponse, body: authConfig } = await fetchJson(new URL('/auth/config', target), 'public auth config');
@@ -167,10 +174,10 @@ function persistPrivateManifest(accountId, marker, characterKey = null, creation
 }
 
 let accountId = null, marker = null, email = null, password = null, browser, context, page, chromium;
-let gameSocketSeen = false, gameSocketClosed = false, attemptedCreation = false, attemptedIntent = null;
+let gameSocketSeen = false, gameSocketClosed = false, gameSocketSequence = 0, attemptedCreation = false, attemptedIntent = null;
 let stagedRecord = null, manifestPath = null;
 let evidence = { schema: 'mn.companion-creation.public.v1', at: new Date().toISOString(), target: target.origin,
-  gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION, world: WORLD,
+  gameVersion: expectedVersion, sourceVersion: GAME.version, protocolVersion: PROTOCOL_VERSION, world: WORLD,
   production: true, simulatedAuth: false, modelCalls: false, otherGameplayCommands: false,
   checks: [], screenshots: [], errors: [], acceptancePass: false, cleanupPending: false, cleanupComplete: false, pass: false };
 
@@ -209,6 +216,11 @@ async function runCleanupMode() {
     assert.equal(profileAfter, null);
     assert.ok(authAfter?.error && authAfter.error.status === 404, 'temporary auth account deletion was not verified');
     evidence.cleanupPending = false; evidence.cleanupComplete = true;
+    delete evidence.cleanupError;
+    if (evidence.canaryRetained) {
+      evidence.canaryBeforeCleanup = { ...evidence.canaryRetained };
+      evidence.canaryRetained = { ...evidence.canaryRetained, account: false, ordinaryProfile: false, creationRecord: false };
+    }
     evidence.cleanup = { markerMatchedBeforeDelete: true, registryAbsentBeforeDelete: true,
       profileDeleted: true, authDeleted: true, ...settlement };
     evidence.pass = evidence.acceptancePass === true;
@@ -261,7 +273,9 @@ async function runAcceptanceMode() {
         isGameSocket = socketUrl.protocol === 'wss:' && socketUrl.host === target.host && socketUrl.pathname.endsWith('/ws'); }
       catch { /* Ignore non-game sockets. */ }
       if (!isGameSocket) return;
-      gameSocketSeen = true; socket.on('close', () => { gameSocketClosed = true; });
+      const sequence = ++gameSocketSequence;
+      gameSocketSeen = true; gameSocketClosed = false;
+      socket.on('close', () => { if (sequence === gameSocketSequence) gameSocketClosed = true; });
     });
 
     await page.goto(`${target.origin}/?q=low`, { waitUntil: 'commit', timeout: 90000 });
@@ -357,7 +371,7 @@ async function runAcceptanceMode() {
     await page.reload({ waitUntil: 'commit', timeout: 90000 });
     await wait(() => window.__mn && !document.querySelector('#btn-play')?.disabled, 'client after reload');
     await wait(() => { const panel = document.querySelector('.account-signed'); return panel && !panel.hidden; }, 'persisted real UI login');
-    await page.locator('#btn-play').click();
+    await page.locator('#btn-play').press('Enter');
     await wait(() => window.__mn.client.joined && window.__mn.st.mode === 'playing', 'rejoined authenticated world');
     await wait(() => !window.__mn.st.boarding && document.querySelector('#title')?.hidden, 'rejoined profile entry settles');
     await page.locator('.mn-companions-toggle').click();
