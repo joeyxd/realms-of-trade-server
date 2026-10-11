@@ -166,7 +166,8 @@ export function bakeCharacter(scene, e) {
   let count = 0;
   for (const o of byMat.values()) count += o.p.length / 3;
   const out = { pos: new Float32Array(count * 3), nrm: new Float32Array(count * 3), uv: new Float32Array(count * 2), col: new Float32Array(count * 3),
-    si: new Uint16Array(count * 4), sw: new Float32Array(count * 4), groups: [], J: null, hand: null, rigid, notes, tris: Math.round(tris) };
+    si: new Uint16Array(count * 4), sw: new Float32Array(count * 4), groups: [], J: null, hand: null, rigid, notes, tris: Math.round(tris),
+    normalization: { rotationY: wrap.rotation.y, scale: s, offset: [tx, ty, tz] } };
   let at = 0;
   const c = new THREE.Color();
   for (const [mat, o] of byMat) {

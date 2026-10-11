@@ -35,6 +35,7 @@
 //        armR, foreR), weapon: "proc" (the look's procedural weapon in the right hand, default) | "none",
 //        armsDown (default true: T / A poses are lowered to the rig's arms-down rest), bone (rigid chars: the bone it
 //        rides, default "body"). mobileSrc optionally selects a smaller character GLB on coarse-pointer devices.
+//        figureAnimation optionally names a native clip used only by the character-sheet preview.
 // prop   props: [kinds] (required), fit: "proc" (default: the procedural prop's size) | "height" | "size" | "none",
 //        size (u: the largest horizontal extent, with fit "size"), height (u, with fit "height").
 // model  fit: "size" (default when size is given) | "height" (default when only height is) | "proc" (otherwise: the size of
@@ -96,6 +97,7 @@ export function normalizeManifest(json, { looks = null } = {}) {
         if (bad.length) { err(`unknown look(s) ${bad.join(', ')}`); e.looks = e.looks.filter((n) => looks.includes(n)); if (!e.looks.length) continue; }
       }
       e.height = num(raw.height, 0); // 0: the look's own height
+      e.figureAnimation = typeof raw.figureAnimation === 'string' ? raw.figureAnimation : '';
       e.bones = {};
       if (raw.bones && typeof raw.bones === 'object') {
         for (const [k, v] of Object.entries(raw.bones)) {

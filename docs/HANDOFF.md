@@ -10,6 +10,23 @@ seguía el flujo seguro para jugadores probando `fb4276f`; no se forzó reinicio
 `d91bc66` se enviaron por continuidad. Falta verificar en producción la revisión activa y el flujo
 autenticado durable. Sin inferencia, spawn ni permisos concedidos; siguiente paso: emparejamiento local.
 
+**Bucanero, idle original en la ficha — alpha.57/protocolo 56, sin SQL propio:**
+[Brief](briefs/buccaneer-sheet-idle.md) y [entrega](delivery/buccaneer-v1/idle/README.md).
+Vista nativa Mixamo con su clip idle, giro/zoom y miniaturas quietas; mundo conserva rig de 15 huesos y acciones.
+Máximo 24 FPS solo con figura visible; pausa/cierre/pestaña/documento oculto/movimiento reducido detienen
+el loop. GLB por dispositivo 1.965.360/1.394.284 B (+353.260 B), sin segunda descarga de modelo.
+42/42 focales CPU y 24/24 comprobaciones de navegador en escritorio/móvil; 57/57 tras integrar
+la creación de compañeros concurrente (protocolo 56, SQL034 conserva su activación separada).
+Publicación por separado.
+
+**AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.56/protocolo 56, sin SQL GM nuevo:**
+[Entrega/evidencia](delivery/gm04c/DELIVERY.md) y [contrato](briefs/gm04c-decoration-brush.md).
+Biblioteca → Dispersión: arrastre con formas, densidad, separación, semilla y escala; cancelación/undo atómicos.
+Costes de geometría/texturas cargadas y ahorro de archivo; límites por trazo y acumulados, modelos existentes.
+Copias decorativas sin colisión ni tala. Política del pincel cliente diferenciada del contrato GM manual histórico.
+V2–v4/compiler 2/SQL033 conservados. 293/293 base y 81/81 integración final; navegador local 10/10.
+Incluye bucanero/carga y creación de compañeros de `d91bc66`; publicación y verificaciones finales en la entrega.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.

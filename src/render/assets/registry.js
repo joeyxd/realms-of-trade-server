@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { normalizeManifest, fitBox, selectTextureSource } from './manifest.js';
 import { bakeCharacter, sizedCharacter } from './rebind.js';
+import { captureCharacterFigure, createCharacterFigure } from './characterFigure.js';
 import { worldToon } from './toonmat.js';
 import { LOOKS, buildLook, buildWeaponOnly } from '../charlooks.js';
 
@@ -66,7 +67,10 @@ export class Assets {
         else {
           if (!gltf) throw new Error('no glTF loader');
           const g = await withTimeout(gltf.loadAsync(this.base + selectedSrc), timeoutMs, selectedSrc);
-          data = e.kind === 'char' ? { bake: bakeCharacter(g.scene, e) } : prepStatic(g.scene, e);
+          if (e.kind === 'char') {
+            const figure = captureCharacterFigure(g, e);
+            data = { bake: bakeCharacter(g.scene, e), figure };
+          } else data = prepStatic(g.scene, e);
         }
         this.state.set(e.id, { state: 'ok', data, selectedSrc });
       } catch (err) {
@@ -172,6 +176,18 @@ export class Assets {
     const res = { geo: sized.geo, J: sized.J, R: proc.R, height: sized.height, key: L.body, look: L, ext: { entry: e, mats: sized.mats, weaponGroup: sized.weaponGroup, id } };
     this.chars.set(key, res);
     return res;
+  }
+
+  hasCharacterFigure(lookIdx) {
+    const id = this.man.byLook.get(LOOKS[lookIdx]?.name);
+    return !!this.data(id)?.figure;
+  }
+
+  characterFigure(lookIdx) {
+    const look = LOOKS[lookIdx], id = this.man.byLook.get(look?.name), data = this.data(id);
+    if (!data?.figure) return null;
+    const entry = this.entry(id), height = (entry.height > 0 ? entry.height : buildLook(lookIdx, false).height) * (look.scale || 1);
+    return createCharacterFigure(data.figure, data.bake, entry, look, height);
   }
 
   // A fitted clone of a static model (prop / model). target: { w, h } of what it replaces (fit "proc").
