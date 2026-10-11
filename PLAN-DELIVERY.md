@@ -1,5 +1,28 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-e2b, 2026-10-10 — Brisa local con conversación y memoria entre procesos:**
+[Entrega/evidencia](docs/delivery/l03d-local-companion-studio.md), [brief](docs/briefs/l03d-local-companion-studio.md).
+Wizard, cinco oficios/aspectos, personalidad/metas/manual/journal vacío; red C01 real y recuperación
+de «Faro de Jade» desde disco. Ledger local fijado; seis llamadas/19.182 tokens confirmados, sin
+uso pendiente. 67/67 focales y UI 1280×1000/390×844 inspeccionada. Modelo mezcla ES/EN y resumen
+rechazado; original intacto. Mundo efímero y cuentas de ensayo; sin SQL o proveedor público.
+Sigue vínculo durable/contabilidad central y montaje del wizard dentro del juego, con preview humano.
+
+**AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
+[entrega](docs/delivery/m5-ground-pearl-lifecycle.md), [contrato](docs/briefs/m5-ground-pearl-lifecycle.md).
+Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
+bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
+Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; devolución con commit/aplicación/reinicio de host;
+compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
+SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
+restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+Integración RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
+Integración GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusión de activación GM con piloto montado. Conteos solapados.
+Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 del actualizador,
+31/31 sin red en la imagen exacta y entrada pública 6/6. Una autoridad, timer activo; montaje apagado.
+
 **AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Cinco pinceles de suelo seco, borrador v3, preview/undo/cancelación y recorrido sobre alturas editadas.

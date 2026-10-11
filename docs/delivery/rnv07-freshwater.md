@@ -1,6 +1,8 @@
 # RNV07a — cubeta, manantial y reserva naval
 
-Publicada y activada en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado a las 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`.
+Primera publicación y activación en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado a las 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`.
+
+**Integración posterior, 05:01Z:** alpha.45 / protocolo 51 con el editor de terreno concurrente; revisión activa `7a23f25be0bac3b9491681f0c78d12890eb73ea8`, imagen `sha256:c39f893e8080039e6b02263b40f74b66592147c3f81df1b85213c800a8f3e3f5`. El actualizador pasó 126/126 y se repitieron las seis comprobaciones públicas de cubeta, recibos y reconexión: [canario](rnv07-freshwater/public-alpha45/acceptance.json), [runtime](rnv07-freshwater/vps-alpha45.json). Agua y atributos siguen enabled/ready, health 200 y cero pendientes/errores. La cuenta temporal se eliminó; dos recibos se conservaron. El alcance sigue excluyendo recolección y traslado completos live. Los commits posteriores de documentación no cambian este código jugable.
 
 ## Circuito jugable
 
@@ -37,5 +39,7 @@ Se verificó el candidato concreto `C:\Unreal\MyProject\Content\_SplineVFX\Demo\
 - El WSS público no recorrió la recolección completa ni las transferencias del barril. Esas acciones y la persistencia visual completa se probaron en la fixture local sin enemigos; la aceptación live del encuentro y de una ruta completa sigue pendiente para RNV07b.
 
 ## Siguiente corte
+
+Comprobación posterior de compatibilidad con la autoridad común, 05:06Z: el runtime `ea982f8e5326308aed6ba0ab9a6bee447ee22a59` pasó 127/127 del actualizador. La suite local de agua pasó 6/6, incluida la nueva guarda tras la lectura asíncrona del recibo. El [canario público repetido](rnv07-freshwater/public-common-alpha45/acceptance.json) pasó las mismas seis comprobaciones acotadas de cubeta y reconexión; [estado e imagen](rnv07-freshwater/vps-common-alpha45.json). Un intento previo se detuvo sin crear cuenta porque había otra conexión; se esperó a que quedara libre. No se montó ni activó el piloto público de suelo común. Esta verificación no amplía el alcance de recolección/transporte/encuentro live.
 
 RNV07b: cantimplora reutilizable, rellenar/beber con supervivencia y aclarar consumo durante viaje activo. Después, el primer viaje Salty Shore–Puerto Sol; el purificador avanzado queda sujeto al acceso al componente de la tercera ciudad. No subir todavía su receta sin alternativa manual publicada y transición de patrimonio.

@@ -19,9 +19,9 @@ export class AgentMind {
     this.#adapter = validateAdapter(adapter); this.#limits = mindLimits(limits);
     if (!(budget instanceof InferenceBudget) || typeof readSnapshot !== 'function' || typeof submitOrder !== 'function' || typeof now !== 'function')
       throw new TypeError('invalid mind configuration');
-    if (adapter.metering !== undefined && typeof budget.assertAdapter !== 'function') throw new TypeError('native_metering_requires_durable_budget');
+    if ((adapter.metering !== undefined || adapter.localResourcePolicy !== undefined) && typeof budget.assertAdapter !== 'function') throw new TypeError('native_metering_requires_durable_budget');
     budget.assertAdapter?.(adapter);
-    this.#nativeMetering = adapter.metering !== undefined;
+    this.#nativeMetering = adapter.metering !== undefined || adapter.localResourcePolicy !== undefined;
     if (sendChat !== null && typeof sendChat !== 'function') throw new TypeError('invalid chat submission');
     if (commitGoals !== null && (typeof commitGoals !== 'function' || typeof readCommitSnapshot !== 'function')) throw new TypeError('invalid goal commit configuration');
     if (appendMemory !== null && (typeof appendMemory !== 'function' || typeof readCommitSnapshot !== 'function')) throw new TypeError('invalid memory commit configuration');
@@ -126,7 +126,7 @@ export class AgentMind {
       this.#interrupt(flight, 'inference_timeout');
     return flight.cancelled;
   }
-  #fenceWhy(before, current, nowMs) {
+  #fenceWhy(before, current, nowMs, mode = 'decision') {
     const invalid = this.#snapshotWhy(current, nowMs);
     if (invalid) return invalid;
     if (!sameScope(before.grant.scope, current.grant.scope) || before.grant.controlRevision !== current.grant.controlRevision ||
@@ -134,7 +134,10 @@ export class AgentMind {
     if (before.taskFence !== current.taskFence) return 'task_changed';
     if (!same(before.ownerFileHashes, current.ownerFileHashes)) return 'owner_files_changed';
     if (before.memoryValidUntilMs !== null && before.memoryValidUntilMs !== undefined && nowMs >= before.memoryValidUntilMs) return 'memory_expired';
-    if (nowMs - before.observation.receivedAtMs > this.#limits.maxDecisionAgeMs) return 'stale_decision';
+    // A slow conversation may use historical context, but body decisions stay short lived.
+    const maxAge = ['conversation', 'goals', 'compaction'].includes(mode)
+      ? this.#limits.maxReflectionAgeMs : this.#limits.maxDecisionAgeMs;
+    if (nowMs - before.observation.receivedAtMs > maxAge) return 'stale_decision';
     return null;
   }
   async #work(flight) {
@@ -201,7 +204,7 @@ export class AgentMind {
     if (!reserved.ok) { this.#finish(flight, { ok: false, why: reserved.why }); return; }
     if (this.#deadline(flight)) { await this.#budget.cancelBeforeDispatch(flight.requestId); return; }
     const dispatchSnapshot = copy(await this.#read());
-    const dispatchFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now());
+    const dispatchFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now(), flight.mode);
     if (this.#deadline(flight) || dispatchFence) {
       await this.#budget.cancelBeforeDispatch(flight.requestId);
       this.#finish(flight, { ok: false, why: dispatchFence }); return;
@@ -220,7 +223,7 @@ export class AgentMind {
         this.#finish(flight, { ok: false, why: admitted.why }); return;
       }
     }
-    const boundaryFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now());
+    const boundaryFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now(), flight.mode);
     if (boundaryFence) {
       await this.#budget.markUnknown(flight.requestId, 'inference_cancelled');
       this.#finish(flight, { ok: false, why: boundaryFence }); return;
@@ -255,7 +258,7 @@ export class AgentMind {
     this.#budget.assertAdapter?.(this.#adapter);
     const current = copy(await this.#read());
     if (this.#deadline(flight)) return;
-    const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs);
+    const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs, flight.mode);
     if (fence) { this.#finish(flight, { ok: false, why: fence }); return; }
     if (this.#budget.checkActive) {
       const active = await this.#budget.checkActive(flight.requestId);
@@ -279,7 +282,7 @@ export class AgentMind {
         if (flight.cancelled || this.#deadline(flight)) return { ok: false, why: 'inference_cancelled' };
         const latest = this.#readCommit();
         if (!latest || typeof latest.then === 'function') return { ok: false, why: 'invalid_commit_snapshot' };
-        const why = this.#fenceWhy(snapshot, copy(latest), this.#now()) ?? (!same(snapshot.required.goals, latest.required?.goals) ? 'owner_files_changed' : null);
+        const why = this.#fenceWhy(snapshot, copy(latest), this.#now(), flight.mode) ?? (!same(snapshot.required.goals, latest.required?.goals) ? 'owner_files_changed' : null);
         if (why) return { ok: false, why };
         guarded = true;
         return { ok: true };
@@ -360,7 +363,7 @@ export class AgentMind {
   async #commitMemory(flight, before, entry) {
     const current = copy(await this.#read());
     if (this.#deadline(flight)) return;
-    const fence = this.#fenceWhy(before, current, this.#now());
+    const fence = this.#fenceWhy(before, current, this.#now(), flight.mode);
     if (fence) { this.#finish(flight, { ok: false, why: fence }); return; }
     let guarded = false, receipt;
     const guard = () => {
@@ -368,7 +371,7 @@ export class AgentMind {
       if (flight.cancelled || this.#deadline(flight)) return { ok: false, why: 'inference_cancelled' };
       const latest = this.#readCommit();
       if (!latest || typeof latest.then === 'function') return { ok: false, why: 'invalid_commit_snapshot' };
-      const why = this.#fenceWhy(before, copy(latest), this.#now());
+      const why = this.#fenceWhy(before, copy(latest), this.#now(), flight.mode);
       if (why) return { ok: false, why };
       guarded = true; return { ok: true };
     };

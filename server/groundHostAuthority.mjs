@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { StoreError } from './store.mjs';
 import { canonicalText, profilePearls } from './pearlOperations.mjs';
 import { GroundClockEpoch } from './groundClockSession.mjs';
+import { GroundDeadlineClock } from './groundDeadlineClock.mjs';
 import { GroundTransactionSession } from './groundTransactionSession.mjs';
 import { groundTransactionOperation } from './groundTransaction.mjs';
 import { snapshotDropData } from './deathDropApply.mjs';
@@ -55,6 +56,12 @@ export class GroundHostAuthority {
     this.#owner();
     if (!this.#epoch || this.#failed) fail('unavailable');
     return this.#epoch.toDurable(this.#world.tick);
+  }
+  deadlineClock() {
+    this.#owner();
+    if (!this.#loaded || !this.#epoch || this.#failed || this.#stopping) fail('unavailable');
+    return new GroundDeadlineClock({ worldId: this.#worldState.id,
+      sourceDomain: 'durable-ground-v1', epoch: this.#epoch });
   }
   prepare() {
     if (this.#loadTask) return this.#loadTask;
@@ -228,7 +235,8 @@ export class GroundHostAuthority {
       if (!this.ready || !this.#drainCheckpoint()) return false;
       this.#draining = true;
       if (!this.#drainFamily()) return false;
-      return this.#economic.drain() && this.canMutate();
+      return this.#economic.drain() && this.canMutate() &&
+        (this.#host.groundPearls?.drain() ?? true) && this.canMutate();
     } catch { this.#fence(); return false; }
     finally { this.#draining = false; }
   }

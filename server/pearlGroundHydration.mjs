@@ -36,6 +36,17 @@ export class PearlGroundHydration {
   }
 
   get state() { return this.#state; }
+  get preparedCounts() {
+    if (this.#state !== 'ready' && this.#state !== 'applied') return null;
+    return { pearls: this.#rows.length, deathDrops: this.#deathRows.length };
+  }
+  // Detached durable pearl rows paired with their projected runtime drop IDs.
+  // Callers may consume these only after the single atomic installation succeeds.
+  get currentPearls() {
+    if (this.#state !== 'applied') return [];
+    return this.#rows.map((row, i) => ({ dropId: this.#before.nextDrop + i,
+      uid: row.uid, kind: row.kind, world: row.world, ground: clone(row.ground), version: row.version }));
+  }
 
   #capture() {
     const w = this.#world;

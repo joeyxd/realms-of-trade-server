@@ -1,0 +1,109 @@
+{
+  "recordedAt": "2026-10-11T04:52:25.134907+00:00",
+  "expectedRevision": "95595b0d0844ac9d05824850be62e4b2c341b830",
+  "revision": "80e46df8ca4664f93aa59df8350c27cc17589b53",
+  "matches": false,
+  "container": "be782604e9d2",
+  "imageId": "sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353",
+  "healthy": "healthy",
+  "startedAt": "2026-10-11T04:47:21.75768249Z",
+  "timer": "active",
+  "updater": "activating",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.44",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 16977,
+    "uptime": 300,
+    "stepMs": 1.346,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 6,
+        "replays": 2
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2207,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 211,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 7252.9,
+      "kbIn": 5.6,
+      "dropped": 0
+    }
+  },
+  "offlineImageValidation": {
+    "revision": "80e46df8ca4664f93aa59df8350c27cc17589b53",
+    "image_id": "sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353",
+    "tests_passed": true
+  },
+  "dormantAPI": {
+    "session": true,
+    "contract": true,
+    "journal": true,
+    "recovery": true,
+    "groundHost": true,
+    "adoption": true,
+    "node": "v22.23.3"
+  }
+}

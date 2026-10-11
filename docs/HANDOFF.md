@@ -1,5 +1,30 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L03d-e2b, 2026-10-10 — Brisa conversa y recupera memoria en un mundo local:**
+[Entrega/evidencia](delivery/l03d-local-companion-studio.md) y [brief](briefs/l03d-local-companion-studio.md).
+Wizard de identidad/oficio/rasgos/aspecto/modelo, documentos nuevos y GameHost/C01 real local;
+memoria y ledger de recursos en disco, identidades de ensayo, mundo efímero, solo chat.
+Tras cerrar el proceso, recuperó «Faro de Jade» desde el episodio guardado. Seis llamadas reales,
+19.182 tokens confirmados, cero uso pendiente; resumen rechazado sin tocar el original.
+Mezcla ES/EN y 4,9–13,5 s: calidad todavía pendiente. 67/67 focales y capturas desktop/móvil;
+la regresión amplia conserva fallos independientes documentados. Sin SQL ni activación pública;
+herramientas fuera de la imagen VPS. Sigue identidad/ledger central, wizard ingame y preview humano.
+
+**AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
+[entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
+Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
+bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
+Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; devolución con commit/aplicación/reinicio de host;
+compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
+SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
+restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+Integración RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
+Integración GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusión de activación GM con piloto montado. Conteos solapados.
+Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 del actualizador,
+31/31 sin red en la imagen exacta y entrada pública 6/6. Una autoridad, timer activo; montaje apagado.
+
 **AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**
 [Entrega](delivery/rnv07-freshwater.md), [dirección](briefs/RNV07-freshwater-progression.md), [WSS público](delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](delivery/rnv07-freshwater/public-readonly.json) y [activación SQL030](delivery/rnv07-freshwater/activation.json). Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z; imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor, readiness RPC 1; `MN_FRESHWATER_OPERATIONS` enabled/ready y atributos siguen enabled/ready. WSS público 6/6, anónimo denegado; lectura pública 7 hashes fuente y health 200. Evidencia de agua visual/recogida completa sigue siendo fixture local sin enemigos; no se afirma recolección/transporte completo live y el encuentro en navegador queda pendiente para RNV07b.
 Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
