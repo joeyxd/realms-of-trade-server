@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-11T00:29:14.401938+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "f939152e24b51774faab3239a902c6cc76e01d3f",
+  "version": "0.6.0-alpha.36",
+  "image": "marea-negra:alpha-f939152e24b5",
+  "imageId": "sha256:2805560bd974edca1e1e31b888a25933f6d56a5673724dd2729141bc84703326",
+  "containerId": "ed66bfbf317a4e4b29250cfae4c2c081b913412bd30557e8ed6e193191bac89b",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-11T00:27:33.533826008Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/f939152e24b51774faab3239a902c6cc76e01d3f",
+  "updateState": {},
+  "validation": {
+    "revision": "f939152e24b51774faab3239a902c6cc76e01d3f",
+    "image_id": "sha256:2805560bd974edca1e1e31b888a25933f6d56a5673724dd2729141bc84703326",
+    "tests_passed": true
+  },
+  "offlineCounts": {
+    "tests": 109,
+    "pass": 109,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "authorities": [
+    "marea-negra-alpha-marea-negra-alpha-1"
+  ],
+  "timer": "active"
+}

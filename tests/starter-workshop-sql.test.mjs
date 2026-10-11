@@ -7,6 +7,8 @@ import { newProfile } from '../src/sim/systems/inventory.js';
 import { workshopProfileDelta } from '../server/workshopOperation.mjs';
 import { fireProfileDelta } from '../server/fireOperation.mjs';
 import { storageProfileDelta } from '../src/sim/systems/raftEditor.js';
+import { prepareRaftProfile } from '../src/sim/systems/rafts.js';
+import { restoreRaftCondition, persistRaftCondition } from '../src/sim/naval/condition.js';
 import { upgradeTimingState } from '../server/resourceState.mjs';
 import { database } from './helpers/ground-clock-sql.mjs';
 
@@ -22,6 +24,7 @@ async function migration(name) {
 }
 const priors = await Promise.all(filenames.map(migration));
 const sql = await migration('024_starter_workshop');
+const raftIdentifierSql = await migration('026_workshop_raft_identifiers');
 const worldData = () => ({ v: 1, seed, economy: new Economy(seed).serialize(), community: { v: 1, epoch: id(900),
   project: { id: 'salty-shore-carpentry', version: 1, requirements: { madera: 50, piedra: 20 }, contributed: { madera: 0, piedra: 0 } } },
   resources: upgradeTimingState({ v: 1, tick: 100, nodes: [{ id: 'palm-1', kind: 'palm', rev: 1, hits: 0, readyAt: 0 }], cooldowns: {} }) });
@@ -88,6 +91,51 @@ test('SQL024 partial personal project, prepaid storage, paid later storage, kits
   await accept(f, id(906), proposal(f, 'upgradePack', 'pack-tier-1'));
   assert.equal(f.p.eco.pack.cap, 30); assert.equal(f.p.eco.pack.maxMass, 18);
   assert.deepEqual((await f.db.query('select public.mn_starter_workshop_ready() as r')).rows[0].r, { version: 1 });
+});
+
+test('SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts', async t => {
+  const f = await fixture(t);
+  // Reproduce the actual host identity and condition instead of an unassigned starter DTO.
+  const p = clone(f.p), namespace = '4d239150-149f-4e6a-a532-c505988bc310';
+  assert.equal(prepareRaftProfile({ profiles: new Map(), raftNamespace: namespace, nextRaft: 1, nextRaftOwner: 1 }, p), true);
+  const ship = p.eco.ships[0], restored = restoreRaftCondition(ship.condition, ship.grid.parts);
+  persistRaftCondition({ ship, condition: restored.structure, conditionNext: restored.nextId });
+  p.workshop = { v: 1, boards: 10, storageCredit: true, crateKits: 1 };
+  p.progression = { v: 1, practice: { logging: 0 }, milestones: [], knowledge: ['raft_storage'] };
+  p.eco.pack.goods = {};
+  await stage(f, p);
+  assert.equal(ship.id, namespace + ':r1');
+  const request = raftProposal(f, 'place', 'real-prepaid-hold', ['storage', 0, 1, 0, 0]);
+  assert.equal((await commit(f, id(1040), request)).ok, false, 'SQL024 reproduces the live identifier rejection');
+  assert.equal((await f.db.query('select count(*)::int n from public.mn_economic_operations')).rows[0].n, 0);
+  await f.db.exec('RESET ROLE'); await f.db.exec(raftIdentifierSql); await f.db.exec(raftIdentifierSql);
+  await f.db.exec('SET ROLE service_role');
+  await accept(f, id(1040), request);
+  assert.equal(f.p.workshop.storageCredit, false);
+  assert.equal(f.p.eco.ships[0].hold.cap, 26);
+  assert.equal(f.p.eco.ships[0].condition.entries.at(-1)[1], 'storage');
+  const paid = clone(f.p); paid.eco.ships[0].hold.goods.madera = 4; paid.eco.pack.goods.madera = 6;
+  await stage(f, paid);
+  await accept(f, id(1041), raftProposal(f, 'place', 'real-paid-hold', ['storage', 1, 0, 0, 0]));
+  assert.equal(f.p.eco.ships[0].hold.cap, 46);
+  assert.equal(f.p.eco.pack.goods.madera, undefined);
+  assert.equal(f.p.eco.ships[0].hold.goods.madera, undefined);
+  await accept(f, id(1042), raftProposal(f, 'remove', 'real-remove-starter-crate', ['crate', 1, 1, 0, 0], 5));
+  await accept(f, id(1043), raftProposal(f, 'place', 'real-kit-crate', ['crate', 1, 1, 0, 0]));
+  assert.equal(f.p.workshop.crateKits, 0);
+  const denied = { world, account, command: { type: 'raft', op: 'place', opId: 'real-occupied-denial',
+    id: ship.id, expectedRev: f.p.eco.ships[0].rev, piece: ['storage', 0, 1, 0, 0], rules: 2 },
+    expectedProfileVersion: f.pv, expectedWorldVersion: f.wv, before: clone(f.p), profile: clone(f.p), worldData: clone(f.w),
+    ack: { type: 'raftEdit', id: ship.id, op: 'place', opId: 'real-occupied-denial', ok: false, why: 'occupied', rev: f.p.eco.ships[0].rev } };
+  await accept(f, id(1044), denied);
+  const stale = clone(denied); stale.command.opId = stale.ack.opId = 'real-stale-denial';
+  stale.command.expectedRev--; stale.expectedProfileVersion = f.pv; stale.expectedWorldVersion = f.wv;
+  stale.ack.why = 'revision'; stale.ack.record = { id: ship.id, rev: stale.ack.rev, parts: f.p.eco.ships[0].grid.parts };
+  await accept(f, id(1045), stale);
+  const forged = clone(stale); forged.command.opId = forged.ack.opId = 'denial-mints-kit';
+  forged.expectedProfileVersion = f.pv; forged.expectedWorldVersion = f.wv; forged.profile.workshop.crateKits++;
+  assert.equal((await commit(f, id(1046), forged)).ok, false);
+  assert.deepEqual((await f.db.query('select public.mn_workshop_raft_identifiers_ready() r')).rows[0].r, { version: 1 });
 });
 
 test('SQL024 adopts a legacy pack only in its exact paid workshop receipt', async t => {
@@ -235,7 +283,7 @@ test('SQL024 timed palm receipt conserves practice and exact three-to-six yield;
   await accept(f, id(962), request);
 });
 
-test('SQL024 leaves a SQL021 receipt unchanged and replays it after both additive migrations', async t => {
+test('SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope', async t => {
   const f = await fixture(t, { apply: false });
   const p = newProfile(); delete p.carry; delete p.workshop; p.eco.pack = { cap: 10, goods: {} };
   const w = worldData(); w.resources = { v: 1, tick: 100, nodes: [{ id: 'palm-1', kind: 'palm', rev: 1, hits: 0, readyAt: 0 }], cooldowns: {} };
@@ -247,10 +295,14 @@ test('SQL024 leaves a SQL021 receipt unchanged and replays it after both additiv
   await f.db.exec('RESET ROLE'); await f.db.exec(sql); await f.db.exec(sql); await f.db.exec('SET ROLE service_role');
   assert.deepEqual(await commit(f, id(970), request), { ...result, replay: true });
   assert.deepEqual((await f.db.query('select request from public.mn_economic_operations where operation_id=$1::uuid', [id(970)])).rows[0].request, request);
+  await f.db.exec('RESET ROLE'); await f.db.exec(raftIdentifierSql); await f.db.exec('SET ROLE service_role');
+  assert.deepEqual(await commit(f, id(970), request), { ...result, replay: true });
+  assert.deepEqual((await f.db.query('select request from public.mn_economic_operations where operation_id=$1::uuid', [id(970)])).rows[0].request, request);
 });
 
 test('SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority', async t => {
   const f = await fixture(t), anchor = id(1100);
+  await f.db.exec('RESET ROLE'); await f.db.exec(raftIdentifierSql); await f.db.exec('SET ROLE service_role');
   const adopted = (await f.db.query('select public.mn_adopt_ground_world($1::uuid,$2::jsonb) r',
     [anchor, { world, expectedWorldVersion: f.wv, worldData: f.w }])).rows[0].r;
   assert.equal(adopted.ok, true, JSON.stringify(adopted));

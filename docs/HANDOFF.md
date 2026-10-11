@@ -33,14 +33,19 @@ Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualiza
 Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
 para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
 
-**AREA03 PRG01d, 2026-10-10 — publicado alpha.35/protocolo 44; taller apagado:**
-[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md). Encargo personal de diez tablas con entregas parciales y primera bodega prepagada;
-caja por kit en banco, tabla 2:1, Tala con aciertos server-owned y carga separada por volumen/masa.
-Sin barrera de Tala 60/carpintería comunitaria. SQL024 después de 001–023 conserva recibos y cerco de mundo;
-no repetir SQL021. Pruebas locales: SQL 9/9, release+autoridad 117/117 y regresión runtime 188/188,
-con solapamiento. QA de paneles ES/EN 39/39, fixtures de escritorio/móvil; no es canario autenticado.
-VPS `33ddf2d` sano: imagen 109/109 y entrada pública 14/14. SQL023/024 ausentes; aplicar en orden y verificar readiness/canario durable antes de activar `MN_STARTER_WORKSHOP`.
-INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es la ampliación posterior, aún separada de este corte.
+**AREA03 PRG01d, 2026-10-10 — taller activado; servidor bloqueado, pendiente SQL026:**
+[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md).
+SQL023/024 confirmados; única autoridad `f939152`, alpha.36/protocolo 45, recursos v3 conservados.
+Encargo personal de diez tablas, crédito único, kit en banco, tabla 2:1 y Tala con aciertos del host.
+Entrada pública 14/14 y navegador autenticado ES/EN 8/8 antes del fallo; cuentas UI limpias, recibos conservados.
+El canario confirmó entregas 3+2+3+2/crédito/kit, pero SQL024 rechazó `:` del ID real al colocar la primera bodega.
+M5 quedó cerrado a escrituras, una operación pendiente, cero jugadores/conexiones; contenedor unhealthy y público 503.
+Recibo fallido ausente, crédito/kit intactos. [Checkpoint y recuperación](delivery/prg01d-starter-workshop/activation/README.md).
+SQL026 preparado (IDs y denegaciones sin cambios), regresión SQL 10/10; aplicación Supabase aún sin verificar.
+Sigue SQL026 → recuperación guardada → canario completo construcción/capacidad/desguace/Tala. No repetir SQL021/024.
+No apagar el taller con recursos v3. Mundo común suelo/perlas/muerte sin adoptar/activar.
+Pruebas locales previas 188/188, 117/117 y paneles 39/39 conservan su alcance; conteos solapados.
+INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es posterior, todavía separado.
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
@@ -48,7 +53,7 @@ tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de e
 V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
 solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
 VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
-pública 6/6. SQL023 aún por aplicar; no se adopta el mundo real ni se activa el montaje.
+pública 6/6. SQL023 instalado y readiness confirmado durante PRG01d; no se adopta el mundo real ni se activa el montaje común.
 Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
 recuperación y canario autenticado VPS.
 

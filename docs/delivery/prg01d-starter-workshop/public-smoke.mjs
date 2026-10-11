@@ -6,6 +6,8 @@ import WebSocket from 'ws';
 import { GAME } from '../../../src/data/meta.js';
 import { PROTOCOL_VERSION, MSG } from '../../../src/net/protocol.js';
 const origin = 'https://marea.62.171.136.148.sslip.io', checks = [];
+const workshopEnabled = process.argv.includes('--workshop-enabled');
+assert.ok(process.argv.slice(2).every(arg => arg === '--workshop-enabled'), 'unknown public smoke option');
 const record = (check, extra = {}) => checks.push({ check, pass: true, ...extra });
 async function get(path) { return fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) }); }
 async function wire(hello, use) {
@@ -37,7 +39,8 @@ try {
   const protocol = await (await get('/src/net/protocol.js')).text();
   assert.ok(protocol.includes('PROTOCOL_VERSION = ' + PROTOCOL_VERSION)); record('published_protocol', { protocol: PROTOCOL_VERSION });
   assert.ok(protocol.includes("AGENT_OWNER: 'agent_owner'"));
-  assert.deepEqual(s.storage.workshop, { enabled: false, ready: false }); record('starter_workshop_off_pending_SQL024');
+  assert.deepEqual(s.storage.workshop, { enabled: workshopEnabled, ready: workshopEnabled });
+  record(workshopEnabled ? 'starter_workshop_enabled_and_ready' : 'starter_workshop_off_pending_SQL024');
   const workshopUi = await get('/src/ui/workshop.js'); assert.equal(workshopUi.status, 200); record('published_workshop_panel');
   const ui = await get('/src/ui/companions.js'); assert.equal(ui.status, 200);
   assert.ok((await ui.text()).includes('serverDisabled')); record('published_companions_panel');
@@ -77,6 +80,7 @@ try {
     assert.equal(denied.t, MSG.ERROR); record('old_protocol_requires_reload');
   });
   const report = { schema: 'mn.prg01d.public.v1', at: new Date().toISOString(), target: 'public TLS', pass: true, checks,
-    limits: ['Guest wire entry only; this does not verify authenticated workshop gameplay.', 'Starter workshop flag remains off; SQL024 and authenticated new-gameplay acceptance remain pending.'] };
-  await writeFile(new URL('./public-smoke.json', import.meta.url), JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report));
+    limits: ['Guest wire entry only; this does not verify authenticated workshop gameplay.',
+      ...(workshopEnabled ? [] : ['Starter workshop flag remains off; SQL024 and authenticated new-gameplay acceptance remain pending.'])] };
+  await writeFile(new URL(workshopEnabled ? './activation/public-entry.json' : './public-smoke.json', import.meta.url), JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify(report));
 } catch { console.error(JSON.stringify({ pass: false, checks, why: 'bounded public smoke failed' })); process.exitCode = 1; }

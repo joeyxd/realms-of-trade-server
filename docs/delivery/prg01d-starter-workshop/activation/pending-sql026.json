@@ -1,0 +1,21 @@
+{
+  "readiness": {
+    "at": "2026-10-11T00:53:27.663Z",
+    "sql026Ready": false,
+    "errorCode": "PGRST202"
+  },
+  "runtime": {
+    "at": "2026-10-11T00:55:59.220792+00:00",
+    "revision": "f939152e24b51774faab3239a902c6cc76e01d3f",
+    "version": "0.6.0-alpha.36",
+    "players": 0,
+    "sockets": 0,
+    "publicHealthStatus": 503,
+    "economicPending": 1,
+    "economicFailed": true,
+    "unsaved": 1,
+    "tickBlocked": true
+  },
+  "recoveryExecuted": false,
+  "next": "Apply SQL026, verify readiness and exact candidate, then run reviewed guarded recovery and full public acceptance."
+}

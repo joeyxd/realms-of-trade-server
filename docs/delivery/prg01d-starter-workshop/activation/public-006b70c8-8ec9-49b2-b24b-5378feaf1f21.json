@@ -1,0 +1,46 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T00:36:22.253Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "protocol": 45,
+  "gameVersion": "0.6.0-alpha.36",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.36",
+      "protocolVersion": 45,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "lawful_bench_navigation",
+      "pass": true
+    },
+    {
+      "name": "partial_delivery_and_exact_retry",
+      "pass": true,
+      "historical": true,
+      "boards": 3
+    },
+    {
+      "name": "insufficient_goods_unchanged",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": false,
+  "failure": "CAS phase seed failed",
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 1,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T00:36:41.820Z"
+}

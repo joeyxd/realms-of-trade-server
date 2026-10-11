@@ -49,6 +49,6 @@ Tala conserva el desafío con objetivo a +45 ticks, cierre a +90 y comienzo no a
 
 ## Estado de aceptación
 
-La entrega local y la evidencia visual están en [PRG01d starter workshop](../delivery/prg01d-starter-workshop.md). La publicación y la activación SQL en un entorno vivo siguen pendientes; las pruebas locales no son un canario autenticado ni confirman persistencia en producción.
+La entrega local y la evidencia visual están en [PRG01d starter workshop](../delivery/prg01d-starter-workshop.md). SQL023/024 confirmados; taller activado en `f939152`, alpha.36/protocolo 45. Navegador autenticado 8/8 y entrada invitada 14/14 antes del fallo. El canario confirmó entregas, crédito y kit, pero SQL024 rechazó el ID real de la primera bodega; M5 está bloqueado y la entrada pública devuelve 503. [SQL026 y recuperación](../delivery/prg01d-starter-workshop/activation/README.md) preparados, regresión SQL 10/10; aplicación SQL026 y aceptación completa aún pendientes. Los conteos locales previos conservan su alcance y se solapan.
 
 Referencias: [PRG01c](prg01c-artisan-storage.md), [Tala durable](prg01b2-logging.md), [autoridad de recursos](m5-resource-authority.md), [continuidad](../CONTINUITY-STATUS.md).
