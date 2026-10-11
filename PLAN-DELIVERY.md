@@ -1,5 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**L03e creación durable de compañeros — readiness instalada; aceptación pública pendiente, alpha.55/protocolo 56:**
+[Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
+57/57 pruebas focales en 9 archivos; browser local 12/12 con SQL034 real en PGlite persistido,
+auth simulada y memoria de juego simulada. SQL034 aplicado en Supabase por UI autenticada;
+`mn_companion_creation_ready` respondió `{"version":1}` a 2026-10-11T17:23:14Z. Flag
+`MN_COMPANION_CREATION=1` configurado en VPS restringido con respaldo; actualizador aún probando
+`fb4276f` de forma segura para jugadores, sin reinicio forzado. Commits `a53c651` y `d91bc66`
+enviados por continuidad. Falta validar revisión activa y flujo público. Sin modelo/inferencia,
+spawn ni permisos concedidos. Siguiente paso: emparejamiento local.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.

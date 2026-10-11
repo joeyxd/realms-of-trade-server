@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**L03e creación de compañeros — readiness instalada; aceptación pública pendiente, alpha.55/protocolo 56:**
+[Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
+57/57 pruebas focales en 9 archivos; browser local 12/12 con SQL034 real en PGlite persistido,
+auth simulada y memoria de juego simulada. SQL034 aplicado en Supabase por UI autenticada;
+`mn_companion_creation_ready` respondió `{"version":1}` a 2026-10-11T17:23:14Z. El flag
+`MN_COMPANION_CREATION=1` quedó configurado en el VPS restringido con respaldo. El actualizador
+seguía el flujo seguro para jugadores probando `fb4276f`; no se forzó reinicio. `a53c651` y
+`d91bc66` se enviaron por continuidad. Falta verificar en producción la revisión activa y el flujo
+autenticado durable. Sin inferencia, spawn ni permisos concedidos; siguiente paso: emparejamiento local.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.
