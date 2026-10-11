@@ -28,4 +28,6 @@ La cobertura vertical del contorno alpha de la figura en la ficha pasa de 85.4% 
 - [asset-evidence.json](../../../art/buccaneer-v1/asset-evidence.json): hashes de originales y derivados, dimensiones, triángulos, skin y comprobaciones de invariantes. Los originales se conservaron byte por byte; las variantes mantienen los hashes invariantes de geometría, skin y nodos frente a la fuente.
 - **36/36 pruebas focales** pasaron. SQL y protocolo 55 no cambian.
 - **19/19 comprobaciones de acciones/fallback** pasaron sin errores del navegador; se inspeccionaron las capturas de poses de escritorio y ficha/partida móvil.
-- La publicación está pendiente. Esta evidencia local no afirma despliegue ni mediciones de FPS.
+- Ajuste publicado y verificado junto al idle en alpha.57, revisión `66fcf82`:
+  [recibo y comprobación pública de escritorio/móvil](../idle/publication.json).
+  No acredita mediciones de FPS en un teléfono físico.
