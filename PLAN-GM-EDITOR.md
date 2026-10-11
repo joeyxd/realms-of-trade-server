@@ -1,11 +1,13 @@
 # Modo GM para construir el mundo
 
-**AREA01 GM05b, 2026-10-11 — pintura implementada localmente, alpha.48/protocolo 53:**
+**AREA01 GM05b, 2026-10-11 — pintura publicada, alpha.48/protocolo 53:**
 [Contrato](docs/briefs/gm05b-terrain-paint.md) y [entrega](docs/delivery/gm05b/DELIVERY.md).
 Hierba/tierra/arena/roca, borrar gradual y pinceles circular/cuadrado/elíptico compartidos con escultura.
 Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores conservadas.
 SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
-Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
+267/267 casos acotados, imagen 37/37 y navegador público 11/11; capturas ES/EN escritorio/móvil inspeccionadas.
+Release `0a2dfc0` sana, 35/35 fuentes activas verificadas; cadena durable y entrada real aceptadas.
+Canario retirado: mapa base generación 8 y borrador original restaurado en r27. Sigue optimización/dispersión y GM06.
 
 **GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
@@ -503,7 +505,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM04b | Plantillas privadas locales de decoración, copias expandidas con IDs independientes y undo atómico | [Entrega](docs/delivery/gm04b/DELIVERY.md); GM 199/199, local 17/17, público 19/19, alpha.41/47 sana |
 | GM04 siguiente | Materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05a | Escultura de suelo seco existente; publicada alpha.45/protocolo 51 | [Entrega](docs/delivery/gm05a/DELIVERY.md): 309/309, imagen 20/20 y actualizador 127/127; 11 controles públicos y cadena autenticada completa, rollback a generación 6 y borrador restaurado |
-| GM05b | Pintar cuatro familias de suelo seco y borrar; formas circular/cuadrada/elíptica | Implementado alpha.48/protocolo 53; [entrega](docs/delivery/gm05b/DELIVERY.md). SQL033 aplicada/readiness real; cierre visual y publicación en curso |
+| GM05b | Pintar cuatro familias de suelo seco y borrar; formas circular/cuadrada/elíptica | Publicado alpha.48/protocolo 53; [entrega](docs/delivery/gm05b/DELIVERY.md). 267/267 acotadas, imagen 37/37, público 11/11 y cadena durable restaurada; SQL033/readiness real |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
@@ -539,7 +541,7 @@ y referencia activa del mundo; la aceptación pública está registrada en la en
 La matriz es objetivo de aceptación por corte, no una afirmación de cobertura completa. GM01 y GM02
 registran las comprobaciones ejecutadas en sus entregas; GM03b2 registra integración, pruebas locales y
 aceptación visual local y aceptación pública alpha.35. GM05a registra escultura y cadena pública alpha.45
-en su entrega; pintura GM05b, expansión GM06 y aceptación física móvil siguen pendientes.
+en su entrega; GM05b registra pintura y cadena pública alpha.48. Expansión GM06 y aceptación física móvil siguen pendientes.
 Cada corte registra implementación, evidencia, aceptación visual y publicación por separado.
 
 ## 13 Base revisada y decisiones pendientes
@@ -563,7 +565,8 @@ el guardado remoto, adopción y conflicto se aceptaron con Supabase real. GM03b2
 protocolo 44: 175/175 selección acotada. Alpha.34 conserva la regresión histórica 308/308 (incluye checker
 2/2) y el navegador local 6/6; el actualizador Linux pasó 22/22 independiente. Alpha.35/protocolo 44 está
 publicada y verificada sana; su canario público pasó 6/6. GM05a publica escultura alpha.45 con una cadena
-autenticada completa y restaurada; la evidencia de cada capa está separada en su entrega. Pintura GM05b, expansión GM06, aceptación física móvil
+autenticada completa y restaurada; GM05b publica pintura alpha.48 con guardado y canario restaurados.
+La evidencia de cada capa está separada en su entrega. Expansión GM06, aceptación física móvil
 y migración explícita entre runtimes siguen pendientes.
 
 Fuera de esta primera entrega: moderación/ban, regalar oro o items, poderes de combate, editor de rigs,

@@ -1,6 +1,6 @@
 {
   "schema": "gm05b-sql-readiness/v1",
-  "at": "2026-10-11T05:58:32.233Z",
+  "at": "2026-10-11T06:32:22.798Z",
   "migration": "server/migrations/033_gm_terrain_materials.sql",
   "sha256": "8a163d4689e4bc6c0d2332d865aa6c600149609495e24c1ed0152df7c51fd9ff",
   "ready": true,
