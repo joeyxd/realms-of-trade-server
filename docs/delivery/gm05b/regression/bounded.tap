@@ -1,0 +1,1543 @@
+TAP version 13
+# Subtest: explicit shifted rectangular bounds fit all four rotated world corners
+ok 1 - explicit shifted rectangular bounds fit all four rotated world corners
+  ---
+  duration_ms: 3.2081
+  type: 'test'
+  ...
+# Subtest: projection round trips and keeps the current NW-up cardinal orientation
+ok 2 - projection round trips and keeps the current NW-up cardinal orientation
+  ---
+  duration_ms: 0.5671
+  type: 'test'
+  ...
+# Subtest: current generated island adapts landmarks and its markers fit the established 255 span
+ok 3 - current generated island adapts landmarks and its markers fit the established 255 span
+  ---
+  duration_ms: 2351.5692
+  type: 'test'
+  ...
+# Subtest: size fallback frames the rotated corners of a square when no legacy span is supplied
+ok 4 - size fallback frames the rotated corners of a square when no legacy span is supplied
+  ---
+  duration_ms: 0.4557
+  type: 'test'
+  ...
+# Subtest: explicit empty feature arrays override legacy island points and regions
+ok 5 - explicit empty feature arrays override legacy island points and regions
+  ---
+  duration_ms: 1.3123
+  type: 'test'
+  ...
+# Subtest: numeric cartography revisions are preserved as strings
+ok 6 - numeric cartography revisions are preserved as strings
+  ---
+  duration_ms: 0.2912
+  type: 'test'
+  ...
+# Subtest: cartography without valid bounds frames known terrain and shifted features instead of cropping them
+ok 7 - cartography without valid bounds frames known terrain and shifted features instead of cropping them
+  ---
+  duration_ms: 0.6152
+  type: 'test'
+  ...
+# Subtest: missing optional world fields and malformed explicit features are safe
+ok 8 - missing optional world fields and malformed explicit features are safe
+  ---
+  duration_ms: 0.4212
+  type: 'test'
+  ...
+# Subtest: editor catalog exposes only the four hashed GM00 candidates with verified GLB metadata
+ok 9 - editor catalog exposes only the four hashed GM00 candidates with verified GLB metadata
+  ---
+  duration_ms: 1542.3252
+  type: 'test'
+  ...
+# Subtest: release checker accepts real current artifact and an active base pointer
+ok 10 - release checker accepts real current artifact and an active base pointer
+  ---
+  duration_ms: 135284.9382
+  type: 'test'
+  ...
+# Subtest: release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+ok 11 - release checker rejects incompatible runtime metadata and corrupted retained bytes without source changes
+  ---
+  duration_ms: 111790.6343
+  type: 'test'
+  ...
+# Subtest: IndexedDB pending activation survives lost response and retries the exact operation after client restart
+ok 12 - IndexedDB pending activation survives lost response and retries the exact operation after client restart
+  ---
+  duration_ms: 79.2806
+  type: 'test'
+  ...
+# Subtest: account identity mismatch stops before network and preserves the durable pending operation
+ok 13 - account identity mismatch stops before network and preserves the durable pending operation
+  ---
+  duration_ms: 30.5845
+  type: 'test'
+  ...
+# Subtest: local CAS loss prevents sending an operation that was not durably recorded
+ok 14 - local CAS loss prevents sending an operation that was not durably recorded
+  ---
+  duration_ms: 30.8169
+  type: 'test'
+  ...
+# Subtest: identity change while session identity is resolving keeps the recorded operation for recovery
+ok 15 - identity change while session identity is resolving keeps the recorded operation for recovery
+  ---
+  duration_ms: 64.4948
+  type: 'test'
+  ...
+# Subtest: cancel and sign-out after a durable commit preserve the exact attempt for later retry
+    # Subtest: cancel
+    ok 1 - cancel
+      ---
+      duration_ms: 44.5876
+      type: 'test'
+      ...
+    # Subtest: signout
+    ok 2 - signout
+      ---
+      duration_ms: 61.1822
+      type: 'test'
+      ...
+    1..2
+ok 16 - cancel and sign-out after a durable commit preserve the exact attempt for later retry
+  ---
+  duration_ms: 107.0503
+  type: 'test'
+  ...
+# Subtest: active world content verifies canonical revision, base fingerprints and collision hash before use
+ok 17 - active world content verifies canonical revision, base fingerprints and collision hash before use
+  ---
+  duration_ms: 944.9483
+  type: 'test'
+  ...
+# Subtest: server baseline absorbs tiny cross-runtime geometry drift and preserves its exact base identities
+ok 18 - server baseline absorbs tiny cross-runtime geometry drift and preserves its exact base identities
+  ---
+  duration_ms: 735.2525
+  type: 'test'
+  ...
+# Subtest: fresh-client verification rejects significant baseline geometry drift before installation
+ok 19 - fresh-client verification rejects significant baseline geometry drift before installation
+  ---
+  duration_ms: 714.1595
+  type: 'test'
+  ...
+# Subtest: a near baseline with a mismatched server fingerprint is rejected
+ok 20 - a near baseline with a mismatched server fingerprint is rejected
+  ---
+  duration_ms: 622.7421
+  type: 'test'
+  ...
+# Subtest: strict base fingerprints reject props, collider and resource drift before changing the active map
+    # Subtest: fingerprint-0
+    ok 1 - fingerprint-0
+      ---
+      duration_ms: 26.9326
+      type: 'test'
+      ...
+    # Subtest: fingerprint-1
+    ok 2 - fingerprint-1
+      ---
+      duration_ms: 27.9701
+      type: 'test'
+      ...
+    # Subtest: fingerprint-2
+    ok 3 - fingerprint-2
+      ---
+      duration_ms: 33.5263
+      type: 'test'
+      ...
+    1..3
+ok 21 - strict base fingerprints reject props, collider and resource drift before changing the active map
+  ---
+  duration_ms: 767.8497
+  type: 'test'
+  ...
+# Subtest: server-selected base identity accepts only null revision bodies and exact runtime version
+ok 22 - server-selected base identity accepts only null revision bodies and exact runtime version
+  ---
+  duration_ms: 776.291
+  type: 'test'
+  ...
+# Subtest: GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+ok 23 - GM content HTTP enforces auth and methods, binds registration to the exact saved head, and activates generation 0 to 1
+  ---
+  duration_ms: 7695.8418
+  type: 'test'
+  ...
+# Subtest: stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+ok 24 - stale HELLO is rejected before auth/profile I/O, current HELLO receives matching WELCOME, and occupied activation is busy
+  ---
+  duration_ms: 6523.8803
+  type: 'test'
+  ...
+# Subtest: default server accepts a HELLO without content identity and welcomes with the base identity
+ok 25 - default server accepts a HELLO without content identity and welcomes with the base identity
+  ---
+  duration_ms: 410.7219
+  type: 'test'
+  ...
+# Subtest: checks all profile pages and rejects only newly added colliders over a persisted checkpoint or ground item
+ok 26 - checks all profile pages and rejects only newly added colliders over a persisted checkpoint or ground item
+  ---
+  duration_ms: 3.3428
+  type: 'test'
+  ...
+# Subtest: rejects a collider over an active profile checkpoint and a same-seed durable raft voyage
+ok 27 - rejects a collider over an active profile checkpoint and a same-seed durable raft voyage
+  ---
+  duration_ms: 0.7844
+  type: 'test'
+  ...
+# Subtest: reserves all derived home berths for saved rafts and ignores voyages from another island seed
+ok 28 - reserves all derived home berths for saved rafts and ignores voyages from another island seed
+  ---
+  duration_ms: 0.8366
+  type: 'test'
+  ...
+# Subtest: checks current death-drop positions and allows an unchanged collider at a drop
+ok 29 - checks current death-drop positions and allows an unchanged collider at a drop
+  ---
+  duration_ms: 0.9587
+  type: 'test'
+  ...
+# Subtest: fails closed on missing APIs, read errors, malformed ordering and more than the bounded profile scan
+ok 30 - fails closed on missing APIs, read errors, malformed ordering and more than the bounded profile scan
+  ---
+  duration_ms: 8.9835
+  type: 'test'
+  ...
+# Subtest: does not mutate the supplied store or world snapshots
+ok 31 - does not mutate the supplied store or world snapshots
+  ---
+  duration_ms: 0.5375
+  type: 'test'
+  ...
+# Subtest: store profile scan is read-only, lowercase, ordered and cursor-bounded in memory and Supabase
+ok 32 - store profile scan is read-only, lowercase, ordered and cursor-bounded in memory and Supabase
+  ---
+  duration_ms: 7.0279
+  type: 'test'
+  ...
+# Subtest: projection keeps stable base data and builds a fresh indexed collision contract
+ok 33 - projection keeps stable base data and builds a fresh indexed collision contract
+  ---
+  duration_ms: 457.2324
+  type: 'test'
+  ...
+# Subtest: null projection clones colliders and query results keep generated-map index semantics
+ok 34 - null projection clones colliders and query results keep generated-map index semantics
+  ---
+  duration_ms: 405.0441
+  type: 'test'
+  ...
+# Subtest: base decoration override and hidden edit compile into exact projection without mutating document or props
+ok 35 - base decoration override and hidden edit compile into exact projection without mutating document or props
+  ---
+  duration_ms: 391.4122
+  type: 'test'
+  ...
+# Subtest: in-place installation changes only collider list and query function
+ok 36 - in-place installation changes only collider list and query function
+  ---
+  duration_ms: 300.807
+  type: 'test'
+  ...
+# Subtest: route validation rejects only clearance losses against previously walkable routes
+ok 37 - route validation rejects only clearance losses against previously walkable routes
+  ---
+  duration_ms: 327.5125
+  type: 'test'
+  ...
+# Subtest: a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+ok 38 - a blocked part of the base route does not grandfather a new obstruction on its clear remainder
+  ---
+  duration_ms: 0.2621
+  type: 'test'
+  ...
+# Subtest: route clearance uses analytic segment-circle overlap for small obstacles between samples
+ok 39 - route clearance uses analytic segment-circle overlap for small obstacles between samples
+  ---
+  duration_ms: 0.149
+  type: 'test'
+  ...
+# Subtest: empty registry has a world-scoped initial state and prepare is repeatable
+ok 40 - empty registry has a world-scoped initial state and prepare is repeatable
+  ---
+  duration_ms: 24.3486
+  type: 'test'
+  ...
+# Subtest: restart validates an existing registry without acquiring the updater-held lock
+ok 41 - restart validates an existing registry without acquiring the updater-held lock
+  ---
+  duration_ms: 16.7061
+  type: 'test'
+  ...
+# Subtest: retain stores canonical revision and exact dependency bytes, then reloads after restart
+ok 42 - retain stores canonical revision and exact dependency bytes, then reloads after restart
+  ---
+  duration_ms: 53.7317
+  type: 'test'
+  ...
+# Subtest: retention rejects altered source bytes and leaves revision unpublished
+ok 43 - retention rejects altered source bytes and leaves revision unpublished
+  ---
+  duration_ms: 22.5115
+  type: 'test'
+  ...
+# Subtest: retention and load reject revision hash mismatch and missing retained bytes
+ok 44 - retention and load reject revision hash mismatch and missing retained bytes
+  ---
+  duration_ms: 36.4479
+  type: 'test'
+  ...
+# Subtest: retention rejects runtime paths outside the release allowlist
+ok 45 - retention rejects runtime paths outside the release allowlist
+  ---
+  duration_ms: 15.011
+  type: 'test'
+  ...
+# Subtest: switch uses generation CAS, records exact replay, and survives restart
+ok 46 - switch uses generation CAS, records exact replay, and survives restart
+  ---
+  duration_ms: 58.1774
+  type: 'test'
+  ...
+# Subtest: operation IDs cannot be reused with a different request
+ok 47 - operation IDs cannot be reused with a different request
+  ---
+  duration_ms: 68.987
+  type: 'test'
+  ...
+# Subtest: failed state rename keeps old state and leaves only an unreachable candidate blob/revision
+ok 48 - failed state rename keeps old state and leaves only an unreachable candidate blob/revision
+  ---
+  duration_ms: 71.9863
+  type: 'test'
+  ...
+# Subtest: failure after state rename reports unknown outcome but durable state is recoverable
+ok 49 - failure after state rename reports unknown outcome but durable state is recoverable
+  ---
+  duration_ms: 61.2932
+  type: 'test'
+  ...
+# Subtest: registry refuses a different world scope
+ok 50 - registry refuses a different world scope
+  ---
+  duration_ms: 16.7404
+  type: 'test'
+  ...
+# Subtest: two scenes install identical base override matrices; restore returns both to base
+ok 51 - two scenes install identical base override matrices; restore returns both to base
+  ---
+  duration_ms: 524.0336
+  type: 'test'
+  ...
+# Subtest: reloading a live layer rebases to original decoration matrices and restore returns to base
+ok 52 - reloading a live layer rebases to original decoration matrices and restore returns to base
+  ---
+  duration_ms: 454.4544
+  type: 'test'
+  ...
+# Subtest: authored models load from prepared entries, preserve YXZ transform, and are removed on restore
+ok 53 - authored models load from prepared entries, preserve YXZ transform, and are removed on restore
+  ---
+  duration_ms: 370.7965
+  type: 'test'
+  ...
+# Subtest: cloned base model preserves per-instance tint and disposes its owned proxy materials
+ok 54 - cloned base model preserves per-instance tint and disposes its owned proxy materials
+  ---
+  duration_ms: 297.3182
+  type: 'test'
+  ...
+# Subtest: missing prepared asset fails closed without leaving any GM scene nodes
+ok 55 - missing prepared asset fails closed without leaving any GM scene nodes
+  ---
+  duration_ms: 378.0552
+  type: 'test'
+  ...
+# Subtest: real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+ok 56 - real durable registry activates, replays exactly, reloads active state after restart, then rolls back to base
+  ---
+  duration_ms: 661.3433
+  type: 'test'
+  ...
+# Subtest: activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+ok 57 - activation rejects lock busy before beginning world exclusion and leaves durable state unchanged
+  ---
+  duration_ms: 419.0115
+  type: 'test'
+  ...
+# Subtest: activation refuses an occupied durable item and a busy game before pointer commit
+ok 58 - activation refuses an occupied durable item and a busy game before pointer commit
+  ---
+  duration_ms: 751.7748
+  type: 'test'
+  ...
+# occupied preflight left the registry head and M5 state unchanged
+# Subtest: lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+ok 59 - lost state rename acknowledgment reconciles durable activation and restart replays the same pointer
+  ---
+  duration_ms: 382.1598
+  type: 'test'
+  ...
+# Subtest: strict publication fingerprint mismatch fails before installation or durable pointer change
+ok 60 - strict publication fingerprint mismatch fails before installation or durable pointer change
+  ---
+  duration_ms: 322.8662
+  type: 'test'
+  ...
+# Subtest: content identity requires the exact server generation and revision pair
+ok 61 - content identity requires the exact server generation and revision pair
+  ---
+  duration_ms: 0.3001
+  type: 'test'
+  ...
+# Subtest: GM draft HTTP requires readiness, authenticates every request and derives owner
+ok 62 - GM draft HTTP requires readiness, authenticates every request and derives owner
+  ---
+  duration_ms: 59.3032
+  type: 'test'
+  ...
+# Subtest: PUT accepts only the strict document contract and returns CAS conflict and replay results
+ok 63 - PUT accepts only the strict document contract and returns CAS conflict and replay results
+  ---
+  duration_ms: 21.72
+  type: 'test'
+  ...
+# Subtest: rate limits the account, sanitizes provider errors, times out, and skips storage after an aborted auth request
+ok 64 - rate limits the account, sanitizes provider errors, times out, and skips storage after an aborted auth request
+  ---
+  duration_ms: 94.1056
+  type: 'test'
+  ...
+# Subtest: PUT rejects incompatible base and unavailable assets; methods, size, and memory mode are bounded
+ok 65 - PUT rejects incompatible base and unavailable assets; methods, size, and memory mode are bounded
+  ---
+  duration_ms: 22.8222
+  type: 'test'
+  ...
+# Subtest: mounted remote drafts use GM auth and content store without changing gameplay world or profiles
+ok 66 - mounted remote drafts use GM auth and content store without changing gameplay world or profiles
+  ---
+  duration_ms: 1238.1527
+  type: 'test'
+  ...
+# Subtest: GM draft readiness failure leaves the mounted game healthy and rejects writes
+ok 67 - GM draft readiness failure leaves the mounted game healthy and rejects writes
+  ---
+  duration_ms: 717.5364
+  type: 'test'
+  ...
+# Subtest: SQL020 is reappliable, service-only and exposes CAS save/load through the Supabase adapter
+ok 68 - SQL020 is reappliable, service-only and exposes CAS save/load through the Supabase adapter
+  ---
+  duration_ms: 2088.555
+  type: 'test'
+  ...
+# Subtest: committed SQL020 receipt replays the exact saved head after database reopen and a lost reply
+ok 69 - committed SQL020 receipt replays the exact saved head after database reopen and a lost reply
+  ---
+  duration_ms: 3387.8208
+  type: 'test'
+  ...
+# Subtest: SQL validator rejects invalid scope, non-v2 document and document over size budget
+ok 70 - SQL validator rejects invalid scope, non-v2 document and document over size budget
+  ---
+  duration_ms: 1335.0198
+  type: 'test'
+  ...
+# Subtest: memory GM draft store identifies itself as non-durable and loads an empty head
+ok 71 - memory GM draft store identifies itself as non-durable and loads an empty head
+  ---
+  duration_ms: 1.3876
+  type: 'test'
+  ...
+# Subtest: memory GM draft store CAS permits one concurrent writer and preserves exact replay
+ok 72 - memory GM draft store CAS permits one concurrent writer and preserves exact replay
+  ---
+  duration_ms: 2.1977
+  type: 'test'
+  ...
+# Subtest: memory GM draft store rejects malformed scope, document version and oversized documents
+ok 73 - memory GM draft store rejects malformed scope, document version and oversized documents
+  ---
+  duration_ms: 0.7948
+  type: 'test'
+  ...
+# Subtest: pure base identity matches GM02 renderer IDs on a generated map
+ok 74 - pure base identity matches GM02 renderer IDs on a generated map
+  ---
+  duration_ms: 16.595
+  type: 'test'
+  ...
+# Subtest: accepts a current document and approved model references, returning normalized v2
+ok 75 - accepts a current document and approved model references, returning normalized v2
+  ---
+  duration_ms: 2.1342
+  type: 'test'
+  ...
+# Subtest: rejects stale base, arbitrary asset IDs, and uneditable base references with stable codes
+ok 76 - rejects stale base, arbitrary asset IDs, and uneditable base references with stable codes
+  ---
+  duration_ms: 3.8069
+  type: 'test'
+  ...
+# Subtest: accepts only generated eligible base IDs and rejects malformed documents
+ok 77 - accepts only generated eligible base IDs and rejects malformed documents
+  ---
+  duration_ms: 3.6525
+  type: 'test'
+  ...
+# Subtest: editor assets load once on demand and clones share immutable prepared geometry
+ok 78 - editor assets load once on demand and clones share immutable prepared geometry
+  ---
+  duration_ms: 5.8849
+  type: 'test'
+  ...
+# Subtest: catalog entry cannot escape assets, replace loaded IDs, or install prop replacement bindings
+ok 79 - catalog entry cannot escape assets, replace loaded IDs, or install prop replacement bindings
+  ---
+  duration_ms: 0.7339
+  type: 'test'
+  ...
+# Subtest: failed lazy load can retry without poisoning normal runtime assets
+ok 80 - failed lazy load can retry without poisoning normal runtime assets
+  ---
+  duration_ms: 0.8785
+  type: 'test'
+  ...
+# Subtest: base IDs are stable for one seed/revision and bind to source prop fingerprints
+ok 81 - base IDs are stable for one seed/revision and bind to source prop fingerprints
+  ---
+  duration_ms: 6.7711
+  type: 'test'
+  ...
+# Subtest: move, rotate and scale preserve instance-local artwork; invalid apply is atomic and restore is exact
+ok 82 - move, rotate and scale preserve instance-local artwork; invalid apply is atomic and restore is exact
+  ---
+  duration_ms: 4.2383
+  type: 'test'
+  ...
+# Subtest: hide is draft-only, rebuilds bounds, and restore re-enables exact original matrices
+ok 83 - hide is draft-only, rebuilds bounds, and restore re-enables exact original matrices
+  ---
+  duration_ms: 1.8378
+  type: 'test'
+  ...
+# Subtest: proxy model shares geometry, preserves per-instance color and relative transform
+ok 84 - proxy model shares geometry, preserves per-instance color and relative transform
+  ---
+  duration_ms: 1.1737
+  type: 'test'
+  ...
+# Subtest: collider edits replace only one owned source circle and preserve independent obstacles
+ok 85 - collider edits replace only one owned source circle and preserve independent obstacles
+  ---
+  duration_ms: 0.725
+  type: 'test'
+  ...
+# Subtest: ambiguous collider ownership prevents edits instead of removing unrelated obstacles
+ok 86 - ambiguous collider ownership prevents edits instead of removing unrelated obstacles
+  ---
+  duration_ms: 1.2967
+  type: 'test'
+  ...
+# Subtest: two props sharing one exact collider are both non-editable and cannot claim that collider
+ok 87 - two props sharing one exact collider are both non-editable and cannot claim that collider
+  ---
+  duration_ms: 0.6558
+  type: 'test'
+  ...
+# Subtest: v1 documents migrate to canonical v2 without changing decoration data
+ok 88 - v1 documents migrate to canonical v2 without changing decoration data
+  ---
+  duration_ms: 2.266
+  type: 'test'
+  ...
+# Subtest: override upsert, hide, removal, and history undo/redo preserve immutable states
+ok 89 - override upsert, hide, removal, and history undo/redo preserve immutable states
+  ---
+  duration_ms: 0.9606
+  type: 'test'
+  ...
+# Subtest: v2 rejects malformed overrides, unknown fields, duplicates, and combined capacity overflow
+ok 90 - v2 rejects malformed overrides, unknown fields, duplicates, and combined capacity overflow
+  ---
+  duration_ms: 9.0688
+  type: 'test'
+  ...
+# Subtest: draft stores migrate and round-trip v1 through save, load, recovery, and export/import
+ok 91 - draft stores migrate and round-trip v1 through save, load, recovery, and export/import
+  ---
+  duration_ms: 1.6493
+  type: 'test'
+  ...
+# Subtest: document v2 validates stable decorative instances and round-trips canonically
+ok 92 - document v2 validates stable decorative instances and round-trips canonically
+  ---
+  duration_ms: 2.264
+  type: 'test'
+  ...
+# Subtest: document rejects non-finite/out-of-bounds transforms, malformed IDs, duplicates, and invalid colliders
+ok 93 - document rejects non-finite/out-of-bounds transforms, malformed IDs, duplicates, and invalid colliders
+  ---
+  duration_ms: 0.8546
+  type: 'test'
+  ...
+# Subtest: decoration edits are immutable and history undo/redo follows committed versions
+ok 94 - decoration edits are immutable and history undo/redo follows committed versions
+  ---
+  duration_ms: 0.8468
+  type: 'test'
+  ...
+# Subtest: draft saves use revision CAS across two store instances and reject stale tab writes
+ok 95 - draft saves use revision CAS across two store instances and reject stale tab writes
+  ---
+  duration_ms: 0.7907
+  type: 'test'
+  ...
+# Subtest: draft export/import round-trip keeps the document and still requires the target revision
+ok 96 - draft export/import round-trip keeps the document and still requires the target revision
+  ---
+  duration_ms: 0.7551
+  type: 'test'
+  ...
+# Subtest: recovery is isolated from the normal draft and preserves the original draft revision
+ok 97 - recovery is isolated from the normal draft and preserves the original draft revision
+  ---
+  duration_ms: 1.3959
+  type: 'test'
+  ...
+# Subtest: concurrent recovery writes use CAS and leave the winning document intact
+ok 98 - concurrent recovery writes use CAS and leave the winning document intact
+  ---
+  duration_ms: 0.5056
+  type: 'test'
+  ...
+# Subtest: recovery clear uses its record revision and cannot clear a newer concurrent save
+ok 99 - recovery clear uses its record revision and cannot clear a newer concurrent save
+  ---
+  duration_ms: 0.6955
+  type: 'test'
+  ...
+# Subtest: allowlisted session opens through bearer check without storing the token
+ok 100 - allowlisted session opens through bearer check without storing the token
+  ---
+  duration_ms: 5.7928
+  type: 'test'
+  ...
+# Subtest: guest and authenticated denied account cannot reach onOpen
+ok 101 - guest and authenticated denied account cannot reach onOpen
+  ---
+  duration_ms: 1.0613
+  type: 'test'
+  ...
+# Subtest: sign-out during lazy editor open closes the editor after onOpen resolves
+ok 102 - sign-out during lazy editor open closes the editor after onOpen resolves
+  ---
+  duration_ms: 9.0713
+  type: 'test'
+  ...
+# Subtest: periodic revalidation revokes an active editor when capability disappears
+ok 103 - periodic revalidation revokes an active editor when capability disappears
+  ---
+  duration_ms: 14.7934
+  type: 'test'
+  ...
+# Subtest: a gameplay transition while the online permission check is pending cannot open the editor
+ok 104 - a gameplay transition while the online permission check is pending cannot open the editor
+  ---
+  duration_ms: 16.1818
+  type: 'test'
+  ...
+# Subtest: known draft and document errors become natural bilingual messages
+ok 105 - known draft and document errors become natural bilingual messages
+  ---
+  duration_ms: 1.1545
+  type: 'test'
+  ...
+# Subtest: unknown external error bytes never reach the visible status
+ok 106 - unknown external error bytes never reach the visible status
+  ---
+  duration_ms: 0.243
+  type: 'test'
+  ...
+# Subtest: visible operation status retains its semantic source and severity across locale changes
+ok 107 - visible operation status retains its semantic source and severity across locale changes
+  ---
+  duration_ms: 0.1916
+  type: 'test'
+  ...
+# Subtest: vegetation editor models preserve painted family materials, normal/depth passes, fit and cached templates
+ok 108 - vegetation editor models preserve painted family materials, normal/depth passes, fit and cached templates
+  ---
+  duration_ms: 8.1713
+  type: 'test'
+  ...
+# Subtest: factory disposal releases only its cached clones and materials, never registry geometry or textures
+ok 109 - factory disposal releases only its cached clones and materials, never registry geometry or textures
+  ---
+  duration_ms: 1.5472
+  type: 'test'
+  ...
+# Subtest: editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+ok 110 - editor controls stay out of the outline pass and remain raycastable on NO_OUTLINE
+  ---
+  duration_ms: 32.6515
+  type: 'test'
+  ...
+# Subtest: normal-pass failures restore world materials so the next frame can render
+ok 111 - normal-pass failures restore world materials so the next frame can render
+  ---
+  duration_ms: 11.5995
+  type: 'test'
+  ...
+# Subtest: a pending draft save persists successfully without hiding a rejected terrain edit
+ok 112 - a pending draft save persists successfully without hiding a rejected terrain edit
+  ---
+  duration_ms: 1.2163
+  type: 'test'
+  ...
+# Subtest: selection pivot is the centroid and has neutral orientation and scale
+ok 113 - selection pivot is the centroid and has neutral orientation and scale
+  ---
+  duration_ms: 1.8217
+  type: 'test'
+  ...
+# Subtest: selection transform applies a world-space pivot delta to rotated and tilted items
+ok 114 - selection transform applies a world-space pivot delta to rotated and tilted items
+  ---
+  duration_ms: 1.3257
+  type: 'test'
+  ...
+# Subtest: batch update handles base and draft objects, preserves unrelated fields, and leaves inputs untouched
+ok 115 - batch update handles base and draft objects, preserves unrelated fields, and leaves inputs untouched
+  ---
+  duration_ms: 1.2303
+  type: 'test'
+  ...
+# Subtest: duplicate flattens draft and base members into new ordinary decorations
+ok 116 - duplicate flattens draft and base members into new ordinary decorations
+  ---
+  duration_ms: 0.4865
+  type: 'test'
+  ...
+# Subtest: batch removal deletes draft objects and hides base members; hidden base removal is a no-op
+ok 117 - batch removal deletes draft objects and hides base members; hidden base removal is a no-op
+  ---
+  duration_ms: 0.4581
+  type: 'test'
+  ...
+# Subtest: one history commit undoes and redoes a whole batch
+ok 118 - one history commit undoes and redoes a whole batch
+  ---
+  duration_ms: 0.5234
+  type: 'test'
+  ...
+# Subtest: selection caps, malformed members, missing/duplicate IDs, hidden edits, and bad transforms reject atomically
+ok 119 - selection caps, malformed members, missing/duplicate IDs, hidden edits, and bad transforms reject atomically
+  ---
+  duration_ms: 1.2398
+  type: 'test'
+  ...
+# Subtest: boundary, invalid IDs, duplicate generated IDs, and object limits reject the complete batch
+ok 120 - boundary, invalid IDs, duplicate generated IDs, and object limits reject the complete batch
+  ---
+  duration_ms: 19.865
+  type: 'test'
+  ...
+# Subtest: updated and duplicated selections remain valid canonical publication content
+ok 121 - updated and duplicated selections remain valid canonical publication content
+  ---
+  duration_ms: 422.4424
+  type: 'test'
+  ...
+# Subtest: a real editor mixed selection can be captured without changing document objects
+ok 122 - a real editor mixed selection can be captured without changing document objects
+  ---
+  duration_ms: 2.5443
+  type: 'test'
+  ...
+# Subtest: template captures visible mixed selection with centroid XZ/minimum Y and preserves base IDs
+ok 123 - template captures visible mixed selection with centroid XZ/minimum Y and preserves base IDs
+  ---
+  duration_ms: 2.515
+  type: 'test'
+  ...
+# Subtest: placement composes relative transforms at one YXZ pivot and makes independent ordinary instances
+ok 124 - placement composes relative transforms at one YXZ pivot and makes independent ordinary instances
+  ---
+  duration_ms: 2.0213
+  type: 'test'
+  ...
+# Subtest: relative height spans document range and placement at minimum height stays valid
+ok 125 - relative height spans document range and placement at minimum height stays valid
+  ---
+  duration_ms: 0.5123
+  type: 'test'
+  ...
+# Subtest: template, library, import bytes, base mismatch, and malformed selection reject atomically
+ok 126 - template, library, import bytes, base mismatch, and malformed selection reject atomically
+  ---
+  duration_ms: 4.2705
+  type: 'test'
+  ...
+# Subtest: placement checks whole batch against document bounds and combined object ceiling
+ok 127 - placement checks whole batch against document bounds and combined object ceiling
+  ---
+  duration_ms: 18.0254
+  type: 'test'
+  ...
+# Subtest: v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+ok 128 - v2 canonical shape stays unchanged, v3 requires terrain, and terrain validates exact canonical samples
+  ---
+  duration_ms: 1.8921
+  type: 'test'
+  ...
+# Subtest: terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+ok 129 - terrain compilation uses alternating mesh triangles, keeps source immutable, and projects walking/material queries
+  ---
+  duration_ms: 1.98
+  type: 'test'
+  ...
+# Subtest: changed samples protect their interpolation neighbors across the dry coast boundary
+ok 130 - changed samples protect their interpolation neighbors across the dry coast boundary
+  ---
+  duration_ms: 6.7095
+  type: 'test'
+  ...
+# Subtest: freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+ok 131 - freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy
+  ---
+  duration_ms: 8.8124
+  type: 'test'
+  ...
+# Subtest: all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+ok 132 - all brushes produce atomic terrain documents and history undo/redo restores the exact sample set
+  ---
+  duration_ms: 31.2465
+  type: 'test'
+  ...
+# Subtest: terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+ok 133 - terrain moves editable base decorations as explicit overrides and stepMover walks the compiled slope
+  ---
+  duration_ms: 33.1396
+  type: 'test'
+  ...
+# Subtest: stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+ok 134 - stroke interpolation is continuous, non-mutating, and invalid gestures reject as a whole
+  ---
+  duration_ms: 8.8147
+  type: 'test'
+  ...
+# Subtest: preview map copies collider data and queries large and huge circles conservatively
+ok 135 - preview map copies collider data and queries large and huge circles conservatively
+  ---
+  duration_ms: 453.9502
+  type: 'test'
+  ...
+# Subtest: preview walks across open terrain and restores camera and listeners on stop
+ok 136 - preview walks across open terrain and restores camera and listeners on stop
+  ---
+  duration_ms: 410.7226
+  type: 'test'
+  ...
+# Subtest: player radius collides with preview-only static circles
+ok 137 - player radius collides with preview-only static circles
+  ---
+  duration_ms: 480.1962
+  type: 'test'
+  ...
+# Subtest: D moves along the actual camera-right direction
+ok 138 - D moves along the actual camera-right direction
+  ---
+  duration_ms: 343.7039
+  type: 'test'
+  ...
+# Subtest: blocked or water spawn searches nearby, while fully blocked terrain reports unavailable
+ok 139 - blocked or water spawn searches nearby, while fully blocked terrain reports unavailable
+  ---
+  duration_ms: 356.092
+  type: 'test'
+  ...
+# Subtest: blur clears held movement and velocity; UI-owned keys pass through
+ok 140 - blur clears held movement and velocity; UI-owned keys pass through
+  ---
+  duration_ms: 253.5429
+  type: 'test'
+  ...
+# Subtest: startup failure and repeated lifecycle leave no view or listeners behind
+ok 141 - startup failure and repeated lifecycle leave no view or listeners behind
+  ---
+  duration_ms: 235.7115
+  type: 'test'
+  ...
+# Subtest: createView failure restores camera and removes preview listeners
+ok 142 - createView failure restores camera and removes preview listeners
+  ---
+  duration_ms: 255.5254
+  type: 'test'
+  ...
+# Subtest: prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+ok 143 - prepares stable runtime fingerprint and resolves only used assets with catalog loader metadata
+  ---
+  duration_ms: 48.0488
+  type: 'test'
+  ...
+# Subtest: uses actual bytes and rejects a declared digest mismatch
+ok 144 - uses actual bytes and rejects a declared digest mismatch
+  ---
+  duration_ms: 30.7013
+  type: 'test'
+  ...
+# Subtest: hashes the resolved file bytes instead of trusting stale index byte counts
+ok 145 - hashes the resolved file bytes instead of trusting stale index byte counts
+  ---
+  duration_ms: 30.7451
+  type: 'test'
+  ...
+# Subtest: rejects external glTF buffer and image URIs
+ok 146 - rejects external glTF buffer and image URIs
+  ---
+  duration_ms: 68.7243
+  type: 'test'
+  ...
+# Subtest: rejects traversal asset paths
+ok 147 - rejects traversal asset paths
+  ---
+  duration_ms: 17.9934
+  type: 'test'
+  ...
+# Subtest: rechecks bytes at resolution and ignores missing unused assets
+ok 148 - rechecks bytes at resolution and ignores missing unused assets
+  ---
+  duration_ms: 33.8217
+  type: 'test'
+  ...
+# Subtest: resolveBaseline hashes every normalized manifest model and texture variant
+ok 149 - resolveBaseline hashes every normalized manifest model and texture variant
+  ---
+  duration_ms: 43.5729
+  type: 'test'
+  ...
+# Subtest: resolveBaseline fails closed when an unused manifest source is missing
+ok 150 - resolveBaseline fails closed when an unused manifest source is missing
+  ---
+  duration_ms: 36.8606
+  type: 'test'
+  ...
+# Subtest: resolve rejects an assets directory junction that escapes the assets root
+ok 151 - resolve rejects an assets directory junction that escapes the assets root
+  ---
+  duration_ms: 35.9353
+  type: 'test'
+  ...
+# Subtest: inspect pins scope, then prepare POST uses its expected revision and verifies the returned artifact
+ok 152 - inspect pins scope, then prepare POST uses its expected revision and verifies the returned artifact
+  ---
+  duration_ms: 7.3741
+  type: 'test'
+  ...
+# Subtest: pending draft operation blocks preparation before a POST
+ok 153 - pending draft operation blocks preparation before a POST
+  ---
+  duration_ms: 1.0077
+  type: 'test'
+  ...
+# Subtest: 409 conflict leaves local state and pending CAS record untouched
+ok 154 - 409 conflict leaves local state and pending CAS record untouched
+  ---
+  duration_ms: 0.5102
+  type: 'test'
+  ...
+# Subtest: late successful response after cancel is ignored
+ok 155 - late successful response after cancel is ignored
+  ---
+  duration_ms: 0.5372
+  type: 'test'
+  ...
+# Subtest: late successful response after sign-out is ignored
+ok 156 - late successful response after sign-out is ignored
+  ---
+  duration_ms: 0.4752
+  type: 'test'
+  ...
+# Subtest: wrong artifact hash returns no preparation artifact
+ok 157 - wrong artifact hash returns no preparation artifact
+  ---
+  duration_ms: 1.982
+  type: 'test'
+  ...
+# Subtest: wrong returned head revision or scope is rejected as a response
+ok 158 - wrong returned head revision or scope is rejected as a response
+  ---
+  duration_ms: 0.9013
+  type: 'test'
+  ...
+# Subtest: preparation authenticates GM users and enforces method, content type, and exact body shape
+ok 159 - preparation authenticates GM users and enforces method, content type, and exact body shape
+  ---
+  duration_ms: 49.1156
+  type: 'test'
+  ...
+# Subtest: preparation derives owner and world, reloads the same saved head before and after build, and never saves
+ok 160 - preparation derives owner and world, reloads the same saved head before and after build, and never saves
+  ---
+  duration_ms: 9.5692
+  type: 'test'
+  ...
+# Subtest: expected revision conflict skips build and releases exclusion for the next valid request
+ok 161 - expected revision conflict skips build and releases exclusion for the next valid request
+  ---
+  duration_ms: 8.3969
+  type: 'test'
+  ...
+# Subtest: head changing during build returns conflict and does not publish a stale result
+ok 162 - head changing during build returns conflict and does not publish a stale result
+  ---
+  duration_ms: 7.0591
+  type: 'test'
+  ...
+# Subtest: build errors are sanitized and draft GET remains available
+ok 163 - build errors are sanitized and draft GET remains available
+  ---
+  duration_ms: 6.9505
+  type: 'test'
+  ...
+# Subtest: only one build runs at once and concurrent preparation returns gm_preparation_busy
+ok 164 - only one build runs at once and concurrent preparation returns gm_preparation_busy
+  ---
+  duration_ms: 8.2852
+  type: 'test'
+  ...
+# Subtest: timeout retains the build lock until underlying work settles, then permits a new build
+ok 165 - timeout retains the build lock until underlying work settles, then permits a new build
+  ---
+  duration_ms: 60.6135
+  type: 'test'
+  ...
+# Subtest: publication readiness failure blocks only prepare while draft reads remain available
+ok 166 - publication readiness failure blocks only prepare while draft reads remain available
+  ---
+  duration_ms: 6.0788
+  type: 'test'
+  ...
+# Subtest: abort after loading the head prevents compilation
+ok 167 - abort after loading the head prevents compilation
+  ---
+  duration_ms: 69.4358
+  type: 'test'
+  ...
+# Subtest: empty preparation is stable, scoped, hashed, and verifiable
+ok 168 - empty preparation is stable, scoped, hashed, and verifiable
+  ---
+  duration_ms: 793.3706
+  type: 'test'
+  ...
+# Subtest: storage crate at a safe point builds a valid visual-only artifact with actual asset digest
+ok 169 - storage crate at a safe point builds a valid visual-only artifact with actual asset digest
+  ---
+  duration_ms: 609.0597
+  type: 'test'
+  ...
+# Subtest: optimized candidate model warns while remaining a valid prepared revision
+ok 170 - optimized candidate model warns while remaining a valid prepared revision
+  ---
+  duration_ms: 694.9512
+  type: 'test'
+  ...
+# Subtest: spawn collider fails validation and produces no artifact
+ok 171 - spawn collider fails validation and produces no artifact
+  ---
+  duration_ms: 528.6656
+  type: 'test'
+  ...
+# Subtest: coastal base overrides and base clones resolve the coast dependency
+ok 172 - coastal base overrides and base clones resolve the coast dependency
+  ---
+  duration_ms: 576.5262
+  type: 'test'
+  ...
+# Subtest: tampered source document, asset metadata, or artifact hash fails client verification
+ok 173 - tampered source document, asset metadata, or artifact hash fails client verification
+  ---
+  duration_ms: 533.9274
+  type: 'test'
+  ...
+# Subtest: preflight and collider compilation are pure; preview sees the compiled collider list
+ok 174 - preflight and collider compilation are pure; preview sees the compiled collider list
+  ---
+  duration_ms: 50.6592
+  type: 'test'
+  ...
+# Subtest: hiding a uniquely colliding base prop removes its collider while preserving other base colliders
+ok 175 - hiding a uniquely colliding base prop removes its collider while preserving other base colliders
+  ---
+  duration_ms: 5.5255
+  type: 'test'
+  ...
+# Subtest: moving a base rock removes its original collider and appends the transformed effective circle
+ok 176 - moving a base rock removes its original collider and appends the transformed effective circle
+  ---
+  duration_ms: 4.0885
+  type: 'test'
+  ...
+# Subtest: transformed base circles preserve collider ownership metadata
+ok 177 - transformed base circles preserve collider ownership metadata
+  ---
+  duration_ms: 4.936
+  type: 'test'
+  ...
+# Subtest: base references, seed, and revision must match exactly
+ok 178 - base references, seed, and revision must match exactly
+  ---
+  duration_ms: 3.3634
+  type: 'test'
+  ...
+# Subtest: base cloned assets resolve against eligible IDs; unrelated base references fail
+ok 179 - base cloned assets resolve against eligible IDs; unrelated base references fail
+  ---
+  duration_ms: 6.0332
+  type: 'test'
+  ...
+# Subtest: untouched colliders are cloned and retain order and metadata
+ok 180 - untouched colliders are cloned and retain order and metadata
+  ---
+  duration_ms: 3.3
+  type: 'test'
+  ...
+# Subtest: visual-only additions produce one aggregate warning
+ok 181 - visual-only additions produce one aggregate warning
+  ---
+  duration_ms: 12.6885
+  type: 'test'
+  ...
+# Subtest: circle collision radius includes scale and X/Z rotation is reported as an aggregate warning
+ok 182 - circle collision radius includes scale and X/Z rotation is reported as an aggregate warning
+  ---
+  duration_ms: 10.2154
+  type: 'test'
+  ...
+# Subtest: protected spawn and resource sites reject authored colliders
+ok 183 - protected spawn and resource sites reject authored colliders
+  ---
+  duration_ms: 21.4623
+  type: 'test'
+  ...
+# Subtest: freshwater spring rejects an authored collider on the gameplay source
+ok 184 - freshwater spring rejects an authored collider on the gameplay source
+  ---
+  duration_ms: 381.0545
+  type: 'test'
+  ...
+# Subtest: path corridor blocks circles only when its projection is on the route segment
+ok 185 - path corridor blocks circles only when its projection is on the route segment
+  ---
+  duration_ms: 7.7562
+  type: 'test'
+  ...
+# Subtest: map bounds, support height, scale, and radius limits are publication errors
+ok 186 - map bounds, support height, scale, and radius limits are publication errors
+  ---
+  duration_ms: 8.0474
+  type: 'test'
+  ...
+# Subtest: unchanged base overrides do not create false collision findings
+ok 187 - unchanged base overrides do not create false collision findings
+  ---
+  duration_ms: 10.8282
+  type: 'test'
+  ...
+# Subtest: edit budget and capped issue display remain invalid using uncapped error counts
+ok 188 - edit budget and capped issue display remain invalid using uncapped error counts
+  ---
+  duration_ms: 15.4978
+  type: 'test'
+  ...
+# Subtest: save records exact attempt before PUT and keeps credentials out of recovery storage
+ok 189 - save records exact attempt before PUT and keeps credentials out of recovery storage
+  ---
+  duration_ms: 6.1047
+  type: 'test'
+  ...
+# Subtest: fresh client retries the exact UUID and payload after a committed PUT lost its response
+ok 190 - fresh client retries the exact UUID and payload after a committed PUT lost its response
+  ---
+  duration_ms: 1.9879
+  type: 'test'
+  ...
+# Subtest: guaranteed remote CAS conflict clears only its attempt and leaves caller draft intact
+ok 191 - guaranteed remote CAS conflict clears only its attempt and leaves caller draft intact
+  ---
+  duration_ms: 0.6778
+  type: 'test'
+  ...
+# Subtest: a second tab with a stale remote head conflicts without replacing local work
+ok 192 - a second tab with a stale remote head conflicts without replacing local work
+  ---
+  duration_ms: 1.1269
+  type: 'test'
+  ...
+# Subtest: local recovery quota failure blocks PUT
+ok 193 - local recovery quota failure blocks PUT
+  ---
+  duration_ms: 0.5449
+  type: 'test'
+  ...
+# Subtest: cancel or signout during an in-flight PUT is not accepted and preserves the exact attempt
+ok 194 - cancel or signout during an in-flight PUT is not accepted and preserves the exact attempt
+  ---
+  duration_ms: 0.6588
+  type: 'test'
+  ...
+# Subtest: wrong scope and malformed success head retain the pending attempt
+ok 195 - wrong scope and malformed success head retain the pending attempt
+  ---
+  duration_ms: 0.6612
+  type: 'test'
+  ...
+# Subtest: retry replay receipt and current inspected head remain separately visible; non-durable ACK is explicit
+ok 196 - retry replay receipt and current inspected head remain separately visible; non-durable ACK is explicit
+  ---
+  duration_ms: 0.7306
+  type: 'test'
+  ...
+# Subtest: mounted HTTP GM session checks authenticated identity and ignores caller-supplied query grants
+ok 197 - mounted HTTP GM session checks authenticated identity and ignores caller-supplied query grants
+  ---
+  duration_ms: 899.704
+  type: 'test'
+  ...
+# Subtest: mounted HTTP GM session is unavailable when the server has no allowlist
+ok 198 - mounted HTTP GM session is unavailable when the server has no allowlist
+  ---
+  duration_ms: 350.2861
+  type: 'test'
+  ...
+# Subtest: real HTTP client disconnect aborts a delayed account resolver without a late response
+ok 199 - real HTTP client disconnect aborts a delayed account resolver without a late response
+  ---
+  duration_ms: 568.0557
+  type: 'test'
+  ...
+# Subtest: late load cannot replace the current session library
+ok 200 - late load cannot replace the current session library
+  ---
+  duration_ms: 3.2573
+  type: 'test'
+  ...
+# Subtest: failed compare-and-swap retains full candidate for export and explicit retry
+ok 201 - failed compare-and-swap retains full candidate for export and explicit retry
+  ---
+  duration_ms: 0.7081
+  type: 'test'
+  ...
+# Subtest: stop and reopen keep the panel mounted and preserve a pending candidate
+ok 202 - stop and reopen keep the panel mounted and preserve a pending candidate
+  ---
+  duration_ms: 0.3138
+  type: 'test'
+  ...
+# Subtest: save, rename, delete, import, and retry are guarded while inactive, walking, or dragging
+ok 203 - save, rename, delete, import, and retry are guarded while inactive, walking, or dragging
+  ---
+  duration_ms: 0.7974
+  type: 'test'
+  ...
+# Subtest: failed initial load leaves controls readonly and a retry can recover
+ok 204 - failed initial load leaves controls readonly and a retry can recover
+  ---
+  duration_ms: 0.4522
+  type: 'test'
+  ...
+# Subtest: IndexedDB open error clears cached rejection so the same source can retry
+ok 205 - IndexedDB open error clears cached rejection so the same source can retry
+  ---
+  duration_ms: 1.769
+  type: 'test'
+  ...
+# Subtest: blocked IndexedDB open retries and closes a late successful connection
+ok 206 - blocked IndexedDB open retries and closes a late successful connection
+  ---
+  duration_ms: 0.2904
+  type: 'test'
+  ...
+# Subtest: template store loads empty, saves and exports immutable revisioned libraries
+ok 207 - template store loads empty, saves and exports immutable revisioned libraries
+  ---
+  duration_ms: 2.2665
+  type: 'test'
+  ...
+# Subtest: shared-source concurrent writers use CAS and report current revision without overwriting winner
+ok 208 - shared-source concurrent writers use CAS and report current revision without overwriting winner
+  ---
+  duration_ms: 0.776
+  type: 'test'
+  ...
+# Subtest: additive import validates first, gives imported templates fresh IDs, and saves as one revision
+ok 209 - additive import validates first, gives imported templates fresh IDs, and saves as one revision
+  ---
+  duration_ms: 1.025
+  type: 'test'
+  ...
+# Subtest: store refuses invalid scope, corrupt stored data, quota errors, size overflow, and revision exhaustion
+ok 210 - store refuses invalid scope, corrupt stored data, quota errors, size overflow, and revision exhaustion
+  ---
+  duration_ms: 3.6264
+  type: 'test'
+  ...
+# Subtest: library is bounded and failed saves leave source record intact
+ok 211 - library is bounded and failed saves leave source record intact
+  ---
+  duration_ms: 1.268
+  type: 'test'
+  ...
+# Subtest: terrain v3 projects the movement sampler and resets to the exact v2 baseline
+ok 212 - terrain v3 projects the movement sampler and resets to the exact v2 baseline
+  ---
+  duration_ms: 478.6023
+  type: 'test'
+  ...
+# Subtest: v2 documents retain their historical shape and projection without terrain fields
+ok 213 - v2 documents retain their historical shape and projection without terrain fields
+  ---
+  duration_ms: 382.993
+  type: 'test'
+  ...
+# Subtest: client publication and server save reject samples in protected ground
+ok 214 - client publication and server save reject samples in protected ground
+  ---
+  duration_ms: 339.3207
+  type: 'test'
+  ...
+# Subtest: publication checks object support against the projected ground height
+ok 215 - publication checks object support against the projected ground height
+  ---
+  duration_ms: 292.7494
+  type: 'test'
+  ...
+# Subtest: activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+ok 216 - activation obstacle guard checks saved drops, checkpoint neighborhoods, and raft footprints even without new colliders
+  ---
+  duration_ms: 354.0924
+  type: 'test'
+  ...
+# Subtest: brush parameters provide stable defaults and enforce bounded values
+ok 217 - brush parameters provide stable defaults and enforce bounded values
+  ---
+  duration_ms: 1.6445
+  type: 'test'
+  ...
+# Subtest: circle, square, and ellipse weights have distinct footprints and rotated ellipses rotate
+ok 218 - circle, square, and ellipse weights have distinct footprints and rotated ellipses rotate
+  ---
+  duration_ms: 0.3009
+  type: 'test'
+  ...
+# Subtest: brush outlines represent shape, respect rotation, and stay within their radius
+ok 219 - brush outlines represent shape, respect rotation, and stay within their radius
+  ---
+  duration_ms: 0.5011
+  type: 'test'
+  ...
+# Subtest: stroke paths preserve legacy samples when bounded and reject oversized paths
+ok 220 - stroke paths preserve legacy samples when bounded and reject oversized paths
+  ---
+  duration_ms: 0.5669
+  type: 'test'
+  ...
+# Subtest: sculpt defaults preserve the prior circular footprint and reject invalid shape controls
+ok 221 - sculpt defaults preserve the prior circular footprint and reject invalid shape controls
+  ---
+  duration_ms: 39.615
+  type: 'test'
+  ...
+# Subtest: sculpting a material-painted terrain keeps v2 materials and document version 4
+ok 222 - sculpting a material-painted terrain keeps v2 materials and document version 4
+  ---
+  duration_ms: 14.9702
+  type: 'test'
+  ...
+# Subtest: ramp remains a circular corridor when non-circular brush controls are supplied
+ok 223 - ramp remains a circular corridor when non-circular brush controls are supplied
+  ---
+  duration_ms: 31.7897
+  type: 'test'
+  ...
+# Subtest: painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+ok 224 - painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back
+  ---
+  duration_ms: 13921.4185
+  type: 'test'
+  ...
+# Subtest: SQL031 preserves v2 receipts and saves/replays strict v3 terrain drafts
+ok 225 - SQL031 preserves v2 receipts and saves/replays strict v3 terrain drafts
+  ---
+  duration_ms: 2322.1046
+  type: 'test'
+  ...
+# Subtest: SQL031 accepts canonical bounds and rejects malformed v3 terrain while retaining the strict v2 path
+ok 226 - SQL031 accepts canonical bounds and rejects malformed v3 terrain while retaining the strict v2 path
+  ---
+  duration_ms: 1770.0262
+  type: 'test'
+  ...
+# Subtest: SQL033 preserves v2/v3 receipts and stores/replays v4 material terrain
+ok 227 - SQL033 preserves v2/v3 receipts and stores/replays v4 material terrain
+  ---
+  duration_ms: 2323.6164
+  type: 'test'
+  ...
+# Subtest: SQL033 enforces canonical v4 height and material bounds independently
+ok 228 - SQL033 enforces canonical v4 height and material bounds independently
+  ---
+  duration_ms: 2677.6782
+  type: 'test'
+  ...
+# Subtest: SQL033 readiness is private and validators remain uncallable
+ok 229 - SQL033 readiness is private and validators remain uncallable
+  ---
+  duration_ms: 1718.7872
+  type: 'test'
+  ...
+# Subtest: v4 saves fail closed before the SQL save RPC when readiness is absent, stale, malformed, or unavailable
+ok 230 - v4 saves fail closed before the SQL save RPC when readiness is absent, stale, malformed, or unavailable
+  ---
+  duration_ms: 2.7867
+  type: 'test'
+  ...
+# Subtest: legacy v3 saves do not require the material readiness RPC
+ok 231 - legacy v3 saves do not require the material readiness RPC
+  ---
+  duration_ms: 0.5105
+  type: 'test'
+  ...
+# Subtest: v4 saves validate readiness first and preserve the exact pending operation identity and document
+ok 232 - v4 saves validate readiness first and preserve the exact pending operation identity and document
+  ---
+  duration_ms: 0.457
+  type: 'test'
+  ...
+# Subtest: terrain material validator rejects invalid sums, ordering, and document-version mismatches
+ok 233 - terrain material validator rejects invalid sums, ordering, and document-version mismatches
+  ---
+  duration_ms: 2.1973
+  type: 'test'
+  ...
+# Subtest: paint and erase are deterministic, nonmutating, and undo/redo restore exact bytes
+ok 234 - paint and erase are deterministic, nonmutating, and undo/redo restore exact bytes
+  ---
+  duration_ms: 2.1806
+  type: 'test'
+  ...
+# Subtest: paint projection preserves height bytes, props, colliders, and resource layout
+ok 235 - paint projection preserves height bytes, props, colliders, and resource layout
+  ---
+  duration_ms: 13.2444
+  type: 'test'
+  ...
+# Subtest: material interpolation follows alternating terrain diagonals exactly
+ok 236 - material interpolation follows alternating terrain diagonals exactly
+  ---
+  duration_ms: 106.4238
+  type: 'test'
+  ...
+# Subtest: matching painted family stays continuous with the automatic residual
+ok 237 - matching painted family stays continuous with the automatic residual
+  ---
+  duration_ms: 0.7091
+  type: 'test'
+  ...
+# Subtest: safe dry material paint passes server draft validation and the spring interpolation margin is rejected
+ok 238 - safe dry material paint passes server draft validation and the spring interpolation margin is rejected
+  ---
+  duration_ms: 3.6256
+  type: 'test'
+  ...
+# Subtest: painting then sculpting preserves material samples in document v4
+ok 239 - painting then sculpting preserves material samples in document v4
+  ---
+  duration_ms: 10.5811
+  type: 'test'
+  ...
+# Subtest: tool and paint controls expose shared brush parameters with relevant controls
+ok 240 - tool and paint controls expose shared brush parameters with relevant controls
+  ---
+  duration_ms: 61.4123
+  type: 'test'
+  ...
+# Subtest: GM terrain preview reuses the terrain object and material, updates its 561 grid and water, then restores exact originals
+ok 241 - GM terrain preview reuses the terrain object and material, updates its 561 grid and water, then restores exact originals
+  ---
+  duration_ms: 205.3588
+  type: 'test'
+  ...
+# Subtest: height texture updates preserve the private texture object and refresh all samples
+ok 242 - height texture updates preserve the private texture object and refresh all samples
+  ---
+  duration_ms: 0.4395
+  type: 'test'
+  ...
+# Subtest: ground transition runs from sand to grass monotonically and stays bounded at extremes
+ok 243 - ground transition runs from sand to grass monotonically and stays bounded at extremes
+  ---
+  duration_ms: 3.4053
+  type: 'test'
+  ...
+# Subtest: ground atlas coordinates stay inside each padded tile, including clamped UV extremes
+ok 244 - ground atlas coordinates stay inside each padded tile, including clamped UV extremes
+  ---
+  duration_ms: 0.7684
+  type: 'test'
+  ...
+# Subtest: a normal map alone cannot enable painted ground; colour without a normal stays flat
+ok 245 - a normal map alone cannot enable painted ground; colour without a normal stays flat
+  ---
+  duration_ms: 0.9815
+  type: 'test'
+  ...
+# Subtest: enabling the ground atlas leaves the shared terrain geometry byte-for-byte unchanged
+ok 246 - enabling the ground atlas leaves the shared terrain geometry byte-for-byte unchanged
+  ---
+  duration_ms: 5.5688
+  type: 'test'
+  ...
+# Subtest: the ground atlas manifest has desktop and mobile sources and linear normal data
+ok 247 - the ground atlas manifest has desktop and mobile sources and linear normal data
+  ---
+  duration_ms: 3.5306
+  type: 'test'
+  ...
+# Subtest: missing texture family keeps terrain valid and normals flat
+ok 248 - missing texture family keeps terrain valid and normals flat
+  ---
+  duration_ms: 3.3823
+  type: 'test'
+  ...
+# Subtest: wet uses same normal; missing colour cannot activate its normal; placement never alters heightfield
+ok 249 - wet uses same normal; missing colour cannot activate its normal; placement never alters heightfield
+  ---
+  duration_ms: 1.125
+  type: 'test'
+  ...
+# Subtest: all consumers have one desktop/mobile source, linear normals and existing files
+ok 250 - all consumers have one desktop/mobile source, linear normals and existing files
+  ---
+  duration_ms: 6.6719
+  type: 'test'
+  ...
+1..250
+# tests 255
+# suites 0
+# pass 255
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 341324.3612

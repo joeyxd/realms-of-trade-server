@@ -557,10 +557,7 @@ export class PortraitStudio {
     this.views = new Map();
   }
 
-  // Returns a canvas (size × size, transparent background). Cached per look (one readback each).
-  render(skinIdx) {
-    if (!this.done) this.done = new Map();
-    if (this.done.has(skinIdx)) return this.done.get(skinIdx);
+  view(skinIdx) {
     let v = this.views.get(skinIdx);
     if (!v) {
       v = new CharacterView(skinIdx, { sword: false });
@@ -568,35 +565,80 @@ export class PortraitStudio {
       v.update(0, { x: 0, y: 0, z: 0, f: 0, vx: 0, vz: 0, st: 0, wade: 1 });
       this.views.set(skinIdx, v);
     }
+    return v;
+  }
+
+  // Studio light only: no cloud shadows, local lights or night fill; alpha is coverage, not glow.
+  shoot(v, cam, rt, buf, w, h) {
     this.scene.add(v.root);
     v.root.updateMatrixWorld(true);
-    const hy = v.head.getWorldPosition(new THREE.Vector3()).y;
-    const big = v.look.body === 'brute' ? 1.45 : 1;
-    this.cam.position.set(0.36 * big, hy + 0.12 * big, 1.0 * big);
-    this.cam.lookAt(0, hy + 0.09 * big, 0);
     const r = this.r, prevClear = r.getClearColor(new THREE.Color()), prevAlpha = r.getClearAlpha(), prevAuto = r.autoClear;
-    // Studio light only: no cloud shadows, local lights or night fill; alpha is coverage, not glow.
     const cloud = U.mnCloud.value, nLights = U.mnLightCount.value, fill = U.mnCharFill.value.clone();
     U.mnCloud.value = 0; U.mnLightCount.value = 0; U.mnGlowOut.value = 0; U.mnCharFill.value.setRGB(0, 0, 0);
     r.autoClear = true;
-    r.setRenderTarget(this.rt);
+    r.setRenderTarget(rt);
     r.setClearColor(0x000000, 0);
     r.clear();
-    r.render(this.scene, this.cam);
-    r.readRenderTargetPixels(this.rt, 0, 0, this.size, this.size, this.buf);
+    r.render(this.scene, cam);
+    r.readRenderTargetPixels(rt, 0, 0, w, h, buf);
     r.setRenderTarget(null);
     r.setClearColor(prevClear, prevAlpha);
     r.autoClear = prevAuto;
     U.mnCloud.value = cloud; U.mnLightCount.value = nLights; U.mnGlowOut.value = 1; U.mnCharFill.value.copy(fill);
     this.scene.remove(v.root);
+  }
+
+  // Copies a bottom-up readback into a 2D canvas.
+  static blit(canvas, buf, w, h) {
+    const ctx = canvas.getContext('2d');
+    const img = ctx.createImageData(w, h);
+    const row = w * 4;
+    for (let y = 0; y < h; y++) img.data.set(buf.subarray((h - 1 - y) * row, (h - y) * row), y * row);
+    ctx.putImageData(img, 0, 0);
+  }
+
+  // Returns a canvas (size × size, transparent background). Cached per look (one readback each).
+  render(skinIdx) {
+    if (!this.done) this.done = new Map();
+    if (this.done.has(skinIdx)) return this.done.get(skinIdx);
+    const v = this.view(skinIdx);
+    v.root.updateMatrixWorld(true);
+    const hy = v.head.getWorldPosition(new THREE.Vector3()).y;
+    const big = v.look.body === 'brute' ? 1.45 : 1;
+    this.cam.position.set(0.36 * big, hy + 0.12 * big, 1.0 * big);
+    this.cam.lookAt(0, hy + 0.09 * big, 0);
+    this.shoot(v, this.cam, this.rt, this.buf, this.size, this.size);
     const c = document.createElement('canvas');
     c.width = c.height = this.size;
-    const ctx = c.getContext('2d');
-    const img = ctx.createImageData(this.size, this.size);
-    const row = this.size * 4;
-    for (let y = 0; y < this.size; y++) img.data.set(this.buf.subarray((this.size - 1 - y) * row, (this.size - y) * row), y * row);
-    ctx.putImageData(img, 0, 0);
+    PortraitStudio.blit(c, this.buf, this.size, this.size);
     this.done.set(skinIdx, c);
     return c;
+  }
+
+  // Full body for the character screen, drawn into `canvas` at its pixel size: turntable yaw (radians) and zoom
+  // (1 = head to toe). Renders on demand (open, drag, zoom); one readback per call.
+  renderFigure(skinIdx, canvas, { yaw = 0, zoom = 1 } = {}) {
+    const w = Math.max(16, canvas.width | 0), h = Math.max(16, canvas.height | 0);
+    if (!this.frt || this.frt.width !== w || this.frt.height !== h) {
+      this.frt?.dispose();
+      this.frt = new THREE.WebGLRenderTarget(w, h, { depthBuffer: true, samples: 4 });
+      this.frt.texture.colorSpace = THREE.SRGBColorSpace;
+      this.fbuf = new Uint8Array(w * h * 4);
+      this.fcam = new THREE.PerspectiveCamera(20, w / h, 0.05, 60);
+    }
+    const v = this.view(skinIdx), H = v.height || 1.88;
+    const z = Math.max(0.8, Math.min(2.6, zoom)), fov = THREE.MathUtils.degToRad(this.fcam.fov);
+    // Fit the whole figure (plus a little floor) vertically, then push in; zooming aims a bit higher, at the chest.
+    const dist = (H * 0.6) / Math.tan(fov / 2) / z, aimY = H * (0.5 + 0.16 * (z - 1) / 1.6);
+    this.fcam.aspect = w / h;
+    this.fcam.updateProjectionMatrix();
+    this.fcam.position.set(0, aimY + H * 0.06, dist);
+    this.fcam.lookAt(0, aimY, 0);
+    const prevYaw = v.root.rotation.y;
+    v.root.rotation.y = yaw;
+    this.shoot(v, this.fcam, this.frt, this.fbuf, w, h);
+    v.root.rotation.y = prevYaw;
+    PortraitStudio.blit(canvas, this.fbuf, w, h);
+    return canvas;
   }
 }

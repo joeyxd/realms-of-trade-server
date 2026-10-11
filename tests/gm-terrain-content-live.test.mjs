@@ -27,7 +27,7 @@ function candidateTerrain(map) {
   for (let z = -280; z <= 280; z++) for (let x = -280; x <= 280; x++) {
     const index = (z + map.half) * 561 + x + map.half;
     for (const delta of [12000, 1000, -1000]) {
-      const terrain = { version: 1, samples: [[index, delta]] };
+      const terrain = { version: 2, samples: [[index, delta]], materials: [[index, 255, 0, 0, 0]] };
       try { validateTerrainForMap(map, terrain); return { terrain, x, z, index, delta }; }
       catch { /* find a safe dry sample on this deterministic seed */ }
     }
@@ -35,18 +35,18 @@ function candidateTerrain(map) {
   throw new Error('No safe terrain sample found in fixture map');
 }
 
-async function savePrepareRegister(httpBase, seed, terrain) {
+async function savePrepareRegister(httpBase, seed, terrain, { operationId = SAVE_OP, expectedRevision = 0 } = {}) {
   const document = createDocument({ seed, baseRevision: BASE, terrain });
   const saved = await fetch(`${httpBase}/api/gm/draft`, { method: 'PUT', headers: json(), body: JSON.stringify({
-    operationId: SAVE_OP, expectedRevision: 0, document,
+    operationId, expectedRevision, document,
   }) });
   assert.equal(saved.status, 200, await saved.clone().text());
   const prepared = await fetch(`${httpBase}/api/gm/prepare`, { method: 'POST', headers: json(),
-    body: JSON.stringify({ expectedRevision: 1 }) });
+    body: JSON.stringify({ expectedRevision: expectedRevision + 1 }) });
   assert.equal(prepared.status, 200, await prepared.clone().text());
   const revision = (await prepared.json()).preparation.revision;
   const registered = await fetch(`${httpBase}/api/gm/revisions`, { method: 'POST', headers: json(),
-    body: JSON.stringify({ expectedRevision: 1, revisionId: revision.revisionId }) });
+    body: JSON.stringify({ expectedRevision: expectedRevision + 1, revisionId: revision.revisionId }) });
   assert.equal(registered.status, 200, await registered.clone().text());
   return revision;
 }
@@ -69,7 +69,7 @@ async function hello(url, content) {
   catch (error) { socket.close(); throw error; }
 }
 
-test('terrain draft saves, prepares, activates, reloads exact heights, admits matching peer, and rolls back to legacy', async () => {
+test('painted v4 terrain draft saves, prepares, activates, loads for clients, admits matching peer, and rolls back', async () => {
   const temp = await mkdtemp(path.join(os.tmpdir(), 'gm-terrain-live-'));
   const store = { ...createMemoryStore(), durable: true };
   const app = createGameServer({ port: 0, host: '127.0.0.1', seed: 12345, bots: 0, dev: false, log() {}, worldId: WORLD,
@@ -81,7 +81,8 @@ test('terrain draft saves, prepares, activates, reloads exact heights, admits ma
     const seed = app.game.server.world.seed, base = generateWorld(seed), sample = candidateTerrain(base);
     const before = base.groundAt(sample.x, sample.z);
     const revision = await savePrepareRegister(httpBase, seed, sample.terrain);
-    assert.deepEqual(Object.keys(revision.content.terrain).sort(), ['gridSize', 'sha256']);
+    assert.equal(revision.content.document.version, 4);
+    assert.deepEqual(Object.keys(revision.content.terrain).sort(), ['gridSize', 'materialsSha256', 'sha256']);
     assert.equal(revision.content.terrain.gridSize, 561);
 
     const activated = await fetch(`${httpBase}/api/gm/activate`, { method: 'POST', headers: json(), body: JSON.stringify({
@@ -89,6 +90,7 @@ test('terrain draft saves, prepares, activates, reloads exact heights, admits ma
     }) });
     assert.equal(activated.status, 200, await activated.clone().text());
     assert.equal(app.game.server.world.map.heights[sample.index], Math.fround(base.heights[sample.index] + sample.delta / 1000));
+    assert.deepEqual(app.game.server.world.map.materialWeightsAt(sample.x, sample.z), [1, 0, 0, 0]);
     peer = await hello(wsUrl, { generation: 1, revisionId: revision.revisionId });
     assert.deepEqual(peer.message.content, { generation: 1, revisionId: revision.revisionId });
     await new Promise((resolve) => { peer.socket.onclose = resolve; peer.socket.close(); });
@@ -106,11 +108,21 @@ test('terrain draft saves, prepares, activates, reloads exact heights, admits ma
       fetchImpl: async () => ({ ok: true, json: async () => forged }) }), { code: 'content_terrain' });
     assert.equal(guardedMap.heights[sample.index], guardedBase.heights[sample.index]);
 
+    const forgedMaterials = structuredClone(activeBody);
+    forgedMaterials.revision.content.terrain.materialsSha256 = '0'.repeat(64);
+    forgedMaterials.revision.revisionId = await gmContentHash(forgedMaterials.revision.content);
+    forgedMaterials.revisionId = forgedMaterials.revision.revisionId;
+    const guardedMaterialBase = generateWorld(seed), guardedMaterialMap = { ...guardedMaterialBase };
+    await assert.rejects(loadGmWorldContent({ httpBase: `${httpBase}/`, map: guardedMaterialMap, baseMap: guardedMaterialBase,
+      gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION,
+      fetchImpl: async () => ({ ok: true, json: async () => forgedMaterials }) }), { code: 'content_terrain' });
+
     const loaded = await loadGmWorldContent({ httpBase: `${httpBase}/`, map: clientMap, baseMap: clientBase,
       gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION });
     assert.equal(loaded.revisionId, revision.revisionId);
     assert.equal(clientMap.heights[sample.index], app.game.server.world.map.heights[sample.index]);
     assert.equal(clientMap.groundAt(sample.x, sample.z), app.game.server.world.map.groundAt(sample.x, sample.z));
+    assert.deepEqual(clientMap.materialWeightsAt(sample.x, sample.z), [1, 0, 0, 0]);
     assert.deepEqual(resourceLayout(clientMap), resourceLayout(clientBase));
 
     const v2Save = await fetch(`${httpBase}/api/gm/draft`, { method: 'PUT', headers: json(), body: JSON.stringify({
@@ -130,12 +142,38 @@ test('terrain draft saves, prepares, activates, reloads exact heights, admits ma
     }) });
     assert.equal(rolledBack.status, 200, await rolledBack.clone().text());
     assert.equal(app.game.server.world.map.heights[sample.index], base.heights[sample.index]);
+    assert.equal(app.game.server.world.map.materialWeightsAt, undefined);
     const legacyBase = generateWorld(seed), legacyMap = { ...legacyBase };
     const legacy = await loadGmWorldContent({ httpBase: `${httpBase}/`, map: legacyMap, baseMap: legacyBase,
       gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION });
     assert.equal(legacy.revisionId, null);
     assert.equal(legacyMap.heights[sample.index], base.heights[sample.index]);
     assert.equal(legacyMap.groundAt(sample.x, sample.z), before);
+    assert.equal(legacyMap.materialWeightsAt, undefined);
+
+    const heightOnly = { version: 1, samples: [[sample.index, sample.delta]] };
+    const heightRevision = await savePrepareRegister(httpBase, seed, heightOnly, {
+      operationId: '40000000-0000-4000-8000-000000000015', expectedRevision: 2,
+    });
+    assert.equal(heightRevision.content.document.version, 3);
+    assert.deepEqual(Object.keys(heightRevision.content.terrain).sort(), ['gridSize', 'sha256']);
+    const heightActivated = await fetch(`${httpBase}/api/gm/activate`, { method: 'POST', headers: json(), body: JSON.stringify({
+      operationId: '40000000-0000-4000-8000-000000000016', expectedGeneration: 2, revisionId: heightRevision.revisionId,
+    }) });
+    assert.equal(heightActivated.status, 200, await heightActivated.clone().text());
+    const heightPeer = await hello(wsUrl, { generation: 3, revisionId: heightRevision.revisionId });
+    assert.deepEqual(heightPeer.message.content, { generation: 3, revisionId: heightRevision.revisionId });
+    await new Promise((resolve) => { heightPeer.socket.onclose = resolve; heightPeer.socket.close(); });
+    const heightClientBase = generateWorld(seed), heightClientMap = { ...heightClientBase };
+    const heightLoaded = await loadGmWorldContent({ httpBase: `${httpBase}/`, map: heightClientMap, baseMap: heightClientBase,
+      gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION });
+    assert.equal(heightLoaded.revisionId, heightRevision.revisionId);
+    assert.equal(heightClientMap.heights[sample.index], app.game.server.world.map.heights[sample.index]);
+    assert.deepEqual(heightClientMap.materialWeightsAt(sample.x, sample.z), [0, 0, 0, 0]);
+    const heightRollback = await fetch(`${httpBase}/api/gm/activate`, { method: 'POST', headers: json(), body: JSON.stringify({
+      operationId: '40000000-0000-4000-8000-000000000017', expectedGeneration: 3, revisionId: null,
+    }) });
+    assert.equal(heightRollback.status, 200, await heightRollback.clone().text());
   } finally {
     if (peer) await new Promise((resolve) => { peer.socket.onclose = resolve; peer.socket.close(); });
     await app.close();

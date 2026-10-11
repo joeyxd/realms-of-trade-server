@@ -135,7 +135,7 @@ export class AgentMind {
     if (!same(before.ownerFileHashes, current.ownerFileHashes)) return 'owner_files_changed';
     if (before.memoryValidUntilMs !== null && before.memoryValidUntilMs !== undefined && nowMs >= before.memoryValidUntilMs) return 'memory_expired';
     // A slow conversation may use historical context, but body decisions stay short lived.
-    const maxAge = ['conversation', 'goals', 'compaction'].includes(mode)
+    const maxAge = ['conversation', 'goals', 'compaction', 'remember'].includes(mode)
       ? this.#limits.maxReflectionAgeMs : this.#limits.maxDecisionAgeMs;
     if (nowMs - before.observation.receivedAtMs > maxAge) return 'stale_decision';
     return null;
@@ -223,7 +223,11 @@ export class AgentMind {
         this.#finish(flight, { ok: false, why: admitted.why }); return;
       }
     }
-    const boundaryFence = this.#fenceWhy(snapshot, dispatchSnapshot, this.#now(), flight.mode);
+    // Durable admission can yield while new observations or owner edits arrive.
+    // Re-read at the provider boundary; the original decision still keeps its age fence.
+    const boundarySnapshot = copy(await this.#read());
+    if (this.#deadline(flight)) { await this.#budget.markUnknown(flight.requestId, 'inference_cancelled'); return; }
+    const boundaryFence = this.#fenceWhy(snapshot, boundarySnapshot, this.#now(), flight.mode);
     if (boundaryFence) {
       await this.#budget.markUnknown(flight.requestId, 'inference_cancelled');
       this.#finish(flight, { ok: false, why: boundaryFence }); return;
@@ -256,15 +260,16 @@ export class AgentMind {
       this.#finish(flight, { ok: false, why: 'response_over_budget' }); return;
     }
     this.#budget.assertAdapter?.(this.#adapter);
-    const current = copy(await this.#read());
-    if (this.#deadline(flight)) return;
-    const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs, flight.mode);
-    if (fence) { this.#finish(flight, { ok: false, why: fence }); return; }
     if (this.#budget.checkActive) {
       const active = await this.#budget.checkActive(flight.requestId);
       if (this.#deadline(flight)) return;
       if (!active.ok) { this.#finish(flight, { ok: false, why: active.why }); return; }
     }
+    // No asynchronous budget I/O may age this final state before a synchronous submission.
+    const current = copy(await this.#read());
+    if (this.#deadline(flight)) return;
+    const nowMs = this.#now(), fence = this.#fenceWhy(snapshot, current, nowMs, flight.mode);
+    if (fence) { this.#finish(flight, { ok: false, why: fence }); return; }
     if (flight.mode === 'compaction') {
       if (decision.type === 'wait') { this.#finish(flight, { ok: true, action: null, memory: null }); return; }
       const result = createMemorySummary(decision, flight.turn, snapshot.scope, nowMs);

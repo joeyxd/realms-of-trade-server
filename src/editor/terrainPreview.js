@@ -39,6 +39,8 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       restore();
       return;
     }
+    const paintOnly = !!projectedMap.terrain && !!currentMap.terrain &&
+      JSON.stringify(projectedMap.terrain.samples) === JSON.stringify(currentMap.terrain.samples);
     if (!activeGeometry) {
       const temporary = createTerrain(projectedMap, { segments: 560 });
       activeGeometry = temporary.geometry;
@@ -49,10 +51,10 @@ export function createTerrainPreview({ scene, map, invalidate = () => {} } = {})
       terrain.geometry = activeGeometry;
     } else {
       // Reuse GPU buffers while a sculpt stroke updates the projected sample set.
-      updateTerrainGeometry(terrain, projectedMap, { segments: 560 });
+      updateTerrainGeometry(terrain, projectedMap, { segments: 560, paintOnly });
     }
-    if (heightTexture) updateHeightTexture(projectedMap, heightTexture);
-    else heightTexture = createHeightTexture(projectedMap);
+    if (heightTexture && !paintOnly) updateHeightTexture(projectedMap, heightTexture);
+    else if (!heightTexture) heightTexture = createHeightTexture(projectedMap);
     setWaterHeight(heightTexture);
     currentMap = projectedMap;
     invalidate();

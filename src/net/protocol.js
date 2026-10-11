@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 53; // Predicted hunger/thirst and private canteen capability; reload peers.
+export const PROTOCOL_VERSION = 54; // Pack load tier in the predicted player state (INV02d overload); reload peers.
 
 export const MSG = {
   // client -> server

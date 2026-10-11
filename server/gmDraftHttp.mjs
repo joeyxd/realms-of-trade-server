@@ -196,7 +196,7 @@ export function createGmDraftHandler({ store, resolvePlayer, accountIds, worldId
         let document;
         try {
           document = validateDocument(input.document);
-          if (![2, 3].includes(document.version) || document.base.seed !== seed || document.base.revision !== baseRevision) throw new Error('document');
+          if (![2, 3, 4].includes(document.version) || document.base.seed !== seed || document.base.revision !== baseRevision) throw new Error('document');
           const referenced = validateReferences(document);
           if (referenced === false) throw new Error('document');
           if (referenced !== undefined && referenced !== true) document = validateDocument(referenced);

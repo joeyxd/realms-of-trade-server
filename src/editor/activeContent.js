@@ -45,10 +45,12 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
     const projected = projectGmContent(verifiedBase, document, 'terrain-s21-v1');
     if (document.terrain) {
       const metadata = content.terrain;
-      if (!metadata || Object.keys(metadata).sort().join(',') !== 'gridSize,sha256' ||
+      const painted = document.terrain.version === 2;
+      if (!metadata || Object.keys(metadata).sort().join(',') !== (painted ? 'gridSize,materialsSha256,sha256' : 'gridSize,sha256') ||
           metadata.gridSize !== TERRAIN_GRID_SIZE || !/^[a-f0-9]{64}$/.test(metadata.sha256) ||
           projected.heights?.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE ||
-          metadata.sha256 !== await gmContentHash(Array.from(projected.heights))) {
+          metadata.sha256 !== await gmContentHash(Array.from(projected.heights)) ||
+          (painted && metadata.materialsSha256 !== await gmContentHash(document.terrain.materials))) {
         throw Object.assign(new Error('content_terrain'), { code: 'content_terrain' });
       }
     } else if (content.terrain !== undefined) {

@@ -33,6 +33,31 @@ async function post(access, route, body, extraHeaders = {}) {
   return fetch(`${access.origin}${route}`, { method: 'POST', headers: headers(access, extraHeaders), body: JSON.stringify(body) });
 }
 async function json(response) { return response.json(); }
+function continuityAdapterFactory(metrics) {
+  return () => ({
+    id: 'continuity-test-adapter', countMode: 'estimated_tokens',
+    localResourcePolicy: { baseUrl: draft.baseUrl, modelId: draft.modelId, thinkingMode: draft.thinkingMode },
+    countText: text => Buffer.byteLength(text, 'utf8'),
+    prepare(request) {
+      const body = JSON.stringify(request), inputTokens = Buffer.byteLength(body, 'utf8') + 1024;
+      return { body, inputTokens, maxCostUnits: inputTokens + request.maxOutputTokens };
+    },
+    async complete({ body }) {
+      metrics.calls++;
+      const packet = JSON.parse(body), sources = packet.context?.required?.tools?.memoryCompaction?.sources;
+      let response;
+      if (Array.isArray(sources)) {
+        metrics.compactionSources = sources.map(source => source.id);
+        response = { v: 1, decision: { type: 'summarize_memory', args: {
+          text: 'Plan comunicado de balsa', tags: [], basis: sources.map(source => source.id) } } };
+      } else {
+        response = { v: 1, decision: { type: 'reply', args: { text: '¡Afirmativo, capitana!' } } };
+      }
+      const text = JSON.stringify(response);
+      return { text, usage: { inputTokens: 1200, outputTokens: 80, costUnits: 1280 } };
+    },
+  });
+}
 async function rawRequest(origin, path, { method = 'GET', headers: requestHeaders = {}, body = '' } = {}) {
   const url = new URL(origin);
   return new Promise((resolve, reject) => {
@@ -89,6 +114,113 @@ test('Host and Origin fences reject cross-site reads and writes', async (t) => {
     headers: { Authorization: `Bearer ${access.key}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ draft, limits }) });
   assert.equal(missingOrigin.status, 403);
   assert.equal((await json(missingOrigin)).why, 'origin_required');
+});
+
+test('continuity routes enforce exact bodies and the local owner fences', async (t) => {
+  const access = await studioFixture(t);
+  const routes = [
+    ['/api/context/refresh', {}, { extra: true }],
+    ['/api/memory/compact', { sourceIds: ['episode:' + 'a'.repeat(64)] }, { sourceIds: ['episode:' + 'a'.repeat(64)], extra: true }],
+    ['/api/continuity', { autoCompact: false }, { autoCompact: false, extra: true }],
+  ];
+  for (const [route, valid, extra] of routes) {
+    const missingAuth = await fetch(`${access.origin}${route}`, { method: 'POST', headers: {
+      Origin: access.origin, 'Content-Type': 'application/json' }, body: JSON.stringify(valid) });
+    assert.equal(missingAuth.status, 401, `${route} requires owner authentication`);
+    assert.equal((await json(missingAuth)).why, 'unauthorized');
+    const missingOrigin = await fetch(`${access.origin}${route}`, { method: 'POST', headers: {
+      Authorization: `Bearer ${access.key}`, 'Content-Type': 'application/json' }, body: JSON.stringify(valid) });
+    assert.equal(missingOrigin.status, 403, `${route} requires the local Origin`);
+    assert.equal((await json(missingOrigin)).why, 'origin_required');
+    const wrongOrigin = await post(access, route, valid, { Origin: 'http://attacker.example' });
+    assert.equal(wrongOrigin.status, 403, `${route} rejects cross-origin access`);
+    assert.equal((await json(wrongOrigin)).why, 'origin_rejected');
+    const extraResponse = await post(access, route, extra);
+    assert.equal(extraResponse.status, 400, `${route} rejects extra fields`);
+    assert.equal((await json(extraResponse)).why, 'invalid_request');
+  }
+  for (const [route, body] of [
+    ['/api/context/refresh', { unexpected: true }],
+    ['/api/memory/compact', {}], ['/api/memory/compact', { sourceIds: [] }],
+    ['/api/memory/compact', { sourceIds: ['not-an-episode'] }],
+    ['/api/memory/compact', { sourceIds: [42] }],
+    ['/api/memory/compact', { sourceIds: ['episode:' + 'a'.repeat(64), 'episode:' + 'a'.repeat(64)] }],
+    ['/api/memory/compact', { sourceIds: Array.from({ length: 9 }, (_, i) => `episode:${i.toString(16).padStart(64, '0')}`) }],
+    ['/api/continuity', {}], ['/api/continuity', { autoCompact: 'true' }],
+  ]) {
+    const response = await post(access, route, body);
+    assert.equal(response.status, 400, `${route} rejects ${JSON.stringify(body)}`);
+    assert.equal((await json(response)).why, 'invalid_request');
+  }
+});
+
+test('context refresh works while stopped without starting a session, inferring, or resetting budget', { timeout: 30000 }, async (t) => {
+  const metrics = { calls: 0, compactionSources: [] };
+  const access = await studioFixture(t, { adapterFactory: continuityAdapterFactory(metrics) });
+  assert.equal((await (await post(access, '/api/create', { draft, limits })).json()).created, true);
+  assert.equal((await post(access, '/api/start', {})).status, 200);
+  const chat = await post(access, '/api/chat', { text: '¿Qué acordamos en el muelle?' });
+  assert.equal(chat.status, 200, JSON.stringify(await json(chat)));
+  assert.equal(metrics.calls, 1, 'the fixture performs one simulated chat inference');
+  assert.equal((await post(access, '/api/stop', {})).status, 200);
+
+  const before = await fetch(`${access.origin}/api/state`, { headers: { Authorization: `Bearer ${access.key}` } }).then(json);
+  assert.equal(before.status.state, 'stopped');
+  assert.ok(before.budget.totals.confirmedTokens > 0);
+  const refresh = await post(access, '/api/context/refresh', {});
+  const result = await json(refresh);
+  assert.equal(refresh.status, 200, JSON.stringify(result));
+  assert.equal(result.state, 'stopped');
+  assert.equal(result.budgetReset, false);
+  assert.equal(metrics.calls, 1, 'context refresh does not call the provider');
+  const after = await fetch(`${access.origin}/api/state`, { headers: { Authorization: `Bearer ${access.key}` } }).then(json);
+  assert.equal(after.status.state, 'stopped');
+  assert.equal(after.status.sessionId, before.status.sessionId);
+  assert.deepEqual(after.budget.totals, before.budget.totals, 'the existing allowance is preserved');
+  assert.equal(after.continuity.lastRefresh.reason, 'manual_refresh');
+});
+
+test('opt-in is local policy only and a simulated chat episode can be summarized with its original retained', { timeout: 30000 }, async (t) => {
+  const metrics = { calls: 0, compactionSources: [] };
+  const access = await studioFixture(t, { adapterFactory: continuityAdapterFactory(metrics) });
+  await post(access, '/api/create', { draft, limits });
+  const optIn = await post(access, '/api/continuity', { autoCompact: true });
+  assert.equal(optIn.status, 200);
+  assert.equal((await json(optIn)).autoCompact, true);
+  assert.equal(metrics.calls, 0, 'changing the opt-in does not call the adapter');
+  const stateAfterOptIn = await fetch(`${access.origin}/api/state`, { headers: { Authorization: `Bearer ${access.key}` } }).then(json);
+  assert.equal(stateAfterOptIn.continuity.autoCompact, true);
+  assert.equal(stateAfterOptIn.continuity.automaticSummaryLimit, 1);
+
+  await post(access, '/api/continuity', { autoCompact: false });
+  assert.equal((await post(access, '/api/start', {})).status, 200);
+  const chat = await post(access, '/api/chat', { text: 'Dejamos la balsa junto al almacén.' });
+  const chatResult = await json(chat);
+  assert.equal(chat.status, 200, JSON.stringify(chatResult));
+  const chatCalls = metrics.calls;
+  assert.equal(chatCalls, 1, 'the delivered chat uses exactly one simulated inference, without retries');
+  const before = await fetch(`${access.origin}/api/state`, { headers: { Authorization: `Bearer ${access.key}` } }).then(json);
+  const episode = before.continuity.sources.find(source => source.id.startsWith('episode:'));
+  assert.ok(episode, 'the delivered chat produces a saved episode');
+  const originalJournal = before.files.memory.content;
+  assert.ok(originalJournal.includes(episode.id));
+
+  const compact = await post(access, '/api/memory/compact', { sourceIds: [episode.id] });
+  const compactResult = await json(compact);
+  assert.equal(compact.status, 200, JSON.stringify(compactResult));
+  assert.deepEqual(metrics.compactionSources, [episode.id], 'the adapter receives the requested pinned source');
+  assert.equal(metrics.calls, chatCalls + 1, 'summary uses exactly one separate simulated inference');
+  const after = await fetch(`${access.origin}/api/state`, { headers: { Authorization: `Bearer ${access.key}` } }).then(json);
+  assert.equal(after.continuity.journal.episodes, 1);
+  assert.equal(after.continuity.journal.summaries, 1);
+  assert.ok(after.files.memory.content.includes(episode.id), 'the original episode remains in the journal');
+  const entries = after.files.memory.content.trim().split(/\r?\n/).map(line => JSON.parse(line));
+  const summary = entries.find(entry => entry.kind === 'summary');
+  assert.ok(summary, 'a summary entry is persisted');
+  assert.equal(summary.payload.text, 'Plan comunicado de balsa');
+  assert.deepEqual(summary.payload.sources.map(source => source.id), [episode.id]);
+  assert.equal(after.continuity.lastSummary.ok, true);
+  assert.deepEqual(after.continuity.lastSummary.sourceIds, [episode.id]);
 });
 
 test('create requires the exact schema and does not infer until explicit start', { timeout: 30000 }, async (t) => {
