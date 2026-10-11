@@ -10,6 +10,20 @@ Público: 11 controles, activación gen5, navegador nuevo con alturas/hash antes
 rollback verificado a gen6/base, borrador original restaurado por CAS en r25. Release `839393a` sana;
 Carga y agua continúan enabled/ready; piloto del suelo sin montar. Capturas originales nocturnas separadas
 de la revisión con luz privada del renderer. Sigue GM05b pintura; GM06 nueva tierra/costa. Sin texturas 2K/4K nuevas.
+Integración posterior alpha.46/protocolo 52: 336/336 en 58 archivos estables y editor público 11/11,
+sin errores; 31 hashes públicos coinciden con Git. No repite el canario ni modifica el borrador online.
+
+**AREA03 INV02c, 2026-10-11 — ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
+[Contrato](briefs/inv02c-attribute-controls.md) y [entrega/evidencia](delivery/inv02c-attribute-controls.md).
+Adopción explícita, asignación de un punto y confirmación de la única reasignación gratuita en C/Atributos;
+puntos/peso/volumen y límites visibles. ACK privado más perfil canónico; retry exacto y consulta sin acciones
+para invitados/solo. Cubeta/agua SQL030 conservadas. Runtime `2a51c8d`, imagen y 21 hashes fijos:
+navegador público autenticado **6/6**, recarga/reconexión conservan mochila, tres tablas y agua.
+Cuenta QA retirada, tres recibos conservados; Supabase durable y cero errores/pendientes al cerrar.
+Pruebas locales **67/67**, integración concurrente **32/32**, imagen VPS **127/127** (conteos solapados);
+fixture ES/EN **24 casos, 10 comprobaciones**, desktop/portrait/landscape y capturas inspeccionadas.
+No requiere otro SQL. Sigue INV02d: sobrepeso/movimiento y mochila, preservando natación/predicción;
+70 % sobre el cómodo, 40 % por encima del techo, nunca inmovilizar. Efectos todavía pendientes.
 
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).

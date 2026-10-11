@@ -1,5 +1,17 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 INV02c, 2026-10-11 — ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
+[Contrato](briefs/inv02c-attribute-controls.md) y [entrega/evidencia](delivery/inv02c-attribute-controls.md).
+Adopción explícita, asignación de un punto y confirmación de la única reasignación gratuita en C/Atributos;
+puntos/peso/volumen y límites visibles. ACK privado más perfil canónico; retry exacto y consulta sin acciones
+para invitados/solo. Cubeta/agua SQL030 conservadas. Runtime `2a51c8d`, imagen y 21 hashes fijos:
+navegador público autenticado **6/6**, recarga/reconexión conservan mochila, tres tablas y agua.
+Cuenta QA retirada, tres recibos conservados; Supabase durable y cero errores/pendientes al cerrar.
+Pruebas locales **67/67**, integración concurrente **32/32**, imagen VPS **127/127** (conteos solapados);
+fixture ES/EN **24 casos, 10 comprobaciones**, desktop/portrait/landscape y capturas inspeccionadas.
+No requiere otro SQL. Sigue INV02d: sobrepeso/movimiento y mochila, preservando natación/predicción;
+70 % sobre el cómodo, 40 % por encima del techo, nunca inmovilizar. Efectos todavía pendientes.
+
 **AREA17 L03d-e2b, 2026-10-10 — Brisa conversa y recupera memoria en un mundo local:**
 [Entrega/evidencia](delivery/l03d-local-companion-studio.md) y [brief](briefs/l03d-local-companion-studio.md).
 Wizard de identidad/oficio/rasgos/aspecto/modelo, documentos nuevos y GameHost/C01 real local;

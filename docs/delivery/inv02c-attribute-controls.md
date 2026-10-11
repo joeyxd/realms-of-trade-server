@@ -1,7 +1,7 @@
 # AREA03 INV02c — Carga desde la ficha ES/EN
 
-[Contrato](../briefs/inv02c-attribute-controls.md). Implementado localmente en alpha.46/protocolo 52;
-publicación y aceptación pública pendientes en este checkpoint. Usa SQL029 ya instalado, sin SQL nuevo.
+[Contrato](../briefs/inv02c-attribute-controls.md). Implementado, publicado y comprobado en navegador
+público en alpha.46/protocolo 52. Usa SQL029 ya instalado, sin SQL nuevo.
 
 La pestaña «Atributos» permite adoptar Carga, asignar un punto y confirmar la única reasignación
 gratuita. Muestra puntos, peso y volumen, límite cómodo y máximo; explica los bloqueos por peso,
@@ -32,8 +32,35 @@ en memoria muestra confirmación de sesión; la interfaz no lo presenta como gua
 Comando: `node --test --test-concurrency=1 tests/attribute-client.test.mjs tests/attribute-operation.test.mjs tests/attribute-authority.test.mjs tests/attribute-profile.test.mjs tests/attribute-controls.test.mjs tests/attribute-operations-sql.test.mjs tests/freshwater-sql.test.mjs tests/workshop-ui.test.mjs tests/ground-workshop-compatibility.test.mjs`.
 Los conteos de entregas anteriores se solapan. La prueba móvil es emulada, sin afirmación de rendimiento físico.
 
+## Publicación y aceptación pública
+
+Código `843cde8`, integración `1d701a4` y runtime aceptado **`2a51c8d90c8ffcd75f81c749d82f5ec8e1cdae4e`**.
+El actualizador normal de la rama `claude/loving-lovelace-ptbif7`, PR #1, instaló alpha.46 el 11 de octubre
+de 2026 a las 05:22:55 UTC. [Validación de imagen](inv02c-updater.json): **127/127** sin red;
+imagen `sha256:87934ad36f3b603d5554663ffc6767a4cb5d66d5dce79b801d82281bf38f45d6`.
+Se conservan SQL/secretos/activaciones y la única autoridad del VPS; sin reinicio forzado ni réplica.
+
+[Navegador autenticado](inv02c-public/20261011T052326Z-browser/acceptance.json): **6/6**, cero errores
+de página, cinco capturas. Login normal y pestaña C/Atributos real; adopción 22→50, asignación 50→55,
+confirmación/cancelación del reset y reset 55→50. Cada acción confirmada se comparó contra perfil y
+recibo SQL. Recarga, nuevo ingreso y reapertura desde mochila conservaron `attr:{v:1,carga:0,re:1}`,
+volumen 18, tres tablas y cubeta con tres unidades de agua (masa total 13, volumen 11).
+Cuenta Auth/perfil desechables retirados; **tres recibos inmutables conservados**. No acredita reinicio
+de proceso, SIGKILL ni todo el circuito de recolección de agua; sus pruebas previas conservan su alcance.
+
+[Autoridad fija antes/después](inv02c-public/20261011T052326Z-browser/authority.ndjson): locks del
+actualizador y contenido, revisión/imagen exactas y **21 hashes de la imagen iguales a Git**. Supabase
+durable, atributos/agua enabled/ready, cero jugadores/sockets/errores/guardados pendientes al cerrar,
+timer activo. Capturas públicas desktop ES y portrait EN confirmación/reconexión inspeccionadas;
+portrait público es viewport redimensionado, el toque emulado se verifica en el fixture local.
+
 ## Siguiente corte
 
 INV02d: conectar el sobrepeso calculado a caminar/correr/dash y a la información de la mochila,
 con reglas idénticas en simulación autoritativa y predicción, sin borrar carga ni bloquear la recuperación.
+Reglas ya aprobadas en `PLAN-PROGRESSION.md` §15.7 del checkout IDE compartido: hasta el cómodo
+normal; por encima del cómodo y hasta su 125 %, velocidad al 70 % y sin dash; por encima, al 40 %,
+sin recoger/comprar más. Nunca inmoviliza. Cómodo 40 + 4/punto y techo 50 + 5/punto. No son propuestas
+nuevas ni efectos implementados por INV02c. Compartir el cálculo en `stepMover` y preservar el modelo
+de natación; verificar replay del predictor y estados ES/EN en `packInventory`.
 El balance de fuerza/mochilas, party, flotabilidad y supervivencia conservan sus cortes propios.
