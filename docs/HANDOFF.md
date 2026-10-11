@@ -1,11 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-**Bucanero, idle original en la ficha — alpha.56/protocolo 55, sin SQL:**
+**Bucanero, idle original en la ficha — alpha.56/protocolo 56, sin SQL propio:**
 [Brief](briefs/buccaneer-sheet-idle.md) y [entrega](delivery/buccaneer-v1/idle/README.md).
 Vista nativa Mixamo con su clip idle, giro/zoom y miniaturas quietas; mundo conserva rig de 15 huesos y acciones.
 Máximo 24 FPS solo con figura visible; pausa/cierre/pestaña/documento oculto/movimiento reducido detienen
 el loop. GLB por dispositivo 1.965.360/1.394.284 B (+353.260 B), sin segunda descarga de modelo.
-42/42 focales CPU y 24/24 comprobaciones de navegador en escritorio/móvil. Publicación por separado.
+42/42 focales CPU y 24/24 comprobaciones de navegador en escritorio/móvil; 57/57 tras integrar
+la creación de compañeros concurrente (protocolo 56, SQL034 conserva su activación separada).
+Publicación por separado.
 
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,

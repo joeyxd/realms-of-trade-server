@@ -1,6 +1,7 @@
 # Bucanero: idle original en la ficha
 
-Alpha.56, protocolo 55 conservado. La figura principal usa el clip `idle` del GLB del autor;
+Alpha.56, protocolo 56 por la integración concurrente de compañeros; el idle no cambia el protocolo.
+La figura principal usa el clip `idle` del GLB del autor;
 no hace falta una ilustración nueva. La carga captura una copia de la escena antes del rebind
 del modelo de mundo. El preview conserva el rig Mixamo de 65 huesos y materiales toon;
 el personaje de mundo mantiene su controlador de 15 huesos y sus acciones existentes.
@@ -21,6 +22,8 @@ La ausencia del clip o un fallo al renderizar conserva el preview estático exis
 - **42/42 pruebas focales**: claves originales del clip, rig nativo independiente del mundo,
   límites del loop y restauración del estado del renderer ante una excepción, además de regresiones
   de assets, personajes, natación, recolección y fábrica GM.
+- Tras integrar `d91bc66`, **57/57 focales** incluyendo cliente/red/UI de creación de compañeros.
+  Ese corte conserva la activación de SQL034 por separado; no se aplica SQL en esta entrega.
 - **24/24 comprobaciones de navegador**, escritorio 1280×900 y móvil horizontal 844×390:
   secuencia de 16 segundos y cruce de la unión del loop, encuadre completo, giro/zoom/reset,
   miniaturas quietas, pausa/reanudación por ajustes, visibilidad, pestaña, cierre y movimiento reducido.
@@ -29,7 +32,7 @@ La ausencia del clip o un fallo al renderizar conserva el preview estático exis
   Cero errores de navegador. Capturas inspeccionadas: [escritorio](desktop-sheet.png),
   [móvil](mobile-sheet.png) y [fallback sin clip](desktop-missing-clip.png).
 - [Registro y fotogramas](acceptance.json); runner reproducible `tools/qa-buccaneer-idle.mjs`.
-  `node tools/import-asset.mjs --check`: 39 assets v?lidos. `git diff --check` correcto.
+  `node tools/import-asset.mjs --check`: 39 assets válidos. `git diff --check` correcto.
 
 Estas comprobaciones usan móvil emulado y no acreditan rendimiento en un teléfono físico.
 La publicación se registra por separado tras verificar revisión activa, salud y entrada pública.
