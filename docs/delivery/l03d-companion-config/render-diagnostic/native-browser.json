@@ -1,15 +1,11 @@
 {
   "schema": "l03d-companion-config-browser/v1",
   "version": "0.6.0-alpha.36",
-  "at": "2026-10-10T23:58:46.563Z",
+  "at": "2026-10-10T23:54:39.282Z",
   "simulatedAuth": true,
   "public": false,
   "production": false,
   "gameplayDurabilityNotVerified": true,
-  "rendering": {
-    "browser": "Chrome headless",
-    "angle": "swiftshader"
-  },
   "storage": {
     "migration": "SQL025",
     "durable": true,
@@ -201,28 +197,14 @@
         "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
         "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
       ],
-      "failedRequests": [
-        {
-          "url": "http://127.0.0.1:62051/api/gm/session",
-          "failure": "net::ERR_ABORTED"
-        },
-        {
-          "url": "http://127.0.0.1:62051/api/gm/session",
-          "failure": "net::ERR_ABORTED"
-        }
-      ]
+      "failedRequests": []
     },
     {
       "pageErrors": [],
       "consoleErrors": [
         "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
       ],
-      "failedRequests": [
-        {
-          "url": "http://127.0.0.1:62051/api/gm/session",
-          "failure": "net::ERR_ABORTED"
-        }
-      ]
+      "failedRequests": []
     }
   ]
 }

@@ -1,12 +1,15 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 45:**
-[Entrega](delivery/l03d-companion-config.md), [contrato](briefs/l03d-companion-config.md).
-Editor ES/EN de personalidad/objetivos de compañeros ya vinculados. SQL025 privado por cuenta,
-mundo y personaje, CAS/replay y borrador conservado ante conflicto o guardado incierto. SQL aplicado,
-readiness de servicio desde VPS y canario transaccional real aprobados; fixture revertido. Publicación
-de código en curso. No conecta la ficha a la mente, crea bindings/conexiones, memorias o presupuesto;
-stop permanece de proceso. Sigue conexión/modelo/límites conjuntos y memoria con fuentes.
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
+[Entrega](delivery/l03d-companion-config.md) y [contrato](briefs/l03d-companion-config.md).
+Personalidad/objetivos por cuenta–mundo–personaje ya vinculado; CAS/replay, borrador conservado
+ante conflicto/incertidumbre y editor ES/EN. SQL025 aplicado, readiness VPS y canario de servicio
+real aprobados; fixture revertido. Runtime `f04cd7d` sano, una autoridad y temporizador activo;
+109/109 del actualizador, 45/45 focales en imagen con hashes Git, WSS público 15/15 y navegador
+público 7/7. Local: 140/140 y selección naval 58/58; navegador 13/13 con auth simulada y base en disco.
+Pendiente save/load de un dueño autenticado en navegador público. No alimenta la mente ni crea
+vínculos/conexiones, memorias o presupuesto; stop sigue de proceso. Sigue conexión/modelo/límites
+conjuntos y memoria con fuentes antes del canario L03d completo.
 
 **AREA07 RNV05, 2026-10-10 — natación costera publicada, alpha.36/protocolo 45:**
 [Contrato](briefs/RNV05-coastal-swimming.md) y [entrega](delivery/rnv05-coastal-swimming.md).

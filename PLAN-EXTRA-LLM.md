@@ -6,13 +6,16 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
-**AREA17 L03d-c, 2026-10-10 — ficha privada durable preparada, alpha.36/protocolo 44:**
+**AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
-Personalidad/objetivos por cuenta–mundo–personaje vinculado, CAS/replay y borrador conservado ante
-conflicto/incertidumbre. SQL025 aplicado, readiness de servicio y canario transaccional real aprobados;
-fixture revertido. Publicación de código en curso. No alimenta la mente ni crea vínculos/conexiones,
-memorias, permisos o presupuesto; stop sigue de proceso. Sigue conexión/modelo/límites conjuntos y
-memoria con fuentes antes del canario L03d completo.
+Personalidad/objetivos por cuenta–mundo–personaje ya vinculado; CAS/replay, borrador conservado
+ante conflicto/incertidumbre y editor ES/EN. SQL025 aplicado, readiness VPS y canario de servicio
+real aprobados; fixture revertido. Runtime `f04cd7d` sano, una autoridad y temporizador activo;
+109/109 del actualizador, 45/45 focales en imagen con hashes Git, WSS público 15/15 y navegador
+público 7/7. Local: 140/140 y selección naval 58/58; navegador 13/13 con auth simulada y base en disco.
+Pendiente save/load de un dueño autenticado en navegador público. No alimenta la mente ni crea
+vínculos/conexiones, memorias o presupuesto; stop sigue de proceso. Sigue conexión/modelo/límites
+conjuntos y memoria con fuentes antes del canario L03d completo.
 
 **AREA17 L03d-b, 2026-10-10 — Mis compañeros publicado, alpha.34/protocolo 43:**
 [entrega](docs/delivery/l03d-owner-center.md). Panel ingame por cuenta con estado y detención de

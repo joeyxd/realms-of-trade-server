@@ -21,6 +21,8 @@ const OTHER = '44444444-4444-4444-8444-444444444444';
 const OTHER_CHARACTER = '66666666-6666-4666-8666-666666666666';
 const WORLD = 'companion-config-browser-fixture';
 const OUTPUT = resolve(process.env.MN_COMPANION_CONFIG_QA_OUTPUT || 'docs/delivery/l03d-companion-config');
+const angle = process.env.MN_COMPANION_CONFIG_QA_ANGLE || 'default';
+assert.ok(['default', 'swiftshader'].includes(angle), 'QA ANGLE must be default or swiftshader');
 const migration = await readFile(new URL('../server/migrations/025_companion_config.sql', import.meta.url), 'utf8');
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT ||
   'C:/DEV/real of trade/realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
@@ -89,6 +91,7 @@ let ownerContext = null, otherContext = null;
 const evidence = {
   schema: 'l03d-companion-config-browser/v1', version: GAME.version, at: new Date().toISOString(),
   simulatedAuth: true, public: false, production: false, gameplayDurabilityNotVerified: true,
+  rendering: { browser: 'Chrome headless', angle },
   storage: { migration: 'SQL025', durable: true, store: 'memory gameplay store + SQL-backed companion-config RPC fixture' },
   checks: [], screenshots: [], errors: [], fixtures: { owner: OWNER, character: CHARACTER, other: OTHER, otherCharacter: OTHER_CHARACTER, world: WORLD },
 };
@@ -190,7 +193,8 @@ try {
   const port = await game.listen(), origin = `http://127.0.0.1:${port}`;
   agent = await joinAgent(port);
   browser = await chromium.launch({ channel: 'chrome', headless: true,
-    args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
+    args: ['--use-gl=angle', `--use-angle=${angle}`, '--enable-webgl', '--ignore-gpu-blocklist',
+      ...(angle === 'swiftshader' ? ['--enable-unsafe-swiftshader'] : [])] });
 
   ownerContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await setupAuth(ownerContext, { accountId: OWNER, token: 'owner-fixture' });
@@ -284,6 +288,8 @@ try {
   });
 
   await check('tab_wraps_inside_owner_dialog_and_escape_closes_editor_and_suspends_game_input', async () => {
+    // Loading correctly disables fields. Check the editable focus trap only after its async head arrives.
+    await otherPage.waitForSelector('.mn-companion-config-personality:enabled');
     assert.equal(await otherPage.evaluate(() => __mn.input.enabled), false);
     const panel = otherPage.locator('.mn-companions-panel');
     const visibleFocusables = () => otherPage.evaluate(() => [...document.querySelector('.mn-companions-panel')

@@ -5,7 +5,8 @@ Hermes para una experiencia sencilla con muchos jugadores.
 **Estado: arquitectura contrastada; el autor aprobó comenzar su implementación.**
 Primer tramo: [Mis compañeros ingame](l03d-owner-center.md), estado y detención de vínculos existentes.
 Continúa [L03d-c, ficha privada durable](l03d-companion-config.md), personalidad y objetivos de esos
-vínculos. Conexiones/vínculos durables, proveedor, memoria y canario conservan sus puertas pendientes.
+vínculos, todavía sin alimentar la mente. Conexiones/vínculos durables, proveedor, memoria y canario
+conservan sus puertas pendientes.
 No selecciona proveedor/modelo, instala Hermes, custodia credenciales ni habilita inferencia.
 Complementa [el plan de agentes](../../PLAN-EXTRA-LLM.md); conserva los contratos L03/L04/L05 y M5.
 

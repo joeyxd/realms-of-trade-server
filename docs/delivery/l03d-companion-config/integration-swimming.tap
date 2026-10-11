@@ -1,0 +1,358 @@
+TAP version 13
+# Subtest: memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 1 - memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 408.837
+  type: 'test'
+  ...
+# Subtest: memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 2 - memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 248.0485
+  type: 'test'
+  ...
+# Subtest: memory: an already applied victim remains the causal killer of a later death
+ok 3 - memory: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 259.946
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 4 - SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 1586.3626
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 5 - SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 1248.926
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+ok 6 - SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 1165.6359
+  type: 'test'
+  ...
+# Subtest: exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+ok 7 - exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+  ---
+  duration_ms: 210.7689
+  type: 'test'
+  ...
+# Subtest: completed terminal baseline includes later same-tick XP without replaying the causal hit
+ok 8 - completed terminal baseline includes later same-tick XP without replaying the causal hit
+  ---
+  duration_ms: 212.659
+  type: 'test'
+  ...
+# Subtest: partial world fault freezes publication and closes without capturing or replaying a death
+ok 9 - partial world fault freezes publication and closes without capturing or replaying a death
+  ---
+  duration_ms: 207.6134
+  type: 'test'
+  ...
+# Subtest: second receipt failure retains the committed prefix, fences and never replays it
+ok 10 - second receipt failure retains the committed prefix, fences and never replays it
+  ---
+  duration_ms: 231.4116
+  type: 'test'
+  ...
+# Subtest: close settles storage without applying a queued terminal death or claiming a complete flush
+ok 11 - close settles storage without applying a queued terminal death or claiming a complete flush
+  ---
+  duration_ms: 247.2148
+  type: 'test'
+  ...
+# Subtest: detaching an unreserved queued participant invalidates the queue before actor mutation
+ok 12 - detaching an unreserved queued participant invalidates the queue before actor mutation
+  ---
+  duration_ms: 243.7227
+  type: 'test'
+  ...
+# Subtest: fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+ok 13 - fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+  ---
+  duration_ms: 318.4528
+  type: 'test'
+  ...
+# Subtest: default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+ok 14 - default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+  ---
+  duration_ms: 445.7272
+  type: 'test'
+  ...
+# Subtest: guest resolution is refused by explicit authenticated fatal mount
+ok 15 - guest resolution is refused by explicit authenticated fatal mount
+  ---
+  duration_ms: 205.8844
+  type: 'test'
+  ...
+# Subtest: actual swallowed Brasa water curse enters the same automatic receipt path
+ok 16 - actual swallowed Brasa water curse enters the same automatic receipt path
+  ---
+  duration_ms: 212.6193
+  type: 'test'
+  ...
+# Subtest: drowning uses the mounted M5 receipt and preserves ordinary death drops
+ok 17 - drowning uses the mounted M5 receipt and preserves ordinary death drops
+  ---
+  duration_ms: 250.9569
+  type: 'test'
+  ...
+# Subtest: an unreserved later victim changing while the first receipt waits fences the entire host
+ok 18 - an unreserved later victim changing while the first receipt waits fences the entire host
+  ---
+  duration_ms: 228.6004
+  type: 'test'
+  ...
+# Subtest: a join already awaiting authentication cannot spawn into a held terminal tick
+ok 19 - a join already awaiting authentication cannot spawn into a held terminal tick
+  ---
+  duration_ms: 288.0639
+  type: 'test'
+  ...
+# Subtest: afterTick async adapter cannot publish or replay a completed tick
+ok 20 - afterTick async adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 243.8564
+  type: 'test'
+  ...
+# Subtest: afterTick malformed adapter cannot publish or replay a completed tick
+ok 21 - afterTick malformed adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 199.1834
+  type: 'test'
+  ...
+# Subtest: afterTick reentrant adapter cannot publish or replay a completed tick
+ok 22 - afterTick reentrant adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 196.9902
+  type: 'test'
+  ...
+# Subtest: receipt advance independently checks exact applied profiles before refreshing the next baseline
+ok 23 - receipt advance independently checks exact applied profiles before refreshing the next baseline
+  ---
+  duration_ms: 220.6463
+  type: 'test'
+  ...
+# Subtest: own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+ok 24 - own slow live voyage exits only through a reachable exposed level-zero edge and reboards as a walker
+  ---
+  duration_ms: 13.4206
+  type: 'test'
+  ...
+# Subtest: water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+ok 25 - water reboarding rejects distant swimmers, active actions, changed blueprints, and foreign raft IDs
+  ---
+  duration_ms: 2.5373
+  type: 'test'
+  ...
+# Subtest: boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+ok 26 - boarding geometry enforces the 1.5 unit climb range and rejects caller range expansion
+  ---
+  duration_ms: 2.2183
+  type: 'test'
+  ...
+# Subtest: water exit cannot reach an exposed edge more than 1.5 units from the owner
+ok 27 - water exit cannot reach an exposed edge more than 1.5 units from the owner
+  ---
+  duration_ms: 2.9731
+  type: 'test'
+  ...
+# Subtest: failed walker creation restores the swimmer and preserves drowning grace
+ok 28 - failed walker creation restores the swimmer and preserves drowning grace
+  ---
+  duration_ms: 2.6956
+  type: 'test'
+  ...
+# Subtest: restored voyage rebinds its ship revision and blueprint before the owner can swim
+ok 29 - restored voyage rebinds its ship revision and blueprint before the owner can swim
+  ---
+  duration_ms: 12.0692
+  type: 'test'
+  ...
+# Subtest: LocalServer receives swim and reboard commands and snapshots the parked and walking states
+ok 30 - LocalServer receives swim and reboard commands and snapshots the parked and walking states
+  ---
+  duration_ms: 308.1714
+  type: 'test'
+  ...
+# Subtest: geometry rejects high-floor drops and edges blocked by railings
+ok 31 - geometry rejects high-floor drops and edges blocked by railings
+  ---
+  duration_ms: 2.2891
+  type: 'test'
+  ...
+# Subtest: boarding geometry only returns exposed base-deck points in deep water
+ok 32 - boarding geometry only returns exposed base-deck points in deep water
+  ---
+  duration_ms: 2.2027
+  type: 'test'
+  ...
+# Subtest: joined starter raft carries the player across its dock gangplank and back
+ok 33 - joined starter raft carries the player across its dock gangplank and back
+  ---
+  duration_ms: 317.0732
+  type: 'test'
+  ...
+# Subtest: raft support is standable while nearby unsupported deep water is not
+ok 34 - raft support is standable while nearby unsupported deep water is not
+  ---
+  duration_ms: 1.8435
+  type: 'test'
+  ...
+# Subtest: wall, window, railing and closed door block body radius and a dash cannot tunnel through
+ok 35 - wall, window, railing and closed door block body radius and a dash cannot tunnel through
+  ---
+  duration_ms: 15.3908
+  type: 'test'
+  ...
+# Subtest: a closed door edge blocks correctly after rotating the raft
+ok 36 - a closed door edge blocks correctly after rotating the raft
+  ---
+  duration_ms: 2.9929
+  type: 'test'
+  ...
+# Subtest: a missing deck cell cannot be crossed by one large movement request
+ok 37 - a missing deck cell cannot be crossed by one large movement request
+  ---
+  duration_ms: 2.2816
+  type: 'test'
+  ...
+# Subtest: upper floor selection follows reconciled Y and ignores lower-level edge blockers
+ok 38 - upper floor selection follows reconciled Y and ignores lower-level edge blockers
+  ---
+  duration_ms: 1.4269
+  type: 'test'
+  ...
+# Subtest: stairs ascend and descend in each cardinal orientation between actual deck levels
+ok 39 - stairs ascend and descend in each cardinal orientation between actual deck levels
+  ---
+  duration_ms: 7.626
+  type: 'test'
+  ...
+# Subtest: owner logout moves a guest off the removed raft and leaves the other owner raft active
+ok 40 - owner logout moves a guest off the removed raft and leaves the other owner raft active
+  ---
+  duration_ms: 257.8654
+  type: 'test'
+  ...
+# Subtest: owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+ok 41 - owner logout rescues an active Abordaje flight aimed at that raft before its stale landing
+  ---
+  duration_ms: 230.5355
+  type: 'test'
+  ...
+# Subtest: owner logout ignores a stale raft landing target while another skill is active
+ok 42 - owner logout ignores a stale raft landing target while another skill is active
+  ---
+  duration_ms: 255.4365
+  type: 'test'
+  ...
+# Subtest: authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+ok 43 - authoritative and predicted movement use the raft list before pending-command replay; stale lists cannot roll back
+  ---
+  duration_ms: 238.3202
+  type: 'test'
+  ...
+# Subtest: Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+ok 44 - Abordaje leaps across unsupported water between upper raft floors at the same height on server and prediction
+  ---
+  duration_ms: 6.3716
+  type: 'test'
+  ...
+# Subtest: Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+ok 45 - Y-only reconciliation restores the upper deck and predicts the next command without horizontal error
+  ---
+  duration_ms: 5.2002
+  type: 'test'
+  ...
+# Subtest: removing raft support while standing over deep water cannot leave the player floating
+ok 46 - removing raft support while standing over deep water cannot leave the player floating
+  ---
+  duration_ms: 1.3343
+  type: 'test'
+  ...
+# Subtest: swim status stays hidden on land and clamps its shared-state values
+ok 47 - swim status stays hidden on land and clamps its shared-state values
+  ---
+  duration_ms: 1.1631
+  type: 'test'
+  ...
+# Subtest: stamina meter reads its capacity and grace from swim tuning
+ok 48 - stamina meter reads its capacity and grace from swim tuning
+  ---
+  duration_ms: 0.4251
+  type: 'test'
+  ...
+# Subtest: low stamina and exhaustion present shore/own-boat advice in Spanish and English
+ok 49 - low stamina and exhaustion present shore/own-boat advice in Spanish and English
+  ---
+  duration_ms: 0.2749
+  type: 'test'
+  ...
+# Subtest: swim presentation catalogs provide Spanish and English UI copy
+ok 50 - swim presentation catalogs provide Spanish and English UI copy
+  ---
+  duration_ms: 0.1827
+  type: 'test'
+  ...
+# Subtest: live navigation offers G for swimming and F for a permitted water reboard
+ok 51 - live navigation offers G for swimming and F for a permitted water reboard
+  ---
+  duration_ms: 0.5058
+  type: 'test'
+  ...
+# Subtest: procedural swim pose is deterministic and bounded
+ok 52 - procedural swim pose is deterministic and bounded
+  ---
+  duration_ms: 0.2324
+  type: 'test'
+  ...
+# Subtest: beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+ok 53 - beach entry swims at surface and returns to accessible shore; enemies and leap targets stay dry
+  ---
+  duration_ms: 12.018
+  type: 'test'
+  ...
+# Subtest: authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+ok 54 - authoritative pack mass slows swimming and drains reserve faster; idle does not regenerate
+  ---
+  duration_ms: 6.1243
+  type: 'test'
+  ...
+# Subtest: exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+ok 55 - exhaustion has grace, then pierces armor/invulnerability gradually and uses the existing death once
+  ---
+  duration_ms: 7.5405
+  type: 'test'
+  ...
+# Subtest: swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+ok 56 - swimming blocks new dash/attacks/skills but retains hazards and Brasa; raft support is dry
+  ---
+  duration_ms: 2.7454
+  type: 'test'
+  ...
+# Subtest: reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+ok 57 - reconciled reserve/load/drowning replay is bit-identical and remote state carries SWIM
+  ---
+  duration_ms: 6.9162
+  type: 'test'
+  ...
+# Subtest: online standby filler continues drowning when a connected client sends no input
+ok 58 - online standby filler continues drowning when a connected client sends no input
+  ---
+  duration_ms: 285.6974
+  type: 'test'
+  ...
+1..58
+# tests 58
+# suites 0
+# pass 58
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13299.2956

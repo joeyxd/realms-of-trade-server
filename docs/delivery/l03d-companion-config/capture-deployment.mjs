@@ -20,6 +20,7 @@ const [code] = await closed; clearTimeout(timer); assert.equal(code, 0, stderr);
 const deployment = JSON.parse(stdout);
 assert.equal(deployment.schema, 'mn.l03d.companion-config.deployment-snapshot.v1');
 assert.equal(deployment.revision, expected); assert.equal(deployment.running, true);
+assert.ok(deployment.currentRelease.endsWith('/releases/' + expected), 'updater handover is not finalized');
 assert.equal(deployment.health, 'healthy');
 const allowPausedTimer = process.argv.includes('--allow-paused-timer');
 if (allowPausedTimer) assert.ok(['active', 'inactive'].includes(deployment.timer));
