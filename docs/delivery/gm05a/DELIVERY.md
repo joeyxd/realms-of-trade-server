@@ -1,7 +1,8 @@
 # GM05a — pinceles de escultura del terreno
 
-**Implementación integrada alpha.45/protocolo 51; aceptación de navegador y publicación en curso.**
+**Publicado y comprobado en alpha.45/protocolo 51; escultura privada y cadena de publicación aceptadas.**
 Continúa [GM04b](../gm04b/DELIVERY.md) y el [contrato previo al código](../../briefs/gm05a-terrain-sculpt.md).
+[Resumen de aceptación y capturas inspeccionadas](acceptance.json).
 
 La pestaña **Terreno** permite subir, bajar, aplanar, suavizar y construir una rampa con dos clics.
 Radio 2–24 m, fuerza, caída suave y cota de aplanado. Arrastrar aplica un trazo; soltar lo conserva como
@@ -41,7 +42,12 @@ usa el terreno proyectado.
 La release integrada alpha.45/protocolo 51 conserva el corte concurrente de agua dulce y sus condiciones
 de activación. El manantial queda protegido contra cambios de altura y colisiones añadidas. La regresión
 conjunta de terreno, Carga, inventario y agua pasó **308/308 en 56 archivos**, con fuentes estables:
-[resumen final](integration-publish/regression.json) y [TAP](integration-publish/regression.tap).
+[resumen previo al último merge de host](integration-publish/regression.json) y [TAP](integration-publish/regression.tap).
+Tras integrar la circulación de perlas del suelo, la selección se repitió: **309/309 en 56 archivos**,
+sin fallos/omisiones y con fuentes estables: [resumen final](integration-final-release/regression.json)
+y [TAP](integration-final-release/regression.tap). El piloto de perlas permanece sin montar en público;
+su composición con activación GM sigue excluida. La [revisión de evidencia upstream](upstream-ground-integration.json)
+separa sus 246 casos históricos de esta ejecución final; los conteos se solapan.
 
 El [navegador local de release](local/release/local-browser-evidence.json) pasó **10/10**, sin errores:
 gestos reales de los cinco pinceles, terraza elevada 1 m, rampa recorrida a pie, undo/redo, rechazo atómico,
@@ -57,5 +63,42 @@ Reveló la lista de archivos de runtime incompleta del registro. Los intentos in
 revelaron supuestos de idioma, comparación insuficiente de cambios y un extremo de rampa debajo del
 inspector; se conserva la evidencia de diagnóstico, pero no acredita el recorrido completo.
 
-Faltan aquí las capturas finales inspeccionadas, la release comprobada
-y la cadena pública con Supabase real. No se declara desplegado a partir de pruebas locales.
+El [navegador público](public/final/public-browser-evidence.json) pasó **11/11 controles**, sin errores,
+con entrada invitada real y sesión GM autenticada. Repitió los cinco pinceles, cancelación/undo,
+recorrido de la rampa y colocación del modelo sobre la terraza, más guardado/reapertura/import/export
+privados en IndexedDB. El recorrido cruzó la rampa en cinco muestras y llegó a 0,20 m del extremo alto.
+Estas comprobaciones del editor no son una prueba de los botones de guardado remoto del panel Online.
+
+La [cadena HTTP autenticada con Supabase real](public/final/public-chain-evidence.json) sí guardó el
+documento v3: borrador r23→r24, replay y recarga exactos, preparación válida, registro y activación
+en generación 5. Un navegador invitado nuevo compiló la rejilla 561, comprobó el hash completo
+`8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca` y la muestra a 1,9244766 m
+**antes de HELLO**; WELCOME confirmó generación/revisión. Después cerró el peer y verificó rollback
+a **generación 6/mapa base**. El borrador original quedó restaurado por CAS en r25, con su hash exacto;
+revisiones y recibos canarios se conservan. No se dejó la elevación de ensayo activa.
+
+El [primer intento público](public/attempt1/public-chain-evidence.json) guardó/preparó, pero detectó
+una conexión abierta antes de activar. No cambió el mapa activo y restauró r21→r22→r23. Se conserva
+como diagnóstico, no como canario completo; el segundo esperó de forma acotada a un mundo vacío,
+sin desconectar jugadores ni relajar la guarda del servidor.
+
+[Despliegue tras rollback](deployment.json): revisión `839393ae15cd154311d9571a6a0d01635becd7f8`,
+imagen `sha256:44964a19c4617e831c2f0a975a838155bb968d01927d1fbda9ada01c80d2c2b5`, una autoridad sana,
+health 200, cero jugadores/conexiones/errores en la captura, Supabase durable, Carga y agua habilitadas/listas,
+mapa base en generación 6 y timer activo. Los [28 hashes del runtime activo](public-runtime.json)
+coinciden con Git y con la imagen integrada probada `ea982f8`. Esa imagen pasó [20/20 focales](image-focal.json)
+y el actualizador [127/127 en 17 archivos](image-updater.json); TAP [focal](image-focal.tap) y
+[actualizador](image-updater.tap). Las revisiones posteriores de documentación/herramientas conservan
+esas 28 fuentes. La comparación no sustituye las pruebas de navegador ni acredita FPS físico.
+
+El [primer ensayo de imagen](image-focal-attempt1.json) pasó 20/21: la suite de publicación importaba
+el módulo de paseo gráfico y no pudo cargar `three`, dependencia de desarrollo ausente en producción.
+La suite sí está cubierta por Windows 309/309; la selección Linux final explicita esa exclusión.
+No se añadió una dependencia de render al servidor para cambiar el resultado de QA.
+
+Las capturas originales [públicas nocturnas](public/final/terrain-es-closeup-1440x900.png) conservan
+la iluminación heredada del juego; `tod=day` sin `debug` no fija el día. La revisión visual de relieve,
+modelo y controles usa cinco [capturas con luz de referencia](public/daylight-reference/evidence.json)
+en ES/EN, escritorio y 844×390. Solo se fija el renderer en el editor privado, con `gameplay=false`;
+no se escribe la hora del mundo ni se activa el borrador importado. No acredita visibilidad nocturna
+ni un control horario nuevo dentro del editor. Siguen pintura GM05b y expansión GM06.

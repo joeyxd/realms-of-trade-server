@@ -1,5 +1,16 @@
 # Continuidad de servidor — AREA15
 
+**AREA01 GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
+[Entrega](delivery/gm05a/DELIVERY.md), [navegador público](delivery/gm05a/public/final/public-browser-evidence.json),
+[cadena autenticada](delivery/gm05a/public/final/public-chain-evidence.json) y [despliegue](delivery/gm05a/deployment.json).
+Cinco herramientas de altura sobre suelo seco, preview/undo y prueba caminando. SQL031 aplicado por el autor
+como 029, bytes idénticos; readiness confirmado y v3 guardado/replay/recargado en Supabase real.
+309/309 en 56 archivos estables; imagen 20/20, actualizador 127/127 y 28 hashes del runtime activo iguales a Git.
+Público: 11 controles, activación gen5, navegador nuevo con alturas/hash antes de HELLO y WELCOME correcto,
+rollback verificado a gen6/base, borrador original restaurado por CAS en r25. Release `839393a` sana;
+Carga y agua continúan enabled/ready; piloto del suelo sin montar. Capturas originales nocturnas separadas
+de la revisión con luz privada del renderer. Sigue GM05b pintura; GM06 nueva tierra/costa. Sin texturas 2K/4K nuevas.
+
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución

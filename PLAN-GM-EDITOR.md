@@ -1,10 +1,12 @@
 # Modo GM para construir el mundo
 
-**GM05a, 2026-10-10 — escultura integrada, alpha.45/protocolo 51; publicación pendiente:**
+**GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Subir/bajar, aplanar, suavizar y rampa entre dos puntos; preview privado, undo por trazo y prueba caminando.
 SQL031 aplicado por el autor y readiness confirmado desde el VPS; conserva borradores v2 y recibos.
-Regresión integrada 308/308 en 56 archivos. El canario público y la revisión activa se registran al completarlos.
+Regresión final 309/309 en 56 archivos; imagen 20/20 y actualizador 127/127. Público: 11 controles del editor
+y cadena autenticada save/replay/prepare/register/activate, cliente nuevo con hash exacto y rollback.
+Release `839393a` sana; mapa base generación 6 y borrador original restaurado en r25. [Evidencia](docs/delivery/gm05a/DELIVERY.md).
 Sigue GM05b: pintar familias de suelo existentes. Nueva tierra/costa queda para GM06.
 
 **GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
@@ -23,7 +25,7 @@ undo atómico, incluida decoración base. Conserva documento v2 y los contratos 
 [Contrato](docs/briefs/gm04a-multiselection.md) y [entrega](docs/delivery/gm04a/DELIVERY.md).
 Navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331 y público autenticado 19/19.
 Release `c4ffc62df90d87b25649728b116a92ca99c6d4a7` sana, sin mutaciones remotas; mapa base generación 4.
-GM04b ya entrega plantillas privadas; el terreno sigue pendiente.
+GM04b entrega plantillas privadas; GM05a añade escultura. Pintura y nueva tierra siguen pendientes.
 
 Checkpoint histórico GM03b2, 2026-10-10: **GM03b2 publicado y aceptado en alpha.35/protocolo 44; release `20066676758639fa5f0822ee7c81d59ed98fda7b` sana.** El canario público pasó 6/6 con sesión GM autenticada, dos clientes invitados y autoridad conectada a Supabase. Mapa base activo en generación 4 tras rollback. Integración acotada: 175/175. [Evidencia pública](docs/delivery/gm03b2/public-evidence.json) · [Despliegue](docs/delivery/gm03b2/deployment.json) · [Entrega GM03b2](docs/delivery/gm03b2/DELIVERY.md) · [GM03b1](docs/delivery/gm03b1/DELIVERY.md) · [GM03a](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
 
@@ -432,7 +434,7 @@ El terreno actual es un heightfield: una altura por coordenada XZ, de 560 unidad
 Es apropiado para elevar/bajar, aplanar, suavizar y formar rampas o islas. Cuevas, túneles y voladizos necesitan
 geometría/superficies adicionales; no se obtienen con un pincel de altura.
 
-**GM05a implementado localmente; aceptación/publicación en curso:** subir/bajar, aplanar a una cota escogida,
+**GM05a publicado y comprobado en alpha.45/protocolo 51:** subir/bajar, aplanar a una cota escogida,
 suavizar y crear rampa entre dos puntos, con tamaño, intensidad, caída, vista previa y undo por trazo.
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega/evidencia](docs/delivery/gm05a/DELIVERY.md).
 Solo suelo seco existente y zonas funcionales protegidas; documento v3 y SQL031. Sigue GM05b: pintura de materiales con
@@ -493,7 +495,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM04a | Multiselección temporal y edición por lotes de decoración base/añadida; un undo por operación, sin cambiar documento v2 | [Entrega](docs/delivery/gm04a/DELIVERY.md); navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331; público autenticado 19/19, release sana |
 | GM04b | Plantillas privadas locales de decoración, copias expandidas con IDs independientes y undo atómico | [Entrega](docs/delivery/gm04b/DELIVERY.md); GM 199/199, local 17/17, público 19/19, alpha.41/47 sana |
 | GM04 siguiente | Materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
-| GM05a | Escultura de suelo seco existente; implementada localmente, aceptación/publicación en curso | [Entrega](docs/delivery/gm05a/DELIVERY.md): deltas v3, cinco herramientas, sampler compartido, SQL031, protección y undo/cancelación |
+| GM05a | Escultura de suelo seco existente; publicada alpha.45/protocolo 51 | [Entrega](docs/delivery/gm05a/DELIVERY.md): 309/309, imagen 20/20 y actualizador 127/127; 11 controles públicos y cadena autenticada completa, rollback a generación 6 y borrador restaurado |
 | GM05b | Pintar familias de suelo, caminos y máscaras existentes | Mezclas legibles, guardado/hash y agua/cartografía coherentes; presupuesto móvil medido |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 
@@ -529,7 +531,7 @@ y referencia activa del mundo; la aceptación pública está registrada en la en
 
 La matriz es objetivo de aceptación por corte, no una afirmación de cobertura completa. GM01 y GM02
 registran las comprobaciones ejecutadas en sus entregas; GM03b2 registra integración, pruebas locales y
-aceptación visual local y aceptación pública alpha.35. GM05a registra escultura local y sus gates pendientes
+aceptación visual local y aceptación pública alpha.35. GM05a registra escultura y cadena pública alpha.45
 en su entrega; pintura GM05b, expansión GM06 y aceptación física móvil siguen pendientes.
 Cada corte registra implementación, evidencia, aceptación visual y publicación por separado.
 
@@ -553,8 +555,8 @@ La cuenta GM y su permiso en el host están verificados; SQL020 y runtime GM03a 
 el guardado remoto, adopción y conflicto se aceptaron con Supabase real. GM03b2 está integrado en alpha.35/
 protocolo 44: 175/175 selección acotada. Alpha.34 conserva la regresión histórica 308/308 (incluye checker
 2/2) y el navegador local 6/6; el actualizador Linux pasó 22/22 independiente. Alpha.35/protocolo 44 está
-publicada y verificada sana; su canario público pasó 6/6. GM05a implementa escultura local; su aceptación
-y publicación se registran por separado en su entrega. Pintura GM05b, expansión GM06, aceptación física móvil
+publicada y verificada sana; su canario público pasó 6/6. GM05a publica escultura alpha.45 con una cadena
+autenticada completa y restaurada; la evidencia de cada capa está separada en su entrega. Pintura GM05b, expansión GM06, aceptación física móvil
 y migración explícita entre runtimes siguen pendientes.
 
 Fuera de esta primera entrega: moderación/ban, regalar oro o items, poderes de combate, editor de rigs,

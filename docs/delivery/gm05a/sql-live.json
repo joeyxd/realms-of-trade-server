@@ -1,7 +1,7 @@
 {
   "schema": "gm05a-sql-readiness/v1",
-  "at": "2026-10-11T04:31:52.754Z",
-  "migration": "server/migrations/030_gm_terrain_drafts.sql",
+  "at": "2026-10-11T05:08:46.877Z",
+  "migration": "server/migrations/031_gm_terrain_drafts.sql",
   "sha256": "7993c50485952065917e372804bfdb6d9cf572a08e790dc8d47a7c7227d5ea1a",
   "ready": true,
   "terrain": {

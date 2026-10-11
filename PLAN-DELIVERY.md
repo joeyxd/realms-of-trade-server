@@ -23,11 +23,13 @@ conserva exclusión de activación GM con piloto montado. Conteos solapados.
 Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 del actualizador,
 31/31 sin red en la imagen exacta y entrada pública 6/6. Una autoridad, timer activo; montaje apagado.
 
-**AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
+**AREA01 GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Cinco pinceles de suelo seco, borrador v3, preview/undo/cancelación y recorrido sobre alturas editadas.
-SQL031 aplicado por el autor; readiness del servicio confirmado. Alpha.45/protocolo 51,
-308/308 en 56 archivos. La entrega separa pruebas locales de aceptación pública pendiente.
+SQL031 aplicado por el autor como 029 (mismo hash); readiness del servicio confirmado.
+309/309 en 56 archivos, imagen 20/20 y actualizador 127/127. Público: 11 controles del editor
+y cadena HTTP autenticada con Supabase real, cliente nuevo con hash exacto/WELCOME y rollback.
+Release `839393a` sana; mapa base generación 6, borrador original restaurado en r25. Evidencia por capa en la entrega.
 Sigue GM05b para pintar familias de suelo; GM06 para costa y nueva tierra. Conserva las activaciones del servidor.
 
 **AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**

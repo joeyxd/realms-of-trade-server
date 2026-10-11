@@ -1,0 +1,52 @@
+{
+  "upstreamCommit": "ea982f8e5326308aed6ba0ab9a6bee447ee22a59",
+  "terrainIntegrationEvidence": "../m5-ground-pearl-lifecycle/terrain-integration.json",
+  "evidenceBaseCommit": "52665eae35733825dbbc850eef61d362be98780c",
+  "evidenceResult": {
+    "tests": 246,
+    "passed": 246,
+    "failed": 0,
+    "testFiles": 29,
+    "exitCode": 0,
+    "sourcesUnchangedDuringRun": true
+  },
+  "runtimeDiffFromEvidenceBase": false,
+  "upstreamChangedRuntimeFiles": [
+    "server/host.mjs",
+    "server/groundHostAuthority.mjs",
+    "server/pearlStaging.mjs"
+  ],
+  "upstreamRuntimeHashChecks": {
+    "server/host.mjs": true,
+    "server/groundHostAuthority.mjs": true,
+    "server/pearlStaging.mjs": true
+  },
+  "currentEvidenceManifestHashCheck": {
+    "manifestEntries": 1400,
+    "currentByteMatches": 1273,
+    "selectedTestFiles": 29,
+    "workingTreeHashMatches": 20,
+    "canonicalGitBlobMatchesAmongWorkingTreeMismatches": 6,
+    "unresolvedCanonicalGitBlobMismatches": [
+      "tests/gm-terrain-authority.test.mjs",
+      "tests/gm-terrain-content-live.test.mjs",
+      "tests/gm-content-projection.test.mjs"
+    ]
+  },
+  "mergeImpact": {
+    "gmActivation": "GameHost.beginContentSwitch() rejects GM activation while groundPearls is mounted, including an inactive mount; the delivery explicitly leaves this composition unsupported.",
+    "terrain": "The common ground tick drains the mounted pearl lifecycle before mutation proceeds; no terrain renderer/editor or protocol files changed in the upstream merge."
+  },
+  "validationResolution": "The stored 246/246 run remains historical evidence for its recorded base, not the final GM acceptance. All three GM suites with differing historical test hashes were rerun from the integrated checkout in the final 309-case selection and in the pinned Linux image's 20-case selection. Both passed; the final Windows source hashes stayed unchanged and the image matched 28 canonical runtime blobs. No final acceptance relies on those three older test hashes.",
+  "currentGmAcceptance": {
+    "windowsEvidence": "integration-final-release/regression.json",
+    "tests": 309,
+    "passed": 309,
+    "testFiles": 56,
+    "sourcesUnchangedDuringRun": true,
+    "linuxEvidence": "image-focal.json",
+    "linuxTests": 20,
+    "linuxPassed": 20,
+    "linuxSourceHashMatches": 28
+  }
+}

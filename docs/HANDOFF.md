@@ -30,11 +30,13 @@ Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 d
 Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
 
 
-**AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
+**AREA01 GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Contrato](briefs/gm05a-terrain-sculpt.md) y [entrega](delivery/gm05a/DELIVERY.md).
 Cinco pinceles de suelo seco, borrador v3, preview/undo/cancelación y recorrido sobre alturas editadas.
-SQL031 aplicado por el autor; readiness del servicio confirmado. Alpha.45/protocolo 51,
-308/308 en 56 archivos. La entrega separa pruebas locales de aceptación pública pendiente.
+SQL031 aplicado por el autor como 029 (mismo hash); readiness del servicio confirmado.
+309/309 en 56 archivos, imagen 20/20 y actualizador 127/127. Público: 11 controles del editor
+y cadena HTTP autenticada con Supabase real, cliente nuevo con hash exacto/WELCOME y rollback.
+Release `839393a` sana; mapa base generación 6, borrador original restaurado en r25. Evidencia por capa en la entrega.
 Sigue GM05b para pintar familias de suelo; GM06 para costa y nueva tierra. Conserva las activaciones del servidor.
 
 **AREA03 INV02b, 2026-10-10 — Carga durable activa y comprobada en público:**

@@ -1,0 +1,57 @@
+{
+  "schema": "gm05a-public-chain/v1",
+  "at": "2026-10-11T05:06:11.659Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "expectedRuntime": {
+    "version": "0.6.0-alpha.45",
+    "protocolVersion": 51
+  },
+  "initial": {
+    "generation": 4,
+    "revisionId": null
+  },
+  "draft": {
+    "originalRevision": 21,
+    "originalDocumentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a",
+    "canaryRevision": 22,
+    "canaryDocumentSha256": "22a242677acf1d49ccef94d1e0281f248c6c5534f7f83a078c4b24dbdcef92ca",
+    "exactReplay": true,
+    "exactReload": true,
+    "sample": {
+      "index": 70841,
+      "x": -125,
+      "z": -154,
+      "deltaMm": 1000
+    }
+  },
+  "preparation": {
+    "revisionId": "d0b09ba8c11955ab6ebc74408b84d4b50bbcdda9ff4525880ec99e91fc847b1a",
+    "terrain": {
+      "gridSize": 561,
+      "sha256": "8c17383da5e0956405d31a628cc8dc82935d951945d17ec432de04d7860956ca"
+    },
+    "valid": true,
+    "registered": true
+  },
+  "activation": null,
+  "browserPeer": null,
+  "rollback": null,
+  "draftRestore": {
+    "restored": true,
+    "operationId": "6220e4b7-38bb-49dc-8183-55189b8bb158",
+    "revision": 23,
+    "documentSha256": "8c672093dfff687490f1723b907a761d075345789020d62fc47149e7b1638c6a"
+  },
+  "failure": "world_busy",
+  "runtime": {
+    "version": "0.6.0-alpha.45",
+    "protocolVersion": 51,
+    "players": 0,
+    "sockets": 0
+  },
+  "cleanup": {
+    "activeRollbackVerified": false,
+    "draftRestored": true,
+    "retainedCanaryRevision": true
+  }
+}
