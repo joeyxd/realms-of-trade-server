@@ -5,14 +5,20 @@
 Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
 
 
-**AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
+**AREA03 INV02b, 2026-10-10 — Carga durable activa y comprobada en público:**
 [Contrato](briefs/inv02b-durable-attributes.md) y [entrega](delivery/inv02b-durable-attributes.md).
-Adopción explícita nivel 1/legacy, asignación y reset gratuito por M5. Pruebas de atributos
-19/19 y composición SQL023/029 1/1 con reapertura de base; UI existente ES/EN 6/6.
-SQL029 listo, sin reescritura de datos. Alpha.43/protocolo 49; flag apagado por defecto,
-readiness obligatorio antes de activar. Siguen SQL/canario y ficha ES/EN INV02c.
-Código desplegado `f281db1` con flag apagado; canario WSS autenticado 5/5, imagen/revisión
-fijas y 14 hashes iguales a Git. Autoridad sana y cuenta temporal retirada.
+SQL029 aplicado por el autor; readiness comprobado desde el contenedor. Activación inicial
+en `024610b`, alpha.43/protocolo 49; `MN_ATTRIBUTE_OPERATIONS=1` y una autoridad en reposo.
+Tras integrar la entrega paralela de agua, el actualizador instaló `80e46df`, alpha.44/protocolo 50.
+[Canario activo repetido](delivery/inv02b-public/20261011T044746Z-active/README.md) **5/5**:
+adopción, asignación, reset, replay sin rollback, conflicto durable y reconexión. Masa 50 → 60 → 50,
+volumen 18 constante. 14 hashes de imagen iguales a Git; Supabase durable, cero errores/pendientes.
+Cuenta QA retirada y cuatro recibos conservados por corrida; evidencia inicial/flag apagado separada.
+Regresión integrada repetida 20/20; pruebas locales previas: atributos 19/19, composición SQL023/029
+1/1 con reapertura, UI existente ES/EN 6/6 y regresión 106/106 (conteos solapados).
+Taller y crédito de Tala offline conservan Carga. Sigue ficha ES/EN INV02c para administrar puntos;
+después movimiento/sobrepeso. La pantalla de atributos todavía no está montada. No requiere otro SQL
+para comenzar INV02c; el flag permanece apagado por defecto en instalaciones nuevas.
 
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](delivery/hud-portrait/README.md), [contrato de Carga](briefs/inv02a-durable-carry.md)
