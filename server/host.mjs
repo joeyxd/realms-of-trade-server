@@ -5,6 +5,7 @@ import { WebSocketServer } from 'ws';
 import { LoggingAim } from './loggingAim.mjs';
 import { CompanionConfigService } from './companionConfig.mjs';
 import { CompanionControlService } from './companionControl.mjs';
+import { InferenceConfigService } from './inferenceConfig.mjs';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
@@ -74,7 +75,8 @@ export class GameHost {
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, agentTrade = false,
-    groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false } = {}) {
+    groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
+    inferenceCatalog = [], inferenceConfigAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -183,6 +185,7 @@ export class GameHost {
     else if (this.economicAuthority) this.server.beforeTick = () => this.economicAuthority.drain();
     this.started = performance.now();
     this.companionControl = new CompanionControlService(this, { allowMemory: companionControlAllowMemory });
+    this.inferenceConfig = new InferenceConfigService(this, { catalog: inferenceCatalog, allowMemory: inferenceConfigAllowMemory });
   }
 
   get pearlStaging() { return this.#pearlStaging; }
@@ -644,6 +647,7 @@ export class GameHost {
       return;
     }
     if (this.companionConfig.handle(sock, msg)) return;
+    if (this.inferenceConfig.handle(sock, msg)) return;
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
     }
