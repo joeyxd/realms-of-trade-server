@@ -34,7 +34,7 @@ archivos no cambien durante la ejecución. El navegador pasa **14 comprobaciones
 revocación/permiso, timestamps de SQL, recarga, fallo/confirmación, logout y reconstrucción del host
 tras reabrir la base. Las cinco capturas originales se inspeccionaron; escritorio ES/EN y vistas
 844×390/390×844, con controles de 44 px y sin salir del viewport. Sin errores de página; se registran
-cuatro respuestas HTTP 503 de los fixtures locales, no atribuidas por este recorrido. No es aceptación
+cuatro mensajes de consola que indican HTTP 503; el recorrido no capturó sus URLs para atribuirlos. No es aceptación
 de rendimiento físico móvil ni de autenticación pública.
 
 ## Recuperación previa
@@ -51,8 +51,24 @@ ya estaban instalados/activados; no se repitió adopción ni activación.
 
 ## Publicación
 
-Runtime preparado como alpha.37/protocolo 46. La revisión activa, imagen exacta, pruebas de imagen,
-entrada WSS pública y capturas públicas quedan pendientes de verificar después del relevo.
+Primera publicación del control durable: **alpha.37/protocolo 46**, revisión `8ce31ce`.
+El runtime activo es **alpha.38/protocolo 46**, revisión
+`d9620558a93f6a6ed88614857b03d7d9822a4b1b`, imagen
+`sha256:f937c420dbe5555048f10c3087e9a5d237e80389c3aa880b6a54b3841cf6bc8c`.
+La [corrección del baseline de Tala](prg01d-timing-baseline.md) permitió cerrar el conflicto
+encontrado durante el canario de taller; el control de compañeros conserva el mismo runtime.
+El [despliegue](l03d-companion-control/deployment.json) confirma una autoridad sana, temporizador
+activo y **109/109** pruebas del actualizador. Las [65/65 focales de alpha.37](l03d-companion-control/image-tests.json)
+y las [28/28 de alpha.38](prg01d-starter-workshop/activation/timing-image-tests.json) corresponden
+a archivos cuyos hashes coinciden con sus revisiones Git; runners aislados sin red, sin SQL/PGlite.
+Las selecciones se solapan y no se suman.
+El [readiness en la imagen activa](l03d-companion-control/active-readiness.json) confirma SQL027 versión 1
+y fixture ausente. El [WSS público](l03d-companion-control/public-smoke.json) pasa **17/17**:
+entrada real, protocolo vigente y denegación invitada sin exponer controles, ficha, mercado o presupuesto.
+El [navegador público invitado de alpha.37](l03d-companion-control/public-browser/public-browser.json) pasó **7/7**,
+sin errores de página/runtime; cuatro capturas originales inspeccionadas ES/EN, escritorio y móvil
+emulado. La UI no cambió en alpha.38. En viewport portrait 390×844 el juego y su panel usan la rotación existente; no acredita
+una interfaz portrait independiente ni un teléfono físico.
 El guardado/stop/resume de un dueño público con binding real sigue pendiente; no se provisiona
 uno para presentar ese criterio como aprobado.
 

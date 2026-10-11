@@ -21,15 +21,17 @@ import { acceptTimedLogging } from './qa-workshop-logging.mjs';
 
 const origin = 'https://marea.62.171.136.148.sslip.io';
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const usage = 'usage: node tools/qa-workshop-public.mjs [--env-file PATH]';
+const usage = 'usage: node tools/qa-workshop-public.mjs [--env-file PATH] [--logging-only | --navigation-only]';
 const ensure = (value, reason) => { if (!value) throw new Error(reason); };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const timeout = ms => AbortSignal.timeout(ms);
 const options = { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   global: { fetch: (input, init) => fetch(input, { ...init, signal: timeout(15000) }) } };
-let envFile = null;
+let envFile = null, loggingOnly = false, navigationOnly = false;
 for (let i = 2; i < process.argv.length; i++) {
   if (process.argv[i] === '--env-file' && process.argv[i + 1] && !envFile) envFile = process.argv[++i];
+  else if (process.argv[i] === '--logging-only' && !loggingOnly && !navigationOnly) loggingOnly = true;
+  else if (process.argv[i] === '--navigation-only' && !navigationOnly && !loggingOnly) navigationOnly = true;
   else if (process.argv[i] === '--help' || process.argv[i] === '-h') { console.log(usage); process.exit(0); }
   else throw new Error(usage);
 }
@@ -53,7 +55,9 @@ const password = `Aa1!${randomBytes(28).toString('base64url')}`, authMarker = `m
 let accountId = null, socket = null, profileVersion = null, currentProfile = null;
 const receipts = new Set();
 const evidence = { schema: 'mn.starter-workshop.public.v1', at: new Date().toISOString(), target: base.origin,
-  identity: 'random disposable Supabase user; credentials redacted', protocol: PROTOCOL_VERSION, gameVersion: GAME.version,
+  identity: 'random disposable Supabase user; credentials redacted',
+  mode: loggingOnly ? 'timed-logging-only' : navigationOnly ? 'raft-navigation-only' : 'full-workshop',
+  protocol: PROTOCOL_VERSION, gameVersion: GAME.version,
   checks: [], errors: [] };
 const check = (name, data = {}) => { evidence.checks.push({ name, pass: true, ...data }); console.log(JSON.stringify({ check: name, pass: true })); };
 const redact = value => String(value || '').replaceAll(email, '[redacted-email]').replaceAll(password, '[redacted-secret]')
@@ -209,11 +213,16 @@ async function moveTo(target, label, radius = 2.2) {
   const open = [{ ix: 0, iz: 0, ...start, g: 0, f: Math.max(0, Math.hypot(start.x-target.x, start.z-target.z)-radius), key: startKey }];
   const best = new Map([[startKey, 0]]), parent = new Map(), points = new Map([[startKey, start]]);
   const directions = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
-  let found = null, visited = 0;
+  let found = null, visited = 0, exactTarget = false;
   while (open.length && visited < 18000) {
     open.sort((a,b) => a.f-b.f); const current = open.shift();
     if (current.g !== best.get(current.key)) continue; visited++;
-    if (Math.hypot(current.x-target.x,current.z-target.z) <= radius) { found=current.key; break; }
+    const targetGap = Math.hypot(current.x-target.x,current.z-target.z);
+    if (targetGap <= radius) { found=current.key; break; }
+    // The 0.8 m lattice can leave a standable target up to 0.566 m from every vertex.
+    // For tight harvest frontiers (0.35 m), connect the last vertex to the exact target
+    // only when it is within one grid step and the same sampled standability/slope edge check passes.
+    if (targetGap <= 0.8 && edge(current,target)) { found=current.key; exactTarget=true; break; }
     for (const [dx,dz] of directions) {
       const ix=current.ix+dx, iz=current.iz+dz; if (!within(ix,iz)) continue;
       const x=start.x+ix*0.8, z=start.z+iz*0.8, next=edge(current,{x,z}); if(!next) continue;
@@ -224,20 +233,38 @@ async function moveTo(target, label, radius = 2.2) {
   }
   ensure(found, visited >= 18000 ? `safe route budget exhausted: ${label}` : `no safe normal route: ${label}`);
   const route=[]; for(let cursor=found;cursor!==startKey;cursor=parent.get(cursor)) route.push(points.get(cursor)); route.reverse();
+  if (exactTarget) route.push(target);
   const waypoints=[]; let anchor=start,index=0;
   while(index<route.length){let farthest=index;for(let probe=route.length-1;probe>index;probe--)if(edge(anchor,route[probe])){farthest=probe;break;}
     waypoints.push(route[farthest]);anchor=route[farthest];index=farthest+1;}
-  let waypoint=0,replans=0,progressAt=Date.now(),prior={...latest.position};
+  let waypoint=0,progressAt=Date.now(),prior={...latest.position};
   while(Date.now()<end&&Math.hypot(latest.position.x-target.x,latest.position.z-target.z)>radius){
-    while(waypoint<waypoints.length&&Math.hypot(latest.position.x-waypoints[waypoint].x,latest.position.z-waypoints[waypoint].z)<=0.65) waypoint++;
+    while (waypoint < waypoints.length) {
+      // A 1.2 m gangplank and a 0.4 m body leave only 0.2 m of lateral clearance.
+      // Reach the checked corner before following its next segment.
+      const tolerance = waypoint === waypoints.length - 1 ? Math.min(0.15, radius) : 0.15;
+      if (Math.hypot(latest.position.x-waypoints[waypoint].x,latest.position.z-waypoints[waypoint].z) > tolerance) break;
+      waypoint++;
+    }
     const goal=waypoints[waypoint]||target,dx=goal.x-latest.position.x,dz=goal.z-latest.position.z,d=Math.hypot(dx,dz);
-    sendInputs(d>0.1?dx/d:0,d>0.1?dz/d:0); await sleep(120);
+    const speedScale = d < 1.5 ? d / 1.5 : 1;
+    sendInputs(d>0.1?(dx/d)*speedScale:0,d>0.1?(dz/d)*speedScale:0); await sleep(120);
     if(Date.now()-progressAt>1400){if(Math.hypot(latest.position.x-prior.x,latest.position.z-prior.z)<0.18){
-      ensure(++replans<=3,`normal movement stalled: ${label}`); throw new Error(`route blocked after bounded replans: ${label}`);}
+      const position = latest.position, goal = waypoints[waypoint] || target;
+      evidence.navigationFailure = { label, position: { x: position.x, y: position.y, z: position.z },
+        goal: { x: goal.x, y: goal.y ?? null, z: goal.z }, waypoint, waypointCount: waypoints.length, radius };
+      throw new Error(`normal movement stalled on checked route: ${label}`);}
       progressAt=Date.now();prior={...latest.position};}
   }
   sendInputs(0,0); await sleep(700);
-  ensure(Math.hypot(latest.position.x-target.x,latest.position.z-target.z)<=radius+0.5,`bounded walk failed: ${label}`);
+  const actual = latest.position, waypointTarget = waypoints[waypoint] || target;
+  const gap = actual ? Math.hypot(actual.x-target.x,actual.z-target.z) : null;
+  const waypointGap = actual ? Math.hypot(actual.x-waypointTarget.x,actual.z-waypointTarget.z) : null;
+  const round = value => Number.isFinite(value) ? Number(value.toFixed(3)) : null;
+  const arrival = { x: round(actual?.x), z: round(actual?.z), targetX: round(target.x), targetZ: round(target.z),
+    gap: round(gap), waypoint: waypoint, waypointX: round(waypointTarget.x), waypointZ: round(waypointTarget.z),
+    waypointGap: round(waypointGap), waypointCount: waypoints.length, radius };
+  ensure(gap !== null && gap<=radius+0.5,`bounded walk failed: ${label} ${JSON.stringify(arrival)}`);
 }
 function artisan(op, extra = {}) { return { type: 'artisan', op, expectedRev: latest.profile.eco.tradeRev, ...extra }; }
 function goods(profile = latest.profile) { return profile.eco.pack.goods || {}; }
@@ -253,12 +280,37 @@ function putCargo(profile, values, label) {
 }
 async function setSeed(goodsSeed, label, { axe = false } = {}) {
   ensure(socket?.readyState !== WebSocket.OPEN, 'profile seed attempted while connected');
-  const statusResponse = await fetch(url('/status'), { cache: 'no-store', signal: timeout(10000) });
-  ensure(statusResponse.ok, 'cannot verify QA profile seed is disconnected');
-  const status = await statusResponse.json(), state = status.storage;
-  ensure(status.players === 0 && status.sockets === 0 && state?.profileWrites === 0 && state?.unsaved === 0
-    && state?.worldWriting === false && state?.economic?.pending === 0,
-  'QA profile seed stopped: host is not fully drained and disconnected');
+  const drainState = status => ({
+    players: Number.isSafeInteger(status?.players) ? status.players : null,
+    sockets: Number.isSafeInteger(status?.sockets) ? status.sockets : null,
+    profileWrites: Number.isSafeInteger(status?.storage?.profileWrites) ? status.storage.profileWrites : null,
+    unsaved: Number.isSafeInteger(status?.storage?.unsaved) ? status.storage.unsaved : null,
+    worldWriting: typeof status?.storage?.worldWriting === 'boolean' ? status.storage.worldWriting : null,
+    economicPending: Number.isSafeInteger(status?.storage?.economic?.pending) ? status.storage.economic.pending : null,
+  });
+  const deadline = Date.now() + 30000;
+  let drainedStatus = null, lastDrainState = null;
+  while (!drainedStatus) {
+    const [healthResponse, statusResponse] = await Promise.all([
+      fetch(url('/health'), { cache: 'no-store', signal: timeout(10000) }),
+      fetch(url('/status'), { cache: 'no-store', signal: timeout(10000) }),
+    ]);
+    ensure(healthResponse.ok && await healthResponse.text() === 'ok', 'QA profile seed stopped: public health check failed');
+    ensure(statusResponse.ok, 'QA profile seed stopped: public status unavailable');
+    const status = await statusResponse.json(), state = status.storage;
+    lastDrainState = drainState(status);
+    ensure(Number.isSafeInteger(status.players) && Number.isSafeInteger(status.sockets),
+      'QA profile seed stopped: public status shape unavailable');
+    ensure(status.players === 0 && status.sockets === 0,
+      'QA profile seed stopped: another player or socket is connected');
+    if (state?.profileWrites === 0 && state?.unsaved === 0 && state?.worldWriting === false
+        && state?.economic?.pending === 0) drainedStatus = status;
+    else {
+      ensure(Date.now() < deadline,
+        `QA profile seed stopped: host did not drain within 30s (${JSON.stringify(lastDrainState)})`);
+      await sleep(300);
+    }
+  }
   const user = unwrap(await admin.auth.admin.getUserById(accountId));
   ensure(user.user?.email === email && user.user?.user_metadata?.mn_qa_marker === authMarker,
     'QA profile seed stopped: disposable Auth marker mismatch');
@@ -281,12 +333,21 @@ async function onRaft(label) {
   ensure(raft, 'owned starter raft is not publicly moored');
   const plank = raftGangplank({ ...raft, pilot: null, parts: raft.parts }, latest.map?.dock);
   ensure(plank, 'owned raft has no normal dock gangplank approach');
-  await moveTo(plank, `${label} gangplank`, 1.0);
+  // Follow the dock's existing centerline before crossing its narrow join, as the
+  // ordinary naval UI acceptance does. Do not cut diagonally across the water edge.
+  const dock = latest.map.dock;
+  const along = (plank.x - dock.base.x) * dock.dir.x + (plank.z - dock.base.z) * dock.dir.z;
+  await moveTo(dock.base, `${label} dock base`, 0.25);
+  await moveTo({ x: dock.base.x + dock.dir.x * along, z: dock.base.z + dock.dir.z * along },
+    `${label} dock centerline`, 0.15);
+  await moveTo(plank, `${label} gangplank`, 0.15);
   ensure(latest.position && Math.hypot(latest.position.x - plank.x, latest.position.z - plank.z) <= 1.5,
     'did not reach public gangplank approach');
   const f = raft.yaw || 0;
   const deck = { x: raft.x + Math.cos(f) + Math.sin(f), y: raft.y, z: raft.z - Math.sin(f) + Math.cos(f) };
-  await moveTo(deck, `${label} deck`, 1.4);
+  await moveTo(deck, `${label} deck`, 0.35);
+  const support = latest.raftDeck.surface(latest.position.x, latest.position.z, latest.position.y);
+  ensure(support?.id === ship.id && support.kind === 'deck', 'normal route did not reach the owned raft deck');
   return ship;
 }
 async function placeRaft(ship, piece, opId) {
@@ -344,7 +405,21 @@ async function drainAndClose() {
 
 try {
   await fs.promises.mkdir(out, { recursive: true }); await publicPreflight();
-  const token = await createAccount(); await connect(token);
+  const token = await createAccount();
+  if (navigationOnly) {
+    await connect(token);
+    await moveTo(latest.resources.bench, 'navigation diagnostic bench');
+    await onRaft('navigation diagnostic owned deck');
+    check('ordinary_dock_centerline_gangplank_to_owned_deck', { supportedByOwnedDeck: true });
+    evidence.pass = true;
+  } else if (loggingOnly) {
+    await setSeed({}, 'disconnected_timed_logging_axe_seed', { axe: true });
+    await connect(token);
+    await acceptTimedLogging({ getLatest: () => latest, send, waitMessage, moveTo, awaitProfile, store, worldId,
+      accountId, receipts, check, ensure, sleep });
+    evidence.pass = true;
+  } else {
+  await connect(token);
   const bench = latest.resources?.bench;
   ensure(bench && Number.isFinite(bench.x) && Number.isFinite(bench.z), 'public snapshot has no workshop bench');
   await moveTo(bench, 'lawful carpentry bench');
@@ -492,6 +567,7 @@ try {
   await acceptTimedLogging({ getLatest: () => latest, send, waitMessage, moveTo, awaitProfile, store, worldId,
     accountId, receipts, check, ensure, sleep });
   evidence.pass = true;
+  }
 } catch (error) {
   evidence.pass = false; evidence.failure = error?.message ? redact(error.message) : 'acceptance failed; details suppressed';
   process.exitCode = 1;

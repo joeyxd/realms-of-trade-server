@@ -21,6 +21,18 @@ control durable. [Antes de la corrección](prg01d-starter-workshop/activation/ti
 [SQL local](prg01d-starter-workshop/activation/timing-sql.tap) y
 [regresión](prg01d-starter-workshop/activation/timing-regression.tap).
 
-Recuperación y aceptación pública se registran al completar sus comprobaciones.
+La [recuperación exacta de alpha.37](prg01d-starter-workshop/activation/timing-recovery.ndjson)
+se ejecutó con cero jugadores/conexiones bajo los locks existentes. Conservó exactamente los hashes
+de perfil y mundo confirmados; terminó sin errores, pendientes ni datos sin guardar. El fixture
+retenido se [limpió](prg01d-starter-workshop/activation/timing-retained-qa-cleanup.json) después
+de desplegar alpha.38: solo su perfil/Auth, sin recibos económicos que borrar.
+
+Alpha.38 `d962055` está activa y sana con una autoridad y timer activo:
+[109/109 del actualizador](l03d-companion-control/deployment.json) y
+[28/28 en la imagen exacta](prg01d-starter-workshop/activation/timing-image-tests.json),
+con hashes Git coincidentes. El [canario público de Tala](prg01d-starter-workshop/activation/public-d783c754-992a-4304-9e2a-25d3f4df4d9d.json)
+pasó 6/6: rechazo de falsificaciones sin efectos, tres golpes con calidad evaluada cero,
+tres troncos/diez puntos, replay histórico y una tabla fabricada en el banco. Perfil/Auth QA retirados;
+cuatro recibos de éxito consultados y retenidos. El recorrido completo del taller se registra por separado.
 El corte de compañeros permanece documentado por separado en
 [L03d-d](l03d-companion-control.md); esta corrección es un requisito de disponibilidad del alfa.

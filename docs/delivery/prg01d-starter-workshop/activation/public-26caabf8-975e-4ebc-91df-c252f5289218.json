@@ -1,0 +1,168 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T01:24:17.713Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "protocol": 46,
+  "gameVersion": "0.6.0-alpha.37",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_026_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.37",
+      "protocolVersion": 46,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "lawful_bench_navigation",
+      "pass": true
+    },
+    {
+      "name": "partial_delivery_and_exact_retry",
+      "pass": true,
+      "historical": true,
+      "boards": 3
+    },
+    {
+      "name": "insufficient_goods_unchanged",
+      "pass": true
+    },
+    {
+      "name": "disconnected_second_partial_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "disconnected_third_partial_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "disconnected_final_boards_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "ten_board_project_and_single_credit",
+      "pass": true
+    },
+    {
+      "name": "disconnected_crate_material_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "two_board_crate_kit_consumed_once",
+      "pass": true
+    },
+    {
+      "name": "occupied_and_stale_raft_edits_are_durable_unchanged_denials",
+      "pass": true
+    },
+    {
+      "name": "first_credit_storage_and_crate_placement",
+      "pass": true
+    },
+    {
+      "name": "disconnected_paid_storage_pack_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "disconnected_paid_storage_pack_completion",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "durable_crate_removal_salvages_at_most_one_plank",
+      "pass": true,
+      "salvagedBoards": 1
+    },
+    {
+      "name": "paid_second_storage_costs_ten_boards",
+      "pass": true
+    },
+    {
+      "name": "disconnected_backpack_upgrade_seed",
+      "pass": true,
+      "cargoKinds": 2
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "backpack_upgrade_after_cost",
+      "pass": true
+    },
+    {
+      "name": "disconnected_logging_material_seed",
+      "pass": true,
+      "cargoKinds": 1
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "two_logs_to_one_plank",
+      "pass": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    },
+    {
+      "name": "reconnect_profile_and_historical_receipt",
+      "pass": true
+    },
+    {
+      "name": "disconnected_timed_logging_axe_seed",
+      "pass": true,
+      "cargoKinds": 0
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": false,
+  "failure": "safe route budget exhausted: standable frontier beside unstarted palm",
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 15,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T01:27:01.523Z"
+}

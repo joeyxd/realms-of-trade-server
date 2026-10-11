@@ -1,5 +1,19 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-d, 2026-10-10 — detención durable publicada, alpha.38/protocolo 46:**
+[Entrega](docs/delivery/l03d-companion-control.md) y [contrato](docs/briefs/l03d-companion-control.md).
+Stop inmediato, guardado privado SQL027 y permiso explícito para una conexión nueva; CAS durable
+separado del epoch, recuperación antes de escuchar y fallo/timeout/tardía sin reanudación automática.
+Conserva el allowlist de vínculos del operador; no provisiona ni activa agentes/proveedor.
+SQL027 aplicado y canario de servicio revertido; runtime `d962055` alpha.38 sano con una autoridad y timer activo.
+109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git; WSS público 17/17.
+Las 65/65 focales y el navegador invitado 7/7 corresponden a alpha.37; la UI de compañeros no cambió.
+El [baseline de Tala](docs/delivery/prg01d-timing-baseline.md) corrigió el conflicto; alfa recuperado y canario Tala público 6/6.
+Local 190/190 y navegador 14/14 con autenticación simulada y SQL027 en disco; conteos solapados.
+Stop/resume de un dueño autenticado público sigue pendiente. No es aceptación de memoria inteligente.
+Sigue conexión/modelo admitidos y techo de gasto compartido; después personalidad/metas en la mente,
+memoria basada en eventos confirmados y canario social/PvE con acuerdo recordado en otra sesión.
+
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
 Personalidad/objetivos por cuenta–mundo–personaje ya vinculado; CAS/replay, borrador conservado
@@ -32,19 +46,18 @@ Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualiza
 Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
 para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
 
-**AREA03 PRG01d, 2026-10-10 — taller activado; servidor bloqueado, pendiente SQL026:**
-[contrato](docs/briefs/prg01d-starter-workshop.md) y [entrega/evidencia](docs/delivery/prg01d-starter-workshop.md).
-SQL023/024 confirmados; única autoridad `f939152`, alpha.36/protocolo 45, recursos v3 conservados.
-Encargo personal de diez tablas, crédito único, kit en banco, tabla 2:1 y Tala con aciertos del host.
-Entrada pública 14/14 y navegador autenticado ES/EN 8/8 antes del fallo; cuentas UI limpias, recibos conservados.
-El canario confirmó entregas 3+2+3+2/crédito/kit, pero SQL024 rechazó `:` del ID real al colocar la primera bodega.
-M5 quedó cerrado a escrituras, una operación pendiente, cero jugadores/conexiones; contenedor unhealthy y público 503.
-Recibo fallido ausente, crédito/kit intactos. [Checkpoint y recuperación](docs/delivery/prg01d-starter-workshop/activation/README.md).
-SQL026 preparado (IDs y denegaciones sin cambios), regresión SQL 10/10; aplicación Supabase aún sin verificar.
-Sigue SQL026 → recuperación guardada → canario completo construcción/capacidad/desguace/Tala. No repetir SQL021/024.
-No apagar el taller con recursos v3. Mundo común suelo/perlas/muerte sin adoptar/activar.
-Pruebas locales previas 188/188, 117/117 y paneles 39/39 conservan su alcance; conteos solapados.
-INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es posterior, todavía separado.
+**AREA03 PRG01d, 2026-10-10 — taller activado; alpha.38 sana y Tala pública verificada:**
+[Contrato](docs/briefs/prg01d-starter-workshop.md) y [entrega/evidencia](docs/delivery/prg01d-starter-workshop.md).
+SQL023/024/026 confirmados; única autoridad `d962055`, alpha.38/protocolo 46 y recursos v3.
+Encargo de diez tablas, crédito único, kit, receta 2:1 y Tala con desafíos evaluados por el host.
+El incidente de bodega alpha.36 por `:` se corrigió con SQL026; recuperación y limpieza QA
+con seis recibos retenidos. El segundo incidente, Tala alpha.37, se corrigió alineando el baseline
+con el escritor M5 existente antes de la operación. [Diagnóstico y recuperación](docs/delivery/prg01d-timing-baseline.md).
+109/109 del actualizador, 28/28 focales de la imagen, dos casos SQL/host locales y Tala pública 6/6;
+conteos solapados. El canario completo de construcción/capacidad/desguace/Tala sigue en ejecución.
+Entrada histórica 14/14 y navegador autenticado ES/EN 8/8 conservan su alcance; móvil emulado.
+No repetir SQL021/024, apagar el taller v3 ni adoptar/activar el mundo común suelo/perlas/muerte.
+INV01–03 (huecos/pilas, Carga y sobrepeso) permanece separado.
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el

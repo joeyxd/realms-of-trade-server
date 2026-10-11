@@ -4,8 +4,10 @@
 Hermes para una experiencia sencilla con muchos jugadores.
 **Estado: arquitectura contrastada; el autor aprobó comenzar su implementación.**
 Primer tramo: [Mis compañeros ingame](l03d-owner-center.md), estado y detención de vínculos existentes.
-Continúa [L03d-c, ficha privada durable](l03d-companion-config.md), personalidad y objetivos de esos
-vínculos, todavía sin alimentar la mente. Conexiones/vínculos durables, proveedor, memoria y canario
+Continúan [L03d-c, ficha privada durable](l03d-companion-config.md), personalidad y objetivos de esos
+vínculos, y [L03d-d, detención durable](l03d-companion-control.md), que conserva el stop confirmado
+al reconstruir el host y exige permiso explícito para una conexión nueva. Todavía no alimentan la mente.
+Conexiones/vínculos durables, proveedor, memoria y canario
 conservan sus puertas pendientes.
 No selecciona proveedor/modelo, instala Hermes, custodia credenciales ni habilita inferencia.
 Complementa [el plan de agentes](../../PLAN-EXTRA-LLM.md); conserva los contratos L03/L04/L05 y M5.
@@ -135,6 +137,7 @@ Exponer ese panel o copiar el donante no cierra estos contratos.
 |---|---|---|
 | Centro, base | Entrada ingame autenticada, compañeros ya vinculados, estado y stop; proveedor ausente mostrado con honestidad. | Dos cuentas aisladas, invitado denegado, stop sin proveedor, desktop/móvil ES/EN; sin consumo. |
 | Ficha privada, L03d-c | Personalidad y objetivos durables de un compañero ya vinculado, todavía sin alimentar su mente. | Cuenta/mundo/personaje aislados, CAS/replay, borrador ante conflicto/incertidumbre, reentrada y base en disco; sin proveedor ni gameplay nuevo. |
+| Detención durable, L03d-d | Stop inmediato y confirmado en SQL027; permitir conexión requiere decisión explícita y runner nuevo. | CAS separado del epoch, recuperación antes de escuchar, fallo/timeout/tardía sin reanudación, bypass legacy cerrado, dos dueños y UI ES/EN. Dueño autenticado público todavía pendiente. |
 | Conexión/configuración | Una ruta API admitida, referencia privada, catálogo elegible, modelo/límites persistentes. | Reinicio/reentrada y CAS; secreto ausente de bundle/perfil/logs; dos personajes comparten techo sin duplicarlo. Proveedor/modelo/importes por elegir. |
 | Canario L03d | Conversar, ayudar en PvE y recordar un acuerdo en una segunda sesión. | Uso/coste/incertidumbre, latencia, timeout/stop/tardía, reserva conjunta, JSON inválido, paráfrasis/contradicción/precio nuevo y efecto único. |
 | Operación/memoria | Inicio/reentrada, captura por eventos y archivos reales visibles con exportación/borrado. | Scope por cuenta, continuidad, coste completo de recuperación/resumen y agotamiento de presupuesto. |

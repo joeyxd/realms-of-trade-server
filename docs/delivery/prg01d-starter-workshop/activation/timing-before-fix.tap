@@ -8,9 +8,9 @@ not ok 1 - a v3 timing denial receipts cleanly when the live economy is ahead of
   failureType: 'testCodeFailure'
   error: |-
     Expected values to be strictly equal:
-    
+
     2 !== 1
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: 1

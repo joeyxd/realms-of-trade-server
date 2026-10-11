@@ -79,12 +79,23 @@ export async function acceptTimedLogging(api) {
     && m.ev.opId === forged.opId, 'reject invented logging challenge UUID', 12000, true);
   send(forged);
   const forgedAck = (await forgedWait).ev;
-  ensure(forgedAck.ok === false && forgedAck.why === 'timing',
-    'invented challenge UUID was not rejected by server timing proof validation');
+  ensure(forgedAck.ok === false && forgedAck.why === 'timing' && forgedAck.durable === true,
+    'invented challenge UUID was not durably rejected by server timing proof validation');
+  const forgedReceiptId = economicOperationId(worldId, accountId, forged.opId);
+  const forgedReceipt = await store.loadEconomicOperation(forgedReceiptId);
+  const forgedReceiptAck = structuredClone(forgedAck);
+  delete forgedReceiptAck.to; delete forgedReceiptAck.durable;
+  ensure(forgedReceipt?.request?.world === worldId && forgedReceipt.request.account === accountId
+    && stable(forgedReceipt.request.command) === stable(economicCommand(forged))
+    && stable(forgedReceipt.request.ack) === stable(forgedReceiptAck)
+    && stable(forgedReceipt.result?.ack) === stable(forgedReceipt.request.ack)
+    && forgedReceipt.result?.ack?.opId === forged.opId,
+  'forged logging denial receipt did not preserve the exact world, account, command, and ACK');
+  receipts.add(forgedReceiptId);
   ensure(stable(latest().profile) === stable(beforeForgedProfile)
     && stable(nodeById(palm.id)) === stable(beforeForgedNode), 'forged logging input changed the durable profile or palm');
   check('logging_rejects_client_quality_and_invented_challenge', { clientQualityRejected: true,
-    challengeRejected: true, profileUnchanged: true, palmUnchanged: true });
+    challengeRejected: true, denialReceiptExact: true, profileUnchanged: true, palmUnchanged: true });
 
   const qualities = [], counts = [], commands = [];
   let expectedRev = palm.rev;
