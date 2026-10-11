@@ -15,7 +15,7 @@ incluidos recipientes y agua, conservando pose, casco, condición y el mismo via
 bodega también cuentan en la masa inicial y en la comprobación de carga congelada.
 
 La UI ES/EN muestra por qué la bodega y los barriles están bloqueados y permite los servicios personales
-solo con el estado autoritativo de parada. El corte se identifica como **alpha.48 / protocolo 54**.
+solo con el estado autoritativo de parada. El corte se identifica como **alpha.50 / protocolo 55**.
 
 ## Validación
 

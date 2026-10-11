@@ -26,7 +26,7 @@
 .pname { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.03em; line-height: 1; }
 .bar {
   position: relative; height: 15px; width: 210px;
-  background: rgba(20, 10, 30, 0.75);
+  background: rgba(10, 23, 38, 0.75);
   border: 2px solid var(--ink); border-radius: 8px;
   box-shadow: 0 2px 0 var(--ink), inset 0 2px 4px rgba(0, 0, 0, 0.6);
   overflow: hidden;
@@ -46,6 +46,9 @@
 .bar.need.food .fill { background: linear-gradient(180deg, #ffe2a0, #b97828 60%, #71431f); }
 .bar.need.water .fill { background: linear-gradient(180deg, #c8fbff, #39b8c8 60%, #176d82); }
 .bar.need.low { border-color: #ff8a80; }
+/* INV02d: the heavy-pack chip beside the gold. */
+.load-chip { margin-left: 6px; padding: 1px 8px 2px; border-radius: 999px; font-size: 11px; font-weight: 900; letter-spacing: 0.05em; color: #2a1600; background: #f2b33d; box-shadow: 0 0 0 2px var(--ink); }
+.load-chip.over { color: #fff3ee; background: #c2461f; }
 .bar .num {
   position: absolute; inset: 0; display: grid; place-items: center;
   font-size: 11px; font-weight: 900; color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink);
@@ -60,7 +63,7 @@
 .net-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 5px; border-radius: 999px;
   font: 900 12px var(--font-ui); color: var(--parch); font-variant-numeric: tabular-nums;
-  background: rgba(20, 12, 36, 0.72); border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink);
+  background: rgba(12, 27, 43, 0.72); border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink);
 }
 .net-chip i { width: 8px; height: 8px; border-radius: 50%; background: #4dff9a; box-shadow: 0 0 0 2px var(--ink); }
 .net-chip.ok i { background: #ffd23d; }
@@ -76,13 +79,15 @@
 @container stage (max-width: 420px) { #hud-mute { display: none; } }
 
 /* Party frames (online): below the player's bars, gold and world clock, scaled together. */
+/* SRV01 meters lengthen the player block; the party list and notices start below them. */
+#hud:has(.hud-player .needs:not([hidden])) { --needs-d: 16px; }
 .party {
-  position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + 138px * var(--ui-scale));
+  position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + (138px + var(--needs-d, 0px)) * var(--ui-scale));
   display: grid; gap: 6px; transform-origin: top left; transform: scale(var(--ui-scale)); pointer-events: none;
 }
 .party .pm {
   display: flex; gap: 7px; align-items: center; padding: 4px 9px 5px 5px; border-radius: 10px;
-  background: rgba(20, 12, 36, 0.7); border: 2px solid var(--ink); box-shadow: inset 3px 0 0 var(--pc), 0 2px 0 var(--ink);
+  background: rgba(12, 27, 43, 0.7); border: 2px solid var(--ink); box-shadow: inset 3px 0 0 var(--pc), 0 2px 0 var(--ink);
 }
 .party .pw { width: 22px; height: 22px; display: grid; place-items: center; }
 .party .pw svg { width: 20px; height: 20px; }
@@ -95,7 +100,7 @@
 .nameplate.ally .np-hp i { background: linear-gradient(180deg, #a6ffcf, #2fd17a); }
 
 /* Lost connection veil */
-.net-lost { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(8, 6, 20, 0.62); backdrop-filter: blur(3px); }
+.net-lost { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(4, 11, 20, 0.62); backdrop-filter: blur(3px); }
 .net-card { max-width: 420px; padding: 22px 24px 24px; display: grid; gap: 12px; justify-items: center; text-align: center; }
 .net-card h2 { margin: 0; font-family: var(--font-display); font-size: 26px; letter-spacing: 0.03em; }
 .net-card p { margin: 0; font-weight: 800; color: var(--parch); text-shadow: 0 2px 0 var(--ink); }
@@ -135,7 +140,7 @@
 }
 .slot {
   position: relative; width: 58px; height: 58px; border-radius: 12px;
-  background: radial-gradient(circle at 50% 30%, #3a2a5a, #1c1232);
+  background: radial-gradient(circle at 50% 30%, #16304a, #0b1826);
   border: 2px solid var(--ink);
   box-shadow: inset 0 0 0 2px var(--brass-d), inset 0 2px 0 rgba(255, 220, 160, 0.3), 0 3px 0 var(--ink);
   display: grid; place-items: center; overflow: hidden;
@@ -145,12 +150,12 @@
 .slot .sweep { position: absolute; inset: 0; border-radius: 10px; pointer-events: none; }
 .slot .charges { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 4px; }
 .slot .pip { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 1.5px solid var(--ink); box-shadow: 0 0 6px var(--accent); }
-.slot .pip.empty { background: #2a2040; box-shadow: none; }
+.slot .pip.empty { background: #1a3048; box-shadow: none; }
 .slot.locked svg { opacity: 0.35; }
 .slot .lock {
   position: absolute; right: 3px; bottom: 3px;
   font-family: var(--font-display); font-size: 11px; color: var(--parch);
-  background: rgba(10, 6, 24, 0.75); border: 1.5px solid var(--brass-d); border-radius: 6px; padding: 0 4px;
+  background: rgba(5, 13, 22, 0.75); border: 1.5px solid var(--brass-d); border-radius: 6px; padding: 0 4px;
 }
 .slot.flash { animation: slotflash 0.25s ease; }
 @keyframes slotflash { 0% { box-shadow: inset 0 0 0 2px var(--accent), 0 0 18px var(--accent); } 100% { box-shadow: inset 0 0 0 2px var(--brass-d), 0 3px 0 var(--ink); } }
@@ -163,6 +168,8 @@
   width: 250px; padding: 10px 12px 12px;
   transform-origin: top right; transform: scale(var(--ui-scale));
 }
+/* The live minimap sits in the same corner (styles/minimap.css): the tracker starts under it and its caption. */
+@container stage (min-height: 481px) { #hud:has(> .world-minimap:not([hidden])) .tracker { top: calc(186px + var(--safe-t)); } }
 .tracker h3 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 400; font-size: 16px; letter-spacing: 0.04em; color: var(--brass-l); text-shadow: 0 2px 0 var(--ink); }
 .tracker ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
 .tracker li { display: grid; grid-template-columns: 18px 1fr; gap: 6px; align-items: start; font-weight: 700; font-size: 13.5px; line-height: 1.3; color: var(--text); text-shadow: 0 1px 0 var(--ink); }
@@ -181,7 +188,7 @@
 .nameplate .np-name { font-weight: 900; font-size: 13px; color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink), 0 2px 0 var(--ink); }
 .nameplate .np-name .lv { color: var(--brass-l); margin-right: 4px; }
 .nameplate .np-title { font-size: 11px; font-weight: 800; color: var(--brass-l); text-shadow: 0 1px 0 var(--ink); }
-.nameplate .np-hp { width: 54px; height: 6px; border-radius: 3px; background: rgba(10, 6, 24, 0.8); border: 1.5px solid var(--ink); overflow: hidden; }
+.nameplate .np-hp { width: 54px; height: 6px; border-radius: 3px; background: rgba(5, 13, 22, 0.8); border: 1.5px solid var(--ink); overflow: hidden; }
 .nameplate .np-hp i { display: block; height: 100%; background: var(--good); }
 .nameplate.npc .np-name { color: #fff2b8; }
 .nameplate.you .np-name { color: var(--accent); }
@@ -193,7 +200,7 @@
   transform-origin: 50% 100%;
 }
 .prompt.below { padding: 6px 11px 7px; font-size: 13.5px; }
-.prompt .arrow { position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; transform: translateX(-50%) rotate(45deg); background: #26173f; border-right: 2px solid var(--brass-d); border-bottom: 2px solid var(--brass-d); }
+.prompt .arrow { position: absolute; left: 50%; bottom: -9px; width: 14px; height: 14px; transform: translateX(-50%) rotate(45deg); background: #12253a; border-right: 2px solid var(--brass-d); border-bottom: 2px solid var(--brass-d); }
 .bubble {
   position: absolute; left: 0; top: 0; max-width: 260px; padding: 9px 12px 10px;
   color: var(--ink); font-weight: 800; font-size: 13.5px; line-height: 1.35; white-space: normal;
@@ -204,7 +211,7 @@
 .bubble::after { content: ''; position: absolute; left: 50%; bottom: -8px; width: 12px; height: 12px; transform: translateX(-50%) rotate(45deg); background: var(--parch); border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
 
 /* Toasts (left, under the portrait) */
-#toasts { position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + (138px + var(--party-n, 0) * 44px) * var(--ui-scale)); display: grid; gap: 8px; width: min(300px, calc(100cqw - 32px)); }
+#toasts { position: absolute; left: calc(14px + var(--safe-l)); top: calc(12px + var(--safe-t) + (138px + var(--needs-d, 0px) + var(--party-n, 0) * 44px) * var(--ui-scale)); display: grid; gap: 8px; width: min(300px, calc(100cqw - 32px)); }
 .toast { padding: 8px 12px; font-weight: 800; font-size: 13.5px; line-height: 1.3; }
 .toast b { color: var(--brass-l); font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; }
 
@@ -212,7 +219,7 @@
 #perf {
   position: absolute; left: calc(14px + var(--safe-l)); bottom: calc(156px + var(--safe-b));
   padding: 8px 10px; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: #d6ffe6;
-  background: rgba(10, 6, 24, 0.78); border: 1px solid #3a2a5a; border-radius: 8px; white-space: pre;
+  background: rgba(5, 13, 22, 0.78); border: 1px solid #16304a; border-radius: 8px; white-space: pre;
   font-variant-numeric: tabular-nums;
 }
 
@@ -236,10 +243,10 @@ body.touch .actionbar { display: none; }
 .bar.hp.hurt { animation: hurtshake 0.25s ease; }
 @keyframes hurtshake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
 .slot .combo { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 3px; }
-.slot .combo i { width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg); background: #2a2040; border: 1.5px solid var(--ink); }
+.slot .combo i { width: 7px; height: 7px; border-radius: 2px; transform: rotate(45deg); background: #1a3048; border: 1.5px solid var(--ink); }
 .slot .combo i.on { background: var(--brass-l); box-shadow: 0 0 6px var(--brass); }
 .slot .catch { position: absolute; top: 4px; right: 4px; display: flex; flex-direction: column; gap: 3px; }
-.slot .catch i { width: 7px; height: 7px; border-radius: 50%; background: #2a2040; border: 1.5px solid var(--ink); opacity: 0.45; }
+.slot .catch i { width: 7px; height: 7px; border-radius: 50%; background: #1a3048; border: 1.5px solid var(--ink); opacity: 0.45; }
 .slot .catch i.on { background: #ffc46a; box-shadow: 0 0 6px #ffb02e; opacity: 1; }
 .slot .catch i.heavy { background: #ff5a1f; box-shadow: 0 0 7px #ff5a1f; }
 .rmb-slot.low svg { filter: drop-shadow(0 0 4px #ff3b30) saturate(0.6); }
@@ -354,13 +361,13 @@ body.touch .actionbar { display: none; }
 /* The weapon's mastery: a thin bar under its name */
 .actionbar .mast {
   position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 22px;
-  width: 150px; height: 9px; border-radius: 5px; background: rgba(20, 10, 30, 0.75); border: 1.5px solid var(--ink); overflow: hidden; pointer-events: auto;
+  width: 150px; height: 9px; border-radius: 5px; background: rgba(10, 23, 38, 0.75); border: 1.5px solid var(--ink); overflow: hidden; pointer-events: auto;
 }
 .actionbar .mast .mfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: linear-gradient(180deg, #ffe7a3, #c9a44c); transition: width 0.3s ease; }
 .actionbar .mast .mtxt { position: absolute; inset: -1px 0 0; display: grid; place-items: center; font: 900 7.5px var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink); }
 .actionbar .wname { margin-bottom: 34px; }
 /* Locked skills: a padlock and the mastery that opens them */
-.slot .lock { right: auto; bottom: auto; inset: 0; display: grid; place-items: center; background: rgba(10, 6, 24, 0.55); border: 0; border-radius: 10px; padding: 0; z-index: 1; }
+.slot .lock { right: auto; bottom: auto; inset: 0; display: grid; place-items: center; background: rgba(5, 13, 22, 0.55); border: 0; border-radius: 10px; padding: 0; z-index: 1; }
 .slot .lock[hidden] { display: none; }
 .slot .lock svg { width: 22px; height: 22px; opacity: 1; }
 .slot .lock em { position: absolute; bottom: 3px; left: 0; right: 0; text-align: center; font-style: normal; font-family: var(--font-display); font-size: 11px; color: var(--brass-l); text-shadow: 0 1px 0 var(--ink); }
@@ -376,10 +383,10 @@ body.touch .actionbar { display: none; }
 .loot-label {
   position: absolute; left: 0; top: 0; transform-origin: 50% 100%; white-space: nowrap; will-change: transform; pointer-events: none;
   padding: 2px 8px 3px; border-radius: 7px; font-weight: 900; font-size: 12.5px; color: var(--rc, #fff);
-  background: rgba(12, 8, 26, 0.72); border: 1.5px solid color-mix(in srgb, var(--rc, #fff) 55%, #1a1033);
+  background: rgba(7, 17, 28, 0.72); border: 1.5px solid color-mix(in srgb, var(--rc, #fff) 55%, #0b1826);
   text-shadow: 0 1px 0 var(--ink); box-shadow: 0 2px 0 var(--ink);
 }
-.loot-label.gold, .loot-label.potion, .loot-label.quest { font-size: 11px; padding: 1px 6px 2px; background: rgba(12, 8, 26, 0.55); }
+.loot-label.gold, .loot-label.potion, .loot-label.quest { font-size: 11px; padding: 1px 6px 2px; background: rgba(7, 17, 28, 0.55); }
 .loot-label.chest { font-family: var(--font-display); font-weight: 400; font-size: 15px; letter-spacing: 0.03em; }
 .fnum.gold { color: #ffd24a; font-size: 16px; }
 .toast .rz { text-shadow: 0 1px 0 var(--ink); }
@@ -452,27 +459,27 @@ body.touch .actionbar { display: none; }
 #touch .tbtn .ico { position: relative; width: 56%; aspect-ratio: 1; display: block; flex: none; }
 #touch .t-pot .ico { width: 58%; }
 #touch .tbtn svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-#touch .tbtn svg .u { stroke: #120a24; stroke-width: 4.2; }
+#touch .tbtn svg .u { stroke: #07111c; stroke-width: 4.2; }
 #touch .tbtn svg .f { stroke: #fff; stroke-width: 2.2; }
 #touch .tbtn .lbl {
   position: relative; display: block; min-height: 1em; white-space: nowrap; text-transform: uppercase;
-  text-shadow: 1px 0 #120a24, -1px 0 #120a24, 0 1px #120a24, 0 -1px #120a24, 1px 1px #120a24, -1px 1px #120a24, 1px -1px #120a24, -1px -1px #120a24;
+  text-shadow: 1px 0 #07111c, -1px 0 #07111c, 0 1px #07111c, 0 -1px #07111c, 1px 1px #07111c, -1px 1px #07111c, 1px -1px #07111c, -1px -1px #07111c;
 }
 #touch .tbtn .lbl svg { width: auto; height: 1.15em; margin: 0 auto; }
 /* Cooldown sweep (conic gradient set by touch.js) sits under the icon. */
 #touch .tbtn .sweep { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
 /* Dash charges: small dots along the bottom of the circle. */
 #touch .t-dash .pips { position: absolute; left: 0; right: 0; bottom: calc(5px * var(--tb)); display: flex; justify-content: center; gap: calc(4px * var(--tb)); }
-#touch .t-dash .pips i { width: calc(6px * var(--tb)); height: calc(6px * var(--tb)); border-radius: 50%; background: #28e0cc; border: 1.5px solid #120a24; }
+#touch .t-dash .pips i { width: calc(6px * var(--tb)); height: calc(6px * var(--tb)); border-radius: 50%; background: #28e0cc; border: 1.5px solid #07111c; }
 #touch .t-dash .pips i.empty { background: rgb(18 10 36 / 0.75); }
 /* Potion: count badge top-right. */
 #touch .t-pot .cnt {
   position: absolute; right: calc(-4px * var(--tb)); top: calc(-4px * var(--tb)); min-width: calc(19px * var(--tb)); height: calc(19px * var(--tb)); padding: 0 calc(4px * var(--tb));
   display: grid; place-items: center; border-radius: 999px; font: 400 calc(12px * var(--tb)) / 1 var(--font-display); color: #fff;
-  background: rgb(255 84 128); border: 2px solid #120a24; text-shadow: 0 1px 0 #120a24;
+  background: rgb(255 84 128); border: 2px solid #07111c; text-shadow: 0 1px 0 #07111c;
 }
 #touch .t-pot.empty { opacity: 0.6; filter: grayscale(0.7); }
-#touch .t-pot.empty .cnt { background: #5a4a66; }
+#touch .t-pot.empty .cnt { background: #4a5d70; }
 /* Locked (mastery): grey, with the padlock instead of the label. */
 #touch .tbtn.locked { filter: grayscale(1); opacity: 0.45; }
 /* Cooldown over: one bright ring pulse. R with the RIPOSTE full: a slow gold glow. */
@@ -561,6 +568,8 @@ body.touch .actionbar { display: none; }
 /* Upright stages reserve separate rows for status, controls and transient notices.
    Use the stage width: a desktop browser resized to a phone needs the same layout. */
 @container stage (max-width: 720px) and (min-height: 481px) {
+  /* SRV01 meters lengthen the player block: the controls row moves down with them (the notices below have room). */
+  body:not(.is-naval) #hud:has(.hud-player .needs:not([hidden])) { --needs-h: 28px; }
   body:not(.is-naval) .hud-player {
     left: calc(10px + var(--safe-l)); top: calc(10px + var(--safe-t));
     width: calc((100cqw - 136px - var(--safe-l) - var(--safe-r)) / var(--ui-scale));
@@ -573,7 +582,7 @@ body.touch .actionbar { display: none; }
   body:not(.is-naval) .hud-player .gold-row { flex-wrap: wrap; font-size: 12px; gap: 4px; }
   body:not(.is-naval) #hud .hud-top-right {
     left: calc(10px + var(--safe-l)); right: calc(10px + var(--safe-r));
-    top: calc(12px + var(--safe-t) + 116px * var(--ui-scale));
+    top: calc(12px + var(--safe-t) + (116px + var(--needs-h, 0px)) * var(--ui-scale));
     max-width: none; transform: none; flex-wrap: wrap; gap: 6px; justify-content: flex-end;
   }
   body:not(.is-naval) .hud-top-right .icon-btn { width: 44px; height: 44px; flex: 0 0 44px; font-size: 16px; }
@@ -597,6 +606,8 @@ body.touch .actionbar { display: none; }
   body:not(.is-naval) .boss-on .party { top: calc(318px + var(--safe-t) + 116px * var(--ui-scale)); }
   body:not(.is-naval) .boss-on #toasts { top: calc(326px + var(--safe-t) + (116px + var(--party-n, 0) * 44px) * var(--ui-scale)); }
 }
+/* Narrowest phones: the controls row keeps 44 px targets; the hand-crafting button steps aside (the bench still crafts). */
+@container stage (max-width: 359px) and (min-height: 481px) { body:not(.is-naval) #hud-craft { display: none; } }
 
 /* ---- Tattoos in the slots (M4.7) ---------------------------------------------------------------- */
 .skill-slot.tattoo { box-shadow: inset 0 0 0 2px #8a5cff, inset 0 2px 0 rgba(210, 180, 255, 0.35), 0 3px 0 var(--ink); }

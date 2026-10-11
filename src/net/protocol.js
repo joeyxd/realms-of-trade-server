@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 54; // Private dry shore-stop service capability; reload peers.
+export const PROTOCOL_VERSION = 55; // Predicted pack load and private dry shore-stop service; reload peers.
 
 export const MSG = {
   // client -> server

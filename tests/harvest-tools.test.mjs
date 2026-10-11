@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GAME } from '../src/data/meta.js';
-import { HARVEST } from '../src/data/resources.js';
+import { HARVEST, RESOURCE_KINDS } from '../src/data/resources.js';
 import { C } from '../src/sim/ecs.js';
 import { installResources, publicResources, resourceCmd } from '../src/sim/systems/resources.js';
 import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
@@ -60,7 +60,7 @@ function craftWorld() {
   installResources(w); w.resources.nodes.clear(); w.resources.bench = { x: 0, y: 2, z: 0 };
   ecs.alive[1] = 1; ecs.mask[1] = C.PLAYER; ecs.hp[1] = 100; ecs.y[1] = 2;
   ecs.dashT[1] = -1; ecs.regenT[1] = 100;
-  const profile = newProfile(); profile.eco.pack = { cap: 10, goods: { madera: 1, piedra: 2 } };
+  const profile = newProfile(); profile.eco.pack = { cap: 20, goods: { tronco: 3, piedra: 2 } };
   w.profiles.set(1, profile);
   return w;
 }
@@ -113,6 +113,34 @@ test('tool crafting commits pack, unique belt slot, trade revision, and save pre
   assert.equal(resourceCmd(world, 1, toolCraft('already-owned', 1)), false);
   assert.equal(world.events.at(-1).why, 'alreadyOwned');
   assert.deepEqual(profile, committed, 'already-owned acknowledgement consumes no materials or revision');
+});
+
+test('both stone tools are hand recipes away from the bench; the wood recipe still needs the bench', () => {
+  const world = craftWorld(), profile = world.profiles.get(1), c = world.ecs;
+  const craft = (opId, recipe, expectedRev) => resourceCmd(world, 1, { type: 'resource', op: 'craft', opId, recipe, expectedRev });
+  c.x[1] = HARVEST.benchRadius + 20; // far from the bench, still on land and calm
+  const before = copy(profile);
+  assert.equal(craft('wood-far', 'madera', 0), false);
+  assert.equal(world.events.at(-1).why, 'far');
+  assert.deepEqual(profile, before, 'a bench recipe away from the bench changes nothing');
+  c.regenT[1] = 0;
+  assert.equal(craft('axe-combat', 'hacha_piedra', 0), false);
+  assert.equal(world.events.at(-1).why, 'combat', 'hand crafting keeps the calm rule');
+  c.regenT[1] = 100;
+  assert.equal(craft('axe-hand', 'hacha_piedra', 0), true);
+  assert.deepEqual(profile.tools, { axe: 1, pickaxe: 0 });
+  assert.deepEqual(profile.eco.pack.goods, {}, 'three logs and two stones leave the backpack');
+  assert.equal(profile.eco.tradeRev, 1);
+  world.tick += HARVEST.chopTicks; profile.eco.pack.goods = { tronco: 3, piedra: 1 };
+  assert.equal(craft('pick-short', 'pico_piedra', 1), false);
+  assert.equal(world.events.at(-1).why, 'materials');
+  profile.eco.pack.goods = { tronco: 3, piedra: 2 };
+  assert.equal(craft('pick-hand', 'pico_piedra', 1), true);
+  assert.deepEqual(profile.tools, { axe: 1, pickaxe: 1 });
+  assert.equal(profile.eco.tradeRev, 2);
+  world.resources.bench = null; world.tick += HARVEST.chopTicks;
+  profile.tools.axe = 0; profile.eco.pack.goods = { tronco: 3, piedra: 2 };
+  assert.equal(craft('axe-no-bench', 'hacha_piedra', 2), true, 'a session without a bench still allows hand recipes');
 });
 
 test('rock final yield preflight failure and replay leave node, inventory, and fresh-hit events atomic', () => {
@@ -169,7 +197,7 @@ test('both mining kinds require a pickaxe, reserve the entire yield, and reset p
     assert.equal(resourceCmd(world, 1, cmd('wrong-tool')), false);
     assert.equal(world.events.at(-1).why, 'tool'); assert.equal(node.hits, 0);
     profile.tools.pickaxe = 1;
-    profile.eco.pack.goods = { madera: 3 };
+    profile.eco.pack.goods = { madera: 6, piedra: 1 }; // 20 of 20
     assert.equal(resourceCmd(world, 1, cmd('full')), false);
     assert.equal(world.events.at(-1).why, 'full'); assert.equal(node.rev, 1);
     profile.eco.pack.goods = {};
@@ -210,54 +238,43 @@ test('empty signed guest must bootstrap materials, craft both tools, then save a
   assert.equal(denied?.ok, false); assert.equal(denied?.why, 'tool');
   assert.equal(palm.hits, 0);
 
-  // Starter wood and loose stones can be collected by hand; the large rock nodes need a pickaxe.
-  const looseWood = [...world.resources.nodes.values()].filter((node) => node.kind === 'wood').slice(0, 4);
-  const looseStone = [...world.resources.nodes.values()].filter((node) => node.kind === 'stone').slice(0, 3);
-  assert.equal(looseWood.length, 4); assert.equal(looseStone.length, 3);
-  for (const [index, node] of looseWood.slice(0, 2).entries()) {
-    if (index) waitForWork(first.server, HARVEST.actionTicks);
+  // Starter logs and loose stones are collected by hand; three logs and two stones make the axe anywhere on land.
+  const looseWood = [...world.resources.nodes.values()].filter((node) => node.kind === 'wood').slice(0, 6);
+  const looseStone = [...world.resources.nodes.values()].filter((node) => node.kind === 'stone').slice(0, 4);
+  assert.equal(looseWood.length, 6); assert.equal(looseStone.length, 4);
+  const gather = (node, opId) => {
+    waitForWork(first.server); // clears the longer palm-chop cooldown too
     stand(first.server, entity, node);
-    const ack = command(first.server, first.messages, 61,
-      { type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev, opId: `hand-${node.id}` });
-    assert.equal(ack?.ok, true, `hand gathering ${node.id} succeeds: ${JSON.stringify(ack)}`);
-  }
-  assert.equal(profile.eco.pack.goods.tronco, 2);
-  waitForWork(first.server, HARVEST.actionTicks);
-  const craft = (opId, recipe) => {
-    stand(first.server, entity, bench);
     return command(first.server, first.messages, 61,
-      { type: 'resource', op: 'craft', opId, recipe, expectedRev: profile.eco.tradeRev });
+      { type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev, opId });
   };
-  const madera = craft('wood-one', 'madera');
-  assert.equal(madera?.ok, true); assert.equal(profile.eco.pack.goods.madera, 1);
-  waitForWork(first.server);
-  stand(first.server, entity, looseStone[0]);
-  assert.equal(command(first.server, first.messages, 61,
-    { type: 'resource', op: 'gather', node: looseStone[0].id, expectedRev: looseStone[0].rev, opId: 'hand-stone-1' })?.ok, true);
+  const craft = (opId, recipe) => command(first.server, first.messages, 61,
+    { type: 'resource', op: 'craft', opId, recipe, expectedRev: profile.eco.tradeRev });
+  for (const [index, node] of looseWood.slice(0, 3).entries())
+    assert.equal(gather(node, `hand-wood-${index}`)?.ok, true, `hand gathering ${node.id} succeeds`);
+  for (const [index, node] of looseStone.slice(0, 2).entries())
+    assert.equal(gather(node, `hand-stone-${index}`)?.ok, true, `hand gathering ${node.id} succeeds`);
+  assert.deepEqual(profile.eco.pack.goods, { tronco: 3, piedra: 2 });
   waitForWork(first.server, HARVEST.actionTicks);
   const axeRev = profile.eco.tradeRev;
-  const axeAck = craft('axe', 'hacha_piedra');
+  const axeAck = craft('axe', 'hacha_piedra'); // still standing on the last loose stone, away from the bench
   assert.equal(axeAck?.ok, true);
   assert.deepEqual({ tool: axeAck.tool, tier: axeAck.tier, count: axeAck.count, rev: axeAck.rev },
     { tool: 'axe', tier: 1, count: 1, rev: axeRev + 1 });
   assert.deepEqual(profile.tools, { axe: 1, pickaxe: 0 });
-  waitForWork(first.server);
-  for (const [index, node] of looseWood.slice(2).entries()) {
-    stand(first.server, entity, node);
+
+  // The axe opens the palms; a felled palm, one more loose log and two stones make the pickaxe.
+  for (let hit = 1; hit <= RESOURCE_KINDS.palm.hits; hit++) {
+    waitForWork(first.server);
+    stand(first.server, entity, palm);
     assert.equal(command(first.server, first.messages, 61,
-      { type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev, opId: `hand-extra-${index}` })?.ok, true);
-    waitForWork(first.server, HARVEST.actionTicks);
+      { type: 'resource', op: 'gather', node: palm.id, expectedRev: palm.rev, opId: `palm-${hit}` })?.ok, true);
   }
-  assert.equal(profile.eco.pack.goods.tronco, 2);
-  assert.equal(craft('wood-two', 'madera')?.ok, true);
-  waitForWork(first.server);
-  for (const [index, node] of looseStone.slice(1).entries()) {
-    waitForWork(first.server, HARVEST.actionTicks);
-    stand(first.server, entity, node);
-    assert.equal(command(first.server, first.messages, 61,
-      { type: 'resource', op: 'gather', node: node.id, expectedRev: node.rev, opId: `hand-stone-${index + 2}` })?.ok, true);
-  }
-  assert.equal(profile.eco.pack.goods.piedra, 2);
+  assert.equal(profile.eco.pack.goods.tronco, RESOURCE_KINDS.palm.yield);
+  assert.equal(gather(looseWood[3], 'hand-wood-3')?.ok, true);
+  for (const [index, node] of looseStone.slice(2).entries())
+    assert.equal(gather(node, `hand-stone-${index + 2}`)?.ok, true);
+  assert.deepEqual(profile.eco.pack.goods, { tronco: 3, piedra: 2 });
   waitForWork(first.server);
   const pickRev = profile.eco.tradeRev;
   const pickAck = craft('pickaxe', 'pico_piedra');
@@ -265,7 +282,16 @@ test('empty signed guest must bootstrap materials, craft both tools, then save a
   assert.deepEqual({ tool: pickAck.tool, tier: pickAck.tier, count: pickAck.count, rev: pickAck.rev },
     { tool: 'pickaxe', tier: 1, count: 1, rev: pickRev + 1 });
   assert.deepEqual(profile.tools, { axe: 1, pickaxe: 1 });
-  assert.equal(profile.eco.pack.goods.madera, undefined);
+  assert.deepEqual(profile.eco.pack.goods, {});
+
+  // The bench still turns two logs into a basic plank.
+  assert.equal(gather(looseWood[4], 'hand-wood-4')?.ok, true);
+  assert.equal(gather(looseWood[5], 'hand-wood-5')?.ok, true);
+  waitForWork(first.server, HARVEST.actionTicks);
+  stand(first.server, entity, bench);
+  assert.equal(craft('wood-one', 'madera')?.ok, true);
+  assert.deepEqual(profile.eco.pack.goods, { madera: 1 });
+  waitForWork(first.server);
 
   // Tool recipes are unique permanent belt slots; replay and crafting the owned tool never debit materials.
   const beforeReplay = copy(profile);
@@ -307,7 +333,7 @@ test('unowned tool recipes and resource commands reject forged tiers, counts, an
   const saves = hmacSaves('harvest-tools-schema-secret'), f = serverFixture({ saves }), entity = join(f.server, 71);
   const profile = f.server.world.profiles.get(entity), bench = f.server.world.resources.bench;
   f.server.world.ecs.x[entity] = bench.x; f.server.world.ecs.y[entity] = bench.y; f.server.world.ecs.z[entity] = bench.z;
-  profile.eco.pack.goods = { madera: 1, piedra: 2 };
+  profile.eco.pack.goods = { tronco: 3, piedra: 2 };
   for (const [suffix, extra] of [['tool', { tool: 'pickaxe' }], ['tier', { tier: 1 }], ['count', { count: 9 }],
     ['batch', { n: 2 }]]) {
     const before = copy(profile);

@@ -16,6 +16,15 @@ const WHY_COPY = {
   inference_busy: 'El compañero ya está atendiendo otra solicitud. Espera a que termine.',
   chat_outcome_unresolved: 'No se pudo confirmar si el mensaje llegó. Revisa la conversación antes de enviarlo de nuevo.',
   start_cancelled: 'El inicio se canceló antes de confirmar el estado. Actualiza para comprobarlo.',
+  local_resource_budget_expired: 'La cuota local caducó. Sus archivos permanecen y el consumo conserva su contador.',
+  invalid_memory_sources: 'Selecciona de uno a ocho episodios válidos.',
+  memory_summary_exists: 'Esos episodios ya tienen un resumen. Los originales siguen disponibles.',
+  memory_source_unavailable: 'Alguna fuente ya no está disponible o caducó. Actualiza la lista.',
+  memory_sources_over_budget: 'Las fuentes no caben en una consulta de resumen. Elige menos episodios.',
+  memory_summary_declined: 'El modelo decidió no resumir. No se guardó un resumen y los originales siguen intactos.',
+  invalid_decision: 'La respuesta del modelo no cumple el formato. No se aplicó su propuesta; revisa el consumo confirmado.',
+  context_reload_failed: 'No se pudieron validar los archivos. Se canceló la consulta anterior; revisa los documentos antes de continuar.',
+  memory_capture_failed: 'No se pudo guardar la captura. El mensaje ya entregado permanece en la conversación.',
   network: 'No se pudo contactar el panel local. Revisa la conexión e inténtalo de nuevo.',
 };
 const LOOK_SWATCHES = ['#536b78', '#783e37', '#52706d', '#805636', '#75434a'];
@@ -27,6 +36,7 @@ let pending = new Set();
 let currentFile = 'personality';
 let currentFiles = null;
 let initialDraftLoaded = false;
+const selectedEpisodeIds = new Set();
 
 export function keyFromFragment(fragment) {
   const match = String(fragment || '').replace(/^#/, '').match(/(?:^|&)key=([a-f0-9]{64})(?:&|$)/i);
@@ -95,7 +105,7 @@ async function api(path, body) {
 
 function setPending(name, value) {
   if (value) pending.add(name); else pending.delete(name);
-  const globalBusy = pending.size > 0;
+  const globalBusy = pending.size > 0 || snapshot?.status?.inFlight === true;
   for (const id of ['start', 'send', 'remember', 'remember-inline', 'reenter']) if ($(id)) $(id).disabled = globalBusy || !created();
   if ($('create')) $('create').disabled = globalBusy || created();
   if ($('chat-input')) $('chat-input').disabled = globalBusy || snapshot?.status?.state !== 'ready';
@@ -198,7 +208,7 @@ function showWorkspace() {
   $('conversation-title').textContent = `Habla con ${snapshot.draft?.name || 'tu compañero'}`;
   $('open-world').hidden = !gameConnected() || !snapshot.status?.worldUrl;
   if (!$('open-world').hidden) $('open-world').href = snapshot.status.worldUrl;
-  const busy = pending.size > 0;
+  const busy = pending.size > 0 || snapshot.status?.inFlight === true;
   $('start').disabled = busy || state === 'ready' || state === 'starting';
   $('stop').disabled = state === 'stopped' || pending.has('stop');
   $('reenter').disabled = busy;
@@ -210,10 +220,82 @@ function showWorkspace() {
   $('held').textContent = fmt(budget.totals?.heldTokens ?? budget.heldTokens);
   $('unresolved').textContent = fmt(budget.totals?.unresolvedTokens ?? budget.unresolvedTokens);
   const limitText = budget.limits ? `Límites: ${fmt(budget.limits.maxCalls)} llamadas · ${fmt(budget.limits.maxTokens)} tokens locales.` : '';
-  $('budget-note').textContent = limitText;
+  $('budget-note').textContent = `${limitText}${budget.persistence?.admissionWhy ? ` ${fixedWhy(budget.persistence.admissionWhy)}` : ''}`;
   renderTranscript(snapshot.transcript || []);
+  renderContinuity(snapshot.continuity || null);
   if (snapshot.files && snapshot.files !== currentFiles) renderFiles(snapshot.files);
   setPill($('connection'), 'Panel local conectado', 'ok');
+}
+function displayTime(value) {
+  return Number.isFinite(value) ? new Date(value).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'hora desconocida';
+}
+function continuityReason(value) {
+  if (!value) return 'sin motivo indicado';
+  return ({ delivered_exchange: 'conversación confirmada', delivered_message: 'mensaje confirmado', manual_capture: 'captura manual',
+    manual_summary: 'resumen manual', context_pressure: 'presión de contexto', manual_refresh: 'refresco manual',
+    process_open: 'apertura de archivos', session_start: 'inicio de sesión', loaded_from_files: 'recuperado desde archivos' })[value] || 'actividad de continuidad';
+}
+function renderContinuity(continuity) {
+  if (!continuity) return;
+  const context = continuity.context;
+  $('continuity-capture').textContent = continuity.autoCapture === true ? 'Captura automática: activa' : 'Captura automática: sin confirmar';
+  $('context-refresh').disabled = !created() || pending.has('contextRefresh');
+  $('context-refresh-status').textContent = pending.has('contextRefresh') ? 'Releyendo los archivos…' : 'Relee los archivos y cancela la consulta anterior. Conserva la sesión, la cuota y los pendientes.';
+  if (context && !context.requiredOverBudget && Number.isFinite(context.inputTokens) && Number.isFinite(context.maxContextTokens)) {
+    const tokenPercent = context.maxContextTokens > 0 ? Math.min(100, context.totalReservedContextTokens / context.maxContextTokens * 100) : 0;
+    $('context-value').textContent = `${fmt(context.totalReservedContextTokens)} / ${fmt(context.maxContextTokens)} unidades estimadas`;
+    $('context-detail').textContent = `Última consulta: ${fmt(context.transmittedBytes)} / ${fmt(context.maxInputBytes)} bytes transmitidos · ${fmt(context.inputTokens)} de entrada + salida y margen reservados. Estimación conservadora; no es un tokenizer del modelo.`;
+    const meter = $('context-meter'); meter.style.width = `${tokenPercent}%`;
+    meter.parentElement.setAttribute('aria-valuemax', String(context.maxContextTokens || 0));
+    meter.parentElement.setAttribute('aria-valuenow', String(context.totalReservedContextTokens || 0));
+    meter.parentElement.classList.toggle('pressure', context.pressure === true);
+    setPill($('context-pressure'), context.pressure === true ? 'Presión alta' : 'Dentro del límite', context.pressure === true ? 'warn' : 'ok');
+  } else {
+    $('context-value').textContent = context?.requiredOverBudget ? 'Contexto obligatorio demasiado grande' : 'Aún sin consulta medida';
+    $('context-detail').textContent = context?.requiredOverBudget ? 'No se envió al modelo. Resumir recuerdos no reduce las reglas y los pendientes obligatorios.' : 'La próxima consulta medirá el payload completo con su reserva de salida y margen.';
+    $('context-meter').style.width = '0%'; $('context-meter').parentElement.classList.remove('pressure');
+    setPill($('context-pressure'), context?.requiredOverBudget ? 'Revisar archivos' : 'Sin lectura', context?.requiredOverBudget ? 'warn' : 'muted');
+  }
+  const capture = continuity.lastCapture;
+  $('capture-detail').textContent = capture ? `${capture.ok ? 'Guardada' : 'No guardada'} · ${displayTime(capture.atMs)} · ${continuityReason(capture.reason)}${capture.entryId ? ` · ${capture.entryId}` : ''}${capture.why ? ` · ${fixedWhy(capture.why)}` : ''}` : 'Sin capturas registradas.';
+  const lastRefresh = continuity.lastRefresh;
+  $('refresh-detail').textContent = lastRefresh ? `${displayTime(lastRefresh.atMs)} · ${continuityReason(lastRefresh.reason)} · revisión ${fmt(lastRefresh.revision)}` : 'Sin mediciones registradas.';
+  const summary = continuity.lastSummary;
+  $('summary-detail').textContent = summary ? `${summary.ok ? 'Completado' : 'No completado'} · ${displayTime(summary.atMs)} · ${continuityReason(summary.reason)}${Array.isArray(summary.sourceIds) ? ` · ${summary.sourceIds.length} episodios` : ''}${summary.why ? ` · ${fixedWhy(summary.why)}` : ''}` : 'Sin resúmenes registrados.';
+
+  const sources = Array.isArray(continuity.sources) ? continuity.sources.slice(0, 32) : [];
+  const sourceIds = new Set(sources.filter(item => typeof item?.id === 'string').map(item => item.id));
+  for (const selectedId of selectedEpisodeIds) if (!sourceIds.has(selectedId)) selectedEpisodeIds.delete(selectedId);
+  const list = $('episode-list'); list.replaceChildren();
+  if (!sources.length) list.append(textNode('p', 'Los episodios aparecerán cuando se guarde actividad.', 'empty-state'));
+  const sourceRows = [];
+  for (const source of sources) {
+    if (!source || typeof source.id !== 'string') continue;
+    const label = document.createElement('label'); label.className = 'episode-row';
+    const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = selectedEpisodeIds.has(source.id); checkbox.setAttribute('aria-label', `Seleccionar episodio ${source.id}`);
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked && selectedEpisodeIds.size >= 8) { checkbox.checked = false; announce('Puedes seleccionar hasta ocho episodios.', true); return; }
+      if (checkbox.checked) selectedEpisodeIds.add(source.id); else selectedEpisodeIds.delete(source.id);
+      renderContinuity(continuity);
+    });
+    const details = document.createElement('span');
+    details.append(textNode('strong', `${displayTime(source.createdAtMs)}${source.summarized ? ' · resumido' : ''}`));
+    details.append(textNode('small', typeof source.preview === 'string' ? source.preview : 'Episodio sin vista previa.'));
+    label.append(checkbox, details); list.append(label); sourceRows.push(checkbox);
+  }
+  const status = snapshot?.status || {}, inFlight = status.inFlight === true;
+  const canSummarize = gameConnected() && !inFlight && selectedEpisodeIds.size > 0
+    && selectedEpisodeIds.size <= 8 && !pending.has('compact') && !snapshot?.budget?.persistence?.admissionWhy;
+  for (const checkbox of sourceRows) checkbox.disabled = inFlight || pending.has('compact') || (!checkbox.checked && selectedEpisodeIds.size >= 8);
+  $('episode-count').textContent = `${fmt(sources.length)} episodios · ${fmt(continuity.journal?.summaries || 0)} resúmenes · ${selectedEpisodeIds.size} de 8 seleccionados`;
+  $('summarize-episodes').disabled = !canSummarize;
+  $('summarize-episodes').textContent = pending.has('compact') ? 'Resumiendo…' : 'Resumir seleccionados';
+  $('auto-compact').checked = continuity.autoCompact === true;
+  $('auto-compact').disabled = pending.has('continuity');
+  const remaining = continuity.automaticSummaryRemaining === 1 ? 1 : 0;
+  $('auto-compact-budget').textContent = continuity.autoCompact === true
+    ? `Activo: ${remaining} resumen automático disponible de ${fmt(continuity.automaticSummaryLimit || 1)} en esta cuota. Espera una pausa y presión del contexto; los intentos manuales también cuentan.`
+    : 'El resumen automático está desactivado. Al activarlo se permite como máximo un resumen por cuota disponible; los intentos manuales también cuentan de forma conservadora. Los originales permanecen.';
 }
 function renderTranscript(records) {
   const root = $('transcript'); root.replaceChildren();
@@ -257,7 +339,7 @@ async function mutate(name, path, body, after = true) {
   setPending(name, true);
   try {
     const result = await api(path, body);
-    if (result?.state) snapshot = { ...snapshot, ...result.state };
+    if (result?.state && typeof result.state === 'object') snapshot = { ...snapshot, ...result.state };
     else if (name === 'files' && result?.files) snapshot = { ...snapshot, files: result.files };
     if (after) await refresh(); else showWorkspace(); announce('Listo.'); return true;
   }
@@ -266,6 +348,31 @@ async function mutate(name, path, body, after = true) {
     announce(fixedWhy(error.message), true); return false;
   }
   finally { setPending(name, false); showWorkspace(); }
+}
+
+async function continuityAction(name, path, body) {
+  if (pending.has(name)) return false;
+  if (name === 'compact') {
+    const status = snapshot?.status || [];
+    const sourceIds = [...selectedEpisodeIds];
+    if (!gameConnected() || status.inFlight === true || sourceIds.length < 1 || sourceIds.length > 8) {
+      announce('Conecta al juego, espera a que el compañero esté libre y selecciona de uno a ocho episodios.', true); return false;
+    }
+    body = { sourceIds };
+  }
+  setPending(name, true);
+  try {
+    const result = await api(path, body);
+    if (result?.state && typeof result.state === 'object') snapshot = { ...snapshot, ...result.state };
+    else if (result?.continuity) snapshot = { ...snapshot, continuity: result.continuity };
+    if (name === 'compact') selectedEpisodeIds.clear();
+    await refresh(); announce(name === 'contextRefresh' ? 'Contexto actualizado.' : name === 'compact' ? 'Episodios enviados a resumen; los originales se conservan.' : 'Preferencia de continuidad actualizada.');
+    return true;
+  } catch (error) {
+    announce(fixedWhy(error.message), true);
+    if (name !== 'continuity') await refresh();
+    return false;
+  } finally { setPending(name, false); if (snapshot) showWorkspace(); }
 }
 
 async function createCompanion(event) {
@@ -300,6 +407,9 @@ function setupEvents() {
     fillDraft(randomized); announce('Tu compañero recibió una nueva combinación de rasgos.');
   });
   $('refresh').addEventListener('click', refresh);
+  $('context-refresh').addEventListener('click', () => continuityAction('contextRefresh', '/api/context/refresh', {}));
+  $('summarize-episodes').addEventListener('click', () => continuityAction('compact', '/api/memory/compact', {}));
+  $('auto-compact').addEventListener('change', event => continuityAction('continuity', '/api/continuity', { autoCompact: event.currentTarget.checked }));
   $('start').addEventListener('click', () => mutate('start', '/api/start', {}));
   $('stop').addEventListener('click', () => mutate('stop', '/api/stop', {}));
   $('reenter').addEventListener('click', () => mutate('reenter', '/api/reenter', {}));
@@ -323,6 +433,11 @@ export async function initialize() {
     setupEvents(); renderStep();
     if (!accessKey) { setPill($('connection'), 'Falta acceso local', 'warn'); announce('Abre el enlace local de creación que te dio el servidor.'); return; }
     $('refresh').disabled = false; await refresh();
+    // Observe bounded background work without making inference calls or reconnecting the game.
+    const poll = setInterval(() => {
+      if (pending.size === 0 && (snapshot?.status?.inFlight || snapshot?.continuity?.summaryScheduled)) void refresh();
+    }, 1500);
+    window.addEventListener('pagehide', () => clearInterval(poll), { once: true });
   } catch (error) {
     setPill($('connection'), 'Panel no disponible', 'warn'); announce('No se pudo preparar el creador. Actualiza el panel local.', true);
   }

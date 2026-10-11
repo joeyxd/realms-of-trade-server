@@ -272,7 +272,7 @@ No se implementó ni publicó gameplay nuevo en este análisis.
 
 ## Checkpoint RNV08a, 2026-10-11
 
-**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.48/protocolo 54:**
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.50/protocolo 55:**
 [Brief](../briefs/RNV08a-shore-resupply.md) y [entrega](../delivery/rnv08a-shore-resupply.md).
 Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
 construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.

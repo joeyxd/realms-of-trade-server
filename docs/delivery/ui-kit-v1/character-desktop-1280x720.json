@@ -1,0 +1,67 @@
+{
+  "build": "0.6.0-alpha.38",
+  "generatedAt": "2026-10-11T02:41:03.889Z",
+  "viewports": [
+    {
+      "name": "desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-01-character-es.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-02-turntable.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-03-slot-head.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-04-compare.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-05-character-en.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-06-inventory.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-07-skills.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-08-journal.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-09-pearls.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-10-all-stats.png"
+      ],
+      "layouts": {
+        "character": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "english": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "gear": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-gear interactive"
+        },
+        "tattoo": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "quests": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "pearl": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": true,
+          "kind": "cp ch-screen is-wide interactive"
+        }
+      },
+      "figure": 8718
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

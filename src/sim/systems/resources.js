@@ -252,11 +252,13 @@ export function resourceCmd(w, e, msg, saveFits = () => true) {
   if (tradeRev >= HARVEST.maxRev) return deny('revisionLimit', tradeRev);
   if (w.navalPilot?.locked?.(e)) return deny('busy', tradeRev);
   if (c.regenT[e] < TRADE.calm) return deny('combat', tradeRev);
-  const bench = r.bench;
-  if (!bench) return deny('bench', tradeRev);
-  if (Math.hypot(c.x[e] - bench.x, c.z[e] - bench.z) > HARVEST.benchRadius) return deny('far', tradeRev);
-  const pack = { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } };
   const recipe = CRAFT_RECIPES[msg.recipe], n = msg.n ?? 1, count = n * recipe.count;
+  if (!recipe.hand) {
+    const bench = r.bench;
+    if (!bench) return deny('bench', tradeRev);
+    if (Math.hypot(c.x[e] - bench.x, c.z[e] - bench.z) > HARVEST.benchRadius) return deny('far', tradeRev);
+  }
+  const pack = { ...profile.eco.pack, goods: { ...profile.eco.pack.goods } };
   const tools = recipe.tool ? sanitizeTools(profile.tools) : null;
   if (tools && tools[recipe.tool] >= recipe.tier) return deny('alreadyOwned', tradeRev);
   for (const [good, amount] of Object.entries(recipe.inputs))

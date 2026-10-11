@@ -1,0 +1,244 @@
+{
+  "build": "0.6.0-alpha.48",
+  "generatedAt": "2026-10-11T06:11:58.674Z",
+  "viewports": [
+    {
+      "name": "desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-01-character-es.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-02-turntable.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-03-slot-head.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-04-compare.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-05-character-en.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-06-inventory.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-07-skills.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-08-journal.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-09-pearls.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1280x720-10-all-stats.png"
+      ],
+      "layouts": {
+        "character": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "english": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "gear": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-gear interactive"
+        },
+        "tattoo": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "quests": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "pearl": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": true,
+          "kind": "cp ch-screen is-wide interactive"
+        }
+      },
+      "figure": 8689
+    },
+    {
+      "name": "desktop-1920x1080",
+      "width": 1920,
+      "height": 1080,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-01-character-es.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-02-turntable.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-03-slot-head.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-04-compare.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-05-character-en.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-06-inventory.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-07-skills.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-08-journal.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-09-pearls.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\desktop-1920x1080-10-all-stats.png"
+      ],
+      "layouts": {
+        "character": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "english": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "gear": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-gear interactive"
+        },
+        "tattoo": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "quests": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "pearl": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": true,
+          "kind": "cp ch-screen is-wide interactive"
+        }
+      },
+      "figure": 19471
+    },
+    {
+      "name": "mobile-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-01-character-es.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-02-turntable.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-03-slot-head.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-04-compare.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-05-character-en.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-06-inventory.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-07-skills.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-08-journal.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-09-pearls.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\mobile-844x390-10-all-stats.png"
+      ],
+      "layouts": {
+        "character": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "english": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "gear": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-gear interactive"
+        },
+        "tattoo": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "quests": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "pearl": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": true,
+          "kind": "cp ch-screen is-wide interactive"
+        }
+      },
+      "figure": 3852
+    },
+    {
+      "name": "portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-01-character-es.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-02-turntable.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-03-slot-head.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-04-compare.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-05-character-en.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-06-inventory.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-07-skills.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-08-journal.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-09-pearls.png",
+        "C:\\DEV\\real of trade\\inv02-survival\\docs\\delivery\\ui-kit-v1\\portrait-390x844-10-all-stats.png"
+      ],
+      "layouts": {
+        "character": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "english": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-stats interactive"
+        },
+        "gear": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-sheet ch-on-gear interactive"
+        },
+        "tattoo": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "quests": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": false,
+          "kind": "cp ch-screen is-wide interactive"
+        },
+        "pearl": {
+          "off": [],
+          "spill": [],
+          "tabsOverflow": true,
+          "kind": "cp ch-screen is-wide interactive"
+        }
+      },
+      "figure": 3845
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

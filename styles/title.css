@@ -30,7 +30,7 @@
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.05em var(--ink);
   paint-order: stroke fill;
-  filter: drop-shadow(0 0.07em 0 var(--ink)) drop-shadow(0 0.16em 0.12em rgba(10, 6, 24, 0.5));
+  filter: drop-shadow(0 0.07em 0 var(--ink)) drop-shadow(0 0.16em 0.12em rgba(5, 13, 22, 0.5));
   transform-origin: 50% 90%;
 }
 .title-logo .word.black .ch {
@@ -76,7 +76,7 @@
   display: inline-flex; align-items: center; gap: 8px;
   padding: 5px 14px 6px; border-radius: 999px;
   font-weight: 900; font-size: 13px; letter-spacing: 0.04em; color: var(--parch);
-  background: rgba(20, 12, 36, 0.78); border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+  background: rgba(12, 27, 43, 0.78); border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink);
 }
 .net-pill i { width: 9px; height: 9px; border-radius: 50%; background: #9aa3b8; box-shadow: 0 0 0 2px var(--ink); }
 .net-pill.online i { background: #4dff9a; box-shadow: 0 0 0 2px var(--ink), 0 0 8px #4dff9a; }

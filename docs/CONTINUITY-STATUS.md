@@ -1,12 +1,22 @@
 # Continuidad de servidor — AREA15
 
-**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.48/protocolo 54:**
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.50/protocolo 55:**
 [Brief](briefs/RNV08a-shore-resupply.md) y [entrega](delivery/rnv08a-shore-resupply.md).
 Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
 construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
 M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
 Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
 
+**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
+[Entrega](delivery/inv02-survival.md). Sobre INV02a–c y RNV07b sin tocar sus operaciones M5, SQL029/032 ni contratos.
+Con Carga adoptada, cómodo = techo / 1,25 (40 + 4 por punto): entre cómodo y techo 70 % de velocidad y sin dash,
+por encima del techo 40 %; nunca inmoviliza ni borra. Sin Carga adoptada no cambia nada. Nivel de carga calculado
+por la autoridad y predicho (columna `load`); natación intacta. Ficha de personaje del kit UI con los controles INV02c
+y medidores SRV01; los alimentos abren el panel de agua y provisiones (consumo durable RNV07b). Menú de fabricación
+(TAB/HUD) y hacha/pico a mano con 3 troncos + 2 piedras. Paleta del kit en HUD y paneles. Retirado el borrador
+SQL028/`attr`/`eat`. Pendiente: comidas especiales SRV02 como operación `freshwater` + ampliación SQL032.
+Suite completa **4598/4659**; los 55 fallos también fallan en origin `c33ed9c` (68 allí) salvo uno de red que pasa
+aislado. HUD vertical **36/36** (origin 28 solapes; corregido el bloque del jugador con barras) y ficha en 4 viewports.
 
 **AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).

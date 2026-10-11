@@ -1,6 +1,7 @@
 export const DOCUMENT_SCHEMA = 'marea.gm.map-draft';
 export const DOCUMENT_VERSION = 2;
 const TERRAIN_DOCUMENT_VERSION = 3;
+const MATERIAL_DOCUMENT_VERSION = 4;
 import { validateTerrain } from './terrainData.js';
 export const MAX_OBJECTS = 5000;
 export const MAX_OBJECT_ID_LENGTH = 96;
@@ -79,7 +80,7 @@ function validateBaseOverride(raw) {
 export function validateDocument(raw) {
   if (!isRecord(raw) || raw.schema !== DOCUMENT_SCHEMA) fail('format');
   const legacy = raw.version === 1;
-  const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION;
+  const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION || raw.version === MATERIAL_DOCUMENT_VERSION;
   if ((!legacy && raw.version !== DOCUMENT_VERSION && !terrainVersion) ||
       !exactKeys(raw, legacy ? ['schema', 'version', 'base', 'objects'] :
         terrainVersion ? ['schema', 'version', 'base', 'objects', 'baseOverrides', 'terrain'] :
@@ -104,19 +105,22 @@ export function validateDocument(raw) {
   }
   const result = {
     schema: DOCUMENT_SCHEMA,
-    version: terrainVersion ? TERRAIN_DOCUMENT_VERSION : DOCUMENT_VERSION,
+    version: terrainVersion ? raw.version : DOCUMENT_VERSION,
     base: { seed: raw.base.seed, revision: raw.base.revision },
     objects,
     baseOverrides: validatedOverrides,
   };
-  if (terrainVersion) result.terrain = validateTerrain(raw.terrain);
+  if (terrainVersion) {
+    result.terrain = validateTerrain(raw.terrain);
+    if (result.terrain.version !== (raw.version === MATERIAL_DOCUMENT_VERSION ? 2 : 1)) fail('terrain_version');
+  }
   return result;
 }
 
 export function createDocument({ seed, baseRevision, objects = [], baseOverrides = [], terrain }) {
   return validateDocument({
     schema: DOCUMENT_SCHEMA,
-    version: terrain === undefined ? DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
+    version: terrain === undefined ? DOCUMENT_VERSION : terrain.version === 2 ? MATERIAL_DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
     base: { seed, revision: baseRevision },
     objects,
     baseOverrides,
