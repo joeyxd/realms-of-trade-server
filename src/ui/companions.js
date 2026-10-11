@@ -1,6 +1,7 @@
 // Small authenticated companion status panel. Callbacks own all account and server authority.
 const COPY = {
   es: {
+    create: 'Crear compañero', prepared: 'Ver compañero preparado', creationReady: 'Puedes crear la ficha de tu compañero. La conexión con el controlador local aún está en preparación.', preparedStatus: 'Tu compañero está preparado y detenido. La conexión al modelo todavía no está disponible.',
     title: 'Mis compañeros', open: 'Abrir mis compañeros', close: 'Cerrar mis compañeros', inference: 'Centro de inferencia', preparedNote: 'El centro prepara conexión, modelo y límites. Guardar no inicia inferencia.',
     unavailableNote: 'Puedes volver al juego. El centro muestra la preparación de límites; todavía no permite añadir una URL ni crear un compañero.',
     refresh: 'Actualizar', refreshing: 'Actualizando…', stop: 'Detener', confirmStop: 'Confirmar detención', stopping: 'Deteniendo…', resume: 'Permitir conexión', resuming: 'Guardando…', closePanel: 'Cerrar panel', configure: 'Ficha',
@@ -19,6 +20,7 @@ const COPY = {
     busy: 'El control está ocupado. Actualiza antes de volver a intentarlo.', durable_control_required: 'Este compañero requiere control durable. Actualiza el estado antes de continuar.',
   },
   en: {
+    create: 'Create companion', prepared: 'View prepared companion', creationReady: 'You can create your companion profile. Local controller pairing is still being prepared.', preparedStatus: 'Your companion is prepared and stopped. Model connection is not available yet.',
     title: 'My companions', open: 'Open my companions', close: 'Close my companions', inference: 'Inference center', preparedNote: 'The center prepares connection, model and limits. Saving does not start inference.',
     unavailableNote: 'You can return to the game. The center shows prepared limits; you cannot add a URL or create a companion here yet.',
     refresh: 'Refresh', refreshing: 'Refreshing…', stop: 'Stop', confirmStop: 'Confirm stop', stopping: 'Stopping…', resume: 'Allow connection', resuming: 'Saving…', closePanel: 'Close panel', configure: 'Profile',
@@ -144,7 +146,10 @@ export class CompanionsUI {
     this.inferenceButton.type = 'button';
     this.inferenceButton.addEventListener('click', () => this.openInference());
     this.sessionNote = node('p', 'mn-companions-setup');
-    this.panel.append(header, this.inferenceButton, this.setupNote, this.sessionNote, this.status, this.list);
+    this.creationButton = node('button', 'mn-companions-refresh mn-companion-create-open');
+    this.creationButton.type = 'button';
+    this.creationButton.addEventListener('click', () => this.openCreation());
+    this.panel.append(header, this.creationButton, this.inferenceButton, this.setupNote, this.sessionNote, this.status, this.list);
     this.container.append(this.toggleButton);
     parent.append(this.container);
     this.portal = document.getElementById?.('ui') || parent;
@@ -207,6 +212,7 @@ export class CompanionsUI {
       this.refreshPending = false;
       this.configEditor?.reset();
       this.inferenceEditor?.reset();
+      this.creationEditor?.reset();
     }
     this.render();
   }
@@ -236,6 +242,7 @@ export class CompanionsUI {
     this.toggleButton.setAttribute('aria-expanded', 'false');
     this.configEditor?.close();
     this.inferenceEditor?.close();
+    this.creationEditor?.close();
     if (wasOpen) {
       this.onVisibilityChange(false);
       if (this.visible) this.toggleButton.focus?.({ preventScroll: true });
@@ -281,9 +288,18 @@ export class CompanionsUI {
 
   setConfigurationEditor(editor) { this.configEditor = editor; this.render(); }
   setInferenceEditor(editor) { this.inferenceEditor = editor; this.render(); }
+  setCreationEditor(editor) { this.creationEditor = editor; this.render(); }
+  openCreation() {
+    if (!this.creationEditor || this.state.status !== 'ready') return;
+    this.configEditor?.close(); this.inferenceEditor?.close(); this.creationEditor.open(); this.render();
+    this.creationEditor.backButton?.focus?.({ preventScroll: true });
+  }
+  closeCreation() {
+    this.creationEditor?.close(); this.render(); this.creationButton.focus?.({ preventScroll: true });
+  }
   openInference() {
     if (!this.inferenceEditor || this.state.status !== 'ready') return;
-    this.configEditor?.close(); this.inferenceEditor.open(); this.render();
+    this.creationEditor?.close(); this.configEditor?.close(); this.inferenceEditor.open(); this.render();
     this.inferenceEditor.backButton?.focus?.({ preventScroll: true });
   }
   closeInference() {
@@ -294,6 +310,7 @@ export class CompanionsUI {
     if (!this.configEditor || !row || this.state.status !== 'ready' || !this.state.enabled) return;
     this.configurationKey = characterKey;
     this.inferenceEditor?.close();
+    this.creationEditor?.close();
     this.configEditor.open(characterKey, row.name || COPY[this.lang].fallbackName(this.state.companions.indexOf(row) + 1));
     this.render();
     this.configEditor.backButton?.focus?.({ preventScroll: true });
@@ -314,7 +331,11 @@ export class CompanionsUI {
     this.closeButton.textContent = '×';
     this.closeButton.setAttribute('aria-label', text.closePanel);
     this.closeButton.title = text.closePanel;
-    this.setupNote.textContent = this.state.status === 'ready' && !this.state.enabled ? text.unavailableNote
+    const creation = this.creationEditor?.client?.snapshot();
+    const creationAvailable = creation?.available === true;
+    this.creationButton.textContent = creation?.record ? `${text.prepared}: ${creation.record.preset.name}` : text.create;
+    this.creationButton.disabled = this.state.status !== 'ready';
+    this.setupNote.textContent = creationAvailable ? text.creationReady : this.state.status === 'ready' && !this.state.enabled ? text.unavailableNote
       : this.inferenceEditor ? text.preparedNote : this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
     this.inferenceButton.textContent = text.inference;
     this.inferenceButton.disabled = this.state.status !== 'ready';
@@ -327,7 +348,8 @@ export class CompanionsUI {
     const status = this.state.message
       ? text[this.state.message]
       : this.state.status === 'ready'
-        ? (!this.state.enabled ? text.serverDisabled : this.state.companions.length === 0 ? text.noCompanions : text.ready)
+        ? (creationAvailable && !this.state.enabled ? (creation?.record ? text.preparedStatus : text.noCompanions)
+          : !this.state.enabled ? text.serverDisabled : this.state.companions.length === 0 ? text.noCompanions : text.ready)
         : text[this.state.status] || text.loading;
     this.status.textContent = this.localError ? text[this.localError] : status;
     this.list.replaceChildren();
@@ -387,7 +409,8 @@ export class CompanionsUI {
       if (actions.children.length) item.append(actions);
       this.list.append(item);
     });
-    const configuring = this.configEditor?.isOpen === true || this.inferenceEditor?.isOpen === true;
+    const configuring = this.configEditor?.isOpen === true || this.inferenceEditor?.isOpen === true || this.creationEditor?.isOpen === true;
+    this.creationButton.hidden = !this.creationEditor || configuring;
     this.inferenceButton.hidden = !this.inferenceEditor || configuring;
     for (const el of [this.setupNote, this.sessionNote, this.status, this.list, this.refreshButton]) el.hidden = configuring;
     if (focusedConfigKey && !configuring) {
@@ -404,6 +427,6 @@ export class CompanionsUI {
   focusables() {
     if (this.panel.querySelectorAll) return [...this.panel.querySelectorAll('button,input,textarea,select,[tabindex]')]
       .filter(el => !el.disabled && el.tabIndex !== -1 && !el.hidden && el.getClientRects().length > 0);
-    return [this.closeButton, this.refreshButton, this.inferenceButton, ...(this.configureButtons || []), ...(this.controlButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
+    return [this.closeButton, this.refreshButton, this.creationButton, this.inferenceButton, ...(this.configureButtons || []), ...(this.controlButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
   }
 }
