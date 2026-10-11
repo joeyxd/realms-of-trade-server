@@ -5,6 +5,7 @@ import { beginFreshwater } from '../src/sim/systems/freshwater.js';
 import { WebSocketServer } from 'ws';
 import { LoggingAim } from './loggingAim.mjs';
 import { CompanionConfigService } from './companionConfig.mjs';
+import { CompanionCreationService } from './companionCreation.mjs';
 import { CompanionControlService } from './companionControl.mjs';
 import { InferenceConfigService } from './inferenceConfig.mjs';
 import { LocalServer } from '../src/net/localServer.js';
@@ -81,7 +82,7 @@ export class GameHost {
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
-    inferenceCatalog = [], inferenceConfigAllowMemory = false } = {}) {
+    inferenceCatalog = [], inferenceConfigAllowMemory = false, companionCreation = false, companionCreationAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -139,6 +140,7 @@ export class GameHost {
     this.errors = 0;
     this.store = store;
     this.companionConfig = new CompanionConfigService(this, { allowMemory: companionConfigAllowMemory });
+    this.companionCreation = new CompanionCreationService(this, { enabled: companionCreation, allowMemory: companionCreationAllowMemory });
     this.resolvePlayer = resolvePlayer; // Optional server-owned identity verifier; the title/login is P2.
     this.initializeAccounts = initializeAccounts;
     this.legacyReservations = new Map();
@@ -664,6 +666,8 @@ export class GameHost {
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
+        companionCreation: { enabled: this.companionCreation.enabled, ready: this.companionCreation.ready,
+          pending: this.companionCreation.busy.size },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };
@@ -704,6 +708,7 @@ export class GameHost {
       return;
     }
     if (this.companionConfig.handle(sock, msg)) return;
+    if (this.companionCreation.handle(sock, msg)) return;
     if (this.inferenceConfig.handle(sock, msg)) return;
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
