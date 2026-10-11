@@ -8,6 +8,13 @@ Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demá
 [Progresión](../../PLAN-PROGRESSION.md#5-navegación-natación-y-poderes) ·
 [Mundo del alfa](../../PLAN-ALFA-MUNDO.md) · [Continuidad M5](../../PLAN-M5.md).
 
+**Cambio de dirección del autor, 2026-10-10 — agua como expedición y logística:**
+[RNV07](RNV07-freshwater-progression.md): primero cubeta, agua dulce del interior con enemigos,
+barril de reserva y cantimplora; purificador avanzado con mucho más hierro/tablas y un componente
+raro de la tercera ciudad. 20 hierro + 30 tablas + núcleo de destilación en Bahía Ceniza es propuesta
+de tuning. Sigue RNV07a fuente/cubeta/barril, coordinación con supervivencia para RNV07b; después
+viaje comercial y acceso al componente avanzado. Diseño registrado, sin cambios de gameplay desplegados.
+
 ## Checkpoint de continuidad — 2026-10-10
 
 - **PRG02a completado:** lección voluntaria, dos boyas, maniobra y atraque real.
@@ -126,7 +133,7 @@ RNV01 entrega techo/puerta y RNV02 completa el refugio con luz, antes de oscurec
 | 1 | **PRG02: primera lección de pilotaje** | Una ida/vuelta costera con objetivo en el mundo, maniobra/atraque y una mejora perceptible de pilotaje. Reutiliza navegación existente; AREA03 comparte el contrato de aprendizaje y M5 conserva el avance. No añadir XP por mantener una tecla o navegar en círculos ni regalar una recompensa económica por el ensayo antiguo |
 | 2 | **Primer refugio naval construible** | Techo y puerta interactuable, después farol; poder armar una habitación, caminar por ella y navegar sin bloquear salida ni cambiar el origen del barco. Habilitar catálogo exige colisión/interacción, coste, daño, soporte y guardado completos, además de render |
 | 3 | **RNV05: agua costera y reembarque propio** | Publicado y aceptado en VPS; ver [entrega](../delivery/rnv05-coastal-swimming.md). Buceo y abordaje ajeno se mantienen después |
-| 4 | **Provisiones y servicios de hogar** | Un módulo nuevo útil, preferentemente agua por purificador, conectado a consumo/producción/carga. Luego huerto y hamaca por cortes propios; respawn requiere reglas de muerte y punto inválido. Evitar activar simultáneamente todos los datos del helper antiguo |
+| 4 | **Provisiones y servicios de hogar** | RNV06 conserva la base técnica del purificador. RNV07 comienza con fuente interior/enemigos, cubeta, barril y cantimplora conectada a supervivencia; purificador avanzado después del acceso al componente raro de la tercera ciudad. Huerto/hamaca van por cortes propios |
 | 5 | **Primer viaje comercial entre puertos** | Salty Shore–Puerto Sol con llegada física, descarga y retorno; comparar camino y costa. AREA01 entrega geografía/anclas transitables y AREA08 reutiliza mercados M5. Con AREA15, definir amarres/custodia y presencia sin dueño antes de exponer bienes públicos. Después Bahía Ceniza, con necesidad marítima real |
 | 6 | **Primer rival naval vencible — D10/A6** | Un barco NPC móvil con intención legible, un arma utilizable, esquiva/huida, daño a piezas y regreso a reparar. Los bienes que exponga requieren el contrato de continuidad correspondiente; no basta ampliar la batería fija |
 | 7 | **Cooperación y riesgo público** | Delegación de timón/tareas, expulsión real de carga, rendición y saqueo con capacidad. PvP, patrullas y abordaje avanzan después de definir consecuencias y comprobar liquidación única |
@@ -207,8 +214,10 @@ aceptadas en cuenta local desechable; canario de materiales de cuenta pública p
 Corrección de Tala `d962055` integrada; no se duplicó la recuperación de continuidad.
 [Contrato](RNV06-purifier.md) y [entrega](../delivery/rnv06-purifier.md).
 
-**Sigue el primer viaje comercial Salty Shore–Puerto Sol:** llegada física, descarga y regreso,
-con anclas/geografía AREA01 y mercados AREA08. Huerto/hamaca continúan como cortes propios.
+**Sigue RNV07a — agua dulce manual:** fuente interior con enemigos, cubeta y barril de reserva;
+cantimplora/consumo con supervivencia en RNV07b. Después, primer viaje comercial Salty Shore–Puerto Sol
+con anclas/geografía AREA01 y mercados AREA08. Purificador avanzado tras el componente de la tercera
+ciudad. Huerto/hamaca continúan como cortes propios.
 
 ## 5 Más allá del alfa
 
