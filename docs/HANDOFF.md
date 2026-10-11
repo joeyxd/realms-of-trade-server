@@ -1,5 +1,13 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07, decisión del autor 2026-10-10 — agua manual antes del purificador avanzado:**
+[RNV07](briefs/RNV07-freshwater-progression.md) registra cubeta, fuente interior con enemigos,
+barril de casa/balsa y cantimplora reutilizable. Purificador tardío con mucho más hierro/tablas y
+componente raro de origen en la tercera ciudad; receta/destino exactos propuestos, no cerrados.
+Sigue RNV07a fuente/cubeta/reserva, RNV07b consumo con `inv02-survival`, después viaje comercial
+Salty Shore–Puerto Sol y componente avanzado. No duplicar sed, perfil o guardado.
+Diseño registrado: no cambia todavía el coste desplegado de RNV06 ni añade recipientes jugables.
+
 **AREA01 GM04a, 2026-10-10 — multiselección publicada, alpha.40/protocolo 47:**
 [Entrega](delivery/gm04a/DELIVERY.md), [navegador público](delivery/gm04a/public-browser-evidence.json)
 y [despliegue](delivery/gm04a/deployment.json). Shift/casillas, pivote común y movimiento/giro/escala,
@@ -37,7 +45,8 @@ imagen 29/29 con 12/12 hashes de fuentes iguales a Git; conteos solapados.
 Entrada pública WSS/minimapa/mapa aceptada, sin escribir economía. La paleta/producción/transferencia
 se aceptaron con cuenta local desechable, no con materiales de una cuenta pública. Sin prueba de
 crash durability ni FPS de teléfono físico. Tala `d962055` integrada y SQL026 instalado.
-Sigue viaje comercial físico Salty Shore–Puerto Sol con AREA01/08.
+La revisión RNV07 anterior pone fuente/cubeta/barril y cantimplora antes del viaje comercial
+Salty Shore–Puerto Sol con AREA01/08.
 
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](delivery/l03d-companion-config.md) y [contrato](briefs/l03d-companion-config.md).

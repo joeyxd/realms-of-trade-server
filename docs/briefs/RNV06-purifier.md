@@ -1,5 +1,11 @@
 # RNV06 — purificador útil a bordo
 
+**Revisión del autor, 2026-10-10:** [RNV07](RNV07-freshwater-progression.md) sustituye el purificador
+barato como objetivo inicial: fuente interior con enemigos, cubeta, barril y cantimplora primero;
+purificador avanzado con mucho más hierro/tablas y componente raro de la tercera ciudad después.
+El contrato inferior conserva la implementación histórica, no el balance final. Este diseño no cambia
+por sí solo la receta ni los módulos desplegados.
+
 Corte AREA07 posterior a [RNV05](RNV05-coastal-swimming.md). Objetivo: construir un módulo que
 produzca agua dulce real y preparar carga para el viaje. Implementación publicada alpha.39/protocolo 47;
 la aceptación local y la publicación se registran por separado en la [entrega](../delivery/rnv06-purifier.md).
@@ -67,5 +73,6 @@ tenía otro bloqueo de Tala; `d962055` corrigió su base económica y su frente 
 La entrega registra `b977b7c` sano y la entrada pública WSS/mapa. El flujo completo del purificador
 se aceptó en cuenta local desechable; no se realizó canario de materiales de cuenta pública.
 
-Sigue el viaje comercial Salty Shore–Puerto Sol del [plan AREA07](area07-naval-action-plan.md), coordinando
-anclas transitables y mercados con AREA01/08. Huerto/hamaca se mantienen como módulos posteriores separados.
+Sigue RNV07a fuente/cubeta/barril del [plan AREA07](area07-naval-action-plan.md), con cantimplora y
+consumo coordinados con supervivencia antes del viaje Salty Shore–Puerto Sol.
+Huerto/hamaca se mantienen como módulos posteriores separados.

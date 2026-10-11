@@ -39,6 +39,16 @@ luz equivalente en calidad baja/móvil. El farol del primer refugio naval debe c
 Antes de oscurecer, entregar fuentes utilizables y adaptar luz automática, relleno y preset cosmético de día.
 [Contrato y aceptación futura](briefs/area07-night-visibility.md). Esta decisión no modifica aún el render.
 
+### Agua dulce, reservas y tecnología avanzada
+
+**Dirección del autor, 2026-10-10:** cubeta para recoger agua dulce dentro de la isla con enemigos;
+barril construible para reservas de casa/barco y cantimplora reutilizable para beber en expediciones.
+Purificador mucho más difícil: más hierro/tablas y componente raro de origen en la tercera ciudad.
+[RNV07](briefs/RNV07-freshwater-progression.md) ordena fuente/cubeta/barril → cantimplora/supervivencia
+→ primer viaje comercial → purificador avanzado. Bahía Ceniza y receta 20 hierro + 30 tablas + núcleo
+son propuestas, no balance aprobado. RNV06 conserva la base técnica; este documento no modifica
+el runtime ni convierte barriles decorativos en reservas funcionales.
+
 ## 2. Tamaño, materiales, navegación y distribución
 
 Recomendación: separar **límite estructural**, **límite de operación competente** y **límite técnico del juego**.

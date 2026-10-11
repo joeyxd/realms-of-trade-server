@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA07, revisión del autor 2026-10-10 — agua dulce manual → purificador avanzado:**
+[Dirección y cortes RNV07](docs/briefs/RNV07-freshwater-progression.md). Primero cubeta/fuente
+interior con enemigos/barril, después cantimplora con supervivencia; sigue viaje Salty Shore–Puerto Sol.
+Purificador tardío: mucho más hierro/tablas y componente raro de origen en la tercera ciudad.
+20 hierro + 30 tablas + núcleo en Bahía Ceniza es propuesta ajustable. Coordinar AREA01/04/08
+y `inv02-survival`, sin crear otra autoridad ni otra sed. Este checkpoint registra diseño/cola,
+sin cambiar la receta desplegada ni anunciar contenedores implementados.
+
 **AREA01 GM04a, 2026-10-10 — multiselección publicada, alpha.40/protocolo 47:**
 [Entrega](docs/delivery/gm04a/DELIVERY.md), [navegador público](docs/delivery/gm04a/public-browser-evidence.json)
 y [despliegue](docs/delivery/gm04a/deployment.json). Shift/casillas, pivote común y movimiento/giro/escala,
@@ -35,7 +43,8 @@ cero pendientes/errores; actualizador 109/109, imagen 29/29 con 12/12 hashes Git
 WSS/minimapa/mapa aceptada; conteos solapados.
 Tala `d962055` integrada; SQL026 instalado. Construcción/agua/transferencia probadas con cuenta local
 desechable; falta canario de materiales de cuenta pública. Sin atribuir Supabase ni crash durability al fixture.
-Sigue el viaje comercial Salty Shore–Puerto Sol, coordinado con AREA01/08.
+La revisión RNV07 anterior pone fuente/cubeta/barril y cantimplora antes del viaje comercial
+Salty Shore–Puerto Sol, coordinado con AREA01/08.
 
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](docs/delivery/l03d-companion-config.md) y [contrato](docs/briefs/l03d-companion-config.md).
