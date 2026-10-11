@@ -1,6 +1,6 @@
 # RNV06 — purificador útil a bordo
 
-Implementación AREA07 sobre `d962055`, alpha.39/protocolo 47. El
+Implementación AREA07 `b977b7c` sobre `d962055`, **publicada alpha.39/protocolo 47**. El
 [contrato](../briefs/RNV06-purifier.md) conserva la autoridad y el guardado existentes.
 La publicación en Git y la aceptación del runtime VPS son estados separados.
 
@@ -68,8 +68,24 @@ El frente de continuidad identificó después un conflicto distinto en la base e
 publicó `d962055`: checkpoint confirmado antes de congelar recibos temporizados. RNV06 incorpora esa
 corrección. La comprobación posterior de las **02:06:42 UTC** confirmó el VPS recuperado por ese
 frente: `d962055`/alpha.38 sano, una autoridad, salud/página 200, cero pendientes/errores de guardado.
-RNV06/alpha.39 aún espera su push y aceptación de la revisión activa.
+RNV06 se envió como `b977b7c8b5ca87f4920e8d60af48cd72d57e783e`. El actualizador pasó **109/109**
+y activó una sola autoridad con imagen
+`sha256:01dcbcb6722cdd6e83add286b3399a47ee03ed540f58cec50cba5b5c0626869a`.
+Observaciones **02:12:15 y 02:14:05 UTC**: alpha.39 sana, Supabase/cuentas durables, mundo ready,
+cero guardados/operaciones pendientes, errores o tick bloqueado; salud/página 200, timer activo,
+contenido gen4/base conservado. [Activación](rnv06-purifier/activation.json).
 
-RNV06 no debe declararse activo hasta confirmar revisión/imagen, salud pública y entrada real.
+Imagen activa: **12/12 hashes** de fuentes aceptadas iguales a Git y **29/29** pruebas focales
+en cinco archivos, contenedor desechable sin red ni secretos. [Log](rnv06-purifier/image-purifier.tap).
+Los tests UI requieren Three de desarrollo y se verifican localmente/navegador; el intento de
+incluirlos en la imagen runtime falló por esa dependencia omitida. No se añadió al bundle servidor.
+Los conteos local/imagen/actualizador se solapan.
+
+Entrada pública anónima aceptada: página, WSS unido real, minimapa/mapa completo y cero errores;
+al cerrar regresó a cero jugadores/sockets. Protocolo 47 confirmado en el código servido. No se
+colocó ni produjo agua con una cuenta pública: el launcher de construcción no estaba disponible
+en el spawn invitado. Ese flujo pertenece a la aceptación local anterior, no a este smoke.
+[Evidencia pública](rnv06-purifier/public/evidence-2026-10-11T02-13-10-004Z.json).
+
 Sigue el primer viaje comercial Salty Shore–Puerto Sol, con llegada física, carga/descarga y regreso,
 coordinado con AREA01/08. Huerto/hamaca y producción navegando conservan cortes separados.

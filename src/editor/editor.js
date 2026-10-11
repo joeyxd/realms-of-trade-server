@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createEditorTransformControls } from './transformControls.js';
-import { addDecoration, createDecoration, createDocument, createDocumentHistory, removeDecoration, updateDecoration, validateDocument, setBaseOverride, removeBaseOverride } from './document.js';
+import { addDecoration, createDecoration, createDocument, createDocumentHistory, updateDecoration, validateDocument, setBaseOverride, removeBaseOverride } from './document.js';
 import { DraftStore, DRAFT_EXPORT_FORMAT, DRAFT_EXPORT_VERSION, MAX_DRAFT_EXPORT_BYTES } from './draftStore.js';
 import { EditorCatalog } from './catalog.js';
 import { EditorFreeCamera } from './freeCamera.js';
@@ -11,13 +11,14 @@ import { RemoteDraftPanel } from './remotePanel.js';
 import { compileGmColliders } from './publicationValidation.js';
 import { EditorStatus, editorErrorMessage, editorMessage } from './messages.js';
 import { getLocale, onLocaleChange, setLocale } from '../core/locale.js';
+import { MAX_SELECTION, selectionPivot, transformSelection, updateSelection, removeSelection, duplicateSelection } from './selection.js';
 import { LAYER } from '../render/pipeline.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
 const clone = (v) => structuredClone(v);
 const uid = () => 'gm-' + (globalThis.crypto?.randomUUID?.() || (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)));
-const typing = (target) => !!target?.closest?.('input,textarea,select,[contenteditable="true"]');
+const typing = (target) => !!target?.closest?.('input:not([type="checkbox"]):not([type="radio"]),textarea,select,[contenteditable="true"]');
 const html = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 
 /** Private decoration overlay. Generated map data and server gameplay remain untouched. */
@@ -41,7 +42,12 @@ export class WorldEditor {
     this.document = null; this.history = null; this.revision = 0; this.dirty = false;
     this.saveTimer = 0; this.saveTask = null; this.saveAgain = false; this.resumeDocument = null;
     this.recoveryRevision = null;
-    this.lastSavedJson = ''; this.records = new Map(); this.selectedId = null;
+    this.lastSavedJson = ''; this.records = new Map(); this.selectedId = null; this.selectedIds = new Set();
+    this.groupPivot = new THREE.Group(); this.groupPivot.name = 'gm-selection-pivot';
+    this.selectionBounds = new THREE.Box3Helper(new THREE.Box3(), 0x6eead0);
+    this.selectionBounds.name = 'gm-selection-bounds'; this.selectionBounds.visible = false;
+    this.selectionBounds.layers.set(LAYER.NO_OUTLINE); this.selectionBounds.material.depthTest = false;
+    this.selectionBounds.renderOrder = 20; this.groupStart = null;
     this.pendingEntry = null; this.ghost = null; this.dragging = false; this.dragStart = null;
     this.pointerNdc = new THREE.Vector2(); this.pointerInside = false; this.error = null; this.lastError = null;
     this.snapEnabled = true; this.snapStep = 0.5;
@@ -61,7 +67,7 @@ export class WorldEditor {
     this.transform = createEditorTransformControls(camera, canvas); this.transform.setSize(0.85);
     this._configureSnap();
     this.transform.addEventListener('dragging-changed', (e) => { this.dragging = e.value; });
-    this.transform.addEventListener('mouseDown', () => { this.dragStart = this._selectedTransform(); });
+    this.transform.addEventListener('mouseDown', () => this._beginTransform());
     this.transform.addEventListener('objectChange', () => this._onObjectChange());
     this.transform.addEventListener('mouseUp', () => this._finishTransform());
     this.transformHelper = this.transform; this.transformHelper.name = 'gm-transform-controls';
@@ -124,6 +130,7 @@ export class WorldEditor {
       '<div class="gm-library" data-role="catalog"></div><section class="gm-scene-panel" data-role="scene-panel" hidden>',
       '<label class="gm-search"><span data-i18n="sceneSearch"></span><input type="search" data-role="scene-search"></label>',
       '<p class="gm-scene-note" data-i18n="sceneScope"></p><div class="gm-scene-count" data-role="scene-count"></div>',
+      '<p class="gm-scene-note" data-i18n="multiHelp"></p><button type="button" data-action="clear-selection" data-i18n="clearSelection"></button>',
       '<div class="gm-scene-list" data-role="scene-list"></div></section></aside>',
       '<div class="gm-canvas-note" data-i18n="controls"></div><aside class="gm-inspector"><h2 data-i18n="inspector"></h2>',
       '<div class="gm-selection-name" data-role="selection-name"></div><div class="gm-transform-tools">',
@@ -138,6 +145,7 @@ export class WorldEditor {
       '<label><span>Rot Y°</span><input data-field="ry" type="number" step="5"></label><label><span>Rot Z°</span><input data-field="rz" type="number" step="5"></label>',
       '<label><span data-i18n="uniformScale"></span><input data-field="scale" type="number" min="0.001" max="1000" step="0.1"></label></div>',
       '<button type="button" data-action="ground" data-i18n="ground"></button>',
+      '<p class="gm-group-note" data-role="group-note" data-i18n="groupNote" hidden></p>',
       '<button type="button" data-action="restore-base" data-i18n="restoreBase"></button>',
       '<div class="gm-collider-fields"><label><span data-i18n="collision"></span><select data-setting="collider">',
       '<option value="none" data-i18n="noCollision"></option><option value="circle" data-i18n="circleCollision"></option></select></label>',
@@ -172,6 +180,10 @@ export class WorldEditor {
       library: ['Library', 'Biblioteca'], scene: ['Scene', 'Escena'], sceneSearch: ['Find placed decoration', 'Buscar decoración colocada'],
       sceneScope: ['Natural rocks, flowers, pebbles and draft models. Functional objects stay protected.',
         'Rocas naturales, flores, guijarros y modelos del borrador. Los objetos funcionales están protegidos.'],
+      multiHelp: ['Shift+click or check boxes to select up to 120 visible decorations.', 'Shift+clic o casillas para seleccionar hasta 120 decoraciones visibles.'],
+      clearSelection: ['Clear selection', 'Vaciar selección'],
+      groupNote: ['Temporary selection. Rotate and scale around its center; each edit resets these deltas. Collisions are edited individually.',
+        'Selección temporal. Gira y escala alrededor de su centro; cada edición reinicia estos deltas. Las colisiones se editan individualmente.'],
       walk: [this.walkPreview?.active ? 'Back to editor' : 'Walk test', this.walkPreview?.active ? 'Volver al editor' : 'Probar caminando'],
       restoreBase: ['Restore original', 'Restaurar original'], collision: ['Walk test collision', 'Colisión de prueba'],
       noCollision: ['None', 'Ninguna'], circleCollision: ['Circle in XZ', 'Círculo en XZ'], radius: ['Radius before scale (m)', 'Radio antes de escala (m)'],
@@ -246,7 +258,7 @@ export class WorldEditor {
       this._stopWalking(); this.baseLayer.restore(); this.footprint.visible = false; this.scene.remove(this.footprint);
       this.cameraController.disable(); this._clearGhost(); this.transform.detach();
       if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
-      this._clearRecords();
+      this._clearRecords(); this.scene.remove(this.groupPivot, this.selectionBounds); this.selectionBounds.visible = false;
       this._setError(error, 'draft');
       return false;
     }
@@ -255,6 +267,7 @@ export class WorldEditor {
   _addControls() {
     if (!this.controlsAdded) { this.scene.add(this.transformHelper); this.controlsAdded = true; }
     this.scene.add(this.footprint);
+    this.scene.add(this.groupPivot, this.selectionBounds);
   }
 
   async close({ force = false } = {}) {
@@ -284,6 +297,7 @@ export class WorldEditor {
     clearTimeout(this.saveTimer); this.saveTimer = 0;
     this.cameraController.disable(); this._clearGhost(); this.transform.detach();
     this.baseLayer.restore(); this.scene.remove(this.footprint); this.footprint.visible = false;
+    this.scene.remove(this.groupPivot, this.selectionBounds); this.selectionBounds.visible = false; this.groupStart = null;
     this._clearRecords();
     if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
     this.ui.hidden = true; this.invalidate();
@@ -320,8 +334,11 @@ export class WorldEditor {
       const model = this.baseLayer.get(item.assetId) ? this.baseLayer.model(item.assetId) : this.assets.model(item.assetId);
       if (entry && model) this._addRecord(item, model);
     }
-    this.selectedId = this.records.has(this.selectedId) ? this.selectedId : null;
-    if (this.selectedId && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root);
+    if (!this.selectedId) this.selectedIds.clear();
+    this.selectedIds = new Set([...this.selectedIds].filter((id) => this.records.has(id)));
+    if (!this.selectedIds.size && this.records.has(this.selectedId)) this.selectedIds.add(this.selectedId);
+    this.selectedId = [...this.selectedIds].at(-1) || null;
+    this._attachSelection();
     this._renderInspector(); this._renderSceneList(); this._updateButtons(); this.invalidate();
   }
 
@@ -415,7 +432,7 @@ export class WorldEditor {
       const hits = this._terrainHits(); if (hits.length) this._placeAt(hits[0].point); return;
     }
     const hit = this._pickPlaced();
-    this.select(hit?.id || null);
+    if (hit || !event.shiftKey) this.select(hit?.id || null, { toggle: event.shiftKey });
   }
 
   _pickPlaced() {
@@ -444,26 +461,73 @@ export class WorldEditor {
     this._setStatus(editorMessage('Added to draft only. No gameplay collision.', 'Añadido solo al borrador. Sin colisión de gameplay.'), 'ok');
   }
 
-  select(id) {
-    if (this.walkPreview?.active) return;
-    this.selectedId = id && this.records.has(id) ? id : null;
-    if (this.selectedId && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root); else this.transform.detach();
+  select(id, { toggle = false } = {}) {
+    if (this.walkPreview?.active || this.dragging) return;
+    id = id && this.records.has(id) ? id : null;
+    if (!toggle || !id || this.records.get(id)?.hidden || this._selectedItems().some((item) => item.hidden)) this.selectedIds.clear();
+    if (id) {
+      if (toggle && this.selectedIds.has(id)) this.selectedIds.delete(id);
+      else if (this.selectedIds.size < MAX_SELECTION) this.selectedIds.add(id);
+      else { this._setStatus(editorMessage('Select at most 120 decorations.', 'Selecciona como máximo 120 decoraciones.'), 'error'); return; }
+    }
+    this.selectedId = [...this.selectedIds].at(-1) || null;
+    this._attachSelection();
     this._renderInspector(); this._renderSceneList(); this._updateButtons(); this.invalidate();
   }
 
-  _selectedItem() {
-    if (!this.selectedId || !this.history) return null;
-    const doc = this.history.current(), base = this.baseLayer.get(this.selectedId);
+  _selectedItems() {
+    if (!this.history) return [];
+    const doc = this.history.current();
+    return [...this.selectedIds].map((id) => this._selectedItem(id, doc)).filter(Boolean);
+  }
+
+  _selectedItem(id = this.selectedId, doc = this.history?.current()) {
+    if (!id || !doc) return null;
+    const base = this.baseLayer.get(id);
     if (base) {
       const override = doc.baseOverrides.find((item) => item.id === base.id);
       return { id: base.id, assetId: base.id, transform: override?.transform || base.transform,
         collider: base.collider, hidden: !!override?.hidden, base: true };
     }
-    return doc.objects.find((obj) => obj.id === this.selectedId) || null;
+    return doc.objects.find((obj) => obj.id === id) || null;
+  }
+
+  _attachSelection() {
+    this.transform.detach();
+    const items = this._selectedItems();
+    if (items.length > 1) {
+      this._applyTransform(this.groupPivot, selectionPivot(items));
+      this.transform.attach(this.groupPivot);
+    } else if (items.length && !items[0].hidden) this.transform.attach(this.records.get(items[0].id).root);
+    this._updateSelectionBounds();
+  }
+
+  _recordBox(record) {
+    if (!record.base) return new THREE.Box3().setFromObject(record.root);
+    const entry = record.entry, matrix = new THREE.Matrix4();
+    entry.mesh.getMatrixAt(entry.instanceIndex, matrix); entry.mesh.updateWorldMatrix(true, false);
+    entry.mesh.geometry.computeBoundingBox();
+    return entry.mesh.geometry.boundingBox.clone().applyMatrix4(entry.mesh.matrixWorld.clone().multiply(matrix));
+  }
+
+  _updateSelectionBounds() {
+    this.selectionBounds.visible = this.active && !this.walkPreview?.active && this.selectedIds.size > 1;
+    if (!this.selectionBounds.visible) return;
+    this.selectionBounds.box.makeEmpty();
+    for (const id of this.selectedIds) {
+      const record = this.records.get(id);
+      if (record && !record.hidden) this.selectionBounds.box.union(this._recordBox(record));
+    }
+    this.selectionBounds.updateMatrixWorld(true);
+  }
+
+  _beginTransform() {
+    this.dragStart = this._selectedTransform();
+    this.groupStart = this.selectedIds.size > 1 ? { items: this._selectedItems(), pivot: clone(this.dragStart), last: clone(this.dragStart) } : null;
   }
 
   _selectedTransform() {
-    const root = this.selectedId && this.records.get(this.selectedId)?.root;
+    const root = this.selectedIds.size > 1 ? this.groupPivot : this.selectedId && this.records.get(this.selectedId)?.root;
     return root ? this._transformFromRoot(root) : null;
   }
 
@@ -474,6 +538,22 @@ export class WorldEditor {
 
   _onObjectChange() {
     if (!this.selectedId) return;
+    if (this.selectedIds.size > 1) {
+      if (!this.groupStart) return;
+      const root = this.groupPivot;
+      root.scale.setScalar(clamp((root.scale.x + root.scale.y + root.scale.z) / 3, .001, 1000));
+      const next = this._selectedTransform();
+      try {
+        const transforms = transformSelection(this.groupStart.items, this.groupStart.pivot, next);
+        updateSelection(this.history.current(), this.groupStart.items, transforms);
+        for (const { id, transform } of transforms) {
+          this._applyTransform(this.records.get(id).root, transform);
+          if (this.records.get(id).base) this.baseLayer.setTransform(id, transform);
+        }
+        this.groupStart.last = next;
+      } catch (error) { this._applyTransform(root, this.groupStart.last); this._setError(error, 'transform'); }
+      this._updateSelectionBounds(); this.invalidate(); this._renderInspector(); return;
+    }
     const root = this.records.get(this.selectedId)?.root; if (!root) return;
     root.position.x = clamp(root.position.x, -280, 280); root.position.y = clamp(root.position.y, -64, 100); root.position.z = clamp(root.position.z, -280, 280);
     const limit = Math.PI * 200;
@@ -487,23 +567,32 @@ export class WorldEditor {
     if (!this.dragStart || !this.selectedId) { this.dragStart = null; return; }
     const before = JSON.stringify(this.dragStart), next = this._selectedTransform(); this.dragStart = null;
     if (before !== JSON.stringify(next)) this._setSelectedTransform(next);
+    this.groupStart = null;
   }
 
   _cancelTransform() {
+    if (this.groupStart) {
+      this.dragStart = null; this.groupStart = null; this.dragging = false; this.transform.dragging = false;
+      this._renderDocument(this.history.current()); return;
+    }
     if (this.dragStart && this.selectedId) {
       const root = this.records.get(this.selectedId)?.root;
       if (root) this._applyTransform(root, this.dragStart);
       if (this.records.get(this.selectedId)?.base) this.baseLayer.setTransform(this.selectedId, this.dragStart);
     }
     this.dragStart = null; this.dragging = false; this.transform.dragging = false;
-    this.transform.detach();
-    if (this.selectedId && this.records.has(this.selectedId) && !this.records.get(this.selectedId).hidden) this.transform.attach(this.records.get(this.selectedId).root);
+    this._attachSelection();
     this._renderInspector(); this.invalidate();
   }
 
   _setSelectedTransform(transform) {
     if (!this.selectedId) return;
     try {
+      if (this.selectedIds.size > 1) {
+        const items = this.groupStart?.items || this._selectedItems(), pivot = this.groupStart?.pivot || selectionPivot(items);
+        this._commit(updateSelection(this.history.current(), items, transformSelection(items, pivot, transform)));
+        return;
+      }
       const item = this._selectedItem();
       this._commit(item?.base ? setBaseOverride(this.history.current(), { id: item.id, transform, hidden: item.hidden }) :
         updateDecoration(this.history.current(), this.selectedId, { transform }));
@@ -520,29 +609,33 @@ export class WorldEditor {
     const record = item && this.records.get(item.id);
     const label = this._entryForAsset(item?.assetId)?.label || record?.entry?.label;
     const localized = typeof label === 'string' ? label : label?.[this.lang] || label?.es || label?.en || item?.assetId;
-    this.selectionName.textContent = item ? (localized + ' · ' + item.id) : this._t('Nothing selected', 'Nada seleccionado');
-    const t = this.dragStart ? this._selectedTransform() : item?.transform;
+    const multiple = this.selectedIds.size > 1;
+    this.selectionName.textContent = multiple ? this._t(`${this.selectedIds.size} decorations selected`, `${this.selectedIds.size} decoraciones seleccionadas`) : item ? (localized + ' · ' + item.id) : this._t('Nothing selected', 'Nada seleccionado');
+    this.ui.querySelector('[data-role="group-note"]').hidden = !multiple;
+    const t = multiple || this.dragStart ? this._selectedTransform() : item?.transform;
     const values = t ? { x: t.position.x, y: t.position.y, z: t.position.z,
       rx: t.rotation.x * 180 / Math.PI, ry: t.rotation.y * 180 / Math.PI, rz: t.rotation.z * 180 / Math.PI, scale: t.scale } : {};
     for (const [key, input] of Object.entries(this.fields)) {
       input.disabled = !item || item.hidden || this.walkPreview?.active; input.value = Number.isFinite(values[key]) ? Number(values[key]).toFixed(key[0] === 'r' ? 1 : 2) : '';
     }
-    this.colliderSelect.disabled = !item || item.base || this.walkPreview?.active;
-    this.colliderSelect.value = item?.collider === 'none' || !item ? 'none' : 'circle';
-    this.colliderRadius.disabled = !item || item.base || item.collider === 'none' || this.walkPreview?.active;
-    this.colliderRadius.value = item && item.collider !== 'none' ? item.collider.radius : '';
-    this.ui.querySelector('[data-action="restore-base"]').hidden = !item?.base;
+    this.colliderSelect.disabled = multiple || !item || item.base || this.walkPreview?.active;
+    this.colliderSelect.value = multiple || item?.collider === 'none' || !item ? 'none' : 'circle';
+    this.colliderRadius.disabled = multiple || !item || item.base || item.collider === 'none' || this.walkPreview?.active;
+    this.colliderRadius.value = !multiple && item && item.collider !== 'none' ? item.collider.radius : '';
+    this.ui.querySelector('[data-action="restore-base"]').hidden = multiple || !item?.base;
     this.ui.querySelector('[data-action="restore-base"]').disabled = !item?.base || !this.history.current().baseOverrides.some((entry) => entry.id === item.id);
-    this.ui.querySelector('[data-action="delete"]').textContent = item?.base ? this._t('Hide', 'Ocultar') : this._t('Delete', 'Eliminar');
+    this.ui.querySelector('[data-action="delete"]').textContent = multiple ? this._t('Delete / hide', 'Eliminar / ocultar') : item?.base ? this._t('Hide', 'Ocultar') : this._t('Delete', 'Eliminar');
     this._updateFootprint();
   }
 
   _inspectorChange(event) {
-    if (this.importTask || this.walkPreview?.active) return;
+    if (this.importTask || this.walkPreview?.active || this.dragging) return;
+    const toggleId = event.target?.dataset?.selectionId;
+    if (toggleId) { this._clearGhost(); this.select(toggleId, { toggle: true }); return; }
     const setting = event.target?.dataset?.setting;
     if (setting) {
       if (setting === 'collider' || setting === 'radius') {
-        const item = this._selectedItem(); if (!item || item.base) return;
+        const item = this._selectedItem(); if (!item || item.base || this.selectedIds.size > 1) return;
         const collider = this.colliderSelect.value === 'circle' ? { type: 'circle', radius: clamp(number(this.colliderRadius.value) || this._suggestColliderRadius(item), .05, 50) } : 'none';
         this._commit(updateDecoration(this.history.current(), item.id, { collider })); return;
       }
@@ -556,7 +649,7 @@ export class WorldEditor {
     if (['x', 'y', 'z'].includes(field)) t.position[field] = value;
     else if (field[0] === 'r') t.rotation[field[1].toLowerCase()] = value * Math.PI / 180;
     else if (field === 'scale') t.scale = value;
-    const root = this.records.get(this.selectedId)?.root; if (root) this._applyTransform(root, t);
+    const root = this.selectedIds.size > 1 ? null : this.records.get(this.selectedId)?.root; if (root) this._applyTransform(root, t);
     this._setSelectedTransform(t); this._renderInspector();
   }
 
@@ -614,6 +707,7 @@ export class WorldEditor {
 
   _renderSceneList() {
     if (!this.sceneList || !this.history) return;
+    const focusedId = document.activeElement?.dataset?.selectionId;
     const doc = this.history.current();
     const items = [ ...doc.objects.map((item) => ({ ...item, label: this._entryForAsset(item.assetId)?.label || item.assetId })),
       ...this.baseEntries.map((entry) => {
@@ -625,12 +719,13 @@ export class WorldEditor {
     const filtered = items.filter((item) => `${labelFor(item)} ${item.id} ${item.kind || ''} ${item.label?.en || ''} ${item.label?.es || ''}`.toLocaleLowerCase().includes(query));
     filtered.sort((a, b) => this.camera.position.distanceToSquared(a.transform.position) - this.camera.position.distanceToSquared(b.transform.position));
     this.sceneCount.textContent = this._t(`Nearest ${Math.min(120, filtered.length)} of ${filtered.length}`, `Más cercanos: ${Math.min(120, filtered.length)} de ${filtered.length}`);
-    this.sceneList.innerHTML = filtered.slice(0, 120).map((item) => `<button type="button" data-scene-id="${html(item.id)}" class="gm-scene-item${item.id === this.selectedId ? ' is-active' : ''}"><b>${html(labelFor(item))}${item.base ? ' #' + item.index : ''}</b><small>${html(item.hidden ? this._t('Hidden · restore in inspector', 'Oculto · restaura en inspector') : item.base ? (item.changed ? this._t('Base · edited', 'Base · editado') : this._t('Base', 'Base')) : this._t('Draft', 'Borrador'))}</small></button>`).join('') || `<p class="gm-empty">${this._t('No matching decoration', 'No hay decoración coincidente')}</p>`;
+    this.sceneList.innerHTML = filtered.slice(0, 120).map((item) => `<div class="gm-scene-row"><input type="checkbox" data-selection-id="${html(item.id)}" aria-label="${html(this._t('Select ', 'Seleccionar ') + labelFor(item) + ' · ' + item.id)}"${this.selectedIds.has(item.id) ? ' checked' : ''}${item.hidden ? ' disabled' : ''}><button type="button" data-scene-id="${html(item.id)}" aria-pressed="${this.selectedIds.has(item.id)}" class="gm-scene-item${this.selectedIds.has(item.id) ? ' is-active' : ''}"><b>${html(labelFor(item))}${item.base ? ' #' + item.index : ''}</b><small>${html(item.hidden ? this._t('Hidden · restore in inspector', 'Oculto · restaura en inspector') : item.base ? (item.changed ? this._t('Base · edited', 'Base · editado') : this._t('Base', 'Base')) : this._t('Draft', 'Borrador'))}</small></button></div>`).join('') || `<p class="gm-empty">${this._t('No matching decoration', 'No hay decoración coincidente')}</p>`;
+    if (focusedId) [...this.sceneList.querySelectorAll('[data-selection-id]')].find((el) => el.dataset.selectionId === focusedId)?.focus({ preventScroll: true });
   }
 
   _updateFootprint() {
     const item = this._selectedItem(), root = this.records.get(this.selectedId)?.root;
-    const visible = this.active && !this.walkPreview?.active && item && !item.hidden && item.collider !== 'none' && root;
+    const visible = this.selectedIds.size === 1 && this.active && !this.walkPreview?.active && item && !item.hidden && item.collider !== 'none' && root;
     this.footprint.visible = !!visible;
     if (!visible) return;
     this.footprint.position.set(root.position.x, this.map.groundAt(root.position.x, root.position.z) + .08, root.position.z);
@@ -660,13 +755,13 @@ export class WorldEditor {
       direction.normalize().multiplyScalar(selected.collider.radius * selected.transform.scale + 1.5);
       point = { x: point.x + direction.x, z: point.z + direction.z };
     }
-    this.cameraController.disable(); this.transform.detach(); this.footprint.visible = false;
+    this.cameraController.disable(); this.transform.detach(); this.footprint.visible = false; this.selectionBounds.visible = false;
     try {
       this.walkPreview.start({ colliders, point });
       this.canvas.focus({ preventScroll: true });
       this._setLanguage(); this._updateButtons();
     } catch (error) {
-      this.cameraController.enable(); this.select(this.selectedId);
+      this.cameraController.enable(); this._attachSelection();
       this._setStatus(editorMessage('No walkable spot nearby. Select a clear area or reduce the proxy.',
         'No hay espacio caminable cerca. Elige una zona libre o reduce el proxy.'), 'error');
     }
@@ -679,7 +774,7 @@ export class WorldEditor {
     finally {
       if (this.active) this.cameraController.enable();
       this._setLanguage(); this._updateButtons();
-      this.select(this.selectedId); this.invalidate();
+      this._attachSelection(); this._renderInspector(); this.invalidate();
     }
   }
 
@@ -714,8 +809,9 @@ export class WorldEditor {
   }
 
   _toolbarAction(event) {
+    if (this.dragging || event.target.closest('[data-selection-id]')) return;
     const sceneId = event.target.closest('[data-scene-id]')?.dataset.sceneId;
-    if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId); this._focusSelection(); return; }
+    if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId, { toggle: event.shiftKey }); if (!event.shiftKey) this._focusSelection(); return; }
     const action = event.target.closest('[data-action]')?.dataset.action;
     if (this.walkPreview?.active && !['walk', 'close'].includes(action)) return;
     if (this.importTask && !['close', 'export'].includes(action)) return;
@@ -725,6 +821,7 @@ export class WorldEditor {
       case 'redo': this._restoreHistory('redo'); break;
       case 'duplicate': this._duplicate(); break;
       case 'delete': this._deleteSelected(); break;
+      case 'clear-selection': this.select(null); break;
       case 'restore-base': {
         if (this.history.current().baseOverrides.some((item) => item.id === this.selectedId)) {
           this._commit(removeBaseOverride(this.history.current(), this.selectedId)); this.select(this.selectedId);
@@ -742,6 +839,15 @@ export class WorldEditor {
       case 'mode-rotate': this.transform.setMode('rotate'); break;
       case 'mode-scale': this.transform.setMode('scale'); break;
       case 'ground': {
+        if (this.selectedIds.size > 1) {
+          try {
+            const items = this._selectedItems();
+            this._commit(updateSelection(this.history.current(), items, items.map((item) => ({ id: item.id,
+              transform: { ...item.transform, position: { ...item.transform.position,
+                y: this.map.groundAt(item.transform.position.x, item.transform.position.z) } } }))));
+          } catch (error) { this._setError(error, 'transform'); }
+          break;
+        }
         const transform = this._selectedTransform();
         if (transform) { transform.position.y = this.map.groundAt(transform.position.x, transform.position.z); this._setSelectedTransform(transform); }
         break;
@@ -752,25 +858,28 @@ export class WorldEditor {
   }
 
   _restoreHistory(kind) {
-    if (!this.history) return;
+    if (!this.history || this.dragging) return;
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
     this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
   }
 
   _duplicate() {
-    const item = this._selectedItem(); if (!item || item.hidden) return;
-    const copy = createDecoration({ id: uid(), assetId: item.assetId, position: item.transform.position,
-      rotation: item.transform.rotation, scale: item.transform.scale, collider: item.collider });
-    copy.transform.position.x = clamp(copy.transform.position.x + 2, -280, 280);
-    copy.transform.position.z = clamp(copy.transform.position.z + 2, -280, 280);
-    this._commit(addDecoration(this.history.current(), copy)); this.select(copy.id);
+    const items = this._selectedItems(); if (!items.length || items.some((item) => item.hidden) || this.dragging) return;
+    try {
+      const result = duplicateSelection(this.history.current(), items, uid);
+      this.selectedIds = new Set(result.ids); this.selectedId = result.ids.at(-1);
+      this._commit(result.document);
+    } catch (error) { this._setError(error, 'transform'); }
   }
 
   _deleteSelected() {
-    if (!this.selectedId) return;
-    const item = this._selectedItem(); if (!item) return;
-    if (item.base) { this._commit(setBaseOverride(this.history.current(), { id: item.id, transform: item.transform, hidden: true })); this.select(item.id); }
-    else { this._commit(removeDecoration(this.history.current(), item.id)); this.select(null); }
+    if (!this.selectedId || this.dragging) return;
+    const items = this._selectedItems(); if (!items.length) return;
+    try {
+      const next = removeSelection(this.history.current(), items);
+      if (items.length > 1 || !items[0].base) { this.selectedIds.clear(); this.selectedId = null; }
+      this._commit(next);
+    } catch (error) { this._setError(error, 'transform'); }
   }
 
   _keyDown(event) {
@@ -783,7 +892,8 @@ export class WorldEditor {
       if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this._stopWalking(); }
       return;
     }
-    if (typing(event.target)) return;
+    if (typing(event.target) && !(this.dragging && event.code === 'Escape')) return;
+    if (this.dragging && event.code !== 'Escape') return;
     if (this.importTask && event.code !== 'Escape') return;
     if (event.code === 'Escape') {
       event.preventDefault(); event.stopImmediatePropagation();
@@ -813,6 +923,12 @@ export class WorldEditor {
   }
 
   _focusSelection() {
+    if (this.selectedIds.size > 1) {
+      this._updateSelectionBounds();
+      const sphere = this.selectionBounds.box.getBoundingSphere(new THREE.Sphere());
+      const offset = new THREE.Vector3(1, .8, 1).normalize().multiplyScalar(clamp(sphere.radius * 3.5, 6, 500));
+      this.camera.position.copy(sphere.center).add(offset); this.cameraController.focus(sphere.center); this.invalidate(); return;
+    }
     const record = this.selectedId && this.records.get(this.selectedId);
     if (!record) { if (this.map.landmarks?.village) this.cameraController.focus(this.map.landmarks.village); return; }
     let sphere;
@@ -922,6 +1038,7 @@ export class WorldEditor {
     this.walkPreview?.dispose(); this.baseLayer.restore();
     this.sceneSearch.removeEventListener('input', this.onSceneSearch);
     this.scene.remove(this.footprint); this.footprint.geometry.dispose(); this.footprint.material.dispose();
+    this.scene.remove(this.groupPivot, this.selectionBounds); this.selectionBounds.geometry.dispose(); this.selectionBounds.material.dispose();
     this.importInput.removeEventListener('change', this.onImport);
     this._clearGhost();
     this._clearRecords(); this.ui.remove();

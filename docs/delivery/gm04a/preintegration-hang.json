@@ -1,0 +1,20 @@
+{
+  "schema": "marea.gm04a.regression-attempt",
+  "schemaVersion": 1,
+  "sourceBase": "d9620558a93f6a6ed88614857b03d7d9822a4b1b",
+  "workingTree": true,
+  "gameVersion": "0.6.0-alpha.39",
+  "protocolVersion": 46,
+  "command": "node --test --test-concurrency=4 --test-reporter=tap <original 50 files>",
+  "attemptedFiles": 50,
+  "status": "stopped_after_hang",
+  "observedElapsedMsApprox": 270000,
+  "configuredTimeoutMs": null,
+  "lastObservedFile": "tests/gm-content-check.test.mjs",
+  "tapCaptured": false,
+  "detail": "Node test output was buffered by the runner; the GM content checker worker remained active beyond the expected run window. Only the verified runner process tree was stopped. This attempt has no test summary and is not counted as a pass or failure.",
+  "preservedInitialRun": {
+    "json": "regression-before-fix.json",
+    "tap": "regression-before-fix.tap"
+  }
+}
