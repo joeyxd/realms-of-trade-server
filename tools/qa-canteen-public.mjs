@@ -121,7 +121,7 @@ async function publicPreflight() {
     && status.storage?.world?.id === worldId && status.storage.world.ready === true && status.storage.world.failed === false
     && status.storage?.unsaved === 0 && status.storage?.profileWrites === 0 && status.storage.errors === 0,
   'public alpha50, zero-player, SQL freshness, or world readiness preflight failed');
-  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), 'deployed protocol differs from local protocol 54');
+  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), 'deployed protocol differs from local protocol 55');
   ensure(auth.enabled === true && new URL(auth.url).origin === new URL(process.env.SUPABASE_URL).origin,
     'public Auth configuration mismatch');
   ensure(content.ok === true && Number.isSafeInteger(content.generation)

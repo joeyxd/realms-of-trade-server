@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-10-11T06:36:54.845Z",
+  "completedAt": "2026-10-11T06:37:22.112Z",
+  "selection": [
+    "tests/overload.test.mjs",
+    "tests/workbench-batch.test.mjs",
+    "tests/gm-terrain-material-sql.test.mjs",
+    "tests/gm-terrain-material-store.test.mjs",
+    "tests/gm-terrain-material.test.mjs",
+    "tests/gm-terrain-panel.test.mjs",
+    "tests/gm-terrain-content-live.test.mjs",
+    "tests/gm-draft-http.test.mjs",
+    "tests/companion-continuity.test.mjs",
+    "tests/local-companion-runtime.test.mjs",
+    "tests/agent-async-budget-freshness.test.mjs",
+    "tests/agent-reflection-freshness.test.mjs"
+  ],
+  "exitCode": 0,
+  "tests": 63,
+  "pass": 63,
+  "fail": 0,
+  "skipped": 0
+}

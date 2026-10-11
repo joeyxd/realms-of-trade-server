@@ -317,6 +317,9 @@ async function run(browser, spec) {
       return accepted;
     };
     await page.evaluate(id => window.__mn.client.send({ t: 'cmd', type: 'navalPilot', op: 'reboard', shipId: id }), RAFT_ID);
+    // Client send is asynchronous; do not mistake the pre-command shore snapshot
+    // for a failed reboard before LocalServer has processed the command.
+    await waitUntil(() => result.reboardAttempt?.accepted === true, 'server accepted normal reboard', 10000);
     result.reboardSteps = [];
     const tickEnd = Date.now() + 2500; let priorTick = -1;
     while (Date.now() < tickEnd) {
