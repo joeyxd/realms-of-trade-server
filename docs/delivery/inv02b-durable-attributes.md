@@ -1,8 +1,8 @@
 # AREA03 INV02b — entrega de Carga durable
 
 Contrato: [adopción, asignación y reasignación](../briefs/inv02b-durable-attributes.md).
-Implementado localmente sobre M5, protocolo 49/alpha.43. Activación pública pendiente de
-SQL029 y canario; el flag permanece apagado por defecto.
+Implementado y publicado sobre M5, protocolo 49/alpha.43. Código desplegado y verificado en
+`f281db1`, con Carga apagada. Activación pública pendiente de SQL029 y su canario.
 
 El perfil conserva `attr` al cargar/sincronizar, al mejorar mochila y al recibir Tala offline.
 Nivel 1 y packs previos al taller tienen adopción explícita sin perder objetos. El éxito se
@@ -32,6 +32,21 @@ introducir o borrar puntos. No se añade UI de asignación ni penalización de m
 
 Los conteos se solapan; no sumarlos como casos únicos. Las pruebas de memoria/SQL local
 no sustituyen aceptación autenticada pública de Carga.
+
+## Publicación y despliegue
+
+Código `f281db1`; herramienta pública/configuración/evidencia posterior `cfeb19e`, rama
+`claude/loving-lovelace-ptbif7`, PR existente #1. El actualizador normal desplegó alpha.43
+sin activar Carga. [Canario público con flag apagado](inv02b-public/20261011T042205Z-off/acceptance.json)
+**5/5**: salud, versión/protocolo, cuenta temporal, entrada autenticada WSS y reconexión;
+adopción rechazada `disabled`, sin recibo ni cambio del DTO legado/masa 22 del nivel 3.
+Cuenta Auth/perfil temporales retirados. No es prueba de UI pública de asignación.
+
+[Revisión e imagen fijas](inv02b-public/20261011T042205Z-off/authority.ndjson) bajo locks del
+actualizador y contenido; 14 hashes de archivos de la imagen iguales a Git. Una autoridad,
+Supabase durable, cero errores/guardados pendientes antes y después, timer activo. Sin
+reinicio forzado ni otra autoridad. La evidencia verifica `f281db1`; los commits posteriores
+de documentación/herramientas no representan una activación de Carga.
 
 ## Reanudar
 

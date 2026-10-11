@@ -8,6 +8,8 @@ con reapertura de base; regresión previa 106/106 y UI existente 6/6 ES/EN, cont
 SQL029 aditivo listo, sin reescribir datos; flag `MN_ATTRIBUTE_OPERATIONS` apagado por defecto,
 exige readiness. Alpha.43/protocolo 49. Sigue aplicar SQL029, canario y ficha ES/EN INV02c;
 después movimiento/sobrepeso. No implica que la pantalla de atributos ya esté jugable.
+Código desplegado `f281db1` con flag apagado; canario público autenticado **5/5**, 14 hashes
+de imagen iguales a Git y una autoridad sana antes/después. Cuenta QA retirada, sin recibos.
 
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](delivery/hud-portrait/README.md), [contrato de Carga](briefs/inv02a-durable-carry.md)
