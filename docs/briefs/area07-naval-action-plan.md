@@ -5,7 +5,7 @@ base histórica; los checkpoints siguientes distinguen implementación, pruebas,
 
 Guía maestra local: `PLAN-MASTER.md`, sección AREA07 (compartida con las demás áreas).
 [M6](../../PLAN-M6.md) · [Dirección naval](../NAVAL-ROADMAP.md) ·
-[Progresión](../../PLAN-PROGRESSION.md#5-navegación-natación-y-poderes) ·
+Progresión: `PLAN-PROGRESSION.md` (guía local compartida) ·
 [Mundo del alfa](../../PLAN-ALFA-MUNDO.md) · [Continuidad M5](../../PLAN-M5.md).
 
 **Cambio de dirección del autor, 2026-10-10 — agua como expedición y logística:**
