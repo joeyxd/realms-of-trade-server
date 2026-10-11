@@ -1,5 +1,20 @@
 # PRG01d — taller y Tala públicos; incidentes recuperados
 
+## Navegador autenticado alpha.40 / protocolo 47
+
+El [recorrido UI y capturas](browser-alpha40-20261011-0247/README.md) pasó **8/8** el
+2026-10-11 02:47–02:48 UTC: login normal, WASD al banco, entrega de tres tablas desde UI,
+recibo Supabase, ajuste de idioma ES→EN y progreso 3/10 restaurado al recargar.
+Revisión `88f61ea` e imagen fijadas antes/después bajo los locks existentes; una autoridad,
+cero errores/pendientes/datos sin guardar al cierre. Perfil/Auth QA eliminados y un recibo conservado.
+Las tres tablas se sembraron sólo en el perfil desechable, sin obtenerlas jugando.
+
+Paneles ES 1280×720 y EN 390×844 inspeccionados, legibles y sin recorte. El HUD de fondo se superpone
+en portrait y sigue pendiente; no se acepta toda la interfaz móvil ni FPS de teléfono físico.
+La prueba UI es parcial (entrega/reconexión); el ciclo completo de construcción/Tala es el WSS 36/36
+de alpha.39 documentado abajo. SIGKILL, nueva medición offline, cooperación y aciertos perfectos
+siguen sin aceptación viva propia de este corte.
+
 ## Integración alpha.39 / protocolo 47
 
 El [canario combinado](public-4e926d4b-bc17-4c9b-b2a1-7924dac83d94.json) pasó **36/36** entre
@@ -62,8 +77,8 @@ sin adoptar ni activar; instalar SQL023 no lo adopta.
   Los conteos se solapan y no se suman.
 
 La aceptación histórica estaba dividida entre construcción alpha.37 y Tala alpha.38; el canario
-combinado posterior alpha.39 ya pasó. Siguen pendientes navegador autenticado actualizado,
-SIGKILL propio, nueva medición offline, balance y teléfono físico.
+combinado posterior alpha.39 ya pasó. El navegador autenticado alpha.40 se aceptó por separado arriba. Siguen pendientes
+SIGKILL propio, nueva medición offline, HUD móvil, balance y teléfono físico.
 La [repetición combinada alpha.38](public-156e1731-9f05-4452-b1ff-3250670c2b87.json) pasó quince
 comprobaciones hasta fabricar el kit, pero agotó sus replanteos al caminar a la pasarela de la balsa.
 No es un pase completo. Perfil/Auth eliminados y seis recibos conservados; no registró otro fence.

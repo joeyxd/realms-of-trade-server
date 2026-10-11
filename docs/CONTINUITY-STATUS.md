@@ -44,7 +44,11 @@ Ambas recuperaciones conservaron perfil/mundo; sus cuentas QA se eliminaron y re
 [Verificación independiente VPS](delivery/prg01d-starter-workshop/activation/timing-deployment-independent.json):
 revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, timer activo,
 cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
-Navegador autenticado ES/EN histórico 8/8 y entrada 14/14 conservan su alcance anterior.
+[Navegador autenticado alpha.40/protocolo 47](delivery/prg01d-starter-workshop/activation/browser-alpha40-20261011-0247/README.md): 8/8,
+entrega UI durable y progreso tras recargar; perfil/Auth QA retirados y un recibo conservado.
+Capturas ES escritorio/EN portrait inspeccionadas: panel legible; HUD de fondo móvil superpuesto pendiente.
+Revisión `88f61ea` e imagen fijadas antes/después, cero errores/pendientes y una autoridad.
+Entrada pública histórica 14/14 conserva su alcance anterior.
 [Checkpoint](delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
 Mundo común suelo/perlas/muerte sin adoptar/activar; SIGKILL propio, pausa offline nueva,
 balance y teléfono físico pendientes. INV01–03 (huecos/pilas, Carga y sobrepeso) continúa aparte.
