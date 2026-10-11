@@ -1,7 +1,7 @@
 # Continuidad de servidor — AREA15
 
-**AREA07 RNV07a, 2026-10-11 — agua manual implementada localmente, alpha.44/protocolo 50:**
-[Entrega](delivery/rnv07-freshwater.md) y [dirección](briefs/RNV07-freshwater-progression.md). Cubeta reutilizable, manantial interior junto al arquero existente, recogida interrumpible y barril naval; M5 conserva los traslados. QA final local: escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; se inspeccionaron manantial, marcador de mapa y barril 4/20 en móvil. La fixture retiró enemigos para proteger el recorrido feliz; la aceptación del encuentro en navegador sigue pendiente. Las pruebas del host sí cubren interrupciones. La selección integrada sigue en 129/129; suite focalizada del host 5/5. SQL030 y readiness son requisitos de activación; no hay afirmación de publicación.
+**AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**
+[Entrega](delivery/rnv07-freshwater.md), [dirección](briefs/RNV07-freshwater-progression.md), [WSS público](delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](delivery/rnv07-freshwater/public-readonly.json) y [activación SQL030](delivery/rnv07-freshwater/activation.json). Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z; imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor, readiness RPC 1; `MN_FRESHWATER_OPERATIONS` enabled/ready y atributos siguen enabled/ready. WSS público 6/6, anónimo denegado; lectura pública 7 hashes fuente y health 200. Evidencia de agua visual/recogida completa sigue siendo fixture local sin enemigos; no se afirma recolección/transporte completo live y el encuentro en navegador queda pendiente para RNV07b.
 Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
 
 

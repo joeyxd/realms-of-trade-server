@@ -1,6 +1,6 @@
 # RNV07a — cubeta, manantial y reserva naval
 
-Implementación local en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Este documento registra implementación y QA locales; no declara publicación ni activación pública.
+Publicada y activada en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado a las 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`.
 
 ## Circuito jugable
 
@@ -14,7 +14,7 @@ El constructor ofrece **Barril de agua dulce**: cuesta 4 tablas, tiene 25 HP, pe
 
 M5/GameHost sigue siendo el único dueño. Se usa la tabla `mn_economic_operations`, el namespace UUID, CAS de perfil/mundo, ACK después del recibo y recuperación de respuesta incierta. `hold.vessels` es un campo opcional estricto de hasta 32 recipientes; la ausencia histórica sigue significando vacío. La cubeta solo va en mochila; el barril solo se acepta con parte y condición coincidentes. Peso, volumen y límites navales incluyen el contenido una sola vez. Las demás familias económicas conservan los recipientes; el escritor base renombrado queda cerrado a `service_role`.
 
-[SQL030](../../server/migrations/030_freshwater_operations.sql) se aplica después de SQL029 y conserva recibos históricos, atributos y permisos de servicio. `MN_FRESHWATER_OPERATIONS=1` exige readiness 1 antes de admitir jugadores. La configuración local/worker permite el circuito; el VPS requiere migración y activación verificadas. Este corte no habilita suelo común, otro guardado ni otra sed.
+[SQL030](../../server/migrations/030_freshwater_operations.sql) fue aplicado por el autor después de SQL029 y conserva recibos históricos, atributos y permisos de servicio. `MN_FRESHWATER_OPERATIONS=1` está habilitado y readiness RPC vale 1; agua y atributos reportan enabled/ready. M5/GameHost sigue siendo la única autoridad y este corte no habilita suelo común, otro guardado ni otra sed.
 
 ## Arte y mapa
 
@@ -27,6 +27,14 @@ Se verificó el candidato concreto `C:\Unreal\MyProject\Content\_SplineVFX\Demo\
 - Selección integrada final: 129/129 en 20 archivos. Después se ejecutó la suite del host con casos nuevos de interrupción: 5/5; no se presenta como una nueva corrida integrada. Las pruebas adicionales del actualizador dieron 22 casos: 19 aprobados y 3 omitidos por plataforma; UI e inventario dieron 11/11.
 - QA visual final: escritorio ES 1280×720 y touch EN 390×844; ambos recorridos terminaron sin errores de navegador, fallos HTTP ni solicitudes externas. Se inspeccionaron el manantial en el mundo, su marcador en el mapa completo y el barril 4/20 en móvil. El agua se conservó en depósito, retiro, vaciado en provisiones y recarga tras reload. El evidence bundle es [evidence-2026-10-11T04-35-22-891Z.json](rnv07-freshwater/local/evidence-2026-10-11T04-35-22-891Z.json); contiene 14 capturas, 7 por viewport.
 - La fixture de navegador retiró enemigos y spawners para proteger el recorrido feliz. Por eso, la aceptación de encuentro/enemigos en navegador sigue pendiente. Las pruebas del host sí cubren interrupción por combate/daño; la fixture visual no demuestra esa aceptación.
+
+## Publicación y activación
+
+- El runtime público comprobado sirve alpha.44/protocolo 50 en la revisión `80e46df8ca4664f93aa59df8350c27cc17589b53`; la imagen es `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`, desplegada a las 04:47Z. El actualizador pasó 126/126. Una revisión posterior que solo añade este registro conserva el mismo código jugable.
+- El bundle fijado a la imagen verificó 20/20 hashes Git y 22/22 pruebas en [image-water.tap](rnv07-freshwater/image-water.tap). La selección integrada previa fue 129/129; la nueva suite focalizada del host fue 5/5, no una repetición de la selección integrada.
+- La lectura pública confirmó health 200 y siete hashes de fuente servida en [public-readonly.json](rnv07-freshwater/public-readonly.json). El canario público pasó sus seis comprobaciones, incluidas las operaciones WSS autenticadas y la denegación anónima, en [public/acceptance.json](rnv07-freshwater/public/acceptance.json): pago de cubeta de 2 tablas, replay exacto, colisión con comando cambiado, denegación de segunda cubeta, y persistencia/reconexión. La cuenta y el perfil temporales se eliminaron; se conservaron deliberadamente dos recibos económicos.
+- [activation.json](rnv07-freshwater/activation.json) registra SQL030 y `MN_FRESHWATER_OPERATIONS=1`; [updater.json](rnv07-freshwater/updater.json) documenta el bundle incorporado. La comprobación de runtime y atributos listos está en el reporte de solo lectura.
+- El WSS público no recorrió la recolección completa ni las transferencias del barril. Esas acciones y la persistencia visual completa se probaron en la fixture local sin enemigos; la aceptación live del encuentro y de una ruta completa sigue pendiente para RNV07b.
 
 ## Siguiente corte
 

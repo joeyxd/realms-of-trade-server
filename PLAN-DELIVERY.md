@@ -1,7 +1,7 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA07 RNV07a, 2026-10-11 — agua manual implementada localmente, alpha.44/protocolo 50:**
-[Entrega](docs/delivery/rnv07-freshwater.md) y [dirección](docs/briefs/RNV07-freshwater-progression.md). Cubeta reutilizable, manantial interior junto al arquero existente, recogida interrumpible y barril naval; M5 conserva los traslados. QA final local: escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; se inspeccionaron manantial, marcador de mapa y barril 4/20 en móvil. La fixture retiró enemigos para proteger el recorrido feliz; la aceptación del encuentro en navegador sigue pendiente. Las pruebas del host sí cubren interrupciones. La selección integrada sigue en 129/129; suite focalizada del host 5/5. SQL030 y readiness son requisitos de activación; no hay afirmación de publicación.
+**AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**
+[Entrega](docs/delivery/rnv07-freshwater.md), [dirección](docs/briefs/RNV07-freshwater-progression.md), [WSS público](docs/delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](docs/delivery/rnv07-freshwater/public-readonly.json) y [activación SQL030](docs/delivery/rnv07-freshwater/activation.json). Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z; imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor, readiness RPC 1; `MN_FRESHWATER_OPERATIONS` enabled/ready y atributos siguen enabled/ready. WSS público 6/6, anónimo denegado; lectura pública 7 hashes fuente y health 200. Evidencia de agua visual/recogida completa sigue siendo fixture local sin enemigos; no se afirma recolección/transporte completo live y el encuentro en navegador queda pendiente para RNV07b.
 Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
 
 
@@ -683,7 +683,7 @@ Todas salvo D00 son trabajo futuro o en curso al redactar; actualizar estado y e
 | ID | Mecánica o resultado | Prueba/mejora de assets asociada | Depende de / aceptación principal | Estado actual |
 |---|---|---|---|---|
 | D00 | Inventario y dirección naval | A00: catálogo, miniaturas y candidatos | CSV/JSON reconciliados, límites de evidencia registrados | Hecho |
-| D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime activo | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
+| D01 | M4.8 P3: Tormenta | A01 fase A: preparar Noise00 fuera del runtime comprobado | Cadena/carga/maldición coherentes cliente-servidor, pruebas y recorrido visual | Integrado `66e6e67`; 259/259, visual emulado aceptado; dispositivos/publicación pendientes, A01 sin integrar |
 | D02 | M4.8 P4: Tinta | Humo/tinta procedural; recursos nuevos se comparan por separado | D01 integrado; marca/nube/IA y maldición día-noche probadas | Integrado alpha.4; 271/271, visual emulado aceptado; dispositivos/publicación pendientes ([informe](docs/delivery/d02-tinta.md)) |
 | D03 | M4.8 P5: cierre integrado | A01 fase B terminada/aplazada para fogatas; A03 opcional tras probar recurso | D01–D02; kit/indicadores legibles, fallback y regresión. Arte nuevo puede aplazarse | Candidato rc.1, 278/278; aceptación física/publicación pendientes ([informe](docs/delivery/d03-pearlkit.md)); A01 no lo bloquea |
 | D04 | M6 P1–P2: balsa visible y cubierta transitable | A02 caja: hook de isla y caja de balsa; preparar banco | D03; muelle → cubierta, paredes/escalera, snapshots. Un mesh no crea almacenamiento | P1–P2 local aceptado en software ([P2](docs/delivery/d04p2-raft-walk.md)); dispositivos/publicación pendientes |
@@ -1147,7 +1147,7 @@ o fallos nuevos lo justifican. Para arte reversible no crear tests que solo copi
 |---|---|---|
 | Principal | Identificar/revisar dueño de Tormenta y fijar base de aceptación; preparar consumidor A01 | Preservar edits activos; integración de manifiesto/wiring solo tras liberar archivos |
 | Luna 1 | D01 Tormenta, si sigue asignada a su dueño actual | Lógica/cliente y evidencia del brief de milestone; no crear un segundo escritor para los mismos archivos |
-| Luna 2 | A01 fase A, según el brief | PNG preparado, decode/hash/dry y propuesta de hook aislado; sin tocar runtime activo ni manifiesto |
+| Luna 2 | A01 fase A, según el brief | PNG preparado, decode/hash/dry y propuesta de hook aislado; sin tocar runtime comprobado ni manifiesto |
 | Luna 3 | Preparar D02 Tinta o revisar D01 cuando llegue | Lectura/contratos/casos de prueba; implementación después de liberar rutas o en aislamiento comprobado |
 
 Integrar D01 → implementar D02 → integrar A01 si mejora → cerrar D03. A02 puede prepararse después, sin frenar
