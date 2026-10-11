@@ -1,6 +1,7 @@
 import { verifyPreparedRevision, canonicalJson } from './publicationArtifact.js';
-import { installGmContent } from './contentProjection.js';
+import { installGmContent, projectGmContent } from './contentProjection.js';
 import { resourceLayout } from '../data/resources.js';
+import { TERRAIN_GRID_SIZE } from './terrainData.js';
 
 export async function gmContentHash(value) {
   const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonicalJson(value)));
@@ -39,12 +40,26 @@ export async function loadGmWorldContent({ httpBase, map, baseMap, gameVersion, 
         content.base.propsHash !== await gmContentHash(baseline.props) ||
         content.base.collidersHash !== await gmContentHash(baseline.colliders) ||
         content.base.resourcesHash !== await gmContentHash(baseline.resources)) throw new Error('content_base');
+    const verifiedBase = { ...baseMap, props: structuredClone(baseline.props), colliders: structuredClone(baseline.colliders),
+      terrainResources: structuredClone(baseline.resources) };
+    const projected = projectGmContent(verifiedBase, document, 'terrain-s21-v1');
+    if (document.terrain) {
+      const metadata = content.terrain;
+      if (!metadata || Object.keys(metadata).sort().join(',') !== 'gridSize,sha256' ||
+          metadata.gridSize !== TERRAIN_GRID_SIZE || !/^[a-f0-9]{64}$/.test(metadata.sha256) ||
+          projected.heights?.length !== TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE ||
+          metadata.sha256 !== await gmContentHash(Array.from(projected.heights))) {
+        throw Object.assign(new Error('content_terrain'), { code: 'content_terrain' });
+      }
+    } else if (content.terrain !== undefined) {
+      throw Object.assign(new Error('content_terrain'), { code: 'content_terrain' });
+    }
+    if (content.collision.sha256 !== await gmContentHash(projected.colliders)) throw new Error('content_collision');
     baseMap.props = structuredClone(baseline.props); baseMap.colliders = structuredClone(baseline.colliders);
     baseMap.terrainResources = structuredClone(baseline.resources);
     installGmContent(baseMap, baseMap, null);
     map.props = baseMap.props; map.terrainResources = baseMap.terrainResources;
     installGmContent(map, baseMap, document);
-    if (content.collision.sha256 !== await gmContentHash(map.colliders)) throw new Error('content_collision');
   }
   map.gmContentIdentity = { generation: body.generation, revisionId: body.revisionId };
   return body;

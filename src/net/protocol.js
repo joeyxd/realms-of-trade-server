@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 48; // Private inference configuration and catalog; reload peers.
+export const PROTOCOL_VERSION = 49; // GM v3 terrain projections share one sampler; reload peers.
 
 export const MSG = {
   // client -> server

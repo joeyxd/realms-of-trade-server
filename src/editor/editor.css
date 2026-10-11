@@ -184,3 +184,12 @@
 .gm-revision-id { display: block; overflow-wrap: anywhere; font-size: .75rem; }
 .gm-content label { display: block; margin: .7rem 0; }
 .gm-content select { display: block; width: 100%; margin-top: .3rem; padding: .5rem; color: inherit; background: #203338; border: 1px solid #62716b; border-radius: .3rem; }
+.gm-tabs { flex-wrap: wrap; }
+.gm-terrain-panel { padding: 12px; display: grid; gap: 12px; color: #c5dad8; }
+.gm-terrain-panel h3 { margin: 0; font-size: 14px; color: #92e6cb; }
+.gm-terrain-panel label { display: grid; grid-template-columns: 1fr auto; gap: 5px; font-size: 12px; }
+.gm-terrain-panel select { grid-column: 1 / -1; background: #102129; color: #e3eeec; padding: 7px; border: 1px solid #52645d; border-radius: 5px; width: 100%; }
+.gm-terrain-panel input { grid-column: 1; width: 100%; accent-color: #80d8bc; }
+.gm-terrain-panel output { grid-column: 2; grid-row: 2; min-width: 38px; }
+.gm-terrain-panel p { margin: 0; font-size: 11px; line-height: 1.5; }
+.gm-terrain-panel canvas { width: 100%; height: auto; border: 1px solid #52645d; border-radius: 5px; }

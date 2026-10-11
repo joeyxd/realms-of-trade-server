@@ -8,7 +8,7 @@ import { sandUniforms, SAND_PARS, SAND_COLOR, SAND_NORMAL_SAMPLE, SAND_NORMAL } 
 import { groundUniforms, GROUND_PARS, GROUND_SETUP, GROUND_EDGE_COLOR, GROUND_PATH_COLOR, GROUND_NORMAL_SAMPLE } from './groundMaterials.js';
 import { WATER_DETAIL_UNIFORMS, CAUSTIC_PARS } from './waterDetail.js';
 
-export function createTerrain(map, { segments = map.terrainRevision ? 320 : 250, assetRegistry = assets } = {}) {
+export function createTerrain(map, { segments = map.gmTerrain ? 560 : map.terrainRevision ? 320 : 250, assetRegistry = assets } = {}) {
   const size = map.size, half = size / 2;
   const n = segments + 1;
   const step = size / segments;
@@ -238,6 +238,33 @@ export function createTerrain(map, { segments = map.terrainRevision ? 320 : 250,
   return mesh;
 }
 
+/** Update a terrain mesh's existing canonical grid buffers from a projected map. */
+export function updateTerrainGeometry(mesh, map, { segments = 560 } = {}) {
+  const geometry = mesh?.geometry;
+  const position = geometry?.getAttribute('position');
+  const normal = geometry?.getAttribute('normal');
+  const masks = geometry?.getAttribute('aMask');
+  const n = segments + 1;
+  if (!position || position.count !== n * n || !normal || !masks) {
+    throw new RangeError('Terrain geometry does not match the canonical grid');
+  }
+  const size = map.size, half = size / 2, step = size / segments;
+  const p = position.array, nr = normal.array, ms = masks.array;
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const k = j * n + i, x = -half + i * step, z = -half + j * step;
+    p[k * 3] = x; p[k * 3 + 1] = map.heightAt(x, z); p[k * 3 + 2] = z;
+    const e = step * 0.5;
+    const nx = map.heightAt(x - e, z) - map.heightAt(x + e, z);
+    const nz = map.heightAt(x, z - e) - map.heightAt(x, z + e);
+    const l = Math.hypot(nx, 2 * e, nz);
+    nr[k * 3] = nx / l; nr[k * 3 + 1] = (2 * e) / l; nr[k * 3 + 2] = nz / l;
+    const m = map.masks(x, z);
+    ms[k * 4] = m.path; ms[k * 4 + 1] = m.volcanic; ms[k * 4 + 2] = m.arenaFloor; ms[k * 4 + 3] = m.lava;
+  }
+  position.needsUpdate = true; normal.needsUpdate = true; masks.needsUpdate = true;
+  geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+}
+
 // Flat seabed under everything beyond the culled deep-ocean cells, so the water always has an
 // opaque floor to measure depth against (no jagged edge where the terrain mesh stops).
 export function createSeabed(map) {
@@ -255,18 +282,28 @@ export function createSeabed(map) {
 // Height texture for the water shader (depth / foam), half-float red channel.
 export function createHeightTexture(map, res = 256) {
   const data = new Uint16Array(res * res);
-  const size = map.size, half = size / 2;
-  for (let j = 0; j < res; j++) {
-    for (let i = 0; i < res; i++) {
-      const x = -half + (i / (res - 1)) * size, z = -half + (j / (res - 1)) * size;
-      const h = map.heightAt(x, z);
-      data[j * res + i] = THREE.DataUtils.toHalfFloat(h);
-    }
-  }
+  fillHeightData(map, data, res);
   const tex = new THREE.DataTexture(data, res, res, THREE.RedFormat, THREE.HalfFloatType);
   tex.magFilter = THREE.LinearFilter;
   tex.minFilter = THREE.LinearFilter;
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
   tex.needsUpdate = true;
   return tex;
+}
+
+export function updateHeightTexture(map, texture) {
+  if (!texture?.image?.data) throw new TypeError('Height texture is unavailable');
+  const { data, width, height } = texture.image;
+  if (width !== height || data.length !== width * height) throw new RangeError('Height texture must be square single-channel data');
+  fillHeightData(map, data, width);
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function fillHeightData(map, data, res) {
+  const size = map.size, half = size / 2;
+  for (let j = 0; j < res; j++) for (let i = 0; i < res; i++) {
+    const x = -half + (i / (res - 1)) * size, z = -half + (j / (res - 1)) * size;
+    data[j * res + i] = THREE.DataUtils.toHalfFloat(map.heightAt(x, z));
+  }
 }

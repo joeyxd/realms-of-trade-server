@@ -425,8 +425,10 @@ El terreno actual es un heightfield: una altura por coordenada XZ, de 560 unidad
 Es apropiado para elevar/bajar, aplanar, suavizar y formar rampas o islas. Cuevas, túneles y voladizos necesitan
 geometría/superficies adicionales; no se obtienen con un pincel de altura.
 
-**Primer corte de terreno:** subir/bajar, aplanar a una cota escogida, suavizar y crear rampa entre dos puntos,
-con tamaño, intensidad, caída del pincel, vista previa y undo por trazo. Después pintura de materiales con
+**GM05a implementado localmente; aceptación/publicación en curso:** subir/bajar, aplanar a una cota escogida,
+suavizar y crear rampa entre dos puntos, con tamaño, intensidad, caída, vista previa y undo por trazo.
+[Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega/evidencia](docs/delivery/gm05a/DELIVERY.md).
+Solo suelo seco existente y zonas funcionales protegidas; documento v3 y SQL030. Sigue GM05b: pintura de materiales con
 máscaras y caminos. Conservar el nivel global del mar; modificarlo afecta navegación y merece otro corte.
 
 Guardar deltas o tiles de alturas sobre una base versionada, con muestras canónicas/cuantización definida,
@@ -484,7 +486,8 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM04a | Multiselección temporal y edición por lotes de decoración base/añadida; un undo por operación, sin cambiar documento v2 | [Entrega](docs/delivery/gm04a/DELIVERY.md); navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331; público autenticado 19/19, release sana |
 | GM04b | Plantillas privadas locales de decoración, copias expandidas con IDs independientes y undo atómico | [Entrega](docs/delivery/gm04b/DELIVERY.md); GM 199/199, local 17/17, público 19/19, alpha.41/47 sana |
 | GM04 siguiente | Materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
-| GM05 | Esculpir/pintar terreno existente con deltas y reconstrucción coordinada | Rampa caminable, agua/minimapa coherentes, undo exacto y zonas protegidas preservadas |
+| GM05a | Escultura de suelo seco existente; implementada localmente, aceptación/publicación en curso | [Entrega](docs/delivery/gm05a/DELIVERY.md): deltas v3, cinco herramientas, sampler compartido, SQL030, protección y undo/cancelación |
+| GM05b | Pintar familias de suelo, caminos y máscaras existentes | Mezclas legibles, guardado/hash y agua/cartografía coherentes; presupuesto móvil medido |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.
@@ -519,8 +522,9 @@ y referencia activa del mundo; la aceptación pública está registrada en la en
 
 La matriz es objetivo de aceptación por corte, no una afirmación de cobertura completa. GM01 y GM02
 registran las comprobaciones ejecutadas en sus entregas; GM03b2 registra integración, pruebas locales y
-aceptación visual local y aceptación pública alpha.35. Edición de terreno y aceptación física móvil
-siguen pendientes. Cada corte registra implementación, evidencia, aceptación visual y publicación por separado.
+aceptación visual local y aceptación pública alpha.35. GM05a registra escultura local y sus gates pendientes
+en su entrega; pintura GM05b, expansión GM06 y aceptación física móvil siguen pendientes.
+Cada corte registra implementación, evidencia, aceptación visual y publicación por separado.
 
 ## 13 Base revisada y decisiones pendientes
 
@@ -542,8 +546,9 @@ La cuenta GM y su permiso en el host están verificados; SQL020 y runtime GM03a 
 el guardado remoto, adopción y conflicto se aceptaron con Supabase real. GM03b2 está integrado en alpha.35/
 protocolo 44: 175/175 selección acotada. Alpha.34 conserva la regresión histórica 308/308 (incluye checker
 2/2) y el navegador local 6/6; el actualizador Linux pasó 22/22 independiente. Alpha.35/protocolo 44 está
-publicada y verificada sana; su canario público pasó 6/6. El terreno, la aceptación física móvil y la
-migración explícita entre runtimes siguen pendientes.
+publicada y verificada sana; su canario público pasó 6/6. GM05a implementa escultura local; su aceptación
+y publicación se registran por separado en su entrega. Pintura GM05b, expansión GM06, aceptación física móvil
+y migración explícita entre runtimes siguen pendientes.
 
 Fuera de esta primera entrega: moderación/ban, regalar oro o items, poderes de combate, editor de rigs,
 IA de generación, marketplace/UGC, terreno voxel y edición colaborativa en vivo. Pueden usar contratos

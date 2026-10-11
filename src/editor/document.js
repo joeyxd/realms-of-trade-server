@@ -1,5 +1,7 @@
 export const DOCUMENT_SCHEMA = 'marea.gm.map-draft';
 export const DOCUMENT_VERSION = 2;
+const TERRAIN_DOCUMENT_VERSION = 3;
+import { validateTerrain } from './terrainData.js';
 export const MAX_OBJECTS = 5000;
 export const MAX_OBJECT_ID_LENGTH = 96;
 export const MAX_ASSET_ID_LENGTH = 160;
@@ -77,8 +79,11 @@ function validateBaseOverride(raw) {
 export function validateDocument(raw) {
   if (!isRecord(raw) || raw.schema !== DOCUMENT_SCHEMA) fail('format');
   const legacy = raw.version === 1;
-  if ((!legacy && raw.version !== DOCUMENT_VERSION) ||
-      !exactKeys(raw, legacy ? ['schema', 'version', 'base', 'objects'] : ['schema', 'version', 'base', 'objects', 'baseOverrides'])) fail('format');
+  const terrainVersion = raw.version === TERRAIN_DOCUMENT_VERSION;
+  if ((!legacy && raw.version !== DOCUMENT_VERSION && !terrainVersion) ||
+      !exactKeys(raw, legacy ? ['schema', 'version', 'base', 'objects'] :
+        terrainVersion ? ['schema', 'version', 'base', 'objects', 'baseOverrides', 'terrain'] :
+          ['schema', 'version', 'base', 'objects', 'baseOverrides'])) fail('format');
   if (!exactKeys(raw.base, ['seed', 'revision']) || !Number.isSafeInteger(raw.base.seed) ||
       raw.base.seed < 0 || raw.base.seed > 0xffffffff || typeof raw.base.revision !== 'string' ||
       raw.base.revision.length < 1 || raw.base.revision.length > 128 || /[\u0000-\u001f]/.test(raw.base.revision)) fail('base');
@@ -97,22 +102,25 @@ export function validateDocument(raw) {
     if (overrideIds.has(override.id) || ids.has(override.id)) fail('duplicate_id');
     overrideIds.add(override.id);
   }
-  return {
+  const result = {
     schema: DOCUMENT_SCHEMA,
-    version: DOCUMENT_VERSION,
+    version: terrainVersion ? TERRAIN_DOCUMENT_VERSION : DOCUMENT_VERSION,
     base: { seed: raw.base.seed, revision: raw.base.revision },
     objects,
     baseOverrides: validatedOverrides,
   };
+  if (terrainVersion) result.terrain = validateTerrain(raw.terrain);
+  return result;
 }
 
-export function createDocument({ seed, baseRevision, objects = [], baseOverrides = [] }) {
+export function createDocument({ seed, baseRevision, objects = [], baseOverrides = [], terrain }) {
   return validateDocument({
     schema: DOCUMENT_SCHEMA,
-    version: DOCUMENT_VERSION,
+    version: terrain === undefined ? DOCUMENT_VERSION : TERRAIN_DOCUMENT_VERSION,
     base: { seed, revision: baseRevision },
     objects,
     baseOverrides,
+    ...(terrain === undefined ? {} : { terrain }),
   });
 }
 

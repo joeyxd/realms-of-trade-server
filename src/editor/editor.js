@@ -15,6 +15,10 @@ import { MAX_SELECTION, selectionPivot, transformSelection, updateSelection, rem
 import { LAYER } from '../render/pipeline.js';
 import { TemplatePanel } from './templatePanel.js';
 import { validateTemplate, instantiateTemplate } from './templates.js';
+import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { createTerrainPreview } from './terrainPreview.js';
+import { TerrainPanel } from './terrainPanel.js';
+import { TerrainInteraction } from './terrainInteraction.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -58,6 +62,8 @@ export class WorldEditor {
     this.baseLayer = createBaseDecorationLayer({ scene, map, baseRevision });
     this.baseEntries = this.baseLayer.list().filter((entry) => entry.editable);
     this.sceneTab = false;
+    this.draftMap = map; this.terrainKey = null;
+    this.terrainPreview = createTerrainPreview({ scene, map, invalidate });
 
     this._installStyles(); this._buildUI();
     this.cameraController = new EditorFreeCamera(camera, canvas, { ownsTarget: (target) => this.ui.contains(target) });
@@ -84,7 +90,7 @@ export class WorldEditor {
     this.onClick = (e) => this._toolbarAction(e);
     this.onChange = (e) => this._inspectorChange(e);
     this.onSceneSearch = () => this._renderSceneList();
-    this.onBlur = () => { this.cameraController.onBlur(); if (this.active && !this.walkPreview?.active) this._cancelTransform(); };
+    this.onBlur = () => { this.cameraController.onBlur(); this.terrainInteraction?.cancel(); if (this.active && !this.walkPreview?.active) this._cancelTransform(); };
     this.onPointerLeave = () => { this.pointerInside = false; if (this.ghost) this.ghost.visible = false; this.invalidate(); };
     this.canvas.addEventListener('pointermove', this.onPointerMove);
     this.canvas.addEventListener('pointerdown', this.onPointerDown);
@@ -104,6 +110,9 @@ export class WorldEditor {
     this.remoteClient = remoteClient;
     this.remotePanel = new RemoteDraftPanel(this, remoteClient);
     this.templatePanel = new TemplatePanel(this, this.templateRoot);
+    this.terrainPanel = new TerrainPanel({ editor: this, root: this.terrainRoot,
+      onTool: tool => this.terrainInteraction.select(tool) });
+    this.terrainInteraction = new TerrainInteraction(this, this.terrainPanel);
     this.unsubscribeLocale = onLocaleChange((lang) => { this.lang = lang; this._setLanguage(); });
     this._setLanguage();
   }
@@ -132,12 +141,14 @@ export class WorldEditor {
       '</div></header><div class="gm-workspace"><aside class="gm-sidebar">',
       '<nav class="gm-tabs"><button type="button" data-action="tab-library" data-i18n="library"></button>',
       '<button type="button" data-action="tab-scene" data-i18n="scene"></button>',
-      '<button type="button" data-action="tab-templates" data-i18n="templates"></button></nav>',
+      '<button type="button" data-action="tab-templates" data-i18n="templates"></button>',
+      '<button type="button" data-action="tab-terrain" data-i18n="terrain"></button></nav>',
       '<div class="gm-library" data-role="catalog"></div><section class="gm-scene-panel" data-role="scene-panel" hidden>',
       '<label class="gm-search"><span data-i18n="sceneSearch"></span><input type="search" data-role="scene-search"></label>',
       '<p class="gm-scene-note" data-i18n="sceneScope"></p><div class="gm-scene-count" data-role="scene-count"></div>',
       '<p class="gm-scene-note" data-i18n="multiHelp"></p><button type="button" data-action="clear-selection" data-i18n="clearSelection"></button>',
-      '<div class="gm-scene-list" data-role="scene-list"></div></section><section class="gm-template-panel" data-role="template-panel" hidden></section></aside>',
+      '<div class="gm-scene-list" data-role="scene-list"></div></section><section class="gm-template-panel" data-role="template-panel" hidden></section>',
+      '<section data-role="terrain-panel" hidden></section></aside>',
       '<div class="gm-canvas-note" data-i18n="controls"></div><aside class="gm-inspector"><h2 data-i18n="inspector"></h2>',
       '<div class="gm-selection-name" data-role="selection-name"></div><div class="gm-transform-tools">',
       '<button type="button" data-action="mode-translate" data-i18n="move"></button><button type="button" data-action="mode-rotate" data-i18n="rotate"></button>',
@@ -161,6 +172,7 @@ export class WorldEditor {
     this.parent.appendChild(this.ui);
     this.catalogRoot = this.ui.querySelector('[data-role="catalog"]');
     this.templateRoot = this.ui.querySelector('[data-role="template-panel"]');
+    this.terrainRoot = this.ui.querySelector('[data-role="terrain-panel"]');
     this.langButton = this.ui.querySelector('[data-role="language"]');
     this.selectionName = this.ui.querySelector('[data-role="selection-name"]');
     this.statusNode = this.ui.querySelector('[data-role="status"]');
@@ -180,6 +192,7 @@ export class WorldEditor {
   _setLanguage() {
     this.status?.setLocale(this.lang);
     const words = {
+      terrain: ['Terrain', 'Terreno'],
       brand: ['World editor', 'Editor del mundo'], draftLocal: ['PRIVATE DRAFT · NO PUBLISH', 'BORRADOR PRIVADO · SIN PUBLICAR'],
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
       delete: ['Delete', 'Eliminar'], save: ['Save locally', 'Guardar local'], export: ['Export', 'Exportar'],
@@ -210,6 +223,7 @@ export class WorldEditor {
     this.catalog?.setLanguage(this.lang); this._renderInspector(); this._renderSceneList();
     this.remotePanel?.render();
     this.templatePanel?.render();
+    this.terrainPanel?.render();
     if (this.walkPreview?.active) this.ui.querySelector('[data-i18n="controls"]').textContent = this._t(
       'PRIVATE WALK TEST · WASD: move · Escape: back to editor · no combat or progress',
       'PRUEBA PRIVADA · WASD: caminar · Escape: volver al editor · sin combate ni progreso');
@@ -264,7 +278,8 @@ export class WorldEditor {
     } catch (error) {
       if (session !== this.session) return false;
       this.active = false; this.ui.hidden = true; this.error = error;
-      this._stopWalking(); this.baseLayer.restore(); this.footprint.visible = false; this.scene.remove(this.footprint);
+      this._stopWalking(); this.terrainPreview.restore(); this.terrainKey = null; this.draftMap = this.map;
+      this.baseLayer.restore(); this.footprint.visible = false; this.scene.remove(this.footprint);
       this.cameraController.disable(); this._clearGhost(); this.transform.detach();
       if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
       this._clearRecords(); this.scene.remove(this.groupPivot, this.selectionBounds); this.selectionBounds.visible = false;
@@ -281,6 +296,7 @@ export class WorldEditor {
 
   async close({ force = false } = {}) {
     if (!this.active) return true;
+    this.terrainInteraction.select(null);
     this.remotePanel?.stop();
     this._clearGhost();
     this._stopWalking();
@@ -308,6 +324,7 @@ export class WorldEditor {
     clearTimeout(this.saveTimer); this.saveTimer = 0;
     this.cameraController.disable(); this._clearGhost(); this.transform.detach();
     this.baseLayer.restore(); this.scene.remove(this.footprint); this.footprint.visible = false;
+    this.terrainPreview.restore(); this.terrainKey = null; this.draftMap = this.map;
     this.scene.remove(this.groupPivot, this.selectionBounds); this.selectionBounds.visible = false; this.groupStart = null;
     this._clearRecords();
     if (this.controlsAdded) { this.scene.remove(this.transformHelper); this.controlsAdded = false; }
@@ -331,6 +348,11 @@ export class WorldEditor {
 
   _renderDocument(document) {
     this._validateBaseReferences(document);
+    const terrainKey = JSON.stringify(document.terrain || null);
+    if (this.terrainKey !== terrainKey) {
+      this.draftMap = document.terrain ? compileTerrainMap(this.map, document.terrain) : this.map;
+      this.terrainPreview.apply(this.draftMap); this.terrainKey = terrainKey;
+    }
     this.transform.detach();
     this._clearRecords(); this.document = clone(document);
     this.baseLayer.apply(document.baseOverrides);
@@ -356,6 +378,7 @@ export class WorldEditor {
   _entryForAsset(id) { return this.baseLayer.get(id) || this.catalog.items.find((entry) => entry.id === id) || this.assets.entry?.(id); }
 
   _validateBaseReferences(document) {
+    if (document.terrain) validateTerrainForMap(this.map, document.terrain);
     for (const id of [...document.baseOverrides.map((item) => item.id),
       ...document.objects.filter((item) => item.assetId.startsWith('base:')).map((item) => item.assetId)]) {
       if (!this.baseLayer.get(id)?.editable) throw new Error(this._t('Base decoration changed or is unavailable. Export this draft before rebasing.',
@@ -481,6 +504,7 @@ export class WorldEditor {
     const x = (event.clientX - rect.left) / rect.width, y = (event.clientY - rect.top) / rect.height;
     this.pointerNdc.set(x * 2 - 1, -(y * 2 - 1)); this.pointerInside = x >= 0 && x <= 1 && y >= 0 && y <= 1;
     if (this.ghost) this._updateGhost();
+    this.terrainInteraction?.move();
   }
 
   _terrainHits() {
@@ -524,6 +548,8 @@ export class WorldEditor {
     if (!this.active || this.walkPreview?.active || this.importTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
     const rect = this.canvas.getBoundingClientRect();
     this.pointerNdc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -(((event.clientY - rect.top) / rect.height) * 2 - 1));
+    this.pointerInside = true;
+    if (this.terrainInteraction.down(event)) return;
     if (this.templateLoading) return;
     if (this.ghost && (this.pendingEntry || this.pendingTemplate)) {
       const hits = this._terrainHits(); if (hits.length) this._placeAt(hits[0].point); return;
@@ -776,6 +802,7 @@ export class WorldEditor {
     this.dirty = JSON.stringify(this.document) !== this.lastSavedJson;
     this._renderDocument(this.document); this.onChanged({ document: clone(this.document), dirty: this.dirty });
     this._updateButtons(); this._scheduleSave();
+    if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
   }
 
   _scheduleSave() {
@@ -817,6 +844,8 @@ export class WorldEditor {
   }
 
   _setSceneTab(sceneTab) {
+    this.terrainInteraction?.select(null); this.terrainRoot.hidden = true;
+    this.ui.querySelector('[data-action="tab-terrain"]').classList.remove('is-active');
     this.sceneTab = sceneTab; this.templateTab = false;
     this.templateRoot.hidden = true; this.catalogRoot.hidden = sceneTab; this.scenePanel.hidden = !sceneTab;
     this.ui.querySelector('[data-action="tab-scene"]').classList.toggle('is-active', sceneTab);
@@ -826,10 +855,22 @@ export class WorldEditor {
   }
 
   _setTemplateTab() {
+    this.terrainInteraction?.select(null); this.terrainRoot.hidden = true;
+    this.ui.querySelector('[data-action="tab-terrain"]').classList.remove('is-active');
     this.sceneTab = false; this.templateTab = true;
     this.catalogRoot.hidden = true; this.scenePanel.hidden = true; this.templateRoot.hidden = false;
     for (const name of ['library', 'scene', 'templates']) this.ui.querySelector(`[data-action="tab-${name}"]`).classList.toggle('is-active', name === 'templates');
     this.templatePanel.update();
+  }
+
+  _setTerrainTab() {
+    this._clearGhost(); this._cancelTransform(); this.select(null);
+    this.sceneTab = false; this.templateTab = false;
+    this.catalogRoot.hidden = this.scenePanel.hidden = this.templateRoot.hidden = true;
+    this.terrainRoot.hidden = false;
+    for (const name of ['library', 'scene', 'templates', 'terrain'])
+      this.ui.querySelector(`[data-action="tab-${name}"]`).classList.toggle('is-active', name === 'terrain');
+    this.terrainPanel.render();
   }
 
   _renderSceneList() {
@@ -872,6 +913,7 @@ export class WorldEditor {
 
   _startWalking() {
     if (!this.active || !this.walkPreview || this.importTask) return;
+    this.terrainInteraction.cancel(); this.terrainInteraction.cursor.visible = false;
     this._cancelTransform(); this._clearGhost();
     const doc = this.history.current(), colliders = compileGmColliders(this.map, doc, this.baseRevision);
     let point = this.records.get(this.selectedId)?.root.position || this._terrainHits()[0]?.point || this.map.landmarks.village;
@@ -884,7 +926,9 @@ export class WorldEditor {
     }
     this.cameraController.disable(); this.transform.detach(); this.footprint.visible = false; this.selectionBounds.visible = false;
     try {
-      this.walkPreview.start({ colliders, point });
+      this.walkPreview.map = this.draftMap;
+      this.walkPreview.start({ colliders, point: this.terrainInteraction.tool && !this.terrainRoot.hidden
+        ? this.terrainInteraction.lastPoint || point : point });
       this.canvas.focus({ preventScroll: true });
       this._setLanguage(); this._updateButtons();
     } catch (error) {
@@ -938,6 +982,7 @@ export class WorldEditor {
 
   _toolbarAction(event) {
     if (this.dragging || event.target.closest('[data-selection-id]')) return;
+    if (event.target.closest('[data-action]')) this.terrainInteraction?.cancel();
     const sceneId = event.target.closest('[data-scene-id]')?.dataset.sceneId;
     if (sceneId && !this.walkPreview?.active && !this.importTask) { this._clearGhost(); this.select(sceneId, { toggle: event.shiftKey }); if (!event.shiftKey) this._focusSelection(); return; }
     const action = event.target.closest('[data-action]')?.dataset.action;
@@ -960,6 +1005,7 @@ export class WorldEditor {
       case 'tab-library': this._setSceneTab(false); break;
       case 'tab-scene': this._setSceneTab(true); break;
       case 'tab-templates': this._setTemplateTab(); break;
+      case 'tab-terrain': this._setTerrainTab(); break;
       case 'save': this.saveNow(); break;
       case 'remote': this.remotePanel.show(); break;
       case 'export': this._exportCurrent(); break;
@@ -978,7 +1024,7 @@ export class WorldEditor {
           break;
         }
         const transform = this._selectedTransform();
-        if (transform) { transform.position.y = this.map.groundAt(transform.position.x, transform.position.z); this._setSelectedTransform(transform); }
+        if (transform) { transform.position.y = this.draftMap.groundAt(transform.position.x, transform.position.z); this._setSelectedTransform(transform); }
         break;
       }
       default: return;
@@ -988,8 +1034,10 @@ export class WorldEditor {
 
   _restoreHistory(kind) {
     if (!this.history || this.dragging) return;
+    this.terrainInteraction?.cancel();
     const doc = this.history[kind](); this.document = doc; this.dirty = JSON.stringify(doc) !== this.lastSavedJson;
     this._renderDocument(doc); this.onChanged({ document: clone(doc), dirty: this.dirty }); this._scheduleSave();
+    if (this.terrainRoot?.hidden === false) this.terrainPanel.render();
   }
 
   _duplicate() {
@@ -1013,6 +1061,12 @@ export class WorldEditor {
 
   _keyDown(event) {
     if (!this.active || event.repeat) return;
+    if (event.code === 'Escape' && this.terrainInteraction?.tool && !this.walkPreview?.active && !this.remotePanel?.open) {
+      event.preventDefault(); event.stopImmediatePropagation();
+      if (!this.terrainInteraction.cancel()) this.terrainInteraction.select(null);
+      return;
+    }
+    if (this.terrainInteraction?.stroke) return;
     if (this.remotePanel?.open) {
       if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this.remotePanel.hide(); }
       return;
@@ -1090,7 +1144,7 @@ export class WorldEditor {
   _placementPoint(point) {
     const snap = (value) => clamp(this.snapEnabled ? Math.round(value / this.snapStep) * this.snapStep : value, -280, 280);
     const x = snap(point.x), z = snap(point.z);
-    return new THREE.Vector3(x, clamp(this.map.groundAt(x, z), -64, 100), z);
+    return new THREE.Vector3(x, clamp((this.draftMap || this.map).groundAt(x, z), -64, 100), z);
   }
 
   exportRecovery() { this._exportDocument(this.rejectedDocument); }
@@ -1151,6 +1205,7 @@ export class WorldEditor {
       return;
     }
     this.cameraController.update(dt);
+    this.terrainInteraction.update();
     if (this.ghost) this._updateGhost();
     this.transform.camera = this.camera; this.transformHelper.updateMatrixWorld(true);
   }
@@ -1159,6 +1214,7 @@ export class WorldEditor {
     if (this.active) await this.close({ force: true });
     this.remotePanel?.dispose();
     this.templatePanel?.dispose();
+    this.terrainInteraction?.dispose(); this.terrainPanel?.dispose(); this.terrainPreview?.dispose();
     this.unsubscribeLocale?.();
     clearTimeout(this.saveTimer); this.cameraController.dispose();
     this.canvas.removeEventListener('pointermove', this.onPointerMove);

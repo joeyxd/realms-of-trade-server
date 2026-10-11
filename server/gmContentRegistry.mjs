@@ -24,7 +24,8 @@ function safePath(value) {
   if (typeof value !== 'string' || !value || value.includes('\\') || value.includes(':') || value.startsWith('/') ||
       value.split('/').some((part) => !part || part === '.' || part === '..')) return false;
   return ALLOWED_TOP.has(value) || value.startsWith('assets/') || value.startsWith('src/') ||
-    /^server\/gmPublication[^/]*\.mjs$/.test(value);
+    /^server\/gmPublication[^/]*\.mjs$/.test(value) ||
+    ['server/gmDraftValidation.mjs', 'server/gmContentObstacles.mjs'].includes(value);
 }
 
 function contained(base, target) {

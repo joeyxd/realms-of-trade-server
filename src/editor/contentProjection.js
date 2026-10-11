@@ -1,6 +1,9 @@
 import { compileGmColliders } from './publicationValidation.js';
+import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
+import { resourceLayout } from '../data/resources.js';
 
 const CELL = 4;
+const baseMaps = new WeakMap();
 const cellKey = (x, z) => (x * 73856093) ^ (z * 19349663);
 
 function colliderQuery(colliders) {
@@ -37,20 +40,49 @@ function assertBase(map, baseRevision) {
   if (typeof baseRevision !== 'string' || !baseRevision) throw new TypeError('A base revision is required');
 }
 
+function immutableBase(map) {
+  let source = baseMaps.get(map);
+  if (!source) {
+    source = { ...map, heights: map.heights, props: map.props, colliders: map.colliders,
+      terrainResources: map.terrainResources };
+    baseMaps.set(map, source);
+  }
+  return source;
+}
+
 /** Build an immutable-by-convention content projection while preserving all base map data and functions. */
 export function projectGmContent(baseMap, document = null, baseRevision = 'terrain-s21-v1') {
   assertBase(baseMap, baseRevision);
+  baseMap = immutableBase(baseMap);
+  if (document?.terrain) validateTerrainForMap(baseMap, document.terrain);
+  let terrainMap = document?.terrain ? compileTerrainMap(baseMap, document.terrain) : baseMap;
+  if (document?.terrain?.samples?.length) {
+    terrainMap = { ...terrainMap, terrainResources: resourceLayout(baseMap) };
+  }
   const colliders = document === null ? baseMap.colliders.map((c) => structuredClone(c))
     : compileGmColliders(baseMap, document, baseRevision);
-  return { ...baseMap, colliders, queryColliders: colliderQuery(colliders) };
+  return { ...terrainMap, colliders, queryColliders: colliderQuery(colliders), terrainMap };
 }
 
-/** Replace only the collision list/index on a caller-owned active map. */
+/** Replace the terrain sampling surface and collision list on a caller-owned active map. */
 export function installGmContent(map, baseMap, document = null, baseRevision = 'terrain-s21-v1') {
   if (!map || typeof map !== 'object') throw new TypeError('An active map is required');
   const projected = projectGmContent(baseMap, document, baseRevision);
+  map.heights = projected.heights;
+  map.heightAt = projected.heightAt;
+  map.groundAt = projected.groundAt;
+  map.materialAt = projected.materialAt;
+  map.props = projected.props;
+  map.terrainProjection = projected.terrainProjection;
+  map.terrainSource = projected.terrainSource;
+  map.gmTerrain = projected.gmTerrain;
+  map.terrain = projected.terrain;
+  map.fullsegments = projected.fullsegments;
+  if (projected.terrainResources !== undefined) map.terrainResources = projected.terrainResources;
+  else delete map.terrainResources;
   map.colliders = projected.colliders;
   map.queryColliders = projected.queryColliders;
+  map.gmTerrainMap = projected.terrainMap;
   return map;
 }
 

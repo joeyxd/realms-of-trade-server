@@ -133,7 +133,11 @@ async function boot() {
   const transport = await transportP;
   const gmContent = transport.kind === 'ws' ? await loadGmWorldContent({ httpBase: httpUrlFor(transport.url),
     map, baseMap, gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION }) : null;
-  const world = new GameScene(canvas, map, { raftSkin: await raftSkinP });
+  const world = new GameScene(canvas, map, { raftSkin: await raftSkinP, terrainMap: baseMap });
+  const { createTerrainPreview } = await import('./editor/terrainPreview.js');
+  const activeTerrain = createTerrainPreview({ scene: world.scene, map: baseMap,
+    invalidate: () => world.pipeline.markDirty() });
+  activeTerrain.apply(map);
   let gmContentLayer = null;
   if (gmContent?.revision) {
     const { createGmContentLayer } = await import('./render/gmContent.js');
@@ -571,7 +575,7 @@ async function boot() {
       if (st.mode !== 'title' || st.boarding || client.joined) return;
       st.gmOpening = true;
       try {
-        gmContentLayer?.suspend(); installGmContent(map, baseMap, null);
+        gmContentLayer?.suspend(); activeTerrain.restore(); installGmContent(map, baseMap, null);
         const { WorldEditor } = await import('./editor/editor.js');
         const { RemoteDraftClient } = await import('./editor/remoteDraft.js');
         if (gmOwner !== accountId) { await gmEditor?.dispose?.(); gmEditor = null; gmOwner = accountId; }
@@ -595,7 +599,7 @@ async function boot() {
               } };
             },
             onClose: ({ saved, recoveryDocument }) => {
-              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
+              installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); activeTerrain.apply(map); gmContentLayer?.resume();
               if (!saved && recoveryDocument) gmRecoveries.set(gmOwner, { document: recoveryDocument, revision: gmEditor.revision });
               else gmRecoveries.delete(gmOwner);
               gmCameraPose = { position: world.camera.position.clone(), quaternion: world.camera.quaternion.clone() };
@@ -625,7 +629,7 @@ async function boot() {
         gmWorldUIHidden = worldUI.root.hidden; worldUI.root.hidden = true;
         world.setTitleShadows(false); world.nearFade(false);
       } catch (error) {
-        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); gmContentLayer?.resume();
+        installGmContent(map, baseMap, gmContent?.revision?.content.document ?? null); activeTerrain.apply(map); gmContentLayer?.resume();
         st.mode = 'title'; title.root.hidden = false; title.pulse?.resume();
         world.setTitleShadows(true); input.enabled = false;
         title.message(rich('runtime.gmFail') +
