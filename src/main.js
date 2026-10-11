@@ -1250,7 +1250,7 @@ async function boot() {
           const distance = tmpV.y < -0.05 ? Math.min(180, Math.max(1, world.camera.position.y / -tmpV.y)) : 35;
           focus.copy(world.camera.position).addScaledVector(tmpV, distance);
           if (gmEditor.walkPreview?.active) focus.copy(gmEditor.walkPreview.position);
-          focus.y = map.groundAt(focus.x, focus.z);
+          focus.y = gmEditor.draftMap.groundAt(focus.x, focus.z);
           world.update(realDt, { focus, shadowFocus: focus, playing: false, simDt: 0 });
           world.render();
         });

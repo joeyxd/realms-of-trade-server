@@ -597,7 +597,7 @@ export class WorldEditor {
     const entry = this.pendingEntry; if (!entry || !this.ghost?.visible) return;
     point = this._placementPoint(point);
     const decoration = createDecoration({ id: uid(), assetId: entry.id, position: {
-      x: clamp(point.x, -280, 280), y: clamp(this.map.groundAt(point.x, point.z), -64, 100), z: clamp(point.z, -280, 280),
+      x: clamp(point.x, -280, 280), y: clamp(this.draftMap.groundAt(point.x, point.z), -64, 100), z: clamp(point.z, -280, 280),
     }, collider: 'none' });
     this._commit(addDecoration(this.history.current(), decoration)); this.select(decoration.id);
     this._setStatus(editorMessage('Added to draft only. No gameplay collision.', 'Añadido solo al borrador. Sin colisión de gameplay.'), 'ok');
@@ -822,7 +822,8 @@ export class WorldEditor {
           this.revision = saved.revision; this.lastSavedJson = JSON.stringify(saved.document);
           this.dirty = JSON.stringify(this.history.current()) !== this.lastSavedJson;
           if (!this.dirty) { this.resumeDocument = null; await this._clearRecovery(); }
-          this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
+          // A completed autosave must not hide a newer rejected edit or loading error.
+          if (this.status.kind !== 'error') this._setStatus(editorMessage('Draft saved locally. Not published.', 'Borrador guardado localmente. Sin publicar.'), 'ok');
         } catch (error) {
           this.dirty = true; this.saveAgain = false;
           this._setError(error, 'save');
@@ -896,7 +897,7 @@ export class WorldEditor {
     const visible = this.selectedIds.size === 1 && this.active && !this.walkPreview?.active && item && !item.hidden && item.collider !== 'none' && root;
     this.footprint.visible = !!visible;
     if (!visible) return;
-    this.footprint.position.set(root.position.x, this.map.groundAt(root.position.x, root.position.z) + .08, root.position.z);
+    this.footprint.position.set(root.position.x, this.draftMap.groundAt(root.position.x, root.position.z) + .08, root.position.z);
     this.footprint.scale.setScalar(item.collider.radius * root.scale.x);
     this.footprint.updateMatrixWorld(true);
   }
@@ -1019,7 +1020,7 @@ export class WorldEditor {
             const items = this._selectedItems();
             this._commit(updateSelection(this.history.current(), items, items.map((item) => ({ id: item.id,
               transform: { ...item.transform, position: { ...item.transform.position,
-                y: this.map.groundAt(item.transform.position.x, item.transform.position.z) } } }))));
+                y: this.draftMap.groundAt(item.transform.position.x, item.transform.position.z) } } }))));
           } catch (error) { this._setError(error, 'transform'); }
           break;
         }

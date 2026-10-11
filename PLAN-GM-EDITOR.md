@@ -1,5 +1,12 @@
 # Modo GM para construir el mundo
 
+**GM05a, 2026-10-10 — escultura integrada, alpha.44/protocolo 50; publicación pendiente:**
+[Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
+Subir/bajar, aplanar, suavizar y rampa entre dos puntos; preview privado, undo por trazo y prueba caminando.
+SQL030 aplicado por el autor y readiness confirmado desde el VPS; conserva borradores v2 y recibos.
+Regresión final 275/275 en 51 archivos. El canario público y la revisión activa se registran al completarlos.
+Sigue GM05b: pintar familias de suelo existentes. Nueva tierra/costa queda para GM06.
+
 **GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
 [Entrega](docs/delivery/gm04b/DELIVERY.md), [navegador público](docs/delivery/gm04b/public-browser-evidence.json)
 y [despliegue](docs/delivery/gm04b/deployment.json). Conjuntos de 1–120 decoraciones, fantasma completo,

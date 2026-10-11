@@ -72,12 +72,13 @@ export class TerrainPanel {
       context?.drawImage(atlas.base, 0, 0, this.mapCanvas.width, this.mapCanvas.height);
       this.renderedMap = map;
     }
-    const mapLabel = doc.createElement('h4'); mapLabel.textContent = this.t('map');
     const dryHelp = doc.createElement('p'); dryHelp.className = 'gm-terrain-help'; dryHelp.textContent = this.t('dryHelp');
     const strengthHelp = doc.createElement('p'); strengthHelp.className = 'gm-terrain-help'; strengthHelp.textContent = this.t('strengthHelp');
     const rampHelp = doc.createElement('p'); rampHelp.className = 'gm-terrain-help'; rampHelp.textContent = this.t('rampHelp');
-    this.element.replaceChildren(title, mapLabel, this.mapCanvas, selectLabel, this._input('radius', 2, 24, 0.5), this._input('strength', 0.05, 1, 0.05),
-      this._input('falloff', 0, 1, 0.05), this._input('level', 0.75, 100, 0.1), dryHelp, strengthHelp, rampHelp);
+    const mapLabel = doc.createElement('h4'); mapLabel.textContent = this.t('map');
+    this.element.replaceChildren(title, selectLabel, this._input('radius', 2, 24, 0.5), this._input('strength', 0.05, 1, 0.05),
+      this._input('falloff', 0, 1, 0.05), this._input('level', 0.75, 100, 0.1),
+      dryHelp, strengthHelp, rampHelp, mapLabel, this.mapCanvas);
     this._syncValues();
   }
   _syncValues() {

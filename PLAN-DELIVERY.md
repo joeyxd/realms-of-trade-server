@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
+[Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
+Cinco pinceles de suelo seco, borrador v3, preview/undo/cancelación y recorrido sobre alturas editadas.
+SQL030 aplicado por el autor; readiness del servicio confirmado. Alpha.44/protocolo 50,
+275/275 en 51 archivos. La entrega separa pruebas locales de aceptación pública pendiente.
+Sigue GM05b para pintar familias de suelo; GM06 para costa y nueva tierra. Carga continúa opt-in.
+
 **AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
 [Contrato](docs/briefs/inv02b-durable-attributes.md) y [entrega](docs/delivery/inv02b-durable-attributes.md).
 Adopción explícita nivel 1/legacy, asignación y un reset por la cola M5; conserva objetos,
