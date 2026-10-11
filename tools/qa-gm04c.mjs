@@ -1,6 +1,7 @@
 // GM04c browser acceptance. Production changes only this disposable browser's private local draft.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -76,7 +77,20 @@ try {
     origin = `http://127.0.0.1:${await game.listen()}`;
   }
   evidence.runtime = await (await fetch(origin + '/status')).json();
-  assert.equal(evidence.runtime.version, GAME.version);
+  if (!production) assert.equal(evidence.runtime.version, GAME.version);
+  else {
+    evidence.checkoutVersion = GAME.version; evidence.version = evidence.runtime.version;
+    evidence.sourceHashes = {};
+    for (const file of ['editor.js', 'editor.css', 'modelCost.js', 'scatterBrush.js', 'scatterPanel.js',
+      'scatterInteraction.js', 'terrainData.js', 'remotePanel.js', 'document.js']) {
+      const path = 'src/editor/' + file, response = await fetch(origin + '/' + path, { cache: 'no-store' });
+      assert.equal(response.status, 200, path);
+      const hash = value => createHash('sha256').update(value.replace(/\r\n/g, '\n')).digest('hex');
+      const publicHash = hash(await response.text());
+      assert.equal(publicHash, hash(await readFile(path, 'utf8')), path);
+      evidence.sourceHashes[path] = publicHash;
+    }
+  }
   const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '../realms-of-trade-server/.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
   browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } }); await setup(context);
@@ -89,7 +103,7 @@ try {
   }
   await page.goto(origin + '/?q=high&tod=day' + suffix, { waitUntil: 'domcontentloaded' });
   if (production) {
-    await page.waitForFunction(() => __mn.gmEntry?.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 90000 });
+    await page.waitForFunction(() => window.__mn?.gmEntry?.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 90000 });
     await page.locator('.gm-account-setup-card [data-action="cancel"]').click();
   }
   await enter(page);
@@ -162,6 +176,10 @@ try {
   await check('no_remote_mutations_or_browser_render_errors', async () => {
     assert.deepEqual(evidence.remoteWrites, []); assert.deepEqual(evidence.pageErrors, []);
     assert.deepEqual(evidence.consoleErrors.filter(e => /WebGL|shader|GL_INVALID/i.test(e)), []);
+    if (production) {
+      evidence.finalRuntime = await (await fetch(origin + '/status')).json();
+      assert.equal(evidence.finalRuntime.version, evidence.runtime.version, 'Release changed during browser acceptance');
+    }
   });
   phase = 'complete';
 } catch (error) {

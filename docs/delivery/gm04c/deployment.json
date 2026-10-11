@@ -1,0 +1,104 @@
+{
+  "schema": "gm04c-deployment/v1",
+  "at": "2026-10-11T17:46:55.938556+00:00",
+  "release": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "image": "sha256:6ea3f02dc4a2b151975d41a9d7860d79e2c792f1b1ecdec483ffcf25d111c026",
+  "imageRevision": "056d275bc858d1d29a758f218d301a0f9f75f786",
+  "container": "df1ddbf5ec5366dd2d767200e21ee51d1b7e691a4825917503029cadab473d6a",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 8,
+    "revisionId": null
+  },
+  "retainedRevisions": 7,
+  "receipts": 8,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "3fcceed3558e869e21f91e0779f8f2f8889b4d9adccea141b43e93f6bb0af29d",
+  "updaterService": "inactive",
+  "timer": "active",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.57",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3030,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 8,
+      "revisionId": null
+    }
+  }
+}

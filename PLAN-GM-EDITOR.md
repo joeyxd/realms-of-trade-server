@@ -1,12 +1,13 @@
 # Modo GM para construir el mundo
 
-**AREA01 GM04c, 2026-10-11 — dispersión decorativa implementada, alpha.56/protocolo 56:**
+**AREA01 GM04c, 2026-10-11 — dispersión decorativa publicada, alpha.57/protocolo 56:**
 [Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).
 Pincel circular/cuadrado/elíptico con densidad, separación, semilla, giro y rango de escala;
 preview privado, cancelación y un undo por trazo. Costes medidos y presupuestos por gesto/borrador.
 Reutiliza vegetación y roca optimizadas actuales; copias decorativas sin tala ni colisión.
-V2–v4/SQL033/compiler 2 conservados, sin SQL GM nuevo. Regresión 293/293; integración final 81/81;
-navegador local 10/10 ES/EN y móvil. Publicación y evidencia final en la entrega.
+V2–v4/SQL033/compiler 2 conservados, sin SQL GM nuevo. Regresión 293/293; integración actual 87/87;
+local y público GM 10/10 cada uno, ES/EN y móvil emulado, capturas inspeccionadas (conteos solapados).
+Release `056d275` sana: 21/21 fuentes activas y 15/15 públicas, entrada real; mapa base generación 8 intacto.
 Sigue adaptador de recursos/optimización reutilizable y generación/importación de costa GM06.
 
 **AREA01 GM05b, 2026-10-11 — pintura publicada, alpha.48/protocolo 53:**
