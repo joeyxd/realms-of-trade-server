@@ -12,6 +12,7 @@ import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { economicOperationId } from '../server/economicAuthority.mjs';
 import { generateWorld } from '../src/sim/worldgen.js';
 import { canStand } from '../src/sim/systems/movement.js';
+import { PLAYER_FIELDS } from '../src/sim/ecs.js';
 import { tuning } from '../src/data/tuning.js';
 import { RaftDeck, raftGangplank } from '../src/sim/raftGeometry.js';
 import { holdUsed, holdMass } from '../src/sim/economy/cargo.js';
@@ -237,6 +238,10 @@ async function moveTo(target, label, radius = 2.2) {
   const waypoints=[]; let anchor=start,index=0;
   while(index<route.length){let farthest=index;for(let probe=route.length-1;probe>index;probe--)if(edge(anchor,route[probe])){farthest=probe;break;}
     waypoints.push(route[farthest]);anchor=route[farthest];index=farthest+1;}
+  // Planning is synchronous. Drain a new authoritative frame before assigning input ticks,
+  // rather than using the snapshot that preceded the potentially expensive search.
+  const plannedAtTick = latest.snap.tick;
+  await waitMessage(m => m.t === 'snap' && m.tick > plannedAtTick, `fresh navigation frame: ${label}`, 10000, true);
   let waypoint=0,progressAt=Date.now(),prior={...latest.position};
   while(Date.now()<end&&Math.hypot(latest.position.x-target.x,latest.position.z-target.z)>radius){
     while (waypoint < waypoints.length) {
@@ -252,7 +257,11 @@ async function moveTo(target, label, radius = 2.2) {
     if(Date.now()-progressAt>1400){if(Math.hypot(latest.position.x-prior.x,latest.position.z-prior.z)<0.18){
       const position = latest.position, goal = waypoints[waypoint] || target;
       evidence.navigationFailure = { label, position: { x: position.x, y: position.y, z: position.z },
-        goal: { x: goal.x, y: goal.y ?? null, z: goal.z }, waypoint, waypointCount: waypoints.length, radius };
+        goal: { x: goal.x, y: goal.y ?? null, z: goal.z }, waypoint, waypointCount: waypoints.length, radius,
+        sentSequence: sequence, acknowledgedSequence: latest.snap.ack, snapshotTick: latest.snap.tick,
+        player: Object.fromEntries(['hp', 'dead', 'stagger', 'speed', 'moveMul', 'vx', 'vz'].map(field =>
+          [field, latest.snap.you?.[PLAYER_FIELDS.indexOf(field)] ?? null])),
+        deckWalking: latest.snap.deck?.active === true, navalActive: latest.snap.naval?.active === true };
       throw new Error(`normal movement stalled on checked route: ${label}`);}
       progressAt=Date.now();prior={...latest.position};}
   }

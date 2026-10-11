@@ -1,12 +1,13 @@
-// The first live raft production chain: nets make fish and grills turn fish into ship biscuits.
+// Raft production chain: nets fish, purifiers make water, and grills turn fish into ship biscuits.
 import { GOODS } from '../../data/goods.js';
 import { RAFT_PARTS } from '../../data/raftparts.js';
 import { load, roomFor, unload } from './cargo.js';
 
-export const PRODUCTION_PARTS = Object.freeze(['net', 'grill']);
+export const PRODUCTION_PARTS = Object.freeze(['net', 'grill', 'purifier']);
 export const MAX_PRODUCTION_DAYS_PER_STEP = 1;
 
-const RATE = Object.freeze({ net: RAFT_PARTS.net.makes.pescado, grill: RAFT_PARTS.grill.recipe.perDay });
+const RATE = Object.freeze({ net: RAFT_PARTS.net.makes.pescado, grill: RAFT_PARTS.grill.recipe.perDay,
+  purifier: RAFT_PARTS.purifier.makes.agua });
 
 function validTuple(tuple) {
   return Array.isArray(tuple) && PRODUCTION_PARTS.includes(tuple[0])
@@ -23,6 +24,7 @@ export function productionKey(tuple) {
 
 function recipeFor(part) {
   if (part === 'net') return { rate: RATE.net, inputs: {}, outputs: { pescado: 1 } };
+  if (part === 'purifier') return { rate: RATE.purifier, inputs: {}, outputs: { agua: 1 } };
   const recipe = RAFT_PARTS.grill.recipe;
   return { rate: RATE.grill, inputs: { ...recipe.in }, outputs: { ...recipe.out } };
 }
@@ -126,15 +128,18 @@ export function stepRaftProduction(raft, hold, days, { poweredKeys = null } = {}
   return { made, used, changed: workChanged || goodsChanged };
 }
 
-const STOPPED = new Set(['saveSize', 'revisionLimit', 'capacity']);
+const STOPPED = new Set(['saveSize', 'revisionLimit', 'capacity', 'voyage']);
 
 // Describe only the selected production chain; all maps and nested values are detached copies.
-export function productionRows(raft, hold, { blocked = '', poweredKeys = null } = {}) {
+export function productionRows(raft, hold, { blocked = '', poweredKeys = null, activeKeys = null } = {}) {
   if (!hold?.goods) return [];
   const work = sanitizeProduction(raft?.parts, raft?.work);
   return productionParts(raft).slice(0, 600).map((record) => {
     const progress = work[record.key] || 0;
-    const stopped = STOPPED.has(blocked) ? blocked : record.part === 'grill' && poweredKeys && !poweredKeys.has(record.key) ? 'fuel' : readiness(hold, record.inputs, record.outputs);
+    const stopped = STOPPED.has(blocked) ? blocked
+      : activeKeys instanceof Set && !activeKeys.has(record.key) ? 'broken'
+        : record.part === 'grill' && poweredKeys && !poweredKeys.has(record.key) ? 'fuel'
+          : readiness(hold, record.inputs, record.outputs);
     return {
       key: record.key, part: record.part, name: RAFT_PARTS[record.part].name, rate: record.rate,
       inputs: { ...record.inputs }, outputs: { ...record.outputs }, progress,

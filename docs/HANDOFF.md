@@ -5,8 +5,9 @@
 Stop inmediato, guardado privado SQL027 y permiso explícito para una conexión nueva; CAS durable
 separado del epoch, recuperación antes de escuchar y fallo/timeout/tardía sin reanudación automática.
 Conserva el allowlist de vínculos del operador; no provisiona ni activa agentes/proveedor.
-SQL027 aplicado y canario de servicio revertido; runtime `d962055` alpha.38 sano con una autoridad y timer activo.
-109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git; WSS público 17/17.
+SQL027 aplicado y canario de servicio revertido; aceptación alpha.38 `d962055` sana, una autoridad y timer activo.
+109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git. Integración posterior
+alpha.39/protocolo 47: 30/30 locales y WSS público 17/17; selecciones solapadas.
 Las 65/65 focales y el navegador invitado 7/7 corresponden a alpha.37; la UI de compañeros no cambió.
 El [baseline de Tala](delivery/prg01d-timing-baseline.md) corrigió el conflicto; alfa recuperado y canario Tala público 6/6.
 Local 190/190 y navegador 14/14 con autenticación simulada y SQL027 en disco; conteos solapados.
@@ -14,6 +15,17 @@ Stop/resume de un dueño autenticado público sigue pendiente. No es aceptación
 Fuente autoritativa en `../area17-market`, rama `codex/area17-market`; no sobreescribir el checkout IDE dirty.
 Sigue conexión/modelo admitidos y techo de gasto compartido; después personalidad/metas en la mente,
 memoria basada en eventos confirmados y canario social/PvE con acuerdo recordado en otra sesión.
+
+**AREA07 RNV06, 2026-10-10 — purificador implementado, alpha.39/protocolo 47; aceptación VPS pendiente:**
+[Contrato](briefs/RNV06-purifier.md) y [entrega](delivery/rnv06-purifier.md).
+Editor B: 3 hierro + 2 tablas; agua dulce real en bodega cada 96 s simulados, pasivo, conectado/amarrado.
+H/toque → Producción muestra ritmo/fracción y pausas ES/EN. Bodega llena/daño conservan la fracción;
+reparar reanuda. Viaje/offline pausados, sin sed/curación ni SQL/writer nuevo.
+Integración local 120/120 en 20 archivos; navegador PC ES/móvil EN aceptado con 14 capturas.
+La corrección de Tala `d962055` está integrada y su frente recuperó el VPS: salud/página 200,
+cero pendientes/errores al comprobar 02:06 UTC. SQL026 instalado. RNV06 espera publicación y
+aceptación de su revisión activa; la prueba local no acredita Supabase ni FPS de teléfono físico.
+Después de cerrar RNV06, sigue viaje comercial físico Salty Shore–Puerto Sol con AREA01/08.
 
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](delivery/l03d-companion-config.md) y [contrato](briefs/l03d-companion-config.md).
@@ -48,18 +60,23 @@ Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualiza
 Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
 para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
 
-**AREA03 PRG01d, 2026-10-10 — taller activado; alpha.38 sana y Tala pública verificada:**
-[Contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md).
-SQL023/024/026 confirmados; única autoridad `d962055`, alpha.38/protocolo 46 y recursos v3.
-Encargo de diez tablas, crédito único, kit, receta 2:1 y Tala con desafíos evaluados por el host.
-El incidente de bodega alpha.36 por `:` se corrigió con SQL026; recuperación y limpieza QA
-con seis recibos retenidos. El segundo incidente, Tala alpha.37, se corrigió alineando el baseline
-con el escritor M5 existente antes de la operación. [Diagnóstico y recuperación](delivery/prg01d-timing-baseline.md).
-109/109 del actualizador, 28/28 focales de la imagen, dos casos SQL/host locales y Tala pública 6/6;
-conteos solapados. El canario completo de construcción/capacidad/desguace/Tala sigue en ejecución.
-Entrada histórica 14/14 y navegador autenticado ES/EN 8/8 conservan su alcance; móvil emulado.
-No repetir SQL021/024, apagar el taller v3 ni adoptar/activar el mundo común suelo/perlas/muerte.
-INV01–03 (huecos/pilas, Carga y sobrepeso) permanece separado.
+**AREA03 PRG01d, 2026-10-10 — SQL026 confirmado; taller y Tala públicos verificados:**
+[contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md).
+Encargo personal de diez tablas, crédito único, caja por kit en banco, tabla 2:1, palmera 3–6
+y mochila con volumen/masa; sin barrera de Tala 60 ni comunidad.
+Construcción/capacidad/reconexión: 33 comprobaciones públicas en alpha.37, antes de que el recorrido
+fallara al navegar a la palmera. Tala aislada: 6/6 en alpha.38/protocolo 46, con desafíos reales,
+rechazos sin mutar, recompensa durable, replay y tabla en banco. La repetición combinada posterior
+alpha.39/protocolo 47 pasó 36/36 por WSS autenticado; perfil/Auth QA retirados y veinte recibos conservados.
+SQL026 corrigió el ID real de balsa; alpha.38 `d962055` alineó el baseline económico antes de Tala.
+Ambas recuperaciones conservaron perfil/mundo; sus cuentas QA se eliminaron y recibos se conservaron.
+[Verificación independiente VPS](delivery/prg01d-starter-workshop/activation/timing-deployment-independent.json):
+revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, timer activo,
+cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
+Navegador autenticado ES/EN histórico 8/8 y entrada 14/14 conservan su alcance anterior.
+[Checkpoint](delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
+Mundo común suelo/perlas/muerte sin adoptar/activar; SIGKILL propio, pausa offline nueva,
+balance y teléfono físico pendientes. INV01–03 (huecos/pilas, Carga y sobrepeso) continúa aparte.
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el

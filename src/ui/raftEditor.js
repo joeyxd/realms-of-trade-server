@@ -200,7 +200,7 @@ export class RaftEditor {
 
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
-    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(translateData(partMeta(id).name))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', lantern: '☼', torchFloor: '♧', torchWall: '♧', campfire: '♨' })[id]}</i><span>${esc(translateData(partMeta(id).name))}</span></button>`).join('');
+    this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(translateData(partMeta(id).name))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', purifier: '◉', lantern: '☼', torchFloor: '♧', torchWall: '♧', campfire: '♨' })[id]}</i><span>${esc(translateData(partMeta(id).name))}</span></button>`).join('');
     this.syncStoragePalette();
     this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (partMeta(this.selected).layer === 'floor' && this.level === 0) this.level = 1; if (partMeta(this.selected).layer === 'base' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
@@ -477,7 +477,7 @@ export class RaftEditor {
         ? `<b>${esc(translateData(def.name))}</b><small>${esc(workshopPaymentLabel(selectedPayment, [this.selected]))}</small>`
       : `<b>${esc(translateData(def.name))}</b><small>${t('systems.raft.cost')}: ${fmtGoods(cost)}${this.selected === ARTISAN.part ? ` · +${partMeta(this.selected).hold} ${isEnglish ? 'hold capacity' : 'de capacidad de bodega'}` : ` · ${direction(this.selected, this.dir)}`}</small>`;
     const shelterHelp = this.$('.re-shelter-help');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', 'purifier', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
     shelterHelp.textContent = workshopOn && this.selected === 'crate'
       ? isEnglish ? 'Place one crate kit prepared at the carpentry workbench. It adds raft cargo space.' : 'Coloca un kit preparado en el banco de carpintería. Añade espacio de carga a la balsa.'
       : this.selected === ARTISAN.part
@@ -485,6 +485,7 @@ export class RaftEditor {
         ? (isEnglish ? 'Complete your personal 10-plank workshop project for the first storage reward. Place it on a free deck or floor cell; raft mass limits still apply.' : 'Completa tu proyecto personal de 10 tablas en el taller para recibir la primera recompensa de bodega. Colócala en una cubierta o piso libre; se mantienen los límites de peso de la balsa.')
         : this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
           : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
+      : this.selected === 'purifier' ? t('systems.raft.purifierHelp')
       : ['lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(this.selected)
       ? this.fireEnabled?.()
         ? (isEnglish ? 'Starts off. Use V or touch nearby to load one wood and light it. Fixed lamps last 60 minutes; campfires and grills last 30. Extinguish to preserve fuel. Wall torches need a wall.'

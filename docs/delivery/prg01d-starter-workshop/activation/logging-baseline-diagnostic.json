@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-11T01:48:24.657Z",
+  "readonly": true,
+  "committed": false,
+  "profileVersion": 3,
+  "worldVersion": 1936,
+  "resourcesVersion": 3,
+  "validRequest": true,
+  "baselineValid": true,
+  "advancedRequestValid": true,
+  "oldBaselineRejected": true,
+  "freshBaselineValid": true,
+  "changedEconomyAccumulator": true,
+  "deniedProfileUnchanged": true,
+  "receiptAbsent": true
+}

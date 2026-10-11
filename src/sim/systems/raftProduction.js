@@ -1,11 +1,23 @@
 // Connected, moored rafts work on the economy's simulation clock. Profile preflight precedes every change.
 import { CLOCK } from '../../data/clock.js';
-import { stepRaftProduction, productionRows, sanitizeProduction } from '../economy/raftProduction.js';
+import { stepRaftProduction, productionRows, productionKey, sanitizeProduction } from '../economy/raftProduction.js';
 import { holdLoadIncreases } from '../economy/raftCapacity.js';
 import { poweredFireKeys } from './fire.js';
 import { activeRaftParts } from '../naval/condition.js';
 
 const MAX_REV = 2147483647;
+
+// Describe the same conditions used by the mounted tick, including dormant damaged modules.
+export function raftWorkStatus(w, active) {
+  const blocked = w.navalPilot?.locked?.(active.owner) ? 'voyage'
+    : active.productionBlocked === 'voyage' ? '' : active.productionBlocked || '';
+  return {
+    production: productionRows(active.ship.grid, active.ship.hold, { blocked,
+      poweredKeys: poweredFireKeys(w, active),
+      activeKeys: new Set(activeRaftParts(active).map(productionKey).filter(Boolean)) }),
+    productionBlocked: blocked, daySec: CLOCK.daySec,
+  };
+}
 
 export function stepRaftWork(w, days, saveFits = () => true) {
   if (!(Number.isFinite(days) && days > 0)) return;
@@ -13,10 +25,10 @@ export function stepRaftWork(w, days, saveFits = () => true) {
     const { ship, owner } = active, profile = w.profiles.get(owner);
     if (!profile || !w.ecs.alive[owner] || ship.at !== 'aldea' || !(ship.hp > 0)
         || !profile.eco.ships.includes(ship)) continue;
-    if (w.navalPilot?.locked?.(owner)) continue;
     const previousBlock = active.productionBlocked || '';
     let blocked = '', result = { made: {}, used: {}, changed: false };
-    if (ship.rev >= MAX_REV || profile.eco.tradeRev >= MAX_REV) blocked = 'revisionLimit';
+    if (w.navalPilot?.locked?.(owner)) blocked = 'voyage';
+    else if (ship.rev >= MAX_REV || profile.eco.tradeRev >= MAX_REV) blocked = 'revisionLimit';
     else {
       const grid = { ...ship.grid, work: { ...ship.grid.work } };
       const hold = { cap: ship.hold.cap, goods: { ...ship.hold.goods } };
@@ -45,8 +57,7 @@ export function stepRaftWork(w, days, saveFits = () => true) {
     active.productionBlocked = blocked;
     if (previousBlock !== blocked || Object.keys(result.made).length) {
       w.emit({ type: 'raftProduction', to: owner, id: ship.id, raftRev: ship.rev,
-        rev: profile.eco.tradeRev, production: productionRows({ ...ship.grid, parts: activeRaftParts(active) }, ship.hold, { blocked, poweredKeys: poweredFireKeys(w, active) }),
-        productionBlocked: blocked, daySec: CLOCK.daySec, made: result.made, used: result.used });
+        rev: profile.eco.tradeRev, ...raftWorkStatus(w, active), made: result.made, used: result.used });
     }
   }
 }

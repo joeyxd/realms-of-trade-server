@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: personal project accepts partial deliveries without practice or community completion and prepays one build
+ok 1 - personal project accepts partial deliveries without practice or community completion and prepays one build
+  ---
+  duration_ms: 498.2166
+  type: 'test'
+  ...
+# Subtest: crate is crafted at the bench and placed once from its kit without a second material debit
+ok 2 - crate is crafted at the bench and placed once from its kit without a second material debit
+  ---
+  duration_ms: 408.1661
+  type: 'test'
+  ...
+# Subtest: held and lost workshop commit cannot publish an early reward or charge a retry twice
+ok 3 - held and lost workshop commit cannot publish an early reward or charge a retry twice
+  ---
+  duration_ms: 384.4442
+  type: 'test'
+  ...
+# Subtest: authoritative timing produces exactly earned logs and rejects a made-up challenge token
+ok 4 - authoritative timing produces exactly earned logs and rejects a made-up challenge token
+  ---
+  duration_ms: 500.4119
+  type: 'test'
+  ...
+# Subtest: missing workshop SQL readiness blocks admission before world adoption
+ok 5 - missing workshop SQL readiness blocks admission before world adoption
+  ---
+  duration_ms: 281.8722
+  type: 'test'
+  ...
+# Subtest: paid second storage debits ten boards and an occupied tile preserves the prepaid credit
+ok 6 - paid second storage debits ten boards and an occupied tile preserves the prepaid credit
+  ---
+  duration_ms: 369.6409
+  type: 'test'
+  ...
+# Subtest: partial workshop progress survives host restart and shares the receipt authority with paid fire
+ok 7 - partial workshop progress survives host restart and shares the receipt authority with paid fire
+  ---
+  duration_ms: 543.0034
+  type: 'test'
+  ...
+# Subtest: an existing legacy pack adopts the basic carry limits inside its first successful workshop receipt
+ok 8 - an existing legacy pack adopts the basic carry limits inside its first successful workshop receipt
+  ---
+  duration_ms: 267.0463
+  type: 'test'
+  ...
+# Subtest: a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+ok 9 - a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+  ---
+  duration_ms: 2575.0089
+  type: 'test'
+  ...
+# Subtest: three valid v3 aim hits still award once and replay their exact receipt
+ok 10 - three valid v3 aim hits still award once and replay their exact receipt
+  ---
+  duration_ms: 2441.6122
+  type: 'test'
+  ...
+# Subtest: SQL024 partial personal project, prepaid storage, paid later storage, kits and pack use exact immutable receipts
+ok 11 - SQL024 partial personal project, prepaid storage, paid later storage, kits and pack use exact immutable receipts
+  ---
+  duration_ms: 1900.652
+  type: 'test'
+  ...
+# Subtest: SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts
+ok 12 - SQL026 accepts real host raft IDs and persisted condition without rewriting SQL024 receipts
+  ---
+  duration_ms: 1272.8456
+  type: 'test'
+  ...
+# Subtest: SQL024 adopts a legacy pack only in its exact paid workshop receipt
+ok 13 - SQL024 adopts a legacy pack only in its exact paid workshop receipt
+  ---
+  duration_ms: 1065.5238
+  type: 'test'
+  ...
+# Subtest: SQL024 v3 worlds still craft, gather ordinary resources and load paid fire while freezing unrelated carry and ledgers
+ok 14 - SQL024 v3 worlds still craft, gather ordinary resources and load paid fire while freezing unrelated carry and ledgers
+  ---
+  duration_ms: 1027.2575
+  type: 'test'
+  ...
+# Subtest: SQL024 world saves adopt v2 exactly once and subsequently advance only the paused resource clock
+ok 15 - SQL024 world saves adopt v2 exactly once and subsequently advance only the paused resource clock
+  ---
+  duration_ms: 912.43
+  type: 'test'
+  ...
+# Subtest: SQL024 rejects invented credit, changed rewards, missing payment, cargo loss and forged capacity without a receipt
+ok 16 - SQL024 rejects invented credit, changed rewards, missing payment, cargo loss and forged capacity without a receipt
+  ---
+  duration_ms: 915.6734
+  type: 'test'
+  ...
+# Subtest: SQL024 rejects malformed workshop envelopes and raft command aliases before any mutation
+ok 17 - SQL024 rejects malformed workshop envelopes and raft command aliases before any mutation
+  ---
+  duration_ms: 996.539
+  type: 'test'
+  ...
+# Subtest: SQL024 timed palm receipt conserves practice and exact three-to-six yield; forged proof and extra logs reject
+ok 18 - SQL024 timed palm receipt conserves practice and exact three-to-six yield; forged proof and extra logs reject
+  ---
+  duration_ms: 939.6665
+  type: 'test'
+  ...
+# Subtest: SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope
+ok 19 - SQL024 and SQL026 leave a SQL021 receipt unchanged and replay its original envelope
+  ---
+  duration_ms: 901.939
+  type: 'test'
+  ...
+# Subtest: SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority
+ok 20 - SQL024 preserves adopted-world fences and commits workshop and legacy receipts only through the common authority
+  ---
+  duration_ms: 966.1617
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11572.2658

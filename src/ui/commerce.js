@@ -4,7 +4,7 @@ import { RAFT_LOAD } from '../data/raftparts.js';
 import { TOWNS } from '../data/towns.js';
 import { EDITOR_RADIUS } from '../data/raftEditor.js';
 import { raftStats } from '../sim/economy/raft.js';
-import { productionRows } from '../sim/economy/raftProduction.js';
+import { productionKey, productionRows } from '../sim/economy/raftProduction.js';
 import { holdUsed, roomFor, goodMass, goodVolume } from '../sim/economy/cargo.js';
 import { raftCapacity } from '../sim/economy/raftCapacity.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
@@ -127,7 +127,7 @@ export class CommercePanel {
     if (!ev || ev.type !== 'raftProduction' || typeof ev.id !== 'string'
       || !Number.isSafeInteger(ev.rev) || !Number.isSafeInteger(ev.raftRev)
       || !Number.isSafeInteger(ev.daySec) || !Array.isArray(ev.production)
-      || !['', 'saveSize', 'revisionLimit', 'capacity'].includes(ev.productionBlocked)) return;
+      || !['', 'saveSize', 'revisionLimit', 'capacity', 'voyage'].includes(ev.productionBlocked)) return;
     const c = this.context();
     if (!c || ev.id !== c.record.id) return;
     this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
@@ -217,7 +217,7 @@ export class CommercePanel {
       if (read.op === 'cargo') {
         if (ev.id !== read.meta.raftId || !ev.hold || !ev.pack || !Number.isSafeInteger(ev.raftRev)
           || !Array.isArray(ev.production) || !Number.isSafeInteger(ev.daySec) || !Number.isSafeInteger(ev.rev)
-          || !['', 'saveSize', 'revisionLimit', 'capacity'].includes(ev.productionBlocked)) return;
+          || !['', 'saveSize', 'revisionLimit', 'capacity', 'voyage'].includes(ev.productionBlocked)) return;
         this.cargoSnapshot = ev;
         this.rememberProductionStatus(ev.id, ev.daySec, ev.rev, ev.raftRev, ev.productionBlocked, ev.production);
         this.clearResult(); this.render(); return;
@@ -511,11 +511,28 @@ export class CommercePanel {
       rev: snapshot.rev, raftRev: snapshot.raftRev, daySec: snapshot.daySec,
       blocked: snapshot.productionBlocked, rows: snapshot.production,
     });
-    const blocked = source?.blocked || '';
+    const blocked = c.record.voyage === true ? 'voyage' : source?.blocked || '';
     const profileIsCurrent = !source || Number.isSafeInteger(c.profile?.eco?.tradeRev)
       && c.profile.eco.tradeRev >= source.rev && Number.isSafeInteger(c.ship.rev) && c.ship.rev >= source.raftRev;
+    const activeParts = Array.isArray(c.record.parts) ? c.record.parts : c.ship.grid.parts;
+    const activeKeys = new Set(activeParts.map(productionKey).filter(Boolean));
+    const poweredKeys = this.fireEnabled?.() ? new Set((c.record.litLanterns || []).map(part => JSON.stringify(part))) : null;
+    const localRows = productionRows(c.ship.grid, c.ship.hold, { blocked, activeKeys, poweredKeys }).map((row) => {
+      if (blocked !== 'voyage' && !activeKeys.has(row.key)) return { ...row, status: 'broken', remainingDays: null };
+      return row;
+    });
+    let rows = localRows;
+    if (!profileIsCurrent && Array.isArray(source?.rows)) {
+      const sourceKeys = new Set(source.rows.map(row => row.key));
+      rows = source.rows.map((row) => {
+        const geometryStatus = !activeKeys.has(row.key) ? 'broken' : '';
+        const status = blocked === 'voyage' ? 'voyage' : geometryStatus || row.status;
+        return status === row.status ? row : { ...row, status, remainingDays: null };
+      });
+      rows.push(...localRows.filter(row => row.status === 'broken' && !sourceKeys.has(row.key)));
+    }
     return {
-      rows: profileIsCurrent || !Array.isArray(source?.rows) ? productionRows(c.ship.grid, c.ship.hold, { blocked, poweredKeys: this.fireEnabled?.() ? new Set((c.record.litLanterns || []).map(part => JSON.stringify(part))) : null }) : source.rows,
+      rows,
       daySec: source?.daySec ?? null,
       blocked,
       hold: c.ship.hold,
@@ -534,6 +551,8 @@ export class CommercePanel {
       const statusText = row.status === 'working' ? t('systems.commerce.production.working')
         : row.status === 'inputs' ? (profileIsCurrent ? t('systems.commerce.production.missingInputs', { goods: Object.entries(row.inputs || {}).filter(([g, n]) => n > (hold?.goods?.[g] || 0)).map(([g, n]) => `${num(n - (hold?.goods?.[g] || 0))} ${goodName(g)}`).join(', ') }) : t('systems.commerce.production.waitingInputs'))
         : row.status === 'fuel' ? t('systems.commerce.production.fuel')
+        : row.status === 'broken' ? t('systems.commerce.production.broken')
+        : row.status === 'voyage' ? t('systems.commerce.production.voyage')
         : row.status === 'room' ? t('systems.commerce.production.fullHold')
         : row.status === 'capacity' ? t('systems.commerce.production.capacity')
         : row.status === 'saveSize' ? t('systems.commerce.production.saveSize')

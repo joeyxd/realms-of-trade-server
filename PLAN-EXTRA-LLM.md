@@ -11,8 +11,9 @@ proveedor/modelo y operación reales siguen pendientes.
 Stop inmediato, guardado privado SQL027 y permiso explícito para una conexión nueva; CAS durable
 separado del epoch, recuperación antes de escuchar y fallo/timeout/tardía sin reanudación automática.
 Conserva el allowlist de vínculos del operador; no provisiona ni activa agentes/proveedor.
-SQL027 aplicado y canario de servicio revertido; runtime `d962055` alpha.38 sano con una autoridad y timer activo.
-109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git; WSS público 17/17.
+SQL027 aplicado y canario de servicio revertido; aceptación alpha.38 `d962055` sana, una autoridad y timer activo.
+109/109 del actualizador y 28/28 focales de alpha.38 con hashes Git. Integración posterior
+alpha.39/protocolo 47: 30/30 locales y WSS público 17/17; selecciones solapadas.
 Las 65/65 focales y el navegador invitado 7/7 corresponden a alpha.37; la UI de compañeros no cambió.
 El [baseline de Tala](docs/delivery/prg01d-timing-baseline.md) corrigió el conflicto; alfa recuperado y canario Tala público 6/6.
 Local 190/190 y navegador 14/14 con autenticación simulada y SQL027 en disco; conteos solapados.

@@ -52,7 +52,7 @@ ya estaban instalados/activados; no se repitió adopción ni activación.
 ## Publicación
 
 Primera publicación del control durable: **alpha.37/protocolo 46**, revisión `8ce31ce`.
-El runtime activo es **alpha.38/protocolo 46**, revisión
+La aceptación inicial de disponibilidad quedó en **alpha.38/protocolo 46**, revisión
 `d9620558a93f6a6ed88614857b03d7d9822a4b1b`, imagen
 `sha256:f937c420dbe5555048f10c3087e9a5d237e80389c3aa880b6a54b3841cf6bc8c`.
 La [corrección del baseline de Tala](prg01d-timing-baseline.md) permitió cerrar el conflicto
@@ -62,15 +62,24 @@ activo y **109/109** pruebas del actualizador. Las [65/65 focales de alpha.37](l
 y las [28/28 de alpha.38](prg01d-starter-workshop/activation/timing-image-tests.json) corresponden
 a archivos cuyos hashes coinciden con sus revisiones Git; runners aislados sin red, sin SQL/PGlite.
 Las selecciones se solapan y no se suman.
-El [readiness en la imagen activa](l03d-companion-control/active-readiness.json) confirma SQL027 versión 1
+El [readiness registrado en alpha.38](l03d-companion-control/active-readiness.json) confirma SQL027 versión 1
 y fixture ausente. El [WSS público](l03d-companion-control/public-smoke.json) pasa **17/17**:
-entrada real, protocolo vigente y denegación invitada sin exponer controles, ficha, mercado o presupuesto.
+entrada real, alpha.39/protocolo 47 y denegación invitada sin exponer controles, ficha, mercado o presupuesto.
 El [navegador público invitado de alpha.37](l03d-companion-control/public-browser/public-browser.json) pasó **7/7**,
 sin errores de página/runtime; cuatro capturas originales inspeccionadas ES/EN, escritorio y móvil
 emulado. La UI no cambió en alpha.38. En viewport portrait 390×844 el juego y su panel usan la rotación existente; no acredita
 una interfaz portrait independiente ni un teléfono físico.
 El guardado/stop/resume de un dueño público con binding real sigue pendiente; no se provisiona
 uno para presentar ese criterio como aprobado.
+
+La integración posterior con el purificador conserva el control durable: **30/30** casos locales
+de taller, baseline SQL, Tala, recursos, fuego y control pasan sobre las fuentes de alpha.39.
+La navegación pública normal al muelle y cubierta propia pasó **3/3** en
+[el canario aislado](prg01d-starter-workshop/activation/public-ebc96836-ae35-4eca-8b19-a6ccee6aa76e.json).
+El [canario combinado del taller](prg01d-starter-workshop/activation/public-4e926d4b-bc17-4c9b-b2a1-7924dac83d94.json)
+pasó 36/36 por WSS autenticado con veinte recibos conservados y perfil/Auth QA retirados.
+Es aceptación económica del taller; el control público autenticado de compañeros conserva su puerta pendiente.
+Estos conteos se solapan.
 
 ## Siguiente tramo
 

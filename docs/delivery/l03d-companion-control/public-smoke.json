@@ -1,6 +1,6 @@
 {
   "schema": "mn.l03d.companion-control.public.v1",
-  "at": "2026-10-11T02:03:59.318Z",
+  "at": "2026-10-11T02:18:02.720Z",
   "target": "public TLS",
   "pass": true,
   "checks": [
@@ -11,13 +11,13 @@
     {
       "check": "durable_M5_resources_healthy",
       "pass": true,
-      "version": "0.6.0-alpha.38",
+      "version": "0.6.0-alpha.39",
       "logging": true
     },
     {
       "check": "published_protocol",
       "pass": true,
-      "protocol": 46
+      "protocol": 47
     },
     {
       "check": "published_companions_panel",
