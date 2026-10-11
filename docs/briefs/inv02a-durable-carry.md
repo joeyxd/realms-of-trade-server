@@ -1,5 +1,8 @@
 # AREA03 INV02a — puntos de Carga y frontera durable
 
+Continuación: [INV02b — montaje durable y adopción explícita](inv02b-durable-attributes.md).
+El resto de este documento conserva el alcance histórico del contrato puro INV02a.
+
 Checkpoint 2026-10-10. Sigue al [taller PRG01d aceptado](../delivery/prg01d-starter-workshop.md).
 El primer subcorte implementa un cálculo puro sin montarlo en gameplay. La siguiente entrega debe
 conectar ese cálculo a M5 antes de mostrar una asignación como confirmada.

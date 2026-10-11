@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
+[Contrato](docs/briefs/inv02b-durable-attributes.md) y [entrega](docs/delivery/inv02b-durable-attributes.md).
+Adopción explícita nivel 1/legacy, asignación y un reset por la cola M5; conserva objetos,
+mochilas y crédito de Tala offline. 19/19 de atributos y 1/1 de composición SQL023/029
+con reapertura de base; regresión previa 106/106 y UI existente 6/6 ES/EN, conteos solapados.
+SQL029 aditivo listo, sin reescribir datos; flag `MN_ATTRIBUTE_OPERATIONS` apagado por defecto,
+exige readiness. Alpha.43/protocolo 49. Sigue aplicar SQL029, canario y ficha ES/EN INV02c;
+después movimiento/sobrepeso. No implica que la pantalla de atributos ya esté jugable.
+
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](docs/delivery/hud-portrait/README.md), [contrato de Carga](docs/briefs/inv02a-durable-carry.md)
 y [entrega INV02a](docs/delivery/inv02a-carry-contract.md). Pantalla vertical con filas separadas para jugador,

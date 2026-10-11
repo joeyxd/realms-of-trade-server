@@ -10,7 +10,7 @@ import { newResourceState, upgradeTimingState } from '../server/resourceState.mj
 import { newProfile } from '../src/sim/systems/inventory.js';
 import { MSG } from '../src/net/protocol.js';
 import { connect, calmAt, turn } from './helpers/resource-authority-fixture.mjs';
-import { database, adoptionId } from './helpers/ground-world-adoption-sql.mjs';
+import { database, reopenDatabase, adoptionId } from './helpers/ground-world-adoption-sql.mjs';
 
 const WORLD = 'ground-workshop-compatibility';
 const SEED = 97;
@@ -19,7 +19,8 @@ const ACCOUNT = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 async function installWorkshopMigrations(fixture) {
   await fixture.db.exec('RESET ROLE');
   for (const name of ['024_starter_workshop.sql', '025_companion_config.sql',
-    '026_workshop_raft_identifiers.sql', '027_companion_control.sql']) {
+    '026_workshop_raft_identifiers.sql', '027_companion_control.sql',
+    '028_inference_config.sql', '029_attribute_operations.sql']) {
     const sql = await readFile(new URL(`../server/migrations/${name}`, import.meta.url), 'utf8');
     await fixture.db.exec(sql);
   }
@@ -45,7 +46,7 @@ function onDeck(host, entity, ship) {
     z: ecs.z[raft.entity] - Math.sin(a) + Math.cos(a), y: ecs.y[raft.entity] });
 }
 
-test('SQL023 adopts a current v3 world and GroundHost durably composes workshop, raft, and resource receipts', async t => {
+test('SQL023/029 compose attributes, workshop, raft and resource receipts and retain them after database reopen', async t => {
   const dir = await mkdtemp(join(tmpdir(), 'ground-workshop-compat-'));
   const path = join(dir, 'db');
   let fixture, host, template;
@@ -60,7 +61,7 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
   });
 
   fixture = await database(path); // SQL001-023, including SQL022/023, via the shared PGlite fixture.
-  await installWorkshopMigrations(fixture); // SQL024-027 under the reset/admin role.
+  await installWorkshopMigrations(fixture); // SQL024-029 under the reset/admin role.
 
   template = new GameHost({ seed: SEED, bots: 0, log() {} });
   const resources = upgradeTimingState(newResourceState(template.server.world));
@@ -73,6 +74,7 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
     [WORLD, worldData]);
 
   const profile = newProfile();
+  profile.lvl = 3; profile.eco.pack.maxMass = 22;
   profile.pirateId = `account:${ACCOUNT}`;
   profile.eco.id = 'persistent-owner';
   profile.eco.ships.find(ship => ship.kind === 'raft').id = 'persisted-raft-001';
@@ -92,10 +94,12 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
 
   const store = { ...fixture.store, async checkStarterWorkshop() {
     return (await fixture.db.query('select public.mn_starter_workshop_ready() as data')).rows[0].data;
+  }, async checkAttributeOperations() {
+    return (await fixture.db.query('select public.mn_attribute_operations_ready() as data')).rows[0].data;
   } };
   const options = { seed: SEED, bots: 0, log() {}, store, worldId: WORLD, resolvePlayer: async () => ACCOUNT,
     economicOperations: true, resourceOperations: true, loggingOperations: true,
-    artisanOperations: true, workshopOperations: true,
+    artisanOperations: true, workshopOperations: true, attributeOperations: true,
     groundTransactions: { journal: fixture.journal(WORLD) } };
   host = new GameHost(options);
   await host.prepare();
@@ -111,6 +115,16 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
   const originalCarry = structuredClone(live.carry);
   const liveRaft = live.eco.ships.find(ship => ship.id === raftId);
   assert.ok(liveRaft, 'workshop profile preserved the starter raft identifier through SQL load');
+
+  const attributeCommands = [];
+  for (const op of ['adopt', 'assign', 'reset']) {
+    const command = { type: 'attributes', op, opId: `compat-attributes-${op}`, expectedRev: live.eco.tradeRev,
+      ...(op === 'assign' ? { stat: 'carga', n: 2 } : {}) };
+    await apply(host, client, command); attributeCommands.push(command);
+    assert.equal(live.eco.pack.maxMass, op === 'assign' ? 60 : 50);
+    assert.deepEqual(live.eco.pack.goods, { madera: 2 });
+  }
+  assert.deepEqual(live.attr, { v: 1, carga: 0, re: 1 });
 
   const node = [...host.server.world.resources.nodes.values()].find(row => row.kind === 'wood');
   assert.ok(node, 'current map includes a wood node');
@@ -135,7 +149,7 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
   assert.equal(live.workshop.storageCredit, false);
   assert.deepEqual(live.carry, originalCarry);
 
-  const opIds = [resourceCommand.opId, workshopCommand.opId, storageCommand.opId];
+  const opIds = [...attributeCommands.map(c => c.opId), resourceCommand.opId, workshopCommand.opId, storageCommand.opId];
   for (const opId of opIds) {
     const receipt = await fixture.store.loadEconomicOperation(economicOperationId(WORLD, ACCOUNT, opId));
     assert.ok(receipt, `economic receipt exists for ${opId}`);
@@ -144,7 +158,7 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
   const committed = await fixture.db.query(
     "select count(*)::int as n from public.mn_ground_transaction_intents where world=$1 and state='committed' and operation_id=any($2::uuid[])",
     [WORLD, journalIds]);
-  assert.equal(committed.rows[0].n, 3, 'each authenticated gameplay command committed through the common journal');
+  assert.equal(committed.rows[0].n, 6, 'each authenticated gameplay command committed through the common journal');
 
   const saved = await fixture.store.loadWorld(WORLD);
   assert.equal(saved.data.resources.v, 3);
@@ -154,5 +168,17 @@ test('SQL023 adopts a current v3 world and GroundHost durably composes workshop,
   const persistedProfile = await fixture.store.loadProfile(ACCOUNT);
   assert.deepEqual(persistedProfile.data.carry, originalCarry);
   assert.deepEqual(persistedProfile.data.workshop, live.workshop);
+  assert.deepEqual(persistedProfile.data.attr, { v: 1, carga: 0, re: 1 });
+  assert.equal(persistedProfile.data.eco.pack.maxMass, 50);
   assert.equal(persistedProfile.data.eco.ships.find(ship => ship.id === raftId).id, raftId);
+
+  const historicalId = economicOperationId(WORLD, ACCOUNT, attributeCommands[0].opId);
+  const historical = await fixture.store.loadEconomicOperation(historicalId);
+  await host.close(); host = null;
+  const closedProfile = await fixture.store.loadProfile(ACCOUNT);
+  await fixture.close(); fixture = await reopenDatabase(path);
+  assert.deepEqual(await fixture.store.loadProfile(ACCOUNT), closedProfile);
+  assert.deepEqual(await fixture.store.commitEconomicOperation({ operationId: historicalId, request: historical.request }),
+    { ...historical.result, replay: true });
+  assert.deepEqual(await fixture.store.loadProfile(ACCOUNT), closedProfile, 'historical adopt replay cannot restore an earlier allocation');
 });
