@@ -1,5 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA17 L03d-e2b, 2026-10-10 — Brisa local con conversación y memoria entre procesos:**
+[Entrega/evidencia](docs/delivery/l03d-local-companion-studio.md), [brief](docs/briefs/l03d-local-companion-studio.md).
+Wizard, cinco oficios/aspectos, personalidad/metas/manual/journal vacío; red C01 real y recuperación
+de «Faro de Jade» desde disco. Ledger local fijado; seis llamadas/19.182 tokens confirmados, sin
+uso pendiente. 67/67 focales y UI 1280×1000/390×844 inspeccionada. Modelo mezcla ES/EN y resumen
+rechazado; original intacto. Mundo efímero y cuentas de ensayo; sin SQL o proveedor público.
+Sigue vínculo durable/contabilidad central y montaje del wizard dentro del juego, con preview humano.
+
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](docs/delivery/m5-ground-pearl-lifecycle.md), [contrato](docs/briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución

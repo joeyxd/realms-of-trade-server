@@ -50,7 +50,7 @@ export const MEMORY_RESPONSE_SCHEMA = shape({ v: { type: 'integer', const: 1 }, 
 
 export const DEFAULT_MIND_LIMITS = Object.freeze({ maxContextTokens: 16000, maxInputBytes: 64000,
   maxOutputTokens: 1024, marginTokens: 256, maxResponseBytes: 8192, timeoutMs: 1000,
-  maxDecisionAgeMs: 1500, maxRequests: 64 });
+  maxDecisionAgeMs: 1500, maxReflectionAgeMs: 1500, maxRequests: 64 });
 export const plain = (v) => v !== null && typeof v === 'object' && !Array.isArray(v) &&
   [Object.prototype, null].includes(Object.getPrototypeOf(v));
 export const exact = (v, keys) => plain(v) && Object.keys(v).length === keys.length && keys.every((k) => Object.hasOwn(v, k));
@@ -62,7 +62,7 @@ export function mindLimits(overrides = {}) {
   if (!plain(overrides) || Object.keys(overrides).some((k) => !Object.hasOwn(DEFAULT_MIND_LIMITS, k))) throw new TypeError('invalid mind limits');
   const limits = { ...DEFAULT_MIND_LIMITS, ...overrides };
   if (Object.values(limits).some((v) => !integer(v) || v < 1 || v > 1000000) || limits.maxRequests > 256 ||
-      limits.timeoutMs > 60000 || limits.maxDecisionAgeMs > 1500 || limits.maxOutputTokens + limits.marginTokens >= limits.maxContextTokens)
+      limits.timeoutMs > 60000 || limits.maxDecisionAgeMs > 1500 || limits.maxReflectionAgeMs > 30000 || limits.maxOutputTokens + limits.marginTokens >= limits.maxContextTokens)
     throw new TypeError('invalid mind limits');
   return Object.freeze(limits);
 }

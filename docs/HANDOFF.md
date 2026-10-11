@@ -1,5 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA17 L03d-e2b, 2026-10-10 — Brisa conversa y recupera memoria en un mundo local:**
+[Entrega/evidencia](delivery/l03d-local-companion-studio.md) y [brief](briefs/l03d-local-companion-studio.md).
+Wizard de identidad/oficio/rasgos/aspecto/modelo, documentos nuevos y GameHost/C01 real local;
+memoria y ledger de recursos en disco, identidades de ensayo, mundo efímero, solo chat.
+Tras cerrar el proceso, recuperó «Faro de Jade» desde el episodio guardado. Seis llamadas reales,
+19.182 tokens confirmados, cero uso pendiente; resumen rechazado sin tocar el original.
+Mezcla ES/EN y 4,9–13,5 s: calidad todavía pendiente. 67/67 focales y capturas desktop/móvil;
+la regresión amplia conserva fallos independientes documentados. Sin SQL ni activación pública;
+herramientas fuera de la imagen VPS. Sigue identidad/ledger central, wizard ingame y preview humano.
+
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
