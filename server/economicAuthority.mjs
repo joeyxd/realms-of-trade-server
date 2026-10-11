@@ -197,9 +197,12 @@ export class EconomicAuthority {
         timing: command.type === 'resource' && command.op === 'gather' && h.workshopOperations ? h.loggingAim.proof(sock.id, c.entity, command) : null };
       this.active = a;
       // Freeze the live economy/resource clock as this operation's confirmed baseline through
-      // the existing world writer. A lesson/edit cannot change markets, nor restore an older
-      // autosave's accumulator when ordinary ticks advanced since the last checkpoint.
-      if (artisanMutation(command) || fireMutation(command)) h.worldState.save(h.server.world.economy);
+      // the existing world writer. A lesson/edit or timed palm receipt cannot change markets,
+      // nor restore an older autosave's accumulator after ordinary ticks advanced. SQL024
+      // compares the entire non-resource world even for an unchanged timing denial.
+      const timedPalm = h.workshopOperations && command.type === 'resource' && command.op === 'gather' &&
+        h.worldState.resources?.v === 3 && h.worldState.resources.nodes.some(n => n.id === command.node && n.kind === 'palm');
+      if (artisanMutation(command) || fireMutation(command) || timedPalm) h.worldState.save(h.server.world.economy);
       h.worldState.operationBusy = true;
       if (agent) h.clearAgentInputs(sock.id);
       a.task = this.prepare(a).catch(() => { this.fence(a); });
