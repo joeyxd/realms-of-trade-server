@@ -43,6 +43,7 @@ import { economicOperationId, economicCommand, EconomicAuthority } from './econo
 import { newCommunityState } from './communityProject.mjs';
 import { canonicalText } from './pearlOperations.mjs';
 import { GroundHostAuthority } from './groundHostAuthority.mjs';
+import { GroundPearlLifecycle } from './groundPearlLifecycle.mjs';
 import { sameContentIdentity } from './gmContent.mjs';
 
 function assemblyOptions(raw, keys) {
@@ -69,6 +70,7 @@ export class GameHost {
   #deathDropStaging = null; #deathDrops = null; #managedDropHook = null;
   #pearlStartup = null; #prepareTask = null; #requiresPearlStartup = false;
   #deadlineClock = null; #pearlGround = null;
+  #groundPearls = null;
   #inventoryQueries = new WeakMap();
   #marketQueries = new WeakMap();
 
@@ -200,6 +202,21 @@ export class GameHost {
   get deathDropStaging() { return this.#deathDropStaging; }
   get deathDrops() { return this.#deathDrops; }
   get pearlGround() { return this.#pearlGround; }
+  get groundPearls() { return this.#groundPearls; }
+
+  // Trusted, incomplete gameplay pilot only. No CLI flag or public adoption is inferred here.
+  mountGroundPearls() {
+    const s = this.server, w = s.world;
+    if (arguments.length || !this.groundAuthority || this.#groundPearls || this.#pearlStaging || this.#pearlStartup ||
+        this.#prepareTask || this.closing || this.wss || this.timer || this.nextId !== 1 || this.sockets.size ||
+        this.pendingJoins || this.joins.size || s.clients.size || this.profiles.accounts.size ||
+        this.profiles.clients.size || this.profiles.tasks.size || w.tick !== 0 || w.profiles.size ||
+        w.drops.size || w.pearlLedger.size || countBots(w) !== 0 ||
+        s.beforeTick !== this.groundAuthority.boundary || w.isDeathDropManaged != null) throw new StoreError('configuration');
+    this.#groundPearls = new GroundPearlLifecycle(this);
+    w.isDeathDropManaged = managedDeathDrop;
+    return this.#groundPearls;
+  }
 
   // Explicit, server-owned assembly only. It does not dispatch player commands or recover startup.
   // Install before transport/admission; no caller callbacks may replace the three trusted adapters.
@@ -374,7 +391,8 @@ export class GameHost {
   }
 
   #pearlsReady() {
-    return !this.#requiresPearlStartup || this.#pearlStartup?.ready === true;
+    return (!this.#groundPearls || this.#groundPearls.ready) &&
+      (!this.#requiresPearlStartup || this.#pearlStartup?.ready === true);
   }
 
   #stopPearls() {
@@ -465,7 +483,7 @@ export class GameHost {
 
   async #prepare() {
     if (this.closing) throw new StoreError('cancelled');
-    if (!this.#pearlsReady() && !this.#pearlStartup) throw new StoreError('configuration');
+    if (!this.#pearlsReady() && !this.#pearlStartup && !this.#groundPearls) throw new StoreError('configuration');
     // Acquire recovery's global barrier synchronously, before either storage authority awaits.
     // Mapping consumes only its explicit frozen inputs; it must not read a loading World by closure.
     const recovery = this.#pearlStartup?.start();
@@ -479,6 +497,10 @@ export class GameHost {
     await Promise.allSettled([observe(this.#prepareEconomy()), observe(recovery)]);
     if (failure) throw failure.error;
     if (this.closing) throw new StoreError('cancelled');
+    if (this.#groundPearls) {
+      await this.#groundPearls.prepare();
+      this.groundAuthority.verifyWorld();
+    }
     if (!this.#pearlStartup) return;
     // No player or simulation exists yet. Install current ground once before opening transport.
     const result = this.#pearlStartup.drain();
@@ -555,7 +577,7 @@ export class GameHost {
         storage.durable !== true || !storage.accounts || !storage.world?.ready || storage.world.failed ||
         storage.errors || s.errors || storage.unsaved || storage.profileWrites || storage.worldWriting || storage.tickBlocked ||
         storage.economic && (storage.economic.pending !== 0 || storage.economic.failed) ||
-        ['staging', 'deathStaging', 'deathDrops', 'pearlGround', 'combatDeaths', 'startup'].some((key) => storage[key] !== null) ||
+        ['staging', 'deathStaging', 'deathDrops', 'pearlGround', 'groundPearls', 'combatDeaths', 'startup'].some((key) => storage[key] !== null) ||
         this.groundAuthority && !this.groundAuthority.canMutate()) throw Object.assign(new Error('gm_content_busy'), { code: 'gm_content_busy' });
     this.contentSwitching = true;
     return () => { this.contentSwitching = false; this.server.last = performance.now(); this.server.acc = 0; };
@@ -597,6 +619,7 @@ export class GameHost {
         profileWrites: this.profiles.tasks.size, worldWriting: !!this.worldState?.running,
         economic: this.economicAuthority?.status() ?? null,
         groundTransactions: this.groundAuthority?.status() ?? null,
+        groundPearls: this.#groundPearls?.status() ?? null,
         tickBlocked: s.tickBlocked,
         staging: this.#pearlStaging ? { enabled: true, failed: this.#pearlFailed,
           pending: this.#pearlStaging.tasks.size, completed: this.#pearlStaging.completed.length,
@@ -687,6 +710,10 @@ export class GameHost {
       const begin = () => {
         if (this.sockets.get(sock.id)!==sock || this.profiles.clients.get(sock.id)!==session || session.failed || session.closed) return;
         if (this.economicAuthority.busy) { this.economicAuthority.handle(sock,msg); return; }
+        // Receipt lookup may yield while another authority reserves the world or account.
+        if (c.paused || this.pendingJoins || !this.commandAvailable(sock.id,c.entity,{world:true,target:null}) || !this.tickAvailable()) {
+          this.economicAuthority.reply(sock.id,command,'busy'); return;
+        }
         beginFreshwater(this.server.world,c.entity,command,ready=> {
           if (this.sockets.get(sock.id)!==sock || this.profiles.clients.get(sock.id)!==session) return;
           this.economicAuthority.handle(sock,{t:MSG.CMD,...ready});
@@ -1139,6 +1166,7 @@ export class GameHost {
   }
 
   profileAvailable(id, entity) {
+    if (this.#groundPearls?.pending) return false;
     if (this.#pearlFailed || !this.#pearlsReady() || this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     try {
       pearlMutationGate(this.profiles).assertAvailable(this.profileLanes(id, entity));
@@ -1219,6 +1247,7 @@ export class GameHost {
   }
 
   beforeProfileDetach(id, entity) {
+    if (this.#groundPearls?.invalidate()) this.#stopPearls();
     if (this.#combatDeaths?.invalidate(id, entity)) this.#stopPearls();
     if (this.#deathDrops?.invalidate()) this.#stopPearls();
     if (this.#pearlGround?.invalidate()) this.#stopPearls();
@@ -1234,6 +1263,7 @@ export class GameHost {
   }
 
   saveProfile(id, p) {
+    if (this.#groundPearls?.pending) return false;
     if (this.#combatDeaths?.pending || this.#combatDeaths?.failed || this.#deathDrops?.pending || this.#deathDrops?.failed || this.#groundBusy()) return false;
     const s = this.profiles.clients.get(id);
     if (!s) return true; // Guests keep their existing signed-save route.
@@ -1352,6 +1382,7 @@ export class GameHost {
     this.closing = true;
     clearInterval(this.timer); clearInterval(this.beat); clearInterval(this.worldTimer);
     this.groundAuthority?.stop();
+    this.#groundPearls?.stop();
     if (this.#pearlStartup && !['idle', 'ready', 'fenced'].includes(this.#pearlStartup.state)) this.#pearlStartup.cancel();
     this.worldState?.cancelLoad();
     if (this.#deathDrops?.pending) this.#deathDrops.fail();
@@ -1367,6 +1398,7 @@ export class GameHost {
         this.worldState?.save(this.server.world.economy);
       }
       await this.groundAuthority?.settle();
+      await this.#groundPearls?.settle();
       await Promise.all([...this.joins]);
       // Cancelled reads may reconcile receipts, but never install ground or admit after close.
       if (this.#prepareTask) await this.#prepareTask.catch(() => {});

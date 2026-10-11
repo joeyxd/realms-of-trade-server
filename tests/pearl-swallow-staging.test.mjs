@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PearlStaging } from '../server/pearlStaging.mjs';
+import { packLimitsForProfile } from '../src/sim/economy/carry.js';
 import { StoreError } from '../server/store.mjs';
 import { pearlEcsDraft } from '../server/pearlEcsEffect.mjs';
 import { canonicalText } from '../server/pearlOperations.mjs';
@@ -76,6 +77,8 @@ test('apply matches every real pearl helper kind using latest HP, gear/mastery, 
     p.gold += 8; p.xp = 13; f.staging.save(1, p);
     reply.resolve(); await f.staging.settle();
     p.gold += 3; p.xp = 21; p.mast[0][0] = 3; p.lvl = 4; s.level[e] = 4;
+    const limits = packLimitsForProfile(p);
+    p.eco.pack.cap = limits.volume; p.eco.pack.maxMass = limits.maxMass;
     p.eq.weapon.l = 4; // A current gear upgrade must contribute to refreshStats, too.
     s.hp[e] = 19; s.maxHp[e] = 137; s.guardSt[e] = 99;
     s.gBuf[e] = 0.7; s.cdG[e] = kind === 'brasa' ? 9 : 1.2; s.waterT[e] = 7;
@@ -88,6 +91,7 @@ test('apply matches every real pearl helper kind using latest HP, gear/mastery, 
     assert.equal(f.w.events[0].elem, PEARLS[kind].elem); assert.equal(f.w.events.length, 1);
     await f.sessions.flush(); const stored = await f.base.loadProfile(accounts[0]);
     assert.equal(stored.data.gold, 31); assert.equal(stored.data.xp, 21); assert.equal(stored.data.mast[0][0], 3);
+    assert.equal(stored.data.eco.pack.cap, 18); assert.equal(stored.data.eco.pack.maxMass, 24);
     assert.deepEqual(stored.data.pearls.bag.map((q) => q.uid), ['swallow-first', 'swallow-last']);
     assert.equal(stored.data.pearls.swallowed.kind, kind);
   });
