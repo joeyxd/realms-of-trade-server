@@ -25,6 +25,9 @@ en memoria muestra confirmación de sesión; la interfaz no lo presenta como gua
   AttributeControls/plan reales, pero reemplaza perfiles en un fixture y no acredita host ni almacenamiento público.
 - `git diff --check` y sintaxis de entradas/herramientas sin errores. La revisión final añadió una
   distinción textual para recibos no durables, verificada en las 67 pruebas; no cambia el flujo visual durable.
+- [Integración concurrente](inv02c-integration.txt): **32/32**, host/cliente de atributos, host de agua
+  y ciclo de perlas de suelo. Merge `1d701a4` conserva los cambios de terreno, suelo y Brisa de upstream
+  `404013f`; la única superposición de runtime fue `server/host.mjs`, revisada antes de las pruebas.
 
 Comando: `node --test --test-concurrency=1 tests/attribute-client.test.mjs tests/attribute-operation.test.mjs tests/attribute-authority.test.mjs tests/attribute-profile.test.mjs tests/attribute-controls.test.mjs tests/attribute-operations-sql.test.mjs tests/freshwater-sql.test.mjs tests/workshop-ui.test.mjs tests/ground-workshop-compatibility.test.mjs`.
 Los conteos de entregas anteriores se solapan. La prueba móvil es emulada, sin afirmación de rendimiento físico.
