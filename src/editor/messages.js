@@ -24,9 +24,11 @@ const documentCodes = {
   asset_id: 'draftInvalid', transform: 'transform', position: 'transform', rotation: 'transform', scale: 'transform',
   collider: 'draftInvalid', duplicate_id: 'draftInvalid', object_limit: 'objectLimit', missing_object: 'draftInvalid',
   object_patch: 'draftInvalid', history_limit: 'draftInvalid',
+  selection: 'draftInvalid', selection_hidden: 'draftInvalid', selection_transform: 'transform', selection_limit: 'selectionLimit',
 };
 
 const known = {
+  selectionLimit: { en: 'Select at most 120 decorations.', es: 'Selecciona como máximo 120 decoraciones.' },
   storageUnavailable: { en: 'Local draft storage is unavailable in this browser.', es: 'El almacenamiento local de borradores no está disponible en este navegador.' },
   draftCorrupt: { en: 'The saved draft is damaged and could not be opened.', es: 'El borrador guardado está dañado y no se pudo abrir.' },
   draftInvalid: { en: 'The draft contains invalid data and could not be used.', es: 'El borrador contiene datos no válidos y no se pudo usar.' },

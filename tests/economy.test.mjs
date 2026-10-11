@@ -180,8 +180,11 @@ test('economy: the clock, unpaid upkeep stops a workshop, serialize round trip',
 });
 
 test('profiles carry the trade state; old saves without it get an empty pack', () => {
-  const p = newProfile();
+  const starter = newProfile();
+  assert.equal(starter.eco.pack.cap, 18); assert.equal(starter.eco.pack.maxMass, 18);
+  const p = newProfile({ starter: false });
   assert.deepEqual(p.eco.pack.goods, {}); assert.equal(p.eco.pack.cap, 10);
+  assert.equal(Object.hasOwn(p.eco.pack, 'maxMass'), false);
   p.eco.pack.goods = { ron: 3, x: 4 }; p.eco.ships = [{ hull: 'balandra', mods: ['cannon_bronce', 'zzz'], at: 'aldea', hold: { goods: { pescado: 4 } } }, { hull: 'nave' }];
   const q = sanitizeProfile(JSON.parse(JSON.stringify(p)));
   assert.deepEqual(q.eco.pack.goods, { ron: 3 });

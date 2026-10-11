@@ -84,6 +84,12 @@
 .gm-scene-list { display: grid; align-content: start; gap: 5px; overflow: auto; padding: 7px; }
 .gm-scene-item { display: grid; text-align: left; gap: 3px; }
 .gm-scene-item small { color: #a3bac0; font-size: 10px; }
+.gm-scene-row { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: center; gap: 3px; }
+.gm-scene-row > input { width: 20px; height: 20px; margin: 5px; cursor: pointer; accent-color: #6eead0; }
+.gm-scene-row > input:disabled { cursor: default; opacity: .4; }
+.gm-scene-row > button { min-width: 0; overflow-wrap: anywhere; }
+.gm-scene-panel > [data-action="clear-selection"] { margin: 0 10px 5px; }
+.gm-group-note { color: #b3dfd7; font-size: 11px; }
 .gm-collider-fields { display: grid; gap: 7px; margin-top: 12px; }
 .gm-collider-fields label { display: grid; gap: 3px; color: #a9bec2; font-size: 11px; }
 .gm-collider-fields input, .gm-collider-fields select { min-width: 0; width: 100%; color: #edf4f5; padding: 6px; background: #102129; border: 1px solid #354b54; border-radius: 5px; }
