@@ -29,6 +29,8 @@ for (let i = 2; i < process.argv.length; i++) {
 if (envFile) process.loadEnvFile(path.resolve(envFile));
 assert.equal(process.env.MN_QA_ALLOW_PUBLIC, '1', 'explicit public QA guard required');
 assert.equal(PROTOCOL_VERSION, 56, 'review the public canary after protocol changes');
+const expectedVersion = process.env.MN_QA_EXPECTED_VERSION || GAME.version;
+assert.match(expectedVersion, /^0\.6\.0-alpha\.[0-9]+$/, 'explicit public release version required');
 if (cleanupManifestPath) assert.ok(out && fs.existsSync(out), 'existing evidence directory required for cleanup mode');
 else assert.ok(out && !fs.existsSync(out), 'new evidence directory required');
 for (const key of ['SUPABASE_URL', 'SUPABASE_PUBLIC_KEY', 'SUPABASE_SERVICE_KEY']) assert.ok(process.env[key], 'private QA configuration unavailable');
@@ -72,7 +74,7 @@ async function fetchJson(url, label) {
 }
 async function checkPublicReadiness() {
   const { response: statusResponse, body: status } = await fetchJson(new URL('/status', target), 'public status');
-  assert.ok(statusResponse.ok && status.version === GAME.version && status.errors === 0, 'public alpha release is not healthy/current');
+  assert.ok(statusResponse.ok && status.version === expectedVersion && status.errors === 0, 'public alpha release is not healthy/current');
   assert.equal(status.storage?.durable, true); assert.equal(status.storage?.accounts, true);
   assert.equal(status.storage?.world?.id, WORLD);
   const { response: authResponse, body: authConfig } = await fetchJson(new URL('/auth/config', target), 'public auth config');
@@ -175,7 +177,7 @@ let accountId = null, marker = null, email = null, password = null, browser, con
 let gameSocketSeen = false, gameSocketClosed = false, gameSocketSequence = 0, attemptedCreation = false, attemptedIntent = null;
 let stagedRecord = null, manifestPath = null;
 let evidence = { schema: 'mn.companion-creation.public.v1', at: new Date().toISOString(), target: target.origin,
-  gameVersion: GAME.version, protocolVersion: PROTOCOL_VERSION, world: WORLD,
+  gameVersion: expectedVersion, sourceVersion: GAME.version, protocolVersion: PROTOCOL_VERSION, world: WORLD,
   production: true, simulatedAuth: false, modelCalls: false, otherGameplayCommands: false,
   checks: [], screenshots: [], errors: [], acceptancePass: false, cleanupPending: false, cleanupComplete: false, pass: false };
 
@@ -364,7 +366,7 @@ async function runAcceptanceMode() {
     await page.reload({ waitUntil: 'commit', timeout: 90000 });
     await wait(() => window.__mn && !document.querySelector('#btn-play')?.disabled, 'client after reload');
     await wait(() => { const panel = document.querySelector('.account-signed'); return panel && !panel.hidden; }, 'persisted real UI login');
-    await page.locator('#btn-play').click();
+    await page.locator('#btn-play').press('Enter');
     await wait(() => window.__mn.client.joined && window.__mn.st.mode === 'playing', 'rejoined authenticated world');
     await wait(() => !window.__mn.st.boarding && document.querySelector('#title')?.hidden, 'rejoined profile entry settles');
     await page.locator('.mn-companions-toggle').click();
