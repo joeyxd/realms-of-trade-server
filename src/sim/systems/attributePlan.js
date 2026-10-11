@@ -1,5 +1,5 @@
-// UNMOUNTED INV02a pure plan only. Returning ok does not mean storage committed, durable, or replay-safe.
-// Do not connect to gameplay until M5 adds serialized durable acknowledgement and replay semantics.
+// Pure candidate planner. Returning ok never means storage committed or replay-safe.
+// The opt-in M5 economic authority confirms, applies and publishes live changes.
 import { tuning } from '../../data/tuning.js';
 import { ATTR, attrPoints, readAttrField } from '../../data/attributes.js';
 import { CARRY, carryLimits, readCarryField } from '../../data/carry.js';
@@ -44,7 +44,7 @@ function parseCommand(command) {
   const op = opField.value;
   const keys = op === 'assign'
     ? ['type', 'op', 'opId', 'expectedRev', 'stat', 'n']
-    : op === 'reset' ? ['type', 'op', 'opId', 'expectedRev'] : null;
+    : op === 'reset' || op === 'adopt' ? ['type', 'op', 'opId', 'expectedRev'] : null;
   if (!keys || !exactKeys(command, keys)) return null;
   const values = Object.fromEntries(keys.map((key) => [key, ownData(command, key).value]));
   if (values.type !== 'attributes' || typeof values.opId !== 'string' || !OP_ID.test(values.opId) ||
@@ -94,7 +94,7 @@ function cloneCanonical(value, active = new WeakSet()) {
   finally { active.delete(value); }
 }
 
-function inspectProfile(profile) {
+function inspectProfile(profile, allowLegacy = false) {
   if (!plain(profile)) return { why: 'profile' };
   const cloned = cloneCanonical(profile);
   if (cloned === INVALID_CLONE) return { why: 'profile' };
@@ -109,21 +109,23 @@ function inspectProfile(profile) {
   if (attr.carga > level - 1) return { why: 'profile' };
 
   const carryField = readCarryField(profile);
-  if (!carryField.present || !carryField.value) return { why: 'carry' };
-  const carry = carryField.value;
+  const legacyAdoption = allowLegacy && !carryField.present && parsedLegacyPack(profile);
+  if ((!carryField.present || !carryField.value) && !legacyAdoption) return { why: 'carry' };
+  const carry = carryField.value || (legacyAdoption ? { v: CARRY.version, backpack: 0 } : null);
   const ecoField = ownData(profile, 'eco');
   if (!ecoField.present || !plain(ecoField.value)) return { why: 'profile' };
   const revField = ownData(ecoField.value, 'tradeRev'), packField = ownData(ecoField.value, 'pack');
   if (!revField.present || !Number.isSafeInteger(revField.value) || revField.value < 0 || revField.value > 2147483646 ||
-      !packField.present || !exactKeys(packField.value, ['cap', 'maxMass', 'goods'])) return { why: 'profile' };
+      !packField.present || !(legacyAdoption ? exactKeys(packField.value, ['cap', 'goods']) : exactKeys(packField.value, ['cap', 'maxMass', 'goods']))) return { why: 'profile' };
   const pack = packField.value;
   const capField = ownData(pack, 'cap'), massField = ownData(pack, 'maxMass'), goodsField = ownData(pack, 'goods');
-  if (!capField.present || capField.value !== CARRY.backpacks[carry.backpack] || !massField.present ||
-      !Number.isSafeInteger(massField.value) || !goodsField.present || !plain(goodsField.value)) return { why: 'carry' };
+  if (!capField.present || capField.value !== (legacyAdoption ? 10 : CARRY.backpacks[carry.backpack]) ||
+      (!legacyAdoption && (!massField.present || !Number.isSafeInteger(massField.value))) ||
+      !goodsField.present || !plain(goodsField.value)) return { why: 'carry' };
 
   const limits = carryLimits(carry, level);
   const recordedMaxMass = attrField.present ? 50 + 5 * attr.carga : limits?.maxMass;
-  if (!limits || massField.value !== recordedMaxMass) return { why: 'carry' };
+  if (!limits || !legacyAdoption && massField.value !== recordedMaxMass) return { why: 'carry' };
 
   // Validate keys/counts before calling hold helpers; this keeps getters and unknown goods out of the calculation.
   try {
@@ -135,8 +137,17 @@ function inspectProfile(profile) {
     const used = holdUsed(pack), mass = holdMass(pack);
     if (!Number.isFinite(used) || used < 0 || used > capField.value || !Number.isFinite(mass) || mass < 0) return { why: 'carry' };
     return { level, attrField, attr, carry, pack, eco: ecoField.value, tradeRev: revField.value, clone: cloned,
-      volume: limits.volume, mass };
+      volume: limits.volume, mass, legacyAdoption };
   } catch { return { why: 'profile' }; }
+}
+
+function parsedLegacyPack(profile) {
+  const eco = ownData(profile, 'eco');
+  if (!eco.present || !plain(eco.value)) return false;
+  const pack = ownData(eco.value, 'pack');
+  if (!pack.present || !exactKeys(pack.value, ['cap', 'goods'])) return false;
+  const cap = ownData(pack.value, 'cap'), goods = ownData(pack.value, 'goods');
+  return cap.present && cap.value === 10 && goods.present && plain(goods.value);
 }
 
 function resultPoints(level, attr) {
@@ -149,14 +160,29 @@ function resultLimits(volume, carga) {
   return { volume, comfortableMass, maxMass: 50 + 5 * carga };
 }
 
-/** Pure, unmounted validation/planning for a single Carga allocation or its one free reset. */
+/** Pure validation/planning for adoption, a Carga allocation or its one free reset. */
 export function planAttributeChange(profile, command) {
   const parsed = parseCommand(command);
   if (!parsed) return error('command', profile);
-  const source = inspectProfile(profile);
+  const attrField = readAttrField(profile);
+  if (parsed.op === 'adopt' && attrField.present && attrField.value) return error('adopted', profile);
+  const source = inspectProfile(profile, parsed.op === 'adopt' && !attrField.present);
   if (source.why) return error(source.why, profile);
   if (source.tradeRev > MAX_REV_BEFORE_INCREMENT) return error('limit', profile);
   if (parsed.expectedRev !== source.tradeRev) return error('conflict', profile);
+
+  if (parsed.op === 'adopt') {
+    if (source.attrField.present) return error('adopted', profile);
+    const next = source.clone;
+    const limits = resultLimits(source.legacyAdoption ? CARRY.backpacks[0] : source.volume, 0);
+    if (source.mass > limits.maxMass + 1e-9 || holdUsed(source.pack) > limits.volume + 1e-9) return error('heavy', profile);
+    next.attr = { v: ATTR.version, carga: 0, re: 0 };
+    if (source.legacyAdoption) next.carry = { v: CARRY.version, backpack: 0 };
+    next.eco.pack.cap = limits.volume;
+    next.eco.pack.maxMass = limits.maxMass;
+    next.eco.tradeRev = source.tradeRev + 1;
+    return { ok: true, why: '', profile: next, points: resultPoints(source.level, next.attr), limits };
+  }
 
   const earned = source.level - 1;
   let nextAttr = { ...source.attr };

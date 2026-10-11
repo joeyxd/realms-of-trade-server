@@ -1,5 +1,5 @@
-// Unmounted INV02a attribute data contract. This module describes points only; no runtime system calls it.
-// A plan is not a durable ACK or replay guarantee. M5 must own any live mutation before gameplay is enabled.
+// Attribute data contract. Reading points never adopts a profile or spends them.
+// The optional M5 attribute operation owns live mutation and durable acknowledgement.
 import { tuning } from './tuning.js';
 
 export const ATTR = Object.freeze({

@@ -1,5 +1,6 @@
 // First-storage quest and personal backpack upgrades use M5's existing profile transaction.
 import { CARRY, carryLimits, nextBackpack, readCarryField } from '../src/data/carry.js';
+import { packLimitsForProfile } from '../src/sim/economy/carry.js';
 import { readWorkshop, workshopPlan, WorkshopError } from '../src/sim/systems/workshop.js';
 import { readProgression } from '../src/sim/systems/progression.js';
 import { holdMass, holdUsed } from '../src/sim/economy/cargo.js';
@@ -13,9 +14,10 @@ const exact = (raw, keys) => raw && typeof raw === 'object' && !Array.isArray(ra
 const safeRev = n => Number.isSafeInteger(n) && n >= 0 && n <= 2147483646;
 
 function carryView(carry, profile) {
-  const limits = carryLimits(carry, profile.lvl);
+  const limits = packLimitsForProfile(profile, carry);
+  const strength = carryLimits(carry, profile.lvl).strength;
   return { v: CARRY.version, backpack: carry.backpack, volume: limits.volume,
-    strength: limits.strength, maxMass: limits.maxMass };
+    strength, maxMass: limits.maxMass };
 }
 
 function profileCarryView(profile) {
@@ -51,7 +53,7 @@ function upgradePack(profile) {
     cloned.eco.pack.goods[good] -= count;
     if (!cloned.eco.pack.goods[good]) delete cloned.eco.pack.goods[good];
   }
-  const limits = carryLimits(next, profile.lvl);
+  const limits = packLimitsForProfile(profile, next);
   if (holdUsed(cloned.eco.pack) > limits.volume || holdMass(cloned.eco.pack) > limits.maxMass) return { why: 'capacity' };
   cloned.carry = next;
   cloned.eco.pack.cap = limits.volume;
