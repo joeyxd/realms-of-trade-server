@@ -50,6 +50,7 @@ export class ECS {
     this.vx = f(); this.vz = f(); this.speed = f(); this.radius = f(); this.moveMag = f(); this.wade = f();
     this.state = new Uint8Array(cap);
     this.swim = f(); this.swimStamina = f(); this.swimDrown = f(); this.swimLoad = f();
+    this.load = f(); // pack load tier on foot (0 comfortable, 1 heavy, 2 above the ceiling), set by the authority
     // SRV01 profile-backed meters and derived stat penalty; bots/non-profile players leave needs disabled.
     this.needs = f(); this.sat = f(); this.hyd = f(); this.needPen = f();
     this.moveMul = f(); this.faceLock = f(); this.kbx = f(); this.kbz = f();
@@ -130,6 +131,7 @@ export class ECS {
     this.moveMul[id] = 1; this.faceLock[id] = 0; this.kbx[id] = this.kbz[id] = 0;
     this.state[id] = 0;
     this.swim[id] = this.swimDrown[id] = this.swimLoad[id] = 0; this.swimStamina[id] = tuning.swim.stamina;
+    this.load[id] = 0;
     this.needs[id] = this.sat[id] = this.hyd[id] = this.needPen[id] = 0;
     this.dashT[id] = -1;
     this.dashDirX[id] = this.dashDirZ[id] = this.dashCovered[id] = 0;
@@ -186,7 +188,7 @@ export class ECS {
 export const MOVER_FIELDS = [
   'x', 'y', 'z', 'facing', 'vx', 'vz', 'moveMag', 'wade', 'dashT', 'dashDirX', 'dashDirZ', 'dashCovered',
   'dashCharges', 'dashMax', 'dashRecharge', 'dashBuffer', 'iframes', 'moveMul', 'faceLock', 'kbx', 'kbz',
-  'swim', 'swimStamina', 'swimDrown', 'swimLoad',
+  'swim', 'swimStamina', 'swimDrown', 'swimLoad', 'load',
 ];
 // Everything the local player predicts (movement + combat). The server sends these at the acked command.
 export const PLAYER_FIELDS = [

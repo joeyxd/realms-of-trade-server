@@ -2,43 +2,43 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { craftAcknowledgementMatches, WorkbenchPanel, workbenchPreview } from '../src/ui/workbench.js';
 
-const profile = (goods, tools = {}) => ({ eco: { pack: { cap: 10, goods }, tradeRev: 4 }, tools });
+const profile = (goods, tools = {}) => ({ eco: { pack: { cap: 20, goods }, tradeRev: 4 }, tools });
 
 test('workbench previews wood batches with the legacy call shape', () => {
-  const preview = workbenchPreview(profile({ tronco: 3 }), 2);
+  const preview = workbenchPreview(profile({ tronco: 4 }), 2);
   assert.equal(preview.recipe, 'madera');
-  assert.equal(preview.inputNeeded, 2);
+  assert.equal(preview.inputNeeded, 4, 'two logs per basic plank');
   assert.equal(preview.outputAmount, 2);
   assert.equal(preview.canCraft, true);
 });
 
 test('stone axe preview requires its full material list and shows owned utility state', () => {
-  const short = workbenchPreview(profile({ madera: 1, piedra: 0 }), 1, 'hacha_piedra');
+  const short = workbenchPreview(profile({ tronco: 3, piedra: 1 }), 1, 'hacha_piedra');
   assert.equal(short.inputs.length, 2);
   assert.equal(short.materialsFit, false);
   assert.equal(short.canCraft, false);
-  const ready = workbenchPreview(profile({ madera: 1, piedra: 1 }), 1, 'hacha_piedra');
+  const ready = workbenchPreview(profile({ tronco: 3, piedra: 2 }), 1, 'hacha_piedra');
   assert.equal(ready.canCraft, true);
   assert.equal(ready.outputName, 'Hacha de piedra');
-  assert.equal(ready.usedBefore, 5);
+  assert.equal(ready.usedBefore, 13);
   assert.equal(ready.usedAfter, 0, 'the consumed materials leave the backpack');
-  assert.equal(ready.spaceAfter, 10, 'the fixed utility belt tool adds no backpack volume');
-  const owned = workbenchPreview(profile({ madera: 1, piedra: 1 }, { axe: 1 }), 1, 'hacha_piedra');
+  assert.equal(ready.spaceAfter, 20, 'the fixed utility belt tool adds no backpack volume');
+  const owned = workbenchPreview(profile({ tronco: 3, piedra: 2 }, { axe: 1 }), 1, 'hacha_piedra');
   assert.equal(owned.ownedTool, true);
   assert.equal(owned.maxCraftable, 0);
   assert.equal(owned.canCraft, false);
 });
 
-test('stone pick preview requires two stones and remains a single craft', () => {
-  const short = workbenchPreview(profile({ madera: 1, piedra: 1 }), 1, 'pico_piedra');
+test('stone pick preview requires three logs and two stones and remains a single craft', () => {
+  const short = workbenchPreview(profile({ tronco: 2, piedra: 2 }), 1, 'pico_piedra');
   assert.equal(short.materialsFit, false);
   assert.equal(short.craftMax, 1);
-  const ready = workbenchPreview(profile({ madera: 1, piedra: 2 }), 1, 'pico_piedra');
+  const ready = workbenchPreview(profile({ tronco: 3, piedra: 2 }), 1, 'pico_piedra');
   assert.equal(ready.canCraft, true);
   assert.equal(ready.tool, 'pickaxe');
-  assert.equal(ready.usedBefore, 7);
-  assert.equal(ready.usedAfter, 0, 'wood and both stones leave the backpack');
-  assert.equal(ready.spaceAfter, 10);
+  assert.equal(ready.usedBefore, 13);
+  assert.equal(ready.usedAfter, 0, 'the logs and both stones leave the backpack');
+  assert.equal(ready.spaceAfter, 20);
 });
 
 test('craft receipt must match the immutable request recipe, output, and next revision', () => {
@@ -63,14 +63,14 @@ function panelForConfirm(goods, recipe, qty) {
   panel.recipe = recipe;
   panel.pending = null;
   panel.lastResult = '';
-  panel.context = () => ({ profile: profile(goods) });
+  panel.context = panel.baseContext = () => ({ profile: profile(goods) }); // bench and hand recipes
   panel.submitCommand = (command) => { sent.push(command); return true; };
   panel.update = () => {};
   return { panel, sent };
 }
 
 test('actual madera confirmation captures the batch label and immutable retry command', () => {
-  const { panel, sent } = panelForConfirm({ tronco: 3 }, 'madera', 2);
+  const { panel, sent } = panelForConfirm({ tronco: 4 }, 'madera', 2);
   assert.equal(panel.confirm(), true);
   const pending = panel.pending;
   assert.equal(pending.label, '2 tablas');
@@ -87,7 +87,7 @@ test('actual madera confirmation captures the batch label and immutable retry co
 });
 
 test('actual tool confirmation captures a single tool request for retry', () => {
-  const { panel, sent } = panelForConfirm({ madera: 1, piedra: 2 }, 'pico_piedra', 1);
+  const { panel, sent } = panelForConfirm({ tronco: 3, piedra: 2 }, 'pico_piedra', 1);
   assert.equal(panel.confirm(), true);
   assert.equal(panel.pending.label, 'Pico de piedra');
   assert.equal(panel.pending.tool, 'pickaxe');

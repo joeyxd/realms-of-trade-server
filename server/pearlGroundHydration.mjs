@@ -47,6 +47,11 @@ export class PearlGroundHydration {
     return this.#rows.map((row, i) => ({ dropId: this.#before.nextDrop + i,
       uid: row.uid, kind: row.kind, world: row.world, ground: clone(row.ground), version: row.version }));
   }
+  get currentDeathDrops() {
+    if (this.#state !== 'applied') return [];
+    return this.#deathRows.map((row, i) => ({ dropId: this.#before.nextDrop + this.#rows.length + i,
+      ...clone(row) }));
+  }
 
   #capture() {
     const w = this.#world;

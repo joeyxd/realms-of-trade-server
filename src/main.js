@@ -46,7 +46,7 @@ import { comic } from './ui/comic.js';
 import { DevPanel } from './ui/devpanel.js';
 import { DebugDraw } from './render/debugdraw.js';
 import { Rewards } from './ui/rewards.js';
-import { CharPanel } from './ui/charpanel.js';
+import { CharacterScreen } from './ui/characterScreen.js';
 import { Dialog } from './ui/dialog.js';
 import { MapView } from './ui/mapview.js';
 import { MiniMap } from './ui/minimap.js';
@@ -210,6 +210,7 @@ async function boot() {
     onMute: () => { settings.muted = !settings.muted; audio.set({ muted: settings.muted }); hud.setMuted(settings.muted); saveSettings(); sfx.click(); },
     onBag: () => { artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.toggle('gear'); },
     onMap: () => { artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); mapView.toggle(); },
+    onCraft: () => { if (st.mode === 'playing' && !pause.open) workbench.toggle(); },
   });
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
@@ -226,10 +227,16 @@ async function boot() {
       fireMul: ecs.fireMul[e], potHeal: ecs.potHeal[e], xpMul: ecs.xpMul[e], potions: ecs.potions[e], weapon: ecs.weapon[e], gold: p ? p.gold : 0,
     };
   };
-  const charPanel = new CharPanel($('#charpanel'), {
+  const charPanel = new CharacterScreen($('#charpanel'), {
     send: sendCmd, profile: () => client && client.profile, stats: playerStats,
     backpack: () => resources.backpack(), locale: () => getLocale(),
+    // Character screen (UI kit): live vitals, the turntable figure and what each action slot holds.
+    vitals: () => ({ name: settings.name, skin: settings.skin, level: ps.level, hp: ps.hp, maxHp: ps.maxHp, xp: ps.xp, xpNext: xpToNext(ps.level),
+      guard: ps.guardSt, guardMax: ps.guardMax || tuning.guard.stamina, needs: ps.needs, sat: ps.sat, hyd: ps.hyd, needPen: ps.needPen }),
+    figure: (canvas, view) => studio?.renderFigure(settings.skin, canvas, view),
+    slots: () => { const d = readSlots(); return { q: d.q.id, e: d.e.id, g: d.g.id, r: d.r.id }; },
     attributeEnabled: () => client?.joined === true && !client.t.closed && client.attributes?.enabled === true,
+    onFood: () => freshwaterPanel?.open(), // RNV07b: eating and drinking are durable water/provisions operations
     nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
@@ -291,7 +298,9 @@ async function boot() {
       canvas.focus({ preventScroll: true });
     },
   });
-  resources.openWorkbench = () => workbench.open();
+  resources.openWorkbench = () => workbench.open({ recipe: 'madera' }); // the bench prompt is about logs → planks
+  // TAB: the crafting menu anywhere on foot (hand recipes). E crafts while it is open (handled by the panel).
+  input.onHotkey('Tab', () => { if (st.mode !== 'playing' || pause.open) return false; return workbench.toggle(); });
   const raftDoors = new RaftDoorActions({ client: () => client,
     locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('raftDoor', (ev) => safe('raftDoor', () => raftDoors.acknowledge(ev)));
@@ -1495,6 +1504,7 @@ async function boot() {
         if (zw) world.rig.zoom(zw > 0 ? 1 : -1);
         hud.setDash(Math.floor(ps.charges), ps.maxCharges, ps.recharge / tuning.dash.recharge);
         hud.setNeeds({ needs: ps.needs, sat: ps.sat, hyd: ps.hyd, needPen: ps.needPen });
+        hud.setLoad(ps.load);
         hud.setStats({
           hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
           guard: ps.guardSt / (ps.guardMax || tuning.guard.stamina), catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,

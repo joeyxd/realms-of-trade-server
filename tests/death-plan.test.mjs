@@ -8,13 +8,19 @@ import { rollItem } from '../src/sim/items.js';
 import { killPlayer } from '../src/sim/systems/combat.js';
 import { captureDeathPlan } from '../server/deathPlan.mjs';
 import { capturePearlProfile } from '../server/pearlProfileSnapshot.mjs';
+import { packLimitsForProfile } from '../src/sim/economy/carry.js';
 import { map, A } from './helpers.mjs';
 
 const clone = structuredClone;
+function updatePackLimits(p) {
+  const limits = packLimitsForProfile(p);
+  p.eco.pack.cap = limits.volume; p.eco.pack.maxMass = limits.maxMass;
+}
 function fixture({ victimAt = A, killer = false, seed = 42 } = {}) {
   const w = new World(seed, { map, server: true }); installInventory(w, 'death-plan');
   const e = w.spawnPlayer({ x: victimAt.x, z: victimAt.z }), p = newProfile();
   p.pirateId = 'account:death-plan-victim'; p.lvl = 4; p.xp = 80; p.gold = 73;
+  updatePackLimits(p);
   p.mast[0] = [3, 123]; attachProfile(w, e, p); w.ecs.regenT[e] = 99;
   let k = 0, kp = null;
   if (killer) {
@@ -181,6 +187,7 @@ test('matches actual killPlayer profile, drops, ledgers, events, numeric ECS row
     // Let the killer's profile lag behind valid live ECS-backed progress.
     w.ecs.level[k] = 6; w.ecs.xp[k] = 41.25; w.ecs.potions[k] = 3;
     kp.lvl = 2; kp.xp = 4; kp.pot = 0;
+    updatePackLimits(kp);
     w.events.length = 0; w.profileDirty.clear();
   }
   const plan = captureDeathPlan(left.w, left.e, { seq: 29, by: left.k });

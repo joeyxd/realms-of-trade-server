@@ -28,7 +28,7 @@ function writeSurv(profile, ecs, e) {
 }
 
 export function syncNeeds(profile, ecs, e) {
-  if (!(ecs.needs[e] > 0) || !profile) return false;
+  if (!(ecs.needs?.[e] > 0) || !profile) return false; // fixture worlds may lack the SRV01 columns
   writeSurv(profile, ecs, e);
   return true;
 }

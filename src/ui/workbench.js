@@ -1,32 +1,28 @@
-// The shore workbench batches wood and offers fixed utility tools; the server remains authoritative.
+// Crafting menu: recipes by category, materials, real base stats and the backpack. Hand recipes craft anywhere on
+// land; the rest need the shore workbench. The server stays authoritative; this panel only previews and asks.
 import { CRAFT_RECIPES, HARVEST, WOOD_RECIPE } from '../data/resources.js';
-import { GOODS } from '../data/goods.js';
+import { onLocaleChange, formatNumber } from '../core/i18n.js';
+import { GOODS, GOOD_IDS } from '../data/goods.js';
 import { goodMass, goodVolume, holdMass, holdUsed } from '../sim/economy/cargo.js';
-import { t, formatNumber, translateData, onLocaleChange } from '../core/i18n.js';
+import { comfortMass } from '../data/carry.js';
+import { readAttrField } from '../data/attributes.js';
+import { CRAFT_CATEGORIES, CRAFT_ICONS, CRAFT_REASONS, CRAFT_TEXT, HERO_ART, RECIPE_ROWS, RECIPE_UI, UPCOMING_RECIPES, craftLang, goodName, itemIcon } from './craftingCatalog.js';
+import { kitAsset } from './kit.js';
 
 const MAX_CRAFT = () => Number.isSafeInteger(HARVEST.craftMax) && HARVEST.craftMax > 0 ? HARVEST.craftMax : 10;
-const fmt = (value) => formatNumber(Math.max(0, Number.isFinite(value) ? value : 0));
+const LOCALE = { es: 'es-MX', en: 'en-US' };
+const fmt = (value, lang = craftLang()) => formatNumber(Math.max(0, Number.isFinite(value) ? value : 0));
+const fill = (text, params) => text.replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? ''));
+const esc = (text) => String(text).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const recipeFor = (id = WOOD_RECIPE.id) => CRAFT_RECIPES?.[id] || CRAFT_RECIPES?.[WOOD_RECIPE.id] || WOOD_RECIPE;
 const recipeInputs = (recipe) => recipe.inputs || { [recipe.input]: recipe.count || 1 };
 const recipeOutput = (recipe) => recipe.output;
 const isToolRecipe = (recipe) => !!recipe.tool;
-const STORAGE_REASONS = {
-  es: { account_required: 'Inicia sesión para fabricar en este servidor.', storage: 'El servidor no pudo confirmar el guardado. Vuelve a conectar.' },
-  en: { account_required: 'Sign in to craft on this server.', storage: 'The server could not confirm the save. Reconnect to continue.' },
-};
-const REASONS = {
-  schema: 'La solicitud no es válida. Ajusta la cantidad e inténtalo otra vez.', n: 'Elige una cantidad válida para preparar.',
-  materials: 'No llevas suficientes materiales para esa receta.', full: 'La mochila no tiene espacio para el resultado.',
-  room: 'La mochila no tiene espacio para el resultado.', far: 'Acércate al banco para preparar materiales.',
-  bench: 'El banco no está disponible en esta partida.', dead: 'No puedes preparar materiales mientras estás derrotado.',
-  busy: 'Detente y termina tu acción antes de preparar materiales.', combat: 'Espera tres segundos en calma antes de preparar materiales.',
-  cooldown: 'Espera un momento antes de preparar otra tanda.', calm: 'Espera tres segundos en calma antes de preparar materiales.',
-  land: 'Desembarca y acércate al banco en tierra.', aboard: 'Desembarca para preparar materiales.', navigation: 'Vuelve a atracar antes de preparar materiales.',
-  revision: 'La mochila cambió. Revisa los materiales e inténtalo otra vez.', revisionLimit: 'La revisión llegó a su límite; vuelve a entrar.',
-  saveSize: 'La partida supera el límite de guardado.', duplicate: 'La solicitud ya corresponde a otra acción.',
-  opIdReuse: 'La solicitud ya corresponde a otra acción.', receiptLimit: 'No se pudo registrar la solicitud; vuelve a entrar.',
-  pack: 'La mochila no está disponible.', alreadyOwned: 'Ya llevas esa herramienta en el cinturón.'
-};
+const recipesIn = (cat) => Object.values(CRAFT_RECIPES).filter((r) => RECIPE_UI[r.id]?.cat === cat)
+  .sort((a, b) => (RECIPE_UI[a.id].order || 0) - (RECIPE_UI[b.id].order || 0));
+const recipeText = (id, lang) => RECIPE_UI[id]?.[lang] || RECIPE_UI[id]?.es || { name: recipeFor(id).name, desc: '', flavor: '', motto: '' };
+// Absolute: a relative url() inside a custom property resolves against the stylesheet that uses it.
+const artUrl = (file) => kitAsset(`crafting/${file}`);
 
 function validPack(pack) {
   if (!pack || !Number.isFinite(pack.cap) || pack.cap < 0 || pack.maxMass !== undefined && (!Number.isFinite(pack.maxMass) || pack.maxMass < 0)
@@ -55,13 +51,13 @@ export function workbenchPreview(profile, n, recipeId = WOOD_RECIPE.id) {
   const qtyValid = Number.isSafeInteger(n) && n >= 1 && n <= craftMax;
   const requested = qtyValid ? n : 0, outputAmount = requested * outputCount;
   const usedAfter = packKnown ? usedBefore + requested * deltaPerBatch : 0;
-  const massAfter = packKnown ? massBefore + requested * massDeltaPerBatch : 0;
   const spaceAfter = packKnown ? pack.cap - usedAfter : 0;
+  const massAfter = packKnown ? massBefore + requested * massDeltaPerBatch : 0;
   const spaceFits = tool || (packKnown && spaceAfter >= -1e-8);
   const massFits = tool || (packKnown && (pack.maxMass === undefined || massAfter <= pack.maxMass + 1e-8));
   const english = globalThis.document?.documentElement?.lang?.toLowerCase().startsWith('en') === true;
-  const plankName = recipe.id === WOOD_RECIPE.id ? (english ? 'Basic plank' : 'Tabla bÃ¡sica') : GOODS[output]?.name || output;
-  return { recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, inputs: needs,
+  const plankName = recipe.id === WOOD_RECIPE.id ? (english ? 'Basic plank' : 'Tabla básica') : GOODS[output]?.name || output;
+  return { recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, hand: !!recipe.hand, inputs: needs,
     input: needs[0]?.good, output, inputName: needs[0]?.name || '', outputName: tool ? recipe.name : plankName,
     n: requested, craftMax, packKnown, qtyValid, inputOwned: needs[0]?.owned || 0,
     inputNeeded: needs[0]?.count * requested || 0, outputAmount, usedBefore, usedAfter, massBefore, massAfter,
@@ -81,132 +77,263 @@ export function craftAcknowledgementMatches(pending, ev) {
   return ev.good === recipe.output && ev.count === pending.count;
 }
 
+const TAB_HTML = CRAFT_CATEGORIES.map((cat) => `<button class="cr-tab" type="button" role="tab" data-cat="${cat}"><span class="cr-tab-ico">${CRAFT_ICONS[cat]}</span><span data-t="tabs.${cat}"></span></button>`).join('');
+
 export class WorkbenchPanel {
   constructor({ parent, profile, player, bench, enabled, blocked, submit, onContext }) {
     Object.assign(this, { parent, profile, player, bench, enabled, blocked, submitCommand: submit, onContext });
-    this.active = false; this.pending = null; this.qty = 1; this.recipe = WOOD_RECIPE.id; this.lastResult = ''; this._contextNotified = false;
+    this.active = false; this.pending = null; this.qty = 1; this.recipe = 'hacha_piedra'; this.cat = 'tools';
+    this.lastResult = ''; this.resultSource = null; this.resultTone = ''; this._contextNotified = false; this.lang = '';
     this.root = document.createElement('section'); this.root.className = 'workbench-panel'; this.root.hidden = true;
-    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'false'); this.root.setAttribute('aria-label', 'Banco de materiales');
-    this.root.innerHTML = `<header class="wb-head"><div class="wb-mark" aria-hidden="true">✦</div><div class="wb-heading"><small>BANCO DEL PUERTO</small><h2>Banco de materiales</h2></div><button class="wb-close" type="button" aria-label="Cerrar banco">×</button></header>
-      <div class="wb-body"><div class="wb-amounts" data-recipe-list role="group" aria-label="Receta"></div>
-      <div class="wb-recipe" aria-label="Receta actual"><div class="wb-material"><span class="wb-wood-icon" aria-hidden="true">▰</span><span><small>NECESITAS</small><b data-input-name>Tronco</b><em data-input-count>1 necesario</em></span></div><div class="wb-arrow" aria-hidden="true">→</div><div class="wb-material wb-result"><span class="wb-plank-icon" aria-hidden="true">▰</span><span><small>FABRICAS</small><b data-output-name>Madera</b><em data-output-count>1 unidad</em></span></div></div>
-      <section class="wb-section" aria-labelledby="wb-amount-title"><div class="wb-section-title"><h3 id="wb-amount-title">Cantidad</h3><small>Máximo <span data-craft-max>10</span> por tanda</small></div><div class="wb-amounts" role="group" aria-label="Cantidad rápida"><button type="button" data-qty="1">1</button><button type="button" data-qty="3">3</button><button type="button" data-qty="max">Máx.</button><label class="wb-qty-input"><span class="wb-sr-only">Cantidad a preparar</span><input data-qty-input type="number" inputmode="numeric" min="1" max="10" step="1" value="1" aria-label="Cantidad a preparar"></label></div></section>
-      <section class="wb-section wb-stock" aria-label="Materiales y espacio en mochila"><div data-needs></div><div class="wb-stock-row"><span>Espacio usado</span><b data-pack-used>0 / 0</b></div><div class="wb-capacity"><div class="wb-capacity-track"><i data-pack-bar></i></div><small data-pack-after>Después de preparar: 0 / 0</small></div><div class="wb-stock-row"><span>Cinturón de herramientas</span><b data-tools>Hacha: no · Pico: no</b></div><small>Dos ranuras fijas de utilidad; no ocupan volumen de mochila.</small></section>
-      <p class="wb-feedback" data-feedback aria-live="polite"></p><button class="wb-retry" type="button" hidden>Reintentar la misma preparación</button><p class="wb-next">Lleva la madera a tu balsa para construir o reparar.</p></div><footer class="wb-foot"><button class="wb-confirm" type="button">Preparar</button></footer>`;
+    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'false'); this.root.setAttribute('aria-labelledby', 'wb-title'); this.root.tabIndex = -1;
+    this.root.innerHTML = `<div class="cr-shell">
+      <div class="cr-main">
+        <header class="wb-head"><span class="wb-mark" aria-hidden="true">${CRAFT_ICONS.palm}</span><div class="wb-heading"><h2 id="wb-title" data-t="title"></h2><small data-t="subtitle"></small></div><button class="cr-inv-toggle" type="button" data-inv-toggle aria-expanded="false"><span class="cr-inv-toggle-ico">${CRAFT_ICONS.backpack}</span><span data-t="inventory"></span><b data-pack-mini></b></button><button class="wb-close" type="button">×</button></header>
+        <nav class="cr-tabs" role="tablist">${TAB_HTML}</nav>
+        <div class="cr-body">
+          <aside class="cr-recipes"><h3 data-t="recipes"></h3><div class="cr-list" data-recipe-list role="listbox"></div></aside>
+          <article class="cr-detail">
+            <div class="cr-empty" data-empty hidden><span class="cr-empty-ico">${CRAFT_ICONS.lock}</span><b data-t="emptyTab"></b><p data-t="emptyHint"></p></div>
+            <div class="cr-art" data-art aria-hidden="true"></div>
+            <div class="cr-info"><h2 data-output-name></h2><p class="cr-desc" data-desc></p><p class="cr-flavor" data-flavor></p></div>
+            <section class="cr-req"><h3 data-t="required"></h3><div class="cr-cards" data-needs></div><span class="cr-sr" data-input-count></span></section>
+            <div class="cr-arrow" aria-hidden="true">${CRAFT_ICONS.arrow}</div>
+            <section class="cr-out"><h3 data-t="craftsInto"></h3><div class="cr-out-row"><div class="cr-out-card" data-output-icon></div><div class="cr-out-name"><b data-output-label></b><em data-output-count></em></div></div></section>
+            <section class="cr-stats"><h3 data-t="stats"></h3><div data-stats></div></section>
+            <div class="cr-left-foot">
+              <div class="cr-qty" data-qty-row><span><b data-t="quantity"></b><small data-qty-max></small></span><div class="wb-amounts" role="group"><button type="button" data-qty="1">1</button><button type="button" data-qty="3">3</button><button type="button" data-qty="max" data-t="max"></button><label class="wb-qty-input"><input data-qty-input type="number" inputmode="numeric" min="1" max="10" step="1" value="1"></label></div></div>
+              <span class="cr-where" data-where></span><p class="cr-motto" data-motto></p>
+              <p class="wb-feedback" data-feedback aria-live="polite"></p><button class="wb-retry" type="button" hidden data-t="retry"></button>
+            </div>
+            <div class="cr-action"><button class="wb-confirm" type="button"><span class="cr-key" aria-hidden="true">E</span><span data-confirm-label></span></button></div>
+          </article>
+        </div>
+      </div>
+      <aside class="cr-inv">
+        <header class="cr-inv-head"><span class="cr-inv-ico">${CRAFT_ICONS.backpack}</span><h3 data-t="inventory"></h3><b data-pack-used>0 / 0</b><button class="cr-inv-close" type="button" data-inv-toggle>×</button></header>
+        <div class="cr-capacity"><i data-pack-bar></i></div>
+        <div class="cr-weight" data-weight-row><span data-t="weight"></span><b data-pack-mass>0</b></div>
+        <div class="cr-grid" data-inv></div>
+        <div class="cr-belt"><small data-t="belt"></small><div class="cr-belt-slots" data-tools></div></div>
+        <p class="cr-quote"><span data-t="quote"></span><i aria-hidden="true">${CRAFT_ICONS.palm}</i></p>
+      </aside>
+    </div>
+    <div class="cr-hints" aria-hidden="true"><span><kbd>TAB</kbd><em data-t="close"></em></span><span><kbd>M</kbd><em data-t="map"></em></span></div>`;
     parent.appendChild(this.root); this.$ = (selector) => this.root.querySelector(selector);
-    this.$('[data-recipe-list]').style.gridTemplateColumns = `repeat(${Object.keys(CRAFT_RECIPES).length}, minmax(0, 1fr))`;
-    const massRow = document.createElement('div'); massRow.className = 'wb-mass';
-    massRow.innerHTML = '<div class="wb-stock-row"><span data-mass-label>Mass / strength</span><b data-pack-mass>0 / 0</b></div><small data-pack-mass-after>After crafting: 0 / 0 uM</small>';
-    this.$('.wb-stock').appendChild(massRow);
-    for (const recipe of Object.values(CRAFT_RECIPES)) { const button = document.createElement('button'); button.type = 'button'; button.dataset.recipe = recipe.id; button.textContent = recipe.name; this.$('[data-recipe-list]').appendChild(button); }
-    this.bind(); this.renderKey = ''; this.renderLabels();
-    this.unsubscribeLocale = onLocaleChange(() => { this.renderLabels(); this.renderKey = ''; this.update(); });
-    this.update();
-  }
-  renderLabels() {
-    const set = (selector, value) => { const el = this.$(selector); if (el) el.textContent = value; };
-    this.root.setAttribute('aria-label', t('systems.workbench.title'));
-    set('.wb-heading small', t('systems.workbench.kicker')); set('.wb-heading h2', t('systems.workbench.title'));
-    this.$('.wb-close').setAttribute('aria-label', t('systems.workbench.close'));
-    this.$('[data-recipe-list]').setAttribute('aria-label', t('systems.workbench.recipe'));
-    this.$('.wb-recipe').setAttribute('aria-label', t('systems.workbench.currentRecipe'));
-    this.$('.wb-material:not(.wb-result) small').textContent = t('systems.workbench.need');
-    this.$('.wb-result small').textContent = t('systems.workbench.make');
-    this.$('#wb-amount-title').textContent = t('systems.workbench.quantity');
-    this.$('.wb-qty-input span').textContent = t('systems.workbench.prepareQuantity');
-    this.$('[data-qty-input]').setAttribute('aria-label', t('systems.workbench.prepareQuantity'));
-    const stockRows = this.root.querySelectorAll('.wb-stock-row span');
-    if (stockRows[0]) stockRows[0].textContent = t('systems.workbench.spaceUsed');
-    if (stockRows[1]) stockRows[1].textContent = t('systems.workbench.utilityBelt');
-    this.$('.wb-stock > small').textContent = t('systems.workbench.toolSlotsHint');
-    this.$('.wb-amounts[aria-label]')?.setAttribute('aria-label', t('systems.workbench.quickQuantity'));
-    this.$('[data-qty="max"]').textContent = t('systems.commerce.max');
-    this.$('.wb-retry').textContent = t('systems.workbench.retry'); this.$('.wb-next').textContent = t('systems.workbench.routeHint');
-    this.root.querySelectorAll('[data-recipe]').forEach((button) => { const recipe = recipeFor(button.dataset.recipe); button.textContent = recipe.id === WOOD_RECIPE.id
-      ? (document.documentElement.lang.toLowerCase().startsWith('en') ? 'Basic plank' : 'Tabla básica') : translateData(recipe.name); });
-  }
-  bind() {
-    this.root.addEventListener('keydown', (event) => { if (event.code === 'Escape') { event.preventDefault(); event.stopPropagation(); this.close(); } else if (event.code === 'Enter') { event.stopPropagation(); if (event.target.matches('[data-qty-input]')) { event.preventDefault(); this.confirm(); } } });
-    this.$('.wb-close').addEventListener('click', () => this.close()); this.$('.wb-confirm').addEventListener('click', () => this.confirm()); this.$('.wb-retry').addEventListener('click', () => this.retry());
-    this.$('[data-qty-input]').addEventListener('input', (event) => { this.qty = event.currentTarget.value === '' ? 0 : Number(event.currentTarget.value); this.setResult(''); this.update(); });
-    this.root.addEventListener('click', (event) => {
-      const recipeButton = event.target.closest('[data-recipe]');
-      if (recipeButton && !this.pending) { this.recipe = recipeButton.dataset.recipe; this.qty = 1; this.setResult(''); this.update(); return; }
-      const button = event.target.closest('[data-qty]'); if (!button || button.disabled || this.pending) return;
-      this.qty = button.dataset.qty === 'max' ? workbenchPreview(call(this.profile), 1, this.recipe).maxCraftable : Number(button.dataset.qty); this.setResult(''); this.update();
+    this.bind(); this.renderKey = ''; this.update();
+    this.unsubscribeLocale = onLocaleChange(() => {
+      const focusedRecipe = this.root.ownerDocument.activeElement?.closest?.('[data-recipe]')?.dataset.recipe;
+      this.lang = ''; this.renderKey = ''; this.listKey = ''; this.update();
+      if (focusedRecipe) this.root.querySelector(`[data-recipe="${focusedRecipe}"]`)?.focus({ preventScroll: true });
     });
   }
+  bind() {
+    // E crafts while the menu is open. Window capture runs before the game's hotkeys, whose E belongs to skills/sailing.
+    addEventListener('keydown', (event) => {
+      if (!this.active || event.code !== 'KeyE' || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target; if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      event.preventDefault(); event.stopImmediatePropagation(); this.confirm();
+    }, true);
+    this.root.addEventListener('keydown', (event) => { if (event.code === 'Escape') { event.preventDefault(); event.stopPropagation(); this.close(); } else if (event.code === 'Enter') { event.stopPropagation(); if (event.target.matches('[data-qty-input]')) { event.preventDefault(); this.confirm(); } } });
+    this.$('.wb-close').addEventListener('click', () => this.close()); this.$('.wb-confirm').addEventListener('click', () => this.confirm()); this.$('.wb-retry').addEventListener('click', () => this.retry());
+    this.$('[data-qty-input]').addEventListener('input', (event) => { this.qty = event.currentTarget.value === '' ? 0 : Number(event.currentTarget.value); this.clearResult(); this.update(); });
+    this.root.addEventListener('click', (event) => {
+      // Landscape phones: the backpack is a drawer over the recipe detail.
+      if (event.target.closest('[data-inv-toggle]')) { this.setInventoryOpen(!this.invOpen); return; }
+      const tab = event.target.closest('[data-cat]');
+      if (tab) { this.selectCategory(tab.dataset.cat); return; }
+      const recipeButton = event.target.closest('[data-recipe]');
+      if (recipeButton && !this.pending) { this.recipe = recipeButton.dataset.recipe; this.qty = 1; this.clearResult(); this.update(); return; }
+      const button = event.target.closest('[data-qty]'); if (!button || button.disabled || this.pending || !this.recipe) return;
+      this.qty = button.dataset.qty === 'max' ? workbenchPreview(call(this.profile), 1, this.recipe).maxCraftable : Number(button.dataset.qty); this.clearResult(); this.update();
+    });
+  }
+  setInventoryOpen(open) {
+    this.invOpen = !!open; this.root.classList.toggle('inv-open', this.invOpen);
+    this.$('.cr-inv-toggle').setAttribute('aria-expanded', this.invOpen ? 'true' : 'false');
+  }
+  selectCategory(cat) {
+    if (!CRAFT_CATEGORIES.includes(cat) || this.pending) return;
+    this.cat = cat; const first = recipesIn(cat)[0];
+    if (RECIPE_UI[this.recipe]?.cat !== cat) { this.recipe = first ? first.id : null; this.qty = 1; this.clearResult(); }
+    this.update();
+  }
+  /** Alive, on foot and free to use menus; enough for hand recipes. */
+  baseContext() {
+    const profile = call(this.profile), player = call(this.player);
+    if (!profile?.eco?.pack || !Number.isSafeInteger(profile.eco.tradeRev) || profile.eco.tradeRev < 0 || !player || player.dead || ![player.x, player.y, player.z].every(Number.isFinite)) return null;
+    if (call(this.enabled, false) !== true || call(this.blocked, false) === true) return null;
+    return { profile, player };
+  }
+  /** Standing at the materials bench (bench recipes and the community works). */
   context() {
-    const profile = call(this.profile), player = call(this.player), bench = call(this.bench);
-    if (!profile?.eco?.pack || !Number.isSafeInteger(profile.eco.tradeRev) || profile.eco.tradeRev < 0 || !player || player.dead || !bench || ![player.x, player.y, player.z, bench.x, bench.y, bench.z].every(Number.isFinite)) return null;
-    if (Math.abs(player.y - bench.y) > 1.5 || Math.hypot(player.x - bench.x, player.z - bench.z) > HARVEST.benchRadius || call(this.enabled, false) !== true || call(this.blocked, false) === true) return null;
-    return { profile, player, bench };
+    const base = this.baseContext(), bench = call(this.bench);
+    if (!base || !bench || ![bench.x, bench.y, bench.z].every(Number.isFinite)) return null;
+    const { player } = base;
+    if (Math.abs(player.y - bench.y) > 1.5 || Math.hypot(player.x - bench.x, player.z - bench.z) > HARVEST.benchRadius) return null;
+    return { ...base, bench };
   }
-  open() { if (!this.context()) return false; this.active = true; this.root.hidden = false; this.notifyContext(true); this.update(); this.$('.wb-close').focus({ preventScroll: true }); return true; }
-  close() { if (!this.active && this.root.hidden) return; this.active = false; this.root.hidden = true; this.notifyContext(false); }
+  craftContext(recipeId = this.recipe) { return recipeFor(recipeId).hand ? this.baseContext() : this.context(); }
+  open({ recipe } = {}) {
+    if (!this.baseContext()) return false;
+    if (recipe && CRAFT_RECIPES[recipe] && !this.pending) { this.recipe = recipe; this.cat = RECIPE_UI[recipe]?.cat || this.cat; this.qty = 1; }
+    this.active = true; this.root.hidden = false; this.notifyContext(true); this.renderKey = ''; this.update();
+    this.root.focus({ preventScroll: true }); return true;
+  }
+  close() { if (!this.active && this.root.hidden) return; this.active = false; this.root.hidden = true; this.setInventoryOpen(false); this.notifyContext(false); }
+  toggle(options) { if (this.active) { this.close(); return true; } return this.open(options); }
   notifyContext(active) { if (this._contextNotified === active) return; this._contextNotified = active; this.onContext?.(active); }
-  setResult(value, data = null) { this.lastResult = value; this.lastResultData = data; }
-  resultMessage() {
-    const data = this.lastResultData;
-    if (!data) return this.lastResult;
-    if (data.kind === 'reason') return t(`systems.workbench.reason.${Object.hasOwn(REASONS, data.why) || Object.hasOwn(STORAGE_REASONS.es, data.why) ? data.why : 'unknown'}`);
-    if (data.kind === 'sendFailed') return t('systems.workbench.sendFailed');
-    if (data.kind === 'tool') return t('systems.workbench.resultTool', { name: translateData(data.name) });
-    if (data.kind === 'wood') return t('systems.workbench.resultWood', { label: this.qtyLabel(data.count) });
-    return this.lastResult;
+  reset() { this.pending = null; this.qty = 1; this.recipe = 'hacha_piedra'; this.cat = 'tools'; this.clearResult(); this.resultTone = ''; this.close(); this.update(); }
+  clearResult() { this.lastResult = ''; this.resultSource = null; }
+  resultText() {
+    const source = this.resultSource, lang = craftLang();
+    if (!source) return '';
+    if (source.kind === 'success') return this.successText(source.done, lang);
+    if (source.kind === 'reason') return CRAFT_REASONS[lang][source.why] || CRAFT_TEXT[lang].feedback.unknown;
+    return CRAFT_TEXT[lang].feedback.sendFailed;
   }
-  reset() { this.pending = null; this.qty = 1; this.recipe = WOOD_RECIPE.id; this.setResult(''); this.close(); this.update(); }
+  text() { return CRAFT_TEXT[craftLang()]; }
+  applyStatic(lang) {
+    const t = CRAFT_TEXT[lang];
+    for (const node of this.root.querySelectorAll('[data-t]')) {
+      const value = node.dataset.t.split('.').reduce((obj, key) => obj?.[key], t);
+      if (typeof value === 'string') node.textContent = value;
+    }
+    this.root.setAttribute('aria-label', t.dialog); this.$('.wb-close').setAttribute('aria-label', t.closeLabel);
+    this.$('[data-qty-input]').setAttribute('aria-label', t.qtyLabel); this.$('[data-pack-used]').title = t.volume;
+    this.$('.cr-inv-close').setAttribute('aria-label', t.inventoryClose);
+  }
   update() {
-    const ctx = this.context(); if (this.active && !ctx) this.close(); const profile = ctx?.profile || call(this.profile);
-    if (this.pending?.ackRev !== undefined && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= this.pending.ackRev) { const done = this.pending; this.pending = null; this.setResult(done.tool ? t('systems.workbench.resultTool', { name: translateData(done.label) }) : t('systems.workbench.resultWood', { label: this.qtyLabel(done.count) }), done.tool ? { kind: 'tool', name: done.label } : { kind: 'wood', count: done.count }); }
+    const base = this.baseContext(); if (this.active && !base) this.close();
+    const profile = base?.profile || call(this.profile);
+    if (this.pending?.ackRev !== undefined && Number.isSafeInteger(profile?.eco?.tradeRev) && profile.eco.tradeRev >= this.pending.ackRev) {
+      const done = this.pending; this.pending = null; this.resultSource = { kind: 'success', done }; this.lastResult = this.resultText(); this.resultTone = 'ok';
+    }
     if (!this.active) return;
-    const preview = workbenchPreview(profile, this.qty, this.recipe), pending = this.pending;
-    this.$('.wb-section-title small').textContent = t('systems.workbench.maxBatch', { max: preview.craftMax });
+    const lang = craftLang(), t = CRAFT_TEXT[lang], bench = this.context(), recipe = this.recipe ? recipeFor(this.recipe) : null;
+    this.lastResult = this.resultText();
+    const ctx = recipe ? (recipe.hand ? base : bench) : null, pending = this.pending;
+    const preview = workbenchPreview(profile, this.qty, recipe ? recipe.id : undefined);
     const retryReady = !!pending && performance.now() - pending.sentAt >= 5000;
-    const renderKey = JSON.stringify([preview, !!ctx, pending?.command.opId, pending?.ackRev, retryReady, this.lastResult, this.recipe]); if (renderKey === this.renderKey) return; this.renderKey = renderKey;
-    const input = this.$('[data-qty-input]'), toolRecipe = !!preview.tool;
-    if (document.activeElement !== input && input.value !== String(this.qty)) input.value = String(this.qty);
-    input.hidden = toolRecipe; input.max = String(preview.craftMax);
-    this.$('[data-input-name]').textContent = preview.inputs.map((i) => translateData(i.name)).join(' + '); this.$('[data-output-name]').textContent = translateData(preview.outputName);
-    this.$('[data-input-count]').textContent = preview.inputs.map((i) => `${fmt(i.count * preview.n)} ${translateData(i.name).toLowerCase()}`).join(' + ');
-    this.$('[data-output-count]').textContent = toolRecipe ? t('systems.workbench.toolCount') : `${fmt(preview.outputAmount)} ${t(preview.outputAmount === 1 ? 'systems.workbench.unit.one' : 'systems.workbench.unit.other')}`;
-    this.$('[data-needs]').innerHTML = preview.inputs.map((i) => `<div class="wb-stock-row"><span>${translateData(i.name)} ${document.documentElement.lang.startsWith('en') ? 'carried' : 'que llevas'}</span><b>${fmt(i.owned)}</b></div><div class="wb-stock-row"><span>${t('systems.workbench.needAmount')}</span><b>${fmt(i.count * preview.n)}</b></div>`).join('');
-    this.$('[data-pack-used]').textContent = `${fmt(preview.usedBefore)} / ${fmt(preview.packCapacity)}`; this.$('[data-pack-after]').textContent = t('systems.workbench.afterCraft', { used: fmt(preview.usedAfter), capacity: fmt(preview.packCapacity) });
-    this.$('[data-pack-bar]').style.width = `${preview.packCapacity > 0 ? Math.max(0, Math.min(100, preview.usedBefore / preview.packCapacity * 100)) : 0}%`;
-    const tools = profile?.tools || {}; this.$('[data-tools]').textContent = t('systems.workbench.toolSlots', { axe: tools.axe === 1 ? (document.documentElement.lang.startsWith('en') ? 'yes' : 'sí') : 'no', pickaxe: tools.pickaxe === 1 ? (document.documentElement.lang.startsWith('en') ? 'yes' : 'sí') : 'no' });
-    const english = document.documentElement.lang.toLowerCase().startsWith('en');
-    this.$('[data-pack-used]').previousElementSibling.textContent = english ? 'Space used' : 'Espacio usado';
-    this.$('[data-tools]').previousElementSibling.textContent = english ? 'Tool belt' : 'Cinturón de herramientas';
-    this.$('[data-pack-mass]').textContent = `${fmt(preview.massBefore)} / ${preview.massLimit === null ? '∞' : fmt(preview.massLimit)} uM`;
-    this.$('[data-pack-mass-after]').textContent = `${english ? 'After crafting' : 'Después de fabricar'}: ${fmt(preview.massAfter)} / ${preview.massLimit === null ? '∞' : fmt(preview.massLimit)} uM`;
-    this.$('[data-mass-label]').textContent = english ? 'Weight / strength' : 'Peso / fuerza';
-    for (const b of this.root.querySelectorAll('[data-recipe]')) { b.disabled = !!pending; b.classList.toggle('on', b.dataset.recipe === this.recipe); b.setAttribute('aria-pressed', b.dataset.recipe === this.recipe ? 'true' : 'false'); }
-    for (const b of this.root.querySelectorAll('[data-qty]')) { const q = b.dataset.qty === 'max' ? preview.maxCraftable : Number(b.dataset.qty); b.disabled = !!pending || !ctx || (b.dataset.qty === 'max' ? q < 1 : q > preview.craftMax); b.classList.toggle('on', b.dataset.qty !== 'max' && q === this.qty); b.setAttribute('aria-pressed', b.dataset.qty !== 'max' && q === this.qty ? 'true' : 'false'); }
-    input.disabled = !!pending || !ctx; this.$('.wb-confirm').disabled = !!pending || !ctx || !preview.canCraft; this.$('.wb-confirm').textContent = `${toolRecipe ? t('systems.workbench.craft') : t('systems.workbench.prepare')} ${translateData(preview.outputName)}`;
-    this.$('.wb-retry').hidden = !retryReady; this.$('.wb-retry').disabled = !retryReady || !ctx;
-    this.$('[data-feedback]').textContent = pending?.ackRev !== undefined ? t('systems.workbench.received') : pending ? t('systems.workbench.waiting') : this.resultMessage() || this.previewMessage(preview, ctx);
+    const pack = profile?.eco?.pack, tools = profile?.tools || {};
+    const renderKey = JSON.stringify([lang, this.cat, this.recipe, preview, !!ctx, !!bench, pending?.command.opId, pending?.ackRev, retryReady,
+      this.lastResult, this.resultTone, pack?.goods, pack?.cap, pack?.maxMass, profile?.attr, tools]);
+    if (renderKey === this.renderKey) return; this.renderKey = renderKey;
+    if (lang !== this.lang) { this.lang = lang; this.root.lang = lang; this.applyStatic(lang); this.listKey = ''; }
+    for (const tab of this.root.querySelectorAll('[data-cat]')) { const on = tab.dataset.cat === this.cat; tab.classList.toggle('on', on); tab.setAttribute('aria-selected', on ? 'true' : 'false'); tab.disabled = !!pending && !on; }
+    this.renderList(lang, t, tools, pending);
+    this.renderDetail(lang, t, recipe, preview, ctx, bench, pending, retryReady);
+    this.renderInventory(lang, t, pack, preview, tools, readAttrField(profile).value !== null);
     this.root.classList.toggle('is-pending', !!pending);
   }
-  previewMessage(p, ctx) { if (!ctx) return t('systems.workbench.far'); if (p.ownedTool) return t('systems.workbench.ownedTool'); if (!p.packKnown) return t('systems.workbench.noBackpack'); if (!p.qtyValid) return t('systems.workbench.badQuantity', { max: p.craftMax }); if (!p.materialsFit) return t('systems.workbench.notEnough'); if (!p.spaceFits) return t('systems.workbench.noSpace'); if (!p.massFits) return document.documentElement.lang.toLowerCase().startsWith('en') ? 'Your pack load would exceed your strength limit.' : 'La carga superaría el límite de fuerza de tu mochila.'; return t('systems.workbench.ready'); }
-  qtyLabel(n) { return `${fmt(n)} ${t(n === 1 ? 'systems.workbench.plank.one' : 'systems.workbench.plank.other')}`; }
+  renderList(lang, t, tools, pending) {
+    const list = this.$('[data-recipe-list]'), recipes = recipesIn(this.cat), key = `${lang}:${this.cat}`;
+    if (this.listKey !== key) {
+      this.listKey = key;
+      const rows = recipes.map((r) => `<button type="button" class="cr-row" role="option" data-recipe="${r.id}">${itemIcon(r.id, 'cr-tile')}<span class="cr-name">${esc(recipeText(r.id, lang).name)}</span><span class="cr-owned" data-owned-tool="${r.tool || ''}" hidden>✓</span></button>`);
+      // Named upcoming recipes first (painted, dimmed), then plain undiscovered rows up to the column height.
+      for (const [id, es, en] of UPCOMING_RECIPES[this.cat] || [])
+        rows.push(`<div class="cr-row is-locked is-named" aria-disabled="true" data-upcoming="${id}" title="${esc(t.locked)}">${itemIcon(id, 'cr-tile')}<span class="cr-name">${esc(lang === 'en' ? en : es)}<small>${esc(t.locked)}</small></span><span class="cr-lock">${CRAFT_ICONS.lock}</span></div>`);
+      for (let i = rows.length; i < Math.max(RECIPE_ROWS, rows.length); i++)
+        rows.push(`<div class="cr-row is-locked" aria-disabled="true"><span class="cr-tile">${CRAFT_ICONS.lock}</span><span class="cr-name">${esc(t.locked)}</span></div>`);
+      list.innerHTML = rows.join('');
+    }
+    for (const b of list.querySelectorAll('[data-recipe]')) {
+      const on = b.dataset.recipe === this.recipe; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.disabled = !!pending && !on;
+      const owned = b.querySelector('[data-owned-tool]'), tool = owned?.dataset.ownedTool; if (owned) owned.hidden = !(tool && tools[tool] === 1);
+    }
+  }
+  renderDetail(lang, t, recipe, p, ctx, bench, pending, retryReady) {
+    const detail = this.$('.cr-detail'), empty = !recipe;
+    detail.classList.toggle('is-empty', empty); this.$('[data-empty]').hidden = !empty;
+    const confirm = this.$('.wb-confirm');
+    if (empty) { confirm.disabled = true; this.$('[data-confirm-label]').textContent = t.craft; this.$('[data-feedback]').textContent = ''; this.$('.wb-retry').hidden = true; return; }
+    const copy = recipeText(recipe.id, lang), tool = !!recipe.tool;
+    this.$('[data-output-name]').textContent = copy.name; this.$('[data-desc]').textContent = copy.desc;
+    this.$('[data-flavor]').textContent = copy.flavor; this.$('[data-motto]').textContent = copy.motto;
+    const where = this.$('[data-where]');
+    where.textContent = recipe.hand ? t.hand : bench ? t.benchNear : t.benchFar;
+    where.className = `cr-where ${recipe.hand ? 'is-hand' : bench ? 'is-near' : 'is-far'}`;
+    const art = this.$('[data-art]'); art.className = `cr-art ${tool ? 'is-tool' : 'is-good'}`;
+    art.style.setProperty('--art', HERO_ART.has(recipe.id) ? `url("${artUrl(`hero-${recipe.id}.webp`)}")` : 'none');
+    art.style.setProperty('--art-m', HERO_ART.has(recipe.id) ? `url("${artUrl(`hero-${recipe.id}-mobile.webp`)}")` : 'none');
+    const n = Math.max(1, p.n || 1);
+    this.$('[data-needs]').innerHTML = p.inputs.map((i) => {
+      const need = i.count * n, ok = i.owned >= need;
+      return `<div class="cr-card ${ok ? 'is-ok' : 'is-short'}" title="${esc(goodName(i.good, lang))}: ${fmt(i.owned, lang)}">${itemIcon(i.good, 'cr-card-art')}<b>${esc(goodName(i.good, lang))}</b><em>${fmt(Math.min(i.owned, need), lang)} / ${fmt(need, lang)}</em></div>`;
+    }).join('');
+    this.$('[data-input-count]').textContent = p.inputs.map((i) => `${fmt(i.count * n, lang)} ${goodName(i.good, lang)}`).join(' + ');
+    this.$('[data-output-icon]').innerHTML = itemIcon(recipe.id, 'cr-out-art');
+    this.$('[data-output-label]').textContent = copy.name;
+    this.$('[data-output-count]').textContent = `x${fmt(tool ? 1 : (p.outputAmount || recipe.count || 1), lang)}`;
+    const stats = RECIPE_UI[recipe.id]?.stats?.() || [];
+    this.$('[data-stats]').innerHTML = stats.map((s) => `<div class="cr-stat"><span class="cr-stat-ico">${CRAFT_ICONS[s.icon] || ''}</span><span class="cr-stat-name">${esc(s[lang] || s.es)}</span><span class="cr-bar"><i style="width:${Math.max(4, Math.min(100, s.value / s.max * 100)).toFixed(1)}%"></i></span><b>${esc(s.text)}</b></div>`).join('');
+    // Quantity: batch recipes only; tools are a single craft.
+    const qtyRow = this.$('[data-qty-row]'), input = this.$('[data-qty-input]');
+    qtyRow.hidden = tool; this.$('[data-motto]').hidden = !tool;
+    if (document.activeElement !== input && input.value !== String(this.qty)) input.value = String(this.qty);
+    input.max = String(p.craftMax); this.$('[data-qty-max]').textContent = fill(t.perBatch, { n: p.craftMax });
+    for (const b of this.root.querySelectorAll('[data-qty]')) { const q = b.dataset.qty === 'max' ? p.maxCraftable : Number(b.dataset.qty); b.disabled = !!pending || !ctx || (b.dataset.qty === 'max' ? q < 1 : q > p.craftMax); b.classList.toggle('on', b.dataset.qty !== 'max' && q === this.qty); b.setAttribute('aria-pressed', b.dataset.qty !== 'max' && q === this.qty ? 'true' : 'false'); }
+    input.disabled = !!pending || !ctx;
+    confirm.disabled = !!pending || !ctx || !p.canCraft;
+    this.$('[data-confirm-label]').textContent = pending ? t.waiting : tool ? t.craft : `${t.craft} ×${fmt(p.n || 0, lang)}`;
+    this.$('.wb-retry').hidden = !retryReady; this.$('.wb-retry').disabled = !retryReady || !ctx;
+    const feedback = this.$('[data-feedback]');
+    const message = pending?.ackRev !== undefined ? t.feedback.received : pending ? t.feedback.pending : this.lastResult || this.previewMessage(p, ctx, recipe);
+    feedback.textContent = message;
+    feedback.className = `wb-feedback ${pending ? 'is-wait' : this.lastResult ? `is-${this.resultTone || 'warn'}` : p.canCraft && ctx ? 'is-ready' : 'is-warn'}`;
+  }
+  renderInventory(lang, t, pack, p, tools, adopted = false) {
+    const known = validPack(pack), used = known ? holdUsed(pack) : 0, cap = known ? pack.cap : 0;
+    this.$('[data-pack-used]').textContent = `${fmt(used, lang)} / ${fmt(cap, lang)}`;
+    this.$('[data-pack-mini]').textContent = `${fmt(used, lang)}/${fmt(cap, lang)}`;
+    this.$('[data-pack-bar]').style.width = `${cap > 0 ? Math.max(0, Math.min(100, used / cap * 100)) : 0}%`;
+    this.$('.cr-capacity').classList.toggle('is-tight', cap > 0 && used / cap > 0.8);
+    const mass = known ? holdMass(pack) : 0, maxMass = known && Number.isFinite(pack.maxMass) ? pack.maxMass : null;
+    // Weight reads against the comfortable load (INV02, Carga adopted); crafting still stops only at the ceiling, like the server.
+    const comfort = maxMass === null ? null : comfortMass(maxMass, adopted);
+    this.$('[data-pack-mass]').textContent = comfort === null ? fmt(mass, lang) : `${fmt(mass, lang)} / ${fmt(comfort, lang)}`;
+    this.$('[data-weight-row]').classList.toggle('is-tight', comfort !== null && mass > comfort);
+    const goods = known ? GOOD_IDS.filter((g) => pack.goods[g] > 0) : [], inputs = new Set(this.recipe ? p.inputs.map((i) => i.good) : []);
+    const slots = Math.max(20, Math.ceil(goods.length / 4) * 4);
+    let html = '';
+    for (let i = 0; i < slots; i++) {
+      const g = goods[i];
+      html += g ? `<div class="cr-slot${inputs.has(g) ? ' is-used' : ''}" title="${esc(goodName(g, lang))} · ${fmt(pack.goods[g], lang)}">${itemIcon(g, 'cr-slot-art')}<b>${fmt(pack.goods[g], lang)}</b></div>` : '<div class="cr-slot is-empty"></div>';
+    }
+    this.$('[data-inv]').innerHTML = html;
+    this.$('[data-tools]').innerHTML = [['axe', 'hacha_piedra'], ['pickaxe', 'pico_piedra']].map(([tool, id]) => {
+      const owned = tools[tool] === 1, name = recipeText(id, lang).name;
+      return `<div class="cr-slot cr-belt-slot ${owned ? 'is-owned' : 'is-missing'}" title="${esc(name)} · ${esc(owned ? t.beltOwned : t.beltMissing)}">${itemIcon(id, 'cr-slot-art')}</div>`;
+    }).join('');
+  }
+  previewMessage(p, ctx, recipe = recipeFor(this.recipe)) {
+    const f = this.text().feedback;
+    if (!ctx) return recipe.hand ? '' : f.far; if (p.ownedTool) return f.owned; if (!p.packKnown) return f.pack;
+    if (!p.qtyValid) return fill(f.qty, { max: p.craftMax }); if (!p.materialsFit) return f.materials; if (!p.spaceFits) return f.space;
+    if (!p.massFits) return f.mass; return f.ready;
+  }
+  qtyLabel(n) { return craftLang() === 'en' ? `${fmt(n, 'en')} ${n === 1 ? 'plank' : 'planks'}` : `${fmt(n, 'es')} ${n === 1 ? 'tabla' : 'tablas'}`; }
+  successText(done, lang = craftLang()) {
+    const f = CRAFT_TEXT[lang].feedback;
+    if (done.tool) return fill(f.madeTool, { name: recipeText(done.recipe, lang).name });
+    return fill(f.madeGood, { n: fmt(done.count, lang), name: goodName(recipeFor(done.recipe).output, lang).toLowerCase() });
+  }
   confirm() {
-    const ctx = this.context(), preview = workbenchPreview(ctx?.profile, this.qty, this.recipe);
+    if (!this.recipe || !CRAFT_RECIPES[this.recipe]) return false;
+    const ctx = this.craftContext(this.recipe), preview = workbenchPreview(ctx?.profile, this.qty, this.recipe);
     if (this.pending || !ctx || !preview.canCraft || typeof this.submitCommand !== 'function') return false;
     const recipe = recipeFor(this.recipe), command = Object.freeze({ t: 'cmd', type: 'resource', op: 'craft', opId: globalThis.crypto.randomUUID(), recipe: recipe.id, n: preview.n, expectedRev: ctx.profile.eco.tradeRev });
     this.pending = { command, sentAt: performance.now(), count: preview.outputAmount, recipe: recipe.id, tool: recipe.tool || null, tier: recipe.tier || 0, label: recipe.tool ? recipe.name || preview.outputName : this.qtyLabel(preview.outputAmount) };
-    this.setResult(''); let accepted = false; try { accepted = this.submitCommand(command) === true; } catch {}
-    if (!accepted) { this.pending = null; this.setResult(t('systems.workbench.sendFailed'), { kind: 'sendFailed' }); this.update(); return false; }
+    this.clearResult(); this.resultTone = ''; let accepted = false; try { accepted = this.submitCommand(command) === true; } catch {}
+    if (!accepted) { this.pending = null; this.resultSource = { kind: 'sendFailed' }; this.lastResult = this.resultText(); this.resultTone = 'error'; this.update(); return false; }
     this.update(); return true;
   }
-  retry() { const p = this.pending; if (!p || performance.now() - p.sentAt < 5000 || !this.context() || typeof this.submitCommand !== 'function') return false; let accepted = false; try { accepted = this.submitCommand(p.command) === true; } catch {} if (accepted) p.sentAt = performance.now(); this.update(); return accepted; }
+  retry() { const p = this.pending; if (!p || performance.now() - p.sentAt < 5000 || !this.craftContext(p.recipe) || typeof this.submitCommand !== 'function') return false; let accepted = false; try { accepted = this.submitCommand(p.command) === true; } catch {} if (accepted) p.sentAt = performance.now(); this.update(); return accepted; }
   onResult(ev) {
     const p = this.pending; if (!p || !ev || ev.type !== 'resource' || ev.opId !== p.command.opId || ev.op !== 'craft') return;
-    if (ev.ok === false) {
-      const locale = document.documentElement?.lang?.startsWith('en') ? 'en' : 'es';
-      this.pending = null; this.setResult(STORAGE_REASONS[locale][ev.why] || REASONS[ev.why] || 'El banco no pudo completar la receta. Revisa tu mochila e inténtalo otra vez.', { kind: 'reason', why: ev.why });
-      this.update(); return;
-    }
+    if (ev.ok === false) { this.pending = null; this.resultSource = { kind: 'reason', why: ev.why }; this.lastResult = this.resultText(); this.resultTone = 'error'; this.update(); return; }
     if (!craftAcknowledgementMatches(p, ev)) return;
-    p.ackRev = ev.rev; this.setResult(''); this.update();
+    p.ackRev = ev.rev; this.clearResult(); this.update();
   }
 }

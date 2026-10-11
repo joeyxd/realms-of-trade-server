@@ -110,4 +110,7 @@ export class GroundCurrentHydration {
     const row = this.#pearlRows.get(dropId);
     return row ? structuredClone(row) : null;
   }
+  get deathDrops() {
+    return this.#state === 'applied' ? this.#hydration.currentDeathDrops : [];
+  }
 }

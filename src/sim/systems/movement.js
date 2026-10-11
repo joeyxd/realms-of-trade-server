@@ -4,6 +4,7 @@ import { tuning } from '../../data/tuning.js';
 import { STATE } from '../ecs.js';
 import { dampAngle } from '../../core/math.js';
 import { canSwim, refreshSwimming } from './swimming.js';
+import { LOAD } from '../../data/carry.js';
 
 // AIM (held bit): the command's aim point is explicit (mouse moved, right stick tilted), so the body faces it
 // even while walking another way; without it you face where you walk (touch, keyboard only).
@@ -114,7 +115,9 @@ export function stepMover(world, e, cmd, dt) {
   if (len > 1) { mx /= len; mz /= len; len = 1; }
   ecs.moveMag[e] = len;
 
-  if (!swimming && cmd.prs & BTN.DASH) ecs.dashBuffer[e] = P.inputBuffer;
+  // A heavy pack (load tier 1+, PLAN-PROGRESSION §15.3) forbids the dash.
+  const heavy = ecs.load[e] > 0;
+  if (!swimming && !heavy && cmd.prs & BTN.DASH) ecs.dashBuffer[e] = P.inputBuffer;
 
   // Charges recharge sequentially.
   if (ecs.dashCharges[e] < ecs.dashMax[e]) {
@@ -128,7 +131,7 @@ export function stepMover(world, e, cmd, dt) {
   if (ecs.iframes[e] > 0) ecs.iframes[e] = Math.max(0, ecs.iframes[e] - dt);
 
   // Start a buffered dash (not during a skill's windup / active frames: the buffer waits).
-  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked && !(ecs.castLock[e] > 0)) {
+  if (ecs.dashT[e] < 0 && ecs.dashBuffer[e] > 0 && ecs.dashCharges[e] >= 1 && !locked && !heavy && !(ecs.castLock[e] > 0)) {
     let dx, dz;
     if (len > 0.1) { dx = mx / len; dz = mz / len; }
     else { dx = Math.sin(ecs.facing[e]); dz = Math.cos(ecs.facing[e]); }
@@ -175,6 +178,7 @@ export function stepMover(world, e, cmd, dt) {
     let mul = 1;
     if (depth > W.wadeStart) mul = 1 - W.wadeSlow * Math.min(1, depth / W.wadeMax);
     mul *= ecs.moveMul[e]; // swings and parries slow you down
+    mul *= LOAD.speed[ecs.load[e]] ?? 1; // a heavy pack walks slower
     if (swimming) mul = 1;
     // Walking backwards (away from where you aim) is a little slower; sideways is free.
     const aimed = (cmd.btn & BTN.AIM) !== 0;

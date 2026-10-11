@@ -18,10 +18,12 @@ export function sanitizeTools(raw) {
     for (const key of Object.keys(out)) if (raw[key] === 1) out[key] = 1;
   return out;
 }
+// `hand`: craftable anywhere on land (the crafting menu), without standing at the materials bench. The stone tools take
+// raw logs, so a new player never needs the bench to get started (author decision, 2026-10-10).
 export const CRAFT_RECIPES = Object.freeze({
   madera: Object.freeze({ id: 'madera', name: 'Tabla básica', inputs: Object.freeze({ tronco: 2 }), output: 'madera', count: 1, max: 10 }),
-  hacha_piedra: Object.freeze({ id: 'hacha_piedra', name: 'Hacha de piedra', inputs: Object.freeze({ madera: 1, piedra: 1 }), tool: 'axe', tier: 1, count: 1, max: 1 }),
-  pico_piedra: Object.freeze({ id: 'pico_piedra', name: 'Pico de piedra', inputs: Object.freeze({ madera: 1, piedra: 2 }), tool: 'pickaxe', tier: 1, count: 1, max: 1 }),
+  hacha_piedra: Object.freeze({ id: 'hacha_piedra', name: 'Hacha de piedra', inputs: Object.freeze({ tronco: 3, piedra: 2 }), tool: 'axe', tier: 1, count: 1, max: 1, hand: true }),
+  pico_piedra: Object.freeze({ id: 'pico_piedra', name: 'Pico de piedra', inputs: Object.freeze({ tronco: 3, piedra: 2 }), tool: 'pickaxe', tier: 1, count: 1, max: 1, hand: true }),
 });
 
 // Candidate ordering is derived from the seed without consuming world/map RNG.

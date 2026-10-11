@@ -858,6 +858,7 @@ export class GameClient {
     out.god = ecs.god[e];
     out.weapon = ecs.weapon[e]; out.cdQ = ecs.cdQ[e]; out.cdE = ecs.cdE[e]; out.castK = ecs.castK[e]; out.castT = ecs.castT[e];
     out.potions = ecs.potions[e]; out.potCd = ecs.potCd[e]; out.mastery = ecs.mastery[e]; out.guardMax = tuning.guard.stamina + ecs.guardAdd[e];
+    out.load = ecs.load[e]; // INV02d: the pack's load tier (HUD chip)
     // M4.7: what the slots hold (skill index, form, rank), the charge and the empowered attack after a Parpadeo.
     out.skQ = ecs.skQ[e]; out.skE = ecs.skE[e]; out.fmQ = ecs.fmQ[e]; out.fmE = ecs.fmE[e]; out.rkQ = ecs.rkQ[e]; out.rkE = ecs.rkE[e];
     out.skG = ecs.skG[e]; out.cdG = ecs.cdG[e];
