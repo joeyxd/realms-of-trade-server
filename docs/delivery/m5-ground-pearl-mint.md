@@ -51,6 +51,12 @@ creación de compañeros/SQL034, dispersión decorativa GM, Carga, contenido y r
 mint/muerte comunes. SQL034 pertenece al corte de compañeros y mantiene su activación separada;
 AREA15 no añade ni ejecuta SQL. Los conteos se solapan con la aceptación principal.
 
+Integración posterior **28/28 en 6 archivos**, fuentes congeladas, base `b89a2d9`:
+[manifiesto](m5-ground-pearl-mint/visual-integration.json),
+[TAP](m5-ground-pearl-mint/visual-integration.tap). Conserva alpha.57/protocolo 56 y
+la animación de ficha del Bucanero; el core de servidor/suelo/mint de la integración
+anterior permanece idéntico. No repite la aceptación visual del corte de personaje.
+
 Código listo para publicación; despliegue aún pendiente del actualizador en mundo vacío.
 El [estado inicial](m5-ground-pearl-mint/initial-status.json) y la
 [lectura inicial del dominio](m5-ground-pearl-mint/initial-domain.json) mantienen el piloto
