@@ -1,9 +1,9 @@
 # AREA03 INV02b — entrega de Carga durable
 
 Contrato: [adopción, asignación y reasignación](../briefs/inv02b-durable-attributes.md).
-Implementado, publicado y activado sobre M5, protocolo 49/alpha.43. SQL029 aplicado y
-readiness verificado desde el contenedor. Carga activa en `024610b`; canario público
-autenticado **5/5**, con adopción, asignación, reset, replay, conflicto y reconexión.
+Implementado, publicado y activado sobre M5. SQL029 aplicado y readiness verificado desde
+el contenedor. Activación inicial alpha.43/protocolo 49 en `024610b`; repetición pública
+**5/5** en `80e46df`, alpha.44/protocolo 50, después de integrar la entrega paralela de agua.
 
 El perfil conserva `attr` al cargar/sincronizar, al mejorar mochila y al recibir Tala offline.
 Nivel 1 y packs previos al taller tienen adopción explícita sin perder objetos. El éxito se
@@ -64,6 +64,15 @@ Cuenta Auth/perfil retirados; cuatro recibos económicos conservados. [Autoridad
 14 hashes iguales a Git, Supabase durable, flag habilitado/listo, cero jugadores, errores o
 guardados pendientes antes/después y timer activo. Es aceptación del contrato público de
 comandos; la pantalla de asignación y el sobrepeso jugable siguen pendientes.
+
+La entrega paralela de agua dulce llegó a la rama mientras se registraba el checkpoint.
+Se conservaron ambos trabajos al integrar y se repitieron las cuatro suites de atributos/
+composición: **20/20**, sin fallos. El actualizador instaló `80e46df`, alpha.44/protocolo 50.
+[Nueva aceptación pública](inv02b-public/20261011T044746Z-active/README.md) **5/5**, con 14
+hashes iguales a Git, Carga habilitada/lista y autoridad sana antes/después. Además verifica
+masa 50 → 60 → 50 y volumen 18 constante, comparación base/snapshot, replay y reconexión.
+Cuenta QA de esta corrida retirada y cuatro recibos conservados. Esta es la última prueba
+pública de Carga; no representa aceptación de gameplay del agua dulce ni de la futura ficha.
 
 ## Reanudar
 
