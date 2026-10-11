@@ -1,7 +1,7 @@
 import { validateDocument } from './document.js';
 
 export const PREPARATION_SCHEMA = 'marea.gm.prepared-revision';
-export const PUBLICATION_COMPILER_VERSION = 1;
+export const PUBLICATION_COMPILER_VERSION = 2;
 
 // Object keys are canonical; array order remains meaningful (rendering and collision order).
 export function canonicalJson(value) {

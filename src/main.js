@@ -617,7 +617,7 @@ async function boot() {
   let gmWorldUIHidden = false;
   const gmRecoveries = new Map();
   const gmEntry = new GmEntry({
-    parent: title.root.querySelector('.title-actions'), auth: accountAuth, online: st.online,
+    parent: title.root.querySelector('.title-row'), auth: accountAuth, online: st.online,
     httpBase: st.online ? httpUrlFor(transport.url) : location.href,
     available: () => st.mode === 'title' && !st.boarding && !st.gmOpening && !client.joined && !pause.open,
     onRevoke: () => { if (gmEditor?.active) void gmEditor.close({ force: true }); },

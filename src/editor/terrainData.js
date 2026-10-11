@@ -3,6 +3,8 @@ import { resourceLayout } from '../data/resources.js';
 import { freshwaterSource } from '../data/freshwater.js';
 
 export const TERRAIN_VERSION = 1;
+export const TERRAIN_MATERIAL_VERSION = 2;
+export const TERRAIN_MATERIALS = Object.freeze(['grass', 'dirt', 'sand', 'rock']);
 export const TERRAIN_GRID_SEGMENTS = 560;
 export const TERRAIN_GRID_SIZE = TERRAIN_GRID_SEGMENTS + 1;
 export const TERRAIN_SAMPLE_COUNT = TERRAIN_GRID_SIZE * TERRAIN_GRID_SIZE;
@@ -15,7 +17,10 @@ const record = value => value !== null && typeof value === 'object' && !Array.is
   (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
 
 export function validateTerrain(raw) {
-  if (!record(raw) || Object.keys(raw).length !== 2 || raw.version !== TERRAIN_VERSION || !Array.isArray(raw.samples)) fail('format');
+  const painted = raw?.version === TERRAIN_MATERIAL_VERSION;
+  if (!record(raw) || Object.keys(raw).length !== (painted ? 3 : 2) ||
+      (!painted && raw.version !== TERRAIN_VERSION) || !Array.isArray(raw.samples) ||
+      (painted && !Array.isArray(raw.materials))) fail('format');
   if (raw.samples.length > TERRAIN_MAX_SAMPLES) fail('sample_limit');
   let previous = -1;
   const samples = raw.samples.map(sample => {
@@ -27,7 +32,21 @@ export function validateTerrain(raw) {
     previous = index;
     return [index, delta];
   });
-  return { version: TERRAIN_VERSION, samples };
+  if (!painted) return { version: TERRAIN_VERSION, samples };
+  if (raw.materials.length > TERRAIN_MAX_SAMPLES) fail('material_limit');
+  previous = -1;
+  const materials = raw.materials.map(entry => {
+    if (!Array.isArray(entry) || entry.length !== 5) fail('material');
+    const [index, ...weights] = entry;
+    if (!Number.isSafeInteger(index) || index < 0 || index >= TERRAIN_SAMPLE_COUNT) fail('material_index');
+    if (index <= previous) fail('material_order');
+    if (weights.some(w => !Number.isSafeInteger(w) || w < 0 || w > 255)) fail('material_weight');
+    const sum = weights.reduce((a, b) => a + b, 0);
+    if (sum < 1 || sum > 255) fail('material_weight');
+    previous = index;
+    return [index, ...weights];
+  });
+  return { version: TERRAIN_MATERIAL_VERSION, samples, materials };
 }
 
 function heightFrom(heights, i, j) { return heights[j * TERRAIN_GRID_SIZE + i]; }
@@ -86,7 +105,7 @@ export function validateTerrainForMap(baseMap, terrain) {
   const { mask: protectedAreas } = protectedMask(baseMap);
   const sampleDeltas = new Map(checked.samples);
   const checkedIndices = new Set();
-  for (const [index] of checked.samples) {
+  for (const [index] of [...checked.samples, ...(checked.materials || [])]) {
     const i = index % TERRAIN_GRID_SIZE, j = Math.floor(index / TERRAIN_GRID_SIZE);
     for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
       const xIndex = i + dx, zIndex = j + dz;
@@ -111,8 +130,9 @@ export function compileTerrainMap(baseMap, terrain) {
   const checked = validateTerrain(terrain);
   if (!baseMap || baseMap.size !== TERRAIN_GRID_SEGMENTS || baseMap.N !== TERRAIN_GRID_SIZE ||
       baseMap.res !== 1 || !baseMap.heights || baseMap.heights.length !== TERRAIN_SAMPLE_COUNT) fail('base_map');
-  if (checked.samples.length === 0) return { ...baseMap, gmTerrain: false, terrain: checked };
-  const heights = new Float32Array(baseMap.heights);
+  const hasPaint = !!checked.materials?.length;
+  if (checked.samples.length === 0 && !hasPaint) return { ...baseMap, gmTerrain: false, terrain: checked };
+  const heights = checked.samples.length ? new Float32Array(baseMap.heights) : baseMap.heights;
   const changedCells = new Uint8Array(TERRAIN_GRID_SEGMENTS * TERRAIN_GRID_SEGMENTS);
   for (const [index, deltaMm] of checked.samples) heights[index] += deltaMm / 1000;
   for (const [index] of checked.samples) {
@@ -143,7 +163,7 @@ export function compileTerrainMap(baseMap, terrain) {
     const j = Math.floor(Math.min(TERRAIN_GRID_SEGMENTS - 1e-7, wz));
     return !!changedCells[j * TERRAIN_GRID_SEGMENTS + i];
   }
-  const materialAt = (x, z) => {
+  const automaticMaterialAt = (x, z) => {
     if (!isAffected(x, z)) return baseMap.materialAt(x, z);
     if (baseMap.onDock?.(x, z)) return 'wood';
     const h = groundAt(x, z);
@@ -153,9 +173,37 @@ export function compileTerrainMap(baseMap, terrain) {
     if (m.path > .5) return 'dirt';
     return h < 1.5 ? 'sand' : 'grass';
   };
-  const hasTerrain = checked.samples.length > 0;
+  const paint = hasPaint ? new Uint8Array(TERRAIN_SAMPLE_COUNT * 4) : null;
+  for (const [index, ...weights] of checked.materials || []) paint.set(weights, index * 4);
+  // Same alternating triangles as heights and the GPU mesh; no independent splat grid.
+  const materialWeightsAt = (x, z, out = [0, 0, 0, 0]) => {
+    out.fill(0);
+    const wx = x + half, wz = z + half;
+    if (!paint || wx < 0 || wz < 0 || wx > 560 || wz > 560) return out;
+    const i = Math.min(559, Math.floor(wx)), j = Math.min(559, Math.floor(wz));
+    const tx = wx - i, tz = wz - j, a = j * TERRAIN_GRID_SIZE + i, b = a + 1, c = a + TERRAIN_GRID_SIZE, d = c + 1;
+    let i0, i1, i2, w0, w1, w2;
+    if ((i + j) & 1) {
+      if (tx + tz <= 1) { i0 = a; i1 = b; i2 = c; w0 = 1 - tx - tz; w1 = tx; w2 = tz; }
+      else { i0 = b; i1 = c; i2 = d; w0 = 1 - tz; w1 = 1 - tx; w2 = tx + tz - 1; }
+    } else if (tz >= tx) { i0 = a; i1 = c; i2 = d; w0 = 1 - tz; w1 = tz - tx; w2 = tx; }
+    else { i0 = a; i1 = b; i2 = d; w0 = 1 - tx; w1 = tx - tz; w2 = tz; }
+    for (let k = 0; k < 4; k++) out[k] = (paint[i0 * 4 + k] * w0 +
+      paint[i1 * 4 + k] * w1 + paint[i2 * 4 + k] * w2) / 255;
+    return out;
+  };
+  const materialAt = (x, z) => {
+    const weights = materialWeightsAt(x, z);
+    let material = automaticMaterialAt(x, z);
+    const automaticWeight = 1 - weights.reduce((a, b) => a + b, 0), automaticIndex = TERRAIN_MATERIALS.indexOf(material);
+    if (automaticIndex >= 0) weights[automaticIndex] += automaticWeight;
+    let best = automaticIndex < 0 ? automaticWeight : weights[automaticIndex];
+    for (let k = 0; k < 4; k++) if (weights[k] > best) { best = weights[k]; material = TERRAIN_MATERIALS[k]; }
+    return material;
+  };
+  const hasTerrain = checked.samples.length > 0 || hasPaint;
   return { ...baseMap, heights, heightAt, groundAt, materialAt,
     ...(hasTerrain ? { fullsegments: TERRAIN_GRID_SEGMENTS } : {}),
-    gmTerrain: hasTerrain, terrain: checked,
+    gmTerrain: hasTerrain, terrain: checked, materialWeightsAt,
     terrainProjection: true, terrainSource: baseMap.terrainSource || baseMap };
 }

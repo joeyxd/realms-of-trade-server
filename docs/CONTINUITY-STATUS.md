@@ -1,6 +1,6 @@
 # Continuidad de servidor — AREA15
 
-**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.48/protocolo 54, sin SQL:**
+**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
 [Entrega](delivery/inv02-survival.md). Sobre INV02a–c y RNV07b sin tocar sus operaciones M5, SQL029/032 ni contratos.
 Con Carga adoptada, cómodo = techo / 1,25 (40 + 4 por punto): entre cómodo y techo 70 % de velocidad y sin dash,
 por encima del techo 40 %; nunca inmoviliza ni borra. Sin Carga adoptada no cambia nada. Nivel de carga calculado

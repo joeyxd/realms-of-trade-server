@@ -1,5 +1,12 @@
 # Modo GM para construir el mundo
 
+**AREA01 GM05b, 2026-10-11 — pintura implementada localmente, alpha.48/protocolo 53:**
+[Contrato](docs/briefs/gm05b-terrain-paint.md) y [entrega](docs/delivery/gm05b/DELIVERY.md).
+Hierba/tierra/arena/roca, borrar gradual y pinceles circular/cuadrado/elíptico compartidos con escultura.
+Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores conservadas.
+SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
+Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
+
 **GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Subir/bajar, aplanar, suavizar y rampa entre dos puntos; preview privado, undo por trazo y prueba caminando.
@@ -496,7 +503,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM04b | Plantillas privadas locales de decoración, copias expandidas con IDs independientes y undo atómico | [Entrega](docs/delivery/gm04b/DELIVERY.md); GM 199/199, local 17/17, público 19/19, alpha.41/47 sana |
 | GM04 siguiente | Materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05a | Escultura de suelo seco existente; publicada alpha.45/protocolo 51 | [Entrega](docs/delivery/gm05a/DELIVERY.md): 309/309, imagen 20/20 y actualizador 127/127; 11 controles públicos y cadena autenticada completa, rollback a generación 6 y borrador restaurado |
-| GM05b | Pintar familias de suelo, caminos y máscaras existentes | Mezclas legibles, guardado/hash y agua/cartografía coherentes; presupuesto móvil medido |
+| GM05b | Pintar cuatro familias de suelo seco y borrar; formas circular/cuadrada/elíptica | Implementado alpha.48/protocolo 53; [entrega](docs/delivery/gm05b/DELIVERY.md). SQL033 aplicada/readiness real; cierre visual y publicación en curso |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 
 **Orden:** GM00 produjo cuatro candidatos; ya tienen comparación visual registrada, pero no están aceptados para gameplay.

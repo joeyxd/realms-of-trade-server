@@ -1,6 +1,6 @@
 # INV02d sobrepeso + ficha de personaje, kit de UI y fabricación a mano
 
-Fecha: 2026-10-11. Estado: **integrado sobre alpha.47 (`c33ed9c`) como alpha.48 / protocolo 54. Sin SQL nuevo.**
+Fecha: 2026-10-11. Estado: **integrado sobre alpha.48 (`0a2dfc0`) como alpha.49 / protocolo 54. Sin SQL nuevo.**
 Decisiones del autor: `PLAN-PROGRESSION.md` §15.7 (guía local compartida).
 
 Esta entrega se apoya en lo ya publicado y no lo duplica:

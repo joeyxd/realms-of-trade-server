@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { sculptTerrainDocument } from './terrainSculpt.js';
+import { paintTerrainDocument } from './terrainPaint.js';
+import { brushOutline } from './terrainBrush.js';
 import { editorMessage } from './messages.js';
 import { LAYER } from '../render/pipeline.js';
 
@@ -38,7 +40,7 @@ export class TerrainInteraction {
     if (!hit) { this.cursor.visible = false; return; }
     this.point = { x: hit.point.x, z: hit.point.z };
     if (this.stroke) {
-      if (this.tool === 'ramp') this.stroke.points[1] = this.point;
+      if ((this.stroke.parameters.tool || this.tool) === 'ramp') this.stroke.points[1] = this.point;
       else {
         const last = this.stroke.points.at(-1);
         if (Math.hypot(last.x - this.point.x, last.z - this.point.z) >= .5) {
@@ -54,9 +56,10 @@ export class TerrainInteraction {
   drawCursor() {
     if (!this.point || !this.tool) return;
     const map = this.editor.draftMap || this.editor.map;
-    const radius = this.panel.parameters().radius;
-    const points = Array.from({ length: 64 }, (_, i) => {
-      const a = i * Math.PI / 32, x = this.point.x + Math.cos(a) * radius, z = this.point.z + Math.sin(a) * radius;
+    const params = this.stroke?.parameters || this.panel.parameters();
+    const outline = brushOutline({ ...params, shape: params.tool === 'ramp' ? 'circle' : params.shape }, 64);
+    const points = outline.map(({ x: dx, z: dz }) => {
+      const x = this.point.x + dx, z = this.point.z + dz;
       return new THREE.Vector3(x, map.heightAt(x, z) + .09, z);
     });
     this.cursor.geometry.setFromPoints(points); this.cursor.geometry.computeBoundingSphere();
@@ -85,7 +88,8 @@ export class TerrainInteraction {
     stroke.pending = false;
     try {
       if (stroke.points.length >= 256) throw new Error('stroke_limit');
-      const result = sculptTerrainDocument({ map: this.editor.map, document: stroke.base,
+      const edit = ['paint', 'erase'].includes(stroke.parameters.tool) ? paintTerrainDocument : sculptTerrainDocument;
+      const result = edit({ map: this.editor.map, document: stroke.base,
         baseRevision: this.editor.baseRevision, ...stroke.parameters, points: stroke.points });
       this.editor._renderDocument(result);
       stroke.result = result; stroke.error = null;

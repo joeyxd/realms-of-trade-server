@@ -1,6 +1,6 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.48/protocolo 54, sin SQL:**
+**INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
 [Entrega](docs/delivery/inv02-survival.md). Sobre INV02a–c y RNV07b sin tocar sus operaciones M5, SQL029/032 ni contratos.
 Con Carga adoptada, cómodo = techo / 1,25 (40 + 4 por punto): entre cómodo y techo 70 % de velocidad y sin dash,
 por encima del techo 40 %; nunca inmoviliza ni borra. Sin Carga adoptada no cambia nada. Nivel de carga calculado
@@ -10,6 +10,13 @@ y medidores SRV01; los alimentos abren el panel de agua y provisiones (consumo d
 SQL028/`attr`/`eat`. Pendiente: comidas especiales SRV02 como operación `freshwater` + ampliación SQL032.
 Suite completa **4598/4659**; los 55 fallos también fallan en origin `c33ed9c` (68 allí) salvo uno de red que pasa
 aislado. HUD vertical **36/36** (origin 28 solapes; corregido el bloque del jugador con barras) y ficha en 4 viewports.
+
+**AREA01 GM05b, 2026-10-11 — pintura implementada localmente, alpha.48/protocolo 53:**
+[Contrato](docs/briefs/gm05b-terrain-paint.md) y [entrega](docs/delivery/gm05b/DELIVERY.md).
+Hierba/tierra/arena/roca, borrar gradual y pinceles circular/cuadrado/elíptico compartidos con escultura.
+Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores conservadas.
+SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
+Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
 
 **AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
 [Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).
