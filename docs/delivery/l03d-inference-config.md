@@ -1,6 +1,7 @@
 # L03d-e1 — Configuración privada del centro de inferencia
 
-Implementación alpha.41/protocolo 48. [Contrato](../briefs/l03d-inference-config.md).
+Implementación inicial alpha.41; integración final alpha.42/protocolo 48, conservando GM04b.
+[Contrato](../briefs/l03d-inference-config.md).
 El autor eligió preparar la configuración y decidir proveedor/importe después; ofreció un modelo
 local para el siguiente adaptador. Este corte no llama proveedores ni aplica un presupuesto de gasto.
 
@@ -25,11 +26,15 @@ Una operación que supera el timeout mantiene su slot hasta terminar; no entrega
 - SQL028 aplicado en Supabase; readiness versión 1. Canario como service_role: save, replay exacto,
   conflicto e aislamiento; rollback comprobado con head revisión cero. Sin filas de prueba retenidas.
 - Regresión adicional: 54/54 en nueve archivos, incluidos SQL025/027, ficha/control y red de la mente.
-- [Navegador local](l03d-inference-config/browser.json): 11 comprobaciones, seis capturas revisadas
+- [Navegador inicial alpha.41](l03d-inference-config/browser.json): 11 comprobaciones, seis capturas.
+- [Integración final alpha.42](l03d-inference-config/integration-final.json): 70/70 en doce archivos;
+  incluye los 52 casos originales y cuatro archivos de plantillas GM04b.
+- [Navegador final alpha.42](l03d-inference-config/final-alpha42/browser.json): 12 comprobaciones,
+  seis capturas revisadas
   por root. Chrome PC ES/EN, portrait poblado 390×844 y paisaje 844×390 ES; nueve controles alcanzables
   por scroll y objetivos de al menos 44 px. Autenticación simulada, gameplay/control en memoria;
   SQL028 en disco reabierto en revisión 2. Cero errores de página, consola o solicitudes.
-- Publicación en curso; el último runtime previo comprobado es `a7f9e6d`/alpha.40.
+- Publicación pendiente; el último runtime previo comprobado es `a7f9e6d`/alpha.40.
 
 Evidencia SQL en [sql-live.json](l03d-inference-config/sql-live.json). Los conteos de selecciones
 locales se solapan; no deben sumarse como cobertura independiente.

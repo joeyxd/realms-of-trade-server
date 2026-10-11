@@ -6,13 +6,14 @@ Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat in
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
 proveedor/modelo y operación reales siguen pendientes.
 
-**AREA17 L03d-e1, 2026-10-10 — centro de inferencia preparado, alpha.41/protocolo 48:**
+**AREA17 L03d-e1, 2026-10-10 — centro de inferencia preparado, alpha.42/protocolo 48:**
 [Entrega](docs/delivery/l03d-inference-config.md) y [contrato](docs/briefs/l03d-inference-config.md).
 Configuración privada por mundo/cuenta: límite conjunto, límite único por conexión y modelo por
 compañero existente. SQL028 CAS/replay, aislamiento, stop obligatorio y borrador conservado ante
 conflicto/incertidumbre. Sin importe/modelo preseleccionados, proveedor ni generación.
-Integración local 52/52 y regresión 54/54 (selecciones solapadas); SQL028 aplicado y canario de
-servicio revertido. Revisión visual/despliegue en curso. Los techos guardados aún no son ledger.
+Integración final alpha.42 70/70 y navegador local 12/12; regresión anterior alpha.41 54/54
+(selecciones solapadas). SQL028 aplicado y canario de servicio revertido. Publicación pendiente.
+Los techos guardados aún no son ledger; la autenticación del navegador local es simulada.
 Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
 
 **AREA17 L03d-d, 2026-10-10 — detención durable publicada, alpha.38/protocolo 46:**

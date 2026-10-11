@@ -97,7 +97,11 @@ const evidence = { schema: 'l03d-inference-config-browser/v1', version: GAME.ver
   fixtures: { owner: OWNER, characters: [CHARACTER_A, CHARACTER_B], other: OTHER, otherCharacter: OTHER_CHARACTER, world: WORLD } };
 async function check(name, fn) { await fn(); evidence.checks.push(name); console.log(`PASS ${name}`); }
 async function shot(page, name) {
-  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  });
+  await page.waitForTimeout(120);
   await page.screenshot({ path: resolve(OUTPUT, name), fullPage: false }); evidence.screenshots.push(name);
 }
 async function openGame(context, origin, viewport) {
@@ -206,6 +210,33 @@ try {
   await check('english_copy_keeps_prepared_limits_and_no_generation_claim', async () => {
     assert.equal(await ownerPage.locator('.mn-inference-config-save').textContent(), 'Save');
     assert.match(await ownerPage.locator('.mn-inference-config').textContent(), /inference is not available yet|not balance or usage/i);
+  });
+  await check('english_config_form_is_visible_and_painted_before_capture', async () => {
+    await ownerPage.evaluate(async () => {
+      await document.fonts.ready;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    });
+    await ownerPage.waitForTimeout(120);
+    const visible = await ownerPage.evaluate(() => {
+      const root = document.querySelector('.mn-inference-config'), title = root?.querySelector('h3');
+      const amount = root?.querySelector('.mn-inference-config-account-ceiling'), status = root?.querySelector('.mn-inference-config-status');
+      const bounds = element => {
+        if (!element) return null;
+        const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, display: style.display,
+          visibility: style.visibility, opacity: Number(style.opacity), color: style.color };
+      };
+      const rootRect = bounds(root), titleRect = bounds(title), amountRect = bounds(amount), statusRect = bounds(status);
+      const onscreen = rect => !!rect && rect.width > 0 && rect.height > 0 && rect.display !== 'none' &&
+        rect.visibility === 'visible' && rect.opacity > 0 && rect.x >= -1 && rect.y >= -1 &&
+        rect.x + rect.width <= innerWidth + 1 && rect.y + rect.height <= innerHeight + 1;
+      return { title: title?.textContent?.trim(), amount: amount?.value, status: status?.textContent?.trim(),
+        root: rootRect, titleRect, amountRect, statusRect,
+        rendered: onscreen(rootRect) && onscreen(titleRect) && onscreen(amountRect) && onscreen(statusRect) };
+    });
+    assert.equal(visible.title, 'Inference Center'); assert.equal(visible.amount, '4.25');
+    assert.match(visible.status, /Configuration saved/); assert.equal(visible.rendered, true, JSON.stringify(visible));
+    evidence.layout = { ...(evidence.layout || {}), englishCapture: visible };
   });
   await shot(ownerPage, 'inference-config-desktop-en.png');
 

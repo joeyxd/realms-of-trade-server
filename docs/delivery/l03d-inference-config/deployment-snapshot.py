@@ -17,6 +17,8 @@ RUNTIME_FILES = (
     'src/client/companions.js', 'src/client/companionConfig.js', 'src/client/inferenceConfig.js',
     'src/ui/companions.js', 'src/ui/companionConfig.js', 'src/ui/inferenceConfig.js',
     'src/main.js', 'src/client/gameClient.js',
+    'src/editor/editor.js', 'src/editor/editor.css', 'src/editor/templatePanel.js',
+    'src/editor/templateStore.js', 'src/editor/templates.js',
 )
 
 
