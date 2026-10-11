@@ -109,3 +109,13 @@ alpha.46/protocolo 52, merge `31f7ff5` sobre upstream `2a51c8d`. La selección c
 [resumen](integration-attributes/regression.json) y [TAP](integration-attributes/regression.tap).
 WELCOME mantiene la identidad del contenido GM al añadir la capacidad privada de atributos.
 Este checkpoint no sustituye ni cambia la versión de la aceptación canaria alpha.45 anterior.
+El [editor público integrado](public/integration-alpha46/public-browser-evidence.json) repitió
+**11/11 controles sin errores** en alpha.46/protocolo 52: invitado, autenticación GM real y cambios
+locales privados. La cadena remota quedó intencionadamente sin ejecutar; no se volvió a activar
+el canario ni se escribió el borrador online. Sus capturas nocturnas confirman controles/scroll;
+la revisión visual de relieve sigue siendo la referencia alpha.45 indicada arriba. La
+[entrada WebSocket real](public/integration-entry-alpha46.json) recibió WELCOME, snapshot y perfil.
+La [imagen pública alpha.46](public/integration-runtime-alpha46.json) coincide con Git en 28/28
+archivos y tres módulos INV02c adicionales; 24/28 fuentes siguen idénticas a alpha.45, con cambios
+exactamente en host, main, metadata y protocolo. [Salud tras cerrar QA](public/integration-deployment-alpha46.json):
+una autoridad sana, Supabase durable, sin jugadores/conexiones, contenido base generación 6.
