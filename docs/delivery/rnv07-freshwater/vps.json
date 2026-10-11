@@ -1,0 +1,83 @@
+{
+  "containers": 1,
+  "utc": "2026-10-11T04:51:06Z",
+  "active": "be782604e9d23a741983b1f8dec1fbe65607c7286ef68c0e52bba0fc6acd9bbc sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353 healthy 80e46df8ca4664f93aa59df8350c27cc17589b53",
+  "command": "[\"node\",\"deploy/runtime.mjs\"]",
+  "status": {
+    "version": "0.6.0-alpha.44",
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "players": 0,
+    "sockets": 0,
+    "tick": 12294,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "unsaved": 0,
+      "errors": 0,
+      "tickBlocked": false,
+      "combatDeaths": null,
+      "deathDrops": null,
+      "groundTransactions": null,
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 6,
+        "replays": 2
+      },
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true
+      },
+      "profileWrites": 0,
+      "worldWriting": false,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 2206,
+        "errors": 0
+      }
+    }
+  },
+  "public_health": 200,
+  "public_page": 200,
+  "validation": {
+    "revision": "80e46df8ca4664f93aa59df8350c27cc17589b53",
+    "image_id": "sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353",
+    "tests_passed": true
+  },
+  "offline_summary": [
+    "# tests 126",
+    "# pass 126",
+    "# fail 0",
+    "# skipped 0"
+  ],
+  "current": "/opt/marea-negra/releases/80e46df8ca4664f93aa59df8350c27cc17589b53",
+  "timer": "active",
+  "service": "ExecMainStatus=0\nActiveState=inactive",
+  "updater_sha256": "9b4431cf07d8f9a6433e7b5f6792dbc095732877d38e2bc685d739027f1edb85"
+}

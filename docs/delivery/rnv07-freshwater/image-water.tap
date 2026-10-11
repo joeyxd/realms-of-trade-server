@@ -1,0 +1,143 @@
+# source_hashes 20/20 verified against Git revision 80e46df8ca4664f93aa59df8350c27cc17589b53
+TAP version 13
+# Subtest: paid bucket, interrupted gathering, exact fill retry and reconnect preserve water
+ok 1 - paid bucket, interrupted gathering, exact fill retry and reconnect preserve water
+  ---
+  duration_ms: 3231.451027
+  type: 'test'
+  ...
+# Subtest: authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water
+ok 2 - authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water
+  ---
+  duration_ms: 2337.869173
+  type: 'test'
+  ...
+# Subtest: guest/disabled/missing SQL readiness deny freshwater without modifying inventory
+ok 3 - guest/disabled/missing SQL readiness deny freshwater without modifying inventory
+  ---
+  duration_ms: 5508.070897
+  type: 'test'
+  ...
+# Subtest: ACK waits for receipt; lost storage response reconciles without paying twice
+ok 4 - ACK waits for receipt; lost storage response reconciles without paying twice
+  ---
+  duration_ms: 2536.712247
+  type: 'test'
+  ...
+# Subtest: paid raft barrel binds stable part identity, conserves transfers and refuses filled removal
+ok 5 - paid raft barrel binds stable part identity, conserves transfers and refuses filled removal
+  ---
+  duration_ms: 2672.758913
+  type: 'test'
+  ...
+# Subtest: craft, fill and decant use immutable exact commands and wait for authoritative profile changes
+ok 6 - craft, fill and decant use immutable exact commands and wait for authoritative profile changes
+  ---
+  duration_ms: 12.756666
+  type: 'test'
+  ...
+# Subtest: barrel transfer clamps to available water/capacity and disables distant, broken, empty, full, and no-bucket cases
+ok 7 - barrel transfer clamps to available water/capacity and disables distant, broken, empty, full, and no-bucket cases
+  ---
+  duration_ms: 2.13762
+  type: 'test'
+  ...
+# Subtest: retry is the same command once; timeout preserves uncertain pending state until final acknowledgement
+ok 8 - retry is the same command once; timeout preserves uncertain pending state until final acknowledgement
+  ---
+  duration_ms: 0.692376
+  type: 'test'
+  ...
+# Subtest: session reset clears uncertainty; gathering is localized and Escape closes only the open panel
+ok 9 - session reset clears uncertainty; gathering is localized and Escape closes only the open panel
+  ---
+  duration_ms: 1.172934
+  type: 'test'
+  ...
+# Subtest: copy is bilingual, source/range guards are clear, and no bucket creation shortcut appears
+ok 10 - copy is bilingual, source/range guards are clear, and no bucket creation shortcut appears
+  ---
+  duration_ms: 0.540434
+  type: 'test'
+  ...
+# Subtest: vessel decoder is strict and missing legacy state stays empty
+ok 11 - vessel decoder is strict and missing legacy state stays empty
+  ---
+  duration_ms: 6.028339
+  type: 'test'
+  ...
+# Subtest: container mass and volume include the reusable bucket and its water
+ok 12 - container mass and volume include the reusable bucket and its water
+  ---
+  duration_ms: 1.01505
+  type: 'test'
+  ...
+# Subtest: commands have an exact bounded shape
+ok 13 - commands have an exact bounded shape
+  ---
+  duration_ms: 2.405327
+  type: 'test'
+  ...
+# Subtest: craft, fill, deposit, withdraw and decant conserve water without mutating input
+ok 14 - craft, fill, deposit, withdraw and decant conserve water without mutating input
+  ---
+  duration_ms: 4.547429
+  type: 'test'
+  ...
+# Subtest: full, empty, stale, owner, condition, room and revision-limit refusals are atomic
+ok 15 - full, empty, stale, owner, condition, room and revision-limit refusals are atomic
+  ---
+  duration_ms: 7.357673
+  type: 'test'
+  ...
+# Subtest: profile vessel validation preserves valid broken barrel contents and rejects mismatched identities
+ok 16 - profile vessel validation preserves valid broken barrel contents and rejects mismatched identities
+  ---
+  duration_ms: 0.953392
+  type: 'test'
+  ...
+# Subtest: renders every carried good, volume, mass, and tier-one utility tools
+ok 17 - renders every carried good, volume, mass, and tier-one utility tools
+  ---
+  duration_ms: 5.652844
+  type: 'test'
+  ...
+# Subtest: lists all catalog goods with positive counts and marks pending presentation quantities
+ok 18 - lists all catalog goods with positive counts and marks pending presentation quantities
+  ---
+  duration_ms: 3.455737
+  type: 'test'
+  ...
+# Subtest: supports English labels and a projected pack without changing saved inventory
+ok 19 - supports English labels and a projected pack without changing saved inventory
+  ---
+  duration_ms: 1.169959
+  type: 'test'
+  ...
+# Subtest: carry metadata supplies mass limit and strength; each item exposes both dimensions
+ok 20 - carry metadata supplies mass limit and strength; each item exposes both dimensions
+  ---
+  duration_ms: 0.677326
+  type: 'test'
+  ...
+# Subtest: empty packs and unowned tools have localized empty states
+ok 21 - empty packs and unowned tools have localized empty states
+  ---
+  duration_ms: 0.681913
+  type: 'test'
+  ...
+# Subtest: reusable bucket remains visible when empty and counts water mass once
+ok 22 - reusable bucket remains visible when empty and counts water mass once
+  ---
+  duration_ms: 2.111512
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17782.461233
