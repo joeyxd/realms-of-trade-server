@@ -24,8 +24,9 @@ export function packComfort(profile, bonus = 0) {
   return comfortMass(pack.maxMass, readAttrField(profile).value !== null, bonus);
 }
 
-/** The load tier of a profile's pack (data/carry.js loadTier): 0 without a weight limit. */
+/** Carga penalties are opt-in; legacy packs retain their capacity limit without movement penalties. */
 export function packLoadTier(profile, bonus = 0) {
+  if (!readAttrField(profile).value) return 0;
   const comfort = packComfort(profile, bonus);
   return comfort === null ? 0 : loadTier(holdMass(profile.eco.pack), profile.eco.pack.maxMass, comfort);
 }
