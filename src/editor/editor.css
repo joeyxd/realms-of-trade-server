@@ -75,6 +75,21 @@
 }
 .gm-sidebar { display: flex; flex-direction: column; }
 .gm-library, .gm-scene-panel { min-height: 0; flex: 1; }
+.gm-template-panel { display: flex; flex: 1; min-height: 0; flex-direction: column; overflow: auto; gap: 8px; padding: 10px; }
+.gm-template-panel > .gm-template-panel { padding: 0; overflow: visible; }
+.gm-template-panel h3 { margin: 0; font-size: 14px; }
+.gm-template-panel input:not([type="file"]) { min-width: 0; width: 100%; min-height: 34px; padding: 7px; border: 1px solid #354b54; border-radius: 6px; background: #102129; color: #edf4f5; }
+.gm-template-panel input:focus-visible, .gm-template-panel button:focus-visible { outline: 2px solid #6eead0; outline-offset: 2px; }
+.gm-template-panel input[type="file"] { display: none; }
+.gm-template-panel p { margin: 0; color: #a9c2c9; font-size: 11px; overflow-wrap: anywhere; }
+.gm-template-panel .gm-template-status[data-state="conflict"], .gm-template-panel .gm-template-status[data-state="pending"], .gm-template-panel .gm-template-status[data-state="unavailable"], .gm-template-panel .gm-template-status[data-state="corrupt"], .gm-template-panel .gm-template-status[data-state="invalid"] { color: #ffd69d; }
+.gm-template-list { display: grid; gap: 6px; }
+.gm-template-list button { text-align: left; overflow-wrap: anywhere; }
+.gm-template-list button[aria-pressed="true"] { color: #b1fff1; border-color: #57b7a5; background: #214139; }
+.gm-template-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.gm-template-actions button { padding: 6px; font-size: 11px; }
+.gm-template-actions [data-template-action="save"], .gm-template-actions [data-template-action="place"] { grid-column: 1 / -1; color: #d8fff2; border-color: #358875; }
+.gm-template-confirmations { display: grid; gap: 5px; }
 .gm-editor [hidden] { display: none !important; }
 .gm-tabs { display: flex; gap: 5px; padding: 8px; border-bottom: 1px solid #2c4149; }
 .gm-tabs button { flex: 1; }

@@ -13,6 +13,8 @@ import { EditorStatus, editorErrorMessage, editorMessage } from './messages.js';
 import { getLocale, onLocaleChange, setLocale } from '../core/locale.js';
 import { MAX_SELECTION, selectionPivot, transformSelection, updateSelection, removeSelection, duplicateSelection } from './selection.js';
 import { LAYER } from '../render/pipeline.js';
+import { TemplatePanel } from './templatePanel.js';
+import { validateTemplate, instantiateTemplate } from './templates.js';
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 const number = (v) => Number.isFinite(Number(v)) ? Number(v) : 0;
@@ -48,7 +50,9 @@ export class WorldEditor {
     this.selectionBounds.name = 'gm-selection-bounds'; this.selectionBounds.visible = false;
     this.selectionBounds.layers.set(LAYER.NO_OUTLINE); this.selectionBounds.material.depthTest = false;
     this.selectionBounds.renderOrder = 20; this.groupStart = null;
-    this.pendingEntry = null; this.ghost = null; this.dragging = false; this.dragStart = null;
+    this.pendingEntry = null; this.pendingTemplate = null; this.templateLoadEpoch = 0;
+    this.templateLoading = false; this.templatePlacement = null;
+    this.ghost = null; this.dragging = false; this.dragStart = null;
     this.pointerNdc = new THREE.Vector2(); this.pointerInside = false; this.error = null; this.lastError = null;
     this.snapEnabled = true; this.snapStep = 0.5;
     this.baseLayer = createBaseDecorationLayer({ scene, map, baseRevision });
@@ -99,6 +103,7 @@ export class WorldEditor {
     });
     this.remoteClient = remoteClient;
     this.remotePanel = new RemoteDraftPanel(this, remoteClient);
+    this.templatePanel = new TemplatePanel(this, this.templateRoot);
     this.unsubscribeLocale = onLocaleChange((lang) => { this.lang = lang; this._setLanguage(); });
     this._setLanguage();
   }
@@ -126,12 +131,13 @@ export class WorldEditor {
       '<button type="button" data-role="language" aria-label="Language"></button><button type="button" data-action="close" class="gm-close" data-i18n="close"></button>',
       '</div></header><div class="gm-workspace"><aside class="gm-sidebar">',
       '<nav class="gm-tabs"><button type="button" data-action="tab-library" data-i18n="library"></button>',
-      '<button type="button" data-action="tab-scene" data-i18n="scene"></button></nav>',
+      '<button type="button" data-action="tab-scene" data-i18n="scene"></button>',
+      '<button type="button" data-action="tab-templates" data-i18n="templates"></button></nav>',
       '<div class="gm-library" data-role="catalog"></div><section class="gm-scene-panel" data-role="scene-panel" hidden>',
       '<label class="gm-search"><span data-i18n="sceneSearch"></span><input type="search" data-role="scene-search"></label>',
       '<p class="gm-scene-note" data-i18n="sceneScope"></p><div class="gm-scene-count" data-role="scene-count"></div>',
       '<p class="gm-scene-note" data-i18n="multiHelp"></p><button type="button" data-action="clear-selection" data-i18n="clearSelection"></button>',
-      '<div class="gm-scene-list" data-role="scene-list"></div></section></aside>',
+      '<div class="gm-scene-list" data-role="scene-list"></div></section><section class="gm-template-panel" data-role="template-panel" hidden></section></aside>',
       '<div class="gm-canvas-note" data-i18n="controls"></div><aside class="gm-inspector"><h2 data-i18n="inspector"></h2>',
       '<div class="gm-selection-name" data-role="selection-name"></div><div class="gm-transform-tools">',
       '<button type="button" data-action="mode-translate" data-i18n="move"></button><button type="button" data-action="mode-rotate" data-i18n="rotate"></button>',
@@ -154,6 +160,7 @@ export class WorldEditor {
     ].join('');
     this.parent.appendChild(this.ui);
     this.catalogRoot = this.ui.querySelector('[data-role="catalog"]');
+    this.templateRoot = this.ui.querySelector('[data-role="template-panel"]');
     this.langButton = this.ui.querySelector('[data-role="language"]');
     this.selectionName = this.ui.querySelector('[data-role="selection-name"]');
     this.statusNode = this.ui.querySelector('[data-role="status"]');
@@ -177,7 +184,7 @@ export class WorldEditor {
       place: ['Place', 'Colocar'], undo: ['Undo', 'Deshacer'], redo: ['Redo', 'Rehacer'], duplicate: ['Duplicate', 'Duplicar'],
       delete: ['Delete', 'Eliminar'], save: ['Save locally', 'Guardar local'], export: ['Export', 'Exportar'],
       import: ['Import', 'Importar'], close: ['Close', 'Cerrar'],
-      library: ['Library', 'Biblioteca'], scene: ['Scene', 'Escena'], sceneSearch: ['Find placed decoration', 'Buscar decoración colocada'],
+      library: ['Library', 'Biblioteca'], scene: ['Scene', 'Escena'], templates: ['Templates', 'Plantillas'], sceneSearch: ['Find placed decoration', 'Buscar decoración colocada'],
       sceneScope: ['Natural rocks, flowers, pebbles and draft models. Functional objects stay protected.',
         'Rocas naturales, flores, guijarros y modelos del borrador. Los objetos funcionales están protegidos.'],
       multiHelp: ['Shift+click or check boxes to select up to 120 visible decorations.', 'Shift+clic o casillas para seleccionar hasta 120 decoraciones visibles.'],
@@ -202,6 +209,7 @@ export class WorldEditor {
     this.langButton.textContent = this.lang === 'es' ? 'EN' : 'ES';
     this.catalog?.setLanguage(this.lang); this._renderInspector(); this._renderSceneList();
     this.remotePanel?.render();
+    this.templatePanel?.render();
     if (this.walkPreview?.active) this.ui.querySelector('[data-i18n="controls"]').textContent = this._t(
       'PRIVATE WALK TEST · WASD: move · Escape: back to editor · no combat or progress',
       'PRUEBA PRIVADA · WASD: caminar · Escape: volver al editor · sin combate ni progreso');
@@ -249,6 +257,7 @@ export class WorldEditor {
       await this._hydrate(draft);
       if (!this.active || session !== this.session) return false;
       this._renderDocument(this.history.current()); this._updateButtons();
+      void this.templatePanel.start();
       this.onChanged({ document: clone(this.document), dirty: this.dirty });
       void this.remotePanel.start();
       this.invalidate(); return true;
@@ -273,6 +282,7 @@ export class WorldEditor {
   async close({ force = false } = {}) {
     if (!this.active) return true;
     this.remotePanel?.stop();
+    this._clearGhost();
     this._stopWalking();
     if (this.importTask) await this.importTask;
     if (!this.active) return true;
@@ -293,6 +303,7 @@ export class WorldEditor {
       }
       else this.resumeDocument = null;
     }
+    this.templatePanel?.stop();
     this.active = false; this.session++; this.catalog.generation = this.session;
     clearTimeout(this.saveTimer); this.saveTimer = 0;
     this.cameraController.disable(); this._clearGhost(); this.transform.detach();
@@ -374,32 +385,94 @@ export class WorldEditor {
   }
 
   _selectAsset(entry, preparedModel) {
-    if (!this.active || this.walkPreview?.active) return;
+    if (!this.active || this.walkPreview?.active || this.dragging || this.importTask) return;
     this._clearGhost(); this.pendingEntry = entry; this.ghost = preparedModel; this.ghost.name = 'gm-placement-ghost';
-    this.ghost.traverse((object) => {
-      if (!object.isMesh) return;
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
-      const copies = materials.map((material) => {
-        const copy = material.clone(); copy.transparent = true; copy.opacity = 0.48; copy.depthWrite = false;
-        copy.userData.gmGhostOwned = true; return copy;
-      });
-      object.material = Array.isArray(object.material) ? copies : copies[0];
-    });
+    this._prepareGhost(this.ghost);
     this.ghost.visible = false; this.scene.add(this.ghost);
     this._setStatus(editorMessage('Click the terrain to add this model to the local draft.', 'Pulsa el terreno para añadir el modelo al borrador local.'), 'info');
     if (this.pointerInside) this._updateGhost();
     this._updateButtons(); this.invalidate();
   }
 
+  _prepareGhost(root) {
+    root.traverse((object) => {
+      if (!object.isMesh) return;
+      object.layers.set(LAYER.NO_OUTLINE);
+      const materials = Array.isArray(object.material) ? object.material : [object.material];
+      const copies = materials.map((material) => {
+        const copy = material.clone(); copy.transparent = true; copy.opacity = 0.48; copy.depthWrite = false;
+        copy.userData.gmGhostColor = copy.color?.clone();
+        copy.userData.gmGhostOwned = true; return copy;
+      });
+      object.material = Array.isArray(object.material) ? copies : copies[0];
+    });
+  }
+
+  async _selectTemplate(raw) {
+    if (!this.active || this.walkPreview?.active || this.dragging || this.importTask) return false;
+    this._clearGhost();
+    this.catalog.generation++;
+    const epoch = this.templateLoadEpoch, session = this.session;
+    this.templateLoading = true; this.transform.detach(); this._updateButtons();
+    const root = new THREE.Group(); root.name = 'gm-template-ghost';
+    const current = () => this.active && this.session === session && this.templateLoadEpoch === epoch && !this.walkPreview?.active;
+    try {
+      const template = validateTemplate(raw);
+      // Validation includes the destination base, total capacity and every transform before any scene commit.
+      const previewIds = template.objects.map(() => uid());
+      if (template.base.seed !== (this.map.seed >>> 0) || template.base.revision !== this.baseRevision) {
+        throw Object.assign(new Error('template_base'), { code: 'template_base' });
+      }
+      await this.catalog.ready;
+      if (!current()) return false;
+      for (const item of template.objects) {
+        const base = this.baseLayer.get(item.assetId), entry = this._entryForAsset(item.assetId);
+        if (!entry || (base ? !base.editable : !['model', 'prop'].includes(entry.kind))) throw Object.assign(new Error('template_asset'), { code: 'template_asset' });
+        const state = this.assets.list().find((record) => record.id === item.assetId)?.state;
+        if (!base && state !== 'ok') await this.assets.ensureModel(entry, { base: entry.base || 'assets/' });
+        if (!current()) return false;
+        const model = base ? this.baseLayer.model(item.assetId) : this.assets.model(item.assetId);
+        if (!model) throw Object.assign(new Error('template_asset'), { code: 'template_asset' });
+        const part = new THREE.Group(); this._applyTransform(part, item.transform); part.add(model); root.add(part);
+      }
+      if (!current()) return false;
+      this._prepareGhost(root);
+      this.pendingTemplate = { template, previewIds };
+      this.ghost = root; this.ghost.visible = false; this.scene.add(root);
+      this._setStatus(editorMessage('Click terrain to place the whole template. Heights stay relative. Escape cancels.',
+        'Pulsa el terreno para colocar la plantilla completa. Conserva alturas relativas. Escape cancela.'), 'info');
+      if (this.pointerInside) this._updateGhost();
+      return true;
+    } catch (error) {
+      if (current()) this._setStatus(editorMessage('Template unavailable or incompatible. No objects were added. Check its assets and base, then retry.',
+        'Plantilla no disponible o incompatible. No se añadió ningún objeto. Revisa sus modelos y base, y reintenta.'), 'error');
+      this.lastError = error;
+      return false;
+    } finally {
+      if (this.ghost !== root) root.traverse((object) => {
+        for (const material of object.userData.gmOwnedMaterials || []) material.dispose();
+      });
+      if (current()) {
+        this.templateLoading = false;
+        if (!this.ghost) this._attachSelection();
+        this._updateButtons(); this.invalidate();
+      }
+    }
+  }
+
   _clearGhost() {
-    if (!this.ghost) return;
-    this.scene.remove(this.ghost);
-    this.ghost.traverse((object) => {
+    this.templateLoadEpoch++; this.templateLoading = false;
+    this.pendingTemplate = null; this.templatePlacement = null; this.pendingEntry = null;
+    if (this.ghost) this.scene.remove(this.ghost);
+    this.ghost?.traverse((object) => {
+      for (const material of object.userData.gmOwnedMaterials || []) material.dispose();
       if (!object.isMesh) return;
       const materials = Array.isArray(object.material) ? object.material : [object.material];
       for (const material of materials) if (material?.userData?.gmGhostOwned) material.dispose();
     });
-    this.ghost = null; this.pendingEntry = null; this._updateButtons();
+    this.ghost = null;
+    if (this.active && this.history && this.records.size) this._attachSelection();
+    this._updateButtons();
   }
 
   _pointerMove(event) {
@@ -421,6 +494,29 @@ export class WorldEditor {
     const hits = this._terrainHits();
     if (!hits.length) { this.ghost.visible = false; return; }
     const point = this._placementPoint(hits[0].point); this.ghost.position.copy(point);
+    if (this.pendingTemplate) {
+      const key = JSON.stringify([point.x, point.y, point.z]);
+      if (key !== this.templatePlacement?.key || this.templatePlacement?.document !== this.document) {
+        let index = 0, error = null;
+        try {
+          instantiateTemplate(this.history.current(), this.pendingTemplate.template, {
+            position: { x: point.x, y: point.y, z: point.z }, rotation: { x: 0, y: 0, z: 0 }, scale: 1,
+          }, () => this.pendingTemplate.previewIds[index++]);
+        } catch (caught) { error = caught; }
+        this.templatePlacement = { key, document: this.document, error };
+        this.ghost.traverse((object) => {
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          for (const material of materials) if (material?.userData?.gmGhostOwned && material.color) {
+            if (error) material.color.setRGB(1, .12, .08);
+            else material.color.copy(material.userData.gmGhostColor);
+          }
+        });
+        this._setStatus(error ? editorMessage('The whole template does not fit here or the draft is full. Nothing will be placed.',
+          'La plantilla completa no cabe aquí o el borrador está lleno. No se colocará nada.') :
+          editorMessage('Click terrain to place the whole template. Heights stay relative. Escape cancels.',
+            'Pulsa el terreno para colocar la plantilla completa. Conserva alturas relativas. Escape cancela.'), error ? 'error' : 'info');
+      }
+    }
     this.ghost.visible = true; this.invalidate();
   }
 
@@ -428,7 +524,8 @@ export class WorldEditor {
     if (!this.active || this.walkPreview?.active || this.importTask || event.button !== 0 || event.target !== this.canvas || this.dragging) return;
     const rect = this.canvas.getBoundingClientRect();
     this.pointerNdc.set(((event.clientX - rect.left) / rect.width) * 2 - 1, -(((event.clientY - rect.top) / rect.height) * 2 - 1));
-    if (this.ghost && this.pendingEntry) {
+    if (this.templateLoading) return;
+    if (this.ghost && (this.pendingEntry || this.pendingTemplate)) {
       const hits = this._terrainHits(); if (hits.length) this._placeAt(hits[0].point); return;
     }
     const hit = this._pickPlaced();
@@ -452,6 +549,25 @@ export class WorldEditor {
   }
 
   _placeAt(point) {
+    if (this.pendingTemplate) {
+      if (!this.ghost?.visible) return;
+      point = this._placementPoint(point);
+      try {
+        const result = instantiateTemplate(this.history.current(), this.pendingTemplate.template, {
+          position: { x: point.x, y: point.y, z: point.z }, rotation: { x: 0, y: 0, z: 0 }, scale: 1,
+        }, uid);
+        this.selectedIds = new Set(result.ids); this.selectedId = result.ids.at(-1);
+        this._commit(result.document); this.transform.detach();
+        this._setStatus(editorMessage('Template added to the draft as independent copies. Escape ends placement.',
+          'Plantilla añadida al borrador como copias independientes. Escape termina la colocación.'), 'ok');
+        return;
+      } catch (error) {
+        this.lastError = error;
+        this._setStatus(editorMessage('The whole template does not fit here or the draft is full. Nothing was added.',
+          'La plantilla completa no cabe aquí o el borrador está lleno. No se añadió nada.'), 'error');
+        return;
+      }
+    }
     const entry = this.pendingEntry; if (!entry || !this.ghost?.visible) return;
     point = this._placementPoint(point);
     const decoration = createDecoration({ id: uid(), assetId: entry.id, position: {
@@ -489,11 +605,13 @@ export class WorldEditor {
       return { id: base.id, assetId: base.id, transform: override?.transform || base.transform,
         collider: base.collider, hidden: !!override?.hidden, base: true };
     }
-    return doc.objects.find((obj) => obj.id === id) || null;
+    const object = doc.objects.find((obj) => obj.id === id);
+    return object ? { ...object, base: false } : null;
   }
 
   _attachSelection() {
     this.transform.detach();
+    if (this.pendingTemplate || this.templateLoading) { this._updateSelectionBounds(); return; }
     const items = this._selectedItems();
     if (items.length > 1) {
       this._applyTransform(this.groupPivot, selectionPivot(items));
@@ -699,10 +817,19 @@ export class WorldEditor {
   }
 
   _setSceneTab(sceneTab) {
-    this.sceneTab = sceneTab; this.catalogRoot.hidden = sceneTab; this.scenePanel.hidden = !sceneTab;
+    this.sceneTab = sceneTab; this.templateTab = false;
+    this.templateRoot.hidden = true; this.catalogRoot.hidden = sceneTab; this.scenePanel.hidden = !sceneTab;
     this.ui.querySelector('[data-action="tab-scene"]').classList.toggle('is-active', sceneTab);
     this.ui.querySelector('[data-action="tab-library"]').classList.toggle('is-active', !sceneTab);
+    this.ui.querySelector('[data-action="tab-templates"]').classList.remove('is-active');
     this._renderSceneList();
+  }
+
+  _setTemplateTab() {
+    this.sceneTab = false; this.templateTab = true;
+    this.catalogRoot.hidden = true; this.scenePanel.hidden = true; this.templateRoot.hidden = false;
+    for (const name of ['library', 'scene', 'templates']) this.ui.querySelector(`[data-action="tab-${name}"]`).classList.toggle('is-active', name === 'templates');
+    this.templatePanel.update();
   }
 
   _renderSceneList() {
@@ -796,7 +923,7 @@ export class WorldEditor {
     this.ui.querySelector('[data-action="delete"]').disabled = !selected || selected.hidden;
     this.ui.querySelector('[data-action="restore-base"]').disabled = !selected?.base || !this.history.current().baseOverrides.some((entry) => entry.id === selected.id);
     for (const action of ['ground', 'mode-translate', 'mode-rotate', 'mode-scale']) this.ui.querySelector(`[data-action="${action}"]`).disabled = !selected || selected.hidden;
-    this.ui.querySelector('[data-action="place"]').classList.toggle('is-active', !!this.pendingEntry);
+    this.ui.querySelector('[data-action="place"]').classList.toggle('is-active', !!this.pendingEntry || !!this.pendingTemplate || this.templateLoading);
     const walking = !!this.walkPreview?.active;
     this.ui.classList.toggle('is-walking', walking);
     this.ui.querySelector('[data-action="walk"]').disabled = !this.walkPreview;
@@ -806,6 +933,7 @@ export class WorldEditor {
     }
     this.importInput.disabled = walking;
     this.remotePanel?.render();
+    this.templatePanel?.update();
   }
 
   _toolbarAction(event) {
@@ -816,7 +944,7 @@ export class WorldEditor {
     if (this.walkPreview?.active && !['walk', 'close'].includes(action)) return;
     if (this.importTask && !['close', 'export'].includes(action)) return;
     switch (action) {
-      case 'place': if (this.pendingEntry) this._clearGhost(); else this._setStatus(editorMessage('Choose a model from the library.', 'Elige un modelo de la biblioteca.'), 'info'); break;
+      case 'place': if (this.pendingEntry || this.pendingTemplate || this.templateLoading) this._clearGhost(); else this._setStatus(editorMessage('Choose a model or template from the library.', 'Elige un modelo o plantilla de la biblioteca.'), 'info'); break;
       case 'undo': this._restoreHistory('undo'); break;
       case 'redo': this._restoreHistory('redo'); break;
       case 'duplicate': this._duplicate(); break;
@@ -831,13 +959,14 @@ export class WorldEditor {
       case 'walk': if (this.walkPreview?.active) this._stopWalking(); else this._startWalking(); break;
       case 'tab-library': this._setSceneTab(false); break;
       case 'tab-scene': this._setSceneTab(true); break;
+      case 'tab-templates': this._setTemplateTab(); break;
       case 'save': this.saveNow(); break;
       case 'remote': this.remotePanel.show(); break;
       case 'export': this._exportCurrent(); break;
       case 'close': this.close(); break;
-      case 'mode-translate': this.transform.setMode('translate'); break;
-      case 'mode-rotate': this.transform.setMode('rotate'); break;
-      case 'mode-scale': this.transform.setMode('scale'); break;
+      case 'mode-translate': this._clearGhost(); this.transform.setMode('translate'); break;
+      case 'mode-rotate': this._clearGhost(); this.transform.setMode('rotate'); break;
+      case 'mode-scale': this._clearGhost(); this.transform.setMode('scale'); break;
       case 'ground': {
         if (this.selectedIds.size > 1) {
           try {
@@ -892,6 +1021,9 @@ export class WorldEditor {
       if (event.code === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this._stopWalking(); }
       return;
     }
+    if (event.code === 'Escape' && (this.ghost || this.templateLoading) && !this.dragging) {
+      event.preventDefault(); event.stopImmediatePropagation(); this._clearGhost(); return;
+    }
     if (typing(event.target) && !(this.dragging && event.code === 'Escape')) return;
     if (this.dragging && event.code !== 'Escape') return;
     if (this.importTask && event.code !== 'Escape') return;
@@ -914,9 +1046,9 @@ export class WorldEditor {
     if (event.code === 'Delete' || event.code === 'Backspace') {
       event.preventDefault(); event.stopImmediatePropagation(); this._deleteSelected(); return;
     }
-    if (event.code === 'Digit1') this.transform.setMode('translate');
-    else if (event.code === 'Digit2') this.transform.setMode('rotate');
-    else if (event.code === 'Digit3') this.transform.setMode('scale');
+    if (event.code === 'Digit1') { this._clearGhost(); this.transform.setMode('translate'); }
+    else if (event.code === 'Digit2') { this._clearGhost(); this.transform.setMode('rotate'); }
+    else if (event.code === 'Digit3') { this._clearGhost(); this.transform.setMode('scale'); }
     else if (event.code === 'KeyF') this._focusSelection();
     else return;
     event.preventDefault(); event.stopImmediatePropagation();
@@ -1026,6 +1158,7 @@ export class WorldEditor {
   async dispose() {
     if (this.active) await this.close({ force: true });
     this.remotePanel?.dispose();
+    this.templatePanel?.dispose();
     this.unsubscribeLocale?.();
     clearTimeout(this.saveTimer); this.cameraController.dispose();
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
