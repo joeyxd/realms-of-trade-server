@@ -77,12 +77,12 @@ if (flags.check) {
       print(r);
       if (!r.ok) bad++;
     }
-    if (e.kind === 'tex' && e.mobileSrc) {
+    if ((e.kind === 'tex' || e.kind === 'char') && e.mobileSrc) {
       const mobileFile = path.join(dir, e.mobileSrc);
       console.log(`  mobile variant → ${e.mobileSrc}`);
-      if (!fs.existsSync(mobileFile)) { console.log('  ⚠ mobile texture file missing'); bad++; }
+      if (!fs.existsSync(mobileFile)) { console.log('  ⚠ mobile asset file missing'); bad++; }
       else {
-        const r = report(mobileFile, 'tex', e.bones);
+        const r = report(mobileFile, e.kind, e.bones);
         print(r);
         if (!r.ok) bad++;
       }

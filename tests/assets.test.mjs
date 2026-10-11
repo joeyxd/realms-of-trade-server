@@ -65,6 +65,20 @@ test('manifest: unknown looks are reported, a char keeps the ones that exist', (
   assert.ok(m.errors.some((e) => /Fantasma/.test(e)));
 });
 
+test('manifest: character mobile variant is validated and selected without changing the look binding', () => {
+  const raw = { id: 'char:buccaneer', src: 'models/buccaneer.glb', mobileSrc: 'models/buccaneer-mobile.glb', looks: ['Bucanero'] };
+  const m = normalizeManifest({ assets: [raw] }, { looks: ['Bucanero'] });
+  assert.deepEqual(m.errors, []);
+  assert.equal(m.byLook.get('Bucanero'), raw.id);
+  assert.equal(selectTextureSource(m.entries.get(raw.id), true), raw.mobileSrc);
+  assert.equal(selectTextureSource(m.entries.get(raw.id), false), raw.src);
+  for (const mobileSrc of ['../outside.glb', 'https://example.test/a.glb', '/absolute.glb', 'C:\\private.glb']) {
+    const bad = normalizeManifest({ assets: [{ ...raw, mobileSrc }] });
+    assert.ok(bad.errors.some((e) => /mobileSrc/.test(e)));
+    assert.equal(selectTextureSource(bad.entries.get(raw.id), true), raw.src);
+  }
+});
+
 test('fitBox: height, size, the procedural size, offsets', () => {
   const f = fitBox([-1, 0, -1], [1, 4, 1], { kind: 'model', fit: 'height', height: 2, scale: 1 });
   assert.equal(f.s, 0.5); assert.equal(f.y, 0);

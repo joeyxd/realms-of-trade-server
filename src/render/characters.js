@@ -601,6 +601,17 @@ export class PortraitStudio {
   render(skinIdx) {
     if (!this.done) this.done = new Map();
     if (this.done.has(skinIdx)) return this.done.get(skinIdx);
+    const illustration = assets.texture(LOOKS[skinIdx]?.portraitTexture)?.image;
+    if (illustration) {
+      // Keep the supplied illustration and its alpha; the 3D turntable remains independent.
+      const c = document.createElement('canvas');
+      c.width = c.height = this.size;
+      const ctx = c.getContext('2d'), s = this.size;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(illustration, 0, 0, s, s);
+      this.done.set(skinIdx, c);
+      return c;
+    }
     const v = this.view(skinIdx);
     v.root.updateMatrixWorld(true);
     const hy = v.head.getWorldPosition(new THREE.Vector3()).y;

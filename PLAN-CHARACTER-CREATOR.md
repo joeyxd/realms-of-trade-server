@@ -1,5 +1,11 @@
 # Plan del creador de personajes modulares
 
+**Bucanero v1, 2026-10-11:** el autor entregó modelo e icono y pidió incorporarlos provisionalmente.
+[Integración](docs/delivery/buccaneer-v1/README.md) sobre el aspecto existente 2: modelo Mixamo
+rebound al rig actual, retrato de UI y derivados 1024/512, originales archivados. 36/36 focales,
+19 comprobaciones de navegador y capturas inspeccionadas. No cierra P02–P07 ni convierte la
+malla vestida en piezas modulares; próximas revisiones artísticas usan otra recepción versionada.
+
 Fecha: 2026-10-07. Dirección y arranque autorizados por el autor: personaje modular en el estilo de las
 láminas del explorador y su tripulación, con bases masculina y femenina, pelo, barba, ojos y equipo intercambiables.
 La primera entrega prepara referencias, dos modelos 3D articulados iniciales y un visor local.

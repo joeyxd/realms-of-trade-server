@@ -34,7 +34,7 @@
 //        to override the automatic map (ours = hips, spine, chest, head, thighL, shinL, thighR, shinR, armL, foreL,
 //        armR, foreR), weapon: "proc" (the look's procedural weapon in the right hand, default) | "none",
 //        armsDown (default true: T / A poses are lowered to the rig's arms-down rest), bone (rigid chars: the bone it
-//        rides, default "body").
+//        rides, default "body"). mobileSrc optionally selects a smaller character GLB on coarse-pointer devices.
 // prop   props: [kinds] (required), fit: "proc" (default: the procedural prop's size) | "height" | "size" | "none",
 //        size (u: the largest horizontal extent, with fit "size"), height (u, with fit "height").
 // model  fit: "size" (default when size is given) | "height" (default when only height is) | "proc" (otherwise: the size of
@@ -84,6 +84,10 @@ export function normalizeManifest(json, { looks = null } = {}) {
       shadow: raw.shadow !== false,
       notes: typeof raw.notes === 'string' ? raw.notes : '',
     };
+    if ((kind === 'char' || kind === 'tex') && raw.mobileSrc !== undefined) {
+      if (validAssetPath(raw.mobileSrc)) e.mobileSrc = raw.mobileSrc;
+      else err('mobileSrc must be a relative path inside assets/');
+    }
     if (kind === 'char') {
       e.looks = strList(raw.looks);
       if (!e.looks.length) { err('char needs "looks": the procedural look names it replaces'); continue; }
@@ -122,10 +126,6 @@ export function normalizeManifest(json, { looks = null } = {}) {
       e.size = num(raw.size, 0); e.height = num(raw.height, 0);
       e.fit = FITS.model.includes(raw.fit) ? raw.fit : e.height > 0 && !(e.size > 0) ? 'height' : e.size > 0 ? 'size' : 'proc';
     } else {
-      if (raw.mobileSrc !== undefined) {
-        if (validAssetPath(raw.mobileSrc)) e.mobileSrc = raw.mobileSrc;
-        else err('mobileSrc must be a relative path inside assets/');
-      }
       const r = Array.isArray(raw.repeat) ? raw.repeat : [1, 1];
       e.repeat = [num(r[0], 1), num(r[1], 1)];
       e.data = !!raw.data;

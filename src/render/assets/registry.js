@@ -56,7 +56,7 @@ export class Assets {
     const tex = new THREE.TextureLoader();
     let done = 0;
     const one = async (e) => {
-      const selectedSrc = e.kind === 'tex' ? selectTextureSource(e, useMobileTextures) : e.src;
+      const selectedSrc = selectTextureSource(e, useMobileTextures);
       this.state.set(e.id, { state: 'loading', selectedSrc });
       try {
         let data;
@@ -65,7 +65,7 @@ export class Assets {
         }
         else {
           if (!gltf) throw new Error('no glTF loader');
-          const g = await withTimeout(gltf.loadAsync(this.base + e.src), timeoutMs, e.src);
+          const g = await withTimeout(gltf.loadAsync(this.base + selectedSrc), timeoutMs, selectedSrc);
           data = e.kind === 'char' ? { bake: bakeCharacter(g.scene, e) } : prepStatic(g.scene, e);
         }
         this.state.set(e.id, { state: 'ok', data, selectedSrc });

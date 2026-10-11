@@ -2,6 +2,23 @@
   "version": 1,
   "assets": [
     {
+      "id": "char:buccaneer-v1",
+      "kind": "char",
+      "src": "models/buccaneer-v1-desktop.glb",
+      "mobileSrc": "models/buccaneer-v1-mobile.glb",
+      "looks": ["Bucanero"],
+      "armsDown": true,
+      "weapon": "proc",
+      "notes": "Author-supplied provisional Bucanero, Mixamo rebind; albedo 1024 desktop / 512 mobile. Original and clips preserved outside runtime. See docs/delivery/buccaneer-v1/README.md."
+    },
+    {
+      "id": "tex:portrait-buccaneer-v1",
+      "kind": "tex",
+      "src": "ui/portraits/buccaneer-v1-desktop.webp",
+      "mobileSrc": "ui/portraits/buccaneer-v1-mobile.webp",
+      "notes": "Author-supplied portrait, original alpha preserved; 512 desktop / 256 mobile."
+    },
+    {
       "id": "prop:storage-crate",
       "src": "models/prop-storage-crate.glb",
       "props": [

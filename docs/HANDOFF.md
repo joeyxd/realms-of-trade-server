@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Bucanero del autor, 2026-10-11 — integrado, alpha.52/protocolo 55, sin SQL:**
+[Entrega y evidencia](delivery/buccaneer-v1/README.md), [brief](briefs/buccaneer-character-v1.md).
+Aspecto existente 2 con modelo Tripo/Mixamo y retrato ilustrado; rebind al rig/acciones actuales.
+Originales conservados y derivados 1024/512 seleccionados por dispositivo, con fallback procedural.
+36/36 focales y 19 comprobaciones de navegador; ficha/HUD, poses armadas/herramienta, fuente frente
+a derivados y 404 real revisados. La publicación se registra aparte en la entrega.
+Aspecto completo provisional; dedos fuente, creador modular y FPS físicos siguen pendientes.
+
 **Antorcha y luz de proyectiles, 2026-10-11 — alpha.51, protocolo 55 sin cambios, sin SQL:**
 [Entrega](delivery/torch-light.md). La antorcha (N) siempre pidió 1 tabla básica (`madera`, SQL022), no troncos;
 el panel de fuego ahora lo muestra (tarjeta de material, aviso «2 troncos por tabla» y botón a fabricación) y pasa al

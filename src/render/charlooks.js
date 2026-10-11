@@ -68,6 +68,7 @@ export const LOOKS = [
   },
   {
     name: 'Bucanero', body: 'male', accent: 0xff9a6c, swatch: [0x2e3a4e, 0x8e2b2b],
+    portraitTexture: 'tex:portrait-buccaneer-v1',
     skin: 0x7a4a33, hair: 0x15110f, beard: 0x15110f, beardStyle: 'full', hairStyle: 'tied',
     headwear: 'bandana', band: 0x8e2b2b, neck: 'none',
     torso: 'coat', shirt: 0xe4dccb, vest: 0x2e3a4e, trim: 0xb39250, sleeves: 'coat', cuff: 0x243045, glove: null,
