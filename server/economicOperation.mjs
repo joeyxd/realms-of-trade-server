@@ -8,6 +8,7 @@ import { checkedResourceState } from './resourceState.mjs';
 import { loggingParticipants, loggingResultProfiles } from './loggingOperation.mjs';
 import { artisanMutation } from './artisanOperation.mjs';
 import { fireMutation } from './fireOperation.mjs';
+import { attributeMutation, draftAttributes } from './attributeOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const NIL_UUID = /^0{8}-0{4}-0{4}-0{4}-0{12}$/;
@@ -92,6 +93,16 @@ export function canonicalEconomicText(value) {
 function checkedCommand(raw) {
   if (!object(raw)) fail('input');
   const id = commandId(raw.opId);
+  if (raw.type === 'attributes') {
+    if (!['adopt', 'assign', 'reset'].includes(raw.op)) fail('input');
+    exact(raw, ['type', 'op', 'opId', 'expectedRev', ...(raw.op === 'assign' ? ['stat', 'n'] : [])]);
+    integer(raw.expectedRev, 0, MAX_VERSION - 2);
+    if (raw.op === 'assign') {
+      if (raw.stat !== 'carga') fail('input');
+      integer(raw.n, 1, 9);
+    }
+    return jsonCopy(raw);
+  }
   if (raw.type === 'fire') {
     exact(raw, ['type', 'op', 'opId', 'ship', 'part', 'kind', 'expectedRev', 'lit']);
     if (!['load', 'set'].includes(raw.op) || !['handTorch', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(raw.kind) || typeof raw.lit !== 'boolean') fail('input');
@@ -224,11 +235,16 @@ function checkedRequest(input) {
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
-  if (artisanMutation(command) || fireMutation(command)) {
+  if (artisanMutation(command) || fireMutation(command) || attributeMutation(command)) {
     if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
     const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
     if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');
     request.before = before;
+    if (attributeMutation(command)) {
+      const planned = draftAttributes(before, command);
+      if (canonicalEconomicText(planned.profile) !== canonicalEconomicText(profile) ||
+          canonicalEconomicText(planned.ack) !== canonicalEconomicText(ack)) fail('input');
+    }
   } else if (Object.hasOwn(input, 'before')) fail('input');
   if (Object.hasOwn(input, 'beneficiaries')) {
     request.beneficiaries = jsonCopy(input.beneficiaries);

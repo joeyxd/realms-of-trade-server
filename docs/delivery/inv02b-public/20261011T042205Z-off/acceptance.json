@@ -1,0 +1,42 @@
+{
+  "schema": "mn.attributes.public.v1",
+  "startedAt": "2026-10-11T04:22:09.413Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "mode": "feature-off-legacy-profile",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.43",
+  "protocolVersion": 49,
+  "checks": [
+    {
+      "name": "public_health_version_protocol_and_attribute_state",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.43",
+      "protocolVersion": 49,
+      "featureEnabled": false,
+      "realPlayers": 0
+    },
+    {
+      "name": "random_disposable_account_and_level_three_profile_seed",
+      "pass": true
+    },
+    {
+      "name": "disposable_authenticated_public_wss_join",
+      "pass": true
+    },
+    {
+      "name": "disposable_authenticated_public_wss_join",
+      "pass": true
+    },
+    {
+      "name": "feature_off_denial_no_receipt_and_legacy_reconnect",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 0,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T04:22:16.630Z"
+}

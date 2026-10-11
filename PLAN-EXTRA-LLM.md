@@ -4,7 +4,16 @@ Origen: 2026-10-05. **Parte esencial del proyecto por decisión del autor, 2026-
 Sustituye la prioridad baja original. El nombre del archivo se conserva para mantener enlaces.
 Cola principal: [PLAN-DELIVERY](PLAN-DELIVERY.md). Primera entrega **C01 chat ingame**, luego **L00–L06**;
 construcción/barcos/comercio y persistencia continúan con sus contratos. L03a tiene integración simulada;
-proveedor/modelo y operación reales siguen pendientes.
+integración del proveedor/modelo y operación ingame reales siguen pendientes.
+
+**AREA17 L03d-e2a, 2026-10-10 — transporte del modelo local probado, sin montaje:**
+[Entrega/evidencia](docs/delivery/l03d-local-model-probe.md) y [brief](docs/briefs/l03d-local-model-probe.md).
+Endpoint loopback sin clave y modelo exacto verificados; wait/reply estructurados y cancelación con
+bloqueo pasaron usando extensión explícita de plantilla sin razonamiento. Default 192 no admitió chat y 512 lo truncó;
+se conservan ambos ensayos. 20/20 HTTP local simulado; ocho intentos reales, siete usos conocidos y
+uno cancelado desconocido, sin retries después. Coste null y cero acciones/chat/memoria enviados.
+Reply mezcló ES/EN y tardó 5,8 s: calidad/latencia pendientes. Herramienta fuera del bundle/VPS;
+sin proveedor público, ledger central o integración AgentMind. E1 permanece la entrega ingame publicada.
 
 **AREA17 L03d-e1, 2026-10-10 — centro de inferencia configurado y publicado, alpha.42/protocolo 48:**
 [Entrega](docs/delivery/l03d-inference-config.md) y [contrato](docs/briefs/l03d-inference-config.md).
