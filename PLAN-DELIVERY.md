@@ -6,6 +6,8 @@ Sin conexiones y sin configuración previa, explica la disponibilidad y oculta e
 Con valores previos, los conserva de solo lectura. ES/EN, Volver/Recargar; sin SQL/protocolo ni proveedor.
 56/56 UI/cliente/red; navegador y despliegue se registran en la entrega. El Studio local no crea
 compañeros en cuentas públicas: faltan vínculo durable, emparejamiento y adaptador real de red.
+Navegador local 19/19; código publicado `1983733`. Despliegue en espera por un jugador/socket;
+VPS `5da58e9` sano, timer activo. Verificar revisión/imagen/entrada tras el relevo, sin forzarlo.
 
 **AREA15, 2026-10-11 — muerte y botín compuestos; código publicado, montaje común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-death-lifecycle.md), [contrato](docs/briefs/m5-ground-death-lifecycle.md).

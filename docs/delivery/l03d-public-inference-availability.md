@@ -26,7 +26,13 @@ runtime. No hubo llamadas al modelo ni cambios en credenciales, cuotas o datos v
   y [pruebas](l03d-public-availability/tests.tap). Capturas vacías ES móvil/EN escritorio
   y configuración previa EN móvil inspeccionadas: texto legible, sin desborde horizontal,
   campos previos deshabilitados y Recargar alcanzable mediante scroll.
-- Publicación y verificación de la release: pendientes en este checkpoint.
+- Publicado en Git: `1983733d4be19842a58fcefbc012d5772d5d7e10`, rama
+  `claude/loving-lovelace-ptbif7`. Revisión independiente del diff sin hallazgos materiales.
+- Despliegue aplazado por el actualizador: `world busy; update deferred`.
+  A las 15:36 UTC seguía activo `5da58e9`, una instancia sana, un jugador/socket,
+  cero errores y bloqueo desactivado. [Estado comprobado](l03d-public-availability/deployment-pending.json).
+  No se forzó desconexión ni reinicio. El timer activo volverá a intentarlo con el
+  mundo vacío; falta verificar imagen/revisión y entrada pública del cambio nuevo.
 - Primer ensayo de navegador: 16 comprobaciones pasaron; el nuevo QA exigía que el
   botón Recargar de un formulario largo cupiera sin scroll. Se corrigió esa aserción
   para verificar acceso mediante scroll/click, conservando el [registro original](l03d-public-availability/browser/browser-first-attempt.json).
