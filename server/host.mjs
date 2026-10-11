@@ -75,7 +75,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, freshwaterOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
@@ -92,6 +92,8 @@ export class GameHost {
     this.artisanOperations = artisanOperations;
     if (typeof workshopOperations !== 'boolean' || workshopOperations && !artisanOperations) throw new StoreError('configuration');
     this.workshopOperations = workshopOperations;
+    if (typeof attributeOperations !== 'boolean' || attributeOperations && !workshopOperations) throw new StoreError('configuration');
+    this.attributeOperations = attributeOperations;
     this.loggingAim = new LoggingAim(this);
     if (typeof fireOperations !== 'boolean' || fireOperations && !economicOperations) throw new StoreError('configuration');
     this.fireOperations = fireOperations;
@@ -500,6 +502,8 @@ export class GameHost {
           (await this.store.checkArtisanOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.workshopOperations && (typeof this.store.checkStarterWorkshop !== 'function' ||
           (await this.store.checkStarterWorkshop())?.version !== 1)) throw new StoreError('configuration');
+      if (this.attributeOperations && (typeof this.store.checkAttributeOperations !== 'function' ||
+          (await this.store.checkAttributeOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.agentTrade && (await this.store.checkAgentTradeOperations())?.version !== 1) throw new StoreError('configuration');
       const economy = await this.worldState.open(this.server.world.economy);
       if (this.closing) throw new StoreError('cancelled');
@@ -613,6 +617,7 @@ export class GameHost {
         freshwater: { enabled: this.freshwaterOperations, ready: this.freshwaterOperations && !!this.worldState?.ready },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
+        attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
         world: this.worldState?.status() ?? null },
       net: { ...s.stats, kbOut: +(this.stats.bytesOut / 1024).toFixed(1), kbIn: +(this.stats.bytesIn / 1024).toFixed(1), dropped: this.stats.dropped },
     };

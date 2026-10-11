@@ -17,6 +17,7 @@ import { EconomicOperationError, economicOperation, canonicalEconomicText, check
 import { checkedResourceState, upgradeLoggingState, upgradeTimingState } from './resourceState.mjs';
 import { loggingResultProfiles, loggingWorldTransition } from './loggingOperation.mjs';
 import { artisanWorldTransition, artisanMutation } from './artisanOperation.mjs';
+import { attributeMutation, attributeWorldTransition } from './attributeOperation.mjs';
 import { fireWorldTransition, fireMutation } from './fireOperation.mjs';
 import { freshwaterWorldTransition, freshwaterMutation, vesselsUnchanged } from './freshwaterOperation.mjs';
 import { agentGoodsBudgetCreate, agentGoodsBudgetRevoke, agentGoodsBudgetScope, agentTradeInput, checkedAgentGoodsBudget,
@@ -145,8 +146,8 @@ export function createMemoryStore() {
     const currentProfile = profiles.get(request.account), currentWorld = worlds.get(request.world);
     if (!currentProfile || !currentWorld || currentProfile.version !== request.expectedProfileVersion ||
         currentWorld.version !== request.expectedWorldVersion || currentWorld.data?.seed !== request.worldData.seed) return conflict();
-    if ((artisanMutation(request.command) || fireMutation(request.command) || freshwaterMutation(request.command)) && canonicalEconomicText(currentProfile.data) !== canonicalEconomicText(request.before)) return conflict();
-    if (!(freshwaterMutation(request.command) ? freshwaterWorldTransition(currentWorld.data, request) : fireMutation(request.command) ? fireWorldTransition(currentWorld.data, request) : artisanWorldTransition(currentWorld.data, request))) return { ok: false, why: 'operation' };
+    if ((artisanMutation(request.command) || fireMutation(request.command) || attributeMutation(request.command) || freshwaterMutation(request.command)) && canonicalEconomicText(currentProfile.data) !== canonicalEconomicText(request.before)) return conflict();
+    if (!(freshwaterMutation(request.command) ? freshwaterWorldTransition(currentWorld.data, request) : attributeMutation(request.command) ? attributeWorldTransition(currentWorld.data, request) : fireMutation(request.command) ? fireWorldTransition(currentWorld.data, request) : artisanWorldTransition(currentWorld.data, request))) return { ok: false, why: 'operation' };
     if (request.worldData.resources?.v >= 2 && currentWorld.data.resources?.v !== request.worldData.resources.v) return conflict();
     if (!resourceAdvanceAllowed(currentWorld.data, request.worldData, request.command.type === 'resource')) return conflict();
     if (!loggingWorldTransition(currentWorld.data.resources, request)) return { ok: false, why: 'operation' };
@@ -170,11 +171,12 @@ export function createMemoryStore() {
           canonicalEconomicText(current.data) !== canonicalEconomicText(row.before)) return conflict();
       if (!freshwaterMutation(request.command) && !vesselsUnchanged(current.data, row.profile)) return conflict();
       if (!fireMutation(request.command) && canonicalEconomicText(current.data.fire ?? null) !== canonicalEconomicText(row.profile.fire ?? null)) return conflict();
+      if (!attributeMutation(request.command) && canonicalEconomicText(current.data.attr ?? null) !== canonicalEconomicText(row.profile.attr ?? null)) return conflict();
       const workshopEdit = request.command.type === 'artisan' && ['contribute', 'craftCrate', 'upgradePack'].includes(request.command.op)
         || request.command.type === 'raft' && request.command.rules === 2 && ['place', 'remove'].includes(request.command.op);
-      if (currentWorld.data.resources?.v === 3 && !workshopEdit && ['carry', 'workshop'].some(field =>
+      if (currentWorld.data.resources?.v === 3 && !workshopEdit && !attributeMutation(request.command) && ['carry', 'workshop'].some(field =>
           canonicalEconomicText(current.data[field] ?? null) !== canonicalEconomicText(row.profile[field] ?? null))) return conflict();
-      if (currentWorld.data.resources?.v === 3 && !workshopEdit && ['cap', 'maxMass'].some(field =>
+      if (currentWorld.data.resources?.v === 3 && !workshopEdit && !attributeMutation(request.command) && ['cap', 'maxMass'].some(field =>
           current.data.eco.pack[field] !== row.profile.eco.pack[field])) return conflict();
       nextProfiles.set(row.account, { data: structuredClone(row.profile), version: row.expectedVersion + 1 });
     }
@@ -201,7 +203,13 @@ export function createMemoryStore() {
         .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).slice(0, limit)
         .map(([accountId, row]) => ({ accountId, profile: structuredClone(row.data) }));
     },
-    async saveProfile(id, data, expected) { return save(profiles, playerKey(id), profile(data), version(expected, 0, MAX_VERSION - 1)); },
+    async saveProfile(id, data, expected) {
+      id = playerKey(id); data = profile(data); expected = version(expected, 0, MAX_VERSION - 1);
+      const current = profiles.get(id);
+      if (!current && Object.hasOwn(data, 'attr')) return conflict();
+      if (current && canonicalEconomicText(current.data.attr ?? null) !== canonicalEconomicText(data.attr ?? null)) return conflict();
+      return save(profiles, id, data, expected);
+    },
     async initializeProfile(id, data, importedKey = null) {
       id = playerKey(id);
       data = profile(data);
@@ -231,6 +239,7 @@ export function createMemoryStore() {
     async checkLoggingOperations() { return { version: 1 }; },
     async checkArtisanOperations() { return { version: 1 }; },
     async checkStarterWorkshop() { return { version: 1 }; },
+    async checkAttributeOperations() { return { version: 1 }; },
     async checkFireOperations() { return { version: 1 }; },
     async checkFreshwaterOperations() { return { version: 1 }; },
     async checkAgentTradeOperations() { return { version: 1 }; },
@@ -723,6 +732,11 @@ export function createSupabaseStore(client) {
     },
     async checkStarterWorkshop() {
       const result = await rpc('mn_starter_workshop_ready', {});
+      if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
+      return result;
+    },
+    async checkAttributeOperations() {
+      const result = await rpc('mn_attribute_operations_ready', {});
       if (!result || result.version !== 1 || Object.keys(result).length !== 1) throw new StoreError('response');
       return result;
     },

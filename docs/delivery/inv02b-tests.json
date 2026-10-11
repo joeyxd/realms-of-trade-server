@@ -1,0 +1,41 @@
+{
+  "schema": "mn.inv02b.local-validation.v1",
+  "scope": "Local JS authority, PGlite SQL and fixture UI. Not public activation proof.",
+  "runs": [
+    {
+      "command": "node --test --test-concurrency=1 tests/attribute-plan.test.mjs tests/attribute-profile.test.mjs tests/attribute-operation.test.mjs tests/attribute-authority.test.mjs tests/economic-host.test.mjs tests/economic-store.test.mjs tests/carry.test.mjs tests/workshop.test.mjs tests/workshop-ui.test.mjs tests/starter-workshop-authority.test.mjs tests/progression-logging.test.mjs tests/logging-authority.test.mjs tests/ground-family-host.test.mjs tests/ground-workshop-compatibility.test.mjs",
+      "pass": 106,
+      "fail": 0,
+      "durationMs": 122963.7049,
+      "note": "Pre-final integration; stale expectedRev and SQL029 composition were subsequently added and rerun below. Counts overlap."
+    },
+    {
+      "command": "node --test --test-concurrency=1 tests/attribute-operations-sql.test.mjs tests/attribute-authority.test.mjs tests/attribute-operation.test.mjs",
+      "pass": 19,
+      "fail": 0,
+      "durationMs": 16063.3749,
+      "note": "SQL001-028 plus SQL029, applied twice; actual host ACK candidates and exact receipt contracts."
+    },
+    {
+      "command": "node --test tests/ground-workshop-compatibility.test.mjs",
+      "pass": 1,
+      "fail": 0,
+      "durationMs": 21287.1198,
+      "note": "File-backed SQL023/029, six journaled operations, clean close/reopen and historical adoption replay without rollback. Not a power-loss test."
+    },
+    {
+      "command": "node --test tests/attribute-operation.test.mjs",
+      "pass": 4,
+      "fail": 0,
+      "durationMs": 264.64,
+      "note": "Final assertion also rejects initial autosave attribute introduction."
+    },
+    {
+      "command": "node tools/qa-attribute-compat.mjs",
+      "pass": 6,
+      "fail": 0,
+      "evidence": "inv02b-ui/2026-10-11T04-20-37-686Z-31696/evidence.json",
+      "note": "ES/EN desktop/portrait/landscape, existing workshop controls and ACK/profile confirmation. Fixture pack positioning differs from the game HUD."
+    }
+  ]
+}

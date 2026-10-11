@@ -1,5 +1,6 @@
 // Personal storage quest, crate kits, and backpack capacity at the Salty Shore bench.
 import { CARRY, carryLimits, nextBackpack, readCarryField } from '../data/carry.js';
+import { packLimitsForProfile } from '../sim/economy/carry.js';
 import { holdMass, holdUsed } from '../sim/economy/cargo.js';
 import { readProgression } from '../sim/systems/progression.js';
 import { newWorkshop, readWorkshop, workshopPlan } from '../sim/systems/workshop.js';
@@ -38,13 +39,14 @@ export function workshopPanelView(profile) {
     const carryField = readCarryField(profile);
     if (carryField.present && !carryField.value) return { valid: false, why: 'carry' };
     const carry = carryField.value || { v: CARRY.version, backpack: 0 };
-    const limits = carryLimits(carry, profile.lvl);
+    const limits = packLimitsForProfile(profile, carry);
+    const strength = carryLimits(carry, profile.lvl).strength;
     const pack = profile.eco.pack, goods = pack.goods;
     const wood = number(goods.madera), canvas = number(goods.lona);
     const remaining = Math.max(0, 10 - workshop.boards), nextCarry = nextBackpack(carry);
     const cost = nextCarry ? COSTS[nextCarry.backpack] : null;
     return { valid: true, workshop, wood, canvas, remaining, carry: { v: CARRY.version, backpack: carry.backpack,
-      volume: limits.volume, strength: limits.strength, maxMass: limits.maxMass },
+      volume: limits.volume, strength, maxMass: limits.maxMass },
       packUsed: holdUsed(pack), packCap: pack.cap, packMass: holdMass(pack), maxMass: Number.isFinite(pack.maxMass) ? pack.maxMass : null,
       nextCost: cost, canContribute: remaining > 0 && wood > 0 && !progression.knowledge.includes('raft_storage'),
       canCraft: workshop.crateKits < 99 && wood >= 2, canUpgrade: !!cost && Object.entries(cost).every(([good, count]) => number(goods[good]) >= count) };
@@ -109,9 +111,10 @@ export class WorkshopPanel {
         expectedWorkshop = plan.workshop; expectedCarry = view.carry;
       } else if (op === 'upgradePack' && view.canUpgrade) {
         const next = nextBackpack({ v: CARRY.version, backpack: view.carry.backpack });
-        const limits = carryLimits(next, profile.lvl);
+        const limits = packLimitsForProfile(profile, next);
+        const strength = carryLimits(next, profile.lvl).strength;
         expectedWorkshop = view.workshop;
-        expectedCarry = { v: CARRY.version, backpack: next.backpack, volume: limits.volume, strength: limits.strength, maxMass: limits.maxMass };
+        expectedCarry = { v: CARRY.version, backpack: next.backpack, volume: limits.volume, strength, maxMass: limits.maxMass };
       } else return false;
     } catch { return false; }
     const command = this.makeCommand(op, profile, amount);
