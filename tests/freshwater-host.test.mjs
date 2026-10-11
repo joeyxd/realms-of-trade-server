@@ -2,6 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { freshwaterSource, FRESHWATER } from '../src/data/freshwater.js';
 import { holdMass, holdUsed } from '../src/sim/economy/cargo.js';
+import { LocalServer } from '../src/net/localServer.js';
+import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
+import { newProfile } from '../src/sim/systems/inventory.js';
+import { publicRafts } from '../src/sim/systems/rafts.js';
+import { pilotPoint } from '../src/sim/naval/pilotGeometry.js';
+import { NavalTrial } from '../src/sim/naval/trial.js';
 import { createMemoryStore } from '../server/store.mjs';
 import { economicOperationId } from '../server/economicAuthority.mjs';
 import { pearlMutationGate } from '../server/pearlMutationGate.mjs';
@@ -47,6 +53,65 @@ test('paid bucket, interrupted gathering, exact fill retry and reconnect preserv
   assert.equal((await submitAndApply(host,resumed,fill)).replay,true);
   const decant=await submitAndApply(host,resumed,cmd('decant','water-cargo',2,{n:4}));
   assert.equal(decant.ok,true);assert.equal(restored.eco.pack.goods.agua,4);assert.equal(restored.eco.pack.vessels[0].water,0);
+});
+
+test('local dry shore craft and drink retain the parked trial hold identity', t => {
+  const messages = [];
+  const server = new LocalServer({ seed: 92, bots: 0, enemies: false, navigation: true,
+    freshwater: true, survival: true, send: (_id, message) => messages.push(copy(message)) });
+  t.after(() => server.stop());
+  const profile = newProfile();
+  profile.eco.pack.goods = { madera: 2 };
+  profile.eco.pack.vessels = [{ id: 'canteen', kind: 'canteen', water: 2 }];
+  profile.surv = { v: 1, sat: 45, hyd: 45 };
+  server.connect(31);
+  server.receive(31, { t: MSG.HELLO, v: PROTOCOL_VERSION, name: 'Shore resupply', skin: 0, weapon: 0, save: '' }, profile);
+  const owner = server.clients.get(31)?.entity, world = server.world;
+  assert.ok(owner);
+  const live = world.profiles.get(owner), ship = live.eco.ships.find(item => item.kind === 'raft');
+  const source = world.rafts.get(ship.id), village = world.map.landmarks.village, home = source.home;
+  const awayX = village.x - home.x, awayZ = village.z - home.z, length = Math.hypot(awayX, awayZ) || 1;
+  const pose = { x: village.x + awayX / length * 8, y: 0, z: village.z + awayZ / length * 8,
+    yaw: Math.atan2(world.map.dock.dir.x, world.map.dock.dir.z) };
+  assert.ok(Math.hypot(pose.x - home.x, pose.z - home.z) >= 20);
+  world.ecs.x[source.entity] = pose.x; world.ecs.y[source.entity] = pose.y;
+  world.ecs.z[source.entity] = pose.z; world.ecs.facing[source.entity] = pose.yaw;
+  const shore = { x: pose.x + 4, z: pose.z + 1 };
+  const originalGround = world.map.groundAt.bind(world.map), originalDock = world.map.onDock.bind(world.map);
+  world.map.groundAt = (x, z) => Math.hypot(x - shore.x, z - shore.z) <= 1.6 ? 0.6 : originalGround(x, z);
+  world.map.onDock = (x, z) => Math.hypot(x - shore.x, z - shore.z) <= 1.6 ? false : originalDock(x, z);
+  world.map.colliders = []; world.map.queryColliders = () => [];
+  world.raftDeck.update(publicRafts(world));
+  world.navalTrial.close();
+  world.navalTrial = new NavalTrial(world, { coast: true, navigation: true });
+  const raft = publicRafts(world).find(item => item.id === ship.id), helm = pilotPoint(raft, raft.helm);
+  world.ecs.x[owner] = helm.x; world.ecs.y[owner] = helm.y; world.ecs.z[owner] = helm.z;
+  world.ecs.facing[owner] = helm.f; world.ecs.regenT[owner] = 100; world.ecs.moveMag[owner] = 0;
+  world.ecs.vx[owner] = world.ecs.vz[owner] = 0; world.ecs.dashT[owner] = -1;
+  assert.equal(world.navalPilot.mount(owner, ship.id), true);
+  world.navalPilot.prepare();
+  const sailing = world.navalPilot.snapshot(owner);
+  assert.equal(world.navalPilot.voyageSnapshot(owner).canLand, true);
+  assert.equal(world.navalPilot.land(owner, sailing.epoch), true);
+  assert.equal(world.navalPilot.shoreStop(owner), true, 'the player earned the real dry landing permit');
+
+  const hold = ship.hold;
+  const eventFor = opId => messages.filter(message => message.t === MSG.EVENT && message.ev?.opId === opId).at(-1)?.ev;
+  const sendFreshwater = (op, opId, expectedRev) => server.receive(31, { t: MSG.CMD, ...cmd(op, opId, expectedRev) });
+  sendFreshwater('craftBucket', 'local-shore-bucket', 0);
+  assert.equal(eventFor('local-shore-bucket')?.ok, true, JSON.stringify(eventFor('local-shore-bucket')));
+  assert.equal(live.eco.pack.goods.madera, undefined, 'the bucket consumed its wood cost');
+  assert.equal(ship.hold, hold, 'crafting a pack item leaves captured hull cargo untouched');
+  assert.equal(world.navalTrial.isParked(owner, ship.id), true, 'the same trial stays parked after the mutation');
+
+  // The canteen operation consumes one unit from the pack.
+  server.receive(31, { t: MSG.CMD, ...cmd('drink', 'local-shore-drink', 1, { n: 1 }) });
+  assert.equal(eventFor('local-shore-drink')?.ok, true, JSON.stringify(eventFor('local-shore-drink')));
+  assert.equal(live.eco.pack.vessels.find(v => v.kind === 'canteen').water, 1);
+  assert.equal(ship.hold, hold, 'drinking leaves the captured hull hold identity intact');
+  assert.equal(world.navalTrial.isParked(owner, ship.id), true, 'the parked body remains valid through both services');
+  assert.equal(world.navalPilot.reboard(owner, ship.id), true, 'the original parked trial can be resumed');
+  assert.equal(world.navalPilot.snapshot(owner).shipId, ship.id);
 });
 
 test('fill rechecks the real account mutation gate after its asynchronous receipt lookup',async t=>{

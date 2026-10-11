@@ -8,6 +8,7 @@ import { readVessels } from '../economy/waterContainers.js';
 import { RAFT } from '../../data/raftparts.js';
 import { activeRaftParts } from '../naval/condition.js';
 import { raftCapacity } from '../economy/raftCapacity.js';
+import { shoreServiceAllowed } from '../naval/shoreService.js';
 
 const barrelDistance = (pose,part,position) => {
   const x=(part[1]+.5)*RAFT.cell, z=(part[2]+.5)*RAFT.cell,c=Math.cos(pose.yaw),s=Math.sin(pose.yaw);
@@ -23,7 +24,7 @@ export function freshwaterAccess(w, e, cmd, proof = true) {
   if (!w.freshwaterEnabled) return 'disabled';
   if (isCanteenCommand(cmd) && !w.survivalEnabled) return 'disabled';
   if (!ecs.alive[e] || ecs.kind[e] !== KIND.PLAYER || ecs.mask[e] & C.BOT || ecs.dead[e] || ecs.hp[e] <= 0) return 'dead';
-  if (w.navalPilot?.locked?.(e)) return 'busy';
+  if (w.navalPilot?.locked?.(e) && !shoreServiceAllowed(w, e, cmd)) return 'busy';
   if (['fill', 'fillCanteen'].includes(cmd.op)) {
     const source = freshwaterSource(w.map);
     if (!source || cmd.source !== source.id || source.y < .3) return 'source';
@@ -120,7 +121,12 @@ export function localFreshwaterCmd(w, e, command, saveFits = () => true) {
     if (next.surv) { p.surv = structuredClone(next.surv); applyNeedsProfile(w, e, p); }
     if (command.op === 'eat' && FOODS[command.source]?.sat > 0)
       w.ecs.hp[e] = Math.min(w.ecs.maxHp[e], w.ecs.hp[e] + w.ecs.maxHp[e] * SURVIVAL.foodHeal);
-    p.eco.ships.forEach((ship,index) => { const candidate=next.eco.ships[index]; ship.hold=candidate.hold; ship.rev=candidate.rev; });
+    p.eco.ships.forEach((ship,index) => {
+      const candidate = next.eco.ships[index];
+      // Pack-only shore services must retain the hold identity captured by NavalTrial.
+      if (!same(ship.hold, candidate.hold)) ship.hold = candidate.hold;
+      ship.rev = candidate.rev;
+    });
     w.profileDirty.add(e);
   }
   cache.set(command.opId, { key, ack: result.ack });

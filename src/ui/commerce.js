@@ -9,6 +9,7 @@ import { holdUsed, roomFor, goodMass, goodVolume } from '../sim/economy/cargo.js
 import { raftCapacity } from '../sim/economy/raftCapacity.js';
 import { raftGangplank } from '../sim/raftGeometry.js';
 import { t, onLocaleChange, formatNumber, translateData } from '../core/i18n.js';
+import { shoreStopAvailable, shoreStopNotice, shoreVoyageActive } from './shoreStopState.js';
 
 const MAX_QTY = 500;
 const MAX_READS = 12;
@@ -49,7 +50,7 @@ export class CommercePanel {
     this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-label', t('systems.commerce.dialog'));
     this.root.innerHTML = `<header class="commerce-head"><div><small class="commerce-kicker">${t('systems.commerce.kicker')}</small><b class="commerce-title">${t('systems.commerce.tabs.hold')}</b></div><button class="commerce-close" type="button" aria-label="${t('systems.commerce.close')}">×</button></header>
       <nav class="commerce-tabs"><button type="button" data-view="cargo">${t('systems.commerce.tabs.hold')}</button><button type="button" data-view="market">${t('systems.commerce.tabs.market')}</button><button type="button" data-view="production" hidden>${t('systems.commerce.tabs.production')}</button></nav>
-      <div class="commerce-body"></div>
+      <p class="commerce-shore-note" role="status" hidden></p><div class="commerce-body"></div>
       <div class="commerce-feedback" aria-live="polite"></div>
       <footer class="commerce-foot"><small class="commerce-footnote"></small><button type="button" class="commerce-confirm">${t('systems.commerce.confirm.transfer')}</button></footer>`;
     this.parent.appendChild(this.root);
@@ -105,7 +106,10 @@ export class CommercePanel {
     return { profile, player, record, ship };
   }
 
+  shoreStop() { return shoreVoyageActive(this.voyage?.()); }
+
   toggleCargo(force = false) {
+    if (this.shoreStop()) return false;
     if (this.active && ['cargo', 'production'].includes(this.view) && !force) { this.close(); return; }
     if (this.enabled && !this.enabled()) return;
     const c = this.context(); if (!c) return;
@@ -116,6 +120,7 @@ export class CommercePanel {
   }
 
   openProduction() {
+    if (this.shoreStop()) return false;
     if (this.enabled && !this.enabled()) return;
     const c = this.context(); if (!c) return;
     this.activate('production');
@@ -144,6 +149,7 @@ export class CommercePanel {
   openMarket(town) {
     if (this.enabled && !this.enabled()) return;
     if (!TOWNS[town]) { this.setResult('systems.commerce.market.unknownTown'); return; }
+    if (this.shoreStop() && (!shoreStopAvailable(this.voyage?.()) || TOWNS[town].walkable !== true)) return false;
     this.town = town; this.activate('market'); this.clearResult(); this.quote = null; this.quoteErrorSignature = ''; this.rows = [];
     this.market = null; this.selected = ''; this.qty = 1;
     this.request('list', { town }, { town }); this.render();
@@ -258,7 +264,7 @@ export class CommercePanel {
   }
 
   update() {
-    const near = !!this.context() && (!this.enabled || this.enabled());
+    const near = !this.shoreStop() && !!this.context() && (!this.enabled || this.enabled());
     this.launcher.hidden = this.active || !near;
     const profile = this.profile?.();
     if (this.pending && this.profileReady(this.pending, profile)) {
@@ -271,7 +277,10 @@ export class CommercePanel {
     }
     if (this.active) {
       if (this.enabled && !this.enabled()) { this.close(); return; }
-      if (['cargo', 'production'].includes(this.view) && !this.context()) { this.close(); return; }
+      if (['cargo', 'production'].includes(this.view) && (!this.context() || this.shoreStop())) {
+        if (this.shoreStop() && this.view === 'cargo') this.render();
+        else { this.close(); return; }
+      }
       for (const [kind, id] of this.readByKind) {
         const read = this.reads.get(id);
         if (read && performance.now() - read.sentAt > 6000) read.timedOut = true;
@@ -286,6 +295,7 @@ export class CommercePanel {
   }
 
   fetchCargo() {
+    if (this.shoreStop()) return;
     const c = this.context(); if (!c) return;
     this.cargoSnapshot = null;
     this.request('cargo', { id: c.record.id }, { raftId: c.record.id, rev: c.ship.rev });
@@ -299,6 +309,7 @@ export class CommercePanel {
   }
 
   confirmTransfer() {
+    if (this.shoreStop()) return false;
     const c = this.context(), row = this.selectedCargoRow();
     if (!c || !row || c.record.rev !== c.ship.rev) { this.setResult('systems.commerce.status.sync'); this.render(); return; }
     const from = this.cargoSide === 'deposit' ? c.profile.eco.pack : c.ship.hold;
@@ -431,17 +442,26 @@ export class CommercePanel {
     this.$('[data-view="production"]').hidden = !c;
     this.$('.commerce-title').textContent = this.view === 'cargo' ? t('systems.commerce.title.cargo') : `${t('systems.commerce.tabs.market')} · ${translateData(TOWNS[this.town]?.name || this.town)}`;
     if (this.view === 'production') this.$('.commerce-title').textContent = t('systems.commerce.title.production');
-    this.$('.commerce-body').innerHTML = this.view === 'cargo' ? this.cargoHtml(cargo)
+    const shore = this.shoreStop();
+    this.$('.commerce-body').innerHTML = shore && this.view === 'cargo'
+      ? `<p class="commerce-shore-locked">${shoreStopNotice(this.locale?.() || globalThis.document?.documentElement?.lang)}</p>`
+      : this.view === 'cargo' ? this.cargoHtml(cargo)
       : this.view === 'market' ? this.marketHtml() : this.productionHtml();
+    const shoreNote = this.$('.commerce-shore-note');
+    shoreNote.hidden = !shore;
+    shoreNote.textContent = shore ? shoreStopNotice(this.locale?.() || globalThis.document?.documentElement?.lang) : '';
+    const cargoTab = this.$('[data-view="cargo"]'), marketTab = this.$('[data-view="market"]');
+    if (cargoTab) cargoTab.disabled = shore;
+    if (marketTab) marketTab.disabled = shore && (!shoreStopAvailable(this.voyage?.()) || TOWNS[this.town]?.walkable !== true);
     this.$('.commerce-feedback').textContent = this.statusText();
     this.$('.commerce-footnote').textContent = this.view === 'cargo'
       ? t('systems.commerce.footnote.cargo')
       : this.view === 'market' ? t('systems.commerce.footnote.market') : t('systems.commerce.footnote.production');
     const confirm = this.$('.commerce-confirm');
     confirm.textContent = this.view === 'cargo' ? t('systems.commerce.confirm.transfer') : this.side === 'buy' ? t('systems.commerce.confirm.buy') : t('systems.commerce.confirm.sell');
-    confirm.hidden = this.view === 'production' || !!this.pending?.ack;
+    confirm.hidden = this.view === 'production' || !!this.pending?.ack || shore && this.view === 'cargo';
     this.$('.commerce-foot').hidden = this.view === 'production';
-    confirm.disabled = this.view === 'production' || !!pending || (this.view === 'cargo' ? !c || !this.cargoSnapshot || this.cargoSnapshot.id !== c.record.id
+    confirm.disabled = shore && this.view === 'cargo' || this.view === 'production' || !!pending || (this.view === 'cargo' ? !c || !this.cargoSnapshot || this.cargoSnapshot.id !== c.record.id
       || this.cargoSnapshot.raftRev !== c.ship.rev || !this.selectedCargoRow() || !this.currentTransferMax() || c.record.rev !== c.ship.rev
       : !this.quote || this.quote.signature !== JSON.stringify([this.town, this.selected, this.qty, this.side]) || !Number.isSafeInteger(this.quote.total)
         || !this.profile?.()?.eco?.pack || this.side === 'buy' && (this.quote.total > (this.profile?.()?.gold || 0) || this.qty > roomFor(this.profile?.()?.eco?.pack || { cap: 0, goods: {} }, this.selected))

@@ -35,7 +35,7 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 if (help) { console.log(usage); process.exit(0); }
 ensure(envFile && outArg, usage);
-ensure(GAME.version === '0.6.0-alpha.47' && PROTOCOL_VERSION === 53, 'local build is not the expected alpha47/protocol53 freshwater build');
+ensure(GAME.version === '0.6.0-alpha.50' && PROTOCOL_VERSION === 55, 'local build is not the expected alpha50/protocol55 freshwater build');
 try { process.loadEnvFile(path.resolve(envFile)); } catch { throw new Error('environment file unavailable'); }
 ensure(process.env.MN_QA_ALLOW_PUBLIC === '1', 'Public QA guard is active; set MN_QA_ALLOW_PUBLIC=1 for this bounded acceptance.');
 ensure(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY && process.env.SUPABASE_PUBLIC_KEY,
@@ -120,8 +120,8 @@ async function publicPreflight() {
     && status.storage.freshwater.canteen === canteenEnabled
     && status.storage?.world?.id === worldId && status.storage.world.ready === true && status.storage.world.failed === false
     && status.storage?.unsaved === 0 && status.storage?.profileWrites === 0 && status.storage.errors === 0,
-  'public alpha47, zero-player, SQL freshness, or world readiness preflight failed');
-  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), 'deployed protocol differs from local protocol 53');
+  'public alpha50, zero-player, SQL freshness, or world readiness preflight failed');
+  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), 'deployed protocol differs from local protocol 55');
   ensure(auth.enabled === true && new URL(auth.url).origin === new URL(process.env.SUPABASE_URL).origin,
     'public Auth configuration mismatch');
   ensure(content.ok === true && Number.isSafeInteger(content.generation)
@@ -131,7 +131,7 @@ async function publicPreflight() {
     && Number.isFinite(sourcePoint.x) && Number.isFinite(sourcePoint.z), 'generated freshwater source map position is not above water');
   contentIdentity = { generation: content.generation, revisionId: content.revisionId };
   evidence.sourceMapPosition = { y: sourcePoint.y, positive: true };
-  check('public_health_alpha47_protocol53_freshwater_ready_and_source_map_position', {
+  check('public_health_alpha50_protocol55_freshwater_ready_and_source_map_position', {
     gameVersion: status.version, protocolVersion: PROTOCOL_VERSION, featureEnabled: status.storage.freshwater.enabled,
     sourceId: sourcePoint.id, sourceHeightPositive: true, realPlayers: status.players });
 }

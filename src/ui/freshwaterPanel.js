@@ -1,4 +1,5 @@
 import { FOODS } from '../data/survival.js';
+import { shoreBarrelNotice, shoreVoyageActive } from './shoreStopState.js';
 
 const RETRY_MS = 1000;
 const TIMEOUT_MS = 5000;
@@ -81,7 +82,7 @@ export class FreshwaterPanel {
       <section class="fresh-canteen" hidden><div class="fresh-canteen-head"><div><b class="fresh-canteen-label"></b><span class="fresh-canteen-count"></span></div><button type="button" class="fresh-canteen-craft"></button></div>
         <div class="fresh-canteen-actions"><button type="button" class="fresh-canteen-spring"></button><button type="button" class="fresh-canteen-bucket"></button><button type="button" class="fresh-canteen-provisions"></button><button type="button" class="fresh-canteen-drink"></button></div>
         <div class="fresh-canteen-needs" aria-live="polite"></div><div class="fresh-foods" role="group"></div></section>
-      <p class="fresh-note"></p><p class="fresh-status" aria-live="polite"></p>`;
+      <p class="fresh-note"></p><p class="fresh-shore-note" role="status" hidden></p><p class="fresh-status" aria-live="polite"></p>`;
     parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector);
     this.closeButton = this.$('.fresh-close'); this.craftButton = this.$('.fresh-craft');
     this.collectButton = this.$('.fresh-collect'); this.decantButton = this.$('.fresh-decant-button');
@@ -111,6 +112,10 @@ export class FreshwaterPanel {
   bucket() { return this.pack()?.vessels?.find(v => v?.kind === 'bucket') || null; }
   canteen() { return this.pack()?.vessels?.find(v => v?.kind === 'canteen') || null; }
   status() { return this.client?.()?.freshwaterStatus || null; }
+  shoreStop() { return shoreVoyageActive(this.client?.()?.voyage); }
+  barrelActionBlocked(op, source = '') {
+    return this.shoreStop() && (op === 'deposit' || op === 'withdraw' || op === 'refillCanteen' && source === 'barrel');
+  }
   canteenEnabled() { return this.status()?.canteenEnabled === true; }
   busy() { const c = this.client?.(), s = this.status(); return s?.busy === true || s?.actionBusy === true || c?.actionBusy === true
     || finite(s?.gathering) > 0 || finite(s?.canteenGathering) > 0; }
@@ -156,7 +161,8 @@ export class FreshwaterPanel {
     return Object.freeze({ t: 'cmd', type: 'freshwater', op, opId: opId(), expectedRev: rev, source, ship, part, n });
   }
   send(op, data = {}) {
-    const c = this.client?.(); if (!this.active || !this.currentSession() || this.pending || this.busy() || !this.status()?.enabled || !c?.send) return false;
+    const c = this.client?.(); if (!this.active || !this.currentSession() || this.pending || this.busy() || !this.status()?.enabled || !c?.send
+      || this.barrelActionBlocked(op, data.source)) return false;
     const command = this.makeCommand(op, data); if (!command) return false;
     this.pending = { command, sentAt: this.now(), retried: false, expired: false };
     try { c.send(command); } catch { this.pending = null; this.setStatus('', 'generic'); this.render(); return false; }
@@ -188,6 +194,7 @@ export class FreshwaterPanel {
     return this.send('fillCanteen', { source: 'salty-spring', n });
   }
   refillCanteen(source, ship = '', part = '', available = Infinity) {
+    if (this.barrelActionBlocked('refillCanteen', source)) return false;
     const canteen = this.canteen(), goods = this.pack()?.goods || {};
     const supply = source === 'bucket' ? finite(this.bucket()?.water) : source === 'provisions' ? finite(goods.agua)
       : available === Infinity ? 0 : Math.max(0, finite(available));
@@ -207,7 +214,7 @@ export class FreshwaterPanel {
       || ((food.sat <= 0 || needs.sat >= 100) && (food.hyd <= 0 || needs.hyd >= 100))) return false;
     return this.send('eat', { source: good, n: 1 });
   }
-  transfer(op, ship, part, n) { return n > 0 && this.send(op, { ship, part, n }); }
+  transfer(op, ship, part, n) { return n > 0 && !this.barrelActionBlocked(op) && this.send(op, { ship, part, n }); }
   acknowledge(ev) {
     const pending = this.pending;
     if (!ev || ev.type !== 'freshwater' || !pending || ev.opId !== pending.command.opId) return false;
@@ -255,10 +262,10 @@ export class FreshwaterPanel {
       const deposit = node.querySelector('.fresh-deposit'), withdraw = node.querySelector('.fresh-withdraw'), refill = node.querySelector('.fresh-canteen-refill');
       refill.hidden = !this.canteenEnabled();
       deposit.textContent = c.deposit; withdraw.textContent = c.withdraw;
-      deposit.disabled = !!(pending || !this.status()?.enabled || !row.near || row.broken || water <= 0 || row.water >= row.capacity);
-      withdraw.disabled = !!(pending || !this.status()?.enabled || !this.bucket() || !row.near || row.broken || row.water <= 0 || water >= 4);
+      deposit.disabled = !!(pending || this.barrelActionBlocked('deposit') || !this.status()?.enabled || !row.near || row.broken || water <= 0 || row.water >= row.capacity);
+      withdraw.disabled = !!(pending || this.barrelActionBlocked('withdraw') || !this.status()?.enabled || !this.bucket() || !row.near || row.broken || row.water <= 0 || water >= 4);
       refill.textContent = c.canteenBarrel;
-      refill.disabled = !!(pending || this.busy() || !this.canteenEnabled() || !this.canteen() || !row.near || row.broken
+      refill.disabled = !!(pending || this.barrelActionBlocked('refillCanteen', 'barrel') || this.busy() || !this.canteenEnabled() || !this.canteen() || !row.near || row.broken
         || row.water <= 0 || finite(this.canteen()?.water) >= 3);
     });
   }
@@ -320,6 +327,9 @@ export class FreshwaterPanel {
       }
     }
     this.$('.fresh-note').textContent = c.craftHelp;
+    const shoreNote = this.$('.fresh-shore-note');
+    shoreNote.hidden = !this.shoreStop();
+    shoreNote.textContent = this.shoreStop() ? shoreBarrelNotice(this.lang()) : '';
     this.renderBarrels();
     this.$('.fresh-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || '';
     this.root.hidden = !this.active;

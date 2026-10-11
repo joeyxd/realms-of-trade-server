@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-10-11T06:10:48.312Z",
+  "completedAt": "2026-10-11T06:11:30.115Z",
+  "selection": [
+    "tests/canteen-sql.test.mjs",
+    "tests/freshwater-sql.test.mjs"
+  ],
+  "exitCode": 0,
+  "tests": 22,
+  "pass": 22,
+  "fail": 0,
+  "skipped": 0
+}

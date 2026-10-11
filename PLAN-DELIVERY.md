@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.50/protocolo 55:**
+[Brief](docs/briefs/RNV08a-shore-resupply.md) y [entrega](docs/delivery/rnv08a-shore-resupply.md).
+Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
+construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
+M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
+
 **INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
 [Entrega](docs/delivery/inv02-survival.md). Sobre INV02a–c y RNV07b sin tocar sus operaciones M5, SQL029/032 ni contratos.
 Con Carga adoptada, cómodo = techo / 1,25 (40 + 4 por punto): entre cómodo y techo 70 % de velocidad y sin dash,

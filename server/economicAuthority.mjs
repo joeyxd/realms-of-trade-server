@@ -408,7 +408,10 @@ export class EconomicAuthority {
         if (a.command.type === 'resource') applyResource(w, a.entity, a.command, a.proposal);
         // Preserve live profile/raft object identities used by deterministic systems.
         if (fireMutation(a.command) && a.ack.ok === true && next.fire) applyFireProfile(w, a.entity, next);
-        p.gold = next.gold; p.eco.pack = clone(next.eco.pack); p.eco.tradeRev = next.eco.tradeRev;
+        p.gold = next.gold;
+        // Unchanged denial receipts must also retain a sailing trial's captured pack reference.
+        if (canonicalText(p.eco.pack) !== canonicalText(next.eco.pack)) p.eco.pack = clone(next.eco.pack);
+        p.eco.tradeRev = next.eco.tradeRev;
         if (a.command.type === 'resource') p.tools = clone(next.tools);
         if (Object.hasOwn(next, 'progression')) p.progression = clone(next.progression);
         if (Object.hasOwn(next, 'carry')) p.carry = clone(next.carry);
@@ -423,7 +426,10 @@ export class EconomicAuthority {
         for (const ship of p.eco.ships) {
           const candidate = next.eco.ships.find(s => s.id === ship.id);
           if (candidate?.kind === 'raft') {
-            ship.hold = clone(candidate.hold); ship.rev = candidate.rev;
+            // A parked coastal trial retains the hold object as its immutable hull cargo baseline.
+            // Pack-only receipts (including denials) must not invalidate that captured reference.
+            if (canonicalText(ship.hold) !== canonicalText(candidate.hold)) ship.hold = clone(candidate.hold);
+            ship.rev = candidate.rev;
             if ((artisanMutation(a.command) || freshwaterMutation(a.command)) && a.command.type === 'raft' && ship.id === a.command.id) {
               ship.grid = clone(candidate.grid);
               if (candidate.condition) {

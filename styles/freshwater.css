@@ -41,6 +41,8 @@
 .fresh-barrel-actions button { min-width: 0; padding: 7px; font-size: 12px; overflow-wrap: anywhere; }
 .fresh-decant { align-items: flex-start; }
 .fresh-note { padding: 2px 3px; }
+.fresh-shore-note { margin: 8px 0 0; padding: 8px 9px; border: 1px solid #d6b36a66; border-radius: 8px; background: #47391f; color: #ffe9b5; font-size: 12px; }
+.fresh-shore-note[hidden] { display: none; }
 .fresh-status { min-height: 1.45em; margin: 10px 2px 0; color: #f1d387; }
 #touch .t-water { --c: 70 210 199; --d: 54; --x: -205; --y: -224; padding: 0; font-weight: 800; letter-spacing: 0; }
 #touch .t-water[hidden] { display: none !important; }

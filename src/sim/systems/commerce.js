@@ -11,6 +11,7 @@ import { raftWorkStatus } from './raftProduction.js';
 import { ownerRaftCapacity } from './raftCapacity.js';
 import { holdLoadIncreases } from '../economy/raftCapacity.js';
 import { activeRaftParts } from '../naval/condition.js';
+import { shoreServiceAllowed } from '../naval/shoreService.js';
 
 const MAX_REV = 2147483647;
 const MAX_OPS = 64;
@@ -155,7 +156,7 @@ export function readCommerce(w, e, msg) {
 
   const profile = w.profiles?.get(e);
   const tradeRev = readTradeRev(profile?.eco || {});
-  if (w.navalPilot?.locked?.(e)) return fail('busy', tradeRev);
+  if (w.navalPilot?.locked?.(e) && !shoreServiceAllowed(w, e, { type: 'commerce', ...msg })) return fail('busy', tradeRev);
   if (!profile?.eco || !alive(w, e)) return fail('dead', tradeRev);
 
   const town = msg.town;
@@ -226,7 +227,7 @@ export function commerceCmd(w, e, msg, saveFits = () => true) {
       || !exactKeys(msg))
     return fail('command');
   const profile = w.profiles?.get(e);
-  if (w.navalPilot?.locked?.(e)) return fail('busy', readTradeRev(profile?.eco || {}));
+  if (w.navalPilot?.locked?.(e) && !shoreServiceAllowed(w, e, msg)) return fail('busy', readTradeRev(profile?.eco || {}));
   const tradeRev = readTradeRev(profile?.eco || {});
   const mutating = ['buy', 'sell', 'transfer'].includes(msg.op);
   if (mutating) {

@@ -11,7 +11,7 @@ import { createNavalCoast } from './coastGeometry.js';
 import { persistRaftCondition } from './condition.js';
 import { RAFT, RAFT_PARTS, RAFT_LOAD } from '../../data/raftparts.js';
 import { GOODS } from '../../data/goods.js';
-import { goodMass } from '../economy/cargo.js';
+import { goodMass, holdMass } from '../economy/cargo.js';
 import { pilotingStatus } from '../systems/progression.js';
 
 const NEUTRAL = Object.freeze({ throttle: 0, brake: 1, steer: 0 });
@@ -46,6 +46,8 @@ function goodsSignature(goods) {
   return JSON.stringify(Object.keys(goods).sort().map((id) => [id, goods[id]]));
 }
 
+const holdSignature = (hold) => JSON.stringify([goodsSignature(hold?.goods), hold?.vessels || []]);
+
 function cargoRows(goods, point) {
   if (!goods || typeof goods !== 'object' || Array.isArray(goods)) throw new TypeError('Invalid voyage cargo');
   return Object.keys(goods).sort().flatMap((id) => {
@@ -54,6 +56,14 @@ function cargoRows(goods, point) {
     const mass = goodMass(id) * count;
     return mass > 0 ? [{ mass, x: point.x, z: point.z, height: point.height || 0 }] : [];
   });
+}
+
+function holdCargoRows(hold, point) {
+  const rows = cargoRows(hold.goods, point);
+  const vesselMass = holdMass(hold) - rows.reduce((sum, row) => sum + row.mass, 0);
+  if (!finite(vesselMass) || vesselMass < -1e-8) throw new TypeError('Invalid voyage vessel cargo');
+  if (vesselMass > 1e-8) rows.push({ mass: vesselMass, x: point.x, z: point.z, height: point.height || 0 });
+  return rows;
 }
 
 function crateCenter(parts) {
@@ -107,6 +117,12 @@ export class NavalTrial {
   get coast() { return this.#coast ? Object.freeze({ version: 1, seed: this.#coast.seed }) : null; }
   get navigation() { return this.#navigation; }
 
+  // Private service eligibility must be read-only, including during a held M5 tick.
+  isParked(owner, shipId) {
+    const record = this.#bodies.get(shipId);
+    return !!record && record.owner === owner && record.parked && this.#valid(record);
+  }
+
   // The caller resolves owner from its server session, never from a packet's owner field. The returned
   // capability is an object identity that cannot survive serialization and is invalidated on teardown.
   start(owner, shipId) {
@@ -125,13 +141,13 @@ export class NavalTrial {
         const hold = source.ship.hold, pack = profile.eco?.pack;
         if (!hold || !pack || !hold.goods || !pack.goods) return null;
         const pilotPoint = localPoint({ x: ecs.x[owner], z: ecs.z[owner] }, pose);
-        const holdCargo = cargoRows(hold.goods, crateCenter(source.ship.grid.parts));
-        const packCargo = cargoRows(pack.goods, { ...pilotPoint, height: Math.max(0, Math.min(8, ecs.y[owner] - pose.y)) });
+        const holdCargo = holdCargoRows(hold, crateCenter(source.ship.grid.parts));
+        const packCargo = holdCargoRows(pack, { ...pilotPoint, height: Math.max(0, Math.min(8, ecs.y[owner] - pose.y)) });
         const payload = w.navalPilot?.payload(shipId) || { crewMass: RAFT_LOAD.crewMass, guestMass: 0 };
         const crewCargo = [{ ...crateCenter(source.ship.grid.parts), mass: payload.crewMass + payload.guestMass }];
         const cargo = [...holdCargo, ...packCargo, ...crewCargo];
-        refs = { hold, holdGoods: hold.goods, holdSignature: goodsSignature(hold.goods),
-          pack, packGoods: pack.goods, packSignature: goodsSignature(pack.goods),
+        refs = { hold, holdGoods: hold.goods, holdSignature: holdSignature(hold),
+          pack, packGoods: pack.goods, packSignature: holdSignature(pack),
           holdCargo, packCargo, crewCargo, payloadSignature: JSON.stringify(payload) };
         body = createTrialBody(source.ship.grid.parts, pose, `trial:${this.#nextInstance}`, bodyTick,
           { navigation: true, cargo, flowOrigin: this.#flowOrigin, wind: T.wind, structure: source.condition,
@@ -172,9 +188,9 @@ export class NavalTrial {
       ship.at === 'aldea' && ship.hp > 0 && ship.rev === record.rev && ship.grid === record.grid &&
       ship.grid.parts === record.parts && sameParts(ship.grid.parts, record.original) &&
       (!this.#navigation || (record.refs && ship.hold === record.refs.hold && ship.hold.goods === record.refs.holdGoods &&
-        goodsSignature(ship.hold.goods) === record.refs.holdSignature && (record.parked ||
+        holdSignature(ship.hold) === record.refs.holdSignature && (record.parked ||
           (profile.eco?.pack === record.refs.pack && profile.eco.pack.goods === record.refs.packGoods &&
-            goodsSignature(profile.eco.pack.goods) === record.refs.packSignature)))) &&
+            holdSignature(profile.eco.pack) === record.refs.packSignature)))) &&
       ecs.x[entity] === pose.x && ecs.y[entity] === pose.y && ecs.z[entity] === pose.z && ecs.facing[entity] === pose.yaw;
   }
 
@@ -229,10 +245,10 @@ export class NavalTrial {
       try {
         const ecs = this.#world.ecs;
         const point = localPoint({ x: ecs.x[r.owner], z: ecs.z[r.owner] }, r.body.pose);
-        const carriedCargo = cargoRows(pack.goods, { ...point, height: Math.max(0, Math.min(8, ecs.y[r.owner] - r.body.pose.y)) });
+        const carriedCargo = holdCargoRows(pack, { ...point, height: Math.max(0, Math.min(8, ecs.y[r.owner] - r.body.pose.y)) });
         const cargo = [...r.refs.holdCargo, ...carriedCargo, ...r.refs.crewCargo];
         r.body = setTrialCargo(r.body, cargo);
-        r.refs.pack = pack; r.refs.packGoods = pack.goods; r.refs.packSignature = goodsSignature(pack.goods);
+        r.refs.pack = pack; r.refs.packGoods = pack.goods; r.refs.packSignature = holdSignature(pack);
         r.refs.packCargo = carriedCargo;
       } catch (error) { if (error instanceof TypeError || error instanceof RangeError) return false; throw error; }
     }
