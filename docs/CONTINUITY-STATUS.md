@@ -10,19 +10,22 @@ Integración alpha.35 175/175; regresión histórica alpha.34 308/308; actualiza
 Solo decoraciones y colisiones estáticas; terreno, objetos funcionales y migración entre runtimes siguen
 para cortes posteriores. GM03b2 no requiere otra migración SQL ni cambia la autoridad de gameplay M5.
 
-**AREA03 PRG01d, 2026-10-10 — taller activado; servidor bloqueado, pendiente SQL026:**
+**AREA03 PRG01d, 2026-10-10 — SQL026 confirmado; taller y Tala públicos verificados:**
 [contrato](briefs/prg01d-starter-workshop.md) y [entrega/evidencia](delivery/prg01d-starter-workshop.md).
-SQL023/024 confirmados; única autoridad `f939152`, alpha.36/protocolo 45, recursos v3 conservados.
-Encargo personal de diez tablas, crédito único, kit en banco, tabla 2:1 y Tala con aciertos del host.
-Entrada pública 14/14 y navegador autenticado ES/EN 8/8 antes del fallo; cuentas UI limpias, recibos conservados.
-El canario confirmó entregas 3+2+3+2/crédito/kit, pero SQL024 rechazó `:` del ID real al colocar la primera bodega.
-M5 quedó cerrado a escrituras, una operación pendiente, cero jugadores/conexiones; contenedor unhealthy y público 503.
-Recibo fallido ausente, crédito/kit intactos. [Checkpoint y recuperación](delivery/prg01d-starter-workshop/activation/README.md).
-SQL026 preparado (IDs y denegaciones sin cambios), regresión SQL 10/10; aplicación Supabase aún sin verificar.
-Sigue SQL026 → recuperación guardada → canario completo construcción/capacidad/desguace/Tala. No repetir SQL021/024.
-No apagar el taller con recursos v3. Mundo común suelo/perlas/muerte sin adoptar/activar.
-Pruebas locales previas 188/188, 117/117 y paneles 39/39 conservan su alcance; conteos solapados.
-INV01–03 (huecos/pilas, Carga con puntos y sobrepeso) es posterior, todavía separado.
+Encargo personal de diez tablas, crédito único, caja por kit en banco, tabla 2:1, palmera 3–6
+y mochila con volumen/masa; sin barrera de Tala 60 ni comunidad.
+Construcción/capacidad/reconexión: 33 comprobaciones públicas en alpha.37, antes de que el recorrido
+fallara al navegar a la palmera. Tala aislada: 6/6 en alpha.38/protocolo 46, con desafíos reales,
+rechazos sin mutar, recompensa durable, replay y tabla en banco. No son un canario combinado completo.
+SQL026 corrigió el ID real de balsa; alpha.38 `d962055` alineó el baseline económico antes de Tala.
+Ambas recuperaciones conservaron perfil/mundo; sus cuentas QA se eliminaron y recibos se conservaron.
+[Verificación independiente VPS](delivery/prg01d-starter-workshop/activation/timing-deployment-independent.json):
+revisión/imagen y hashes Git confirmados, salud pública 200, una autoridad, timer activo,
+cero errores, pendientes o datos sin guardar. Local final 20/20; imagen 28/28. Conteos solapados.
+Navegador autenticado ES/EN histórico 8/8 y entrada 14/14 conservan su alcance anterior.
+[Checkpoint](delivery/prg01d-starter-workshop/activation/README.md). No requiere otro SQL.
+Mundo común suelo/perlas/muerte sin adoptar/activar; SIGKILL propio, pausa offline nueva,
+balance y teléfono físico pendientes. INV01–03 (huecos/pilas, Carga y sobrepeso) continúa aparte.
 
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](delivery/m5-ground-world-adoption.md), [contrato](briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el

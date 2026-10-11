@@ -1,0 +1,13 @@
+{
+  "schema": "mn.starter-workshop.cleanup-timing.v1",
+  "at": "2026-10-11T02:02:08.096Z",
+  "privateIdsNeverPrinted": true,
+  "pass": true,
+  "status": "cleaned",
+  "mutated": true,
+  "publicVersion": "0.6.0-alpha.38",
+  "initialPlayers": 0,
+  "profileRemoved": true,
+  "authRemoved": true,
+  "economicReceiptCount": 0
+}
