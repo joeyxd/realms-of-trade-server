@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { createGameServer } from '../server/index.mjs';
 import { createMemoryStore } from '../server/store.mjs';
 
-const out = resolve('docs/delivery/buccaneer-v1');
+const out = resolve(process.env.MN_BUCCANEER_OUT || 'docs/delivery/buccaneer-v1');
 await mkdir(out, { recursive: true });
 const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
 const browser = await chromium.launch({ headless: true,
