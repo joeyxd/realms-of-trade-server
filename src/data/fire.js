@@ -14,6 +14,9 @@ export const fireClockSeconds = hours => {
   return Math.floor(hours * (CLOCK.daySec / 24) + 0.000001);
 };
 export const FIRE_KIND_SECONDS = FIRE_SECONDS;
+// One fuel load (a hand torch or a raft fire) burns one basic plank (`madera`, 2 logs at the materials bench).
+// Mirrors fireProfileDelta and SQL022, which stay the authority; the UI reads it to show the requirement.
+export const FIRE_FUEL = Object.freeze({ good: 'madera', count: 1 });
 
 export const FIRE_MAX_SLOTS = 601;
 export const FIRE_MAX_REV = 2147483646;

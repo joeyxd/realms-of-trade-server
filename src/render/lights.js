@@ -1,5 +1,5 @@
 // Local lights: lanterns, braziers, the campfire, lava, hut windows at night, sentinel eyes, the
-// player's light radius and short flashes (dash, later hits). No three.js lights: the nearest few
+// player's light radius, short flashes (dash, muzzle, loot) and projectiles in flight. No three.js lights: the nearest few
 // go into two uniform arrays and every lit shader evaluates them in the same banded style as the
 // sun (toon.js / water.js). Selection never pops: each chosen light fades out as the first light
 // left out gets as close as it, so a swap happens at zero weight.
@@ -24,6 +24,10 @@ const KINDS = {
   // Hellfire's body glow (M2.5): moved with the boss by the scene, dark when there is no boss.
   boss: { color: 0xff7a2a, i: 0, r: 10, flicker: 0.18, speed: 2.2, wrap: 0.5, knob: 'fire' },
 };
+// Projectiles in flight by ProjectileView light kind (0 bullet/pellet, 1 player shot, 2 hostile, 3 heavy orb): radius
+// and intensity at full night; by day they keep about half, where the sun drowns them anyway.
+const SHOT_LIGHT = [{ r: 6, i: 2.6 }, { r: 6, i: 2.4 }, { r: 5, i: 2 }, { r: 7, i: 2.8 }];
+const SHOT_MAX = 4;
 
 // Points on the lava river and crater: greedy picks on a 3 u grid, at least 9 u apart (also used
 // by the lava bubbles in effects.js).
@@ -52,6 +56,10 @@ export class LocalLights {
     this.wantedRaftSources = new Set();
     this.wantedPortableSources = new Set();
     this.flashes = [];
+    this.shots = null;
+    this.shotPick = new Int32Array(SHOT_MAX);
+    this.shotDist = new Float32Array(SHOT_MAX);
+    this.shotColor = new THREE.Color();
     this.max = 8;
     this.time = 0;
     this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, portable: 1 };
@@ -169,6 +177,9 @@ export class LocalLights {
     this.sources = [...this.staticSources, ...this.raftSources.values(), ...this.portableSources.values()];
   }
 
+  // Projectiles drawn this frame (a ProjectileView, or null): see update().
+  setShots(view) { this.shots = view && view.glowCount > 0 ? view : null; }
+
   // Short-lived light (dash, hits). Fades with (1 - t)^2.
   flash(x, y, z, color, radius = 5, intensity = 3, life = 0.3) {
     let f = this.flashes.find((q) => q.t >= q.life);
@@ -220,6 +231,27 @@ export class LocalLights {
       f.t += dt;
       const k = Math.max(0, 1 - f.t / f.life);
       put(f.x, f.y, f.z, f.r, f.color, f.i * k * k, 0.6);
+    }
+    // Projectiles light their surroundings with whatever slots are still free (never the ranked budget above):
+    // the nearest few to the focus, brighter at night through the fire knob.
+    const shots = this.shots;
+    if (shots && n < this.max) {
+      const want = Math.min(SHOT_MAX, this.max - n), pick = this.shotPick, dist = this.shotDist, g = shots.glow;
+      let picked = 0;
+      for (let i = 0; i < shots.glowCount; i++) {
+        const d = Math.hypot(g[i * 4] - focus.x, g[i * 4 + 2] - focus.z);
+        if (d > 40) continue;
+        let j = picked < want ? picked++ : want;
+        if (j === want) { if (d >= dist[want - 1]) continue; j = want - 1; }
+        while (j > 0 && dist[j - 1] > d) { dist[j] = dist[j - 1]; pick[j] = pick[j - 1]; j--; }
+        dist[j] = d; pick[j] = i;
+      }
+      const night = 0.45 + 0.55 * Math.min(1, K.fire ?? 1);
+      for (let k = 0; k < picked; k++) {
+        const i = pick[k], spec = SHOT_LIGHT[g[i * 4 + 3]] || SHOT_LIGHT[0];
+        this.shotColor.setHex(shots.glowColor[i]);
+        put(g[i * 4], g[i * 4 + 1], g[i * 4 + 2], spec.r, this.shotColor, spec.i * night * (1 - THREE.MathUtils.smoothstep(dist[k], 30, 40)), 0.6);
+      }
     }
     U.mnLightCount.value = n;
   }

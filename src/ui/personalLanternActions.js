@@ -7,13 +7,13 @@ const COPY = {
     command: 'No se pudo validar la solicitud de luz.', fireOn: 'Encender antorcha', fireOff: 'Apagar antorcha',
     firePendingOn: 'Encendiendo antorcha…', firePendingOff: 'Apagando antorcha…', fireLit: 'Antorcha encendida.',
     fireDark: 'Antorcha apagada.', fireEmpty: 'Crear antorcha (20 min)', fireDelayed: 'La conexión tarda. El combustible sigue bajo control del servidor.',
-    fireDenied: 'No se pudo completar la acción de la antorcha.', goods: 'Necesitas una madera en la mochila.' },
+    fireDenied: 'No se pudo completar la acción de la antorcha.', goods: 'Necesitas 1 tabla básica en la mochila.' },
   en: { on: 'Light lantern', off: 'Extinguish lantern', pendingOn: 'Lighting…', pendingOff: 'Extinguishing…',
     lit: 'Lantern lit.', dark: 'Lantern extinguished.', delayed: 'The connection is taking longer. The light remains under server control.',
     command: 'The light request could not be validated.', fireOn: 'Light torch', fireOff: 'Extinguish torch',
     firePendingOn: 'Lighting torch…', firePendingOff: 'Extinguishing torch…', fireLit: 'Torch lit.',
     fireDark: 'Torch extinguished.', fireEmpty: 'Craft torch (20 min)', fireDelayed: 'The connection is taking longer. Fuel remains under server control.',
-    fireDenied: 'The torch action could not be completed.', goods: 'You need one wood in your pack.' },
+    fireDenied: 'The torch action could not be completed.', goods: 'You need 1 basic plank in your pack.' },
 };
 
 const isDead = (entity, player) => !!entity?.dying || entity?.r?.act === 6 || entity?.r?.hp <= 0 || !!player?.dead;

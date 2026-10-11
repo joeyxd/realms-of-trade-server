@@ -101,6 +101,9 @@
 .cr-art { position: absolute; z-index: 0; right: calc(4 * var(--u)); top: calc(2 * var(--u)); width: calc(270 * var(--u)); height: calc(300 * var(--u));
   background: var(--art) center / contain no-repeat; filter: drop-shadow(0 calc(8 * var(--u)) calc(10 * var(--u)) #000b); pointer-events: none; }
 .cr-art.is-good { right: calc(10 * var(--u)); top: calc(14 * var(--u)); width: calc(220 * var(--u)); height: calc(170 * var(--u)); }
+/* No painted hero (the torch): the kit icon, large, with a warm glow. */
+.cr-art.is-icon { display: grid; place-items: center; }
+.cr-art-ico { width: 78%; height: 78%; filter: drop-shadow(0 0 calc(18 * var(--u)) #ff9a3c66); }
 .cr-art::before { content: ''; position: absolute; inset: 8% 10% 0 -36%; z-index: -1; opacity: .09; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2390c4ff' d='M11.2 22.5c.5-4.6.4-8.5-.6-12l1.6-.4c1.1 3.8 1.2 7.9.7 12.4zM11.7 9.8C9 6.4 5.2 5.6 1.6 7.6c3.2-.4 5.6.3 7.7 2.4-2.9-.4-5.5.7-7.4 3.4 2.6-1.3 5.4-1.6 8.4-.7zm.6 0c1.5-3.6 4.6-5.6 9.4-5.1-3 .7-5.1 2-6.4 3.9 3-.6 5.8.3 8 2.9-2.7-1-5.8-1.3-9.1-.3zm-.5-.4C10.6 6 8.4 3.3 4.8 1.6c2.9.3 5.4 1.7 7.4 4.3.3-2.2 1.4-3.9 3.5-5.1-1.2 1.7-1.8 4.3-1.8 7.7z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .cr-info { grid-area: info; position: relative; z-index: 1; max-width: calc(290 * var(--u)); padding-bottom: calc(18 * var(--u)); }
 .cr-info h2 { font: 600 calc(33 * var(--u)) / 1.05 var(--f-body); color: #fff; text-shadow: 0 2px 0 #0009; }
@@ -204,6 +207,7 @@
 .cr-belt-slot { width: calc(56 * var(--u)); height: calc(52 * var(--u)); }
 .cr-belt-slot.is-missing .cr-slot-art { filter: grayscale(1) brightness(.45); opacity: .7; }
 .cr-belt-slot.is-owned { border-color: #8fe06b99; }
+.cr-belt-slot.is-lit { border-color: #f6a623cc; box-shadow: inset 0 0 calc(14 * var(--u)) #f6a62366, 0 0 calc(10 * var(--u)) #f6a62355; }
 .cr-quote { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: calc(6 * var(--u)); min-height: calc(50 * var(--u)); padding: calc(6 * var(--u)) 0 calc(2 * var(--u));
   font: italic 400 calc(16 * var(--u)) / 1.2 var(--f-body); color: #6f89a3; white-space: pre-line; text-align: center; transform: rotate(-4deg); }
 .cr-quote i { width: calc(40 * var(--u)); height: calc(52 * var(--u)); color: #4d6782; opacity: .8; }

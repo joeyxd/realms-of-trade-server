@@ -1,5 +1,12 @@
 # Continuidad de servidor — AREA15
 
+**Antorcha y luz de proyectiles, 2026-10-11 — alpha.51, protocolo 55 sin cambios, sin SQL:**
+[Entrega](delivery/torch-light.md). La antorcha (N) siempre pidió 1 tabla básica (`madera`, SQL022), no troncos;
+el panel de fuego ahora lo muestra (tarjeta de material, aviso «2 troncos por tabla» y botón a fabricación) y pasa al
+kit azul. La antorcha entra como receta a mano en el menú de fabricación (TAB y banco) con la misma intención `fire`
+del panel, sin tocar `resource craft`. Balas, perdigones y proyectiles enemigos son luces móviles en los huecos libres
+de `LocalLights` (hasta 4, sin quitar faroles) más destello de boca. Suite completa 4721/4743; los 17 fallos también fallan en origin `5da58e9` (18 allí).
+
 **AREA15, 2026-10-11 — muerte y botín compuestos; código publicado, montaje común apagado:**
 [Entrega/evidencia](delivery/m5-ground-death-lifecycle.md), [contrato](briefs/m5-ground-death-lifecycle.md).
 Captura fatal real, pérdidas/XP/PK y fuentes en el recibo común; recogida/expiración automática,

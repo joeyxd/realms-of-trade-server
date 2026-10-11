@@ -78,11 +78,11 @@ test('station uses pack plus raft hold as available stock and emits its stable c
   const f = fixture({ wood: 0, holdWood: 1 });
   assert.equal(f.panel.open({ ship: 'raft:1', part: 'p_9', kind: 'torchFloor', name: '<b>Deck torch</b>' }), true);
   assert.equal(f.panel.$('.fire-title').textContent, '<b>Deck torch</b>', 'names are assigned as text, never parsed as HTML');
-  assert.equal(f.panel.$('.fire-stock').textContent, 'Mochila: 0 · Bodega: 1 Madera');
+  assert.equal(f.panel.$('.fire-stock').textContent, 'Mochila: 0 · Bodega: 1 Tabla básica');
   assert.equal(f.panel.load(), true);
   assert.equal(f.commands[0].ship, 'raft:1'); assert.equal(f.commands[0].part, 'p_9');
   assert.equal(f.commands[0].kind, 'torchFloor'); assert.equal(f.commands[0].lit, true);
-  assert.equal(f.panel.$('.fire-load').textContent, 'Cargar y encender · 1 madera');
+  assert.equal(f.panel.$('.fire-load').textContent, 'Cargar y encender · 1 tabla');
 });
 
 test('retry sends the exact same request once and times out without changing confirmed fuel', () => {
@@ -101,7 +101,7 @@ test('denials localize server recovery reasons and session changes reset the act
   const f = fixture(); f.panel.open(); f.panel.load();
   const command = f.commands[0];
   assert.equal(f.panel.acknowledge({ type: 'fire', op: 'load', opId: command.opId, ok: false, why: 'goods' }), true);
-  assert.equal(f.panel.$('.fire-status').textContent, 'Necesitas una madera en la mochila o bodega.');
+  assert.equal(f.panel.$('.fire-status').textContent, 'Necesitas 1 tabla básica en la mochila o bodega.');
   f.panel.load(); f.client.youServer = 8; f.panel.update();
   assert.equal(f.panel.pending, null); assert.equal(f.panel.active, false); assert.equal(f.panel.root.hidden, true);
 });
@@ -110,7 +110,7 @@ test('English labels, disabled-world guard, active-only Escape, and dispose life
   const f = fixture({ locale: 'en', enabled: false });
   assert.equal(f.panel.open(), true);
   assert.equal(f.panel.load(), false);
-  assert.equal(f.panel.loadButton.textContent, 'Craft & light · 1 wood');
+  assert.equal(f.panel.loadButton.textContent, 'Craft & light · 1 plank');
   assert.equal(f.panel.loadButton.disabled, true);
   assert.equal((f.doc.listeners.keydown || []).length, 1);
   f.doc.key('Escape'); assert.equal(f.panel.active, false); assert.equal((f.doc.listeners.keydown || []).length, 0);

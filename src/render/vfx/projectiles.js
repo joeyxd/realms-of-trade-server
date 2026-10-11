@@ -217,6 +217,21 @@ export class ProjectileView {
     this.highContrast = false;
     this.count = 0;
     this.time = 0;
+    // One moving light per projectile drawn (x, y, z, kind: 0 bullet, 1 player shot, 2 hostile, 3 heavy orb) and its
+    // colour; LocalLights.setShots() lights the nearest few with the slots the static lights leave free.
+    this.glow = new Float32Array(cap * 4);
+    this.glowColor = new Uint32Array(cap);
+    this.glowCount = 0;
+    this.hostileHex = [this.uniforms.uParry.value.getHex(), this.uniforms.uHeavy.value.getHex(), this.uniforms.uUnstop.value.getHex()];
+    this.elemHex = [this.uniforms.uShot.value.getHex(), this.uniforms.uFire.value.getHex(), this.uniforms.uIce.value.getHex(),
+      this.uniforms.uStorm.value.getHex(), this.uniforms.uDark.value.getHex()];
+    this.tracerHex = this.uniforms.uTracer.value.getHex();
+  }
+
+  light(n, x, y, z, kind, hex) {
+    const q = n * 4;
+    this.glow[q] = x; this.glow[q + 1] = y; this.glow[q + 2] = z; this.glow[q + 3] = kind;
+    this.glowColor[n] = hex;
   }
 
   put(n, x, y, z, vx, vy, vz, type, age, r, flags) {
@@ -237,16 +252,19 @@ export class ProjectileView {
       if (!H.live(s, tick)) continue;
       const t = tick;
       const x = H.px(s, t), z = H.pz(s, t), y = H.py(s, t), v = H.velocityAt(s, t);
+      this.light(n, x, y, z, H.type[s] === PTYPE.HEAVY ? 3 : 2, this.hostileHex[H.type[s]] ?? this.hostileHex[0]);
       this.put(n++, x, y, z, v.x, H.vy[s] * (H.speed[s] ? v.speed / H.speed[s] : 1), v.z, H.type[s], (t - H.t0[s]) * DT, H.r[s], hc);
     }
     const S = shots;
     for (let s = 0; s < S.cap && n < this.cap; s++) {
       if (!S.id[s]) continue;
       const tracer = S.kind[s] === SHOT.BULLET || S.kind[s] === SHOT.PELLET;
+      this.light(n, S.x[s], S.y[s], S.z[s], tracer ? 0 : 1, S.elem[s] > 0 ? (this.elemHex[S.elem[s]] ?? this.tracerHex) : tracer ? this.tracerHex : this.elemHex[0]);
       this.put(n++, S.x[s], S.y[s], S.z[s], S.vx[s], 0, S.vz[s], tracer ? 3 : S.type[s], 1, S.r[s] * (S.type[s] === PTYPE.HEAVY ? 1.05 : 1), 1 | hc | (S.tier[s] << 2) | (S.elem[s] << 4));
       if (onShot) onShot(s, S.x[s], S.y[s], S.z[s]);
     }
     this.count = n;
+    this.glowCount = n;
     this.mesh.geometry.instanceCount = n;
     this.shadowMesh.geometry.instanceCount = n;
     if (n) {

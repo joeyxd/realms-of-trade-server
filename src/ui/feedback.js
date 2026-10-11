@@ -286,6 +286,7 @@ export class Feedback {
         if (v) v.recoil(ev.hand);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.2;
         W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, false, ev.elem);
+        W.lights?.flash(ev.x + ev.dx * 0.8, y, ev.z + ev.dz * 0.8, elementVisual(ev.elem)?.accent ?? 0xffc46a, 6, 3.2, 0.12);
         sfx.pistol(ev.hand, me ? 0.8 : 0.6 * this.vol(ev.x, ev.z));
         sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
         break;
@@ -294,6 +295,7 @@ export class Feedback {
         const v = me ? this.me() : this.viewOf(ev.e);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.15;
         W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, true, ev.elem);
+        W.lights?.flash(ev.x + ev.dx * 1.2, y, ev.z + ev.dz * 1.2, elementVisual(ev.elem)?.accent ?? 0xffc46a, 8, 4, 0.16);
         W.combatFx.ring(ev.x + ev.dx * 1.2, y - 1.1, ev.z + ev.dz * 1.2, 1.6, elementVisual(ev.elem)?.accent ?? 0xffd27a, 0.25, 0.18, 0.7);
         if (me) { this.shake(0.22); W.rig.punchIn(0.25); }
         sfx.blast(me ? 1 : this.vol(ev.x, ev.z));

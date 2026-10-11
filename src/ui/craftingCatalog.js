@@ -1,6 +1,7 @@
 // Crafting panel presentation: ES/EN text by stable key, recipe categories/descriptions and line icons.
 // Gameplay (inputs, outputs, bench rules) stays in data/resources.js; this file only decides how it reads.
 import { CRAFT_RECIPES, RESOURCE_KINDS, HARVEST } from '../data/resources.js';
+import { FIRE_FUEL, FIRE_SECONDS } from '../data/fire.js';
 import { GOODS } from '../data/goods.js';
 import { DT } from '../data/tuning.js';
 import { formatNumber } from '../core/i18n.js';
@@ -14,12 +15,12 @@ export const CRAFT_TEXT = {
     title: 'Fabricación', subtitle: 'Convierte recursos en un mañana mejor', dialog: 'Menú de fabricación',
     tabs: { tools: 'Herramientas', weapons: 'Armas', building: 'Construcción', survival: 'Supervivencia', food: 'Comida' },
     recipes: 'Recetas', inventory: 'Inventario', required: 'Materiales necesarios', craftsInto: 'Se convierte en',
-    stats: 'Estadísticas (base)', craft: 'Fabricar objeto', prepare: 'Preparar', waiting: 'Fabricando…',
+    stats: 'Estadísticas (base)', craft: 'Fabricar objeto', craftLight: 'Fabricar y encender', prepare: 'Preparar', waiting: 'Fabricando…',
     close: 'Cerrar', closeLabel: 'Cerrar fabricación', map: 'Mapa', quantity: 'Cantidad', max: 'Máx.',
     qtyLabel: 'Cantidad a preparar', perBatch: 'máx. {n} por tanda', locked: 'Por descubrir',
     emptyTab: 'Aún no conoces recetas de esta categoría.', emptyHint: 'Explora la isla y habla con su gente para aprender nuevas recetas.',
     hand: 'A mano · sin banco', benchNear: 'Banco de materiales · cerca', benchFar: 'Requiere el banco de materiales',
-    belt: 'Cinturón', beltOwned: 'En tu cinturón', beltMissing: 'Sin fabricar', volume: 'Volumen de mochila', weight: 'Peso',
+    belt: 'Cinturón', beltOwned: 'En tu cinturón', beltMissing: 'Sin fabricar', torchOn: 'Antorcha · {time}', volume: 'Volumen de mochila', weight: 'Peso',
     quote: '«Cosas simples.\nLugares extraordinarios.»', retry: 'Reintentar', inventoryClose: 'Cerrar inventario',
     unit: (n) => n === 1 ? 'unidad' : 'unidades', tool: 'herramienta',
     feedback: {
@@ -30,6 +31,11 @@ export const CRAFT_TEXT = {
       pending: 'Esperando confirmación…',
       received: 'Recibido; actualizando tu mochila…', sendFailed: 'No se pudo enviar. Inténtalo otra vez.',
       madeTool: '{name} fabricada. Ya está en tu cinturón.', madeGood: 'Preparaste {n} {name}.',
+      torchLit: 'Antorcha encendida: {min} min de luz. Pulsa N para apagarla o volver a encenderla.',
+      torchBurning: 'Tu antorcha aún arde ({time}). Cuando se consuma podrás fabricar otra.',
+      torchPlank: 'Te falta 1 tabla básica. Prepárala en el banco de materiales con 2 troncos.',
+      torchOff: 'El fuego todavía no está disponible en este mundo.',
+      torchAccount: 'Entra con una cuenta para guardar tu antorcha.',
       unknown: 'No se pudo completar la receta. Revisa tu mochila e inténtalo otra vez.',
     },
   },
@@ -37,12 +43,12 @@ export const CRAFT_TEXT = {
     title: 'Crafting', subtitle: 'Turn resources into a brighter tomorrow', dialog: 'Crafting menu',
     tabs: { tools: 'Tools', weapons: 'Weapons', building: 'Building', survival: 'Survival', food: 'Food' },
     recipes: 'Recipes', inventory: 'Inventory', required: 'Required materials', craftsInto: 'Crafts into',
-    stats: 'Stats (base)', craft: 'Craft item', prepare: 'Prepare', waiting: 'Crafting…',
+    stats: 'Stats (base)', craft: 'Craft item', craftLight: 'Craft & light', prepare: 'Prepare', waiting: 'Crafting…',
     close: 'Close', closeLabel: 'Close crafting', map: 'Map', quantity: 'Quantity', max: 'Max',
     qtyLabel: 'Quantity to prepare', perBatch: 'max {n} per batch', locked: 'Undiscovered',
     emptyTab: 'You do not know any recipes in this category yet.', emptyHint: 'Explore the island and talk to its people to learn new recipes.',
     hand: 'By hand · no bench', benchNear: 'Materials bench · nearby', benchFar: 'Requires the materials bench',
-    belt: 'Belt', beltOwned: 'On your belt', beltMissing: 'Not crafted', volume: 'Backpack volume', weight: 'Weight',
+    belt: 'Belt', beltOwned: 'On your belt', beltMissing: 'Not crafted', torchOn: 'Torch · {time}', volume: 'Backpack volume', weight: 'Weight',
     quote: '“Simple things.\nExtraordinary places.”', retry: 'Retry', inventoryClose: 'Close inventory',
     unit: (n) => n === 1 ? 'unit' : 'units', tool: 'tool',
     feedback: {
@@ -53,6 +59,11 @@ export const CRAFT_TEXT = {
       pending: 'Waiting for confirmation…',
       received: 'Received; updating your backpack…', sendFailed: 'Could not send. Try again.',
       madeTool: '{name} crafted. It is now on your belt.', madeGood: 'You prepared {n} {name}.',
+      torchLit: 'Torch lit: {min} min of light. Press N to put it out or light it again.',
+      torchBurning: 'Your torch is still burning ({time}). Craft another once it burns out.',
+      torchPlank: 'You need 1 basic plank. Prepare it at the materials bench from 2 logs.',
+      torchOff: 'Fire is not available in this world yet.',
+      torchAccount: 'Sign in to keep your torch.',
       unknown: 'The recipe could not be completed. Check your backpack and try again.',
     },
   },
@@ -136,6 +147,19 @@ export const RECIPE_UI = {
       { icon: 'ore', es: 'Golpes por veta', en: 'Hits per iron vein', value: ore.hits, max: 6, text: `${ore.hits}` },
     ],
   },
+  // The hand torch is a fire load (data/fire.js), not a resource craft: one plank, 20 minutes of light, by hand.
+  antorcha: {
+    cat: 'tools', order: 3,
+    es: { name: 'Antorcha', desc: 'Una tabla untada de brea que arde y alumbra a tu alrededor.',
+      flavor: 'La noche en la isla es oscura de verdad.\nLleva el fuego contigo.', motto: 'Enciende. Explora. Regresa.' },
+    en: { name: 'Torch', desc: 'A tar-coated plank that burns and lights up your surroundings.',
+      flavor: 'Night on the island is truly dark.\nCarry the fire with you.', motto: 'Light up. Explore. Come back.' },
+    stats: () => [
+      { icon: 'clock', es: 'Minutos de luz', en: 'Minutes of light', value: FIRE_SECONDS.handTorch / 60, max: 60, text: `${FIRE_SECONDS.handTorch / 60} min` },
+      { icon: 'stack', es: 'Tablas por carga', en: 'Planks per load', value: FIRE_FUEL.count, max: 4, text: `${FIRE_FUEL.count}` },
+      { icon: 'logs', es: 'Troncos por tabla', en: 'Logs per plank', value: CRAFT_RECIPES.madera.inputs.tronco, max: 4, text: `${CRAFT_RECIPES.madera.inputs.tronco}` },
+    ],
+  },
   madera: {
     cat: 'building', order: 1,
     es: { name: 'Tabla básica', desc: 'Dos troncos limpios y cortados en una tabla, lista para construir.',
@@ -159,7 +183,7 @@ export const CRAFT_ICONS = LINE_ICONS;
 // Recipes the author named for later (the crafting reference): listed as undiscovered, with no materials or numbers
 // until their rules exist. Painted icons come from the kit's misc atlas.
 export const UPCOMING_RECIPES = {
-  tools: [['antorcha', 'Antorcha', 'Torch'], ['arpon', 'Arpón de pesca', 'Fishing Spear'], ['cuerda', 'Cuerda', 'Rope']],
+  tools: [['arpon', 'Arpón de pesca', 'Fishing Spear'], ['cuerda', 'Cuerda', 'Rope']],
   weapons: [['lanza', 'Lanza tosca', 'Crude Spear'], ['arco', 'Arco de madera', 'Wooden Bow'], ['flechas', 'Flechas (×5)', 'Arrows (×5)']],
   survival: [['fogata', 'Fogata', 'Campfire']],
 };

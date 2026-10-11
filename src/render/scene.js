@@ -307,6 +307,7 @@ export class GameScene {
     this.applyPreset(this.lighting.cur);
     this.lights.setRafts(ctx.rafts || [], ctx.lightRaftId ?? ctx.shelterId ?? null);
     this.lights.setPortableLights(ctx.playing ? (ctx.portableLights || []) : []);
+    this.lights.setShots(ctx.combat ? this.projectiles : null); // drawn last frame: at most one frame behind
     this.lights.update(dt, ctx.focus);
     this.sky.position.copy(this.camera.position);
     // Combat-timed pieces follow instance time (they freeze in the hitstop with the characters).

@@ -294,6 +294,9 @@ async function boot() {
     enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
     blocked: () => !!(client.naval.active || client.deck.active || client.voyage?.active),
     submit: (command) => resources.send(command),
+    // The torch recipe is the hand fire load: same intent as the fire panel, answered by the `fire` event below.
+    torch: () => client?.fire,
+    submitFire: (command) => { if (!client?.joined || client.t?.closed) return false; client.send(command); return true; },
     onContext: (active) => {
       if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
       input.setBuildContext(active || raftEditor.active || commercePanel.active || community.active || artisan?.active); aimCtl.reset(); st.wantWeapon = 0;
@@ -310,6 +313,7 @@ async function boot() {
   bus.on('you:welcome', () => raftDoors.reset());
   firePanel = new FirePanel({ parent: $('#ui'), client: () => client,
     locale: () => getLocale(), toast: text => hud.toast(text, 2400),
+    openCraft: () => workbench.open({ recipe: 'madera' }), // no planks: show the bench recipe (2 logs → 1 plank)
     onOpen: () => {
       freshwaterPanel?.close();
       companionsPanel?.close();
@@ -318,7 +322,7 @@ async function boot() {
     },
     onClose: () => { input.setBuildContext(!!(freshwaterPanel?.active || artisan?.active || workbench.active || community.active || commercePanel.active || raftEditor.active)); canvas.focus({ preventScroll: true }); },
   });
-  bus.on('fire', ev => safe('fire', () => { firePanel.acknowledge(ev); personalLantern.acknowledge(ev); }));
+  bus.on('fire', ev => safe('fire', () => { firePanel.acknowledge(ev); personalLantern.acknowledge(ev); workbench.onFire(ev); }));
   bus.on('you:welcome', () => firePanel.resetSession());
   freshwaterPanel = new FreshwaterPanel({ parent: $('#ui'), client: () => client,
     locale: () => getLocale(), toast: text => hud.toast(text, 2400),

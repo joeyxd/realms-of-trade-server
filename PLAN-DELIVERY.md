@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Antorcha y luz de proyectiles, 2026-10-11 — alpha.51, protocolo 55 sin cambios, sin SQL:**
+[Entrega](docs/delivery/torch-light.md). La antorcha (N) siempre pidió 1 tabla básica (`madera`, SQL022), no troncos;
+el panel de fuego ahora lo muestra (tarjeta de material, aviso «2 troncos por tabla» y botón a fabricación) y pasa al
+kit azul. La antorcha entra como receta a mano en el menú de fabricación (TAB y banco) con la misma intención `fire`
+del panel, sin tocar `resource craft`. Balas, perdigones y proyectiles enemigos son luces móviles en los huecos libres
+de `LocalLights` (hasta 4, sin quitar faroles) más destello de boca. Suite completa 4721/4743; los 17 fallos también fallan en origin `5da58e9` (18 allí).
+
 **AREA17, 2026-10-11 — disponibilidad del centro público; creación aún pendiente:**
 [Entrega](docs/delivery/l03d-public-inference-availability.md), [contrato](docs/briefs/l03d-public-inference-availability.md).
 Sin conexiones y sin configuración previa, explica la disponibilidad y oculta el formulario de gasto.
