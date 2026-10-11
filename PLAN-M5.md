@@ -10,6 +10,8 @@ SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordin
 restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
 Integracion RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
 reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
+Integracion GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusion de activacion GM con piloto montado. Conteos solapados.
 
 **AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-family-boundary.md), [contrato](docs/briefs/m5-ground-family-boundary.md).

@@ -10,6 +10,8 @@ antes de iniciar recolección o publicar eventos. El recibo económico conserva 
 Aceptación posterior en base `95595b0`: 226/226 en 25 archivos congelados,
 [manifest](../delivery/m5-ground-pearl-lifecycle/concurrent-integration.json) y
 [entrega](../delivery/m5-ground-pearl-lifecycle.md). Se solapa con los 594 casos de la base anterior.
+Integración GM05 en `52665ea`, alpha.45/protocolo 51: 246/246 en 29 archivos congelados,
+[evidencia](../delivery/m5-ground-pearl-lifecycle/terrain-integration.json), con la misma exclusión GM.
 
 Este corte conecta un piloto de confianza `GameHost.mountGroundPearls()` antes de `prepare()`.
 Conserva el único `GroundHostAuthority.boundary`, cuentas autenticadas, cero bots y mundo ya
@@ -44,6 +46,8 @@ No cierra captura completa de muerte, consumo/expiración de botín ordinario, m
 give/swallow/leave/batch, custodia offline, XP/misiones, producción o backups. No activar este
 piloto en el VPS hasta componer esas rutas y hacer la transición detenida, con exclusión del
 actualizador y aceptación autenticada de caída/reinicio. Publicar las APIs no equivale a montarlas.
+La activación GM permanece bloqueada mientras este piloto está montado, incluso inactivo;
+componer cambios de geometría en caliente y su prueba con suelo persistido queda pendiente.
 
 Reutilización: GroundHostAuthority, SQL018/019/023, PearlGroundHydration, GroundDeadlineClock,
 PearlMutationGate y helpers de gameplay existentes. El candidato Unreal `BP_JigServerSave.uasset`

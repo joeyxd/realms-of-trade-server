@@ -61,6 +61,13 @@ El [ensayo anterior sin congelación](m5-ground-pearl-lifecycle/concurrent-integ
 pasó 225 aserciones mientras se añadía esa regresión; no se acepta porque cambiaron fuentes.
 Su [TAP](m5-ground-pearl-lifecycle/concurrent-integration-unfrozen.tap) conserva el diagnóstico.
 
+La entrega GM05 concurrente quedó integrada en `52665ea`, alpha.45/protocolo 51:
+**246/246 en 29 archivos**, cero fallos/omisiones y fuentes congeladas,
+[manifest](m5-ground-pearl-lifecycle/terrain-integration.json) y
+[TAP](m5-ground-pearl-lifecycle/terrain-integration.tap). Repite la selección anterior y añade
+autoridad de terreno, contenido activo, obstáculos y proyección. Confirma la protección de
+huellas de perlas persistidas; no habilita la activación GM con el piloto montado. Conteos solapados.
+
 - 7 pruebas nuevas de hidratación, 7 del adaptador pickup y 4 de devolución: selección,
   elegibilidad, ownership, identidad de fuentes, CAS de sesión y rollback de pickup inyectado.
 - 10 de host con SQL real local: arranque y pausa offline, rechazo de botín antes de instalar,
@@ -86,6 +93,11 @@ expiración del botín ordinario, mint de loot nuevo y comandos give/swallow/lea
 dueño. Después corresponde transición detenida con exclusión del actualizador/escritor anterior,
 adopción explícita y canario autenticado de caída/reinicio VPS. No se ejecutó SQL ni adopción en
 el dominio real y no se mató su proceso para este corte.
+
+El piloto conserva otra exclusión existente: `beginContentSwitch()` rechaza activaciones GM
+mientras `groundPearls` está montado, incluso inactivo. GM05 protege las huellas persistidas
+frente a cambios de altura, pero la combinación de activación GM y piloto montado no se habilita
+en este corte. Debe componerse y probarse antes de permitir ese cambio de geometría en caliente.
 
 No acredita cada cambio permanente, pérdida eléctrica/disco, concurrencia entre backends,
 lease entre procesos, custodia offline, XP/misiones, producción autónoma ni backups/restauración.

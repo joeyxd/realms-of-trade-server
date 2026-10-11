@@ -10,6 +10,8 @@ SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordin
 restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
 Integracion RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
 reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
+Integracion GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusion de activacion GM con piloto montado. Conteos solapados.
 
 **AREA07 RNV07a, 2026-10-11 — publicado y activado, alpha.44/protocolo 50:**
 [Entrega](delivery/rnv07-freshwater.md), [dirección](briefs/RNV07-freshwater-progression.md), [WSS público](delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](delivery/rnv07-freshwater/public-readonly.json) y [activación SQL030](delivery/rnv07-freshwater/activation.json). Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z; imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor, readiness RPC 1; `MN_FRESHWATER_OPERATIONS` enabled/ready y atributos siguen enabled/ready. WSS público 6/6, anónimo denegado; lectura pública 7 hashes fuente y health 200. Evidencia de agua visual/recogida completa sigue siendo fixture local sin enemigos; no se afirma recolección/transporte completo live y el encuentro en navegador queda pendiente para RNV07b.
