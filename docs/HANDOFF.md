@@ -1,5 +1,13 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.48/protocolo 54:**
+[Brief](briefs/RNV08a-shore-resupply.md) y [entrega](delivery/rnv08a-shore-resupply.md).
+Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
+construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
+M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
+
+
 **AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).
 Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;

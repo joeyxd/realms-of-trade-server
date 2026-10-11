@@ -41,6 +41,7 @@ import { NavalTrial } from '../sim/naval/trial.js';
 import { NavalPilot } from '../sim/naval/pilot.js';
 import { NavalRoute } from '../sim/naval/route.js';
 import { NavalLesson } from '../sim/naval/lesson.js';
+import { shoreServiceAllowed } from '../sim/naval/shoreService.js';
 import { PILOTING } from '../data/progression.js';
 
 const MAX_CMDS_PER_TICK = 2; // normal pace
@@ -319,9 +320,10 @@ export class LocalServer {
     if (!this.commandAllowed(c, { world: WORLD_COMMANDS.has(msg.type) || (pearl && msg.op !== 'give'),
       target: pearl && msg.op === 'give' ? msg.target | 0 : null })) return false;
     const w = this.world, e = c.entity, uid = msg.uid | 0;
-    // Cargo mass and blueprint are captured for the whole voyage, including coastal exploration.
+    // Hull cargo and blueprint stay captured; dry shore stops may change the pack only.
     // Keep economy helpers' own locks as well: trusted callers must not bypass this transport check.
-    if (w.navalPilot?.locked?.(e) && ['raft', 'commerce', 'market', 'buy', 'sell'].includes(msg.type)) {
+    if (w.navalPilot?.locked?.(e) && ['raft', 'commerce', 'market', 'buy', 'sell'].includes(msg.type) &&
+        !shoreServiceAllowed(w, e, msg)) {
       w.emit({ type: 'commandDenied', to: e, e, why: 'navigation' });
       return false;
     }

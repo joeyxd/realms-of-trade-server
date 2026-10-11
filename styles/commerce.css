@@ -27,6 +27,9 @@
   font: 750 12px system-ui, sans-serif; touch-action: manipulation;
 }
 .commerce-tabs button { flex: 1; }
+.commerce-shore-note, .commerce-shore-locked { margin: 8px 13px 0; padding: 8px 10px; border: 1px solid #d8aa5f66; border-radius: 6px; background: #49361f99; color: #ffe7b5; font-size: 12px; line-height: 1.35; }
+.commerce-shore-note[hidden] { display: none; }
+.commerce-shore-locked { margin: 0; }
 .commerce-tabs button.on, .commerce-good.on, .market-row.on, .commerce-qty button.on { border-color: #f0c56c; background: linear-gradient(#75542d, #49361f); color: #fff4d3; }
 .commerce-body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 11px 13px; scrollbar-color: #886539 #17151a; }
 .commerce-feedback { min-height: 20px; padding: 3px 14px 7px; color: #e8c889; font-size: 12px; }

@@ -269,3 +269,12 @@ No se implementó ni publicó gameplay nuevo en este análisis.
 
 
 **Checkpoint RNV07a publicado y activado:** [entrega](../delivery/rnv07-freshwater.md), alpha.44/protocolo 50; runtime `80e46df8ca4664f93aa59df8350c27cc17589b53` desplegado 04:47Z, imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado y readiness RPC 1; agua/atributos enabled/ready. [WSS](../delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](../delivery/rnv07-freshwater/public-readonly.json), [activación](../delivery/rnv07-freshwater/activation.json). WSS público 6/6, anónimo denegado; health 200 y 7 hashes fuente. QA local final 14 capturas (7 por viewport), [evidencia](../delivery/rnv07-freshwater/local/evidence-2026-10-11T04-35-22-891Z.json); no representa el recorrido live completo de recolección/combate. Encuentro en navegador pendiente para RNV07b. Sigue cantimplora/supervivencia antes del viaje comercial; purificador avanzado conserva sus dependencias.
+
+## Checkpoint RNV08a, 2026-10-11
+
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.48/protocolo 54:**
+[Brief](../briefs/RNV08a-shore-resupply.md) y [entrega](../delivery/rnv08a-shore-resupply.md).
+Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
+construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
+M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.

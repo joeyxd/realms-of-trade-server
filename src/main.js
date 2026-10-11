@@ -57,6 +57,7 @@ import { FirePanel } from './ui/firePanel.js';
 import { FreshwaterPanel } from './ui/freshwaterPanel.js';
 import { PersonalLanternActions } from './ui/personalLanternActions.js';
 import { CommercePanel } from './ui/commerce.js';
+import { shoreStopAvailable } from './ui/shoreStopState.js';
 import { ResourceActions } from './ui/resourceActions.js';
 import { WorkbenchPanel } from './ui/workbench.js';
 import { CommunityPanel } from './ui/community.js';
@@ -260,10 +261,12 @@ async function boot() {
   });
   bus.on('raftEdit', (ev) => safe('raftEdit', () => raftEditor.onResult(ev)));
   const commercePanel = new CommercePanel({
+    voyage: () => client?.voyage,
     parent: $('#ui'), profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
     raftDeck: () => client?.pred.raftDeck, youServer: () => client?.youServer, fireEnabled: () => client?.fire?.enabled === true, player: () => ps,
     map, send: sendCmd,
-    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
+    enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead &&
+      (!client.voyage?.active || shoreStopAvailable(client.voyage)),
     onContext: (active) => {
       if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); workbench.close(); community.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
       input.setBuildContext(active || raftEditor.active || workbench.active || community.active || artisan?.active); aimCtl.reset(); st.wantWeapon = 0;

@@ -104,3 +104,12 @@ Cantimplora, dosis/rellenos y consumo SRV01 publicados y activos: alpha.47/proto
 SQL032 aplicada/readiness 1; 153/153 en el actualizador/VPS, SQL032 13/13 local y navegador ES/EN aprobado.
 WSS público autenticado confirma coste, consumo, replay y reconexión duradera; 19 hashes públicos iguales a Git.
 La fixture visual sin enemigos no acepta el encuentro completo. Sigue ruta comercial Salty Shore–Puerto Sol.
+
+## Checkpoint RNV08a, 2026-10-11
+
+**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.48/protocolo 54:**
+[Brief](../briefs/RNV08a-shore-resupply.md) y [entrega](../delivery/rnv08a-shore-resupply.md).
+Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
+construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
+M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.

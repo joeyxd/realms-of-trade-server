@@ -49,6 +49,21 @@ export class NavalPilot {
 
   locked(owner) { return this.#records.has(owner) || this.#walkers.has(owner) || this.#recoveries.has(owner); }
 
+  // A normal dry landing grants pack services only. Swimming, recovery and deck seats do not.
+  shoreStop(owner) {
+    const r = this.#records.get(owner), w = this.#world, ecs = w.ecs;
+    const source = r && w.rafts.get(r.shipId);
+    if (this.#closed || !this.#liveVoyages || !r?.ashore || r.waterExit || !this.#live(owner) ||
+        ecs.clientId[owner] !== r.clientId || ecs.swim?.[owner] || this.#walkers.has(owner) ||
+        !source || source.owner !== owner || source.ship !== r.ship || source.ship.rev !== r.shipRev ||
+        source.ship.hp <= 0 || source.ship.at !== 'aldea' ||
+        w.profiles.get(owner)?.eco?.ships?.includes(r.ship) !== true ||
+        JSON.stringify(r.ship.grid.parts) !== r.blueprint ||
+        w.navalTrial?.isParked?.(owner, r.shipId) !== true) return false;
+    const ground = w.map.groundAt(ecs.x[owner], ecs.z[owner]);
+    return Number.isFinite(ground) && ground >= .2 && Math.abs(ecs.y[owner] - ground) <= .6;
+  }
+
   // Reconnection restores an uncrewed parked vessel, not a trial handle or a piloting seat.
   restore(owner, shipId) {
     const w = this.#world, source = w.rafts.get(shipId);
@@ -139,6 +154,7 @@ export class NavalPilot {
         parts: r.body.operational.parts, from: { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] },
         radius: ecs.radius[owner], maxDistance: SWIM_BOARDING_RANGE });
     return Object.freeze({ active: true, shipId: r.shipId, phase: r.ashore ? 'shore' : 'sailing',
+      shoreService: this.shoreStop(owner),
       home: Object.freeze({ x: home.x, y: home.y, z: home.z }),
       landing: landing ? Object.freeze({ x: landing.x, y: landing.y, z: landing.z }) : null,
       canLand, canDock, canSwim, swimming, canReboard, distanceHome, visited: r.visited,
@@ -435,10 +451,17 @@ export class NavalPilot {
         distanceToNavalHull(ecs.x[owner], ecs.z[owner], r.body.pose, r.body.operational.parts) > 6 ||
         this.#nextEpoch >= Number.MAX_SAFE_INTEGER) return false;
     const source = w.rafts.get(shipId), helm = source?.helm || liveHelmAnchor(r.body.operational.parts);
-    if (!source || source.owner !== owner || source.ship !== r.ship || !helm ||
-        !w.navalTrial.park(r.handle, false)) return false;
+    if (!source || source.owner !== owner || source.ship !== r.ship || !helm) return false;
+    // Recompute carried cargo at the admitted helm, rather than at the shore landing point.
+    const priorPosition = { x: ecs.x[owner], y: ecs.y[owner], z: ecs.z[owner] };
+    const helmPoint = pilotPoint(r.body.pose, helm);
+    ecs.x[owner] = helmPoint.x; ecs.y[owner] = helmPoint.y; ecs.z[owner] = helmPoint.z;
+    const restorePosition = () => {
+      ecs.x[owner] = priorPosition.x; ecs.y[owner] = priorPosition.y; ecs.z[owner] = priorPosition.z;
+    };
+    if (!w.navalTrial.park(r.handle, false)) { restorePosition(); return false; }
     const resumed = w.navalTrial.snapshot(r.handle);
-    if (!resumed?.body) { w.navalTrial.park(r.handle, true); return false; }
+    if (!resumed?.body) { w.navalTrial.park(r.handle, true); restorePosition(); return false; }
     r.body = resumed.body; r.ack = resumed.ack;
     this.neutral(owner);
     r.anchor = Object.freeze({ ...helm }); r.ashore = false; r.helm = true;
@@ -524,6 +547,7 @@ export class NavalPilot {
   #placePlayer(e, point) {
     const ecs = this.#world.ecs;
     ecs.x[e] = point.x; ecs.y[e] = point.y; ecs.z[e] = point.z;
+    if (Number.isFinite(point.f)) ecs.facing[e] = point.f;
     ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = ecs.moveMag[e] = 0;
     ecs.dashT[e] = -1;
     ecs.castK[e] = ecs.castT[e] = ecs.castLock[e] = ecs.chg[e] = 0;
