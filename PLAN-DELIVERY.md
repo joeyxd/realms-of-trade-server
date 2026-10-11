@@ -16,10 +16,12 @@ Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; 
 compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
 SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
 restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
-Integracion RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+Integración RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
 reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
-Integracion GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
-conserva exclusion de activacion GM con piloto montado. Conteos solapados.
+Integración GM05 alpha.45/protocolo 51: 246/246 en 29 archivos congelados (base 52665ea);
+conserva exclusión de activación GM con piloto montado. Conteos solapados.
+Código verificado en VPS `ea982f8` sano, 0.6.0-alpha.45/protocolo 51: 127/127 del actualizador,
+31/31 sin red en la imagen exacta y entrada pública 6/6. Una autoridad, timer activo; montaje apagado.
 
 **AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
