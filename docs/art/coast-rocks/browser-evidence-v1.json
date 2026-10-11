@@ -1,0 +1,514 @@
+[
+  {
+    "device": "desktop",
+    "state": {
+      "asset": {
+        "id": "model:coast-rock-v1",
+        "kind": "model",
+        "src": "models/coast-rock-v1.glb",
+        "selectedSrc": "models/coast-rock-v1.glb",
+        "state": "ok",
+        "error": "",
+        "tris": 64,
+        "notes": []
+      },
+      "coast": {
+        "asset": "model:coast-rock-v1",
+        "count": 8,
+        "variants": 3
+      },
+      "groups": [
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 2,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        }
+      ],
+      "gameErrors": {},
+      "assetErrors": [],
+      "camera": [
+        123.9629357851163,
+        17.308600433250124,
+        71.4629357851163
+      ],
+      "coarse": false,
+      "glError": 0,
+      "footprintLimit": 256
+    },
+    "pageErrors": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
+    "device": "mobile",
+    "state": {
+      "asset": {
+        "id": "model:coast-rock-v1",
+        "kind": "model",
+        "src": "models/coast-rock-v1.glb",
+        "selectedSrc": "models/coast-rock-v1.glb",
+        "state": "ok",
+        "error": "",
+        "tris": 64,
+        "notes": []
+      },
+      "coast": {
+        "asset": "model:coast-rock-v1",
+        "count": 8,
+        "variants": 3
+      },
+      "groups": [
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 2,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        }
+      ],
+      "gameErrors": {},
+      "assetErrors": [],
+      "camera": [
+        123.9629357851163,
+        17.308600433250124,
+        71.4629357851163
+      ],
+      "coarse": true,
+      "glError": 0,
+      "footprintLimit": 128
+    },
+    "pageErrors": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
+    "device": "low",
+    "state": {
+      "asset": {
+        "id": "model:coast-rock-v1",
+        "kind": "model",
+        "src": "models/coast-rock-v1.glb",
+        "selectedSrc": "models/coast-rock-v1.glb",
+        "state": "ok",
+        "error": "",
+        "tris": 64,
+        "notes": []
+      },
+      "coast": {
+        "asset": "model:coast-rock-v1",
+        "count": 8,
+        "variants": 3
+      },
+      "groups": [
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks0",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.500777542591095,
+              0,
+              -0.45043879747390747
+            ],
+            "max": [
+              0.500777542591095,
+              0.7799999713897705,
+              0.45043879747390747
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 2,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks1",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.51995849609375,
+              0,
+              -0.26190733909606934
+            ],
+            "max": [
+              0.51995849609375,
+              0.5600000023841858,
+              0.26190733909606934
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        },
+        {
+          "group": "coastRocks2",
+          "instances": 1,
+          "triangles": 64,
+          "bounds": {
+            "min": [
+              -0.41648218035697937,
+              0,
+              -0.5052971839904785
+            ],
+            "max": [
+              0.41648218035697937,
+              0.36000001430511475,
+              0.5052971839904785
+            ]
+          }
+        }
+      ],
+      "gameErrors": {},
+      "assetErrors": [],
+      "camera": [
+        123.9629357851163,
+        17.308600433250124,
+        71.4629357851163
+      ],
+      "coarse": true,
+      "glError": 0,
+      "footprintLimit": 96
+    },
+    "pageErrors": [],
+    "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
+    "failure": "missing",
+    "state": {
+      "coast": {
+        "asset": null,
+        "count": 0,
+        "variants": 3
+      },
+      "errors": {},
+      "assetErrors": [
+        "model:coast-rock-v1: fetch for \"http://127.0.0.1:5192/assets/models/coast-rock-v1.glb\" responded with 404: Not Found"
+      ],
+      "glError": 0
+    },
+    "pageErrors": []
+  },
+  {
+    "failure": "bad",
+    "state": {
+      "coast": {
+        "asset": null,
+        "count": 0,
+        "variants": 3
+      },
+      "errors": {},
+      "assetErrors": [
+        "model:coast-rock-v1: Unexpected token 'o', \"not a glb\" is not valid JSON"
+      ],
+      "glError": 0
+    },
+    "pageErrors": []
+  },
+  {
+    "failure": "disabled",
+    "state": {
+      "coast": {
+        "asset": null,
+        "count": 0,
+        "variants": 3
+      },
+      "errors": {},
+      "assetErrors": [],
+      "glError": 0
+    },
+    "pageErrors": []
+  }
+]

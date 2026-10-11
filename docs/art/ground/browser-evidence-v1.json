@@ -1,0 +1,921 @@
+{
+  "schemaVersion": 1,
+  "scope": "S03 local map and emulated mobile; no physical FPS or public deployment acceptance",
+  "cases": [
+    {
+      "device": "desktop",
+      "state": {
+        "loaded": [
+          "sand-grass",
+          "sand-dirt",
+          "grass",
+          "dirt"
+        ],
+        "enabled": 1,
+        "normalOn": 1,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-albedo-desktop.webp",
+            "width": 2048,
+            "height": 2048,
+            "colorSpace": "srgb"
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-normal-desktop.webp",
+            "width": 2048,
+            "height": 2048,
+            "colorSpace": ""
+          }
+        ],
+        "requestedGround": [
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-desktop.webp"
+        ],
+        "coarse": false,
+        "gameErrors": {},
+        "assetErrors": [],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          1.2258715702326022,
+          35.55950310305725,
+          1.2258715702326022
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        },
+        {
+          "name": "road",
+          "x": 55.5,
+          "z": 52,
+          "dist": 20,
+          "height": 2.700173020362854,
+          "masks": {
+            "path": 1,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "town",
+          "x": 66.5,
+          "z": 75,
+          "dist": 29,
+          "height": 2.395954966545105,
+          "masks": {
+            "path": 0.5292038966435291,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "arena",
+          "x": -17.7,
+          "z": -17.7,
+          "dist": 40,
+          "height": 4.583710083961487,
+          "masks": {
+            "path": 0,
+            "volcanic": 1,
+            "arenaFloor": 1,
+            "lava": 0
+          },
+          "material": "rock"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/desktop-beach-v1.png",
+        "docs/art/ground/desktop-beach-clean-v1.png",
+        "docs/art/ground/desktop-road-v1.png",
+        "docs/art/ground/desktop-road-clean-v1.png",
+        "docs/art/ground/desktop-town-v1.png",
+        "docs/art/ground/desktop-town-clean-v1.png",
+        "docs/art/ground/desktop-arena-v1.png"
+      ],
+      "groundRequests": [
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-desktop.webp"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "device": "mobile",
+      "state": {
+        "loaded": [
+          "sand-grass",
+          "sand-dirt",
+          "grass",
+          "dirt"
+        ],
+        "enabled": 1,
+        "normalOn": 1,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": "srgb"
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": ""
+          }
+        ],
+        "requestedGround": [
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+        ],
+        "coarse": true,
+        "gameErrors": {},
+        "assetErrors": [],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          1.2258715702326022,
+          35.55950310305725,
+          1.2258715702326022
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        },
+        {
+          "name": "road",
+          "x": 55.5,
+          "z": 52,
+          "dist": 20,
+          "height": 2.700173020362854,
+          "masks": {
+            "path": 1,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "town",
+          "x": 66.5,
+          "z": 75,
+          "dist": 29,
+          "height": 2.395954966545105,
+          "masks": {
+            "path": 0.5292038966435291,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "arena",
+          "x": -17.7,
+          "z": -17.7,
+          "dist": 40,
+          "height": 4.583710083961487,
+          "masks": {
+            "path": 0,
+            "volcanic": 1,
+            "arenaFloor": 1,
+            "lava": 0
+          },
+          "material": "rock"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/mobile-beach-v1.png",
+        "docs/art/ground/mobile-road-v1.png",
+        "docs/art/ground/mobile-town-v1.png",
+        "docs/art/ground/mobile-arena-v1.png"
+      ],
+      "groundRequests": [
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "device": "low",
+      "state": {
+        "loaded": [
+          "sand-grass",
+          "sand-dirt",
+          "grass",
+          "dirt"
+        ],
+        "enabled": 1,
+        "normalOn": 1,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": "srgb"
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": ""
+          }
+        ],
+        "requestedGround": [
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+        ],
+        "coarse": true,
+        "gameErrors": {},
+        "assetErrors": [],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          1.2258715702326022,
+          35.55950310305725,
+          1.2258715702326022
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        },
+        {
+          "name": "road",
+          "x": 55.5,
+          "z": 52,
+          "dist": 20,
+          "height": 2.700173020362854,
+          "masks": {
+            "path": 1,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "town",
+          "x": 66.5,
+          "z": 75,
+          "dist": 29,
+          "height": 2.395954966545105,
+          "masks": {
+            "path": 0.5292038966435291,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "dirt"
+        },
+        {
+          "name": "arena",
+          "x": -17.7,
+          "z": -17.7,
+          "dist": 40,
+          "height": 4.583710083961487,
+          "masks": {
+            "path": 0,
+            "volcanic": 1,
+            "arenaFloor": 1,
+            "lava": 0
+          },
+          "material": "rock"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/low-beach-v1.png",
+        "docs/art/ground/low-beach-clean-v1.png",
+        "docs/art/ground/low-road-v1.png",
+        "docs/art/ground/low-road-clean-v1.png",
+        "docs/art/ground/low-town-v1.png",
+        "docs/art/ground/low-town-clean-v1.png",
+        "docs/art/ground/low-arena-v1.png"
+      ],
+      "groundRequests": [
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "device": "missing-color",
+      "state": {
+        "loaded": [],
+        "enabled": 0,
+        "normalOn": 0,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "error",
+            "selectedSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+            "width": null,
+            "height": null,
+            "colorSpace": null
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": ""
+          }
+        ],
+        "requestedGround": [
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+        ],
+        "coarse": true,
+        "gameErrors": {},
+        "assetErrors": [
+          "tex:ground-atlas-albedo-v1: [object Event]"
+        ],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          107.4629357851163,
+          17.652809806247408,
+          101.4629357851163
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/missing-color-beach-v1.png"
+      ],
+      "groundRequests": [
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "device": "missing-normal",
+      "state": {
+        "loaded": [
+          "sand-grass",
+          "sand-dirt",
+          "grass",
+          "dirt"
+        ],
+        "enabled": 1,
+        "normalOn": 0,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "ok",
+            "selectedSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+            "width": 1024,
+            "height": 1024,
+            "colorSpace": "srgb"
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "error",
+            "selectedSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+            "width": null,
+            "height": null,
+            "colorSpace": null
+          }
+        ],
+        "requestedGround": [
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+          "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+        ],
+        "coarse": true,
+        "gameErrors": {},
+        "assetErrors": [
+          "tex:ground-atlas-normal-v1: [object Event]"
+        ],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          107.4629357851163,
+          17.652809806247408,
+          101.4629357851163
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/missing-normal-beach-v1.png"
+      ],
+      "groundRequests": [
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp"
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    },
+    {
+      "device": "disabled",
+      "state": {
+        "loaded": [],
+        "enabled": 0,
+        "normalOn": 0,
+        "atlases": [
+          {
+            "id": "tex:ground-atlas-albedo-v1",
+            "state": "absent",
+            "selectedSrc": null,
+            "width": null,
+            "height": null,
+            "colorSpace": null
+          },
+          {
+            "id": "tex:ground-atlas-normal-v1",
+            "state": "absent",
+            "selectedSrc": null,
+            "width": null,
+            "height": null,
+            "colorSpace": null
+          }
+        ],
+        "requestedGround": [],
+        "coarse": true,
+        "gameErrors": {},
+        "assetErrors": [],
+        "glError": 0,
+        "linked": true,
+        "samplerLimit": 16,
+        "activeSamplers": [
+          {
+            "name": "mnNoiseTex",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandDryNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandWetNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandRippleNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandFootprintsNormal",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreColor",
+            "size": 1
+          },
+          {
+            "name": "mnSandShoreNormal",
+            "size": 1
+          },
+          {
+            "name": "mnGroundColor",
+            "size": 1
+          },
+          {
+            "name": "mnGroundNormal",
+            "size": 1
+          },
+          {
+            "name": "directionalShadowMap[0]",
+            "size": 1
+          }
+        ],
+        "camera": [
+          107.4629357851163,
+          17.652809806247408,
+          101.4629357851163
+        ]
+      },
+      "samples": [
+        {
+          "name": "beach",
+          "x": 98,
+          "z": 92,
+          "dist": 20,
+          "height": 1.539913296699524,
+          "masks": {
+            "path": 0,
+            "volcanic": 0,
+            "arenaFloor": 0,
+            "lava": 0
+          },
+          "material": "grass"
+        }
+      ],
+      "shots": [
+        "docs/art/ground/disabled-beach-v1.png"
+      ],
+      "groundRequests": [],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ]
+    }
+  ]
+}

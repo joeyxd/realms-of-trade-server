@@ -1,0 +1,98 @@
+{
+  "schema": "i18n04b-deployment/v3",
+  "at": "2026-10-10T23:51:34.601Z",
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "revision": "822ddc27b788d2108f09ae836fc305d8770910ae",
+  "image": "marea-negra:alpha-822ddc27b788",
+  "imageId": "sha256:c1a1f031a7f6eb73281e7362e612479b95d5bb90474c3ea31e1f7e1b76bf9557",
+  "version": "0.6.0-alpha.35",
+  "protocol": 44,
+  "container": "21f7104adf53",
+  "health": "healthy",
+  "activeAuthorityCount": 1,
+  "offlineImageTests": {
+    "pass": 109,
+    "fail": 0,
+    "durationMs": 161509.87911
+  },
+  "publicStatus": {
+    "at": "2026-10-10T23:51:34.601Z",
+    "healthHTTP": 200,
+    "statusHTTP": 200,
+    "version": "0.6.0-alpha.35",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "worldReady": true,
+      "profileWrites": 0,
+      "worldWriting": false
+    }
+  },
+  "scope": "Final catalog-only correction after bbbf39e full public HUD/reconnect acceptance; final public NPC check uses real guest WebSocket. Existing single authority and no localization-owned SQL, secrets or flag changes.",
+  "publicEvidence": "public-npc/evidence.json",
+  "fullPublicAcceptanceCheckpoint": {
+    "schema": "i18n04b-deployment/v2",
+    "at": "2026-10-10T23:36:49.471Z",
+    "url": "https://marea.62.171.136.148.sslip.io",
+    "revision": "bbbf39e2891e25f3316f4e246db065d1353fe5d6",
+    "image": "marea-negra:alpha-bbbf39e2891e",
+    "imageId": "sha256:3d8a1310401b27c22844bc66e1c0cef7e35692b4de11bb487652865a2e7ee783",
+    "version": "0.6.0-alpha.35",
+    "protocol": 44,
+    "container": "e64bc66537fd",
+    "health": "healthy",
+    "activeAuthorityCount": 1,
+    "offlineImageTests": {
+      "pass": 109,
+      "fail": 0,
+      "durationMs": 157861.267173
+    },
+    "publicStatus": {
+      "at": "2026-10-10T23:36:49.471Z",
+      "healthHTTP": 200,
+      "statusHTTP": 200,
+      "version": "0.6.0-alpha.35",
+      "players": 0,
+      "sockets": 0,
+      "errors": 0,
+      "storage": {
+        "kind": "supabase",
+        "durable": true,
+        "accounts": true,
+        "errors": 0,
+        "unsaved": 0,
+        "tickBlocked": false,
+        "worldReady": true,
+        "profileWrites": 0,
+        "worldWriting": false
+      }
+    },
+    "scope": "Existing single VPS authority. Final I18N04b UI plus concurrent upstream features. No localization-owned migration, secret or flag changes; other features retain their own acceptance. Public browser evidence recorded separately.",
+    "evidence": "public/evidence.json"
+  },
+  "firstAcceptance": {
+    "schema": "i18n04b-deployment/v1",
+    "at": "2026-10-10T22:46:25.959Z",
+    "url": "https://marea.62.171.136.148.sslip.io",
+    "revision": "1f0f158db56061888378f99603aca27cf5ae0436",
+    "image": "marea-negra:alpha-1f0f158db560",
+    "imageId": "sha256:09f9be8101c59335f7f17061b6780184f91ceae2cb58b6c07df5d5bf49e7b6e1",
+    "version": "0.6.0-alpha.32",
+    "protocol": 42,
+    "container": "8c458955eff4",
+    "health": "healthy",
+    "activeAuthorityCount": 1,
+    "offlineImageTests": {
+      "pass": 107,
+      "fail": 0
+    },
+    "scope": "Existing single VPS authority, unchanged secrets and feature flags; UI localization only. Public browser evidence recorded separately."
+  }
+}

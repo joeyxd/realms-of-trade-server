@@ -1,0 +1,184 @@
+{
+  "milestone": "W02d-wallet-preflight",
+  "date": "2026-10-08",
+  "status": "implemented-and-verified-locally",
+  "node": "v24.14.0",
+  "viem": "2.57.3",
+  "uniqueTestsPassed": 128,
+  "tests": [
+    {
+      "command": "node --test tests/web3-wallet-preflight.test.mjs tests/web3-wallet-runtime.test.mjs tests/web3-wallet-readiness-sql.test.mjs",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMs": 24195.3373,
+      "note": "Initial pass; preflight tests subsequently strengthened, no source behavior change"
+    },
+    {
+      "command": "node --test tests/web3-wallet-preflight.test.mjs",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMs": 156121.7102,
+      "note": "Final preflight test source; repeated 13 are excluded from unique total"
+    },
+    {
+      "command": "node --test tests/web3-wallet-link.test.mjs tests/web3-wallet-http.test.mjs tests/web3-wallet-sql.test.mjs tests/web3-wallet-integration.test.mjs tests/web3-wallet-provider.test.mjs tests/web3-wallet-browser.test.mjs tests/web3-wallet-config.test.mjs tests/web3-asset-registry.test.mjs tests/web3-asset-registry-sql.test.mjs tests/web3-asset-registry-process.test.mjs tests/web3-asset-registry-boundary.test.mjs tests/web3-equipment-content.test.mjs tests/account-auth.test.mjs tests/server.test.mjs",
+      "passed": 100,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "todo": 0,
+      "durationMs": 250423.7494
+    }
+  ],
+  "verification": {
+    "explicitCheckAndWalletFlagRequired": true,
+    "noImplicitEnvLoading": true,
+    "invalidConfigBeforeClientCreation": true,
+    "sqlReadinessBeforeRpc": true,
+    "onlySqlRpc": "mn_web3_wallet_ready",
+    "onlyEvmRpc": [
+      "eth_chainId",
+      "eth_getBlockByNumber"
+    ],
+    "blockTag": "latest",
+    "rpcTimeoutMs": 10000,
+    "rpcResponseMaxBytes": 1048576,
+    "rpcFatalUtf8": true,
+    "strictEnvelopeAndQuantities": true,
+    "wrongChainStopsBeforeBlock": true,
+    "noCredentialsForwardedToRpc": true,
+    "noRedirects": true,
+    "fetchAndBodyDeadlineBounded": true,
+    "timedOutBodyReaderCancelled": true,
+    "noRetryOrPolling": true,
+    "privateEndpointAndErrorsRedacted": true,
+    "fullyConfiguredEnvFileIgnoredWithZeroTrapRequests": true,
+    "childCliUsesRealSupabaseSdkWithLoopbackStubs": true,
+    "utf8NoBom": true,
+    "syntaxAndWhitespaceChecked": true
+  },
+  "scope": {
+    "rpc": "loopback HTTP and injected fixtures only; no real chain observation",
+    "supabase": "real SDK with loopback stub in CLI; selected existing tests also use PGlite local",
+    "report": "point-in-time reported chain/block and SQL prerequisite checks; not finality, honesty, synchronization, asset authority or durable-world validation",
+    "networkSelected": false,
+    "liveSupabase": false,
+    "liveSQLApplied": false,
+    "actualRepoEnvRead": false,
+    "actualRepoHostStartedOrRestarted": false,
+    "realWalletExtension": false,
+    "testnetOrLiveRPC": false,
+    "tokensOrPayments": false,
+    "browser": "not rerun; W02b UI hashes retained",
+    "ownSimulationProfileProtocolVersionChanges": false,
+    "commitPushOrDeployment": false
+  },
+  "previousSources": [
+    {
+      "path": "docs/delivery/w01-asset-registry-evidence.json",
+      "count": 10,
+      "unchanged": 10,
+      "changed": []
+    },
+    {
+      "path": "docs/delivery/w00-equipment-content-evidence.json",
+      "count": 7,
+      "unchanged": 7,
+      "changed": []
+    },
+    {
+      "path": "docs/delivery/w02b-wallet-browser-evidence.json",
+      "count": 20,
+      "unchanged": 15,
+      "changed": [
+        "server/index.mjs",
+        "PLAN-WEB3.md",
+        "PLAN-DELIVERY.md",
+        "DESIGN.md",
+        "docs/HANDOFF.md"
+      ]
+    },
+    {
+      "path": "docs/delivery/w02c-wallet-runtime-evidence.json",
+      "count": 13,
+      "unchanged": 7,
+      "changed": [
+        "server/web3/walletRuntime.mjs",
+        "deploy/marea-negra.env.example",
+        "PLAN-WEB3.md",
+        "DESIGN.md",
+        "PLAN-DELIVERY.md",
+        "docs/HANDOFF.md"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "server/web3/walletRuntime.mjs",
+      "bytes": 3365,
+      "sha256": "a271c095c1d104ca4c95b846cf0032b6fd2195c6f715123c7b7315b9981870f3"
+    },
+    {
+      "path": "server/web3/rpcProbe.mjs",
+      "bytes": 4440,
+      "sha256": "113b6d422e715cc4f1dd4804ef34e1eb184cea76883774a12e818128c294c845"
+    },
+    {
+      "path": "server/web3/walletPreflight.mjs",
+      "bytes": 1323,
+      "sha256": "20f0d998f226ff3dff3fcfa8016daa4ba2471a5e3d74009d8386cb036b6fa9f2"
+    },
+    {
+      "path": "tools/web3-wallet-preflight.mjs",
+      "bytes": 1007,
+      "sha256": "27f80ca28eaec074358bb24b20c4141a2d76c63340745285956344c5452367e3"
+    },
+    {
+      "path": "tests/web3-wallet-preflight.test.mjs",
+      "bytes": 15733,
+      "sha256": "0c072a4fa94f872fc2d23ef9b38b4fdde8fb0c04bff928f682454fc64e00097d"
+    },
+    {
+      "path": "deploy/marea-negra.env.example",
+      "bytes": 2084,
+      "sha256": "c553866d2ca4e3faf06f2e7b09c409f3f65c725f25fe4b678a826e04c61408ce"
+    },
+    {
+      "path": "docs/briefs/w02d-wallet-preflight.md",
+      "bytes": 4125,
+      "sha256": "4aa024e907180df81d780ed81266b05400c0f7ee81ca798bbaec122dcc0fb078"
+    },
+    {
+      "path": "docs/delivery/w02d-wallet-preflight.md",
+      "bytes": 5418,
+      "sha256": "d25b0b33495976a7fb016f334b0ecdc74aeb25efb19c355d967b7c649935318c"
+    },
+    {
+      "path": "PLAN-WEB3.md",
+      "bytes": 17973,
+      "sha256": "3819d2701dd7be93f19192e7ba03f77ace9338a7d2592f6faf47eb648914b344"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 73492,
+      "sha256": "f1cba7fa475bb8dee2e72bd5bb9d4bea5fc24b57ed8a0818bb59e9102f3cdf34"
+    },
+    {
+      "path": "PLAN-DELIVERY.md",
+      "bytes": 62417,
+      "sha256": "8d164d9cc1838aa753ae33a97ff43a7af5ccd77a3a5278f69849b23a8a1758af"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "bytes": 100002,
+      "sha256": "082be23cac9de9cc451296353f89b7d6963da7dc97dac874b07bb2846c83ad15"
+    }
+  ],
+  "sharedContinuitySnapshot": true
+}

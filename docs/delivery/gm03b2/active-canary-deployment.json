@@ -1,0 +1,87 @@
+{
+  "schema": "gm03b2-deployment/v1",
+  "at": "2026-10-10T23:25:59.329264+00:00",
+  "release": "20066676758639fa5f0822ee7c81d59ed98fda7b",
+  "image": "sha256:6c58d3ab2bc630cf71514c3a90da8c540614af8841d69770dd7588d28ff4fb9a",
+  "imageRevision": "20066676758639fa5f0822ee7c81d59ed98fda7b",
+  "container": "6ac5714db345ba8013e876c501dbbf0f57d577c5afdf0eb428ccf399285d9c22",
+  "running": true,
+  "health": "healthy",
+  "contentMount": "/opt/marea-negra/content",
+  "content": {
+    "version": 1,
+    "worldId": "marea-negra",
+    "generation": 3,
+    "revisionId": "9fbe67a57311c5a9464efa8bad81dcd4e686bcead3be489cac3b47771084c79e"
+  },
+  "retainedRevisions": 4,
+  "receipts": 3,
+  "lock": {
+    "inode": 98077,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o660"
+  },
+  "updaterSha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d",
+  "updaterService": "inactive",
+  "timer": "active",
+  "public": {
+    "health": 200,
+    "version": "0.6.0-alpha.35",
+    "players": 0,
+    "sockets": 1,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "workshop": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1722,
+        "errors": 0
+      }
+    },
+    "content": {
+      "generation": 3,
+      "revisionId": "9fbe67a57311c5a9464efa8bad81dcd4e686bcead3be489cac3b47771084c79e"
+    }
+  }
+}

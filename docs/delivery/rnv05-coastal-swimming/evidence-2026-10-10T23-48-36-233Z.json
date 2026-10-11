@@ -1,0 +1,384 @@
+{
+  "generatedAt": "2026-10-10T23:48:36.233Z",
+  "purpose": "Verify real generated-coast swimming, server-owned stamina/load HUD, land return/recovery, and own-raft sail/swim/reboard through live navigation UI.",
+  "harness": "One serial Chromium launch with desktop and mobile contexts, isolated disposable memory-backed GameHost/account per viewport, local Three.js/GSAP/font routes. No SQL, external services, production writes, or physical-device performance claim.",
+  "fixture": "Coast point is selected from this generated server world by sampling a dry playable beach with nearby contiguous deep water. Server relocation seeds only the starting position; WASD or touch joystick performs movement. Pack load uses a valid profile cargo item and is projected by GameHost into swimLoad.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "swim-desktop-es-low",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:50266/ws"
+        }
+      ],
+      "screenshots": [
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-01-coast.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-02-swimming-loaded.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-03-exhaustion-warning.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-04-land-hud-hidden.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-05-own-raft-water-exit-prompt.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-06-own-raft-water-exit.jpg",
+        "swim-desktop-es-low-2026-10-10T23-48-36-233Z-07-own-raft-reboard.jpg"
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "generatedCoastalSite": true,
+        "serverNoonVisibility": true,
+        "realKeyboardOrTouchSwimming": true,
+        "localizedVisibleHudFitsViewport": true,
+        "serverProfileCargoProjectsSwimLoad": true,
+        "serverStaminaFixtureShowsExhaustion": true,
+        "landReturnHidesHudAndRegenerates": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "noWorldActionPromptWhileSwimming": true,
+        "ownRaftMountSailOpenWaterStopGSwimFReboard": true
+      },
+      "port": 50266,
+      "fixture": {
+        "coast": {
+          "x": -138,
+          "y": 0.7691462635993958,
+          "z": -52,
+          "direction": {
+            "dx": 0,
+            "dz": 1,
+            "key": "KeyW"
+          },
+          "waterDistance": 1,
+          "spawnDistance": 281.39672062847137,
+          "input": {
+            "x": -0.7071067811865475,
+            "y": -0.7071067811865476,
+            "keys": [
+              "s",
+              "a"
+            ],
+            "reverseKeys": [
+              "w",
+              "d"
+            ]
+          }
+        },
+        "cameraYaw": 0.7853981633974483,
+        "cameraRelativeInput": {
+          "x": -0.7071067811865475,
+          "y": -0.7071067811865476,
+          "keys": [
+            "s",
+            "a"
+          ]
+        },
+        "serverDayHours": 12,
+        "pack": {
+          "goods": {
+            "piedra": 2
+          },
+          "cap": 18,
+          "maxMass": 18,
+          "swimLoad": 0.4
+        },
+        "navalPilot": {
+          "epoch": 0,
+          "active": false
+        },
+        "boatHook": "Live owned starter raft mounted, sailed, exited, and reboarded through normal navigation actions."
+      },
+      "swimming": {
+        "hud": {
+          "title": "Resistencia al nadar",
+          "load": "La carga reduce tu velocidad",
+          "x": 464,
+          "y": 484.296875,
+          "width": 352,
+          "height": 96.515625,
+          "right": 816,
+          "bottom": 580.8125,
+          "viewport": {
+            "width": 1280,
+            "height": 720,
+            "documentWidth": 1280
+          }
+        },
+        "worldPromptHidden": true,
+        "server": {
+          "swim": 1,
+          "stamina": 28.448333333333327,
+          "load": 0.4,
+          "position": {
+            "x": -137.7323921750219,
+            "y": -0.8,
+            "z": -48.594245586582716
+          }
+        },
+        "input": "keyboard s+a"
+      },
+      "exhaustion": {
+        "serverStamina": 0,
+        "serverDrown": 0.016666666666666666,
+        "warning": "Agotamiento · 5 s para llegar a salvo"
+      },
+      "returnToLand": {
+        "serverSwimming": 0,
+        "stamina": 0.30000000000000004,
+        "hudHidden": true,
+        "position": {
+          "x": -137.7323921750219,
+          "y": -0.6265804216954943,
+          "z": -51.55369003102762
+        }
+      },
+      "ownRaft": {
+        "shipId": "ca48faeb-45ea-4f3c-9266-7dafaa301f8d:r1",
+        "mountPrompt": "F\nPuesto de mando · iniciar travesía\nPilotar",
+        "mountedThroughVisibleAction": true,
+        "start": {
+          "x": 124.82204313379856,
+          "z": 101.19511994389497
+        },
+        "initialDistanceHome": 0,
+        "distanceAfterSailing": 22.096591896558756,
+        "stopped": true,
+        "swimPromptState": {
+          "active": true,
+          "shipId": "ca48faeb-45ea-4f3c-9266-7dafaa301f8d:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "canSwim": true,
+          "swimming": false,
+          "canReboard": false,
+          "distanceHome": 33.00684312269404,
+          "visited": true,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "swimPrompt": "G\nEntra al agua desde tu barco\nNadar",
+        "swimCommand": "G via normal live-navigation hotkey/button",
+        "reboardPrompt": "F\nAcércate a tu barco para subir\nVolver a bordo",
+        "reboardCommand": "F via normal live-navigation hotkey/button",
+        "walkingAfterReboard": true,
+        "finalPosition": {
+          "x": 153.4053319792179,
+          "y": 0.72,
+          "z": 119.62598190853477
+        },
+        "status": "passed"
+      }
+    },
+    {
+      "name": "swim-mobile-en-low",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:54577/ws"
+        }
+      ],
+      "screenshots": [
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-01-coast.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-02-swimming-loaded.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-03-exhaustion-warning.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-04-land-hud-hidden.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-05-own-raft-water-exit-prompt.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-06-own-raft-water-exit.jpg",
+        "swim-mobile-en-low-2026-10-10T23-48-36-233Z-07-own-raft-reboard.jpg"
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "generatedCoastalSite": true,
+        "serverNoonVisibility": true,
+        "realKeyboardOrTouchSwimming": true,
+        "localizedVisibleHudFitsViewport": true,
+        "serverProfileCargoProjectsSwimLoad": true,
+        "serverStaminaFixtureShowsExhaustion": true,
+        "landReturnHidesHudAndRegenerates": true,
+        "noBrowserErrorsOrExternalRequests": true,
+        "noWorldActionPromptWhileSwimming": true,
+        "ownRaftMountSailOpenWaterStopGSwimFReboard": true
+      },
+      "port": 54577,
+      "fixture": {
+        "coast": {
+          "x": -138,
+          "y": 0.7691462635993958,
+          "z": -52,
+          "direction": {
+            "dx": 0,
+            "dz": 1,
+            "key": "KeyW"
+          },
+          "waterDistance": 1,
+          "spawnDistance": 281.39672062847137,
+          "input": {
+            "x": -0.7071067811865475,
+            "y": -0.7071067811865476,
+            "keys": [
+              "s",
+              "a"
+            ],
+            "reverseKeys": [
+              "w",
+              "d"
+            ]
+          }
+        },
+        "cameraYaw": 0.7853981633974483,
+        "cameraRelativeInput": {
+          "x": -0.7071067811865475,
+          "y": -0.7071067811865476,
+          "keys": [
+            "s",
+            "a"
+          ]
+        },
+        "serverDayHours": 12,
+        "pack": {
+          "goods": {
+            "piedra": 2
+          },
+          "cap": 18,
+          "maxMass": 18,
+          "swimLoad": 0.4
+        },
+        "navalPilot": {
+          "epoch": 0,
+          "active": false
+        },
+        "boatHook": "Live owned starter raft mounted, sailed, exited, and reboarded through normal navigation actions."
+      },
+      "swimming": {
+        "hud": {
+          "title": "Swim stamina",
+          "load": "Your load slows swimming",
+          "x": 83.1875,
+          "y": 246,
+          "width": 92.4375,
+          "height": 352,
+          "right": 175.625,
+          "bottom": 598,
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "documentWidth": 390
+          }
+        },
+        "worldPromptHidden": true,
+        "server": {
+          "swim": 1,
+          "stamina": 28.50666666666666,
+          "load": 0.4,
+          "position": {
+            "x": -138,
+            "y": -0.8,
+            "z": -48.50938250033819
+          }
+        },
+        "input": "touch joystick pointer gesture"
+      },
+      "exhaustion": {
+        "serverStamina": 0,
+        "serverDrown": 0.016666666666666666,
+        "warning": "Exhausted · 5s to reach safety"
+      },
+      "returnToLand": {
+        "serverSwimming": 0,
+        "stamina": 0.5,
+        "hudHidden": true,
+        "position": {
+          "x": -138,
+          "y": -0.6262304388060704,
+          "z": -51.100878563330426
+        }
+      },
+      "ownRaft": {
+        "shipId": "7b1134ff-a1c0-419e-b3f8-d4486ef9c21e:r1",
+        "mountPrompt": "Helm · start voyage\nPilot",
+        "mountedThroughVisibleAction": true,
+        "start": {
+          "x": 124.82204313379856,
+          "z": 101.19511994389497
+        },
+        "initialDistanceHome": 0,
+        "distanceAfterSailing": 22.29846384682494,
+        "stopped": true,
+        "swimPromptState": {
+          "active": true,
+          "shipId": "7b1134ff-a1c0-419e-b3f8-d4486ef9c21e:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "canSwim": true,
+          "swimming": false,
+          "canReboard": false,
+          "distanceHome": 33.29193125019535,
+          "visited": true,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "swimPrompt": "Enter the water from your boat\nSwim",
+        "swimCommand": "G via normal live-navigation hotkey/button",
+        "reboardPrompt": "Reach your boat to climb aboard\nReboard your boat",
+        "reboardCommand": "F via normal live-navigation hotkey/button",
+        "walkingAfterReboard": true,
+        "finalPosition": {
+          "x": 153.63981336101241,
+          "y": 0.72,
+          "z": 119.80832641226513
+        },
+        "status": "passed"
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false,
+  "boatPrompt": {
+    "status": "passed",
+    "viewports": [
+      "swim-desktop-es-low",
+      "swim-mobile-en-low"
+    ]
+  }
+}

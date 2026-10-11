@@ -1,0 +1,81 @@
+{
+  "recordedAt": "2026-10-10T17:13:38Z",
+  "sourceRevision": "3a23f2c2304c21a0704d62b368f4bda961ac2392",
+  "appVersion": "0.6.0-alpha.23",
+  "protocolVersion": 36,
+  "description": "Recorded summaries of Node test commands, not raw TAP. Counts are separate runs and include overlap.",
+  "runs": [
+    {
+      "name": "integrated",
+      "files": [
+        "tests/progression-profile.test.mjs",
+        "tests/progression-logging.test.mjs",
+        "tests/progression-piloting.test.mjs",
+        "tests/progression-continuity.test.mjs",
+        "tests/naval-pilot-continuity.test.mjs",
+        "tests/naval-pilot-benefit.test.mjs",
+        "tests/naval-lesson.test.mjs",
+        "tests/naval-lesson-live.test.mjs",
+        "tests/naval-lesson-ui.test.mjs",
+        "tests/naval-handling.test.mjs",
+        "tests/naval-trial-body.test.mjs",
+        "tests/naval-pilot-authority.test.mjs",
+        "tests/naval-pilot-prediction.test.mjs",
+        "tests/naval-coast-authority.test.mjs",
+        "tests/naval-coast-prediction.test.mjs",
+        "tests/naval-deck-walk.test.mjs",
+        "tests/naval-live-integration.test.mjs",
+        "tests/naval-route.test.mjs",
+        "tests/naval-route-ui.test.mjs",
+        "tests/raft-persistence.test.mjs",
+        "tests/economic-host.test.mjs",
+        "tests/economic-raft-host.test.mjs",
+        "tests/server.test.mjs",
+        "tests/accounts-server.test.mjs",
+        "tests/deploy-runtime.test.mjs"
+      ],
+      "tests": 174,
+      "pass": 174,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 12770
+    },
+    {
+      "name": "agent-private-read-regression",
+      "files": [
+        "tests/agent-market-runner.test.mjs",
+        "tests/agent-market-host.test.mjs",
+        "tests/agent-market-client.test.mjs",
+        "tests/agent-market-cli.test.mjs",
+        "tests/agent-inventory-projection.test.mjs",
+        "tests/agent-inventory-host.test.mjs",
+        "tests/agent-inventory-client.test.mjs"
+      ],
+      "tests": 38,
+      "pass": 38,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 5170.5302
+    },
+    {
+      "name": "resource-and-naval-continuity",
+      "files": [
+        "tests/resource-authority.test.mjs",
+        "tests/resource-state.test.mjs",
+        "tests/economic-resource-contract.test.mjs",
+        "tests/naval-pilot-continuity.test.mjs"
+      ],
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 3133.6799,
+      "overlap": "Four naval continuity cases also appear in integrated."
+    }
+  ],
+  "browserEvidence": "evidence-2026-10-10T17-06-11-466Z.json",
+  "limitations": [
+    "Browser uses memory storage and a declared candidate-position fixture.",
+    "No real VPS durable lesson acceptance or physical-device performance claim."
+  ]
+}

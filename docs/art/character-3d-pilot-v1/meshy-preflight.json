@@ -1,0 +1,73 @@
+{
+  "schema": "mn-character-3d-pilot-preflight/v1",
+  "checkedAt": "2026-10-08T20:55:59.863Z",
+  "package": "@meshy-ai/meshy-mcp-server",
+  "version": "0.6.1",
+  "transport": "stdio",
+  "input": {
+    "source": "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+    "sha256": "ccba6952f37893d1e5c738564bd3b299d38dac3fceff0c758a9649f9c887704c",
+    "bytes": 1885419,
+    "width": 1024,
+    "height": 1536
+  },
+  "proposedRequest": {
+    "tool": "meshy_image_to_3d",
+    "arguments": {
+      "file_path": "docs/art/source/character-alpha-v1/male-scout-master-v1.png",
+      "ai_model": "meshy-7.1",
+      "geometry_resolution": "standard",
+      "model_type": "standard",
+      "pose_mode": "t-pose",
+      "enable_pbr": false,
+      "topology": "triangle",
+      "target_polycount": 15000,
+      "should_remesh": true,
+      "should_texture": true,
+      "texture_resolution": "2k",
+      "image_enhancement": false,
+      "save_pre_remeshed_model": true,
+      "target_formats": [
+        "glb"
+      ],
+      "response_format": "json"
+    },
+    "estimatedCredits": 30,
+    "priceSource": "https://docs.meshy.ai/en/api/pricing",
+    "submitted": false
+  },
+  "generationRequests": 0,
+  "balanceRequest": "missing-api-key",
+  "authenticated": false,
+  "generationStatus": "not-submitted",
+  "handshake": "pass",
+  "tools": [
+    "meshy_analyze_printability",
+    "meshy_animate",
+    "meshy_cancel_task",
+    "meshy_check_balance",
+    "meshy_convert",
+    "meshy_creative_lab",
+    "meshy_download_model",
+    "meshy_get_task_status",
+    "meshy_image_to_3d",
+    "meshy_image_to_image",
+    "meshy_list_models",
+    "meshy_list_tasks",
+    "meshy_multi_image_to_3d",
+    "meshy_process_multicolor",
+    "meshy_remesh",
+    "meshy_repair_printability",
+    "meshy_resize",
+    "meshy_retexture",
+    "meshy_rig",
+    "meshy_send_to_slicer",
+    "meshy_text_to_3d",
+    "meshy_text_to_3d_refine",
+    "meshy_text_to_image",
+    "meshy_uv_unwrap"
+  ],
+  "requiredToolsPresent": true,
+  "requestSchema": "pass",
+  "status": "installed-auth-pending"
+}

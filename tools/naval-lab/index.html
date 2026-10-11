@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101e28">
+  <link rel="icon" href="data:,">
+  <title>Marea Negra · Bahía de manejo</title>
+  <link rel="stylesheet" href="/tools/naval-lab/style.css">
+  <link rel="stylesheet" href="/tools/naval-lab/touch-helm.css">
+  <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body class="sailing-view">
+  <header>
+    <div><span class="eyebrow">MAREA NEGRA / D08</span><h1>Bahía de manejo</h1></div>
+    <span class="stamp">PROTOTIPO · SIN GUARDADO</span>
+  </header>
+  <main>
+    <section class="bay" aria-label="Bahía de navegación de prueba">
+      <canvas id="bay" tabindex="0" aria-label="Balsa de prueba en el mar"></canvas>
+      <div class="view-tools" aria-label="Opciones de la bahía">
+        <button id="pause-nav" data-lab-control type="button" disabled>Pausar</button>
+        <button id="lab-toggle" data-lab-control type="button" aria-expanded="false" aria-controls="lab-settings">Ajustes</button>
+      </div>
+      <div class="voyage-notes">
+        <div class="voyage-title"><span aria-hidden="true"></span> LEE EL MAR</div>
+        <div id="hud-load">Leyendo el peso del casco…</div>
+        <div class="hull-health" id="hull-health" role="meter" aria-label="Integridad de los bloques del casco" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+          <span id="hull-readout">CASCO</span><div><i id="hull-fill"></i></div>
+        </div>
+        <div class="gust-timing">
+          <span id="gust-label">Prepara la vela</span>
+          <div class="gust-track" role="meter" id="gust-progress" aria-label="Recorrido de la ráfaga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="gust-window"></i><i class="gust-perfect"></i><b id="gust-marker"></b></div>
+          <span class="timing-key"><i></i> ventana <i></i> perfecto</span>
+        </div>
+      </div>
+      <div class="nav-chart" role="img" aria-label="Brújula de rumbo, viento y corriente" id="nav-chart">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <defs><radialGradient id="chart-sea"><stop stop-color="#1b4048" stop-opacity=".88"/><stop offset="1" stop-color="#08161e" stop-opacity=".94"/></radialGradient></defs>
+          <circle cx="50" cy="50" r="46" fill="url(#chart-sea)" stroke="#080f13" stroke-width="3"/>
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#a79876" stroke-width=".9"/>
+          <circle cx="50" cy="50" r="43.5" fill="none" stroke="#d8cfb2" stroke-width=".35" opacity=".5"/>
+          <g fill="none" stroke="#709093" stroke-width=".4" opacity=".55"><circle cx="50" cy="50" r="33"/><circle cx="50" cy="50" r="22"/><circle cx="50" cy="50" r="11"/><path d="M7 50h86M50 7v86M20 20l60 60M20 80l60-60"/></g>
+          <path d="M50 5v5m22-0.5-2 4M88 28l-4 2m11 20h-5M88 72l-4-2M72 88l-2-4M50 95v-5M28 88l2-4M12 72l4-2M5 50h5M12 28l4 2M28 12l2 4" stroke="#d4c5a4" stroke-width=".7" opacity=".8"/>
+          <g fill="#eee9d9" font-size="6.5" text-anchor="middle" font-family="sans-serif"><text x="50" y="17">0</text><text x="84" y="52">90</text><text x="50" y="88">180</text><text x="16" y="52">270</text></g>
+          <g id="chart-wind"><path d="M65 63V34m-4 5 4-5 4 5" fill="none" stroke="#e9bf72" stroke-width="1.5" stroke-linejoin="round"/></g>
+          <g id="chart-current"><path d="M35 63V38m-3 4 3-4 3 4" fill="none" stroke="#65d5e3" stroke-width="1.5" stroke-linejoin="round"/></g>
+          <g id="chart-heading"><path d="M50 39l5 17-5-3-5 3z" fill="#fff8e6" stroke="#080f13" stroke-width="1"/></g>
+          <path d="M48 4h4" stroke="#eee9d9" stroke-width="1.5"/>
+        </svg>
+        <b id="heading">RUMBO 000°</b>
+        <div class="chart-key"><span>PROA</span><span>VIENTO</span><span>FLUJO</span></div>
+        <span id="sail">Empuje de vela 100%</span>
+        <span id="flow-label">Busca la corriente</span>
+      </div>
+      <div class="nav-callout" id="nav-callout" hidden><strong id="callout-title"></strong><span id="callout-detail"></span></div>
+      <div class="speed-dial" id="speed-dial" role="meter" aria-label="Velocidad de la balsa en unidades por segundo" aria-valuemin="0" aria-valuemax="13" aria-valuenow="0">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs><linearGradient id="speed-fire" gradientUnits="userSpaceOnUse" x1="15" y1="60" x2="110" y2="75"><stop stop-color="#ffd574"/><stop offset=".55" stop-color="#ff9a3d"/><stop offset="1" stop-color="#ed4b39"/></linearGradient><radialGradient id="dial-glass"><stop stop-color="#1a2b31" stop-opacity=".9"/><stop offset="1" stop-color="#09131a" stop-opacity=".96"/></radialGradient></defs>
+          <path class="dial-flare" d="M84 26c6-5 4-12 11-18-2 8 1 8 4 12 6-2 5-8 10-12-1 7-5 13-3 16 5-1 7-4 10-4-3 5-8 6-7 12 1 5-2 9-8 12z" fill="#ed5a32"/>
+          <circle cx="60" cy="60" r="41" fill="url(#dial-glass)" stroke="#82745a" stroke-width=".7"/>
+          <circle cx="60" cy="60" r="38" fill="none" stroke="#81908a" stroke-width=".35" opacity=".4"/>
+          <path d="M28.2 91.8 A45 45 0 1 1 91.8 91.8" fill="none" stroke="#142027" stroke-width="9"/>
+          <path d="M28.2 91.8 A45 45 0 1 1 91.8 91.8" fill="none" stroke="url(#speed-fire)" stroke-width="7" opacity=".23"/>
+          <path id="speed-arc" d="M28.2 91.8 A45 45 0 1 1 91.8 91.8" fill="none" stroke="url(#speed-fire)" stroke-width="7" pathLength="100" stroke-dasharray="0 100"/>
+          <path d="M20.6 68l-7.8 1.5M26.7 37.8l-6.7-4.4M45.3 22l-3.1-7.4M74.7 22l3.1-7.4M93.3 37.8l6.7-4.4M99.4 68l7.8 1.5M91.8 91.8l5.6 5.6" stroke="#10191c" stroke-width="1.3"/>
+          <path id="boost-arc" d="M35.3 84.7 A35 35 0 1 1 84.7 84.7" fill="none" stroke="#f8d387" stroke-width="1.5" pathLength="100" stroke-dasharray="0 100"/>
+        </svg>
+        <div class="dial-number"><strong id="speed">0.0</strong><span>u/s</span></div>
+        <b id="dial-state">VELOCIDAD</b>
+      </div>
+      <div class="maneuvers">
+        <div class="action-cards" aria-label="Maniobras navales">
+          <button id="capture" data-capture class="action-card gust-card" type="button" disabled aria-keyshortcuts="Space" aria-label="Cazar ráfaga (Espacio o mando A)">
+            <small class="card-key">ESPACIO / A</small>
+            <svg viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 18h24c10 0 10-13 2-13-4 0-6 2-6 5M3 25h33c11 0 11 15 2 15-4 0-6-2-6-5M10 32h12c7 0 7 10 1 10"/><path d="M7 11h9M3 39h8" stroke-width="1.3" opacity=".6"/></g></svg>
+            <span class="card-title">Cazar ráfaga</span>
+          </button>
+          <button id="jettison-hud" class="action-card cargo-card" type="button" disabled aria-keyshortcuts="J" aria-label="Soltar lastre de prueba (J)">
+            <span class="card-key">J</span>
+            <svg viewBox="0 0 48 48" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m10 17 17-8 15 8v20l-17 8-15-8zM10 17l15 8 17-8M25 25v20M16 14l16 8M36 20v20M16 21v19"/><path d="m13 26 9 5m-9 1 9 5M28 30l10-5M28 37l10-5" stroke-width="1.1"/><path d="M4 12h9m-11 8h5m-4 9h4M24 4l3-3m3 4 6-3" stroke-width="1.6" stroke-linecap="round"/></g></svg>
+            <span class="card-title">Soltar lastre</span>
+            <small id="cargo-card-key">J · PRUEBA</small>
+          </button>
+        </div>
+        <p id="capture-status" role="status" aria-live="polite">Espera una ráfaga</p>
+      </div>
+      <nav class="pilot" aria-label="Controles de pilotaje">
+        <button data-pilot="left" aria-label="Timón a babor">◀<small>A</small></button>
+        <button data-pilot="throttle" aria-label="Dar propulsión">AVANZAR<small>W / RT</small></button>
+        <button data-pilot="brake" aria-label="Frenar">FRENAR<small>S / LT</small></button>
+        <button data-pilot="right" aria-label="Timón a estribor">▶<small>D</small></button>
+      </nav>
+    </section>
+    <aside id="lab-settings" aria-label="Ajustes del laboratorio" inert>
+      <button id="return-to-sea" data-lab-control type="button">← Volver a navegar</button>
+      <div class="section-title"><span>01</span> Prepara la prueba</div>
+      <p id="message" class="lab-message" role="status">Cargando la bahía…</p>
+      <label for="fixture">Balsa y acomodo</label><select id="fixture"></select>
+      <p id="fixture-detail" class="muted"></p>
+      <label for="camera">Cámara de navegación</label><select id="camera"><option value="chase">Persecución · referencia</option><option value="isometric">Isométrica · comparación</option></select>
+      <label for="material">Acabado de la balsa</label><select id="material"><option value="author">Madera del autor · envejecida</option><option value="original">Atlas anterior · comparación</option></select>
+      <label for="relief">Relieve de la madera</label><select id="relief"><option value="flat">Acabado pintado</option><option value="soft">Relieve suave</option><option value="flipped">Relieve suave invertido</option></select>
+      <label for="wind">Viento constante</label><select id="wind"></select>
+      <div class="activity-options" aria-label="Actividades de navegación">
+        <label><input id="currents" type="checkbox" checked> Corrientes</label>
+        <label><input id="gusts" type="checkbox" checked> Ráfagas</label>
+        <label><input id="drama" type="checkbox" checked> Efectos de cómic</label>
+        <label><input id="cruise" type="checkbox" checked> Crucero asistido (desactívalo para dejarte llevar)</label>
+        <label><input id="coast-collisions" type="checkbox" checked> Choques con las rocas de costa</label>
+      </div>
+      <button id="sound" type="button" aria-pressed="false">Activar sonido</button>
+      <div class="actions"><button id="pause">Pausar</button><button id="reset">Reiniciar <kbd>R</kbd></button></div>
+      <button id="jettison" class="yellow">Soltar lastre de prueba <kbd>J</kbd></button>
+      <p class="muted">El lastre representa peso situado en puntos concretos. Aquí no hay mercancías ni costes.</p>
+      <div class="section-title"><span>02</span> Qué lleva esta balsa</div>
+      <dl class="stats">
+        <div><dt>Piezas / lastre</dt><dd id="mass"></dd></div>
+        <div><dt>Peso / flotación</dt><dd id="load"></dd></div>
+        <div><dt>Resistencia al giro</dt><dd id="inertia"></dd></div>
+        <div><dt>Equilibrio / altura</dt><dd id="balance"></dd></div>
+      </dl>
+      <p id="warning" class="warning"></p>
+      <details><summary>Casco y bloques</summary>
+        <p id="damage-status" role="status">Bloques intactos.</p>
+        <button id="coast-start" data-lab-control type="button">Acercar la prueba a una roca</button>
+        <label for="damage-target">Bloque para un golpe de prueba</label><select id="damage-target"></select>
+        <p id="block-health" class="muted"></p>
+        <button id="part-hit" data-lab-control type="button">Golpe de prueba · 40 HP</button>
+        <p class="muted">Un bloque destruido deja de funcionar. Reiniciar restaura esta prueba; el plano y los bienes de tu partida no se modifican.</p>
+      </details>
+      <details open><summary>03 · Comparación automática</summary>
+        <p class="muted">Referencia de los planos intactos: 6 s de avance desde parado. Frenado y giro empiezan a 2 u/s. Mismo viento y órdenes para todas.</p>
+        <div class="table-scroll"><table><thead><tr><th>Balsa</th><th>Vel. 6 s</th><th>Freno</th><th>Giro 90°</th></tr></thead><tbody id="compare"></tbody></table></div>
+        <p class="muted">Cifras experimentales; el viento permanece fijo mientras giras. u = unidades del mundo.</p>
+      </details>
+      <details><summary>Controles y lectura</summary>
+        <p>Mantén W para avanzar, A/D para girar y S para frenar. Pulsa Espacio para cazar una ráfaga. El crucero asistido mantiene un avance básico; desactívalo para dejar que el barco pierda velocidad al soltar. No hay marcha atrás instantánea.</p>
+        <p>En mando: stick izquierdo para timón, RT para avanzar, LT para frenar y A para la ráfaga. En móvil: stick izquierdo para avanzar, frenar y girar; derecho para mirar alrededor. Ráfaga y Lastre quedan encima del derecho. Centrar recupera la cámara detrás de la balsa.</p>
+        <p>La brújula muestra grados del mundo: 0° es el eje +Z. La proa va en blanco, el viento en oro y la corriente en cyan. La carga del casco compara peso total con flotación; el lastre es peso de prueba, no mercancías. El dial usa unidades del mundo por segundo. Ajustes abre la preparación de la bahía; Volver al mar recupera la vista amplia.</p>
+        <p>La línea dorada registra tu trayectoria; las figuras amarillas marcan el lastre. El aro muestra el centro de masa.</p>
+      </details>
+      <div class="display-options"><label><input id="references" type="checkbox"> Referencias de prueba</label><label><input id="light" type="checkbox"> Render ligero</label></div>
+      <p id="texture" class="muted"></p>
+      <p class="footnote">Esta bahía es independiente de tu partida. El pilotaje online, la cubierta móvil, los niveles de navegación y el viento cambiante vienen después.</p>
+    </aside>
+  </main>
+  <noscript>Activa JavaScript para abrir la bahía.</noscript>
+  <script type="module" src="/tools/naval-lab/main.js"></script>
+</body>
+</html>

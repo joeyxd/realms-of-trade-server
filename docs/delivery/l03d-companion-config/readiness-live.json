@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-10T23:59:18.223Z",
+  "rpc": "mn_companion_config_ready",
+  "ok": true,
+  "version": 1,
+  "code": null,
+  "revision": "f04cd7dca544efe343bed8ebc9971dbe74d32226",
+  "source": "Read-only RPC from the deployed VPS container using its existing service environment",
+  "limits": ["Does not prove an authenticated owner save/load in the public browser."]
+}

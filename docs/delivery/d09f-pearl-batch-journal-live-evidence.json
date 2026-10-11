@@ -1,0 +1,277 @@
+{
+  "cut": "D09f-2b.6",
+  "acceptedAtUtc": "2026-10-06T22:03:32Z",
+  "baseCommit": "b2b2b151430b565828dbbaa5587e59d533ebc70d",
+  "runtimeCommit": "a9913c67ecdd1a45c8e0c6aca66946d8c2ce7657",
+  "projectUrl": "https://hdhkzcqzitfqwlyrzwiw.supabase.co",
+  "targetMatchesUserProvidedProject": true,
+  "sql008AppliedByAuthor": true,
+  "sql008LiveAccepted": true,
+  "runtimeChanged": false,
+  "gameplayActive": false,
+  "deployed": false,
+  "local": {
+    "node": "v24.14.0",
+    "isolation": "Fixed HEAD archive plus four owned tool/test files; node_modules junction; no env",
+    "isolatedRepo": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\m5-j8-accept-dac8ba57-9ba2-4b48-af7f-d7a37e7d8bf9\\repo",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test",
+      "--test-concurrency=1",
+      "--test-reporter=tap",
+      "tests/pearl-batch-journal-canary.test.mjs"
+    ],
+    "checks": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "freshCanaryNodeProcesses": 4,
+    "log": "shots/review/m5-j8-accept.log",
+    "environmentRead": false,
+    "externalNetwork": false
+  },
+  "live": {
+    "scope": "canary-j8-75aeb5ba-a7a2-414e-8b3f-51d5f0fbe2f5",
+    "fixtureFile": ".scratch\\m5-j8-live-75aeb5ba-a7a2-414e-8b3f-51d5f0fbe2f5.json",
+    "node": "v24.14.0",
+    "command": [
+      "node",
+      "tools/verify-pearl-batch-journal.mjs",
+      "--live"
+    ],
+    "freshNodeProcesses": 4,
+    "checks": [
+      {
+        "phase": "prepare",
+        "check": "exact-generated-fixtures-absent",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "two-synthetic-profiles-six-UIDs-tracked-and-legacy-seeded",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "batch-intent-blocks-003-004-and-changed-request-or-scope",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "003-004-receipts-and-ground-intent-exclude-batch-family",
+        "ok": true
+      },
+      {
+        "phase": "prepare",
+        "check": "real-session-queue-one-builder-two-exact-sends-discarded-commit-replies",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "fresh-process-read-only-startup-settles-receipt-keeps-unsent-lanes",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "explicit-resume-sends-one-frozen-death-request-and-settles-all-UIDs",
+        "ok": true
+      },
+      {
+        "phase": "recover",
+        "check": "terminal-exact-identities-return-committed-and-reject-changes",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "third-process-terminal-startup-read-only-and-empty",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "ordinary-progress-save-and-ground-pickup-survive-historical-batch-replays",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-journal-prepare-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-journal-resolve-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-journal-list-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-intent-validator-denied",
+        "ok": true
+      },
+      {
+        "phase": "verify",
+        "check": "public-journal-table-denied",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "freeze-exact-generated-cleanup-plan-before-any-delete",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "conditional-cleanup-preserves-drift-and-resumes-confirmed-absences",
+        "ok": true
+      },
+      {
+        "phase": "cleanup",
+        "check": "three-terminal-audits-retained-and-no-new-dispatch-after-receipt-cleanup",
+        "ok": true
+      }
+    ],
+    "log": "shots/review/m5-j8-live-75aeb5ba-a7a2-414e-8b3f-51d5f0fbe2f5.log",
+    "toolHash": "8779286a9fe126f5b3e532ab6aa1728880c6e0f22edf5ea217597fbf37fb9388",
+    "syntheticProfiles": 2,
+    "managedUIDs": 6,
+    "deathUIDs": 3,
+    "replacementUIDs": 2,
+    "fixturesRemoved": true,
+    "retainedAudits": [
+      {
+        "operationId": "367f6f80-f6ee-41df-bff6-4bde128e3261",
+        "family": "batch",
+        "state": "committed"
+      },
+      {
+        "operationId": "59a474e8-6296-4239-886e-17e180d6dd4c",
+        "family": "ground",
+        "state": "rejected"
+      },
+      {
+        "operationId": "aac928bf-2eac-4b0e-85cc-722cf13dad6a",
+        "family": "batch",
+        "state": "committed"
+      }
+    ],
+    "createdAuthUsers": 0,
+    "replyLoss": "Controlled adapter discards two confirmed real SDK responses and makes receipt read unavailable",
+    "recoveryStartupBatchDispatches": 0,
+    "explicitUnsentResumeBatchDispatches": 1,
+    "geometryClock": "Fixed canary metadata; no offline/gameplay clock policy acceptance"
+  },
+  "ownedSourceFiles": [
+    "tools/verify-pearl-batch-journal.mjs",
+    "tests/pearl-batch-journal-canary.test.mjs",
+    "tests/helpers/pearl-canary-sql-client.mjs",
+    "tests/helpers/pearl-batch-journal-canary-process.mjs"
+  ],
+  "unchangedSourceFiles": [
+    "server/store.mjs",
+    "server/pearlBatch.mjs",
+    "server/pearlJournal.mjs",
+    "server/pearlQueue.mjs",
+    "server/profileSessions.mjs",
+    "server/pearlMemoryIdentity.mjs",
+    "server/pearlOperations.mjs",
+    "server/pearlGround.mjs",
+    "server/pearlMutationGate.mjs",
+    "server/pearlStaging.mjs",
+    "server/pearlEcsEffect.mjs",
+    "server/host.mjs",
+    "src/net/localServer.js",
+    "src/net/protocol.js",
+    "src/sim/systems/inventory.js",
+    "src/sim/systems/pearls.js",
+    "src/sim/systems/pearlEffect.js",
+    "src/sim/systems/stats.js",
+    "src/data/pearls.js",
+    "src/data/tuning.js",
+    "server/migrations/001_store.sql",
+    "server/migrations/002_accounts.sql",
+    "server/migrations/003_pearl_operations.sql",
+    "server/migrations/004_pearl_ground.sql",
+    "server/migrations/005_pearl_journal.sql",
+    "server/migrations/006_pearl_same_holder.sql",
+    "server/migrations/007_pearl_batch.sql",
+    "server/migrations/008_pearl_batch_journal.sql"
+  ],
+  "sourceHashes": {
+    "tools/verify-pearl-batch-journal.mjs": "8779286a9fe126f5b3e532ab6aa1728880c6e0f22edf5ea217597fbf37fb9388",
+    "tests/pearl-batch-journal-canary.test.mjs": "4fde9b5f4018eaa3be546d94b0f4e0d0a198192f821db56b499911a9daa9f8a6",
+    "tests/helpers/pearl-canary-sql-client.mjs": "5a002639e4e58e7d8d2c303857e4d8a266cd30f7fdccd17befd2c1f5909b095c",
+    "tests/helpers/pearl-batch-journal-canary-process.mjs": "60ebf90c7161fb8d23bea31a37494a423c2f6f37cfa4654dfac7dc00059f597d",
+    "server/store.mjs": "97c0b1ec8753094d1785743680eceefe11b44c026aeadea8251a556b9365cd98",
+    "server/pearlBatch.mjs": "c8e287b382cae7922035aff8abf8549e5aa3f460c301d6a108664b8acc29d411",
+    "server/pearlJournal.mjs": "c287d4ab4b41988cb185490cc48899623a8e624bd4277d41923fd689f7e6cb33",
+    "server/pearlQueue.mjs": "96e3a9605db109872fcbeb02dfe9078a403c30042fd74d91980156cc87c34789",
+    "server/profileSessions.mjs": "b7b07a252fda1daa8b927593f65083c3736d6cb638a9b3a784c2cb3883adc840",
+    "server/pearlMemoryIdentity.mjs": "867302568d730fc1fa9454d9ab8f2f979538e89e06cd944f0b8c25b89a23462b",
+    "server/pearlOperations.mjs": "a3998dd4344db4ab05315c1ba7a494f6360b7079c457976e5708f95a3f4af26e",
+    "server/pearlGround.mjs": "1921255a227c6f2469b44901746115e99b4fc3c63985a7f34c9a833783478443",
+    "server/pearlMutationGate.mjs": "e3250fd8018aef53c8cb63deb709e7775a73bdef6b82d855f570f26ab1411e83",
+    "server/pearlStaging.mjs": "561b0cfabeda56bda5299302bfbd3795ba303e573a7762db69c6afe67d610226",
+    "server/pearlEcsEffect.mjs": "8e5e81841170c2045ee345ce436e62bbeab5cb237658c745ff54f3faa37ef424",
+    "server/host.mjs": "ad37a19f432a812402e3d51158b12d606d9ad1a08eca41587913fae34010feb5",
+    "src/net/localServer.js": "b5e83035c799be50a9ab9b5e6c5a79836e22502445cde6d11f2e953f32d81825",
+    "src/net/protocol.js": "782c8a7ae25f12bd16337173808c440409613ed1b61b8fcdebb93c120d56d84f",
+    "src/sim/systems/inventory.js": "da34e995584bba4e4f5bf81297ae01b4470be629e8882959054d3f490bbb0bb6",
+    "src/sim/systems/pearls.js": "21f5cd9adc51a8e610b45d1d6278d642ab879698a0c0310512a10bc13417adac",
+    "src/sim/systems/pearlEffect.js": "e8a27184d444020d166d7bdd46d3d9014e1e044901acf42c53be8974213b5eaa",
+    "src/sim/systems/stats.js": "2d6df7c144d01e9f5b66f259ede516d82b14bff48430536ba0dbe824a1e0b8e6",
+    "src/data/pearls.js": "8ad387abbe06a2e15776a8b7b1e4a67bb12f12becb508dc4420b8f38a97c8412",
+    "src/data/tuning.js": "818c9aa5cd328bc2bb9a34fa277ce5879a919c36ff6829ec25f05ffba14c7c34",
+    "server/migrations/001_store.sql": "29d7762215c754d1367ce1ab19142e5eecbaeeb59c7743e54ac19db6d7db1583",
+    "server/migrations/002_accounts.sql": "12a3a71523bc4f574f2873d5907ab9bd3236163e6db34697a2dba22a9fa07ae1",
+    "server/migrations/003_pearl_operations.sql": "77c92847099f366b0481bf55a71b0fca7138e716726003d2050db34ecef9b096",
+    "server/migrations/004_pearl_ground.sql": "b11876cbb629b5f9b08cb5cd4233a9841c48eeb89e8047c250d2dd83d4daa5ee",
+    "server/migrations/005_pearl_journal.sql": "85783e38d4aace762c71f89aa43e06b91989444b96d107baff0856977675bfad",
+    "server/migrations/006_pearl_same_holder.sql": "babc657ae756dd65c3a83bf7ad323eef842f0990432a2747b2d6ccf22fd711df",
+    "server/migrations/007_pearl_batch.sql": "2bf141865e5d4b7030c0aefc544357a4249dc161ed14e5e9ca061e9086ae1559",
+    "server/migrations/008_pearl_batch_journal.sql": "af09f7ccb5cb5b013d0c62ef4a07a3c0c9e51f5b4f76a3dd69045b1a2733c77b"
+  },
+  "sourceHashesStableBeforeAfterLocalAndLive": true,
+  "priorRuntimeAcceptance": {
+    "tests": 579,
+    "commit": "a9913c6",
+    "rerun": false,
+    "reason": "No runtime/SQL edits in this cut"
+  },
+  "reuse": {
+    "sourceReadOnly": true,
+    "boundedExactPaths": true,
+    "portableRuntime": "Existing Node SDK/store/DTO/journal/queue and canary guards",
+    "unrealCandidates": [
+      {
+        "path": "ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/Components/BP_InventoryComponent.uasset",
+        "bytes": 24878603
+      },
+      {
+        "path": "ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/SaveSystem/BP_JigServerSave.uasset",
+        "bytes": 580554
+      },
+      {
+        "path": "ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/SaveSystem/S_ServerSave.uasset",
+        "bytes": 20800
+      },
+      {
+        "path": "ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/SaveSystem/SaveData.uasset",
+        "bytes": 21213
+      }
+    ]
+  },
+  "pending": [
+    "Batch staging/tick apply and publication",
+    "Host/LocalServer hooks and authority reload/world hydration",
+    "Full death gear/gold/world coordination",
+    "Guest/UID adoption, restart clock and multi-host leases",
+    "Permanent character/pearl-kind affinity defaults, sanitation, durable credit, power and UI"
+  ],
+  "nextBrief": "docs/briefs/m5-pearl-batch-staging.md"
+}

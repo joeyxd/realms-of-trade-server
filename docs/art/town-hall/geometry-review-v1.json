@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "family": "town-hall-v1",
+  "unchangedStaticMeshes": 25,
+  "changedChunks": 1,
+  "additionalMeshes": 1,
+  "camerasUnchanged": true,
+  "before": {
+    "meshes": 28,
+    "triangles": 46834,
+    "attributeBytes": 7462448
+  },
+  "after": {
+    "meshes": 29,
+    "triangles": 47052,
+    "attributeBytes": 7490824
+  },
+  "supports": {
+    "triangles": 146,
+    "bytes": 21024,
+    "min": [
+      -2.7899999618530273,
+      3.359999895095825,
+      -1.5700000524520874
+    ],
+    "max": [
+      0.10999999940395355,
+      7.239999771118164,
+      1.5700000524520874
+    ]
+  },
+  "banner": {
+    "triangles": 72,
+    "bytes": 2096,
+    "min": [
+      -2.809890031814575,
+      3.3450000286102295,
+      -1.409999966621399
+    ],
+    "max": [
+      -2.7301101684570312,
+      4.739999771118164,
+      1.409999966621399
+    ]
+  },
+  "mapContractsUnchanged": true
+}

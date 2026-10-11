@@ -1,0 +1,210 @@
+{
+  "schema": "l01a-agent-network-verification/v1",
+  "recordedAt": "2026-10-08T04:19:31.203Z",
+  "status": "local_software_verified",
+  "checkout": {
+    "startingHead": "5ddb299b81bdb2cf94744e5385f073396737845c",
+    "headAtEvidenceCapture": "60a88ca7ae0a71dc9268e7602f911b279ab14f98",
+    "sharedDirtyCheckout": true,
+    "missionCommitCreated": false
+  },
+  "scope": "L01a development adapter using an ordinary guest connection; real owner-file inspection and bounded context; no LLM or server owner authorization",
+  "testResultSource": "Counts and durations transcribed from successful root tool executions in this turn; raw TAP output was not saved as a standalone artifact.",
+  "tests": [
+    {
+      "command": "node --test --test-concurrency=2 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs",
+      "exitCode": 0,
+      "total": 74,
+      "passed": 73,
+      "failed": 0,
+      "skipped": 1,
+      "durationMs": 9221.3252,
+      "skippedReason": "Windows EPERM when creating a file symlink; the symlink case was not executed."
+    },
+    {
+      "command": "node --test --test-concurrency=1 tests/chat.test.mjs tests/net.test.mjs",
+      "exitCode": 0,
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 8545.2592
+    }
+  ],
+  "visual": {
+    "command": "node tools/qa-agent-network.mjs",
+    "evidenceFile": "docs/delivery/l01a-agent-network/evidence.json",
+    "evidenceSha256": "20640f0c016732e2f67babd4dccc257aea0d67954ade131f4c499a5becd431e5",
+    "status": "passed",
+    "startedAt": "2026-10-08T04:15:57.823Z",
+    "finishedAt": "2026-10-08T04:16:15.317Z",
+    "protocolVersion": 25,
+    "normalSlotsUsed": 2,
+    "browserErrors": [],
+    "serverClosed": true,
+    "screenshotReview": "Root inspected both final PNG files: ordinary scene, visible agent body and name before and after movement.",
+    "screenshots": [
+      {
+        "file": "docs/delivery/l01a-agent-network/normal-client-agent-before-move.png",
+        "bytes": 1613616,
+        "sha256": "73039f930188f089a1972c07f915fa86568f8007f884ee6d484c446c73594e1e"
+      },
+      {
+        "file": "docs/delivery/l01a-agent-network/normal-client-agent-after-move.png",
+        "bytes": 1621332,
+        "sha256": "63486515ade293176cfa2817aa9b88222548b5af0fa1ca4ce3359b8f4cbd2ced"
+      }
+    ],
+    "feedbackOutcome": "partial",
+    "feedbackCode": "position_observed",
+    "serverDisplacement": 2.67500000000004,
+    "browserInterpolatedDisplacement": 3.0450000000000017
+  },
+  "finalChecks": {
+    "utf8FilesChecked": 26,
+    "replacementCharacters": 0,
+    "trailingWhitespace": 0,
+    "agreedDirectionRows": 22,
+    "launchModalityDA3": "proposed; undecided"
+  },
+  "hashBasis": "File bytes captured at finalization after verification; shared checkout is not an immutable test snapshot. L00 evidence remains historical.",
+  "files": [
+    {
+      "file": "tools/agent/contract.mjs",
+      "bytes": 7604,
+      "sha256": "0d24046415ce24752657fbeb223ff5f1f2a0147b8180d008030a451ee3e657c6"
+    },
+    {
+      "file": "tools/agent/session.mjs",
+      "bytes": 9339,
+      "sha256": "b830e8cc5bb483fb48a663830dcf40feb8924684238c3aa98cf3b295ecc17f68"
+    },
+    {
+      "file": "tools/agent/context.mjs",
+      "bytes": 14172,
+      "sha256": "394cb32ba9a05ffccb555537e925084bfd8bb66b844d9780690046c1f0fa5b78"
+    },
+    {
+      "file": "tools/agent/fixtures.mjs",
+      "bytes": 2941,
+      "sha256": "32bdd6533afc799c21143d8a9b2f858fcac7e37cb77c72002a91791aaf25aa29"
+    },
+    {
+      "file": "tools/agent/lab.mjs",
+      "bytes": 5481,
+      "sha256": "7ba6aac34920cd5aee8e8543d7e142d6ecf7f28a412c0ac2a0e73c8f5358d56c"
+    },
+    {
+      "file": "tools/agent/network-client.mjs",
+      "bytes": 15581,
+      "sha256": "b297af1deb509b1afd14a62fa58f5b09f7cc7aa390f0fcc056851e1b82fccdb0"
+    },
+    {
+      "file": "tools/agent/owner-files.mjs",
+      "bytes": 10219,
+      "sha256": "44ef8dc4d19b537ed9f6aa442c55cac60d26ce2eabc0b89b3c88bf57060fed49"
+    },
+    {
+      "file": "tools/agent/run.mjs",
+      "bytes": 6639,
+      "sha256": "5dfbd7461d4cec9af9f468206859e41e1d53102dda28a75b7de824d3459f780f"
+    },
+    {
+      "file": "tools/qa-agent-network.mjs",
+      "bytes": 17879,
+      "sha256": "66216dd2e35bc08466821f89bb7bb2ca0aa0b22ba69371fcbd2f6f60c853fa7f"
+    },
+    {
+      "file": "tools/agent/fixtures/personality.md",
+      "bytes": 223,
+      "sha256": "4db50469016235d52b7f443c7db15f97f4cca149990c604982d42b1ce6910e5c"
+    },
+    {
+      "file": "tools/agent/fixtures/objectives.json",
+      "bytes": 310,
+      "sha256": "e39fbe60b4039620c67d7eabc7f894b995587ce7bcac0f00eb9e711fd66d272f"
+    },
+    {
+      "file": "tools/agent/fixtures/memory.jsonl",
+      "bytes": 871,
+      "sha256": "dd89fc94ec058a90d492d3e86a9e8a118b109184b40929152a2be71e01ca038a"
+    },
+    {
+      "file": "tests/agent-interface.test.mjs",
+      "bytes": 24246,
+      "sha256": "8ad61a915ed6687997a00dd87548131b1f7283d903dce3b43176fef2127d6593"
+    },
+    {
+      "file": "tests/agent-context.test.mjs",
+      "bytes": 11391,
+      "sha256": "405a38044854bf48b50f9674a49c24701a9c1f96edeb1c88490934fc1d379d99"
+    },
+    {
+      "file": "tests/agent-lab.test.mjs",
+      "bytes": 1594,
+      "sha256": "55c65b4c42b9e23a3d03b98997ae6184cc8cdff061831d7c1f8d65f6fef415c1"
+    },
+    {
+      "file": "tests/agent-owner-files.test.mjs",
+      "bytes": 7562,
+      "sha256": "395378bb364c930eb2f80734ba24838fa560a2e56153ceba1ce8c83460f77057"
+    },
+    {
+      "file": "tests/agent-network.test.mjs",
+      "bytes": 24610,
+      "sha256": "cb400e681fa2fddc3f2e260123d2ac5eaadb3db95db09308a2b13e4b554d35d4"
+    },
+    {
+      "file": "tests/agent-runner.test.mjs",
+      "bytes": 4226,
+      "sha256": "9d8922b8bcb104cda2c7dde1177c547a2f6b0b2ce2cb7f5a0f7d99fb69657271"
+    },
+    {
+      "file": "docs/agents/interface-v1.md",
+      "bytes": 15477,
+      "sha256": "1d84dcf820e07a5c1c8ffa0bfa6f9f54b630de45fa6a305160fd35f183623c67"
+    },
+    {
+      "file": "docs/agents/network-runner.md",
+      "bytes": 6311,
+      "sha256": "bb9e2f1c07305ec2bedb6673ed855239297e402b57f529b93cbed1609079fd1e"
+    },
+    {
+      "file": "docs/briefs/l01a-agent-network.md",
+      "bytes": 2561,
+      "sha256": "0f681288fd208a2066ff4b3b2eb85eb7ddc3328feacc0543ae2798536017c1e8"
+    },
+    {
+      "file": "docs/delivery/l01a-agent-network.md",
+      "bytes": 5621,
+      "sha256": "46b73c4608bc7bc05f16b9e9bc0dc964fe788e2de3969dfd42e91e9b67da6e41"
+    },
+    {
+      "file": "PLAN-EXTRA-LLM.md",
+      "bytes": 52529,
+      "sha256": "6b2d938b2e23c1d02bcb4c4274baf82d11a1cc3387c42c0c5b13a366e3d56a2a"
+    },
+    {
+      "file": "PLAN-DELIVERY.md",
+      "bytes": 59063,
+      "sha256": "397d1fcf1fd47e5ae2c60e461317f94b4ab3aa870e60c95e7dd0869b5d8ec7e7"
+    },
+    {
+      "file": "DESIGN.md",
+      "bytes": 71708,
+      "sha256": "0b2a5c690b304fce9dc668978f88fed1114b8cfab3b35968adac7ca02c6f09a2"
+    },
+    {
+      "file": "docs/HANDOFF.md",
+      "bytes": 95774,
+      "sha256": "bdeb6ae0609ffc101c573a2854fd64cfb0053b6ac25aab1d0dd93782baf88d29"
+    }
+  ],
+  "limits": [
+    "Guest identity and local scope only; server owner linkage, permissions and revocation remain pending.",
+    "Movement evidence is partial observed displacement; swing evidence confirms execution only, not impact.",
+    "Selected regression tests and automated local browser rehearsal; no full-game-suite, human playtest, WAN or physical device performance claim.",
+    "No inference call, monetary budget enforcement, provider, publication or deployment in this slice."
+  ],
+  "nextSlice": "L01b: common C01 chat on the agent connection before LLM integration"
+}

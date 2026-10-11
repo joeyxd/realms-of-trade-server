@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "recipe": "palm-family-v1",
+  "recipeSha256": "614730e8fcf1d944fae1e6de4ef835fe241c9c6231b98480c250756da08da1e8",
+  "source": {
+    "reference": {
+      "original": "materials/references/palmera tropical.png",
+      "copy": "docs/art/source/palm-family-v1/reference.png",
+      "bytes": 2761091,
+      "sha256": "10962346ec73ab45bffe49398ad4f03629bc1051cb38b70ee5d5c1e661bd456a",
+      "copiedByteForByte": true
+    },
+    "geometry": {
+      "file": "src/render/palmGeometry.js",
+      "bytes": 7386,
+      "sha256": "74435f249bc75f6de9579df91a43f0ef741e0f16195397bbcd8f0ae403c64fad"
+    },
+    "tool": {
+      "file": "tools/prepare-palm-family.mjs",
+      "bytes": 11218,
+      "sha256": "bba1c702e03e864ea7ec579958f32c78c43b115cb8e104bf0da1fad5d1361e0a"
+    }
+  },
+  "geometryCodePath": "src/render/palmGeometry.js:PALM_STYLES,palmGeometry",
+  "format": "GLB 2.0; two transform-free meshes in trunk/fronds order; POSITION,NORMAL,COLOR_0,_FLEX,_PAINT,TEXCOORD_0; no images or textures",
+  "textureAtlasMapping": {
+    "receipt": "docs/art/source/palm-textures-v1/receipt.json",
+    "atlas": "assets/textures/palm-family-v1/{albedo,normal}-{desktop,mobile}.webp",
+    "tileOrder": [
+      "trunk",
+      "leaf-a",
+      "leaf-b",
+      "coconut"
+    ],
+    "layout": "2x2; trunk top-left, leaf-a top-right, leaf-b bottom-left, coconut bottom-right; each tile uses an inset UV region to stay inside the 16 px desktop / 8 px mobile gutter",
+    "cropPixelsAtSource1254": {
+      "trunk": [
+        32,
+        18,
+        163,
+        832
+      ],
+      "leaf-a": [
+        647,
+        6,
+        224,
+        584
+      ],
+      "leaf-b": [
+        856,
+        6,
+        221,
+        516
+      ],
+      "coconut": [
+        396,
+        494,
+        124,
+        132
+      ]
+    },
+    "uv": {
+      "inset": [
+        0.015625,
+        0.015625
+      ],
+      "span": [
+        0.46875,
+        0.46875
+      ],
+      "pixelOrigin": "top-left with TextureLoader flipY=true"
+    },
+    "meshAssignment": {
+      "trunk": [
+        "trunk",
+        "coconut"
+      ],
+      "fronds": [
+        "leaf-a",
+        "leaf-b"
+      ]
+    }
+  },
+  "materials": [
+    {
+      "part": "trunk",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": false
+    },
+    {
+      "part": "fronds",
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 1,
+      "doubleSided": true
+    }
+  ],
+  "budgets": {
+    "maxBytesPerModel": 204800,
+    "maxTrianglesPerModel": 1600
+  },
+  "models": [
+    {
+      "style": "tall",
+      "file": "assets/models/palm-tall-v1.glb",
+      "bytes": 123256,
+      "sha256": "4c76201fe013ddb9652097d89c3806df47b2733af4af55226f16dc86dfb7db8f",
+      "triangles": 1016,
+      "vertices": 2103,
+      "bounds": {
+        "min": [
+          -2.5109899044036865,
+          0,
+          -2.6680874824523926
+        ],
+        "max": [
+          2.7545859813690186,
+          6.392889022827148,
+          2.860846757888794
+        ]
+      },
+      "parts": {
+        "trunk": {
+          "vertices": 1752,
+          "triangles": 584,
+          "bounds": {
+            "min": [
+              -0.310798317193985,
+              0,
+              -0.4341561794281006
+            ],
+            "max": [
+              0.66266268491745,
+              6.318994045257568,
+              0.4496757388114929
+            ]
+          }
+        },
+        "fronds": {
+          "vertices": 351,
+          "triangles": 432,
+          "bounds": {
+            "min": [
+              -2.5109899044036865,
+              4.730000019073486,
+              -2.6680874824523926
+            ],
+            "max": [
+              2.7545859813690186,
+              6.392889022827148,
+              2.860846757888794
+            ]
+          }
+        }
+      },
+      "meshCount": 2,
+      "images": 0
+    },
+    {
+      "style": "curved",
+      "file": "assets/models/palm-curved-v1.glb",
+      "bytes": 125740,
+      "sha256": "6c2ed9fe4a85654ddf81afab2649dcb15a577b91bf6ddfaa33ab4ff8e9b8b08a",
+      "triangles": 1064,
+      "vertices": 2142,
+      "bounds": {
+        "min": [
+          -1.7930506467819214,
+          0,
+          -3.007431983947754
+        ],
+        "max": [
+          3.7850000858306885,
+          6.096177577972412,
+          3.007431983947754
+        ]
+      },
+      "parts": {
+        "trunk": {
+          "vertices": 1752,
+          "triangles": 584,
+          "bounds": {
+            "min": [
+              -0.31048402190208435,
+              0,
+              -0.4341561794281006
+            ],
+            "max": [
+              1.6326626539230347,
+              6.018993854522705,
+              0.4496757388114929
+            ]
+          }
+        },
+        "fronds": {
+          "vertices": 390,
+          "triangles": 480,
+          "bounds": {
+            "min": [
+              -1.7930506467819214,
+              4.322800159454346,
+              -3.007431983947754
+            ],
+            "max": [
+              3.7850000858306885,
+              6.096177577972412,
+              3.007431983947754
+            ]
+          }
+        }
+      },
+      "meshCount": 2,
+      "images": 0
+    },
+    {
+      "style": "short",
+      "file": "assets/models/palm-short-v1.glb",
+      "bytes": 128208,
+      "sha256": "2cf92d13a5407008a36c690abc6e13c2d1ad17629c04dcf36db770fe7fd945cd",
+      "triangles": 1112,
+      "vertices": 2181,
+      "bounds": {
+        "min": [
+          -2.7343742847442627,
+          0,
+          -3.129276752471924
+        ],
+        "max": [
+          3.158663511276245,
+          4.655777931213379,
+          3.0607707500457764
+        ]
+      },
+      "parts": {
+        "trunk": {
+          "vertices": 1752,
+          "triangles": 584,
+          "bounds": {
+            "min": [
+              -0.31074970960617065,
+              0,
+              -0.4341561794281006
+            ],
+            "max": [
+              0.8126627206802368,
+              4.518993854522705,
+              0.4496757388114929
+            ]
+          }
+        },
+        "fronds": {
+          "vertices": 429,
+          "triangles": 528,
+          "bounds": {
+            "min": [
+              -2.7343742847442627,
+              3.2679998874664307,
+              -3.129276752471924
+            ],
+            "max": [
+              3.158663511276245,
+              4.655777931213379,
+              3.0607707500457764
+            ]
+          }
+        }
+      },
+      "meshCount": 2,
+      "images": 0
+    }
+  ]
+}

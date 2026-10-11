@@ -1,0 +1,15 @@
+{
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "pageErrors": [],
+  "failedRequests": [],
+  "phase": "joined",
+  "state": {
+    "mode": "playing",
+    "joined": true,
+    "clientErrors": {},
+    "titleHidden": true,
+    "minimapVisible": true,
+    "mapHidden": false
+  },
+  "pass": true
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "mn.starter-workshop.public.v1",
+  "at": "2026-10-11T02:08:19.008Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "mode": "raft-navigation-only",
+  "protocol": 46,
+  "gameVersion": "0.6.0-alpha.38",
+  "checks": [
+    {
+      "name": "public_tls_release_and_sql023_024_026_readiness",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.38",
+      "protocolVersion": 46,
+      "realPlayers": 0,
+      "workshopReady": true,
+      "resourcesReady": true
+    },
+    {
+      "name": "disposable_auth_and_public_wss_admission",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "navigationFailure": {
+    "label": "navigation diagnostic bench",
+    "position": {
+      "x": 67.175,
+      "y": 7.746,
+      "z": 71.418
+    },
+    "goal": {
+      "x": 79.175,
+      "y": 2.4000000953674316,
+      "z": 79.418
+    },
+    "waypoint": 0,
+    "waypointCount": 4,
+    "radius": 2.2
+  },
+  "pass": false,
+  "failure": "normal movement stalled on checked route: navigation diagnostic bench",
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 0,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T02:08:31.307Z"
+}

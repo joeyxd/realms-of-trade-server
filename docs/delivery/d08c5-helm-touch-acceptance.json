@@ -1,0 +1,342 @@
+{
+  "base": "9bf5826",
+  "generatedAt": "2026-10-07T16:35:58.921Z",
+  "node": "v24.14.0",
+  "sources": [
+    {
+      "file": "src/render/rafts.js",
+      "sha256Normalized": "dcdc3253cbcec87e6cdbe9e94098e35b5891f439c01be0f55ad555cf1a3153d3"
+    },
+    {
+      "file": "src/render/navalHelmPose.js",
+      "sha256Normalized": "b4ef70853ed6c90764c387e5dcc5b39d3978d27779db342cc8f5bd2984af819c"
+    },
+    {
+      "file": "tools/naval-lab/main.js",
+      "sha256Normalized": "8e4486fe915a3466abfc91e5884547f05bf95b01569f294d91b0f2afadea3494"
+    },
+    {
+      "file": "tools/naval-lab/camera.js",
+      "sha256Normalized": "b725817a7d2916528e19765563d759af9359e4b6a189188108acf72874db1e97"
+    },
+    {
+      "file": "tools/naval-lab/touch-helm.js",
+      "sha256Normalized": "65340ef34fa5954febf8f42a41d093666e9b489bcade8c1af6650510c0c86cbd"
+    },
+    {
+      "file": "tools/naval-lab/touch-helm.css",
+      "sha256Normalized": "cc28a8ea461447ca87e7a79eb1bd9128bef4fec9c93889e31fc13bd2d1d5af50"
+    },
+    {
+      "file": "tools/naval-lab/index.html",
+      "sha256Normalized": "bc89e505794f488a4a286f9472a436aee020880d1dd2b0c2a999c8d84efd0385"
+    },
+    {
+      "file": "tools/naval-lab/style.css",
+      "sha256Normalized": "a5ea0da086632bdf2c23f45325177dcdb057c0a9d622a355bfd6df2391935bc3"
+    },
+    {
+      "file": "tools/naval-pilot/main.js",
+      "sha256Normalized": "e5ea375fbe8542eb8ef845bd82ca769111591f8be4662b7b24202746a425a021"
+    },
+    {
+      "file": "tools/naval-pilot/index.html",
+      "sha256Normalized": "16e008ca66470f63c4daf2c826c8a843573aa49a4f5ecd5f9b8f5379f6524ae5"
+    },
+    {
+      "file": "tools/naval-pilot/style.css",
+      "sha256Normalized": "df58ce8ff2d2ce297c769b21f4ce7618d4829afc6b0cafccc16a22d9a5615404"
+    },
+    {
+      "file": "tests/naval-camera-orbit.test.mjs",
+      "sha256Normalized": "4704ce2bffdff15af890c1cef3c38f969f97b6ec9fdc6d6115fbc88d47a25cc0"
+    },
+    {
+      "file": "tests/naval-touch-helm.test.mjs",
+      "sha256Normalized": "45cc6f6afa846c5217f23a731ce951aeb083b5b293f5129aa6a733785bac47e4"
+    },
+    {
+      "file": "tests/naval-helm-pose.test.mjs",
+      "sha256Normalized": "51db4c4d24c8bf5da18cb7a578da6baa2735fba71ddab505ee7bc69143126160"
+    },
+    {
+      "file": "tools/qa-naval-helm.mjs",
+      "sha256Normalized": "4ff2ef81057cfbc0b6791161ef65a87bbb83aa083f6b0efe28272f64adc83f71"
+    }
+  ],
+  "tests": [
+    {
+      "file": "tests/naval-camera-orbit.test.mjs",
+      "sha256Normalized": "4704ce2bffdff15af890c1cef3c38f969f97b6ec9fdc6d6115fbc88d47a25cc0"
+    },
+    {
+      "file": "tests/naval-touch-helm.test.mjs",
+      "sha256Normalized": "45cc6f6afa846c5217f23a731ce951aeb083b5b293f5129aa6a733785bac47e4"
+    },
+    {
+      "file": "tests/naval-helm-pose.test.mjs",
+      "sha256Normalized": "51db4c4d24c8bf5da18cb7a578da6baa2735fba71ddab505ee7bc69143126160"
+    },
+    {
+      "file": "tests/naval-lab-camera.test.mjs",
+      "sha256Normalized": "0e4f64de953fc58fc1910f23772cab33a31a480764c03fd8553cf09f97eaa4ee"
+    },
+    {
+      "file": "tests/raft-renderer.test.mjs",
+      "sha256Normalized": "d36ca78190c27a61e3fa9f1011810d2e489d4801560512567d72a02903255957"
+    },
+    {
+      "file": "tests/raft-materials.test.mjs",
+      "sha256Normalized": "c989eb9661e19d983957cbbd15d782f201e895227ddb8ef3ccdf637eccc6b75a"
+    },
+    {
+      "file": "tests/naval-lab-input.test.mjs",
+      "sha256Normalized": "d0f9ac8a979897a33b47ed6043f52730a6f6fac73531847d5980a5e13cf160af"
+    },
+    {
+      "file": "tests/naval-navigation.test.mjs",
+      "sha256Normalized": "19da8e31b90b4d6ffe8838ab7facf5c8064c5c90c4aadd21073a41bc0cb509f1"
+    },
+    {
+      "file": "tests/naval-lab-feedback.test.mjs",
+      "sha256Normalized": "58775f54492fe13cdfd015107d0199dcff5088ffeca858bc4d3833f07f863d8e"
+    },
+    {
+      "file": "tests/naval-pilot-client.test.mjs",
+      "sha256Normalized": "f15813ff90b6420412767983f910c6c775ddc18e2437b41b09ff2713de90e185"
+    },
+    {
+      "file": "tests/naval-deck-prediction.test.mjs",
+      "sha256Normalized": "d9fea0e16c3167e8a867763d89d40a27dc51107baa8118305df28ce3b2ef7792"
+    },
+    {
+      "file": "tests/naval-coast-authority.test.mjs",
+      "sha256Normalized": "504a4e46e4d0de98a9d50459c3f887fc415df6a0a85c0ebdf1d2e02e472b01a7"
+    }
+  ],
+  "regression": {
+    "files": [
+      "tests/naval-camera-orbit.test.mjs",
+      "tests/naval-touch-helm.test.mjs",
+      "tests/naval-helm-pose.test.mjs",
+      "tests/naval-lab-camera.test.mjs",
+      "tests/raft-renderer.test.mjs",
+      "tests/raft-materials.test.mjs",
+      "tests/naval-lab-input.test.mjs",
+      "tests/naval-navigation.test.mjs",
+      "tests/naval-lab-feedback.test.mjs",
+      "tests/naval-pilot-client.test.mjs",
+      "tests/naval-deck-prediction.test.mjs",
+      "tests/naval-coast-authority.test.mjs"
+    ],
+    "exitCode": 0,
+    "durationMs": 13579,
+    "tests": 78,
+    "passed": 78,
+    "failed": 0,
+    "concurrency": 1,
+    "artifact": {
+      "file": "d08c5-helm-touch/regression.txt",
+      "sha256": "13362795762553be419123d44fb4f171f087e05cac351b3de093d34bbd1ee10c"
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "cases": [
+      {
+        "name": "pilot-desktop-1280x800",
+        "status": "passed",
+        "errors": 0,
+        "glError": 0,
+        "profileConserved": true,
+        "hands": {
+          "left": {
+            "x": 130.42236821370136,
+            "y": 1.9200000000000217,
+            "z": 105.9820960163865,
+            "error": 3.85130590454953e-14,
+            "clampedTargetWorld": {
+              "x": 130.4223682137014,
+              "y": 1.92,
+              "z": 105.98209601638649
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.3787862125044,
+            "y": 1.920000000000006,
+            "z": 105.91500943671763,
+            "error": 2.904713483186334e-14,
+            "clampedTargetWorld": {
+              "x": 130.37878621250442,
+              "y": 1.92,
+              "z": 105.91500943671763
+            },
+            "clamped": false
+          }
+        }
+      },
+      {
+        "name": "pilot-mobile-390x844",
+        "status": "passed",
+        "errors": 0,
+        "glError": 0,
+        "profileConserved": true,
+        "hands": {
+          "left": {
+            "x": 130.48838777906997,
+            "y": 1.9200000000000268,
+            "z": 106.00776230703691,
+            "error": 2.6867397195928788e-14,
+            "clampedTargetWorld": {
+              "x": 130.48838777906997,
+              "y": 1.92,
+              "z": 106.00776230703691
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.462164948128,
+            "y": 1.9199999999999788,
+            "z": 105.93218213015574,
+            "error": 2.5434528619335685e-14,
+            "clampedTargetWorld": {
+              "x": 130.462164948128,
+              "y": 1.92,
+              "z": 105.93218213015575
+            },
+            "clamped": false
+          }
+        }
+      },
+      {
+        "name": "pilot-mobile-844x390",
+        "status": "passed",
+        "errors": 0,
+        "glError": 0,
+        "profileConserved": true,
+        "hands": {
+          "left": {
+            "x": 130.4897018189776,
+            "y": 1.9199999999999573,
+            "z": 106.00844499100523,
+            "error": 5.317214951750687e-14,
+            "clampedTargetWorld": {
+              "x": 130.48970181897758,
+              "y": 1.92,
+              "z": 106.00844499100522
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 130.46394452146478,
+            "y": 1.920000000000006,
+            "z": 105.93270489841984,
+            "error": 3.233704429407591e-14,
+            "clampedTargetWorld": {
+              "x": 130.4639445214648,
+              "y": 1.92,
+              "z": 105.93270489841986
+            },
+            "clamped": false
+          }
+        }
+      },
+      {
+        "name": "lab-mobile-844x390",
+        "status": "passed",
+        "errors": 0,
+        "glError": 0,
+        "gust": "capture",
+        "hands": {
+          "left": {
+            "x": 1.1643812002758789,
+            "y": 1.8549351188151018,
+            "z": 1.0320311149349422,
+            "error": 2.220446049250313e-16,
+            "clampedTargetWorld": {
+              "x": 1.1643812002758789,
+              "y": 1.854935118815102,
+              "z": 1.0320311149349422
+            },
+            "clamped": false
+          },
+          "right": {
+            "x": 1.0859662428733496,
+            "y": 1.8554737929795164,
+            "z": 1.04786791655977,
+            "error": 0,
+            "clampedTargetWorld": {
+              "x": 1.0859662428733496,
+              "y": 1.8554737929795164,
+              "z": 1.04786791655977
+            },
+            "clamped": false
+          }
+        }
+      }
+    ]
+  },
+  "captures": [
+    {
+      "file": "lab-mobile-844x390-capture-canvas.png",
+      "sha256": "befa6939dabcbfda20182065e6a340e64336f541fc42ffa29087296edbef4ec0"
+    },
+    {
+      "file": "lab-mobile-844x390-capture-full.png",
+      "sha256": "d560208921191aa3d8af10a612531902ed3936c0dc0c0ee6c5d37049968860fc"
+    },
+    {
+      "file": "lab-mobile-844x390-helm-canvas.png",
+      "sha256": "d045e44a0fcb17b18cc7bee2fd6e7a2e05efecca50babbf183538db70eae5fef"
+    },
+    {
+      "file": "lab-mobile-844x390-helm-full.png",
+      "sha256": "8110336409c4f233b08d5c2dcc53f3819a9777193f54426a6e65f26073c34caf"
+    },
+    {
+      "file": "pilot-desktop-1280x800-canvas.png",
+      "sha256": "ff4001c7eed7fe6129810ff5ebde86c89d2a52b51869f7283d0bca464b249a4f"
+    },
+    {
+      "file": "pilot-desktop-1280x800-full.png",
+      "sha256": "19caa744435a7e6f92e14347f1a571d560e801911ac2e91c85338fe3be8de0a7"
+    },
+    {
+      "file": "pilot-mobile-390x844-helm-canvas.png",
+      "sha256": "e50d1b250a216bf14bcc0258a79879402f9e78d7ddc0ab4188026cf2b0d3c5f9"
+    },
+    {
+      "file": "pilot-mobile-390x844-helm-full.png",
+      "sha256": "8b65d7bf8c510f8e259cfce142119863eb73b5e7fe1a9187804e703b0ce73a83"
+    },
+    {
+      "file": "pilot-mobile-390x844-walking-canvas.png",
+      "sha256": "24c568e0fe7b900763427952d9ddc916e37d5a2ea8e1287d88429a2676970e67"
+    },
+    {
+      "file": "pilot-mobile-390x844-walking-full.png",
+      "sha256": "5fcf80776bf814fcabc321c26f5176a38f8962a5307d673ed4679c8d21f86760"
+    },
+    {
+      "file": "pilot-mobile-844x390-helm-canvas.png",
+      "sha256": "4e345157b37e3f5400a90af514b2f7033a9d98f7945985dc0931fe7de4a1269f"
+    },
+    {
+      "file": "pilot-mobile-844x390-helm-full.png",
+      "sha256": "26b54b8c669089d87160e45f0b0c6a0de0f5fa5c6b2c8144b3ec49c160097f14"
+    },
+    {
+      "file": "pilot-mobile-844x390-walking-canvas.png",
+      "sha256": "cd06a947781a5a4e609d5e933e0c48389a2292f5be79c357c38aa0c506bc850a"
+    },
+    {
+      "file": "pilot-mobile-844x390-walking-full.png",
+      "sha256": "57a2af4b423292f38542fc738ef5dd2cdc2a21e86560eb50cfffb5a8ec752967"
+    }
+  ],
+  "limits": [
+    "Headless SwiftShader and emulated touch; no physical-device FPS/audio acceptance",
+    "Local harnesses only; no public naval activation or deployment"
+  ]
+}

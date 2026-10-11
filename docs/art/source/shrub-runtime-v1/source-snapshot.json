@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "family": "shrubs-v1-integration",
+  "policy": "Historical snapshot: check validates copied bytes; future renderer work does not refresh this source.",
+  "files": [
+    {
+      "source": "src/render/shrubMaterials.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/shrubMaterials.source.js",
+      "bytes": 1424,
+      "sha256": "95540b16681f94578d5e757f3d155ce1719c87efdb376db40adc6694ba1cedfc"
+    },
+    {
+      "source": "src/render/shrubPlacement.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/shrubPlacement.source.js",
+      "bytes": 5887,
+      "sha256": "37a5060ba9d8262667a464c21d88c09f9ac79a48932cd3d30904f96fe7b65e7b"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/vegetation.source.js",
+      "bytes": 20681,
+      "sha256": "e3bd5fb224dc66d64ca04e0d6b5066cee0123be87dd4bcb66b99ab623c30979f"
+    },
+    {
+      "source": "src/render/palmMaterials.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/palmMaterials.source.js",
+      "bytes": 3485,
+      "sha256": "865f309396b06c1a91349787b3ca0c52efb01698c4b23c6eef323d22fc1b2319"
+    },
+    {
+      "source": "tools/qa-shrubs.playwright.js",
+      "snapshot": "docs/art/source/shrub-runtime-v1/qa-shrubs.source.js",
+      "bytes": 8473,
+      "sha256": "7538bf4777032fb8a0aff78adf5ca91dfdb2255e12d90dc6b6dc7e6e9fab451a"
+    },
+    {
+      "source": "tools/prepare-shrub-sources.mjs",
+      "snapshot": "docs/art/source/shrub-runtime-v1/prepare-shrub-sources.source.mjs",
+      "bytes": 2687,
+      "sha256": "cdfe6d8ae3dfdc851d3f46cc1b8abc1373c839c63a88b9ad329b2d495b757ebb"
+    }
+  ]
+}

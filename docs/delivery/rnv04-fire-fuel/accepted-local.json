@@ -1,0 +1,1382 @@
+{
+  "schema": "mn.fire.local.accepted.v1",
+  "note": "Passed viewport evidence extracted without changing checks. Earlier harness races were corrected and repeated; no physical-device FPS claim.",
+  "viewports": [
+    {
+      "sourceRun": "2026-10-10T22-03-19-636Z",
+      "name": "fire-desktop-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:65367/ws"
+        }
+      ],
+      "screenshots": [
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-01-dark-raft-before-fuel.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-02-hand-torch-empty-panel.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-03-hand-torch-lit.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-04-campfire-lit-panel.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-05-raft-fixtures-lit-panel.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-06-raft-fixtures-lit.jpg",
+        "fire-desktop-es-2026-10-10T22-03-19-636Z-07-hand-torch-reloaded.jpg"
+      ],
+      "fireAcks": [
+        {
+          "op": "load",
+          "opId": "8fd7fa74-2a79-478f-a3ca-3cc45fedfa8c",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "set",
+          "opId": "f4b944d1-42e2-4135-a347-1c0164b34ce9",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "set",
+          "opId": "9f6f1b0b-8aa2-4c35-87d7-cd72a922eaaa",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "load",
+          "opId": "0842ea59-aa8a-4dfa-8dec-6b25caf5a8cd",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "load",
+          "opId": "c2ff4242-133b-4e7e-9f26-b9fb9535ccef",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "load",
+          "opId": "305f34fb-4e93-47c5-b814-fa033e760cd4",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "load",
+          "opId": "4e69f285-34ca-4961-9f61-88707c5867bf",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "load",
+          "opId": "4cffda8e-c3ab-4d3b-b76d-c3ea44170180",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "midnightServerClock": true,
+        "localizedHandPanel": true,
+        "panelControlsAtLeast48px": true,
+        "paidHandFuelExactlyOneWood": true,
+        "confirmedHandTorchPublicFlame": true,
+        "extinguishPreservesFuel": true,
+        "relightUsesLoadedFuel": true,
+        "floorWallCampfireAndGrillFuelActions": true,
+        "publicRaftFlamesAndSources": true,
+        "simulationExpiryAndPaidReload": true,
+        "mobilePanelFitsViewport": false,
+        "noBrowserErrors": true
+      },
+      "port": 65367,
+      "fixture": {
+        "raftId": "qa-fire-raft",
+        "entries": [
+          {
+            "id": "p10",
+            "part": [
+              "grill",
+              2,
+              0,
+              0,
+              0
+            ],
+            "hp": 30
+          },
+          {
+            "id": "p11",
+            "part": [
+              "campfire",
+              3,
+              0,
+              0,
+              0
+            ],
+            "hp": 20
+          },
+          {
+            "id": "p12",
+            "part": [
+              "torchFloor",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          },
+          {
+            "id": "p13",
+            "part": [
+              "wall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 50
+          },
+          {
+            "id": "p14",
+            "part": [
+              "torchWall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          }
+        ],
+        "packWood": 2,
+        "holdWood": 4,
+        "startHour": 24,
+        "stationPanelOpen": "programmatic target selection; load actions use the visible UI button"
+      },
+      "midnight": {
+        "serverHours": 24,
+        "phase": 0.7503514236111113,
+        "sunIntensity": 0.018
+      },
+      "handPanelControls": {
+        "panel": {
+          "x": 470,
+          "y": 206.5,
+          "width": 340,
+          "height": 307,
+          "right": 810,
+          "bottom": 513.5
+        },
+        "close": {
+          "x": 746,
+          "y": 222.5,
+          "width": 48,
+          "height": 48,
+          "right": 794,
+          "bottom": 270.5
+        },
+        "load": {
+          "x": 486,
+          "y": 447.5,
+          "width": 166.65625,
+          "height": 50,
+          "right": 652.65625,
+          "bottom": 497.5
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "documentWidth": 1280
+        }
+      },
+      "handLit": {
+        "woodAfterLoad": 1,
+        "source": {
+          "source": {
+            "x": 124.50342927683455,
+            "y": 1.82,
+            "z": 102.62905333705622,
+            "r": 7.5,
+            "w": 1,
+            "priority": 2
+          },
+          "coreVisible": true,
+          "flameVisible": true
+        },
+        "serverLit": true,
+        "profileSlot": {
+          "kind": "handTorch",
+          "seconds": 1200,
+          "since": 960,
+          "lit": true
+        }
+      },
+      "handToggle": {
+        "extinguishedAndRelit": true,
+        "secondsBefore": 1200,
+        "secondsAfterExtinguish": 1200,
+        "secondsAfterRelight": 1200,
+        "wood": 1
+      },
+      "stations": [
+        {
+          "id": "p10",
+          "kind": "grill",
+          "tuple": [
+            "grill",
+            2,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 124.99745473765998,
+              "y": 1.92,
+              "z": 102.59841277478623,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p11",
+          "kind": "campfire",
+          "tuple": [
+            "campfire",
+            3,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.22533596468982,
+              "y": 1.3599999999999999,
+              "z": 101.01970834003357,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p12",
+          "kind": "torchFloor",
+          "tuple": [
+            "torchFloor",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 127.45321719171966,
+              "y": 2.34,
+              "z": 99.44100390528092,
+              "r": 9.5,
+              "w": 0.65
+            }
+          }
+        },
+        {
+          "id": "p14",
+          "kind": "torchWall",
+          "tuple": [
+            "torchWall",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.91645768390374,
+              "y": 2.8499999999999996,
+              "z": 99.02352428809077,
+              "r": 9.5,
+              "w": 0.65
+            }
+          }
+        }
+      ],
+      "expiry": {
+        "startSec": 960,
+        "nowSec": 2160,
+        "clientSeconds": 0,
+        "serverLightOff": true,
+        "monotonicClockJump": "24 to 54 hours"
+      },
+      "reload": {
+        "seconds": 1200,
+        "lit": true,
+        "packWood": 0,
+        "confirmed": true
+      },
+      "finalViewport": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "low",
+        "websocketReady": true
+      }
+    },
+    {
+      "sourceRun": "2026-10-10T22-03-19-636Z",
+      "name": "fire-mobile-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:60144/ws"
+        }
+      ],
+      "screenshots": [
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-01-dark-raft-before-fuel.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-02-hand-torch-empty-panel.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-03-hand-torch-lit.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-04-campfire-lit-panel.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-05-raft-fixtures-lit-panel.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-06-raft-fixtures-lit.jpg",
+        "fire-mobile-en-2026-10-10T22-03-19-636Z-07-hand-torch-reloaded.jpg"
+      ],
+      "fireAcks": [
+        {
+          "op": "load",
+          "opId": "9bc8a1ea-06a1-466f-be40-612eee581763",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "set",
+          "opId": "167b47e7-741e-40cd-a22a-e3e207b04cb2",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "set",
+          "opId": "2a3b9df9-2374-448c-98e5-020c4191066b",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "load",
+          "opId": "c6827d13-1fc1-4609-b911-3f8139409165",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "load",
+          "opId": "951b0fc9-3306-4dee-95b6-aa029625b167",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "load",
+          "opId": "5ad486f3-d738-4b04-a927-e417cf87e126",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "load",
+          "opId": "887e7cb2-692d-440a-a462-f3f9e0a361c9",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "load",
+          "opId": "dcdfd31f-6427-415e-b4fe-bb76523baefe",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "midnightServerClock": true,
+        "localizedHandPanel": true,
+        "panelControlsAtLeast48px": true,
+        "paidHandFuelExactlyOneWood": true,
+        "confirmedHandTorchPublicFlame": true,
+        "extinguishPreservesFuel": true,
+        "relightUsesLoadedFuel": true,
+        "floorWallCampfireAndGrillFuelActions": true,
+        "publicRaftFlamesAndSources": true,
+        "simulationExpiryAndPaidReload": true,
+        "mobilePanelFitsViewport": true,
+        "noBrowserErrors": true
+      },
+      "port": 60144,
+      "fixture": {
+        "raftId": "qa-fire-raft",
+        "entries": [
+          {
+            "id": "p10",
+            "part": [
+              "grill",
+              2,
+              0,
+              0,
+              0
+            ],
+            "hp": 30
+          },
+          {
+            "id": "p11",
+            "part": [
+              "campfire",
+              3,
+              0,
+              0,
+              0
+            ],
+            "hp": 20
+          },
+          {
+            "id": "p12",
+            "part": [
+              "torchFloor",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          },
+          {
+            "id": "p13",
+            "part": [
+              "wall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 50
+          },
+          {
+            "id": "p14",
+            "part": [
+              "torchWall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          }
+        ],
+        "packWood": 2,
+        "holdWood": 4,
+        "startHour": 24,
+        "stationPanelOpen": "programmatic target selection; load actions use the visible UI button"
+      },
+      "midnight": {
+        "serverHours": 24,
+        "phase": 0.7500562152777781,
+        "sunIntensity": 0.018
+      },
+      "handPanelControls": {
+        "panel": {
+          "x": 42.5,
+          "y": 252,
+          "width": 305,
+          "height": 340,
+          "right": 347.5,
+          "bottom": 592
+        },
+        "close": {
+          "x": 283.5,
+          "y": 528,
+          "width": 48,
+          "height": 48,
+          "right": 331.5,
+          "bottom": 576
+        },
+        "load": {
+          "x": 58.5,
+          "y": 268,
+          "width": 48,
+          "height": 166.65625,
+          "right": 106.5,
+          "bottom": 434.65625
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "documentWidth": 390
+        }
+      },
+      "handLit": {
+        "woodAfterLoad": 1,
+        "source": {
+          "source": {
+            "x": 124.50513065206547,
+            "y": 1.82,
+            "z": 102.64956934565976,
+            "r": 7.5,
+            "w": 1,
+            "priority": 2
+          },
+          "coreVisible": true,
+          "flameVisible": true
+        },
+        "serverLit": true,
+        "profileSlot": {
+          "kind": "handTorch",
+          "seconds": 1200,
+          "since": 960,
+          "lit": true
+        }
+      },
+      "handToggle": {
+        "extinguishedAndRelit": true,
+        "secondsBefore": 1200,
+        "secondsAfterExtinguish": 1200,
+        "secondsAfterRelight": 1200,
+        "wood": 1
+      },
+      "stations": [
+        {
+          "id": "p10",
+          "kind": "grill",
+          "tuple": [
+            "grill",
+            2,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 124.99745473765998,
+              "y": 1.92,
+              "z": 102.59841277478623,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p11",
+          "kind": "campfire",
+          "tuple": [
+            "campfire",
+            3,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.22533596468982,
+              "y": 1.3599999999999999,
+              "z": 101.01970834003357,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p12",
+          "kind": "torchFloor",
+          "tuple": [
+            "torchFloor",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 127.45321719171966,
+              "y": 2.34,
+              "z": 99.44100390528092,
+              "r": 9.5,
+              "w": 0.65
+            }
+          }
+        },
+        {
+          "id": "p14",
+          "kind": "torchWall",
+          "tuple": [
+            "torchWall",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.91645768390374,
+              "y": 2.8499999999999996,
+              "z": 99.02352428809077,
+              "r": 9.5,
+              "w": 0.65
+            }
+          }
+        }
+      ],
+      "expiry": {
+        "startSec": 960,
+        "nowSec": 2160,
+        "clientSeconds": 0,
+        "serverLightOff": true,
+        "monotonicClockJump": "24 to 54 hours"
+      },
+      "reload": {
+        "seconds": 1200,
+        "lit": true,
+        "packWood": 0,
+        "confirmed": true
+      },
+      "finalViewport": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "low",
+        "websocketReady": true
+      }
+    },
+    {
+      "sourceRun": "2026-10-10T22-10-08-009Z",
+      "name": "fire-mobile-en-high",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "high",
+      "locale": "en",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:51698/ws"
+        }
+      ],
+      "screenshots": [
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-01-dark-raft-before-fuel.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-02-hand-torch-empty-panel.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-03-hand-torch-lit.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-04-campfire-lit-panel.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-05-raft-fixtures-lit-panel.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-06-raft-fixtures-lit.jpg",
+        "fire-mobile-en-high-2026-10-10T22-10-08-009Z-07-hand-torch-reloaded.jpg"
+      ],
+      "fireAcks": [
+        {
+          "op": "load",
+          "opId": "7c07d867-e1db-404e-8858-14e261b21e86",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "set",
+          "opId": "e54d0eb1-7eb9-4dab-9fab-15c6040f0a69",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "set",
+          "opId": "1074ffe5-5197-4ca3-9e28-11d64aac2a3f",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "load",
+          "opId": "63391d5d-e506-4c72-bf45-487ff1115cf5",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "load",
+          "opId": "23051ee1-e512-4393-8dc3-ea752e41dd26",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "load",
+          "opId": "c58edead-700f-4f89-9abd-ce4ef35e4837",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "load",
+          "opId": "46798bdd-1be0-470b-aeea-fcdfb56bc5a4",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "load",
+          "opId": "3eab47fc-a954-4f56-89e0-78614b1323bf",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "midnightServerClock": true,
+        "localizedHandPanel": true,
+        "panelControlsAtLeast48px": true,
+        "paidHandFuelExactlyOneWood": true,
+        "confirmedHandTorchPublicFlame": true,
+        "extinguishPreservesFuel": true,
+        "relightUsesLoadedFuel": true,
+        "floorWallCampfireAndGrillFuelActions": true,
+        "publicRaftFlamesAndSources": true,
+        "simulationExpiryAndPaidReload": true,
+        "mobilePanelFitsViewport": true,
+        "noBrowserErrors": true
+      },
+      "port": 51698,
+      "fixture": {
+        "raftId": "qa-fire-raft",
+        "entries": [
+          {
+            "id": "p10",
+            "part": [
+              "grill",
+              2,
+              0,
+              0,
+              0
+            ],
+            "hp": 30
+          },
+          {
+            "id": "p11",
+            "part": [
+              "campfire",
+              3,
+              0,
+              0,
+              0
+            ],
+            "hp": 20
+          },
+          {
+            "id": "p12",
+            "part": [
+              "torchFloor",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          },
+          {
+            "id": "p13",
+            "part": [
+              "wall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 50
+          },
+          {
+            "id": "p14",
+            "part": [
+              "torchWall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          }
+        ],
+        "packWood": 2,
+        "holdWood": 4,
+        "startHour": 24,
+        "stationPanelOpen": "programmatic target selection; load actions use the visible UI button"
+      },
+      "midnight": {
+        "serverHours": 24,
+        "phase": 0.7500737152777774,
+        "sunIntensity": 0.018
+      },
+      "handPanelControls": {
+        "panel": {
+          "x": 42.5,
+          "y": 252,
+          "width": 305,
+          "height": 340,
+          "right": 347.5,
+          "bottom": 592
+        },
+        "close": {
+          "x": 283.5,
+          "y": 528,
+          "width": 48,
+          "height": 48,
+          "right": 331.5,
+          "bottom": 576
+        },
+        "load": {
+          "x": 58.5,
+          "y": 268,
+          "width": 48,
+          "height": 166.65625,
+          "right": 106.5,
+          "bottom": 434.65625
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "documentWidth": 390
+        }
+      },
+      "handLit": {
+        "woodAfterLoad": 1,
+        "source": {
+          "source": {
+            "x": 124.50248060841567,
+            "y": 1.82,
+            "z": 102.59763086760687,
+            "r": 7.5,
+            "w": 1,
+            "priority": 2
+          },
+          "coreVisible": true,
+          "flameVisible": true
+        },
+        "serverLit": true,
+        "profileSlot": {
+          "kind": "handTorch",
+          "seconds": 1200,
+          "since": 960,
+          "lit": true
+        }
+      },
+      "handToggle": {
+        "extinguishedAndRelit": true,
+        "secondsBefore": 1200,
+        "secondsAfterExtinguish": 1200,
+        "secondsAfterRelight": 1200,
+        "wood": 1
+      },
+      "stations": [
+        {
+          "id": "p10",
+          "kind": "grill",
+          "tuple": [
+            "grill",
+            2,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 124.99745473765998,
+              "y": 1.92,
+              "z": 102.59841277478623,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p11",
+          "kind": "campfire",
+          "tuple": [
+            "campfire",
+            3,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.22533596468982,
+              "y": 1.3599999999999999,
+              "z": 101.01970834003357,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p12",
+          "kind": "torchFloor",
+          "tuple": [
+            "torchFloor",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 127.45321719171966,
+              "y": 2.34,
+              "z": 99.44100390528092,
+              "r": 9.5,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p14",
+          "kind": "torchWall",
+          "tuple": [
+            "torchWall",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.91645768390374,
+              "y": 2.8499999999999996,
+              "z": 99.02352428809077,
+              "r": 9.5,
+              "w": 1
+            }
+          }
+        }
+      ],
+      "expiry": {
+        "startSec": 960,
+        "nowSec": 2160,
+        "clientSeconds": 0,
+        "serverLightOff": true,
+        "monotonicClockJump": "24 to 54 hours"
+      },
+      "reload": {
+        "seconds": 1200,
+        "lit": true,
+        "packWood": 0,
+        "confirmed": true
+      },
+      "finalViewport": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "high",
+        "websocketReady": true
+      }
+    },
+    {
+      "sourceRun": "2026-10-10T22-11-15-371Z",
+      "name": "fire-desktop-es-high",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "high",
+      "locale": "es",
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:51565/ws"
+        }
+      ],
+      "screenshots": [
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-01-dark-raft-before-fuel.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-02-hand-torch-empty-panel.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-03-hand-torch-lit.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-04-campfire-lit-panel.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-05-raft-fixtures-lit-panel.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-06-raft-fixtures-lit.jpg",
+        "fire-desktop-es-high-2026-10-10T22-11-15-371Z-07-hand-torch-reloaded.jpg"
+      ],
+      "fireAcks": [
+        {
+          "op": "load",
+          "opId": "1137bff6-666c-4dc3-b97d-e3e857798b77",
+          "ok": true,
+          "why": "",
+          "rev": 1
+        },
+        {
+          "op": "set",
+          "opId": "cbcfdea0-1f47-4f0a-a2c2-60660cfff537",
+          "ok": true,
+          "why": "",
+          "rev": 2
+        },
+        {
+          "op": "set",
+          "opId": "3c50e72f-6b0a-4844-aa43-9705dc21e9e2",
+          "ok": true,
+          "why": "",
+          "rev": 3
+        },
+        {
+          "op": "load",
+          "opId": "74b31d47-4fd0-4b9a-b9c0-d17d953d5445",
+          "ok": true,
+          "why": "",
+          "rev": 4
+        },
+        {
+          "op": "load",
+          "opId": "d200b623-c4fd-44fc-bc19-c1235b524d97",
+          "ok": true,
+          "why": "",
+          "rev": 5
+        },
+        {
+          "op": "load",
+          "opId": "1fb3911d-ca31-484c-bc71-5e23a5801798",
+          "ok": true,
+          "why": "",
+          "rev": 6
+        },
+        {
+          "op": "load",
+          "opId": "7b740e13-c620-4b61-9207-22f807c705c6",
+          "ok": true,
+          "why": "",
+          "rev": 7
+        },
+        {
+          "op": "load",
+          "opId": "30c54c01-38a4-400b-b921-f76e8a6d0308",
+          "ok": true,
+          "why": "",
+          "rev": 8
+        }
+      ],
+      "assertions": {
+        "normalPlayJoin": true,
+        "midnightServerClock": true,
+        "localizedHandPanel": true,
+        "panelControlsAtLeast48px": true,
+        "paidHandFuelExactlyOneWood": true,
+        "confirmedHandTorchPublicFlame": true,
+        "extinguishPreservesFuel": true,
+        "relightUsesLoadedFuel": true,
+        "floorWallCampfireAndGrillFuelActions": true,
+        "publicRaftFlamesAndSources": true,
+        "simulationExpiryAndPaidReload": true,
+        "mobilePanelFitsViewport": false,
+        "noBrowserErrors": true
+      },
+      "port": 51565,
+      "fixture": {
+        "raftId": "qa-fire-raft",
+        "entries": [
+          {
+            "id": "p10",
+            "part": [
+              "grill",
+              2,
+              0,
+              0,
+              0
+            ],
+            "hp": 30
+          },
+          {
+            "id": "p11",
+            "part": [
+              "campfire",
+              3,
+              0,
+              0,
+              0
+            ],
+            "hp": 20
+          },
+          {
+            "id": "p12",
+            "part": [
+              "torchFloor",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          },
+          {
+            "id": "p13",
+            "part": [
+              "wall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 50
+          },
+          {
+            "id": "p14",
+            "part": [
+              "torchWall",
+              4,
+              0,
+              0,
+              0
+            ],
+            "hp": 10
+          }
+        ],
+        "packWood": 2,
+        "holdWood": 4,
+        "startHour": 24,
+        "stationPanelOpen": "programmatic target selection; load actions use the visible UI button"
+      },
+      "midnight": {
+        "serverHours": 24,
+        "phase": 0.750060833333333,
+        "sunIntensity": 0.018
+      },
+      "handPanelControls": {
+        "panel": {
+          "x": 470,
+          "y": 206.5,
+          "width": 340,
+          "height": 307,
+          "right": 810,
+          "bottom": 513.5
+        },
+        "close": {
+          "x": 746,
+          "y": 222.5,
+          "width": 48,
+          "height": 48,
+          "right": 794,
+          "bottom": 270.5
+        },
+        "load": {
+          "x": 486,
+          "y": 447.5,
+          "width": 166.65625,
+          "height": 50,
+          "right": 652.65625,
+          "bottom": 497.5
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "documentWidth": 1280
+        }
+      },
+      "handLit": {
+        "woodAfterLoad": 1,
+        "source": {
+          "source": {
+            "x": 124.50364231005103,
+            "y": 1.82,
+            "z": 102.63231390071097,
+            "r": 7.5,
+            "w": 1,
+            "priority": 2
+          },
+          "coreVisible": true,
+          "flameVisible": true
+        },
+        "serverLit": true,
+        "profileSlot": {
+          "kind": "handTorch",
+          "seconds": 1200,
+          "since": 960,
+          "lit": true
+        }
+      },
+      "handToggle": {
+        "extinguishedAndRelit": true,
+        "secondsBefore": 1200,
+        "secondsAfterExtinguish": 1200,
+        "secondsAfterRelight": 1200,
+        "wood": 1
+      },
+      "stations": [
+        {
+          "id": "p10",
+          "kind": "grill",
+          "tuple": [
+            "grill",
+            2,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 124.99745473765998,
+              "y": 1.92,
+              "z": 102.59841277478623,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p11",
+          "kind": "campfire",
+          "tuple": [
+            "campfire",
+            3,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.22533596468982,
+              "y": 1.3599999999999999,
+              "z": 101.01970834003357,
+              "r": 10,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p12",
+          "kind": "torchFloor",
+          "tuple": [
+            "torchFloor",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 127.45321719171966,
+              "y": 2.34,
+              "z": 99.44100390528092,
+              "r": 9.5,
+              "w": 1
+            }
+          }
+        },
+        {
+          "id": "p14",
+          "kind": "torchWall",
+          "tuple": [
+            "torchWall",
+            4,
+            0,
+            0,
+            0
+          ],
+          "woodFromHold": 1,
+          "publicState": {
+            "coreVisible": true,
+            "source": {
+              "x": 126.91645768390374,
+              "y": 2.8499999999999996,
+              "z": 99.02352428809077,
+              "r": 9.5,
+              "w": 1
+            }
+          }
+        }
+      ],
+      "expiry": {
+        "startSec": 960,
+        "nowSec": 2160,
+        "clientSeconds": 0,
+        "serverLightOff": true,
+        "monotonicClockJump": "24 to 54 hours"
+      },
+      "reload": {
+        "seconds": 1200,
+        "lit": true,
+        "packWood": 0,
+        "confirmed": true
+      },
+      "finalViewport": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "high",
+        "websocketReady": true
+      }
+    }
+  ]
+}

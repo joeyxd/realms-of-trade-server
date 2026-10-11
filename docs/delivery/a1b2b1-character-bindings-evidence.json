@@ -1,0 +1,72 @@
+{
+  "schema": "realms.community.binding-acceptance.v1",
+  "date": "2026-10-09",
+  "slice": "A1b2b1",
+  "status": "implemented-locally-tested",
+  "reviewBase": "bb42f18379760f76a0d9d177bb4cbd3fb2799456",
+  "runtime": "v24.14.0",
+  "command": "node --test --test-concurrency=1 tests/community-contribution.test.mjs tests/community-contribution-sql.test.mjs tests/community-contribution-boundaries.test.mjs tests/community-contribution-coexistence.test.mjs tests/community-character-saves.test.mjs tests/community-scoped-sessions.test.mjs tests/community-scoped-sessions-sql.test.mjs tests/community-character-bindings.test.mjs tests/community-bound-sessions.test.mjs tests/community-bound-auth-sql.test.mjs",
+  "tests": {
+    "total": 82,
+    "passed": 82,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 122571.6435
+  },
+  "syntaxChecks": {
+    "total": 8,
+    "exitCode": 0
+  },
+  "testedSources": {
+    "server/community/boundProfileSessions.mjs": {
+      "gitBlob": "ad711df2e4ea4fa758b2043fd2ab377119276087",
+      "sha256": "083a404f843ec5e8d8601ff48ed124de2f08914d3ac5352a4f66ae6693c014d4"
+    },
+    "server/community/characterBindingContract.mjs": {
+      "gitBlob": "cddb22197b30654af3048ff0a2d181147450cb29",
+      "sha256": "dded8a48654949e4fe57c2a20c98f1f45efaf30ac53d3d127ee64ab909a149a9"
+    },
+    "server/community/memoryContributionStore.mjs": {
+      "gitBlob": "4af8ec21f58f97bb088a76bd54f638879732a08f",
+      "sha256": "e4902d965dd7c66794dbe42bd4baf38247fabc9b049a85bdd3204f9d9b6152c8"
+    },
+    "server/community/supabaseContributionStore.mjs": {
+      "gitBlob": "13881f3aae2dff3cc671fb74a4bc15bd0d5d3106",
+      "sha256": "960ea06c963940ca4346ebf72024f433d6c7c25f1ed07976c43a6cd8a61a22e5"
+    },
+    "server/migrations/community/003_character_bindings.sql": {
+      "gitBlob": "9785c23d30073201b617640fda4512c58ad029f6",
+      "sha256": "41c01e91c5a24f9bc849b566e10aa8a926667afd6d494740da875f41f4020973"
+    },
+    "tests/helpers/community-sql.mjs": {
+      "gitBlob": "d9461bc8cd7ee3bdab22b2ab2ea981a86cf8e095",
+      "sha256": "17647584f63809a7b34126377cfe3cb085486327b0232e8c959a31eda36a4754"
+    },
+    "tests/community-character-bindings.test.mjs": {
+      "gitBlob": "70b8a7b3feac937748eef5996ed17c845a4bf523",
+      "sha256": "fe0f856ceb54e51c04ce533c9409b168f89f8e26554db7e76bea5205723c9141"
+    },
+    "tests/community-bound-sessions.test.mjs": {
+      "gitBlob": "1c6b6af028025cadb116366e85c760b04a0a99f2",
+      "sha256": "c295e4b35dfb9eec8caedf95aeee13f7d849dcd1e041dc043a85646f515faae0"
+    },
+    "tests/community-bound-auth-sql.test.mjs": {
+      "gitBlob": "561cb8b2b8f05e11bb61448998893af6f6a4a582",
+      "sha256": "fd1a72b5a65ed2cf998eb4cc81674093da5a9212aa64c1962e11167b924cdc49"
+    }
+  },
+  "conditions": {
+    "backend": "PGlite PostgreSQL local",
+    "sdk": "Supabase SDK fixture fetch",
+    "auth": "existing account resolver with simulated getUser",
+    "separateReviewCopy": true,
+    "excludedParallelBootstrap": true,
+    "sqlLiveApplied": false,
+    "hostMounted": false,
+    "browserVerified": false,
+    "deployed": false,
+    "crashPendingIntentRecovery": false,
+    "crossHostLease": false
+  }
+}

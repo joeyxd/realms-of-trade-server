@@ -1,0 +1,41 @@
+{
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "pageErrors": [],
+  "failedRequests": [],
+  "phase": "joined",
+  "release": {
+    "version": "0.6.0-alpha.24",
+    "protocol": 37,
+    "editorParts": [
+      "foundation",
+      "floor",
+      "pillar",
+      "wall",
+      "door",
+      "roof",
+      "railing",
+      "stairs",
+      "crate",
+      "net",
+      "grill"
+    ]
+  },
+  "state": {
+    "mode": "playing",
+    "joined": true,
+    "clientErrors": {},
+    "titleHidden": true,
+    "minimapVisible": true,
+    "mapHidden": false
+  },
+  "pass": true,
+  "observedAt": "2026-10-10T19:25:24.838Z",
+  "activeRevision": "29a9e46e41169119a9547e47acc88ca56e3eae0c",
+  "entryMode": "guest",
+  "authenticatedPersistenceClaim": false,
+  "screenshots": [
+    "public-gameplay.png",
+    "public-map.png"
+  ],
+  "screenshotsInspected": true
+}

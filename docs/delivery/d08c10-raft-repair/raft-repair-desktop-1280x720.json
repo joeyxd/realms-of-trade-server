@@ -1,0 +1,688 @@
+{
+  "generatedAt": "2026-10-08T04:03:13.255Z",
+  "purpose": "Repair one damaged foundation at the port through the real editor, pay the material cost once, preserve its instance and blueprint position, then confirm repaired HP on remount.",
+  "harness": "Fresh isolated ephemeral GameHost and in-memory store per viewport; GAME.seed, local Three.js/GSAP/font routes, normal Chrome renderer, no .env, SQL, external hosts, or persistent browser storage.",
+  "fixture": "Server-side QA fixture adds madera:2 to raft hold and madera:1 to backpack. After the owner mounts through the game UI, NavalTrial.queueDamage applies exactly 30 damage to one foundation and an admitted server tick commits it. This is fixture damage, not proof of a real coastal impact or durable damage.",
+  "expected": {
+    "before": {
+      "hullHp": 210,
+      "hullMaxHp": 240,
+      "pieceHp": 30,
+      "pieceMaxHp": 60,
+      "repairCost": {
+        "madera": 2
+      }
+    },
+    "after": {
+      "hullHp": 240,
+      "hullMaxHp": 240,
+      "pieceHp": 60,
+      "pieceMaxHp": 60,
+      "hold": {},
+      "pack": {
+        "madera": 1
+      }
+    }
+  },
+  "protocolVersion": 25,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "raft-repair-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c10-raft-repair\\raft-repair-desktop-1280x720-00-damaged-at-port.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c10-raft-repair\\raft-repair-desktop-1280x720-01-repair-forecast.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c10-raft-repair\\raft-repair-desktop-1280x720-02-repaired-at-port.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c10-raft-repair\\raft-repair-desktop-1280x720-03-remounted-repaired.png"
+      ],
+      "fixture": {
+        "shipId": "837a751f-e938-4933-b37b-4d549c203a94:r1",
+        "materials": {
+          "hold": {
+            "madera": 2
+          },
+          "pack": {
+            "madera": 1
+          }
+        },
+        "seed": 99282957,
+        "cameraSnapForAcceptance": true,
+        "damageSource": "QA fixture via NavalTrial.queueDamage and one admitted server.step; not a real impact"
+      },
+      "damaged": {
+        "shipId": "837a751f-e938-4933-b37b-4d549c203a94:r1",
+        "partId": "raft:27:p3",
+        "piece": [
+          "foundation",
+          0,
+          1,
+          0,
+          0
+        ],
+        "hp": 30,
+        "maxHp": 60,
+        "condition": {
+          "hull": {
+            "hp": 210,
+            "maxHp": 240,
+            "fraction": 0.875,
+            "destroyed": false,
+            "total": 4,
+            "disabled": false
+          },
+          "entries": [
+            {
+              "index": 0,
+              "id": "raft:27:p1",
+              "piece": [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 1,
+              "id": "raft:27:p2",
+              "piece": [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 2,
+              "id": "raft:27:p3",
+              "piece": [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              "hp": 30,
+              "maxHp": 60,
+              "cost": {
+                "madera": 2
+              }
+            },
+            {
+              "index": 3,
+              "id": "raft:27:p4",
+              "piece": [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 4,
+              "id": "raft:27:p5",
+              "piece": [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 40,
+              "maxHp": 40,
+              "cost": {}
+            },
+            {
+              "index": 5,
+              "id": "raft:27:p6",
+              "piece": [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 15,
+              "maxHp": 15,
+              "cost": {}
+            }
+          ]
+        },
+        "worldTick": 570
+      },
+      "docked": {
+        "mode": "port",
+        "condition": {
+          "hull": {
+            "hp": 210,
+            "maxHp": 240,
+            "fraction": 0.875,
+            "destroyed": false,
+            "total": 4,
+            "disabled": false
+          },
+          "entries": [
+            {
+              "index": 0,
+              "id": "raft:27:p1",
+              "piece": [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 1,
+              "id": "raft:27:p2",
+              "piece": [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 2,
+              "id": "raft:27:p3",
+              "piece": [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              "hp": 30,
+              "maxHp": 60,
+              "cost": {
+                "madera": 2
+              }
+            },
+            {
+              "index": 3,
+              "id": "raft:27:p4",
+              "piece": [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 4,
+              "id": "raft:27:p5",
+              "piece": [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 40,
+              "maxHp": 40,
+              "cost": {}
+            },
+            {
+              "index": 5,
+              "id": "raft:27:p6",
+              "piece": [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 15,
+              "maxHp": 15,
+              "cost": {}
+            }
+          ]
+        },
+        "hold": {
+          "madera": 2
+        },
+        "pack": {
+          "madera": 1
+        }
+      },
+      "repairChoice": {
+        "mode": "repair",
+        "active": true,
+        "target": {
+          "id": "raft:27:p3",
+          "piece": [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          "hp": 30,
+          "maxHp": 60,
+          "cost": {
+            "madera": 2
+          }
+        },
+        "text": "Cimiento · 30/60 HP\nReparar: 2 madera · casilla 0, 1 · nivel 0",
+        "status": "Cimiento · 30/60 HP · casilla 0, 1 · Revisa la pieza y confirma para repararla.",
+        "action": "Confirmar reparación",
+        "disabled": false,
+        "rect": {
+          "x": 1132.265625,
+          "y": 352.25,
+          "width": 121.734375,
+          "height": 45,
+          "top": 352.25,
+          "right": 1254,
+          "bottom": 397.25,
+          "left": 1132.265625
+        },
+        "listText": "Cimiento · 30/60 HP\nCasilla 0, 1 · nivel 0 · 2 madera",
+        "capacity": {
+          "id": "837a751f-e938-4933-b37b-4d549c203a94:r1",
+          "raftRev": 2,
+          "tradeRev": 1,
+          "mode": "port",
+          "dryMass": 21,
+          "holdMass": 6,
+          "packMass": 3,
+          "cargoMass": 9,
+          "totalMass": 33,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 7,
+          "overMass": 0,
+          "status": "ready",
+          "load": 0.5892857142857143,
+          "holdVolume": 6,
+          "holdFree": 0,
+          "holdCap": 6,
+          "packVolume": 3,
+          "packFree": 7,
+          "packCap": 10,
+          "condition": {
+            "hull": {
+              "hp": 210,
+              "maxHp": 240,
+              "fraction": 0.875,
+              "destroyed": false,
+              "total": 4,
+              "disabled": false
+            },
+            "entries": [
+              {
+                "index": 0,
+                "id": "raft:27:p1",
+                "piece": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 1,
+                "id": "raft:27:p2",
+                "piece": [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 2,
+                "id": "raft:27:p3",
+                "piece": [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 30,
+                "maxHp": 60,
+                "cost": {
+                  "madera": 2
+                }
+              },
+              {
+                "index": 3,
+                "id": "raft:27:p4",
+                "piece": [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 4,
+                "id": "raft:27:p5",
+                "piece": [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 40,
+                "maxHp": 40,
+                "cost": {}
+              },
+              {
+                "index": 5,
+                "id": "raft:27:p6",
+                "piece": [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 15,
+                "maxHp": 15,
+                "cost": {}
+              }
+            ]
+          }
+        }
+      },
+      "repair": {
+        "interaction": "mouse click on Confirmar reparación",
+        "sentAck": {
+          "send": {
+            "type": "raft",
+            "op": "repair",
+            "id": "837a751f-e938-4933-b37b-4d549c203a94:r1",
+            "expectedRev": 2,
+            "opId": "058ebbe0-42af-4b54-9ad5-91733afad913",
+            "index": 2,
+            "piece": [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            "partId": "raft:27:p3",
+            "expectedHp": 30
+          },
+          "ack": {
+            "type": "raftEdit",
+            "op": "repair",
+            "ok": true,
+            "why": "",
+            "rev": 3,
+            "opId": "058ebbe0-42af-4b54-9ad5-91733afad913"
+          },
+          "clicks": 1
+        },
+        "before": {
+          "shipRev": 2,
+          "hold": {
+            "madera": 2
+          },
+          "pack": {
+            "madera": 1
+          },
+          "blueprint": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "hp": 30,
+          "maxHp": 60
+        },
+        "after": {
+          "shipRev": 3,
+          "hold": {},
+          "pack": {
+            "madera": 1
+          },
+          "blueprint": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "condition": {
+            "hull": {
+              "hp": 240,
+              "maxHp": 240,
+              "fraction": 1,
+              "destroyed": false,
+              "total": 4,
+              "disabled": false
+            },
+            "entries": [
+              {
+                "index": 0,
+                "id": "raft:27:p1",
+                "piece": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 1,
+                "id": "raft:27:p2",
+                "piece": [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 2,
+                "id": "raft:27:p3",
+                "piece": [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 3,
+                "id": "raft:27:p4",
+                "piece": [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 4,
+                "id": "raft:27:p5",
+                "piece": [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 40,
+                "maxHp": 40,
+                "cost": {}
+              },
+              {
+                "index": 5,
+                "id": "raft:27:p6",
+                "piece": [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 15,
+                "maxHp": 15,
+                "cost": {}
+              }
+            ]
+          },
+          "samePartId": true,
+          "sameTuple": true
+        }
+      },
+      "remount": {
+        "active": true,
+        "shipId": "837a751f-e938-4933-b37b-4d549c203a94:r1",
+        "partId": "raft:27:p3",
+        "hp": 60,
+        "maxHp": 60,
+        "worldTick": 659
+      }
+    }
+  ],
+  "failures": [],
+  "finishedAt": "2026-10-08T04:03:25.157Z",
+  "status": "passed"
+}

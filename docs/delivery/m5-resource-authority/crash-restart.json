@@ -1,0 +1,49 @@
+{
+  "recordedAt": "2026-10-10T18:55:38.043336+00:00",
+  "mode": "SIGKILL-after-ack-with-no-active-players-or-pending-writes",
+  "signal": "KILL",
+  "revision": "a5b8f127340c1febbd4c0b29cb83bbc2fa83fe98",
+  "container": "483bc13dc370",
+  "imageId": "sha256:e011fc83172b19a20c187fdac234acac9c637716e52f5e1b947f0874fe68318e",
+  "startedAtBefore": "2026-10-10T18:54:35.851809186Z",
+  "startedAtAfter": "2026-10-10T18:55:29.696236332Z",
+  "observedExitCode": 137,
+  "observedRunningAfterKill": false,
+  "restartCount": 0,
+  "uptimeBefore": 50,
+  "uptimeAfter": 5,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "worldWriting": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "tickBlocked": false,
+    "staging": null,
+    "deathStaging": null,
+    "deathDrops": null,
+    "pearlGround": null,
+    "combatDeaths": null,
+    "startup": null,
+    "resources": {
+      "enabled": true,
+      "ready": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1379,
+      "errors": 0
+    }
+  }
+}

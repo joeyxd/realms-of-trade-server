@@ -1,0 +1,199 @@
+{
+  "family": "map-revamp-v1",
+  "files": [
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/sim/worldgen.js",
+      "source": "src/sim/worldgen.js",
+      "phase": "after",
+      "bytes": 32236,
+      "sha256": "6ebc4ec43a1be4167f0f70125177e36caaa56c9368063dd6227756788f702537"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/sim/terrainRevamp.js",
+      "source": "src/sim/terrainRevamp.js",
+      "phase": "after",
+      "bytes": 6919,
+      "sha256": "7dc78593e3eca801f27e8cf34b5e6097b1f574bfa57c2bf5af9941ba9743c49e"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/data/resources.js",
+      "source": "src/data/resources.js",
+      "phase": "after",
+      "bytes": 5947,
+      "sha256": "72488c4fb8f587ce4cdc4c7b8c689d6541b2cec51de3bc0a4d25ddcfa3bf971e"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/terrain.js",
+      "source": "src/render/terrain.js",
+      "phase": "after",
+      "bytes": 15876,
+      "sha256": "bd4296be0eab7d0172f5cb81fbd1b644e764d9131ad4850776079c82bf5329cf"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/terrainSites.js",
+      "source": "src/render/terrainSites.js",
+      "phase": "after",
+      "bytes": 1298,
+      "sha256": "67f1a18025d30d0291fcdfe3c15d076d1641bb69afe557946ea00000a1783369"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/vegetation.js",
+      "source": "src/render/vegetation.js",
+      "phase": "after",
+      "bytes": 19823,
+      "sha256": "f25ce717eba518539ac15dc3332faf0dd5968fbf7bcfd8001556fc91080cf243"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/grassPatches.js",
+      "source": "src/render/grassPatches.js",
+      "phase": "after",
+      "bytes": 4306,
+      "sha256": "e8c40b8020a27db36ee023db0879660f3e7c1ce484200e8d34e41bf5b9d5686d"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/beachDebris.js",
+      "source": "src/render/beachDebris.js",
+      "phase": "after",
+      "bytes": 4830,
+      "sha256": "5d6cc2227e56ae12a73e655cd27168ca310bea7bd6614207f445efb3737917b8"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/seaweed.js",
+      "source": "src/render/seaweed.js",
+      "phase": "after",
+      "bytes": 4801,
+      "sha256": "b5e9e83c76b10691fc3d43262cbc63a4444ab39da9bd5758e2e35874d9ec79a0"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/render/palmBaseGeometry.js",
+      "source": "src/render/palmBaseGeometry.js",
+      "phase": "after",
+      "bytes": 7767,
+      "sha256": "c17332f6f3d4458261f0f5c2786c3a0c5f12028e8fad8fd1983bb5141163590c"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/ui/mapview.js",
+      "source": "src/ui/mapview.js",
+      "phase": "after",
+      "bytes": 8242,
+      "sha256": "453dd999203108a75056de3782ced75885d430b80057ddb33f653391b856b920"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/net/protocol.js",
+      "source": "src/net/protocol.js",
+      "phase": "after",
+      "bytes": 5100,
+      "sha256": "7c31744ff6d6db6253ef9281d2254dc9a67b085180b17e7e0d7ec9279e205206"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/src/data/meta.js",
+      "source": "src/data/meta.js",
+      "phase": "after",
+      "bytes": 253,
+      "sha256": "bbf051bd3d0b43161a4088c0ae2807144a5caa1e0842e0c7ed41d3a914d36485"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/package.json",
+      "source": "package.json",
+      "phase": "after",
+      "bytes": 872,
+      "sha256": "4e1c686d20c449cfad97272aaad0cc6fb171cde321769c81381a3134c4e656c5"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/package-lock.json",
+      "source": "package-lock.json",
+      "phase": "after",
+      "bytes": 12384,
+      "sha256": "5830ab9d7b27258e4e78bb2deb56b0da1db0e767809955bbd2618ff96f52e567"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/tests/map-revamp.test.mjs",
+      "source": "tests/map-revamp.test.mjs",
+      "phase": "after",
+      "bytes": 11982,
+      "sha256": "8337df69aaf4c30522623eac588aaef425283191e7d9052fe443a92846fbe495"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/tools/qa-map-revamp.playwright.js",
+      "source": "tools/qa-map-revamp.playwright.js",
+      "phase": "after",
+      "bytes": 8613,
+      "sha256": "2ab5466bbdc1072cad71b57ecab6ec0e846d55395b61459dfe0fe03cb5d7dbe0"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/tools/qa-map-revamp-panel.playwright.js",
+      "source": "tools/qa-map-revamp-panel.playwright.js",
+      "phase": "after",
+      "bytes": 2746,
+      "sha256": "b4404de86c4eeadeb9bea22d5429c13546f4d9c26b48e5d553d948dd5a4b64a3"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/tools/map-revamp-evidence.mjs",
+      "source": "tools/map-revamp-evidence.mjs",
+      "phase": "after",
+      "bytes": 7675,
+      "sha256": "f8ff9a38f45af218fd000e717568da48932d89678e886e658f3ccf07c2ff7d29"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/accepted/after/tools/register-map-revamp-catalog.mjs",
+      "source": "tools/register-map-revamp-catalog.mjs",
+      "phase": "after",
+      "bytes": 17050,
+      "sha256": "2816ffd7a6e5dbf762eec7cb46ed1195f37c058fbc1cb6b25d180f4aef5c48ab"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/before/worldgen.js",
+      "source": "src/sim/worldgen.js",
+      "phase": "before",
+      "bytes": 32168,
+      "sha256": "294483d590e1711ce29735c67d6de0c66c571eed94d73974c68678dcf0375a0a"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/before/terrain.js",
+      "source": "src/render/terrain.js",
+      "phase": "before",
+      "bytes": 15848,
+      "sha256": "8be2b2272f09043ecca308a2333bdf45acd5e734b4371672ae50db27dfa2dbe1"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/before/resources.js",
+      "source": "src/data/resources.js",
+      "phase": "before",
+      "bytes": 5671,
+      "sha256": "7ab139c612352beb81ece70d66cd56e18a663cb74dc7e6b555eb5d918ea4e6ae"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/before/mapview.js",
+      "source": "src/ui/mapview.js",
+      "phase": "before",
+      "bytes": 8093,
+      "sha256": "67b0a0eabf95d7056635f926a0b7320bec5708bd1a15c1a76d02fdd3975302ea"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/before/catalog.json",
+      "source": "tools/art-catalog/catalog.json",
+      "phase": "before",
+      "bytes": 494994,
+      "sha256": "7301b93e5d0653587bcb07569590f079a50f32333417cf710c7beba75ae98462"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/final/baseline/baseline-v1.json",
+      "source": "docs/art/map-revamp/baseline-v1.json",
+      "phase": "baseline",
+      "bytes": 443379,
+      "sha256": "dd14d773a77aefb0f546d6c347bc0a89a181ac8671d9f475ae57dea710efbaa3"
+    },
+    {
+      "path": "docs/art/source/map-revamp-v1/final/baseline/baseline-heights-v1.bin",
+      "source": "docs/art/map-revamp/baseline-heights-v1.bin",
+      "phase": "baseline",
+      "bytes": 643204,
+      "sha256": "8865be290d60d83e3a95f6ee8653e60bbc397b4523b9a8a57bd43f334807598b"
+    }
+  ],
+  "reusedAssets": [],
+  "assetPolicy": "No runtime assets were added; the revamp uses terrain and existing scene sources.",
+  "previousCandidate": "docs/art/source/map-revamp-v1/final/source-snapshot.json",
+  "archivedDraft": "docs/art/source/map-revamp-v1/terrain-draft-v1/catalog.json",
+  "reason": "The earlier candidate left the two expansion centers unreachable; this accepted snapshot follows the corrected terrain with both access corridors verified."
+}

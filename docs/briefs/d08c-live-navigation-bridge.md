@@ -1,0 +1,99 @@
+# D08c — del laboratorio a la balsa del jugador
+
+2026-10-06. **Puente de autoridad en desarrollo, sin activación pública.** La base previa
+[D08c.0 de daño modular/contacto](d08c0-modular-damage.md) está implementada en la bahía aislada;
+no equivale a conectar el World. El autor confirma
+que el manejo se siente bien y acepta el HUD B4a. Ahora pide seguir y conocer lo pendiente. Este puente
+conserva D08/D10; no fija topología del mar, pérdidas, XP, progresión ni controles finales de abordaje.
+
+## Brecha comprobada
+
+`src/sim/naval/handling.js` ya calcula rig y dinámica determinista, pero su contrato es de bahía aislada:
+no adjunta barcos al World ni toca perfiles/bienes. `src/sim/systems/rafts.js` crea la balsa del plano
+guardado como vehículo ECS, deriva su amarre y publica pose/plano; no integra `stepNaval` ni piloto.
+`w.raftDeck` y la predicción ya comparten superficies amarradas. `src/net/protocol.js` conserva
+SHIP_INPUT/SHIP_STATE como reservados sin gameplay. Tener mensajes reservados no habilita pilotaje.
+
+El siguiente salto jugable es mover una balsa construida con la misma autoridad que usa el juego,
+conservar al personaje a bordo y ver a otro cliente observar el movimiento correcto.
+
+## Cortes propuestos
+
+0. **Base modular implementada en aislamiento.** `structure.js` conserva plano/IDs/HP; `operational.js`
+   deriva el cuerpo de piezas vivas y rebasa el centro de masa; `contact.js` resuelve costa y genera daño
+   localizado. La bahía consume estos módulos. En autoridad, asignar IDs de instancia desde el servidor
+   sobre un plano validado; no persistir los IDs de fixture `lab:*` ni reconstruir identidad desde índices.
+1. **Cuerpo naval en autoridad, ensayo interno implementado.** [D08c.1](d08c1-naval-authority.md)
+   conecta una copia transitoria del plano a `World.stepWorld()` con handles de control y daño en tick.
+   La opción es server-only y apagada por defecto; el barco ECS/deck públicos permanecen amarrados hasta
+   poder mover piloto y cubierta juntos. La copia no crea inventario ni expone bienes.
+   Adaptar el plano a `buildNavalRig` y mantener
+   estado transitorio por balsa; avanzar `stepNaval` desde el tick del World. Resolver piloto/propiedad
+   desde la sesión del servidor. Entorno constante y lastre de prueba; no escribir pose marítima en el
+   perfil. Validar entradas, neutralizar al perder control y limpiar al destruir/desconectar.
+   Todavía sin activar órdenes navales públicas ni modificar el cliente.
+2. **Puesto de mando, cliente y cuerpo del piloto, ensayo local D08c.2 implementado.**
+   [Contrato y límites](d08c2-pilot-deck.md): servidor dedicado, posición relativa anclada y proyección
+   transitoria de cubierta/piloto en tick, sin activar Worker/GameHost ni cambiar el amarre guardado.
+   Entrada/salida explícita, ejes/ACK de nave,
+   predicción/reconciliación compartidas y cámara naval. El piloto necesita posición relativa válida
+   a la cubierta; no habilitar barco móvil con personaje inmóvil en coordenadas del mundo.
+   Protocolo 17; primera activación en prueba delimitada sin bienes en riesgo. El harness usa
+   `renderRafts(alpha)` junto al estado del personaje. El entrypoint ordinario aún requiere cableado
+   de esa vista/cámara cuando se habilite navegación pública; no presentar el ensayo como esa activación.
+3. **Cubierta móvil y pasajeros, ensayo local D08c.3 implementado.**
+   [Contrato](d08c3-relative-crew.md): caminar en coordenadas locales sobre suelo/bloqueos/escaleras,
+   invitación del propietario y aceptación del pasajero en soporte real. Protocolo 18 con ACK/epoch
+   de caminata separados; nave y tripulación usan la misma pose renderizada. Alternar timón/caminata
+   cancela empuje previo; desconexión, cambio de fuente y pérdida de soporte conservan rescate local.
+   El ensayo admite propietario y tres invitados; no activa PvP, producción ni editor durante navegación.
+4. **Contacto/HP en el puente, ensayo local D08c.4 aceptado.**
+   [Contrato](d08c4-coastal-hull.md) y [entrega](../delivery/d08c4-coastal-hull.md): geometría costera/muelle
+   compartida, barrido por cimiento con envolvente de giro, HP localizado y rig/cubierta de piezas vivas.
+   Sustituye la barrera discreta por contacto, rebote/deslizamiento y daño confirmado en tick.
+   ACK/replay comparte el contacto y no duplica daño/feedback; soporte perdido rescata ocupantes vivos.
+   Protocolo 19; 437/437 pertinentes y cuatro recorridos de navegador con conservación. Continúa como
+   ensayo efímero sin navegación pública ni destrucción durable.
+
+Revisar cada corte antes de activar el conjunto. El ensayo puede usar copia del plano construido,
+sin trasladar bodega real ni conceder otro barco. Editor/producción en movimiento requieren contrato
+explícito; conectar pose no los habilita automáticamente.
+El autor pide completar estructura/features antes de su playtest conjunto (2026-10-06). Las comprobaciones
+automáticas y revisiones de integración continúan; su aceptación de manejo/balance/dispositivos queda abierta.
+
+## Pruebas de paso
+
+- Mismos comandos a distintos FPS producen mismos ticks/pose; giro cruza ±π sin salto.
+- Solo el piloto autorizado mueve su nave; secuencias viejas/repetidas no vuelven a actuar.
+- Cambio de puesto, blur, cierre y reciclaje no dejan órdenes activas ni ocupantes sin soporte.
+- ACK/predicción con latencia y snapshots viejos mantienen nave/piloto/cubierta coherentes.
+- Dos clientes observan el mismo barco; reiniciar conserva plano y bodega original intactos.
+- Revisar escritorio/móvil emulado con casa construida; medir FPS y dispositivos físicos por separado.
+
+## Persistencia y orden mayor
+
+M5 conserva su propia cola de guards y efectos/startup del host; seguir su checkpoint actual en
+`PLAN-M5.md`. Montaje trusted `14ede6d` y recuperación antes de admisión `6a56b3f` están aceptados;
+el puente naval pasó además 67/67 de compatibilidad con ese arranque. Los callers eligen scope/reloj/
+adopción explícitos y mantienen admisión/sim detenidas hasta ready y cierre que espere startup.
+La activación pública, circulación/muerte completas y operaciones durables de progreso siguen sus
+cortes M5. SQL007/008 ya tienen verificación real; no son el paso pendiente.
+Muerte completa (equipo/oro/mundo), afinidad y leases permanecen abiertos.
+
+La navegación efímera puede evaluarse sin custodia nueva. Jettison de mercancías, pérdidas, botín,
+reparación/recuperación y comercio durante el viaje requieren sus operaciones durables D09.
+Después del puente viene D10: primer viaje, dos rutas y NPC vencible. Drift/ancla y remolino son
+prototipos posteriores de maniobra; no están implementados. PvP/rendición/notoriedad sigue D11.
+Q1 de luz/reflejos es ensayo visual paralelo opcional, no requisito de navegación.
+
+## FAB y reparto
+
+El inventario D08 no identificó un sistema de barco/control listo y portable por nombre/ruta. Sus
+Blueprints/agua Unreal no aportan autoridad Node ni reconciliación del juego. Reutilizar rig/dinámica,
+RaftDeck, renderer/atlas/crate y netcode existentes; no exportar arte para este trabajo de autoridad.
+[Reutilización D08](../research/unreal-assets/D08-REUSE.md). Fuentes Unreal intactas.
+
+Luna realizó el barrido de dependencias/contratos de solo lectura. El principal conserva diseño,
+World/LocalServer/protocolo/cliente, integración y aceptación. Al ejecutar, delegar cálculo/adaptadores
+y pruebas acotadas en archivos disjuntos; no disputar entrypoints ni tocar arena/puerto concurrentes.
+M5 conserva prioridad técnica. D06b móvil necesita su recorrido de producción; HUD móvil no lo sustituye.

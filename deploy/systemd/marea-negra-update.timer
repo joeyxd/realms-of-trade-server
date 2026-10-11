@@ -1,0 +1,11 @@
+[Unit]
+Description=Check for a MAREA NEGRA alpha release every two minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=2min
+AccuracySec=10s
+Unit=marea-negra-update.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "family": "town-wood-v1",
+  "createdAt": "2026-10-08T03:30:37.507Z",
+  "policy": "Immutable historical copies; future live edits do not refresh this receipt.",
+  "sources": [
+    {
+      "phase": "before",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-wood-v1/before/props.source.js",
+      "bytes": 34492,
+      "sha256": "df043adbac620deb806cff791a0f7ad7e3fd540cc915ebc04af4da118eaf3567"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/townMaterials.js",
+      "snapshot": "docs/art/source/town-wood-v1/after/src__render__townMaterials.js",
+      "bytes": 4598,
+      "sha256": "88ad4024d91a0dcdcae8521a072282997948c56d8b02f90dfcf218e8973acdaa"
+    },
+    {
+      "phase": "after",
+      "source": "src/render/props.js",
+      "snapshot": "docs/art/source/town-wood-v1/after/src__render__props.js",
+      "bytes": 35724,
+      "sha256": "482685f4d89cc24f2dd203cd8b268fd0835027e45bd97eac2882a744294740c3"
+    },
+    {
+      "phase": "after",
+      "source": "assets/manifest.json",
+      "snapshot": "docs/art/source/town-wood-v1/after/assets__manifest.json",
+      "bytes": 13874,
+      "sha256": "22a4e8d2627479915eeaa35214d4db23597e7fe30f658e772ff52bb35571c2d9"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-materials.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__prepare-town-materials.mjs",
+      "bytes": 15886,
+      "sha256": "4fc32ffb99cd6ce4ecb5d61f41a08f81ed648f387ceb4b58ab5814bf6e4808bd"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-manifest.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__register-town-manifest.mjs",
+      "bytes": 2991,
+      "sha256": "78b67852f6aee0dc74df6174214a084c0a607c4ab7903421f8e503ce0300eab1"
+    },
+    {
+      "phase": "after",
+      "source": "tools/register-town-catalog.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__register-town-catalog.mjs",
+      "bytes": 20421,
+      "sha256": "bf4ab8e0cbe73ede066a9c78840bc17b0a55e54939373c281e52e9c37b4b3846"
+    },
+    {
+      "phase": "after",
+      "source": "tools/verify-town-catalog.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__verify-town-catalog.mjs",
+      "bytes": 8234,
+      "sha256": "1b81f6f4eebc04801628de2339bf7854cc3a98b94e0d669a8115f3fc9a3ef4b7"
+    },
+    {
+      "phase": "after",
+      "source": "tools/prepare-town-sources.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__prepare-town-sources.mjs",
+      "bytes": 2596,
+      "sha256": "708a4bed29affef8f1baacda60d554002c717b79e5abfb02573a45807cffba77"
+    },
+    {
+      "phase": "after",
+      "source": "tools/qa-town-wood.playwright.js",
+      "snapshot": "docs/art/source/town-wood-v1/after/tools__qa-town-wood.playwright.js",
+      "bytes": 8516,
+      "sha256": "9a3ae1ef7ba04df62d7d5341964ff9fa8a7a6e4eeb850e5407b83e07545d1d84"
+    },
+    {
+      "phase": "after",
+      "source": "tests/town-materials.test.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tests__town-materials.test.mjs",
+      "bytes": 7162,
+      "sha256": "73a9681515f3194e0a9c791b19471e95eabb357d2a37ca9a4ebe292b41f12438"
+    },
+    {
+      "phase": "after",
+      "source": "tests/dock-wood.test.mjs",
+      "snapshot": "docs/art/source/town-wood-v1/after/tests__dock-wood.test.mjs",
+      "bytes": 8801,
+      "sha256": "109fca12553dc3f6ad6b858c4af266fcca3d0f24001017b974ecbd661b8ee319"
+    }
+  ]
+}

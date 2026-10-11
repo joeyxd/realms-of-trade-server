@@ -1,0 +1,39 @@
+# L03b — conversación del agente sobre C01
+
+## Alcance local implementado
+
+Conectar una respuesta conversacional con personalidad al chat común que ya usa el runner. Implementación **local y simulada**: `AgentMind.converse` recibe un ID de mensaje C01 entregado; la política confiable fija canal/destinatario y el responder inyectable propone solo texto o espera. `AgentChat` valida y enruta el envío. No añade proveedor, clave, servicio, historial durable ni permisos nuevos. No modifica la dirección, el orden ni las demostraciones acordadas de las 22 filas L00a–L06e; D-A3 continúa propuesto y por decidir (CLI local independiente de proveedor/framework frente a otras formas de operación).
+
+La conversación se limita a Mundo, Cerca (`local`) y Susurro (`whisper`). Una respuesta es una propuesta de texto. El servidor conserva identidad, audiencia, cercanía, destino, límite de ritmo y resultado de routing; que `CHAT_RESULT` confirme routing no demuestra lectura humana.
+
+## Reutilización existente
+
+- No existe `tools/agent/chat-adapter.mjs`. El adaptador de transporte es `AgentChat` en `tools/agent/chat.mjs`; expone estado, mensajes recibidos, solicitudes, `send(order, context)`, `retry(requestId, context)` y `stop(reason)`. El runner publica `chat`, `sendChat(order)` y `retryChat(requestId)` sin exponer socket ni `send` crudo (`tools/agent/network-runner.mjs`, `tools/agent/network-client.mjs`). Reusar ese contrato, no crear otro remitente.
+- `AgentChat` conserva el texto entrante ya validado por C01, deduplica la secuencia global, marca cada evento como `trust: 'player_text'`, convierte identidad propia al ID del personaje y anonimiza peers ajenos como `chat:<id>` en su proyección de observación. La conversación debe leer solo mensajes de esa sesión (`runner.chat.messages`/`runner.observation.chat`); no consultar sockets, logs del host, historial de otros usuarios ni archivos de terceros.
+- `src/data/chat.js` define configuración de host: activo, radio local, longitud, ráfaga/recarga, historial y recibos. `src/net/chatService.js` deriva el remitente de la sesión admitida. Mundo se enruta a participantes de la instancia; Cerca usa la distancia 3D autoritativa al enviar; Susurro requiere el identificador opaco de la conexión destinataria y se entrega solo a remitente/destinatario. El routing no se decide desde el prompt.
+- El envío válido usa `chat_send` con el scope/epoch y revisión de observación frescos, canal y texto normalizados, `target: null` para Mundo/Cerca, y el `id` opaco de peer vigente para Susurro. `AgentChat` exige agente listo, grant no vencido con capability `chat`, observación fresca, personaje vivo y chat activo; valida que el whisper target sea un peer actual. El host también aplica rate limit y comprueba el destino.
+- Hay una solicitud de chat sin resolver a la vez. El timeout conserva `uncertain`; si el envío pudiera haberse recibido, no se genera otro mensaje. El único reintento disponible conserva ID y payload, es explícito, y tiene límite de intentos. L03b no debe disparar `retryChat` automáticamente ni inferir que `read: 'unknown'` significa leído.
+- `personality.md` existente puede orientar tono, pero no permisos. `AgentMind.converse` usa un esquema conversacional separado de las decisiones corporales L03a y comparte su plaza/ledger. El responder simulado recibe personalidad y contexto seleccionado de lectura; no recibe token de cuenta, socket ni funciones de mutación. La salida conversacional no admite órdenes corporales, canal o destinatario elegidos por el modelo.
+
+## Privacidad, identidad y prevención de bucles
+
+La única entrada conversacional elegible es un mensaje C01 que `AgentChat.receive` aceptó para esta conexión. Para Susurro, el cliente comprueba que él mismo sea remitente o destinatario; el servidor ya restringió la audiencia. No sintetizar mensajes de un historial global ni responder a texto observado en otra parte del mundo que nunca se entregó al agente.
+
+El texto de jugadores es contenido no confiable, nunca instrucción para ampliar capacidades, ignorar política, revelar archivos ni cambiar de objetivo/acción. Separar explícitamente instrucciones de sistema y texto citado del jugador. Una invitación o una petición como «haz X» puede obtener una respuesta conversacional, pero no autoriza una orden corporal; `chat_send` solo usa capability `chat`, y las acciones L02 siguen sus validadores separados.
+
+Procesar cada ID de mensaje entrante como máximo una vez. Excluir ecos propios y mensajes emitidos por el agente como disparadores de una respuesta nueva. No ejecutar una respuesta solo porque llega un `CHAT_RESULT`, no encadenar respuestas a respuestas ni repetir ante eventos duplicados/replay de historial. C01 limita ritmo; el agente añade su propia política de supresión y conserva el ID de mensaje origen junto al resultado para que la conducta sea auditable. La historia de chat es solo de sesión y se pierde al reconectar; no prometer continuidad durable.
+
+## Cruce Unreal/FAB acotado
+
+La búsqueda dirigida en `docs/research/unreal-assets/actionrpg/files.csv` localiza como candidatos de conversación de quest `QuestSystem/ChildQuests/BP_TalkToQuest.uasset` y `QuestSystem/QuestCreator/Data/E_QuestDialogueType.uasset`. Verifiqué solo existencia/tamaño en los proyectos fuente: `C:\Unreal\ActionRPGMultiplayerStart\Content\ActionRPGStarterSystem\QuestSystem\ChildQuests\BP_TalkToQuest.uasset` (55.851 bytes) y `C:\Unreal\ActionRPGMultiplayerStart\Content\ActionRPGStarterSystem\QuestSystem\QuestCreator\Data\E_QuestDialogueType.uasset` (4.494 bytes). El inventario los clasifica como candidato de sistema Blueprint y esquema/datos, respectivamente; esos nombres no revelan el grafo ni prueban que contengan diálogo reutilizable. No los abrí ni modifiqué. Se descartan para L03b: pertenecen al sistema Unreal de quests, no al transporte C01, y no se ejecutan en JS/cliente web. El candidato cercano de audio `Welcome/ThankYou/EndConvo` es `.uasset` etiquetado como audio no verificado, no texto de conversación; tampoco sustituye personalidad/respuesta textual.
+
+## Propuesta de QA local
+
+Partir del harness existente `tools/qa-agent-chat.mjs` y sus tres conexiones (agente, humano, tercero), en servidor aislado loopback y con respondedor scripted determinista. No llamar un LLM, proveedor ni servicio externo. Para cada canal, comprobar: el humano inicia una conversación; el agente recibe solo el evento que C01 entregó; se genera como máximo una respuesta con personalidad y audiencia permitida; en Susurro solo agente y destino reciben el texto; el tercero no recibe contenido privado; Cerca se decide desde posiciones del servidor; Mundo solo se usa cuando la política simulada lo permite. Probar también entrada que pide credenciales/autoridad, eco propio, duplicado de evento, respuesta circular entre dos agentes, chat desactivado, capability ausente, peer vencido, rate limit y timeout de entrega incierto. En todos los casos no deben aparecer órdenes de cuerpo, envíos repetidos ni afirmaciones de lectura. Registrar mensajes origen/respuesta, canal, destinatario opaco, resultado `routed/rejected/uncertain`, revisiones y omisiones; no guardar secretos ni registrar texto que no fue entregado a esa sesión.
+
+Esta QA comprobaría la adaptación conversacional simulada y privacidad del flujo local. No cerraría proveedor/tokenizer/facturación, persistencia de historial, experiencia humana, operación ni D-A3; tampoco equivaldría a publicación o despliegue.
+
+Implementación y evidencia efectivamente ejecutada en [entrega L03b](../delivery/l03b-agent-conversation.md)
+y [contrato](../agents/conversation-runner.md). Turnos explícitos, un ID consumido una vez, supresión por peer/total/cooldown
+y contexto protegido; no existe planificador ni clasificación autoritativa humano/agente. Los casos de QA propuestos
+arriba no constituyen aceptación por sí mismos; el manifest registra las suites ejecutadas.

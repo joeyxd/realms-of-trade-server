@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "family": "grass-patches-v1",
+  "policy": "Historical snapshot: check validates copied bytes; future renderer work does not refresh this source.",
+  "files": [
+    {
+      "source": "src/render/grassGeometry.js",
+      "snapshot": "docs/art/source/grass-patches-v1/grassGeometry.source.js",
+      "bytes": 3811,
+      "sha256": "0908038fa7709513277a0704fa8af03c9992d6e74aa20e9c2bbdcd6e5e6dc75e"
+    },
+    {
+      "source": "src/render/grassPlacement.js",
+      "snapshot": "docs/art/source/grass-patches-v1/grassPlacement.source.js",
+      "bytes": 2852,
+      "sha256": "1b766b38bf8530217541fcef2479626ffc046f2951673a3e269e422f8d246b95"
+    },
+    {
+      "source": "src/render/grassPatches.js",
+      "snapshot": "docs/art/source/grass-patches-v1/grassPatches.source.js",
+      "bytes": 4226,
+      "sha256": "c1d0df3d2b80574968fb3efe351e81ecc1080dcaf511e0fb364db987f42dc63e"
+    },
+    {
+      "source": "src/render/shrubPlacement.js",
+      "snapshot": "docs/art/source/grass-patches-v1/shrubPlacement.source.js",
+      "bytes": 5921,
+      "sha256": "50c8dd043705ff434999097f26c21b3635992ba50536273a781109a4311931a3"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "snapshot": "docs/art/source/grass-patches-v1/vegetation.source.js",
+      "bytes": 20828,
+      "sha256": "1e1b2bd9a57ea67af5dc6df0a3133ab1f8ead8cfde52c86a6ed904430beffc70"
+    },
+    {
+      "source": "src/render/scene.js",
+      "snapshot": "docs/art/source/grass-patches-v1/scene.source.js",
+      "bytes": 19949,
+      "sha256": "87a230e9ecb24757d91aa80ebdc70351b0cfd57c9506c8ed4954e21892cf643a"
+    },
+    {
+      "source": "tools/qa-grass.playwright.js",
+      "snapshot": "docs/art/source/grass-patches-v1/qa-grass.source.js",
+      "bytes": 6804,
+      "sha256": "093bd1885f2dc3504c1be5c979ad30e5336a79d8f6022e11e4e8ab09598b02f6"
+    },
+    {
+      "source": "tests/grass-patches.test.mjs",
+      "snapshot": "docs/art/source/grass-patches-v1/grass-patches.test.source.mjs",
+      "bytes": 13159,
+      "sha256": "05244af12263c72e219502cd2b025bb79043b2cfe4c98b9034a2532c1e2d0841"
+    },
+    {
+      "source": "tools/prepare-grass-sources.mjs",
+      "snapshot": "docs/art/source/grass-patches-v1/prepare-grass-sources.source.mjs",
+      "bytes": 2797,
+      "sha256": "a9980adaf3c5238d15c963a4db15861ddc4bd4b895c09cc8886efa70af0b4763"
+    }
+  ]
+}

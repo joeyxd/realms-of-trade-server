@@ -1,0 +1,498 @@
+{
+  "delivery": "D04 P1",
+  "date": "2026-10-05",
+  "base": "da757d3ed152182c9d3e7332c7763a55c1d6c7cf",
+  "version": "0.6.0-alpha.1",
+  "protocolVersion": 13,
+  "acceptance": "local; P1 only; P2 deck walking pending",
+  "checks": {
+    "regression": {
+      "tests": 302,
+      "pass": 302,
+      "fail": 0,
+      "durationMs": 41692.6728,
+      "log": "shots/review/d04p1/regression.log",
+      "sha256": "0376e9059ba009d731b7b0b71cd9e58a020d8057b257b6066f668ce7bfb599fb"
+    },
+    "network": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "durationMs": 7558.5865,
+      "log": "shots/review/d04p1/net.log",
+      "sha256": "4ca2b264d0d53f9aac34546694bc883f6ed8288763714049120741a99c9a5dff"
+    },
+    "syntax": "node --check on changed JS/MJS and both new tests; passed",
+    "whitespace": "git diff --check; passed"
+  },
+  "sourceFiles": [
+    {
+      "path": "package-lock.json",
+      "sha256": "068013cb0788ad67759d3d65eae8da707ecf46ef253f5f758020348bad7dc429"
+    },
+    {
+      "path": "package.json",
+      "sha256": "1ec5cac8602d927b37c2b4bc5830ac100c553be6704d5e0db2701b920f606365"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "sha256": "580eb396aee16f24ad63b0eb069c622c2ff456dedc001a3b03214c936ea46649"
+    },
+    {
+      "path": "src/data/meta.js",
+      "sha256": "2238f1bed1f8071b84c9a95ad3d6d264c3d7bf27e05d2d3e4433c8262eaa01cc"
+    },
+    {
+      "path": "src/data/raftparts.js",
+      "sha256": "1ee0989d896467019848435d35f94ae2f88ec9eca02b9a58594e780348577668"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "78133ebc70f34df16a38b9fe027bf7bf26bab9cbbdb20ef5853be7ea6719d5bf"
+    },
+    {
+      "path": "src/net/localServer.js",
+      "sha256": "01383f55547f6e1f6815c8e9341cce04ab17e6e3bf93e5875d56339c86368654"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "sha256": "8e707f775a3b89aef0c1a4329682227b0504b13dd9dcb131e8ce523293ac0329"
+    },
+    {
+      "path": "src/render/scene.js",
+      "sha256": "7163d9222c81d94057f07781b6ddd498c77f9c702c43915e05e44a5773e7e361"
+    },
+    {
+      "path": "src/sim/economy/raft.js",
+      "sha256": "a9de73027b8b029a43cd1e8c04ee4b93abab411e81afd235fc672100fe7b8eb4"
+    },
+    {
+      "path": "src/sim/ecs.js",
+      "sha256": "44660765a5421faf7d54aceab506ca71571a5cc1832cca71aaed739c71ad6234"
+    },
+    {
+      "path": "src/sim/systems/trade.js",
+      "sha256": "77f5ef65033fad5f15e10af5de84fdb51a4fcc9687050c2f7895dd459c17dfb1"
+    },
+    {
+      "path": "src/render/rafts.js",
+      "sha256": "35739990a5c8549a1cd171b49429374365427ab8a768fcbe34c450af7435c4ea"
+    },
+    {
+      "path": "src/sim/systems/rafts.js",
+      "sha256": "a76b87c20888d4c28637d86d384ddd148b4f841f17825dd52e28213314a2216a"
+    },
+    {
+      "path": "tests/rafts.test.mjs",
+      "sha256": "197402a739cbe2eeafa6999db5d3ceb25c84bfa72db9a5d408e0b29316d4c806"
+    },
+    {
+      "path": "tests/rafts-store.test.mjs",
+      "sha256": "0aee36ff460f6c90f6e7839ed3c14eec8f33d34ea9762cd284d59efca00d0393"
+    },
+    {
+      "path": "tools/look-raft.mjs",
+      "sha256": "2b5bd27e94dc6b06d99f7f24c07887285043a1770e8cef1ce0bf52fd05a26c9b"
+    }
+  ],
+  "visualCases": [
+    {
+      "name": "high-day",
+      "evidence": "shots/review/d04p1/high-day/evidence.json",
+      "sha256": "f859b9a1ec6a869310aad055babd8496414f0bb3cc1763e669186c6dd4b4ad21",
+      "quality": "high",
+      "tod": "day",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "noAssets": false,
+      "stableIdOnReload": true,
+      "normalWorkerSaveObserved": true,
+      "pageErrors": 0,
+      "gameErrors": 0,
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "captures": [
+        {
+          "name": "overview",
+          "image": "shots/review/d04p1/high-day/overview.png",
+          "sha256": "d83464c3425d32e6ea17afb9d6c76fc1da094b3b78d35da2d22f904be38ae9e9",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": null,
+          "isLocal": null,
+          "calls": 128,
+          "triangles": 228366,
+          "memory": {
+            "geometries": 105,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "close",
+          "image": "shots/review/d04p1/high-day/close.png",
+          "sha256": "f50c6811cb3e7560c32b654afd6e5215e32c2de0ec403ec443415c2cf46e9bf4",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": null,
+          "isLocal": null,
+          "calls": 122,
+          "triangles": 224566,
+          "memory": {
+            "geometries": 105,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "reconnect",
+          "image": "shots/review/d04p1/high-day/reconnect.png",
+          "sha256": "98c3da7d37c7b7493022e570c3a78b5b98dac3d6a4a2190434b6f4ad02c6c041",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": null,
+          "isLocal": null,
+          "calls": 121,
+          "triangles": 222246,
+          "memory": {
+            "geometries": 105,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        }
+      ]
+    },
+    {
+      "name": "high-night",
+      "evidence": "shots/review/d04p1/high-night/evidence.json",
+      "sha256": "13771f6ec5d7e25b441a81d9898dbb0efd64863a23547e98c3216ee16c78e5e8",
+      "quality": "high",
+      "tod": "night",
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "noAssets": false,
+      "stableIdOnReload": true,
+      "normalWorkerSaveObserved": true,
+      "pageErrors": 0,
+      "gameErrors": 0,
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "captures": [
+        {
+          "name": "overview",
+          "image": "shots/review/d04p1/high-night/overview.png",
+          "sha256": "a6ef5c0f5160a1b9f53766f60a045472c03a190351c689a48ca61455e06c7997",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 128,
+          "triangles": 232422,
+          "memory": {
+            "geometries": 107,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "close",
+          "image": "shots/review/d04p1/high-night/close.png",
+          "sha256": "4095c864ea8425849f006c8fed52a288364b8ac9996bb1eb2d5930044e072b93",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 122,
+          "triangles": 228622,
+          "memory": {
+            "geometries": 107,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "reconnect",
+          "image": "shots/review/d04p1/high-night/reconnect.png",
+          "sha256": "f149d9677eb382b04cbf774fc320570e67fb84be686c53e2430d48124cd0b78b",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 120,
+          "triangles": 223742,
+          "memory": {
+            "geometries": 107,
+            "textures": 50
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        }
+      ]
+    },
+    {
+      "name": "low-phone-day",
+      "evidence": "shots/review/d04p1/low-phone-day/evidence.json",
+      "sha256": "13a970e69d42b2d4cefb0269bcfba6d7671583f8fbb404bc1082fdabfcfb7e05",
+      "quality": "low",
+      "tod": "day",
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "noAssets": false,
+      "stableIdOnReload": true,
+      "normalWorkerSaveObserved": true,
+      "pageErrors": 0,
+      "gameErrors": 0,
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "captures": [
+        {
+          "name": "overview",
+          "image": "shots/review/d04p1/low-phone-day/overview.png",
+          "sha256": "2ee3207111260a6ffd8a9b3df69c50d5f7c8069dbe75321108b82e0daee5bcf9",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 88,
+          "triangles": 157196,
+          "memory": {
+            "geometries": 101,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "close",
+          "image": "shots/review/d04p1/low-phone-day/close.png",
+          "sha256": "4ecfdbbf7f2c226327950e176623cb4713682fc712f10720acbb8c399bcfd5aa",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 86,
+          "triangles": 151456,
+          "memory": {
+            "geometries": 101,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "reconnect",
+          "image": "shots/review/d04p1/low-phone-day/reconnect.png",
+          "sha256": "3685757ed99ffa0d247cf0e2216262824b8e6ad12d473d6c1dcbc3dbe2a36920",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 85,
+          "triangles": 148892,
+          "memory": {
+            "geometries": 101,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        }
+      ]
+    },
+    {
+      "name": "low-phone-night",
+      "evidence": "shots/review/d04p1/low-phone-night/evidence.json",
+      "sha256": "d9deb5ba414f9ca5d57798548f9dbb79bfeeb180aceac2600301b6dd9b50af33",
+      "quality": "low",
+      "tod": "night",
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "noAssets": false,
+      "stableIdOnReload": true,
+      "normalWorkerSaveObserved": true,
+      "pageErrors": 0,
+      "gameErrors": 0,
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "captures": [
+        {
+          "name": "overview",
+          "image": "shots/review/d04p1/low-phone-night/overview.png",
+          "sha256": "b127d47d61d0dd9408378116f01f2080639cd916cb689e8baffb36380f7b9b02",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 87,
+          "triangles": 158956,
+          "memory": {
+            "geometries": 103,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "close",
+          "image": "shots/review/d04p1/low-phone-night/close.png",
+          "sha256": "ebeaeb506a7cc38dd3b2fff0b247a386430466f32490b7712ab23672fc7076d4",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 85,
+          "triangles": 153216,
+          "memory": {
+            "geometries": 103,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "reconnect",
+          "image": "shots/review/d04p1/low-phone-night/reconnect.png",
+          "sha256": "4f44333175b67b7978dbab135ef66290c4e8e03582b7259bf3f85aaf1ac6b130",
+          "viewCount": 1,
+          "raftMeshes": 6,
+          "importedCrates": 1,
+          "isLocal": true,
+          "calls": 85,
+          "triangles": 153216,
+          "memory": {
+            "geometries": 103,
+            "textures": 42
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        }
+      ]
+    },
+    {
+      "name": "low-phone-fallback",
+      "evidence": "shots/review/d04p1/low-phone-fallback/evidence.json",
+      "sha256": "1426d27f2d9c3574bd11c16159f02d56af1f6a8e078c6aa62d263a20d694ace4",
+      "quality": "low",
+      "tod": "day",
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "noAssets": true,
+      "stableIdOnReload": true,
+      "normalWorkerSaveObserved": true,
+      "pageErrors": 0,
+      "gameErrors": 0,
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED",
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "captures": [
+        {
+          "name": "overview",
+          "image": "shots/review/d04p1/low-phone-fallback/overview.png",
+          "sha256": "f33dc52fa5e231a4f8cd3c2885e793755031464541cd8cb4ee5f89a3526669db",
+          "viewCount": 1,
+          "raftMeshes": 5,
+          "importedCrates": 0,
+          "isLocal": true,
+          "calls": 82,
+          "triangles": 149384,
+          "memory": {
+            "geometries": 100,
+            "textures": 41
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "close",
+          "image": "shots/review/d04p1/low-phone-fallback/close.png",
+          "sha256": "293e1fe85651f72c3b51c58f7edc9df2e379bdb2e9add735ca97ad95057a4599",
+          "viewCount": 1,
+          "raftMeshes": 5,
+          "importedCrates": 0,
+          "isLocal": true,
+          "calls": 80,
+          "triangles": 143644,
+          "memory": {
+            "geometries": 100,
+            "textures": 41
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        },
+        {
+          "name": "reconnect",
+          "image": "shots/review/d04p1/low-phone-fallback/reconnect.png",
+          "sha256": "ea9e9cd50691e2e63c8393e8f7354b694c6aa8eb1a76b3b3bfe638bed1a44cdf",
+          "viewCount": 1,
+          "raftMeshes": 5,
+          "importedCrates": 0,
+          "isLocal": true,
+          "calls": 81,
+          "triangles": 145964,
+          "memory": {
+            "geometries": 100,
+            "textures": 41
+          },
+          "sameSnapshotChanged": false,
+          "sameRoot": true,
+          "restoredViews": 1
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "SwiftShader, mobile viewport and camera/time QA only; no FPS, hardware, physical phone or VRAM claim.",
+    "GameHost store roundtrip uses memoryStore and trusted identity mock; no real Supabase or cross-process custody.",
+    "Anonymous save replay remains possible outside the active process.",
+    "Concurrent main-checkout M5 P2 work is outside the tested tree.",
+    "No deck collision/walking, editor, cargo UI, sailing, combat or deployment in P1.",
+    "First desktop day case predates explicit importedCrates/isLocal fields; adoption inspected visually and captured explicitly in later cases."
+  ]
+}

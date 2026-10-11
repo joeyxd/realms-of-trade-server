@@ -1,0 +1,13 @@
+{
+  "schema": "character-alpha-catalog/v1",
+  "scope": "local-visual-preview",
+  "reference": "User Horizon Tides creator reference, 2026-10-08; images individually generated with built-in image_gen",
+  "bodyId": "male",
+  "mode": "master",
+  "quality": "desktop",
+  "mobileFallback": false,
+  "backgroundId": "harbor",
+  "backdrop": "scene",
+  "parts": null,
+  "createdAt": "2026-10-08T14:46:25.805Z"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "gm01-render-fix-validation-history/v1",
+  "attempts": [
+    {
+      "at": "2026-10-10T18:43:52.833Z",
+      "version": "0.6.0-alpha.23",
+      "checksCompleted": 3,
+      "result": "guest entry assertion failed before any GM token consumption",
+      "rootCause": "not determined"
+    },
+    {
+      "at": "2026-10-10T18:45:26.276Z",
+      "version": "0.6.0-alpha.23",
+      "checksCompleted": 7,
+      "result": "pass",
+      "errors": 0,
+      "online": true,
+      "transport": "ws",
+      "quality": "high",
+      "outlines": true
+    }
+  ],
+  "runtimeChangesBetweenAttempts": false,
+  "qaChangeBetweenAttempts": "Added sanitized boot-mode diagnostics; no assertion removed."
+}

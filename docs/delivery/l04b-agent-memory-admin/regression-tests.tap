@@ -1,0 +1,1252 @@
+TAP version 13
+# Subtest: offline bootstrap makes no request and disabled config keeps guest mode available
+ok 1 - offline bootstrap makes no request and disabled config keeps guest mode available
+  ---
+  duration_ms: 1.6392
+  type: 'test'
+  ...
+# Subtest: public config initializes persistent SDK lazily and token reads the refreshed session without exposing it in state
+ok 2 - public config initializes persistent SDK lazily and token reads the refreshed session without exposing it in state
+  ---
+  duration_ms: 1.3525
+  type: 'test'
+  ...
+# Subtest: signup reports confirmation safely and logout only ends this browser session
+ok 3 - signup reports confirmation safely and logout only ends this browser session
+  ---
+  duration_ms: 0.4349
+  type: 'test'
+  ...
+# Subtest: signup redirect and resend use the game origin and trimmed email
+ok 4 - signup redirect and resend use the game origin and trimmed email
+  ---
+  duration_ms: 0.3841
+  type: 'test'
+  ...
+# Subtest: known provider codes map to fixed Spanish errors and arbitrary provider text stays hidden
+ok 5 - known provider codes map to fixed Spanish errors and arbitrary provider text stays hidden
+  ---
+  duration_ms: 0.4045
+  type: 'test'
+  ...
+# Subtest: resend reports a fixed failure when the installed Auth SDK has no resend method
+ok 6 - resend reports a fixed failure when the installed Auth SDK has no resend method
+  ---
+  duration_ms: 0.1774
+  type: 'test'
+  ...
+# Subtest: malformed auth success responses fail with fixed errors
+ok 7 - malformed auth success responses fail with fixed errors
+  ---
+  duration_ms: 0.3493
+  type: 'test'
+  ...
+# Subtest: token fails closed when a known session disappears or the SDK cannot validate it
+ok 8 - token fails closed when a known session disappears or the SDK cannot validate it
+  ---
+  duration_ms: 0.5632
+  type: 'test'
+  ...
+# Subtest: SDK startup failure remains fail closed until the player explicitly chooses guest
+ok 9 - SDK startup failure remains fail closed until the player explicitly chooses guest
+  ---
+  duration_ms: 0.2988
+  type: 'test'
+  ...
+# Subtest: background Auth events cannot undo an explicit guest choice; a new login can
+ok 10 - background Auth events cannot undo an explicit guest choice; a new login can
+  ---
+  duration_ms: 0.8104
+  type: 'test'
+  ...
+# Subtest: configuration and provider failures expose only fixed Spanish errors
+ok 11 - configuration and provider failures expose only fixed Spanish errors
+  ---
+  duration_ms: 0.2463
+  type: 'test'
+  ...
+# Subtest: memory import creates one profile and atomically consumes a legacy receipt
+ok 12 - memory import creates one profile and atomically consumes a legacy receipt
+  ---
+  duration_ms: 4.2294
+  type: 'test'
+  ...
+# Subtest: memory import serializes competing accounts and validates server hash format
+ok 13 - memory import serializes competing accounts and validates server hash format
+  ---
+  duration_ms: 0.8832
+  type: 'test'
+  ...
+# Subtest: SQL and Supabase SDK import atomically, preserve accounts, and protect receipt authority
+ok 14 - SQL and Supabase SDK import atomically, preserve accounts, and protect receipt authority
+  ---
+  duration_ms: 1290.6054
+  type: 'test'
+  ...
+# Subtest: public Auth config accepts publishable/anon keys and rejects private or partial configuration
+ok 15 - public Auth config accepts publishable/anon keys and rejects private or partial configuration
+  ---
+  duration_ms: 1.9749
+  type: 'test'
+  ...
+# Subtest: verifier uses SDK getUser HTTP response, rejects supplied invalid tokens, and never decodes client identity
+ok 16 - verifier uses SDK getUser HTTP response, rejects supplied invalid tokens, and never decodes client identity
+  ---
+  duration_ms: 8.0945
+  type: 'test'
+  ...
+# Subtest: accounts persist before WELCOME; invalid token cannot fall back to a valid signed save
+ok 17 - accounts persist before WELCOME; invalid token cannot fall back to a valid signed save
+  ---
+  duration_ms: 336.9
+  type: 'test'
+  ...
+# Subtest: one-time import consumes all signed versions of the pirate and retires guest restoration
+ok 18 - one-time import consumes all signed versions of the pirate and retires guest restoration
+  ---
+  duration_ms: 324.431
+  type: 'test'
+  ...
+# Subtest: existing account wins; malformed/id-less/tampered imports fail without creating a new profile
+ok 19 - existing account wins; malformed/id-less/tampered imports fail without creating a new profile
+  ---
+  duration_ms: 224.1147
+  type: 'test'
+  ...
+# Subtest: guest/import races reserve legacy identity before await, releasing failed and closed joins
+ok 20 - guest/import races reserve legacy identity before await, releasing failed and closed joins
+  ---
+  duration_ms: 206.4884
+  type: 'test'
+  ...
+# Subtest: real HTTP public config/SDK and WebSocket account admission expose no service credentials
+ok 21 - real HTTP public config/SDK and WebSocket account admission expose no service credentials
+  ---
+  duration_ms: 301.5344
+  type: 'test'
+  ...
+# Subtest: timed-out guest DB checks cannot retain a reservation or spawn later
+ok 22 - timed-out guest DB checks cannot retain a reservation or spawn later
+  ---
+  duration_ms: 256.3152
+  type: 'test'
+  ...
+# Subtest: a malformed initialization response does not admit an unpersisted default
+ok 23 - a malformed initialization response does not admit an unpersisted default
+  ---
+  duration_ms: 226.7582
+  type: 'test'
+  ...
+# Subtest: only live local chat creates a nearby bubble with state-derived identity and radius
+ok 24 - only live local chat creates a nearby bubble with state-derived identity and radius
+  ---
+  duration_ms: 1.33
+  type: 'test'
+  ...
+# Subtest: world and unrelated channels never create bubbles
+ok 25 - world and unrelated channels never create bubbles
+  ---
+  duration_ms: 0.6258
+  type: 'test'
+  ...
+# Subtest: empty and non-string text is ignored before deduplication or display
+ok 26 - empty and non-string text is ignored before deduplication or display
+  ---
+  duration_ms: 0.1479
+  type: 'test'
+  ...
+# Subtest: whispers are limited to the sender or current target and use trusted labels
+ok 27 - whispers are limited to the sender or current target and use trusted labels
+  ---
+  duration_ms: 0.1482
+  type: 'test'
+  ...
+# Subtest: sender and whisper target must match current opaque token and entity mapping
+ok 28 - sender and whisper target must match current opaque token and entity mapping
+  ---
+  duration_ms: 0.1817
+  type: 'test'
+  ...
+# Subtest: leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+ok 29 - leave and entity remap remove the old bubble; disable, self change, and disconnect clear all
+  ---
+  duration_ms: 0.2613
+  type: 'test'
+  ...
+# Subtest: state updates never replay prior history and duplicate live IDs are suppressed
+ok 30 - state updates never replay prior history and duplicate live IDs are suppressed
+  ---
+  duration_ms: 0.1305
+  type: 'test'
+  ...
+# Subtest: Unicode text is truncated by code point and lifetime stays within five to eight seconds
+ok 31 - Unicode text is truncated by code point and lifetime stays within five to eight seconds
+  ---
+  duration_ms: 0.1697
+  type: 'test'
+  ...
+# Subtest: chat state gives joined peers opaque whisper tokens and excludes spectators
+ok 32 - chat state gives joined peers opaque whisper tokens and excludes spectators
+  ---
+  duration_ms: 297.0793
+  type: 'test'
+  ...
+# Subtest: world chat trusts server identity, preserves text literally, and delivers only to joined peers
+ok 33 - world chat trusts server identity, preserves text literally, and delivers only to joined peers
+  ---
+  duration_ms: 201.5079
+  type: 'test'
+  ...
+# Subtest: local chat uses current server x/y/z distance and includes the sender
+ok 34 - local chat uses current server x/y/z distance and includes the sender
+  ---
+  duration_ms: 200.1864
+  type: 'test'
+  ...
+# Subtest: whisper is private to the opaque recipient token and rejects stale tokens
+ok 35 - whisper is private to the opaque recipient token and rejects stale tokens
+  ---
+  duration_ms: 213.7134
+  type: 'test'
+  ...
+# Subtest: chat request receipts are idempotent per peer and conflicting reuse is rejected
+ok 36 - chat request receipts are idempotent per peer and conflicting reuse is rejected
+  ---
+  duration_ms: 205.4206
+  type: 'test'
+  ...
+# Subtest: chat validates channel, target and bounded text before delivery
+ok 37 - chat validates channel, target and bounded text before delivery
+  ---
+  duration_ms: 194.4165
+  type: 'test'
+  ...
+# Subtest: chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+ok 38 - chat history is bounded per session and state refresh after a newcomer preserves whisper privacy
+  ---
+  duration_ms: 217.0635
+  type: 'test'
+  ...
+# Subtest: disabled chat returns a result and leaves simulation events untouched
+ok 39 - disabled chat returns a result and leaves simulation events untouched
+  ---
+  duration_ms: 193.6929
+  type: 'test'
+  ...
+# Subtest: chat rejects prejoin requests and applies a per-peer token bucket using injected time
+ok 40 - chat rejects prejoin requests and applies a per-peer token bucket using injected time
+  ---
+  duration_ms: 196.3876
+  type: 'test'
+  ...
+# Subtest: real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+ok 41 - real WebSocket chat works through WsTransport and GameClient without leaking messages or receipts
+  ---
+  duration_ms: 452.8487
+  type: 'test'
+  ...
+# Subtest: memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 42 - memory: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 351.7018
+  type: 'test'
+  ...
+# Subtest: memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 43 - memory: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 256.6822
+  type: 'test'
+  ...
+# Subtest: memory: an already applied victim remains the causal killer of a later death
+ok 44 - memory: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 231.5821
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+ok 45 - SDK/SQL010 local: fatal command completes exactly one terminal tick and withholds loss/publication until receipt
+  ---
+  duration_ms: 1602.2612
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+ok 46 - SDK/SQL010 local: two terminal deaths sharing a killer serialize against confirmed profile versions
+  ---
+  duration_ms: 1188.6606
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+ok 47 - SDK/SQL010 local: an already applied victim remains the causal killer of a later death
+  ---
+  duration_ms: 1191.186
+  type: 'test'
+  ...
+# Subtest: exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+ok 48 - exterior death has no PK credit; enemy/source omission and zero pearls still use one whole-death receipt
+  ---
+  duration_ms: 215.1279
+  type: 'test'
+  ...
+# Subtest: completed terminal baseline includes later same-tick XP without replaying the causal hit
+ok 49 - completed terminal baseline includes later same-tick XP without replaying the causal hit
+  ---
+  duration_ms: 209.3848
+  type: 'test'
+  ...
+# Subtest: partial world fault freezes publication and closes without capturing or replaying a death
+ok 50 - partial world fault freezes publication and closes without capturing or replaying a death
+  ---
+  duration_ms: 214.943
+  type: 'test'
+  ...
+# Subtest: second receipt failure retains the committed prefix, fences and never replays it
+ok 51 - second receipt failure retains the committed prefix, fences and never replays it
+  ---
+  duration_ms: 223.5805
+  type: 'test'
+  ...
+# Subtest: close settles storage without applying a queued terminal death or claiming a complete flush
+ok 52 - close settles storage without applying a queued terminal death or claiming a complete flush
+  ---
+  duration_ms: 245.9262
+  type: 'test'
+  ...
+# Subtest: detaching an unreserved queued participant invalidates the queue before actor mutation
+ok 53 - detaching an unreserved queued participant invalidates the queue before actor mutation
+  ---
+  duration_ms: 230.4888
+  type: 'test'
+  ...
+# Subtest: fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+ok 54 - fatal hook rejects idle/direct gameplay and mount ownership is checked before simulation
+  ---
+  duration_ms: 311.485
+  type: 'test'
+  ...
+# Subtest: default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+ok 55 - default host preserves immediate death; mounted fatal assembly is explicit and selector-free
+  ---
+  duration_ms: 458.5842
+  type: 'test'
+  ...
+# Subtest: guest resolution is refused by explicit authenticated fatal mount
+ok 56 - guest resolution is refused by explicit authenticated fatal mount
+  ---
+  duration_ms: 201.2837
+  type: 'test'
+  ...
+# Subtest: actual swallowed Brasa water curse enters the same automatic receipt path
+ok 57 - actual swallowed Brasa water curse enters the same automatic receipt path
+  ---
+  duration_ms: 205.1919
+  type: 'test'
+  ...
+# Subtest: an unreserved later victim changing while the first receipt waits fences the entire host
+ok 58 - an unreserved later victim changing while the first receipt waits fences the entire host
+  ---
+  duration_ms: 215.6665
+  type: 'test'
+  ...
+# Subtest: a join already awaiting authentication cannot spawn into a held terminal tick
+ok 59 - a join already awaiting authentication cannot spawn into a held terminal tick
+  ---
+  duration_ms: 218.3977
+  type: 'test'
+  ...
+# Subtest: afterTick async adapter cannot publish or replay a completed tick
+ok 60 - afterTick async adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 205.4352
+  type: 'test'
+  ...
+# Subtest: afterTick malformed adapter cannot publish or replay a completed tick
+ok 61 - afterTick malformed adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 194.7601
+  type: 'test'
+  ...
+# Subtest: afterTick reentrant adapter cannot publish or replay a completed tick
+ok 62 - afterTick reentrant adapter cannot publish or replay a completed tick
+  ---
+  duration_ms: 194.189
+  type: 'test'
+  ...
+# Subtest: receipt advance independently checks exact applied profiles before refreshing the next baseline
+ok 63 - receipt advance independently checks exact applied profiles before refreshing the next baseline
+  ---
+  duration_ms: 209.2913
+  type: 'test'
+  ...
+# Subtest: the timed sword reflect: EXCELENTE, BUENO and POBRE by how close the bullet was
+ok 64 - the timed sword reflect: EXCELENTE, BUENO and POBRE by how close the bullet was
+  ---
+  duration_ms: 25.2025
+  type: 'test'
+  ...
+# Subtest: the spread of BUENO / POBRE reflects is the same on every machine (hash of id and seq)
+ok 65 - the spread of BUENO / POBRE reflects is the same on every machine (hash of id and seq)
+  ---
+  duration_ms: 4.8303
+  type: 'test'
+  ...
+# Subtest: a slow bullet hit early is destroyed, not reflected; mashing LMB mostly destroys
+ok 66 - a slow bullet hit early is destroyed, not reflected; mashing LMB mostly destroys
+  ---
+  duration_ms: 17.2662
+  type: 'test'
+  ...
+# Subtest: heavy orbs: only an EXCELENTE swing sends them back; earlier swings clunk
+ok 67 - heavy orbs: only an EXCELENTE swing sends them back; earlier swings clunk
+  ---
+  duration_ms: 6.0066
+  type: 'test'
+  ...
+# Subtest: guard: blocks × 0.25 from the front for stamina; nothing from behind
+ok 68 - guard: blocks × 0.25 from the front for stamina; nothing from behind
+  ---
+  duration_ms: 6.4264
+  type: 'test'
+  ...
+# Subtest: perfect guard catches the bullet and the next swing throws it back; mashing RMB does not re-arm
+ok 69 - perfect guard catches the bullet and the next swing throws it back; mashing RMB does not re-arm
+  ---
+  duration_ms: 5.6318
+  type: 'test'
+  ...
+# Subtest: guard stamina runs out: GUARDIA ROTA stuns you
+ok 70 - guard stamina runs out: GUARDIA ROTA stuns you
+  ---
+  duration_ms: 4.2506
+  type: 'test'
+  ...
+# Subtest: heavy orb on the guard: × 0.4 and a push; a perfect guard catches it and throws back a heavy shot
+ok 71 - heavy orb on the guard: × 0.4 and a push; a perfect guard catches it and throws back a heavy shot
+  ---
+  duration_ms: 4.9539
+  type: 'test'
+  ...
+# Subtest: unstoppable spikes pierce the guard and stun; dashing through them is FANTASMA
+ok 72 - unstoppable spikes pierce the guard and stun; dashing through them is FANTASMA
+  ---
+  duration_ms: 6.9683
+  type: 'test'
+  ...
+# Subtest: coyote: LMB within 60 ms of a parryable touching you is a POBRE reflect, RMB a block
+ok 73 - coyote: LMB within 60 ms of a parryable touching you is a POBRE reflect, RMB a block
+  ---
+  duration_ms: 7.6426
+  type: 'test'
+  ...
+# Subtest: a guarded melee circle from in front; a mortar shell from the sky is not guarded
+ok 74 - a guarded melee circle from in front; a mortar shell from the sky is not guarded
+  ---
+  duration_ms: 9.4779
+  type: 'test'
+  ...
+# Subtest: the active frames of a swing destroy parryables and clunk on heavy orbs
+ok 75 - the active frames of a swing destroy parryables and clunk on heavy orbs
+  ---
+  duration_ms: 2.2792
+  type: 'test'
+  ...
+# Subtest: the combo chains 3 stages with buffered presses, and restarts after the gap
+ok 76 - the combo chains 3 stages with buffered presses, and restarts after the gap
+  ---
+  duration_ms: 3.583
+  type: 'test'
+  ...
+# Subtest: a projectile brushing past is a graze, once
+ok 77 - a projectile brushing past is a graze, once
+  ---
+  duration_ms: 3.4985
+  type: 'test'
+  ...
+# Subtest: lag compensation: the server judges a swing at the projectile tick the client saw
+ok 78 - lag compensation: the server judges a swing at the projectile tick the client saw
+  ---
+  duration_ms: 2.4163
+  type: 'test'
+  ...
+# Subtest: the archer fires aimed bursts of 3 that hit an idle player
+ok 79 - the archer fires aimed bursts of 3 that hit an idle player
+  ---
+  duration_ms: 86.6731
+  type: 'test'
+  ...
+# Subtest: reflected arrows kill an archer, XP goes to the player and levels them up
+ok 80 - reflected arrows kill an archer, XP goes to the player and levels them up
+  ---
+  duration_ms: 5.3399
+  type: 'test'
+  ...
+# Subtest: melee hits enemies where the attacker saw them (interp delay rewind)
+ok 81 - melee hits enemies where the attacker saw them (interp delay rewind)
+  ---
+  duration_ms: 3.8
+  type: 'test'
+  ...
+# Subtest: client prediction with projectiles, sword reflects, guards and the combo matches the server exactly
+ok 82 - client prediction with projectiles, sword reflects, guards and the combo matches the server exactly
+  ---
+  duration_ms: 536.6731
+  type: 'test'
+  ...
+# Subtest: a client running at half the server rate keeps its projectile clock, pool and prediction
+ok 83 - a client running at half the server rate keeps its projectile clock, pool and prediction
+  ---
+  duration_ms: 954.7339
+  type: 'test'
+  ...
+# Subtest: memory: persisted source pickup holds the completed world tick and publishes only after apply
+ok 84 - memory: persisted source pickup holds the completed world tick and publishes only after apply
+  ---
+  duration_ms: 347.2324
+  type: 'test'
+  ...
+# Subtest: memory: ordered public scan skips a full first receiver and multiple drops use fresh UIDs and versions
+ok 85 - memory: ordered public scan skips a full first receiver and multiple drops use fresh UIDs and versions
+  ---
+  duration_ms: 317.5348
+  type: 'test'
+  ...
+# Subtest: memory: full potion carrier is notified once, then next eligible authenticated carrier receives it
+ok 86 - memory: full potion carrier is notified once, then next eligible authenticated carrier receives it
+  ---
+  duration_ms: 303.3129
+  type: 'test'
+  ...
+# Subtest: memory: expiration is journaled before removal and managed sources bypass native stepDrops
+ok 87 - memory: expiration is journaled before removal and managed sources bypass native stepDrops
+  ---
+  duration_ms: 238.8756
+  type: 'test'
+  ...
+# Subtest: legacy public item and potion retain native immediate pickup without durable receipts
+ok 88 - legacy public item and potion retain native immediate pickup without durable receipts
+  ---
+  duration_ms: 221.1755
+  type: 'test'
+  ...
+# Subtest: close while receipt is pending settles storage but never applies the source
+ok 89 - close while receipt is pending settles storage but never applies the source
+  ---
+  duration_ms: 250.065
+  type: 'test'
+  ...
+# Subtest: changed tick or source and managed-hook replacement fence the lifecycle before apply
+ok 90 - changed tick or source and managed-hook replacement fence the lifecycle before apply
+  ---
+  duration_ms: 989.2022
+  type: 'test'
+  ...
+# Subtest: default hosts stay dormant and explicit mount rejects invalid order, duplicate, bots, guests, and async hooks
+ok 91 - default hosts stay dormant and explicit mount rejects invalid order, duplicate, bots, guests, and async hooks
+  ---
+  duration_ms: 1377.7538
+  type: 'test'
+  ...
+# Subtest: memory: real host holds complete ticks, applies once and respawns with durable loss
+ok 92 - memory: real host holds complete ticks, applies once and respawns with durable loss
+  ---
+  duration_ms: 402.9938
+  type: 'test'
+  ...
+# Subtest: SDK/SQL010 local: real host holds complete ticks, applies once and respawns with durable loss
+ok 93 - SDK/SQL010 local: real host holds complete ticks, applies once and respawns with durable loss
+  ---
+  duration_ms: 1639.3677
+  type: 'test'
+  ...
+# Subtest: shared recovered memory journal commits exterior death with zero pearls and no killer credit
+ok 94 - shared recovered memory journal commits exterior death with zero pearls and no killer credit
+  ---
+  duration_ms: 245.2307
+  type: 'test'
+  ...
+# Subtest: close waits for whole-death receipt, never applies or hides incomplete shutdown
+ok 95 - close waits for whole-death receipt, never applies or hides incomplete shutdown
+  ---
+  duration_ms: 233.6274
+  type: 'test'
+  ...
+# Subtest: input apply fault rolls back death and inputs before deferred socket teardown, preserving receipt
+ok 96 - input apply fault rolls back death and inputs before deferred socket teardown, preserving receipt
+  ---
+  duration_ms: 259.0912
+  type: 'test'
+  ...
+# Subtest: trusted requests reject tick reentry, wire commands, guest binding and extra/accessor metadata
+ok 97 - trusted requests reject tick reentry, wire commands, guest binding and extra/accessor metadata
+  ---
+  duration_ms: 208.4537
+  type: 'test'
+  ...
+# Subtest: death mount requires empty authenticated bot-free authority and matching pearl scope; defaults stay unmounted
+    # Subtest: missing pearl mount
+    ok 1 - missing pearl mount
+      ---
+      duration_ms: 201.3975
+      type: 'test'
+      ...
+    # Subtest: foreign scope
+    ok 2 - foreign scope
+      ---
+      duration_ms: 200.3089
+      type: 'test'
+      ...
+    # Subtest: bad limit
+    ok 3 - bad limit
+      ---
+      duration_ms: 209.4846
+      type: 'test'
+      ...
+    # Subtest: extra callback
+    ok 4 - extra callback
+      ---
+      duration_ms: 206.1274
+      type: 'test'
+      ...
+    # Subtest: replaced boundary
+    ok 5 - replaced boundary
+      ---
+      duration_ms: 218.5992
+      type: 'test'
+      ...
+    # Subtest: live connection
+    ok 6 - live connection
+      ---
+      duration_ms: 216.1199
+      type: 'test'
+      ...
+    # Subtest: advanced tick
+    ok 7 - advanced tick
+      ---
+      duration_ms: 308.016
+      type: 'test'
+      ...
+    # Subtest: bot present
+    ok 8 - bot present
+      ---
+      duration_ms: 234.1149
+      type: 'test'
+      ...
+    1..8
+ok 98 - death mount requires empty authenticated bot-free authority and matching pearl scope; defaults stay unmounted
+  ---
+  duration_ms: 2001.5299
+  type: 'test'
+  ...
+# Subtest: invalid death input adapter fences: async adapter
+ok 99 - invalid death input adapter fences: async adapter
+  ---
+  duration_ms: 269.5298
+  type: 'test'
+  ...
+# Subtest: invalid death input adapter fences: accessor method
+ok 100 - invalid death input adapter fences: accessor method
+  ---
+  duration_ms: 251.2582
+  type: 'test'
+  ...
+# Subtest: invalid death input adapter fences: caught staging reentry
+ok 101 - invalid death input adapter fences: caught staging reentry
+  ---
+  duration_ms: 264.3868
+  type: 'test'
+  ...
+# Subtest: rarities follow their weights; the Mareas bonus and a floor shift them
+ok 102 - rarities follow their weights; the Mareas bonus and a floor shift them
+  ---
+  duration_ms: 18.8019
+  type: 'test'
+  ...
+# Subtest: items: deterministic, every slot as likely, bases by level, affixes by rarity within the budget
+ok 103 - items: deterministic, every slot as likely, bases by level, affixes by rarity within the budget
+  ---
+  duration_ms: 24.0237
+  type: 'test'
+  ...
+# Subtest: item stats, names and value
+ok 104 - item stats, names and value
+  ---
+  duration_ms: 0.6279
+  type: 'test'
+  ...
+# Subtest: sanitizeItem keeps good items and refuses forged ones
+ok 105 - sanitizeItem keeps good items and refuses forged ones
+  ---
+  duration_ms: 0.3015
+  type: 'test'
+  ...
+# Subtest: refreshStats: level + gear + mastery; caps; HP keeps its fraction; no profile is the old game
+ok 106 - refreshStats: level + gear + mastery; caps; HP keeps its fraction; no profile is the old game
+  ---
+  duration_ms: 2.9317
+  type: 'test'
+  ...
+# Subtest: the Cala on the map: inside the ring of skulls is lawless, its door is a checkpoint outside, nothing random grows there
+ok 107 - the Cala on the map: inside the ring of skulls is lawless, its door is a checkpoint outside, nothing random grows there
+  ---
+  duration_ms: 1.6038
+  type: 'test'
+  ...
+# Subtest: outside the Cala there is no friendly fire
+ok 108 - outside the Cala there is no friendly fire
+  ---
+  duration_ms: 298.0481
+  type: 'test'
+  ...
+# Subtest: inside, the cutlass, the pistols and the storm hurt the other pirate (× pvpDmg, after their DEF), lag-compensated
+ok 109 - inside, the cutlass, the pistols and the storm hurt the other pirate (× pvpDmg, after their DEF), lag-compensated
+  ---
+  duration_ms: 768.9197
+  type: 'test'
+  ...
+# Subtest: a blade lands through the mercy window after a hit (the whole combo lands); bullets pass through it
+ok 110 - a blade lands through the mercy window after a hit (the whole combo lands); bullets pass through it
+  ---
+  duration_ms: 422.2228
+  type: 'test'
+  ...
+# Subtest: inside, a raised guard blocks a pirate's cutlass, a perfect one stops it and staggers the attacker; the dash dodges it
+ok 111 - inside, a raised guard blocks a pirate's cutlass, a perfect one stops it and staggers the attacker; the dash dodges it
+  ---
+  duration_ms: 640.0172
+  type: 'test'
+  ...
+# Subtest: falling inside spills everything you wear and carry (a starter weapon aside) and your potions, for anyone; the gold stays
+ok 112 - falling inside spills everything you wear and carry (a starter weapon aside) and your potions, for anyone; the gold stays
+  ---
+  duration_ms: 230.8174
+  type: 'test'
+  ...
+# Subtest: outside the Cala equipment stays; a pirate who arrives later sees public Cala loot
+ok 113 - outside the Cala equipment stays; a pirate who arrives later sees public Cala loot
+  ---
+  duration_ms: 250.6154
+  type: 'test'
+  ...
+# Subtest: a mob killed inside drops public loot, rolled once (quest items stay personal)
+ok 114 - a mob killed inside drops public loot, rolled once (quest items stay personal)
+  ---
+  duration_ms: 209.8732
+  type: 'test'
+  ...
+# Subtest: inside the Cala a mob's bullet lands on another mob, which turns on it; outside it flies through
+ok 115 - inside the Cala a mob's bullet lands on another mob, which turns on it; outside it flies through
+  ---
+  duration_ms: 9.9668
+  type: 'test'
+  ...
+# Subtest: a mob another mob finishes off is the kill of the pirate who hurt it lately; with none, nobody earns XP for watching
+ok 116 - a mob another mob finishes off is the kill of the pirate who hurt it lately; with none, nobody earns XP for watching
+  ---
+  duration_ms: 10.5094
+  type: 'test'
+  ...
+# Subtest: the Desalmados go for a pirate in reach before any mob, and never hurt each other
+ok 117 - the Desalmados go for a pirate in reach before any mob, and never hurt each other
+  ---
+  duration_ms: 10.8844
+  type: 'test'
+  ...
+# Subtest: the Cala's mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around
+ok 118 - the Cala's mobs are harder (Sin ley); the Desalmados have names and hunt the mobs while a pirate is around
+  ---
+  duration_ms: 373.7873
+  type: 'test'
+  ...
+# Subtest: a Desalmado falls: its gear (2 items, one at least Uncommon), gold and maybe a potion, all public
+ok 119 - a Desalmado falls: its gear (2 items, one at least Uncommon), gold and maybe a potion, all public
+  ---
+  duration_ms: 1.1295
+  type: 'test'
+  ...
+# Subtest: boarding requires an owner invite, passenger consent, live deck support, and a fresh frame lease
+ok 120 - boarding requires an owner invite, passenger consent, live deck support, and a fresh frame lease
+  ---
+  duration_ms: 17.9991
+  type: 'test'
+  ...
+# Subtest: a turning helm carries a walking passenger in the same local frame without changing saved ship data
+ok 121 - a turning helm carries a walking passenger in the same local frame without changing saved ship data
+  ---
+  duration_ms: 8.5747
+  type: 'test'
+  ...
+# Subtest: owner can leave helm to walk, retains naval authority, and takes helm at the walked frame
+ok 122 - owner can leave helm to walk, retains naval authority, and takes helm at the walked frame
+  ---
+  duration_ms: 2.5211
+  type: 'test'
+  ...
+# Subtest: packet floods coalesce to one committed walk step and stale controls time out safely
+ok 123 - packet floods coalesce to one committed walk step and stale controls time out safely
+  ---
+  duration_ms: 8.726
+  type: 'test'
+  ...
+# Subtest: death, disconnect, source edits, and owner detach release only live leases without reviving anyone
+ok 124 - death, disconnect, source edits, and owner detach release only live leases without reviving anyone
+  ---
+  duration_ms: 282.7391
+  type: 'test'
+  ...
+# Subtest: M5-held ticks publish cached crew frames without applying movement or ACKs
+ok 125 - M5-held ticks publish cached crew frames without applying movement or ACKs
+  ---
+  duration_ms: 233.9765
+  type: 'test'
+  ...
+# Subtest: returning to walk accepts a position inside an internally destroyed wall while saved blueprint stays intact
+ok 126 - returning to walk accepts a position inside an internally destroyed wall while saved blueprint stays intact
+  ---
+  duration_ms: 10.6421
+  type: 'test'
+  ...
+# Subtest: pilot control is server-only and opt-in
+ok 127 - pilot control is server-only and opt-in
+  ---
+  duration_ms: 267.0355
+  type: 'test'
+  ...
+# Subtest: mount requires the own deck, a live idle owner, and no guests; epochs fence mount and input
+ok 128 - mount requires the own deck, a live idle owner, and no guests; epochs fence mount and input
+  ---
+  duration_ms: 40.6527
+  type: 'test'
+  ...
+# Subtest: World ticks move the public raft and anchored pilot together while saved source remains moored
+ok 129 - World ticks move the public raft and anchored pilot together while saved source remains moored
+  ---
+  duration_ms: 24.6913
+  type: 'test'
+  ...
+# Subtest: a guest arriving after mount releases the pilot and rescues both players to the dock
+ok 130 - a guest arriving after mount releases the pilot and rescues both players to the dock
+  ---
+  duration_ms: 26.3517
+  type: 'test'
+  ...
+# Subtest: detach, source invalidation, death, and close clear transient authority without changing saved ship data
+ok 131 - detach, source invalidation, death, and close clear transient authority without changing saved ship data
+  ---
+  duration_ms: 29.4617
+  type: 'test'
+  ...
+# Subtest: pilot mount is refused at the four-body trial cap
+ok 132 - pilot mount is refused at the four-body trial cap
+  ---
+  duration_ms: 50.5831
+  type: 'test'
+  ...
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+ok 133 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 6441.3495
+  type: 'test'
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 134 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 2.6277
+  type: 'test'
+  ...
+# Subtest: memory: mounted GameHost applies a slow swallow on its real tick, preserving canonical progress and inputs
+ok 135 - memory: mounted GameHost applies a slow swallow on its real tick, preserving canonical progress and inputs
+  ---
+  duration_ms: 356.5603
+  type: 'test'
+  ...
+# Subtest: SDK/SQL008 local: mounted GameHost applies a slow swallow on its real tick, preserving canonical progress and inputs
+ok 136 - SDK/SQL008 local: mounted GameHost applies a slow swallow on its real tick, preserving canonical progress and inputs
+  ---
+  duration_ms: 1491.3079
+  type: 'test'
+  ...
+# Subtest: mounted give drains through the host without filtering either endpoint or changing active powers
+ok 137 - mounted give drains through the host without filtering either endpoint or changing active powers
+  ---
+  duration_ms: 238.3788
+  type: 'test'
+  ...
+# Subtest: memory: mounted host rejects replacement before storage or input changes
+ok 138 - memory: mounted host rejects replacement before storage or input changes
+  ---
+  duration_ms: 238.1669
+  type: 'test'
+  ...
+# Subtest: SDK/SQL008 local: mounted host rejects replacement before storage or input changes
+ok 139 - SDK/SQL008 local: mounted host rejects replacement before storage or input changes
+  ---
+  duration_ms: 1201.9784
+  type: 'test'
+  ...
+# Subtest: close waits for an in-flight mounted receipt, without applying, publishing, replaying or hiding incomplete progress
+ok 140 - close waits for an in-flight mounted receipt, without applying, publishing, replaying or hiding incomplete progress
+  ---
+  duration_ms: 249.1889
+  type: 'test'
+  ...
+# Subtest: apply failure rolls back before socket detach, stops admission/timers and retains the committed SQL authority
+ok 141 - apply failure rolls back before socket detach, stops admission/timers and retains the committed SQL authority
+  ---
+  duration_ms: 245.098
+  type: 'test'
+  ...
+# Subtest: unexpected drain exceptions stop the pump once and keep the rejected close observable
+ok 142 - unexpected drain exceptions stop the pump once and keep the rejected close observable
+  ---
+  duration_ms: 229.937
+  type: 'test'
+  ...
+# Subtest: explicit mount rejects replacement, late admission, foreign scope and callback configuration without side effects
+    # Subtest: missing scope
+    ok 1 - missing scope
+      ---
+      duration_ms: 208.3559
+      type: 'test'
+      ...
+    # Subtest: callback override
+    ok 2 - callback override
+      ---
+      duration_ms: 204.3345
+      type: 'test'
+      ...
+    # Subtest: invalid limit
+    ok 3 - invalid limit
+      ---
+      duration_ms: 205.8491
+      type: 'test'
+      ...
+    # Subtest: wrong world
+    ok 4 - wrong world
+      ---
+      duration_ms: 207.0176
+      type: 'test'
+      ...
+    # Subtest: without identity verifier
+    ok 5 - without identity verifier
+      ---
+      duration_ms: 206.7226
+      type: 'test'
+      ...
+    # Subtest: connection exists
+    ok 6 - connection exists
+      ---
+      duration_ms: 226.3682
+      type: 'test'
+      ...
+    # Subtest: prior connection closed
+    ok 7 - prior connection closed
+      ---
+      duration_ms: 218.7403
+      type: 'test'
+      ...
+    # Subtest: sim advanced
+    ok 8 - sim advanced
+      ---
+      duration_ms: 309.4938
+      type: 'test'
+      ...
+    # Subtest: existing beforeTick
+    ok 9 - existing beforeTick
+      ---
+      duration_ms: 232.8625
+      type: 'test'
+      ...
+    1..9
+ok 143 - explicit mount rejects replacement, late admission, foreign scope and callback configuration without side effects
+  ---
+  duration_ms: 2223.8551
+  type: 'test'
+  ...
+# Subtest: default host leaves beforeTick and ordinary pearl commands unchanged
+ok 144 - default host leaves beforeTick and ordinary pearl commands unchanged
+  ---
+  duration_ms: 222.4811
+  type: 'test'
+  ...
+# Subtest: default createGameServer preserves signed guest saves and refuses mounting after attachment
+ok 145 - default createGameServer preserves signed guest saves and refuses mounting after attachment
+  ---
+  duration_ms: 207.8395
+  type: 'test'
+  ...
+# Subtest: createGameServer explicitly mounts before attach and reports only public staging counts
+ok 146 - createGameServer explicitly mounts before attach and reports only public staging counts
+  ---
+  duration_ms: 252.9266
+  type: 'test'
+  ...
+# Subtest: memory: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+ok 147 - memory: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+  ---
+  duration_ms: 295.1986
+  type: 'test'
+  ...
+# Subtest: SDK/SQL006: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+ok 148 - SDK/SQL006: slow receipt keeps actions until apply, then movement/ACK survive and fresh G works
+  ---
+  duration_ms: 1484.8845
+  type: 'test'
+  ...
+# Subtest: memory: retired replacement leaves inputs and owner progress untouched
+ok 149 - memory: retired replacement leaves inputs and owner progress untouched
+  ---
+  duration_ms: 237.683
+  type: 'test'
+  ...
+# Subtest: SDK/SQL008: retired replacement leaves inputs and owner progress untouched
+ok 150 - SDK/SQL008: retired replacement leaves inputs and owner progress untouched
+  ---
+  duration_ms: 1183.6397
+  type: 'test'
+  ...
+# Subtest: give does not change active power and never prepares or filters either endpoint
+ok 151 - give does not change active power and never prepares or filters either endpoint
+  ---
+  duration_ms: 216.5413
+  type: 'test'
+  ...
+# Subtest: a carried potion remains usable exactly once while old combat presses are removed
+ok 152 - a carried potion remains usable exactly once while old combat presses are removed
+  ---
+  duration_ms: 210.4906
+  type: 'test'
+  ...
+# Subtest: without adapter the accepted queue and non-G buffer behavior stays unchanged
+ok 153 - without adapter the accepted queue and non-G buffer behavior stays unchanged
+  ---
+  duration_ms: 209.5836
+  type: 'test'
+  ...
+# Subtest: trim/late carry cannot resurrect filtered actions; remaining movement and filler ACK are normal
+ok 154 - trim/late carry cannot resurrect filtered actions; remaining movement and filler ACK are normal
+  ---
+  duration_ms: 227.2188
+  type: 'test'
+  ...
+# Subtest: local save failure after filtering restores transport references and ECS buffers; SQL stays committed
+ok 155 - local save failure after filtering restores transport references and ECS buffers; SQL stays committed
+  ---
+  duration_ms: 227.3222
+  type: 'test'
+  ...
+# Subtest: builtin effect refuses preparation outside apply and detects changed queue or identity before its writes
+    # Subtest: queue
+    ok 1 - queue
+      ---
+      duration_ms: 209.4663
+      type: 'test'
+      ...
+    # Subtest: command
+    ok 2 - command
+      ---
+      duration_ms: 222.9799
+      type: 'test'
+      ...
+    # Subtest: carry
+    ok 3 - carry
+      ---
+      duration_ms: 285.2026
+      type: 'test'
+      ...
+    # Subtest: last
+    ok 4 - last
+      ---
+      duration_ms: 220.1581
+      type: 'test'
+      ...
+    # Subtest: ack
+    ok 5 - ack
+      ---
+      duration_ms: 209.6431
+      type: 'test'
+      ...
+    # Subtest: identity
+    ok 6 - identity
+      ---
+      duration_ms: 208.5252
+      type: 'test'
+      ...
+    1..6
+ok 156 - builtin effect refuses preparation outside apply and detects changed queue or identity before its writes
+  ---
+  duration_ms: 1356.869
+  type: 'test'
+  ...
+# Subtest: invalid, async and caught reentrant input adapters fence before local writes
+    # Subtest: throw
+    ok 1 - throw
+      ---
+      duration_ms: 219.1051
+      type: 'test'
+      ...
+    # Subtest: Promise
+    ok 2 - Promise
+      ---
+      duration_ms: 215.7721
+      type: 'test'
+      ...
+    # Subtest: rejected Promise
+    ok 3 - rejected Promise
+      ---
+      duration_ms: 237.4186
+      type: 'test'
+      ...
+    # Subtest: missing method
+    ok 4 - missing method
+      ---
+      duration_ms: 243.6565
+      type: 'test'
+      ...
+    # Subtest: reentry
+    ok 5 - reentry
+      ---
+      duration_ms: 334.4954
+      type: 'test'
+      ...
+    # Subtest: getter reentry
+    ok 6 - getter reentry
+      ---
+      duration_ms: 250.274
+      type: 'test'
+      ...
+    1..6
+ok 157 - invalid, async and caught reentrant input adapters fence before local writes
+  ---
+  duration_ms: 1501.5752
+  type: 'test'
+  ...
+# Subtest: failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied
+    # Subtest: apply throw
+    ok 1 - apply throw
+      ---
+      duration_ms: 234.8763
+      type: 'test'
+      ...
+    # Subtest: apply Promise
+    ok 2 - apply Promise
+      ---
+      duration_ms: 237.9613
+      type: 'test'
+      ...
+    # Subtest: assert reentry
+    ok 3 - assert reentry
+      ---
+      duration_ms: 217.1217
+      type: 'test'
+      ...
+    # Subtest: rollback throw
+    ok 4 - rollback throw
+      ---
+      duration_ms: 223.7521
+      type: 'test'
+      ...
+    1..4
+ok 158 - failed input apply/assert and rollback callback cannot leave staging-owned ECS/profile writes applied
+  ---
+  duration_ms: 914.3769
+  type: 'test'
+  ...
+# Subtest: invalidated death/revival, closed session and recycled profile never prepare an input effect
+    # Subtest: death/revival
+    ok 1 - death/revival
+      ---
+      duration_ms: 220.7487
+      type: 'test'
+      ...
+    # Subtest: closed
+    ok 2 - closed
+      ---
+      duration_ms: 205.3704
+      type: 'test'
+      ...
+    # Subtest: recycled
+    ok 3 - recycled
+      ---
+      duration_ms: 219.6372
+      type: 'test'
+      ...
+    1..3
+ok 159 - invalidated death/revival, closed session and recycled profile never prepare an input effect
+  ---
+  duration_ms: 646.1999
+  type: 'test'
+  ...
+# Subtest: adapter configuration and selector validation fail closed without transport changes
+ok 160 - adapter configuration and selector validation fail closed without transport changes
+  ---
+  duration_ms: 211.9795
+  type: 'test'
+  ...
+# Subtest: /health, /status and only the client files are served
+ok 161 - /health, /status and only the client files are served
+  ---
+  duration_ms: 372.9971
+  type: 'test'
+  ...
+# Subtest: two players join the same island, see each other move, and leaving despawns
+ok 162 - two players join the same island, see each other move, and leaving despawns
+  ---
+  duration_ms: 1213.3666
+  type: 'test'
+  ...
+# Subtest: a full instance and a wrong protocol version are refused politely
+ok 163 - a full instance and a wrong protocol version are refused politely
+  ---
+  duration_ms: 282.6355
+  type: 'test'
+  ...
+# Subtest: junk does not hurt the server: malformed messages close only that socket
+ok 164 - junk does not hurt the server: malformed messages close only that socket
+  ---
+  duration_ms: 554.2464
+  type: 'test'
+  ...
+# Subtest: names are cleaned: control characters, markup and length
+ok 165 - names are cleaned: control characters, markup and length
+  ---
+  duration_ms: 229.7453
+  type: 'test'
+  ...
+# Subtest: the island has racks, clear of colliders, and the weapons are indexed
+ok 166 - the island has racks, clear of colliders, and the weapons are indexed
+  ---
+  duration_ms: 1.2337
+  type: 'test'
+  ...
+# Subtest: the weapon only changes next to a rack (w = weapon + 1), with one equip event
+ok 167 - the weapon only changes next to a rack (w = weapon + 1), with one equip event
+  ---
+  duration_ms: 8.3645
+  type: 'test'
+  ...
+# Subtest: HELLO picks the starting weapon; describe and the snapshot carry it
+ok 168 - HELLO picks the starting weapon; describe and the snapshot carry it
+  ---
+  duration_ms: 329.4945
+  type: 'test'
+  ...
+# Subtest: client prediction stays exact through weapon swaps at a rack; the equip is shown once
+ok 169 - client prediction stays exact through weapon swaps at a rack; the equip is shown once
+  ---
+  duration_ms: 325.6029
+  type: 'test'
+  ...
+# Subtest: shots are judged against the enemies as the shooter saw them (lag compensation)
+ok 170 - shots are judged against the enemies as the shooter saw them (lag compensation)
+  ---
+  duration_ms: 19.3198
+  type: 'test'
+  ...
+1..170
+# tests 206
+# suites 0
+# pass 206
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66976.7546

@@ -1,0 +1,207 @@
+{
+  "schemaVersion": 1,
+  "family": "palm-textures-v1",
+  "generator": {
+    "script": "tools/prepare-palm-textures.mjs",
+    "scriptSha256": "4f3a93b247c75969b2737e5ee4d5350bdd41be1a149d21da68c80bce7b0ba452",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; no explicit gamma/color conversion"
+  },
+  "sources": [
+    {
+      "id": "albedo",
+      "source": "materials/texturas pintadas a mano palmera.png",
+      "path": "docs/art/source/palm-textures-v1/albedo.png",
+      "sha256": "8ab9ed41a605c33bea8a5d3e64961b252f623c61f5698726ed53457b9dfd968d",
+      "bytes": 3023857,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "id": "normal",
+      "source": "materials/Atlas normal mapas de palmeras tropicales.png",
+      "path": "docs/art/source/palm-textures-v1/normal.png",
+      "sha256": "a3e191a02dbf2cee7db2672a7e7f4bd2655abccda9089418bde487ebe4e968f1",
+      "bytes": 2918102,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "tiles": [
+    {
+      "id": "trunk",
+      "crop": [
+        32,
+        18,
+        163,
+        832
+      ],
+      "alpha": "opaque"
+    },
+    {
+      "id": "leaf-a",
+      "crop": [
+        647,
+        6,
+        224,
+        584
+      ],
+      "seed": [
+        113,
+        294
+      ],
+      "alpha": "seeded-candidate-mask"
+    },
+    {
+      "id": "leaf-b",
+      "crop": [
+        856,
+        6,
+        221,
+        516
+      ],
+      "seed": [
+        114,
+        294
+      ],
+      "alpha": "seeded-candidate-mask"
+    },
+    {
+      "id": "coconut",
+      "crop": [
+        396,
+        494,
+        124,
+        132
+      ],
+      "alpha": "opaque"
+    }
+  ],
+  "uvLayout": {
+    "origin": "pixel top-left; TextureLoader flipY=true",
+    "order": [
+      "trunk",
+      "leaf-a",
+      "leaf-b",
+      "coconut"
+    ],
+    "tilesPerRow": 2,
+    "desktop": {
+      "atlas": 1024,
+      "tile": 512,
+      "content": 480,
+      "gutter": 16
+    },
+    "mobile": {
+      "atlas": 512,
+      "tile": 256,
+      "content": 240,
+      "gutter": 8
+    },
+    "shaderInset": [
+      0.015625,
+      0.015625
+    ],
+    "shaderSpan": [
+      0.46875,
+      0.46875
+    ],
+    "sourceCrops": {
+      "trunk": [
+        32,
+        18,
+        163,
+        832
+      ],
+      "leaf-a": [
+        647,
+        6,
+        224,
+        584
+      ],
+      "leaf-b": [
+        856,
+        6,
+        221,
+        516
+      ],
+      "coconut": [
+        396,
+        494,
+        124,
+        132
+      ]
+    }
+  },
+  "mask": {
+    "rule": "max(R,G,B)-min(R,G,B) < 18 and mean(R,G,B) in [24,75]",
+    "scope": "leaf-a and leaf-b only; trunk/coconut stay opaque",
+    "blackInk": "pixels with mean below 24 stay opaque",
+    "normalOutside": [
+      128,
+      128,
+      255
+    ],
+    "edgeColorDilationPixels": 2,
+    "status": "candidate heuristic; exact mask has not been manually approved"
+  },
+  "normalPairing": "same UV crops; visually registered only, bake alignment not verified",
+  "derivatives": [
+    {
+      "id": "albedo-desktop",
+      "path": "assets/textures/palm-family-v1/albedo-desktop.webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 195930,
+      "sha256": "7216e8492755efdfe71358802decd6936bdc456196bcf5433e2fa86d9b66dfdd",
+      "encoding": "WebP quality 88"
+    },
+    {
+      "id": "normal-desktop",
+      "path": "assets/textures/palm-family-v1/normal-desktop.webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 952430,
+      "sha256": "8b0149a340ffb57912b0caf25cfff537c2156a1c566d6847ca309aa97546455e",
+      "encoding": "lossless WebP"
+    },
+    {
+      "id": "albedo-mobile",
+      "path": "assets/textures/palm-family-v1/albedo-mobile.webp",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "bytes": 70156,
+      "sha256": "a1878283b4c99b8f854fd29bcb2ad8c866520151f30359d9224889a3114bc937",
+      "encoding": "WebP quality 85"
+    },
+    {
+      "id": "normal-mobile",
+      "path": "assets/textures/palm-family-v1/normal-mobile.webp",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "bytes": 325230,
+      "sha256": "2ed950a4f2466a92775db22e8b09b6ab50ecb7c432bc5b0ecaa6c6bef80973ea",
+      "encoding": "lossless WebP"
+    }
+  ],
+  "aggregateRuntimeBytes": 1543746
+}

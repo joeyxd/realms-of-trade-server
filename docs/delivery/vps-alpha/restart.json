@@ -1,0 +1,52 @@
+{
+  "shutdownExitCode": 0,
+  "oomKilled": false,
+  "worldCheckpointAfterClose": {
+    "version": 385,
+    "hash": "b3afdd6d92d8ad0af81943745ec068cb8f1a9209c7aee864fbbee159c186ead2",
+    "worldId": "marea-negra"
+  },
+  "restartStatus": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.16",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 78,
+    "uptime": 2,
+    "stepMs": 3.447,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 385,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  }
+}

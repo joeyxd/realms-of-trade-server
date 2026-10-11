@@ -1,0 +1,1076 @@
+{
+  "generatedAt": "2026-10-08T06:39:30.738Z",
+  "purpose": "Verify a real signed SAVE restores the same damaged raft at its safe saved sea pose while the player returns to checkpoint without pilot or crew; recover through the harbor UI, repair once, and reload the repaired docked save.",
+  "harness": "Three fresh isolated ephemeral GameHosts per viewport, same GAME.seed, HMAC save secret and browser localStorage slot, in-memory stores; local Three.js/GSAP/font routes and normal Chrome renderer; no .env, SQL or external hosts.",
+  "fixture": "Trusted host-side QA setup writes a safe away pose, exact 30/60 foundation damage, and madera cargo into the owner profile, then asks LocalServer to issue its normal HMAC-signed SAVE over the real browser transport. Reconnect and all recovery/repair actions use the real UI and client/server protocol. Damage and saved placement are fixtures, not proof of a real coastal impact.",
+  "expected": {
+    "restored": {
+      "pieceHp": 30,
+      "pieceMaxHp": 60,
+      "hold": {
+        "madera": 3
+      },
+      "pilot": false,
+      "crew": false,
+      "playerAtCheckpoint": true
+    },
+    "repaired": {
+      "pieceHp": 60,
+      "pieceMaxHp": 60,
+      "hold": {
+        "madera": 1
+      },
+      "pack": {
+        "madera": 1
+      },
+      "voyage": null
+    }
+  },
+  "protocolVersion": 26,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "raft-recovery-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-00-signed-recovery-away.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-01-recovered-at-port.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-00-damaged-at-port.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-01-repair-forecast.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-02-repaired-at-port.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-02-repaired-save-before-reload.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c11-raft-recovery\\raft-recovery-desktop-1280x720-2026-10-08T06-39-30-738Z-03-fresh-reload-repaired-docked.png"
+      ],
+      "fixture": {
+        "shipId": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+        "partId": "p1",
+        "piece": [
+          "foundation",
+          0,
+          0,
+          0,
+          0
+        ],
+        "blueprint": [
+          [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            "foundation",
+            1,
+            1,
+            0,
+            0
+          ],
+          [
+            "sail",
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            "crate",
+            1,
+            1,
+            0,
+            0
+          ]
+        ],
+        "hold": {
+          "madera": 3
+        },
+        "pack": {
+          "madera": 1
+        },
+        "safeAwayPose": [
+          -188,
+          -188,
+          0.7
+        ],
+        "home": {
+          "x": 124.82204313379856,
+          "z": 101.19511994389497
+        },
+        "seed": 99282957,
+        "saveTransport": "LocalServer.sendSave -> actual browser WebSocket -> main.js storeSave",
+        "savedBlobVerifiedByServerSigner": true,
+        "damageSource": "trusted fixture applyPartDamage; not a real impact"
+      },
+      "firstSignedSave": {
+        "key": "mareanegra.v1.save.online.127.0.0.1:60318",
+        "length": 1712,
+        "condition": {
+          "v": 1,
+          "next": 7,
+          "entries": [
+            [
+              "p1",
+              "foundation",
+              0,
+              0,
+              0,
+              0,
+              30
+            ],
+            [
+              "p2",
+              "foundation",
+              1,
+              0,
+              0,
+              0,
+              60
+            ],
+            [
+              "p3",
+              "foundation",
+              0,
+              1,
+              0,
+              0,
+              60
+            ],
+            [
+              "p4",
+              "foundation",
+              1,
+              1,
+              0,
+              0,
+              60
+            ],
+            [
+              "p5",
+              "sail",
+              0,
+              0,
+              0,
+              0,
+              40
+            ],
+            [
+              "p6",
+              "crate",
+              1,
+              1,
+              0,
+              0,
+              15
+            ]
+          ]
+        },
+        "voyage": {
+          "v": 1,
+          "seed": 99282957,
+          "pose": [
+            -188,
+            -188,
+            0.7
+          ]
+        }
+      },
+      "reconnect": {
+        "playerCheckpoint": {
+          "x": 102.53048327204941,
+          "z": 94.04520189781083
+        },
+        "voyage": {
+          "active": true,
+          "shipId": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+          "phase": "shore",
+          "recovery": true,
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "yaw": 0.9097531579442095
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "visited": true,
+          "distanceHome": 426.01813115144284,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "yaw": 0.9097531579442095,
+            "label": "Puerto"
+          }
+        },
+        "navalActive": false,
+        "aboard": false,
+        "raft": {
+          "shipId": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+          "pose": {
+            "x": -188,
+            "z": -188
+          },
+          "part": {
+            "id": "p1",
+            "part": [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            "maxHp": 60,
+            "hp": 30
+          },
+          "hold": {
+            "madera": 3
+          },
+          "blueprint": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ]
+        }
+      },
+      "recoveryUi": {
+        "phase": "BALSA RECUPERABLE · POSICIÓN GUARDADA",
+        "routeLabel": "RECUPERAR EN PUERTO",
+        "target": "Puerto",
+        "objective": null,
+        "actions": []
+      },
+      "harborRecovery": {
+        "action": "real prompt click/tap: Recuperar en puerto",
+        "shipId": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+        "sameSource": true,
+        "mode": "port",
+        "pose": {
+          "x": 124.82204313379856,
+          "z": 101.19511994389497
+        },
+        "condition": {
+          "hull": {
+            "hp": 210,
+            "maxHp": 240,
+            "fraction": 0.875,
+            "destroyed": false,
+            "total": 4,
+            "disabled": false
+          },
+          "entries": [
+            {
+              "index": 0,
+              "id": "p1",
+              "piece": [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 30,
+              "maxHp": 60,
+              "cost": {
+                "madera": 2
+              }
+            },
+            {
+              "index": 1,
+              "id": "p2",
+              "piece": [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 2,
+              "id": "p3",
+              "piece": [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 3,
+              "id": "p4",
+              "piece": [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 4,
+              "id": "p5",
+              "piece": [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 40,
+              "maxHp": 40,
+              "cost": {}
+            },
+            {
+              "index": 5,
+              "id": "p6",
+              "piece": [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 15,
+              "maxHp": 15,
+              "cost": {}
+            }
+          ]
+        },
+        "hold": {
+          "madera": 3
+        },
+        "voyage": {
+          "active": false
+        }
+      },
+      "repairChoice": {
+        "mode": "repair",
+        "active": true,
+        "target": {
+          "id": "p1",
+          "piece": [
+            "foundation",
+            0,
+            0,
+            0,
+            0
+          ],
+          "hp": 30,
+          "maxHp": 60,
+          "cost": {
+            "madera": 2
+          }
+        },
+        "text": "Cimiento · 30/60 HP\nReparar: 2 madera · casilla 0, 0 · nivel 0",
+        "status": "Cimiento · 30/60 HP · casilla 0, 0 · Revisa la pieza y confirma para repararla.",
+        "action": "Confirmar reparación",
+        "disabled": false,
+        "rect": {
+          "x": 1132.265625,
+          "y": 352.25,
+          "width": 121.734375,
+          "height": 45,
+          "top": 352.25,
+          "right": 1254,
+          "bottom": 397.25,
+          "left": 1132.265625
+        },
+        "listText": "Cimiento · 30/60 HP\nCasilla 0, 0 · nivel 0 · 2 madera",
+        "capacity": {
+          "id": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+          "raftRev": 2,
+          "tradeRev": 1,
+          "mode": "port",
+          "dryMass": 21,
+          "holdMass": 9,
+          "packMass": 3,
+          "cargoMass": 12,
+          "totalMass": 36,
+          "buoyancy": 56,
+          "cargoMax": 16,
+          "structuralLimit": 40,
+          "safeDisplacement": 50.4,
+          "totalLimit": 40,
+          "crewCount": 1,
+          "crewMass": 3,
+          "guestMass": 0,
+          "freeMass": 4,
+          "overMass": 0,
+          "status": "heavy",
+          "load": 0.6428571428571429,
+          "holdVolume": 9,
+          "holdFree": 0,
+          "holdCap": 6,
+          "packVolume": 3,
+          "packFree": 7,
+          "packCap": 10,
+          "condition": {
+            "hull": {
+              "hp": 210,
+              "maxHp": 240,
+              "fraction": 0.875,
+              "destroyed": false,
+              "total": 4,
+              "disabled": false
+            },
+            "entries": [
+              {
+                "index": 0,
+                "id": "p1",
+                "piece": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 30,
+                "maxHp": 60,
+                "cost": {
+                  "madera": 2
+                }
+              },
+              {
+                "index": 1,
+                "id": "p2",
+                "piece": [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 2,
+                "id": "p3",
+                "piece": [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 3,
+                "id": "p4",
+                "piece": [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 4,
+                "id": "p5",
+                "piece": [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 40,
+                "maxHp": 40,
+                "cost": {}
+              },
+              {
+                "index": 5,
+                "id": "p6",
+                "piece": [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 15,
+                "maxHp": 15,
+                "cost": {}
+              }
+            ]
+          }
+        }
+      },
+      "repair": {
+        "interaction": "mouse click on Confirmar reparación",
+        "sentAck": {
+          "send": {
+            "type": "raft",
+            "op": "repair",
+            "id": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+            "expectedRev": 2,
+            "opId": "4fab7f64-7297-4f8f-a552-82cd2dfe0b30",
+            "index": 0,
+            "piece": [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            "partId": "p1",
+            "expectedHp": 30
+          },
+          "ack": {
+            "type": "raftEdit",
+            "op": "repair",
+            "ok": true,
+            "why": "",
+            "rev": 3,
+            "opId": "4fab7f64-7297-4f8f-a552-82cd2dfe0b30",
+            "repair": {
+              "partId": "p1",
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {
+                "madera": 2
+              },
+              "reconstructed": false
+            }
+          },
+          "clicks": 1
+        },
+        "before": {
+          "shipRev": 2,
+          "hold": {
+            "madera": 3
+          },
+          "pack": {
+            "madera": 1
+          },
+          "blueprint": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "hp": 30,
+          "maxHp": 60
+        },
+        "after": {
+          "shipRev": 3,
+          "hold": {
+            "madera": 1
+          },
+          "pack": {
+            "madera": 1
+          },
+          "blueprint": [
+            [
+              "foundation",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              0,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              0,
+              1,
+              0,
+              0
+            ],
+            [
+              "foundation",
+              1,
+              1,
+              0,
+              0
+            ],
+            [
+              "sail",
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              "crate",
+              1,
+              1,
+              0,
+              0
+            ]
+          ],
+          "condition": {
+            "hull": {
+              "hp": 240,
+              "maxHp": 240,
+              "fraction": 1,
+              "destroyed": false,
+              "total": 4,
+              "disabled": false
+            },
+            "entries": [
+              {
+                "index": 0,
+                "id": "p1",
+                "piece": [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 1,
+                "id": "p2",
+                "piece": [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 2,
+                "id": "p3",
+                "piece": [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 3,
+                "id": "p4",
+                "piece": [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 60,
+                "maxHp": 60,
+                "cost": {}
+              },
+              {
+                "index": 4,
+                "id": "p5",
+                "piece": [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "hp": 40,
+                "maxHp": 40,
+                "cost": {}
+              },
+              {
+                "index": 5,
+                "id": "p6",
+                "piece": [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                "hp": 15,
+                "maxHp": 15,
+                "cost": {}
+              }
+            ]
+          },
+          "samePartId": true,
+          "sameTuple": true
+        }
+      },
+      "repairedSave": {
+        "key": "mareanegra.v1.save.online.127.0.0.1:60318",
+        "length": 1656,
+        "signatureVerified": true,
+        "ship": {
+          "kind": "raft",
+          "id": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+          "rev": 3,
+          "berth": 0,
+          "berthBasis": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "n": "La Balsa",
+          "grid": {
+            "parts": [
+              [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ]
+            ],
+            "work": {}
+          },
+          "condition": {
+            "v": 1,
+            "next": 7,
+            "entries": [
+              [
+                "p1",
+                "foundation",
+                0,
+                0,
+                0,
+                0,
+                60
+              ],
+              [
+                "p2",
+                "foundation",
+                1,
+                0,
+                0,
+                0,
+                60
+              ],
+              [
+                "p3",
+                "foundation",
+                0,
+                1,
+                0,
+                0,
+                60
+              ],
+              [
+                "p4",
+                "foundation",
+                1,
+                1,
+                0,
+                0,
+                60
+              ],
+              [
+                "p5",
+                "sail",
+                0,
+                0,
+                0,
+                0,
+                40
+              ],
+              [
+                "p6",
+                "crate",
+                1,
+                1,
+                0,
+                0,
+                15
+              ]
+            ]
+          },
+          "voyage": null,
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "at": "aldea",
+          "hp": 1,
+          "look": null
+        },
+        "previousBlobLength": 1712
+      },
+      "finalReload": {
+        "shipId": "575a4403-eace-44d3-9833-4e8892d1c391:r1",
+        "partId": "p1",
+        "hp": 60,
+        "maxHp": 60,
+        "voyage": null,
+        "mode": "port",
+        "hold": {
+          "madera": 1
+        },
+        "pack": {
+          "madera": 1
+        },
+        "pilotActive": false,
+        "condition": {
+          "hull": {
+            "hp": 240,
+            "maxHp": 240,
+            "fraction": 1,
+            "destroyed": false,
+            "total": 4,
+            "disabled": false
+          },
+          "entries": [
+            {
+              "index": 0,
+              "id": "p1",
+              "piece": [
+                "foundation",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 1,
+              "id": "p2",
+              "piece": [
+                "foundation",
+                1,
+                0,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 2,
+              "id": "p3",
+              "piece": [
+                "foundation",
+                0,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 3,
+              "id": "p4",
+              "piece": [
+                "foundation",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 60,
+              "maxHp": 60,
+              "cost": {}
+            },
+            {
+              "index": 4,
+              "id": "p5",
+              "piece": [
+                "sail",
+                0,
+                0,
+                0,
+                0
+              ],
+              "hp": 40,
+              "maxHp": 40,
+              "cost": {}
+            },
+            {
+              "index": 5,
+              "id": "p6",
+              "piece": [
+                "crate",
+                1,
+                1,
+                0,
+                0
+              ],
+              "hp": 15,
+              "maxHp": 15,
+              "cost": {}
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "failures": [],
+  "finishedAt": "2026-10-08T06:39:51.707Z",
+  "status": "passed"
+}

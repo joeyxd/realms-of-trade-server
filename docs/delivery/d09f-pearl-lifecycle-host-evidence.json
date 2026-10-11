@@ -1,0 +1,127 @@
+{
+  "slice": "D09f-2b.39",
+  "date": "2026-10-09",
+  "base": "4cd3e56d0585a44553867c0576bbbf968aed0dee",
+  "isolatedTestTree": "be9d0b3c0522676fe7d2a5d89fadcadc4b039daf",
+  "implementation": "Optional clock-bound pearl lifecycle and joint ground startup in GameHost; tick completion owner retained",
+  "test": {
+    "code": 0,
+    "node": "v24.14.0",
+    "concurrency": 2,
+    "selectedCases": 512,
+    "newCases": 35,
+    "runnerDurationMs": 112677.9277,
+    "files": [
+      "tests/pearl-lifecycle-host.test.mjs",
+      "tests/pearl-lifecycle-boundary.test.mjs",
+      "tests/pearl-lifecycle-host-sql.test.mjs",
+      "tests/death-drop-host.test.mjs",
+      "tests/death-drop-host-boundary.test.mjs",
+      "tests/death-drop-host-sql.test.mjs",
+      "tests/combat-death-host.test.mjs",
+      "tests/pearl-host-mount.test.mjs",
+      "tests/pearl-host-startup.test.mjs",
+      "tests/pearl-input-boundary.test.mjs",
+      "tests/pearl-command-access.test.mjs",
+      "tests/pearl-tick-apply.test.mjs",
+      "tests/pearl-tick-access.test.mjs",
+      "tests/pearl-tick-effects.test.mjs",
+      "tests/pearl-profile-io.test.mjs",
+      "tests/ground-deadline-integration.test.mjs",
+      "tests/ground-deadline-clock.test.mjs",
+      "tests/ground-deadline-sql.test.mjs",
+      "tests/death-ground-clock.test.mjs",
+      "tests/death-ground-clock-sql.test.mjs",
+      "tests/pearl-leave-clock.test.mjs",
+      "tests/pearl-leave-clock-sql.test.mjs",
+      "tests/pearl-pickup-staging.test.mjs",
+      "tests/pearl-pickup-staging-sql.test.mjs",
+      "tests/pearl-return-staging.test.mjs",
+      "tests/pearl-return-staging-sql.test.mjs",
+      "tests/pearl-startup.test.mjs",
+      "tests/pearl-startup-sql.test.mjs",
+      "tests/pearl-startup-gate.test.mjs",
+      "tests/pearl-no-sale.test.mjs",
+      "tests/store-host.test.mjs",
+      "tests/world-host.test.mjs",
+      "tests/server.test.mjs",
+      "tests/net.test.mjs"
+    ],
+    "summary": [
+      "ℹ tests 512",
+      "ℹ pass 512",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 112677.9277"
+    ],
+    "log": "shots/review/m5-pearl-lifecycle-host/test.log",
+    "logSha256": "19998af9ecf2517a283d3b621428c39d5754721fa16a6eac21a90947cf2fec1e",
+    "fullProof": "shots/review/m5-pearl-lifecycle-host/test-evidence.json"
+  },
+  "stability": {
+    "algorithm": "sha256 UTF-8 LF",
+    "files": 204,
+    "changed": [],
+    "beforeAggregateSha256": "3b9e60eaaf1ec32340463485e4f6b1b1eeec611c870296cce736289298579b04",
+    "afterAggregateSha256": "3b9e60eaaf1ec32340463485e4f6b1b1eeec611c870296cce736289298579b04",
+    "scope": "literal relative source and SQL fixture closure plus manifests and static index; isolated staged Git tree; shared node_modules dependency bytes not pinned"
+  },
+  "syntax": {
+    "files": 10,
+    "passed": true
+  },
+  "visual": {
+    "required": false,
+    "reason": "Server/runtime boundary only; no UI or assets changed"
+  },
+  "sql": {
+    "existingMigrations": "001-013",
+    "transport": "Supabase SDK with local PGlite RPC fixtures",
+    "freshHosts": true,
+    "sameNodeProcess": true,
+    "sameDatabaseInstance": true,
+    "databaseReopened": false,
+    "processRestart": false,
+    "liveSupabase": false,
+    "manualClockCheckpoints": true,
+    "clockGameplayAtomicityProven": false
+  },
+  "unreal": [
+    {
+      "file": "C:/Unreal/survival project/SimpleMultiplayerSurvival/Content/Dreamrise_SMSK/Blueprints/BP_LootBox.uasset",
+      "bytes": 53960,
+      "decision": "Interaction reference; no portable Node persistence or scheduling logic"
+    },
+    {
+      "file": "C:/Unreal/survival project/SimpleMultiplayerSurvival/Content/Dreamrise_SMSK/Assets/Meshes/SM_StoragePart_03.uasset",
+      "bytes": 24248,
+      "decision": "Existing A02 visual prop; no authority logic or new export"
+    }
+  ],
+  "activation": {
+    "optionalHostAssembly": true,
+    "cliEnabled": false,
+    "defaultsChanged": false,
+    "newSql": false,
+    "envReadOrChanged": false,
+    "profileSchemaChanged": false,
+    "protocolChanged": false,
+    "deployed": false
+  },
+  "preparatoryFailures": [
+    "Reservation cleanup called active after release; fixture corrected",
+    "Two completion-owner replacement tests reproduced publication bypass; runtime fixed and cohort passed",
+    "A shared-checkout rerun passed 512 cases but detected concurrent source drift; final acceptance moved to an isolated staged tree",
+    "First isolated export included concurrent host edits with an unstaged import; preserved them in the working tree and selected the original owned host blob before final acceptance"
+  ],
+  "remaining": [
+    "clock authority/startup/offline/crash policy",
+    "legacy domain certification/backfill",
+    "trusted durable creation from loot/chests",
+    "leases/finalizer",
+    "permanent affinity",
+    "real server restart/WAN/Supabase acceptance"
+  ]
+}

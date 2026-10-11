@@ -1,0 +1,621 @@
+{
+  "source_reports": {
+    "ActionRPG": {
+      "csv_rows": 1086,
+      "json_files": 1086,
+      "rowcount_match": true,
+      "csv_sum_bytes": 524074501,
+      "json_bytes": 524074501,
+      "bytes_match": true
+    },
+    "Survival": {
+      "csv_rows": 1779,
+      "json_files": 1779,
+      "rowcount_match": true,
+      "csv_sum_bytes": 2561311525,
+      "json_bytes": 2561311525,
+      "bytes_match": true
+    },
+    "MyProject": {
+      "csv_rows": 4541,
+      "json_files": 4541,
+      "rowcount_match": true,
+      "csv_sum_bytes": 3848866718,
+      "json_bytes": 3848866718,
+      "bytes_match": true
+    }
+  },
+  "all_reconciliations_pass": true,
+  "per_project_rollups": {
+    "ActionRPG": {
+      "scope_as_in_source_inventory": "Content only",
+      "included_inventory_rows": 1086,
+      "included_inventory_bytes": 524074501,
+      "by_bucket": {
+        "Content": {
+          "files": 1086,
+          "bytes": 524074501
+        }
+      }
+    },
+    "Survival": {
+      "scope_as_in_source_inventory": "Content only",
+      "included_inventory_rows": 1779,
+      "included_inventory_bytes": 2561311525,
+      "by_bucket": {
+        "Content": {
+          "files": 1779,
+          "bytes": 2561311525
+        }
+      }
+    },
+    "MyProject": {
+      "scope_as_in_source_inventory": "Content, Plugins, Source if present",
+      "included_inventory_rows": 4541,
+      "included_inventory_bytes": 3848866718,
+      "by_bucket": {
+        "Content": {
+          "files": 4248,
+          "bytes": 3844377199
+        },
+        "Plugins": {
+          "files": 293,
+          "bytes": 4489519
+        }
+      }
+    }
+  },
+  "combined_duplicate_inclusive": {
+    "duplicate_inclusive_files": 7406,
+    "duplicate_inclusive_bytes": 6934252744,
+    "duplicate_inclusive_gib_binary": 6.458,
+    "content_files": 7113,
+    "content_bytes": 6929763225,
+    "plugin_files": 293,
+    "plugin_bytes": 4489519,
+    "source_files": 0,
+    "source_bytes": 0,
+    "scope_note": "Duplicate-inclusive physical inventory rows as published; ActionRPG/Survival reports inventory Content only, while MyProject also inventories Plugins/Source. Zero rows outside a report's stated scope do not assert the source folder was absent."
+  },
+  "packs_csv_rows": 24,
+  "shared_top_pack_overlaps": [
+    {
+      "content_top_pack": "ActionRPGStarterSystem",
+      "project_pairs": {
+        "ActionRPG vs MyProject": {
+          "shared_pack_relative_paths": 1077,
+          "same_size_row_pairs": 179,
+          "different_size_row_pairs": 898
+        }
+      }
+    },
+    {
+      "content_top_pack": "BigNiagaraBundle",
+      "project_pairs": {
+        "Survival vs MyProject": {
+          "shared_pack_relative_paths": 67,
+          "same_size_row_pairs": 0,
+          "different_size_row_pairs": 67
+        }
+      }
+    },
+    {
+      "content_top_pack": "Dreamrise_SMSK",
+      "project_pairs": {
+        "Survival vs MyProject": {
+          "shared_pack_relative_paths": 334,
+          "same_size_row_pairs": 0,
+          "different_size_row_pairs": 334
+        }
+      }
+    },
+    {
+      "content_top_pack": "NiagaraExamples",
+      "project_pairs": {
+        "Survival vs MyProject": {
+          "shared_pack_relative_paths": 669,
+          "same_size_row_pairs": 669,
+          "different_size_row_pairs": 0
+        }
+      }
+    },
+    {
+      "content_top_pack": "SwordTrailVFX",
+      "project_pairs": {
+        "Survival vs MyProject": {
+          "shared_pack_relative_paths": 98,
+          "same_size_row_pairs": 98,
+          "different_size_row_pairs": 0
+        }
+      }
+    },
+    {
+      "content_top_pack": "sA_Megapack_v1",
+      "project_pairs": {
+        "Survival vs MyProject": {
+          "shared_pack_relative_paths": 563,
+          "same_size_row_pairs": 8,
+          "different_size_row_pairs": 555
+        }
+      }
+    }
+  ],
+  "sha256_samples_under_20MiB_per_shared_pack": [
+    {
+      "pack": "ActionRPGStarterSystem",
+      "pack_relative_path": "Inputs/Actions/IA_ALT.uasset",
+      "copies": [
+        {
+          "project": "ActionRPG",
+          "relative_path": "ActionRPGStarterSystem/Inputs/Actions/IA_ALT.uasset",
+          "bytes": 1232,
+          "disk_bytes": 1232,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "432e4d6425501547ec61d43c1f7129589b9bc0412d1ff4d6a594965f8a2bc798"
+        },
+        {
+          "project": "MyProject",
+          "relative_path": "Content/ActionRPGStarterSystem/Inputs/Actions/IA_ALT.uasset",
+          "bytes": 1150,
+          "disk_bytes": 1150,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "53c0f0ae04ea34521d6b5436d8a08359499c485e4b6412fff01a1d77350afb88"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "ActionRPGStarterSystem",
+      "pack_relative_path": "Inputs/Actions/Turn.uasset",
+      "copies": [
+        {
+          "project": "ActionRPG",
+          "relative_path": "ActionRPGStarterSystem/Inputs/Actions/Turn.uasset",
+          "bytes": 1418,
+          "disk_bytes": 1418,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "4c5e19643c429023394c44be06995ab3014e665ba6a9deb3ba0a8fb6281e13d9"
+        },
+        {
+          "project": "MyProject",
+          "relative_path": "Content/ActionRPGStarterSystem/Inputs/Actions/Turn.uasset",
+          "bytes": 1338,
+          "disk_bytes": 1338,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "326a88de1689dc0f3ac06864b2f551dee26d2ac5e5af617d03373adfcba8f34f"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "ActionRPGStarterSystem",
+      "pack_relative_path": "Inputs/Actions/LookUp.uasset",
+      "copies": [
+        {
+          "project": "ActionRPG",
+          "relative_path": "ActionRPGStarterSystem/Inputs/Actions/LookUp.uasset",
+          "bytes": 1428,
+          "disk_bytes": 1428,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "037a76b0e344008f1b6780561187055afd95b3fc6e9710cc1bddbc48480b217b"
+        },
+        {
+          "project": "MyProject",
+          "relative_path": "Content/ActionRPGStarterSystem/Inputs/Actions/LookUp.uasset",
+          "bytes": 1346,
+          "disk_bytes": 1346,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "0a1933716ad2990254c09eb28fb2d19732097e8afba7f826dfc2864de3f51f93"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "BigNiagaraBundle",
+      "pack_relative_path": "NiagaraBlackAndWhite/Materials/M_DefaultSpriteMaterialBlack.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/BigNiagaraBundle/NiagaraBlackAndWhite/Materials/M_DefaultSpriteMaterialBlack.uasset",
+          "bytes": 89309,
+          "disk_bytes": 89309,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "4b36700b63083c99cf3e61b8180dbd3df1802f84685babe68d8b2a98477889fc"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "BigNiagaraBundle/NiagaraBlackAndWhite/Materials/M_DefaultSpriteMaterialBlack.uasset",
+          "bytes": 88116,
+          "disk_bytes": 88116,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "7703d4d02650b6be69cf4a1983e449d18d8e7459417ec3d2df245c583fd16498"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "BigNiagaraBundle",
+      "pack_relative_path": "NiagaraHologramPack/Meshes/SM_Octagon.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/BigNiagaraBundle/NiagaraHologramPack/Meshes/SM_Octagon.uasset",
+          "bytes": 97397,
+          "disk_bytes": 97397,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "cdc78c9c1e80d9906fd341e968e1418753f55734f34fac797d671d298d2f83cd"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "BigNiagaraBundle/NiagaraHologramPack/Meshes/SM_Octagon.uasset",
+          "bytes": 95679,
+          "disk_bytes": 95679,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "5a450666df89dd87bca8db0da12082034cc6dfdfbcc713f9ef48c3bb3b5da7f0"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "BigNiagaraBundle",
+      "pack_relative_path": "NiagaraHologramPack/Meshes/SM_City.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/BigNiagaraBundle/NiagaraHologramPack/Meshes/SM_City.uasset",
+          "bytes": 145732,
+          "disk_bytes": 145732,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "b62cd003a077b467997b579898a1e200822b388bea765d4939b24d291660b871"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "BigNiagaraBundle/NiagaraHologramPack/Meshes/SM_City.uasset",
+          "bytes": 146162,
+          "disk_bytes": 146162,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "3ea81a6f6fad282467772c407db53a0e70d0f1ab9180771c547efdb1f931b3ef"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "Dreamrise_SMSK",
+      "pack_relative_path": "Levels/Dirt_LayerInfo.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/Dreamrise_SMSK/Levels/Dirt_LayerInfo.uasset",
+          "bytes": 1560,
+          "disk_bytes": 1560,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "240ab133a121a8023fc3809d4b10c0cfbadacad901339a2ce003f4f1464ef35c"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "Dreamrise_SMSK/Levels/Dirt_LayerInfo.uasset",
+          "bytes": 1584,
+          "disk_bytes": 1584,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "df795fe492200a080f1455dd660c299af01c45d07725590ec2dda2880e097ca4"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "Dreamrise_SMSK",
+      "pack_relative_path": "Input/Actions/IA_Look.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/Dreamrise_SMSK/Input/Actions/IA_Look.uasset",
+          "bytes": 1332,
+          "disk_bytes": 1332,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "208d95a5df425ed820adb7f81ef025a2415915e8c5eb01e13fa5940d43c94c54"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "Dreamrise_SMSK/Input/Actions/IA_Look.uasset",
+          "bytes": 1590,
+          "disk_bytes": 1590,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "65b62f920029413f98b67346d6ec7a8dc30d7fe9ea55df32906bca3a44b1697a"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "Dreamrise_SMSK",
+      "pack_relative_path": "Input/Actions/IA_Move.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/Dreamrise_SMSK/Input/Actions/IA_Move.uasset",
+          "bytes": 1332,
+          "disk_bytes": 1332,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "173df904bce18198a7b820493707192621f7efbe49f0d556da2b2ab3c79c2bc1"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "Dreamrise_SMSK/Input/Actions/IA_Move.uasset",
+          "bytes": 1590,
+          "disk_bytes": 1590,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "79da61f7251bf658d0bbb2b0a8cdc5b3dcd1429fcdfa9b13a512922194bb57c5"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "NiagaraExamples",
+      "pack_relative_path": "Gallery/Inputs/Actions/IA_Aim.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/NiagaraExamples/Gallery/Inputs/Actions/IA_Aim.uasset",
+          "bytes": 1195,
+          "disk_bytes": 1195,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "3def21f3210ff515a2e54236733e2fbb0969ce90f58993fddf3ba896b302be54"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "NiagaraExamples/Gallery/Inputs/Actions/IA_Aim.uasset",
+          "bytes": 1195,
+          "disk_bytes": 1195,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "3def21f3210ff515a2e54236733e2fbb0969ce90f58993fddf3ba896b302be54"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "NiagaraExamples",
+      "pack_relative_path": "Gallery/Inputs/Actions/IA_Ping.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/NiagaraExamples/Gallery/Inputs/Actions/IA_Ping.uasset",
+          "bytes": 1200,
+          "disk_bytes": 1200,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "a2a007284acb9426689027c6d03bc99c5c3cd2ee0affb05e7c7c7f07a3345f1f"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "NiagaraExamples/Gallery/Inputs/Actions/IA_Ping.uasset",
+          "bytes": 1200,
+          "disk_bytes": 1200,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "a2a007284acb9426689027c6d03bc99c5c3cd2ee0affb05e7c7c7f07a3345f1f"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "NiagaraExamples",
+      "pack_relative_path": "Gallery/Inputs/Actions/IA_Interact.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/NiagaraExamples/Gallery/Inputs/Actions/IA_Interact.uasset",
+          "bytes": 1220,
+          "disk_bytes": 1220,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "e7d0bdc0b174584194ec040ec49ab12db0b879a7484f8bef2c537bd0380cc1b2"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "NiagaraExamples/Gallery/Inputs/Actions/IA_Interact.uasset",
+          "bytes": 1220,
+          "disk_bytes": 1220,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "e7d0bdc0b174584194ec040ec49ab12db0b879a7484f8bef2c537bd0380cc1b2"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "SwordTrailVFX",
+      "pack_relative_path": "Textures/RT_Draw.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/SwordTrailVFX/Textures/RT_Draw.uasset",
+          "bytes": 4042,
+          "disk_bytes": 4042,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "caad8c2ebd7f6dabcddf9049265918b53b6a3df1b2339044f0c2c6c82e173484"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "SwordTrailVFX/Textures/RT_Draw.uasset",
+          "bytes": 4042,
+          "disk_bytes": 4042,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "caad8c2ebd7f6dabcddf9049265918b53b6a3df1b2339044f0c2c6c82e173484"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "SwordTrailVFX",
+      "pack_relative_path": "Textures/T_Base_LC.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/SwordTrailVFX/Textures/T_Base_LC.uasset",
+          "bytes": 4531,
+          "disk_bytes": 4531,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "ea293f615b03b577f7a334e61af68f5324173196c07538c5e061db3f3d8a8ed2"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "SwordTrailVFX/Textures/T_Base_LC.uasset",
+          "bytes": 4531,
+          "disk_bytes": 4531,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "ea293f615b03b577f7a334e61af68f5324173196c07538c5e061db3f3d8a8ed2"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "SwordTrailVFX",
+      "pack_relative_path": "Demo/M_Base.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/SwordTrailVFX/Demo/M_Base.uasset",
+          "bytes": 8479,
+          "disk_bytes": 8479,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "06d20f92ef76f08e1b8e565a178e4bdde9b31033344c564e25fd446c827ded6d"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "SwordTrailVFX/Demo/M_Base.uasset",
+          "bytes": 8479,
+          "disk_bytes": 8479,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "06d20f92ef76f08e1b8e565a178e4bdde9b31033344c564e25fd446c827ded6d"
+        }
+      ],
+      "all_sizes_match": true,
+      "all_hashes_match": true
+    },
+    {
+      "pack": "sA_Megapack_v1",
+      "pack_relative_path": "sA_Projectilevfx/Vfx/Blueprints/BP_CameraShake01.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/sA_Megapack_v1/sA_Projectilevfx/Vfx/Blueprints/BP_CameraShake01.uasset",
+          "bytes": 6671,
+          "disk_bytes": 6671,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "9dcbceb79e47a2502380d744dcf6c8581267025778da3dc9324ab5d28a948ac2"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "sA_Megapack_v1/sA_Projectilevfx/Vfx/Blueprints/BP_CameraShake01.uasset",
+          "bytes": 5307,
+          "disk_bytes": 5307,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "eeece82269aa9c336dc6a3aca5afa8f11b30780cb355a330570f58dfbf0afc74"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "sA_Megapack_v1",
+      "pack_relative_path": "sA_StylizedAttacksPack/BluePrints/GM_TestGamemode.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/sA_Megapack_v1/sA_StylizedAttacksPack/BluePrints/GM_TestGamemode.uasset",
+          "bytes": 20895,
+          "disk_bytes": 20895,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "3c39c7e3faa80cf6f656c769081286cc7cb1cc404bf1cf14ca78410a8b7ae124"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "sA_Megapack_v1/sA_StylizedAttacksPack/BluePrints/GM_TestGamemode.uasset",
+          "bytes": 17272,
+          "disk_bytes": 17272,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "d0d9d5a0b9de77c4c839a5143c5d3fd52d4b34a26e22a67fdb724586a0118470"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    },
+    {
+      "pack": "sA_Megapack_v1",
+      "pack_relative_path": "sA_StylizedAttacksPack/Materials/Textures/T_Gradient_Vertical.uasset",
+      "copies": [
+        {
+          "project": "MyProject",
+          "relative_path": "Content/sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Gradient_Vertical.uasset",
+          "bytes": 15792,
+          "disk_bytes": 15792,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "e62747376f8d5f731b11d71f2f5d818804724e5b391a6599ad6d407104d06418"
+        },
+        {
+          "project": "Survival",
+          "relative_path": "sA_Megapack_v1/sA_StylizedAttacksPack/Materials/Textures/T_Gradient_Vertical.uasset",
+          "bytes": 24123,
+          "disk_bytes": 24123,
+          "inventory_size_matches_disk": true,
+          "file_exists": true,
+          "sha256": "f6e62024f7bf708664e61b75336b5c2fc93665d9d6e688cab7629f88fa5e34ee"
+        }
+      ],
+      "all_sizes_match": false,
+      "all_hashes_match": false
+    }
+  ],
+  "sample_method": "up to three exact same-top-pack and same-relative-path files per shared pack, smallest first and only when every sampled copy is <=20 MiB; SHA-256 read in 1 MiB chunks",
+  "caveats": [
+    "Same name/path/size is not proof of identical content.",
+    "Matching hashes prove only the sampled files match, not that a whole pack/project is equivalent.",
+    "No source content was modified or deleted.",
+    "Paths were normalized to Content/... for comparing the two inventories whose CSV paths omit the Content prefix."
+  ],
+  "all_sample_hash_files_exist_and_sizes_match_inventory": true
+}

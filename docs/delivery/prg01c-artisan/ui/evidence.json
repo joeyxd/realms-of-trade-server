@@ -1,0 +1,495 @@
+{
+  "scope": "Actual ArtisanPanel/RaftEditor with local profile/protocol fixtures; no live host or physical phone",
+  "checks": [
+    {
+      "device": "desktop",
+      "locale": "es",
+      "state": "locked",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala30 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Necesitas completar 60 puntos de tala primero.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-es-locked.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "es",
+      "state": "project",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaMadera: 2 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 La obra de carpintería aún no está completa.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-es-project.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "es",
+      "state": "ready",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Cumples los requisitos para aprender.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-es-ready.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "es",
+      "state": "known",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala70 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Ya conoces esta receta.Reenviar la misma solicitud Ya conoces esta receta.Aportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-es-known.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "es",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.",
+        "undefinedIcon": false
+      },
+      "screenshot": "desktop-es-storage.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "state": "locked",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging30 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Reach 60 logging points first.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-en-locked.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "state": "project",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectWood: 2 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 The carpentry project is not complete yet.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-en-project.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "state": "ready",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Requirements met. You can learn the recipe.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-en-ready.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "state": "known",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging70 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 You already know this recipe.Retry the same request You already know this recipe.Contribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "desktop-en-known.png"
+    },
+    {
+      "device": "desktop",
+      "locale": "en",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.",
+        "undefinedIcon": false
+      },
+      "screenshot": "desktop-en-storage.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "locked",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala30 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Necesitas completar 60 puntos de tala primero.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-es-locked.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "project",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaMadera: 2 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 La obra de carpintería aún no está completa.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-es-project.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "ready",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Cumples los requisitos para aprender.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-es-ready.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "known",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala70 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Ya conoces esta receta.Reenviar la misma solicitud Ya conoces esta receta.Aportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-es-known.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.",
+        "undefinedIcon": false
+      },
+      "screenshot": "compact-es-storage.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "state": "locked",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging30 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Reach 60 logging points first.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-en-locked.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "state": "project",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectWood: 2 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 The carpentry project is not complete yet.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-en-project.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "state": "ready",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Requirements met. You can learn the recipe.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-en-ready.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "state": "known",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging70 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 You already know this recipe.Retry the same request You already know this recipe.Contribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "compact-en-known.png"
+    },
+    {
+      "device": "compact",
+      "locale": "en",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.",
+        "undefinedIcon": false
+      },
+      "screenshot": "compact-en-storage.png"
+    },
+    {
+      "device": "compact",
+      "locale": "es",
+      "state": "workbench-trigger-integration",
+      "header": {
+        "rect": {
+          "left": 9,
+          "top": 250.90625,
+          "right": 381,
+          "bottom": 349.5
+        },
+        "scrollWidth": 372,
+        "clientWidth": 372,
+        "heading": {
+          "left": 63,
+          "right": 326,
+          "width": 263
+        },
+        "close": {
+          "left": 334,
+          "right": 370
+        },
+        "controls": [
+          {
+            "label": "Consultar y aportar a la obra comunitaria",
+            "text": "Obra comunitaria",
+            "left": 20,
+            "top": 304.5,
+            "right": 190.5,
+            "bottom": 340.5,
+            "width": 170.5,
+            "height": 36,
+            "visible": true
+          },
+          {
+            "label": "Visitar artesano",
+            "text": "Visitar artesano",
+            "left": 198.5,
+            "top": 304.5,
+            "right": 370,
+            "bottom": 340.5,
+            "width": 171.5,
+            "height": 36,
+            "visible": true
+          }
+        ]
+      },
+      "fit": true,
+      "switchedToArtisan": {
+        "workbench": false,
+        "artisan": true,
+        "visible": true,
+        "focusedClose": true
+      },
+      "artisanClosed": {
+        "closed": true,
+        "focusRestoredToOpener": false,
+        "focusOnCanvas": true,
+        "focusRemainsInsideHiddenArtisan": false
+      },
+      "switchedToCommunity": {
+        "workbench": false,
+        "community": true,
+        "visible": true
+      },
+      "communityClosed": true,
+      "screenshot": "compact-es-workbench-triggers.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "es",
+      "state": "locked",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala30 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Necesitas completar 60 puntos de tala primero.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-es-locked.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "es",
+      "state": "project",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaMadera: 2 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 La obra de carpintería aún no está completa.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-es-project.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "es",
+      "state": "ready",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala60 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Cumples los requisitos para aprender.Reenviar la misma solicitud Aprender: BodegaAportar a la obraConsultar de nuevo",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-es-ready.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "es",
+      "state": "known",
+      "text": "✦BANCO DE CARPINTERÍAArtesana de Salty Shore× Aprende una nueva receta personal para tu balsa. Tala70 / 60 puntos Obra comunitariaCarpintería comunitaria completa · Madera: 4 / 4 materiales · Piedra: 2 / 2 materiales Lección: 2 maderas · Construcción: 6 maderas · Capacidad: +20 Madera en tu mochila2 / 2 Ya conoces esta receta.Reenviar la misma solicitud Ya conoces esta receta.Aportar a la obraConsultar de nuevo",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-es-known.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "es",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.",
+        "undefinedIcon": false
+      },
+      "screenshot": "landscape-es-storage.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "locked",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging30 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Reach 60 logging points first.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-en-locked.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "project",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectWood: 2 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 The carpentry project is not complete yet.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-en-project.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "ready",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging60 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 Requirements met. You can learn the recipe.Retry the same request Learn: Storage holdContribute to the projectCheck again",
+      "enabled": true,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-en-ready.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "known",
+      "text": "✦CARPENTRY WORKBENCHSalty Shore Artisan× Learn a new personal recipe for your raft. Logging70 / 60 points Community projectCommunity carpentry complete · Wood: 4 / 4 materials · Stone: 2 / 2 materials Lesson: 2 wood · Build: 6 wood · Capacity: +20 Wood in your pack2 / 2 You already know this recipe.Retry the same request You already know this recipe.Contribute to the projectCheck again",
+      "enabled": false,
+      "fits": true,
+      "noOverflow": true,
+      "specCards": 1,
+      "screenshot": "landscape-en-known.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "storage",
+      "locked": {
+        "disabled": true,
+        "text": "Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project."
+      },
+      "learned": {
+        "disabled": false,
+        "text": "Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.",
+        "undefinedIcon": false
+      },
+      "screenshot": "landscape-en-storage.png"
+    },
+    {
+      "device": "landscape",
+      "locale": "en",
+      "state": "workbench-trigger-integration",
+      "header": {
+        "rect": {
+          "left": 412,
+          "top": 6,
+          "right": 828,
+          "bottom": 97
+        },
+        "scrollWidth": 416,
+        "clientWidth": 416,
+        "heading": {
+          "left": 470,
+          "right": 769,
+          "width": 299
+        },
+        "close": {
+          "left": 777,
+          "right": 813
+        },
+        "controls": [
+          {
+            "label": "Consultar y aportar a la obra comunitaria",
+            "text": "Obra comunitaria",
+            "left": 427,
+            "top": 55,
+            "right": 615.5,
+            "bottom": 91,
+            "width": 188.5,
+            "height": 36,
+            "visible": true
+          },
+          {
+            "label": "Visit artisan",
+            "text": "Visit artisan",
+            "left": 623.5,
+            "top": 55,
+            "right": 813,
+            "bottom": 91,
+            "width": 189.5,
+            "height": 36,
+            "visible": true
+          }
+        ]
+      },
+      "fit": true,
+      "switchedToArtisan": {
+        "workbench": false,
+        "artisan": true,
+        "visible": true,
+        "focusedClose": true
+      },
+      "artisanClosed": {
+        "closed": true,
+        "focusRestoredToOpener": false,
+        "focusOnCanvas": true,
+        "focusRemainsInsideHiddenArtisan": false
+      },
+      "switchedToCommunity": {
+        "workbench": false,
+        "community": true,
+        "visible": true
+      },
+      "communityClosed": true,
+      "screenshot": "landscape-en-workbench-triggers.png"
+    }
+  ]
+}

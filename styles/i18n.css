@@ -1,0 +1,11 @@
+.language-picker{display:flex;align-items:center;justify-content:center;gap:4px;pointer-events:auto}
+.language-picker button{font:800 13px/1.2 var(--font-ui,system-ui);min-height:36px;padding:7px 13px;border:1px solid #e8bd6a;border-radius:6px;background:#172333;color:#fff3d3;cursor:pointer;white-space:nowrap}
+.language-picker button[aria-pressed="true"]{color:#172333;background:#ffd077;box-shadow:inset 0 -2px 0 #bd792b}
+.language-picker button:focus-visible{outline:3px solid #67e5ef;outline-offset:3px}
+#bootstrap-locale{position:fixed;z-index:2000;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}
+#bootstrap-locale[hidden]{display:none}
+.title-actions>.language-picker{margin:4px auto}
+#pause .language-picker{margin:8px 0 14px}
+html[lang="en"] .party .pm.dead .pn::after{content:' · fallen'}
+@media(max-height:500px){.language-picker button{min-height:32px;padding:5px 12px}}
+@media(pointer:coarse){.language-picker button{min-height:44px}}

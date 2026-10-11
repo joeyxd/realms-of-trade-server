@@ -1,0 +1,4041 @@
+{
+  "schemaVersion": 1,
+  "scope": "S04 local real game in desktop and mobile emulated browser; no physical FPS or public deployment claim",
+  "cases": [
+    {
+      "device": "desktop",
+      "errors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedResponses": [],
+      "modelRequests": [
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [
+            "model:beach-shell-fan-v1",
+            "model:beach-shell-oval-v1",
+            "model:beach-shell-chip-v1",
+            "model:beach-pebbles-v1"
+          ],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 192,
+            "radius": 18.593033389598858,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.626013459577692,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 10.135968303493875,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.45991733292749565,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 12.64330227230766,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 14.370534645133251,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.35523203393275427,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 9.162147578188861,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 14.900523182574084,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 26.811995585010827,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.336746286253355,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 192,
+            "radius": 15.812472402437416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.36070716410549336,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.48301896402663724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.4587775276846618,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.32982023295222823,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 7.775434704716574,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [
+          {
+            "id": "model:beach-shell-fan-v1",
+            "kind": "model",
+            "src": "models/beach-shell-fan-v1.glb",
+            "selectedSrc": "models/beach-shell-fan-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 80,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-oval-v1",
+            "kind": "model",
+            "src": "models/beach-shell-oval-v1.glb",
+            "selectedSrc": "models/beach-shell-oval-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-chip-v1",
+            "kind": "model",
+            "src": "models/beach-shell-chip-v1.glb",
+            "selectedSrc": "models/beach-shell-chip-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 48,
+            "notes": []
+          },
+          {
+            "id": "model:beach-pebbles-v1",
+            "kind": "model",
+            "src": "models/beach-pebbles-v1.glb",
+            "selectedSrc": "models/beach-pebbles-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 192,
+            "notes": []
+          }
+        ],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [],
+        "coarse": false,
+        "glError": 0,
+        "renderedCalls": 133,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    },
+    {
+      "device": "mobile",
+      "errors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedResponses": [],
+      "modelRequests": [
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [
+            "model:beach-shell-fan-v1",
+            "model:beach-shell-oval-v1",
+            "model:beach-shell-chip-v1",
+            "model:beach-pebbles-v1"
+          ],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 192,
+            "radius": 18.593033389598858,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.626013459577692,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 10.135968303493875,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.45991733292749565,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 12.64330227230766,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 14.370534645133251,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.35523203393275427,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 9.162147578188861,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 14.900523182574084,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 26.811995585010827,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.336746286253355,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 192,
+            "radius": 15.812472402437416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.36070716410549336,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.48301896402663724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.4587775276846618,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.32982023295222823,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 7.775434704716574,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [
+          {
+            "id": "model:beach-shell-fan-v1",
+            "kind": "model",
+            "src": "models/beach-shell-fan-v1.glb",
+            "selectedSrc": "models/beach-shell-fan-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 80,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-oval-v1",
+            "kind": "model",
+            "src": "models/beach-shell-oval-v1.glb",
+            "selectedSrc": "models/beach-shell-oval-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-chip-v1",
+            "kind": "model",
+            "src": "models/beach-shell-chip-v1.glb",
+            "selectedSrc": "models/beach-shell-chip-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 48,
+            "notes": []
+          },
+          {
+            "id": "model:beach-pebbles-v1",
+            "kind": "model",
+            "src": "models/beach-pebbles-v1.glb",
+            "selectedSrc": "models/beach-pebbles-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 192,
+            "notes": []
+          }
+        ],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [],
+        "coarse": true,
+        "glError": 0,
+        "renderedCalls": 146,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    },
+    {
+      "device": "low",
+      "errors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedResponses": [],
+      "modelRequests": [
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [
+            "model:beach-shell-fan-v1",
+            "model:beach-shell-oval-v1",
+            "model:beach-shell-chip-v1",
+            "model:beach-pebbles-v1"
+          ],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 192,
+            "radius": 18.593033389598858,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.626013459577692,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 10.135968303493875,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.45991733292749565,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 12.64330227230766,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 14.370534645133251,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.35523203393275427,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 9.162147578188861,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 14.900523182574084,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 26.811995585010827,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.336746286253355,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 192,
+            "radius": 15.812472402437416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.36070716410549336,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.48301896402663724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.4587775276846618,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.32982023295222823,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 7.775434704716574,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [
+          {
+            "id": "model:beach-shell-fan-v1",
+            "kind": "model",
+            "src": "models/beach-shell-fan-v1.glb",
+            "selectedSrc": "models/beach-shell-fan-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 80,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-oval-v1",
+            "kind": "model",
+            "src": "models/beach-shell-oval-v1.glb",
+            "selectedSrc": "models/beach-shell-oval-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 96,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-chip-v1",
+            "kind": "model",
+            "src": "models/beach-shell-chip-v1.glb",
+            "selectedSrc": "models/beach-shell-chip-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 48,
+            "notes": []
+          },
+          {
+            "id": "model:beach-pebbles-v1",
+            "kind": "model",
+            "src": "models/beach-pebbles-v1.glb",
+            "selectedSrc": "models/beach-pebbles-v1.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 192,
+            "notes": []
+          }
+        ],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [],
+        "coarse": true,
+        "glError": 0,
+        "renderedCalls": 103,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    },
+    {
+      "device": "missing",
+      "errors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)",
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedResponses": [
+        {
+          "url": "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb",
+          "status": 404
+        }
+      ],
+      "modelRequests": [
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 192,
+            "radius": 18.593033389598858,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.626013459577692,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 10.135968303493875,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.45991733292749565,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 12.64330227230766,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 14.370534645133251,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.35523203393275427,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 9.162147578188861,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 14.900523182574084,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 26.811995585010827,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.336746286253355,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 192,
+            "radius": 15.812472402437416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.36070716410549336,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.48301896402663724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.4587775276846618,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.32982023295222823,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 7.775434704716574,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [
+          {
+            "id": "model:beach-shell-fan-v1",
+            "kind": "model",
+            "src": "models/beach-shell-fan-v1.glb",
+            "selectedSrc": "models/beach-shell-fan-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-fan-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-oval-v1",
+            "kind": "model",
+            "src": "models/beach-shell-oval-v1.glb",
+            "selectedSrc": "models/beach-shell-oval-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-oval-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-chip-v1",
+            "kind": "model",
+            "src": "models/beach-shell-chip-v1.glb",
+            "selectedSrc": "models/beach-shell-chip-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-chip-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-pebbles-v1",
+            "kind": "model",
+            "src": "models/beach-pebbles-v1.glb",
+            "selectedSrc": "models/beach-pebbles-v1.glb",
+            "state": "error",
+            "error": "model:beach-pebbles-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb\" responded with 404: Not Found",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [
+          "model:beach-shell-fan-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb\" responded with 404: Not Found",
+          "model:beach-shell-oval-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb\" responded with 404: Not Found",
+          "model:beach-shell-chip-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb\" responded with 404: Not Found",
+          "model:beach-pebbles-v1: fetch for \"http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb\" responded with 404: Not Found"
+        ],
+        "coarse": true,
+        "glError": 0,
+        "renderedCalls": 145,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    },
+    {
+      "device": "invalid",
+      "errors": [],
+      "consoleErrors": [],
+      "failedResponses": [],
+      "modelRequests": [
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb"
+      ],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 192,
+            "radius": 18.593033389598858,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.626013459577692,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 10.135968303493875,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.45991733292749565,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 12.64330227230766,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 14.370534645133251,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.35523203393275427,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 9.162147578188861,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 14.900523182574084,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 192,
+            "radius": 26.811995585010827,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 192,
+            "radius": 18.336746286253355,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 192,
+            "radius": 15.812472402437416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.36070716410549336,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.48301896402663724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.4587775276846618,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 192,
+            "radius": 0.32982023295222823,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 192,
+            "radius": 7.775434704716574,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [
+          {
+            "id": "model:beach-shell-fan-v1",
+            "kind": "model",
+            "src": "models/beach-shell-fan-v1.glb",
+            "selectedSrc": "models/beach-shell-fan-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-fan-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-oval-v1",
+            "kind": "model",
+            "src": "models/beach-shell-oval-v1.glb",
+            "selectedSrc": "models/beach-shell-oval-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-oval-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-shell-chip-v1",
+            "kind": "model",
+            "src": "models/beach-shell-chip-v1.glb",
+            "selectedSrc": "models/beach-shell-chip-v1.glb",
+            "state": "error",
+            "error": "model:beach-shell-chip-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          },
+          {
+            "id": "model:beach-pebbles-v1",
+            "kind": "model",
+            "src": "models/beach-pebbles-v1.glb",
+            "selectedSrc": "models/beach-pebbles-v1.glb",
+            "state": "error",
+            "error": "model:beach-pebbles-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [
+          "model:beach-shell-fan-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+          "model:beach-shell-oval-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+          "model:beach-shell-chip-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON",
+          "model:beach-pebbles-v1: Unexpected token 'i', \"invalid S04 fixture\" is not valid JSON"
+        ],
+        "coarse": true,
+        "glError": 0,
+        "renderedCalls": 145,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    },
+    {
+      "device": "disabled",
+      "errors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "failedResponses": [],
+      "modelRequests": [],
+      "state": {
+        "seed": 99282957,
+        "details": {
+          "shells": 100,
+          "pebbleClusters": 58,
+          "loaded": [],
+          "source": "S04 painted geometry; SM_Rock pebble derivative",
+          "cosmetic": true
+        },
+        "batches": [
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5317629732049416,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 3,
+            "trianglesPerInstance": 80,
+            "radius": 16.583919022816318,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 12.682177029440922,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.5106653774937217,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 9.50308120119906,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44241755870610744,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 4,
+            "trianglesPerInstance": 80,
+            "radius": 16.161421644308298,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4579207769047078,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 1.742899552272974,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 3.8428052491453277,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4697720667287528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4605940676189501,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.44965366931221495,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 2,
+            "trianglesPerInstance": 80,
+            "radius": 21.842579767142016,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.37622428936337626,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.4879062065486104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells0",
+            "count": 1,
+            "trianglesPerInstance": 80,
+            "radius": 0.39680930049277646,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5954256560191068,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.334957946943067,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 2.428354195308876,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 5.230323121412384,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 14.116906171189322,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 19.202294274298378,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 2,
+            "trianglesPerInstance": 96,
+            "radius": 3.874609313934649,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 12.371937234128776,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 5.977915598565476,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5226690773898299,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 4,
+            "trianglesPerInstance": 96,
+            "radius": 24.080978375530343,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5921848991234986,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 3,
+            "trianglesPerInstance": 96,
+            "radius": 23.876875309096537,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells1",
+            "count": 1,
+            "trianglesPerInstance": 96,
+            "radius": 0.5548150546391102,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 22.758301684679573,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 19.388836008669724,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 5,
+            "trianglesPerInstance": 48,
+            "radius": 18.816056902092157,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 17.168386076870135,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3790820868996853,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 5.136131177355528,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.4185985100585848,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 12.85745303643623,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 20.902819616100516,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3712662899546132,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.3967653344614225,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 10.67088643255418,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 2,
+            "trianglesPerInstance": 48,
+            "radius": 20.44046326308838,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 3,
+            "trianglesPerInstance": 48,
+            "radius": 11.226252153311075,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.312852578386147,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachShells2",
+            "count": 1,
+            "trianglesPerInstance": 48,
+            "radius": 0.31285257722692883,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 8,
+            "trianglesPerInstance": 60,
+            "radius": 18.57090381644291,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 60,
+            "radius": 18.618694426500596,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 60,
+            "radius": 10.112087467355195,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.4503792712765253,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 60,
+            "radius": 12.6231576735645,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 60,
+            "radius": 14.351430672905881,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.34786500338732285,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 60,
+            "radius": 9.163204762636523,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 60,
+            "radius": 14.892139896591104,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 7,
+            "trianglesPerInstance": 60,
+            "radius": 26.799741753383323,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 4,
+            "trianglesPerInstance": 60,
+            "radius": 18.32662785630498,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 5,
+            "trianglesPerInstance": 60,
+            "radius": 15.822403531753054,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.3532265867867706,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.47300180588182733,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.4492631040483908,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 1,
+            "trianglesPerInstance": 60,
+            "radius": 0.3229802086904514,
+            "castsShadow": false,
+            "layerMask": 4
+          },
+          {
+            "family": "beachPebbleClusters",
+            "count": 3,
+            "trianglesPerInstance": 60,
+            "radius": 7.770111087534637,
+            "castsShadow": false,
+            "layerMask": 4
+          }
+        ],
+        "assets": [],
+        "nearCamera": {
+          "shells": [
+            {
+              "x": 109.24158257961274,
+              "y": 0.6853638412644376,
+              "z": 96.10087452359498,
+              "scale": 0.8534184125438333,
+              "rot": 2.4728107327783637,
+              "variant": 1,
+              "nx": 0.013212973818474964,
+              "ny": 0.9998633169011925,
+              "nz": 0.009938050020890151
+            },
+            {
+              "x": 103.39882618911565,
+              "y": 0.5793986399985895,
+              "z": 105.4275465042144,
+              "scale": 1.1450361842475831,
+              "rot": 3.9596695775945046,
+              "variant": 2,
+              "nx": 0.10125840329947594,
+              "ny": 0.9916008313898403,
+              "nz": 0.08046444524271641
+            },
+            {
+              "x": 112.1143656386435,
+              "y": 0.4740162755780369,
+              "z": 95.4911964572221,
+              "scale": 0.8356027605198324,
+              "rot": 5.701730976187084,
+              "variant": 2,
+              "nx": 0.16629073552971135,
+              "ny": 0.9791834325678521,
+              "nz": 0.11639242527598698
+            },
+            {
+              "x": 99.87501743376255,
+              "y": 0.6769352896437892,
+              "z": 108.05875122964382,
+              "scale": 1.0687397889979184,
+              "rot": 1.0329960652324657,
+              "variant": 0,
+              "nx": 0.032153907310304895,
+              "ny": 0.9985040260637112,
+              "nz": 0.044224836678495937
+            },
+            {
+              "x": 108.5739092105627,
+              "y": 0.5007970952635759,
+              "z": 99.89977108612656,
+              "scale": 1.1073675203323365,
+              "rot": 3.8870243763617105,
+              "variant": 1,
+              "nx": 0.14746232225786354,
+              "ny": 0.9817808901183187,
+              "nz": 0.11983800445935167
+            }
+          ],
+          "pebbles": [
+            {
+              "x": 90.85317629016936,
+              "y": 0.6880457967385032,
+              "z": 107.62092690959572,
+              "scale": 0.9145190423540771,
+              "rot": 3.7684269125984486,
+              "variant": 2,
+              "nx": -0.002294619222910907,
+              "ny": 0.9999144568024381,
+              "nz": -0.012876870742027513
+            },
+            {
+              "x": 113.3010128775239,
+              "y": 0.66101935464866,
+              "z": 91.08196934878826,
+              "scale": 1.1576672009378672,
+              "rot": 4.55385529549466,
+              "variant": 0,
+              "nx": 0.0503241341167415,
+              "ny": 0.99843294014269,
+              "nz": 0.0244774501005283
+            }
+          ]
+        },
+        "gameErrors": {},
+        "assetErrors": [],
+        "coarse": true,
+        "glError": 0,
+        "renderedCalls": 141,
+        "camera": [
+          112.4629357851163,
+          16.61585580863541,
+          112.4629357851163
+        ]
+      }
+    }
+  ]
+}

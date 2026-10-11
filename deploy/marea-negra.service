@@ -1,0 +1,24 @@
+# systemd unit for the game server (docs/DEPLOY.md).
+#   sudo cp deploy/marea-negra.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#   sudo systemctl enable --now marea-negra ; journalctl -u marea-negra -f
+[Unit]
+Description=Marea Negra game server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marea
+WorkingDirectory=/opt/marea-negra
+EnvironmentFile=/etc/marea-negra.env
+ExecStart=/usr/bin/env node server/index.mjs
+Restart=always
+RestartSec=3
+# Hardening: the server only reads the repo and listens on its port.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

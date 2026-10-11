@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-06T23:55:53.195Z",
+  "tools": {
+    "ffmpeg": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version 8.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+    "codec": "libwebp"
+  },
+  "sources": {
+    "albedo": {
+      "path": "materials/raft material.jpg",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 3909415,
+      "sha256": "95a47597af982b1079b24bf1c7d873b3ef070562d3ea4f968794a4a3fd50c413",
+      "pixelFormat": "yuvj420p",
+      "colorSpace": "bt470bg",
+      "colorTransfer": null,
+      "colorPrimaries": null
+    },
+    "normal": {
+      "path": "materials/raft material normal.jpg",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 2882809,
+      "sha256": "9d32c52e6d39aa7887ed1b16cf4e71eccdf3095ae1f4decd8e65a6a8cb99e044",
+      "pixelFormat": "yuvj420p",
+      "colorSpace": "bt470bg",
+      "colorTransfer": null,
+      "colorPrimaries": null
+    }
+  },
+  "notes": {
+    "layout": "The 2x2 board collage is preserved as supplied; outputs are not seamless tiling textures.",
+    "normalConvention": "The source provides no metadata establishing tangent-space green-channel sign; channel signs are preserved without flipping.",
+    "normalMobileRuntime": "Mobile normal derivative is prepared for later review; current runtime selection is albedo-only."
+  },
+  "outputs": [
+    {
+      "path": "assets/textures/raft/wood-boards-v2.webp",
+      "role": "albedo",
+      "variant": "desktop",
+      "codec": "WebP lossy RGB",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 302458,
+      "sha256": "9c01667951001e673ff381f886e70ec86509a64240448316cb373ccf66d05b24",
+      "settings": {
+        "resize": "Lanczos",
+        "quality": 88,
+        "compressionLevel": 6
+      },
+      "decodedRgbaBytes": 4194304,
+      "decodedRgbaWithFullMipChainBytes": 5592406
+    },
+    {
+      "path": "assets/textures/raft/wood-boards-v2-mobile.webp",
+      "role": "albedo",
+      "variant": "mobile",
+      "codec": "WebP lossy RGB",
+      "width": 512,
+      "height": 512,
+      "bytes": 79054,
+      "sha256": "74804ca5b13a7979c2169793cbf87799bc458ba23626ec048fa67c8f6a5318ba",
+      "settings": {
+        "resize": "Lanczos",
+        "quality": 85,
+        "compressionLevel": 6
+      },
+      "decodedRgbaBytes": 1048576,
+      "decodedRgbaWithFullMipChainBytes": 1398102
+    },
+    {
+      "path": "assets/textures/raft/wood-boards-v2-normal.webp",
+      "role": "normal",
+      "variant": "desktop",
+      "codec": "WebP lossless RGB",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1138930,
+      "sha256": "a63b0db26f98e156e14426224dc7dde8fb2f1f715fdfa36fa75fe31e4c72e296",
+      "settings": {
+        "resize": "Lanczos in raw RGB channel values",
+        "vector": "decoded tangent normals renormalized after resize",
+        "gammaConversion": false,
+        "greenChannelSignChanged": false,
+        "lossless": true,
+        "compressionLevel": 6
+      },
+      "decodedRgbaBytes": 4194304,
+      "decodedRgbaWithFullMipChainBytes": 5592406
+    },
+    {
+      "path": "assets/textures/raft/wood-boards-v2-normal-mobile.webp",
+      "role": "normal",
+      "variant": "mobile",
+      "codec": "WebP lossless RGB",
+      "width": 512,
+      "height": 512,
+      "bytes": 297964,
+      "sha256": "f1f52dd9b33d2cbbcf43bd51dfe89c61e868ad69b331c41f4f0a9cd8b05d1297",
+      "settings": {
+        "resize": "Lanczos in raw RGB channel values",
+        "vector": "decoded tangent normals renormalized after resize",
+        "gammaConversion": false,
+        "greenChannelSignChanged": false,
+        "lossless": true,
+        "compressionLevel": 6
+      },
+      "decodedRgbaBytes": 1048576,
+      "decodedRgbaWithFullMipChainBytes": 1398102
+    }
+  ]
+}

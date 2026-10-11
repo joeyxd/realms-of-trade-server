@@ -1,0 +1,19 @@
+{
+  "schema": "gm02-tests/v1",
+  "at": "2026-10-10T19:30:06.698Z",
+  "version": "0.6.0-alpha.25",
+  "command": "node --test tests/gm-assets.test.mjs tests/gm-editor-assets.test.mjs tests/gm-editor-base-decoration.test.mjs tests/gm-editor-base-document.test.mjs tests/gm-editor-document.test.mjs tests/gm-editor-entry.test.mjs tests/gm-editor-model-factory.test.mjs tests/gm-editor-rendering.test.mjs tests/gm-editor-walk-preview.test.mjs tests/gm-session-http.test.mjs tests/gmSession.test.mjs tests/store-host.test.mjs tests/accounts-server.test.mjs tests/world-state.test.mjs tests/world-host.test.mjs tests/raft-persistence.test.mjs tests/harvest-tools.test.mjs tests/server.test.mjs tests/deploy-runtime.test.mjs tests/ground-terrain.test.mjs tests/sand-terrain.test.mjs tests/harvest-render.test.mjs tests/naval-shelter-state.test.mjs tests/raft-doors.test.mjs tests/raft-door-host.test.mjs tests/raft-refuge-integration.test.mjs tests/logging-resource-state.test.mjs",
+  "tests": 162,
+  "passed": 162,
+  "failed": 0,
+  "cancelled": 0,
+  "durationMs": 12643.4667,
+  "source": "test-output.txt",
+  "gmSubset": {
+    "tests": 51,
+    "passed": 51,
+    "failed": 0,
+    "command": "node --test tests/gm-assets.test.mjs tests/gm-editor-assets.test.mjs tests/gm-editor-base-decoration.test.mjs tests/gm-editor-base-document.test.mjs tests/gm-editor-document.test.mjs tests/gm-editor-entry.test.mjs tests/gm-editor-model-factory.test.mjs tests/gm-editor-rendering.test.mjs tests/gm-editor-walk-preview.test.mjs tests/gm-session-http.test.mjs tests/gmSession.test.mjs",
+    "source": "gm-test-output.txt"
+  }
+}

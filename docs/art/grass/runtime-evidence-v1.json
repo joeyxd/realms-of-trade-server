@@ -1,0 +1,1183 @@
+{
+  "version": 1,
+  "cut": "S08",
+  "date": "2026-10-07",
+  "scope": "Local visual inspection and draw counts; no physical FPS or deployment claim.",
+  "cases": [
+    {
+      "device": "desktop",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/src/render/assets/registry.js",
+        "http://127.0.0.1:5192/src/render/assets/toonmat.js",
+        "http://127.0.0.1:5192/src/render/assets/manifest.js",
+        "http://127.0.0.1:5192/src/render/assets/rebind.js",
+        "http://127.0.0.1:5192/src/render/assets/bonemap.js",
+        "http://127.0.0.1:5192/assets/manifest.json",
+        "http://127.0.0.1:5192/assets/textures/raft/wood-boards-v2.webp",
+        "http://127.0.0.1:5192/assets/textures/raft/wood-boards-v2-normal.webp",
+        "http://127.0.0.1:5192/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:5192/assets/textures/raft/comic-materials-v1.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/wet-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/albedo-desktop.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/normal-desktop.webp",
+        "http://127.0.0.1:5192/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/albedo-pc.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/normal-pc.webp",
+        "http://127.0.0.1:5192/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/albedo-pc.webp",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/normal-pc.webp"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "grass": {
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 551,
+            "calls": 280,
+            "triangles": 571338,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 565,
+            "calls": 272,
+            "triangles": 570420,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 8,
+          "extraTriangles": 918
+        },
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        {
+          "tier": "low",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 6,
+          "near": 0,
+          "far": 6,
+          "triangles": 108,
+          "batches": 2,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 160,
+            "distance": 28,
+            "detailDistance": 0
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 0,
+          "near": 0,
+          "far": 0,
+          "triangles": 0,
+          "batches": 0,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        }
+      ]
+    },
+    {
+      "device": "mobile",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/src/render/assets/registry.js",
+        "http://127.0.0.1:5192/src/render/assets/toonmat.js",
+        "http://127.0.0.1:5192/src/render/assets/manifest.js",
+        "http://127.0.0.1:5192/src/render/assets/rebind.js",
+        "http://127.0.0.1:5192/src/render/assets/bonemap.js",
+        "http://127.0.0.1:5192/assets/manifest.json",
+        "http://127.0.0.1:5192/assets/textures/raft/wood-boards-v2-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:5192/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/wet-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/normal-mobile.webp"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "medium",
+        "coarse": true,
+        "grass": {
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 635,
+            "calls": 297,
+            "triangles": 611320,
+            "points": 1944,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 649,
+            "calls": 291,
+            "triangles": 610856,
+            "points": 1944,
+            "lines": 0
+          },
+          "extraCalls": 6,
+          "extraTriangles": 464
+        },
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "low",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 6,
+          "near": 0,
+          "far": 6,
+          "triangles": 108,
+          "batches": 2,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 160,
+            "distance": 28,
+            "detailDistance": 0
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 0,
+          "near": 0,
+          "far": 0,
+          "triangles": 0,
+          "batches": 0,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        }
+      ]
+    },
+    {
+      "device": "low",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/src/render/assets/registry.js",
+        "http://127.0.0.1:5192/src/render/assets/toonmat.js",
+        "http://127.0.0.1:5192/src/render/assets/manifest.js",
+        "http://127.0.0.1:5192/src/render/assets/rebind.js",
+        "http://127.0.0.1:5192/src/render/assets/bonemap.js",
+        "http://127.0.0.1:5192/assets/manifest.json",
+        "http://127.0.0.1:5192/assets/textures/raft/wood-boards-v2-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/prop-storage-crate.glb",
+        "http://127.0.0.1:5192/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/dry-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/wet-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/ripple-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/footprints-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/sand-family-v1/shore-sand-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/coast-rock-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/ground-family-v1/atlas-normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/beach-shell-fan-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-oval-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-shell-chip-v1.glb",
+        "http://127.0.0.1:5192/assets/models/beach-pebbles-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-curved-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-short-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-family-v2/normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/palm-base-open-v1.glb",
+        "http://127.0.0.1:5192/assets/models/palm-base-lush-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/palm-base-v1/normal-mobile.webp",
+        "http://127.0.0.1:5192/assets/models/shrub-round-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-low-v1.glb",
+        "http://127.0.0.1:5192/assets/models/shrub-tall-v1.glb",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/albedo-mobile.webp",
+        "http://127.0.0.1:5192/assets/textures/shrub-v1/normal-mobile.webp"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "low",
+        "coarse": true,
+        "grass": {
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 6,
+          "near": 0,
+          "far": 6,
+          "triangles": 108,
+          "batches": 2,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 160,
+            "distance": 28,
+            "detailDistance": 0
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 143,
+            "calls": 208,
+            "triangles": 394872,
+            "points": 1944,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 146,
+            "calls": 206,
+            "triangles": 394764,
+            "points": 1944,
+            "lines": 0
+          },
+          "extraCalls": 2,
+          "extraTriangles": 108
+        },
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "low",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 6,
+          "near": 0,
+          "far": 6,
+          "triangles": 108,
+          "batches": 2,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 160,
+            "distance": 28,
+            "detailDistance": 0
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 0,
+          "near": 0,
+          "far": 0,
+          "triangles": 0,
+          "batches": 0,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        }
+      ]
+    },
+    {
+      "device": "disabled",
+      "errors": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "location": {
+            "url": "http://127.0.0.1:5192/favicon.ico",
+            "line": 0,
+            "column": 0,
+            "lineNumber": 0,
+            "columnNumber": 0
+          }
+        }
+      ],
+      "requests": [
+        "http://127.0.0.1:5192/src/render/assets/registry.js",
+        "http://127.0.0.1:5192/src/render/assets/toonmat.js",
+        "http://127.0.0.1:5192/src/render/assets/manifest.js",
+        "http://127.0.0.1:5192/src/render/assets/rebind.js",
+        "http://127.0.0.1:5192/src/render/assets/bonemap.js"
+      ],
+      "state": {
+        "seed": 99282957,
+        "quality": "high",
+        "coarse": false,
+        "grass": {
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        "errors": {},
+        "glError": 0,
+        "programsLinked": true,
+        "counts": {
+          "enabled": {
+            "frame": 621,
+            "calls": 277,
+            "triangles": 569326,
+            "points": 2088,
+            "lines": 0
+          },
+          "disabled": {
+            "frame": 635,
+            "calls": 269,
+            "triangles": 568408,
+            "points": 2088,
+            "lines": 0
+          },
+          "extraCalls": 8,
+          "extraTriangles": 918
+        },
+        "material": {
+          "opaque": true,
+          "map": false,
+          "normalMap": false,
+          "alphaTest": 0,
+          "allShadowOff": true,
+          "allNoOutline": true
+        }
+      },
+      "transitions": [
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        {
+          "tier": "low",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 6,
+          "near": 0,
+          "far": 6,
+          "triangles": 108,
+          "batches": 2,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 160,
+            "distance": 28,
+            "detailDistance": 0
+          }
+        },
+        {
+          "tier": "medium",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 23,
+          "near": 7,
+          "far": 16,
+          "triangles": 544,
+          "batches": 8,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 320,
+            "distance": 38,
+            "detailDistance": 14
+          }
+        },
+        {
+          "tier": "high",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 72,
+          "near": 20,
+          "far": 52,
+          "triangles": 1684,
+          "batches": 25,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        },
+        {
+          "tier": "off-island",
+          "total": 522,
+          "patches": 184,
+          "limit": 600,
+          "variants": [
+            {
+              "style": "tuft",
+              "count": 199
+            },
+            {
+              "style": "fan",
+              "count": 140
+            },
+            {
+              "style": "wild",
+              "count": 183
+            }
+          ],
+          "active": 0,
+          "near": 0,
+          "far": 0,
+          "triangles": 0,
+          "batches": 0,
+          "cosmetic": true,
+          "textures": [],
+          "castShadow": false,
+          "alphaTest": 0,
+          "chunkSize": 24,
+          "budget": {
+            "limit": 600,
+            "distance": 55,
+            "detailDistance": 24
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "character-appearance-cpu/v1",
+  "scope": "P03a local contract tests and independent GLB byte inspection; no game/device performance claim",
+  "passed": true,
+  "sourceHashes": {
+    "tools/character-appearance-v1/hair.mjs": "49c4d56d7c5602700773115a76ddac8bc5140dbad6a97a4e8f1f6dbca49c7fd9",
+    "tools/character-appearance-v1/face.mjs": "c1ff2b552058c492296b49235b18670daa64a68977f61876fbc3804d31fb1e90",
+    "tools/character-appearance-v1/assemble.mjs": "a957383db5a1e82e5275b16bc3e6fdf5706bf0ae72d7afef27f90b8fc5afeaf8",
+    "tools/character-appearance-v1/glb.mjs": "94171144a784d6bd1d5d79711f92d3a62ffcb6559cfaf02e7c29befc9c95427e",
+    "tools/character-appearance-v1/generate.mjs": "5857c7702b11cd4955a527e3d767012ad3b23c96785f19e7783691ad2255e32d",
+    "tools/character-appearance-v1/inspect.mjs": "3a0cce0cf8257a49d209a047934f978930e20758ebdf4797d31872d0f703bdf7",
+    "tools/character-lab/main.js": "8704b56a73f994653287ecebccc5514a7cdf1f0649bc6fcb146a665b3a1eb50c",
+    "tools/character-lab/appearance.js": "e97cdb2285543a33b0abf8740e7aa08bf8a382ed20e8de2b5cfe22836cf10e78",
+    "tools/character-lab/index.html": "fdb50035ff909a1235453ec7ebe0a67c2b0fcd8b87d0b099d836b14e95d6b6a4",
+    "tools/character-lab/style.css": "6414b77f16cee3de4e9f35d28f29ae8c4270c8202bbfed4d01da5f74c6b2536e",
+    "tools/character-lab/server.mjs": "7252130ade58bfac764bb3214525e4a925aba9a32eb7e17d7c3a3a90e112b84c",
+    "tools/character-lab/qa-appearance-v1.mjs": "b847f2d575c8d80f8eba6051d9110ffef88cc81f5207a4bc6e145be3d097ada7",
+    "tests/character-appearance.test.mjs": "5a9e3a8b4fd90a047b7d509670424d917ba3b0b4d30592fca470c07cd1bb15e7"
+  },
+  "baseDependencies": {
+    "body.mjs": "42bb55ddd61ad7cf34d39113fbfe3ec6b6ab537a5b8a087356beb345a780393e",
+    "head.mjs": "7aad47de8cf4e241aa5eed3d0cbad8ff27860a86ec21cc324d71becf596c9060",
+    "textures.mjs": "3a29f120c853a663d39496803755564489f46e010834e0a68d0e4c72409110a3",
+    "inspect.mjs": "0fed406324cf9039a2a86e9f9ab962cfae6713c9d109689475991a76cba19b72"
+  },
+  "artifacts": [
+    {
+      "name": "male-appearance-v1.glb",
+      "sha256": "8b65f7637dbfa66d8fb05d912c2b55c62ba594013572e9cab7b2ef20145ce583",
+      "bytes": 837708,
+      "triangles": 11432,
+      "headBound": false,
+      "complete": true
+    },
+    {
+      "name": "male-appearance-v1-mobile.glb",
+      "sha256": "8d50917b53e5c975163dbfec0b719fb28c7dc20ec08327f6bc7eba62edb3cead",
+      "bytes": 639100,
+      "triangles": 11432,
+      "headBound": false,
+      "complete": true
+    },
+    {
+      "name": "male-hair-scout-v1.glb",
+      "sha256": "0304e2c41847dfa77f04ef3db5a47d4603188979b33c4b2d638eb77a63ee3b84",
+      "bytes": 59908,
+      "triangles": 1400,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-hair-swept-v1.glb",
+      "sha256": "71514dbc364b6a911b3361f140ae68740f6f247d91e1f8af24fa3de8bc45d486",
+      "bytes": 48196,
+      "triangles": 1112,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-hair-pony-v1.glb",
+      "sha256": "b488040fdfaffaa6188d810e66c1f56d5d58e4f3620f14af97fc33fe403d6d36",
+      "bytes": 45936,
+      "triangles": 1056,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-hair-crop-v1.glb",
+      "sha256": "1218f6e5a6fc0038fb3236c1c918278b8e36370c80d73dc3251511c95b65534d",
+      "bytes": 46368,
+      "triangles": 1064,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-beard-stubble-v1.glb",
+      "sha256": "bbc972be78386ade0d5df3854879f95d8512d8b650e6bf1b2c6e780ba0f65aab",
+      "bytes": 32468,
+      "triangles": 740,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-beard-full-v1.glb",
+      "sha256": "d435c9db100cdfb379505da8d7c3483aacac1f99d2117da882ba1ba9496373c7",
+      "bytes": 52476,
+      "triangles": 1260,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-eyes-neutral-v1.glb",
+      "sha256": "ae6723c259f3fb447973e23d1d8f9d5853bd6ad31f913e9471dc68b762c3ec65",
+      "bytes": 63292,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-eyes-keen-v1.glb",
+      "sha256": "f015ae6c118dd1e11f7c5f02d236169efb3cee8b8db43e69f030a9c5bfdf9320",
+      "bytes": 63284,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-eyes-soft-v1.glb",
+      "sha256": "98c29c59504a85cf12a956ea746f2987bc4ed28e89f13112845a5bd243d9172d",
+      "bytes": 63288,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-brows-natural-v1.glb",
+      "sha256": "19810fb23210a53d825c323ff256ecacdd0c842738a12ebddefa11958ce369c0",
+      "bytes": 8936,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-brows-bold-v1.glb",
+      "sha256": "72d146983e45d46a478b15d1a0719a9af3289ea9fe31ddc1fcd65e45a665f7d1",
+      "bytes": 8936,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "male-brows-arched-v1.glb",
+      "sha256": "faf27d951aa59031e3a39c3c1480ae7dbc9e0b10424e43e09e013d89be9d7917",
+      "bytes": 8936,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-appearance-v1.glb",
+      "sha256": "8d4bd5d47f1cc852b6fb07cb32520b5e96d2dde1f4ba1c17261576cc086b1c94",
+      "bytes": 838232,
+      "triangles": 11432,
+      "headBound": false,
+      "complete": true
+    },
+    {
+      "name": "female-appearance-v1-mobile.glb",
+      "sha256": "5c46f3b6c86d2703ef8163279de48e5d41cd49626ba177405c6d45af579aabd7",
+      "bytes": 639628,
+      "triangles": 11432,
+      "headBound": false,
+      "complete": true
+    },
+    {
+      "name": "female-hair-scout-v1.glb",
+      "sha256": "ba89bf7fda9c0284aed36e6e92add15d398d109e29ef9de7461f6d4ff56c4fdb",
+      "bytes": 59912,
+      "triangles": 1400,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-hair-swept-v1.glb",
+      "sha256": "abd3772601de8ede97953dfe655c6809b3fb22cd12a0924f7df7f2030fe893c8",
+      "bytes": 48200,
+      "triangles": 1112,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-hair-pony-v1.glb",
+      "sha256": "fee5fa655bf39f3479b4f77456298114ba0cf28a9ee7a92b4b72a5db82d1e912",
+      "bytes": 45940,
+      "triangles": 1056,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-hair-crop-v1.glb",
+      "sha256": "8eb7d2779e4146069d1152378e6272130e6ea383de25641c15a4d8fa76167e83",
+      "bytes": 46372,
+      "triangles": 1064,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-beard-stubble-v1.glb",
+      "sha256": "724e5cfb4ff3d6ee78775bfc0ce16421b89f0593e296596e1bbb1271ade92e14",
+      "bytes": 32472,
+      "triangles": 740,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-beard-full-v1.glb",
+      "sha256": "c1aa1c5c52c08d2f4185c4c9016b64687254504bff87ae5bc26a5d79dd757a06",
+      "bytes": 52480,
+      "triangles": 1260,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-eyes-neutral-v1.glb",
+      "sha256": "20f7051aff5000e6c4a3af31102c8ee136c7acfbdd0c23cd8612602a50d7d950",
+      "bytes": 63296,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-eyes-keen-v1.glb",
+      "sha256": "f24f8bf06d779065b02d7c384934983158028e6db1e832d320ffebb8e28c16d6",
+      "bytes": 63292,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-eyes-soft-v1.glb",
+      "sha256": "f97abd4a4233fa4cd1dd22a860714a01cade2bdac9a95bc7c5965c5dffc0dd3e",
+      "bytes": 63292,
+      "triangles": 1120,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-brows-natural-v1.glb",
+      "sha256": "663683063cbd65955d3d96f05e167fb4fc7d6ee228427b59a1cec6a509a91132",
+      "bytes": 8940,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-brows-bold-v1.glb",
+      "sha256": "9d73c7c5ca6414abe9a40ff0f7733357007e5a9159e08af5892d7f92cc2044f2",
+      "bytes": 8940,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    },
+    {
+      "name": "female-brows-arched-v1.glb",
+      "sha256": "69a490810407740bdf6a1839bdf649d7ed81f571482ee437a8706047b9bc4d0d",
+      "bytes": 8944,
+      "triangles": 64,
+      "headBound": true,
+      "complete": false
+    }
+  ],
+  "tests": {
+    "command": "node --test tests/character-appearance.test.mjs tests/art-catalog.test.mjs",
+    "exitCode": 0,
+    "stdout": "✔ serves UI, registered atlas, shot, docs and plan while keeping source and unlisted files private (141.4166ms)\n✔ PATCH uses catalog-wide CAS, persists supported states and returns the UI contract (34.1748ms)\n✔ uploads Unicode names with exact bytes and advances global revision (21.7753ms)\n✔ validates upload role, extension, traversal, row id, GLB signature, CAS and size (9177.7084ms)\n✔ allows Markdown evidence to satisfy applied-state evidence gate (10789.0336ms)\n✔ empty prepared states fail and concurrent saves preserve exactly one revision (9506.7372ms)\n✔ rejects foreign origins and arbitrary Host headers (7474.1598ms)\n✔ appearance catalog exposes the required options for both body bases (133.0059ms)\n✔ malformed and unknown appearance values normalize to a closed safe descriptor (0.2765ms)\n✔ none choices omit their geometry families (1.0244ms)\n✔ each recolor changes only its own family colors while geometry stays fixed (70.8291ms)\n✔ A to B to A swaps are deterministic in vertices, indices, and colors (100.1606ms)\n✔ appearance receipt preserves the v3 body and head source hashes (1.8705ms)\nℹ tests 13\nℹ suites 0\nℹ pass 13\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 38950.6877\n"
+  }
+}

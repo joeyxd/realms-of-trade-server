@@ -1,0 +1,140 @@
+{
+  "generatedAt": "2026-10-08T13:21:57.922Z",
+  "purpose": "Verify the optional route through the live GameHost snapshot and UI: start at berth, cross three ordered buoys, read a real telegraphed corsair salvo and its hit-or-dodge result, return, and dock through the normal command.",
+  "harness": "Fresh isolated ephemeral GameHost per viewport, real browser WebSocket and game UI, in-memory store, local Three.js/GSAP/font routes, Chrome WebGL renderer; no .env, SQL, external hosts, device or FPS claim.",
+  "fixture": "After helm mount and routeStart through the UI, QA wraps only world.navalRoute.plan for the owner and rebuilds each real candidate trial body at server-issued route points. This trusted relocation makes buoy and cannon acceptance deterministic; route snapshots, timing, shots, damage, ship HP, route commands, and dock completion remain server-owned. It does not claim unaided sailing/contact skill or physical-device performance.",
+  "expected": {
+    "buoys": 3,
+    "routeStatus": "complete",
+    "completionCommand": "normal navalPilot dock command",
+    "maximumDamagePerRun": 24,
+    "lootOrXp": false
+  },
+  "protocolVersion": 27,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "naval-route-desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "screenshots": [
+        "naval-route-desktop-1280x720-2026-10-08T13-21-57-922Z-01-buoy-one.png",
+        "naval-route-desktop-1280x720-2026-10-08T13-21-57-922Z-02-telegraphed-salvo.png",
+        "naval-route-desktop-1280x720-2026-10-08T13-21-57-922Z-03-salvo-resolution.png",
+        "naval-route-desktop-1280x720-2026-10-08T13-21-57-922Z-04-returning.png",
+        "naval-route-desktop-1280x720-2026-10-08T13-21-57-922Z-05-complete.png"
+      ],
+      "stage": "return",
+      "fixture": {
+        "shipId": "4e23b456-9d5b-4ebe-ae0b-a988a1662cc4:r1",
+        "home": null,
+        "routeLayout": {
+          "buoys": [
+            {
+              "x": 151.91875064028923,
+              "z": 124.99408929779119,
+              "id": "buoy:1",
+              "label": "Boya 1/3",
+              "radius": 9
+            },
+            {
+              "x": 147.8842837514769,
+              "z": 149.72712544224942,
+              "id": "buoy:2",
+              "label": "Boya 2/3",
+              "radius": 9
+            },
+            {
+              "x": 122.44960119157304,
+              "z": 162.88299573185486,
+              "id": "buoy:3",
+              "label": "Boya 3/3",
+              "radius": 9
+            }
+          ],
+          "threat": {
+            "x": 138.23664553909958,
+            "z": 163.76005375116188,
+            "id": "corsair-battery",
+            "yaw": 2.480549484739106,
+            "range": 58,
+            "label": "Cañonera corsaria"
+          }
+        },
+        "movement": "Navigation input and authoritative body movement remain active until each owner-authorized fixture relocation is applied on the server tick."
+      },
+      "start": {
+        "runId": "route:1",
+        "status": "outbound",
+        "next": 0,
+        "commandPath": "button click/tap → actual client navalPilot routeStart with epoch"
+      },
+      "buoys": [
+        {
+          "index": 1,
+          "id": "buoy:1",
+          "next": 1,
+          "status": "outbound"
+        },
+        {
+          "index": 2,
+          "id": "buoy:2",
+          "next": 2,
+          "status": "outbound"
+        },
+        {
+          "index": 3,
+          "id": "buoy:3",
+          "next": 3,
+          "status": "returning"
+        }
+      ],
+      "salvo": {
+        "shotId": "route:1:shot:1",
+        "launchedAt": 1352,
+        "impactTick": 1470,
+        "warningTicks": 118,
+        "from": {
+          "x": 139.1530568030853,
+          "z": 162.7016632772629
+        },
+        "mark": {
+          "x": 150.6908694132594,
+          "z": 149.3763022345266
+        },
+        "radius": 3.5,
+        "status": "outbound"
+      },
+      "resolution": {
+        "hits": 1,
+        "dodged": 0,
+        "damage": 6,
+        "ownerHull": null
+      },
+      "completion": {
+        "status": "complete",
+        "reason": "dock",
+        "hits": 1,
+        "dodged": 0,
+        "damage": 6,
+        "voyage": {
+          "active": false
+        },
+        "dockAction": "real prompt click/tap: Amarrar",
+        "ui": {
+          "visible": true,
+          "title": "Ensayo completado",
+          "score": "1 impacto · 0 esquivados · 6 HP",
+          "overflow": false
+        }
+      }
+    }
+  ],
+  "failures": []
+}

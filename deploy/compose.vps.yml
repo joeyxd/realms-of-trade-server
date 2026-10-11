@@ -1,0 +1,84 @@
+services:
+  marea-negra-alpha:
+    image: ${GAME_IMAGE:?Set GAME_IMAGE to the built image tag}
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      args:
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        APP_VERSION: ${APP_VERSION:-unknown}
+    env_file:
+      - ${MN_ENV_FILE:?Set MN_ENV_FILE to the absolute path of the private runtime env file}
+    environment:
+      PORT: "5173"
+      HOST: "0.0.0.0"
+      DEV: "0"
+      MAX_PLAYERS: "4"
+      WORLD_ID: ${WORLD_ID:?Set a stable WORLD_ID for this single authority}
+      ORIGINS: https://${GAME_HOSTNAME:?Set GAME_HOSTNAME to the public HTTPS hostname}
+      NODE_OPTIONS: --max-old-space-size=640
+      MN_GM_CONTENT_DIR: /var/lib/marea-content
+    volumes:
+      - /opt/marea-negra/content:/var/lib/marea-content
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 90s
+    read_only: true
+    pids_limit: 128
+    # Shared CPU ceiling: consume only what the world needs, without pinning cores.
+    cpus: 3.0
+    mem_limit: 1G
+    memswap_limit: 1G
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "3.0"
+          memory: 1G
+          pids: 128
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:5173/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks:
+      - coolify
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: coolify
+      traefik.http.routers.mn-alpha.rule: "Host(`${GAME_HOSTNAME:?Set GAME_HOSTNAME to the public HTTPS hostname}`)"
+      traefik.http.routers.mn-alpha.entrypoints: https
+      traefik.http.routers.mn-alpha.service: mn-alpha
+      traefik.http.routers.mn-alpha.tls: "true"
+      traefik.http.routers.mn-alpha.tls.certresolver: letsencrypt
+      traefik.http.services.mn-alpha.loadbalancer.server.port: "5173"
+      traefik.http.routers.mn-alpha-http.rule: "Host(`${GAME_HOSTNAME:?Set GAME_HOSTNAME to the public HTTPS hostname}`)"
+      traefik.http.routers.mn-alpha-http.entrypoints: http
+      traefik.http.routers.mn-alpha-http.middlewares: mn-alpha-https
+      traefik.http.routers.mn-alpha-http.service: mn-alpha
+      traefik.http.middlewares.mn-alpha-https.redirectscheme.scheme: https
+      traefik.http.middlewares.mn-alpha-https.redirectscheme.permanent: "true"
+
+networks:
+  coolify:
+    external: true
+    name: coolify

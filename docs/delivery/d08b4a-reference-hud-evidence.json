@@ -1,0 +1,117 @@
+{
+  "mission": "D08b.4a",
+  "title": "Reference HUD and immersive sailing evidence",
+  "date": "2026-10-06",
+  "humanReview": {
+    "date": "2026-10-06",
+    "feedback": "es cierto quedó muy bien sigamos man que falta?",
+    "accepted": "Visual appearance of B4a HUD in the conversation after delivery.",
+    "limits": "Does not establish physical-device FPS, gamepad acceptance, B2 normal/mipmap calibration, or deployment."
+  },
+  "source": {
+    "commit": "825e96e4496418b0142c72d2e63cc6653a362b6e",
+    "baseCommit": "84d464c12a1b1b2314cef992de7dce66c8bd8a67",
+    "comparison": "SHA-256 of working files and commit blobs after normalizing CRLF and lone CR to LF; all six selected files match.",
+    "files": [
+      {"path": "tools/naval-lab/index.html", "sha256": "348fc80cbb3618a08f9f8a477cd473df7a13677053716f7dc70d848a0a198f20", "matchesCommit": true},
+      {"path": "tools/naval-lab/style.css", "sha256": "2873aa3b7a1435f1ddac6300d03db633147d7b66a5627a18e9d4bcb3e2871aa4", "matchesCommit": true},
+      {"path": "tools/naval-lab/main.js", "sha256": "23dea8f7bf7ee522edbb952936b03f2d9fa0c1c6d504ba5b34b53cba216e6f5d", "matchesCommit": true},
+      {"path": "tools/naval-lab/hud.js", "sha256": "750dcb50e7f7cd945bff6ecf62ee52a79b239aecddce5286ef19a3091daf47f9", "matchesCommit": true},
+      {"path": "tools/naval-lab/input.js", "sha256": "0ddda0e442bca9217260bd33b44b5ca42d3363d64634bbe2e5661a8c524e9491", "matchesCommit": true},
+      {"path": "tests/naval-lab-input.test.mjs", "sha256": "d0f9ac8a979897a33b47ed6043f52730a6f6fac73531847d5980a5e13cf160af", "matchesCommit": true}
+    ],
+    "unrelatedConcurrentChanges": [
+      {"path": "assets/manifest.json", "bytes": 4044, "sha256": "ff8b3e4c45cd696868dca8040534f853d04657c9a2ac5e2c7f875c786c69d9f2"},
+      {"path": "src/render/toon.js", "bytes": 26060, "sha256": "7458b43934a9d7110be770110c27ff1b66491b18980e7dc471acf869b84650dd"},
+      {"path": "src/render/terrain.js", "bytes": 15329, "sha256": "dab262910bb36795bed814b4a4ab70206936fbde55806fa0d6b9e28a96c086c3"}
+    ],
+    "checkoutNote": "This evidence compares the selected HUD paths only and does not claim a clean full checkout."
+  },
+  "checks": {
+    "reportedBy": "root agent; not rerun for this evidence record",
+    "tests": "89/89 passed across 15 files",
+    "node": "v24.14.0",
+    "exitCode": 0,
+    "durationMs": 917.7225,
+    "toolChunk": "faba5d",
+    "fullM5Suite": false
+  },
+  "captures": {
+    "directory": "shots/naval-hud-ref-20261006",
+    "method": "ffprobe measured image dimensions; hashes, byte counts, and JPEG signatures were read from the original files. Captures are ignored workspace evidence and were not edited.",
+    "stage": {
+      "hudImages": {
+        "files": ["desktop-boost.jpg", "portrait-house.jpg", "landscape-house.jpg", "small-house.jpg", "native-final.jpg"],
+        "sourceCommit": "84d464c12a1b1b2314cef992de7dce66c8bd8a67",
+        "relationToFinal": "Their artwork and HUD are visually identical in final source commit 825e96e4496418b0142c72d2e63cc6653a362b6e."
+      },
+      "portraitSettings": {
+        "file": "portrait-settings.jpg",
+        "sourceCommit": "825e96e4496418b0142c72d2e63cc6653a362b6e",
+        "detail": "Captured with the final settings scroll helper."
+      },
+      "uiAndInputProofs": {
+        "sourceCommit": "84d464c12a1b1b2314cef992de7dce66c8bd8a67",
+        "relationToFinal": "The relevant UI and input source files are unchanged in 825e96e4496418b0142c72d2e63cc6653a362b6e."
+      }
+    },
+    "images": [
+      {"file": "desktop-boost.jpg", "width": 1280, "height": 800, "bytes": 131275, "jpegSignatureHex": "ffd8ff", "sha256": "989e38076d4de85f2e512a2abdad1d10fe9f2a0e3ae0e1e3744e3fa8d5900083", "snapshot": "desktop-boost.json"},
+      {"file": "portrait-house.jpg", "width": 390, "height": 844, "bytes": 42423, "jpegSignatureHex": "ffd8ff", "sha256": "53c29d5994b61b5d28b7c7e7ed3dcabe0b158317dd1cd1477aa47bf1fae6eb30", "snapshot": "portrait-house.json"},
+      {"file": "landscape-house.jpg", "width": 844, "height": 390, "bytes": 43795, "jpegSignatureHex": "ffd8ff", "sha256": "1b6d54d67e5fe620f60f1ea75e81b27881bff6ba450667525553e8a965cf8d69", "snapshot": "landscape-house.json"},
+      {"file": "small-house.jpg", "width": 320, "height": 740, "bytes": 35339, "jpegSignatureHex": "ffd8ff", "sha256": "a0c7487798d8912e5adcc687ae46a2af2461575924b4922ec2338bb6b0366682", "snapshot": null},
+      {"file": "portrait-settings.jpg", "width": 390, "height": 844, "bytes": 39796, "jpegSignatureHex": "ffd8ff", "sha256": "7acac2f93457c61fd997e1725ebe9d06e12b16b5582cecd8d82323b3fb0354f5", "snapshot": "settings-scroll.json"},
+      {"file": "native-final.jpg", "width": 1707, "height": 825, "bytes": 159867, "jpegSignatureHex": "ffd8ff", "sha256": "05cc81453bebe0c2957c7fadfaaf33908b294b57ee54c1f6ee4988ea353bd84c", "snapshot": "native-final.json", "devicePixelRatio": 1.5}
+    ],
+    "uiSnapshots": [
+      {"file": "desktop-ui.json", "viewport": [1280, 800], "canvas": [1280, 800], "svgCount": 5, "loadedRaftTextures": ["wood-boards-v2.webp", "wood-boards-v2-normal.webp"]},
+      {"file": "portrait-ui.json", "viewport": [390, 844], "canvas": [390, 679], "svgCount": 5, "loadedRaftTextures": ["wood-boards-v2-mobile.webp"]},
+      {"file": "landscape-ui.json", "viewport": [844, 390], "canvas": [844, 290], "svgCount": 5, "loadedRaftTextures": ["wood-boards-v2-mobile.webp"]},
+      {"file": "small-ui.json", "viewport": [320, 740], "canvas": [320, 575], "svgCount": 5, "loadedRaftTextures": ["wood-boards-v2-mobile.webp"]},
+      {"file": "native-ui.json", "viewport": [1707, 825], "canvas": [1707.3334, 825.3334], "devicePixelRatio": 1.5, "svgCount": 5, "loadedRaftTextures": ["wood-boards-v2.webp", "wood-boards-v2-normal.webp"]}
+    ],
+    "settingsPanel": {"snapshot": "settings-scroll.json", "scrollY": 641.3333, "viewport": [390, 844], "settingsRect": {"x": 0, "y": -18.7396, "width": 390, "height": 1625.0417}, "returnButtonRect": {"x": 16, "y": -0.0729, "width": 358, "height": 44}, "reviewNote": "Root confirmed the refreshed portrait-settings.jpg shows the settings panel in the final 825e96e UI."}
+  },
+  "interactionEvidence": {
+    "reportedBy": "root agent; UI event sequences were run in the real lab interface",
+    "keyboard": {
+      "source": "keyboard-controls.json",
+      "viewport": [390, 844],
+      "sequence": "With focus on the settings button labeled '← Volver a navegar', press J and then Space. J does not jettison cargo; Space activates the focused native button, closes settings, and does not capture a gust. These focused key behaviors are not global key blocking.",
+      "before": {"tick": 0, "cargoMass": 48, "lastAttempt": -1},
+      "afterJ": {"tick": 0, "cargoMass": 48, "lastAttempt": -1},
+      "afterSpace": {"tick": 0, "cargoMass": 48, "lastAttempt": -1}
+    },
+    "jettison": {
+      "source": "jettison.json",
+      "before": {"tick": 0, "cargoMass": 48, "cargoCount": 1, "loadPercent": 64},
+      "after": {"tick": 0, "cargoMass": 0, "cargoCount": 0, "loadPercent": 42}
+    },
+    "perfectSailingState": {
+      "sources": ["desktop-boost.json", "native-final.json"],
+      "state": {"tick": 420, "boostUntil": 735, "multiplier": 2.8, "result": "perfect", "resultUntil": 555, "speed": 8.5958438131, "boostSeconds": 5.25},
+      "sameStateInBothSnapshots": true
+    },
+    "togglePauseSnapshot": "toggle-pause.json was omitted because it predates the final helper."
+  },
+  "responsiveAndAssetBudget": {
+    "measuredControls": "Across desktop, portrait, landscape, 320px small portrait, and native viewports, all measured controls are at least 44px high and the recorded control rectangles have zero overlapping pairs.",
+    "review": "Root visually reviewed the five viewport layouts; the refreshed portrait settings capture shows the settings panel.",
+    "mobileAlbedo": {"src": "/assets/textures/raft/wood-boards-v2-mobile.webp", "width": 512, "height": 512},
+    "mobileNormal": null,
+    "svgCount": 5,
+    "rasterNote": "The reference HUD adds no raster image loads; mobile UI snapshots report only the existing 512x512 raft albedo and no normal map.",
+    "limits": "Evidence does not measure physical-device GPU or FPS, and does not establish gamepad acceptance, user acceptance, or a production deployment."
+  },
+  "assetReuse": {
+    "unrealSource": "C:/Unreal/ActionRPGMultiplayerStart/Content/ActionRPGStarterSystem/InventorySystem/JigSaw/Widgets/Images",
+    "confirmedCandidates": [
+      {"file": "T_SlotFrame.uasset", "bytes": 6129},
+      {"file": "T_SlotBackG.uasset", "bytes": 6459}
+    ],
+    "handling": "Same candidates confirmed for B4; neither source was modified, exported, or previewed.",
+    "iconDesign": "Wind and crate icons are manually redrawn as fixed inline SVG. The mastbolt icon was reused historically in B4, then replaced by wind curves in B4a; mastbolt reuse is not part of the final B4a HUD."
+  },
+  "scopeLimits": ["No combat implementation evidence", "No Q1 milestone claim", "No push or deployment claim"],
+  "issues": []
+}

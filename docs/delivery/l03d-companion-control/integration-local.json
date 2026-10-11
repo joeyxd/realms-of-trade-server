@@ -1,0 +1,29 @@
+{
+  "schema": "mn.l03d.companion-control.integration-local.v1",
+  "recordedAt": "2026-10-11T02:18:48.966081+00:00",
+  "source": "merged worktree containing f628755 and upstream 418abcf; alpha.39/protocol47",
+  "command": "node --test tests/starter-workshop-baseline.test.mjs tests/starter-workshop-authority.test.mjs tests/logging-timing-integration.test.mjs tests/resource-authority.test.mjs tests/fire-host.test.mjs tests/companion-control-network.test.mjs",
+  "exitCode": 0,
+  "counts": {
+    "tests": 30,
+    "pass": 30,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "durationMs": 5890.8725,
+  "sha256": {
+    "server/economicAuthority.mjs": "8e169e07845676cede07aedc3dbe9e5476df0b7ca108723643071b6f8ddb6a64",
+    "server/host.mjs": "dbbf467e080a98d0dff83c9c637831b94a2a03e9e7762e42164c6919e805d773",
+    "src/net/localServer.js": "6a5c8ca8713347b8f3d35d6800b95678a56224040a6f59893e414fa58862dada",
+    "src/net/protocol.js": "b0f9792eb24f44ee57b5cb35d793fde547558db9321621318b1f6efceb280813",
+    "tests/starter-workshop-baseline.test.mjs": "4938eca599a67b043736462c5678d2bd4b3c12b019a365f638aeefc4241d7a5d",
+    "tests/starter-workshop-authority.test.mjs": "fcad7bb9ebed28df1e00cd94fd756fa068adba17a4f67ffade11bbab76b9d925",
+    "tests/logging-timing-integration.test.mjs": "880d51847727fb9aaafcac95a08df3fbba52db6373ff509d5a5b548b7e8e65e6",
+    "tests/resource-authority.test.mjs": "3e62704d2568f52d6c979f5670727d4fe8db6bea7b0670766d0dd32c349e8763",
+    "tests/fire-host.test.mjs": "f11424905e64009739a9178a17fba1d2d1f8c6b0fd6fa0e8cfccbcf3f3f5b38f",
+    "tests/companion-control-network.test.mjs": "5e5f37086746c4445f775f4803395d4f8e95283481da092109b3c67a224c61c2"
+  },
+  "scope": "Local GameHost resource/workshop/fire/companion control regression and two SQL024/026 baseline cases. Not a public authenticated owner control canary."
+}

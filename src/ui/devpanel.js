@@ -1,0 +1,158 @@
+import { text as ltext, dataText } from '../core/i18n.js';
+// F4 debug panel (DESIGN §16, M2 fun test): live tuning of the combat numbers (applied to the local
+// prediction and to the local server at once), spawns, god mode, hitboxes. The local server accepts
+// these 'dev' commands; a public server never would.
+import { tuning } from '../data/tuning.js';
+import { ENEMIES } from '../data/enemies.js';
+import { setPath } from '../net/localServer.js';
+import { MSG } from '../net/protocol.js';
+import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
+
+const ROOTS = { tuning, enemies: ENEMIES, skills: SKILLS };
+
+const get = (obj, path) => path.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
+
+const SLIDERS = [
+  ['Espada: EXCELENTE (s antes del impacto)', 'tuning', 'sword.excellent.tc', 0.02, 0.15, 0.005],
+  ['Espada: BUENO (s)', 'tuning', 'sword.good.tc', 0.05, 0.25, 0.005],
+  ['Espada: POBRE (s)', 'tuning', 'sword.poor.tc', 0.1, 0.4, 0.01],
+  ['Espada: EXCELENTE daño ×', 'tuning', 'sword.excellent.dmg', 1, 5, 0.1],
+  ['Coyote (s)', 'tuning', 'parry.coyote', 0, 0.12, 0.005],
+  ['Guardia: PERFECTA (s)', 'tuning', 'guard.perfect', 0.04, 0.3, 0.01],
+  ['Guardia: daño que pasa ×', 'tuning', 'guard.blockMult', 0, 1, 0.05],
+  ['Guardia: aguante', 'tuning', 'guard.stamina', 10, 150, 5],
+  ['Hitstop EXCELENTE (s)', 'tuning', 'sword.excellent.hitstop', 0, 0.25, 0.01],
+  ['Hitstop golpe (s)', 'tuning', 'feel.hitstopMelee', 0, 0.15, 0.005],
+  ['Cámara lenta EXCELENTE ×', 'tuning', 'sword.excellent.slowmo', 0.1, 1, 0.05],
+  ['Cámara lenta: duración (s)', 'tuning', 'feel.perfectSlowmoTime', 0, 0.8, 0.05],
+  ['Proyectil: armado (s)', 'tuning', 'projectiles.armTime', 0, 0.4, 0.01],
+  ['Roce: margen (u)', 'tuning', 'projectiles.graze', 0, 1, 0.05],
+  ['Invulnerable tras golpe (s)', 'tuning', 'combat.hurtIframes', 0, 1, 0.05],
+  ['Dash: recarga (s)', 'tuning', 'dash.recharge', 0.2, 2, 0.05],
+  ['Pistola: cadencia (s)', 'skills', 'pistol.every', 0.08, 0.5, 0.01],
+  ['Pistola: daño × ATK', 'skills', 'pistol.mult', 0.2, 1.5, 0.05],
+  ['Descarga: enfriamiento (s)', 'skills', 'blast.cd', 1, 12, 0.5],
+  ['Paso de humo: distancia (u)', 'skills', 'blink.dist', 2, 8, 0.25],
+  ['Estocada: distancia (u)', 'skills', 'lunge.dist', 2, 8, 0.25],
+  ['Hoja de viento: enfriamiento (s)', 'skills', 'wave.cd', 1, 10, 0.5],
+  ['Lluvia: daño × ATK', 'skills', 'rain.mult', 0.2, 1.5, 0.05],
+  ['Rayo de mástil: carga (s)', 'skills', 'mastbolt.charge', 0.4, 2.5, 0.05],
+  ['Rayo de mástil: alcance (u)', 'skills', 'mastbolt.range', 5, 14, 0.5],
+  ['Rayo de mástil: salto (u)', 'skills', 'mastbolt.chainR', 1, 8, 0.25],
+  ['Rayo de mástil: recarga (s)', 'skills', 'mastbolt.cd', 2, 30, 1],
+  ['Nube de tinta: alcance (u)', 'skills', 'inkcloud.range', 5, 14, 0.5],
+  ['Nube de tinta: radio (u)', 'skills', 'inkcloud.r', 1, 5, 0.25],
+  ['Nube de tinta: duración (s)', 'skills', 'inkcloud.dur', 2, 8, 0.5],
+  ['Nube de tinta: recarga (s)', 'skills', 'inkcloud.cd', 2, 30, 1],
+  ['Arquero: vel. flecha', 'enemies', 'archer.attacks.0.speed', 4, 14, 0.5],
+  ['Arquero: enfriamiento (s)', 'enemies', 'archer.attacks.0.cd', 0.6, 5, 0.1],
+  ['Arquero: aviso (s)', 'enemies', 'archer.attacks.0.windup', 0.15, 1, 0.05],
+  ['Centinela: aviso tajo (s)', 'enemies', 'sentinel.attacks.0.windup', 0.3, 1.5, 0.05],
+  ['Centinela: vel. púas', 'enemies', 'sentinel.attacks.1.speed', 4, 14, 0.5],
+];
+
+export class DevPanel {
+  constructor(root, { client, world, hud }) {
+    this.root = root;
+    this.client = client;
+    this.world = world;
+    this.hud = hud;
+    this.open = false;
+    this.flags = { god: false, hitboxes: false };
+    root.className = 'devpanel frame-dark interactive';
+    root.hidden = true;
+    root.innerHTML = `
+      <h3>${ltext('dev.label0')} <span class="kbd">F4</span></h3>
+      <div class="dv-row dv-btns">
+        <button data-op="spawn" data-kind="archer">${ltext('dev.label1')}</button>
+        <button data-op="spawn" data-kind="sentinel">${ltext('dev.label2')}</button>
+        <button data-op="spawn" data-kind="dummy">${ltext('dev.label3')}</button>
+        <button data-op="clear">${ltext('dev.label4')}</button>
+      </div>
+      <div class="dv-row dv-btns">
+        <button data-op="spawn" data-kind="grunt" data-n="4">${ltext('dev.label5')}</button>
+        <button data-op="spawn" data-kind="imp">${ltext('dev.label6')}</button>
+        <button data-op="spawn" data-kind="shaman">${ltext('dev.label7')}</button>
+        <button data-op="spawn" data-kind="crab">${ltext('dev.label8')}</button>
+      </div>
+      <div class="dv-row dv-btns">
+        <button data-op="enc" data-sub="start">${ltext('dev.label9')}</button>
+        <button data-op="enc" data-sub="wave">${ltext('dev.label10')}</button>
+        <button data-op="enc" data-sub="boss">${ltext('dev.label11')}</button>
+        <button data-op="enc" data-sub="phase2">${ltext('dev.label12')}</button>
+        <button data-op="enc" data-sub="phase3">${ltext('dev.label13')}</button>
+        <button data-op="enc" data-sub="win">${ltext('dev.label14')}</button>
+        <button data-op="enc" data-sub="reset">${ltext('dev.label15')}</button>
+      </div>
+      <div class="dv-row dv-btns">
+        <button data-op="heal">${ltext('dev.label16')}</button>
+        <button data-op="riposte">${ltext('dev.label17')}</button>
+        <button data-op="pearl">${ltext('dev.label18')}</button>
+        <button data-op="pearl" data-kind="escarcha">${ltext('dev.label19')}</button>
+        <button data-op="pearl" data-kind="tormenta">${ltext('dev.label20')}</button>
+        <button data-op="pearl" data-kind="tinta">${ltext('dev.label21')}</button>
+        <button data-op="clock" data-hours="12">${ltext('dev.label22')}</button>
+        <button data-op="clock" data-hours="22">${ltext('dev.label23')}</button>
+        <button data-op="lvdown">${ltext('dev.label24')}</button>
+        <button data-op="lvup">${ltext('dev.label25')}</button>
+        <button data-op="weapon">${ltext('dev.label26')}</button>
+      </div>
+      <label class="dv-check"><input type="checkbox" data-flag="god"> ${ltext('dev.label27')}</label>
+      <label class="dv-check"><input type="checkbox" data-flag="hitboxes"> ${ltext('dev.label28')}</label>
+      <div class="dv-sliders">${SLIDERS.map(([label, rootName, path, min, max, step], i) => `
+        <label class="dv-slider"><span>${dataText(label)} <b data-v="${i}"></b></span>
+        <input type="range" data-i="${i}" min="${min}" max="${max}" step="${step}"></label>`).join('')}
+      </div>
+      <p class="dv-note">${ltext('dev.label29')}</p>`;
+    root.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => this.button(b.dataset)));
+    root.querySelectorAll('input[data-flag]').forEach((el) => el.addEventListener('change', () => this.flag(el.dataset.flag, el.checked)));
+    root.querySelectorAll('input[data-i]').forEach((el) => el.addEventListener('input', () => this.slide(+el.dataset.i, +el.value)));
+    for (const el of root.querySelectorAll('button, input')) el.addEventListener('keydown', (e) => e.stopPropagation());
+  }
+
+  send(op, extra = {}) { this.client.send({ t: MSG.CMD, type: 'dev', op, ...extra }); }
+
+  toggle() {
+    this.open = !this.open;
+    this.root.hidden = !this.open;
+    if (this.open) this.refresh();
+  }
+
+  refresh() {
+    this.root.querySelectorAll('input[data-i]').forEach((el) => {
+      const [, rootName, path] = SLIDERS[+el.dataset.i];
+      const v = get(ROOTS[rootName] || tuning, path);
+      el.value = v;
+      this.root.querySelector(`b[data-v="${el.dataset.i}"]`).textContent = (+v).toFixed(3).replace(/\.?0+$/, '');
+    });
+  }
+
+  button(d) {
+    const ps = this.client.pred.ecs, e = this.client.youLocal;
+    switch (d.op) {
+      case 'spawn': { const n = +d.n || 1; for (let i = 0; i < n; i++) this.send('spawn', { kind: d.kind, dist: d.kind === 'sentinel' ? 9 : 8, ang: ps.facing[e] + (i - (n - 1) / 2) * 0.45 }); break; }
+      case 'clear': this.send('clear'); break;
+      case 'enc': this.send('enc', { sub: d.sub }); break;
+      case 'heal': this.send('heal'); break;
+      case 'riposte': this.send('riposte'); break;
+      case 'pearl': this.send('pearl', { kind: d.kind || 'brasa' }); break;
+      case 'clock': this.send('clock', { hours: +d.hours }); break;
+      case 'lvup': this.send('level', { level: (ps.level[e] || 1) + 1 }); break;
+      case 'lvdown': this.send('level', { level: Math.max(1, (ps.level[e] || 1) - 1) }); break;
+      case 'weapon': this.send('weapon', { weapon: ((ps.weapon[e] | 0) + 1) % WEAPON_KINDS.length }); break;
+      default: break;
+    }
+  }
+
+  flag(name, on) {
+    this.flags[name] = on;
+    if (name === 'god') this.send('god', { on });
+  }
+
+  slide(i, value) {
+    const [, rootName, path] = SLIDERS[i];
+    const obj = ROOTS[rootName] || tuning;
+    if (setPath(obj, path, value)) this.send('tune', { root: rootName, path, value });
+    this.root.querySelector(`b[data-v="${i}"]`).textContent = String(+value.toFixed(3));
+  }
+}

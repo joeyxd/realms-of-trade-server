@@ -1,0 +1,1159 @@
+{
+  "generatedAt": "2026-10-10T20:40:07.645Z",
+  "purpose": "Verify a dark night with no automatic player fill, usable portable light on foot, authoritative light state, and day-preset resistance.",
+  "harness": "Disposable GameHost and memory store per viewport; local Three.js/GSAP/fonts; Chrome4viewports. No production server, SQL, external assets, or physical-device performance claim.",
+  "fixture": "The server clock is fixed to midnight and dawn in turn; camera/player projection is awaited after relocations. One test player uses an isolated coast and the actual lantern-lit dock, then a second raw WebSocket guest verifies public light visibility and death reset.",
+  "assertions": [],
+  "viewports": [
+    {
+      "name": "night-desktop-low-es",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "low",
+      "locale": "es",
+      "port": 63582,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:63582/ws"
+        }
+      ],
+      "screenshots": [
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-01-dark-no-personal-light.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-02-personal-lantern-on.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-02b-personal-lantern-on-late.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-03-personal-lantern-moving.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-03b-personal-lantern-off-late.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-04-port-midnight-off.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-05-port-midnight-on.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-06-port-midnight-off-late.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-07-port-day-off.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-08-port-day-on.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-09-port-day-off-late.jpg",
+        "night-desktop-low-es-2026-10-10T20-40-07-644Z-04-nearby-player-lantern.jpg"
+      ],
+      "acks": [],
+      "assertions": {
+        "cameraSettledAndPlayerProjected": true,
+        "midnightClockLocked": true,
+        "dawnClockFixture": true,
+        "savedDayPreferenceIgnoredDuringPlay": true,
+        "nearBlackSun": true,
+        "portLanternAtMidnightAndDawn": true,
+        "lateOnOffScreenshots": true,
+        "noAutomaticPlayerFill": true,
+        "buttonAtLeast45px": true,
+        "localizedButton": true,
+        "actualToggle": true,
+        "sourceAndPropFollowMovement": true,
+        "remotePlayerLightVisible": true,
+        "deathClearsSource": true,
+        "noHorizontalOverflow": true
+      },
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "cameraStates": [
+        {
+          "label": "isolated-coast",
+          "blend": false,
+          "target": {
+            "x": -111.99985554581487,
+            "y": 0.7000275016347434,
+            "z": 159.9999555893108
+          },
+          "player": {
+            "x": -112,
+            "y": 0.699999988079071,
+            "z": 160
+          },
+          "projection": {
+            "x": -0.04849689575720121,
+            "y": 0.09842548141874433,
+            "z": 0.9517650585469666,
+            "screenX": 608.9619867153913,
+            "screenY": 324.566826689252
+          }
+        },
+        {
+          "label": "port-midnight",
+          "blend": false,
+          "target": {
+            "x": 115.91830043415553,
+            "y": 1.0471422557580512,
+            "z": 86.94054617342593
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.07364792170506701,
+            "y": 0.020932217102881706,
+            "z": 0.9506474261631306,
+            "screenX": 687.1346698912429,
+            "screenY": 352.46440184296256
+          }
+        },
+        {
+          "label": "port-dawn",
+          "blend": false,
+          "target": {
+            "x": 115.99379164206114,
+            "y": 1.0499913911747747,
+            "z": 86.9175669874359
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.0033952583492176933,
+            "y": 0.07657521468331453,
+            "z": 0.9514525655863997,
+            "screenX": 642.1729653434993,
+            "screenY": 332.4329227140068
+          }
+        }
+      ],
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7516794444444446,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 1190,
+          "y": 528,
+          "width": 72,
+          "height": 48
+        },
+        "hudGeometry": {
+          "control": {
+            "left": 1190,
+            "top": 528,
+            "right": 1262,
+            "bottom": 576
+          },
+          "obstacles": [
+            {
+              "selector": "#touch .t-cluster",
+              "visible": true,
+              "bounds": {
+                "left": 0,
+                "top": 0,
+                "right": 0,
+                "bottom": 0
+              }
+            },
+            {
+              "selector": ".tracker",
+              "visible": true,
+              "bounds": {
+                "left": 1016,
+                "top": 80,
+                "right": 1266,
+                "bottom": 348.015625
+              }
+            }
+          ],
+          "overlaps": []
+        },
+        "text": "Farol N",
+        "ariaLabel": "Encender luz (N)"
+      },
+      "ownPortableSource": {
+        "x": -111.68073134167463,
+        "y": 1.859999988079071,
+        "z": 159.9247170416952,
+        "r": 7.5,
+        "w": 1,
+        "priority": 2,
+        "coreVisible": true,
+        "uniform": {
+          "p": [
+            -111.68073134167463,
+            1.859999988079071,
+            159.9247170416952,
+            7.5
+          ],
+          "c": [
+            2.6257725482289245,
+            1.9375848943933813,
+            0.8485005676072307,
+            0.35
+          ]
+        },
+        "lightCount": 1
+      },
+      "movement": {
+        "before": {
+          "x": -112,
+          "z": 160,
+          "light": {
+            "kind": "portable",
+            "id": "26",
+            "x": -111.67562807689536,
+            "y": 1.859999988079071,
+            "z": 159.95118549906633,
+            "r": 7.5,
+            "i": 2.6,
+            "color": {
+              "isColor": true,
+              "r": 1,
+              "g": 0.7379104087672317,
+              "b": 0.3231432091022285
+            },
+            "flicker": 0.08,
+            "speed": 1.6,
+            "wrap": 0.35,
+            "knob": "portable",
+            "seed": 1.6620853411643102,
+            "d": -3.75,
+            "w": 1,
+            "priority": 2
+          }
+        },
+        "after": {
+          "x": -114.6783633522945,
+          "z": 157.32163664770547,
+          "light": {
+            "x": -114.35246329954857,
+            "z": 157.27932192222607
+          }
+        },
+        "followed": true
+      },
+      "portFixture": {
+        "x": 115.99379638584126,
+        "y": 1.05,
+        "z": 86.91756554345044,
+        "staticLamp": "lantern",
+        "lightDistance": 7.694342077136942
+      },
+      "portNightDay": {
+        "point": {
+          "x": 115.99379638584126,
+          "y": 1.05,
+          "z": 86.91756554345044,
+          "staticLamp": "lantern",
+          "lightDistance": 7.694342077136942
+        },
+        "midnightPhase": 0.75,
+        "dawnPhase": 0,
+        "personalSourceToggledAtBothHours": true,
+        "staticLampDistance": 7.694342077136942
+      },
+      "remoteLight": {
+        "entity": 28,
+        "source": {
+          "x": 112.74057435590902,
+          "y": 2.131647587976815,
+          "z": 89.2561287333148,
+          "priority": 0,
+          "radius": 7.5
+        },
+        "serverFlag": 1
+      },
+      "deathReset": {
+        "dead": true,
+        "authoritativeFlagOff": true,
+        "remoteSourceRemoved": true
+      },
+      "finalViewport": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "low",
+        "phase": 0.7504337847222224,
+        "sunIntensity": 0.018,
+        "control": {
+          "x": 1190,
+          "y": 528,
+          "width": 72,
+          "height": 48
+        },
+        "buttonHidden": false
+      }
+    },
+    {
+      "name": "night-desktop-high-en",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "quality": "high",
+      "locale": "en",
+      "port": 54535,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:54535/ws"
+        }
+      ],
+      "screenshots": [
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-01-dark-no-personal-light.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-02-personal-lantern-on.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-02b-personal-lantern-on-late.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-03-personal-lantern-moving.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-03b-personal-lantern-off-late.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-04-port-midnight-off.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-05-port-midnight-on.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-06-port-midnight-off-late.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-07-port-day-off.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-08-port-day-on.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-09-port-day-off-late.jpg",
+        "night-desktop-high-en-2026-10-10T20-40-07-644Z-04-nearby-player-lantern.jpg"
+      ],
+      "acks": [],
+      "assertions": {
+        "cameraSettledAndPlayerProjected": true,
+        "midnightClockLocked": true,
+        "dawnClockFixture": true,
+        "savedDayPreferenceIgnoredDuringPlay": true,
+        "nearBlackSun": true,
+        "portLanternAtMidnightAndDawn": true,
+        "lateOnOffScreenshots": true,
+        "noAutomaticPlayerFill": true,
+        "buttonAtLeast45px": true,
+        "localizedButton": true,
+        "actualToggle": true,
+        "sourceAndPropFollowMovement": true,
+        "remotePlayerLightVisible": true,
+        "deathClearsSource": true,
+        "noHorizontalOverflow": true
+      },
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "cameraStates": [
+        {
+          "label": "isolated-coast",
+          "blend": false,
+          "target": {
+            "x": -111.9995387397583,
+            "y": 0.7000552055174889,
+            "z": 159.9998581911267
+          },
+          "player": {
+            "x": -112,
+            "y": 0.699999988079071,
+            "z": 160
+          },
+          "projection": {
+            "x": -0.04567075178356322,
+            "y": 0.09653509452764084,
+            "z": 0.9517381253968633,
+            "screenX": 610.7707188585196,
+            "screenY": 325.2473659700493
+          }
+        },
+        {
+          "label": "port-midnight",
+          "blend": false,
+          "target": {
+            "x": 115.92110025879124,
+            "y": 1.0472066507683364,
+            "z": 86.93969305877255
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.07379559366688895,
+            "y": 0.020597974636105167,
+            "z": 0.9506428653357032,
+            "screenX": 687.2291799468089,
+            "screenY": 352.5847291310022
+          }
+        },
+        {
+          "label": "port-dawn",
+          "blend": false,
+          "target": {
+            "x": 115.99379557148441,
+            "y": 1.049997009751195,
+            "z": 86.91756579132738
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.002060897754843234,
+            "y": 0.07764071488331045,
+            "z": 0.9514678168065658,
+            "screenX": 641.3189745630997,
+            "screenY": 332.04934264200824
+          }
+        }
+      ],
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7515452083333334,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 1174.859375,
+          "y": 528,
+          "width": 87.140625,
+          "height": 48
+        },
+        "hudGeometry": {
+          "control": {
+            "left": 1174.859375,
+            "top": 528,
+            "right": 1262,
+            "bottom": 576
+          },
+          "obstacles": [
+            {
+              "selector": "#touch .t-cluster",
+              "visible": true,
+              "bounds": {
+                "left": 0,
+                "top": 0,
+                "right": 0,
+                "bottom": 0
+              }
+            },
+            {
+              "selector": ".tracker",
+              "visible": true,
+              "bounds": {
+                "left": 1016,
+                "top": 80,
+                "right": 1266,
+                "bottom": 348.015625
+              }
+            }
+          ],
+          "overlaps": []
+        },
+        "text": "Lantern N",
+        "ariaLabel": "Light lantern (N)"
+      },
+      "ownPortableSource": {
+        "x": -111.68010412169495,
+        "y": 1.859999988079071,
+        "z": 159.9274284694702,
+        "r": 7.5,
+        "w": 1,
+        "priority": 2,
+        "coreVisible": true,
+        "uniform": {
+          "p": [
+            -111.68010412169495,
+            1.859999988079071,
+            159.9274284694702,
+            7.5
+          ],
+          "c": [
+            2.607850242457768,
+            1.9243598384157359,
+            0.8427090962058278,
+            0.35
+          ]
+        },
+        "lightCount": 1
+      },
+      "movement": {
+        "before": {
+          "x": -112,
+          "z": 160,
+          "light": {
+            "kind": "portable",
+            "id": "26",
+            "x": -111.6755566050772,
+            "y": 1.859999988079071,
+            "z": 159.95166281461476,
+            "r": 7.5,
+            "i": 2.6,
+            "color": {
+              "isColor": true,
+              "r": 1,
+              "g": 0.7379104087672317,
+              "b": 0.3231432091022285
+            },
+            "flicker": 0.08,
+            "speed": 1.6,
+            "wrap": 0.35,
+            "knob": "portable",
+            "seed": 1.6620853411643102,
+            "d": -3.75,
+            "w": 1,
+            "priority": 2
+          }
+        },
+        "after": {
+          "x": -114.6783633522945,
+          "z": 157.32163664770547,
+          "light": {
+            "x": -114.30894641663207,
+            "z": 157.32285916179393
+          }
+        },
+        "followed": true
+      },
+      "portFixture": {
+        "x": 115.99379638584126,
+        "y": 1.05,
+        "z": 86.91756554345044,
+        "staticLamp": "lantern",
+        "lightDistance": 7.694342077136942
+      },
+      "portNightDay": {
+        "point": {
+          "x": 115.99379638584126,
+          "y": 1.05,
+          "z": 86.91756554345044,
+          "staticLamp": "lantern",
+          "lightDistance": 7.694342077136942
+        },
+        "midnightPhase": 0.75,
+        "dawnPhase": 0,
+        "personalSourceToggledAtBothHours": true,
+        "staticLampDistance": 7.694342077136942
+      },
+      "remoteLight": {
+        "entity": 28,
+        "source": {
+          "x": 118.79394704081876,
+          "y": 2.21,
+          "z": 86.65795927075203,
+          "priority": 0,
+          "radius": 7.5
+        },
+        "serverFlag": 1
+      },
+      "deathReset": {
+        "dead": true,
+        "authoritativeFlagOff": true,
+        "remoteSourceRemoved": true
+      },
+      "finalViewport": {
+        "width": 1280,
+        "height": 720,
+        "documentWidth": 1280,
+        "overflow": false,
+        "quality": "high",
+        "phase": 0.7504296875,
+        "sunIntensity": 0.018,
+        "control": {
+          "x": 1174.859375,
+          "y": 528,
+          "width": 87.140625,
+          "height": 48
+        },
+        "buttonHidden": false
+      }
+    },
+    {
+      "name": "night-mobile-low-en",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "low",
+      "locale": "en",
+      "port": 60588,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:60588/ws"
+        }
+      ],
+      "screenshots": [
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-01-dark-no-personal-light.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-02-personal-lantern-on.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-02b-personal-lantern-on-late.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-03-personal-lantern-moving.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-03b-personal-lantern-off-late.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-04-port-midnight-off.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-05-port-midnight-on.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-06-port-midnight-off-late.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-07-port-day-off.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-08-port-day-on.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-09-port-day-off-late.jpg",
+        "night-mobile-low-en-2026-10-10T20-40-07-644Z-04-nearby-player-lantern.jpg"
+      ],
+      "acks": [],
+      "assertions": {
+        "cameraSettledAndPlayerProjected": true,
+        "midnightClockLocked": true,
+        "dawnClockFixture": true,
+        "savedDayPreferenceIgnoredDuringPlay": true,
+        "nearBlackSun": true,
+        "portLanternAtMidnightAndDawn": true,
+        "lateOnOffScreenshots": true,
+        "noAutomaticPlayerFill": true,
+        "buttonAtLeast45px": true,
+        "localizedButton": true,
+        "actualToggle": true,
+        "sourceAndPropFollowMovement": true,
+        "remotePlayerLightVisible": true,
+        "deathClearsSource": true,
+        "noHorizontalOverflow": true
+      },
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "cameraStates": [
+        {
+          "label": "isolated-coast",
+          "blend": false,
+          "target": {
+            "x": -111.96556728532644,
+            "y": 0.7007343182978292,
+            "z": 159.98941407901683
+          },
+          "player": {
+            "x": -112,
+            "y": 0.699999988079071,
+            "z": 160
+          },
+          "projection": {
+            "x": -0.05206348574838727,
+            "y": 0.046713628337305024,
+            "z": 0.951028162376883,
+            "screenX": 184.84762027906447,
+            "screenY": 402.2868488416573
+          }
+        },
+        {
+          "label": "port-midnight",
+          "blend": false,
+          "target": {
+            "x": 115.92130300583999,
+            "y": 1.0365830292478033,
+            "z": 86.94116290014978
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.16156928993464229,
+            "y": 0.12826085621330724,
+            "z": 0.9521473566754696,
+            "screenX": 226.50601153725526,
+            "screenY": 367.87391867798436
+          }
+        },
+        {
+          "label": "port-dawn",
+          "blend": false,
+          "target": {
+            "x": 115.9937940665758,
+            "y": 1.0499730421197102,
+            "z": 86.91756629839571
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.13729911506369097,
+            "y": 0.18740877402723793,
+            "z": 0.9530369918996613,
+            "screenX": 221.77332743741977,
+            "screenY": 342.91349736050563
+          }
+        }
+      ],
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.751050590277778,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 231,
+          "y": 747.859375,
+          "width": 48,
+          "height": 87.140625
+        },
+        "hudGeometry": {
+          "control": {
+            "left": 231,
+            "top": 747.859375,
+            "right": 279,
+            "bottom": 835
+          },
+          "obstacles": [
+            {
+              "selector": "#touch .t-cluster",
+              "visible": true,
+              "bounds": {
+                "left": 60.71875,
+                "top": 783.28125,
+                "right": 60.71875,
+                "bottom": 783.28125
+              }
+            },
+            {
+              "selector": ".tracker",
+              "visible": true,
+              "bounds": {
+                "left": 241,
+                "top": 10,
+                "right": 272,
+                "bottom": 260
+              }
+            }
+          ],
+          "overlaps": []
+        },
+        "text": "Lantern N",
+        "ariaLabel": "Light lantern (N)"
+      },
+      "ownPortableSource": {
+        "x": -111.76492408209185,
+        "y": 1.859999988079071,
+        "z": 159.7712221321464,
+        "r": 7.5,
+        "w": 1,
+        "priority": 2,
+        "coreVisible": true,
+        "uniform": {
+          "p": [
+            -111.76492408209185,
+            1.859999988079071,
+            159.7712221321464,
+            7.5
+          ],
+          "c": [
+            2.6253758013286324,
+            1.9372921307260096,
+            0.848372361540669,
+            0.35
+          ]
+        },
+        "lightCount": 1
+      },
+      "movement": {
+        "before": {
+          "x": -112,
+          "z": 160,
+          "light": {
+            "kind": "portable",
+            "id": "26",
+            "x": -111.69236940119991,
+            "y": 1.859999988079071,
+            "z": 159.88614300776018,
+            "r": 7.5,
+            "i": 2.6,
+            "color": {
+              "isColor": true,
+              "r": 1,
+              "g": 0.7379104087672317,
+              "b": 0.3231432091022285
+            },
+            "flicker": 0.08,
+            "speed": 1.6,
+            "wrap": 0.35,
+            "knob": "portable",
+            "seed": 1.6620853411643102,
+            "d": -3.75,
+            "w": 1,
+            "priority": 2
+          }
+        },
+        "after": {
+          "x": -113.7675193895876,
+          "z": 161.70741264378844,
+          "light": {
+            "x": -113.5304143157837,
+            "z": 161.93408682400414
+          }
+        },
+        "followed": true
+      },
+      "portFixture": {
+        "x": 115.99379638584126,
+        "y": 1.05,
+        "z": 86.91756554345044,
+        "staticLamp": "lantern",
+        "lightDistance": 7.694342077136942
+      },
+      "portNightDay": {
+        "point": {
+          "x": 115.99379638584126,
+          "y": 1.05,
+          "z": 86.91756554345044,
+          "staticLamp": "lantern",
+          "lightDistance": 7.694342077136942
+        },
+        "midnightPhase": 0.75,
+        "dawnPhase": 0,
+        "personalSourceToggledAtBothHours": true,
+        "staticLampDistance": 7.694342077136942
+      },
+      "remoteLight": {
+        "entity": 28,
+        "source": {
+          "x": 110.68532489968794,
+          "y": 2.105081989667682,
+          "z": 90.14347678973064,
+          "priority": 0,
+          "radius": 7.5
+        },
+        "serverFlag": 1
+      },
+      "deathReset": {
+        "dead": true,
+        "authoritativeFlagOff": true,
+        "remoteSourceRemoved": true
+      },
+      "finalViewport": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "low",
+        "phase": 0.7504386458333334,
+        "sunIntensity": 0.018,
+        "control": {
+          "x": 231,
+          "y": 747.859375,
+          "width": 48,
+          "height": 87.140625
+        },
+        "buttonHidden": false
+      }
+    },
+    {
+      "name": "night-mobile-high-es",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "quality": "high",
+      "locale": "es",
+      "port": 49705,
+      "status": "passed",
+      "stage": "complete",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "httpFailures": [],
+      "externalRequests": [],
+      "websockets": [
+        {
+          "url": "ws://127.0.0.1:49705/ws"
+        }
+      ],
+      "screenshots": [
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-01-dark-no-personal-light.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-02-personal-lantern-on.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-02b-personal-lantern-on-late.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-03-personal-lantern-moving.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-03b-personal-lantern-off-late.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-04-port-midnight-off.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-05-port-midnight-on.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-06-port-midnight-off-late.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-07-port-day-off.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-08-port-day-on.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-09-port-day-off-late.jpg",
+        "night-mobile-high-es-2026-10-10T20-40-07-644Z-04-nearby-player-lantern.jpg"
+      ],
+      "acks": [],
+      "assertions": {
+        "cameraSettledAndPlayerProjected": true,
+        "midnightClockLocked": true,
+        "dawnClockFixture": true,
+        "savedDayPreferenceIgnoredDuringPlay": true,
+        "nearBlackSun": true,
+        "portLanternAtMidnightAndDawn": true,
+        "lateOnOffScreenshots": true,
+        "noAutomaticPlayerFill": true,
+        "buttonAtLeast45px": true,
+        "localizedButton": true,
+        "actualToggle": true,
+        "sourceAndPropFollowMovement": true,
+        "remotePlayerLightVisible": true,
+        "deathClearsSource": true,
+        "noHorizontalOverflow": true
+      },
+      "fixtureSite": {
+        "x": -112,
+        "y": 0.699999988079071,
+        "z": 160,
+        "lightDistance": 184.1932999275615,
+        "spawnDistance": 224.44011148999104
+      },
+      "cameraStates": [
+        {
+          "label": "isolated-coast",
+          "blend": false,
+          "target": {
+            "x": -111.95994685807864,
+            "y": 0.7008040520378709,
+            "z": 159.98768614674947
+          },
+          "player": {
+            "x": -112,
+            "y": 0.699999988079071,
+            "z": 160
+          },
+          "projection": {
+            "x": -0.05462179615246528,
+            "y": 0.048296256292302935,
+            "z": 0.9510510211941967,
+            "screenX": 184.34874975026926,
+            "screenY": 401.61897984464815
+          }
+        },
+        {
+          "label": "port-midnight",
+          "blend": false,
+          "target": {
+            "x": 115.92144516079078,
+            "y": 1.036654138139901,
+            "z": 86.94112759792486
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.1617226883151924,
+            "y": 0.12770713268973322,
+            "z": 0.9521396675875785,
+            "screenX": 226.5359242214625,
+            "screenY": 368.1075900049326
+          }
+        },
+        {
+          "label": "port-dawn",
+          "blend": false,
+          "target": {
+            "x": 115.99379537084224,
+            "y": 1.0499836484671912,
+            "z": 86.91756587399719
+          },
+          "player": {
+            "x": 115.99379638584126,
+            "y": 1.05,
+            "z": 86.91756554345044
+          },
+          "projection": {
+            "x": 0.1370973650686735,
+            "y": 0.18783186396221346,
+            "z": 0.9530430746847249,
+            "screenX": 221.73398618839133,
+            "screenY": 342.73495340794597
+          }
+        }
+      ],
+      "nightAndPreference": {
+        "sunIntensity": 0.018,
+        "phase": 0.7510413888888885,
+        "savedPreference": "day",
+        "automaticPlayerFill": 0,
+        "sourcesAtOff": 0
+      },
+      "control": {
+        "bounds": {
+          "x": 231,
+          "y": 764.578125,
+          "width": 48,
+          "height": 70.421875
+        },
+        "hudGeometry": {
+          "control": {
+            "left": 231,
+            "top": 764.578125,
+            "right": 279,
+            "bottom": 835
+          },
+          "obstacles": [
+            {
+              "selector": "#touch .t-cluster",
+              "visible": true,
+              "bounds": {
+                "left": 60.71875,
+                "top": 783.28125,
+                "right": 60.71875,
+                "bottom": 783.28125
+              }
+            },
+            {
+              "selector": ".tracker",
+              "visible": true,
+              "bounds": {
+                "left": 241,
+                "top": 10,
+                "right": 272,
+                "bottom": 260
+              }
+            }
+          ],
+          "overlaps": []
+        },
+        "text": "Farol N",
+        "ariaLabel": "Encender luz (N)"
+      },
+      "ownPortableSource": {
+        "x": -111.76672803134683,
+        "y": 1.859999988079071,
+        "z": 159.76938302612194,
+        "r": 7.5,
+        "w": 1,
+        "priority": 2,
+        "coreVisible": true,
+        "uniform": {
+          "p": [
+            -111.76672803134683,
+            1.859999988079071,
+            159.76938302612194,
+            7.5
+          ],
+          "c": [
+            2.5724615187654987,
+            1.8982461308502228,
+            0.8312734704658759,
+            0.35
+          ]
+        },
+        "lightCount": 1
+      },
+      "movement": {
+        "before": {
+          "x": -112,
+          "z": 160,
+          "light": {
+            "kind": "portable",
+            "id": "26",
+            "x": -111.69199421592559,
+            "y": 1.859999988079071,
+            "z": 159.88716189926842,
+            "r": 7.5,
+            "i": 2.6,
+            "color": {
+              "isColor": true,
+              "r": 1,
+              "g": 0.7379104087672317,
+              "b": 0.3231432091022285
+            },
+            "flicker": 0.08,
+            "speed": 1.6,
+            "wrap": 0.35,
+            "knob": "portable",
+            "seed": 1.6620853411643102,
+            "d": -3.75,
+            "w": 1,
+            "priority": 2
+          }
+        },
+        "after": {
+          "x": -113.7301324031696,
+          "z": 161.73013240316936,
+          "light": {
+            "x": -113.49330698311967,
+            "z": 161.95709874520747
+          }
+        },
+        "followed": true
+      },
+      "portFixture": {
+        "x": 115.99379638584126,
+        "y": 1.05,
+        "z": 86.91756554345044,
+        "staticLamp": "lantern",
+        "lightDistance": 7.694342077136942
+      },
+      "portNightDay": {
+        "point": {
+          "x": 115.99379638584126,
+          "y": 1.05,
+          "z": 86.91756554345044,
+          "staticLamp": "lantern",
+          "lightDistance": 7.694342077136942
+        },
+        "midnightPhase": 0.75,
+        "dawnPhase": 0,
+        "personalSourceToggledAtBothHours": true,
+        "staticLampDistance": 7.694342077136942
+      },
+      "remoteLight": {
+        "entity": 28,
+        "source": {
+          "x": 102.47337027006951,
+          "y": 1.9989999999999999,
+          "z": 93.72190082994845,
+          "priority": 0,
+          "radius": 7.5
+        },
+        "serverFlag": 1
+      },
+      "deathReset": {
+        "dead": true,
+        "authoritativeFlagOff": true,
+        "remoteSourceRemoved": true
+      },
+      "finalViewport": {
+        "width": 390,
+        "height": 844,
+        "documentWidth": 390,
+        "overflow": false,
+        "quality": "high",
+        "phase": 0.750390347222222,
+        "sunIntensity": 0.018,
+        "control": {
+          "x": 231,
+          "y": 764.578125,
+          "width": 48,
+          "height": 70.421875
+        },
+        "buttonHidden": false
+      }
+    }
+  ],
+  "failures": [],
+  "performanceClaim": false
+}

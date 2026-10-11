@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 1,
+  "family": "palm-textures-v2",
+  "generator": {
+    "script": "tools/prepare-palm-textures-v2.mjs",
+    "scriptSha256": "d9330e8544258248ab6a3c2f237f09a4b138c6e883c452a7a1086f05353f4e5b",
+    "python": "Python 3.14.3",
+    "pillow": "12.2.0",
+    "resampler": "Pillow Lanczos; no explicit gamma/color conversion"
+  },
+  "sources": [
+    {
+      "id": "albedo",
+      "source": "materials/texturas pintadas a mano palmera.png",
+      "path": "docs/art/source/palm-textures-v2/albedo.png",
+      "sha256": "8ab9ed41a605c33bea8a5d3e64961b252f623c61f5698726ed53457b9dfd968d",
+      "bytes": 3023857,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "id": "normal",
+      "source": "materials/Atlas normal mapas de palmeras tropicales.png",
+      "path": "docs/art/source/palm-textures-v2/normal.png",
+      "sha256": "a3e191a02dbf2cee7db2672a7e7f4bd2655abccda9089418bde487ebe4e968f1",
+      "bytes": 2918102,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    }
+  ],
+  "tiles": [
+    {
+      "id": "trunk",
+      "crop": [
+        32,
+        18,
+        163,
+        832
+      ],
+      "alpha": "opaque"
+    },
+    {
+      "id": "leaf-a",
+      "crop": [
+        647,
+        6,
+        224,
+        584
+      ],
+      "seed": [
+        113,
+        294
+      ],
+      "alpha": "seeded-foreground-plus-2px-dilation"
+    },
+    {
+      "id": "leaf-b",
+      "crop": [
+        856,
+        6,
+        221,
+        516
+      ],
+      "seed": [
+        114,
+        294
+      ],
+      "alpha": "seeded-foreground-plus-2px-dilation"
+    },
+    {
+      "id": "coconut",
+      "crop": [
+        396,
+        494,
+        124,
+        132
+      ],
+      "alpha": "opaque"
+    }
+  ],
+  "uvLayout": {
+    "origin": "pixel top-left; TextureLoader flipY=true",
+    "order": [
+      "trunk",
+      "leaf-a",
+      "leaf-b",
+      "coconut"
+    ],
+    "tilesPerRow": 2,
+    "desktop": {
+      "atlas": 1024,
+      "tile": 512,
+      "content": 480,
+      "gutter": 16
+    },
+    "mobile": {
+      "atlas": 512,
+      "tile": 256,
+      "content": 240,
+      "gutter": 8
+    },
+    "shaderInset": [
+      0.015625,
+      0.015625
+    ],
+    "shaderSpan": [
+      0.46875,
+      0.46875
+    ],
+    "sourceCrops": {
+      "trunk": [
+        32,
+        18,
+        163,
+        832
+      ],
+      "leaf-a": [
+        647,
+        6,
+        224,
+        584
+      ],
+      "leaf-b": [
+        856,
+        6,
+        221,
+        516
+      ],
+      "coconut": [
+        396,
+        494,
+        124,
+        132
+      ]
+    }
+  },
+  "mask": {
+    "background": "low-chroma pixels with max-min < 18 and mean < 75 are transparent, including dark hole interiors",
+    "foreground": "chroma >= 18 or mean >= 75",
+    "scope": "leaf-a and leaf-b only; trunk/coconut stay opaque",
+    "edgeInk": "retain a 2-pixel max-filter dilation of seeded nonbackground colored leaf foreground",
+    "alphaResize": "Lanczos resize followed by hard alpha threshold at 128 to keep holes fully transparent on mobile",
+    "normalOutside": [
+      128,
+      128,
+      255
+    ],
+    "componentSelection": "8-connected foreground component containing each recorded leaf seed inside its crop",
+    "status": "root inspected and approved for shadow-hole local test; heuristic, not manually painted"
+  },
+  "holeProbes": [
+    {
+      "id": "leaf-a-hole",
+      "tile": "leaf-a",
+      "local": [
+        156,
+        139
+      ],
+      "v1Alpha": 255,
+      "darkComponentAreaPx": 910
+    },
+    {
+      "id": "leaf-b-hole",
+      "tile": "leaf-b",
+      "local": [
+        173,
+        309
+      ],
+      "v1Alpha": 255,
+      "darkComponentAreaPx": 250
+    }
+  ],
+  "normalPairing": "same UV crops; visually registered only, bake alignment not verified",
+  "derivatives": [
+    {
+      "id": "albedo-desktop",
+      "path": "assets/textures/palm-family-v2/albedo-desktop.webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 162998,
+      "sha256": "6aef45495a25dc8f3587731be43f7119be51f08e1625b00aaf9e538f1be3f099",
+      "encoding": "WebP quality 88",
+      "holeAlphaSamples": [
+        {
+          "id": "leaf-a-hole",
+          "pixel": [
+            863,
+            130
+          ],
+          "sourceLocal": [
+            156,
+            139
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 910
+        },
+        {
+          "id": "leaf-b-hole",
+          "pixel": [
+            392,
+            815
+          ],
+          "sourceLocal": [
+            173,
+            309
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 250
+        }
+      ]
+    },
+    {
+      "id": "normal-desktop",
+      "path": "assets/textures/palm-family-v2/normal-desktop.webp",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "RGBA",
+      "bytes": 889632,
+      "sha256": "c0ae523ae8d612d4bc90ccf79f21a52e3ff1306655ab0978277bd6e40cd5417b",
+      "encoding": "lossless WebP",
+      "holeAlphaSamples": [
+        {
+          "id": "leaf-a-hole",
+          "pixel": [
+            863,
+            130
+          ],
+          "sourceLocal": [
+            156,
+            139
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 910
+        },
+        {
+          "id": "leaf-b-hole",
+          "pixel": [
+            392,
+            815
+          ],
+          "sourceLocal": [
+            173,
+            309
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 250
+        }
+      ]
+    },
+    {
+      "id": "albedo-mobile",
+      "path": "assets/textures/palm-family-v2/albedo-mobile.webp",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "bytes": 58454,
+      "sha256": "48785922f41373d01b43f27b17d3fc5ece71e41f0ea238c1bbc51b5d58d74c79",
+      "encoding": "WebP quality 85",
+      "holeAlphaSamples": [
+        {
+          "id": "leaf-a-hole",
+          "pixel": [
+            431,
+            65
+          ],
+          "sourceLocal": [
+            156,
+            139
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 910
+        },
+        {
+          "id": "leaf-b-hole",
+          "pixel": [
+            196,
+            407
+          ],
+          "sourceLocal": [
+            173,
+            309
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 250
+        }
+      ]
+    },
+    {
+      "id": "normal-mobile",
+      "path": "assets/textures/palm-family-v2/normal-mobile.webp",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "bytes": 299440,
+      "sha256": "3b6e79681f3b47ad240325ad63f64008cce013483022e465b148e77959428e03",
+      "encoding": "lossless WebP",
+      "holeAlphaSamples": [
+        {
+          "id": "leaf-a-hole",
+          "pixel": [
+            431,
+            65
+          ],
+          "sourceLocal": [
+            156,
+            139
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 910
+        },
+        {
+          "id": "leaf-b-hole",
+          "pixel": [
+            196,
+            407
+          ],
+          "sourceLocal": [
+            173,
+            309
+          ],
+          "v1Alpha": 255,
+          "v2Alpha": 0,
+          "expectedAlpha": 0,
+          "darkComponentAreaPx": 250
+        }
+      ]
+    }
+  ],
+  "aggregateRuntimeBytes": 1410524
+}

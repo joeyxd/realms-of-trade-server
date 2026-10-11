@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-10T20:12:29.630352+00:00",
+  "expectedRevision": "dfbf9e7a147773af45bdd1f02ddfadfd21633da9",
+  "revision": "e648d1be69d9320d88ac1e980ae4d699a4675b79",
+  "matches": false,
+  "container": "e8167ba40323",
+  "imageId": "sha256:d6d66c961e4dc60895bac5aa14a0df820334501206a72d57c4e82f77d228f1a2",
+  "healthy": "healthy",
+  "startedAt": "2026-10-10T20:11:29.303246379Z",
+  "timer": "active",
+  "updater": "inactive",
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.27",
+    "players": 0,
+    "max": 4,
+    "sockets": 1,
+    "tick": 3336,
+    "uptime": 57,
+    "stepMs": 1.242,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1471,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 519.5,
+      "kbIn": 0.1,
+      "dropped": 0
+    }
+  },
+  "offlineImageValidation": {
+    "revision": "e648d1be69d9320d88ac1e980ae4d699a4675b79",
+    "image_id": "sha256:d6d66c961e4dc60895bac5aa14a0df820334501206a72d57c4e82f77d228f1a2",
+    "tests_passed": true
+  },
+  "dormantAPI": {
+    "session": true,
+    "contract": true,
+    "node": "v22.23.3"
+  },
+  "includesPublishedCut": true,
+  "unchangedM5Paths": [
+    "server/store.mjs",
+    "server/economicOperation.mjs",
+    "server/groundTransaction.mjs",
+    "server/groundTransactionSession.mjs",
+    "server/migrations/018_ground_transactions.sql"
+  ],
+  "scope": "Code/image verification only. Ground transaction API imports, but GameHost coordinators remain unmounted; no SQL018 activation."
+}

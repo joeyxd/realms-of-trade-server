@@ -1,0 +1,970 @@
+{
+  "id": "D06a",
+  "date": "2026-10-05",
+  "status": "accepted-local-software",
+  "version": "0.6.0-alpha.3",
+  "protocol": 15,
+  "integrationBase": "cfb494b90c01a114b64b4eadacf8c84109e370db",
+  "previousRaftEditor": "991db89",
+  "sourceHashes": [
+    {
+      "path": "AGENTS.md",
+      "normalization": "LF",
+      "sha256": "33d60349c9c6d3db44e9e729fc3fac79b0b0a9c0c616aeeda1644c36c90adb26"
+    },
+    {
+      "path": "PLAN-M6.md",
+      "normalization": "LF",
+      "sha256": "771d404a18aa9129dbc558d90c5485556e11138382ffc8be15837248b9345153"
+    },
+    {
+      "path": "PLAN-M7.md",
+      "normalization": "LF",
+      "sha256": "fce74e852938052024f86adcf771ae2c62e76b7e1163a096dab90339f1fc027c"
+    },
+    {
+      "path": "index.html",
+      "normalization": "LF",
+      "sha256": "50a8a67458cbfab9ccec35bd163a999dc1ad528b3939376b8f11f4662e297643"
+    },
+    {
+      "path": "package.json",
+      "normalization": "LF",
+      "sha256": "4957abb981e926254a1d69b338d7e5b65adf7510f13b04ec7d78b62f37b5b89f"
+    },
+    {
+      "path": "package-lock.json",
+      "normalization": "LF",
+      "sha256": "6e26039e11a5d2a0f8841c63fc2ec607d58108aff40a429a475c5a5ca4a08276"
+    },
+    {
+      "path": "src/data/meta.js",
+      "normalization": "LF",
+      "sha256": "7f859b8c16208b0ab4b6cad1c541671deab90cb6dac4cbeaa53ccf341b2b47b8"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "normalization": "LF",
+      "sha256": "9aaacc5ac6d50d101762e44ce8af1dc6fb2f652ae45e9199f09b11be32a7fd02"
+    },
+    {
+      "path": "src/sim/systems/trade.js",
+      "normalization": "LF",
+      "sha256": "2aedcc76719dba40eee2e3c93e125fcbe38cb5cffa170533be525307c3129f43"
+    },
+    {
+      "path": "src/sim/systems/commerce.js",
+      "normalization": "LF",
+      "sha256": "e7f391b8872e9475e76d7e82f5ced32278689513cc6bd9f27e95c5a0c582911d"
+    },
+    {
+      "path": "src/net/localServer.js",
+      "normalization": "LF",
+      "sha256": "a1936dee0deefa41e3b61fd9ca06c96036ba5752e5385b259bbddbf32ecef41d"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "normalization": "LF",
+      "sha256": "0e589ab730fd50757a71525972142b8b2f478b0c4a78d96c3acfb4f361e8af05"
+    },
+    {
+      "path": "src/sim/worldgen.js",
+      "normalization": "LF",
+      "sha256": "7c937834ba124b01dc29e1ef04d77f8e4cf60a58da7e0e048becf817fee3174e"
+    },
+    {
+      "path": "src/data/quests.js",
+      "normalization": "LF",
+      "sha256": "031df4dc297d0c6e84ce28abe28c9596cc61a3c5836bd17d9dc5e4d38012992b"
+    },
+    {
+      "path": "src/ui/dialog.js",
+      "normalization": "LF",
+      "sha256": "2aacfe7d7a12235a10c2df2717a5d5896ab64f12f7b532edccb68129d521fb1c"
+    },
+    {
+      "path": "src/ui/commerce.js",
+      "normalization": "LF",
+      "sha256": "4eec9a373c79957049ef5ca934f5f8664b1852b43f1a7c10f9e32be8751ecea1"
+    },
+    {
+      "path": "src/main.js",
+      "normalization": "LF",
+      "sha256": "d3484ffe0ed1568de9d1aea123e7dd5e3795fdab225376c01f8bf6db5e6c8246"
+    },
+    {
+      "path": "styles/commerce.css",
+      "normalization": "LF",
+      "sha256": "9f7aec98d17e0f35b8200aadceaf80eb47b351eb3ecfa2602807136c6ea1ed97"
+    },
+    {
+      "path": "tests/commerce.test.mjs",
+      "normalization": "LF",
+      "sha256": "c994aa56b02d475ff972173ac50864c49447a19a17148e417a555f61cb2f9cdc"
+    },
+    {
+      "path": "tools/look-commerce.mjs",
+      "normalization": "LF",
+      "sha256": "238b73f280ff78f5712d62b00f683346fe99a53c27828b0a1c47100503b42fd7"
+    },
+    {
+      "path": "docs/briefs/d06a-cargo-market.md",
+      "normalization": "LF",
+      "sha256": "32f9490d4961fe6bfa877964caa8e7c5f2b49e45891e3c8f70437bd761c1827f"
+    },
+    {
+      "path": "docs/briefs/d06b-production.md",
+      "normalization": "LF",
+      "sha256": "66578c8d783cff70b22ca118b64a379ad68476c3447235c4174933cba656dcc1"
+    },
+    {
+      "path": "docs/research/unreal-assets/D06-REUSE.md",
+      "normalization": "LF",
+      "sha256": "a7da1fa34267548332bb4fb689dfd4fde4b5f27204e35bef49d2afe59e43c84d"
+    },
+    {
+      "path": "docs/delivery/d06a-cargo-market.md",
+      "normalization": "LF",
+      "sha256": "eb740abfc8f1da96e9d3a6564b09cf31293fb6d5664ef4c54c3dd6ac4df22704"
+    }
+  ],
+  "tests": {
+    "commerce": {
+      "pass": 8,
+      "fail": 0
+    },
+    "sharedCheckoutRegression": {
+      "command": "node --test --test-concurrency=2 --test-timeout=60000 tests/*.test.mjs",
+      "pass": 453,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 119640.8906,
+      "rawLog": {
+        "path": ".scratch/d06a-regression-final.log",
+        "bytes": 91834,
+        "sha256": "9421f250957830703b06291b2b785ddd9aebbac1f70ff5e4d9c6f317957cd07d"
+      },
+      "includesConcurrentM5Work": true,
+      "doesNotAcceptOtherMission": true
+    },
+    "committedRegression": {
+      "sourceSha": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+      "isolatedCommittedTree": true,
+      "sharedNodeModulesJunction": true,
+      "testFiles": 60,
+      "command": "node --test --test-concurrency=2 --test-timeout=60000 [60 committed test files]",
+      "pass": 493,
+      "fail": 0,
+      "skipped": 0,
+      "durationMs": 96151.5615,
+      "rawLog": {
+        "path": ".scratch/d06a-regression-pinned.log",
+        "bytes": 49589,
+        "sha256": "38116c01594574a76c957df91399e8734383b10a4e90921daec2e83e8a90d51b"
+      }
+    }
+  },
+  "browser": [
+    {
+      "name": "desktop",
+      "rawEvidence": {
+        "path": "shots/review/d06a/desktop-accepted/evidence.json",
+        "bytes": 64304,
+        "sha256": "4abf059c0f29aed4d29a8d5bcaff42bafb6dbdaa602c3421124562cda536760d"
+      },
+      "viewport": [
+        1280,
+        720
+      ],
+      "accepted": true,
+      "visuallyInspected": true,
+      "atlas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "textureRequests": [
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "screenshots": [
+        {
+          "name": "00-fresh-profile",
+          "path": "shots/review/d06a/desktop-accepted/00-fresh-profile.png",
+          "bytes": 1022669,
+          "sha256": "59171d53d7e34d39b5bcd99652abf56d915f4d078d225e82d4b9e2f83011165a",
+          "visuallyInspected": true
+        },
+        {
+          "name": "01-market-don-bacalao",
+          "path": "shots/review/d06a/desktop-accepted/01-market-don-bacalao.png",
+          "bytes": 775043,
+          "sha256": "e36f131ab1616347ccc1d623a0b2c70cd633bbc87e207fcb7f049e9ca7563db7",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood-quote",
+          "path": "shots/review/d06a/desktop-accepted/02-buy-three-wood-quote.png",
+          "bytes": 814721,
+          "sha256": "e5917381404cea0d16c4bbbe2fdc5da56b7a583b4602764a7083b38756d65dc6",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02a-lost-ack-retry",
+          "path": "shots/review/d06a/desktop-accepted/02a-lost-ack-retry.png",
+          "bytes": 790184,
+          "sha256": "d7da635008089a0e7780ec2b80c6444e8934bd6ab9d5cb02eccea5e8b8edaa3d",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood",
+          "path": "shots/review/d06a/desktop-accepted/02-buy-three-wood.png",
+          "bytes": 824519,
+          "sha256": "72287f116dd82dea13d27cda781c118622c7a4670552d3a9a4138d2cc2eecfa2",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood-quote",
+          "path": "shots/review/d06a/desktop-accepted/03-sell-one-wood-quote.png",
+          "bytes": 802119,
+          "sha256": "2e0c250ee438b3ff26c63f4e375071e0552a450543141669de08690301fb5140",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood",
+          "path": "shots/review/d06a/desktop-accepted/03-sell-one-wood.png",
+          "bytes": 800251,
+          "sha256": "614194ac50de04ad3e6b12e306edc65a69d065acc7cd5b302b6304a229905e7e",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood-quote",
+          "path": "shots/review/d06a/desktop-accepted/03b-buy-one-wood-quote.png",
+          "bytes": 804848,
+          "sha256": "41e01f51d34d2a9f664d3bd4878edec7208ffe5e58cb82fb7a2af9df579d46e3",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood",
+          "path": "shots/review/d06a/desktop-accepted/03b-buy-one-wood.png",
+          "bytes": 799239,
+          "sha256": "57fb0a0e639ad5490999b7ef96163d4e2f43b2679289a9d2cc5af94168a5e03c",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood-ready",
+          "path": "shots/review/d06a/desktop-accepted/04-deposit-two-wood-ready.png",
+          "bytes": 812513,
+          "sha256": "39b6bd49f17e6f89f8486af866a769fc37384906efc2e71609bae52e8274d6ef",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood",
+          "path": "shots/review/d06a/desktop-accepted/04-deposit-two-wood.png",
+          "bytes": 818222,
+          "sha256": "873dbada76bdc99dad0832911341ffad9b94ab832d53a6d82a033c9df555f9f6",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood-ready",
+          "path": "shots/review/d06a/desktop-accepted/05-withdraw-one-wood-ready.png",
+          "bytes": 813771,
+          "sha256": "343fa48785fe6b424eb552905898c09cebe98bf29ee4083ee0eccc50f102ded8",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood",
+          "path": "shots/review/d06a/desktop-accepted/05-withdraw-one-wood.png",
+          "bytes": 814425,
+          "sha256": "cbe9a01283f5453e38de1cdc0755254fbfa962d303d7c29c398e1bfca4dedb02",
+          "visuallyInspected": true
+        },
+        {
+          "name": "06-cargo-summary",
+          "path": "shots/review/d06a/desktop-accepted/06-cargo-summary.png",
+          "bytes": 810588,
+          "sha256": "86168eeadc7541e1795bd14dace824cb2d57ad99739675ad08e5d2fddd15b554",
+          "visuallyInspected": true
+        },
+        {
+          "name": "07-reloaded-save",
+          "path": "shots/review/d06a/desktop-accepted/07-reloaded-save.png",
+          "bytes": 1062445,
+          "sha256": "a38c750a0243aee3df047b196946258a9d1fcd1fbdc996b570d66439498ba491",
+          "visuallyInspected": true
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "requestFailures": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        }
+      ],
+      "fixture": "Fresh newProfile, gold=1000, starter raft and empty pack. Debug teleport only places the avatar at the real NPC/deck before normal input.",
+      "renderScheduling": "Normal Worker/input/frame ticks; render draws only at screenshots, near-camera fade off for inspection.",
+      "market": {
+        "bought": 4,
+        "sold": 1,
+        "firstBuyTotal": 15,
+        "soldTotal": 4,
+        "finalPackWood": 2,
+        "finalHoldWood": 1
+      },
+      "final": {
+        "gold": 984,
+        "tradeRev": 5,
+        "shipRev": 3,
+        "pack": {
+          "cap": 10,
+          "goods": {
+            "madera": 2
+          }
+        },
+        "hold": {
+          "cap": 6,
+          "goods": {
+            "madera": 1
+          }
+        }
+      },
+      "notableActions": [
+        {
+          "name": "02a-lost-ack-retry"
+        },
+        {
+          "name": "lost-buy-ack-close-reopen-same-intent",
+          "paid": {
+            "gold": 985,
+            "tradeRev": 1,
+            "pack": {
+              "cap": 10,
+              "goods": {
+                "madera": 3
+              }
+            },
+            "shipRev": 1,
+            "hold": {
+              "cap": 6,
+              "goods": {}
+            },
+            "marketActive": true,
+            "view": "market",
+            "pending": {
+              "op": "buy",
+              "id": "325db162-085c-4ee1-938e-eeac8d8124bc",
+              "ack": false
+            },
+            "status": "Enviando solicitud…",
+            "errors": [],
+            "transport": "worker",
+            "online": false,
+            "player": {
+              "x": 82.31727983645297,
+              "y": 2.5726770901633307,
+              "z": 65.34671708797583,
+              "wade": 0
+            },
+            "predErr": 0,
+            "deck": null,
+            "pose": {
+              "id": "ab5117be-5079-42bc-bd6e-d91fae67ab02:r1",
+              "entity": 32,
+              "owner": 31,
+              "rev": 1,
+              "name": "La Balsa",
+              "berth": 0,
+              "x": 124.82204313379856,
+              "y": 0.72,
+              "z": 101.19511994389497,
+              "yaw": 0.9097531579442095,
+              "parts": [
+                [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ]
+              ],
+              "look": null
+            }
+          },
+          "retried": {
+            "gold": 985,
+            "tradeRev": 1,
+            "pack": {
+              "cap": 10,
+              "goods": {
+                "madera": 3
+              }
+            },
+            "shipRev": 1,
+            "hold": {
+              "cap": 6,
+              "goods": {}
+            },
+            "marketActive": true,
+            "view": "market",
+            "pending": null,
+            "status": "Cotiza el total antes de confirmar.",
+            "errors": [],
+            "transport": "worker",
+            "online": false,
+            "player": {
+              "x": 82.31727983645297,
+              "y": 2.5726770901633307,
+              "z": 65.34671708797583,
+              "wade": 0
+            },
+            "predErr": 0,
+            "deck": null,
+            "pose": {
+              "id": "ab5117be-5079-42bc-bd6e-d91fae67ab02:r1",
+              "entity": 32,
+              "owner": 31,
+              "rev": 1,
+              "name": "La Balsa",
+              "berth": 0,
+              "x": 124.82204313379856,
+              "y": 0.72,
+              "z": 101.19511994389497,
+              "yaw": 0.9097531579442095,
+              "parts": [
+                [
+                  "foundation",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  1,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  0,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  "foundation",
+                  1,
+                  1,
+                  0,
+                  0
+                ],
+                [
+                  "sail",
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  "crate",
+                  1,
+                  1,
+                  0,
+                  0
+                ]
+              ],
+              "look": null
+            }
+          }
+        },
+        {
+          "name": "full-hold-deposit-disabled",
+          "disabled": true
+        },
+        {
+          "name": "G-remains-pearl-near-own-raft",
+          "slots": {
+            "down": {
+              "q": false,
+              "e": false,
+              "r": false,
+              "g": true
+            },
+            "up": {
+              "q": false,
+              "e": false,
+              "r": false,
+              "g": false
+            },
+            "held": {
+              "q": false,
+              "e": false,
+              "r": false,
+              "g": true
+            },
+            "cancel": false
+          }
+        }
+      ],
+      "ordinarySoloReload": true,
+      "savedPackEqual": true,
+      "savedHoldEqual": true
+    },
+    {
+      "name": "mobile",
+      "rawEvidence": {
+        "path": "shots/review/d06a/mobile-accepted/evidence.json",
+        "bytes": 60064,
+        "sha256": "2ac3ba861ffa3c7ca0f910db1f91e5e9fc601ab7219c869d2e3893ce49aa6bba"
+      },
+      "viewport": [
+        844,
+        390
+      ],
+      "accepted": true,
+      "visuallyInspected": true,
+      "atlas": {
+        "width": 512,
+        "height": 512
+      },
+      "textureRequests": [
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp"
+      ],
+      "screenshots": [
+        {
+          "name": "00-fresh-profile",
+          "path": "shots/review/d06a/mobile-accepted/00-fresh-profile.png",
+          "bytes": 264567,
+          "sha256": "5022e186787fd800104674db259f64197f881d6c5a9388f5452ee877a3c2bea7",
+          "visuallyInspected": true
+        },
+        {
+          "name": "01-market-don-bacalao",
+          "path": "shots/review/d06a/mobile-accepted/01-market-don-bacalao.png",
+          "bytes": 211247,
+          "sha256": "29bf2f920bbc2e78b1bc34c205e4ca9c4161ede16aab6219c6f852d055051170",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood-quote",
+          "path": "shots/review/d06a/mobile-accepted/02-buy-three-wood-quote.png",
+          "bytes": 208924,
+          "sha256": "bffa2b02e08ec278e1a79d2036590c461c49967325cc9e986de3b1a231210ac1",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood",
+          "path": "shots/review/d06a/mobile-accepted/02-buy-three-wood.png",
+          "bytes": 199216,
+          "sha256": "60c5ec234088b6f85481facf918f62638c128269ba863c462de730947c8af87f",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood-quote",
+          "path": "shots/review/d06a/mobile-accepted/03-sell-one-wood-quote.png",
+          "bytes": 194951,
+          "sha256": "b4ed79916f0bab74a1e2ddf557cc91a6b2abe9d82c62167d7e847ae51c739829",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood",
+          "path": "shots/review/d06a/mobile-accepted/03-sell-one-wood.png",
+          "bytes": 190704,
+          "sha256": "5583ffad5404d593e8a67280e0926e04fc2bb3b22063a98619f13ca13a8c0ae4",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood-quote",
+          "path": "shots/review/d06a/mobile-accepted/03b-buy-one-wood-quote.png",
+          "bytes": 188642,
+          "sha256": "d9699c0d26c03b9b12ed47a1280fa6b9a1ce8e43d2affc8e8580ade41a89b40c",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood",
+          "path": "shots/review/d06a/mobile-accepted/03b-buy-one-wood.png",
+          "bytes": 186959,
+          "sha256": "f35573f3a4a6a450c8e094291f754724042246b7822bd7fdb817b098b720040a",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03c-market-la-tuerta",
+          "path": "shots/review/d06a/mobile-accepted/03c-market-la-tuerta.png",
+          "bytes": 265711,
+          "sha256": "aaf816ddea62656ccc6ef9de761f9dbb85912aab4b89d87f0cd2952a9f5da868",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood-ready",
+          "path": "shots/review/d06a/mobile-accepted/04-deposit-two-wood-ready.png",
+          "bytes": 200676,
+          "sha256": "1a13efb64c1333f240ec3f870f1fecbe3e552d8fa533f78861683d9bd40cc98c",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood",
+          "path": "shots/review/d06a/mobile-accepted/04-deposit-two-wood.png",
+          "bytes": 201560,
+          "sha256": "19b04db1885911cffbab49408cf439b4ba44801d3c106c982a2533a34d5797ba",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood-ready",
+          "path": "shots/review/d06a/mobile-accepted/05-withdraw-one-wood-ready.png",
+          "bytes": 203075,
+          "sha256": "598511cf0fe36020a4115f7e2d1e82e22e272fcda09d07a5f958c26e0b172781",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood",
+          "path": "shots/review/d06a/mobile-accepted/05-withdraw-one-wood.png",
+          "bytes": 203597,
+          "sha256": "dfe07232c6a2efc7ad8e188a059d50eb267a5cb5e84d0c0688b4231446f88a23",
+          "visuallyInspected": true
+        },
+        {
+          "name": "06-cargo-summary",
+          "path": "shots/review/d06a/mobile-accepted/06-cargo-summary.png",
+          "bytes": 203529,
+          "sha256": "720ac4b148b5c8a6ab9e7e049f333be15e0e784fb41cd643abea59eb2b0a6c87",
+          "visuallyInspected": true
+        },
+        {
+          "name": "07-reloaded-save",
+          "path": "shots/review/d06a/mobile-accepted/07-reloaded-save.png",
+          "bytes": 273009,
+          "sha256": "3fdeb1d2cfdaf606d76b50fb02d20dc27167c0aa5e1780a65519c31164f907d2",
+          "visuallyInspected": true
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "requestFailures": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        }
+      ],
+      "fixture": "Fresh newProfile, gold=1000, starter raft and empty pack. Debug teleport only places the avatar at the real NPC/deck before normal input. Mobile Cala inspection uses local debug god mode to keep combat outside this UI acceptance.",
+      "renderScheduling": "Normal Worker/input/frame ticks; render draws only at screenshots, near-camera fade off for inspection.",
+      "market": {
+        "bought": 4,
+        "sold": 1,
+        "firstBuyTotal": 15,
+        "soldTotal": 4,
+        "finalPackWood": 2,
+        "finalHoldWood": 1
+      },
+      "final": {
+        "gold": 984,
+        "tradeRev": 5,
+        "shipRev": 3,
+        "pack": {
+          "cap": 10,
+          "goods": {
+            "madera": 2
+          }
+        },
+        "hold": {
+          "cap": 6,
+          "goods": {
+            "madera": 1
+          }
+        }
+      },
+      "notableActions": [
+        {
+          "name": "full-hold-deposit-disabled",
+          "disabled": true
+        }
+      ],
+      "ordinarySoloReload": true,
+      "savedPackEqual": true,
+      "savedHoldEqual": true
+    },
+    {
+      "name": "portrait",
+      "rawEvidence": {
+        "path": "shots/review/d06a/portrait-accepted/evidence.json",
+        "bytes": 60080,
+        "sha256": "00396cc39fe2d337324c111dba00854ee7613122f2f40dd681740ccaef9483da"
+      },
+      "viewport": [
+        390,
+        844
+      ],
+      "accepted": true,
+      "visuallyInspected": true,
+      "atlas": {
+        "width": 512,
+        "height": 512
+      },
+      "textureRequests": [
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp"
+      ],
+      "screenshots": [
+        {
+          "name": "00-fresh-profile",
+          "path": "shots/review/d06a/portrait-accepted/00-fresh-profile.png",
+          "bytes": 371320,
+          "sha256": "3e23d213bca27f9f143914797c71acc7705af72c709efa61b151b44eca142b4c",
+          "visuallyInspected": true
+        },
+        {
+          "name": "01-market-don-bacalao",
+          "path": "shots/review/d06a/portrait-accepted/01-market-don-bacalao.png",
+          "bytes": 236995,
+          "sha256": "12af23f23e786ab25ba4540c43268835e756764e37e00c9c833cc3afcb49f111",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood-quote",
+          "path": "shots/review/d06a/portrait-accepted/02-buy-three-wood-quote.png",
+          "bytes": 228318,
+          "sha256": "725a9f13bb83f6f13f89e49e25f229e2eb5f0a14b25e697843a2ccf3a021e1ba",
+          "visuallyInspected": true
+        },
+        {
+          "name": "02-buy-three-wood",
+          "path": "shots/review/d06a/portrait-accepted/02-buy-three-wood.png",
+          "bytes": 218205,
+          "sha256": "8f5cbfb9694576c1212e68c4b98f9d3ff57974bb22b22c771415118a2ddf1fa4",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood-quote",
+          "path": "shots/review/d06a/portrait-accepted/03-sell-one-wood-quote.png",
+          "bytes": 216013,
+          "sha256": "d77915f10a94241250dc09b0692277ab6bf37d67de77e40306d77a6e45cc7650",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03-sell-one-wood",
+          "path": "shots/review/d06a/portrait-accepted/03-sell-one-wood.png",
+          "bytes": 208864,
+          "sha256": "8371f9d9d4750d2b5586299d2f530a23bddc6686011c1f3ea6f601ce2d1972b7",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood-quote",
+          "path": "shots/review/d06a/portrait-accepted/03b-buy-one-wood-quote.png",
+          "bytes": 201782,
+          "sha256": "21668055b1d8737d419ceeafa6011f7099bea6987fac7b727e8922ec073b8984",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03b-buy-one-wood",
+          "path": "shots/review/d06a/portrait-accepted/03b-buy-one-wood.png",
+          "bytes": 199267,
+          "sha256": "225df2c7b53c87a7c1654837e2ae224c237e199f7ff103bae944c4b7e1a0ca0e",
+          "visuallyInspected": true
+        },
+        {
+          "name": "03c-market-la-tuerta",
+          "path": "shots/review/d06a/portrait-accepted/03c-market-la-tuerta.png",
+          "bytes": 285927,
+          "sha256": "559a19083b0963e651992f4a4c35c37bc16993c3e52b659fcba91a1fa50f83e2",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood-ready",
+          "path": "shots/review/d06a/portrait-accepted/04-deposit-two-wood-ready.png",
+          "bytes": 236603,
+          "sha256": "243a113fb76562f78feaa93126be6fe6be53487e449e3c92942d3154bb150578",
+          "visuallyInspected": true
+        },
+        {
+          "name": "04-deposit-two-wood",
+          "path": "shots/review/d06a/portrait-accepted/04-deposit-two-wood.png",
+          "bytes": 237192,
+          "sha256": "998317fb382872efde2d775250fef09953bc125f2060cd2a62b7bbb64f2be8cb",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood-ready",
+          "path": "shots/review/d06a/portrait-accepted/05-withdraw-one-wood-ready.png",
+          "bytes": 238557,
+          "sha256": "ee9b9caaf6b9d2d8a43392e4e16eaa8c17e985c27652b3bf8b8e9df6a9ce87ef",
+          "visuallyInspected": true
+        },
+        {
+          "name": "05-withdraw-one-wood",
+          "path": "shots/review/d06a/portrait-accepted/05-withdraw-one-wood.png",
+          "bytes": 224869,
+          "sha256": "f34732195efa64a15a75c6b064ab266b1db650c7c49792613a9d34e4aeae13ee",
+          "visuallyInspected": true
+        },
+        {
+          "name": "06-cargo-summary",
+          "path": "shots/review/d06a/portrait-accepted/06-cargo-summary.png",
+          "bytes": 225430,
+          "sha256": "5987bb587502fcb1832c169b438a8b3f5a68934fa105adc93d3f67f0f26dd870",
+          "visuallyInspected": true
+        },
+        {
+          "name": "07-reloaded-save",
+          "path": "shots/review/d06a/portrait-accepted/07-reloaded-save.png",
+          "bytes": 283965,
+          "sha256": "37a8e1d49d9104a2e85176b2fca6e54587f9f77ebac54e4ba76df6c9f46b5f54",
+          "visuallyInspected": true
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: net::ERR_FAILED"
+      ],
+      "requestFailures": [
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+          "error": "net::ERR_FAILED"
+        }
+      ],
+      "fixture": "Fresh newProfile, gold=1000, starter raft and empty pack. Debug teleport only places the avatar at the real NPC/deck before normal input. Mobile Cala inspection uses local debug god mode to keep combat outside this UI acceptance.",
+      "renderScheduling": "Normal Worker/input/frame ticks; render draws only at screenshots, near-camera fade off for inspection.",
+      "market": {
+        "bought": 4,
+        "sold": 1,
+        "firstBuyTotal": 15,
+        "soldTotal": 4,
+        "finalPackWood": 2,
+        "finalHoldWood": 1
+      },
+      "final": {
+        "gold": 984,
+        "tradeRev": 5,
+        "shipRev": 3,
+        "pack": {
+          "cap": 10,
+          "goods": {
+            "madera": 2
+          }
+        },
+        "hold": {
+          "cap": 6,
+          "goods": {
+            "madera": 1
+          }
+        }
+      },
+      "notableActions": [
+        {
+          "name": "full-hold-deposit-disabled",
+          "disabled": true
+        }
+      ],
+      "ordinarySoloReload": true,
+      "savedPackEqual": true,
+      "savedHoldEqual": true
+    }
+  ],
+  "screenshotsInspected": 45,
+  "unrealReuse": {
+    "report": "docs/research/unreal-assets/D06-REUSE.md",
+    "newArt": false,
+    "sourceProjectsUntouched": true,
+    "existingCrateBytes": 51684,
+    "existingCrateTriangles": 204
+  },
+  "limitations": [
+    "Software GPU and emulated phones do not prove physical-device FPS or feel.",
+    "Successful mutation receipts are bounded to this entity session, not durable across restarts.",
+    "World markets and player profiles remain separate stores.",
+    "No sailing, wind, naval damage, goods death-loss policy or secure port reserve delivered.",
+    "Per-good icons, production, hammock and lanterns remain pending.",
+    "Google Fonts requests intentionally blocked during UI QA."
+  ],
+  "next": "docs/briefs/d06b-production.md",
+  "hostRestarted": false,
+  "pushed": false,
+  "published": false,
+  "release": {
+    "status": "verified-local",
+    "path": "dist/0.6.0-alpha.3-bcd0886831b1",
+    "sourceSha": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+    "version": "0.6.0-alpha.3",
+    "protocolVersion": 15,
+    "fileCount": 142,
+    "bytes": 2106643,
+    "allFileHashesVerified": true,
+    "commerceModulesMatchCommittedSource": true,
+    "commerceCssEmbedded": true,
+    "manifest": {
+      "path": "dist/0.6.0-alpha.3-bcd0886831b1/release.json",
+      "bytes": 22404,
+      "sha256": "b7e75db0d619f630097ecbbbae5f6ae9ce91354849954c2eedbe1bda7b3f9214"
+    },
+    "published": false
+  },
+  "workBase": "c6bc368",
+  "sourceCommit": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687",
+  "sourceHashesCommit": "bcd0886831b13e83e0e158d1cb1ecfb80cd66687"
+}

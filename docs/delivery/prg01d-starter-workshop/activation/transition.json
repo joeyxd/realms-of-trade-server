@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-11T00:28:46.301Z",
+  "pass": true,
+  "before": {
+    "at": "2026-10-11T00:27:31.126Z",
+    "worldVersion": 1786,
+    "resourceVersion": 2,
+    "tick": 1196614,
+    "nodes": 206,
+    "palms": 96,
+    "nodesHash": "d3aa97473b54bb0dc106a4b87c4551111c93f474fdccfde47c2becaaf35adf7f",
+    "cooldownsHash": "31353ec3ee69ca4d6faf30500dae45ac473aec4994ae70253f304401b0475139",
+    "communityHash": "781ca7a01c3667c00ec0d3b52ae62309c9fbf76bf5dc86f9c7578e7fd17605cc",
+    "seedHash": "7917b9e625509f18724bbbd564e20f80101b814d2b61c6dcf4c0aa8d3ce34c83",
+    "loggingV2Hash": "d26519f1998eb31affa887176797eda66dc85c4eb5bc74b8306e5271d2d4191b"
+  },
+  "after": {
+    "worldVersion": 1789,
+    "resourceVersion": 3,
+    "tick": 1201522,
+    "nodes": 206,
+    "palms": 96,
+    "nodesHash": "d3aa97473b54bb0dc106a4b87c4551111c93f474fdccfde47c2becaaf35adf7f",
+    "cooldownsHash": "31353ec3ee69ca4d6faf30500dae45ac473aec4994ae70253f304401b0475139",
+    "communityHash": "781ca7a01c3667c00ec0d3b52ae62309c9fbf76bf5dc86f9c7578e7fd17605cc",
+    "seedHash": "7917b9e625509f18724bbbd564e20f80101b814d2b61c6dcf4c0aa8d3ce34c83",
+    "loggingV2Hash": "d26519f1998eb31affa887176797eda66dc85c4eb5bc74b8306e5271d2d4191b"
+  },
+  "status": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.36",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 3763,
+    "uptime": 70,
+    "stepMs": 1.092,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 4,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1789,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "reconciliation": "Initial post-switch hash compared JS insertion order with JSONB key order. The unchanged v2 projection and every added quality=0 are now verified directly.",
+  "limits": [
+    "Offline pause not remeasured.",
+    "Authenticated gameplay canary is the next check."
+  ]
+}

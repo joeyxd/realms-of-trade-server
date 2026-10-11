@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "source": "src/render/beachDetails.js",
+      "target": "docs/art/source/beach-details-v1/beachDetails.source.js",
+      "bytes": 7772,
+      "sha256": "1a19d4be5898b9dd6452c0086cb6f6d0098e12a50a4079981998ce54abe4f23a"
+    },
+    {
+      "source": "src/render/vegetation.js",
+      "target": "docs/art/source/beach-details-v1/vegetation.source.js",
+      "bytes": 20196,
+      "sha256": "e68a97d5eedbf02f3e56af4574149facccc76828fa726ef43eadcf148a309918"
+    },
+    {
+      "source": "tools/prepare-beach-details.mjs",
+      "target": "docs/art/source/beach-details-v1/prepare-beach-details.source.mjs",
+      "bytes": 11565,
+      "sha256": "e03c4dfc7f80fb84f620c93c1832dee606e27ad7e6f7d03e6d8c93d6c032309e"
+    }
+  ]
+}

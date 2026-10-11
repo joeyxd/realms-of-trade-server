@@ -1,0 +1,26 @@
+TAP version 13
+# Subtest: two players at 100 ms RTT: prediction holds, they see each other walk and swing
+not ok 1 - two players at 100 ms RTT: prediction holds, they see each other walk and swing
+  ---
+  duration_ms: 98972.9876
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area17-market\\.scratch\\net-baseline-c9d3bbf\\tests\\net.test.mjs:27:1'
+  failureType: 'testTimeoutFailure'
+  error: 'test timed out after 30000ms'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+ok 2 - a death still flying on a shot waits for it: the despawn is held, and a newcomer reusing the id is not touched
+  ---
+  duration_ms: 26.44
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 0
+# cancelled 1
+# skipped 0
+# todo 0
+# duration_ms 282352.687

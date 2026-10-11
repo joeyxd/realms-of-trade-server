@@ -1,0 +1,7 @@
+{
+  "notes": [
+    "An initial selector picked a legacy partial palm; no gameplay command was sent and those temporary accounts were removed.",
+    "The first trained attempt was durably denied full; normal craft and quoted sale made room before training continued.",
+    "A concurrent updater completed after QA disconnect. Container tmpfs QA files were lost; only the exact synthetic credentials were reset, and fixture/checkpoint were reconstructed from intact M5 profiles and immutable receipts before a further controlled restart."
+  ]
+}

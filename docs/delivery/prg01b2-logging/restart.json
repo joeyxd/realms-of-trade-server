@@ -1,0 +1,18 @@
+{
+  "schema": "mn.logging-restart.v1",
+  "at": "2026-10-10T20:06:43.416465+00:00",
+  "revision": "454e2dabf44a1f97b1f7d514fda3844b980c8348",
+  "image": "marea-negra:alpha-454e2dabf44a",
+  "container": "7716ba1cb605",
+  "singleAuthority": true,
+  "gracefulStop": true,
+  "stoppedAt": "2026-10-10T20:06:23.094133+00:00",
+  "stopExitCode": 0,
+  "offlineMs": 19875,
+  "resourceTickAtShutdown": 281617,
+  "worldVersionAtShutdown": 1466,
+  "resourceVersion": 2,
+  "loggingAfter": true,
+  "errorsAfter": 0,
+  "tickBlockedAfter": false
+}

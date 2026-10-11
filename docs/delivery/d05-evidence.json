@@ -1,0 +1,529 @@
+{
+  "delivery": "D05 / M6 P3",
+  "date": "2026-10-05",
+  "status": "accepted locally in software",
+  "initialBase": "15bfb44",
+  "integrationBase": "12a685449300959fad72a1eacaefe161f0088b8f",
+  "version": "0.6.0-alpha.2",
+  "protocol": 14,
+  "sources": [
+    {
+      "path": "index.html",
+      "sha256": "e857d4f2507f261ca25e804cf32b2e7b59b613e1484a705d95c428cacf66087e"
+    },
+    {
+      "path": "package.json",
+      "sha256": "b9ff69d8edc63594e8e683727687404bf33d8e09c851fbc772a41ddb12034dbd"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "382ea6cbeb82419831dc4776fabf892b6abc2a9df37ebae734b8669a2799eb07"
+    },
+    {
+      "path": "src/client/gameClient.js",
+      "sha256": "d2671f6485269bf3a323dcb5652b6ac34924983f2e8bcf072a9ecbe62bee5523"
+    },
+    {
+      "path": "src/core/input.js",
+      "sha256": "127c60542b0710b79168b8102f82cc25322bc2525fe728aa67b33b670e67269e"
+    },
+    {
+      "path": "src/data/meta.js",
+      "sha256": "019baa45a9700e1f5eea73445570cad69b31bc0187f26b9eb6c0a2dc553e2547"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "9a5f91756140193a29a6e4ab3888a9334a3b9ee46143673b976bfc88581749f7"
+    },
+    {
+      "path": "src/net/localServer.js",
+      "sha256": "6db714f66d5827ac87238fbece9384bc88d98159561f1bf45c890bb06fdafd83"
+    },
+    {
+      "path": "src/net/protocol.js",
+      "sha256": "6e6dfe6e9ca2497a9c60c4976222a739271b952a0ebc16f1248f265d8eafe827"
+    },
+    {
+      "path": "src/sim/systems/rafts.js",
+      "sha256": "775eb512be626b1a537a0d4e5af92e8316bf3a9b7f637846d11b42272a379db7"
+    },
+    {
+      "path": "src/sim/systems/trade.js",
+      "sha256": "4797a0ab0a8bb55b751070a59b86d3686ed6091b9af46a408a5ad04cc86a7853"
+    },
+    {
+      "path": "src/data/raftEditor.js",
+      "sha256": "bd07be18fd5992191d30cd6a2ea2adc353b53ad77364ace2907c9a16c0071283"
+    },
+    {
+      "path": "src/sim/systems/raftEditor.js",
+      "sha256": "ab47696499b415926e1e1ee6006cc602b881aa2f30c0be7750a7578027ba69ff"
+    },
+    {
+      "path": "src/ui/raftEditor.js",
+      "sha256": "11ace758f90e4e43fc16fcaaf521df721635a152adc5c08fd6e9bd7c38507a36"
+    },
+    {
+      "path": "styles/raft-editor.css",
+      "sha256": "a9e855d1a3a6825e912c6b893e90a7e49fba16c69edae3dc43a92318d752eacb"
+    },
+    {
+      "path": "tests/raft-editor.test.mjs",
+      "sha256": "ebbfead9a26dc2ecebaa39d21e801ba535279cf7f3a91a54e18a7783971b3d66"
+    },
+    {
+      "path": "tests/raft-input.test.mjs",
+      "sha256": "f1849c4d84240b35d19d12f39244f26d743dd5b7c6abcebebc677648757d6b45"
+    },
+    {
+      "path": "tools/look-raft-editor.mjs",
+      "sha256": "84aca224c212608632303914c2a21481cfbda3c0d4447de171a6f54d2ca5b907"
+    }
+  ],
+  "regression": {
+    "command": "node --test --test-concurrency=2 --test-timeout=60000 tests/*.test.mjs",
+    "tests": 413,
+    "passed": 413,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "durationMs": 74455.8215,
+    "path": "shots/review/d05/regression-final.log",
+    "sha256": "f9d2b022b542f912c2c4f7df6e14132027b5712f7924d2432656887b0303de04"
+  },
+  "targeted": {
+    "tests": 12,
+    "passed": 12,
+    "authorityTests": 10,
+    "inputTests": 2
+  },
+  "visualAcceptance": {
+    "reviewedScreenshots": 24,
+    "cases": [
+      {
+        "name": "desktop-accepted",
+        "raw": {
+          "path": "shots/review/d05/desktop-accepted/evidence.json",
+          "sha256": "ba8149cce32ca0b4f2a5135bc262174e70ec25555fc75cb639982fd0e32c3a24"
+        },
+        "viewport": {
+          "width": 1280,
+          "height": 720,
+          "phone": false,
+          "portrait": false,
+          "dpr": 1
+        },
+        "fixture": "Unmodified six-piece starter; gold 1200 in isolated solo save. No free materials/pieces.",
+        "renderScheduling": "Normal input/frame/Worker ticks remain active; GPU draws only at screenshots. Fixed camera composition.",
+        "accepted": true,
+        "inspectedBy": "root",
+        "atlas": {
+          "width": 1024,
+          "height": 1024
+        },
+        "textureRequests": [
+          "/assets/textures/raft/comic-materials-v1.webp",
+          "/assets/textures/raft/comic-materials-v1.webp"
+        ],
+        "transactions": {
+          "paidWoodPurchases": 19,
+          "woodUnits": 19,
+          "goldSpent": 100,
+          "placedPieces": 7,
+          "explicitlyRemovedCrates": 1,
+          "refundedWood": 1
+        },
+        "final": {
+          "revision": 28,
+          "parts": 12,
+          "gold": 1100,
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "predictionError": 0,
+          "transport": "worker",
+          "online": false,
+          "savedStateMatches": true
+        },
+        "diagnostics": {
+          "pageErrors": [],
+          "gameErrors": [],
+          "consoleErrors": [
+            "Failed to load resource: net::ERR_FAILED",
+            "Failed to load resource: net::ERR_FAILED"
+          ],
+          "requestFailures": [
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            },
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            }
+          ],
+          "explanation": "Two deliberately blocked Google Fonts requests per run; no app/page errors."
+        },
+        "screenshots": [
+          {
+            "name": "01-starter-editor",
+            "path": "shots/review/d05/desktop-accepted/01-starter-editor.png",
+            "bytes": 870633,
+            "sha256": "b1556ed8ae98be4a7aff5bf2ea775f48020a748136993a6a44258296bb4f1974",
+            "visuallyInspected": true
+          },
+          {
+            "name": "02-invalid-overlap",
+            "path": "shots/review/d05/desktop-accepted/02-invalid-overlap.png",
+            "bytes": 869640,
+            "sha256": "8c92d669d284e777761f8585fc93c7bd1b3e7f9f524547c75cd73071262c0004",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-foundation",
+            "path": "shots/review/d05/desktop-accepted/preview-foundation.png",
+            "bytes": 878338,
+            "sha256": "067918a16aed607fda7282aad8e2e00133279cc7822bba1370f8bfb87221d2a8",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-floor",
+            "path": "shots/review/d05/desktop-accepted/preview-floor.png",
+            "bytes": 900837,
+            "sha256": "4594ebd56d27ced36175433829ff0457d02657dd2528e0ea933a9a4166d84d9b",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-wall",
+            "path": "shots/review/d05/desktop-accepted/preview-wall.png",
+            "bytes": 902473,
+            "sha256": "8fa13e1baeba0938d165b82666b4c85ff8906644af1c65e4d1b4631f7ab1c4e4",
+            "visuallyInspected": true
+          },
+          {
+            "name": "03-seven-pieces-built",
+            "path": "shots/review/d05/desktop-accepted/03-seven-pieces-built.png",
+            "bytes": 903297,
+            "sha256": "9f2b7856a514c77ac0d80161a365cea0ce810e59c0d97f6e08deda8d1e9d551d",
+            "visuallyInspected": true
+          },
+          {
+            "name": "04-explicit-remove-refund",
+            "path": "shots/review/d05/desktop-accepted/04-explicit-remove-refund.png",
+            "bytes": 904480,
+            "sha256": "f0411bd268bc397ae6a58481e402d9dfeaac30f07045b6c887a573ec0740733b",
+            "visuallyInspected": true
+          },
+          {
+            "name": "05-remove-confirmed",
+            "path": "shots/review/d05/desktop-accepted/05-remove-confirmed.png",
+            "bytes": 908745,
+            "sha256": "b77b47526e959e8819b89dc91b3fa544e0d61bf0c2fb9f30bfd8ad61cf2c351e",
+            "visuallyInspected": true
+          }
+        ]
+      },
+      {
+        "name": "mobile-accepted",
+        "raw": {
+          "path": "shots/review/d05/mobile-accepted/evidence.json",
+          "sha256": "e93e6b5ff3a37f79c1375cf275ceb111fc3b2bebb81f8c316ef992be0b30e3a9"
+        },
+        "viewport": {
+          "width": 844,
+          "height": 390,
+          "phone": true,
+          "portrait": false,
+          "dpr": 1
+        },
+        "fixture": "Unmodified six-piece starter; gold 1200 in isolated solo save. No free materials/pieces.",
+        "renderScheduling": "Normal input/frame/Worker ticks remain active; GPU draws only at screenshots. Fixed camera composition.",
+        "accepted": true,
+        "inspectedBy": "root",
+        "atlas": {
+          "width": 512,
+          "height": 512
+        },
+        "textureRequests": [
+          "/assets/textures/raft/comic-materials-v1-mobile.webp",
+          "/assets/textures/raft/comic-materials-v1-mobile.webp"
+        ],
+        "transactions": {
+          "paidWoodPurchases": 19,
+          "woodUnits": 19,
+          "goldSpent": 100,
+          "placedPieces": 7,
+          "explicitlyRemovedCrates": 1,
+          "refundedWood": 1
+        },
+        "final": {
+          "revision": 28,
+          "parts": 12,
+          "gold": 1100,
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "predictionError": 0,
+          "transport": "worker",
+          "online": false,
+          "savedStateMatches": true
+        },
+        "diagnostics": {
+          "pageErrors": [],
+          "gameErrors": [],
+          "consoleErrors": [
+            "Failed to load resource: net::ERR_FAILED",
+            "Failed to load resource: net::ERR_FAILED"
+          ],
+          "requestFailures": [
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            },
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            }
+          ],
+          "explanation": "Two deliberately blocked Google Fonts requests per run; no app/page errors."
+        },
+        "screenshots": [
+          {
+            "name": "01-starter-editor",
+            "path": "shots/review/d05/mobile-accepted/01-starter-editor.png",
+            "bytes": 188625,
+            "sha256": "0869680e6b9244c2dacc67c261fd02e4b6157d61a194cc843d51d26761acc589",
+            "visuallyInspected": true
+          },
+          {
+            "name": "02-invalid-overlap",
+            "path": "shots/review/d05/mobile-accepted/02-invalid-overlap.png",
+            "bytes": 185171,
+            "sha256": "9b97a149788f2e1a1675ed32ab20166a907cae12af97ba21442c96f4b65a3346",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-foundation",
+            "path": "shots/review/d05/mobile-accepted/preview-foundation.png",
+            "bytes": 187587,
+            "sha256": "e8dd1d8550d07e775fe636bdf9c1b01537a7d197f6baaccbb23339180922f6de",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-floor",
+            "path": "shots/review/d05/mobile-accepted/preview-floor.png",
+            "bytes": 194794,
+            "sha256": "70b8b93618598e113656bc30107090c9cb193d0a250502a2f15a1184a6ca9749",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-wall",
+            "path": "shots/review/d05/mobile-accepted/preview-wall.png",
+            "bytes": 194765,
+            "sha256": "dc099fa67f176b9d9c59f2602615f8b731d4c43566d7c91e7b181c16366c7329",
+            "visuallyInspected": true
+          },
+          {
+            "name": "03-seven-pieces-built",
+            "path": "shots/review/d05/mobile-accepted/03-seven-pieces-built.png",
+            "bytes": 198578,
+            "sha256": "018f230a5e582839117256d047172aaf58ab006531ba12f140d6f2331baa787a",
+            "visuallyInspected": true
+          },
+          {
+            "name": "04-explicit-remove-refund",
+            "path": "shots/review/d05/mobile-accepted/04-explicit-remove-refund.png",
+            "bytes": 198604,
+            "sha256": "65dda10dc4f26397f57895900bdece3b875809030d02608331d81e58d1624686",
+            "visuallyInspected": true
+          },
+          {
+            "name": "05-remove-confirmed",
+            "path": "shots/review/d05/mobile-accepted/05-remove-confirmed.png",
+            "bytes": 196513,
+            "sha256": "9b6e738d9feeaf32f4d4d796ae292d57f55d465f465f12cdef883e66ff0ac8d6",
+            "visuallyInspected": true
+          }
+        ]
+      },
+      {
+        "name": "portrait-accepted",
+        "raw": {
+          "path": "shots/review/d05/portrait-accepted/evidence.json",
+          "sha256": "6575408415e7351f7e0a22461142f23bbd3cf2cc5884ca1bf7bb50bc79711963"
+        },
+        "viewport": {
+          "width": 390,
+          "height": 844,
+          "phone": true,
+          "portrait": true,
+          "dpr": 1
+        },
+        "fixture": "Unmodified six-piece starter; gold 1200 in isolated solo save. No free materials/pieces.",
+        "renderScheduling": "Normal input/frame/Worker ticks remain active; GPU draws only at screenshots. Fixed camera composition.",
+        "accepted": true,
+        "inspectedBy": "root",
+        "atlas": {
+          "width": 512,
+          "height": 512
+        },
+        "textureRequests": [
+          "/assets/textures/raft/comic-materials-v1-mobile.webp",
+          "/assets/textures/raft/comic-materials-v1-mobile.webp"
+        ],
+        "transactions": {
+          "paidWoodPurchases": 19,
+          "woodUnits": 19,
+          "goldSpent": 100,
+          "placedPieces": 7,
+          "explicitlyRemovedCrates": 1,
+          "refundedWood": 1
+        },
+        "final": {
+          "revision": 28,
+          "parts": 12,
+          "gold": 1100,
+          "hold": {
+            "cap": 6,
+            "goods": {
+              "madera": 1
+            }
+          },
+          "pack": {
+            "cap": 10,
+            "goods": {}
+          },
+          "predictionError": 0,
+          "transport": "worker",
+          "online": false,
+          "savedStateMatches": true
+        },
+        "diagnostics": {
+          "pageErrors": [],
+          "gameErrors": [],
+          "consoleErrors": [
+            "Failed to load resource: net::ERR_FAILED",
+            "Failed to load resource: net::ERR_FAILED"
+          ],
+          "requestFailures": [
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            },
+            {
+              "url": "https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&display=swap",
+              "error": "net::ERR_FAILED"
+            }
+          ],
+          "explanation": "Two deliberately blocked Google Fonts requests per run; no app/page errors."
+        },
+        "screenshots": [
+          {
+            "name": "01-starter-editor",
+            "path": "shots/review/d05/portrait-accepted/01-starter-editor.png",
+            "bytes": 198116,
+            "sha256": "c23c0eb95e992d8c3adae9c1cc9d1a4fe63844dc484b7292b2f27497059f80b2",
+            "visuallyInspected": true
+          },
+          {
+            "name": "02-invalid-overlap",
+            "path": "shots/review/d05/portrait-accepted/02-invalid-overlap.png",
+            "bytes": 196494,
+            "sha256": "11daa1639c98992eb48c46367d5c14f4bb02e9f45c034487eaa51a6ac56179f6",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-foundation",
+            "path": "shots/review/d05/portrait-accepted/preview-foundation.png",
+            "bytes": 195842,
+            "sha256": "c8a0a138451ca93b4d1440885603858c5d942da75dfad590327af18a1c6b0345",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-floor",
+            "path": "shots/review/d05/portrait-accepted/preview-floor.png",
+            "bytes": 201584,
+            "sha256": "bf6e8856b2bbe0228665851d641c4c864b1675b1c65c8f8adc86055542f1d464",
+            "visuallyInspected": true
+          },
+          {
+            "name": "preview-wall",
+            "path": "shots/review/d05/portrait-accepted/preview-wall.png",
+            "bytes": 202652,
+            "sha256": "4125258bee2af59ed3e7a1714bd233317e82d0ed4206b47e16fb1d0270465dfa",
+            "visuallyInspected": true
+          },
+          {
+            "name": "03-seven-pieces-built",
+            "path": "shots/review/d05/portrait-accepted/03-seven-pieces-built.png",
+            "bytes": 205599,
+            "sha256": "0383f418924cad199bbaf1c010228c8f3792c75c0551d136565d835d8295dcf6",
+            "visuallyInspected": true
+          },
+          {
+            "name": "04-explicit-remove-refund",
+            "path": "shots/review/d05/portrait-accepted/04-explicit-remove-refund.png",
+            "bytes": 206420,
+            "sha256": "77f43c83c03e4cccc220cf9cf2fd16ffd2d11ac6a1c210e1fe47ac5205448fc2",
+            "visuallyInspected": true
+          },
+          {
+            "name": "05-remove-confirmed",
+            "path": "shots/review/d05/portrait-accepted/05-remove-confirmed.png",
+            "bytes": 204784,
+            "sha256": "e9bd048fcfa1971d4c6c8dc60bfc1e44963d86343bb166e50623ddfacd30428c",
+            "visuallyInspected": true
+          }
+        ]
+      }
+    ],
+    "postCaptureChange": "After screenshots, only server cargo-transfer selection changed from greedy to bounded transfer-weight search; the mixed-cargo regression and final full suite verify this correction. UI/atlas bytes stayed unchanged. Desktop CSS was relocated with identical bytes to styles/raft-editor.css; mobile runs loaded its final path."
+  },
+  "authority": {
+    "ownerOnly": true,
+    "revisionAndOperationReceipt": true,
+    "privateResources": true,
+    "cloneBeforeCommit": true,
+    "preservation": [
+      "structural support",
+      "occupants",
+      "active leap landings",
+      "route to gangplank",
+      "gangplank",
+      "dock/raft separation",
+      "full material refund",
+      "signed save size"
+    ],
+    "limits": {
+      "foundationFootprint": "12 x 12",
+      "levels": 3,
+      "persistedEditorPieces": 600,
+      "guestSignedSaveBytes": 32768,
+      "escapeLatticeUnits": 0.25,
+      "escapeNodes": 20000
+    },
+    "limitsAreMobilePerformanceCertification": false
+  },
+  "limitations": [
+    "Software Chromium screenshots, not physical phone/GPU/FPS acceptance.",
+    "Browser workflow used isolated solo Worker; networking/privacy/rejoin authority covered by automated tests.",
+    "No new FAB kit exported; existing comic atlas/procedural pieces and crate GLB/fallback remain.",
+    "No host restart, online save mutation, deployment or publication.",
+    "World market and account profile durability remain separate existing stores; no cross-ledger durable transaction claim."
+  ],
+  "next": "D06: hold interaction/transfers, production and merchants; then D08 naval handling prototype."
+}

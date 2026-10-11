@@ -1,0 +1,217 @@
+{
+  "schema": "l04b-agent-memory-admin-verification/v1",
+  "status": "local_software_verified",
+  "generatedAt": "2026-10-09T13:46:34.718Z",
+  "checkout": {
+    "head": "b567960e01ab99add673804d573e802f5f4b0cd3",
+    "branch": "claude/loving-lovelace-ptbif7",
+    "sharedDirty": true,
+    "missionCommit": null
+  },
+  "protocol": {
+    "version": 32,
+    "changedByMission": false
+  },
+  "agentTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/agent-interface.test.mjs tests/agent-context.test.mjs tests/agent-lab.test.mjs tests/agent-owner-files.test.mjs tests/agent-network.test.mjs tests/agent-runner.test.mjs tests/agent-chat.test.mjs tests/agent-runner-context.test.mjs tests/agent-lifecycle.test.mjs tests/agent-lifecycle-runner.test.mjs tests/agent-movement.test.mjs tests/agent-movement-network.test.mjs tests/agent-movement-runner.test.mjs tests/agent-pve.test.mjs tests/agent-pve-network.test.mjs tests/agent-pve-runner.test.mjs tests/agent-authority.test.mjs tests/agent-authority-network.test.mjs tests/agent-authority-runner.test.mjs tests/agent-inference-budget.test.mjs tests/agent-mind.test.mjs tests/agent-mind-context.test.mjs tests/agent-mind-network.test.mjs tests/agent-conversation-policy.test.mjs tests/agent-conversation-mind.test.mjs tests/agent-conversation-network.test.mjs tests/agent-objective-store.test.mjs tests/agent-goals-mind.test.mjs tests/agent-goals-network.test.mjs tests/agent-goals-pve.test.mjs tests/agent-memory-journal.test.mjs tests/agent-memory-store.test.mjs tests/agent-memory-retrieval.test.mjs tests/agent-memory-mind.test.mjs tests/agent-memory-context.test.mjs tests/agent-memory-network.test.mjs tests/agent-memory-recovery.test.mjs tests/agent-memory-management.test.mjs tests/agent-memory-admin-store.test.mjs tests/agent-memory-admin-flow.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "be1634f5b499d570a46629043d860fd280e50b38",
+    "headAfter": "be1634f5b499d570a46629043d860fd280e50b38",
+    "startedAt": "2026-10-09T13:41:46.175Z",
+    "finishedAt": "2026-10-09T13:43:18.834Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 401,
+    "pass": 398,
+    "fail": 0,
+    "skipped": 3,
+    "cancelled": 0,
+    "durationMs": 92587.4981,
+    "stderr": "",
+    "log": "agents-tests.tap",
+    "changedDuringSuite": [
+      "server/community/supabaseContributionStore.mjs",
+      "server/migrations/community/001_contributions.sql"
+    ],
+    "dependencyCount": 275
+  },
+  "regressionTests": {
+    "command": "node --test --test-concurrency=1 --test-reporter=tap --test-timeout=30000 tests/server.test.mjs tests/accounts-server.test.mjs tests/account-auth.test.mjs tests/account-import.test.mjs tests/naval-pilot-authority.test.mjs tests/naval-crew-authority.test.mjs tests/pearl-input-boundary.test.mjs tests/pearl-host-mount.test.mjs tests/death-host-mount.test.mjs tests/combat-death-host.test.mjs tests/death-drop-host.test.mjs tests/chat.test.mjs tests/chat-bubbles.test.mjs tests/net.test.mjs tests/combat.test.mjs tests/weapons.test.mjs tests/lawless.test.mjs tests/items.test.mjs",
+    "hashScope": "core gameplay/auth/storage/agent modules plus relative test import graph and package lock",
+    "headBefore": "1a3ef18d4da16331088ff16802f3f4ace9f5df91",
+    "headAfter": "be1634f5b499d570a46629043d860fd280e50b38",
+    "startedAt": "2026-10-09T13:34:40.681Z",
+    "finishedAt": "2026-10-09T13:35:47.722Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 206,
+    "pass": 206,
+    "fail": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMs": 66976.7546,
+    "stderr": "",
+    "log": "regression-tests.tap",
+    "changedDuringSuite": [],
+    "dependencyCount": 257
+  },
+  "newMissionTestFiles": [
+    "agent-memory-management",
+    "agent-memory-admin-store",
+    "agent-memory-admin-flow"
+  ],
+  "dependencyStability": {
+    "finalDrift": [],
+    "ignoredIndependentChanges": [
+      {
+        "suite": "agents",
+        "path": "server/community/supabaseContributionStore.mjs",
+        "phase": "during_suite",
+        "beforeHash": "f66ca92f529fb5536c2baca39f100d15950f1065a3af9f1b80c9989a5d5dbd53",
+        "afterHash": "ccd9a8a100cf9894c8e7eafb1cd9ba5b9b0dead80a2a5f583adbe1354a892e24"
+      },
+      {
+        "suite": "agents",
+        "path": "server/migrations/community/001_contributions.sql",
+        "phase": "during_suite",
+        "beforeHash": "e071c9f5cb32331ddf2a0468a614925f4116236cc4268f8b2732263a973ec1f6",
+        "afterHash": "3d0ef47656048afbfcb07201ad04abf6b030e48cca5978584e4b4caa8b2e3301"
+      },
+      {
+        "suite": "agents",
+        "path": "server/community/contributionContract.mjs",
+        "phase": "after_suite",
+        "testedHash": "8551d546696da4afe2ab4f770e4cfde77a597a64cb71bb7667e273c319a699ff",
+        "currentHash": "543cbfaf2743d6f8113023a494033fdd6ee99bd64f8c9b300fe57e1aa07f4c3b"
+      },
+      {
+        "suite": "agents",
+        "path": "server/migrations/community/001_contributions.sql",
+        "phase": "after_suite",
+        "testedHash": "3d0ef47656048afbfcb07201ad04abf6b030e48cca5978584e4b4caa8b2e3301",
+        "currentHash": "679f07d872205d4cf9cf96e3c8c7170caa2a9b49631225bd0556089d3ff69171"
+      },
+      {
+        "suite": "regression",
+        "path": "server/community/contributionContract.mjs",
+        "phase": "after_suite",
+        "testedHash": "8551d546696da4afe2ab4f770e4cfde77a597a64cb71bb7667e273c319a699ff",
+        "currentHash": "543cbfaf2743d6f8113023a494033fdd6ee99bd64f8c9b300fe57e1aa07f4c3b"
+      },
+      {
+        "suite": "regression",
+        "path": "src/client/liveNavigationView.js",
+        "phase": "after_suite",
+        "testedHash": "d38193f0f30d38e307eb3cfd1aa42747711a1266c2d43b7c2c4e40ba6c710b33",
+        "currentHash": "c84bd8ba4e1472b9e1193359658e1fa5c434110f6a33fc0431e82ae98fcecc17"
+      }
+    ],
+    "status": "verified",
+    "scope": "all core net/sim/data/server/agent modules and the test dependency graph, including static URL assets; unimported rendering and isolated community modules excluded",
+    "headChanges": "recorded separately; unrelated commits do not replace exact tested dependency hashes"
+  },
+  "earlierAttempt": {
+    "agents": "one prior conversation fixture race: agent received its earlier echo during an invalid-reply turn",
+    "correction": "await the existing echo and assert unchanged outbound request count; no chat runtime change",
+    "regression": "206 passed, but a concurrent integration changed HEAD and liveNavigationView.js during the suite",
+    "secondAgents": "398 passed with 3 skipped; an unrelated, unimported rendering view changed during broad client-folder hashing",
+    "scopeCorrection": "all imported client files remain fingerprinted; client views outside the actual test import graph are excluded",
+    "thirdAgents": "397 passed with 3 skipped; the held-compaction fixture hit observation freshness before the file-change fence",
+    "thirdCorrection": "inject a fixed clock for the held-compaction scenario; runtime freshness checks unchanged",
+    "finalAgents": "398 passed with 3 skipped; independent community storage files changed while tests ran, without changes to test dependencies",
+    "acceptance": "both suites reran after the conversation fixture fix; agents repeated after scope and held-clock corrections; all prior logs retained"
+  },
+  "planIntegrity": {
+    "agreedDirectionRows": 22,
+    "agreementAndDemonstrationUnchanged": true,
+    "da3Unchanged": true,
+    "da3State": "Propuesto; por acordar",
+    "baseline": "docs/delivery/l04b-agent-memory-admin/baseline.json"
+  },
+  "localProof": {
+    "actualOwnerFiles": true,
+    "byteExactBase64Export": true,
+    "pathFreeExport": true,
+    "childCli": true,
+    "freshRestartAfterDeletion": true,
+    "sourceReferenceClosure": "v2 summaries and recursive legacy ID/id@revision sources",
+    "allLegacyRevisionsRemoved": true,
+    "fullPendingEvidencePreserved": true,
+    "terminalResolutionResurrectionBlocked": true,
+    "explicitRetentionOnly": true,
+    "explicitEncodingMigrationOnly": true,
+    "finalGuardAndAllFileHashFences": true,
+    "cooperativeAppendConflict": true,
+    "inFlightDeletedSource": "held scripted compaction rejected before append; native usage reconciled",
+    "inFlightExpiredSource": "held scripted decision rejected before action; native usage reconciled",
+    "providerCallsByAdministration": 0,
+    "paidProviderConnected": false,
+    "qualityWithRealModelAccepted": false,
+    "humanExperienceAccepted": false,
+    "externalServiceTouched": false,
+    "externalMigrationApplied": false,
+    "published": false,
+    "deployed": false
+  },
+  "policies": {
+    "maxMemoryBytes": 1048576,
+    "automaticRetention": false,
+    "capacity": "reject_without_deletion",
+    "removal": "explicit_preview_and_owner_commit_with_hashes",
+    "revision": "entry_count_plus_complete_file_hash",
+    "unresolvedOperations": "reject_any_pending_evidence_change",
+    "migration": "utf8_lf_jsonl_preserve_accepted_fields_and_provenance",
+    "authorization": "local_directory_access_not_multiuser_server_authentication"
+  },
+  "limits": [
+    "No owner panel, remote administration, automatic TTL, embeddings or persistent derived index",
+    "Previous exports, already sent provider contexts and all diagnostic RAM copies cannot be recalled",
+    "Fresh explicit captures may record the same current observation again; no tombstone or automatic capture",
+    "Cooperative local lock only; no OS-wide CAS, multi-host writes, stale-lock recovery or physical crash durability",
+    "Local content hashes do not authenticate server evidence; real provider quality, accounting and human acceptance remain separate",
+    "Existing Windows symlink checks may skip on EPERM; see exact suite report"
+  ],
+  "unrealReuse": {
+    "sourceReadOnly": true,
+    "inventory": "docs/research/unreal-assets/myproject/FINDINGS.md",
+    "decision": "No applicable portable component for local textual archive administration; no new assets or source edits"
+  },
+  "sourceFiles": {
+    "tools/agent/memory-management.mjs": "34a026c918d97b132357945f1f0508c4614a6e4a8042842f240bf52b42b7e35f",
+    "tools/agent/memory-admin.mjs": "3f092651d53b2f4cadcf757941a6434fd6a6c4e9582b89c1e47a7a3e8f8e6a06",
+    "tools/agent/manage-memory.mjs": "c38343a373414586ac7799003799381c240e25330cabec9ab7fe6ea7762e85a2",
+    "tools/agent/memory-store.mjs": "5f02bd21ab4d8967f99fa1aef40e98ae05ac977dd6e28f20a0545f5052fec707",
+    "tools/agent/owner-files.mjs": "82d19c63855bb555c767a5a8504575f18d0b3e2e8dfc0115fe3fb36b62a34e4c",
+    "tools/agent/mind.mjs": "86047707298e17d4dc534f84720e9a659e54b4d271069e22d74c94c71e0f05cc",
+    "tools/qa-agent-memory-admin.mjs": "1cec229eabd7aae3f0b9fba566c0c7ac909ae2f0d6015c6300e3a17ccb5c5368",
+    "tools/qa-agent-memory-admin-evidence.mjs": "4f5a29f893188c7ff30ce0387dcf140703816d13e43b33fa0a6fc739c305a560",
+    "tests/agent-memory-management.test.mjs": "52a6b89a5c742f008166826d83984f975de6204b2224bb24619518fd1bb0c058",
+    "tests/agent-memory-admin-store.test.mjs": "cf5b0e5fa0b867a2cff6bff6edd6d7cdb63f98afdd9029a3eed4ab7e5040fe00",
+    "tests/agent-memory-admin-flow.test.mjs": "3848b7e09bcfd36c975c21e6a7b1b24bec91fedfdd8408a3d11d3db855fab7cd",
+    "tests/agent-conversation-network.test.mjs": "94bbc20868818e4cdb87906badd0689a62b151dbf3e3875082addba94ae3bfc2",
+    "docs/agents/memory-admin.md": "dcb5122942ac235fe2195fc9c22af67bc72d767d6a5727515586a734128f5390",
+    "docs/agents/memory-runner.md": "16e3c81a9535e597c323c2dc9a0e112cdba51b9cb81762cfa5105711a9896d22",
+    "docs/briefs/l04b-agent-memory-admin.md": "6a3fd10adcaddd24edf64ae55e74cbd05027fa9f79cb64670211e597b0793da6",
+    "docs/delivery/l04b-agent-memory-admin.md": "65bc8d91d59f945a0522e5cdee0715f8f34f37a866a708450ad0f5a578de482b",
+    "PLAN-EXTRA-LLM.md": "fdcd6fb55637cee0693b7e4fdda66888584a3317c5b1b161efbef28d0992b86b",
+    "PLAN-DELIVERY.md": "af29cabf953c7a20d19acab211741b4f631ffc81a951d45d10e9abc98578a207",
+    "DESIGN.md": "76af37e57d27936a316d3442cea03f25a743a0667ac71898d0a07a5083bf31c4",
+    "docs/HANDOFF.md": "68f66b6da35266665895d171f4218e364f375a5a0d8b8d1ba4aee84bf00c4ffc"
+  },
+  "evidenceFiles": {
+    "docs/delivery/l04b-agent-memory-admin/baseline.json": "152a0f9f5091a2168cbc67a7839359a9902b903ee2fba78c1fc1cfde87f40551",
+    "docs/delivery/l04b-agent-memory-admin/agents-tests.tap": "ab2cff688437210a8c950c130ec0f40554b603fa3fd9840c62b261f916d9f15e",
+    "docs/delivery/l04b-agent-memory-admin/agents-tests.json": "8abbfe10a7383332ee3deae31651cbada1338ff2d5ae9877d988745ed1b5ea67",
+    "docs/delivery/l04b-agent-memory-admin/regression-tests.tap": "eccefd58fc47696fa25a0ab630c496305c405c93cb420cf1fab87887b232e56b",
+    "docs/delivery/l04b-agent-memory-admin/regression-tests.json": "6a9ff070f13e71abceb03fb2481555e7629ded1ae45ecef660b88534c2e8fd99",
+    "docs/delivery/l04b-agent-memory-admin/attempt1-agents-tests.tap": "352afd6985ad6b4119fd3ce7ba4bef8ac9f7e126d4d226047c3a13e2c6eee01e",
+    "docs/delivery/l04b-agent-memory-admin/attempt1-agents-tests.json": "e04b0d1767fe673084c3c9941749f4226e32847908a092ced4631751d80881db",
+    "docs/delivery/l04b-agent-memory-admin/attempt1-regression-tests.tap": "8e8bd2f21a4456669966e27afc6ed57a72c23197097bda191185ae56175477d1",
+    "docs/delivery/l04b-agent-memory-admin/attempt1-regression-tests.json": "562ea73606fec0e466d7c0c0c70fe9116c21688e565c737507ec265bc58de910",
+    "docs/delivery/l04b-agent-memory-admin/attempt2-agents-tests.tap": "f05c2d10c5089bf0a7c262378213fcc057c1d3a44c7f9cfa0e0e4d3422cb3b3c",
+    "docs/delivery/l04b-agent-memory-admin/attempt2-agents-tests.json": "a5e32e33db1ecd057705c6cd0ed48b011dcf71d82d722ed9b25b9bfbda82fe3e",
+    "docs/delivery/l04b-agent-memory-admin/attempt3-agents-tests.tap": "6994ea5d280ac12f4ad53a39e5bc4e81e9cbe2b1c47571ccc0d169dfc596cbcd",
+    "docs/delivery/l04b-agent-memory-admin/attempt3-agents-tests.json": "81c12cb975dd882f4ae67a4e25e44171d4d730041d6a357b63394e7964ef8fc7"
+  },
+  "nextSlice": "L05a owner inference limits, durable reservations and reconciliation; provider approval and human experience remain separate"
+}

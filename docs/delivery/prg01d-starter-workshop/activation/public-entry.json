@@ -1,0 +1,70 @@
+{
+  "schema": "mn.prg01d.public.v1",
+  "at": "2026-10-11T00:32:00.226Z",
+  "target": "public TLS",
+  "pass": true,
+  "checks": [
+    {
+      "check": "public_health_200",
+      "pass": true
+    },
+    {
+      "check": "durable_M5_resources_healthy",
+      "pass": true,
+      "version": "0.6.0-alpha.36",
+      "logging": true
+    },
+    {
+      "check": "published_protocol",
+      "pass": true,
+      "protocol": 45
+    },
+    {
+      "check": "starter_workshop_enabled_and_ready",
+      "pass": true
+    },
+    {
+      "check": "published_workshop_panel",
+      "pass": true
+    },
+    {
+      "check": "published_companions_panel",
+      "pass": true
+    },
+    {
+      "check": "operator_tools_not_public",
+      "pass": true
+    },
+    {
+      "check": "ordinary_guest_real_public_entry",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companions_forbidden",
+      "pass": true
+    },
+    {
+      "check": "public_guest_market_forbidden",
+      "pass": true
+    },
+    {
+      "check": "public_guest_trade_forbidden_without_receipt",
+      "pass": true
+    },
+    {
+      "check": "public_guest_budget_forbidden",
+      "pass": true
+    },
+    {
+      "check": "unconfigured_public_agent_admission_denied",
+      "pass": true
+    },
+    {
+      "check": "old_protocol_requires_reload",
+      "pass": true
+    }
+  ],
+  "limits": [
+    "Guest wire entry only; this does not verify authenticated workshop gameplay."
+  ]
+}

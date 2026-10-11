@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-06",
+  "codeBase": "0024900da89dcedc2f7789280919336c04b596a6",
+  "visualFollowups": ["f7bdee53e78c49da281ce919b85b25260d85077d", "f6dce6e671f09f4258be9403df68ef37a6a162dc"],
+  "navalTests": {
+    "source": "f6dce6e671f09f4258be9403df68ef37a6a162dc",
+    "tests": 52,
+    "pass": 52,
+    "fail": 0,
+    "durationMs": 489.3843,
+    "command": "node --test tests/naval-handling.test.mjs tests/naval-lab-clock.test.mjs tests/naval-lab-input.test.mjs tests/naval-lab-server.test.mjs tests/naval-navigation.test.mjs tests/naval-lab-feedback.test.mjs tests/naval-lab-speed-feel.test.mjs"
+  },
+  "fullRegression": {
+    "source": "0024900da89dcedc2f7789280919336c04b596a6",
+    "nodeVersion": "v24.14.0",
+    "files": 86,
+    "tests": 994,
+    "pass": 987,
+    "fail": 7,
+    "durationMs": 701005.97,
+    "tap": ".scratch/naval-arcade-accept-0024900d-20261006-214128313Z.tap",
+    "summary": ".scratch/naval-arcade-accept-0024900d-20261006-214128313Z.json",
+    "passed": false,
+    "isolatedNetFollowup": {"tests": 2, "pass": 2, "fail": 0, "boundedSeconds": 60},
+    "isolatedFailingFilesFollowup": {
+      "source": "0024900da89dcedc2f7789280919336c04b596a6",
+      "summary": ".scratch/naval-arcade-accept-0024900d-followup-summary.json",
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "files": [
+        {"path": "tests/net.test.mjs", "pass": 2, "seconds": 7.36},
+        {"path": "tests/pc-host.test.mjs", "pass": 1, "seconds": 4.54},
+        {"path": "tests/pearl-batch-process.test.mjs", "pass": 3, "seconds": 21.69},
+        {"path": "tests/pearl-same-holder-process.test.mjs", "pass": 2, "seconds": 24.996},
+        {"path": "tests/server.test.mjs", "pass": 5, "seconds": 6.86}
+      ],
+      "conclusion": "Failures did not reproduce individually; full-run result remains non-green and load sensitivity is an inference"
+    }
+  },
+  "browser": {
+    "tool": "computer-use",
+    "desktop": {
+      "source": "f6dce6e671f09f4258be9403df68ef37a6a162dc",
+      "artifact": "shots/naval-arcade-20261006/desktop-final.png",
+      "surfaceBehindHullAndSail": true,
+      "observedConsoleErrors": 0,
+      "atlas": "textures/raft/comic-materials-v1.webp",
+      "atlasDimensions": [1024, 1024]
+    },
+    "portrait": {
+      "source": "f7bdee53e78c49da281ce919b85b25260d85077d",
+      "cssViewport": [390, 844],
+      "bay": [374.66668701171875, 489.51043701171875],
+      "horizontalOverflow": false,
+      "artifact": "shots/naval-arcade-20261006/mobile-portrait-final.png",
+      "mastAndControlsVisible": true
+    },
+    "mobileCapture": {
+      "source": "0024900da89dcedc2f7789280919336c04b596a6",
+      "tick": 476,
+      "velocity": [0.12049051525184215, 10.98671398925334],
+      "result": "perfect",
+      "multiplier": 2.8,
+      "captureBursts": 1,
+      "sprayActive": 20,
+      "sprayCap": 144,
+      "wakeSamples": 9,
+      "foamFlecks": 251,
+      "foamCap": 338,
+      "comicPaths": 12,
+      "fov": 40.46172008082833,
+      "ambienceSources": 1,
+      "playedApproachWindowPerfect": [1, 1, 1],
+      "pausedMix": {"wind": 0, "water": 0},
+      "atlas": "textures/raft/comic-materials-v1-mobile.webp",
+      "atlasDimensions": [512, 512],
+      "artifact": "shots/naval-arcade-20261006/mobile-landscape-final.png",
+      "snapshot": ".scratch/naval-arcade-mobile-final.json"
+    },
+    "landscape": {
+      "cssViewport": [844, 390],
+      "horizontalOverflow": false,
+      "captureAnomaly": "Bitmap scale differs from requested viewport; visual acceptance of this viewport remains provisional"
+    },
+    "viewportRestored": true,
+    "audioAuditionAccepted": false,
+    "physicalDeviceFpsAccepted": false
+  },
+  "publicDeployment": false,
+  "onlinePilotage": false
+}

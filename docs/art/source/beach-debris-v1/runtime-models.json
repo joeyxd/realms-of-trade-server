@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "cut": "S09",
+  "family": "beach-debris-v1",
+  "source": {
+    "file": "docs/art/source/beach-debris-v1/SM_Logs.geometry-export.glb",
+    "bytes": 13304,
+    "sha256": "26942a59a2be96c5520efe94a4f6b9609022c15f600695b7849fec634e320cea"
+  },
+  "geometrySha256": "81895ce91222ff8e82b4f5e03158c009fbc56a9c4422831e30a4d3ba996af5f2",
+  "toolSha256": "73178753d124eca2813f27644260f43ed0412cac9c9a1e82ebbe0afc1b4212d2",
+  "models": [
+    {
+      "style": "branch",
+      "file": "assets/models/beach-debris-branch-v1.glb",
+      "bytes": 6612,
+      "sha256": "070250b366e84066a6a96e74f52e826c19659d0ab1f6944a9d9088d781a03c75",
+      "triangles": 208,
+      "bounds": {
+        "min": [
+          -1.0032559633255005,
+          0,
+          -0.21083573997020721
+        ],
+        "max": [
+          0.9085729122161865,
+          0.3694644868373871,
+          0.2944195866584778
+        ]
+      },
+      "source": "native painted geometry"
+    },
+    {
+      "style": "log",
+      "file": "assets/models/beach-debris-log-v1.glb",
+      "bytes": 3696,
+      "sha256": "150b1cb68daeacc5d12966e9436c91aa3f984adf29477f9cdd53c8a1b0d57361",
+      "triangles": 96,
+      "bounds": {
+        "min": [
+          -0.8659242987632751,
+          0,
+          -0.24872522056102753
+        ],
+        "max": [
+          0.7826525568962097,
+          0.2721790671348572,
+          0.2957683801651001
+        ]
+      },
+      "source": "native painted geometry"
+    },
+    {
+      "style": "planks",
+      "file": "assets/models/beach-debris-planks-v1.glb",
+      "bytes": 8432,
+      "sha256": "d74f34aba10fba311c936b204b9ab74e4f49080c8f55f62a85e95d523cb99636",
+      "triangles": 132,
+      "bounds": {
+        "min": [
+          -0.75,
+          0,
+          -0.6328923106193542
+        ],
+        "max": [
+          0.75,
+          0.4000000059604645,
+          0.6328923106193542
+        ]
+      },
+      "source": "docs/art/source/beach-debris-v1/SM_Logs.geometry-export.glb"
+    }
+  ]
+}

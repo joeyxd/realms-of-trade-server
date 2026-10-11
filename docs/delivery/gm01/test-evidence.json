@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-10T15:58:31.554Z",
+  "version": "0.6.0-alpha.18",
+  "base": "ec5d054dd63a1889d5d9e34e93387b582e220785",
+  "command": "node --test tests/gm*.test.mjs tests/store-host.test.mjs tests/accounts-server.test.mjs tests/world-state.test.mjs tests/world-host.test.mjs tests/raft-persistence.test.mjs tests/harvest-tools.test.mjs tests/server.test.mjs tests/deploy-runtime.test.mjs",
+  "passed": 100,
+  "failed": 0,
+  "gmTests": 30,
+  "assetSourceCheck": "4 candidate GLBs and original source hashes verified",
+  "physicalMobilePerformance": false
+}

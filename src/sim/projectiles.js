@@ -1,0 +1,547 @@
+// Projectiles. Pure and deterministic (sim, worker, client, node tests).
+//
+// Hostile projectiles follow reproducible paths from (x0, z0) at tick t0: straight or a bounded
+// Tormenta arc, slowed by historical frost, with a fixed lifetime and static obstacle clipping.
+// Their position at any tick is a formula, so:
+//   · the server never sends them one by one: it sends a PATTERN event (who, where, angle, params) and
+//     every client expands it into the same projectiles with the same ids;
+//   · the server can evaluate a player's command at the projectile tick that player was seeing
+//     (lag compensation for parries, destroys, hits and grazes) without storing per-bullet positions.
+// What changes a projectile (a hit, a destroy, a reflect) is an event with the tick and, when a
+// player caused it, the sequence number of that player's command (prediction dedupes by it).
+//
+// Reflected projectiles become SHOTS: owned by a player, stepped every tick with soft homing toward
+// enemies, decided by the server (the client steps a visual copy toward what it sees). Weapons fire
+// shots too (pistol bullets, pellets). The server tests a shot against the enemies as its shooter saw
+// them: `lag` ticks in the past (lag compensation, like melee).
+import { tuning, DT } from '../data/tuning.js';
+
+// The emission anchor travels with the pattern: the mild arc can be reconstructed at any tick.
+export const STORM_CURSE = { range: 18, turn: 0.22, maxAngle: 0.45 };
+export function stormCurve(x, z, vx, vz, magnets = []) {
+  let best = null, d2 = STORM_CURSE.range ** 2;
+  for (const m of magnets) {
+    if (![m.e, m.x, m.z].every(Number.isFinite)) continue;
+    const d = (m.x - x) ** 2 + (m.z - z) ** 2;
+    if (d < d2 || (d === d2 && (!best || m.e < best.e))) { best = m; d2 = d; }
+  }
+  if (!best || d2 < 1e-9) return 0;
+  const a = Math.atan2(vx, vz), want = Math.atan2(best.x - x, best.z - z);
+  const delta = Math.atan2(Math.sin(want - a), Math.cos(want - a));
+  return Math.max(-STORM_CURSE.turn, Math.min(STORM_CURSE.turn, delta * 0.25));
+}
+
+export const PTYPE = { PARRY: 0, HEAVY: 1, UNSTOP: 2 };
+export const PTYPE_OF = { parry: PTYPE.PARRY, heavy: PTYPE.HEAVY, unstop: PTYPE.UNSTOP };
+export const KILL = { NONE: 0, HIT: 1, DESTROY: 2, REFLECT: 3, BLOCK: 4, CANCEL: 5, WAVE: 6 };
+export const NEVER = 0x7fffffff;
+// What a player shot is (Shots.kind): a reflected bullet and a released catch ignore armour and the
+// boss's shield; pistol bullets and pellets do not.
+export const SHOT = { REFLECT: 0, BULLET: 1, PELLET: 2, RELEASE: 3 };
+
+const typeCfg = (t) => (t === PTYPE.HEAVY ? tuning.projectiles.heavy : t === PTYPE.UNSTOP ? tuning.projectiles.unstoppable : tuning.projectiles.parryable);
+export const radiusOf = (t) => typeCfg(t).radius;
+export const lengthOf = (t) => (t === PTYPE.UNSTOP ? tuning.projectiles.unstoppable.length : 0);
+
+// First distance along (dx, dz) from (x, z) at height y where a static collider or the ground blocks
+// a projectile of radius r. Deterministic (same map → same result on every machine).
+// slope: height change per u travelled (aimed shots climb or dip toward their target).
+export function clipDistance(map, x, y, z, dx, dz, r, maxD, slope = 0) {
+  const step = 0.35;
+  for (let d = step; d <= maxD; d += step) {
+    const px = x + dx * d, pz = z + dz * d;
+    if (map.groundAt(px, pz) > y + slope * d - 0.25) return d;
+    const list = map.queryColliders(px, pz, r + 1.2);
+    for (let k = 0; k < list.length; k++) {
+      const c = map.colliders[list[k]];
+      const ox = px - c.x, oz = pz - c.z, m = c.r + r * 0.5;
+      if (ox * ox + oz * oz < m * m) return d;
+    }
+  }
+  return maxD;
+}
+
+export class Hazards {
+  constructor(cap = tuning.projectiles.cap) {
+    this.cap = cap;
+    const I = () => new Int32Array(cap), F = () => new Float64Array(cap);
+    this.id = I(); // 0 = free slot
+    this.type = new Uint8Array(cap);
+    this.owner = I();
+    this.x0 = F(); this.z0 = F(); this.y = F(); this.vx = F(); this.vy = F(); this.vz = F(); this.speed = F();
+    this.t0 = I(); this.tEnd = I();
+    this.r = F(); this.len = F(); this.dmg = F();
+    this.fire = new Uint8Array(cap);
+    this.clipD = F().fill(Infinity); // first static blocker, measured along the path
+    this.curve = F();
+    this.maps = new Array(cap);
+    this.curveCache = new Array(cap);
+    this.stormPatterns = new Map();
+    this.patternOf = new Map();
+    this.dead = I().fill(NEVER); // tick it was removed (hit, destroyed, reflected…)
+    this.kill = new Uint8Array(cap);
+    this.killBy = I();
+    this.killSeq = new Uint32Array(cap);
+    this.confirmed = new Uint8Array(cap); // client: the server agreed with a predicted kill
+    this.marks = new Array(cap).fill(null); // per-player one-shot flags: [{e, k ('g' graze | 'h' ghost), seq}]
+    this.pathCacheTick = new Float64Array(cap).fill(NaN);
+    this.pathCacheRev = new Uint32Array(cap);
+    this.pathCache = new Array(cap);
+    this.slot = new Map(); // id → slot
+    this.freeList = [];
+    for (let i = cap - 1; i >= 0; i--) this.freeList.push(i);
+    this.count = 0;
+    this.aoes = []; // {id, owner, x, z, r, t0, tAct, dmg, keep, hits: [{e, seq}]}
+    this.beams = []; // lasers, fire lanes, the boss charge (see beamSeg)
+    this.frostFields = []; // history reconstructs analytic bullet paths after fields expire
+    this.frostRev = 0;
+    this.maxLifeTicks = Math.round(Math.max(tuning.projectiles.parryable.life, tuning.projectiles.heavy.life, tuning.projectiles.unstoppable.life) / DT);
+    this.lava = null; // the shrinking lava ring of the boss's last phase (see lavaR)
+    this.dropped = 0;
+  }
+
+  // Returns the slot or -1 when the pool is full (oldest projectiles are not evicted: patterns are fair).
+  // life: seconds, overrides the type's (curtains that must cross the whole arena).
+  spawn(id, type, owner, x, y, z, vx, vz, t0, dmg, map, slope = 0, life = 0, fire = 0, curve = 0) {
+    const s = this.freeList.pop();
+    if (s === undefined) { this.dropped++; return -1; }
+    const cfg = typeCfg(type);
+    const speed = Math.hypot(vx, vz);
+    this.id[s] = id; this.type[s] = type; this.owner[s] = owner;
+    this.pathCacheTick[s] = NaN;
+    this.curveCache[s] = null;
+    this.curve[s] = Number.isFinite(curve) ? Math.max(-STORM_CURSE.turn, Math.min(STORM_CURSE.turn, curve)) : 0;
+    this.maps[s] = map;
+    this.x0[s] = x; this.z0[s] = z; this.y[s] = y; this.vx[s] = vx; this.vy[s] = slope * speed; this.vz[s] = vz; this.speed[s] = speed;
+    this.r[s] = cfg.radius; this.len[s] = lengthOf(type); this.dmg[s] = dmg;
+    this.fire[s] = fire ? 1 : 0;
+    const L = life || cfg.life;
+    let lifeT = Math.round(L / DT);
+    this.maxLifeTicks = Math.max(this.maxLifeTicks, lifeT);
+    if (map && speed > 1e-6) {
+      const maxD = speed * L;
+      const d = this.curve[s] ? this._curveClip(s, maxD, slope) : clipDistance(map, x, y, z, vx / speed, vz / speed, cfg.radius, maxD, slope);
+      this.clipD[s] = d;
+    } else this.clipD[s] = speed > 1e-6 ? speed * L : Infinity;
+    this.t0[s] = t0; this.tEnd[s] = t0 + lifeT;
+    this.dead[s] = NEVER; this.kill[s] = 0; this.killBy[s] = 0; this.killSeq[s] = 0; this.confirmed[s] = 0;
+    this.marks[s] = null;
+    this.slot.set(id, s);
+    this.count++;
+    return s;
+  }
+
+  free(s) {
+    this.slot.delete(this.id[s]);
+    this.id[s] = 0;
+    this.pathCacheTick[s] = NaN;
+    this.marks[s] = null;
+    this.freeList.push(s);
+    this.maps[s] = null; this.curveCache[s] = null;
+    this.count--;
+  }
+
+  // Elapsed seconds since spawn at tick t (may be negative: staggered patterns spawn later).
+  age(s, t) { return (t - this.t0[s]) * DT; }
+  fieldSlowAt(x, z, tick) { return this._fieldSlowAt(x, z, tick * DT); }
+  _fieldSlowAt(x, z, sec, dirX = 0, dirZ = 0) {
+    let mul = 1;
+    x += dirX * 1e-7; z += dirZ * 1e-7;
+    for (const f of this.frostFields) {
+      if (sec < f.t0 * DT || sec >= f.tEnd * DT) continue;
+      const dx = x - f.x, dz = z - f.z;
+      if (dx * dx + dz * dz <= f.r * f.r) mul = Math.min(mul, f.slow);
+    }
+    return mul;
+  }
+  addFrostField(o) {
+    if (!Number.isFinite(o.e) || !Number.isFinite(o.seq) || !Number.isFinite(o.x) || !Number.isFinite(o.z) ||
+        !Number.isFinite(o.r) || o.r <= 0 || !Number.isFinite(o.slow) || !Number.isFinite(o.t0) ||
+        !Number.isFinite(o.tEnd) || o.tEnd <= o.t0) return null;
+    const i = this.frostFields.findIndex((f) => f.e === o.e && f.seq === o.seq);
+    const f = { e: o.e, seq: o.seq >>> 0, x: o.x, z: o.z, r: o.r, t0: o.t0, tEnd: o.tEnd,
+      slow: Math.max(0.05, Math.min(1, o.slow)), predicted: !!o.predicted };
+    if (i >= 0) {
+      const old = this.frostFields[i];
+      if (old.predicted && !f.predicted) { Object.assign(old, f); this.frostRev++; }
+      return this.frostFields[i];
+    }
+    this.frostFields.push(f);
+    this.frostRev++;
+    return f;
+  }
+  removePredictedFrostFields(e, afterSeq = 0) {
+    const n = this.frostFields.length;
+    this.frostFields = this.frostFields.filter((f) => !(f.predicted && f.e === e && (!afterSeq || f.seq > afterSeq)));
+    if (n !== this.frostFields.length) this.frostRev++;
+  }
+  // Exact arc geometry by distance, then a straight tangent once the total bend reaches maxAngle.
+  _curvePoint(s, dist) {
+    const speed = this.speed[s], a = Math.atan2(this.vx[s], this.vz[s]), w = this.curve[s];
+    const arc = Math.min(dist, STORM_CURSE.maxAngle * speed / Math.abs(w));
+    const b = a + w * arc / speed, radius = speed / w;
+    return { x: this.x0[s] + radius * (Math.cos(a) - Math.cos(b)) + Math.sin(b) * (dist - arc),
+      z: this.z0[s] + radius * (Math.sin(b) - Math.sin(a)) + Math.cos(b) * (dist - arc), dx: Math.sin(b), dz: Math.cos(b) };
+  }
+  _curveClip(s, maxD, slope) {
+    const map = this.maps[s];
+    for (let d = 0.175; d < maxD + 0.175; d += 0.175) {
+      const at = Math.min(d, maxD), p = this._curvePoint(s, at);
+      if (map.groundAt(p.x, p.z) > this.y[s] + slope * at - 0.25) return at;
+      for (const k of map.queryColliders(p.x, p.z, this.r[s] + 1.2)) {
+        const c = map.colliders[k], r = c.r + this.r[s] * 0.5;
+        if ((p.x - c.x) ** 2 + (p.z - c.z) ** 2 < r * r) return at;
+      }
+      if (at === maxD) break;
+    }
+    return maxD;
+  }
+  _curvedPath(s, tick) {
+    const age = Math.max(0, Math.min(tick, this.tEnd[s]) - this.t0[s]), speed = this.speed[s];
+    let dist = speed * age * DT;
+    if (this.frostFields.length) {
+      // Fixed quarter-tick midpoint steps compose historical frost with the arc. Cached checkpoints
+      // make rewind independent of query order without replaying a lifetime every render.
+      let cache = this.curveCache[s];
+      if (!cache || cache.rev !== this.frostRev) cache = this.curveCache[s] = { rev: this.frostRev, d: [0] };
+      const n = Math.floor(age * 4 + 1e-9);
+      const advance = (d, start, span) => {
+        const p = this._curvePoint(s, d), mul = this._fieldSlowAt(p.x, p.z, (this.t0[s] + start) * DT, p.dx, p.dz);
+        const mid = this._curvePoint(s, d + speed * span * DT * mul / 2);
+        const m = this._fieldSlowAt(mid.x, mid.z, (this.t0[s] + start + span / 2) * DT, mid.dx, mid.dz);
+        return Math.min(this.clipD[s], d + speed * span * DT * m);
+      };
+      while (cache.d.length <= n) {
+        const i = cache.d.length - 1;
+        cache.d.push(advance(cache.d[i], i / 4, 0.25));
+      }
+      dist = cache.d[n];
+      const rest = age - n / 4;
+      if (rest > 1e-9) dist = advance(dist, n / 4, rest);
+    }
+    dist = Math.min(dist, this.clipD[s]);
+    const p = this._curvePoint(s, dist);
+    return { ...p, dist, y: this.y[s] + (this.vy[s] / speed) * dist };
+  }
+  _path(s, tick) {
+    if (this.pathCacheTick[s] === tick && this.pathCacheRev[s] === this.frostRev) return this.pathCache[s];
+    const vx = this.vx[s], vz = this.vz[s], speed = this.speed[s], dirX = speed > 1e-9 ? vx / speed : 0, dirZ = speed > 1e-9 ? vz / speed : 0;
+    const duration = Math.max(0, (tick - this.t0[s]) * DT);
+    if (this.curve[s] && speed > 1e-9) {
+      const out = this._curvedPath(s, tick);
+      this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+      return out;
+    }
+    let elapsed = 0, dist = 0, x = this.x0[s], z = this.z0[s];
+    if (!this.frostFields.length) {
+      const moved = Math.min(speed * duration, this.clipD[s]);
+      const out = { x: x + dirX * moved, z: z + dirZ * moved,
+        y: this.y[s] + (speed > 1e-9 ? (this.vy[s] / speed) * moved : 0), dist: moved };
+      this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+      return out;
+    }
+    const maxSteps = this.frostFields.length * 5 + 16;
+    for (let step = 0; elapsed < duration - 1e-10 && step < maxSteps && speed > 1e-9; step++) {
+      const now = this.t0[s] * DT + elapsed;
+      const mul = this._fieldSlowAt(x, z, now, dirX, dirZ);
+      let nextTime = duration;
+      let nextDist = Infinity;
+      for (const f of this.frostFields) {
+        const a = f.t0 * DT, b = f.tEnd * DT;
+        if (a > now + 1e-9) nextTime = Math.min(nextTime, elapsed + a - now);
+        if (b > now + 1e-9) nextTime = Math.min(nextTime, elapsed + b - now);
+        const ox = x - f.x, oz = z - f.z;
+        const proj = ox * dirX + oz * dirZ;
+        const c = ox * ox + oz * oz - f.r * f.r;
+        const disc = proj * proj - c;
+        if (disc < 0) continue;
+        const root = Math.sqrt(disc);
+        const near = -proj - root, far = -proj + root;
+        if (near > 1e-7) nextDist = Math.min(nextDist, near);
+        if (far > 1e-7) nextDist = Math.min(nextDist, far);
+      }
+      let span = Math.max(0, nextTime - elapsed);
+      if (Number.isFinite(nextDist)) span = Math.min(span, nextDist / (speed * mul));
+      if (!(span > 1e-10)) { elapsed += 1e-9; continue; }
+      const stepDist = speed * mul * span;
+      const left = this.clipD[s] - dist;
+      const moved = Math.min(stepDist, Math.max(0, left));
+      x += dirX * moved; z += dirZ * moved; dist += moved; elapsed += span;
+      if (moved + 1e-9 < stepDist) break;
+    }
+    if (elapsed < duration && speed > 1e-9 && dist < this.clipD[s]) {
+      const mul = this._fieldSlowAt(x, z, this.t0[s] * DT + elapsed, dirX, dirZ), moved = Math.min(speed * mul * (duration - elapsed), this.clipD[s] - dist);
+      x += dirX * moved; z += dirZ * moved; dist += moved;
+    }
+    const out = { x, z, y: this.y[s] + (speed > 1e-9 ? (this.vy[s] / speed) * dist : 0), dist };
+    this.pathCacheTick[s] = tick; this.pathCacheRev[s] = this.frostRev; this.pathCache[s] = out;
+    return out;
+  }
+  px(s, t) { return this._path(s, t).x; }
+  pz(s, t) { return this._path(s, t).z; }
+  py(s, t) { return this._path(s, t).y; }
+  velocityAt(s, t) {
+    const p = this._path(s, t);
+    const speed = this.speed[s], dx = p.dx ?? (speed > 1e-9 ? this.vx[s] / speed : 0), dz = p.dz ?? (speed > 1e-9 ? this.vz[s] / speed : 0);
+    const mul = this._fieldSlowAt(p.x, p.z, t * DT, dx, dz);
+    return { x: dx * speed * mul, z: dz * speed * mul, speed: speed * mul };
+  }
+  // Exists in the world at tick t (spawned, not past its end, not removed).
+  live(s, t) { return this.id[s] !== 0 && t >= this.t0[s] && t < this.tEnd[s] && this.dead[s] === NEVER && this._path(s, t).dist < this.clipD[s] - 1e-9; }
+  armed(s, t) { return (t - this.t0[s]) * DT >= tuning.projectiles.armTime; }
+
+  remove(s, tick, kind, by = 0, seq = 0) {
+    this.dead[s] = tick; this.kill[s] = kind; this.killBy[s] = by; this.killSeq[s] = seq;
+    const p = this.stormPatterns.get(this.patternOf.get(this.id[s]));
+    // Only the authority retains durable removal tombstones. Predicted kills must still roll back.
+    if (p && !this.predicting) p.removed.set(this.id[s], { pid: this.id[s], tick, kind, by, seq });
+  }
+
+  hasMark(s, e, k) {
+    const m = this.marks[s];
+    if (!m) return false;
+    for (let i = 0; i < m.length; i++) if (m[i].e === e && m[i].k === k) return true;
+    return false;
+  }
+  mark(s, e, k, seq) { (this.marks[s] || (this.marks[s] = [])).push({ e, k, seq }); }
+
+  // Remove the projectiles an emitter had not fired yet (it died or was staggered mid-burst), its
+  // pending ground circles (not the `keep` ones: mortar shells and meteors already in the air) and its
+  // beams (a staggered boss stops lasering).
+  cancelPending(owner, tick) {
+    for (let s = 0; s < this.cap; s++) {
+      if (this.id[s] !== 0 && this.owner[s] === owner && this.t0[s] > tick && this.dead[s] === NEVER) this.remove(s, tick, KILL.CANCEL);
+    }
+    for (const a of this.aoes) if (a.owner === owner && a.tAct > tick && !a.cancel && !a.keep) a.cancel = true;
+    for (const b of this.beams) if (b.owner === owner && b.tEnd > tick && !b.cancel && !b.keep) { b.cancel = true; b.cancelT = tick; }
+  }
+
+  // Clear everything hostile (boss phase change, end of a wave, debug). The lava is terrain: it stays.
+  clear(tick) {
+    for (let s = 0; s < this.cap; s++) if (this.id[s] !== 0 && this.dead[s] === NEVER) this.remove(s, tick, KILL.CANCEL);
+    for (const a of this.aoes) a.cancel = true;
+    for (const b of this.beams) if (!b.cancel && b.tEnd > tick) { b.cancel = true; b.cancelT = tick; }
+  }
+
+  // Free slots well after they ended (kept a moment for rewinding and death effects).
+  sweep(tick) {
+    for (let s = 0; s < this.cap; s++) {
+      if (this.id[s] === 0) continue;
+      if ((this.dead[s] !== NEVER && tick - this.dead[s] > 40) || tick - this.tEnd[s] > 40) this.free(s);
+    }
+    for (let i = this.aoes.length - 1; i >= 0; i--) if (tick - this.aoes[i].tAct > 40) this.aoes.splice(i, 1);
+    for (let i = this.beams.length - 1; i >= 0; i--) {
+      const b = this.beams[i];
+      if (tick - b.tEnd > 40 || (b.cancel && tick - b.cancelT > 40)) this.beams.splice(i, 1);
+    }
+    const history = this.maxLifeTicks + tuning.combat.rewind;
+    const before = this.frostFields.length;
+    this.frostFields = this.frostFields.filter((f) => tick - f.tEnd <= history);
+    if (before !== this.frostFields.length) this.frostRev++;
+    for (const [id, p] of this.stormPatterns) if (tick - p.end > 40) {
+      this.stormPatterns.delete(id);
+      for (let k = 0; k < patternCount(p.ev); k++) this.patternOf.delete(id + k);
+    }
+    if (this.lava) this.lava.hits = this.lava.hits.filter((h) => tick - h.tick < 120);
+  }
+
+  stormSnapshot() {
+    return [...this.stormPatterns.values()].map(({ ev, removed }) => ({ ...ev, removed: [...removed.values()] }));
+  }
+  addAoe(a) { a.hits = []; this.aoes.push(a); return a; }
+  addBeam(b) { b.hits = []; b.ghosts = []; this.beams.push(b); return b; }
+  setLava(L) { this.lava = L ? { ...L, hits: [] } : null; return this.lava; }
+}
+
+// ---- Beams ------------------------------------------------------------------------------------------
+// {x0, z0, ang0, omega, vx, vz, off, len, w, t0, tAct, tEnd}: from tAct the origin slides at (vx, vz) u/s
+// and the beam turns omega rad/s; it covers the segment from origin + dir·off to origin + dir·(off + len).
+//   laser   origin on the boss, turning (two of them, opposite, for laser2)
+//   lane    a long band of fire sliding sideways across the arena
+//   charge  the boss's own body during a charge (the server moves him along the same formula)
+// t0 → tAct is the telegraph (no damage). Positions at tick t (clamped to the active window).
+export function beamSeg(b, t, out) {
+  const tt = Math.max(b.tAct, Math.min(b.tEnd, t));
+  const tau = (tt - b.tAct) * DT;
+  const ox = b.x0 + b.vx * tau, oz = b.z0 + b.vz * tau, a = b.ang0 + b.omega * tau;
+  const dx = Math.sin(a), dz = Math.cos(a);
+  out.ax = ox + dx * b.off; out.az = oz + dz * b.off;
+  out.bx = ox + dx * (b.off + b.len); out.bz = oz + dz * (b.off + b.len);
+  out.ox = ox; out.oz = oz; out.ang = a;
+  return out;
+}
+
+// Distance from (px, pz) to the segment (ax, az)–(bx, bz); out.cx/cz = closest point.
+export function segDist(px, pz, ax, az, bx, bz, out) {
+  const abx = bx - ax, abz = bz - az, l2 = abx * abx + abz * abz;
+  let t = l2 > 0 ? ((px - ax) * abx + (pz - az) * abz) / l2 : 0;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  out.cx = ax + abx * t; out.cz = az + abz * t;
+  return Math.hypot(px - out.cx, pz - out.cz);
+}
+
+// ---- Lava -------------------------------------------------------------------------------------------
+// {cx, cz, r0, rMin, rate, t0, R, dmg, every}: the safe radius shrinks from r0 to rMin at `rate` u/s;
+// between it and R + 1 the ground burns (dmg every `every` ticks, counted from t0).
+export function lavaR(L, t) { return Math.max(L.rMin, L.r0 - L.rate * Math.max(0, t - L.t0) * DT); }
+
+// ---- Patterns -------------------------------------------------------------------------------------
+// ev: {pid0, tick, src, pat, ptype, n, gap, spread, speed, dmg, x, y, z, ang, slope, arms, waves, alt}.
+// Projectile k gets id pid0 + k. Angles follow the facing convention (0 = +z, atan2(dx, dz)).
+//   burst   n aimed shots, gap s apart
+//   fan     n shots at once, spread deg apart, centred on ang
+//   spiral  n shots over time on `arms` arms (default 1): arm k % arms, step ⌊k / arms⌋ turns spread deg
+//           and waits gap s
+//   ring    n shots around a full circle (alt: every other one unstoppable)
+//   rings   `waves` rings of n, gap s apart, each turned spread deg from the last (alt as ring)
+//   rows    a curtain: `waves` rows of n side by side (sp u apart, across ang), gap s apart; row w leaves
+//           a hole of hw shots from index holes[w] (the ids are used anyway). life: s (optional)
+export function patternCount(ev) {
+  if (ev.pat === 'single') return 1;
+  if (ev.pat === 'rings' || ev.pat === 'rows') return (ev.n | 0) * Math.max(1, ev.waves | 0);
+  return ev.n | 0;
+}
+
+export function emitPattern(store, ev, map) {
+  const n = patternCount(ev);
+  const type = PTYPE_OF[ev.ptype] ?? PTYPE.PARRY;
+  const D2R = Math.PI / 180, TAU = Math.PI * 2;
+  const arms = Math.max(1, ev.arms | 0), per = ev.n | 0;
+  for (let k = 0; k < n; k++) {
+    if (ev.omitted?.includes(ev.pid0 + k)) continue;
+    let ang = ev.ang, t0 = ev.tick, j = k;
+    if (ev.pat === 'burst') t0 = ev.tick + Math.round((k * ev.gap) / DT);
+    else if (ev.pat === 'fan') ang = ev.ang + (k - (n - 1) / 2) * ev.spread * D2R;
+    else if (ev.pat === 'spiral') {
+      const step = Math.floor(k / arms);
+      ang = ev.ang + ((k % arms) / arms) * TAU + step * ev.spread * D2R;
+      t0 = ev.tick + Math.round((step * ev.gap) / DT);
+    } else if (ev.pat === 'ring') ang = ev.ang + (k / n) * TAU;
+    else if (ev.pat === 'rings') {
+      const w = Math.floor(k / per);
+      j = k % per;
+      ang = ev.ang + (j / per) * TAU + w * ev.spread * D2R;
+      t0 = ev.tick + Math.round((w * ev.gap) / DT);
+    }
+    let x = ev.x, z = ev.z;
+    if (ev.pat === 'rows') {
+      const w = Math.floor(k / per);
+      j = k % per;
+      const h = ev.holes ? ev.holes[w] : -1;
+      if (h !== undefined && h >= 0 && j >= h && j < h + (ev.hw | 0)) continue;
+      const o = (j - (per - 1) / 2) * ev.sp;
+      x += Math.cos(ang) * o; z -= Math.sin(ang) * o;
+      t0 = ev.tick + Math.round((w * ev.gap) / DT);
+    }
+    const speed = Math.min(ev.speed, tuning.projectiles.maxSpeed);
+    const t = (ev.pat === 'ring' || ev.pat === 'rings') && ev.alt ? (j % 2 ? PTYPE.UNSTOP : PTYPE.PARRY) : type;
+    if (store.slot.has(ev.pid0 + k)) continue;
+    const vx = Math.sin(ang) * speed, vz = Math.cos(ang) * speed;
+    const slot = store.spawn(ev.pid0 + k, t, ev.src, x, ev.y, z, vx, vz, t0, ev.dmg, map, ev.slope || 0, ev.life || 0, ev.fire, stormCurve(x, z, vx, vz, ev.magnets));
+    // A late joiner may have more free slots than the authority had at emission. It must not
+    // create bullets the authoritative pool dropped, including future shots in a burst.
+    if (slot < 0 && !store.predicting) (ev.omitted || (ev.omitted = [])).push(ev.pid0 + k);
+  }
+  if (ev.magnets?.length) {
+    let end = ev.tick;
+    for (let k = 0; k < n; k++) { const s = store.slot.get(ev.pid0 + k); if (s !== undefined) end = Math.max(end, store.tEnd[s]); }
+    const { removed, ...pattern } = ev;
+    const old = store.stormPatterns.get(ev.pid0);
+    store.stormPatterns.set(ev.pid0, { ev: pattern, end: Math.max(end, old?.end || 0), removed: old?.removed || new Map() });
+    for (let k = 0; k < n; k++) store.patternOf.set(ev.pid0 + k, ev.pid0);
+  }
+  return n;
+}
+
+// Seconds from the first projectile of a pattern to the last one.
+export function patternSpan(ev) {
+  if (ev.pat === 'burst') return Math.max(0, (ev.n | 0) - 1) * (ev.gap || 0);
+  if (ev.pat === 'spiral') return Math.floor(Math.max(0, (ev.n | 0) - 1) / Math.max(1, ev.arms | 0)) * (ev.gap || 0);
+  if (ev.pat === 'rings' || ev.pat === 'rows') return Math.max(0, (ev.waves | 0) - 1) * (ev.gap || 0);
+  return 0;
+}
+
+// ---- Shots (reflected, player-owned) -----------------------------------------------------------------
+export class Shots {
+  constructor(cap = tuning.projectiles.shotCap) {
+    this.cap = cap;
+    const F = () => new Float64Array(cap);
+    this.id = new Int32Array(cap);
+    this.type = new Uint8Array(cap);
+    this.owner = new Int32Array(cap);
+    this.target = new Int32Array(cap);
+    this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vz = F(); this.speed = F();
+    this.life = F(); this.dmg = F(); this.r = F();
+    this.heavy = new Uint8Array(cap);
+    this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce, a released catch)
+    // Prediction key: the client adopts the server's copy of a shot it predicted by this (reflects: the
+    // projectile id; shots made by a command: −(seq·8 + k + 1); bounces: 0, never predicted).
+    this.key = F();
+    this.homing = F(); this.cone = F(); // soft homing (rad/s) toward enemies in a cone ahead (deg); 0 = straight
+    this.kind = new Uint8Array(cap); // SHOT.*
+    this.elem = new Uint8Array(cap); // The element at launch, retained through impact and bounces.
+    this.tier = new Uint8Array(cap); // a reflect's tier (3 EXCELENTE · 2 BUENO · 1 POBRE; 0 = not a sword reflect): its look
+    this.knock = F(); // knockback on hit (0 = the melee default)
+    this.crit = new Uint8Array(cap); // 1: hits as a crit whatever the roll (an empowered shot after a Parpadeo)
+    this.lag = new Int32Array(cap); // server: ticks behind the present its hits and homing are judged at
+    this.bounce = new Uint8Array(cap); // server: jumps left after a hit
+    this.lastHit = new Int32Array(cap); // server: the enemy it bounced off (not chosen again right away)
+    this.pred = new Uint32Array(cap); // client: seq of the command that predicted it (0 = from the server)
+    this.slot = new Map();
+    this.cursor = 0;
+    this.count = 0;
+  }
+
+  spawn(id, o) {
+    let s = -1;
+    for (let k = 0; k < this.cap; k++) {
+      const i = (this.cursor + k) % this.cap;
+      if (this.id[i] === 0) { s = i; break; }
+    }
+    if (s < 0) return -1;
+    this.cursor = (s + 1) % this.cap;
+    this.id[s] = id; this.type[s] = o.type; this.owner[s] = o.owner; this.target[s] = o.target || 0;
+    this.x[s] = o.x; this.y[s] = o.y; this.z[s] = o.z;
+    this.speed[s] = o.speed; this.vx[s] = o.dx * o.speed; this.vz[s] = o.dz * o.speed;
+    this.life[s] = o.life; this.dmg[s] = o.dmg; this.r[s] = o.r; this.heavy[s] = o.heavy ? 1 : 0;
+    this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0; this.key[s] = o.key || 0;
+    this.homing[s] = o.homing ?? tuning.parry.reflect.wave.homing; this.cone[s] = o.cone ?? tuning.parry.reflect.wave.cone;
+    this.bounce[s] = o.bounce || 0; this.lastHit[s] = o.lastHit || 0;
+    this.kind[s] = o.kind || 0; this.elem[s] = o.elem || 0; this.knock[s] = o.knock || 0; this.crit[s] = o.crit ? 1 : 0; this.lag[s] = o.lag || 0; this.tier[s] = o.tier || 0;
+    this.slot.set(id, s);
+    this.count++;
+    return s;
+  }
+
+  free(s) {
+    this.slot.delete(this.id[s]);
+    this.id[s] = 0;
+    this.count--;
+  }
+
+  // One step: soft homing toward the target (re-acquired in a cone ahead when lost), then move.
+  // findTarget(x, z, dirX, dirZ, coneCos) → id or 0; targetPos(id, out) → bool.
+  step(s, dt, findTarget, targetPos, tmp) {
+    let tx = this.homing[s] > 0 ? this.target[s] : 0;
+    const sp = this.speed[s];
+    const dx = this.vx[s] / sp, dz = this.vz[s] / sp;
+    if (this.homing[s] > 0 && (!tx || !targetPos(tx, tmp))) {
+      tx = findTarget(this.x[s], this.z[s], dx, dz, Math.cos((this.cone[s] / 2) * Math.PI / 180));
+      this.target[s] = tx;
+      if (tx && !targetPos(tx, tmp)) tx = 0;
+    }
+    if (tx) {
+      if (tmp.y !== undefined) this.y[s] += Math.max(-2 * dt, Math.min(2 * dt, tmp.y - this.y[s]));
+      const want = Math.atan2(tmp.x - this.x[s], tmp.z - this.z[s]);
+      const cur = Math.atan2(dx, dz);
+      let d = want - cur;
+      d = Math.atan2(Math.sin(d), Math.cos(d));
+      const maxTurn = this.homing[s] * dt;
+      const a = cur + Math.max(-maxTurn, Math.min(maxTurn, d));
+      this.vx[s] = Math.sin(a) * sp; this.vz[s] = Math.cos(a) * sp;
+    }
+    this.x[s] += this.vx[s] * dt;
+    this.z[s] += this.vz[s] * dt;
+    this.life[s] -= dt;
+  }
+}

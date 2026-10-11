@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-10T23:50:51.961Z",
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "revision": "822ddc27b788d2108f09ae836fc305d8770910ae",
+  "scope": "Real public guest entry and live village NPC role translation; final change is catalog-only. Full reconnect/HUD acceptance is recorded separately.",
+  "errors": [],
+  "locales": {
+    "es": [
+      {
+        "title": "Mercader de mercancías",
+        "name": "Don Bacalao",
+        "visible": true
+      },
+      {
+        "title": "Mercader de la Cala",
+        "name": "La Tuerta",
+        "visible": false
+      },
+      {
+        "title": "Capitana del puerto",
+        "name": "Capitana Brea",
+        "visible": false
+      },
+      {
+        "title": "Vendedora",
+        "name": "Tía Perla",
+        "visible": true
+      },
+      {
+        "title": "Tatuadora",
+        "name": "Doña Sepia",
+        "visible": true
+      }
+    ],
+    "en": [
+      {
+        "title": "Goods merchant",
+        "name": "Don Bacalao",
+        "visible": true
+      },
+      {
+        "title": "Cove merchant",
+        "name": "La Tuerta",
+        "visible": false
+      },
+      {
+        "title": "Harbor captain",
+        "name": "Capitana Brea",
+        "visible": false
+      },
+      {
+        "title": "Shopkeeper",
+        "name": "Tía Perla",
+        "visible": true
+      },
+      {
+        "title": "Tattooist",
+        "name": "Doña Sepia",
+        "visible": true
+      }
+    ]
+  },
+  "pass": true,
+  "image": "marea-negra:alpha-822ddc27b788",
+  "imageId": "sha256:c1a1f031a7f6eb73281e7362e612479b95d5bb90474c3ea31e1f7e1b76bf9557",
+  "version": "0.6.0-alpha.35",
+  "protocol": 44,
+  "fullPublicAcceptanceRevision": "bbbf39e2891e25f3316f4e246db065d1353fe5d6",
+  "reviewedScreenshots": [
+    "bound-npc-en.png"
+  ],
+  "visibleScope": "Three village labels visible at spawn; the harbor captain and distant Cove merchant are sampled from real bound DOM while off-screen. Four village labels asserted; all five DOM records retained."
+}

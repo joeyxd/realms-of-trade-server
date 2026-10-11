@@ -1,0 +1,36 @@
+{
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "pageErrors": [],
+  "failedRequests": [],
+  "phase": "joined",
+  "websockets": [
+    "wss://marea.62.171.136.148.sslip.io/ws"
+  ],
+  "release": {
+    "version": "0.6.0-alpha.27",
+    "protocol": 39,
+    "editorParts": [
+      "foundation",
+      "floor",
+      "pillar",
+      "wall",
+      "door",
+      "roof",
+      "railing",
+      "stairs",
+      "crate",
+      "net",
+      "grill",
+      "lantern"
+    ]
+  },
+  "state": {
+    "mode": "playing",
+    "joined": true,
+    "clientErrors": {},
+    "titleHidden": true,
+    "minimapVisible": true,
+    "mapHidden": false
+  },
+  "pass": true
+}

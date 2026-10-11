@@ -1,0 +1,96 @@
+{
+  "schema": "mn.logging.live.v1",
+  "phases": [
+    {
+      "phase": "before",
+      "checks": [
+        {
+          "check": "cooperative 7/3, offline reconnect, threshold and trained 45 tick actions; normal craft/sale and solo completion",
+          "pass": true,
+          "at": "2026-10-10T19:56:02.179Z",
+          "commandCount": 9,
+          "successfulReceipts": 8,
+          "deniedFullReceipts": 1,
+          "practiceAtThreshold": {
+            "A": 60,
+            "B": 3
+          },
+          "practiceAtCheckpoint": {
+            "A": 70,
+            "B": 3
+          },
+          "completedSyntheticCycles": 2,
+          "partialSyntheticCycles": 0
+        }
+      ]
+    },
+    {
+      "phase": "updater-restart",
+      "checks": [
+        {
+          "check": "full profiles and exact resource targets match latest immutable receipts after updater recreated the authority",
+          "pass": true,
+          "at": "2026-10-10T20:00:05.297Z",
+          "commandCount": 9,
+          "practice": {
+            "A": 70,
+            "B": 3
+          },
+          "profileHashes": {
+            "B": "30267c11aaead089c690dba749006edecb2611904635fd6662674d218090dcfd",
+            "A": "62ceb96828d56d31c95eda4c32c7f0759b0df04bc1359f3bec1492e9d25b413a"
+          }
+        }
+      ]
+    },
+    {
+      "phase": "after",
+      "checks": [
+        {
+          "check": "v2 palm deadline consistent; it had elapsed before shutdown so downtime pause is not measured",
+          "pass": true,
+          "at": "2026-10-10T20:07:11.216Z",
+          "offlineMs": 19875,
+          "remainingTicks": 0,
+          "expectedWaitSeconds": 0,
+          "publicWaitSeconds": 0,
+          "toleranceSeconds": 0.016666666666666666,
+          "pauseMeasured": false
+        },
+        {
+          "check": "graceful restart restored authenticated profiles, contributor ledger and exact replay without duplicate effects",
+          "pass": true,
+          "at": "2026-10-10T20:07:31.024Z",
+          "commandCount": 9,
+          "receiptCount": 9,
+          "practice": {
+            "A": 70,
+            "B": 3
+          },
+          "palmHash": "946ff13768c3c942c5750b038a75bc31b2b796efbb76e02dd84298598fc550aa",
+          "ledgerHash": "983585ce8eec5668686a359bcd0cf3c4071bc6cc317899a3de71d315242f91e9",
+          "hostUptimeAfter": 51
+        }
+      ]
+    },
+    {
+      "phase": "cleanup",
+      "checks": [
+        {
+          "check": "removed only exact synthetic Auth/profile rows; retained operation receipts and public world history",
+          "pass": true,
+          "at": "2026-10-10T20:08:03.267Z",
+          "syntheticAccounts": 2,
+          "retainedReceiptCount": 9,
+          "worldMutationRetained": true,
+          "palmHash": "946ff13768c3c942c5750b038a75bc31b2b796efbb76e02dd84298598fc550aa"
+        }
+      ]
+    }
+  ],
+  "harnessNotes": [
+    "An initial selector picked a legacy partial palm; no gameplay command was sent and those temporary accounts were removed.",
+    "The first trained attempt was durably denied full; normal craft and quoted sale made room before training continued.",
+    "A concurrent updater completed after QA disconnect. Container tmpfs QA files were lost; only the exact synthetic credentials were reset, and fixture/checkpoint were reconstructed from intact M5 profiles and immutable receipts before a further controlled restart."
+  ]
+}

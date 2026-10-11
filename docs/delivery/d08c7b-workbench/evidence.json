@@ -1,0 +1,191 @@
+{
+  "build": "0.6.0-alpha.13",
+  "protocol": 29,
+  "generatedAt": "2026-10-08T21:44:50.758Z",
+  "setup": "Ephemeral localhost hosts, memory store, isolated browser contexts. Server ECS relocation is a QA fixture; gathering, panel opening, quantities and crafting use real controls. No .env, SQL or external services.",
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "desktop-1280x720",
+      "width": 1280,
+      "height": 720,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\desktop-1280x720-00-empty.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\desktop-1280x720-01-batch-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\desktop-1280x720-02-confirmed.png"
+      ],
+      "acks": [
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "c7b80ec1-018b-49d9-9141-1f369836a435",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "madera",
+          "count": 2
+        },
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "c7b80ec1-018b-49d9-9141-1f369836a435",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "madera",
+          "count": 2
+        }
+      ],
+      "insufficientBatch": "three-unit choice disabled with only two logs; no request or debit",
+      "preview": {
+        "qty": 2,
+        "owned": "2",
+        "needed": "2",
+        "space": "8 / 10",
+        "confirmDisabled": false,
+        "stage": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "layout": {
+        "insideViewport": true,
+        "controlsInsideViewport": true
+      },
+      "lostAckRecovery": {
+        "firstId": "c7b80ec1-018b-49d9-9141-1f369836a435",
+        "exactReplay": false
+      },
+      "conservation": {
+        "before": {
+          "tronco": 2,
+          "piedra": 1
+        },
+        "after": {
+          "piedra": 1,
+          "madera": 2
+        },
+        "revision": 4,
+        "goldUnchanged": true
+      },
+      "reconnect": "exact crafted cargo and revision restored from signed online save"
+    },
+    {
+      "name": "mobile-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\mobile-844x390-00-empty.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\mobile-844x390-01-batch-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\mobile-844x390-02-confirmed.png"
+      ],
+      "acks": [
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "c9156543-f7fb-49a0-b096-455a8183a3e7",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "madera",
+          "count": 2
+        }
+      ],
+      "insufficientBatch": "three-unit choice disabled with only two logs; no request or debit",
+      "preview": {
+        "qty": 2,
+        "owned": "2",
+        "needed": "2",
+        "space": "8 / 10",
+        "confirmDisabled": false,
+        "stage": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "layout": {
+        "insideViewport": true,
+        "controlsInsideViewport": true
+      },
+      "conservation": {
+        "before": {
+          "tronco": 2,
+          "piedra": 1
+        },
+        "after": {
+          "piedra": 1,
+          "madera": 2
+        },
+        "revision": 4,
+        "goldUnchanged": true
+      },
+      "reconnect": "exact crafted cargo and revision restored from signed online save"
+    },
+    {
+      "name": "portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\portrait-390x844-00-empty.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\portrait-390x844-01-batch-ready.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\d08c7b-workbench\\portrait-390x844-02-confirmed.png"
+      ],
+      "acks": [
+        {
+          "type": "resource",
+          "to": 26,
+          "op": "craft",
+          "opId": "e28338a1-914c-4a7f-bfe4-728c409e7f89",
+          "ok": true,
+          "why": "",
+          "rev": 4,
+          "good": "madera",
+          "count": 2
+        }
+      ],
+      "insufficientBatch": "three-unit choice disabled with only two logs; no request or debit",
+      "preview": {
+        "qty": 2,
+        "owned": "2",
+        "needed": "2",
+        "space": "8 / 10",
+        "confirmDisabled": false,
+        "stage": {
+          "width": 844,
+          "height": 390
+        }
+      },
+      "layout": {
+        "insideViewport": true,
+        "controlsInsideViewport": true
+      },
+      "conservation": {
+        "before": {
+          "tronco": 2,
+          "piedra": 1
+        },
+        "after": {
+          "piedra": 1,
+          "madera": 2
+        },
+        "revision": 4,
+        "goldUnchanged": true
+      },
+      "reconnect": "exact crafted cargo and revision restored from signed online save"
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

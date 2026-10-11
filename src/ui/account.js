@@ -1,0 +1,252 @@
+// Comic account dossier. Auth owns the session; the title owns the current name and appearance.
+import { WalletPanel } from './wallet.js';
+import { t, text, rich, createLanguagePicker, onLocaleChange } from '../core/i18n.js';
+const CREST = `<svg viewBox="0 0 160 160" aria-hidden="true" focusable="false"><path d="M24 126 127 23l11 12L36 139Zm0-91 12-12 103 103-12 13Z" fill="#edf6eb" stroke="#161626" stroke-width="7"/><path d="M43 58c0-47 74-47 74 0v27l-17 15v20H60v-20L43 85Z" fill="#fff1bd" stroke="#161626" stroke-width="8" stroke-linejoin="round"/><path d="m43 53 70-22 13 19-81 24Z" fill="#ed5b41" stroke="#161626" stroke-width="7"/><path d="m59 73 16 5-9 13-12-5Zm27 6 17-8 2 17-14 3Z" fill="#161626"/><path d="m79 88-8 12h16Z" fill="#161626"/><path d="M71 111v10m17-10v10" stroke="#161626" stroke-width="5"/><path d="m18 21 13 2-2 13-12-3Zm115 117 10-12 10 11-11 10Z" fill="#ffc53b" stroke="#161626" stroke-width="4"/></svg>`;
+
+export class AccountPanel {
+  constructor(parent, auth, { hasLegacySave = () => false, onChange = null, looks = [],
+    getCharacter = () => ({ name: 'Grumete', skin: 0 }), onCharacterChange = null, onReady = null, wallet = null } = {}) {
+    Object.assign(this, { auth, hasLegacySave, onChange, looks, getCharacter, onCharacterChange, onReady });
+    this.boarding = false; this.import = false; this.mode = 'login';
+    this.notice = ''; this.noticeTone = ''; this.confirmationEmail = ''; this.portraits = new Map();
+    this.container = parent?.matches?.('.title-actions') ? parent : parent?.querySelector?.('.title-actions');
+    if (!this.container) throw new Error('AccountPanel requiere el contenedor .title-actions');
+    this.launch = document.createElement('div'); this.launch.className = 'account-launch';
+    this.launch.innerHTML = `<button type="button" class="account-open" aria-haspopup="dialog"><span aria-hidden="true">✦</span> ${text('account.open')}</button><span class="account-status" aria-live="polite"></span>`;
+    (this.container.querySelector('.title-net') || this.container).append(this.launch);
+    this.openButton = this.launch.querySelector('.account-open'); this.status = this.launch.querySelector('.account-status');
+    this.overlay = document.createElement('div'); this.overlay.className = 'account-overlay'; this.overlay.hidden = true;
+    this.overlay.innerHTML = `
+      <section class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="account-title" tabindex="-1">
+        <header class="account-masthead">
+          <span class="account-brand">MAREA <b>NEGRA</b></span>
+          <div class="account-steps" aria-label="Pasos" data-l10n-aria-label="account.steps"><span class="account-step-account">01 <b>${text('account.stepAccount')}</b></span><i aria-hidden="true">→</i><span class="account-step-pirate">02 <b>${text('account.stepPirate')}</b></span></div>
+          <button class="account-close" type="button" aria-label="Cerrar" data-l10n-aria-label="account.close">×</button>
+        </header>
+        <div class="account-layout">
+          <aside class="account-cover" aria-hidden="true">
+            <div class="account-cover-label">${text('account.island')}</div><div class="account-crest">${CREST}</div>
+            <h3>${rich('account.coverTitle')}</h3><div class="account-cover-mobile">${text('account.coverMobile')}</div><div class="account-cover-tag">${text('account.coverTag')}</div>
+            <p>${rich('account.coverCopy')}</p><span class="account-issue">${text('account.issue')}</span>
+          </aside>
+          <div class="account-content">
+            <span class="account-kicker">${text('account.kicker.entry')}</span><h2 id="account-title">${rich('account.title.login')}</h2>
+            <p class="account-copy">${text('account.copy.login')}</p>
+            <div class="account-tabs" role="group" aria-label="Acceso a la cuenta" data-l10n-aria-label="account.accessLabel">
+              <button class="account-tab" data-mode="login" type="button" aria-pressed="true">${text('account.tab.login')}</button>
+              <button class="account-tab" data-mode="signup" type="button" aria-pressed="false">${text('account.tab.signup')}</button>
+            </div>
+            <form class="account-form" novalidate>
+              <label class="account-field"><span>${text('account.email')}</span><input name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="${t('account.emailPlaceholder')}" data-l10n-placeholder="account.emailPlaceholder" required></label>
+              <label class="account-field"><span>${text('account.password')}</span><span class="account-password"><input name="password" type="password" autocomplete="current-password" placeholder="${t('account.passwordPlaceholder')}" data-l10n-placeholder="account.passwordPlaceholder" required><button class="account-password-toggle" type="button" aria-label="${t('account.passwordShow')}" data-l10n-aria-label="account.passwordShow" aria-pressed="false">${text('account.show')}</button></span></label>
+              <label class="account-field account-confirm-field" hidden><span>${text('account.confirmPassword')}</span><input name="confirmPassword" type="password" autocomplete="new-password" placeholder="${t('account.onceMore')}" data-l10n-placeholder="account.onceMore"></label>
+              <p class="account-password-hint" hidden>${text('account.passwordHint')}</p>
+              <button class="account-submit" type="submit" data-action="login"><span>${text('account.submitLogin')}</span><i aria-hidden="true">&#8594;</i></button>
+            </form>
+            <div class="account-confirmation" hidden>
+              <span class="account-mail-mark" aria-hidden="true">&#9993;</span><h3>${text('account.confirmationTitle')}</h3>
+              <p>${rich('account.confirmationCopy')}</p>
+              <p class="account-confirmation-note">${text('account.confirmationNote')}</p>
+              <button class="account-confirmation-login account-primary" type="button">${text('account.confirmationLogin')}</button>
+              <button class="account-resend account-text-button" type="button">${text('account.resend')}</button>
+            </div>
+            <div class="account-signed" hidden>
+              <div class="account-character-preview"><div class="account-character-art"><img class="account-character-portrait" alt="" hidden><span aria-hidden="true">&#10022;</span></div><div><span class="account-character-label">${text('account.lookLabel')}</span><h3 class="account-character-look"></h3><p>${text('account.continue')}</p></div></div>
+              <label class="account-field"><span>${text('account.characterName')}</span><input name="characterName" maxlength="16" autocomplete="off" spellcheck="false" placeholder="${t('account.defaultName')}"></label>
+              <div class="account-crew-grid" role="group" aria-label="Aspecto del pirata" data-l10n-aria-label="account.pirateLook"></div>
+              <div class="account-import" hidden><label><input class="account-import-toggle" type="checkbox"><span>${text('account.import')}</span></label><p>${text('account.importNote')}</p></div>
+              <button class="account-ready account-primary" type="button">${text('account.ready')} <i aria-hidden="true">&#8594;</i></button>
+              <div class="account-signed-footer"><p class="account-email"></p><button class="account-logout account-text-button" type="button">${text('account.logout')}</button></div>
+            </div>
+            <p class="account-feedback" role="status" aria-live="polite" hidden></p>
+            <footer class="account-guest-footer"><button class="account-guest account-text-button" type="button">${text('account.guest')} <span aria-hidden="true">&#8598;</span></button><p class="account-guest-note">${text('account.guestNote')}</p></footer>
+          </div>
+        </div>
+      </section>`;
+    document.body.append(this.overlay);
+    this.wallet = wallet;
+    this.walletPanel = wallet ? new WalletPanel(this.overlay.querySelector('.account-signed'), wallet) : null;
+    this.dialog = this.overlay.querySelector('.account-dialog'); this.form = this.overlay.querySelector('.account-form');
+    this.feedback = this.overlay.querySelector('.account-feedback'); this.importToggle = this.overlay.querySelector('.account-import-toggle');
+    this.languagePicker = createLanguagePicker(); this.overlay.querySelector('.account-masthead').append(this.languagePicker);
+    this.characterName = this.overlay.querySelector('[name=characterName]'); this.buildLooks();
+    this.openButton.addEventListener('click', () => this.open());
+    this.overlay.querySelector('.account-close').addEventListener('click', () => this.close());
+    this.overlay.addEventListener('pointerdown', (event) => { if (event.target === this.overlay) this.close(); });
+    // Handle keys at the overlay so Escape/Tab also work from inside either form.
+    this.overlay.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if (event.key === 'Escape') { event.preventDefault(); this.close(); }
+      if (event.key !== 'Tab') return;
+      const controls = [...this.dialog.querySelectorAll('button, input')].filter((control) => !control.disabled && !control.closest('[hidden]'));
+      const first = controls[0], last = controls.at(-1);
+      if (!first) { event.preventDefault(); this.dialog.focus(); }
+      else if (event.shiftKey && (document.activeElement === first || document.activeElement === this.dialog)) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    this.form.addEventListener('submit', (event) => { event.preventDefault(); this.submit(); });
+    this.overlay.querySelectorAll('.account-tab').forEach((tab) => tab.addEventListener('click', () => this.setMode(tab.dataset.mode)));
+    this.overlay.querySelector('.account-password-toggle').addEventListener('click', () => {
+      const show = this.form.elements.password.type === 'password'; this.form.elements.password.type = show ? 'text' : 'password'; this.renderPasswordToggle(show);
+    });
+    this.overlay.querySelector('.account-confirmation-login').addEventListener('click', () => this.setMode('login', true));
+    this.overlay.querySelector('.account-resend').addEventListener('click', () => this.resend());
+    this.overlay.querySelector('.account-logout').addEventListener('click', () => this.logout());
+    this.characterName.addEventListener('input', () => this.changeCharacter({ name: this.characterName.value.slice(0, 16) }));
+    this.characterName.addEventListener('change', () => { if (!this.characterName.value.trim()) this.changeCharacter({ name: 'Grumete' }); this.renderCharacter(); });
+    this.overlay.querySelector('.account-ready').addEventListener('click', () => {
+      if (this.boarding || this.auth.state.busy || !this.auth.state.signedIn) return;
+      if (!this.characterName.value.trim()) this.changeCharacter({ name: 'Grumete' });
+      this.close(); this.onReady?.();
+    });
+    this.importToggle.addEventListener('change', () => { this.import = this.importToggle.checked; this.emitChange(); });
+    this.overlay.querySelector('.account-guest').addEventListener('click', () => {
+      if (this.boarding || this.auth.state.busy) return; this.auth.useGuest(); this.close();
+    });
+    this.wasSignedIn = false;
+    this.unsubscribe = auth.subscribe((state) => { this.render(state); this.emitChange(); });
+    this.unsubscribeLocale = onLocaleChange(() => {
+      this.refreshLookText();
+      const confirmation = this.form.elements.confirmPassword;
+      if (confirmation.validity.customError) confirmation.setCustomValidity(t('account.error.passwordMismatch'));
+      this.render(this.auth.state, true);
+    });
+  }
+
+  buildLooks() {
+    const grid = this.overlay.querySelector('.account-crew-grid');
+    for (const look of this.looks) {
+      const button = document.createElement('button'); button.className = 'account-look'; button.type = 'button'; button.dataset.skin = look.id;
+      button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', t(`look.${look.name}`));
+      button.innerHTML = '<span class="account-look-art"><img alt="" hidden><i aria-hidden="true">✦</i></span><span class="account-look-name"></span>';
+      button.querySelector('.account-look-name').textContent = t(`look.${look.name}`);
+      if (look.color) button.style.setProperty('--look-color', look.color);
+      button.addEventListener('click', () => { this.changeCharacter({ skin: look.id }); this.renderCharacter(); }); grid.append(button);
+    }
+  }
+
+  refreshLookText() {
+    for (const look of this.looks) {
+      const button = this.overlay.querySelector(`.account-look[data-skin="${look.id}"]`);
+      if (!button) continue;
+      const name = t(`look.${look.name}`);
+      button.setAttribute('aria-label', name);
+      button.querySelector('.account-look-name').textContent = name;
+    }
+  }
+
+  setPortraits(render) {
+    for (const look of this.looks) {
+      const canvas = render(look.id); if (!canvas) continue;
+      const image = canvas.toDataURL(); this.portraits.set(look.id, image);
+      const thumb = this.overlay.querySelector(`.account-look[data-skin="${look.id}"] img`); thumb.src = image; thumb.hidden = false;
+    }
+    this.renderCharacter();
+  }
+
+  changeCharacter(patch) { this.onCharacterChange?.(patch); }
+  renderCharacter() {
+    const character = this.getCharacter(), look = this.looks.find((item) => item.id === character.skin) || this.looks[0];
+    if (document.activeElement !== this.characterName) this.characterName.value = character.name || t('account.defaultName');
+    this.overlay.querySelector('.account-character-look').textContent = look ? t(`look.${look.name}`) : t('account.defaultLook');
+    for (const button of this.overlay.querySelectorAll('.account-look')) button.setAttribute('aria-pressed', String(Number(button.dataset.skin) === look?.id));
+    const portrait = this.overlay.querySelector('.account-character-portrait'), src = this.portraits.get(look?.id); portrait.hidden = !src; if (src) portrait.src = src;
+  }
+
+  setMode(mode, focus = false) {
+    if (this.auth.state.busy || this.boarding) return;
+    this.mode = mode === 'signup' ? 'signup' : 'login'; this.notice = ''; this.noticeTone = ''; this.confirmationEmail = '';
+    this.auth.dismissError();
+    this.clearPasswords(); this.render(this.auth.state); if (focus) this.form.elements.password.focus({ preventScroll: true });
+  }
+  importRequested() { return Boolean(this.auth.state.signedIn && this.hasLegacySave() && this.import); }
+  emitChange() { this.onChange?.({ state: { ...this.auth.state }, importRequested: this.importRequested() }); }
+
+  render(state, localeChange = false) {
+    const signed = state.signedIn;
+    if (signed) this.confirmationEmail = '';
+    if (!signed && this.wasSignedIn) { this.mode = 'login'; this.notice = ''; this.noticeTone = ''; }
+    const confirming = !signed && Boolean(this.confirmationEmail), signup = this.mode === 'signup', importVisible = Boolean(signed && this.hasLegacySave());
+    if (!importVisible) this.import = false; this.importToggle.checked = this.import;
+    this.overlay.querySelector('.account-import').hidden = !importVisible;
+    this.form.hidden = signed || confirming || !state.enabled;
+    this.overlay.querySelector('.account-tabs').hidden = signed || confirming || !state.enabled;
+    this.overlay.querySelector('.account-confirmation').hidden = !confirming; this.overlay.querySelector('.account-signed').hidden = !signed;
+    this.dialog.dataset.screen = signed ? 'pirate' : confirming ? 'confirmation' : signup ? 'signup' : 'login'; this.dialog.setAttribute('aria-busy', String(state.busy));
+    this.overlay.querySelector('#account-title').innerHTML = t(signed ? 'account.title.pirate' : confirming ? 'account.title.confirm' : signup ? 'account.title.signup' : 'account.title.login');
+    this.overlay.querySelector('.account-kicker').textContent = t(signed ? 'account.kicker.pirate' : confirming ? 'account.kicker.confirm' : 'account.kicker.login');
+    this.overlay.querySelector('.account-copy').textContent = t(signed ? 'account.copy.pirate' : confirming ? 'account.copy.confirm' : !state.enabled ? 'account.copy.unavailable' : signup ? 'account.copy.signup' : 'account.copy.login');
+    for (const tab of this.overlay.querySelectorAll('.account-tab')) tab.setAttribute('aria-pressed', String(tab.dataset.mode === this.mode));
+    this.overlay.querySelector('.account-confirm-field').hidden = !signup; this.form.elements.confirmPassword.required = signup;
+    const submit = this.overlay.querySelector('.account-submit'); submit.dataset.action = this.mode;
+    submit.querySelector('span').textContent = t(state.busy ? 'account.submitBusy' : signup ? 'account.submitSignup' : 'account.submitLogin');
+    this.overlay.querySelector('.account-email').textContent = state.email || t('account.signedIn'); this.overlay.querySelector('.account-confirmation-email').textContent = this.confirmationEmail;
+    this.overlay.querySelector('.account-guest-footer').hidden = signed;
+    this.status.textContent = signed ? state.email : state.guestChoice ? t('account.statusGuest') : state.errorKey ? t(state.errorKey) : state.error || t(state.enabled ? 'account.statusReady' : 'account.statusUnavailable');
+    this.feedback.textContent = this.notice ? t(this.notice) : state.errorKey ? t(state.errorKey) : state.error || ''; this.feedback.hidden = !this.feedback.textContent; this.feedback.dataset.tone = this.notice ? this.noticeTone : 'error';
+    this.renderCharacter(); this.setControlsDisabled(this.boarding || state.busy);
+    if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.refreshWallet();
+    if (!localeChange && state.busy && !this.overlay.hidden) this.dialog.focus({ preventScroll: true });
+    if (!localeChange && signed && !state.busy && !this.wasSignedIn && !this.overlay.hidden) this.characterName.focus({ preventScroll: true });
+    if (!state.busy) this.wasSignedIn = signed;
+  }
+
+  renderPasswordToggle(show) {
+    const button = this.overlay.querySelector('.account-password-toggle'); button.setAttribute('aria-pressed', String(show));
+    button.setAttribute('aria-label', t(show ? 'account.passwordHide' : 'account.passwordShow')); button.textContent = t(show ? 'account.hide' : 'account.show');
+  }
+  clearPasswords() {
+    this.form.elements.password.value = ''; this.form.elements.confirmPassword.value = ''; this.form.elements.password.type = 'password';
+    this.renderPasswordToggle(false); this.form.elements.confirmPassword.setCustomValidity('');
+  }
+  setControlsDisabled(disabled) {
+    this.openButton.disabled = Boolean(disabled);
+    for (const control of this.overlay.querySelectorAll('button, input')) {
+      if (control.matches('[data-locale]')) continue;
+      control.disabled = Boolean(disabled);
+    }
+    this.walletPanel?.setBlocked(disabled);
+    this.wallet?.setBlocked(disabled);
+  }
+  open() {
+    if (this.boarding || this.auth.state.busy) return; this.notice = ''; this.noticeTone = ''; this.overlay.hidden = false; this.render(this.auth.state);
+    const focus = this.auth.state.signedIn ? this.characterName : this.confirmationEmail || !this.auth.state.enabled ? this.dialog : this.form.elements.email; focus.focus({ preventScroll: true });
+    this.refreshWallet();
+  }
+  refreshWallet() {
+    if (this.wallet) void this.wallet.init().then((enabled) => {
+      if (enabled && !this.overlay.hidden && this.auth.state.signedIn) return this.wallet.refresh();
+    }).catch(() => {});
+  }
+  close() { this.wallet?.cancel(); this.clearPasswords(); if (this.overlay.hidden) return; this.overlay.hidden = true; this.openButton.focus({ preventScroll: true }); }
+  hide() { this.close(); }
+  setBoarding(on) { this.boarding = Boolean(on); if (this.boarding) this.close(); this.setControlsDisabled(this.boarding || this.auth.state.busy); }
+
+  async submit() {
+    if (this.boarding || this.auth.state.busy || !this.auth.state.enabled) return;
+    const email = this.form.elements.email, password = this.form.elements.password, confirm = this.form.elements.confirmPassword;
+    email.value = email.value.trim(); confirm.setCustomValidity(''); this.notice = ''; this.noticeTone = 'error';
+    if (!email.validity.valid || !password.value || (this.mode === 'signup' && !confirm.value)) {
+      this.notice = 'account.notice.fields'; this.render(this.auth.state); this.form.reportValidity(); return;
+    }
+    if (this.mode === 'signup' && password.value !== confirm.value) {
+      this.notice = 'account.error.passwordMismatch'; confirm.setCustomValidity(t(this.notice)); this.render(this.auth.state); confirm.focus(); return;
+    }
+    try {
+      const result = this.mode === 'signup' ? await this.auth.signup(email.value, password.value) : await this.auth.login(email.value, password.value);
+      if (result.ok && result.confirmationPending) { this.confirmationEmail = email.value; this.notice = 'account.notice.confirm'; this.noticeTone = 'success'; }
+    } finally {
+      this.clearPasswords(); this.render(this.auth.state);
+      if (!this.overlay.hidden && this.confirmationEmail) this.overlay.querySelector('.account-confirmation-login').focus({ preventScroll: true });
+      else if (!this.overlay.hidden && !this.auth.state.signedIn) password.focus({ preventScroll: true });
+    }
+  }
+  async resend() {
+    if (!this.confirmationEmail || this.auth.state.busy || this.boarding) return; this.notice = '';
+    const result = await this.auth.resend(this.confirmationEmail); if (result.ok) { this.notice = 'account.notice.resend'; this.noticeTone = 'success'; } this.render(this.auth.state);
+  }
+  async logout() {
+    this.notice = ''; this.noticeTone = ''; this.clearPasswords(); const result = await this.auth.logout(); this.render(this.auth.state); if (result.ok) this.form.elements.email.focus({ preventScroll: true });
+  }
+  destroy() { this.clearPasswords(); this.unsubscribe?.(); this.unsubscribeLocale?.(); this.walletPanel?.destroy(); this.wallet?.destroy(); this.launch.remove(); this.overlay.remove(); }
+}

@@ -1,0 +1,80 @@
+{
+  "scope": "Character artifacts only; game application remains pending",
+  "catalogRevision": 19,
+  "registeredRows": [
+    {
+      "id": "char-base-male",
+      "state": "prepared"
+    },
+    {
+      "id": "char-base-female",
+      "state": "prepared"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/art/source/characters-base-v0/male-concept-v1.png",
+      "bytes": 1866059,
+      "sha256": "74c602a02d35d210102c5a3848d2c0c12dfe49e9f268e60625a1f1d0f77ee268"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/plan-snapshot-v1.md",
+      "bytes": 11715,
+      "sha256": "6e7ad80221b3147d9778bccafd05684c081483cfee31ca86ffffb183d95d2d88"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/male-base-v0.glb",
+      "bytes": 444592,
+      "sha256": "b61d2cd29475e6cc198e90b314e8b5f9c8e8e97ebd58e07ac2cd1e703006b747"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/models-receipt.json",
+      "bytes": 4454,
+      "sha256": "5a1f81b317f536aee031fc2028c0ff95b9334c2182b0fff597e1ea98a6282f6d"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/prompts.json",
+      "bytes": 5961,
+      "sha256": "b07fc97ff7e27f8f3c8d214f6199dab6e37d6b4152146e759e921b9652ab464a"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/concepts-receipt.json",
+      "bytes": 1375,
+      "sha256": "109bdc597c646d1004474500b88074dccf1b1a17cd0d89d0f13869d14d8e2245"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/generator-snapshot-v0.mjs.txt",
+      "bytes": 24177,
+      "sha256": "009b7096fd85bade41ba64c9b4412363f10a16ec0dc4eb5eec251535e0a8725a"
+    },
+    {
+      "path": "docs/art/characters-base-v0/desktop-male-front-v0.png",
+      "bytes": 365154,
+      "sha256": "6c13946822f4989121ff9a924ccf24008bb6c041a2399df2f41000770e011948"
+    },
+    {
+      "path": "docs/art/characters-base-v0/browser-evidence-v0.json",
+      "bytes": 9127,
+      "sha256": "72d144dbf87d9f84df95047a58edaa0006400fe00602af3829c1a1fa8804c4a4"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/female-concept-v1.png",
+      "bytes": 1817190,
+      "sha256": "4cca04754e693776fca0c099794fb9ffe76cc9009333259388a74a3dc58ae0a7"
+    },
+    {
+      "path": "docs/art/source/characters-base-v0/female-base-v0.glb",
+      "bytes": 444608,
+      "sha256": "9f1d4f507b68f5d16cfc91bc1faf11c88fd95dfeae168a882f90f9db0dba1e5c"
+    },
+    {
+      "path": "docs/art/characters-base-v0/desktop-female-front-v0.png",
+      "bytes": 363178,
+      "sha256": "0d3107e928b5dcf6621cbb16479203a1556750f1c4599c264ac129193825c999"
+    }
+  ],
+  "sourceSnapshotMatches": true,
+  "planSnapshotMatches": true,
+  "conceptHashesMatch": true,
+  "browserCases": 4
+}

@@ -1,0 +1,1670 @@
+{
+  "generatedAt": "2026-10-09T13:41:49.599Z",
+  "purpose": "Verify that the normal-game live naval HUD uses the reference instrument layout, stays within desktop/touch stages, and keeps its action slots and helm/deck lifecycle usable.",
+  "harness": "One ephemeral dev:false GameHost with an in-memory store per viewport; normal game UI and real owner helm commands; local Three.js/GSAP/font routes; no .env, SQL, external services, or performance claim.",
+  "fixture": "After a fresh guest joins, the trusted QA fixture positions the owner at the existing owned starter helm and broadcasts the snapshot. Mount, deck mode, return to helm, and dock use the normal game controls and server commands. No fake enemies, damage, skills, or cargo are created.",
+  "protocolVersion": 32,
+  "performanceClaim": false,
+  "viewports": [
+    {
+      "name": "live-hud-desktop-1365x768",
+      "width": 1365,
+      "height": 768,
+      "touch": false,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-00-before-helm.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-01-helm-mounted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-02-deck-mode.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-03-docked.png"
+      ],
+      "serverNavalEvents": [
+        {
+          "type": "navalPilot",
+          "op": "mount",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "helm",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": null,
+          "ok": null,
+          "why": "dock",
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "dock",
+          "ok": true,
+          "why": null,
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        }
+      ],
+      "fixture": {
+        "raftId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "kind": "owner positioned at existing server-owned starter helm; no raft/profile edits"
+      },
+      "mounted": {
+        "viewport": {
+          "width": 1365,
+          "height": 768
+        },
+        "stage": {
+          "width": 1365,
+          "height": 768,
+          "rotated": false
+        },
+        "touch": false,
+        "stripDisplay": "none",
+        "root": {
+          "visible": true,
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 1365,
+            "height": 768
+          },
+          "local": {
+            "left": 0,
+            "top": 0,
+            "right": 1365,
+            "bottom": 768
+          }
+        },
+        "gauge": {
+          "visible": true,
+          "box": {
+            "x": 1201,
+            "y": 598,
+            "width": 166,
+            "height": 166
+          },
+          "local": {
+            "left": 1201,
+            "top": 598,
+            "right": 1367,
+            "bottom": 764
+          }
+        },
+        "hull": {
+          "visible": true,
+          "box": {
+            "x": 98,
+            "y": 725,
+            "width": 210,
+            "height": 25
+          },
+          "local": {
+            "left": 98,
+            "top": 725,
+            "right": 308,
+            "bottom": 750
+          }
+        },
+        "wind": {
+          "visible": true,
+          "box": {
+            "x": 1071,
+            "y": 92,
+            "width": 110,
+            "height": 50
+          },
+          "local": {
+            "left": 1071,
+            "top": 92,
+            "right": 1181,
+            "bottom": 142
+          }
+        },
+        "compass": {
+          "visible": true,
+          "box": {
+            "x": 1209,
+            "y": 28,
+            "width": 126,
+            "height": 126
+          },
+          "local": {
+            "left": 1209,
+            "top": 28,
+            "right": 1335,
+            "bottom": 154
+          }
+        },
+        "sticks": [
+          {
+            "label": "move",
+            "box": null
+          },
+          {
+            "label": "look",
+            "box": null
+          }
+        ],
+        "slots": [
+          {
+            "index": 0,
+            "label": "Habilidad 1: Ráfaga",
+            "text": "Ráfaga",
+            "shortcut": "Q",
+            "ariaShortcut": "Q",
+            "rect": {
+              "x": 541.5,
+              "y": 628,
+              "width": 86,
+              "height": 90,
+              "local": {
+                "left": 541.5,
+                "top": 628,
+                "right": 627.5,
+                "bottom": 718
+              }
+            }
+          },
+          {
+            "index": 1,
+            "label": "Habilidad 2: Mochila",
+            "text": "Mochila",
+            "shortcut": "I",
+            "ariaShortcut": "I",
+            "rect": {
+              "x": 639.5,
+              "y": 628,
+              "width": 86,
+              "height": 90,
+              "local": {
+                "left": 639.5,
+                "top": 628,
+                "right": 725.5,
+                "bottom": 718
+              }
+            }
+          },
+          {
+            "index": 2,
+            "label": "Habilidad 3: Cubierta",
+            "text": "Cubierta",
+            "shortcut": "E",
+            "ariaShortcut": "E",
+            "rect": {
+              "x": 737.5,
+              "y": 628,
+              "width": 86,
+              "height": 90,
+              "local": {
+                "left": 737.5,
+                "top": 628,
+                "right": 823.5,
+                "bottom": 718
+              }
+            }
+          }
+        ],
+        "actionIds": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "route": {
+          "available": true,
+          "active": false,
+          "summaryVisible": true,
+          "summaryText": "Práctica opcional0 impactos · 0 esquivados · 0 HPSin botín ni XP · hasta 24 HP reparables · tu carga se conservaProbar ruta"
+        },
+        "carryingText": "Porte libre 16.0 uM · bodega 0/6 uV · Puerto 0 m",
+        "voyage": {
+          "active": true,
+          "phase": "sailing"
+        },
+        "capacity": {
+          "mode": "sailing",
+          "status": "ready",
+          "freeMass": 16,
+          "holdVolume": 0,
+          "holdCap": 6
+        },
+        "pointers": 0,
+        "errors": []
+      },
+      "sailingShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-01-helm-mounted.png",
+      "desktopBagShortcut": true,
+      "desktopCapture": {
+        "capture": true,
+        "keyDown": true
+      },
+      "cameraAction": {
+        "calls": 1,
+        "bagClicks": 0,
+        "navalActive": true,
+        "pointers": 0
+      },
+      "modeBefore": {
+        "index": 2,
+        "binding": "mode",
+        "label": "Cubierta",
+        "actionDisabled": false,
+        "actionAvailable": true,
+        "enabled": true,
+        "slotDisabled": false,
+        "ariaDisabled": "false",
+        "unavailable": "false",
+        "modeAction": {
+          "key": "E",
+          "verb": "Caminar"
+        },
+        "inputEnabled": true,
+        "paused": false,
+        "naval": true,
+        "deck": false,
+        "commandsSoFar": 1,
+        "traceLength": 9
+      },
+      "modeAfter": {
+        "deckActive": true,
+        "navalActive": true,
+        "voyage": {
+          "active": true,
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "touchEnabled": true,
+        "inputEnabled": true,
+        "pointers": 0,
+        "commandTrace": [
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "mount",
+            "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1"
+          },
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "walk",
+            "epoch": 1
+          }
+        ],
+        "actionTrace": [
+          {
+            "at": 12037,
+            "kind": "pointerdown",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "mouse",
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 12037.199999999953,
+            "kind": "pointerup",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "mouse",
+            "detail": 0,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 12037.300000000047,
+            "kind": "activateSlot",
+            "slot": 2,
+            "id": "mode",
+            "label": "Cubierta",
+            "disabled": false,
+            "enabled": true,
+            "disposed": false
+          },
+          {
+            "at": 12037.300000000047,
+            "kind": "onAction",
+            "id": "mode",
+            "enabled": true,
+            "naval": true,
+            "deck": false
+          },
+          {
+            "at": 12037.600000000093,
+            "kind": "runAction",
+            "id": "mode",
+            "canAct": true,
+            "interaction": [
+              {
+                "key": "G",
+                "verb": "Amarrar",
+                "disabled": false
+              },
+              {
+                "key": "E",
+                "verb": "Caminar",
+                "disabled": false
+              }
+            ],
+            "target": {
+              "key": "E",
+              "verb": "Caminar",
+              "disabled": false
+            },
+            "naval": true,
+            "deck": false,
+            "returned": null,
+            "navalAfter": true,
+            "deckAfter": false
+          },
+          {
+            "at": 12037.699999999953,
+            "kind": "click",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "mouse",
+            "detail": 1,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "naval": {
+          "active": true,
+          "epoch": 1,
+          "state": {
+            "tick": 762,
+            "x": 127.62862879558105,
+            "z": 100.84429673617215,
+            "yaw": 0.9097531579442095,
+            "vx": 0,
+            "vz": 0,
+            "omega": 0
+          }
+        },
+        "deck": {
+          "active": true,
+          "epoch": 1
+        }
+      },
+      "modeWaitError": null,
+      "modeServerEvents": [
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "entity": 26
+        }
+      ],
+      "deck": {
+        "deckActive": true,
+        "navalActive": true,
+        "pointers": 0,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "actionIds": [
+          "bag",
+          "mode",
+          "center",
+          "map"
+        ],
+        "routeTrialVisible": false,
+        "gustText": "Toma el timón",
+        "serverRouteContext": {
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "epoch": 1,
+          "helm": false,
+          "ashore": false,
+          "bodyPresent": true
+        }
+      },
+      "deckShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-02-deck-mode.png",
+      "helmReturn": {
+        "clientActive": true,
+        "serverRouteContext": {
+          "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+          "epoch": 1,
+          "helm": true,
+          "bodyPresent": true
+        },
+        "serverEvents": [
+          {
+            "type": "navalPilot",
+            "op": "helm",
+            "ok": true,
+            "why": null,
+            "active": true,
+            "mode": null,
+            "epoch": 1,
+            "shipId": "482b0fca-564c-4541-ba29-ef941b8ef61e:r1",
+            "entity": 26
+          }
+        ]
+      },
+      "returnedToHelm": true,
+      "pauseCleanup": {
+        "open": true,
+        "pointers": 0,
+        "navalActive": true
+      },
+      "dockReady": {
+        "canDock": true,
+        "phase": "sailing",
+        "mode": "sailing"
+      },
+      "docked": {
+        "voyageActive": false,
+        "navalActive": false,
+        "touchDisposed": false,
+        "pointers": 0,
+        "errors": []
+      },
+      "dockShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-desktop-1365x768-03-docked.png",
+      "disposal": {
+        "blocked": true,
+        "restored": true,
+        "rootRemoved": true
+      }
+    },
+    {
+      "name": "live-hud-touch-landscape-844x390",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-00-before-helm.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-01-helm-mounted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-02-deck-mode.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-03-docked.png"
+      ],
+      "serverNavalEvents": [
+        {
+          "type": "navalPilot",
+          "op": "mount",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "helm",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": null,
+          "ok": null,
+          "why": "dock",
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "dock",
+          "ok": true,
+          "why": null,
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        }
+      ],
+      "fixture": {
+        "raftId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "kind": "owner positioned at existing server-owned starter helm; no raft/profile edits"
+      },
+      "mounted": {
+        "viewport": {
+          "width": 844,
+          "height": 390
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": false
+        },
+        "touch": true,
+        "stripDisplay": "none",
+        "root": {
+          "visible": true,
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 844,
+            "height": 390
+          },
+          "local": {
+            "left": 0,
+            "top": 0,
+            "right": 844,
+            "bottom": 390
+          }
+        },
+        "gauge": {
+          "visible": true,
+          "box": {
+            "x": 710,
+            "y": 254,
+            "width": 118,
+            "height": 118
+          },
+          "local": {
+            "left": 710,
+            "top": 254,
+            "right": 828,
+            "bottom": 372
+          }
+        },
+        "hull": {
+          "visible": true,
+          "box": {
+            "x": 80,
+            "y": 73,
+            "width": 162,
+            "height": 22
+          },
+          "local": {
+            "left": 80,
+            "top": 73,
+            "right": 242,
+            "bottom": 95
+          }
+        },
+        "wind": {
+          "visible": true,
+          "box": {
+            "x": 622,
+            "y": 62,
+            "width": 102,
+            "height": 50
+          },
+          "local": {
+            "left": 622,
+            "top": 62,
+            "right": 724,
+            "bottom": 112
+          }
+        },
+        "compass": {
+          "visible": true,
+          "box": {
+            "x": 742,
+            "y": 12,
+            "width": 84,
+            "height": 84
+          },
+          "local": {
+            "left": 742,
+            "top": 12,
+            "right": 826,
+            "bottom": 96
+          }
+        },
+        "sticks": [
+          {
+            "label": "move",
+            "box": {
+              "x": 24,
+              "y": 268,
+              "width": 108,
+              "height": 108,
+              "local": {
+                "left": 24,
+                "top": 268,
+                "right": 132,
+                "bottom": 376
+              }
+            }
+          },
+          {
+            "label": "look",
+            "box": {
+              "x": 638,
+              "y": 315,
+              "width": 52,
+              "height": 52,
+              "local": {
+                "left": 638,
+                "top": 315,
+                "right": 690,
+                "bottom": 367
+              }
+            }
+          }
+        ],
+        "slots": [
+          {
+            "index": 0,
+            "label": "Habilidad 1: Ráfaga",
+            "text": "Ráfaga",
+            "shortcut": "Q",
+            "ariaShortcut": "Q",
+            "rect": {
+              "x": 660.859375,
+              "y": 240,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 660.859375,
+                "top": 240,
+                "right": 710.859375,
+                "bottom": 290
+              }
+            }
+          },
+          {
+            "index": 1,
+            "label": "Habilidad 2: Mochila",
+            "text": "Mochila",
+            "shortcut": "I",
+            "ariaShortcut": "I",
+            "rect": {
+              "x": 703.421875,
+              "y": 200.984375,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 703.421875,
+                "top": 200.984375,
+                "right": 753.421875,
+                "bottom": 250.984375
+              }
+            }
+          },
+          {
+            "index": 2,
+            "label": "Habilidad 3: Cubierta",
+            "text": "Cubierta",
+            "shortcut": "E",
+            "ariaShortcut": "E",
+            "rect": {
+              "x": 760.65625,
+              "y": 193.46875,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 760.65625,
+                "top": 193.46875,
+                "right": 810.65625,
+                "bottom": 243.46875
+              }
+            }
+          }
+        ],
+        "actionIds": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "route": {
+          "available": true,
+          "active": false,
+          "summaryVisible": true,
+          "summaryText": "Práctica opcional0 impactos · 0 esquivados · 0 HPSin botín ni XP · hasta 24 HP reparables · tu carga se conservaProbar ruta"
+        },
+        "carryingText": "Porte libre 16.0 uM · Puerto 0 m",
+        "voyage": {
+          "active": true,
+          "phase": "sailing"
+        },
+        "capacity": {
+          "mode": "sailing",
+          "status": "ready",
+          "freeMass": 16,
+          "holdVolume": 0,
+          "holdCap": 6
+        },
+        "pointers": 0,
+        "errors": []
+      },
+      "sailingShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-01-helm-mounted.png",
+      "cameraAction": {
+        "calls": 1,
+        "bagClicks": 0,
+        "navalActive": true,
+        "pointers": 0
+      },
+      "modeBefore": {
+        "index": 2,
+        "binding": "mode",
+        "label": "Cubierta",
+        "actionDisabled": false,
+        "actionAvailable": true,
+        "enabled": true,
+        "slotDisabled": false,
+        "ariaDisabled": "false",
+        "unavailable": "false",
+        "modeAction": {
+          "key": "E",
+          "verb": "Caminar"
+        },
+        "inputEnabled": true,
+        "paused": false,
+        "naval": true,
+        "deck": false,
+        "commandsSoFar": 1,
+        "traceLength": 10
+      },
+      "modeAfter": {
+        "deckActive": true,
+        "navalActive": true,
+        "voyage": {
+          "active": true,
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "touchEnabled": true,
+        "inputEnabled": true,
+        "pointers": 0,
+        "commandTrace": [
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "mount",
+            "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1"
+          },
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "walk",
+            "epoch": 1
+          }
+        ],
+        "actionTrace": [
+          {
+            "at": 6641.600000000093,
+            "kind": "pointerdown",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 6641.800000000047,
+            "kind": "pointerup",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "detail": 0,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 6641.90000000014,
+            "kind": "activateSlot",
+            "slot": 2,
+            "id": "mode",
+            "label": "Cubierta",
+            "disabled": false,
+            "enabled": true,
+            "disposed": false
+          },
+          {
+            "at": 6641.90000000014,
+            "kind": "onAction",
+            "id": "mode",
+            "enabled": true,
+            "naval": true,
+            "deck": false
+          },
+          {
+            "at": 6642.100000000093,
+            "kind": "runAction",
+            "id": "mode",
+            "canAct": true,
+            "interaction": [
+              {
+                "key": "G",
+                "verb": "Amarrar",
+                "disabled": false
+              },
+              {
+                "key": "E",
+                "verb": "Caminar",
+                "disabled": false
+              }
+            ],
+            "target": {
+              "key": "E",
+              "verb": "Caminar",
+              "disabled": false
+            },
+            "naval": true,
+            "deck": false,
+            "returned": null,
+            "navalAfter": true,
+            "deckAfter": false
+          },
+          {
+            "at": 6649.90000000014,
+            "kind": "click",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "detail": 1,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "naval": {
+          "active": true,
+          "epoch": 1,
+          "state": {
+            "tick": 438,
+            "x": 127.62862879558105,
+            "z": 100.84429673617215,
+            "yaw": 0.9097531579442095,
+            "vx": 0,
+            "vz": 0,
+            "omega": 0
+          }
+        },
+        "deck": {
+          "active": true,
+          "epoch": 1
+        }
+      },
+      "modeWaitError": null,
+      "modeServerEvents": [
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "entity": 26
+        }
+      ],
+      "deck": {
+        "deckActive": true,
+        "navalActive": true,
+        "pointers": 0,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "actionIds": [
+          "bag",
+          "mode",
+          "center",
+          "map"
+        ],
+        "routeTrialVisible": false,
+        "gustText": "Toma el timón",
+        "serverRouteContext": {
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "epoch": 1,
+          "helm": false,
+          "ashore": false,
+          "bodyPresent": true
+        }
+      },
+      "deckShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-02-deck-mode.png",
+      "helmReturn": {
+        "clientActive": true,
+        "serverRouteContext": {
+          "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+          "epoch": 1,
+          "helm": true,
+          "bodyPresent": true
+        },
+        "serverEvents": [
+          {
+            "type": "navalPilot",
+            "op": "helm",
+            "ok": true,
+            "why": null,
+            "active": true,
+            "mode": null,
+            "epoch": 1,
+            "shipId": "bea61e35-5a18-43a9-951d-2f398a57963c:r1",
+            "entity": 26
+          }
+        ]
+      },
+      "returnedToHelm": true,
+      "pauseCleanup": {
+        "open": true,
+        "pointers": 0
+      },
+      "dockReady": {
+        "canDock": true,
+        "phase": "sailing",
+        "mode": "sailing"
+      },
+      "docked": {
+        "voyageActive": false,
+        "navalActive": false,
+        "touchDisposed": false,
+        "pointers": 0,
+        "errors": []
+      },
+      "dockShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-landscape-844x390-03-docked.png",
+      "disposal": {
+        "blocked": true,
+        "restored": true,
+        "rootRemoved": true
+      }
+    },
+    {
+      "name": "live-hud-touch-portrait-390x844",
+      "width": 390,
+      "height": 844,
+      "touch": true,
+      "status": "passed",
+      "errors": [],
+      "consoleErrors": [],
+      "requestFailures": [],
+      "screenshots": [
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-00-before-helm.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-01-helm-mounted.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-02-deck-mode.png",
+        "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-03-docked.png"
+      ],
+      "serverNavalEvents": [
+        {
+          "type": "navalPilot",
+          "op": "mount",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "helm",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": null,
+          "ok": null,
+          "why": "dock",
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        },
+        {
+          "type": "navalPilot",
+          "op": "dock",
+          "ok": true,
+          "why": null,
+          "active": false,
+          "mode": null,
+          "epoch": 1,
+          "shipId": null,
+          "entity": 26
+        }
+      ],
+      "fixture": {
+        "raftId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+        "helm": {
+          "x": 3,
+          "y": 0,
+          "z": 1,
+          "f": 0
+        },
+        "point": {
+          "x": 127.45321719171966,
+          "y": 0.72,
+          "z": 99.44100390528091,
+          "f": 0.9097531579442091
+        },
+        "kind": "owner positioned at existing server-owned starter helm; no raft/profile edits"
+      },
+      "mounted": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stage": {
+          "width": 844,
+          "height": 390,
+          "rotated": true
+        },
+        "touch": true,
+        "stripDisplay": "none",
+        "root": {
+          "visible": true,
+          "box": {
+            "x": 0,
+            "y": 0,
+            "width": 390,
+            "height": 844
+          },
+          "local": {
+            "left": 0,
+            "top": 0,
+            "right": 844,
+            "bottom": 390
+          }
+        },
+        "gauge": {
+          "visible": true,
+          "box": {
+            "x": 18,
+            "y": 710,
+            "width": 118,
+            "height": 118
+          },
+          "local": {
+            "left": 710,
+            "top": 254,
+            "right": 828,
+            "bottom": 372
+          }
+        },
+        "hull": {
+          "visible": true,
+          "box": {
+            "x": 295,
+            "y": 80,
+            "width": 22,
+            "height": 162
+          },
+          "local": {
+            "left": 80,
+            "top": 73,
+            "right": 242,
+            "bottom": 95
+          }
+        },
+        "wind": {
+          "visible": true,
+          "box": {
+            "x": 278,
+            "y": 622,
+            "width": 50,
+            "height": 102
+          },
+          "local": {
+            "left": 622,
+            "top": 62,
+            "right": 724,
+            "bottom": 112
+          }
+        },
+        "compass": {
+          "visible": true,
+          "box": {
+            "x": 294,
+            "y": 742,
+            "width": 84,
+            "height": 84
+          },
+          "local": {
+            "left": 742,
+            "top": 12,
+            "right": 826,
+            "bottom": 96
+          }
+        },
+        "sticks": [
+          {
+            "label": "move",
+            "box": {
+              "x": 14,
+              "y": 24,
+              "width": 108,
+              "height": 108,
+              "local": {
+                "left": 24,
+                "top": 268,
+                "right": 132,
+                "bottom": 376
+              }
+            }
+          },
+          {
+            "label": "look",
+            "box": {
+              "x": 23,
+              "y": 638,
+              "width": 52,
+              "height": 52,
+              "local": {
+                "left": 638,
+                "top": 315,
+                "right": 690,
+                "bottom": 367
+              }
+            }
+          }
+        ],
+        "slots": [
+          {
+            "index": 0,
+            "label": "Habilidad 1: Ráfaga",
+            "text": "Ráfaga",
+            "shortcut": "Q",
+            "ariaShortcut": "Q",
+            "rect": {
+              "x": 100,
+              "y": 660.859375,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 660.859375,
+                "top": 240,
+                "right": 710.859375,
+                "bottom": 290
+              }
+            }
+          },
+          {
+            "index": 1,
+            "label": "Habilidad 2: Mochila",
+            "text": "Mochila",
+            "shortcut": "I",
+            "ariaShortcut": "I",
+            "rect": {
+              "x": 139.015625,
+              "y": 703.421875,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 703.421875,
+                "top": 200.984375,
+                "right": 753.421875,
+                "bottom": 250.984375
+              }
+            }
+          },
+          {
+            "index": 2,
+            "label": "Habilidad 3: Cubierta",
+            "text": "Cubierta",
+            "shortcut": "E",
+            "ariaShortcut": "E",
+            "rect": {
+              "x": 146.53125,
+              "y": 760.65625,
+              "width": 50,
+              "height": 50,
+              "local": {
+                "left": 760.65625,
+                "top": 193.46875,
+                "right": 810.65625,
+                "bottom": 243.46875
+              }
+            }
+          }
+        ],
+        "actionIds": [
+          "capture",
+          "bag",
+          "mode",
+          "center",
+          "map",
+          "dock"
+        ],
+        "route": {
+          "available": true,
+          "active": false,
+          "summaryVisible": true,
+          "summaryText": "Práctica opcional0 impactos · 0 esquivados · 0 HPSin botín ni XP · hasta 24 HP reparables · tu carga se conservaProbar ruta"
+        },
+        "carryingText": "Porte libre 16.0 uM · Puerto 0 m",
+        "voyage": {
+          "active": true,
+          "phase": "sailing"
+        },
+        "capacity": {
+          "mode": "sailing",
+          "status": "ready",
+          "freeMass": 16,
+          "holdVolume": 0,
+          "holdCap": 6
+        },
+        "pointers": 0,
+        "errors": []
+      },
+      "sailingShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-01-helm-mounted.png",
+      "cameraAction": {
+        "calls": 1,
+        "bagClicks": 0,
+        "navalActive": true,
+        "pointers": 0
+      },
+      "modeBefore": {
+        "index": 2,
+        "binding": "mode",
+        "label": "Cubierta",
+        "actionDisabled": false,
+        "actionAvailable": true,
+        "enabled": true,
+        "slotDisabled": false,
+        "ariaDisabled": "false",
+        "unavailable": "false",
+        "modeAction": {
+          "key": "E",
+          "verb": "Caminar"
+        },
+        "inputEnabled": true,
+        "paused": false,
+        "naval": true,
+        "deck": false,
+        "commandsSoFar": 1,
+        "traceLength": 10
+      },
+      "modeAfter": {
+        "deckActive": true,
+        "navalActive": true,
+        "voyage": {
+          "active": true,
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "phase": "sailing",
+          "home": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497
+          },
+          "landing": null,
+          "canLand": false,
+          "canDock": false,
+          "distanceHome": 0,
+          "visited": false,
+          "target": {
+            "x": 124.82204313379856,
+            "y": 0.72,
+            "z": 101.19511994389497,
+            "label": "Puerto"
+          }
+        },
+        "touchEnabled": true,
+        "inputEnabled": true,
+        "pointers": 0,
+        "commandTrace": [
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "mount",
+            "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1"
+          },
+          {
+            "t": "cmd",
+            "type": "navalPilot",
+            "op": "walk",
+            "epoch": 1
+          }
+        ],
+        "actionTrace": [
+          {
+            "at": 6075,
+            "kind": "pointerdown",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 6075.199999999953,
+            "kind": "pointerup",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "detail": 0,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "at": 6075.199999999953,
+            "kind": "activateSlot",
+            "slot": 2,
+            "id": "mode",
+            "label": "Cubierta",
+            "disabled": false,
+            "enabled": true,
+            "disposed": false
+          },
+          {
+            "at": 6075.199999999953,
+            "kind": "onAction",
+            "id": "mode",
+            "enabled": true,
+            "naval": true,
+            "deck": false
+          },
+          {
+            "at": 6075.5,
+            "kind": "runAction",
+            "id": "mode",
+            "canAct": true,
+            "interaction": [
+              {
+                "key": "G",
+                "verb": "Amarrar",
+                "disabled": false
+              },
+              {
+                "key": "E",
+                "verb": "Caminar",
+                "disabled": false
+              }
+            ],
+            "target": {
+              "key": "E",
+              "verb": "Caminar",
+              "disabled": false
+            },
+            "naval": true,
+            "deck": false,
+            "returned": null,
+            "navalAfter": true,
+            "deckAfter": false
+          },
+          {
+            "at": 6076.5,
+            "kind": "click",
+            "slot": "2",
+            "id": "mode",
+            "label": "Cubierta",
+            "pointerType": "touch",
+            "detail": 1,
+            "enabled": true,
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "naval": {
+          "active": true,
+          "epoch": 1,
+          "state": {
+            "tick": 407,
+            "x": 127.62862879558105,
+            "z": 100.84429673617215,
+            "yaw": 0.9097531579442095,
+            "vx": 0,
+            "vz": 0,
+            "omega": 0
+          }
+        },
+        "deck": {
+          "active": true,
+          "epoch": 1
+        }
+      },
+      "modeWaitError": null,
+      "modeServerEvents": [
+        {
+          "type": "navalPilot",
+          "op": "walk",
+          "ok": true,
+          "why": null,
+          "active": true,
+          "mode": null,
+          "epoch": 1,
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "entity": 26
+        }
+      ],
+      "deck": {
+        "deckActive": true,
+        "navalActive": true,
+        "pointers": 0,
+        "axes": {
+          "naval": {
+            "throttle": 0,
+            "brake": 0,
+            "steer": 0,
+            "capture": false
+          },
+          "deck": {
+            "mx": 0,
+            "mz": 0
+          }
+        },
+        "actionIds": [
+          "bag",
+          "mode",
+          "center",
+          "map"
+        ],
+        "routeTrialVisible": false,
+        "gustText": "Toma el timón",
+        "serverRouteContext": {
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "epoch": 1,
+          "helm": false,
+          "ashore": false,
+          "bodyPresent": true
+        }
+      },
+      "deckShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-02-deck-mode.png",
+      "helmReturn": {
+        "clientActive": true,
+        "serverRouteContext": {
+          "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+          "epoch": 1,
+          "helm": true,
+          "bodyPresent": true
+        },
+        "serverEvents": [
+          {
+            "type": "navalPilot",
+            "op": "helm",
+            "ok": true,
+            "why": null,
+            "active": true,
+            "mode": null,
+            "epoch": 1,
+            "shipId": "b541bf04-f926-42ef-aaf3-edbb4a29ab55:r1",
+            "entity": 26
+          }
+        ]
+      },
+      "returnedToHelm": true,
+      "pauseCleanup": {
+        "open": true,
+        "pointers": 0
+      },
+      "dockReady": {
+        "canDock": true,
+        "phase": "sailing",
+        "mode": "sailing"
+      },
+      "docked": {
+        "voyageActive": false,
+        "navalActive": false,
+        "touchDisposed": false,
+        "pointers": 0,
+        "errors": []
+      },
+      "dockShot": "C:\\DEV\\real of trade\\realms-of-trade-server\\docs\\delivery\\live-hud-publication\\live-hud-touch-portrait-390x844-03-docked.png",
+      "disposal": {
+        "blocked": true,
+        "restored": true,
+        "rootRemoved": true
+      }
+    }
+  ],
+  "failures": [],
+  "status": "passed"
+}

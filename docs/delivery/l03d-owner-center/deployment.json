@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-10T23:06:53.021940+00:00",
+  "container": "marea-negra-alpha-marea-negra-alpha-1",
+  "revision": "ee886903066016dee9752d8571aea382d717e073",
+  "version": "0.6.0-alpha.34",
+  "image": "marea-negra:alpha-ee8869030660",
+  "imageId": "sha256:208bc57038efbb8341811df48804a9266c59a417702b25b756bbce8b904856a5",
+  "containerId": "c597a3259d87d26c27f9751f65480ccf20ab8a855661d7e7c3194246d52c4f2d",
+  "running": true,
+  "health": "healthy",
+  "startedAt": "2026-10-10T23:03:17.983208689Z",
+  "oomKilled": false,
+  "currentRelease": "/opt/marea-negra/releases/ee886903066016dee9752d8571aea382d717e073",
+  "updateState": {},
+  "validation": {
+    "revision": "ee886903066016dee9752d8571aea382d717e073",
+    "image_id": "sha256:208bc57038efbb8341811df48804a9266c59a417702b25b756bbce8b904856a5",
+    "tests_passed": true
+  },
+  "offlineCounts": {
+    "tests": 107,
+    "pass": 107,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "authorities": [
+    "marea-negra-alpha-marea-negra-alpha-1"
+  ],
+  "timer": "active",
+  "expectedRevision": "ee886903066016dee9752d8571aea382d717e073",
+  "recordedAt": "2026-10-10T23:06:53.659Z",
+  "timerPausedAtCapture": false,
+  "publicStatus": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.34",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 4,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "artisan": {
+        "enabled": false,
+        "ready": false
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 1701,
+        "errors": 0
+      }
+    }
+  },
+  "scope": "In-game owner companion status/stop and game continuity. No real provider, new SQL or public agent activation. Stop remains process-local."
+}

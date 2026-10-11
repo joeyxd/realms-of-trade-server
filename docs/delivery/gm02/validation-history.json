@@ -1,0 +1,30 @@
+{
+  "schema": "gm02-validation/v1",
+  "local": {
+    "tests": 162,
+    "pass": 162,
+    "gmSubset": 51,
+    "browser": 28
+  },
+  "sharedWorkspace": {
+    "focusedTests": 27,
+    "browser": 28,
+    "metadataVersion": "0.6.0-alpha.17",
+    "concurrentI18nPreserved": true,
+    "production": false
+  },
+  "production": {
+    "version": "0.6.0-alpha.25",
+    "revision": "e2ff69ecf814056dbeaed4d202c5cdd6d5d67d61",
+    "offlineReleaseTests": 107,
+    "browser": 12,
+    "simulatedAuth": false,
+    "passwordChanged": false,
+    "temporaryCredentialFileRemoved": true,
+    "authorBrowserDraftTouched": false
+  },
+  "localQANotes": [
+    "An early GM02 harness run omitted circle selection and failed before the walk check; the fixture was corrected and full acceptance passed without changing runtime for that failure.",
+    "Visual review prompted camera framing, estimated circle radius, spawn outside selected proxy and temporary character resource cleanup before final acceptance."
+  ]
+}

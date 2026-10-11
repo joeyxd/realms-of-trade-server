@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "assets": {
+    "prop:storage-crate": {
+      "thumbnail": "assets/editor/thumbnails/prop-storage-crate.webp",
+      "label": {
+        "es": "Caja de almacenaje",
+        "en": "Storage crate"
+      },
+      "stats": {
+        "triangles": 204,
+        "bytes": 51684
+      }
+    },
+    "model:coast-rock-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-coast-rock-v1.webp",
+      "label": {
+        "es": "Roca costera",
+        "en": "Coastal rock"
+      },
+      "stats": {
+        "triangles": 64,
+        "bytes": 7964
+      }
+    },
+    "model:beach-shell-fan-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-fan-v1.webp",
+      "label": {
+        "es": "Concha abanico",
+        "en": "Fan shell"
+      },
+      "stats": {
+        "triangles": 80,
+        "bytes": 9700
+      }
+    },
+    "model:beach-shell-oval-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-oval-v1.webp",
+      "label": {
+        "es": "Concha ovalada",
+        "en": "Oval shell"
+      },
+      "stats": {
+        "triangles": 96,
+        "bytes": 11432
+      }
+    },
+    "model:beach-shell-chip-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-shell-chip-v1.webp",
+      "label": {
+        "es": "Fragmento de concha",
+        "en": "Shell fragment"
+      },
+      "stats": {
+        "triangles": 48,
+        "bytes": 6248
+      }
+    },
+    "model:beach-pebbles-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-pebbles-v1.webp",
+      "label": {
+        "es": "Piedras de playa",
+        "en": "Beach pebbles"
+      },
+      "stats": {
+        "triangles": 192,
+        "bytes": 21796
+      }
+    },
+    "model:palm-tall-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-tall-v1.webp",
+      "label": {
+        "es": "Palmera alta",
+        "en": "Tall palm"
+      },
+      "stats": {
+        "triangles": 1016,
+        "bytes": 123256
+      }
+    },
+    "model:palm-curved-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-curved-v1.webp",
+      "label": {
+        "es": "Palmera curva",
+        "en": "Curved palm"
+      },
+      "stats": {
+        "triangles": 1064,
+        "bytes": 125740
+      }
+    },
+    "model:palm-short-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-short-v1.webp",
+      "label": {
+        "es": "Palmera baja",
+        "en": "Short palm"
+      },
+      "stats": {
+        "triangles": 1112,
+        "bytes": 128208
+      }
+    },
+    "model:palm-base-open-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-base-open-v1.webp",
+      "label": {
+        "es": "Base de palmera abierta",
+        "en": "Open palm base"
+      },
+      "stats": {
+        "triangles": 410,
+        "bytes": 54728
+      }
+    },
+    "model:palm-base-lush-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-palm-base-lush-v1.webp",
+      "label": {
+        "es": "Base de palmera frondosa",
+        "en": "Lush palm base"
+      },
+      "stats": {
+        "triangles": 540,
+        "bytes": 70952
+      }
+    },
+    "model:shrub-round-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-round-v1.webp",
+      "label": {
+        "es": "Arbusto redondo",
+        "en": "Round shrub"
+      },
+      "stats": {
+        "triangles": 424,
+        "bytes": 24720
+      }
+    },
+    "model:shrub-low-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-low-v1.webp",
+      "label": {
+        "es": "Arbusto bajo",
+        "en": "Low shrub"
+      },
+      "stats": {
+        "triangles": 512,
+        "bytes": 28832
+      }
+    },
+    "model:shrub-tall-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-shrub-tall-v1.webp",
+      "label": {
+        "es": "Arbusto alto",
+        "en": "Tall shrub"
+      },
+      "stats": {
+        "triangles": 440,
+        "bytes": 25656
+      }
+    },
+    "model:beach-debris-branch-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-branch-v1.webp",
+      "label": {
+        "es": "Rama de playa",
+        "en": "Beach branch"
+      },
+      "stats": {
+        "triangles": 208,
+        "bytes": 6612
+      }
+    },
+    "model:beach-debris-log-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-log-v1.webp",
+      "label": {
+        "es": "Tronco de playa",
+        "en": "Beach log"
+      },
+      "stats": {
+        "triangles": 96,
+        "bytes": 3696
+      }
+    },
+    "model:beach-debris-planks-v1": {
+      "thumbnail": "assets/editor/thumbnails/model-beach-debris-planks-v1.webp",
+      "label": {
+        "es": "Tablas de playa",
+        "en": "Beach planks"
+      },
+      "stats": {
+        "triangles": 132,
+        "bytes": 8432
+      }
+    },
+    "model:gm-rock-2k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-rock-2k.webp",
+      "stats": {
+        "triangles": 19469,
+        "bytes": 3271288
+      }
+    },
+    "model:gm-rock-1k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-rock-1k.webp",
+      "stats": {
+        "triangles": 19469,
+        "bytes": 1546948
+      }
+    },
+    "model:gm-coral-200k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-coral-200k.webp",
+      "stats": {
+        "triangles": 199999,
+        "bytes": 8596920
+      }
+    },
+    "model:gm-coral-50k": {
+      "thumbnail": "assets/editor/thumbnails/model-gm-coral-50k.webp",
+      "stats": {
+        "triangles": 49999,
+        "bytes": 3482648
+      }
+    }
+  }
+}

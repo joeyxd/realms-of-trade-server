@@ -1,0 +1,69 @@
+{
+  "schema": "marea-negra.m5-resource-sql-live.v1",
+  "startedAt": "2026-10-10T16:56:56.630Z",
+  "target": "public-tls",
+  "checks": {
+    "configuration": {
+      "pass": true,
+      "envFileHash": "5cf456b2bdd758d2b9edc87d764f19363f754d9fede72dd433c9f7196f31d992",
+      "providerHostHash": "c05304fbc6f67d71f73a18ba0a7245cd512aa8bf5f0661ad53418a6fb1755922",
+      "publicTargetHash": "6c9fb2cbd76cec448c2a58c2e759481df4a7b122a4cecda232bd0210ed930f4d"
+    },
+    "publicTarget": {
+      "pass": true,
+      "status": 200,
+      "worldReady": true
+    },
+    "serviceReady": {
+      "pass": true,
+      "version": 1
+    },
+    "resourceStateValidator": {
+      "pass": true,
+      "tickStateAccepted": true,
+      "noTickRejected": true
+    },
+    "anonymousDenied": {
+      "pass": true,
+      "code": "42501"
+    },
+    "authenticatedDenied": {
+      "pass": true,
+      "denied": true,
+      "code": "42501"
+    },
+    "legacyReceipt": {
+      "pass": true,
+      "legacy": true,
+      "requestHash": "e46d511a78da03907ac074d5e3dd4cadb27bfadf32b44d04126f38765a53200f",
+      "resultHash": "d4e3e9747e7968638b96e175e7272bfec2adf13255ec9dff3af8c3eeb95480c0"
+    },
+    "qaWorldGuards": {
+      "pass": true,
+      "qaWorldHash": "13f1f7cf0b9d371bb8c08da512c714bae5433deb5bdaab59f364e43e86c9636f",
+      "bootstrapAccepted": true,
+      "tickAdvanceAccepted": true,
+      "rewindRejected": "conflict",
+      "nodeRewriteRejected": "conflict",
+      "omissionRejected": "conflict",
+      "persistedSnapshotHash": "d2868e8b55dd03e4a2cc7615b7b36ace58c913927b3c900b2cf0f80212982e8d"
+    },
+    "cleanup": {
+      "pass": true,
+      "authUserDeleted": true,
+      "qaWorldDeleted": true,
+      "correctedAt": "2026-10-10T17:02:03.014Z",
+      "accountHash": "6a6e01c01dd2aa0bc434eb2e6f1951594cbfb45fef091c776ed83d152df6950d",
+      "identityRecovery": "single generated QA email match; creation and sign-in timestamps; no game profile; exact-ID recheck before delete"
+    }
+  },
+  "finishedAt": "2026-10-10T16:57:01.530Z",
+  "pass": true,
+  "initialCleanup": {
+    "pass": false,
+    "authUserDeleted": false,
+    "qaWorldDeleted": true,
+    "authDeleteCode": "user_id_not_captured"
+  },
+  "initialFailureCode": "cleanup_incomplete"
+}

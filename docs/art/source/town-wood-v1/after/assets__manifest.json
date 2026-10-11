@@ -1,0 +1,393 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "prop:storage-crate",
+      "src": "models/prop-storage-crate.glb",
+      "props": [
+        "crate"
+      ]
+    },
+    {
+      "id": "tex:raft-comic-v1",
+      "kind": "tex",
+      "src": "textures/raft/comic-materials-v1.webp",
+      "mobileSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Original generated comic raft albedo atlas: wood, iron, rope and patched sailcloth. See docs/delivery/raft-comic-material.md."
+    },
+    {
+      "id": "tex:sand-dry-albedo-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/dry-albedo-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/dry-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-dry-normal-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/dry-normal-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/dry-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-wet-albedo-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/wet-albedo-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/wet-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-ripple-albedo-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/ripple-albedo-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/ripple-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-ripple-normal-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/ripple-normal-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/ripple-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-footprints-albedo-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/footprints-albedo-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/footprints-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-footprints-normal-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/footprints-normal-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/footprints-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-shore-sand-albedo-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/shore-sand-albedo-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/shore-sand-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "tex:sand-shore-sand-normal-v1",
+      "kind": "tex",
+      "src": "textures/sand-family-v1/shore-sand-normal-desktop.webp",
+      "mobileSrc": "textures/sand-family-v1/shore-sand-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "Supplied illustrated sand family; desktop 1024 / mobile 512. See docs/delivery/sand-family-v1.md."
+    },
+    {
+      "id": "model:coast-rock-v1",
+      "kind": "model",
+      "src": "models/coast-rock-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": true,
+        "comic": true
+      },
+      "notes": "Dreamrise SM_Rock geometry, vertex-painted coastal derivative; three runtime silhouettes. No new textures. See docs/delivery/coast-rocks-v1.md."
+    },
+    {
+      "id": "tex:ground-atlas-albedo-v1",
+      "kind": "tex",
+      "src": "textures/ground-family-v1/atlas-albedo-desktop.webp",
+      "mobileSrc": "textures/ground-family-v1/atlas-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "Four supplied painted ground pairs in a padded atlas; PC 2048 / mobile 1024. See docs/delivery/ground-family-v1.md."
+    },
+    {
+      "id": "tex:ground-atlas-normal-v1",
+      "kind": "tex",
+      "src": "textures/ground-family-v1/atlas-normal-desktop.webp",
+      "mobileSrc": "textures/ground-family-v1/atlas-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "Four supplied painted ground pairs in a padded atlas; PC 2048 / mobile 1024. See docs/delivery/ground-family-v1.md."
+    },
+    {
+      "id": "model:beach-shell-fan-v1",
+      "kind": "model",
+      "src": "models/beach-shell-fan-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": true,
+        "comic": false
+      },
+      "notes": "S04 painted beach geometry; normals and vertex color, no new textures. Pebbles reuse S02 SM_Rock. See docs/delivery/beach-details-v1.md."
+    },
+    {
+      "id": "model:beach-shell-oval-v1",
+      "kind": "model",
+      "src": "models/beach-shell-oval-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": true,
+        "comic": false
+      },
+      "notes": "S04 painted beach geometry; normals and vertex color, no new textures. Pebbles reuse S02 SM_Rock. See docs/delivery/beach-details-v1.md."
+    },
+    {
+      "id": "model:beach-shell-chip-v1",
+      "kind": "model",
+      "src": "models/beach-shell-chip-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": true,
+        "comic": false
+      },
+      "notes": "S04 painted beach geometry; normals and vertex color, no new textures. Pebbles reuse S02 SM_Rock. See docs/delivery/beach-details-v1.md."
+    },
+    {
+      "id": "model:beach-pebbles-v1",
+      "kind": "model",
+      "src": "models/beach-pebbles-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": true,
+        "comic": false
+      },
+      "notes": "S04 painted beach geometry; normals and vertex color, no new textures. Pebbles reuse S02 SM_Rock. See docs/delivery/beach-details-v1.md."
+    },
+    {
+      "id": "model:palm-tall-v1",
+      "kind": "model",
+      "src": "models/palm-tall-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S05 geometry + authored atlas UV. Two parts, _FLEX/_PAINT custom attributes; shared textures applied by vegetation.js. See docs/delivery/palm-family-v1.md."
+    },
+    {
+      "id": "model:palm-curved-v1",
+      "kind": "model",
+      "src": "models/palm-curved-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S05 geometry + authored atlas UV. Two parts, _FLEX/_PAINT custom attributes; shared textures applied by vegetation.js. See docs/delivery/palm-family-v1.md."
+    },
+    {
+      "id": "model:palm-short-v1",
+      "kind": "model",
+      "src": "models/palm-short-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S05 geometry + authored atlas UV. Two parts, _FLEX/_PAINT custom attributes; shared textures applied by vegetation.js. See docs/delivery/palm-family-v1.md."
+    },
+    {
+      "id": "tex:palm-albedo-v2",
+      "kind": "tex",
+      "src": "textures/palm-family-v2/albedo-desktop.webp",
+      "mobileSrc": "textures/palm-family-v2/albedo-mobile.webp",
+      "notes": "S05 supplied painted palm atlas; 1024 PC / 512 coarse pointer, four cropped components. Normal is linear data."
+    },
+    {
+      "id": "tex:palm-normal-v2",
+      "kind": "tex",
+      "src": "textures/palm-family-v2/normal-desktop.webp",
+      "mobileSrc": "textures/palm-family-v2/normal-mobile.webp",
+      "data": true,
+      "notes": "S05 supplied painted palm atlas; 1024 PC / 512 coarse pointer, four cropped components. Normal is linear data."
+    },
+    {
+      "id": "model:palm-base-open-v1",
+      "kind": "model",
+      "src": "models/palm-base-open-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S06 two-part cosmetic base: rigid roots and low leaf rosettes. Shared S05 bark; separate compact leaf atlas. See docs/delivery/palm-bases-v1.md."
+    },
+    {
+      "id": "model:palm-base-lush-v1",
+      "kind": "model",
+      "src": "models/palm-base-lush-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S06 two-part cosmetic base: rigid roots and low leaf rosettes. Shared S05 bark; separate compact leaf atlas. See docs/delivery/palm-bases-v1.md."
+    },
+    {
+      "id": "tex:palm-base-albedo-v1",
+      "kind": "tex",
+      "src": "textures/palm-base-v1/albedo-pc.webp",
+      "mobileSrc": "textures/palm-base-v1/albedo-mobile.webp",
+      "notes": "S06 two supplied small leaf crops, 512x256 PC / 256x128 coarse pointer. Shared binary alpha, linear normal data; visual registration only."
+    },
+    {
+      "id": "tex:palm-base-normal-v1",
+      "kind": "tex",
+      "src": "textures/palm-base-v1/normal-pc.webp",
+      "mobileSrc": "textures/palm-base-v1/normal-mobile.webp",
+      "data": true,
+      "notes": "S06 two supplied small leaf crops, 512x256 PC / 256x128 coarse pointer. Shared binary alpha, linear normal data; visual registration only."
+    },
+    {
+      "id": "model:shrub-round-v1",
+      "kind": "model",
+      "src": "models/shrub-round-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S07 cosmetic shrub: rigid painted wood and four atlas leaf silhouettes. Wind and alpha in vegetation.js. See docs/delivery/shrubs-v1.md."
+    },
+    {
+      "id": "model:shrub-low-v1",
+      "kind": "model",
+      "src": "models/shrub-low-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S07 cosmetic shrub: rigid painted wood and four atlas leaf silhouettes. Wind and alpha in vegetation.js. See docs/delivery/shrubs-v1.md."
+    },
+    {
+      "id": "model:shrub-tall-v1",
+      "kind": "model",
+      "src": "models/shrub-tall-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S07 cosmetic shrub: rigid painted wood and four atlas leaf silhouettes. Wind and alpha in vegetation.js. See docs/delivery/shrubs-v1.md."
+    },
+    {
+      "id": "tex:shrub-albedo-v1",
+      "kind": "tex",
+      "src": "textures/shrub-v1/albedo-pc.webp",
+      "mobileSrc": "textures/shrub-v1/albedo-mobile.webp",
+      "notes": "S07 generated leaf atlas, PC 512x512 / coarse pointer 256x256; authoritative color alpha, per-tile gutters. Normal data linear; generated source, bake not certified."
+    },
+    {
+      "id": "tex:shrub-normal-v1",
+      "kind": "tex",
+      "src": "textures/shrub-v1/normal-pc.webp",
+      "mobileSrc": "textures/shrub-v1/normal-mobile.webp",
+      "data": true,
+      "notes": "S07 generated leaf atlas, PC 512x512 / coarse pointer 256x256; authoritative color alpha, per-tile gutters. Normal data linear; generated source, bake not certified."
+    },
+    {
+      "id": "model:beach-debris-branch-v1",
+      "kind": "model",
+      "src": "models/beach-debris-branch-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S09 opaque painted coastal debris; stacked planks derive from audited Dreamrise SM_Logs after visual review; no new textures. Cosmetic, no collider. See docs/delivery/beach-debris-v1.md."
+    },
+    {
+      "id": "model:beach-debris-log-v1",
+      "kind": "model",
+      "src": "models/beach-debris-log-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S09 opaque painted coastal debris; stacked planks derive from audited Dreamrise SM_Logs after visual review; no new textures. Cosmetic, no collider. See docs/delivery/beach-debris-v1.md."
+    },
+    {
+      "id": "model:beach-debris-planks-v1",
+      "kind": "model",
+      "src": "models/beach-debris-planks-v1.glb",
+      "fit": "none",
+      "toon": {
+        "flat": false,
+        "comic": false
+      },
+      "notes": "S09 opaque painted coastal debris; stacked planks derive from audited Dreamrise SM_Logs after visual review; no new textures. Cosmetic, no collider. See docs/delivery/beach-debris-v1.md."
+    },
+    {
+      "kind": "tex",
+      "id": "tex:town-wood-albedo-v1",
+      "src": "textures/town-wood-v1/atlas-albedo-desktop.webp",
+      "mobileSrc": "textures/town-wood-v1/atlas-albedo-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "notes": "S14 supplied town wood albedo maps in a padded 4x4 atlas; desktop 2048 / mobile 1024. See docs/art/town-wood/material-receipt-v1.json."
+    },
+    {
+      "kind": "tex",
+      "id": "tex:town-wood-normal-v1",
+      "src": "textures/town-wood-v1/atlas-normal-desktop.webp",
+      "mobileSrc": "textures/town-wood-v1/atlas-normal-mobile.webp",
+      "repeat": [
+        1,
+        1
+      ],
+      "data": true,
+      "notes": "S14 supplied town wood tangent-space normal maps in a padded 4x4 atlas; desktop 2048 / mobile 1024. See docs/art/town-wood/material-receipt-v1.json."
+    }
+  ]
+}

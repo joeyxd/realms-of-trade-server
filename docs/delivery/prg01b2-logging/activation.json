@@ -1,0 +1,66 @@
+{
+  "schema": "mn.logging-activation.v1",
+  "at": "2026-10-10T19:51:15.336331+00:00",
+  "revision": "758a217d05a9da767f66bbb652d6284faf9e4ec9",
+  "version": "0.6.0-alpha.25",
+  "protocol": 37,
+  "image": "marea-negra:alpha-758a217d05a9",
+  "imageId": "sha256:deb814812769d78281a3bb424c25d0dabcf4b355c1c42f947b24fd723148c0df",
+  "container": "e22ac32c9986",
+  "singleAuthority": true,
+  "sql016Ready": true,
+  "flags": {
+    "MN_ECONOMIC_OPERATIONS": "1",
+    "MN_RESOURCE_OPERATIONS": "1",
+    "MN_LOGGING_OPERATIONS": "1"
+  },
+  "resourceVersionBefore": 1,
+  "resourceVersionAfter": 2,
+  "nodes": 206,
+  "palms": 96,
+  "nodesPreserved": true,
+  "cooldownsPreserved": true,
+  "exactAdoptionIncludingTickCheckedBeforePublicProbe": true,
+  "resourceTickBefore": 221286,
+  "resourceTickObserved": 228485,
+  "nodeHash": "326939c0710442d10ad9f29fc45c4ec6e630a33d68d231734c6918768d1eb5dd",
+  "cooldownHash": "4d94b4f8e90c02b830213688eddf2894c93c1ed1e30e82f084a7bc1594f1ec8a",
+  "legacyUncreditedCycles": 1,
+  "worldVersionBefore": 1438,
+  "worldVersionObserved": 1441,
+  "storage": {
+    "kind": "supabase",
+    "durable": true,
+    "accounts": true,
+    "errors": 0,
+    "unsaved": 0,
+    "tickBlocked": false,
+    "economic": {
+      "enabled": true,
+      "pending": 0,
+      "failed": false,
+      "completed": 0,
+      "replays": 0
+    },
+    "resources": {
+      "enabled": true,
+      "ready": true,
+      "logging": true
+    },
+    "world": {
+      "id": "marea-negra",
+      "ready": true,
+      "failed": false,
+      "version": 1441,
+      "errors": 0
+    }
+  },
+  "publicHealth": true,
+  "healthProbeNote": "First probe during Traefik cutover failed transiently; repeated public health/status and WSS subsequently passed.",
+  "updaterTimerActive": true,
+  "imageValidation": {
+    "revision": "758a217d05a9da767f66bbb652d6284faf9e4ec9",
+    "image_id": "sha256:deb814812769d78281a3bb424c25d0dabcf4b355c1c42f947b24fd723148c0df",
+    "tests_passed": true
+  }
+}

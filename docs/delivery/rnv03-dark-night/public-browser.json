@@ -1,0 +1,53 @@
+{
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "scope": "Public guest session, actual clock, portable N on/off and map. No inventory writes, SQL or authenticated durability claim.",
+  "pageErrors": [],
+  "failedRequests": [],
+  "phase": "joined",
+  "websockets": [
+    "wss://marea.62.171.136.148.sslip.io/ws"
+  ],
+  "release": {
+    "version": "0.6.0-alpha.28",
+    "protocol": 40,
+    "editorParts": [
+      "foundation",
+      "floor",
+      "pillar",
+      "wall",
+      "door",
+      "roof",
+      "railing",
+      "stairs",
+      "crate",
+      "net",
+      "grill",
+      "lantern"
+    ]
+  },
+  "initialOff": true,
+  "lit": {
+    "confirmed": true,
+    "pressed": "true",
+    "core": true,
+    "radius": 7.5,
+    "weight": 1
+  },
+  "offAgain": true,
+  "clock": {
+    "phase": 0.13008680555532237,
+    "lightingPhase": 0.13007357638864891,
+    "hours": 2193.1220833333277,
+    "gameplay": true
+  },
+  "state": {
+    "mode": "playing",
+    "joined": true,
+    "clientErrors": {},
+    "titleHidden": true,
+    "minimapVisible": true,
+    "mapHidden": false
+  },
+  "pass": true,
+  "generatedAt": "2026-10-10T20:56:23.645Z"
+}

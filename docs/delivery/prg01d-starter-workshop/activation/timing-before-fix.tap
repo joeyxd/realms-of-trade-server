@@ -1,0 +1,48 @@
+TAP version 13
+# Subtest: a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+not ok 1 - a v3 timing denial receipts cleanly when the live economy is ahead of the saved baseline
+  ---
+  duration_ms: 1710.5368
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area17-market\\tests\\starter-workshop-baseline.test.mjs:95:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    2 !== 1
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 2
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area17-market/tests/starter-workshop-baseline.test.mjs:111:10)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+  ...
+# Subtest: three valid v3 aim hits still award once and replay their exact receipt
+not ok 2 - three valid v3 aim hits still award once and replay their exact receipt
+  ---
+  duration_ms: 1324.0482
+  type: 'test'
+  location: 'C:\\DEV\\real of trade\\area17-market\\tests\\starter-workshop-baseline.test.mjs:134:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'entity')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    aimAndGather (file:///C:/DEV/real%20of%20trade/area17-market/tests/starter-workshop-baseline.test.mjs:78:52)
+    TestContext.<anonymous> (file:///C:/DEV/real%20of%20trade/area17-market/tests/starter-workshop-baseline.test.mjs:138:54)
+    async Test.run (node:internal/test_runner/test:1125:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3662.1259

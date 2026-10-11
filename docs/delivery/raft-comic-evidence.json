@@ -1,0 +1,980 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-05T15:36:47.666Z",
+  "purpose": "Compact software and artifact evidence for the raft comic atlas visual QA matrix.",
+  "visualInspection": {
+    "inspected": true,
+    "inspectedBy": "primary agent",
+    "inspectionDate": "2026-10-05",
+    "inspectedCaptureCount": 26,
+    "visuallyInspectedCases": [
+      "high-day",
+      "high-day-skin-off",
+      "high-night",
+      "low-phone-day",
+      "low-phone-night",
+      "atlas-404",
+      "atlas-bad-phone",
+      "noassets-phone"
+    ],
+    "captureCoverage": {
+      "overviewAndCloseAllEightCases": true,
+      "hero": [
+        "high-day",
+        "high-day-skin-off"
+      ],
+      "reconnect": [
+        "high-day",
+        "high-day-skin-off",
+        "high-night",
+        "low-phone-day",
+        "low-phone-night",
+        "atlas-404",
+        "atlas-bad-phone",
+        "noassets-phone"
+      ]
+    },
+    "findings": [
+      "Large cracks, turquoise accents, and stitches read clearly at 512px mobile and 1024px desktop.",
+      "No obvious quadrant bleed in the inspected captures.",
+      "Night appearance follows existing world lighting.",
+      "Fallback retains raft geometry.",
+      "Visual evidence does not claim FPS or hardware performance."
+    ],
+    "remainingReconnectCapturesNotVisuallyInspected": [],
+    "acceptedByThisReport": true
+  },
+  "limits": {
+    "softwareQAOnly": true,
+    "visualOnly": true,
+    "fpsOrHardwarePerformanceClaim": false,
+    "decodedTextureSizesAreEstimates": true
+  },
+  "sourceFiles": {
+    "renderer": {
+      "path": "src/render/rafts.js",
+      "bytes": 24177,
+      "sha256": "8729db3ef9fb3dcc3865e38dff842f87918d30230a3eebe959347ff13d959b5e"
+    },
+    "materialHelper": {
+      "path": "src/render/raftMaterials.js",
+      "bytes": 4894,
+      "sha256": "ffb10b5481df7412c035c7dd6ca52476ad076f4b14a93e51272eb65fb2006c60"
+    },
+    "assetRegistry": {
+      "path": "src/render/assets/registry.js",
+      "bytes": 11270,
+      "sha256": "9d78f4bbe4e924fd2618a5ab30291d55fd03a349aed2b45588591067d4c77ca5"
+    },
+    "runtimeManifestModule": {
+      "path": "src/render/assets/manifest.js",
+      "bytes": 10186,
+      "sha256": "4a60e49ac2f0b0647502d8af5f928c56dc0bc152ee1fc983ab7434ca866c6226"
+    },
+    "assetManifest": {
+      "path": "assets/manifest.json",
+      "bytes": 546,
+      "sha256": "af387fa68f2c57ae8053be41e8341ebde0950e15650397579b937c80e25b77a8"
+    },
+    "visualHarness": {
+      "path": "tools/look-raft.mjs",
+      "bytes": 26894,
+      "sha256": "3174ba67d0d0c8ef4b7321ce922e27a100a9b5042c0dd63d6af3734d56657af4"
+    },
+    "buildTool": {
+      "path": "tools/optimize-raft-texture.mjs",
+      "bytes": 6581,
+      "sha256": "def81fa5b20359ec60c210bd114c6e07591b561e17ef7bdaa7b87f038fc30830"
+    },
+    "atlasSource": {
+      "path": "docs/art/source/raft-comic-v1.png",
+      "bytes": 3032353,
+      "sha256": "fd06e39b63e3a96b23e33d335facb6ed1d2d197b0552af74145b66ae7be8753e"
+    },
+    "desktopAtlas": {
+      "path": "assets/textures/raft/comic-materials-v1.webp",
+      "bytes": 308536,
+      "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54"
+    },
+    "mobileAtlas": {
+      "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+      "bytes": 82878,
+      "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719"
+    }
+  },
+  "optimization": {
+    "path": "docs/art/raft-comic-optimization.json",
+    "tool": {
+      "name": "FFmpeg",
+      "version": "ffmpeg version 8.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+      "path": "ffmpeg"
+    },
+    "source": {
+      "path": "docs/art/source/raft-comic-v1.png",
+      "codec": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3032353,
+      "sha256": "fd06e39b63e3a96b23e33d335facb6ed1d2d197b0552af74145b66ae7be8753e"
+    },
+    "outputs": [
+      {
+        "path": "assets/textures/raft/comic-materials-v1.webp",
+        "width": 1024,
+        "height": 1024,
+        "bytes": 308536,
+        "sha256": "8fd911b1f4c3e64d8a2a2f812c9b85cc82b86c9d562f71eeb8447e6204fa3a54",
+        "settings": {
+          "scale": "1024x1024",
+          "filter": "Lanczos",
+          "quality": 85,
+          "compressionLevel": 6
+        },
+        "estimatedDecodedRgbaBytes": 4194304,
+        "estimatedDecodedRgbaWithFullMipChainBytes": 5592406
+      },
+      {
+        "path": "assets/textures/raft/comic-materials-v1-mobile.webp",
+        "width": 512,
+        "height": 512,
+        "bytes": 82878,
+        "sha256": "464486d6ff3f108b6c9e0593bbb95dc9697fa1ac8907afa1225f1909cae6f719",
+        "settings": {
+          "scale": "512x512",
+          "filter": "Lanczos",
+          "quality": 82,
+          "compressionLevel": 6
+        },
+        "estimatedDecodedRgbaBytes": 1048576,
+        "estimatedDecodedRgbaWithFullMipChainBytes": 1398102
+      }
+    ]
+  },
+  "matrix": [
+    {
+      "id": "high-day",
+      "base": "0aaae7117f27bdaa7e1c6de374dcf0c5c208e157",
+      "observedGitHead": "0aaae7117f27bdaa7e1c6de374dcf0c5c208e157",
+      "workingTree": true,
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "tod": "day",
+      "quality": "high",
+      "skinEnabled": true,
+      "atlasFail": null,
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "texture": {
+        "state": "ok",
+        "selectedSrc": "textures/raft/comic-materials-v1.webp",
+        "width": 1024,
+        "height": 1024,
+        "loaded": true,
+        "applied": true,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 4,
+            "texturedMaterials": 4,
+            "maps": 4
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 1,
+            "maps": 1
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/high-day/evidence.json",
+        "bytes": 24632,
+        "sha256": "0224003271d2b53287ec8189c2447bab791f436d82644e5317f4b8e6854cb805"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/high-day/overview.png",
+          "bytes": 912686,
+          "sha256": "cc83bca09eea9ce9ce1ef67dfa6a42bb26800e02505f610a21d20544d0825a03",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/high-day/close.png",
+          "bytes": 954612,
+          "sha256": "f059bd0e1972ebd7dca75a5dbd7a3f8660cf316606dfa729193bc2c9d3999723",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "hero",
+          "path": "shots/review/raft-comic/high-day/hero.png",
+          "bytes": 1159232,
+          "sha256": "8846a42057f547baa0667e645834474f29669d702962615ae577b1ef4081696a",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/high-day/reconnect.png",
+          "bytes": 954703,
+          "sha256": "72ef814262723ed72d2c2bedf62ddf655193425776eef906fcc4331a8a816b3c",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "high-day-skin-off",
+      "base": "0aaae7117f27bdaa7e1c6de374dcf0c5c208e157",
+      "observedGitHead": "0aaae7117f27bdaa7e1c6de374dcf0c5c208e157",
+      "workingTree": true,
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "tod": "day",
+      "quality": "high",
+      "skinEnabled": false,
+      "atlasFail": null,
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "texture": {
+        "state": "ok",
+        "selectedSrc": "textures/raft/comic-materials-v1.webp",
+        "width": 1024,
+        "height": 1024,
+        "loaded": true,
+        "applied": false,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 3,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/high-day-skin-off/evidence.json",
+        "bytes": 24692,
+        "sha256": "98d5359841793c503656ced11c67c2be6b0c0f0981e449dc305f519f92417870"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/high-day-skin-off/overview.png",
+          "bytes": 867056,
+          "sha256": "0526a452a7db40ccf4ffc9dff3b279d1eabb816b1664a9f3a9ed603c2f043d74",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/high-day-skin-off/close.png",
+          "bytes": 842353,
+          "sha256": "75650409c29359b6f6ddda2cd227026b0d66c3640fb076fbf40f4cb11e56d2f2",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "hero",
+          "path": "shots/review/raft-comic/high-day-skin-off/hero.png",
+          "bytes": 991364,
+          "sha256": "e30125c99d3c5507a802b5b136dd5e482bf6d5daa24c72c9b3081fcb651b67b1",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/high-day-skin-off/reconnect.png",
+          "bytes": 842928,
+          "sha256": "0cf5b77b5712dcd5662be37220e47264db8b998b061ec7b581110a7326489a1c",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "high-night",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "tod": "night",
+      "quality": "high",
+      "skinEnabled": true,
+      "atlasFail": null,
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "texture": {
+        "state": "ok",
+        "selectedSrc": "textures/raft/comic-materials-v1.webp",
+        "width": 1024,
+        "height": 1024,
+        "loaded": true,
+        "applied": true,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 4,
+            "texturedMaterials": 4,
+            "maps": 4
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 1,
+            "maps": 1
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/high-night/evidence.json",
+        "bytes": 20185,
+        "sha256": "3cfe84cda63ae7cfbf5fa194b5608e3cc9249ae197b08132ec902006d9cf8e23"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/high-night/overview.png",
+          "bytes": 819861,
+          "sha256": "0038dd3b180699d386e4c376869a5b881791067dda1c6a3a4d7828bd45d82952",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/high-night/close.png",
+          "bytes": 850983,
+          "sha256": "72d967e19e7dd60273402e1f98f95ebabdd0c606ffdc5b4ff51050f185e0a36d",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/high-night/reconnect.png",
+          "bytes": 851304,
+          "sha256": "830968250a11272e1dac43c649344105258d56ebb4889adefc479ce27310e0fe",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "low-phone-day",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "tod": "day",
+      "quality": "low",
+      "skinEnabled": true,
+      "atlasFail": null,
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp"
+      ],
+      "texture": {
+        "state": "ok",
+        "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+        "width": 512,
+        "height": 512,
+        "loaded": true,
+        "applied": true,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 4,
+            "texturedMaterials": 4,
+            "maps": 4
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 1,
+            "maps": 1
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/low-phone-day/evidence.json",
+        "bytes": 20206,
+        "sha256": "df73eae3172c584310d28f489986669b1b32ab03e51413a227b0208945c0d904"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/low-phone-day/overview.png",
+          "bytes": 219020,
+          "sha256": "1542070709117d5ab5c44d8243c0ef3371581814e4bc8c2e56cda2f871e5d175",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/low-phone-day/close.png",
+          "bytes": 206702,
+          "sha256": "ab75ed5f2d446f534a73e20cebec8ac2a131440d3b39af29becce3c88710c9ea",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/low-phone-day/reconnect.png",
+          "bytes": 206349,
+          "sha256": "2d852e71de3adfccf3ef1d1584c7a951c04a08bf6619d0f5e691c669783a0c0a",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "low-phone-night",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "tod": "night",
+      "quality": "low",
+      "skinEnabled": true,
+      "atlasFail": null,
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp"
+      ],
+      "texture": {
+        "state": "ok",
+        "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+        "width": 512,
+        "height": 512,
+        "loaded": true,
+        "applied": true,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 4,
+            "texturedMaterials": 4,
+            "maps": 4
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 1,
+            "maps": 1
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 2,
+            "maps": 2
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/low-phone-night/evidence.json",
+        "bytes": 20214,
+        "sha256": "4fb3f858bcfabd14566ed699e030be1b1f2873a34cfa55c3fd2269cdfcde6780"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/low-phone-night/overview.png",
+          "bytes": 173582,
+          "sha256": "b8089e221860293f12d34a9859b2aabd742d172654a643be1d1fd4e1e26d8c85",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/low-phone-night/close.png",
+          "bytes": 168233,
+          "sha256": "1258ca894cd50c5f0e686ccc607f9e12caf13d51768f179074e3521a6b6a0f8b",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/low-phone-night/reconnect.png",
+          "bytes": 168141,
+          "sha256": "58b6185a3867e67a2d7f24ed118d44d114c7be56c697129bc6cff64aae9e62c2",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "atlas-404",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 1280,
+        "height": 720,
+        "dpr": 1,
+        "phone": false
+      },
+      "tod": "day",
+      "quality": "high",
+      "skinEnabled": true,
+      "atlasFail": "404",
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1.webp",
+        "/assets/textures/raft/comic-materials-v1.webp"
+      ],
+      "texture": {
+        "state": "error",
+        "selectedSrc": "textures/raft/comic-materials-v1.webp",
+        "width": null,
+        "height": null,
+        "loaded": false,
+        "applied": false,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 3,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 4
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/atlas-404/evidence.json",
+        "bytes": 20457,
+        "sha256": "d102255341cfacecaf49d1f94600be284f557f2281b178e52b63bab0fa45e410"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/atlas-404/overview.png",
+          "bytes": 866058,
+          "sha256": "b2cdb42aa4719782e614ce28a1a874919910f7ef058e14e9a09bc4faabe1039b",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/atlas-404/close.png",
+          "bytes": 842704,
+          "sha256": "9552d5b6062ca14f6f227764ba34445ab0c9bf384a7fbecbf63de2ade2c92bad",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/atlas-404/reconnect.png",
+          "bytes": 843850,
+          "sha256": "137bf0ecd88632950d2e93ad252494a9116006abf829cda8c18756b400127dd4",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "atlas-bad-phone",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "tod": "day",
+      "quality": "low",
+      "skinEnabled": true,
+      "atlasFail": "bad",
+      "noAssets": false,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "requestURLs": [
+        "/assets/textures/raft/comic-materials-v1-mobile.webp",
+        "/assets/textures/raft/comic-materials-v1-mobile.webp"
+      ],
+      "texture": {
+        "state": "error",
+        "selectedSrc": "textures/raft/comic-materials-v1-mobile.webp",
+        "width": null,
+        "height": null,
+        "loaded": false,
+        "applied": false,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 3,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          }
+        },
+        "importedCrates": 1
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/atlas-bad-phone/evidence.json",
+        "bytes": 20332,
+        "sha256": "d90500525b8364e7d2b295892f834a3c3eeb366304497017c5062634dffa79c6"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/atlas-bad-phone/overview.png",
+          "bytes": 208848,
+          "sha256": "40d826b633c46d0ec49f3f7fda96a684c6fe1248455ac9255062acf0e6da1397",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/atlas-bad-phone/close.png",
+          "bytes": 182370,
+          "sha256": "684638b6d9aa0fc5c4e21068ee1e88d24963c5ce9b0c751d75374c3ac35ea8b9",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/atlas-bad-phone/reconnect.png",
+          "bytes": 182364,
+          "sha256": "8968862b3af0ac52dd528fd53634bb563c27374332069c39296cd036f5bfd767",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    },
+    {
+      "id": "noassets-phone",
+      "base": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "observedGitHead": "f0b74a7ee7108d3635902cc60adcc7d722b26f2e",
+      "workingTree": true,
+      "viewport": {
+        "width": 844,
+        "height": 390,
+        "dpr": 1,
+        "phone": true
+      },
+      "tod": "day",
+      "quality": "low",
+      "skinEnabled": true,
+      "atlasFail": null,
+      "noAssets": true,
+      "expectedTextureSrc": "textures/raft/comic-materials-v1-mobile.webp",
+      "requestURLs": [],
+      "texture": {
+        "state": "absent",
+        "selectedSrc": null,
+        "width": null,
+        "height": null,
+        "loaded": false,
+        "applied": false,
+        "surfaceCounts": {
+          "wood": {
+            "materials": 3,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "iron": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "rope": {
+            "materials": 1,
+            "texturedMaterials": 0,
+            "maps": 0
+          },
+          "cloth": {
+            "materials": 2,
+            "texturedMaterials": 0,
+            "maps": 0
+          }
+        },
+        "importedCrates": 0
+      },
+      "errors": {
+        "page": 0,
+        "gameFirst": 0,
+        "gameAfterReload": 0,
+        "consoleResourceFailureMessages": 2
+      },
+      "saveReload": {
+        "normalWorkerSaveObserved": true,
+        "saveBlobBytes": 913,
+        "stableRecordIdentity": true,
+        "partsPreserved": true,
+        "holdPreserved": true,
+        "persistedProfilePreserved": true
+      },
+      "evidenceJson": {
+        "path": "shots/review/raft-comic/noassets-phone/evidence.json",
+        "bytes": 19640,
+        "sha256": "43005824b0cd22e26f7ced0a2db84a61b55b0d541e1fc768922bcc9c3246b3da"
+      },
+      "screenshots": [
+        {
+          "capture": "overview",
+          "path": "shots/review/raft-comic/noassets-phone/overview.png",
+          "bytes": 207502,
+          "sha256": "15e0b39838206b46f3c690e41aeeae39856fdc0ecfdcaf95ab8c781eddaa878c",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "close",
+          "path": "shots/review/raft-comic/noassets-phone/close.png",
+          "bytes": 181068,
+          "sha256": "61aeb9f40b7bbfd8b78de5eb7da8681780e7160a706123b97b072454edc31125",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        },
+        {
+          "capture": "reconnect",
+          "path": "shots/review/raft-comic/noassets-phone/reconnect.png",
+          "bytes": 188591,
+          "sha256": "cee80c0efe1ad7cdeb9d57e2fab9bef218fcee6caa5d99025fc11d856c7fcd72",
+          "visuallyInspectedBy": "primary agent",
+          "visuallyInspected": true
+        }
+      ]
+    }
+  ],
+  "automatedChecks": {
+    "suite": "combined non-network and network tests",
+    "total": 340,
+    "passed": 340,
+    "failed": 0,
+    "nonNetwork": {
+      "tests": 338,
+      "passed": 338,
+      "failed": 0,
+      "durationMs": 52175.2757,
+      "log": {
+        "path": "shots/review/raft-comic/regression.tap",
+        "bytes": 67854,
+        "sha256": "415d7a24e9e8295b7cab554a7ddd8ca6d3e1e1f1319f35a717e440d5273d0b6e"
+      }
+    },
+    "network": {
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "durationMs": 7318.7025,
+      "log": {
+        "path": "shots/review/raft-comic/net.tap",
+        "bytes": 658,
+        "sha256": "33d44fbd473770560d469a63f7ff4742db7aa0a8d4c0e091b016811ab655ed81"
+      }
+    }
+  }
+}

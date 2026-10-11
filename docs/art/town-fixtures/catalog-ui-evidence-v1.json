@@ -1,0 +1,230 @@
+{
+  "schema": 1,
+  "family": "town-fixtures-v1",
+  "revision": 32,
+  "httpFiles": 53,
+  "errors": [],
+  "results": [
+    {
+      "id": "farol-pintado-v1",
+      "images": 40,
+      "failures": [],
+      "links": 98,
+      "screenshot": "C:/DEV/real of trade/realms-of-trade-server/docs/art/town-fixtures/catalog-farol-pintado-v1-v1.png"
+    },
+    {
+      "id": "letreros-pintados-v1",
+      "images": 40,
+      "failures": [],
+      "links": 98,
+      "screenshot": "C:/DEV/real of trade/realms-of-trade-server/docs/art/town-fixtures/catalog-letreros-pintados-v1-v1.png"
+    }
+  ],
+  "geometryReview": {
+    "schema": 1,
+    "family": "town-fixtures-v1",
+    "unrelatedStaticResources": "exact hashes/index/matrix/instances/program/shadows",
+    "mapProps": "identical in 9 contexts",
+    "lightSources": "identical in 9 contexts",
+    "dayGlass": "identical",
+    "camera": "identical in four before/after PC views",
+    "signatures": [
+      {
+        "index": 0,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 2
+      },
+      {
+        "index": 1,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 4796
+      },
+      {
+        "index": 2,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 5444
+      },
+      {
+        "index": 3,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 1472
+      },
+      {
+        "index": 4,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 3152
+      },
+      {
+        "index": 5,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 11314
+      },
+      {
+        "index": 6,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 8894
+      },
+      {
+        "index": 7,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 3040
+      },
+      {
+        "index": 8,
+        "chunk": true,
+        "sign": false,
+        "animated": false,
+        "triangles": 48
+      },
+      {
+        "index": 9,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 204
+      },
+      {
+        "index": 10,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 96
+      },
+      {
+        "index": 11,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 480
+      },
+      {
+        "index": 12,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 216
+      },
+      {
+        "index": 13,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 828
+      },
+      {
+        "index": 14,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 4160
+      },
+      {
+        "index": 15,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 1112
+      },
+      {
+        "index": 16,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 64
+      },
+      {
+        "index": 17,
+        "chunk": false,
+        "sign": false,
+        "animated": true,
+        "triangles": 2
+      },
+      {
+        "index": 18,
+        "chunk": false,
+        "sign": true,
+        "animated": false,
+        "triangles": 12
+      },
+      {
+        "index": 19,
+        "chunk": false,
+        "sign": true,
+        "animated": false,
+        "triangles": 12
+      },
+      {
+        "index": 20,
+        "chunk": false,
+        "sign": false,
+        "animated": true,
+        "triangles": 12
+      },
+      {
+        "index": 21,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 108
+      },
+      {
+        "index": 22,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 108
+      },
+      {
+        "index": 23,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 280
+      },
+      {
+        "index": 24,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 216
+      },
+      {
+        "index": 25,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 280
+      },
+      {
+        "index": 26,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 216
+      },
+      {
+        "index": 27,
+        "chunk": false,
+        "sign": false,
+        "animated": false,
+        "triangles": 266
+      }
+    ]
+  }
+}

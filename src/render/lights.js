@@ -1,0 +1,232 @@
+// Local lights: lanterns, braziers, the campfire, lava, hut windows at night, sentinel eyes, the
+// player's light radius and short flashes (dash, later hits). No three.js lights: the nearest few
+// go into two uniform arrays and every lit shader evaluates them in the same banded style as the
+// sun (toon.js / water.js). Selection never pops: each chosen light fades out as the first light
+// left out gets as close as it, so a swap happens at zero weight.
+import * as THREE from 'three';
+import { U, MAX_LIGHTS } from './toon.js';
+import { lanternPoint } from '../sim/naval/lantern.js';
+import { isRaftFireTuple, personalLanternPoint, raftFirePoint } from './personalLantern.js';
+
+export { MAX_LIGHTS };
+
+// Light kinds: base color, intensity, radius, flicker amount/speed, wrap, which preset knob scales it.
+const KINDS = {
+  lantern: { color: 0xffb35a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'fire' },
+  portable: { color: 0xffdf9a, i: 2.6, r: 7.5, flicker: 0.08, speed: 1.6, wrap: 0.35, knob: 'portable' },
+  brazier: { color: 0xff7a2a, i: 3.6, r: 9.5, flicker: 0.2, speed: 2.6, wrap: 0.35, knob: 'fire' },
+  campfire: { color: 0xff8a32, i: 3.8, r: 10, flicker: 0.24, speed: 2.9, wrap: 0.35, knob: 'fire' },
+  lava: { color: 0xff5a1e, i: 3.0, r: 12, flicker: 0.1, speed: 0.6, wrap: 0.5, knob: 'lava' },
+  window: { color: 0xffa648, i: 2.2, r: 6, flicker: 0.05, speed: 0.9, wrap: 0.2, knob: 'night' },
+  eyes: { color: 0x5ad8ff, i: 1.4, r: 3.2, flicker: 0, speed: 0, wrap: 0.6, knob: 'eyes' },
+  // Soft up-light from the glowing cracks of the Caldera floor.
+  arena: { color: 0xff5a24, i: 1.5, r: 20, flicker: 0.06, speed: 0.5, wrap: 0.85, knob: 'lava' },
+  // Hellfire's body glow (M2.5): moved with the boss by the scene, dark when there is no boss.
+  boss: { color: 0xff7a2a, i: 0, r: 10, flicker: 0.18, speed: 2.2, wrap: 0.5, knob: 'fire' },
+};
+
+// Points on the lava river and crater: greedy picks on a 3 u grid, at least 9 u apart (also used
+// by the lava bubbles in effects.js).
+const lavaCache = new WeakMap();
+export function lavaPoints(map) {
+  if (lavaCache.has(map)) return lavaCache.get(map);
+  const picks = [];
+  const half = map.size / 2;
+  for (let z = -half; z < half; z += 3) {
+    for (let x = -half; x < half; x += 3) {
+      if (map.masks(x, z).lava < 0.75) continue;
+      if (picks.some((q) => (q.x - x) ** 2 + (q.z - z) ** 2 < 81)) continue;
+      picks.push({ x, y: map.heightAt(x, z), z });
+    }
+  }
+  lavaCache.set(map, picks);
+  return picks;
+}
+
+export class LocalLights {
+  constructor(map) {
+    this.sources = [];
+    this.staticSources = this.sources;
+    this.raftSources = new Map();
+    this.portableSources = new Map();
+    this.wantedRaftSources = new Set();
+    this.wantedPortableSources = new Set();
+    this.flashes = [];
+    this.max = 8;
+    this.time = 0;
+    this.knobs = { fire: 1, lava: 1, night: 0, eyes: 1, portable: 1 };
+    this.picked = [];
+    const add = (kind, x, y, z, extra = {}) => {
+      const k = KINDS[kind];
+      this.sources.push({
+        kind, x, y, z, r: extra.r ?? k.r, i: extra.i ?? k.i, color: new THREE.Color(extra.color ?? k.color),
+        flicker: k.flicker, speed: k.speed, wrap: k.wrap, knob: k.knob, seed: this.sources.length * 1.618 + 0.37, d: 0, w: 0,
+      });
+    };
+    for (const p of map.props) {
+      const c = Math.cos(p.rot), s = Math.sin(p.rot);
+      // Local (lx, lz) offset rotated like the prop (three.js Y rotation).
+      const at = (lx, ly, lz) => [p.x + lx * c + lz * s, p.y + ly, p.z - lx * s + lz * c];
+      if (p.kind === 'lantern') add('lantern', ...at(0.42, 1.8, 0));
+      else if (p.kind === 'brazier') add('brazier', p.x, p.y + 1.6, p.z);
+      else if (p.kind === 'gatePost') add('brazier', p.x, p.y + 5.2, p.z, { r: 10 });
+      else if (p.kind === 'campfire') add('campfire', p.x, p.y + 0.8, p.z);
+      else if (p.kind === 'hut') add('window', ...at(0.7, 2.2, 2.6));
+    }
+    // Sentinel eyes: start at the spawn points; the scene moves them with the enemies (follow()).
+    for (const sp of map.enemySpawns || []) {
+      if (sp.kind !== 'sentinel') continue;
+      add('eyes', sp.x + Math.sin(sp.facing) * 0.45, map.groundAt(sp.x, sp.z) + 1.6, sp.z + Math.cos(sp.facing) * 0.45);
+      this.sources[this.sources.length - 1].follow = true;
+    }
+    // Lava: a light a little above each lava point.
+    for (const q of lavaPoints(map)) add('lava', q.x, q.y + 1.4, q.z);
+    const A = map.landmarks.arena;
+    add('arena', A.x, map.groundAt(A.x, A.z) + 1.2, A.z, { r: map.landmarks.arenaR + 6 });
+    add('boss', A.x, map.groundAt(A.x, A.z) + 2.5, A.z);
+    this.bossLight = this.sources[this.sources.length - 1];
+  }
+
+  // Dynamic raft lights reuse the same bounded shader slots as the map's static lights.
+  // Updating snapshots mutates source transforms in place and only rebuilds the source list when
+  // lantern membership changes; no Three.js light objects or per-frame source allocations are used.
+  setRafts(records, activeRaftId = null) {
+    const wanted = this.wantedRaftSources;
+    wanted.clear();
+    const active = activeRaftId == null ? '' : String(activeRaftId);
+    let membershipChanged = false;
+    for (const record of Array.isArray(records) ? records : []) {
+      if (!record || record.id == null || !Array.isArray(record.parts) || !Array.isArray(record.litLanterns)) continue;
+      const raftId = String(record.id);
+      for (const part of record.litLanterns) {
+        if (!isRaftFireTuple(part)) continue;
+        const point = part[0] === 'lantern' ? lanternPoint(record, part) : raftFirePoint(record, part);
+        if (!point ||
+            !record.parts.some((p) => Array.isArray(p) && p.length === 5 && p.every((v, i) => v === part[i]))) continue;
+        // A placed, destroyed lantern is absent from public live parts. Explicit health data also
+        // guards callers that pass blueprint parts rather than the server's live part list.
+        const health = Array.isArray(record.partHealth) && record.partHealth.find((p) =>
+          p?.part?.length === 5 && p.part.every((v, i) => v === part[i]));
+        if (health && !(health.hp > 0)) continue;
+        const key = `${raftId}|${JSON.stringify(part)}`;
+        wanted.add(key);
+        let source = this.raftSources.get(key);
+        if (!source) {
+          const lightKind = part[0] === 'lantern' ? 'lantern' :
+            ['campfire', 'grill'].includes(part[0]) ? 'campfire' : 'brazier';
+          const k = KINDS[lightKind];
+          source = { kind: lightKind, raftId, part: [...part], x: 0, y: 0, z: 0,
+            r: k.r, i: k.i, color: new THREE.Color(k.color), flicker: k.flicker, speed: k.speed,
+            wrap: k.wrap, knob: k.knob, seed: sourceSeed(key), d: 0, w: 0, priority: 0 };
+          this.raftSources.set(key, source);
+          membershipChanged = true;
+        }
+        source.x = point.x;
+        source.y = point.y + (part[0] === 'lantern' ? 1.24 : 0);
+        source.z = point.z;
+        source.priority = raftId === active ? 1 : 0;
+      }
+    }
+    for (const key of this.raftSources.keys()) if (!wanted.has(key)) {
+      this.raftSources.delete(key);
+      membershipChanged = true;
+    }
+    if (membershipChanged) this.refreshSources();
+  }
+
+  // Character belt lights share the fixed local-light shader slots with map and raft lights.
+  // The owner's live light has top priority so decoration can never hide it on the low tier.
+  setPortableLights(records) {
+    const wanted = this.wantedPortableSources;
+    wanted.clear();
+    let membershipChanged = false;
+    for (const record of Array.isArray(records) ? records : []) {
+      if (!record || record.id == null || record.lit !== true) continue;
+      const point = personalLanternPoint(record);
+      if (!point) continue;
+      const key = String(record.id);
+      wanted.add(key);
+      let source = this.portableSources.get(key);
+      if (!source) {
+        const k = KINDS.portable;
+        source = { kind: 'portable', id: key, x: point.x, y: point.y, z: point.z,
+          r: k.r, i: k.i, color: new THREE.Color(k.color), flicker: k.flicker, speed: k.speed,
+          wrap: k.wrap, knob: k.knob, seed: sourceSeed(`portable:${key}`), d: 0, w: 0, priority: 0 };
+        this.portableSources.set(key, source);
+        membershipChanged = true;
+      }
+      source.x = point.x; source.y = point.y; source.z = point.z;
+      source.priority = record.own === true ? 2 : 0;
+    }
+    for (const key of this.portableSources.keys()) if (!wanted.has(key)) {
+      this.portableSources.delete(key);
+      membershipChanged = true;
+    }
+    if (membershipChanged) this.refreshSources();
+  }
+
+  refreshSources() {
+    this.sources = [...this.staticSources, ...this.raftSources.values(), ...this.portableSources.values()];
+  }
+
+  // Short-lived light (dash, hits). Fades with (1 - t)^2.
+  flash(x, y, z, color, radius = 5, intensity = 3, life = 0.3) {
+    let f = this.flashes.find((q) => q.t >= q.life);
+    if (!f) { if (this.flashes.length >= 6) return; f = { color: new THREE.Color() }; this.flashes.push(f); }
+    Object.assign(f, { x, y, z, r: radius, i: intensity, life, t: 0 });
+    f.color.set(color);
+  }
+
+  update(dt, focus) {
+    this.time += dt;
+    const t = this.time, K = this.knobs;
+    let n = 0;
+    const pos = U.mnLightPos.value, col = U.mnLightCol.value;
+    const put = (x, y, z, r, color, intensity, wrap) => {
+      if (n >= this.max || intensity < 0.01) return;
+      pos[n].set(x, y, z, r);
+      col[n].set(color.r * intensity, color.g * intensity, color.b * intensity, wrap);
+      n++;
+    };
+    // Keep the prior static budget stable while reserving room for transient combat flashes.
+    const reserve = this.max >= 8 ? 2 : 1;
+    const slots = this.max - reserve;
+    // Rank by distance from the focus minus part of the radius (big lights count from farther).
+    const list = this.picked;
+    list.length = 0;
+    for (const s of this.sources) {
+      s.w = 0;
+      const knob = K[s.knob] ?? 1;
+      if (knob < 0.01) continue;
+      s.d = s.priority >= 2 ? -s.r * 0.5 : Math.hypot(s.x - focus.x, s.z - focus.z) - s.r * 0.5;
+      if (s.d > 40) continue;
+      list.push(s);
+    }
+    list.sort((a, b) => (b.priority || 0) - (a.priority || 0) || a.d - b.d);
+    const cut = list.length > slots ? list[slots].d : 40;
+    for (let i = 0; i < Math.min(slots, list.length); i++) {
+      const s = list[i];
+      const fade = s.priority >= 2 ? 1 : Math.max(s.priority ? 0.65 : 0, Math.min(1, (cut - s.d) / 6)) *
+        (1 - THREE.MathUtils.smoothstep(s.d, 30, 40));
+      if (fade <= 0) continue;
+      s.w = fade;
+      // Flicker: two incommensurate sines + a faster jitter, never below 1 - 2*amount.
+      const fl = 1 + s.flicker * (Math.sin(t * s.speed * 3.1 + s.seed * 7) * 0.6 + Math.sin(t * s.speed * 7.3 + s.seed * 3) * 0.4 + Math.sin(t * s.speed * 17 + s.seed) * 0.3);
+      put(s.x, s.y + (s.flicker > 0.15 ? Math.sin(t * 9 + s.seed) * 0.08 : 0), s.z, s.r, s.color, s.i * fl * fade * K[s.knob], s.wrap);
+    }
+    // Flashes use the remaining reserved slot; portable lights are ordinary ranked sources above.
+    for (const f of this.flashes) {
+      if (f.t >= f.life) continue;
+      f.t += dt;
+      const k = Math.max(0, 1 - f.t / f.life);
+      put(f.x, f.y, f.z, f.r, f.color, f.i * k * k, 0.6);
+    }
+    U.mnLightCount.value = n;
+  }
+}
+
+function sourceSeed(key) {
+  let hash = 2166136261;
+  for (let i = 0; i < key.length; i++) hash = Math.imul(hash ^ key.charCodeAt(i), 16777619);
+  return ((hash >>> 0) / 0xffffffff) * Math.PI * 2;
+}

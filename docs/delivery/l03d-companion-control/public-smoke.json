@@ -1,0 +1,85 @@
+{
+  "schema": "mn.l03d.companion-control.public.v1",
+  "at": "2026-10-11T02:18:02.720Z",
+  "target": "public TLS",
+  "pass": true,
+  "checks": [
+    {
+      "check": "public_health_200",
+      "pass": true
+    },
+    {
+      "check": "durable_M5_resources_healthy",
+      "pass": true,
+      "version": "0.6.0-alpha.39",
+      "logging": true
+    },
+    {
+      "check": "published_protocol",
+      "pass": true,
+      "protocol": 47
+    },
+    {
+      "check": "published_companions_panel",
+      "pass": true
+    },
+    {
+      "check": "published_companion_config_client",
+      "pass": true
+    },
+    {
+      "check": "published_companion_config_editor",
+      "pass": true
+    },
+    {
+      "check": "operator_tools_not_public",
+      "pass": true
+    },
+    {
+      "check": "ordinary_guest_real_public_entry",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companions_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_stop_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_resume_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_companion_config_load_forbidden_without_head",
+      "pass": true
+    },
+    {
+      "check": "public_guest_market_forbidden",
+      "pass": true
+    },
+    {
+      "check": "public_guest_trade_forbidden_without_receipt",
+      "pass": true
+    },
+    {
+      "check": "public_guest_budget_forbidden",
+      "pass": true
+    },
+    {
+      "check": "unconfigured_public_agent_admission_denied",
+      "pass": true
+    },
+    {
+      "check": "old_protocol_requires_reload",
+      "pass": true
+    }
+  ],
+  "scope": "Public delivery and unauthenticated denial for SQL027 durable stop/control and SQL025 companion configuration on existing bindings only.",
+  "limits": [
+    "Guest wire denials are verified; authenticated public owner stop/resume acceptance remains pending.",
+    "This smoke does not inspect private SQL027 control rows or prove durable stop/resume across restart.",
+    "No binding provisioning, provider, credentials, inference, agent budgets, or public agent activation. Gameplay durability is checked separately."
+  ]
+}

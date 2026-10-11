@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-07T00:07:34.648Z",
+  "catalogRevision": 3,
+  "rows": 76,
+  "checks": {
+    "fiveSandRowsHaveOriginalReference": true,
+    "dryPreparedNotApplied": true,
+    "allNewLinksExact": true
+  },
+  "links": [
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-desktop.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 441600,
+      "sha256": "acbbd2aa3ca2f66cec616a8db4f444bc7dd08280bc8d5d9c80792fb6a75e07a6"
+    },
+    {
+      "path": "docs/art/source/sand-dry-selected-v1.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 3728793,
+      "sha256": "c85606c5c23e411ea407516d8c658b793aca464c471a929a860289c3748231e1"
+    },
+    {
+      "path": "docs/art/references/beach-sand-board-v1.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 3153159,
+      "sha256": "5d4bb01fbcdb1ed9080f26c3f5a33431b225cf08f822c468c8dd091e0de39fe1"
+    },
+    {
+      "path": "docs/briefs/visual-s01-sand-family.md",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "bytes": 9813,
+      "sha256": "56321cb5656f8cfab60dd195af6c4eeaeb4ad64618176e721bc7565698803420"
+    },
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-repeat-3x3.png",
+      "status": 200,
+      "contentType": "image/png",
+      "bytes": 1922799,
+      "sha256": "eebecc97903a9ecde2b95101e2b91e1fd69c73a654e9d7a154931311c4e7c0cb"
+    },
+    {
+      "path": "docs/art/sand/sand-dry-v2-desktop.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 116456,
+      "sha256": "bebaefd9afe75a53146584ffe24a220274280f7c6e42414af3561279bb269e73"
+    },
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-mobile.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "bytes": 97836,
+      "sha256": "7056c7c42c7fdc431dc2a51069394497168d0b77145245bb7d73569f797926e9"
+    },
+    {
+      "path": "docs/art/sand/sand-dry-selected-v1-receipt.json",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 2287,
+      "sha256": "2099586cb4745265cbd4b8025c14e35b00123cb6d299b08c9aa4b9b86b04195d"
+    }
+  ],
+  "limits": "HTTP/data checks only. Bitmap candidates inspected separately; no new browser UI/game screenshot or mobile selection evidence in this cut."
+}

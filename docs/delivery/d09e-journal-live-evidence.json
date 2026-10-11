@@ -1,0 +1,214 @@
+{
+  "delivery": "D09e Supabase follow-up",
+  "date": "2026-10-05",
+  "sourceCommit": "68fdcec329883cb6528c464e74687509fc05fac1",
+  "productionSources": [
+    {
+      "file": "server/store.mjs",
+      "sha256": "6e6771fb8263f17711ca55383dca5d4de1854a185d017aeaa317d53c5ed4b001",
+      "matchesHead": true
+    },
+    {
+      "file": "server/profileSessions.mjs",
+      "sha256": "14d096d5ad619ffe63cbfdad7437f05cc1a17aa7965bf26f6fd8010b69641aa5",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlQueue.mjs",
+      "sha256": "20ab54058ed98fec62e0112e0ec950f456d71417c382ad8822c582870c2b7f35",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlJournal.mjs",
+      "sha256": "4ffa1d3b62cb837b50fdd066d94a12fa664d49a4ce1aec1e776b4560220d4beb",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlOperations.mjs",
+      "sha256": "f0d19a875d52ab5503847cd346a15ce26a9535807855e8f24b5bf6ae895d65d0",
+      "matchesHead": true
+    },
+    {
+      "file": "server/pearlGround.mjs",
+      "sha256": "4617c4505cf0a90eaf503681b9dbd270c816219ab53b5cd7221cce12b7780794",
+      "matchesHead": true
+    },
+    {
+      "file": "server/migrations/005_pearl_journal.sql",
+      "sha256": "85783e38d4aace762c71f89aa43e06b91989444b96d107baff0856977675bfad",
+      "matchesHead": true
+    },
+    {
+      "file": "src/sim/systems/inventory.js",
+      "sha256": "2c60931bd2ecd78bd0d128643191c485b41ca5eff8959b6ee0c0aa3694339fee",
+      "matchesHead": true
+    }
+  ],
+  "tool": {
+    "file": "tools/verify-pearl-journal.mjs",
+    "reviewedSha256": "bf55dab019d7a5b8f5e64d14c39723bc0c8586ce3190a6a40bfd9f4dac80f743",
+    "command": "node tools/verify-pearl-journal.mjs --live",
+    "safety": "Explicit flag; exact generated fixtures; successful-run cleanup; failed runs retained for recovery"
+  },
+  "probe": {
+    "source": ".scratch/m5-journal-live-probe.mjs",
+    "sha256": "459a6bb1af447dd42a2090d243bd0b544e923aa82244b2e13920b2e061116eb1",
+    "checks": [
+      {
+        "check": "journal-table-available",
+        "ok": true
+      },
+      {
+        "check": "journal-sdk-empty-jsonb-page",
+        "ok": true
+      },
+      {
+        "check": "journal-write-RPCs-invalid-no-insert",
+        "ok": true
+      },
+      {
+        "check": "journal-public-table-denied",
+        "ok": true
+      },
+      {
+        "check": "journal-public-RPCs-denied",
+        "ok": true
+      }
+    ]
+  },
+  "realSupabase": true,
+  "checksPassed": 21,
+  "checksTotal": 21,
+  "phases": [
+    {
+      "phase": "prepare-committed",
+      "check": "isolated-fixture-absence-and-profiles",
+      "ok": true
+    },
+    {
+      "phase": "prepare-committed",
+      "check": "exact-prepare-idempotence-and-identity-guards",
+      "ok": true
+    },
+    {
+      "phase": "prepare-committed",
+      "check": "exclusive-paging-and-scope-isolation",
+      "ok": true
+    },
+    {
+      "phase": "prepare-committed",
+      "check": "both-families-committed-before-process-exit",
+      "ok": true
+    },
+    {
+      "phase": "recover-committed",
+      "check": "fresh-process-admission-gate-and-read-only-recovery",
+      "ok": true
+    },
+    {
+      "phase": "recover-committed",
+      "check": "gold-once-authoritative-profiles-and-terminal-omission",
+      "ok": true
+    },
+    {
+      "phase": "prepare-unsent",
+      "check": "request-persisted-without-dispatch",
+      "ok": true
+    },
+    {
+      "phase": "resume-unsent",
+      "check": "fresh-process-pending-account-and-UID-fences",
+      "ok": true
+    },
+    {
+      "phase": "resume-unsent",
+      "check": "one-exact-persisted-request-no-new-builder-or-UUID",
+      "ok": true
+    },
+    {
+      "phase": "lost-terminal-reply",
+      "check": "applied-terminal-write-lost-reply-keeps-local-fence",
+      "ok": true
+    },
+    {
+      "phase": "lost-terminal-reply",
+      "check": "read-only-reconciliation-no-second-relocation",
+      "ok": true
+    },
+    {
+      "phase": "lost-terminal-reply",
+      "check": "terminal-idempotence-and-reopen-denied",
+      "ok": true
+    },
+    {
+      "phase": "lost-terminal-reply",
+      "check": "service-delete-denied-and-audit-retained",
+      "ok": true
+    },
+    {
+      "phase": "lost-terminal-reply",
+      "check": "public-journal-writes-denied",
+      "ok": true
+    },
+    {
+      "phase": "cleanup",
+      "check": "all-four-journal-rows-terminal-before-cleanup",
+      "ok": true
+    },
+    {
+      "phase": "cleanup",
+      "check": "exact-gameplay-fixtures-removed-and-audit-retained",
+      "ok": true
+    }
+  ],
+  "processEvidence": {
+    "nodeChildren": 6,
+    "gameplayHostRestarted": false,
+    "sdkReplyLossSimulatedAtCaller": true,
+    "authenticatedUserCreated": false
+  },
+  "fixtures": {
+    "scope": "canary-journal-7c8a41ac-b735-44a3-8850-a0cb0ade2220",
+    "accounts": [
+      "94a69cba-d418-42cb-b719-9d5e89ae30bb",
+      "2712dd13-2df8-4350-bfba-007a4411fe46"
+    ],
+    "uids": [
+      "canary-journal-sale-7c8a41ac-b735-44a3-8850-a0cb0ade2220",
+      "canary-journal-pearl-7c8a41ac-b735-44a3-8850-a0cb0ade2220",
+      "canary-journal-mint-7c8a41ac-b735-44a3-8850-a0cb0ade2220"
+    ],
+    "operations": [
+      "a1517da1-b6cb-4b8e-9b65-a463938160be",
+      "4d0a780e-cdca-4d57-ae61-5e36bbb39356",
+      "3bac60d4-1aef-495c-89e0-2657346a4ed1",
+      "5811f7dc-9a25-4a15-9363-fc37b3fe7af0",
+      "fa18d718-f4cf-4da4-b2b4-0fd45dd85d31"
+    ],
+    "gameplayRowsRemovedAndVerified": true,
+    "retainedJournalOperations": [
+      "4d0a780e-cdca-4d57-ae61-5e36bbb39356",
+      "3bac60d4-1aef-495c-89e0-2657346a4ed1",
+      "5811f7dc-9a25-4a15-9363-fc37b3fe7af0",
+      "fa18d718-f4cf-4da4-b2b4-0fd45dd85d31"
+    ],
+    "retainedJournalState": "committed",
+    "retainedJournalRows": 4,
+    "remainingPending": 0
+  },
+  "outcome": {
+    "saleGold": 610,
+    "recoveryMutationSends": 0,
+    "explicitResumeMutationSends": 1,
+    "lostTerminalReplyRelocationSends": 1,
+    "publicTableAndRPCDenied": true,
+    "serviceJournalDeleteDenied": true
+  },
+  "limitations": [
+    "No live authenticated-role assertion",
+    "No GameHost/LocalServer gameplay injection or restart",
+    "No multi-host lease/failover/forced backend overlap",
+    "Ground clock/adoption/guests and all gameplay gates remain open"
+  ],
+  "nextBrief": "docs/briefs/m5-pearl-game-staging.md"
+}

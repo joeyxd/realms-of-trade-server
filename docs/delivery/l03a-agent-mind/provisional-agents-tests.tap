@@ -1,0 +1,1286 @@
+TAP version 13
+# Subtest: opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+ok 1 - opt-in real WebSocket authority separates owner and character identity and denies unmapped or duplicate agents
+  ---
+  duration_ms: 304.2769
+  type: 'test'
+  ...
+# Subtest: owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+ok 2 - owner direct control and revoke dominate agent tasks; stale epoch and task revisions cannot return after resume
+  ---
+  duration_ms: 530.0799
+  type: 'test'
+  ...
+# Subtest: agent authority gate requires authenticated identity resolution and a matching configured world
+ok 3 - agent authority gate requires authenticated identity resolution and a matching configured world
+  ---
+  duration_ms: 0.6622
+  type: 'test'
+  ...
+# Subtest: agent HELLO remains denied when the opt-in server gate is absent
+ok 4 - agent HELLO remains denied when the opt-in server gate is absent
+  ---
+  duration_ms: 132.9943
+  type: 'test'
+  ...
+# Subtest: partial agent admission failure closes the managed socket and leaves no entity or active grant
+ok 5 - partial agent admission failure closes the managed socket and leaves no entity or active grant
+  ---
+  duration_ms: 130.5548
+  type: 'test'
+  ...
+# Subtest: a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+ok 6 - a missing body capability blocks body tasks and protected buttons; agent sockets cannot dispatch CMD or naval messages
+  ---
+  duration_ms: 348.3063
+  type: 'test'
+  ...
+# Subtest: PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+ok 7 - PvE ATTACK carried from a late command is revalidated after merge if a live player enters range before the tick
+  ---
+  duration_ms: 174.8295
+  type: 'test'
+  ...
+# Subtest: task and grant expiration are swept with the host timer stopped
+ok 8 - task and grant expiration are swept with the host timer stopped
+  ---
+  duration_ms: 1331.5135
+  type: 'test'
+  ...
+# Subtest: death invalidates an active grant, task, and queued input before any next tick
+ok 9 - death invalidates an active grant, task, and queued input before any next tick
+  ---
+  duration_ms: 264.8315
+  type: 'test'
+  ...
+# Subtest: disconnect retires its queue and a reentered agent receives a different grant
+ok 10 - disconnect retires its queue and a reentered agent receives a different grant
+  ---
+  duration_ms: 247.6321
+  type: 'test'
+  ...
+# Subtest: authenticated runner adopts the server grant, validates scope, and waits for task acknowledgement before input
+ok 11 - authenticated runner adopts the server grant, validates scope, and waits for task acknowledgement before input
+  ---
+  duration_ms: 535.1961
+  type: 'test'
+  ...
+# Subtest: owner direct movement outranks runner goals; owner revoke archives uncertainty and requires resume plus a fresh epoch
+ok 12 - owner direct movement outranks runner goals; owner revoke archives uncertainty and requires resume plus a fresh epoch
+  ---
+  duration_ms: 596.4819
+  type: 'test'
+  ...
+# Subtest: agent self-release receives a confirmed server receipt and does not disable the binding
+ok 13 - agent self-release receives a confirmed server receipt and does not disable the binding
+  ---
+  duration_ms: 571.5588
+  type: 'test'
+  ...
+# Subtest: CLI reads authenticated token only from the named environment variable and keeps it out of output and context
+ok 14 - CLI reads authenticated token only from the named environment variable and keeps it out of output and context
+  ---
+  duration_ms: 724.5475
+  type: 'test'
+  ...
+# Subtest: AgentControl accepts only canonical server bindings and keeps owner and character identities separate
+ok 15 - AgentControl accepts only canonical server bindings and keeps owner and character identities separate
+  ---
+  duration_ms: 2.988
+  type: 'test'
+  ...
+# Subtest: admission uses the resolved character UUID, reserves entity zero, and issues a detached scoped grant
+ok 16 - admission uses the resolved character UUID, reserves entity zero, and issues a detached scoped grant
+  ---
+  duration_ms: 1.1981
+  type: 'test'
+  ...
+# Subtest: task revisions are CAS guarded, priority orders direct over goal over reflex, and cancel advances revision
+ok 17 - task revisions are CAS guarded, priority orders direct over goal over reflex, and cancel advances revision
+  ---
+  duration_ms: 2.1272
+  type: 'test'
+  ...
+# Subtest: capability and task schemas reject unsupported authority and unsafe object data
+ok 18 - capability and task schemas reject unsupported authority and unsafe object data
+  ---
+  duration_ms: 0.4055
+  type: 'test'
+  ...
+# Subtest: task and grant expiry are enforced at authorization and swept without reviving work
+ok 19 - task and grant expiry are enforced at authorization and swept without reviving work
+  ---
+  duration_ms: 0.663
+  type: 'test'
+  ...
+# Subtest: revoke disables authority and clears tasks; resume requires fresh admission and never restores the old grant
+ok 20 - revoke disables authority and clears tasks; resume requires fresh admission and never restores the old grant
+  ---
+  duration_ms: 0.5913
+  type: 'test'
+  ...
+# Subtest: disconnect and task expiry snapshots are detached and cannot mutate authoritative state
+ok 21 - disconnect and task expiry snapshots are detached and cannot mutate authoritative state
+  ---
+  duration_ms: 0.397
+  type: 'test'
+  ...
+# Subtest: AgentChat rejects malformed deliveries and a changed C01 session identity
+ok 22 - AgentChat rejects malformed deliveries and a changed C01 session identity
+  ---
+  duration_ms: 2.3407
+  type: 'test'
+  ...
+# Subtest: real guests share world, local, and private chat through C01 routing
+ok 23 - real guests share world, local, and private chat through C01 routing
+  ---
+  duration_ms: 1001.6219
+  type: 'test'
+  ...
+# Subtest: server rate and recipient rejections return visible chat outcomes
+ok 24 - server rate and recipient rejections return visible chat outcomes
+  ---
+  duration_ms: 463.6092
+  type: 'test'
+  ...
+# Subtest: same-ID retry recovers a lost C01 reply without duplicating delivery
+ok 25 - same-ID retry recovers a lost C01 reply without duplicating delivery
+  ---
+  duration_ms: 550.2044
+  type: 'test'
+  ...
+# Subtest: chat and body orders share action IDs, and server chat accepts 281–300 code points
+ok 26 - chat and body orders share action IDs, and server chat accepts 281–300 code points
+  ---
+  duration_ms: 516.876
+  type: 'test'
+  ...
+# Subtest: real chat history is bounded, replay deduplicated, and control text is cleaned
+ok 27 - real chat history is bounded, replay deduplicated, and control text is cleaned
+  ---
+  duration_ms: 1098.9226
+  type: 'test'
+  ...
+# Subtest: chat send requires a fresh observation and the chat capability
+ok 28 - chat send requires a fresh observation and the chat capability
+  ---
+  duration_ms: 783.7223
+  type: 'test'
+  ...
+# Subtest: chat has one unresolved request and caps explicit uncertainty retries at three attempts
+ok 29 - chat has one unresolved request and caps explicit uncertainty retries at three attempts
+  ---
+  duration_ms: 865.5589
+  type: 'test'
+  ...
+# Subtest: foreign whispers and malformed receipts cannot create delivered context or routing proof
+ok 30 - foreign whispers and malformed receipts cannot create delivered context or routing proof
+  ---
+  duration_ms: 1.91
+  type: 'test'
+  ...
+# Subtest: closed IDs remain replay-only, capacity is explicit, and stop keeps uncertainty without resend
+ok 31 - closed IDs remain replay-only, capacity is explicit, and stop keeps uncertainty without resend
+  ---
+  duration_ms: 1.1355
+  type: 'test'
+  ...
+# Subtest: required blocks are preserved and exact fit succeeds while one unit over fails
+ok 32 - required blocks are preserved and exact fit succeeds while one unit over fails
+  ---
+  duration_ms: 2.3434
+  type: 'test'
+  ...
+# Subtest: large repeated history is bounded, deduplicated, deterministic, and reports omitted history
+ok 33 - large repeated history is bounded, deduplicated, deterministic, and reports omitted history
+  ---
+  duration_ms: 13.6844
+  type: 'test'
+  ...
+# Subtest: invalid, out-of-scope, expired and superseded revisions are excluded with reasons
+ok 34 - invalid, out-of-scope, expired and superseded revisions are excluded with reasons
+  ---
+  duration_ms: 0.5705
+  type: 'test'
+  ...
+# Subtest: uncertainty and source provenance survive exact compaction without mutating input
+ok 35 - uncertainty and source provenance survive exact compaction without mutating input
+  ---
+  duration_ms: 0.7901
+  type: 'test'
+  ...
+# Subtest: context pruning omits optional records only and preserves pending uncertainty
+ok 36 - context pruning omits optional records only and preserves pending uncertainty
+  ---
+  duration_ms: 0.3917
+  type: 'test'
+  ...
+# Subtest: selected-memory cap reports omitted candidates and relevance is deterministic
+ok 37 - selected-memory cap reports omitted candidates and relevance is deterministic
+  ---
+  duration_ms: 0.4328
+  type: 'test'
+  ...
+# Subtest: injected counter and configuration are validated and reported
+ok 38 - injected counter and configuration are validated and reported
+  ---
+  duration_ms: 0.7974
+  type: 'test'
+  ...
+# Subtest: scope, revision and source shapes are exact; integer revisions sort numerically
+ok 39 - scope, revision and source shapes are exact; integer revisions sort numerically
+  ---
+  duration_ms: 0.3566
+  type: 'test'
+  ...
+# Subtest: required blocks are snapshotted so later source mutation cannot desync text
+ok 40 - required blocks are snapshotted so later source mutation cannot desync text
+  ---
+  duration_ms: 0.2406
+  type: 'test'
+  ...
+# Subtest: scope with extra keys is rejected instead of widening access
+ok 41 - scope with extra keys is rejected instead of widening access
+  ---
+  duration_ms: 0.2475
+  type: 'test'
+  ...
+# Subtest: compactMemory rejects invalid bounds and never crosses owner scope
+ok 42 - compactMemory rejects invalid bounds and never crosses owner scope
+  ---
+  duration_ms: 0.2787
+  type: 'test'
+  ...
+# Subtest: long original ids compact into bounded reusable records with full provenance
+ok 43 - long original ids compact into bounded reusable records with full provenance
+  ---
+  duration_ms: 0.3814
+  type: 'test'
+  ...
+# Subtest: candidate bound reads the latest append-ordered entries and zero candidates scans none
+ok 44 - candidate bound reads the latest append-ordered entries and zero candidates scans none
+  ---
+  duration_ms: 0.2805
+  type: 'test'
+  ...
+# Subtest: zero optional memory budget keeps required blocks and reports zero selected memory units
+ok 45 - zero optional memory budget keeps required blocks and reports zero selected memory units
+  ---
+  duration_ms: 0.2716
+  type: 'test'
+  ...
+# Subtest: concurrent synchronous reservations cannot pass the same remaining cap
+ok 46 - concurrent synchronous reservations cannot pass the same remaining cap
+  ---
+  duration_ms: 2.0601
+  type: 'test'
+  ...
+# Subtest: all request kinds draw from the same call and usage caps
+ok 47 - all request kinds draw from the same call and usage caps
+  ---
+  duration_ms: 0.248
+  type: 'test'
+  ...
+# Subtest: same reservation replays without consuming capacity; collision is rejected
+ok 48 - same reservation replays without consuming capacity; collision is rejected
+  ---
+  duration_ms: 0.2223
+  type: 'test'
+  ...
+# Subtest: unknown calls retain full holds until trusted usage reconciliation
+ok 49 - unknown calls retain full holds until trusted usage reconciliation
+  ---
+  duration_ms: 0.931
+  type: 'test'
+  ...
+# Subtest: actual usage beyond a reservation is recorded truthfully and blocks new admissions
+ok 50 - actual usage beyond a reservation is recorded truthfully and blocks new admissions
+  ---
+  duration_ms: 0.2204
+  type: 'test'
+  ...
+# Subtest: cancel before dispatch releases holds and a call but retains the bounded identity
+ok 51 - cancel before dispatch releases holds and a call but retains the bounded identity
+  ---
+  duration_ms: 0.2288
+  type: 'test'
+  ...
+# Subtest: snapshot and returned entries are detached copies
+ok 52 - snapshot and returned entries are detached copies
+  ---
+  duration_ms: 0.1517
+  type: 'test'
+  ...
+# Subtest: malformed, zero-work, and overflowing estimates fail closed
+ok 53 - malformed, zero-work, and overflowing estimates fail closed
+  ---
+  duration_ms: 0.162
+  type: 'test'
+  ...
+# Subtest: entry capacity never evicts identities and cancellation does not reopen space
+ok 54 - entry capacity never evicts identities and cancellation does not reopen space
+  ---
+  duration_ms: 0.1349
+  type: 'test'
+  ...
+# Subtest: constructor rejects malformed scope or limits
+ok 55 - constructor rejects malformed scope or limits
+  ---
+  duration_ms: 0.4337
+  type: 'test'
+  ...
+# Subtest: request and usage payloads require exact plain own fields and safe request IDs
+ok 56 - request and usage payloads require exact plain own fields and safe request IDs
+  ---
+  duration_ms: 0.1972
+  type: 'test'
+  ...
+# Subtest: provider use beyond a per-call reservation is an overrun even below the global cap
+ok 57 - provider use beyond a per-call reservation is an overrun even below the global cap
+  ---
+  duration_ms: 0.1738
+  type: 'test'
+  ...
+# Subtest: settlement arithmetic overflow fails closed and latches the overrun gate
+ok 58 - settlement arithmetic overflow fails closed and latches the overrun gate
+  ---
+  duration_ms: 0.8235
+  type: 'test'
+  ...
+# Subtest: snapshot exposes detached copies of every ledger entry
+ok 59 - snapshot exposes detached copies of every ledger entry
+  ---
+  duration_ms: 0.1239
+  type: 'test'
+  ...
+# Subtest: fixture factories provide independent copies and explicitly lab-only evidence
+ok 60 - fixture factories provide independent copies and explicitly lab-only evidence
+  ---
+  duration_ms: 2.3288
+  type: 'test'
+  ...
+# Subtest: observe, accept, normal input, send, ACK and fixture receipt have distinct stages
+ok 61 - observe, accept, normal input, send, ACK and fixture receipt have distinct stages
+  ---
+  duration_ms: 2.7209
+  type: 'test'
+  ...
+# Subtest: ACK cannot create a result and must be within an emitted range
+ok 62 - ACK cannot create a result and must be within an emitted range
+  ---
+  duration_ms: 0.3987
+  type: 'test'
+  ...
+# Subtest: predicted targets and predicted health never grant authority or confirm an outcome
+ok 63 - predicted targets and predicted health never grant authority or confirm an outcome
+  ---
+  duration_ms: 0.6002
+  type: 'test'
+  ...
+# Subtest: strict envelopes reject malformed, hidden and non-fixture input
+ok 64 - strict envelopes reject malformed, hidden and non-fixture input
+  ---
+  duration_ms: 1.0521
+  type: 'test'
+  ...
+# Subtest: unsupported capability and owner-forbidden action are different failures
+ok 65 - unsupported capability and owner-forbidden action are different failures
+  ---
+  duration_ms: 0.3725
+  type: 'test'
+  ...
+# Subtest: an action must reference the current session and control revision
+ok 66 - an action must reference the current session and control revision
+  ---
+  duration_ms: 0.4113
+  type: 'test'
+  ...
+# Subtest: observation revisions, ticks, received times and maximum age enforce freshness
+ok 67 - observation revisions, ticks, received times and maximum age enforce freshness
+  ---
+  duration_ms: 0.5621
+  type: 'test'
+  ...
+# Subtest: grant expiry stops active emission and never resumes the lab
+ok 68 - grant expiry stops active emission and never resumes the lab
+  ---
+  duration_ms: 0.5819
+  type: 'test'
+  ...
+# Subtest: move and aim arguments are finite, bounded, exact and require a short horizon
+ok 69 - move and aim arguments are finite, bounded, exact and require a short horizon
+  ---
+  duration_ms: 0.7335
+  type: 'test'
+  ...
+# Subtest: confirmed live PvE targets are required and attack is one pulse per action
+ok 70 - confirmed live PvE targets are required and attack is one pulse per action
+  ---
+  duration_ms: 0.6247
+  type: 'test'
+  ...
+# Subtest: lost targets and reused numeric entity IDs cancel old lifecycle orders
+ok 71 - lost targets and reused numeric entity IDs cancel old lifecycle orders
+  ---
+  duration_ms: 0.8309
+  type: 'test'
+  ...
+# Subtest: stop requires the owner and preserves already sent uncertainty
+ok 72 - stop requires the owner and preserves already sent uncertainty
+  ---
+  duration_ms: 0.4049
+  type: 'test'
+  ...
+# Subtest: death and disconnect neutralize inputs and distinguish unsent from sent work
+ok 73 - death and disconnect neutralize inputs and distinguish unsent from sent work
+  ---
+  duration_ms: 0.6327
+  type: 'test'
+  ...
+# Subtest: confirmed death interrupts even when prediction appears healthy
+ok 74 - confirmed death interrupts even when prediction appears healthy
+  ---
+  duration_ms: 0.3238
+  type: 'test'
+  ...
+# Subtest: late decisions are rejected but an original fixture receipt resolves uncertainty without restarting input
+ok 75 - late decisions are rejected but an original fixture receipt resolves uncertainty without restarting input
+  ---
+  duration_ms: 0.292
+  type: 'test'
+  ...
+# Subtest: superseding an action retires its inputs while late original evidence stays correlated
+ok 76 - superseding an action retires its inputs while late original evidence stays correlated
+  ---
+  duration_ms: 0.426
+  type: 'test'
+  ...
+# Subtest: action horizon ends emission; a fresh observation permits testing result timeout independently
+ok 77 - action horizon ends emission; a fresh observation permits testing result timeout independently
+  ---
+  duration_ms: 0.4257
+  type: 'test'
+  ...
+# Subtest: stale observations close emission instead of carrying a retained move
+ok 78 - stale observations close emission instead of carrying a retained move
+  ---
+  duration_ms: 0.6779
+  type: 'test'
+  ...
+# Subtest: duplicate IDs replay equivalent reordered objects without a second attack pulse; changed arguments conflict
+ok 79 - duplicate IDs replay equivalent reordered objects without a second attack pulse; changed arguments conflict
+  ---
+  duration_ms: 0.6041
+  type: 'test'
+  ...
+# Subtest: input ranges are validated and extended contiguously; expiry cannot transmit
+ok 80 - input ranges are validated and extended contiguously; expiry cannot transmit
+  ---
+  duration_ms: 0.259
+  type: 'test'
+  ...
+# Subtest: evidence rejects wrong source, scope, action ID, authorization and baseline tick
+ok 81 - evidence rejects wrong source, scope, action ID, authorization and baseline tick
+  ---
+  duration_ms: 0.3843
+  type: 'test'
+  ...
+# Subtest: partial fixture evidence retains uncertainty, receipts deduplicate and terminal results close
+ok 82 - partial fixture evidence retains uncertainty, receipts deduplicate and terminal results close
+  ---
+  duration_ms: 0.4365
+  type: 'test'
+  ...
+# Subtest: rejected fixture outcomes close work and do not hide their code
+ok 83 - rejected fixture outcomes close work and do not hide their code
+  ---
+  duration_ms: 0.2109
+  type: 'test'
+  ...
+# Subtest: action, observation and partial-effect capacity limits prevent unbounded retained state
+ok 84 - action, observation and partial-effect capacity limits prevent unbounded retained state
+  ---
+  duration_ms: 0.3971
+  type: 'test'
+  ...
+# Subtest: invalid configuration is rejected and time never runs backward
+ok 85 - invalid configuration is rejected and time never runs backward
+  ---
+  duration_ms: 0.4169
+  type: 'test'
+  ...
+# Subtest: constructor input, observation, orders, receipts and getters are detached from external mutation
+ok 86 - constructor input, observation, orders, receipts and getters are detached from external mutation
+  ---
+  duration_ms: 0.2819
+  type: 'test'
+  ...
+# Subtest: the same simulated observations and decisions reproduce input and result history
+ok 87 - the same simulated observations and decisions reproduce input and result history
+  ---
+  duration_ms: 0.6135
+  type: 'test'
+  ...
+# Subtest: pure order validation expresses dead state without deriving it from prediction
+ok 88 - pure order validation expresses dead state without deriving it from prediction
+  ---
+  duration_ms: 0.1267
+  type: 'test'
+  ...
+# Subtest: malformed cyclic retries reject without crashing or changing the previous action
+ok 89 - malformed cyclic retries reject without crashing or changing the previous action
+  ---
+  duration_ms: 0.2105
+  type: 'test'
+  ...
+# Subtest: pure validation rejects missing grants and malformed observations safely
+ok 90 - pure validation rejects missing grants and malformed observations safely
+  ---
+  duration_ms: 0.0876
+  type: 'test'
+  ...
+# Subtest: L00 lab runs reproducibly with visible fixture files and bounded huge history
+ok 91 - L00 lab runs reproducibly with visible fixture files and bounded huge history
+  ---
+  duration_ms: 368.1021
+  type: 'test'
+  ...
+# Subtest: stay-open runner preserves uncertainty and requires explicit fresh-session reentry
+ok 92 - stay-open runner preserves uncertainty and requires explicit fresh-session reentry
+  ---
+  duration_ms: 933.6412
+  type: 'test'
+  ...
+# Subtest: death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+ok 93 - death archives sent uncertainty, cancels unsent work, and explicit reentry starts with fresh state and retired IDs
+  ---
+  duration_ms: 314.564
+  type: 'test'
+  ...
+# Subtest: zero HP snapshot halts once; death callback cannot allow a post-death decision
+ok 94 - zero HP snapshot halts once; death callback cannot allow a post-death decision
+  ---
+  duration_ms: 261.0796
+  type: 'test'
+  ...
+# Subtest: reentry enforces owner, session cap, expiry, and fresh handshake before ready
+ok 95 - reentry enforces owner, session cap, expiry, and fresh handshake before ready
+  ---
+  duration_ms: 378.3388
+  type: 'test'
+  ...
+# Subtest: failed fresh admission remains stopped and retains prior uncertainty without retry
+ok 96 - failed fresh admission remains stopped and retains prior uncertainty without retry
+  ---
+  duration_ms: 126.9765
+  type: 'test'
+  ...
+# Subtest: unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+ok 97 - unexpected socket close preserves sent uncertainty, clears queues, and reentry ignores stale scope
+  ---
+  duration_ms: 269.6092
+  type: 'test'
+  ...
+# Subtest: self DESPAWN is a terminal disconnect and cannot leave a reusable session
+ok 98 - self DESPAWN is a terminal disconnect and cannot leave a reusable session
+  ---
+  duration_ms: 287.8876
+  type: 'test'
+  ...
+# Subtest: owner stop cancels a close-wait transition and a stop during admission cannot resume it
+ok 99 - owner stop cancels a close-wait transition and a stop during admission cannot resume it
+  ---
+  duration_ms: 470.0358
+  type: 'test'
+  ...
+# Subtest: real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+ok 100 - real WebSocket reentry frees a normal slot and idle fresh body does not replay old movement
+  ---
+  duration_ms: 1324.2432
+  type: 'test'
+  ...
+# Subtest: doubling a huge history does not grow transmitted context beyond its complete envelope budget
+ok 101 - doubling a huge history does not grow transmitted context beyond its complete envelope budget
+  ---
+  duration_ms: 460.0535
+  type: 'test'
+  ...
+# Subtest: adding a large provider wrapper first prunes optional context, then fails closed if mandatory minimum cannot fit
+ok 102 - adding a large provider wrapper first prunes optional context, then fails closed if mandatory minimum cannot fit
+  ---
+  duration_ms: 21.4528
+  type: 'test'
+  ...
+# Subtest: real managed body keeps ticking during mind wait; owner stop fences the late proposal after usage settles
+ok 103 - real managed body keeps ticking during mind wait; owner stop fences the late proposal after usage settles
+  ---
+  duration_ms: 743.1827
+  type: 'test'
+  ...
+# Subtest: simulated structured move is admitted as an acknowledged server task and advances the body
+ok 104 - simulated structured move is admitted as an acknowledged server task and advances the body
+  ---
+  duration_ms: 413.6315
+  type: 'test'
+  ...
+# Subtest: CLI simulated mind is opt-in, settles one call under maxCalls, stays responsive, and leaves owner files untouched
+ok 105 - CLI simulated mind is opt-in, settles one call under maxCalls, stays responsive, and leaves owner files untouched
+  ---
+  duration_ms: 651.8359
+  type: 'test'
+  ...
+# Subtest: CLI default rejects think, and simulated input budget rejects before dispatch
+ok 106 - CLI default rejects think, and simulated input budget rejects before dispatch
+  ---
+  duration_ms: 1077.487
+  type: 'test'
+  ...
+# Subtest: mind context measures exact provider wrapper and preserves the transmitted body
+ok 107 - mind context measures exact provider wrapper and preserves the transmitted body
+  ---
+  duration_ms: 4.2755
+  type: 'test'
+  ...
+# Subtest: mind context rejects required content when the full wrapper exceeds limits
+ok 108 - mind context rejects required content when the full wrapper exceeds limits
+  ---
+  duration_ms: 0.6766
+  type: 'test'
+  ...
+# Subtest: mind context can use either a measured or estimated adapter without provider coupling
+ok 109 - mind context can use either a measured or estimated adapter without provider coupling
+  ---
+  duration_ms: 2.4468
+  type: 'test'
+  ...
+# Subtest: decide reserves usage before adapter I/O and accepts only a validated action
+ok 110 - decide reserves usage before adapter I/O and accepts only a validated action
+  ---
+  duration_ms: 7.2282
+  type: 'test'
+  ...
+# Subtest: a throwing submitOrder reports an uncertain action and does not retry automatically
+ok 111 - a throwing submitOrder reports an uncertain action and does not retry automatically
+  ---
+  duration_ms: 3.2368
+  type: 'test'
+  ...
+# Subtest: missing provider usage remains unresolved and never reports zero spend
+ok 112 - missing provider usage remains unresolved and never reports zero spend
+  ---
+  duration_ms: 2.6078
+  type: 'test'
+  ...
+# Subtest: invalid provider response still reconciles known usage and creates no order
+ok 113 - invalid provider response still reconciles known usage and creates no order
+  ---
+  duration_ms: 1.5839
+  type: 'test'
+  ...
+# Subtest: response output token budget is enforced even when native usage is absent or underreports it
+    # Subtest: missing native usage
+    ok 1 - missing native usage
+      ---
+      duration_ms: 1.6968
+      type: 'test'
+      ...
+    # Subtest: underreported native output usage
+    ok 2 - underreported native output usage
+      ---
+      duration_ms: 1.5482
+      type: 'test'
+      ...
+    1..2
+ok 114 - response output token budget is enforced even when native usage is absent or underreports it
+  ---
+  duration_ms: 3.8748
+  type: 'test'
+  ...
+# Subtest: extra identity, control and capability fields in a response never reach submitOrder
+    # Subtest: {"v":1,"decision":{"type":"move","args":{"mx":1,"mz":0,"durationMs":100}},"requestId":"invented"}
+    ok 1 - {"v":1,"decision":{"type":"move","args":{"mx":1,"mz":0,"durationMs":100}},"requestId":"invented"}
+      ---
+      duration_ms: 1.7998
+      type: 'test'
+      ...
+    # Subtest: {"v":1,"decision":{"type":"move","controlRevision":99,"args":{"mx":1,"mz":0,"durationMs":100}}}
+    ok 2 - {"v":1,"decision":{"type":"move","controlRevision":99,"args":{"mx":1,"mz":0,"durationMs":100}}}
+      ---
+      duration_ms: 1.7764
+      type: 'test'
+      ...
+    # Subtest: {"v":1,"decision":{"type":"move","args":{"mx":1,"mz":0,"durationMs":100,"scope":{"ownerId":"owner-1","characterId":"agent-1","worldId":"lab-world","sessionId":"lab-session-1"}}}}
+    ok 3 - {"v":1,"decision":{"type":"move","args":{"mx":1,"mz":0,"durationMs":100,"scope":{"ownerId":"owner-1","characterId":"agent-1","worldId":"lab-world","sessionId":"lab-session-1"}}}}
+      ---
+      duration_ms: 1.5862
+      type: 'test'
+      ...
+    # Subtest: {"v":1,"decision":{"type":"chat","args":{"text":"hello"}}}
+    ok 4 - {"v":1,"decision":{"type":"chat","args":{"text":"hello"}}}
+      ---
+      duration_ms: 1.2855
+      type: 'test'
+      ...
+    1..4
+ok 115 - extra identity, control and capability fields in a response never reach submitOrder
+  ---
+  duration_ms: 7.0809
+  type: 'test'
+  ...
+# Subtest: minimum context over budget avoids reservation and all adapter I/O
+ok 116 - minimum context over budget avoids reservation and all adapter I/O
+  ---
+  duration_ms: 0.6676
+  type: 'test'
+  ...
+# Subtest: clock deadline reached synchronously during prepare skips paid provider I/O and reservation
+ok 117 - clock deadline reached synchronously during prepare skips paid provider I/O and reservation
+  ---
+  duration_ms: 1.1607
+  type: 'test'
+  ...
+# Subtest: stale authority, task fence, file hashes, and death each prevent application
+    # Subtest: control epoch
+    ok 1 - control epoch
+      ---
+      duration_ms: 1.4053
+      type: 'test'
+      ...
+    # Subtest: task fence
+    ok 2 - task fence
+      ---
+      duration_ms: 1.7251
+      type: 'test'
+      ...
+    # Subtest: owner file revision
+    ok 3 - owner file revision
+      ---
+      duration_ms: 1.3438
+      type: 'test'
+      ...
+    # Subtest: death
+    ok 4 - death
+      ---
+      duration_ms: 1.2566
+      type: 'test'
+      ...
+    1..4
+ok 118 - stale authority, task fence, file hashes, and death each prevent application
+  ---
+  duration_ms: 6.3089
+  type: 'test'
+  ...
+# Subtest: current target life and direct owner priority are checked at application time
+    # Subtest: target dies during inference
+    ok 1 - target dies during inference
+      ---
+      duration_ms: 1.5858
+      type: 'test'
+      ...
+    # Subtest: direct priority blocks before provider call
+    ok 2 - direct priority blocks before provider call
+      ---
+      duration_ms: 0.3367
+      type: 'test'
+      ...
+    1..2
+ok 119 - current target life and direct owner priority are checked at application time
+  ---
+  duration_ms: 2.2381
+  type: 'test'
+  ...
+# Subtest: timeouts and cancellation suppress late results and keep the one-query slot until provider settles
+ok 120 - timeouts and cancellation suppress late results and keep the one-query slot until provider settles
+  ---
+  duration_ms: 43.6071
+  type: 'test'
+  ...
+# Subtest: an independent body pump continues while inference awaits the provider
+ok 121 - an independent body pump continues while inference awaits the provider
+  ---
+  duration_ms: 13.8376
+  type: 'test'
+  ...
+# Subtest: closed mind rejects future decisions and state is a detached projection
+ok 122 - closed mind rejects future decisions and state is a detached projection
+  ---
+  duration_ms: 0.3789
+  type: 'test'
+  ...
+# Subtest: fake wire go_to emits bounded ordinary inputs and only confirmed arrival ends the task
+ok 123 - fake wire go_to emits bounded ordinary inputs and only confirmed arrival ends the task
+  ---
+  duration_ms: 212.6139
+  type: 'test'
+  ...
+# Subtest: fake wire cancellation sends neutral, preserves submitted uncertainty, and prevents old movement
+ok 124 - fake wire cancellation sends neutral, preserves submitted uncertainty, and prevents old movement
+  ---
+  duration_ms: 170.0378
+  type: 'test'
+  ...
+# Subtest: fake wire follow and keep_distance require the same observable target life
+ok 125 - fake wire follow and keep_distance require the same observable target life
+  ---
+  duration_ms: 161.1681
+  type: 'test'
+  ...
+# Subtest: fake wire holding neutral ranges stay attached to follow when the target moves away again
+ok 126 - fake wire holding neutral ranges stay attached to follow when the target moves away again
+  ---
+  duration_ms: 152.3848
+  type: 'test'
+  ...
+# Subtest: fake wire reentry starts with no prior task or retained movement input
+ok 127 - fake wire reentry starts with no prior task or retained movement input
+  ---
+  duration_ms: 294.5987
+  type: 'test'
+  ...
+# Subtest: real WS go_to, follow and keep_distance use ordinary inputs; terrain collision reports blocked without teleporting
+ok 128 - real WS go_to, follow and keep_distance use ordinary inputs; terrain collision reports blocked without teleporting
+  ---
+  duration_ms: 4850.7698
+  type: 'test'
+  ...
+# Subtest: CLI exposes confirmed go_to feedback, rejects malformed cancel, and keeps uncertain cancellation inspectable
+ok 129 - CLI exposes confirmed go_to feedback, rejects malformed cancel, and keeps uncertain cancellation inspectable
+  ---
+  duration_ms: 1087.0807
+  type: 'test'
+  ...
+# Subtest: go_to normalizes diagonal input and arrives only from a confirmed position
+ok 130 - go_to normalizes diagonal input and arrives only from a confirmed position
+  ---
+  duration_ms: 3.5423
+  type: 'test'
+  ...
+# Subtest: follow approaches a referenced player and holds inside its outer band without backing away
+ok 131 - follow approaches a referenced player and holds inside its outer band without backing away
+  ---
+  duration_ms: 1.5859
+  type: 'test'
+  ...
+# Subtest: keep_distance backs away when too close and holds inside its distance band
+ok 132 - keep_distance backs away when too close and holds inside its distance band
+  ---
+  duration_ms: 0.604
+  type: 'test'
+  ...
+# Subtest: identical observations and times produce identical movement decisions
+ok 133 - identical observations and times produce identical movement decisions
+  ---
+  duration_ms: 0.616
+  type: 'test'
+  ...
+# Subtest: movement watchdog blocks sent work without progress; unsent work stays cancellable
+ok 134 - movement watchdog blocks sent work without progress; unsent work stays cancellable
+  ---
+  duration_ms: 0.711
+  type: 'test'
+  ...
+# Subtest: confirmed progress resets the watchdog; movement remains active while progress continues
+ok 135 - confirmed progress resets the watchdog; movement remains active while progress continues
+  ---
+  duration_ms: 0.4072
+  type: 'test'
+  ...
+# Subtest: follow and keep_distance stop at their horizon; sent work stays uncertain and neutral
+ok 136 - follow and keep_distance stop at their horizon; sent work stays uncertain and neutral
+  ---
+  duration_ms: 1.2078
+  type: 'test'
+  ...
+# Subtest: navigation freshness stays tied to confirmed snapshots and prediction cannot predeclare arrival
+ok 137 - navigation freshness stays tied to confirmed snapshots and prediction cannot predeclare arrival
+  ---
+  duration_ms: 0.4553
+  type: 'test'
+  ...
+# Subtest: malformed movement arguments, unauthorized scopes, ranges, and horizons are rejected
+ok 138 - malformed movement arguments, unauthorized scopes, ranges, and horizons are rejected
+  ---
+  duration_ms: 0.7895
+  type: 'test'
+  ...
+# Subtest: target identity and life are validated; cancellation and supersession clear the old controller
+ok 139 - target identity and life are validated; cancellation and supersession clear the old controller
+  ---
+  duration_ms: 0.8946
+  type: 'test'
+  ...
+# Subtest: stale observation and death cancel navigation without manufacturing a result
+ok 140 - stale observation and death cancel navigation without manufacturing a result
+  ---
+  duration_ms: 0.6838
+  type: 'test'
+  ...
+# Subtest: guest handshake waits for a valid own snapshot and reports the real protocol identity
+ok 141 - guest handshake waits for a valid own snapshot and reports the real protocol identity
+  ---
+  duration_ms: 194.1467
+  type: 'test'
+  ...
+# Subtest: fixture and server sources stay partitioned and a lab cannot opt into server receipts
+ok 142 - fixture and server sources stay partitioned and a lab cannot opt into server receipts
+  ---
+  duration_ms: 1.223
+  type: 'test'
+  ...
+# Subtest: normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+ok 143 - normal input uses sequence and projectile tick; prediction and ACK cannot confirm movement
+  ---
+  duration_ms: 170.1025
+  type: 'test'
+  ...
+# Subtest: zero displacement and full ACK remain unknown until timeout without inventing a cause
+ok 144 - zero displacement and full ACK remain unknown until timeout without inventing a cause
+  ---
+  duration_ms: 158.2394
+  type: 'test'
+  ...
+# Subtest: a failed flush preserves submitted uncertainty and stops without replaying an attack
+ok 145 - a failed flush preserves submitted uncertainty and stops without replaying an attack
+  ---
+  duration_ms: 146.3322
+  type: 'test'
+  ...
+# Subtest: invalid, unsupported, forbidden and wrong session orders emit no privileged command
+ok 146 - invalid, unsupported, forbidden and wrong session orders emit no privileged command
+  ---
+  duration_ms: 151.8214
+  type: 'test'
+  ...
+# Subtest: wrong protocol and missing or malformed own snapshots cannot become ready
+ok 147 - wrong protocol and missing or malformed own snapshots cannot become ready
+  ---
+  duration_ms: 460.9772
+  type: 'test'
+  ...
+# Subtest: old and malformed snapshots do not replace confirmed state or freshness
+ok 148 - old and malformed snapshots do not replace confirmed state or freshness
+  ---
+  duration_ms: 158.7178
+  type: 'test'
+  ...
+# Subtest: raw swing confirms only correlated attack execution, ignoring unrelated events
+ok 149 - raw swing confirms only correlated attack execution, ignoring unrelated events
+  ---
+  duration_ms: 146.4042
+  type: 'test'
+  ...
+# Subtest: despawn and numeric entity reuse retire an old target without another attack
+ok 150 - despawn and numeric entity reuse retire an old target without another attack
+  ---
+  duration_ms: 145.6867
+  type: 'test'
+  ...
+# Subtest: raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+ok 151 - raw despawn and reused spawn cancel attack before any replacement snapshot arrives
+  ---
+  duration_ms: 282.4878
+  type: 'test'
+  ...
+# Subtest: nearby human safety rejects PvE attack locally without claiming server policy
+ok 152 - nearby human safety rejects PvE attack locally without claiming server policy
+  ---
+  duration_ms: 156.158
+  type: 'test'
+  ...
+# Subtest: a nearby human omitted by the visible entity cap still prevents PvE attack
+ok 153 - a nearby human omitted by the visible entity cap still prevents PvE attack
+  ---
+  duration_ms: 145.9366
+  type: 'test'
+  ...
+# Subtest: duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+ok 154 - duplicate attacks do not pulse twice and cloning getters cannot alter live orders
+  ---
+  duration_ms: 151.7585
+  type: 'test'
+  ...
+# Subtest: owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+ok 155 - owner stop and unexpected close neutralize the runner and preserve sent uncertainty
+  ---
+  duration_ms: 478.9128
+  type: 'test'
+  ...
+# Subtest: stop closes and retains uncertainty even if the final neutral flush throws
+ok 156 - stop closes and retains uncertainty even if the final neutral flush throws
+  ---
+  duration_ms: 213.9409
+  type: 'test'
+  ...
+# Subtest: real guests occupy normal slots and another normal client observes confirmed movement
+ok 157 - real guests occupy normal slots and another normal client observes confirmed movement
+  ---
+  duration_ms: 1513.7089
+  type: 'test'
+  ...
+# Subtest: real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+ok 158 - real guest walks with bounded inputs to the normal practice dummy and receives a server swing
+  ---
+  duration_ms: 1725.7213
+  type: 'test'
+  ...
+# Subtest: loads actual owner-visible files with detached records, absolute paths and raw-byte hashes
+ok 159 - loads actual owner-visible files with detached records, absolute paths and raw-byte hashes
+  ---
+  duration_ms: 22.7961
+  type: 'test'
+  ...
+# Subtest: reads only the latest bounded candidate suffix after validating every record in the file
+ok 160 - reads only the latest bounded candidate suffix after validating every record in the file
+  ---
+  duration_ms: 13.4217
+  type: 'test'
+  ...
+# Subtest: rejects objective scope mismatch, malformed goals and invalid memory lines
+ok 161 - rejects objective scope mismatch, malformed goals and invalid memory lines
+  ---
+  duration_ms: 24.0004
+  type: 'test'
+  ...
+# Subtest: rejects oversize and invalid UTF-8 files before exposing content
+ok 162 - rejects oversize and invalid UTF-8 files before exposing content
+  ---
+  duration_ms: 8.6139
+  type: 'test'
+  ...
+# Subtest: rejects file symlinks that escape the explicit owner directory
+ok 163 - rejects file symlinks that escape the explicit owner directory # SKIP symlink creation unavailable: EPERM
+  ---
+  duration_ms: 6.6875
+  type: 'test'
+  ...
+# Subtest: rejects likely credentials and unsafe directories without returning file contents
+ok 164 - rejects likely credentials and unsafe directories without returning file contents
+  ---
+  duration_ms: 8.1941
+  type: 'test'
+  ...
+# Subtest: loads actual repo fixtures with the requested matching scope
+ok 165 - loads actual repo fixtures with the requested matching scope
+  ---
+  duration_ms: 3.0075
+  type: 'test'
+  ...
+# Subtest: fake wire decodes only confirmed combat reserves and predicts no reserve change from input ACK
+ok 166 - fake wire decodes only confirmed combat reserves and predicts no reserve change from input ACK
+  ---
+  duration_ms: 196.0833
+  type: 'test'
+  ...
+# Subtest: fake wire body uses confirmed busy state and cadence; support guards near its ally without attacking
+ok 167 - fake wire body uses confirmed busy state and cadence; support guards near its ally without attacking
+  ---
+  duration_ms: 147.3064
+  type: 'test'
+  ...
+# Subtest: fake wire target retirement cancels before a fresh snapshot and late observations cannot resume the body
+ok 168 - fake wire target retirement cancels before a fresh snapshot and late observations cannot resume the body
+  ---
+  duration_ms: 141.2949
+  type: 'test'
+  ...
+# Subtest: fake wire partial swings, potion receipts, ACK and guard observation never claim a completed encounter
+ok 169 - fake wire partial swings, potion receipts, ACK and guard observation never claim a completed encounter
+  ---
+  duration_ms: 138.2521
+  type: 'test'
+  ...
+# Subtest: fake wire cancel, expiry and stop stay neutral and never resume a previously emitted body
+ok 170 - fake wire cancel, expiry and stop stay neutral and never resume a previously emitted body
+  ---
+  duration_ms: 134.9532
+  type: 'test'
+  ...
+# Subtest: real WS body attacks with authoritative damage, retreats on confirmed low HP, consumes one potion, and respects the map boundary
+ok 171 - real WS body attacks with authoritative damage, retreats on confirmed low HP, consumes one potion, and respects the map boundary
+  ---
+  duration_ms: 4846.208
+  type: 'test'
+  ...
+# Subtest: real WS support covers its protected player and the host blocks a directed projectile
+ok 172 - real WS support covers its protected player and the host blocks a directed projectile
+  ---
+  duration_ms: 4127.6163
+  type: 'test'
+  ...
+# Subtest: CLI runs a holding body_pve action, rejects malformed orders, and keeps sent cancellation uncertain
+ok 173 - CLI runs a holding body_pve action, rejects malformed orders, and keeps sent cancellation uncertain
+  ---
+  duration_ms: 1145.5633
+  type: 'test'
+  ...
+# Subtest: aggressive target choice is deterministic and breaks equal-distance ties by entity id
+ok 174 - aggressive target choice is deterministic and breaks equal-distance ties by entity id
+  ---
+  duration_ms: 3.5571
+  type: 'test'
+  ...
+# Subtest: body attacks only in range, honors busy combat state and applies mode cadence to emitted pulses
+ok 175 - body attacks only in range, honors busy combat state and applies mode cadence to emitted pulses
+  ---
+  duration_ms: 0.6594
+  type: 'test'
+  ...
+# Subtest: aim uses absolute world coordinates when the controlled body is away from the origin
+ok 176 - aim uses absolute world coordinates when the controlled body is away from the origin
+  ---
+  duration_ms: 0.2949
+  type: 'test'
+  ...
+# Subtest: non-emitting observation steps do not consume attack or potion pulse cadence
+ok 177 - non-emitting observation steps do not consume attack or potion pulse cadence
+  ---
+  duration_ms: 0.4003
+  type: 'test'
+  ...
+# Subtest: player proximity suppresses PvE attacks while preserving guard input
+ok 178 - player proximity suppresses PvE attacks while preserving guard input
+  ---
+  duration_ms: 0.3149
+  type: 'test'
+  ...
+# Subtest: defensive mode holds its anchor and guards a nearby enemy while aggressive mode approaches
+ok 179 - defensive mode holds its anchor and guards a nearby enemy while aggressive mode approaches
+  ---
+  duration_ms: 0.2235
+  type: 'test'
+  ...
+# Subtest: guard requires minimum stamina unless already raised, then continues with positive stamina
+ok 180 - guard requires minimum stamina unless already raised, then continues with positive stamina
+  ---
+  duration_ms: 0.2221
+  type: 'test'
+  ...
+# Subtest: defensive mode counterattacks only inside range and uses its slower cadence
+ok 181 - defensive mode counterattacks only inside range and uses its slower cadence
+  ---
+  duration_ms: 0.1919
+  type: 'test'
+  ...
+# Subtest: support follows its living player and moves to an interception point for a nearby enemy
+ok 182 - support follows its living player and moves to an interception point for a nearby enemy
+  ---
+  duration_ms: 0.365
+  type: 'test'
+  ...
+# Subtest: support cancels when protected player is absent, dead or has a different life
+ok 183 - support cancels when protected player is absent, dead or has a different life
+  ---
+  duration_ms: 0.4256
+  type: 'test'
+  ...
+# Subtest: low health starts retreat with hysteresis, guards, and consumes only an authorized ready potion
+ok 184 - low health starts retreat with hysteresis, guards, and consumes only an authorized ready potion
+  ---
+  duration_ms: 0.3147
+  type: 'test'
+  ...
+# Subtest: potion needs explicit permission, a low-health threshold, stock and ready server cooldown
+ok 185 - potion needs explicit permission, a low-health threshold, stock and ready server cooldown
+  ---
+  duration_ms: 0.4412
+  type: 'test'
+  ...
+# Subtest: watchdog starts only after emitted movement and observed progress restarts its window
+ok 186 - watchdog starts only after emitted movement and observed progress restarts its window
+  ---
+  duration_ms: 0.4563
+  type: 'test'
+  ...
+# Subtest: body cancellation, death, missing combat and unsupported weapon always return neutral
+ok 187 - body cancellation, death, missing combat and unsupported weapon always return neutral
+  ---
+  duration_ms: 0.3082
+  type: 'test'
+  ...
+# Subtest: combat observation is optional for L02a observations, but exact when present
+ok 188 - combat observation is optional for L02a observations, but exact when present
+  ---
+  duration_ms: 0.8471
+  type: 'test'
+  ...
+# Subtest: body_pve validation requires the full capability set, exact arguments, valid mode/protect and horizon
+ok 189 - body_pve validation requires the full capability set, exact arguments, valid mode/protect and horizon
+  ---
+  duration_ms: 2.2344
+  type: 'test'
+  ...
+# Subtest: AgentSession attaches body decisions only to fresh confirmed snapshots and preserves sent uncertainty
+ok 190 - AgentSession attaches body decisions only to fresh confirmed snapshots and preserves sent uncertainty
+  ---
+  duration_ms: 1.2401
+  type: 'test'
+  ...
+# Subtest: AgentSession supersedes, times out and dies without fabricating a body result
+ok 191 - AgentSession supersedes, times out and dies without fabricating a body result
+  ---
+  duration_ms: 1.2003
+  type: 'test'
+  ...
+# Subtest: stale confirmed state stops an emitted body and retains uncertainty
+ok 192 - stale confirmed state stops an emitted body and retains uncertainty
+  ---
+  duration_ms: 0.4506
+  type: 'test'
+  ...
+# Subtest: prediction cannot change the body decision while confirmed combat and entities stay fixed
+ok 193 - prediction cannot change the body decision while confirmed combat and entities stay fixed
+  ---
+  duration_ms: 0.6963
+  type: 'test'
+  ...
+# Subtest: large allowed chat history is reduced to a recent ordered window without mutating inspection state
+ok 194 - large allowed chat history is reduced to a recent ordered window without mutating inspection state
+  ---
+  duration_ms: 7.2254
+  type: 'test'
+  ...
+# Subtest: protected required context still fails when it cannot fit after optional chat and peers are removed
+ok 195 - protected required context still fails when it cannot fit after optional chat and peers are removed
+  ---
+  duration_ms: 1.4528
+  type: 'test'
+  ...
+# Subtest: roster pruning preserves self and unresolved whisper targets while reporting omissions
+ok 196 - roster pruning preserves self and unresolved whisper targets while reporting omissions
+  ---
+  duration_ms: 4.2833
+  type: 'test'
+  ...
+# Subtest: inspect exposes actual files and hashes without opening a game connection
+ok 197 - inspect exposes actual files and hashes without opening a game connection
+  ---
+  duration_ms: 169.2986
+  type: 'test'
+  ...
+# Subtest: runner accepts bounded text commands, keeps files and context separate, and exits on owner stop
+ok 198 - runner accepts bounded text commands, keeps files and context separate, and exits on owner stop
+  ---
+  duration_ms: 635.8529
+  type: 'test'
+  ...
+# Subtest: oversized partial stdin is rejected before parsing and closes the guest connection
+ok 199 - oversized partial stdin is rejected before parsing and closes the guest connection
+  ---
+  duration_ms: 621.8359
+  type: 'test'
+  ...
+# Subtest: CLI chat uses explicit capability and a scoped envelope with visible routing and bounded context
+ok 200 - CLI chat uses explicit capability and a scoped envelope with visible routing and bounded context
+  ---
+  duration_ms: 602.4011
+  type: 'test'
+  ...
+1..200
+# tests 212
+# suites 0
+# pass 211
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 54085.1529
