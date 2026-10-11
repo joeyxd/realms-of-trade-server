@@ -100,6 +100,11 @@
   display: grid; justify-items: center; gap: 2px;
   text-align: center; opacity: 0;
 }
+/* Walking controls can include the account companion menu even on a wide stage. */
+:where(body:not(.is-naval)) #zone-banner {
+  top: calc(14px + var(--safe-t) + 150px * var(--ui-scale));
+  width: min(560px, calc(100cqw - 32px));
+}
 #zone-banner .zname { font-family: var(--font-display); font-size: clamp(28px, 5cqw, 46px); line-height: 1; }
 #zone-banner .zsub { font-weight: 800; font-size: 14px; letter-spacing: 0.06em; color: var(--parch); text-shadow: 0 2px 0 var(--ink); text-transform: uppercase; }
 #zone-banner .zline { width: 0; height: 4px; border-radius: 2px; background: var(--brass); box-shadow: 0 0 0 2px var(--ink); margin-top: 4px; }
@@ -521,6 +526,70 @@ body.touch .actionbar { display: none; }
 }
 /* (narrower than 720 px the tracker stays hidden, as before) */
 @container stage (max-height: 480px) and (min-width: 721px) { .tracker { display: flex; } #hud { --trk: 36px; } }
+
+/* Compact landscape keeps the account controls below the player column. */
+@container stage (min-width: 721px) and (max-width: 900px) and (max-height: 480px) {
+  body:not(.is-naval) #hud .hud-top-right {
+    left: calc(18px + var(--safe-l) + 226px * var(--ui-scale));
+    top: calc(92px + var(--safe-t));
+    max-width: none; transform: none; flex-wrap: wrap; gap: 6px; justify-content: flex-end;
+  }
+  body:not(.is-naval) .hud-top-right .icon-btn { width: 44px; height: 44px; flex: 0 0 44px; font-size: 16px; }
+  body:not(.is-naval) .hud-top-right .mn-companions { min-width: 0; flex: 0 0 100%; order: 1; }
+  body:not(.is-naval) .hud-top-right .mn-companions-toggle { width: 100%; min-height: 44px; padding: 6px; font-size: 13px; }
+  body:not(.is-naval) .hud-top-right .net-chip { order: 0; margin-left: auto; font-size: 12px; }
+  body:not(.is-naval) .hud-top-right .net-chip .pl { display: none; }
+  body:not(.is-naval) #toasts,
+  body:not(.is-naval) .tracker { width: min(220px, 26cqw); }
+  body:not(.is-naval) #zone-banner {
+    left: calc(18px + var(--safe-l) + 226px * var(--ui-scale));
+    top: calc(12px + var(--safe-t));
+    width: calc(100cqw - 18px - var(--safe-l) - 226px * var(--ui-scale) - 190px - var(--safe-r));
+    transform: none;
+  }
+  body:not(.is-naval) #zone-banner .zname { font-size: 24px; overflow-wrap: anywhere; }
+  body:not(.is-naval) #zone-banner .zsub { overflow-wrap: anywhere; }
+}
+
+/* Upright stages reserve separate rows for status, controls and transient notices.
+   Use the stage width: a desktop browser resized to a phone needs the same layout. */
+@container stage (max-width: 720px) and (min-height: 481px) {
+  body:not(.is-naval) .hud-player {
+    left: calc(10px + var(--safe-l)); top: calc(10px + var(--safe-t));
+    width: calc((100cqw - 136px - var(--safe-l) - var(--safe-r)) / var(--ui-scale));
+    gap: 6px; align-items: flex-start;
+  }
+  body:not(.is-naval) .hud-player .portrait { width: 48px; height: 48px; flex: 0 0 48px; border-width: 3px; }
+  body:not(.is-naval) .hud-player .bars { min-width: 0; flex: 1; gap: 4px; }
+  body:not(.is-naval) .hud-player .bar { width: 100%; }
+  body:not(.is-naval) .hud-player .pname { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body:not(.is-naval) .hud-player .gold-row { flex-wrap: wrap; font-size: 12px; gap: 4px; }
+  body:not(.is-naval) #hud .hud-top-right {
+    left: calc(10px + var(--safe-l)); right: calc(10px + var(--safe-r));
+    top: calc(12px + var(--safe-t) + 116px * var(--ui-scale));
+    max-width: none; transform: none; flex-wrap: wrap; gap: 6px; justify-content: flex-end;
+  }
+  body:not(.is-naval) .hud-top-right .icon-btn { width: 44px; height: 44px; flex: 0 0 44px; font-size: 16px; }
+  body:not(.is-naval) .hud-top-right .mn-companions { min-width: 0; flex: 1; }
+  body:not(.is-naval) .hud-top-right .mn-companions-toggle { width: 100%; min-height: 44px; padding: 6px; font-size: 13px; }
+  body:not(.is-naval) .hud-top-right .net-chip { order: 9; margin-left: auto; font-size: 12px; }
+  body:not(.is-naval) #zone-banner,
+  body:not(.is-naval) #boss-bar,
+  body:not(.is-naval) #enc-info { top: calc(108px + var(--safe-t) + 116px * var(--ui-scale)); }
+  body:not(.is-naval) #zone-banner { width: calc(100cqw - 24px - var(--safe-l) - var(--safe-r)); }
+  body:not(.is-naval) #zone-banner .zname { font-size: clamp(22px, 5cqw, 30px); overflow-wrap: anywhere; }
+  body:not(.is-naval) #zone-banner .zsub { font-size: 12px; overflow-wrap: anywhere; }
+  body:not(.is-naval) #enc-info { max-width: calc(100cqw - 24px); white-space: normal; text-align: center; }
+  body:not(.is-naval) .boss-on #enc-info { top: calc(190px + var(--safe-t) + 116px * var(--ui-scale)); }
+  body:not(.is-naval) .boss-on #zone-banner { top: calc(224px + var(--safe-t) + 116px * var(--ui-scale)); }
+  body:not(.is-naval) .party { top: calc(210px + var(--safe-t) + 116px * var(--ui-scale)); }
+  body:not(.is-naval) #toasts {
+    left: calc(10px + var(--safe-l)); width: calc(100cqw - 20px - var(--safe-l) - var(--safe-r));
+    top: calc(218px + var(--safe-t) + (116px + var(--party-n, 0) * 44px) * var(--ui-scale));
+  }
+  body:not(.is-naval) .boss-on .party { top: calc(318px + var(--safe-t) + 116px * var(--ui-scale)); }
+  body:not(.is-naval) .boss-on #toasts { top: calc(326px + var(--safe-t) + (116px + var(--party-n, 0) * 44px) * var(--ui-scale)); }
+}
 
 /* ---- Tattoos in the slots (M4.7) ---------------------------------------------------------------- */
 .skill-slot.tattoo { box-shadow: inset 0 0 0 2px #8a5cff, inset 0 2px 0 rgba(210, 180, 255, 0.35), 0 3px 0 var(--ink); }

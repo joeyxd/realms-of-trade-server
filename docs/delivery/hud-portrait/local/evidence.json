@@ -1,0 +1,6655 @@
+{
+  "at": "2026-10-11T03:12:39.859Z",
+  "scope": "Local real client and SoloWorker; local CDN substitutes; presentation-only zone banner and toast fixtures.",
+  "stateMutation": false,
+  "cases": [
+    {
+      "key": "desktop-320x640-es-scale1",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 194,
+          "bottom": 123,
+          "width": 184,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 310,
+          "bottom": 178.375,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 308,
+          "bottom": 294,
+          "width": 296,
+          "height": 70,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 310,
+          "bottom": 389.09375,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 131.1875,
+          "right": 154,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 131.1875,
+          "right": 104,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 131.1875,
+          "right": 54,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 244.90625,
+          "bottom": 178.375,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -60.5,
+          "top": 558,
+          "right": 380.5,
+          "bottom": 626,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-320x640-en-scale1",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 194,
+          "bottom": 123,
+          "width": 184,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 310,
+          "bottom": 178.375,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 308,
+          "bottom": 272,
+          "width": 296,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 310,
+          "bottom": 371.546875,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 131.1875,
+          "right": 154,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 131.1875,
+          "right": 104,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 131.1875,
+          "right": 54,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 244.90625,
+          "bottom": 178.375,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -60.5,
+          "top": 558,
+          "right": 380.5,
+          "bottom": 626,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-320x640-es-scale1_3",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 193.99061584472656,
+          "bottom": 156.89999389648438,
+          "width": 183.99061584472656,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 310,
+          "bottom": 213.171875,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 308,
+          "bottom": 328.796875,
+          "width": 296,
+          "height": 70,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 310,
+          "bottom": 423.890625,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 165.984375,
+          "right": 154,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 165.984375,
+          "right": 104,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 165.984375,
+          "right": 54,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 244.90625,
+          "bottom": 213.171875,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -126.64999389648438,
+          "top": 537.5999755859375,
+          "right": 446.6499938964844,
+          "bottom": 626,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-320x640-en-scale1_3",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 193.99061584472656,
+          "bottom": 156.89999389648438,
+          "width": 183.99061584472656,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 310,
+          "bottom": 213.171875,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 308,
+          "bottom": 306.796875,
+          "width": 296,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 310,
+          "bottom": 406.34375,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 165.984375,
+          "right": 154,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 165.984375,
+          "right": 104,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 165.984375,
+          "right": 54,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 244.90625,
+          "bottom": 213.171875,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -126.64999389648438,
+          "top": 537.5999755859375,
+          "right": 446.6499938964844,
+          "bottom": 626,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-390x844-es-scale1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 264,
+          "bottom": 123,
+          "width": 254,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 380,
+          "bottom": 172,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 378,
+          "bottom": 272,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 380,
+          "bottom": 371.546875,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 128,
+          "right": 154,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 314.90625,
+          "bottom": 172,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -25.5,
+          "top": 762,
+          "right": 415.5,
+          "bottom": 830,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-390x844-es-scale1.png"
+    },
+    {
+      "key": "desktop-390x844-en-scale1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 264,
+          "bottom": 123,
+          "width": 254,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 380,
+          "bottom": 172,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 378,
+          "bottom": 272,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 380,
+          "bottom": 371.546875,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 128,
+          "right": 154,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 314.90625,
+          "bottom": 172,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -25.5,
+          "top": 762,
+          "right": 415.5,
+          "bottom": 830,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-390x844-en-scale1.png"
+    },
+    {
+      "key": "desktop-390x844-es-scale1_3",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 263.98748779296875,
+          "bottom": 156.89999389648438,
+          "width": 253.98748779296875,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 380,
+          "bottom": 206.796875,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 378,
+          "bottom": 306.796875,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 380,
+          "bottom": 406.34375,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 162.796875,
+          "right": 154,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 314.90625,
+          "bottom": 206.796875,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -91.64999389648438,
+          "top": 741.5999755859375,
+          "right": 481.6499938964844,
+          "bottom": 830,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-390x844-es-scale1_3.png"
+    },
+    {
+      "key": "desktop-390x844-en-scale1_3",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 263.98748779296875,
+          "bottom": 156.89999389648438,
+          "width": 253.98748779296875,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 380,
+          "bottom": 206.796875,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 378,
+          "bottom": 306.796875,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 380,
+          "bottom": 406.34375,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 162.796875,
+          "right": 154,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 314.90625,
+          "bottom": 206.796875,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -91.64999389648438,
+          "top": 741.5999755859375,
+          "right": 481.6499938964844,
+          "bottom": 830,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-390x844-en-scale1_3.png"
+    },
+    {
+      "key": "desktop-430x932-es-scale1",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 304,
+          "bottom": 123,
+          "width": 294,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 420,
+          "bottom": 172,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 418,
+          "bottom": 272,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 420,
+          "bottom": 371.546875,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 204,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 128,
+          "right": 354.90625,
+          "bottom": 172,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -5.5,
+          "top": 850,
+          "right": 435.5,
+          "bottom": 918,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-430x932-en-scale1",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 304,
+          "bottom": 123,
+          "width": 294,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 420,
+          "bottom": 172,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 418,
+          "bottom": 272,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 420,
+          "bottom": 371.546875,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 204,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 128,
+          "right": 354.90625,
+          "bottom": 172,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -5.5,
+          "top": 850,
+          "right": 435.5,
+          "bottom": 918,
+          "width": 441,
+          "height": 68,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-430x932-es-scale1_3",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 303.9827880859375,
+          "bottom": 156.89999389648438,
+          "width": 293.9827880859375,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 420,
+          "bottom": 206.796875,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 418,
+          "bottom": 306.796875,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 420,
+          "bottom": 406.34375,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 204,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 162.796875,
+          "right": 354.90625,
+          "bottom": 206.796875,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -71.64999389648438,
+          "top": 829.5999755859375,
+          "right": 501.6499938964844,
+          "bottom": 918,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-430x932-en-scale1_3",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 303.9827880859375,
+          "bottom": 156.89999389648438,
+          "width": 293.9827880859375,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 420,
+          "bottom": 206.796875,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 418,
+          "bottom": 306.796875,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 420,
+          "bottom": 406.34375,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 204,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 162.796875,
+          "right": 354.90625,
+          "bottom": 206.796875,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": -71.64999389648438,
+          "top": 829.5999755859375,
+          "right": 501.6499938964844,
+          "bottom": 918,
+          "width": 573.2999877929688,
+          "height": 88.4000244140625,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "desktop-844x390-es-scale1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 236,
+          "bottom": 108,
+          "width": 226,
+          "height": 100,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 244,
+          "top": 92,
+          "right": 654,
+          "bottom": 186,
+          "width": 410,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 688,
+          "top": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 665,
+          "top": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 244,
+          "top": 12,
+          "right": 654,
+          "bottom": 62,
+          "width": 410,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 158,
+          "right": 229.4375,
+          "bottom": 204.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 610,
+          "top": 92,
+          "right": 654,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 510,
+          "top": 92,
+          "right": 554,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 460,
+          "top": 92,
+          "right": 504,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 244,
+          "top": 142,
+          "right": 654,
+          "bottom": 186,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 149,
+          "top": 294,
+          "right": 695,
+          "bottom": 376,
+          "width": 546,
+          "height": 82,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-844x390-es-scale1.png"
+    },
+    {
+      "key": "desktop-844x390-en-scale1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 236,
+          "bottom": 108,
+          "width": 226,
+          "height": 100,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 244,
+          "top": 92,
+          "right": 654,
+          "bottom": 186,
+          "width": 410,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 688,
+          "top": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 665,
+          "top": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 244,
+          "top": 12,
+          "right": 654,
+          "bottom": 62,
+          "width": 410,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 158,
+          "right": 229.4375,
+          "bottom": 204.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 610,
+          "top": 92,
+          "right": 654,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 510,
+          "top": 92,
+          "right": 554,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 460,
+          "top": 92,
+          "right": 504,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 244,
+          "top": 142,
+          "right": 654,
+          "bottom": 186,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 149,
+          "top": 294,
+          "right": 695,
+          "bottom": 376,
+          "width": 546,
+          "height": 82,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-844x390-en-scale1.png"
+    },
+    {
+      "key": "desktop-844x390-es-scale1_3",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 303.79998779296875,
+          "bottom": 138,
+          "width": 293.79998779296875,
+          "height": 130,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 311.796875,
+          "top": 92,
+          "right": 654,
+          "bottom": 186,
+          "width": 342.203125,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 688,
+          "top": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 665,
+          "top": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 311.796875,
+          "top": 12,
+          "right": 653.984375,
+          "bottom": 86,
+          "width": 342.1875,
+          "height": 74,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 203,
+          "right": 229.4375,
+          "bottom": 249.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 610,
+          "top": 92,
+          "right": 654,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 510,
+          "top": 92,
+          "right": 554,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 460,
+          "top": 92,
+          "right": 504,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 311.796875,
+          "top": 142,
+          "right": 654,
+          "bottom": 186,
+          "width": 342.203125,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 67.10000610351562,
+          "top": 269.3999938964844,
+          "right": 776.9000549316406,
+          "bottom": 376,
+          "width": 709.800048828125,
+          "height": 106.60000610351562,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-844x390-es-scale1_3.png"
+    },
+    {
+      "key": "desktop-844x390-en-scale1_3",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 303.79998779296875,
+          "bottom": 138,
+          "width": 293.79998779296875,
+          "height": 130,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 311.796875,
+          "top": 92,
+          "right": 654,
+          "bottom": 186,
+          "width": 342.203125,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 688,
+          "top": 28,
+          "right": 814,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 665,
+          "top": 162,
+          "right": 837,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 311.796875,
+          "top": 12,
+          "right": 653.984375,
+          "bottom": 62,
+          "width": 342.1875,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 203,
+          "right": 229.4375,
+          "bottom": 249.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 610,
+          "top": 92,
+          "right": 654,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 510,
+          "top": 92,
+          "right": 554,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 460,
+          "top": 92,
+          "right": 504,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 311.796875,
+          "top": 142,
+          "right": 654,
+          "bottom": 186,
+          "width": 342.203125,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 67.10000610351562,
+          "top": 269.3999938964844,
+          "right": 776.9000549316406,
+          "bottom": 376,
+          "width": 709.800048828125,
+          "height": 106.60000610351562,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-844x390-en-scale1_3.png"
+    },
+    {
+      "key": "desktop-1280x800-es-scale1",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 14,
+          "top": 12,
+          "right": 308,
+          "bottom": 133,
+          "width": 294,
+          "height": 121,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 660.953125,
+          "top": 12,
+          "right": 1090,
+          "bottom": 56,
+          "width": 429.046875,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 1124,
+          "top": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 1101,
+          "top": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 360,
+          "top": 164,
+          "right": 920,
+          "bottom": 284,
+          "width": 560,
+          "height": 120,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 14,
+          "top": 150,
+          "right": 314,
+          "bottom": 205.09375,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 916.875,
+          "top": 16.671875,
+          "right": 951.53125,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 831.5625,
+          "top": 16.671875,
+          "right": 866.21875,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 788.90625,
+          "top": 16.671875,
+          "right": 823.5625,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 959.53125,
+          "top": 12,
+          "right": 1090,
+          "bottom": 56,
+          "width": 130.46875,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 367,
+          "top": 704,
+          "right": 913,
+          "bottom": 786,
+          "width": 546,
+          "height": 82,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-1280x800-es-scale1.png"
+    },
+    {
+      "key": "desktop-1280x800-en-scale1",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 14,
+          "top": 12,
+          "right": 308,
+          "bottom": 133,
+          "width": 294,
+          "height": 121,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 678.515625,
+          "top": 12,
+          "right": 1090,
+          "bottom": 56,
+          "width": 411.484375,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 1124,
+          "top": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 1101,
+          "top": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 360,
+          "top": 164,
+          "right": 920,
+          "bottom": 238,
+          "width": 560,
+          "height": 74,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 14,
+          "top": 150,
+          "right": 314,
+          "bottom": 187.546875,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 920.109375,
+          "top": 16.671875,
+          "right": 954.765625,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 834.796875,
+          "top": 16.671875,
+          "right": 869.453125,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 792.140625,
+          "top": 16.671875,
+          "right": 826.796875,
+          "bottom": 51.328125,
+          "width": 34.65625,
+          "height": 34.65625,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 962.765625,
+          "top": 12,
+          "right": 1090,
+          "bottom": 56,
+          "width": 127.234375,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 367,
+          "top": 704,
+          "right": 913,
+          "bottom": 786,
+          "width": 546,
+          "height": 82,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-1280x800-en-scale1.png"
+    },
+    {
+      "key": "desktop-1280x800-es-scale1_3",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "desktop",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 14,
+          "top": 12,
+          "right": 396.1999816894531,
+          "bottom": 169.29998779296875,
+          "width": 382.1999816894531,
+          "height": 157.29998779296875,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 532.2390747070312,
+          "top": 12,
+          "right": 1090,
+          "bottom": 69.19999694824219,
+          "width": 557.7609252929688,
+          "height": 57.19999694824219,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 1124,
+          "top": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 1101,
+          "top": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 360,
+          "top": 209,
+          "right": 920,
+          "bottom": 329,
+          "width": 560,
+          "height": 120,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 14,
+          "top": 191.390625,
+          "right": 314,
+          "bottom": 246.484375,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 864.9375,
+          "top": 18.073436737060547,
+          "right": 909.9906005859375,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 754.03125,
+          "top": 18.073436737060547,
+          "right": 799.0843505859375,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 698.578125,
+          "top": 18.073436737060547,
+          "right": 743.6312255859375,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 920.390625,
+          "top": 12,
+          "right": 1090,
+          "bottom": 69.19999694824219,
+          "width": 169.609375,
+          "height": 57.19999694824219,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 285.1000061035156,
+          "top": 679.4000244140625,
+          "right": 994.9000549316406,
+          "bottom": 786,
+          "width": 709.800048828125,
+          "height": 106.5999755859375,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-1280x800-es-scale1_3.png"
+    },
+    {
+      "key": "desktop-1280x800-en-scale1_3",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "mode": "desktop",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 14,
+          "top": 12,
+          "right": 396.1999816894531,
+          "bottom": 169.29998779296875,
+          "width": 382.1999816894531,
+          "height": 157.29998779296875,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 555.0703125,
+          "top": 12,
+          "right": 1090,
+          "bottom": 69.19999694824219,
+          "width": 534.9296875,
+          "height": 57.19999694824219,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 1124,
+          "top": 28,
+          "right": 1250,
+          "bottom": 154,
+          "width": 126,
+          "height": 126,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 1101,
+          "top": 162,
+          "right": 1273,
+          "bottom": 174.09375,
+          "width": 172,
+          "height": 12.09375,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 360,
+          "top": 209,
+          "right": 920,
+          "bottom": 283,
+          "width": 560,
+          "height": 74,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 14,
+          "top": 191.390625,
+          "right": 314,
+          "bottom": 228.9375,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 869.1422119140625,
+          "top": 18.073436737060547,
+          "right": 914.1953125,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 758.2359619140625,
+          "top": 18.073436737060547,
+          "right": 803.2890625,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 702.7828369140625,
+          "top": 18.073436737060547,
+          "right": 747.8359375,
+          "bottom": 63.12656021118164,
+          "width": 45.0531005859375,
+          "height": 45.053123474121094,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 924.5953369140625,
+          "top": 12,
+          "right": 1090,
+          "bottom": 69.19999694824219,
+          "width": 165.4046630859375,
+          "height": 57.19999694824219,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 285.1000061035156,
+          "top": 679.4000244140625,
+          "right": 994.9000549316406,
+          "bottom": 786,
+          "width": 709.800048828125,
+          "height": 106.5999755859375,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        }
+      ],
+      "screenshot": "desktop-1280x800-en-scale1_3.png"
+    },
+    {
+      "key": "touch-320x640-es-scale1",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 194,
+          "bottom": 123,
+          "width": 184,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 310,
+          "bottom": 178.375,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 308,
+          "bottom": 294,
+          "width": 296,
+          "height": 70,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 310,
+          "bottom": 389.09375,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 131.1875,
+          "right": 154,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 131.1875,
+          "right": 104,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 131.1875,
+          "right": 54,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 244.90625,
+          "bottom": 178.375,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 17.96875,
+          "top": 496.671875,
+          "right": 84.65625,
+          "bottom": 563.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 73.171875,
+          "top": 393.171875,
+          "right": 139.859375,
+          "bottom": 459.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 178.96875,
+          "top": 340.265625,
+          "right": 241.0625,
+          "bottom": 402.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 196.2109375,
+          "top": 516.2109375,
+          "right": 302.0078125,
+          "bottom": 622.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-320x640-en-scale1",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 194,
+          "bottom": 123,
+          "width": 184,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 310,
+          "bottom": 178.375,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 308,
+          "bottom": 272,
+          "width": 296,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 310,
+          "bottom": 371.546875,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 131.1875,
+          "right": 154,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 131.1875,
+          "right": 104,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 131.1875,
+          "right": 54,
+          "bottom": 175.1875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 244.90625,
+          "bottom": 178.375,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 17.96875,
+          "top": 496.671875,
+          "right": 84.65625,
+          "bottom": 563.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 73.171875,
+          "top": 393.171875,
+          "right": 139.859375,
+          "bottom": 459.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 178.96875,
+          "top": 340.265625,
+          "right": 241.0625,
+          "bottom": 402.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 196.2109375,
+          "top": 516.2109375,
+          "right": 302.0078125,
+          "bottom": 622.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-320x640-es-scale1_3",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 193.99061584472656,
+          "bottom": 156.89999389648438,
+          "width": 183.99061584472656,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 310,
+          "bottom": 213.171875,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 308,
+          "bottom": 328.796875,
+          "width": 296,
+          "height": 70,
+          "opacity": 0.4096,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 310,
+          "bottom": 423.890625,
+          "width": 300,
+          "height": 55.09375,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 165.984375,
+          "right": 154,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 165.984375,
+          "right": 104,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 165.984375,
+          "right": 54,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 244.90625,
+          "bottom": 213.171875,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 17.96875,
+          "top": 496.671875,
+          "right": 84.65625,
+          "bottom": 563.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 73.171875,
+          "top": 393.171875,
+          "right": 139.859375,
+          "bottom": 459.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 178.96875,
+          "top": 340.265625,
+          "right": 241.0625,
+          "bottom": 402.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 196.2109375,
+          "top": 516.2109375,
+          "right": 302.0078125,
+          "bottom": 622.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-320x640-en-scale1_3",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 193.99061584472656,
+          "bottom": 156.89999389648438,
+          "width": 183.99061584472656,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 310,
+          "bottom": 213.171875,
+          "width": 300,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 218,
+          "top": 12,
+          "right": 302,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 209,
+          "top": 103,
+          "right": 311,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 308,
+          "bottom": 306.796875,
+          "width": 296,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 310,
+          "bottom": 406.34375,
+          "width": 300,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 165.984375,
+          "right": 154,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 165.984375,
+          "right": 104,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 165.984375,
+          "right": 54,
+          "bottom": 209.984375,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 244.90625,
+          "bottom": 213.171875,
+          "width": 84.90625,
+          "height": 50.375,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 17.96875,
+          "top": 496.671875,
+          "right": 84.65625,
+          "bottom": 563.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 73.171875,
+          "top": 393.171875,
+          "right": 139.859375,
+          "bottom": 459.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 178.96875,
+          "top": 340.265625,
+          "right": 241.0625,
+          "bottom": 402.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 196.2109375,
+          "top": 516.2109375,
+          "right": 302.0078125,
+          "bottom": 622.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-390x844-es-scale1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 264,
+          "bottom": 123,
+          "width": 254,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 380,
+          "bottom": 172,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 378,
+          "bottom": 272,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 380,
+          "bottom": 371.546875,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 128,
+          "right": 154,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 314.90625,
+          "bottom": 172,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 87.96875,
+          "top": 700.671875,
+          "right": 154.65625,
+          "bottom": 767.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 143.171875,
+          "top": 597.171875,
+          "right": 209.859375,
+          "bottom": 663.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 248.96875,
+          "top": 544.265625,
+          "right": 311.0625,
+          "bottom": 606.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 266.2109375,
+          "top": 720.2109375,
+          "right": 372.0078125,
+          "bottom": 826.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-390x844-es-scale1.png"
+    },
+    {
+      "key": "touch-390x844-en-scale1",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 264,
+          "bottom": 123,
+          "width": 254,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 380,
+          "bottom": 172,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 378,
+          "bottom": 272,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 380,
+          "bottom": 371.546875,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 128,
+          "right": 154,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 314.90625,
+          "bottom": 172,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 87.96875,
+          "top": 700.671875,
+          "right": 154.65625,
+          "bottom": 767.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 143.171875,
+          "top": 597.171875,
+          "right": 209.859375,
+          "bottom": 663.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 248.96875,
+          "top": 544.265625,
+          "right": 311.0625,
+          "bottom": 606.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 266.2109375,
+          "top": 720.2109375,
+          "right": 372.0078125,
+          "bottom": 826.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-390x844-en-scale1.png"
+    },
+    {
+      "key": "touch-390x844-es-scale1_3",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 263.98748779296875,
+          "bottom": 156.89999389648438,
+          "width": 253.98748779296875,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 380,
+          "bottom": 206.796875,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 378,
+          "bottom": 306.796875,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 380,
+          "bottom": 406.34375,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 162.796875,
+          "right": 154,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 314.90625,
+          "bottom": 206.796875,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 87.96875,
+          "top": 700.671875,
+          "right": 154.65625,
+          "bottom": 767.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 143.171875,
+          "top": 597.171875,
+          "right": 209.859375,
+          "bottom": 663.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 248.96875,
+          "top": 544.265625,
+          "right": 311.0625,
+          "bottom": 606.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 266.2109375,
+          "top": 720.2109375,
+          "right": 372.0078125,
+          "bottom": 826.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-390x844-es-scale1_3.png"
+    },
+    {
+      "key": "touch-390x844-en-scale1_3",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 263.98748779296875,
+          "bottom": 156.89999389648438,
+          "width": 253.98748779296875,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 380,
+          "bottom": 206.796875,
+          "width": 370,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 288,
+          "top": 12,
+          "right": 372,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 279,
+          "top": 103,
+          "right": 381,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 378,
+          "bottom": 306.796875,
+          "width": 366,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 380,
+          "bottom": 406.34375,
+          "width": 370,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 110,
+          "top": 162.796875,
+          "right": 154,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 314.90625,
+          "bottom": 206.796875,
+          "width": 154.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 87.96875,
+          "top": 700.671875,
+          "right": 154.65625,
+          "bottom": 767.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 143.171875,
+          "top": 597.171875,
+          "right": 209.859375,
+          "bottom": 663.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 248.96875,
+          "top": 544.265625,
+          "right": 311.0625,
+          "bottom": 606.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 266.2109375,
+          "top": 720.2109375,
+          "right": 372.0078125,
+          "bottom": 826.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-390x844-en-scale1_3.png"
+    },
+    {
+      "key": "touch-430x932-es-scale1",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 304,
+          "bottom": 123,
+          "width": 294,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 420,
+          "bottom": 172,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 418,
+          "bottom": 272,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 420,
+          "bottom": 371.546875,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 204,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 128,
+          "right": 354.90625,
+          "bottom": 172,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 127.96875,
+          "top": 788.671875,
+          "right": 194.65625,
+          "bottom": 855.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 183.171875,
+          "top": 685.171875,
+          "right": 249.859375,
+          "bottom": 751.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 288.96875,
+          "top": 632.265625,
+          "right": 351.0625,
+          "bottom": 694.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 306.2109375,
+          "top": 808.2109375,
+          "right": 412.0078125,
+          "bottom": 914.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-430x932-en-scale1",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 304,
+          "bottom": 123,
+          "width": 294,
+          "height": 113,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 128,
+          "right": 420,
+          "bottom": 172,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 224,
+          "right": 418,
+          "bottom": 272,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 334,
+          "right": 420,
+          "bottom": 371.546875,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 128,
+          "right": 204,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 128,
+          "right": 104,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 128,
+          "right": 54,
+          "bottom": 172,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 128,
+          "right": 354.90625,
+          "bottom": 172,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 127.96875,
+          "top": 788.671875,
+          "right": 194.65625,
+          "bottom": 855.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 183.171875,
+          "top": 685.171875,
+          "right": 249.859375,
+          "bottom": 751.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 288.96875,
+          "top": 632.265625,
+          "right": 351.0625,
+          "bottom": 694.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 306.2109375,
+          "top": 808.2109375,
+          "right": 412.0078125,
+          "bottom": 914.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-430x932-es-scale1_3",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 303.9827880859375,
+          "bottom": 156.89999389648438,
+          "width": 293.9827880859375,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 420,
+          "bottom": 206.796875,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 418,
+          "bottom": 306.796875,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 420,
+          "bottom": 406.34375,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 204,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 162.796875,
+          "right": 354.90625,
+          "bottom": 206.796875,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 127.96875,
+          "top": 788.671875,
+          "right": 194.65625,
+          "bottom": 855.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 183.171875,
+          "top": 685.171875,
+          "right": 249.859375,
+          "bottom": 751.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 288.96875,
+          "top": 632.265625,
+          "right": 351.0625,
+          "bottom": 694.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 306.2109375,
+          "top": 808.2109375,
+          "right": 412.0078125,
+          "bottom": 914.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-430x932-en-scale1_3",
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 10,
+          "right": 303.9827880859375,
+          "bottom": 156.89999389648438,
+          "width": 293.9827880859375,
+          "height": 146.89999389648438,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 10,
+          "top": 162.796875,
+          "right": 420,
+          "bottom": 206.796875,
+          "width": 410,
+          "height": 44,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 328,
+          "top": 12,
+          "right": 412,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 319,
+          "top": 103,
+          "right": 421,
+          "bottom": 114,
+          "width": 102,
+          "height": 11,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 12,
+          "top": 258.796875,
+          "right": 418,
+          "bottom": 306.796875,
+          "width": 406,
+          "height": 48,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 368.796875,
+          "right": 420,
+          "bottom": 406.34375,
+          "width": 410,
+          "height": 37.546875,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 160,
+          "top": 162.796875,
+          "right": 204,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 60,
+          "top": 162.796875,
+          "right": 104,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 10,
+          "top": 162.796875,
+          "right": 54,
+          "bottom": 206.796875,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 210,
+          "top": 162.796875,
+          "right": 354.90625,
+          "bottom": 206.796875,
+          "width": 144.90625,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 127.96875,
+          "top": 788.671875,
+          "right": 194.65625,
+          "bottom": 855.359375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 183.171875,
+          "top": 685.171875,
+          "right": 249.859375,
+          "bottom": 751.859375,
+          "width": 66.6875,
+          "height": 66.6875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 288.96875,
+          "top": 632.265625,
+          "right": 351.0625,
+          "bottom": 694.359375,
+          "width": 62.09375,
+          "height": 62.09375,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 306.2109375,
+          "top": 808.2109375,
+          "right": 412.0078125,
+          "bottom": 914.0078125,
+          "width": 105.796875,
+          "height": 105.796875,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": null
+    },
+    {
+      "key": "touch-844x390-es-scale1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 236,
+          "bottom": 108,
+          "width": 226,
+          "height": 100,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 244,
+          "top": 92,
+          "right": 724,
+          "bottom": 186,
+          "width": 480,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 742,
+          "top": 12,
+          "right": 826,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 729,
+          "top": 103,
+          "right": 839,
+          "bottom": 112.890625,
+          "width": 110,
+          "height": 9.890625,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 244,
+          "top": 12,
+          "right": 654,
+          "bottom": 62,
+          "width": 410,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 158,
+          "right": 229.4375,
+          "bottom": 204.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 680,
+          "top": 92,
+          "right": 724,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 580,
+          "top": 92,
+          "right": 624,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 530,
+          "top": 92,
+          "right": 574,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 244,
+          "top": 142,
+          "right": 724,
+          "bottom": 186,
+          "width": 480,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 596.5625,
+          "top": 270.765625,
+          "right": 650.4375,
+          "bottom": 324.640625,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 641.15625,
+          "top": 187.15625,
+          "right": 695.03125,
+          "bottom": 241.03125,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 726.625,
+          "top": 144.421875,
+          "right": 776.78125,
+          "bottom": 194.578125,
+          "width": 50.15625,
+          "height": 50.15625,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 740.5546875,
+          "top": 286.5546875,
+          "right": 826.0078125,
+          "bottom": 372.0078125,
+          "width": 85.453125,
+          "height": 85.453125,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-844x390-es-scale1.png"
+    },
+    {
+      "key": "touch-844x390-en-scale1",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 236,
+          "bottom": 108,
+          "width": 226,
+          "height": 100,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 244,
+          "top": 92,
+          "right": 724,
+          "bottom": 186,
+          "width": 480,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 742,
+          "top": 12,
+          "right": 826,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 729,
+          "top": 103,
+          "right": 839,
+          "bottom": 112.890625,
+          "width": 110,
+          "height": 9.890625,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 244,
+          "top": 12,
+          "right": 654,
+          "bottom": 62,
+          "width": 410,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 158,
+          "right": 229.4375,
+          "bottom": 204.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 680,
+          "top": 92,
+          "right": 724,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 580,
+          "top": 92,
+          "right": 624,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 530,
+          "top": 92,
+          "right": 574,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 244,
+          "top": 142,
+          "right": 724,
+          "bottom": 186,
+          "width": 480,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 596.5625,
+          "top": 270.765625,
+          "right": 650.4375,
+          "bottom": 324.640625,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 641.15625,
+          "top": 187.15625,
+          "right": 695.03125,
+          "bottom": 241.03125,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 726.625,
+          "top": 144.421875,
+          "right": 776.78125,
+          "bottom": 194.578125,
+          "width": 50.15625,
+          "height": 50.15625,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 740.5546875,
+          "top": 286.5546875,
+          "right": 826.0078125,
+          "bottom": 372.0078125,
+          "width": 85.453125,
+          "height": 85.453125,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-844x390-en-scale1.png"
+    },
+    {
+      "key": "touch-844x390-es-scale1_3",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "touch",
+      "locale": "es",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 303.79998779296875,
+          "bottom": 138,
+          "width": 293.79998779296875,
+          "height": 130,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 311.796875,
+          "top": 92,
+          "right": 724,
+          "bottom": 186,
+          "width": 412.203125,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 742,
+          "top": 12,
+          "right": 826,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 729,
+          "top": 103,
+          "right": 839,
+          "bottom": 112.890625,
+          "width": 110,
+          "height": 9.890625,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 311.796875,
+          "top": 12,
+          "right": 653.984375,
+          "bottom": 86,
+          "width": 342.1875,
+          "height": 74,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 203,
+          "right": 229.4375,
+          "bottom": 249.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 680,
+          "top": 92,
+          "right": 724,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Ajustes"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 580,
+          "top": 92,
+          "right": 624,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Mapa (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 530,
+          "top": 92,
+          "right": 574,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bolsa y personaje (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 311.796875,
+          "top": 142,
+          "right": 724,
+          "bottom": 186,
+          "width": 412.203125,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Abrir mis compañeros"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 596.5625,
+          "top": 270.765625,
+          "right": 650.4375,
+          "bottom": 324.640625,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 641.15625,
+          "top": 187.15625,
+          "right": 695.03125,
+          "bottom": 241.03125,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 726.625,
+          "top": 144.421875,
+          "right": 776.78125,
+          "bottom": 194.578125,
+          "width": 50.15625,
+          "height": 50.15625,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 740.5546875,
+          "top": 286.5546875,
+          "right": 826.0078125,
+          "bottom": 372.0078125,
+          "width": 85.453125,
+          "height": 85.453125,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-844x390-es-scale1_3.png"
+    },
+    {
+      "key": "touch-844x390-en-scale1_3",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "mode": "touch",
+      "locale": "en",
+      "scale": 1.3,
+      "boxes": {
+        ".hud-player": {
+          "left": 10,
+          "top": 8,
+          "right": 303.79998779296875,
+          "bottom": 138,
+          "width": 293.79998779296875,
+          "height": 130,
+          "opacity": 1,
+          "visible": true
+        },
+        ".hud-top-right": {
+          "left": 311.796875,
+          "top": 92,
+          "right": 724,
+          "bottom": 186,
+          "width": 412.203125,
+          "height": 94,
+          "opacity": 1,
+          "visible": true
+        },
+        ".world-minimap": {
+          "left": 742,
+          "top": 12,
+          "right": 826,
+          "bottom": 96,
+          "width": 84,
+          "height": 84,
+          "opacity": 1,
+          "visible": true
+        },
+        ".minimap-caption": {
+          "left": 729,
+          "top": 103,
+          "right": 839,
+          "bottom": 112.890625,
+          "width": 110,
+          "height": 9.890625,
+          "opacity": 1,
+          "visible": true
+        },
+        "#zone-banner": {
+          "left": 311.796875,
+          "top": 12,
+          "right": 653.984375,
+          "bottom": 62,
+          "width": 342.1875,
+          "height": 50,
+          "opacity": 1,
+          "visible": true
+        },
+        "#toasts": {
+          "left": 10,
+          "top": 203,
+          "right": 229.4375,
+          "bottom": 249.5,
+          "width": 219.4375,
+          "height": 46.5,
+          "opacity": 1,
+          "visible": true
+        }
+      },
+      "buttons": [
+        {
+          "selector": "#hud-settings",
+          "exists": true,
+          "left": 680,
+          "top": 92,
+          "right": 724,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Settings"
+        },
+        {
+          "selector": "#hud-map",
+          "exists": true,
+          "left": 580,
+          "top": 92,
+          "right": 624,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Map (M)"
+        },
+        {
+          "selector": "#hud-bag",
+          "exists": true,
+          "left": 530,
+          "top": 92,
+          "right": 574,
+          "bottom": 136,
+          "width": 44,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Bag and character (I)"
+        },
+        {
+          "selector": ".mn-companions-toggle",
+          "exists": true,
+          "left": 311.796875,
+          "top": 142,
+          "right": 724,
+          "bottom": 186,
+          "width": 412.203125,
+          "height": 44,
+          "opacity": 1,
+          "visible": true,
+          "label": "Open my companions"
+        }
+      ],
+      "combat": [
+        {
+          "selector": ".actionbar",
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "width": 0,
+          "height": 0,
+          "opacity": 1,
+          "visible": false
+        },
+        {
+          "selector": "#touch .t-q",
+          "left": 596.5625,
+          "top": 270.765625,
+          "right": 650.4375,
+          "bottom": 324.640625,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-e",
+          "left": 641.15625,
+          "top": 187.15625,
+          "right": 695.03125,
+          "bottom": 241.03125,
+          "width": 53.875,
+          "height": 53.875,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-r",
+          "left": 726.625,
+          "top": 144.421875,
+          "right": 776.78125,
+          "bottom": 194.578125,
+          "width": 50.15625,
+          "height": 50.15625,
+          "opacity": 0.45,
+          "visible": true
+        },
+        {
+          "selector": "#touch .t-atk",
+          "left": 740.5546875,
+          "top": 286.5546875,
+          "right": 826.0078125,
+          "bottom": 372.0078125,
+          "width": 85.453125,
+          "height": 85.453125,
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "screenshot": "touch-844x390-en-scale1_3.png"
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "desktop-390x844-es-scale1.png",
+    "desktop-390x844-en-scale1.png",
+    "desktop-390x844-es-scale1_3.png",
+    "desktop-390x844-en-scale1_3.png",
+    "desktop-844x390-es-scale1.png",
+    "desktop-844x390-en-scale1.png",
+    "desktop-844x390-es-scale1_3.png",
+    "desktop-844x390-en-scale1_3.png",
+    "desktop-1280x800-es-scale1.png",
+    "desktop-1280x800-en-scale1.png",
+    "desktop-1280x800-es-scale1_3.png",
+    "desktop-1280x800-en-scale1_3.png",
+    "touch-390x844-es-scale1.png",
+    "touch-390x844-en-scale1.png",
+    "touch-390x844-es-scale1_3.png",
+    "touch-390x844-en-scale1_3.png",
+    "touch-844x390-es-scale1.png",
+    "touch-844x390-en-scale1.png",
+    "touch-844x390-es-scale1_3.png",
+    "touch-844x390-en-scale1_3.png"
+  ],
+  "pass": true
+}
