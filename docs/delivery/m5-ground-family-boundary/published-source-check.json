@@ -1,0 +1,62 @@
+{
+  "revision": "e4c5f0da669cbc2dc3cced850dad158e8a8ac1cc",
+  "scope": "Windows local acceptance hashes versus normalized Git publication; no code or assertion change. Image verification uses Git bytes.",
+  "files": [
+    {
+      "path": "docs/delivery/m5-ground-family-boundary/public-smoke.mjs",
+      "localSha256": "47eada4da7a37da6499ed22894d9bb48a1ce7b8ca6e94b9948257ab2c1fd8b85",
+      "publishedSha256": "47eada4da7a37da6499ed22894d9bb48a1ce7b8ca6e94b9948257ab2c1fd8b85",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "server/groundHostAuthority.mjs",
+      "localSha256": "13c20234fa98616a923e7e74aa9ef5a99a314486f46fd7ff0e677cc29092aa59",
+      "publishedSha256": "4b8ed855beac255af377ae37ed7b3e29fde98287f6cca72f64b611b96c3ed157",
+      "byteIdentical": false,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/ground-family-boundary.test.mjs",
+      "localSha256": "2ce6d684ffe85d43c9a948229213bc8c44e639d5d6be25ee23d3b47cb3803e16",
+      "publishedSha256": "2ce6d684ffe85d43c9a948229213bc8c44e639d5d6be25ee23d3b47cb3803e16",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/ground-family-host.test.mjs",
+      "localSha256": "9f5dd112d787e0ac652b52285667c7fc079ad2205395346b903640bb952d5d01",
+      "publishedSha256": "9f5dd112d787e0ac652b52285667c7fc079ad2205395346b903640bb952d5d01",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/ground-family-process.test.mjs",
+      "localSha256": "14032e252b4b91c325f1da29d89bdab9899770e0d6811f9a0d6d60acd0c7109a",
+      "publishedSha256": "14032e252b4b91c325f1da29d89bdab9899770e0d6811f9a0d6d60acd0c7109a",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/ground-host-authority-sql.test.mjs",
+      "localSha256": "50631bb67b8f9175788f077964bc1f9f748b81470ecb3edbb7383a92be489551",
+      "publishedSha256": "c6d3cf48d45f3a77ccb2da83064df97fbab9806cd7d0b4f5989b1865d0f3c6cf",
+      "byteIdentical": false,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/ground-workshop-compatibility.test.mjs",
+      "localSha256": "aaf7459ecf97c1d3eba5f67bada90682406b2003bd11862bcb3bc1f2c97b6822",
+      "publishedSha256": "aaf7459ecf97c1d3eba5f67bada90682406b2003bd11862bcb3bc1f2c97b6822",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    },
+    {
+      "path": "tests/helpers/ground-family-process.mjs",
+      "localSha256": "4816933d173d16e147c6c30b47c435c955e2b4a2cc2f207e20c408b77ebafff7",
+      "publishedSha256": "4816933d173d16e147c6c30b47c435c955e2b4a2cc2f207e20c408b77ebafff7",
+      "byteIdentical": true,
+      "onlyCRLFToLF": true
+    }
+  ]
+}

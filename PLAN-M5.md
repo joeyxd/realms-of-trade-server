@@ -8,6 +8,8 @@ SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin c
 recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
 SQL023 instalado/readiness confirmado en VPS;
 mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Código `e4c5f0d` verificado en VPS alpha.41/protocolo 47: 109/109 del actualizador, 13/13
+focales sin red en la imagen exacta y entrada pública 6/6; una autoridad sana y timer activo.
 Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
 detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
 

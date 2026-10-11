@@ -1,6 +1,6 @@
 {
-  "recordedAt": "2026-10-11T03:04:39.038Z",
-  "version": "0.6.0-alpha.40",
+  "recordedAt": "2026-10-11T03:28:58.648Z",
+  "version": "0.6.0-alpha.41",
   "protocol": 47,
   "checks": [
     "health_200",
@@ -13,13 +13,13 @@
   "count": 6,
   "status": {
     "game": "MAREA NEGRA",
-    "version": "0.6.0-alpha.40",
+    "version": "0.6.0-alpha.41",
     "players": 0,
     "max": 4,
     "sockets": 0,
-    "tick": 5476,
-    "uptime": 97,
-    "stepMs": 1.183,
+    "tick": 3455,
+    "uptime": 64,
+    "stepMs": 1.172,
     "bots": 3,
     "names": [],
     "errors": 0,
@@ -72,7 +72,7 @@
         "id": "marea-negra",
         "ready": true,
         "failed": false,
-        "version": 2073,
+        "version": 2097,
         "errors": 0
       }
     },
