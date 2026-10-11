@@ -11,6 +11,16 @@ SQL028/`attr`/`eat`. Pendiente: comidas especiales SRV02 como operación `freshw
 Suite completa **4598/4659**; los 55 fallos también fallan en origin `c33ed9c` (68 allí) salvo uno de red que pasa
 aislado. HUD vertical **36/36** (origin 28 solapes; corregido el bloque del jugador con barras) y ficha en 4 viewports.
 
+**AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
+[Entrega/evidencia](delivery/l04c-companion-continuity.md) y [brief](briefs/l04c-companion-continuity.md).
+Captura tras chat confirmado sin inferencia; continuación desde fuentes y refresco que cancela tardías
+sin renovar sesión/cuota ni reactivar stop. Resumen manual y automático opt-in por presión/pausa;
+un intento automático por cuota durable compartida con compactados manuales, originales conservados.
+Regresión integrada: 250 aprobadas/una omitida por symlink Windows; navegador 9/9 simulado con C01 real local.
+AgentMind relee observación tras I/O del presupuesto; stop/archivos y frescura corporal conservan sus límites.
+Solo Studio local fuera de la imagen VPS, identidades fixture y mundo efímero; sin SQL, protocolo o JEV.
+Sigue vínculo durable/ledger central y wizard ingame. Calidad real de Brisa/resumen y experiencia humana pendientes.
+
 **AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).
 Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;
@@ -821,7 +831,8 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   Las 22 líneas L00a–L06e tienen dirección acordada; L00, L01a/b/c y L02a/b tienen evidencia local;
   L02c añade autoridad opt-in, L03a API/mente simulada y L03b conversación simulada verificadas localmente;
   L03c tiene metas/feedback y ciclo local simulados; L04a tiene memoria local con resúmenes simulados;
-  L04b tiene administración local verificada; L05–L06 siguen pendientes, con demostración
+  L04b tiene administración local verificada; L04c añade captura/refresco/resumen acotados del Studio local
+  ([entrega](delivery/l04c-companion-continuity.md)); montaje central y L05–L06 conservan sus puertas, con demostración
   y estado de diseño/implementación por fila.
   **D-A1 acordada:** personaje propio y plaza normal; su dueño autoriza capacidades y puede detenerlo.
   El autor añade autonomía para elegir metas/acciones dentro de límites de gasto del usuario y archivos
@@ -919,7 +930,8 @@ recorrido humano con el amigo/FPS físicos siguen pendientes. Sin cambiar protoc
   añade journal local persistente, recuperación y resúmenes con fuentes/incertidumbre, escritura/CLI/reentrada
   y coste de compactado verificados con modelos simulados. [L04b](delivery/l04b-agent-memory-admin.md) añade
   consulta/exportación byte exacta, borrado con derivados/pendientes y retención/migración explícitas locales.
-  Sigue L05a; proveedor, encuentro/aceptación humana y calidad pendientes.
+  [L04c](delivery/l04c-companion-continuity.md) añade continuidad del Studio local y ledger durable local;
+  sigue contabilidad central, montaje ingame y encuentro/aceptación humana/calidad.
   Provisioning/UI, percepción autoritativa, gasto real, memoria
   con operación remota y evaluación humana siguen pendientes. Sin publicación ni despliegue.
 

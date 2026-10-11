@@ -49,8 +49,8 @@ function baseSnapshot(nowMs, overrides = {}) {
 }
 
 function harness({ mode = 'conversation', ageMs = 2000, limits = {}, mutateOnComplete = () => {}, sourceEntry = null,
-  appendMemory = null } = {}) {
-  const state = { now: 1000, value: baseSnapshot(1000), chatOrders: [], bodyOrders: [], appends: [] };
+  mutateOnAppend = () => {}, appendMemory = null } = {}) {
+  const state = { now: 1000, value: baseSnapshot(1000), chatOrders: [], bodyOrders: [], appends: [], completeCalls: 0 };
   if (sourceEntry) {
     const journal = parseMemoryJournal(`${JSON.stringify(sourceEntry)}\n`, scope);
     state.value.memoryJournal = journal;
@@ -67,6 +67,7 @@ function harness({ mode = 'conversation', ageMs = 2000, limits = {}, mutateOnCom
     countText: (text) => Math.ceil(Buffer.byteLength(text) / 4),
     prepare: (request) => ({ body: JSON.stringify(request), inputTokens: Math.ceil(Buffer.byteLength(JSON.stringify(request)) / 4), maxCostUnits: 10 }),
     complete: async () => {
+      state.completeCalls++;
       state.now += ageMs;
       mutateOnComplete(state);
       const text = mode === 'conversation' ? reply : mode === 'decision' ? JSON.stringify({ v: 1, decision: {
@@ -75,6 +76,8 @@ function harness({ mode = 'conversation', ageMs = 2000, limits = {}, mutateOnCom
     } };
   const commitMemory = appendMemory ?? (async (request) => {
     state.appends.push(request);
+    state.now += ageMs;
+    mutateOnAppend(state);
     const checked = request.guard();
     if (!checked.ok) return checked;
     return { ok: true, replay: false, revision: request.expectedRevision + 1,
@@ -138,4 +141,41 @@ test('slow memory compaction keeps the final owner-file commit fence', async () 
   assert.equal(result.why, 'owner_files_changed');
   assert.equal(f.state.appends.length, 1);
   assert.equal(f.state.bodyOrders.length, 0);
+});
+
+test('bounded server-delivered memory capture uses the explicit historical age fence without inference or body actions', async (t) => {
+  await t.test('two seconds passes only with the explicit 30 second historical window', async () => {
+    const f = harness({ mode: 'remember', ageMs: 2000, limits: { maxReflectionAgeMs: 30000 } });
+    const result = await f.mind.remember();
+    assert.equal(result.ok, true, JSON.stringify(result));
+    assert.equal(f.state.appends.length, 1);
+    assert.equal(f.state.completeCalls, 0);
+    assert.equal(f.state.chatOrders.length, 0);
+    assert.equal(f.state.bodyOrders.length, 0);
+  });
+  await t.test('default 1500 ms window rejects after two seconds', async () => {
+    const f = harness({ mode: 'remember', ageMs: 2000, limits: { maxReflectionAgeMs: 1500 } });
+    const result = await f.mind.remember();
+    assert.equal(result.ok, false);
+    assert.equal(result.why, 'stale_decision');
+    assert.equal(f.state.appends.length, 1);
+    assert.equal(f.state.completeCalls, 0);
+    assert.equal(f.state.bodyOrders.length, 0);
+  });
+});
+
+test('historical capture still rejects a stop or owner-file change at the final append guard', async (t) => {
+  for (const [name, mutate, expected] of [
+    ['stop', (state) => { state.value.state = 'stopped'; }, 'not_ready'],
+    ['owner file change', (state) => { state.value.ownerFileHashes.memory = 'e'.repeat(64); }, 'owner_files_changed'],
+  ]) await t.test(name, async () => {
+    const f = harness({ mode: 'remember', ageMs: 2000, limits: { maxReflectionAgeMs: 30000 }, mutateOnAppend: mutate });
+    const result = await f.mind.remember();
+    assert.equal(result.ok, false);
+    assert.equal(result.why, expected);
+    assert.equal(f.state.appends.length, 1);
+    assert.equal(f.state.completeCalls, 0);
+    assert.equal(f.state.chatOrders.length, 0);
+    assert.equal(f.state.bodyOrders.length, 0);
+  });
 });

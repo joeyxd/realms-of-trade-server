@@ -62,13 +62,20 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
         request.resume(); reply(response, 401, fail('unauthorized')); return;
       }
       if (request.method === 'GET' && request.url === '/api/state') { reply(response, 200, await view()); return; }
-      if (request.method !== 'POST' || !['/api/create', '/api/start', '/api/stop', '/api/chat', '/api/remember', '/api/files', '/api/reenter'].includes(request.url)) {
+      if (request.method !== 'POST' || !['/api/create', '/api/start', '/api/stop', '/api/chat', '/api/remember', '/api/files', '/api/reenter',
+        '/api/context/refresh', '/api/memory/compact', '/api/continuity'].includes(request.url)) {
         request.resume(); reply(response, 404, fail('route_unavailable')); return;
       }
       if (request.headers.origin !== origin) { request.resume(); reply(response, 403, fail('origin_required')); return; }
       const input = await parseBody(request), route = request.url;
-      const fields = route === '/api/create' ? ['draft', 'limits'] : route === '/api/chat' ? ['text'] : [];
+      const fields = route === '/api/create' ? ['draft', 'limits'] : route === '/api/chat' ? ['text'] :
+        route === '/api/memory/compact' ? ['sourceIds'] : route === '/api/continuity' ? ['autoCompact'] : [];
       if (!exact(input, fields)) { reply(response, 400, fail('invalid_request')); return; }
+      if (route === '/api/memory/compact' && (!Array.isArray(input.sourceIds) || input.sourceIds.length < 1 || input.sourceIds.length > 8 ||
+        new Set(input.sourceIds).size !== input.sourceIds.length || !input.sourceIds.every(id => typeof id === 'string' && /^episode:[a-f0-9]{64}$/.test(id))) ||
+        route === '/api/continuity' && typeof input.autoCompact !== 'boolean') {
+        reply(response, 400, fail('invalid_request')); return;
+      }
       let result;
       if (route === '/api/create') {
         if (companion || creating) { reply(response, 409, fail('already_created')); return; }
@@ -84,6 +91,9 @@ export async function createCompanionStudio({ directory, baseUrl, modelId, port 
       else if (route === '/api/reenter') result = await companion.reenter();
       else if (route === '/api/chat') result = await companion.chat(input.text);
       else if (route === '/api/remember') result = await companion.remember();
+      else if (route === '/api/context/refresh') result = await companion.refreshContext();
+      else if (route === '/api/memory/compact') result = await companion.compactMemory(input.sourceIds);
+      else if (route === '/api/continuity') result = companion.setContinuity(input);
       else result = await view();
       reply(response, result.ok ? 200 : 409, result);
     } catch { if (!response.headersSent && !response.destroyed) reply(response, 400, fail('invalid_request')); }
