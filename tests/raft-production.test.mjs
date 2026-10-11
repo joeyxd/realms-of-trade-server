@@ -17,7 +17,7 @@ function chainRaft({ nets = 1, grills = 1 } = {}) {
 }
 
 test('the selected chain produces fish and biscuits at the authored rates', () => {
-  assert.deepEqual(PRODUCTION_PARTS, ['net', 'grill']);
+  assert.deepEqual(PRODUCTION_PARTS, ['net', 'grill', 'purifier']);
   const raft = chainRaft();
   const hold = newHold(100);
   const result = stepRaftProduction(raft, hold, 1);

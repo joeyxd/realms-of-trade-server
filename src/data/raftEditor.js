@@ -1,6 +1,6 @@
 // The first construction pass is deliberately limited to pieces already useful on the starter raft.
 export const EDITOR_PARTS = Object.freeze([
-  'foundation', 'floor', 'pillar', 'wall', 'door', 'roof', 'railing', 'stairs', 'crate', 'net', 'grill', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'storage',
+  'foundation', 'floor', 'pillar', 'wall', 'door', 'roof', 'railing', 'stairs', 'crate', 'net', 'grill', 'purifier', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'storage',
 ]);
 
 export const EDITOR_RADIUS = 8;
