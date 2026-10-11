@@ -28,6 +28,19 @@
 .fresh-canteen-needs { min-height: 1.5em; margin: 7px 2px 2px; color: #c5ded9; font-size: 12px; font-variant-numeric: tabular-nums; }
 .fresh-foods { display: flex; flex-wrap: wrap; gap: 6px; }
 .fresh-foods button { flex: 1 1 calc(33% - 6px); }
+.fresh-meals { margin: 12px 0; }
+.fresh-meals[hidden] { display: none; }
+.fresh-meals-title { margin: 0 2px 8px; color: #d9eee9; font-size: 16px; line-height: 1.2; }
+.fresh-meal-active { margin: 0 0 8px; padding: 7px 9px; border: 1px solid #d6b36a66; border-radius: 8px; background: #47391f; color: #ffe9b5; font-size: 12px; font-variant-numeric: tabular-nums; }
+.fresh-meal-active:empty { display: none; }
+.fresh-meal-cards { display: grid; gap: 8px; }
+.fresh-meal-card { min-width: 0; padding: 9px 10px; border: 1px solid #31524e; border-radius: 10px; background: linear-gradient(145deg, #183332, #142829); }
+.fresh-meal-name { display: block; color: #f2f7f6; font-weight: 800; }
+.fresh-meal-cost, .fresh-meal-effect { margin: 3px 0 0; color: #bfd5d0; font-size: 12px; line-height: 1.35; }
+.fresh-meal-duration { display: inline-block; margin-top: 5px; color: #91cec2; font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.fresh-meal-hint { min-height: 1.3em; margin: 3px 0 0; color: #f1d387; font-size: 11px; line-height: 1.3; }
+.fresh-meal-hint:empty { display: none; }
+.fresh-meal-card button { display: block; width: 100%; min-height: 38px; margin-top: 7px; padding: 6px 9px; font-size: 12px; }
 .fresh-pack > div, .fresh-source > div, .fresh-decant > div { min-width: 0; }
 .fresh-bucket, .fresh-barrel-title b, .fresh-source-name, .fresh-decant-label { display: block; font-weight: 700; }
 .fresh-count { display: block; color: #b5c9c4; font-size: 12px; }

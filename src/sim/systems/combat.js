@@ -30,6 +30,7 @@ import { LAWLESS } from '../../data/lawless.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
 import { respawnNeeds } from './survival.js';
 import { staminaRegenMul } from '../../data/survival.js';
+import { mealEffects } from '../../data/meals.js';
 import { stepWaterCurse } from './pearlcombat.js';
 
 const D2R = Math.PI / 180;
@@ -595,7 +596,11 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   dec('stagger');
   if (ecs.regenT[e] > Cb.regenDelay && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = Math.min(ecs.maxHp[e], ecs.hp[e] + ecs.maxHp[e] * Cb.regenRate * dt);
   const gMax = guardMax(ecs, e);
-  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < gMax) ecs.guardSt[e] = Math.min(gMax, ecs.guardSt[e] + G.regen * dt * (ecs.needs[e] > 0 ? staminaRegenMul(ecs.sat[e], ecs.hyd[e]) : 1));
+  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < gMax) {
+    const needMul = ecs.needs[e] > 0 ? staminaRegenMul(ecs.sat[e], ecs.hyd[e]) : 1;
+    const mealMul = mealEffects(ecs.mealKind?.[e] ?? 0, ecs.mealTicks?.[e] ?? 0).regen;
+    ecs.guardSt[e] = Math.min(gMax, ecs.guardSt[e] + G.regen * dt * needMul * mealMul);
+  }
   if (ecs.catchN[e] > 0 && ecs.catchT[e] > G.catchLife) {
     ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
     world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });

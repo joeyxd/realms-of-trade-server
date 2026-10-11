@@ -2,13 +2,14 @@
 // checks belong to the authoritative host before this module is called.
 import { FRESHWATER, readVessels, validProfileVessels, vesselsMass, vesselsVolume } from '../../data/freshwater.js';
 import { GOODS } from '../../data/goods.js';
-import { FOODS, readSurvField } from '../../data/survival.js';
+import { FOODS, readSurvField, meterValue } from '../../data/survival.js';
+import { MEALS, MEAL_TICKS, readMealField } from '../../data/meals.js';
 import { consumeNeeds } from '../systems/survival.js';
 import { RAFT, RAFT_LOAD, RAFT_PARTS } from '../../data/raftparts.js';
 
 export { readVessels, vesselsMass, vesselsVolume, validProfileVessels };
 
-const OPS = new Set(['craftBucket', 'fill', 'deposit', 'withdraw', 'decant', 'craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat']);
+const OPS = new Set(['craftBucket', 'fill', 'deposit', 'withdraw', 'decant', 'craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat', 'meal']);
 const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const readStoredVessels = (holder) => {
   if (!holder || typeof holder !== 'object') return [];
@@ -41,6 +42,11 @@ export function checkedFreshwaterCommand(raw) {
   if (c.op === 'fillCanteen') return c.source === FRESHWATER.sourceId && c.ship === '' && c.part === '' && c.n >= 1 && c.n <= FRESHWATER.canteenCapacity ? c : null;
   if (c.op === 'decant') return c.source === '' && c.ship === '' && c.part === '' && c.n >= 1 && c.n <= FRESHWATER.bucketCapacity ? c : null;
   if (c.op === 'drink') return c.source === '' && c.ship === '' && c.part === '' && c.n === 1 ? c : null;
+  if (c.op === 'meal') {
+    if (!Object.hasOwn(MEALS, c.source) || c.n !== 1) return null;
+    return MEALS[c.source].heat ? /^[A-Za-z0-9:_-]{1,120}$/.test(c.ship) && /^p[0-9]{1,10}$/.test(c.part) ? c : null
+      : c.ship === '' && c.part === '' ? c : null;
+  }
   if (c.op === 'eat') return Object.hasOwn(FOODS, c.source) && c.ship === '' && c.part === '' && c.n === 1 ? c : null;
   if (c.op === 'refillCanteen') {
     if (c.n < 1 || c.n > FRESHWATER.canteenCapacity) return null;
@@ -60,6 +66,8 @@ export function freshwaterProfileDelta(profile, command) {
   const eco = profile.eco, rev = Number.isSafeInteger(eco.tradeRev) ? eco.tradeRev : 0;
   if (cmd.expectedRev !== rev) return { profile: null, why: 'revision' };
   if (rev >= FRESHWATER.maxRevision) return { profile: null, why: 'revisionLimit' };
+  const mealField = readMealField(profile);
+  if (mealField.present && !mealField.value) return { profile: null, why: 'command' };
   const survField = readSurvField(profile);
   if (survField.present && !survField.value) return { profile: null, why: 'command' };
   let packV, ships;
@@ -126,6 +134,15 @@ export function freshwaterProfileDelta(profile, command) {
     const needs = consumeNeeds(profile, 'agua'); if (!needs) return fail('full');
     c.water -= 1;
     out.surv = needs.surv;
+  } else if (cmd.op === 'meal') {
+    const meal = MEALS[cmd.source];
+    if (Object.entries(meal.cost).some(([good, count]) => (pack.goods[good] || 0) < count)) return fail('goods');
+    for (const [good, count] of Object.entries(meal.cost)) {
+      pack.goods[good] -= count; if (!pack.goods[good]) delete pack.goods[good];
+    }
+    out.surv = { v: 1, sat: meterValue((survField.value?.sat ?? 100) + meal.sat),
+      hyd: meterValue((survField.value?.hyd ?? 100) + meal.hyd) };
+    out.meal = { v: 1, kind: cmd.source, ticks: MEAL_TICKS };
   } else if (cmd.op === 'eat') {
     if ((pack.goods[cmd.source] || 0) < 1) return fail('empty');
     const needs = consumeNeeds(profile, cmd.source); if (!needs) return fail('full');

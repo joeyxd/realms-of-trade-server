@@ -422,6 +422,7 @@ export class GameClient {
     if (Object.hasOwn(s, 'freshwater')) {
       this.freshwaterStatus = s.freshwater ? structuredClone(s.freshwater) : null;
       this.pred.survivalEnabled = s.freshwater?.canteenEnabled === true;
+      this.pred.mealsEnabled = s.freshwater?.mealsEnabled === true;
     }
     const off = st - this.clock;
     // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one

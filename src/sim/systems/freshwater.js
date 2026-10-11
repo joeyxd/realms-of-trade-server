@@ -3,6 +3,9 @@ import { C, KIND } from '../ecs.js';
 import { FRESHWATER, freshwaterSource, isCanteenCommand } from '../../data/freshwater.js';
 import { applyNeedsProfile } from './survival.js';
 import { FOODS, SURVIVAL } from '../../data/survival.js';
+import { MEALS, readMealField } from '../../data/meals.js';
+import { fireAccess, fireSeconds } from './fire.js';
+import { readFire, remainingFire } from '../economy/fire.js';
 import { checkedFreshwaterCommand, freshwaterProfileDelta } from './freshwaterProfile.js';
 import { readVessels } from '../economy/waterContainers.js';
 import { RAFT } from '../../data/raftparts.js';
@@ -23,8 +26,20 @@ export function freshwaterAccess(w, e, cmd, proof = true) {
   const ecs = w.ecs;
   if (!w.freshwaterEnabled) return 'disabled';
   if (isCanteenCommand(cmd) && !w.survivalEnabled) return 'disabled';
+  if (cmd.op === 'meal' && !w.mealsEnabled) return 'disabled';
   if (!ecs.alive[e] || ecs.kind[e] !== KIND.PLAYER || ecs.mask[e] & C.BOT || ecs.dead[e] || ecs.hp[e] <= 0) return 'dead';
   if (w.navalPilot?.locked?.(e) && !shoreServiceAllowed(w, e, cmd)) return 'busy';
+  if (cmd.op === 'meal' && MEALS[cmd.source]?.heat) {
+    if (!w.fireEnabled) return 'heat';
+    const active = w.rafts?.get(cmd.ship);
+    if (!active || active.owner !== e) return 'owner';
+    const entry = active.condition?.entries.find(p => p.id === cmd.part);
+    if (!entry || !['campfire', 'grill'].includes(entry.part[0])) return 'heat';
+    const why = fireAccess(w, e, { ship: cmd.ship, part: cmd.part, kind: entry.part[0] });
+    if (why) return why;
+    const slot = readFire(w.profiles.get(e)?.fire).slots[JSON.stringify([cmd.ship, cmd.part])];
+    if (!slot || slot.kind !== entry.part[0] || !slot.lit || remainingFire(slot, fireSeconds(w)) <= 0) return 'heat';
+  }
   if (['fill', 'fillCanteen'].includes(cmd.op)) {
     const source = freshwaterSource(w.map);
     if (!source || cmd.source !== source.id || source.y < .3) return 'source';
@@ -102,7 +117,21 @@ export function freshwaterStatus(w, e) {
       capacity: FRESHWATER.barrelCapacity, broken: entry.hp <= 0,
       near: barrelDistance(pose, entry.part, { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e] }) <= 3.5 });
   }
+  const cookers = [];
+  if (w.mealsEnabled && w.fireEnabled) {
+    const state = readFire(w.profiles.get(e)?.fire), now = fireSeconds(w);
+    for (const active of w.rafts?.values() || []) if (active.owner === e) {
+      for (const entry of active.condition?.entries || []) if (['campfire', 'grill'].includes(entry.part[0])) {
+        const slot = state.slots[JSON.stringify([active.ship.id, entry.id])];
+        cookers.push({ ship: active.ship.id, part: entry.id, kind: entry.part[0],
+          near: !fireAccess(w, e, { ship: active.ship.id, part: entry.id, kind: entry.part[0] }),
+          broken: active.ship.hp <= 0 || entry.hp <= 0,
+          lit: !!slot && slot.kind === entry.part[0] && slot.lit && remainingFire(slot, now) > 0 });
+      }
+    }
+  }
   return { enabled: true, canteenEnabled: w.survivalEnabled === true,
+    mealsEnabled: w.mealsEnabled === true, meal: readMealField(w.profiles.get(e)).value, cookers,
     ...(w.survivalEnabled ? { needs: { sat: ecs.sat[e], hyd: ecs.hyd[e], penalty: ecs.needPen[e] } } : {}), source: source && { id: source.id,
     near: Math.hypot(ecs.x[e] - source.x, ecs.z[e] - source.z) <= source.radius && Math.abs(ecs.y[e] - source.y) <= 2 }, barrels,
     gathering: g ? Math.min(1, (w.tick - g.tick) / FRESHWATER.collectTicks) : 0 };
@@ -118,8 +147,10 @@ export function localFreshwaterCmd(w, e, command, saveFits = () => true) {
   if (result.ack.ok) {
     const p = w.profiles.get(e), next = result.profile;
     p.eco.pack = next.eco.pack; p.eco.tradeRev = next.eco.tradeRev;
+    if (next.meal) p.meal = structuredClone(next.meal);
+    else delete p.meal;
     if (next.surv) { p.surv = structuredClone(next.surv); applyNeedsProfile(w, e, p); }
-    if (command.op === 'eat' && FOODS[command.source]?.sat > 0)
+    if (command.op === 'meal' || command.op === 'eat' && FOODS[command.source]?.sat > 0)
       w.ecs.hp[e] = Math.min(w.ecs.maxHp[e], w.ecs.hp[e] + w.ecs.maxHp[e] * SURVIVAL.foodHeal);
     p.eco.ships.forEach((ship,index) => {
       const candidate = next.eco.ships[index];

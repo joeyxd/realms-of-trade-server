@@ -8,6 +8,7 @@ import { MASTERY, WEAPON_KINDS } from '../../data/weapons.js';
 import { ARTS, DEFAULT_LOADOUT, LOADOUT_SLOTS as SKILL_SLOTS, SLOT_COLS, isArt, skillIndex, slotSkill } from '../../data/tattoos.js';
 import { PEARLS } from '../../data/pearls.js';
 import { needPenalty } from '../../data/survival.js';
+import { mealEffects } from '../../data/meals.js';
 import { itemStats, emptyStats } from '../items.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -74,12 +75,13 @@ export function refreshStats(world, e) {
   const base = statsFor(ecs.level[e]), g = gearTotals(prof);
   if (prof && Array.isArray(prof.mast)) ecs.mastery[e] = packMastery(WEAPON_KINDS.map((_, i) => (prof.mast[i] ? prof.mast[i][0] : 1)));
   const m = masteryOf(ecs, e);
+  const meal = mealEffects(ecs.mealKind?.[e] ?? 0, ecs.mealTicks?.[e] ?? 0);
   const frac = ecs.maxHp[e] > 0 ? ecs.hp[e] / ecs.maxHp[e] : 1;
   ecs.atk[e] = Math.round((base.atk + g.atk) * (1 + MASTERY.dmg * Math.max(0, m - 1)));
   ecs.def[e] = base.def + g.def;
   // Needs lower both maxima. Hunger must never reduce HP below the survival floor.
   const needMul = 1 - (ecs.needs[e] > 0 ? (ecs.needPen[e] || needPenalty(ecs.sat[e], ecs.hyd[e])) : 0);
-  ecs.maxHp[e] = Math.round((base.hp + g.hp) * needMul);
+  ecs.maxHp[e] = Math.round((base.hp + g.hp) * needMul * meal.hp);
   ecs.hp[e] = ecs.dead[e] > 0 ? 0 : Math.min(ecs.maxHp[e], Math.max(1, frac * ecs.maxHp[e]));
   ecs.speed[e] = tuning.player.runSpeed * (1 + capped(g, 'spd'));
   ecs.cdr[e] = capped(g, 'cdr');

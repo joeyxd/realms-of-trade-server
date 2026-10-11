@@ -177,6 +177,7 @@ export class EconomicAuthority {
         command.type === 'artisan' && command.op === 'learn' && h.workshopOperations) { reject('disabled'); return true; }
     if (freshwaterMutation(command) && !h.freshwaterOperations) { reject('disabled'); return true; }
     if (isCanteenCommand(command) && !h.canteenOperations) { reject('disabled'); return true; }
+    if (command.type === 'freshwater' && command.op === 'meal' && !h.specialMealOperations) { reject('disabled'); return true; }
     if (command.type === 'fire' && !h.fireOperations) { reject('disabled'); return true; }
     if ((command.type === 'artisan' || artisanMutation(command)) && !h.artisanOperations) { reject('disabled'); return true; }
     if (command.op === 'list') {
@@ -418,9 +419,11 @@ export class EconomicAuthority {
         if (Object.hasOwn(next, 'workshop')) p.workshop = clone(next.workshop);
         if (Object.hasOwn(next, 'attr')) p.attr = clone(next.attr);
         if (Object.hasOwn(next, 'surv')) p.surv = clone(next.surv);
+        if (Object.hasOwn(next, 'meal')) p.meal = clone(next.meal);
+        else delete p.meal;
         if (isCanteenCommand(a.command) && a.ack.ok) {
           applyNeedsProfile(w, a.entity, p);
-          if (a.command.op === 'eat' && FOODS[a.command.source]?.sat > 0)
+          if (a.command.op === 'meal' || a.command.op === 'eat' && FOODS[a.command.source]?.sat > 0)
             w.ecs.hp[a.entity] = Math.min(w.ecs.maxHp[a.entity], w.ecs.hp[a.entity] + w.ecs.maxHp[a.entity] * SURVIVAL.foodHeal);
         }
         for (const ship of p.eco.ships) {

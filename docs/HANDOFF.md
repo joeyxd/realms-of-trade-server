@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
+[Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).
+Alpha.58/protocolo 57; tres comidas con un efecto durante 15 min conectados, pausa offline y
+limpieza al reaparecer. Recibo freshwater/M5; `MN_SPECIAL_MEAL_OPERATIONS=0` por defecto.
+194/194 grupo del actualizador, SQL 33/33; UI real local ES/EN 6/6, cliente simulado. Leer entrega para
+alcance SQL, fotos y límites de evidencia. INV02d ya está incluido en VPS cd5df25/alpha.57;
+un jugador, sin forzar relevo. Aplicar SQL035, verificar readiness, desplegar/activar cuando
+esté idle/durable y aceptar consumo/replay/reentrada en público. Después INV03/bolsas.
+
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
 Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.

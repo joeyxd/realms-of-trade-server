@@ -1,4 +1,5 @@
 import { FOODS } from '../data/survival.js';
+import { MEALS, MEAL_TICKS } from '../data/meals.js';
 import { shoreBarrelNotice, shoreVoyageActive } from './shoreStopState.js';
 
 const RETRY_MS = 1000;
@@ -31,6 +32,12 @@ const COPY = {
     canteenBucket: 'Desde la cubeta', canteenProvisions: 'Desde provisiones', canteenBarrel: 'Desde el barril',
     hunger: 'Hambre', thirst: 'Sed', eat: 'Comer', fish: 'Pescado', biscuit: 'Galleta', fruit: 'Fruta', waterGood: 'Agua', rum: 'Ron',
     canteenCrafted: 'Cantimplora fabricada.', canteenFilled: 'Cantimplora rellenada.', drank: 'Has bebido una dosis.', ate: 'Has comido.',
+    meals: 'Comidas especiales', mealFish: 'Pescado asado', mealGrog: 'Grog', mealBiscuit: 'Galleta reforzada',
+    mealFishCost: '1 pescado', mealGrogCost: '1 ron + 1 agua', mealBiscuitCost: '1 galleta + 1 harina',
+    mealFishEffect: '+10 % de vida máxima', mealGrogEffect: '+25 % de recuperación de aguante', mealBiscuitEffect: '+10 unidades de carga cómoda; no cambia la masa máxima',
+    prepareEat: 'Preparar y comer', mealDuration: '15 min', mealActive: 'Comida activa: se reemplazará al preparar otra.', mealRemaining: 'Restante',
+    mealNoHeat: 'Necesitas una fogata o parrilla propia encendida y cercana.', mealHeatRequired: 'Fogata o parrilla encendida.', mealBusy: 'Espera a que termine tu acción actual.',
+    mealGoods: 'Faltan ingredientes para esta receta.', meal_goods: 'Faltan ingredientes para esta receta.', heat: 'Necesitas una fogata o parrilla propia encendida y cercana.', mealAccess: 'Esta función no está disponible para tu sesión.', mealReady: 'Comida especial preparada y comida.',
   },
   en: {
     title: 'Fresh water', close: 'Close fresh water', bucket: 'Bucket', bucketAbsent: 'No bucket',
@@ -58,6 +65,12 @@ const COPY = {
     canteenBucket: 'From bucket', canteenProvisions: 'From provisions', canteenBarrel: 'From barrel',
     hunger: 'Hunger', thirst: 'Thirst', eat: 'Eat', fish: 'Fish', biscuit: 'Biscuit', fruit: 'Fruit', waterGood: 'Water', rum: 'Rum',
     canteenCrafted: 'Canteen crafted.', canteenFilled: 'Canteen refilled.', drank: 'You drank one dose.', ate: 'You ate.',
+    meals: 'Special meals', mealFish: 'Roast fish', mealGrog: 'Grog', mealBiscuit: 'Reinforced biscuit',
+    mealFishCost: '1 fish', mealGrogCost: '1 rum + 1 water', mealBiscuitCost: '1 biscuit + 1 flour',
+    mealFishEffect: '+10% maximum health', mealGrogEffect: '+25% stamina recovery', mealBiscuitEffect: '+10 units of comfortable load; maximum mass is unchanged',
+    prepareEat: 'Prepare and eat', mealDuration: '15 min', mealActive: 'Active meal: preparing another will replace it.', mealRemaining: 'Remaining',
+    mealNoHeat: 'You need a nearby lit campfire or grill of your own.', mealHeatRequired: 'Lit campfire or grill required.', mealBusy: 'Wait for your current action to finish.',
+    mealGoods: 'You are missing ingredients for this recipe.', meal_goods: 'You are missing ingredients for this recipe.', heat: 'You need a nearby lit campfire or grill of your own.', mealAccess: 'This feature is unavailable to your session.', mealReady: 'Special meal prepared and eaten.',
   },
 };
 
@@ -82,6 +95,11 @@ export class FreshwaterPanel {
       <section class="fresh-canteen" hidden><div class="fresh-canteen-head"><div><b class="fresh-canteen-label"></b><span class="fresh-canteen-count"></span></div><button type="button" class="fresh-canteen-craft"></button></div>
         <div class="fresh-canteen-actions"><button type="button" class="fresh-canteen-spring"></button><button type="button" class="fresh-canteen-bucket"></button><button type="button" class="fresh-canteen-provisions"></button><button type="button" class="fresh-canteen-drink"></button></div>
         <div class="fresh-canteen-needs" aria-live="polite"></div><div class="fresh-foods" role="group"></div></section>
+      <section class="fresh-meals" hidden><h3 class="fresh-meals-title"></h3><p class="fresh-meal-active" aria-live="polite"></p><div class="fresh-meal-cards">
+        <article class="fresh-meal-card" data-meal-card="roastFish"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="roastFish"></button></article>
+        <article class="fresh-meal-card" data-meal-card="grog"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="grog"></button></article>
+        <article class="fresh-meal-card" data-meal-card="heartyBiscuit"><b class="fresh-meal-name"></b><p class="fresh-meal-cost"></p><p class="fresh-meal-effect"></p><span class="fresh-meal-duration"></span><p class="fresh-meal-hint" aria-live="polite"></p><button type="button" data-meal="heartyBiscuit"></button></article>
+      </div></section>
       <p class="fresh-note"></p><p class="fresh-shore-note" role="status" hidden></p><p class="fresh-status" aria-live="polite"></p>`;
     parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector);
     this.closeButton = this.$('.fresh-close'); this.craftButton = this.$('.fresh-craft');
@@ -89,6 +107,7 @@ export class FreshwaterPanel {
     this.canteenCraftButton = this.$('.fresh-canteen-craft'); this.canteenSpringButton = this.$('.fresh-canteen-spring');
     this.canteenBucketButton = this.$('.fresh-canteen-bucket'); this.canteenProvisionsButton = this.$('.fresh-canteen-provisions');
     this.canteenDrinkButton = this.$('.fresh-canteen-drink'); this.foodsBox = this.$('.fresh-foods');
+    this.mealSection = this.$('.fresh-meals');
     this.closeButton.addEventListener('click', () => this.close());
     this.craftButton.addEventListener('click', () => this.craftBucket());
     this.collectButton.addEventListener('click', () => this.fill());
@@ -99,6 +118,7 @@ export class FreshwaterPanel {
     this.canteenProvisionsButton.addEventListener('click', () => this.refillCanteen('provisions'));
     this.canteenDrinkButton.addEventListener('click', () => this.drink());
     this.foodsBox.addEventListener('click', event => { const button = event.target?.closest?.('[data-food]'); if (button) this.eat(button.dataset.food); });
+    this.mealSection.addEventListener('click', event => { const button = event.target?.closest?.('[data-meal]'); if (button) this.meal(button.dataset.meal); });
     this.keyListener = event => {
       if (this.active && (event.code === 'Escape' || event.key === 'Escape')) { event.preventDefault(); event.stopPropagation(); this.close(); }
     };
@@ -117,6 +137,21 @@ export class FreshwaterPanel {
     return this.shoreStop() && (op === 'deposit' || op === 'withdraw' || op === 'refillCanteen' && source === 'barrel');
   }
   canteenEnabled() { return this.status()?.canteenEnabled === true; }
+  mealsEnabled() { return this.status()?.mealsEnabled === true; }
+  eligibleCooker() {
+    return (Array.isArray(this.status()?.cookers) ? this.status().cookers : []).find(c => c
+      && (c.kind === 'campfire' || c.kind === 'grill') && typeof c.ship === 'string' && c.ship
+      && typeof c.part === 'string' && c.part && c.near === true && c.lit === true && c.broken !== true) || null;
+  }
+  meal(kind) {
+    const recipe = MEALS[kind];
+    if (!this.mealsEnabled() || !recipe) return false;
+    const goods = this.pack()?.goods || {};
+    if (Object.entries(recipe.cost).some(([good, amount]) => finite(goods[good]) < amount)) return false;
+    const cooker = recipe.heat ? this.eligibleCooker() : null;
+    if (recipe.heat && !cooker) return false;
+    return this.send('meal', { source: kind, n: 1, ship: cooker?.ship || '', part: cooker?.part || '' });
+  }
   busy() { const c = this.client?.(), s = this.status(); return s?.busy === true || s?.actionBusy === true || c?.actionBusy === true
     || finite(s?.gathering) > 0 || finite(s?.canteenGathering) > 0; }
   needs() {
@@ -226,10 +261,11 @@ export class FreshwaterPanel {
     const c = this.copy();
     if (ev.ok === true) {
       const key = ({ craftBucket: 'crafting', fill: 'filled', deposit: 'deposited', withdraw: 'withdrawn', decant: 'decanted',
-        craftCanteen: 'canteenCrafted', fillCanteen: 'canteenFilled', refillCanteen: 'canteenFilled', drink: 'drank', eat: 'ate' })[pending.command.op] || '';
+        craftCanteen: 'canteenCrafted', fillCanteen: 'canteenFilled', refillCanteen: 'canteenFilled', drink: 'drank', eat: 'ate', meal: 'mealReady' })[pending.command.op] || '';
       this.setStatus(key); if (key) invoke(() => this.toast(c[key]), null);
     } else {
-      const reason = ev.why || 'generic'; this.setStatus('', reason); invoke(() => this.toast(c[reason] || c.generic), null);
+      const reason = pending.command.op === 'meal' && ev.why === 'goods' ? 'meal_goods' : ev.why || 'generic';
+      this.setStatus('', reason); invoke(() => this.toast(c[reason] || c.generic), null);
     }
     this.render(); return true;
   }
@@ -268,6 +304,38 @@ export class FreshwaterPanel {
       refill.disabled = !!(pending || this.barrelActionBlocked('refillCanteen', 'barrel') || this.busy() || !this.canteenEnabled() || !this.canteen() || !row.near || row.broken
         || row.water <= 0 || finite(this.canteen()?.water) >= 3);
     });
+  }
+  renderMeals() {
+    const c = this.copy(), status = this.status(), enabled = this.mealsEnabled(), goods = this.pack()?.goods || {};
+    this.mealSection.hidden = !enabled;
+    if (!enabled) return;
+    const names = { roastFish: c.mealFish, grog: c.mealGrog, heartyBiscuit: c.mealBiscuit };
+    const costs = { roastFish: c.mealFishCost, grog: c.mealGrogCost, heartyBiscuit: c.mealBiscuitCost };
+    const effects = { roastFish: c.mealFishEffect, grog: c.mealGrogEffect, heartyBiscuit: c.mealBiscuitEffect };
+    this.$('.fresh-meals-title').textContent = c.meals;
+    const activeMeal = status?.meal && MEALS[status.meal.kind] && Number.isFinite(status.meal.ticks) && status.meal.ticks > 0 ? status.meal : null;
+    const activeNode = this.$('.fresh-meal-active');
+    if (activeMeal) {
+      const seconds = Math.ceil(Math.min(MEAL_TICKS, activeMeal.ticks) / 60);
+      activeNode.textContent = `${names[activeMeal.kind]} · ${c.mealRemaining}: ${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')} — ${c.mealActive}`;
+    } else activeNode.textContent = '';
+    const cooker = this.eligibleCooker(), pending = !!this.pending, busy = this.busy();
+    for (const kind of Object.keys(MEALS)) {
+      const recipe = MEALS[kind], card = this.$(`[data-meal-card="${kind}"]`), button = card?.querySelector('button');
+      if (!card || !button) continue;
+      card.querySelector('.fresh-meal-name').textContent = names[kind];
+      card.querySelector('.fresh-meal-cost').textContent = costs[kind];
+      card.querySelector('.fresh-meal-effect').textContent = effects[kind];
+      card.querySelector('.fresh-meal-duration').textContent = c.mealDuration;
+      button.textContent = c.prepareEat;
+      const hasGoods = Object.entries(recipe.cost).every(([good, amount]) => finite(goods[good]) >= amount);
+      const heatReady = !recipe.heat || !!cooker;
+      const blocked = pending ? c.waiting : busy ? c.mealBusy : !status?.enabled ? c.mealAccess
+        : !hasGoods ? c.mealGoods : !heatReady ? c.mealNoHeat : '';
+      card.querySelector('.fresh-meal-hint').textContent = blocked || (recipe.heat ? c.mealHeatRequired : '');
+      button.disabled = !!blocked;
+      button.title = blocked;
+    }
   }
   render() {
     if (!this.root) return;
@@ -331,6 +399,7 @@ export class FreshwaterPanel {
     shoreNote.hidden = !this.shoreStop();
     shoreNote.textContent = this.shoreStop() ? shoreBarrelNotice(this.lang()) : '';
     this.renderBarrels();
+    this.renderMeals();
     this.$('.fresh-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || '';
     this.root.hidden = !this.active;
   }

@@ -1,5 +1,14 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 SRV02, 2026-10-11 — comidas especiales implementadas; SQL035/activación pública pendientes:**
+[Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).
+Alpha.58/protocolo 57: pescado asado +10 % HP máximo, grog +25 % recuperación de aguante,
+galleta reforzada +10 unidades de carga cómoda; una activa por 15 min conectados, pausa offline,
+se pierde al reaparecer. Operación freshwater/M5, sin segunda autoridad. Flag nuevo apagado.
+194/194 grupo del actualizador, SQL 33/33 y UI local 6/6 ES/EN escritorio/móvil/rotado; conteos solapados.
+INV02d ya está incluido en VPS cd5df25/alpha.57; un jugador, sin forzar relevo. Sigue SQL035,
+readiness y aceptación autenticada. Después INV03/bolsas; no reimplementar sobrepeso.
+
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
 Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.
