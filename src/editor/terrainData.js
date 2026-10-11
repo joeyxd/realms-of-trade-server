@@ -97,6 +97,29 @@ function protectedMask(map) {
   return result;
 }
 
+/** Conservative cosmetic scatter policy. The full fitted footprint avoids functional ground. */
+export function canScatterAt(map, x, z, radius = 0) {
+  if (!map || ![x, z, radius, map.half].every(Number.isFinite) || radius < 0 || radius > 24 ||
+      Math.abs(x) + radius >= map.half - 2 || Math.abs(z) + radius >= map.half - 2) return false;
+  const { points } = protectedMask(map);
+  if (points.some(p => Math.hypot(x - p.x, z - p.z) < radius + p.radius + 2)) return false;
+  const safe = (px, pz) => {
+    const h = map.groundAt(px, pz), m = map.masks?.(px, pz);
+    if (!Number.isFinite(h) || h < TERRAIN_MIN_HEIGHT || h > 100 || map.onDock?.(px, pz) || map.lawlessAt?.(px, pz) ||
+        map.pathInfo?.(px, pz)?.d < 2 || map.trailInfo?.(px, pz)?.d < 2 ||
+        (m && (m.arenaFloor > 0 || m.lava > 0 || m.volcanic > 0))) return false;
+    const dx = map.groundAt(px + .5, pz) - map.groundAt(px - .5, pz);
+    const dz = map.groundAt(px, pz + .5) - map.groundAt(px, pz - .5);
+    return Number.isFinite(dx) && Number.isFinite(dz) && Math.hypot(dx, dz) <= .75;
+  };
+  if (!safe(x, z)) return false;
+  // Include a grid-cell margin so a coastline cannot pass between tested vertices.
+  for (let iz = Math.floor(z - radius - 1); iz <= Math.ceil(z + radius + 1); iz++)
+    for (let ix = Math.floor(x - radius - 1); ix <= Math.ceil(x + radius + 1); ix++)
+      if (Math.hypot(ix - x, iz - z) <= radius + 1 && !safe(ix, iz)) return false;
+  return true;
+}
+
 export function validateTerrainForMap(baseMap, terrain) {
   const checked = validateTerrain(terrain);
   if (!baseMap || baseMap.size !== TERRAIN_GRID_SEGMENTS || baseMap.N !== TERRAIN_GRID_SIZE ||

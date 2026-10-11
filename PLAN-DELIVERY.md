@@ -1,5 +1,12 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.55/protocolo 55, sin SQL:**
+[Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).
+Pinceles de copias independientes con preview privado, formas/densidad/separación/semilla/escala y undo atómico.
+Modelo cargado: geometría, texturas, archivo/ahorro y costes medidos, con presupuestos por trazo y acumulados.
+Sin tala/recolección ni cambios de recursos. Modelos existentes reutilizados; fuentes intactas.
+293/293 regresión y 60/60 integración; navegador local 10/10. Publicación y límites en la entrega.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.
