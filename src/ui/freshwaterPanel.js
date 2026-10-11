@@ -1,0 +1,220 @@
+const RETRY_MS = 1000;
+const TIMEOUT_MS = 5000;
+
+const COPY = {
+  es: {
+    title: 'Agua dulce', close: 'Cerrar agua dulce', bucket: 'Cubeta', bucketAbsent: 'Sin cubeta',
+    water: 'agua', sourceName: 'Manantial interior', collect: 'Recoger agua', gathering: 'Recogiendo agua',
+    map: 'Busca el manantial señalado en el interior de Salty Shore.', noSource: 'No hay una fuente de agua dulce cercana.',
+    sourceFar: 'Acércate al manantial para recoger agua.', craft: 'Fabricar cubeta · 2 maderas',
+    craftHelp: 'En el constructor, arma un barril con 4 tablas para crear una reserva naval.',
+    decant: 'Vaciar en provisiones', decantHelp: 'Vierte el agua de la cubeta en tus provisiones y libera el recipiente.',
+    pack: 'Mochila', barrel: 'Barril', empty: 'Vacío', full: 'Lleno', broken: 'Roto', distant: 'Acércate al barril.',
+    deposit: 'Guardar agua', withdraw: 'Retirar agua', waiting: 'Esperando confirmación…',
+    delayed: 'La conexión tarda. El resultado de esta solicitud sigue pendiente; espera la actualización.',
+    crafting: 'Cubeta fabricada.', filled: 'Agua recogida.', deposited: 'Agua guardada en el barril.',
+    withdrawn: 'Agua retirada del barril.', decanted: 'Agua vertida en provisiones.',
+    account_required: 'Inicia sesión para guardar recipientes y agua.', goods: 'Necesitas 2 maderas en la mochila.',
+    room: 'No hay espacio suficiente en la mochila o el barril.', far: 'Acércate a la fuente o al barril.',
+    source: 'Esa fuente de agua dulce ya no está disponible.', empty: 'No hay agua suficiente en el recipiente.',
+    full: 'El recipiente no tiene espacio suficiente.', condition: 'Ese barril está roto.',
+    revision: 'El inventario cambió. Espera a que se actualice.', revisionLimit: 'Vuelve a entrar para continuar.',
+    owner: 'Ese barril no está disponible en tu balsa.', dead: 'No puedes recoger agua mientras estás derrotado.',
+    busy: 'Espera a que termine tu acción actual.', interrupted: 'La recogida se interrumpió.',
+    storage: 'No se pudo guardar el agua. Vuelve a conectar.', command: 'La solicitud de agua no se pudo validar.',
+    duplicate: 'La solicitud ya se usó para otra acción.', generic: 'No se pudo completar la acción de agua.',
+  },
+  en: {
+    title: 'Fresh water', close: 'Close fresh water', bucket: 'Bucket', bucketAbsent: 'No bucket',
+    water: 'water', sourceName: 'Inland spring', collect: 'Collect water', gathering: 'Collecting water',
+    map: 'Find the marked spring inland on Salty Shore.', noSource: 'No fresh water source is nearby.',
+    sourceFar: 'Move closer to the spring to collect water.', craft: 'Craft bucket · 2 wood',
+    craftHelp: 'Build a barrel with 4 planks in the builder to make a naval reserve.',
+    decant: 'Pour into provisions', decantHelp: 'Pour bucket water into provisions and free the container.',
+    pack: 'Pack', barrel: 'Barrel', empty: 'Empty', full: 'Full', broken: 'Broken', distant: 'Move closer to the barrel.',
+    deposit: 'Store water', withdraw: 'Withdraw water', waiting: 'Waiting for confirmation…',
+    delayed: 'The connection is taking longer. This request is still pending; wait for the update.',
+    crafting: 'Bucket crafted.', filled: 'Water collected.', deposited: 'Water stored in the barrel.',
+    withdrawn: 'Water withdrawn from the barrel.', decanted: 'Water poured into provisions.',
+    account_required: 'Sign in to save containers and water.', goods: 'You need 2 wood in your pack.',
+    room: 'There is not enough room in the pack or barrel.', far: 'Move closer to the source or barrel.',
+    source: 'That fresh water source is no longer available.', empty: 'There is not enough water in the container.',
+    full: 'The container does not have enough room.', condition: 'That barrel is broken.',
+    revision: 'The inventory changed. Wait for it to update.', revisionLimit: 'Rejoin to continue.',
+    owner: 'That barrel is unavailable on your raft.', dead: 'You cannot collect water while defeated.',
+    busy: 'Wait for your current action to finish.', interrupted: 'Collection was interrupted.',
+    storage: 'Water could not be saved. Reconnect to continue.', command: 'The water request could not be validated.',
+    duplicate: 'This request was already used for another action.', generic: 'The water action could not be completed.',
+  },
+};
+
+const invoke = (fn, fallback) => { try { return typeof fn === 'function' ? fn() : fallback; } catch { return fallback; } };
+const opId = () => globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const finite = value => Number.isFinite(value) ? value : 0;
+
+export class FreshwaterPanel {
+  constructor({ parent, client = () => null, locale = () => 'es', toast = () => {}, onOpen = () => {}, onClose = () => {}, now = () => performance.now() } = {}) {
+    Object.assign(this, { parent, client, localeSource: locale, toast, onOpen, onClose, now });
+    this.active = false; this.pending = null; this.owner = null; this.session = null; this.statusKey = ''; this.statusReason = '';
+    this.root = null; this.renderKey = '';
+    const doc = parent?.ownerDocument || globalThis.document;
+    if (!doc?.createElement || !parent?.appendChild) return;
+    this.doc = doc;
+    this.root = doc.createElement('section'); this.root.className = 'freshwater-panel'; this.root.hidden = true;
+    this.root.setAttribute('role', 'dialog'); this.root.setAttribute('aria-modal', 'false');
+    this.root.innerHTML = `<header class="fresh-head"><div><small class="fresh-kicker"></small><h2 class="fresh-title"></h2></div><button type="button" class="fresh-close"></button></header>
+      <section class="fresh-pack"><div><b class="fresh-bucket"></b><span class="fresh-count"></span></div><button type="button" class="fresh-craft"></button></section>
+      <section class="fresh-source"><div><b class="fresh-source-name"></b><p class="fresh-map"></p></div><button type="button" class="fresh-collect"></button></section>
+      <div class="fresh-barrels"></div><section class="fresh-decant"><div><b class="fresh-decant-label"></b><p class="fresh-decant-help"></p></div><button type="button" class="fresh-decant-button"></button></section>
+      <p class="fresh-note"></p><p class="fresh-status" aria-live="polite"></p>`;
+    parent.appendChild(this.root); this.$ = selector => this.root.querySelector(selector);
+    this.closeButton = this.$('.fresh-close'); this.craftButton = this.$('.fresh-craft');
+    this.collectButton = this.$('.fresh-collect'); this.decantButton = this.$('.fresh-decant-button');
+    this.closeButton.addEventListener('click', () => this.close());
+    this.craftButton.addEventListener('click', () => this.craftBucket());
+    this.collectButton.addEventListener('click', () => this.fill());
+    this.decantButton.addEventListener('click', () => this.decant());
+    this.keyListener = event => {
+      if (this.active && (event.code === 'Escape' || event.key === 'Escape')) { event.preventDefault(); event.stopPropagation(); this.close(); }
+    };
+    this.render();
+  }
+
+  lang() { return String(invoke(this.localeSource, 'es')).toLowerCase().startsWith('en') ? 'en' : 'es'; }
+  copy() { return COPY[this.lang()]; }
+  profile() { return this.client?.()?.profile || null; }
+  pack() { return this.profile()?.eco?.pack || null; }
+  bucket() { return this.pack()?.vessels?.find(v => v?.kind === 'bucket') || null; }
+  status() { return this.client?.()?.freshwaterStatus || null; }
+  barrels() { return Array.isArray(this.status()?.barrels) ? this.status().barrels.filter(row => row && typeof row.ship === 'string' && typeof row.part === 'string') : []; }
+  currentSession() { const c = this.client?.(); return !!(c?.joined && c === this.owner && c.youServer === this.session); }
+  open() {
+    const c = this.client?.(); if (!this.root || !c?.joined || !c.youServer) return false;
+    if (this.owner && (this.owner !== c || this.session !== c.youServer)) this.resetSession();
+    this.owner = c; this.session = c.youServer; this.active = true; this.root.hidden = false;
+    this.doc?.addEventListener?.('keydown', this.keyListener); invoke(this.onOpen, null);
+    this.render(); this.closeButton.focus?.({ preventScroll: true }); return true;
+  }
+  close() {
+    const wasActive = this.active; this.active = false; if (this.root) this.root.hidden = true;
+    this.doc?.removeEventListener?.('keydown', this.keyListener); this.render(); if (wasActive) invoke(this.onClose, null);
+  }
+  toggle() { return this.active ? (this.close(), false) : this.open(); }
+  resetSession() { this.pending = null; this.owner = null; this.session = null; this.close(); }
+  update() {
+    const c = this.client?.();
+    if (!c?.joined || c !== this.owner || c.youServer !== this.session) {
+      if (this.pending || this.active || this.owner) this.resetSession();
+      if (c?.joined && c.youServer) { this.owner = c; this.session = c.youServer; }
+    }
+    if (this.pending) {
+      const elapsed = this.now() - this.pending.sentAt;
+      if (!this.pending.retried && elapsed >= RETRY_MS) {
+        this.pending.retried = true;
+        try { c.send(this.pending.command); } catch { /* Keep the same request uncertain until a final acknowledgement. */ }
+      }
+      if (!this.pending.expired && elapsed >= TIMEOUT_MS) { this.pending.expired = true; this.setStatus('delayed'); }
+    }
+    this.render();
+  }
+  makeCommand(op, { source = '', ship = '', part = '', n = 0 } = {}) {
+    const rev = this.profile()?.eco?.tradeRev;
+    if (!Number.isSafeInteger(rev) || rev < 0) return null;
+    return Object.freeze({ t: 'cmd', type: 'freshwater', op, opId: opId(), expectedRev: rev, source, ship, part, n });
+  }
+  send(op, data = {}) {
+    const c = this.client?.(); if (!this.active || !this.currentSession() || this.pending || !this.status()?.enabled || !c?.send) return false;
+    const command = this.makeCommand(op, data); if (!command) return false;
+    this.pending = { command, sentAt: this.now(), retried: false, expired: false };
+    try { c.send(command); } catch { this.pending = null; this.setStatus('', 'generic'); this.render(); return false; }
+    this.setStatus('waiting'); this.render(); return true;
+  }
+  craftBucket() {
+    if (this.bucket() || finite(this.pack()?.goods?.madera) < 2) return false;
+    return this.send('craftBucket');
+  }
+  fill() {
+    const source = this.status()?.source, bucket = this.bucket();
+    if (!source || typeof source.id !== 'string' || !source.id || !source.near || !bucket) return false;
+    const n = Math.min(4 - finite(bucket.water), 4);
+    return n > 0 && this.send('fill', { source: source.id, n });
+  }
+  decant() {
+    const bucket = this.bucket(), n = finite(bucket?.water);
+    return n > 0 && this.send('decant', { n });
+  }
+  transfer(op, ship, part, n) { return n > 0 && this.send(op, { ship, part, n }); }
+  acknowledge(ev) {
+    const pending = this.pending;
+    if (!ev || ev.type !== 'freshwater' || !pending || ev.opId !== pending.command.opId) return false;
+    if (ev.stage === 'gathering') {
+      this.pending.gathering = Math.max(0, Math.min(1, finite(ev.progress)));
+      this.render(); return true;
+    }
+    this.pending = null;
+    const c = this.copy();
+    if (ev.ok === true) {
+      const key = ({ craftBucket: 'crafting', fill: 'filled', deposit: 'deposited', withdraw: 'withdrawn', decant: 'decanted' })[pending.command.op] || '';
+      this.setStatus(key); if (key) invoke(() => this.toast(c[key]), null);
+    } else {
+      const reason = ev.why || 'generic'; this.setStatus('', reason); invoke(() => this.toast(c[reason] || c.generic), null);
+    }
+    this.render(); return true;
+  }
+  setStatus(key, reason = '') {
+    this.statusKey = key || ''; this.statusReason = reason || '';
+    if (this.root) { const c = this.copy(); this.$('.fresh-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || ''; }
+  }
+  renderBarrels() {
+    if (!this.root) return;
+    const c = this.copy(), rows = this.barrels(), bucket = this.bucket(), water = finite(bucket?.water), pending = !!this.pending;
+    const box = this.$('.fresh-barrels');
+    const signature = JSON.stringify(rows.map(r => [r.ship, r.part, r.water, r.capacity, !!r.near, !!r.broken, r.name]));
+    if (signature !== this.renderKey) {
+      this.renderKey = signature;
+      box.innerHTML = rows.map((r, i) => `<article class="fresh-barrel" data-row="${i}"><div class="fresh-barrel-title"><b></b><span></span></div><p class="fresh-barrel-state"></p><div class="fresh-barrel-actions"><button type="button" class="fresh-deposit"></button><button type="button" class="fresh-withdraw"></button></div></article>`).join('');
+      this.barrelNodes = [...(box.querySelectorAll?.('.fresh-barrel') || [])];
+      if (!this.barrelNodes.length && rows.length) this.barrelNodes = rows.map((_, i) => box.querySelector(`[data-row="${i}"]`)).filter(Boolean);
+      this.barrelNodes.forEach((node, i) => {
+        node.querySelector('.fresh-deposit')?.addEventListener('click', () => { const r = this.barrels()[i]; if (r) this.transfer('deposit', r.ship, r.part, Math.min(finite(this.bucket()?.water), Math.max(0, finite(r.capacity) - finite(r.water)))); });
+        node.querySelector('.fresh-withdraw')?.addEventListener('click', () => { const r = this.barrels()[i]; if (r) this.transfer('withdraw', r.ship, r.part, Math.min(4 - finite(this.bucket()?.water), finite(r.water))); });
+      });
+    }
+    this.barrelNodes?.forEach((node, i) => {
+      const row = rows[i]; if (!row) return;
+      node.querySelector('b').textContent = row.name || `${c.barrel} · ${row.ship}`;
+      node.querySelector('span').textContent = `${Math.max(0, finite(row.water))}/${Math.max(0, finite(row.capacity))}`;
+      const reason = row.broken ? c.broken : !row.near ? c.distant : row.water <= 0 ? c.empty : row.water >= row.capacity ? c.full : '';
+      node.querySelector('.fresh-barrel-state').textContent = reason;
+      const deposit = node.querySelector('.fresh-deposit'), withdraw = node.querySelector('.fresh-withdraw');
+      deposit.textContent = c.deposit; withdraw.textContent = c.withdraw;
+      deposit.disabled = !!(pending || !this.status()?.enabled || !row.near || row.broken || water <= 0 || row.water >= row.capacity);
+      withdraw.disabled = !!(pending || !this.status()?.enabled || !this.bucket() || !row.near || row.broken || row.water <= 0 || water >= 4);
+    });
+  }
+  render() {
+    if (!this.root) return;
+    const c = this.copy(), status = this.status(), bucket = this.bucket(), water = finite(bucket?.water), pending = this.pending;
+    this.$('.fresh-kicker').textContent = c.water; this.$('.fresh-title').textContent = c.title;
+    this.closeButton.textContent = '×'; this.closeButton.setAttribute('aria-label', c.close);
+    this.$('.fresh-bucket').textContent = bucket ? `${c.bucket} · ${water}/4 ${c.water}` : c.bucketAbsent;
+    this.$('.fresh-count').textContent = `${c.pack}: ${water} ${c.water}`;
+    this.craftButton.textContent = c.craft; this.craftButton.disabled = !!(pending || !status?.enabled || bucket || finite(this.pack()?.goods?.madera) < 2);
+    const source = status?.source;
+    this.$('.fresh-source-name').textContent = source?.name || c.sourceName;
+    this.$('.fresh-map').textContent = source ? `${c.map}${source.near ? '' : ` ${c.sourceFar}`}` : c.map;
+    const gathering = pending?.command?.op === 'fill'
+      ? Math.max(0, Math.min(1, finite(status?.gathering ?? pending.gathering))) : null;
+    this.collectButton.textContent = gathering != null ? `${c.gathering} · ${Math.round(gathering * 100)}%` : c.collect;
+    this.collectButton.disabled = !!(pending || !status?.enabled || !bucket || !source?.near || water >= 4);
+    this.collectButton.title = source ? (!source.near ? c.sourceFar : water >= 4 ? c.full : '') : c.noSource;
+    this.$('.fresh-decant-label').textContent = c.decant; this.$('.fresh-decant-help').textContent = c.decantHelp;
+    this.decantButton.textContent = c.decant; this.decantButton.disabled = !!(pending || !status?.enabled || water <= 0);
+    this.$('.fresh-note').textContent = c.craftHelp;
+    this.renderBarrels();
+    this.$('.fresh-status').textContent = this.statusReason ? c[this.statusReason] || c.generic : c[this.statusKey] || '';
+    this.root.hidden = !this.active;
+  }
+}
+
+export function newFreshwaterPanel(options) { return new FreshwaterPanel(options); }

@@ -4,7 +4,7 @@ import { describeMap, projectMap, unprojectMap, mapDirection } from './cartograp
 const atlases = new WeakMap();
 export const MAP_COLORS = Object.freeze({ sea: '#123f5d', me: '#b5fff5', crew: '#9dffc8', npc: '#ffe39a',
   town: '#e6be68', spawn: '#e6be68', route: '#c8ba8d', rack: '#c9a44c', ship: '#bd9671', danger: '#ff7466',
-  arena: '#ff9c51', goal: '#ffcf4a' });
+  arena: '#ff9c51', spring: '#65d9ec', goal: '#ffcf4a' });
 const SIZE = 640;
 const positive = (v) => Math.max(0, Math.min(1, Number(v) || 0));
 

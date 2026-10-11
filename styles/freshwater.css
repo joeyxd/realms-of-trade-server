@@ -1,0 +1,43 @@
+.freshwater-panel {
+  position: fixed; z-index: 90; right: clamp(12px, 3vw, 36px); top: 50%; transform: translateY(-50%);
+  width: min(440px, calc(100vw - 24px)); max-height: min(680px, calc(100dvh - 24px)); overflow: auto;
+  box-sizing: border-box; padding: 18px; color: #f2f7f6; background: rgba(13, 28, 31, .97);
+  border: 1px solid rgba(145, 206, 197, .35); border-radius: 16px; box-shadow: 0 18px 60px #0009;
+  font: 500 14px/1.45 system-ui, sans-serif; overscroll-behavior: contain;
+}
+.freshwater-panel[hidden] { display: none; }
+.freshwater-panel *, .freshwater-panel *::before, .freshwater-panel *::after { box-sizing: border-box; }
+.freshwater-panel button { min-height: 42px; border: 1px solid #5b9c91; border-radius: 9px; padding: 8px 12px; color: #f5fffc; background: #24584f; font: inherit; cursor: pointer; }
+.freshwater-panel button:hover:not(:disabled) { background: #337769; }
+.freshwater-panel button:focus-visible { outline: 3px solid #f1d387; outline-offset: 2px; }
+.freshwater-panel button:disabled { opacity: .48; cursor: not-allowed; }
+.fresh-head, .fresh-pack, .fresh-source, .fresh-barrel-title, .fresh-barrel-actions, .fresh-decant { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.fresh-head { margin-bottom: 14px; }
+.fresh-kicker { color: #91cec2; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; }
+.fresh-title { margin: 2px 0 0; font-size: 23px; line-height: 1.15; }
+.fresh-close { flex: 0 0 42px; padding: 0 !important; font-size: 24px !important; background: transparent !important; }
+.fresh-pack, .fresh-source, .fresh-barrel, .fresh-decant { border: 1px solid #31524e; border-radius: 11px; padding: 12px; margin: 10px 0; background: #142b2c; }
+.fresh-pack > div, .fresh-source > div, .fresh-decant > div { min-width: 0; }
+.fresh-bucket, .fresh-barrel-title b, .fresh-source-name, .fresh-decant-label { display: block; font-weight: 700; }
+.fresh-count { display: block; color: #b5c9c4; font-size: 12px; }
+.fresh-map, .fresh-decant-help, .fresh-barrel-state, .fresh-note { margin: 4px 0 0; color: #b5c9c4; font-size: 12px; }
+.fresh-source { align-items: flex-start; }
+.fresh-source button, .fresh-pack button, .fresh-decant button { flex: 0 0 auto; }
+.fresh-barrels { margin-top: 12px; }
+.fresh-barrel-title { align-items: baseline; }
+.fresh-barrel-title span { color: #b7ded5; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.fresh-barrel-actions { margin-top: 10px; }
+.fresh-barrel-actions button { flex: 1 1 0; }
+.fresh-decant { align-items: flex-start; }
+.fresh-note { padding: 2px 3px; }
+.fresh-status { min-height: 1.45em; margin: 10px 2px 0; color: #f1d387; }
+#touch .t-water { --c: 70 210 199; --d: 54; --x: -205; --y: -224; padding: 0; font-weight: 800; letter-spacing: 0; }
+#touch .t-water[hidden] { display: none !important; }
+@media (max-width: 520px) {
+  .freshwater-panel { top: auto; right: 0; bottom: max(0px, env(safe-area-inset-bottom)); left: 0; transform: none; width: 100%; max-height: min(72dvh, 650px); padding: 14px 14px calc(14px + env(safe-area-inset-bottom)); border-radius: 16px 16px 0 0; }
+  .fresh-title { font-size: 21px; }
+  .fresh-pack, .fresh-source, .fresh-decant { gap: 8px; }
+  .fresh-source button, .fresh-pack button, .fresh-decant button { max-width: 48%; }
+  .fresh-barrel-actions { gap: 8px; }
+  .fresh-barrel-actions button { padding-inline: 7px; font-size: 13px; }
+}

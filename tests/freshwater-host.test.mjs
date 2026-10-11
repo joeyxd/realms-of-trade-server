@@ -1,0 +1,106 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { freshwaterSource, FRESHWATER } from '../src/data/freshwater.js';
+import { holdMass, holdUsed } from '../src/sim/economy/cargo.js';
+import { createMemoryStore } from '../server/store.mjs';
+import { economicOperationId } from '../server/economicAuthority.mjs';
+import { ACCOUNT_ONE, connect, makeResourceStore, makeResourceHost, startResourceHost, turn, submitAndApply, calmAt, copy, deferred } from './helpers/resource-authority-fixture.mjs';
+const options={freshwaterOperations:true};
+const cmd=(op,opId,expectedRev,extra={})=>({type:'freshwater',op,opId,expectedRev,source:'',ship:'',part:'',n:0,...extra});
+async function gather(f,command) {
+  const w=f.host.server.world;
+  calmAt(f.host,f.entity(),freshwaterSource(w.map));
+  f.client.send(command); await turn(); f.host.server.step();
+  assert.equal(f.client.events(command.opId).at(-1)?.stage,'gathering');
+  w.tick=w.freshwaterGather.get(f.entity()).tick+FRESHWATER.collectTicks-1; f.host.server.step();
+  assert.equal(f.host.economicAuthority.busy,false,'cannot fill before the full gather duration');
+  f.host.server.step(); await turn(); await f.host.economicAuthority.settle(); f.host.server.step();
+  return f.client.events(command.opId).at(-1);
+}
+test('paid bucket, interrupted gathering, exact fill retry and reconnect preserve water',async t=>{
+  const {store,base}=makeResourceStore();
+  const f=await startResourceHost(t,store,{goods:{madera:2},options});
+  const {host,client}=f,w=host.server.world,p=w.profiles.get(f.entity());
+  const crafted=await submitAndApply(host,client,cmd('craftBucket','bucket-1',0));
+  assert.equal(crafted.ok,true,JSON.stringify(crafted));
+  assert.equal(p.eco.pack.goods.madera,undefined); assert.equal(holdUsed(p.eco.pack),2); assert.equal(holdMass(p.eco.pack),1);
+  const before=copy(p),source=freshwaterSource(w.map);
+  calmAt(host,f.entity(),source);
+  client.send(cmd('fill','move-interrupt',1,{source:source.id,n:4})); await turn();host.server.step();
+  assert.equal(client.events('move-interrupt').at(-1).stage,'gathering');
+  w.ecs.x[f.entity()]+=.3;host.server.step();
+  assert.equal(client.events('move-interrupt').at(-1).why,'interrupted'); assert.deepEqual(p,before);
+  const fill=cmd('fill','spring-fill-1',1,{source:source.id,n:4});
+  assert.equal((await gather(f,fill)).ok,true);
+  assert.equal(p.eco.pack.vessels[0].water,4); assert.equal(holdMass(p.eco.pack),5);
+  const after=copy(p);
+  const retry=await submitAndApply(host,client,fill);
+  assert.equal(retry.replay,true); assert.deepEqual(p,after);
+  assert.equal((await submitAndApply(host,client,{...fill,n:3})).why,'duplicate');
+  const receipt=await base.loadEconomicOperation(economicOperationId(host.worldState.id,ACCOUNT_ONE,fill.opId));
+  assert.equal(receipt.request.profile.eco.pack.vessels[0].water,4);
+  client.ws.close();await turn();
+  const resumed=connect(host);resumed.hello();await Promise.all([...host.joins]);
+  const restored=w.profiles.get(host.server.clients.get(resumed.id).entity);
+  assert.equal(restored.eco.pack.vessels[0].water,4); assert.equal(restored.eco.tradeRev,2);
+  assert.equal((await submitAndApply(host,resumed,fill)).replay,true);
+  const decant=await submitAndApply(host,resumed,cmd('decant','water-cargo',2,{n:4}));
+  assert.equal(decant.ok,true);assert.equal(restored.eco.pack.goods.agua,4);assert.equal(restored.eco.pack.vessels[0].water,0);
+});
+test('guest/disabled/missing SQL readiness deny freshwater without modifying inventory',async t=>{
+  const {store}=makeResourceStore();const f=await startResourceHost(t,store,{options});
+  const guest=connect(f.host,'guest');guest.hello();await Promise.all([...f.host.joins]);
+  guest.send(cmd('craftBucket','guest-water',0));await turn();assert.equal(guest.events('guest-water').at(-1).why,'account_required');
+  const bad=makeResourceHost({...createMemoryStore(),checkFreshwaterOperations:undefined},async()=>ACCOUNT_ONE,options);
+  t.after(()=>bad.close().catch(()=>{}));await assert.rejects(bad.prepare(),e=>e.code==='configuration');
+  const disabled=await startResourceHost(t,makeResourceStore().store,{goods:{madera:2}});
+  const before=copy(disabled.host.server.world.profiles.get(disabled.entity()));
+  assert.equal((await submitAndApply(disabled.host,disabled.client,cmd('craftBucket','off-water',0))).why,'disabled');
+  assert.deepEqual(disabled.host.server.world.profiles.get(disabled.entity()),before);
+});
+test('ACK waits for receipt; lost storage response reconciles without paying twice',async t=>{
+  const base=createMemoryStore(),gate=deferred();let once=true;
+  const store={...base,async commitEconomicOperation(id,request){
+    const result=await base.commitEconomicOperation(id,request);
+    if(once){once=false;await gate.promise;throw new Error('lost response');}return result;
+  }};
+  const f=await startResourceHost(t,store,{goods:{madera:2},options});
+  const command=cmd('craftBucket','uncertain-water',0),p=f.host.server.world.profiles.get(f.entity());
+  f.client.send(command);await turn();
+  assert.equal(f.client.events(command.opId).length,0);assert.equal(p.eco.pack.vessels,undefined);
+  f.client.send(command);gate.resolve();await f.host.economicAuthority.settle();f.host.server.step();
+  assert.equal(f.client.events(command.opId).at(-1).ok,true);assert.equal(p.eco.pack.vessels.length,1);
+  assert.equal(p.eco.tradeRev,1);assert.equal(p.eco.pack.goods.madera,undefined);
+});
+
+test('paid raft barrel binds stable part identity, conserves transfers and refuses filled removal',async t=>{
+  const {store,base}=makeResourceStore();
+  const f=await startResourceHost(t,store,{options:{...options,loggingOperations:true,artisanOperations:true,workshopOperations:true}});
+  const {host,client}=f,w=host.server.world,p=w.profiles.get(f.entity()),ship=p.eco.ships.find(s=>s.kind==='raft');
+  p.eco.pack.goods.madera=4;
+  const deck=()=>{const r=w.rafts.get(ship.id),a=w.ecs.facing[r.entity];calmAt(host,f.entity(),{
+    x:w.ecs.x[r.entity]+Math.cos(a)+Math.sin(a),z:w.ecs.z[r.entity]-Math.sin(a)+Math.cos(a),y:w.ecs.y[r.entity]});};
+  deck();
+  const place={type:'raft',op:'place',id:ship.id,expectedRev:ship.rev,opId:'paid-barrel',piece:['waterBarrel',1,0,0,0],rules:2};
+  const placed=await submitAndApply(host,client,place);assert.equal(placed?.ok,true,JSON.stringify(placed));
+  assert.equal(p.eco.pack.goods.madera,undefined);
+  const barrel=ship.condition.entries.find(r=>r[1]==='waterBarrel'), part=barrel[0];
+  assert.equal(barrel[6],25);assert.equal(ship.hold.cap,6);
+  const before=copy(p);assert.equal((await submitAndApply(host,client,place)).replay,true);assert.deepEqual(p,before);
+  p.eco.pack.goods.madera=2;
+  assert.equal((await submitAndApply(host,client,cmd('craftBucket','bucket-raft',p.eco.tradeRev))).ok,true);
+  const source=freshwaterSource(w.map);
+  assert.equal((await gather(f,cmd('fill','fill-raft',p.eco.tradeRev,{source:source.id,n:4}))).ok,true);
+  deck();
+  assert.equal((await submitAndApply(host,client,cmd('deposit','deposit-raft',p.eco.tradeRev,{ship:ship.id,part,n:4}))).ok,true);
+  assert.equal(ship.hold.vessels[0].water,4);assert.equal(p.eco.pack.vessels[0].water,0);
+  let remove={type:'raft',op:'remove',id:ship.id,expectedRev:ship.rev,opId:'filled-remove',piece:place.piece,index:ship.grid.parts.length-1,rules:2};
+  assert.equal((await submitAndApply(host,client,remove)).why,'waterFull');
+  assert.equal((await submitAndApply(host,client,cmd('withdraw','withdraw-raft',p.eco.tradeRev,{ship:ship.id,part,n:4}))).ok,true);
+  assert.equal(ship.hold.vessels[0].water,0);assert.equal(p.eco.pack.vessels[0].water,4);
+  remove={...remove,opId:'empty-remove',expectedRev:ship.rev};
+  assert.equal((await submitAndApply(host,client,remove)).ok,true);
+  assert.deepEqual(ship.hold.vessels,[]);assert.equal(ship.grid.parts.some(r=>r[0]==='waterBarrel'),false);
+  const receipt=await base.loadEconomicOperation(economicOperationId(host.worldState.id,ACCOUNT_ONE,'deposit-raft'));
+  assert.equal(receipt.request.profile.eco.ships.find(s=>s.id===ship.id).hold.vessels[0].id,part);
+});
