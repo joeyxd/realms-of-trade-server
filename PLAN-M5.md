@@ -4,10 +4,12 @@
 [entrega](docs/delivery/m5-ground-pearl-lifecycle.md), [contrato](docs/briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
 bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
-594/594 en 58 archivos congelados, incluidos dos SIGKILL locales de pickup y devolución/reinicio;
+Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; devolución con commit/aplicación/reinicio de host;
 compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
 SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
 restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+Integracion RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
 
 **AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-family-boundary.md), [contrato](docs/briefs/m5-ground-family-boundary.md).

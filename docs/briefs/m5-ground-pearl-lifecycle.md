@@ -4,6 +4,13 @@ Base de aceptación `4edbf30`, integrada con taller/recursos v3, HUD, navegació
 inferencia y Carga/atributos INV02b alpha.43/protocolo 49.
 SQL023 ya instalado; el mundo público sigue sin adoptar. No añade SQL, protocolo ni flag público.
 
+La integración posterior incorpora RNV07 alpha.44/protocolo 50 y Carga durable INV02b.
+Las continuaciones asíncronas de llenado deben volver a comprobar la reserva común y de cuenta
+antes de iniciar recolección o publicar eventos. El recibo económico conserva su propia autoridad.
+Aceptación posterior en base `95595b0`: 226/226 en 25 archivos congelados,
+[manifest](../delivery/m5-ground-pearl-lifecycle/concurrent-integration.json) y
+[entrega](../delivery/m5-ground-pearl-lifecycle.md). Se solapa con los 594 casos de la base anterior.
+
 Este corte conecta un piloto de confianza `GameHost.mountGroundPearls()` antes de `prepare()`.
 Conserva el único `GroundHostAuthority.boundary`, cuentas autenticadas, cero bots y mundo ya
 adoptado/coherente. Nunca intenta adoptar el mundo legacy desde el arranque normal.

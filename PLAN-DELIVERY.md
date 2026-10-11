@@ -4,10 +4,12 @@
 [entrega](docs/delivery/m5-ground-pearl-lifecycle.md), [contrato](docs/briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
 bajo el único `beforeTick`; perfil y metadatos de sesión se aplican juntos tras SQL confirmado.
-594/594 en 58 archivos congelados, incluidos dos SIGKILL locales de pickup y devolución/reinicio;
+Base 4edbf30: 594/594 en 58 archivos congelados, dos SIGKILL locales de pickup; devolución con commit/aplicación/reinicio de host;
 compatibilidad SQL001–029 con recursos v3/taller/Carga/atributos alpha.43/protocolo 49.
 SQL023 confirmado; no añade ni ejecuta SQL. Sigue componer muerte, botín ordinario, mint y comandos
 restantes; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+Integracion RNV07 alpha.44/protocolo 50: 226/226 en 25 archivos congelados (base 95595b0);
+reserva de llenado revalidada tras la lectura del recibo. Conteos solapados con la base 594.
 
 **AREA07 RNV07a, 2026-10-11 — agua manual implementada localmente, alpha.44/protocolo 50:**
 [Entrega](docs/delivery/rnv07-freshwater.md) y [dirección](docs/briefs/RNV07-freshwater-progression.md). Cubeta reutilizable, manantial interior junto al arquero existente, recogida interrumpible y barril naval; M5 conserva los traslados. QA final local: escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; se inspeccionaron manantial, marcador de mapa y barril 4/20 en móvil. La fixture retiró enemigos para proteger el recorrido feliz; la aceptación del encuentro en navegador sigue pendiente. Las pruebas del host sí cubren interrupciones. La selección integrada sigue en 129/129; suite focalizada del host 5/5. SQL030 y readiness son requisitos de activación; no hay afirmación de publicación.

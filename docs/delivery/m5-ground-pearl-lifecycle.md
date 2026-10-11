@@ -38,11 +38,28 @@ fixture para usar un perfil canónico, sin relajar el servidor. La suite final i
 IO, staging, swallow y leave, además de pruebas con capturas falsas canónicas y rollback de
 capacidad tras un save fallido.
 
+Al integrar RNV07 alpha.44/protocolo 50 se encontró otra carrera: el inicio de llenado podía
+continuar después de una lectura de recibo, aunque otra autoridad hubiera reservado el mundo
+o la cuenta durante la espera. `607e489` vuelve a comprobar la disponibilidad justo antes de
+iniciar la recolección. La regresión autenticada retiene esa lectura, toma la reserva real y
+verifica respuesta `busy`, cero recolección/eventos/perfil/escrituras; tras liberarla, el mismo
+comando puede completarse. Los contenedores de agua conservan el saneado y los límites de Carga.
+
 ## Evidencia local
 
 **594/594 en 58 archivos**, cero fallos/omisiones y fuentes congeladas antes/después:
 [manifest](m5-ground-pearl-lifecycle/acceptance.json), [TAP](m5-ground-pearl-lifecycle/acceptance.tap).
 Los conteos incluyen regresiones existentes y se solapan con informes anteriores.
+
+Después de integrar RNV07 y la evidencia de activación INV02b, **226/226 en 25 archivos**, cero
+fallos/omisiones, fuentes congeladas, base `95595b0` alpha.44/protocolo 50:
+[manifest de integración](m5-ground-pearl-lifecycle/concurrent-integration.json) y
+[TAP](m5-ground-pearl-lifecycle/concurrent-integration.tap). Incluye la regresión de llenado
+autenticado frente a la reserva real y repite host/SQL/proceso de perlas, autoridad común,
+atributos, economía, carga, contenedores y purificador. Los conteos se solapan con la base de 594.
+El [ensayo anterior sin congelación](m5-ground-pearl-lifecycle/concurrent-integration-unfrozen.json)
+pasó 225 aserciones mientras se añadía esa regresión; no se acepta porque cambiaron fuentes.
+Su [TAP](m5-ground-pearl-lifecycle/concurrent-integration-unfrozen.tap) conserva el diagnóstico.
 
 - 7 pruebas nuevas de hidratación, 7 del adaptador pickup y 4 de devolución: selección,
   elegibilidad, ownership, identidad de fuentes, CAS de sesión y rollback de pickup inyectado.
