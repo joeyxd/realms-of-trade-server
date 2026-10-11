@@ -1,5 +1,17 @@
 # Continuidad de servidor — AREA15
 
+**AREA03 INV02c, 2026-10-11 ? ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
+[Contrato](briefs/inv02c-attribute-controls.md) y [entrega/evidencia](delivery/inv02c-attribute-controls.md).
+Adopci?n expl?cita, asignaci?n de un punto y confirmaci?n de la ?nica reasignaci?n gratuita en C/Atributos;
+puntos/peso/volumen y l?mites visibles. ACK privado m?s perfil can?nico; retry exacto y consulta sin acciones
+para invitados/solo. Cubeta/agua SQL030 conservadas. Runtime `2a51c8d`, imagen y 21 hashes fijos:
+navegador p?blico autenticado **6/6**, recarga/reconexi?n conservan mochila, tres tablas y agua.
+Cuenta QA retirada, tres recibos conservados; Supabase durable y cero errores/pendientes al cerrar.
+Pruebas locales **67/67**, integraci?n concurrente **32/32**, imagen VPS **127/127** (conteos solapados);
+fixture ES/EN **24 casos, 10 comprobaciones**, desktop/portrait/landscape y capturas inspeccionadas.
+No requiere otro SQL. Sigue INV02d: sobrepeso/movimiento y mochila, preservando nataci?n/predicci?n;
+70 % sobre el c?modo, 40 % por encima del techo, nunca inmovilizar. Efectos todav?a pendientes.
+
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](delivery/m5-ground-pearl-lifecycle.md), [contrato](briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución
