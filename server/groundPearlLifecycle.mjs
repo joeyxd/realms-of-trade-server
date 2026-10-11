@@ -1,5 +1,5 @@
 // Explicit common-authority pilot: hydrate current rows, then select receipted pearl transitions.
-// Whole-death capture, ordinary-drop consumption and new loot minting remain separate composition.
+// Whole-death and ordinary-drop composition is an additional explicit mount; new mint remains separate.
 import { randomUUID } from 'node:crypto';
 import { StoreError } from './store.mjs';
 import { GroundCurrentHydration } from './groundCurrentHydration.mjs';
@@ -11,11 +11,17 @@ import { managedDeathDrop } from './deathDropLifecycle.mjs';
 import { groundOperation } from './pearlGround.mjs';
 import { DROPS } from '../src/data/loot.js';
 import { PEARL } from '../src/data/pearls.js';
+import { prepareGroundDeathDrop } from './groundDeathDrop.mjs';
+import { settleGroundProfile } from './groundProfileBaseline.mjs';
+import { capturePearlProfile } from './pearlProfileSnapshot.mjs';
+import { canonicalText, profilePearls } from './pearlOperations.mjs';
+import { deathDropOperation, checkedCurrentDeathDrop } from './deathDropOperation.mjs';
 
 const fail = code => { throw new StoreError(code); };
 export class GroundPearlLifecycle {
   #host; #server; #world; #authority; #hydration = null; #clock = null; #rows = new Map();
   #task = null; #active = null; #failed = false; #stopping = false; #notified = new Map();
+  #dropRows = new Map();
   constructor(host) {
     this.#host = host; this.#server = host.server; this.#world = host.server.world;
     this.#authority = host.groundAuthority;
@@ -39,7 +45,7 @@ export class GroundPearlLifecycle {
       this.#owner();
       if (this.#stopping || this.#host.closing) fail('cancelled');
       const counts = this.#hydration.preparedCounts;
-      if (!counts || counts.deathDrops !== 0) {
+      if (!counts || (counts.deathDrops !== 0 && !this.#host.groundDeaths)) {
         this.#hydration.cancel();
         fail('configuration');
       }
@@ -51,6 +57,7 @@ export class GroundPearlLifecycle {
         const { dropId, ...source } = row;
         this.#rows.set(id, source);
       }
+      this.#dropRows = new Map(this.#hydration.deathDrops.map(({ dropId, ...row }) => [dropId, row]));
       return result;
     }).catch(error => { this.#failed = true; throw error; });
     return this.#task;
@@ -89,6 +96,108 @@ export class GroundPearlLifecycle {
       dropId, row: this.#row(dropId) });
     return this.#stage(dropId, plan, plan.targetDrop.id);
   }
+  // Source installation is paired reversibly with a checked death's synchronous ECS apply.
+  prepareDeathSources(receipt, drops) {
+    this.#server.assertDropApplyBoundary(); this.#owner();
+    if (!this.#host.groundDeaths || !this.ready || this.pending || this.#stopping || this.#host.closing) fail('configuration');
+    const oldPearls = this.#rows, oldDrops = this.#dropRows;
+    const pearls = new Map(oldPearls), ordinary = new Map(oldDrops);
+    for (const drop of drops) {
+      if (pearls.has(drop.id) || ordinary.has(drop.id)) fail('ownership');
+      if (drop.kind === 'pearl') {
+        const location = receipt.locations.find(r => r.uid === drop.pearl.uid);
+        if (!location) fail('response');
+        this.#clock.assertDrop(drop, 'pearl', location.ground);
+        pearls.set(drop.id, { uid: drop.pearl.uid, kind: drop.pearl.kind, ...structuredClone(location) });
+      } else {
+        const creation = receipt.drops.find(r => r.operationId === drop.operationId && r.ordinal === drop.ordinal);
+        if (!creation) fail('response');
+        this.#clock.assertDrop(drop, 'drop', creation.ground);
+        ordinary.set(drop.id, checkedCurrentDeathDrop({ ...structuredClone(creation), state: 'ground',
+          version: 1, holder: null, transitionOperationId: null }));
+      }
+    }
+    let installed = false;
+    return { apply: () => {
+      if (this.#rows !== oldPearls || this.#dropRows !== oldDrops || installed) fail('cancelled');
+      this.#rows = pearls; this.#dropRows = ordinary; installed = true;
+    }, rollback: () => {
+      if (installed) { this.#rows = oldPearls; this.#dropRows = oldDrops; installed = false; }
+    } };
+  }
+  pickupDrop(raw) {
+    this.#server.assertTickIdle();
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'dropId,receiver') fail('operation');
+    return this.#drop(value.dropId, 'pickup', value.receiver);
+  }
+  expireDrop(raw) {
+    this.#server.assertTickIdle();
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'dropId') fail('operation');
+    return this.#drop(value.dropId, 'expire', null);
+  }
+  #drop(dropId, mode, receiver) {
+    this.#available();
+    if (!this.#host.groundDeaths) fail('configuration');
+    const row = this.#dropRows.get(dropId);
+    if (!row) fail('ownership');
+    const create = () => prepareGroundDeathDrop({ host: this.#host, deadlineClock: this.#clock, dropId, mode,
+      receiver, row: structuredClone(row) });
+    let plan = create();
+    const operationId = randomUUID(), active = { operationId, result: null };
+    const apply = effect => {
+      this.#owner();
+      if (this.#failed || this.#stopping || this.#host.closing || this.#active !== active) fail('cancelled');
+      if (plan.apply(effect, operationId) !== true) fail('effect');
+      this.#dropRows.delete(dropId); this.#active = null; return true;
+    };
+    this.#active = active;
+    try {
+      if (mode === 'expire') active.result = this.#authority.stageFamily({ operationId, family: 'drop',
+        operation: deathDropOperation({ ...plan.operation, operationId }).request }, apply);
+      else {
+        const before = structuredClone(plan.operation.profile.before), w = this.#world;
+        const session = this.#host.profiles.clients.get(receiver.clientId), profile = w.profiles.get(receiver.entity);
+        const live = snapshotDropData(profile), tick = w.tick, source = snapshotDropData(w.drops.get(dropId));
+        const client = this.#server.clients.get(receiver.clientId), ecs = w.ecs, names = ecs.names, name = names[receiver.entity];
+        const columns = Object.entries(ecs).filter(([, c]) => ArrayBuffer.isView(c) && !(c instanceof DataView))
+          .map(([key, column]) => ({ key, column, value: column[receiver.entity] }));
+        const state = { drops: w.drops, profiles: w.profiles, ledger: w.pearlLedger, events: w.events,
+          dirty: w.profileDirty, nextDrop: w.nextDrop, rng: w.lootRng, rngState: w.lootRng.state(),
+          dropData: snapshotDropData([...w.drops]), ledgerData: snapshotDropData([...w.pearlLedger]),
+          eventData: snapshotDropData(w.events), dirtyData: [...w.profileDirty] };
+        const endpoint = { session, clientId: receiver.clientId };
+        const assertCurrent = () => {
+          this.#owner();
+          assertDropContainers(w);
+          if (this.#active !== active || this.#failed || this.#stopping || this.#host.closing || w.tick !== tick ||
+              this.#host.profiles.clients.get(receiver.clientId) !== session || session.closed || session.failed ||
+              this.#host.profiles.accounts.get(session.key) !== session || this.#server.clients.get(receiver.clientId) !== client ||
+              client.entity !== receiver.entity || !client.serverProfile || w.ecs !== ecs || ecs.names !== names || names[receiver.entity] !== name ||
+              columns.some(q => ecs[q.key] !== q.column || !Object.is(q.column[receiver.entity], q.value)) ||
+              w.drops !== state.drops || w.profiles !== state.profiles || w.pearlLedger !== state.ledger ||
+              w.events !== state.events || w.profileDirty !== state.dirty || w.nextDrop !== state.nextDrop ||
+              w.lootRng !== state.rng || w.lootRng.state() !== state.rngState ||
+              canonicalText(snapshotDropData([...w.drops])) !== canonicalText(state.dropData) ||
+              canonicalText(snapshotDropData([...w.pearlLedger])) !== canonicalText(state.ledgerData) ||
+              canonicalText(snapshotDropData(w.events)) !== canonicalText(state.eventData) ||
+              canonicalText([...w.profileDirty]) !== canonicalText(state.dirtyData) ||
+              w.profiles.get(receiver.entity) !== profile || canonicalText(snapshotDropData(profile)) !== canonicalText(live) ||
+              canonicalText(capturePearlProfile(w, receiver.entity)) !== canonicalText(before) ||
+              canonicalText(snapshotDropData(w.drops.get(dropId))) !== canonicalText(source)) fail('cancelled');
+        };
+        active.result = this.#authority.stagePreparedFamily({ operationId, family: 'drop', lanes: {
+          accounts: [session.key], uids: profilePearls(before).map(q => q.uid), drops: [`${row.operationId}:${row.ordinal}`],
+        } }, async reservation => {
+          await settleGroundProfile(this.#host.profiles, endpoint, before, reservation, assertCurrent);
+          assertCurrent(); plan = create(); return plan.operation;
+        }, apply);
+      }
+      active.result.catch(() => { this.#failed = true; });
+      return Object.freeze({ operationId, result: active.result });
+    } catch (error) { this.#active = null; throw error; }
+  }
   #stage(dropId, plan, nextDropId) {
     const operationId = randomUUID();
     const operation = groundOperation({ ...plan.operation, operationId }).request;
@@ -123,6 +232,21 @@ export class GroundPearlLifecycle {
     assertDropContainers(w);
     for (const id of this.#notified.keys()) if (!w.drops.has(id)) this.#notified.delete(id);
     for (const [dropId, raw] of w.drops) {
+      if (!managedPearlDrop(raw) && managedDeathDrop(raw)) {
+        if (!this.#host.groundDeaths) fail('configuration');
+        const drop = snapshotDropData(raw), ground = this.#clock.assertDrop(drop, 'drop'), at = this.#clock.at(w.tick);
+        if (at > ground.expiresAt) { this.#server.holdDropPublication(); this.#drop(dropId, 'expire', null); return false; }
+        if (at < ground.availableAt) continue;
+        for (const entity of w.profiles.keys()) {
+          if (!ecs.alive[entity] || ecs.dead[entity] > 0 ||
+              Math.hypot(ecs.x[entity] - drop.x, ecs.z[entity] - drop.z) > DROPS.pickR) continue;
+          const p = w.profiles.get(entity);
+          if (drop.kind === 'item' ? p.bag.length >= 24 : p.pot >= 5) continue;
+          const clientId = this.#server.clientOf(entity);
+          this.#server.holdDropPublication(); this.#drop(dropId, 'pickup', { clientId, entity }); return false;
+        }
+        continue;
+      }
       if (!managedPearlDrop(raw)) continue;
       const drop = snapshotDropData(raw), ground = this.#clock.assertDrop(drop, 'pearl'), at = this.#clock.at(w.tick);
       if (at > ground.returnAt) {

@@ -5,6 +5,7 @@ import { newProfile, sanitizeProfile, syncProfile } from '../src/sim/systems/inv
 import { packLimitsForProfile } from '../src/sim/economy/carry.js';
 import { workshopPanelView } from '../src/ui/workshop.js';
 import { workshopProfileDelta } from '../server/workshopOperation.mjs';
+import { ECS } from '../src/sim/ecs.js';
 
 const adopt = p => ({ type: 'attributes', op: 'adopt', opId: `adopt-${p.eco.tradeRev}`, expectedRev: p.eco.tradeRev });
 const legacy = () => {
@@ -86,7 +87,7 @@ test('profile carry limits, sync, and workshop backpack upgrades preserve adopte
   p.eco.pack.maxMass = 60;
   assert.deepEqual(packLimitsForProfile(p), { volume: 18, maxMass: 60 });
   assert.equal(sanitizeProfile(p).eco.pack.maxMass, 60);
-  const world = { profiles: new Map([[1, p]]), ecs: { alive: [], level: [], xp: [], potions: [], cpX: [], cpZ: [] },
+  const world = { profiles: new Map([[1, p]]), ecs: new ECS(2),
     map: { checkpoints: {} } };
   world.ecs.alive[1] = 1; world.ecs.level[1] = 3; world.ecs.xp[1] = 0; world.ecs.potions[1] = 0;
   syncProfile(world, 1);

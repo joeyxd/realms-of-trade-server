@@ -225,3 +225,27 @@ test('replacing the boundary owner fences an active family before its callback c
   assert.equal(applied, 0); assert.equal(f.host.worldState.failed, true);
   assert.equal(f.host.groundAuthority.status().failed, true);
 });
+
+test('prepared death reserves before its first await and rejects any unreserved source before journal IO', async t => {
+  const f = await setup(t, { account: VICTIM }), entered = deferred(), release = deferred();
+  const scene = makeDeath({ lawless: false, killer: false, loot: true, pearlCount: 0, seed: 73 });
+  scene.world.tick = 500;
+  const planned = planRequest(scene, deathOp(92)); planned.request.world = f.world;
+  assert.ok(planned.request.drops.length, 'the canonical death includes ordinary source lanes');
+  let applied = 0;
+  const task = f.host.groundAuthority.stagePreparedFamily({ operationId: planned.request.operationId,
+    family: 'death', lanes: { accounts: [VICTIM], uids: [], drops: [] } }, async () => {
+    entered.resolve(); await release.promise;
+    return deathOperation(planned.request).request;
+  }, () => { applied++; return true; });
+  const rejected = assert.rejects(task, { code: 'ownership' });
+  await entered.promise;
+  assert.equal(f.host.groundAuthority.busy, true);
+  assert.equal(f.host.worldState.operationBusy, true);
+  assert.equal(f.host.server.step(), false, 'the world is held during asynchronous capture preparation');
+  assert.throws(() => f.host.groundAuthority.stageFamily(mint(f.world, 93), () => true), { code: 'busy' });
+  release.resolve(); await f.host.groundAuthority.settle(); await rejected;
+  assert.equal(applied, 0);
+  assert.equal(f.transaction(), null, 'the omitted source prevents any gameplay SQL commit');
+  assert.equal(f.host.groundAuthority.status().failed, true);
+});
