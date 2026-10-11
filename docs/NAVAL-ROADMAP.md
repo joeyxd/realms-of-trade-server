@@ -440,3 +440,6 @@ varias aperturas directas devolvieron timeout/403. No se utilizaron foros de jug
 
 La dirección ya está registrada. Las respuestas pendientes no impiden cerrar M4.8 ni avanzar el prototipo
 doméstico básico; no deben sustituirse por decisiones silenciosas sobre pérdidas o PvP.
+
+
+**RNV07a, 2026-10-11:** circuito manual de agua implementado localmente en alpha.44/protocolo 50; [entrega y QA](delivery/rnv07-freshwater.md). Cubeta, manantial, barril naval y traslados conservados por M5. Capturas finales: escritorio ES 1280×720 y touch EN 390×844, 14 capturas en total (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; selección integrada 129/129 y suite focalizada del host 5/5. La fixture retiró enemigos para proteger el recorrido feliz, así que la aceptación del encuentro en navegador sigue pendiente; las pruebas del host sí cubren interrupciones. No hay afirmación de publicación. Sigue cantimplora/consumo en RNV07b; casas y purificador avanzado conservan sus dependencias.

@@ -271,6 +271,16 @@ function spaceForUnits(hold, good) {
   return unitWeight > 0 ? Math.max(0, Math.floor((hold.cap - used) / unitWeight)) : 0;
 }
 
+// Removing a reservoir must never silently discard its paid contents.
+function removeBarrelWater(active, index, hold) {
+  const entry = raftConditionEntry(active, index);
+  if (entry?.part[0] !== 'waterBarrel') return '';
+  const vessel = hold.vessels?.find(v => v.id === entry.id);
+  if (vessel?.water > 0) return 'waterFull';
+  if (hold.vessels) hold.vessels = hold.vessels.filter(v => v.id !== entry.id);
+  return '';
+}
+
 function reject(w, e, msg, why, ship, stale = false) {
   const record = stale && ship ? publicRafts(w).find((q) => q.id === ship.id) : null;
   return answer(w, e, msg, false, why, ship?.rev, record);
@@ -391,6 +401,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
   } else if (msg.op === 'place') {
     if (!tuple(msg.piece) || !allowed.has(msg.piece[0])) return reject(w, e, msg, 'piece', ship);
     const [id, x, z, level, dir] = msg.piece;
+    if (id === 'waterBarrel' && !w.freshwaterEnabled) return reject(w, e, msg, 'disabled', ship);
     if (['torchFloor', 'torchWall', 'campfire'].includes(id) && !w.fireEnabled) return reject(w, e, msg, 'disabled', ship);
     if (id === ARTISAN.part && !knowsStorage(profile)) return reject(w, e, msg, 'knowledge', ship);
     workshopPayment = workshopBuildPayment(profile, msg.piece, msg.rules);
@@ -398,7 +409,7 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (Math.abs(x) > 128 || Math.abs(z) > 128 || level < 0 || level >= RAFT.levels || dir < 0 || dir > 3)
       return reject(w, e, msg, 'level', ship);
     if (grid.parts.length >= 600) return reject(w, e, msg, 'size', ship);
-    if (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'purifier'].includes(id)) {
+    if (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'purifier', 'waterBarrel'].includes(id)) {
       const support = canPlace(activeRaftParts(active), msg.piece);
       if (support) return reject(w, e, msg, support, ship);
     }
@@ -416,6 +427,8 @@ export function raftCmd(w, e, msg, saveFits = () => true) {
     if (!Number.isSafeInteger(msg.index) || !tuple(msg.piece) || !(allowed.has(msg.piece[0]) || msg.piece[0] === 'reinforcedFoundation')
         || !sameTuple(ship.grid.parts[msg.index], msg.piece)) return reject(w, e, msg, 'piece', ship);
     const removed = grid.parts[msg.index];
+    const waterWhy = removeBarrelWater(active, msg.index, hold);
+    if (waterWhy) return reject(w, e, msg, waterWhy, ship);
     delete grid.work[productionKey(removed)];
     why = remove(grid, msg.index, null);
     if (why) return reject(w, e, msg, why, ship);
@@ -464,7 +477,7 @@ export function storageProfileDelta(before, command) {
   const fail = why => ({ why });
   if (!ship || ship.kind !== 'raft' || ship.at !== 'aldea' || !(ship.hp > 0)) return fail('owner');
   if (command.expectedRev !== ship.rev || ship.rev >= MAX_REV) return fail('revision');
-  if (!['storage', ...(command.rules === 2 ? ['crate'] : [])].includes(command.piece?.[0]) || !tuple(command.piece)) return fail('piece');
+  if (!['storage', 'waterBarrel', ...(command.rules === 2 ? ['crate'] : [])].includes(command.piece?.[0]) || !tuple(command.piece)) return fail('piece');
   const grid = { parts: ship.grid.parts.map(copyTuple), work: { ...ship.grid.work } };
   const hold = cloneHold(ship.hold), pack = cloneHold(profile.eco.pack);
   const restored = ship.condition ? restoreRaftCondition(ship.condition, grid.parts) : null;
@@ -478,11 +491,13 @@ export function storageProfileDelta(before, command) {
     for (const g of new Set([...Object.keys(hold.goods), ...Object.keys(pack.goods)])) virtual.goods[g] = (hold.goods[g] || 0) + (pack.goods[g] || 0);
     if (payment) virtual.goods.madera = Math.max(virtual.goods.madera || 0, RAFT_PARTS[command.piece[0]].cost.madera || 0);
     why = place(grid, command.piece, virtual); if (why) return fail(why);
-    if (!debit(payment?.cost || RAFT_PARTS.storage.cost, hold, pack)) return fail('goods');
+    if (!debit(payment?.cost || RAFT_PARTS[command.piece[0]].cost, hold, pack)) return fail('goods');
     if (payment?.workshop) profile.workshop = payment.workshop;
     hold.cap = raftStats(grid).hold;
   } else if (command.op === 'remove') {
     if (!sameTuple(grid.parts[command.index], command.piece)) return fail('piece');
+    const waterWhy = removeBarrelWater(active, command.index, hold);
+    if (waterWhy) return fail(waterWhy);
     const refund = salvagePartCost(raftConditionEntry(active, command.index));
     delete grid.work[productionKey(command.piece)];
     why = remove(grid, command.index, null); if (why) return fail(why);

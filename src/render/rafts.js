@@ -687,6 +687,13 @@ export class RaftLayer {
           box(WOOD_DARK, ww, 0.7, 1.3, cx, y + 0.38, cz);
           box(WOOD, ww * 0.96, 0.18, 1.34, cx, y + 0.82, cz);
           box(IRON, 0.12, 0.3, 0.08, cx, y + 0.58, cz + 0.69);
+        } else if (id === 'waterBarrel') {
+          // A compact coopered silhouette with two dark hoops and a visible lid.
+          cyl(WOOD_DARK, 0.59, 0.57, 1.25, cx, y + 0.66, cz, 10);
+          cyl(WOOD, 0.55, 0.53, 0.91, cx, y + 0.66, cz, 10);
+          for (const yy of [y + 0.27, y + 1.04]) ring(IRON, 0.57, 0.045, cx, yy, cz, 0, Math.PI / 2);
+          cyl(WOOD_LIGHT, 0.49, 0.49, 0.07, cx, y + 1.32, cz, 10);
+          for (let i = -2; i <= 2; i++) box(WOOD_DARK, 0.018, 0.02, 0.82, cx + i * 0.16, y + 1.36, cz);
         } else if (id === 'stairs') {
           const count = Math.max(1, STAIR.steps | 0), treadDepth = CELL / count, rise = LEVEL_H / count;
           const slope = Math.atan2(LEVEL_H, CELL), slopeLength = Math.hypot(LEVEL_H, CELL);

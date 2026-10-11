@@ -26,6 +26,7 @@ import { carryLimits, packLimitsForProfile, readCarryField } from '../economy/ca
 import { readAttrField } from '../../data/attributes.js';
 import { newWorkshop, readWorkshop } from './workshop.js';
 import { readFire } from '../economy/fire.js';
+import { validProfileVessels } from '../economy/waterContainers.js';
 
 export const PROFILE_VERSION = 1;
 const NO_TIER = { ilvl: 0, rar: 0, gold: 1, xp: 1 };
@@ -127,7 +128,9 @@ export function sanitizeProfile(raw) {
   p.pearls = sanitizePearls(raw.pearls);
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
   const limits = hasCarry ? packLimitsForProfile(p) : null;
-  p.eco = sanitizeEco(raw.eco, limits ? { packCap: limits.volume, packMaxMass: limits.maxMass } : undefined);
+  try { p.eco = sanitizeEco(raw.eco, limits ? { packCap: limits.volume, packMaxMass: limits.maxMass } : undefined); }
+  catch { return null; }
+  if (!validProfileVessels(p)) return null;
   p.tools = sanitizeTools(raw.tools);
   if (hasProgression) p.progression = progression;
   try {

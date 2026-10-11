@@ -1,5 +1,10 @@
 # Continuidad de servidor — AREA15
 
+**AREA07 RNV07a, 2026-10-11 — agua manual implementada localmente, alpha.44/protocolo 50:**
+[Entrega](delivery/rnv07-freshwater.md) y [dirección](briefs/RNV07-freshwater-progression.md). Cubeta reutilizable, manantial interior junto al arquero existente, recogida interrumpible y barril naval; M5 conserva los traslados. QA final local: escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; se inspeccionaron manantial, marcador de mapa y barril 4/20 en móvil. La fixture retiró enemigos para proteger el recorrido feliz; la aceptación del encuentro en navegador sigue pendiente. Las pruebas del host sí cubren interrupciones. La selección integrada sigue en 129/129; suite focalizada del host 5/5. SQL030 y readiness son requisitos de activación; no hay afirmación de publicación.
+Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
+
+
 **AREA03 INV02b, 2026-10-10 — Carga durable activa y comprobada en público:**
 [Contrato](briefs/inv02b-durable-attributes.md) y [entrega](delivery/inv02b-durable-attributes.md).
 SQL029 aplicado por el autor; readiness comprobado desde el contenedor. Alpha.43/protocolo 49,

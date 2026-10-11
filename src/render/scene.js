@@ -7,6 +7,7 @@ import { createTerrain, createHeightTexture, createSeabed } from './terrain.js';
 import { createWater, WATER_LIGHT } from './water.js';
 import { createVegetation } from './vegetation.js';
 import { createProps } from './props.js';
+import { createFreshwaterSpring } from './freshwater.js';
 import { RaftLayer } from './rafts.js';
 import { ResourceNodes } from './resourceNodes.js';
 import { CameraRig } from './camera.js';
@@ -84,6 +85,8 @@ export class GameScene {
     this.scene.add(this.sky);
     this.terrain = createTerrain(map);
     this.scene.add(this.terrain);
+    this.freshwaterSpring = createFreshwaterSpring(map);
+    if (this.freshwaterSpring) this.scene.add(this.freshwaterSpring);
     this.scene.add(createSeabed(map));
     this.water = createWater(map, createHeightTexture(map));
     this.water.layers.set(LAYER.WATER);
