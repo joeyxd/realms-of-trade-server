@@ -1,0 +1,64 @@
+{
+  "schema": "mn.freshwater.public.v1",
+  "startedAt": "2026-10-11T05:06:21.380Z",
+  "target": "https://marea.62.171.136.148.sslip.io",
+  "mode": "authenticated-disposable-profile",
+  "identity": "random disposable Supabase user; credentials redacted",
+  "gameVersion": "0.6.0-alpha.45",
+  "protocolVersion": 51,
+  "checks": [
+    {
+      "name": "public_health_alpha45_protocol51_freshwater_ready_and_source_map_position",
+      "pass": true,
+      "gameVersion": "0.6.0-alpha.45",
+      "protocolVersion": 51,
+      "featureEnabled": true,
+      "sourceId": "salty-spring",
+      "sourceHeightPositive": true,
+      "realPlayers": 0
+    },
+    {
+      "name": "anonymous_freshwater_denied_without_receipt",
+      "pass": true
+    },
+    {
+      "name": "random_disposable_account_and_two_wood_profile_seed",
+      "pass": true
+    },
+    {
+      "name": "owner_private_freshwater_status_and_no_public_cargo_fields",
+      "pass": true,
+      "sourceId": "salty-spring",
+      "publicRaftCount": 1,
+      "privateBucketPresent": false
+    },
+    {
+      "name": "owner_private_freshwater_status_and_no_public_cargo_fields",
+      "pass": true,
+      "sourceId": "salty-spring",
+      "publicRaftCount": 1,
+      "privateBucketPresent": true
+    },
+    {
+      "name": "paid_craft_exact_replay_collision_and_new_opid_full_denial_reconnect",
+      "pass": true,
+      "receiptCount": 2,
+      "tradeRev": 1,
+      "packWood": 0,
+      "bucketWater": 0,
+      "gatherPerformed": false
+    }
+  ],
+  "pass": true,
+  "scope": "craft bucket, replay/conflict, private snapshot, durable reconnect; no fill/gather or player relocation",
+  "sourceMapPosition": {
+    "y": 5.335283553727776,
+    "positive": true
+  },
+  "cleanup": {
+    "temporaryAuthAndProfileRemoved": true,
+    "retainedReceiptCount": 2,
+    "receiptPolicy": "economic receipts intentionally retained"
+  },
+  "completedAt": "2026-10-11T05:06:36.590Z"
+}
