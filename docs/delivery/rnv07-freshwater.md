@@ -1,6 +1,8 @@
 # RNV07a — cubeta, manantial y reserva naval
 
-Publicada y activada en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado a las 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`.
+Primera publicación y activación en alpha.44 / protocolo 50, integrada con atributos SQL029 y SQL030. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado a las 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`.
+
+**Integración posterior, 05:01Z:** alpha.45 / protocolo 51 con el editor de terreno concurrente; revisión activa `7a23f25be0bac3b9491681f0c78d12890eb73ea8`, imagen `sha256:c39f893e8080039e6b02263b40f74b66592147c3f81df1b85213c800a8f3e3f5`. El actualizador pasó 126/126 y se repitieron las seis comprobaciones públicas de cubeta, recibos y reconexión: [canario](rnv07-freshwater/public-alpha45/acceptance.json), [runtime](rnv07-freshwater/vps-alpha45.json). Agua y atributos siguen enabled/ready, health 200 y cero pendientes/errores. La cuenta temporal se eliminó; dos recibos se conservaron. El alcance sigue excluyendo recolección y traslado completos live. Los commits posteriores de documentación no cambian este código jugable.
 
 ## Circuito jugable
 
