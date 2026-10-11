@@ -1,0 +1,76 @@
+{
+  "schema": "marea.rnv06.purifier.public-guest-smoke.v1",
+  "generatedAt": "2026-10-11T02:13:10.004Z",
+  "origin": "https://marea.62.171.136.148.sslip.io",
+  "releaseRevision": "b977b7c8b5ca87f4920e8d60af48cd72d57e783e",
+  "revisionConfirmation": "supplied by root after VPS active-image confirmation",
+  "expectedGameVersion": "0.6.0-alpha.39",
+  "expectedProtocol": 47,
+  "scope": "Public unauthenticated guest page, normal play and WSS join, minimap/full map, and read-only purifier palette inspection when the normal build launcher is available. No account, database fixture, build placement, economy advance, or cargo mutation.",
+  "status": "passed",
+  "checks": {
+    "publicPreflight": true,
+    "normalGuestPlayAndWssJoin": true,
+    "minimapOpensFullMap": true,
+    "builderPaletteInspectable": false
+  },
+  "screenshots": [
+    "purifier-public-2026-10-11T02-13-10-004Z-01-guest-world.jpg",
+    "purifier-public-2026-10-11T02-13-10-004Z-02-full-map.jpg"
+  ],
+  "browserErrors": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "httpFailures": [],
+  "websocket": [
+    {
+      "url": "wss://marea.62.171.136.148.sslip.io/ws",
+      "welcomes": [],
+      "protocolErrors": []
+    }
+  ],
+  "failure": null,
+  "preflight": {
+    "health": 200,
+    "status": {
+      "version": "0.6.0-alpha.39",
+      "players": 0,
+      "sockets": 0,
+      "errors": 0,
+      "tick": 4434
+    },
+    "protocolVersion": 47
+  },
+  "join": {
+    "player": 29,
+    "online": true,
+    "websocketOpen": true,
+    "guestChoice": false,
+    "protocolVersionFromPublicSource": 47
+  },
+  "map": {
+    "minimapVisible": true,
+    "fullMapVisible": true,
+    "title": "Isla de la Caldera"
+  },
+  "builderPalette": {
+    "available": false,
+    "reason": "normal builder launcher was not visible in the guest spawn context"
+  },
+  "finalStatus": {
+    "playerStillJoined": true,
+    "browser": {
+      "width": 1280,
+      "height": 720,
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "failedRequests": 0,
+      "httpFailures": 0
+    }
+  },
+  "afterClose": {
+    "players": 0,
+    "sockets": 0,
+    "errors": 0
+  }
+}

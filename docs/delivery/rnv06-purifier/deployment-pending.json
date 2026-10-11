@@ -1,5 +1,5 @@
 {
-  "state": "local_accepted_push_pending",
+  "state": "historical_pre_activation_record",
   "targetVersion": "0.6.0-alpha.39",
   "targetProtocol": 47,
   "readiness": {
@@ -166,5 +166,6 @@
     "timer": "active",
     "service": "ExecMainStatus=0\nActiveState=inactive",
     "updater_sha256": "3e5e9ad641fb0dd45e88c571d3aaab136422c7acf154ae189a6370afda6d899d"
-  }
+  },
+  "closedBy": "activation.json"
 }

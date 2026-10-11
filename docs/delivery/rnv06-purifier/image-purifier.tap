@@ -1,0 +1,185 @@
+# source_hashes 12/12
+TAP version 13
+# Subtest: readCommerce returns bounded current list and quote projections without side effects
+ok 1 - readCommerce returns bounded current list and quote projections without side effects
+  ---
+  duration_ms: 2505.661679
+  type: 'test'
+  ...
+# Subtest: readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+ok 2 - readCommerce enforces exact bounded shape, physical town service, life, and naval lock
+  ---
+  duration_ms: 2021.981682
+  type: 'test'
+  ...
+# Subtest: readCommerce preserves list and quote semantics of human commerce transport
+ok 3 - readCommerce preserves list and quote semantics of human commerce transport
+  ---
+  duration_ms: 2475.990136
+  type: 'test'
+  ...
+# Subtest: LocalServer clock preserves fractional work, settles the net-to-grill chain, and revises once per lot tick
+ok 4 - LocalServer clock preserves fractional work, settles the net-to-grill chain, and revises once per lot tick
+  ---
+  duration_ms: 2751.253496
+  type: 'test'
+  ...
+# Subtest: signed save restores fractional work without producing while the owner is offline
+ok 5 - signed save restores fractional work without producing while the owner is offline
+  ---
+  duration_ms: 1963.951398
+  type: 'test'
+  ...
+# Subtest: full hold pauses both pieces without consuming or losing goods, then resumes when space returns
+ok 6 - full hold pauses both pieces without consuming or losing goods, then resumes when space returns
+  ---
+  duration_ms: 2486.662187
+  type: 'test'
+  ...
+# Subtest: signed guest save preflight rejects an oversized lot atomically, then recovers
+ok 7 - signed guest save preflight rejects an oversized lot atomically, then recovers
+  ---
+  duration_ms: 1813.190759
+  type: 'test'
+  ...
+# Subtest: save-store throws preserve the entire staged lot and a later healthy preflight recovers
+ok 8 - save-store throws preserve the entire staged lot and a later healthy preflight recovers
+  ---
+  duration_ms: 2234.805119
+  type: 'test'
+  ...
+# Subtest: revision exhaustion blocks once without work, cargo, or revision changes
+ok 9 - revision exhaustion blocks once without work, cargo, or revision changes
+  ---
+  duration_ms: 3576.354982
+  type: 'test'
+  ...
+# Subtest: editor edits preserve unrelated module work and removing a module clears only its own tuple key
+ok 10 - editor edits preserve unrelated module work and removing a module clears only its own tuple key
+  ---
+  duration_ms: 2789.852438
+  type: 'test'
+  ...
+# Subtest: the selected chain produces fish and biscuits at the authored rates
+ok 11 - the selected chain produces fish and biscuits at the authored rates
+  ---
+  duration_ms: 8.245649
+  type: 'test'
+  ...
+# Subtest: identical modules keep independent tuple identities and reorder keeps their fractions
+ok 12 - identical modules keep independent tuple identities and reorder keeps their fractions
+  ---
+  duration_ms: 2.018128
+  type: 'test'
+  ...
+# Subtest: whole lots preflight post-input capacity and never consume ingredients on a blocked output
+ok 13 - whole lots preflight post-input capacity and never consume ingredients on a blocked output
+  ---
+  duration_ms: 4.149892
+  type: 'test'
+  ...
+# Subtest: missing inputs freeze fractional work and stopped rows have no time estimate
+ok 14 - missing inputs freeze fractional work and stopped rows have no time estimate
+  ---
+  duration_ms: 0.857413
+  type: 'test'
+  ...
+# Subtest: sanitization keeps only bounded fractions for extant net and grill tuple keys
+ok 15 - sanitization keeps only bounded fractions for extant net and grill tuple keys
+  ---
+  duration_ms: 1.79414
+  type: 'test'
+  ...
+# Subtest: production rows are detached views with rate, recipe, progress, and remaining time
+ok 16 - production rows are detached views with rate, recipe, progress, and remaining time
+  ---
+  duration_ms: 1.451601
+  type: 'test'
+  ...
+# Subtest: invalid and oversized time is guarded, capped, and deterministic
+ok 17 - invalid and oversized time is guarded, capped, and deterministic
+  ---
+  duration_ms: 1.508688
+  type: 'test'
+  ...
+# Subtest: nets can only be placed on the ground-level rim
+ok 18 - nets can only be placed on the ground-level rim
+  ---
+  duration_ms: 0.859243
+  type: 'test'
+  ...
+# Subtest: LocalServer purifier placement debits hold before pack, deduplicates, and rejects unsupported or unfunded pieces atomically
+ok 19 - LocalServer purifier placement debits hold before pack, deduplicates, and rejects unsupported or unfunded pieces atomically
+  ---
+  duration_ms: 2598.156624
+  type: 'test'
+  ...
+# Subtest: LocalServer produces purifier water on its economy clock, revises once, saves, and reports only to the owner
+ok 20 - LocalServer produces purifier water on its economy clock, revises once, saves, and reports only to the owner
+  ---
+  duration_ms: 1996.561013
+  type: 'test'
+  ...
+# Subtest: full hold and signed-save preflight pause purifier output without consuming its earned fraction
+ok 21 - full hold and signed-save preflight pause purifier output without consuming its earned fraction
+  ---
+  duration_ms: 2507.050096
+  type: 'test'
+  ...
+# Subtest: raft capacity preflight refuses a purifier lot when its added cargo would exceed the live structure
+ok 22 - raft capacity preflight refuses a purifier lot when its added cargo would exceed the live structure
+  ---
+  duration_ms: 1968.440223
+  type: 'test'
+  ...
+# Subtest: destroyed purifier keeps its fraction and reports broken, then the real repair command resumes it
+ok 23 - destroyed purifier keeps its fraction and reports broken, then the real repair command resumes it
+  ---
+  duration_ms: 2516.246055
+  type: 'test'
+  ...
+# Subtest: voyage lock pauses purifier work; local HMAC rejoin restores produced water and work without offline production
+ok 24 - voyage lock pauses purifier work; local HMAC rejoin restores produced water and work without offline production
+  ---
+  duration_ms: 1710.641147
+  type: 'test'
+  ...
+# Subtest: purifier produces one water per 0.1 game day (96 simulation seconds)
+ok 25 - purifier produces one water per 0.1 game day (96 simulation seconds)
+  ---
+  duration_ms: 7.809278
+  type: 'test'
+  ...
+# Subtest: a full hold pauses at its saved fraction and resumes a whole water lot
+ok 26 - a full hold pauses at its saved fraction and resumes a whole water lot
+  ---
+  duration_ms: 2.416822
+  type: 'test'
+  ...
+# Subtest: purifier fractions follow tuple identity across reorder and removal; modules progress independently
+ok 27 - purifier fractions follow tuple identity across reorder and removal; modules progress independently
+  ---
+  duration_ms: 1.773797
+  type: 'test'
+  ...
+# Subtest: adding purifier production leaves net and grill rates, inputs, outputs, and lots unchanged
+ok 28 - adding purifier production leaves net and grill rates, inputs, outputs, and lots unchanged
+  ---
+  duration_ms: 4.725452
+  type: 'test'
+  ...
+# Subtest: rows expose broken and voyage stops without changing saved work or cargo
+ok 29 - rows expose broken and voyage stops without changing saved work or cargo
+  ---
+  duration_ms: 0.987649
+  type: 'test'
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39550.58895

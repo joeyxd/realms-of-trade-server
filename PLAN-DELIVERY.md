@@ -1,13 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA07 RNV06, 2026-10-10 — purificador implementado, alpha.39/protocolo 47; aceptación VPS pendiente:**
+**AREA07 RNV06, 2026-10-10 — purificador publicado, alpha.39/protocolo 47:**
 [Contrato](docs/briefs/RNV06-purifier.md) y [entrega](docs/delivery/rnv06-purifier.md).
 Editor B, coste 3 hierro + 2 tablas; una agua dulce cada 96 s simulados, con dueño conectado y balsa
 amarrada. Bodega/masa/transferencia/comercio existentes; panel H/toque ES/EN, pausa por daño/espacio/viaje.
 Integración 120/120 en 20 archivos; PC ES/móvil EN aceptados, 14 capturas. Sin SQL ni autoridad de
-guardado nueva; agua aún no es consumo por sed. Corrección de Tala `d962055` integrada; su frente
-recuperó el VPS: salud/página 200, cero pendientes/errores a las 02:06 UTC. SQL026 instalado.
-Falta publicar RNV06 y aceptar su revisión activa; sin atribuir persistencia Supabase al fixture local.
+guardado nueva; agua aún no es consumo por sed. VPS `b977b7c` sano, una autoridad, salud/página 200,
+cero pendientes/errores; actualizador 109/109, imagen 29/29 con 12/12 hashes Git, entrada pública
+WSS/minimapa/mapa aceptada; conteos solapados.
+Tala `d962055` integrada; SQL026 instalado. Construcción/agua/transferencia probadas con cuenta local
+desechable; falta canario de materiales de cuenta pública. Sin atribuir Supabase ni crash durability al fixture.
 Sigue el viaje comercial Salty Shore–Puerto Sol, coordinado con AREA01/08.
 
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**

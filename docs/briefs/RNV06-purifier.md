@@ -1,7 +1,7 @@
 # RNV06 — purificador útil a bordo
 
 Corte AREA07 posterior a [RNV05](RNV05-coastal-swimming.md). Objetivo: construir un módulo que
-produzca agua dulce real y preparar carga para el viaje. Implementación prevista alpha.39/protocolo 47;
+produzca agua dulce real y preparar carga para el viaje. Implementación publicada alpha.39/protocolo 47;
 la aceptación local y la publicación se registran por separado en la [entrega](../delivery/rnv06-purifier.md).
 
 ## Contrato jugable
@@ -64,7 +64,8 @@ balance y producción navegando requieren aceptación propia.
 
 SQL026 está instalado y la recuperación histórica del taller terminó. Al cerrar este corte, el VPS
 tenía otro bloqueo de Tala; `d962055` corrigió su base económica y su frente recuperó el VPS.
-La entrega registra la observación sana y después verificará la revisión pública del purificador.
+La entrega registra `b977b7c` sano y la entrada pública WSS/mapa. El flujo completo del purificador
+se aceptó en cuenta local desechable; no se realizó canario de materiales de cuenta pública.
 
 Sigue el viaje comercial Salty Shore–Puerto Sol del [plan AREA07](area07-naval-action-plan.md), coordinando
 anclas transitables y mercados con AREA01/08. Huerto/hamaca se mantienen como módulos posteriores separados.

@@ -197,13 +197,14 @@ nueva persistencia. Integración 121/121, PC ES/móvil EN emulado aceptados, ima
 pública 10/10 en `56155bb`; selecciones solapadas. Ver
 [contrato](RNV05-coastal-swimming.md) y [entrega](../delivery/rnv05-coastal-swimming.md).
 
-**RNV06 — purificador implementado, alpha.39/protocolo 47; runtime VPS pendiente:**
+**RNV06 — purificador publicado, alpha.39/protocolo 47:**
 Editor B, 3 hierro + 2 tablas; una agua dulce cada 96 s simulados en bodega, pasivo y conectado/amarrado.
 Masa/volumen/transferencias existentes, fracciones conservadas, daño/reparación y panel ES/EN.
 Integración local 120/120 en 20 archivos; navegador PC ES/móvil EN aceptado, 14 capturas.
-Sin SQL/writer nuevo ni necesidad de sed. Corrección de Tala `d962055` integrada; VPS sano
-con cero pendientes/errores a las 02:06 UTC, a la espera del push/aceptación RNV06.
-El preflight histórico se detuvo sin mutaciones; no se duplicó la recuperación de continuidad.
+Sin SQL/writer nuevo ni necesidad de sed. VPS `b977b7c` sano, una autoridad, salud/página 200,
+cero pendientes/errores; entrada pública WSS/minimapa/mapa aceptada. Construcción/agua/transferencia
+aceptadas en cuenta local desechable; canario de materiales de cuenta pública pendiente.
+Corrección de Tala `d962055` integrada; no se duplicó la recuperación de continuidad.
 [Contrato](RNV06-purifier.md) y [entrega](../delivery/rnv06-purifier.md).
 
 **Sigue el primer viaje comercial Salty Shore–Puerto Sol:** llegada física, descarga y regreso,

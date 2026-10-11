@@ -1,15 +1,17 @@
 ﻿# Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA07 RNV06, 2026-10-10 — purificador implementado, alpha.39/protocolo 47; aceptación VPS pendiente:**
+**AREA07 RNV06, 2026-10-10 — purificador publicado, alpha.39/protocolo 47:**
 [Contrato](briefs/RNV06-purifier.md) y [entrega](delivery/rnv06-purifier.md).
 Editor B: 3 hierro + 2 tablas; agua dulce real en bodega cada 96 s simulados, pasivo, conectado/amarrado.
 H/toque → Producción muestra ritmo/fracción y pausas ES/EN. Bodega llena/daño conservan la fracción;
 reparar reanuda. Viaje/offline pausados, sin sed/curación ni SQL/writer nuevo.
 Integración local 120/120 en 20 archivos; navegador PC ES/móvil EN aceptado con 14 capturas.
-La corrección de Tala `d962055` está integrada y su frente recuperó el VPS: salud/página 200,
-cero pendientes/errores al comprobar 02:06 UTC. SQL026 instalado. RNV06 espera publicación y
-aceptación de su revisión activa; la prueba local no acredita Supabase ni FPS de teléfono físico.
-Después de cerrar RNV06, sigue viaje comercial físico Salty Shore–Puerto Sol con AREA01/08.
+VPS `b977b7c` sano, salud/página 200, cero pendientes/errores y una autoridad; actualizador 109/109,
+imagen 29/29 con 12/12 hashes de fuentes iguales a Git; conteos solapados.
+Entrada pública WSS/minimapa/mapa aceptada, sin escribir economía. La paleta/producción/transferencia
+se aceptaron con cuenta local desechable, no con materiales de una cuenta pública. Sin prueba de
+crash durability ni FPS de teléfono físico. Tala `d962055` integrada y SQL026 instalado.
+Sigue viaje comercial físico Salty Shore–Puerto Sol con AREA01/08.
 
 **AREA17 L03d-c, 2026-10-10 — ficha privada durable publicada, alpha.36/protocolo 45:**
 [Entrega](delivery/l03d-companion-config.md) y [contrato](briefs/l03d-companion-config.md).
