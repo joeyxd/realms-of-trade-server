@@ -2014,12 +2014,12 @@ not ok 254 - rejects a malformed current pearl ledger owner and a valid-looking 
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
       Comparison {
     +   code: 'profile'
     -   code: 'ownership'
       }
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:
@@ -2179,9 +2179,9 @@ not ok 263 - a throwing terrain query cannot mutate the live profile, ECS, ledge
   failureType: 'testCodeFailure'
   error: |-
     The input did not match the regular expression /terrain unavailable/. Input:
-    
+
     'StoreError: Storage: profile'
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:

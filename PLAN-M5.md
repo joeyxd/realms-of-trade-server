@@ -1,5 +1,19 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-11 — muerte y botín compuestos; código publicado, montaje común apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-death-lifecycle.md), [contrato](docs/briefs/m5-ground-death-lifecycle.md).
+Captura fatal real, pérdidas/XP/PK y fuentes en el recibo común; recogida/expiración automática,
+hidratar filas actuales y pausa offline. Aplica perfiles/ECS/sesión/eventos juntos tras SQL confirmado.
+1015/1015 en 100 archivos congelados (base 97d32a1), cuatro SIGKILL nuevos;
+SQL001–032, Carga/agua/terreno y supervivencia/respawn conservados. Conteos solapados.
+Integración final 278/278 en 43 archivos congelados (base 58a097b):
+INV02d/carga, SQL033/materiales GM y exclusión de activación, cantimplora y Companion Studio.
+RNV08a/costa 74/74 en 14 archivos congelados (base cd2a97b), conteos solapados.
+VPS `cd2a97b` sano, 0.6.0-alpha.50/protocolo 55: 176/176 del actualizador,
+63/63 sin red en la imagen exacta, diez módulos iguales a Git y entrada pública 6/6.
+Una autoridad/timer activo; sin SQL nuevo, adopción ni montaje público. Sigue mint y comandos
+restantes de perlas; después transición detenida/adopción y canario autenticado de caída/reinicio VPS.
+
 **AREA15, 2026-10-10 — arranque y circulación de perlas implementados; montaje público apagado:**
 [entrega](docs/delivery/m5-ground-pearl-lifecycle.md), [contrato](docs/briefs/m5-ground-pearl-lifecycle.md).
 Recuperación de filas actuales después del diario común, pausa offline y recogida/devolución

@@ -980,10 +980,10 @@ not ok 152 - GM content switching excludes a ready host with common death author
   error: |-
     Expected values to be strictly equal:
     + actual - expected
-    
+
     + undefined
     - false
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: false
