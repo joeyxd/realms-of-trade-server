@@ -40,6 +40,49 @@ recursos v3; no hay reloj común ni filas de suelo/perlas/botín/intenciones de 
 No se ejecutó adopción, migración, mutación de gameplay autenticada ni cambio de flags en este corte.
 No requiere SQL adicional.
 
+## Publicación verificada
+
+Código [`e4c5f0d`](https://github.com/joeyxd/realms-of-trade-server/commit/e4c5f0da669cbc2dc3cced850dad158e8a8ac1cc) activo en
+**alpha.41/protocolo 47**, revisión e imagen comprobadas después del cambio. Salud pública correcta,
+una autoridad (el supervisor rechaza más de un contenedor), temporizador activo y cero errores de
+simulación/almacenamiento. [Estado](m5-ground-family-boundary/live-status.json).
+
+- **109/109** del actualizador en la imagen exacta antes de sustituir la autoridad:
+  [comprobación](m5-ground-family-boundary/updater-validation.json).
+- **13/13** focales en la misma imagen, contenedor aislado sin red ni credenciales vivas:
+  [resultado/hash runtime](m5-ground-family-boundary/image-tests.json). Cinco contratos nuevos de
+  frontera y ocho previos del host, con fixtures en memoria; no son prueba SQL durable.
+- **6/6** de salud, identidad GM y entrada ordinaria WSS con WELCOME/SNAPSHOT/PROFILE:
+  [evidencia](m5-ground-family-boundary/public-smoke.json). No hay acción durable autenticada.
+- [Lectura final SQL de solo consulta](m5-ground-family-boundary/final-domain.json),
+  2026-10-11T03:28:27.809222+00:00: SQL023 readiness v1, recursos v3, cero filas de las familias
+  consultadas y ausencia de reloj común. La instalación de SQL023 está confirmada; adoptar/activar
+  sigue pendiente del ensamblaje autónomo.
+
+[Comparación de fuentes](m5-ground-family-boundary/published-source-check.json) conserva código y
+assertions: la publicación Git normaliza finales Windows CRLF a LF. La comprobación de imagen usa
+el SHA256 de los bytes Git, y los manifiestos locales conservan sus hashes originales.
+
+El trabajo de código permanece en `C:\DEV\real of trade\area15-resource-live`, rama
+`codex/area15-resource-live`; el checkout IDE concurrente recibe solamente este checkpoint,
+contrato y evidencias. No se copia runtime, pruebas, entorno ni migraciones sobre sus cambios.
+
+## Integración concurrente posterior
+
+La rama incorpora después el centro privado de inferencia alpha.42/protocolo 48. Se revisaron
+las adiciones de host/store/index: servicio y mensajes privados, sin reemplazar `beforeTick`,
+escritor del mundo ni la frontera de familias. **83/83 en doce archivos**, con fuentes congeladas:
+host/store/economía, taller actual SQL001–027 e inferencia SQL028, cliente/UI/red/store.
+[Manifest](m5-ground-family-boundary/concurrent-integration.json),
+[TAP](m5-ground-family-boundary/concurrent-integration.tap). Se solapan con los conteos previos.
+
+El módulo de familias es idéntico byte a byte en Git al aceptado en `e4c5f0d`.
+[Lectura VPS posterior](m5-ground-family-boundary/current-source-status.json) vuelve a comprobar
+su hash, revisión/imagen activa, salud pública y montaje apagado. La publicación/aceptación
+alpha.41 anterior mantiene su revisión exacta; esta integración local no declara publicada
+alpha.42 ni acepta su entrada pública. SQL028 pertenece a la entrega independiente de inferencia;
+este corte de continuidad no añade ni ejecuta SQL.
+
 ## Límites y siguiente corte
 
 Esta entrada de ensamblaje no conecta todavía los coordinadores autónomos, sus selectores ni su
