@@ -1,7 +1,7 @@
 # RNV07 — expediciones por agua dulce y purificador avanzado
 
 Dirección del autor, 2026-10-10, posterior a [RNV06](RNV06-purifier.md). **Diseño registrado; este
-documento no modifica el gameplay desplegado.** Sustituye el purificador barato como objetivo inicial
+documento separa dirección y entregas comprobadas.** Sustituye el purificador barato como objetivo inicial
 de provisiones. Sigue el circuito manual de agua, antes del viaje comercial completo.
 
 ## Experiencia acordada
@@ -92,3 +92,8 @@ Antes de implementar, verificar candidatos concretos del inventario
 [Unreal/FAB](../research/unreal-assets/README.md) y geometría de barril existente; fuentes de solo lectura.
 Este corte de diseño no exporta assets ni acepta modelos. Recetas, capacidades y duración se cierran
 en el brief de implementación y se prueban sin convertir la logística en grind.
+
+
+## Checkpoint RNV07a, 2026-10-11
+
+[Entrega local](../delivery/rnv07-freshwater.md), alpha.44/protocolo 50: fuente interior, cubeta reutilizable de 4 unidades/2 tablas y barril naval de 20 unidades/4 tablas. La recogida tarda dos segundos activos y puede interrumpirse; el contenido conserva identidad y se traslada sin duplicarse. QA final completado en escritorio ES 1280×720 y touch EN 390×844, 14 capturas en total (7 por viewport); [evidencia](../delivery/rnv07-freshwater/local/evidence-2026-10-11T04-35-22-891Z.json). La revisión visual confirma el manantial en mundo y marcador en mapa completo, además de la lectura 4/20 del barril en móvil. El fixture retiró enemigos y spawners para proteger el recorrido feliz, por lo que la aceptación del encuentro en navegador queda pendiente. Las pruebas automatizadas del host cubren interrupciones. La selección integrada sigue en 129/129; suite del host 5/5. SQL030/readiness y la activación pública siguen pendientes; este checkpoint no declara publicación. Cantimplora, beber, casas y receta avanzada quedan fuera de RNV07a.

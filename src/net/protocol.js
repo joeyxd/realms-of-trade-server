@@ -1,6 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 49; // Optional Carga profile state and durable attribute commands; reload peers.
+export const PROTOCOL_VERSION = 50; // Private freshwater status, reusable vessels and commands; reload peers.
 
 export const MSG = {
   // client -> server

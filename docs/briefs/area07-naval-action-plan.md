@@ -266,3 +266,6 @@ node --test tests/rafts.test.mjs tests/raft-editor.test.mjs tests/raft-capacity.
 
 Se comprobó la existencia de las referencias locales de este informe y el formato del cambio documental.
 No se implementó ni publicó gameplay nuevo en este análisis.
+
+
+**Checkpoint RNV07a:** [agua manual](../delivery/rnv07-freshwater.md) implementada localmente en alpha.44/protocolo 50. Manantial, cubeta, barril naval y conservación M5. QA final en escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport; [evidencia](../delivery/rnv07-freshwater/local/evidence-2026-10-11T04-35-22-891Z.json)). Selección integrada 129/129; suite focalizada del host 5/5. El fixture retiró enemigos para proteger el recorrido feliz: la aceptación del encuentro en navegador sigue pendiente, mientras las pruebas del host sí cubren interrupciones. No se afirma publicación; SQL030/readiness y activación siguen siendo requisitos. Sigue RNV07b: cantimplora y supervivencia antes del viaje comercial. El purificador avanzado mantiene sus dependencias.

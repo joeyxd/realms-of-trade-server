@@ -1,4 +1,5 @@
 // Presentation-only view of the on-foot cargo pack and utility belt.
+import { readVessels } from '../data/freshwater.js';
 import { GOODS } from '../data/goods.js';
 import { holdMass, holdUsed } from '../sim/economy/cargo.js';
 import { CARRY, carryLimits, readCarryField } from '../data/carry.js';
@@ -50,8 +51,9 @@ export function packInventoryHtml(profile, view = {}, language = 'es') {
     const dimensions = `${good.volume ?? good.w ?? 1} uV · ${good.mass ?? good.w ?? 1} uM`;
     return [`<li class="pack-good${pending ? ' is-pending' : ''}" title="${esc(dimensions)}"><span class="pack-good-icon">${cargoIcon()}</span><span class="pack-good-name">${esc(name)}<small>${esc(dimensions)}</small></span><b>${count}</b>${pending ? '<i class="pack-pending" aria-hidden="true"></i>' : ''}</li>`];
   }).join('');
-  const used = holdUsed({ goods });
-  const mass = holdMass({ goods });
+  const vessels = readVessels(pack.vessels).map(v => `<li class="pack-good"><span class="pack-good-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 12h16l-3 16H11zM10 12V9a6 6 0 0 1 12 0v3"/></svg></span><span class="pack-good-name">${lang==='en'?'Reusable bucket':'Cubeta reutilizable'}<small>${v.water}/4 ${lang==='en'?'fresh water':'agua dulce'} ? U</small></span><b>1</b></li>`).join('');
+  const used = holdUsed({ ...pack, goods });
+  const mass = holdMass({ ...pack, goods });
   const cap = Number.isFinite(Number(pack?.cap)) ? Math.max(0, Number(pack.cap)) : 0;
   const carryField = readCarryField(profile), carry = carryField.present && carryField.value
     ? carryField.value : { v: CARRY.version, backpack: 0 };
@@ -64,7 +66,7 @@ export function packInventoryHtml(profile, view = {}, language = 'es') {
     `<li class="belt-tool">${toolIcon(tool)}<span>${copy[tool]}<small>${copy.tier}</small></span></li>`).join('');
   return `<section class="pack-inventory" aria-label="${esc(copy.materials)}">
     <div class="pack-heading"><h4>${esc(copy.materials)}</h4><span>${esc(backpackLabel)}</span><span>${esc(copy.volume)} <b>${used} / ${cap} uV</b></span><span>${esc(copy.mass)} <b>${mass}${Number.isFinite(maxMass) ? ` / ${maxMass}` : ''} uM</b></span>${Number.isFinite(maxMass) ? `<span>${esc(copy.strength)} <b>${strength}</b></span>` : ''}</div>
-    ${rows ? `<ul class="pack-goods">${rows}</ul>` : `<p class="pack-empty">${lang === 'en' ? 'No materials carried.' : 'No llevas materiales.'}</p>`}
+    ${rows || vessels ? `<ul class="pack-goods">${rows}${vessels}</ul>` : `<p class="pack-empty">${lang === 'en' ? 'No materials carried.' : 'No llevas materiales.'}</p>`}
     <div class="tool-belt"><h4>${esc(copy.belt)}</h4>${tools ? `<ul>${tools}</ul>` : `<p class="pack-empty">${lang === 'en' ? 'No tools yet.' : 'Aún no tienes herramientas.'}</p>`}</div>
   </section>`;
 }
