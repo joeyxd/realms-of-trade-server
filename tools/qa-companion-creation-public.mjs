@@ -216,6 +216,11 @@ async function runCleanupMode() {
     assert.equal(profileAfter, null);
     assert.ok(authAfter?.error && authAfter.error.status === 404, 'temporary auth account deletion was not verified');
     evidence.cleanupPending = false; evidence.cleanupComplete = true;
+    delete evidence.cleanupError;
+    if (evidence.canaryRetained) {
+      evidence.canaryBeforeCleanup = { ...evidence.canaryRetained };
+      evidence.canaryRetained = { ...evidence.canaryRetained, account: false, ordinaryProfile: false, creationRecord: false };
+    }
     evidence.cleanup = { markerMatchedBeforeDelete: true, registryAbsentBeforeDelete: true,
       profileDeleted: true, authDeleted: true, ...settlement };
     evidence.pass = evidence.acceptancePass === true;

@@ -1,0 +1,54 @@
+{
+  "schema": "mn.companion-creation.final-health.v1",
+  "at": "2026-10-11T17:44:36.042Z",
+  "containerId": "857b91ed13ac9ee4b94816ededbd195daf99a65bad8c6c88d7f5f6c7d6d8ae50",
+  "image": "marea-negra:alpha-66fcf82868a5",
+  "imageId": "sha256:04caacf78327b76ed1200b40602bd5c357aa954f4f940538c2e67e5ce9f8e380",
+  "revision": "66fcf82868a5d266db468808689e83dbf8548af9",
+  "healthy": true,
+  "creationFlagEnabled": true,
+  "authorities": 1,
+  "hashes": {
+    "server/companionCreation.mjs": "c226bbd96d77c39ad20b14affaa43af17fbfad41dd0bc64802619d940756d37d",
+    "server/companionCreationStore.mjs": "f60c049376e902bd44203775642526d6bec5c2a786059f9700a22dbcafa6055e",
+    "server/host.mjs": "3eeb63c9dc9f7846f017cd3a742dcec1c9637450a0f066f27059d621ebf76d9d",
+    "server/index.mjs": "b2be7a5cb3f87d946a46804defefd1e8fc050ac80630d2d542a0d77ea538386f",
+    "src/net/companionCreation.js": "b0f8b80a42842b921c27cafd985885195e61bb74af48306f30c3858b0ed83c8d",
+    "src/client/companionCreation.js": "615eb69224bd1014e47a606557d0635ca94a6ea44fdab014f9757ce2a26e12cf",
+    "src/ui/companionCreation.js": "8b1fa06d28749dd080ebe182a17f385705b90480e948a482232081c000b618ea",
+    "src/ui/companions.js": "d8671fd5e8fa5f1c69b7d8084f770c991f8550d681ccb606f1637091f26b1b3b",
+    "src/main.js": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+    "src/net/protocol.js": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9"
+  },
+  "updaterTimer": "active",
+  "version": "0.6.0-alpha.57",
+  "protocol": 56,
+  "publicHashes": {
+    "src/net/companionCreation.js": "b0f8b80a42842b921c27cafd985885195e61bb74af48306f30c3858b0ed83c8d",
+    "src/client/companionCreation.js": "615eb69224bd1014e47a606557d0635ca94a6ea44fdab014f9757ce2a26e12cf",
+    "src/ui/companionCreation.js": "8b1fa06d28749dd080ebe182a17f385705b90480e948a482232081c000b618ea",
+    "src/ui/companions.js": "d8671fd5e8fa5f1c69b7d8084f770c991f8550d681ccb606f1637091f26b1b3b",
+    "src/main.js": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+    "src/net/protocol.js": "47d7f15dda4977fa4476e2fd3b96d0c67ec383916b80088a50c6f91c43af00e9"
+  },
+  "allImageModulesMatch": true,
+  "allPublicModulesMatch": true,
+  "status": {
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storageErrors": 0,
+    "unsaved": 0,
+    "profileWrites": 0,
+    "economicPending": 0,
+    "tickBlocked": false,
+    "worldReady": true,
+    "companionCreation": {
+      "enabled": true,
+      "ready": true,
+      "pending": 0
+    }
+  },
+  "acceptanceRevision": "96af1aa1cd54cd529803166614fe2b7903f07085",
+  "note": "Public wizard acceptance ran on alpha.56; current alpha.57 contains the same companion creation modules. All ten image modules and six served modules match Git at the active revision. The post-acceptance updater transition changed the version guard for fixture cleanup only."
+}

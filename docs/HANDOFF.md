@@ -1,14 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-**L03e creación de compañeros — readiness instalada; aceptación pública pendiente, alpha.55/protocolo 56:**
+**L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
-57/57 pruebas focales en 9 archivos; browser local 12/12 con SQL034 real en PGlite persistido,
-auth simulada y memoria de juego simulada. SQL034 aplicado en Supabase por UI autenticada;
-`mn_companion_creation_ready` respondió `{"version":1}` a 2026-10-11T17:23:14Z. El flag
-`MN_COMPANION_CREATION=1` quedó configurado en el VPS restringido con respaldo. El actualizador
-seguía el flujo seguro para jugadores probando `fb4276f`; no se forzó reinicio. `a53c651` y
-`d91bc66` se enviaron por continuidad. Falta verificar en producción la revisión activa y el flujo
-autenticado durable. Sin inferencia, spawn ni permisos concedidos; siguiente paso: emparejamiento local.
+Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.
+Un compañero preparado por cuenta/mundo, con identidad, configuración SQL025 y control SQL027 detenido en SQL034.
+57/57 focales; navegador local 12/12 con SQL034 en PGlite persistido y auth simulada; recheck de integración 21/21
+solapado tras conservar los cambios concurrentes. Supabase SQL034 instalado/readiness 1 y flag de VPS habilitado.
+Aceptación autenticada pública 11/11 en 96af1aa, alpha.56: creación, documentos, recarga/reentrada y limpieza
+verificada de la cuenta temporal. Updater 176/176. Salud posterior comprobada en 66fcf82, alpha.57:
+una autoridad sana, diez módulos de imagen y seis públicos iguales a Git, cero errores/escrituras pendientes.
+Sin modelo/inferencia, spawn ni permisos concedidos; siguiente corte: emparejamiento local revocable y adaptador real de red.
 
 **AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
 [Entrega/evidencia](delivery/m5-ground-pearl-mint.md), [contrato](briefs/m5-ground-pearl-mint.md).

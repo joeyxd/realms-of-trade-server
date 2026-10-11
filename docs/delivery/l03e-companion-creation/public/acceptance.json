@@ -112,9 +112,9 @@
     }
   },
   "canaryRetained": {
-    "account": true,
-    "ordinaryProfile": true,
-    "creationRecord": true,
+    "account": false,
+    "ordinaryProfile": false,
+    "creationRecord": false,
     "sessionClosed": true,
     "stableProfileReads": 3,
     "storageIdle": true
@@ -129,5 +129,13 @@
     "profileWrites": 0,
     "economicPending": 0,
     "socketClosed": true
+  },
+  "canaryBeforeCleanup": {
+    "account": true,
+    "ordinaryProfile": true,
+    "creationRecord": true,
+    "sessionClosed": true,
+    "stableProfileReads": 3,
+    "storageIdle": true
   }
 }
