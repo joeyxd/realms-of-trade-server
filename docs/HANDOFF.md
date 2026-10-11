@@ -32,6 +32,15 @@ Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4
 Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
 Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
 
+**AREA17 L03d-e2a, 2026-10-10 — transporte del modelo local probado, sin montaje:**
+[Entrega/evidencia](delivery/l03d-local-model-probe.md) y [brief](briefs/l03d-local-model-probe.md).
+Endpoint loopback sin clave y modelo exacto verificados; wait/reply estructurados y cancelación con
+bloqueo pasaron usando extensión explícita de plantilla sin razonamiento. Default 192 no admitió chat y 512 lo truncó;
+se conservan ambos ensayos. 20/20 HTTP local simulado; ocho intentos reales, siete usos conocidos y
+uno cancelado desconocido, sin retries después. Coste null y cero acciones/chat/memoria enviados.
+Reply mezcló ES/EN y tardó 5,8 s: calidad/latencia pendientes. Herramienta fuera del bundle/VPS;
+sin proveedor público, ledger central o integración AgentMind. E1 permanece la entrega ingame publicada.
+
 **AREA17 L03d-e1, 2026-10-10 — centro de inferencia configurado y publicado, alpha.42/protocolo 48:**
 [Entrega](delivery/l03d-inference-config.md) y [contrato](briefs/l03d-inference-config.md).
 Configuración privada por mundo/cuenta: techo conjunto, una fila de límite por conexión y modelo por
