@@ -1,10 +1,13 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
-**AREA07 RNV08a, 2026-10-11 — implementación local, publicación en curso; alpha.50/protocolo 55:**
+**AREA07 RNV08a, 2026-10-11 — publicada y desplegada; alpha.50/protocolo 55:**
 [Brief](docs/briefs/RNV08a-shore-resupply.md) y [entrega](docs/delivery/rnv08a-shore-resupply.md).
 Parada seca autoritativa: mercado físico y agua/comida de mochila disponibles; bodega, barriles y
 construcción bloqueados. Reembarque conserva el mismo viaje y recalcula masa de recipientes/agua.
 M5/SQL030/032 existentes, sin nueva migración o flag; referencias estables en commits y rechazos.
+Runtime `cd2a97b`, una instancia sana, 176/176 en Docker y 21/21 hashes públicos iguales a Git.
+WSS autenticado 5/5: consumo, replay y reconexión durables; cuenta temporal retirada, cero errores/pendientes.
+Navegador local ES/EN con fixture de ubicación: comercio, agua/comida y el mismo viaje tras reembarcar.
 Puerto Sol aún necesita geografía/anclas físicas; este corte no acepta la ruta completa ni descarga.
 
 **INV02d, 2026-10-11 — sobrepeso, ficha de personaje y fabricación a mano, alpha.49/protocolo 54, sin SQL:**
