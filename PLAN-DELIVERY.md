@@ -18,12 +18,14 @@ SQL028/`attr`/`eat`. Pendiente: comidas especiales SRV02 como operación `freshw
 Suite completa **4598/4659**; los 55 fallos también fallan en origin `c33ed9c` (68 allí) salvo uno de red que pasa
 aislado. HUD vertical **36/36** (origin 28 solapes; corregido el bloque del jugador con barras) y ficha en 4 viewports.
 
-**AREA01 GM05b, 2026-10-11 — pintura implementada localmente, alpha.48/protocolo 53:**
+**AREA01 GM05b, 2026-10-11 — pintura publicada, alpha.48/protocolo 53:**
 [Contrato](docs/briefs/gm05b-terrain-paint.md) y [entrega](docs/delivery/gm05b/DELIVERY.md).
 Hierba/tierra/arena/roca, borrar gradual y pinceles circular/cuadrado/elíptico compartidos con escultura.
 Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores conservadas.
 SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
-Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
+267/267 casos acotados, imagen 37/37 y navegador público 11/11; capturas ES/EN escritorio/móvil inspeccionadas.
+Release `0a2dfc0` sana, 35/35 fuentes activas verificadas; cadena durable y entrada real aceptadas.
+Canario retirado: mapa base generación 8 y borrador original restaurado en r27. Sigue optimización/dispersión y GM06.
 
 **AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
 [Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).

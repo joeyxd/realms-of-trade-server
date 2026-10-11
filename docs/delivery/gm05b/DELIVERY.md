@@ -1,6 +1,6 @@
 # GM05b — pintura de terreno y formas de pincel
 
-Implementado localmente en **alpha.48/protocolo 53**. Publicación y aceptación del VPS en curso.
+Publicado y verificado en **alpha.48/protocolo 53**, release `0a2dfc0b6b8a9797f756b42e7b1d51a972393dd5`.
 Continúa [GM05a](../gm05a/DELIVERY.md) y el [contrato previo al código](../../briefs/gm05b-terrain-paint.md).
 
 La pestaña **Terreno** añade **Pintar** y **Borrar**, con hierba, tierra, arena y roca. Los pinceles
@@ -44,6 +44,34 @@ La aceptación [local](local/release-accepted/local-browser-evidence.json) pasó
 ES/EN inspeccionadas: tres detalles y dos vistas generales de escritorio, dos vistas generales móviles.
 Registró cero errores de página/WebGL y las cuatro URLs/resoluciones reales por dispositivo;
 las respuestas 503 del fixture local sin almacén durable están identificadas por endpoint.
+
+La imagen Linux aceptada, `sha256:dd62a49baaed2c76400509bb5bed563e486a474b21504e91ba378e8404df246a`,
+pasó **37/37 pruebas focales**, con **35/35 archivos** iguales al commit. Son comprobaciones adicionales
+con solapamiento, no 37 casos únicos añadidos a los 267. [Resultado de imagen](image-focal.json),
+[salida](image-focal.tap) y [comparación del contenedor activo](public-runtime.json).
+
+El [navegador público autenticado](public/final/public-browser-evidence.json) pasó **11/11 controles**,
+con siete capturas ES/EN inspeccionadas, incluidas vistas de detalle móviles. Confirmó las URLs y dimensiones
+de las variantes móviles realmente cargadas, sin errores JavaScript de página ni WebGL. Conserva un evento
+de red `GET /api/gm/draft` cancelado (`net::ERR_ABORTED`); la evidencia no registra su instante ni permite
+atribuirlo con certeza al cierre del contexto. No se oculta ese evento ni se equipara a una prueba de fallo
+de escritura: la cadena durable independiente siguiente completó guardado y recarga exactos.
+En móvil horizontal el panel tiene desplazamiento vertical: las capturas de detalle muestran proporción
+y giro, mientras herramienta/material/forma quedan arriba, fuera de esa vista. Se inspeccionó ese estado
+y la vista de escritorio con los controles completos; el check automático no exige que todos sean visibles
+simultáneamente. Cerrar el editor cancela las lecturas remotas activas, compatible con el evento observado.
+
+La [cadena pública con Supabase real](public/final/public-chain-evidence.json) guardó v4 en r26,
+verificó replay y recarga exactos, preparó con compiler 2, registró y activó una revisión temporal en
+generación 7. Un cliente nuevo verificó ambos hashes antes de entrar; recibió la altura y roca pintadas
+y el WebSocket admitió esa misma revisión. Al terminar se restauró el **mapa base en generación 8**
+y el **borrador original en r27**, con su hash anterior exacto. El canario queda retenido como revisión
+inactiva; no sustituye el mapa del autor. La sesión de QA no cambió contraseña ni envió correo.
+
+[Salud y despliegue](deployment.json): contenedor sano, almacenamiento Supabase durable, cero errores
+y guardados pendientes al cierre. La [entrada real posterior](public-entry.json) recibió bienvenida,
+snapshot y perfil sobre el mapa base restaurado. Las pruebas con navegador y móvil emulado acreditan
+este flujo funcional y visual; la medición de FPS en teléfono físico conserva su aceptación propia.
 
 Sigue optimización reutilizable de modelos y dispersión controlada; después, generación/importación
 de terreno por sectores y costa en GM06. El sistema de modelos optimizados existente permanece
