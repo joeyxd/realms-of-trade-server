@@ -47,6 +47,41 @@ test('paid bucket, interrupted gathering, exact fill retry and reconnect preserv
   const decant=await submitAndApply(host,resumed,cmd('decant','water-cargo',2,{n:4}));
   assert.equal(decant.ok,true);assert.equal(restored.eco.pack.goods.agua,4);assert.equal(restored.eco.pack.vessels[0].water,0);
 });
+test('authenticated gathering cancels on damage, combat, cast, and dash without a receipt or water',async t=>{
+  const {store,base}=makeResourceStore();
+  const f=await startResourceHost(t,store,{goods:{madera:2},options});
+  const {host,client}=f,w=host.server.world,e=f.entity(),p=w.profiles.get(e);
+  assert.equal((await submitAndApply(host,client,cmd('craftBucket','interrupt-test-bucket',0))).ok,true);
+  const source=freshwaterSource(w.map), cases=[
+    ['damage',ecs=>{ecs.hp[e]-=1;}],
+    ['combat',ecs=>{ecs.regenT[e]=2;}],
+    ['cast',ecs=>{ecs.castK[e]=1;}],
+    ['dash',ecs=>{ecs.dashT[e]=0;}],
+  ];
+  for (const [name,interrupt] of cases) {
+    const command=cmd('fill',`interrupt-${name}`,p.eco.tradeRev,{source:source.id,n:4});
+    calmAt(host,e,source);
+    const before=copy(p);
+    client.send(command);await turn();host.server.step();
+    assert.equal(client.events(command.opId).at(-1)?.stage,'gathering',`${name}: channel starts`);
+    const gathering=w.freshwaterGather.get(e);
+    assert.ok(gathering,`${name}: channel is active`);
+    w.tick=gathering.tick+FRESHWATER.collectTicks-2;host.server.step();
+    assert.equal(host.economicAuthority.busy,false,`${name}: no early economic commit`);
+    assert.equal(w.profiles.get(e).eco.pack.vessels[0].water,0,`${name}: no early water`);
+    assert.equal(await base.loadEconomicOperation(economicOperationId(host.worldState.id,ACCOUNT_ONE,command.opId)),null,
+      `${name}: no receipt before completion`);
+    interrupt(w.ecs);
+    host.server.step();await turn();
+    assert.equal(client.events(command.opId).at(-1)?.why,'interrupted',`${name}: channel is cancelled`);
+    assert.equal(w.freshwaterGather.has(e),false,`${name}: gathering state is removed`);
+    assert.equal(w.freshwaterProofs?.has(e) ?? false,false,`${name}: no completion proof`);
+    assert.equal(host.economicAuthority.busy,false,`${name}: no economic operation was submitted`);
+    assert.deepEqual(p,before,`${name}: profile and inventory are unchanged`);
+    assert.equal(await base.loadEconomicOperation(economicOperationId(host.worldState.id,ACCOUNT_ONE,command.opId)),null,
+      `${name}: no durable receipt is written`);
+  }
+});
 test('guest/disabled/missing SQL readiness deny freshwater without modifying inventory',async t=>{
   const {store}=makeResourceStore();const f=await startResourceHost(t,store,{options});
   const guest=connect(f.host,'guest');guest.hello();await Promise.all([...f.host.joins]);

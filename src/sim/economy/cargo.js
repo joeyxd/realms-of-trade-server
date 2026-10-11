@@ -53,7 +53,11 @@ export function rot(h, days) {
 // A saved hold made safe: known goods, whole non-negative counts, within its cap (extra is dropped).
 export function sanitizeHold(raw, cap, maxMass) {
   const h = newHold(cap, maxMass);
-  if (raw && Object.hasOwn(raw, 'vessels')) h.vessels = readVessels(raw.vessels);
+  if (raw && Object.hasOwn(raw, 'vessels')) {
+    const field=Object.getOwnPropertyDescriptor(raw,'vessels');
+    if (!Object.hasOwn(field,'value')) throw new TypeError('Invalid freshwater vessels');
+    h.vessels=readVessels(field.value);
+  } else if (raw && 'vessels' in raw) throw new TypeError('Invalid freshwater vessels');
   const src = raw && typeof raw === 'object' && raw.goods && typeof raw.goods === 'object' ? raw.goods : {};
   for (const [g, n] of Object.entries(src)) {
     const k = Math.floor(Number(n));

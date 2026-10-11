@@ -60,3 +60,14 @@ test('empty packs and unowned tools have localized empty states', () => {
   assert.match(html, /No materials carried\./);
   assert.match(html, /No tools yet\./);
 });
+
+
+test('reusable bucket remains visible when empty and counts water mass once', () => {
+  const profile={eco:{pack:{cap:18,maxMass:18,goods:{},vessels:[{id:'bucket',kind:'bucket',water:4}]}}};
+  const before=structuredClone(profile),html=packInventoryHtml(profile,{},'en');
+  assert.match(html,/Reusable bucket/);assert.match(html,/4\/4 fresh water/);
+  assert.match(html,/Volume <b>2 \/ 18 uV/);assert.match(html,/Mass <b>5 \/ 18 uM/);
+  assert.deepEqual(profile,before);
+  profile.eco.pack.vessels[0].water=0;
+  assert.match(packInventoryHtml(profile),/Cubeta reutilizable/);
+});

@@ -41,3 +41,15 @@
   .fresh-barrel-actions { gap: 8px; }
   .fresh-barrel-actions button { padding-inline: 7px; font-size: 13px; }
 }
+/* In portrait touch mode #stage is rotated and uses the viewport's long edge as
+   its logical width. Keep the panel sized in that landscape coordinate space;
+   viewport-width sizing here would rotate a full-width sheet off-screen. */
+@media (orientation: portrait) and (max-width: 520px) {
+  body.rotated .freshwater-panel {
+    top: 50%; right: 12px; bottom: auto; left: auto; transform: translateY(-50%);
+    width: min(440px, calc(100dvh - 24px));
+    max-height: min(72dvw, 366px);
+    padding: 14px;
+    border-radius: 16px;
+  }
+}

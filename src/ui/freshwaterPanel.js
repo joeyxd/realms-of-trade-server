@@ -9,7 +9,7 @@ const COPY = {
     sourceFar: 'Acércate al manantial para recoger agua.', craft: 'Fabricar cubeta · 2 maderas',
     craftHelp: 'En el constructor, arma un barril con 4 tablas para crear una reserva naval.',
     decant: 'Vaciar en provisiones', decantHelp: 'Vierte el agua de la cubeta en tus provisiones y libera el recipiente.',
-    pack: 'Mochila', barrel: 'Barril', empty: 'Vacío', full: 'Lleno', broken: 'Roto', distant: 'Acércate al barril.',
+    pack: 'Mochila', barrel: 'Barril', emptyLabel: 'Vacío', fullLabel: 'Lleno', broken: 'Roto', distant: 'Acércate al barril.',
     deposit: 'Guardar agua', withdraw: 'Retirar agua', waiting: 'Esperando confirmación…',
     delayed: 'La conexión tarda. El resultado de esta solicitud sigue pendiente; espera la actualización.',
     crafting: 'Cubeta fabricada.', filled: 'Agua recogida.', deposited: 'Agua guardada en el barril.',
@@ -31,7 +31,7 @@ const COPY = {
     sourceFar: 'Move closer to the spring to collect water.', craft: 'Craft bucket · 2 wood',
     craftHelp: 'Build a barrel with 4 planks in the builder to make a naval reserve.',
     decant: 'Pour into provisions', decantHelp: 'Pour bucket water into provisions and free the container.',
-    pack: 'Pack', barrel: 'Barrel', empty: 'Empty', full: 'Full', broken: 'Broken', distant: 'Move closer to the barrel.',
+    pack: 'Pack', barrel: 'Barrel', emptyLabel: 'Empty', fullLabel: 'Full', broken: 'Broken', distant: 'Move closer to the barrel.',
     deposit: 'Store water', withdraw: 'Withdraw water', waiting: 'Waiting for confirmation…',
     delayed: 'The connection is taking longer. This request is still pending; wait for the update.',
     crafting: 'Bucket crafted.', filled: 'Water collected.', deposited: 'Water stored in the barrel.',
@@ -184,7 +184,7 @@ export class FreshwaterPanel {
       const row = rows[i]; if (!row) return;
       node.querySelector('b').textContent = row.name || `${c.barrel} · ${row.ship}`;
       node.querySelector('span').textContent = `${Math.max(0, finite(row.water))}/${Math.max(0, finite(row.capacity))}`;
-      const reason = row.broken ? c.broken : !row.near ? c.distant : row.water <= 0 ? c.empty : row.water >= row.capacity ? c.full : '';
+      const reason = row.broken ? c.broken : !row.near ? c.distant : row.water <= 0 ? c.emptyLabel : row.water >= row.capacity ? c.fullLabel : '';
       node.querySelector('.fresh-barrel-state').textContent = reason;
       const deposit = node.querySelector('.fresh-deposit'), withdraw = node.querySelector('.fresh-withdraw');
       deposit.textContent = c.deposit; withdraw.textContent = c.withdraw;
