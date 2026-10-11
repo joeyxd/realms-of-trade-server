@@ -1,7 +1,7 @@
 // Small authenticated companion status panel. Callbacks own all account and server authority.
 const COPY = {
   es: {
-    title: 'Mis compañeros', open: 'Abrir mis compañeros', close: 'Cerrar mis compañeros',
+    title: 'Mis compañeros', open: 'Abrir mis compañeros', close: 'Cerrar mis compañeros', inference: 'Centro de inferencia', preparedNote: 'El centro prepara conexión, modelo y límites. Guardar no inicia inferencia.',
     refresh: 'Actualizar', refreshing: 'Actualizando…', stop: 'Detener', confirmStop: 'Confirmar detención', stopping: 'Deteniendo…', resume: 'Permitir conexión', resuming: 'Guardando…', closePanel: 'Cerrar panel', configure: 'Ficha',
     signed_out: 'Inicia sesión para consultar tus compañeros.', loading: 'Consultando compañeros…',
     error: 'No se pudo consultar el estado. Inténtalo de nuevo.', offline: 'Sin conexión. Los compañeros no están disponibles.',
@@ -18,7 +18,7 @@ const COPY = {
     busy: 'El control está ocupado. Actualiza antes de volver a intentarlo.', durable_control_required: 'Este compañero requiere control durable. Actualiza el estado antes de continuar.',
   },
   en: {
-    title: 'My companions', open: 'Open my companions', close: 'Close my companions',
+    title: 'My companions', open: 'Open my companions', close: 'Close my companions', inference: 'Inference center', preparedNote: 'The center prepares connection, model and limits. Saving does not start inference.',
     refresh: 'Refresh', refreshing: 'Refreshing…', stop: 'Stop', confirmStop: 'Confirm stop', stopping: 'Stopping…', resume: 'Allow connection', resuming: 'Saving…', closePanel: 'Close panel', configure: 'Profile',
     signed_out: 'Sign in to view your companions.', loading: 'Checking companions…',
     error: 'Could not load status. Try again.', offline: 'Offline. Companions are unavailable.',
@@ -138,8 +138,11 @@ export class CompanionsUI {
     heading.append(this.title, this.closeButton);
     header.append(heading, this.refreshButton);
     this.setupNote = node('p', 'mn-companions-setup');
+    this.inferenceButton = node('button', 'mn-companions-refresh mn-inference-open');
+    this.inferenceButton.type = 'button';
+    this.inferenceButton.addEventListener('click', () => this.openInference());
     this.sessionNote = node('p', 'mn-companions-setup');
-    this.panel.append(header, this.setupNote, this.sessionNote, this.status, this.list);
+    this.panel.append(header, this.inferenceButton, this.setupNote, this.sessionNote, this.status, this.list);
     this.container.append(this.toggleButton);
     parent.append(this.container);
     this.portal = document.getElementById?.('ui') || parent;
@@ -201,6 +204,7 @@ export class CompanionsUI {
       this.localError = '';
       this.refreshPending = false;
       this.configEditor?.reset();
+      this.inferenceEditor?.reset();
     }
     this.render();
   }
@@ -229,6 +233,7 @@ export class CompanionsUI {
     this.panel.hidden = true;
     this.toggleButton.setAttribute('aria-expanded', 'false');
     this.configEditor?.close();
+    this.inferenceEditor?.close();
     if (wasOpen) {
       this.onVisibilityChange(false);
       if (this.visible) this.toggleButton.focus?.({ preventScroll: true });
@@ -273,10 +278,20 @@ export class CompanionsUI {
   }
 
   setConfigurationEditor(editor) { this.configEditor = editor; this.render(); }
+  setInferenceEditor(editor) { this.inferenceEditor = editor; this.render(); }
+  openInference() {
+    if (!this.inferenceEditor || this.state.status !== 'ready') return;
+    this.configEditor?.close(); this.inferenceEditor.open(); this.render();
+    this.inferenceEditor.backButton?.focus?.({ preventScroll: true });
+  }
+  closeInference() {
+    this.inferenceEditor?.close(); this.render(); this.inferenceButton.focus?.({ preventScroll: true });
+  }
   openConfiguration(characterKey) {
     const row = this.state.companions.find(item => item.characterKey === characterKey);
     if (!this.configEditor || !row || this.state.status !== 'ready' || !this.state.enabled) return;
     this.configurationKey = characterKey;
+    this.inferenceEditor?.close();
     this.configEditor.open(characterKey, row.name || COPY[this.lang].fallbackName(this.state.companions.indexOf(row) + 1));
     this.render();
     this.configEditor.backButton?.focus?.({ preventScroll: true });
@@ -297,7 +312,9 @@ export class CompanionsUI {
     this.closeButton.textContent = '×';
     this.closeButton.setAttribute('aria-label', text.closePanel);
     this.closeButton.title = text.closePanel;
-    this.setupNote.textContent = this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
+    this.setupNote.textContent = this.inferenceEditor ? text.preparedNote : this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
+    this.inferenceButton.textContent = text.inference;
+    this.inferenceButton.disabled = this.state.status !== 'ready';
     const hasDurable = this.state.companions.some((companion) => companion.control);
     const hasLegacy = this.state.companions.some((companion) => !companion.control);
     this.sessionNote.textContent = [hasLegacy ? text.sessionNote : '', hasDurable ? text.durableNote : ''].filter(Boolean).join(' ');
@@ -367,7 +384,8 @@ export class CompanionsUI {
       if (actions.children.length) item.append(actions);
       this.list.append(item);
     });
-    const configuring = this.configEditor?.isOpen === true;
+    const configuring = this.configEditor?.isOpen === true || this.inferenceEditor?.isOpen === true;
+    this.inferenceButton.hidden = !this.inferenceEditor || configuring;
     for (const el of [this.setupNote, this.sessionNote, this.status, this.list, this.refreshButton]) el.hidden = configuring;
     if (focusedConfigKey && !configuring) {
       (this.configureButtons.find(button => button.dataset.configKey === focusedConfigKey && !button.disabled) || this.closeButton).focus?.({ preventScroll: true });
@@ -383,6 +401,6 @@ export class CompanionsUI {
   focusables() {
     if (this.panel.querySelectorAll) return [...this.panel.querySelectorAll('button,input,textarea,select,[tabindex]')]
       .filter(el => !el.disabled && el.tabIndex !== -1 && !el.hidden && el.getClientRects().length > 0);
-    return [this.closeButton, this.refreshButton, ...(this.configureButtons || []), ...(this.controlButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
+    return [this.closeButton, this.refreshButton, this.inferenceButton, ...(this.configureButtons || []), ...(this.controlButtons || [])].filter((button) => button && !button.disabled && !button.hidden);
   }
 }

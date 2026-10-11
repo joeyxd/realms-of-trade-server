@@ -10,6 +10,16 @@ Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4
 Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
 Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
 
+**AREA17 L03d-e1, 2026-10-10 — centro de inferencia preparado, alpha.42/protocolo 48:**
+[Entrega](delivery/l03d-inference-config.md) y [contrato](briefs/l03d-inference-config.md).
+Configuración privada por mundo/cuenta: límite conjunto, límite único por conexión y modelo por
+compañero existente. SQL028 CAS/replay, aislamiento, stop obligatorio y borrador conservado ante
+conflicto/incertidumbre. Sin importe/modelo preseleccionados, proveedor ni generación.
+Integración final alpha.42 70/70 y navegador local 12/12; regresión anterior alpha.41 54/54
+(selecciones solapadas). SQL028 aplicado y canario de servicio revertido. Publicación pendiente.
+Los techos guardados aún no son ledger; la autenticación del navegador local es simulada.
+Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
+
 **AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
 [entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
 Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
