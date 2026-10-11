@@ -18,12 +18,14 @@ Idle auténtico en rig nativo independiente; giro/zoom, miniaturas quietas y gat
 Un GLB por dispositivo, +353.260 B por clip; 42/42 CPU y 24/24 navegador. Tras integrar el corte
 concurrente de compañeros: 57/57 focales; SQL034 conserva su activación separada. Publicación aparte.
 
-**AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.56/protocolo 56, sin SQL GM nuevo:**
+**AREA01 GM04c, 2026-10-11 — dispersión decorativa publicada, alpha.57/protocolo 56, sin SQL GM nuevo:**
 [Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).
 Pinceles de copias independientes con preview privado, formas/densidad/separación/semilla/escala y undo atómico.
 Modelo cargado: geometría, texturas, archivo/ahorro y costes medidos, con presupuestos por trazo y acumulados.
 Sin tala/recolección ni cambios de recursos. Modelos existentes reutilizados; fuentes intactas.
-293/293 regresión y 81/81 integración final; navegador local 10/10. Publicación y límites en la entrega.
+293/293 regresión y 87/87 integración actual; local/público GM 10/10 cada uno, capturas inspeccionadas.
+Release `056d275` sana, 21/21 fuentes activas y 15/15 públicas; entrada real y mapa base generación 8.
+Conteos solapados; alcance de costes, móvil emulado y límites en la entrega.
 
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,

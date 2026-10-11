@@ -1,0 +1,343 @@
+{
+  "schema": "gm04c-browser/v1",
+  "at": "2026-10-11T17:45:50.470Z",
+  "version": "0.6.0-alpha.57",
+  "production": true,
+  "simulatedAuth": false,
+  "checks": [
+    "real_loaded_shrub_cost_and_private_brush",
+    "circle_preview_cancel_keeps_history",
+    "square_preview_cancel_keeps_history",
+    "ellipse_preview_cancel_keeps_history",
+    "stroke_commit_single_undo_redo_and_ids",
+    "private_save_reopen_exact_without_remote_write",
+    "palm_decorative_cost_and_english_controls",
+    "optimized_rock_file_savings_and_real_texture_dimensions",
+    "mobile_emulation_controls_and_loaded_model",
+    "no_remote_mutations_or_browser_render_errors"
+  ],
+  "screenshots": [
+    "preview-circle-es.png",
+    "preview-square-es.png",
+    "preview-ellipse-es.png",
+    "placed-shrubs-es.png",
+    "palm-controls-en.png",
+    "optimized-rock-en.png",
+    "mobile-scatter.png",
+    "mobile-controls.png"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "networkFailures": [
+    {
+      "path": "/api/gm/revisions",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "remoteWrites": [],
+  "runtime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.57",
+    "players": 0,
+    "max": 4,
+    "sockets": 0,
+    "tick": 561,
+    "uptime": 20,
+    "stepMs": 1.44,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3029,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 0,
+      "kbIn": 0,
+      "dropped": 0
+    }
+  },
+  "checkoutVersion": "0.6.0-alpha.57",
+  "sourceHashes": {
+    "src/editor/editor.js": "fc37f5a9b9d27d4a50e7bb1d75f60cbf42ffc87137bb8579da97e734d9efd40f",
+    "src/editor/editor.css": "714ca194b673a79964d04bb73aee2a72b846b28d2348e26dc0b8a1f98b728cf7",
+    "src/editor/modelCost.js": "0ba2f0f94ad2937200677be67e95a6e98fc9ec8cebf2cbc7cf63ea8675061a86",
+    "src/editor/scatterBrush.js": "80d71ebb753033ef1242aff0c22518d660d973543a504c0a0696369770e168df",
+    "src/editor/scatterPanel.js": "fc0547b3f1b0fccf1f53761d8a6fe4f1ecf003daf8acecf619e3b233ed0983e6",
+    "src/editor/scatterInteraction.js": "b42759479ca56fba12d521ca95cb488899a84ce2b1c2341507abee3cc4fd02b9",
+    "src/editor/terrainData.js": "1d0bde543ab7abb5046108450041b6f3655eb3e548647ed9e2db193c4e1aa332",
+    "src/editor/remotePanel.js": "839a73d4a4ba98eb404672f4be7c5c79d4f89cac7ec908bfb83f8887b91f4c17",
+    "src/editor/document.js": "cb47efb3b9d987e25ca352cc9cc22799db8dbc14ce522cfbded9a880d7e74a0f"
+  },
+  "shrub": {
+    "triangles": 424,
+    "primitives": 2,
+    "radius": 1.284956768087996,
+    "textures": [
+      {
+        "width": 512,
+        "height": 512
+      },
+      {
+        "width": 512,
+        "height": 512
+      }
+    ],
+    "textureBytes": 2796203,
+    "geometries": 2,
+    "materials": 2
+  },
+  "dragPoints": 5,
+  "previewIds": [
+    "gm-scatter-eacd66c4-718d-414a-a2b9-6f4d460f41b8",
+    "gm-scatter-8ba743ba-4efa-45b4-9101-29926352f580",
+    "gm-scatter-2f4638ea-bb88-4362-ab22-8da892be0d59",
+    "gm-scatter-41905e66-7020-4846-9bb4-94a0594a664d",
+    "gm-scatter-6e8584ee-25aa-4ff5-9e6a-e77374d9c796",
+    "gm-scatter-404899b2-b769-4193-9f45-2c6d817f3982"
+  ],
+  "objectCount": 6,
+  "palm": {
+    "triangles": 1112,
+    "primitives": 2,
+    "radius": 4.2733061717115435,
+    "textures": [
+      {
+        "width": 1024,
+        "height": 1024
+      },
+      {
+        "width": 1024,
+        "height": 1024
+      }
+    ],
+    "textureBytes": 11184811,
+    "geometries": 2,
+    "materials": 2
+  },
+  "rock": {
+    "metrics": {
+      "triangles": 19469,
+      "primitives": 1,
+      "radius": 2.5,
+      "textures": [
+        {
+          "width": 1024,
+          "height": 1024
+        }
+      ],
+      "textureBytes": 5592406,
+      "geometries": 1,
+      "materials": 1
+    },
+    "stats": {
+      "triangles": 19469,
+      "bytes": 1546948,
+      "textures": 3,
+      "textureBytes": 792602,
+      "sourceBytes": 8836372,
+      "sourceTriangles": 19469,
+      "sourceSha256": "6e38f2f611fdb3afa0356b0a991f77c1ee777b99b81f0dc7f0af12b3c93baf4c",
+      "sha256": "f40e26c2711a0935cefbb9ba7ae441ef43fad6ca83f1b868811845bb53ea09fc",
+      "bounds": {
+        "min": [
+          -0.5000001,
+          0,
+          -0.4764072
+        ],
+        "max": [
+          0.5000001,
+          0.4551134,
+          0.4764072
+        ],
+        "size": [
+          1.0000001,
+          0.4551134,
+          0.9528143
+        ],
+        "fitSize": 4
+      }
+    }
+  },
+  "mobileModel": {
+    "triangles": 424,
+    "primitives": 2,
+    "radius": 1.284956768087996,
+    "textures": [
+      {
+        "width": 256,
+        "height": 256
+      },
+      {
+        "width": 256,
+        "height": 256
+      }
+    ],
+    "textureBytes": 699051,
+    "geometries": 2,
+    "materials": 2
+  },
+  "finalRuntime": {
+    "game": "MAREA NEGRA",
+    "version": "0.6.0-alpha.57",
+    "players": 0,
+    "max": 4,
+    "sockets": 1,
+    "tick": 3199,
+    "uptime": 64,
+    "stepMs": 2.157,
+    "bots": 3,
+    "names": [],
+    "errors": 0,
+    "content": {
+      "generation": 8,
+      "revisionId": null,
+      "switching": false
+    },
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "profileWrites": 0,
+      "worldWriting": false,
+      "economic": {
+        "enabled": true,
+        "pending": 0,
+        "failed": false,
+        "completed": 0,
+        "replays": 0
+      },
+      "groundTransactions": null,
+      "groundPearls": null,
+      "groundDeaths": null,
+      "groundPearlMints": null,
+      "tickBlocked": false,
+      "staging": null,
+      "deathStaging": null,
+      "deathDrops": null,
+      "pearlGround": null,
+      "combatDeaths": null,
+      "startup": null,
+      "resources": {
+        "enabled": true,
+        "ready": true,
+        "logging": true
+      },
+      "fire": {
+        "enabled": true,
+        "ready": true
+      },
+      "freshwater": {
+        "enabled": true,
+        "ready": true,
+        "canteen": true
+      },
+      "artisan": {
+        "enabled": true,
+        "ready": true
+      },
+      "workshop": {
+        "enabled": true,
+        "ready": true
+      },
+      "attributes": {
+        "enabled": true,
+        "ready": true
+      },
+      "companionCreation": {
+        "enabled": true,
+        "ready": true,
+        "pending": 0
+      },
+      "world": {
+        "id": "marea-negra",
+        "ready": true,
+        "failed": false,
+        "version": 3029,
+        "errors": 0
+      }
+    },
+    "net": {
+      "fill": 0,
+      "late": 0,
+      "trimmed": 0,
+      "clamped": 0,
+      "kbOut": 40618.9,
+      "kbIn": 0.8,
+      "dropped": 0
+    }
+  },
+  "phase": "complete"
+}
