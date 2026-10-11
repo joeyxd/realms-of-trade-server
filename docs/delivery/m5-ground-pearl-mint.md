@@ -44,6 +44,13 @@ ocultarla. [Comparación](m5-ground-pearl-mint/upstream-cometa.json),
 [TAP upstream](m5-ground-pearl-mint/upstream-cometa.tap) y
 [evaluación](m5-ground-pearl-mint/acceptance-evaluation.json). No se declara toda la cohorte verde.
 
+Integración concurrente **137/137 en 24 archivos**, cero fallos/omisiones y fuentes
+congeladas, base `c535e5d`: [manifiesto](m5-ground-pearl-mint/concurrent-integration.json),
+[TAP](m5-ground-pearl-mint/concurrent-integration.tap). Conserva la release alpha.56/protocolo 56,
+creación de compañeros/SQL034, dispersión decorativa GM, Carga, contenido y red junto al
+mint/muerte comunes. SQL034 pertenece al corte de compañeros y mantiene su activación separada;
+AREA15 no añade ni ejecuta SQL. Los conteos se solapan con la aceptación principal.
+
 Código listo para publicación; despliegue aún pendiente del actualizador en mundo vacío.
 El [estado inicial](m5-ground-pearl-mint/initial-status.json) y la
 [lectura inicial del dominio](m5-ground-pearl-mint/initial-domain.json) mantienen el piloto
