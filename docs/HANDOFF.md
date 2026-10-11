@@ -1,5 +1,11 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Bucanero, ajuste de tamaño pedido por el autor — alpha.53/protocolo 55, sin SQL:**
+[Comparación antes/después](delivery/buccaneer-v1/size-review/README.md).
+Modelo 1,89 → 2,12 u (+12,2 %); encuadre de ficha ×1,10; rostro del icono ×1,60 centrado.
+36/36 focales, cuatro sesiones de comparación y 16 vistas completas sin cortes; originales intactos.
+Publicación registrada por separado tras el relevo ordinario del actualizador.
+
 **Bucanero del autor, 2026-10-11 — integrado, alpha.52/protocolo 55, sin SQL:**
 [Entrega y evidencia](delivery/buccaneer-v1/README.md), [brief](briefs/buccaneer-character-v1.md).
 Aspecto existente 2 con modelo Tripo/Mixamo y retrato ilustrado; rebind al rig/acciones actuales.

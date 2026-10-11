@@ -3,11 +3,16 @@
 2026-10-11. Implementado sobre `6fd7f68`; release alpha.52, protocolo 55 conservado, sin SQL.
 [Brief previo](../../briefs/buccaneer-character-v1.md).
 
+**Revisión posterior, alpha.53:** a petición del autor, el modelo crece un 12,2 %, la ficha se
+acerca un 10 % y el icono presenta la cara a ×1,60. [Comparación y verificación](size-review/README.md).
+Los binarios del modelo/retrato y los originales conservan sus hashes; cambia su presentación.
+
 ## Resultado
 
 El aspecto **Bucanero**, índice 2 del selector existente, usa el GLB del autor en la partida y en
 el giro de la ficha de personaje. El icono ilustrado aparece en selector/HUD/retratos; conserva su
-transparencia y composición. Los otros aspectos conservan sus fuentes. Originales archivados
+transparencia. Alpha.52 dibujaba el medallón completo; alpha.53 acerca la cara en runtime.
+Los otros aspectos conservan sus fuentes. Originales archivados
 byte por byte en `docs/art/source/buccaneer-v1/`, además de la carpeta entregada por el autor.
 
 El GLB fuente Tripo tiene 9.164 triángulos, 65 huesos Mixamo, tres mapas 2048 y cuatro clips.

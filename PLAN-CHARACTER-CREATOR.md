@@ -1,5 +1,9 @@
 # Plan del creador de personajes modulares
 
+**Revisión de tamaño del Bucanero, alpha.53:** autor confirma pequeño en mundo y ficha; altura
+visual 2,12 u (+12,2 %), encuadre 3D ×1,10 e icono centrado en la cara ×1,60. [Evidencia](docs/delivery/buccaneer-v1/size-review/README.md).
+Conserva las fuentes y los gates del creador; aceptación artística del autor pendiente.
+
 **Bucanero v1, 2026-10-11:** el autor entregó modelo e icono y pidió incorporarlos provisionalmente.
 [Integración](docs/delivery/buccaneer-v1/README.md) sobre el aspecto existente 2: modelo Mixamo
 rebound al rig actual, retrato de UI y derivados 1024/512, originales archivados. 36/36 focales,

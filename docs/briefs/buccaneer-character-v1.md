@@ -3,6 +3,15 @@
 Fecha: 2026-10-11. Solicitud del autor: incorporar provisionalmente su modelo e icono de
 `materials/characters/`; habrá cambios artísticos posteriores.
 
+## Revisión de tamaño pedida por el autor
+
+Tras alpha.52 el autor confirma que lo siente demasiado pequeño en el mundo y en la ficha.
+Pase previsto: altura visual del modelo 1,89 → 2,12 u (+12,2 %), encuadre de ficha ×1,10 y
+recorte de presentación del icono ×1,60 centrado a Y=44 %. Revisar antes/después con la misma
+cámara y pose, cuerpo completo en la ficha, armas/herramienta y escritorio/móvil emulado.
+Son ajustes de presentación sobre los assets ya recibidos: no hace falta otra fuente Unreal/FAB.
+Los archivos de arte, colisiones y reglas conservan sus contratos.
+
 ## Corte previsto antes de implementar
 
 1. Conservar ambos originales, sus hashes y la recepción del GLB Tripo/Mixamo.

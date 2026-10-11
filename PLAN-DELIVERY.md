@@ -1,5 +1,10 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Bucanero, tamaño — alpha.53/protocolo 55, sin SQL:** el autor lo siente pequeño en mundo y ficha.
+[Ajuste y comparación](docs/delivery/buccaneer-v1/size-review/README.md): modelo +12,2 %, ficha
+×1,10 y rostro del icono ×1,60. 36/36 focales, cuatro sesiones/16 vistas sin cortes; sin nuevos assets.
+La publicación se comprueba y registra aparte.
+
 **Bucanero v1, 2026-10-11 — alpha.52/protocolo 55 sin SQL:**
 [Entrega](docs/delivery/buccaneer-v1/README.md): modelo e icono del autor incorporados al aspecto 2.
 Derivados escritorio/móvil y originales conservados; 36/36 focales, 19 comprobaciones de navegador,
