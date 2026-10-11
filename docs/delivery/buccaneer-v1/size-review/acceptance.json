@@ -1,0 +1,234 @@
+{
+  "generatedAt": "2026-10-11T16:56:17.251Z",
+  "baseline": "f26aae2090d0a9edd8ed7229714db89192d52f80",
+  "sessions": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "variant": "before",
+      "errors": [],
+      "presentation": {
+        "imported": "char:buccaneer-v1",
+        "height": 1.8899999856948853,
+        "projectedHeightPixels": 95.90687478140411,
+        "samples": [
+          {
+            "yaw": 0,
+            "x0": 113,
+            "y0": 46,
+            "x1": 244,
+            "y1": 518,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8446428571428571
+          },
+          {
+            "yaw": 0.38,
+            "x0": 117,
+            "y0": 45,
+            "x1": 257,
+            "y1": 522,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8535714285714285
+          },
+          {
+            "yaw": 1.5707963267948966,
+            "x0": 139,
+            "y0": 46,
+            "x1": 247,
+            "y1": 523,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8535714285714285
+          },
+          {
+            "yaw": 3.141592653589793,
+            "x0": 118,
+            "y0": 47,
+            "x1": 242,
+            "y1": 507,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8232142857142857
+          }
+        ],
+        "albedo": 1024
+      },
+      "passed": true
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "variant": "after",
+      "errors": [],
+      "presentation": {
+        "imported": "char:buccaneer-v1",
+        "height": 2.119999885559082,
+        "projectedHeightPixels": 108.55639343806372,
+        "samples": [
+          {
+            "yaw": 0,
+            "x0": 106,
+            "y0": 27,
+            "x1": 251,
+            "y1": 548,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9321428571428572
+          },
+          {
+            "yaw": 0.38,
+            "x0": 111,
+            "y0": 27,
+            "x1": 265,
+            "y1": 552,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9392857142857143
+          },
+          {
+            "yaw": 1.5707963267948966,
+            "x0": 135,
+            "y0": 28,
+            "x1": 254,
+            "y1": 554,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9410714285714286
+          },
+          {
+            "yaw": 3.141592653589793,
+            "x0": 112,
+            "y0": 28,
+            "x1": 249,
+            "y1": 536,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9089285714285714
+          }
+        ],
+        "albedo": 1024
+      },
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "variant": "before",
+      "errors": [],
+      "presentation": {
+        "imported": "char:buccaneer-v1",
+        "height": 1.8899999856948853,
+        "projectedHeightPixels": 95.90687478140411,
+        "samples": [
+          {
+            "yaw": 0,
+            "x0": 113,
+            "y0": 46,
+            "x1": 244,
+            "y1": 518,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8446428571428571
+          },
+          {
+            "yaw": 0.38,
+            "x0": 117,
+            "y0": 45,
+            "x1": 257,
+            "y1": 522,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8535714285714285
+          },
+          {
+            "yaw": 1.5707963267948966,
+            "x0": 139,
+            "y0": 46,
+            "x1": 247,
+            "y1": 523,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8535714285714285
+          },
+          {
+            "yaw": 3.141592653589793,
+            "x0": 118,
+            "y0": 47,
+            "x1": 242,
+            "y1": 507,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.8232142857142857
+          }
+        ],
+        "albedo": 512
+      },
+      "passed": true
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "variant": "after",
+      "errors": [],
+      "presentation": {
+        "imported": "char:buccaneer-v1",
+        "height": 2.119999885559082,
+        "projectedHeightPixels": 108.55639343806372,
+        "samples": [
+          {
+            "yaw": 0,
+            "x0": 106,
+            "y0": 27,
+            "x1": 251,
+            "y1": 548,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9321428571428572
+          },
+          {
+            "yaw": 0.38,
+            "x0": 111,
+            "y0": 27,
+            "x1": 265,
+            "y1": 552,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9392857142857143
+          },
+          {
+            "yaw": 1.5707963267948966,
+            "x0": 135,
+            "y0": 28,
+            "x1": 254,
+            "y1": 554,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9410714285714286
+          },
+          {
+            "yaw": 3.141592653589793,
+            "x0": 112,
+            "y0": 28,
+            "x1": 249,
+            "y1": 536,
+            "width": 360,
+            "height": 560,
+            "coverageY": 0.9089285714285714
+          }
+        ],
+        "albedo": 512
+      },
+      "passed": true
+    }
+  ]
+}

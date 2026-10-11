@@ -52,3 +52,23 @@ test('a heavy pack walks at 70 % without dash; above the ceiling at 40 %; the cl
   const legacy = run(full, true);
   assert.equal(legacy.load, 0); assert.equal(legacy.dashed, 1);
 });
+
+test('an unadopted legacy pack above its ceiling keeps its goods, normal walking and dash', () => {
+  for (const withCarry of [false, true]) {
+    const profile = newProfile();
+    if (withCarry) profile.carry = { v: 1, backpack: 0 };
+    profile.eco.pack.goods = { hierro: 4 };
+    assert.equal(packComfort(profile), 18);
+    assert.equal(packLoadTier(profile), 0, 'legacy limits must not silently activate Carga penalties');
+    const before = structuredClone(profile), { w, e, step } = arena();
+    w.profiles = new Map([[e, profile]]);
+    const start = w.ecs.z[e];
+    for (let i = 0; i < 20; i++) step({ mz: 1 });
+    assert.equal(w.ecs.load[e], 0);
+    assert.equal(w.ecs.vz[e], w.ecs.speed[e]);
+    assert.ok(w.ecs.z[e] > start, 'legacy cargo never immobilizes the character');
+    step({ mz: 1, prs: BTN.DASH });
+    assert.equal(w.ecs.dashCount[e], 1);
+    assert.deepEqual(profile, before, 'movement must not adopt Carga or discard legacy cargo');
+  }
+});

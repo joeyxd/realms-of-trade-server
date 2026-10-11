@@ -608,7 +608,11 @@ export class PortraitStudio {
       c.width = c.height = this.size;
       const ctx = c.getContext('2d'), s = this.size;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(illustration, 0, 0, s, s);
+      // The supplied medallion has its own wide frame; bring the face forward inside the UI's frame.
+      const frame = LOOKS[skinIdx]?.portraitFrame, z = frame?.zoom || 1;
+      const w = illustration.width / z, h = illustration.height / z;
+      const x = (illustration.width - w) / 2, y = illustration.height * (frame?.centerY ?? 0.5) - h / 2;
+      ctx.drawImage(illustration, x, y, w, h, 0, 0, s, s);
       this.done.set(skinIdx, c);
       return c;
     }
@@ -638,7 +642,8 @@ export class PortraitStudio {
       this.fcam = new THREE.PerspectiveCamera(20, w / h, 0.05, 60);
     }
     const v = this.view(skinIdx), H = v.height || 1.88;
-    const z = Math.max(0.8, Math.min(2.6, zoom)), fov = THREE.MathUtils.degToRad(this.fcam.fov);
+    const fit = v.ext ? v.look.figureZoom || 1 : 1;
+    const z = Math.max(0.8, Math.min(2.6, zoom * fit)), fov = THREE.MathUtils.degToRad(this.fcam.fov);
     // Fit the whole figure (plus a little floor) vertically, then push in; zooming aims a bit higher, at the chest.
     const dist = (H * 0.6) / Math.tan(fov / 2) / z, aimY = H * (0.5 + 0.16 * (z - 1) / 1.6);
     this.fcam.aspect = w / h;
