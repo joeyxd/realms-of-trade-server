@@ -3,9 +3,14 @@
 **AREA01 GM05a, 2026-10-10 — escultura integrada; publicación pendiente:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Cinco pinceles de suelo seco, borrador v3, preview/undo/cancelación y recorrido sobre alturas editadas.
-SQL030 aplicado por el autor; readiness del servicio confirmado. Alpha.44/protocolo 50,
-275/275 en 51 archivos. La entrega separa pruebas locales de aceptación pública pendiente.
-Sigue GM05b para pintar familias de suelo; GM06 para costa y nueva tierra. Carga continúa opt-in.
+SQL031 aplicado por el autor; readiness del servicio confirmado. Alpha.45/protocolo 51,
+308/308 en 56 archivos. La entrega separa pruebas locales de aceptación pública pendiente.
+Sigue GM05b para pintar familias de suelo; GM06 para costa y nueva tierra. Conserva las activaciones del servidor.
+
+**AREA07 RNV07a, 2026-10-11 — agua manual implementada localmente, alpha.44/protocolo 50:**
+[Entrega](docs/delivery/rnv07-freshwater.md) y [dirección](docs/briefs/RNV07-freshwater-progression.md). Cubeta reutilizable, manantial interior junto al arquero existente, recogida interrumpible y barril naval; M5 conserva los traslados. QA final local: escritorio ES 1280×720 y touch EN 390×844, 14 capturas (7 por viewport), evidencia `2026-10-11T04-35-22-891Z`; se inspeccionaron manantial, marcador de mapa y barril 4/20 en móvil. La fixture retiró enemigos para proteger el recorrido feliz; la aceptación del encuentro en navegador sigue pendiente. Las pruebas del host sí cubren interrupciones. La selección integrada sigue en 129/129; suite focalizada del host 5/5. SQL030 y readiness son requisitos de activación; no hay afirmación de publicación.
+Sigue RNV07b: cantimplora y consumo coordinados con supervivencia; el purificador avanzado después.
+
 
 **AREA03 INV02b, 2026-10-10 — Carga durable implementada; activación pendiente:**
 [Contrato](docs/briefs/inv02b-durable-attributes.md) y [entrega](docs/delivery/inv02b-durable-attributes.md).

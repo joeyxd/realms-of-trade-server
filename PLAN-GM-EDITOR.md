@@ -1,10 +1,10 @@
 # Modo GM para construir el mundo
 
-**GM05a, 2026-10-10 — escultura integrada, alpha.44/protocolo 50; publicación pendiente:**
+**GM05a, 2026-10-10 — escultura integrada, alpha.45/protocolo 51; publicación pendiente:**
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega](docs/delivery/gm05a/DELIVERY.md).
 Subir/bajar, aplanar, suavizar y rampa entre dos puntos; preview privado, undo por trazo y prueba caminando.
-SQL030 aplicado por el autor y readiness confirmado desde el VPS; conserva borradores v2 y recibos.
-Regresión final 275/275 en 51 archivos. El canario público y la revisión activa se registran al completarlos.
+SQL031 aplicado por el autor y readiness confirmado desde el VPS; conserva borradores v2 y recibos.
+Regresión integrada 308/308 en 56 archivos. El canario público y la revisión activa se registran al completarlos.
 Sigue GM05b: pintar familias de suelo existentes. Nueva tierra/costa queda para GM06.
 
 **GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
@@ -435,7 +435,7 @@ geometría/superficies adicionales; no se obtienen con un pincel de altura.
 **GM05a implementado localmente; aceptación/publicación en curso:** subir/bajar, aplanar a una cota escogida,
 suavizar y crear rampa entre dos puntos, con tamaño, intensidad, caída, vista previa y undo por trazo.
 [Contrato](docs/briefs/gm05a-terrain-sculpt.md) y [entrega/evidencia](docs/delivery/gm05a/DELIVERY.md).
-Solo suelo seco existente y zonas funcionales protegidas; documento v3 y SQL030. Sigue GM05b: pintura de materiales con
+Solo suelo seco existente y zonas funcionales protegidas; documento v3 y SQL031. Sigue GM05b: pintura de materiales con
 máscaras y caminos. Conservar el nivel global del mar; modificarlo afecta navegación y merece otro corte.
 
 Guardar deltas o tiles de alturas sobre una base versionada, con muestras canónicas/cuantización definida,
@@ -493,7 +493,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM04a | Multiselección temporal y edición por lotes de decoración base/añadida; un undo por operación, sin cambiar documento v2 | [Entrega](docs/delivery/gm04a/DELIVERY.md); navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331; público autenticado 19/19, release sana |
 | GM04b | Plantillas privadas locales de decoración, copias expandidas con IDs independientes y undo atómico | [Entrega](docs/delivery/gm04b/DELIVERY.md); GM 199/199, local 17/17, público 19/19, alpha.41/47 sana |
 | GM04 siguiente | Materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
-| GM05a | Escultura de suelo seco existente; implementada localmente, aceptación/publicación en curso | [Entrega](docs/delivery/gm05a/DELIVERY.md): deltas v3, cinco herramientas, sampler compartido, SQL030, protección y undo/cancelación |
+| GM05a | Escultura de suelo seco existente; implementada localmente, aceptación/publicación en curso | [Entrega](docs/delivery/gm05a/DELIVERY.md): deltas v3, cinco herramientas, sampler compartido, SQL031, protección y undo/cancelación |
 | GM05b | Pintar familias de suelo, caminos y máscaras existentes | Mezclas legibles, guardado/hash y agua/cartografía coherentes; presupuesto móvil medido |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |
 

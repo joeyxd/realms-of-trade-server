@@ -32,6 +32,7 @@ export class GameClient {
     this.youServer = 0;
     this.personalLantern = false;
     this.fire = null;
+    this.freshwaterStatus = null;
     this.youLocal = 0;
     this.seq = 0;
     this.pending = [];
@@ -124,6 +125,7 @@ export class GameClient {
         }
         this.personalLantern = false;
     this.fire = null;
+        this.freshwaterStatus = null;
         this.naval = new NavalPilotPrediction(this.map);
         this.route = null;
         this.lesson = null;
@@ -213,6 +215,10 @@ export class GameClient {
     }
     if (ev.type === 'fire') {
       if (ev.to === this.youServer) this.bus.emit('fire', ev);
+      return;
+    }
+    if (ev.type === 'freshwater') {
+      if (ev.to === this.youServer) this.bus.emit('freshwater', ev);
       return;
     }
     if (ev.type === 'personalLantern') {
@@ -411,6 +417,7 @@ export class GameClient {
     }
     const st = s.tick * DT;
     if (s.fire) this.fire = structuredClone(s.fire);
+    if (Object.hasOwn(s, 'freshwater')) this.freshwaterStatus = s.freshwater ? structuredClone(s.freshwater) : null;
     const off = st - this.clock;
     // Asymmetric: a snapshot saying the server is further ahead is taken at once (the least delayed one
     // is the best clock sample; a slow device whose clock lags real time keeps up), late ones only

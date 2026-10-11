@@ -54,6 +54,7 @@ import { RaftEditor } from './ui/raftEditor.js';
 import { RaftDoorActions } from './ui/raftDoorActions.js';
 import { RaftLanternActions } from './ui/raftLanternActions.js';
 import { FirePanel } from './ui/firePanel.js';
+import { FreshwaterPanel } from './ui/freshwaterPanel.js';
 import { PersonalLanternActions } from './ui/personalLanternActions.js';
 import { CommercePanel } from './ui/commerce.js';
 import { ResourceActions } from './ui/resourceActions.js';
@@ -234,7 +235,7 @@ async function boot() {
   const miniMap = new MiniMap($('#hud'), map, { isTouch, onOpen: () => {
     if (st.mode === 'playing' && input.enabled && !pause.open && !chatPanel.typing) $('#hud-map').click();
   } });
-  let artisan = null, firePanel = null;
+  let artisan = null, firePanel = null, freshwaterPanel = null;
   const raftEditor = new RaftEditor({
     parent: $('#ui'), scene: world.scene, canvas, camera: world.camera, map,
     profile: () => client?.profile, rafts: () => client?.pred.rafts, capacity: () => client?.capacity,
@@ -244,7 +245,7 @@ async function boot() {
     player: () => ps, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) { firePanel?.close(); artisan?.close(); workbench.close(); community.close(); commercePanel.close(); }
+      if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); workbench.close(); community.close(); commercePanel.close(); }
       input.setBuildContext(active || commercePanel.active || workbench.active || community.active || artisan?.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('building-raft', active);
       if (active) { charPanel.close(); dialog.hide(); mapView.close(); }
@@ -258,7 +259,7 @@ async function boot() {
     map, send: sendCmd,
     enabled: () => st.mode === 'playing' && client.joined && !pause.open && input.enabled && !ps.dead && !client.voyage?.active,
     onContext: (active) => {
-      if (active) { firePanel?.close(); artisan?.close(); workbench.close(); community.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); workbench.close(); community.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
       input.setBuildContext(active || raftEditor.active || workbench.active || community.active || artisan?.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('trading-goods', active);
       canvas.focus({ preventScroll: true });
@@ -278,7 +279,7 @@ async function boot() {
     blocked: () => !!(client.naval.active || client.deck.active || client.voyage?.active),
     submit: (command) => resources.send(command),
     onContext: (active) => {
-      if (active) { firePanel?.close(); artisan?.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
+      if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); }
       input.setBuildContext(active || raftEditor.active || commercePanel.active || community.active || artisan?.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('working-materials', active);
       canvas.focus({ preventScroll: true });
@@ -292,21 +293,33 @@ async function boot() {
   firePanel = new FirePanel({ parent: $('#ui'), client: () => client,
     locale: () => getLocale(), toast: text => hud.toast(text, 2400),
     onOpen: () => {
+      freshwaterPanel?.close();
       companionsPanel?.close();
       artisan?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close();
       input.setBuildContext(true); aimCtl.reset(); st.wantWeapon = 0;
     },
-    onClose: () => { input.setBuildContext(!!(artisan?.active || workbench.active || community.active || commercePanel.active || raftEditor.active)); canvas.focus({ preventScroll: true }); },
+    onClose: () => { input.setBuildContext(!!(freshwaterPanel?.active || artisan?.active || workbench.active || community.active || commercePanel.active || raftEditor.active)); canvas.focus({ preventScroll: true }); },
   });
   bus.on('fire', ev => safe('fire', () => { firePanel.acknowledge(ev); personalLantern.acknowledge(ev); }));
   bus.on('you:welcome', () => firePanel.resetSession());
+  freshwaterPanel = new FreshwaterPanel({ parent: $('#ui'), client: () => client,
+    locale: () => getLocale(), toast: text => hud.toast(text, 2400),
+    onOpen: () => {
+      firePanel.close(); companionsPanel?.close(); chatPanel.close(); artisan?.close(); workbench.close();
+      community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close();
+      input.setBuildContext(true); aimCtl.reset(); st.wantWeapon = 0;
+    },
+    onClose: () => { input.setBuildContext(!!(firePanel.active || artisan?.active || workbench.active || community.active || commercePanel.active || raftEditor.active)); canvas.focus({ preventScroll: true }); },
+  });
+  bus.on('freshwater', ev => safe('freshwater', () => freshwaterPanel.acknowledge(ev)));
+  bus.on('you:welcome', () => freshwaterPanel.resetSession());
   const raftLanterns = new RaftLanternActions({ client: () => client, openFuel: target => firePanel.open(target),
     locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('raftLantern', (ev) => safe('raftLantern', () => raftLanterns.acknowledge(ev)));
   bus.on('you:welcome', () => raftLanterns.reset());
   const personalLantern = new PersonalLanternActions({ client: () => client, openFuel: target => firePanel.open(target), parent: $('#ui'), player: () => ps,
     enabled: () => st.mode === 'playing' && !!client?.joined && !pause.open && !chatPanel.typing && input.enabled &&
-      !firePanel.active && !raftEditor.active && !commercePanel.active && !workbench.active && !community.active && !mapView.isOpen && !st.sheet,
+      !firePanel.active && !freshwaterPanel.active && !raftEditor.active && !commercePanel.active && !workbench.active && !community.active && !mapView.isOpen && !st.sheet,
     locale: () => getLocale(), toast: (text) => hud.toast(text, 2400) });
   bus.on('personalLantern', (ev) => safe('personalLantern', () => personalLantern.acknowledge(ev)));
   bus.on('you:welcome', () => personalLantern.reset());
@@ -319,7 +332,7 @@ async function boot() {
     enabled: () => st.online && st.mode === 'playing' && !!client?.joined && !pause.open && input.enabled && !client.t.closed,
     submit: (command) => { if (!st.online || !client?.joined || client.t.closed) return false; client.send(command); return true; },
     onContext: (active) => {
-      if (active) { firePanel?.close(); artisan?.close(); workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
+      if (active) { firePanel?.close(); freshwaterPanel?.close(); artisan?.close(); workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
       input.setBuildContext(active || workbench.active || commercePanel.active || raftEditor.active); aimCtl.reset(); st.wantWeapon = 0;
       document.body.classList.toggle('building-community', active);
       canvas.focus({ preventScroll: true });
@@ -338,7 +351,7 @@ async function boot() {
     submit: (command) => { if (!st.online || !client?.joined || client.t.closed) return false; client.send(command); return true; },
     onCommunity: () => community.open(),
     onContext: active => {
-      if (active) { firePanel?.close(); companionsPanel?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
+      if (active) { firePanel?.close(); freshwaterPanel?.close(); companionsPanel?.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); chatPanel.close(); }
       input.setBuildContext(active || workbench.active || community.active || commercePanel.active || raftEditor.active);
       aimCtl.reset(); st.wantWeapon = 0; document.body.classList.toggle('learning-artisan', active);
       if (!active) canvas.focus({ preventScroll: true });
@@ -362,7 +375,7 @@ async function boot() {
   bus.on('artisan', ev => safe('artisan', () => artisan.onResult(ev)));
   bus.on('profile', () => artisan.update()); bus.on('you:welcome', () => artisan.reset());
   var companionsPanel = null;
-  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { companionsPanel?.close(); artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
+  const panelKey = (fn) => () => { if (st.mode === 'playing' && !pause.open) { companionsPanel?.close(); artisan.close(); freshwaterPanel.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close(); fn(); } };
   input.onHotkey('KeyI', panelKey(() => charPanel.toggle('gear')));
   input.onHotkey('KeyB', () => { if (st.mode === 'playing' && !pause.open) raftEditor.toggle(); });
   input.onHotkey('KeyH', () => {
@@ -376,9 +389,28 @@ async function boot() {
   input.onHotkey('KeyT', panelKey(() => charPanel.toggle('tattoo'))); // M4.7: your tattoos and the Q / E loadout
   input.onHotkey('KeyP', panelKey(() => charPanel.toggle('pearl')));
   input.onHotkey('KeyM', panelKey(() => mapView.toggle()));
+  input.onHotkey('KeyU', () => {
+    if (st.mode !== 'playing' || pause.open) return false;
+    if (freshwaterPanel.active) freshwaterPanel.close(); else freshwaterPanel.open();
+    return true;
+  });
   input.onHotkey('PadSelect', panelKey(() => charPanel.toggle('gear')));
   const touch = new TouchControls($('#touch'), input);
   touch.setScale(settings.touchSize); touch.setHaptics(settings.haptics !== false);
+  const freshwaterTouchButton = document.createElement('button');
+  freshwaterTouchButton.type = 'button'; freshwaterTouchButton.className = 'tbtn t-water';
+  freshwaterTouchButton.hidden = !isTouch;
+  freshwaterTouchButton.textContent = getLocale() === 'en' ? 'Water' : 'Agua';
+  freshwaterTouchButton.setAttribute('aria-label', getLocale() === 'en' ? 'Fresh water' : 'Agua dulce');
+  freshwaterTouchButton.addEventListener('click', () => {
+    if (st.mode !== 'playing' || pause.open || !client?.joined) return;
+    if (freshwaterPanel.active) freshwaterPanel.close(); else freshwaterPanel.open();
+  });
+  touch.root.querySelector('.t-cluster').appendChild(freshwaterTouchButton);
+  onLocaleChange(() => {
+    const en = getLocale() === 'en'; freshwaterTouchButton.textContent = en ? 'Water' : 'Agua';
+    freshwaterTouchButton.setAttribute('aria-label', en ? 'Fresh water' : 'Agua dulce');
+  });
   const pause = new PauseMenu($('#pause'), settings, {
     onChange: (key) => {
       saveSettings();
@@ -417,12 +449,13 @@ async function boot() {
   }));
   input.onHotkey('Enter', () => {
     if (st.mode !== 'playing' || pause.open) return false;
-    artisan.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close();
+    artisan.close(); freshwaterPanel.close(); workbench.close(); community.close(); commercePanel.close(); raftEditor.close();
     return chatPanel.open();
   });
   const setServerPause = (on) => { if (client && client.joined) client.send({ t: 'cmd', type: 'pause', on }); };
   function openPause(tab) {
     if (pause.open) return;
+    freshwaterPanel?.close();
     companionsPanel?.close();
     chatPanel.close();
     artisan.close();
@@ -452,6 +485,7 @@ async function boot() {
     if (chatPanel.opened) { chatPanel.close(); return true; }
     if (artisan.active) { artisan.close(); return true; }
     if (firePanel.active) { firePanel.close(); return true; }
+    if (freshwaterPanel.active) { freshwaterPanel.close(); return true; }
     if (workbench.active) { workbench.close(); return true; }
     if (community.active) { community.close(); return true; }
     if (commercePanel.active) { commercePanel.close(); return; }
@@ -491,9 +525,9 @@ async function boot() {
   const navigation = new LiveNavigationView({
     world, client: () => client, input, isTouch, stage, parent: $('#ui'),
     active: () => st.mode === 'playing' && client.joined && !client.t.closed,
-    doorInteraction: () => !firePanel.active && !pause.open && input.enabled && !raftEditor.active && !workbench.active && !commercePanel.active && !community.active && !artisan.active && !chatPanel.typing && !ps.dead ? raftDoors.interaction() : null,
-    lanternInteraction: () => !firePanel.active && !pause.open && input.enabled && !raftEditor.active && !workbench.active && !commercePanel.active && !community.active && !artisan.active && !chatPanel.typing && !ps.dead ? raftLanterns.interaction() : null,
-    onClosePanels: () => { artisan.close(); community.close(); workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); aimCtl.reset(); input.clearActions(); },
+    doorInteraction: () => !firePanel.active && !freshwaterPanel.active && !pause.open && input.enabled && !raftEditor.active && !workbench.active && !commercePanel.active && !community.active && !artisan.active && !chatPanel.typing && !ps.dead ? raftDoors.interaction() : null,
+    lanternInteraction: () => !firePanel.active && !freshwaterPanel.active && !pause.open && input.enabled && !raftEditor.active && !workbench.active && !commercePanel.active && !community.active && !artisan.active && !chatPanel.typing && !ps.dead ? raftLanterns.interaction() : null,
+    onClosePanels: () => { artisan.close(); community.close(); firePanel.close(); freshwaterPanel.close(); workbench.close(); commercePanel.close(); raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close(); aimCtl.reset(); input.clearActions(); },
   });
   bus.on('combat', (ev) => safe('navigation event', () => navigation.event(ev)));
   bus.on('navalPilot', (ev) => safe('navigation event', () => navigation.event(ev)));
@@ -520,6 +554,7 @@ async function boot() {
       clearInterval(companionsPoll); companionsPoll = null;
       if (open) {
         firePanel.close();
+        freshwaterPanel.close();
         chatPanel.close(); artisan.close(); community.close(); workbench.close(); commercePanel.close();
         raftEditor.close(); charPanel.close(); dialog.hide(); mapView.close();
         companions.refresh();
@@ -665,7 +700,7 @@ async function boot() {
     if (gmEditor?.active) void gmEditor.close({ force: true });
     chatPanel.disconnected();
     chatBubbles.disconnected();
-    artisan.close(); community.close(); firePanel.close();
+    artisan.close(); community.close(); firePanel.close(); freshwaterPanel.close();
     workbench.close();
     commercePanel.close();
     raftEditor.close();
@@ -1173,7 +1208,7 @@ async function boot() {
       const navalInput = navigation.fixedInput();
       if (navalInput) {
         input.consumePresses(); aimCtl.reset(); st.wantWeapon = 0;
-        client.tickInput(chatPanel.typing || pause.open || firePanel.active || !input.enabled
+        client.tickInput(chatPanel.typing || pause.open || firePanel.active || freshwaterPanel.active || !input.enabled
           ? { naval: { throttle: 0, brake: 0, steer: 0, capture: false }, deck: { mx: 0, mz: 0 } }
           : navalInput);
         return;
@@ -1185,7 +1220,7 @@ async function boot() {
       input.axes(axes);
       world.rig.moveBasis(axes.x, axes.y, move);
       const prs = input.consumePresses();
-      if (artisan.active || community.active || firePanel.active) {
+      if (artisan.active || community.active || firePanel.active || freshwaterPanel.active) {
         client.tickInput({ mx: 0, mz: 0, ax: ps.x, az: ps.z, btn: 0, prs: 0, w: 0 });
         return;
       }
@@ -1268,6 +1303,12 @@ async function boot() {
       }));
       safe('personalLantern', () => personalLantern.update());
       safe('firePanel', () => { if (ps.dead || pause.open) firePanel.close(); firePanel.update(); });
+      safe('freshwaterPanel', () => {
+        if (ps.dead || pause.open) freshwaterPanel.close();
+        freshwaterPanel.update();
+        freshwaterTouchButton.hidden = !isTouch || st.mode !== 'playing' || !client.joined || client.freshwaterStatus?.enabled !== true;
+        freshwaterTouchButton.disabled = !client.joined || client.freshwaterStatus?.enabled !== true;
+      });
 
       // Characters.
       safe('chars', () => {
@@ -1400,7 +1441,7 @@ async function boot() {
         }
         if (act) worldUI.setPrompt('you', act, { below: true }); else worldUI.hidePrompt('you');
         const interact = input.consumeInteract();
-        if (!firePanel.active && !workbench.active && !commercePanel.active && !artisan.active && !community.active && interact) {
+        if (!firePanel.active && !freshwaterPanel.active && !workbench.active && !commercePanel.active && !artisan.active && !community.active && interact) {
           if (navalInteraction?.key === 'F') navalInteraction.run();
           else if (navalInteraction?.door || navalInteraction?.lantern) navalInteraction.run();
           else if (npc) {
@@ -1600,7 +1641,7 @@ async function boot() {
   gmEntry.ready = true; gmEntry.render();
   // Start network timeouts after shader compilation has finished blocking the browser thread.
   initializeAccount().then(() => accountSetup?.consumeLink());
-  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
+  window.__mn = { world, client, settings, st, ps, map, gmContent, gmContentLayer, quality, transport, loop, input, errors, comic, assets, aimCtl, slotD, navigation, resources, personalLantern, gmEntry, companions, get gmEditor() { return gmEditor; }, panels: { firePanel, freshwaterPanel, charPanel, dialog, mapView, miniMap, raftEditor, commercePanel, chatPanel, workbench, artisan, community, companionsPanel } };
   if (debug) {
     window.__mn.teleport = (x, z) => transport.send({ t: 'cmd', type: 'debug_teleport', x, z });
     // Lighting: __mn.tod('night'), __mn.tod('cycle', 0.75) jumps the cycle to midnight.

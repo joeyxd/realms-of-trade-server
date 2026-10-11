@@ -8,6 +8,7 @@ import { checkedResourceState } from './resourceState.mjs';
 import { loggingParticipants, loggingResultProfiles } from './loggingOperation.mjs';
 import { artisanMutation } from './artisanOperation.mjs';
 import { fireMutation } from './fireOperation.mjs';
+import { checkedFreshwaterCommand, freshwaterMutation } from '../src/sim/systems/freshwaterProfile.js';
 import { attributeMutation, draftAttributes } from './attributeOperation.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -93,6 +94,7 @@ export function canonicalEconomicText(value) {
 function checkedCommand(raw) {
   if (!object(raw)) fail('input');
   const id = commandId(raw.opId);
+  if (raw.type === 'freshwater') { const checked = checkedFreshwaterCommand(raw); if (!checked) fail('input'); return checked; }
   if (raw.type === 'attributes') {
     if (!['adopt', 'assign', 'reset'].includes(raw.op)) fail('input');
     exact(raw, ['type', 'op', 'opId', 'expectedRev', ...(raw.op === 'assign' ? ['stat', 'n'] : [])]);
@@ -159,7 +161,7 @@ function checkedCommand(raw) {
     exact(raw, ['type', 'op', 'opId', 'id', 'expectedRev', 'piece', ...(raw.op === 'remove' ? ['index'] : []), ...(Object.hasOwn(raw, 'rules') ? ['rules'] : [])]);
     if (Object.hasOwn(raw, 'rules') && raw.rules !== 2) fail('input');
     key(raw.id, 120); integer(raw.expectedRev, 1, MAX_VERSION - 1);
-    if (!Array.isArray(raw.piece) || raw.piece.length !== 5 || !['storage', ...(raw.rules === 2 ? ['crate'] : [])].includes(raw.piece[0])) fail('input');
+    if (!Array.isArray(raw.piece) || raw.piece.length !== 5 || !['storage', 'waterBarrel', ...(raw.rules === 2 ? ['crate'] : [])].includes(raw.piece[0])) fail('input');
     integer(raw.piece[1], -128, 128); integer(raw.piece[2], -128, 128);
     integer(raw.piece[3], 0, 2); integer(raw.piece[4], 0, 3);
     if (raw.op === 'remove') integer(raw.index, 0, 599);
@@ -208,6 +210,7 @@ export function checkedWorldData(raw) {
 }
 
 function checkedAck(raw, command) {
+  if (command.type === 'freshwater') exact(raw, ACK_FIELDS);
   if (!object(raw) || ACK_FIELDS.some(k => !Object.hasOwn(raw, k)) || Object.hasOwn(raw, 'to')) fail('input');
   const expectedType = command.type === 'raft' ? 'raftEdit' : command.type;
   if (raw.type !== expectedType || raw.op !== command.op || raw.opId !== command.opId || typeof raw.ok !== 'boolean' ||
@@ -235,7 +238,7 @@ function checkedRequest(input) {
   const ack = checkedAck(input.ack, command);
   const request = { world, account, command, expectedProfileVersion: input.expectedProfileVersion,
     expectedWorldVersion: input.expectedWorldVersion, profile, worldData, ack };
-  if (artisanMutation(command) || fireMutation(command) || attributeMutation(command)) {
+  if (artisanMutation(command) || fireMutation(command) || attributeMutation(command) || freshwaterMutation(command)) {
     if (!Object.hasOwn(input, 'before') || Object.hasOwn(input, 'beneficiaries')) fail('input');
     const before = JSON.parse(bytes(input.before, MAX_PROFILE_BYTES)), sanitized = sanitizeProfile(before);
     if (!sanitized || canonicalEconomicText(before) !== canonicalEconomicText(sanitized)) fail('input');

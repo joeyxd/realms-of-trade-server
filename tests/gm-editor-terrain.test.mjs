@@ -7,6 +7,8 @@ import { generateWorld } from '../src/sim/worldgen.js';
 import { World } from '../src/sim/world.js';
 import { stepMover } from '../src/sim/systems/movement.js';
 import { gmEditableBaseProps } from '../src/editor/baseIdentity.js';
+import { freshwaterSource } from '../src/data/freshwater.js';
+import { createGmDraftValidator } from '../server/gmDraftValidation.mjs';
 
 const BASE = 'gm05a-test-base';
 const map = generateWorld(20261010);
@@ -78,6 +80,33 @@ test('changed samples protect their interpolation neighbors across the dry coast
     }
   }
   assert.ok(edgeIndex >= 0, 'the generated map should contain a policy-rejected dry/wet interpolation edge');
+});
+
+test('freshwater spring and its interpolation margin are rejected by client and server-shared sculpt policy', () => {
+  const spring = freshwaterSource(map);
+  assert.ok(spring && Number.isFinite(spring.x) && Number.isFinite(spring.z));
+  const i = Math.round(spring.x + map.half), j = Math.round(spring.z + map.half);
+  const index = j * 561 + i, samplePoint = { x: i - map.half, z: j - map.half };
+  assert.ok(Math.hypot(samplePoint.x - spring.x, samplePoint.z - spring.z) <= Math.SQRT1_2,
+    'the canonical grid must contain a sample within the protected spring radius');
+  assert.throws(() => validateTerrainForMap(map, { version: 1, samples: [[index, 1]] }),
+    error => error.code === 'protected_area');
+  assert.throws(() => sculptTerrainDocument({ map, document: empty(), baseRevision: BASE,
+    tool: 'raise', points: [{ x: spring.x, z: spring.z }], radius: 2 }),
+  error => error.code === 'protected_area');
+
+  const validateServerDraft = createGmDraftValidator({ map, baseRevision: BASE, manifest: [], editorCatalog: [] });
+  const maliciousDocument = createDocument({ seed: map.seed, baseRevision: BASE,
+    terrain: { version: 1, samples: [[index, 1]] } });
+  assert.throws(() => validateServerDraft(maliciousDocument), error =>
+    error.name === 'GmDraftValidationError' && error.code === 'protected_area');
+  for (const [dx, dz] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+    const neighbor = (j + dz) * 561 + i + dx;
+    assert.throws(() => validateServerDraft(createDocument({ seed: map.seed, baseRevision: BASE,
+      terrain: { version: 1, samples: [[neighbor, 1]] } })), error =>
+      error.name === 'GmDraftValidationError' && error.code === 'protected_area',
+    `server-shared policy must protect interpolation neighbor ${dx},${dz} around the spring`);
+  }
 });
 
 test('all brushes produce atomic terrain documents and history undo/redo restores the exact sample set', () => {

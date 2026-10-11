@@ -1,5 +1,6 @@
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
+import { freshwaterSource } from '../data/freshwater.js';
 
 export const TERRAIN_VERSION = 1;
 export const TERRAIN_GRID_SEGMENTS = 560;
@@ -51,6 +52,7 @@ function protectedMask(map) {
   const l = map.landmarks || {};
   add('spawn', l.spawn, 4); add('village', l.village, 4); add('dockBase', l.dockBase, 3); add('dockEnd', l.dockEnd, 3);
   add('arena', l.arena, l.arenaR || 19); add('volcano', l.volcano, 12); add('cala', map.cala, map.cala?.r || 0);
+  add('freshwater:salty-spring', freshwaterSource(map), 3);
   for (const [key, p] of Object.entries(map.checkpoints || {})) add(`checkpoint:${key}`, p, 2);
   for (const [kind, list] of [['npc', map.npcs], ['rack', map.racks], ['enemySpawn', map.enemySpawns]])
     for (let i = 0; i < (list || []).length; i++) add(`${kind}:${i}`, list[i], 2);

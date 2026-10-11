@@ -20,7 +20,7 @@ muestras. El resultado completo, no una reproducción indefinida de gestos, es l
 La semilla y revisión base siguen siendo obligatorias. Validación estricta y pura compartida; no reloj,
 GPU ni RNG para compilar. Las revisiones antiguas conservan su documento/hash.
 
-SQL030 extiende el validador de SQL020 para guardar v3 y conserva el camino v2 y sus recibos.
+SQL031 extiende el validador de SQL020 para guardar v3 y conserva el camino v2 y sus recibos.
 La preparación añade el hash SHA-256 de las alturas Float32 completas y el tamaño de rejilla;
 el cliente recompila y verifica ese hash antes de admitir el contenido. Los recursos conservan
 el catálogo base, incluidos sus IDs y alturas. No se añade estado de perfil.

@@ -38,6 +38,7 @@ export const RAFT_PARTS = {
   cropPlot: { name: 'Huerto', layer: 'tile', size: [1, 1], cost: { madera: 3, fruta: 2 }, weight: 4, hp: 25, makes: { fruta: 5 }, needs: { agua: 2 } },
   canePlot: { name: 'Cañaveral', layer: 'tile', size: [1, 1], cost: { madera: 3, cana: 2 }, weight: 4, hp: 25, makes: { cana: 4 }, needs: { agua: 2 } },
   purifier: { name: 'Purificador', layer: 'tile', size: [1, 1], cost: { hierro: 3, madera: 2 }, weight: 3, hp: 30, makes: { agua: 10 }, roofBonus: 4 },
+  waterBarrel: { name: 'Barril de agua', layer: 'tile', size: [1, 1], cost: { madera: 4 }, weight: 2, hp: 25 },
   net: { name: 'Red de pesca', layer: 'tile', size: [1, 1], cost: { lona: 3, madera: 2 }, weight: 2, hp: 20, makes: { pescado: 6 }, rim: true },
   grill: { name: 'Parrilla', layer: 'tile', size: [1, 1], cost: { hierro: 2, madera: 2 }, weight: 3, hp: 30, recipe: { in: { pescado: 2 }, out: { galleta: 2 }, perDay: 6 } },
   still: { name: 'Alambique', layer: 'tile', size: [1, 1], cost: { hierro: 6, madera: 4 }, weight: 5, hp: 40, recipe: { in: { cana: 4 }, out: { ron: 2 }, perDay: 3 } },

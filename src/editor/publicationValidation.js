@@ -1,6 +1,7 @@
 import { validateDocument } from './document.js';
 import { gmEditableBaseProps } from './baseIdentity.js';
 import { resourceLayout } from '../data/resources.js';
+import { freshwaterSource } from '../data/freshwater.js';
 import { compileTerrainMap, validateTerrainForMap } from './terrainData.js';
 
 const MAX_REPORTED_ISSUES = 200;
@@ -91,6 +92,7 @@ function anchorList(map) {
   add('dockBase', lm.dockBase, 3); add('dockEnd', lm.dockEnd, 3);
   add('arena', lm.arena, Number.isFinite(lm.arenaR) ? lm.arenaR : 19);
   add('volcano', lm.volcano, 12);
+  add('freshwater:salty-spring', freshwaterSource(map), 3);
   for (const [id, point] of Object.entries(map.checkpoints || {})) add(`checkpoint:${id}`, point, 2);
   for (const [kind, list] of [['npc', map.npcs], ['rack', map.racks], ['enemySpawn', map.enemySpawns]]) {
     for (let i = 0; i < (Array.isArray(list) ? list.length : 0); i++) add(`${kind}:${list[i].id || i}`, list[i], 2);

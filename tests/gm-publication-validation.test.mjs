@@ -6,6 +6,8 @@ import { createDecoration, createDocument, setBaseOverride } from '../src/editor
 import { compileGmColliders, validateGmPublication } from '../src/editor/publicationValidation.js';
 import { createPreviewMap } from '../src/editor/walkPreview.js';
 import { resourceLayout } from '../src/data/resources.js';
+import { GAME } from '../src/data/meta.js';
+import { freshwaterSource } from '../src/data/freshwater.js';
 
 const seed = 12345;
 const baseRevision = 'terrain-s21-v1';
@@ -125,6 +127,19 @@ test('protected spawn and resource sites reject authored colliders', () => {
   assert.ok(node);
   const resourceResult = validateGmPublication({ map, document: { ...doc(), objects: [circle('resource-hit', map, node.x, node.z, 1)] }, baseRevision });
   assert.ok(resourceResult.issues.some((i) => i.code === 'resource_collision' && i.anchorId === `resource:${node.id}`));
+});
+
+test('freshwater spring rejects an authored collider on the gameplay source', () => {
+  const springMap = generateWorld(GAME.seed), source = freshwaterSource(springMap);
+  assert.ok(source);
+  const blocker = createDecoration({ id: 'spring-blocker', assetId: 'prop:storage-crate',
+    position: { x: source.x, y: springMap.groundAt(source.x, source.z), z: source.z },
+    collider: { type: 'circle', radius: 1 } });
+  const result = validateGmPublication({ map: springMap,
+    document: createDocument({ seed: GAME.seed, baseRevision, objects: [blocker] }), baseRevision });
+  assert.equal(result.valid, false);
+  assert.ok(result.issues.some((issue) => issue.code === 'protected_anchor_collision' &&
+    issue.objectId === 'spring-blocker' && issue.anchorId === 'freshwater:salty-spring'));
 });
 
 test('path corridor blocks circles only when its projection is on the route segment', () => {

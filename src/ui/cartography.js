@@ -1,6 +1,7 @@
 // Pure display adapter for world maps. Keep world geometry separate from map UI and rendering.
 import { toUV, toWorld, ZONES } from '../sim/worldgen.js';
 import { t } from '../core/i18n.js';
+import { freshwaterSource } from '../data/freshwater.js';
 
 const SQRT_HALF = Math.SQRT1_2;
 const finite = (n) => typeof n === 'number' && Number.isFinite(n);
@@ -48,6 +49,8 @@ function legacyData(map) {
   add('ship', t('systems.map.boat'), 'ship', L.ship);
   for (const n of Array.isArray(map?.npcs) ? map.npcs : []) add(n?.id, n?.name, 'npc', n);
   for (const rack of (Array.isArray(map?.racks) ? map.racks : [])) add(rack?.id, rack?.name, 'rack', rack);
+  const spring = freshwaterSource(map);
+  if (spring) add(spring.id, 'Manantial de agua dulce', 'spring', spring);
   const arenaR = L.arenaR;
   if (point(L.arena) && finite(arenaR) && arenaR >= 0)
     regions.push({ id: 'arena', name: zone('caldera'), x: L.arena.x, z: L.arena.z, r: arenaR, kind: 'arena' });
@@ -62,6 +65,11 @@ function legacyData(map) {
 export function describeMap(map) {
   const explicit = map?.cartography && typeof map.cartography === 'object' ? map.cartography : null;
   const points = explicit ? (Array.isArray(explicit.points) ? explicit.points : []).map((p, i) => normalizePoint(p, i)).filter(Boolean) : [];
+  const spring = freshwaterSource(map);
+  if (spring && !points.some((p) => p.id === spring.id)) {
+    const p = normalizePoint({ ...spring, name: 'Manantial de agua dulce', kind: 'spring' }, points.length, 'spring');
+    if (p) points.push(p);
+  }
   const regions = explicit ? (Array.isArray(explicit.regions) ? explicit.regions : []).map(normalizeRegion).filter(Boolean) : [];
   let frame = explicit ? frameForBounds(explicit.bounds) : null;
   if (!frame) {

@@ -201,6 +201,7 @@ export class RaftEditor {
   renderPalette() {
     const ids = IDS.filter((id) => !EDITOR_PARTS || (Array.isArray(EDITOR_PARTS) ? EDITOR_PARTS.includes(id) || EDITOR_PARTS.some((p) => p.id === id) : !!EDITOR_PARTS[id]));
     this.$('.re-pieces').innerHTML = ids.map((id) => `<button type="button" data-part="${id}" title="${esc(translateData(partMeta(id).name))}"><i>${({ foundation: '▦', floor: '▤', pillar: '▥', wall: '▰', door: '▯', roof: '⌂', railing: '⌁', stairs: '▧', crate: '▣', storage: '▣', net: '▩', grill: '♨', purifier: '◉', lantern: '☼', torchFloor: '♧', torchWall: '♧', campfire: '♨' })[id]}</i><span>${esc(translateData(partMeta(id).name))}</span></button>`).join('');
+    const barrelIcon = this.$('.re-pieces [data-part="waterBarrel"] i'); if (barrelIcon) barrelIcon.textContent = '▤';
     this.syncStoragePalette();
     this.root.querySelectorAll('[data-part]').forEach((b) => b.addEventListener('click', () => { this.selected = b.dataset.part; if (partMeta(this.selected).layer === 'floor' && this.level === 0) this.level = 1; if (partMeta(this.selected).layer === 'base' || this.selected === 'net') this.level = 0; this.mode = 'place'; this.target = null; this.reproject(); this.render(); }));
   }
@@ -268,8 +269,14 @@ export class RaftEditor {
     return valid && indexes.size === parts.length ? condition : null;
   }
   conditionEntries(c) { return this.conditionFor(c)?.entries || []; }
+  barrelWater(c, selection) {
+    if (!c || selection?.p?.[0] !== 'waterBarrel') return 0;
+    const saved = c.ship.condition?.entries?.find((entry) => Array.isArray(entry) && entry[1] === 'waterBarrel' && entry.slice(2, 6).every((n, i) => n === selection.p[i + 1]));
+    const id = selection.condition?.id || saved?.[0];
+    return c.ship.hold?.vessels?.find((v) => v.kind === 'barrel' && v.id === id)?.water || 0;
+  }
   placementReason(c, piece = this.proposed(c)) {
-    return (['torchFloor', 'torchWall', 'campfire'].includes(piece?.[0]) && !this.fireEnabled?.() ? 'disabled' : '') || raftPlacementReason(c?.profile, this.gridParts(c), piece, this.workshopEnabled?.() === true) || (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire'].includes(piece[0])
+    return (['torchFloor', 'torchWall', 'campfire'].includes(piece?.[0]) && !this.fireEnabled?.() ? 'disabled' : '') || raftPlacementReason(c?.profile, this.gridParts(c), piece, this.workshopEnabled?.() === true) || (['roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'waterBarrel'].includes(piece[0])
       ? canPlace(c.record.parts || this.gridParts(c), piece) : '');
   }
   repairCost(entry) {
@@ -374,7 +381,8 @@ export class RaftEditor {
     if (c.record.rev !== c.ship.rev) { this.setResult('systems.raft.status.sync'); this.render(); return; }
     if (this.mode === 'remove') {
       const chosen = this.removalTarget(c); if (!chosen) { this.setResult('systems.raft.status.chooseRemove'); this.render(); return; }
-      const id = crypto.randomUUID(); const message = { type: 'raft', op: 'remove', id: c.record.id, expectedRev: c.record.rev, opId: id, index: chosen.index, piece: [...chosen.p] };
+      if (chosen.p[0] === 'waterBarrel' && this.barrelWater(c, chosen) > 0) { this.render(); return; }
+      const id = crypto.randomUUID(); const message = { type: 'raft', op: 'remove', id: c.record.id, expectedRev: c.record.rev, opId: id, index: chosen.index, piece: [...chosen.p], ...(chosen.p[0] === 'waterBarrel' ? { rules: 2 } : {}) };
       const workshopRule = this.workshopEnabled?.() === true && ['crate', ARTISAN.part].includes(chosen.p[0]);
       this.pending = { id, expectedRev: c.record.rev, op: 'remove', message, sentAt: performance.now(),
         workshopRule, expectedWorkshop: workshopRule ? workshopSnapshot(c.profile) : null,
@@ -403,7 +411,7 @@ export class RaftEditor {
         else this.setResult(`systems.raft.reason.${why}`);
         this.render(); return;
       }
-      const id = crypto.randomUUID(); const message = { type: 'raft', op: 'place', id: c.record.id, expectedRev: c.record.rev, opId: id, piece };
+      const id = crypto.randomUUID(); const message = { type: 'raft', op: 'place', id: c.record.id, expectedRev: c.record.rev, opId: id, piece, ...(piece[0] === 'waterBarrel' ? { rules: 2 } : {}) };
       const workshopRule = this.workshopEnabled?.() === true && ['crate', ARTISAN.part].includes(piece[0]);
       const payment = workshopBuildPayment(c.profile, piece, workshopRule);
       this.pending = { id, expectedRev: c.record.rev, op: 'place', message, sentAt: performance.now(), workshopRule,
@@ -477,7 +485,7 @@ export class RaftEditor {
         ? `<b>${esc(translateData(def.name))}</b><small>${esc(workshopPaymentLabel(selectedPayment, [this.selected]))}</small>`
       : `<b>${esc(translateData(def.name))}</b><small>${t('systems.raft.cost')}: ${fmtGoods(cost)}${this.selected === ARTISAN.part ? ` · +${partMeta(this.selected).hold} ${isEnglish ? 'hold capacity' : 'de capacidad de bodega'}` : ` · ${direction(this.selected, this.dir)}`}</small>`;
     const shelterHelp = this.$('.re-shelter-help');
-    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', 'purifier', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
+    shelterHelp.hidden = this.mode !== 'place' || !['door', 'roof', 'lantern', 'torchFloor', 'torchWall', 'campfire', 'grill', 'purifier', 'waterBarrel', ARTISAN.part, ...(workshopOn ? ['crate'] : [])].includes(this.selected);
     shelterHelp.textContent = workshopOn && this.selected === 'crate'
       ? isEnglish ? 'Place one crate kit prepared at the carpentry workbench. It adds raft cargo space.' : 'Coloca un kit preparado en el banco de carpintería. Añade espacio de carga a la balsa.'
       : this.selected === ARTISAN.part
@@ -485,6 +493,9 @@ export class RaftEditor {
         ? (isEnglish ? 'Complete your personal 10-plank workshop project for the first storage reward. Place it on a free deck or floor cell; raft mass limits still apply.' : 'Completa tu proyecto personal de 10 tablas en el taller para recibir la primera recompensa de bodega. Colócala en una cubierta o piso libre; se mantienen los límites de peso de la balsa.')
         : this.knowsStorage(c) ? (isEnglish ? 'Needs a free deck or floor cell. Adds cargo space; normal raft mass limits still apply.' : 'Necesita una casilla libre de cubierta o piso. Añade espacio de carga; se mantienen los límites normales de peso de la balsa.')
           : (isEnglish ? 'Learn this recipe from the workbench artisan after reaching the logging milestone and completing the community carpentry project.' : 'Aprende esta receta con la artesana del banco al alcanzar el hito de tala y completar la obra comunitaria de carpintería.')
+      : this.selected === 'waterBarrel' ? (isEnglish
+        ? 'Stores up to 20 water. It starts empty and never produces water. Empty the barrel before removing it.'
+        : 'Almacena hasta 20 unidades de agua. Empieza vacío y no produce agua. Vacía el barril antes de retirarlo.')
       : this.selected === 'purifier' ? t('systems.raft.purifierHelp')
       : ['lantern', 'torchFloor', 'torchWall', 'campfire', 'grill'].includes(this.selected)
       ? this.fireEnabled?.()
@@ -534,7 +545,9 @@ export class RaftEditor {
     }).join('');
     let reason = this.lastResult;
     if (!reason && c && this.mode === 'place' && this.target) { const why = this.placementReason(c); reason = placementReasonText(why, this.proposed(c)); }
-    if (!reason && this.mode === 'remove' && selection) reason = t('systems.raft.status.confirmRemove');
+    if (!reason && this.mode === 'remove' && selection) reason = selection.p[0] === 'waterBarrel' && this.barrelWater(c, selection) > 0
+      ? (isEnglish ? 'Empty the water barrel before removing it.' : 'Vacía el barril de agua antes de retirarlo.')
+      : t('systems.raft.status.confirmRemove');
     if (!reason && this.mode === 'reinforce' && reinforcement) reason = t('systems.raft.status.confirmReinforce');
     if (!reason && this.mode === 'repair' && repair) reason = this.repairAffordable(c, repair) ? t('systems.raft.status.confirmRepair') : t('systems.raft.status.missingMaterials', { goods: fmtGoods(Object.fromEntries(Object.entries(repairCost).map(([g, n]) => [g, Math.max(0, n - (stock[g] || 0))]))) });
     if (!reason && this.mode === 'repair' && conditionReady && !damaged.length) reason = t('systems.raft.status.healthy');
@@ -545,7 +558,7 @@ export class RaftEditor {
     this.$('.re-status').textContent = this.pending ? `${coord} \u00b7 ${this.pending.ack ? t('systems.raft.status.waitingSnapshot') : t('systems.raft.status.sendingIntent')}${this.lastResult ? ` \u00b7 ${this.lastResult}` : ''}` : `${coord} \u00b7 ${reason || t('systems.raft.status.ready')}`;
     this.$('.re-retry').hidden = !this.pending || performance.now() - this.pending.sentAt < 5000;
     this.$('.re-action').textContent = this.mode === 'remove' ? t('systems.raft.confirmRemove') : this.mode === 'repair' ? t('systems.raft.confirmRepair') : this.mode === 'reinforce' ? t('systems.raft.confirmReinforce') : t('systems.raft.place');
-    this.$('.re-action').disabled = disabled || c.record.rev !== c.ship.rev || (this.mode === 'place' ? !this.target || !!this.placementReason(c) : this.mode === 'reinforce' ? !reinforcement : this.mode === 'repair' ? !repair || !conditionReady || !this.repairAffordable(c, repair) : !selection);
+    this.$('.re-action').disabled = disabled || c.record.rev !== c.ship.rev || (this.mode === 'place' ? !this.target || !!this.placementReason(c) : this.mode === 'reinforce' ? !reinforcement : this.mode === 'repair' ? !repair || !conditionReady || !this.repairAffordable(c, repair) : !selection || this.barrelWater(c, selection) > 0);
     this.$('.re-cycle').hidden = this.mode !== 'remove';
     this.$('.re-remove-choice span').textContent = selection ? t('systems.raft.status.removeSelection', { index: selection.index, part: translateData(partMeta(selection.p[0]).name), x: selection.p[1], z: selection.p[2], level: selection.p[3] }) : t('systems.raft.status.pointPart');
     if (this.target && c && this.mode !== 'repair') {

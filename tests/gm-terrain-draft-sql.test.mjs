@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { database as baseDatabase } from './helpers/ground-transaction-sql.mjs';
 
 const sql020 = await readFile(new URL('../server/migrations/020_gm_drafts.sql', import.meta.url), 'utf8');
-const sql029 = await readFile(new URL('../server/migrations/030_gm_terrain_drafts.sql', import.meta.url), 'utf8');
+const sql031 = await readFile(new URL('../server/migrations/031_gm_terrain_drafts.sql', import.meta.url), 'utf8');
 const owner = 'a1b2c3d4-e5f6-4789-8123-123456789abc';
 const operation = n => `b2000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 const v2 = () => ({ schema: 'marea.gm.map-draft', version: 2,
@@ -25,14 +25,14 @@ async function valid(db, op, value, validator = 'mn_valid_gm_draft_request') {
   return (await db.query(`SELECT public.${validator}($1::uuid,$2::jsonb) AS valid`, [op, value])).rows[0].valid;
 }
 
-test('SQL030 preserves v2 receipts and saves/replays strict v3 terrain drafts', async t => {
+test('SQL031 preserves v2 receipts and saves/replays strict v3 terrain drafts', async t => {
   const f = await setup(t), legacyRequest = request(v2());
   const committed = (await f.db.query('SELECT public.mn_save_gm_draft($1::uuid,$2::jsonb) AS data',
     [operation(1), legacyRequest])).rows[0].data;
   assert.equal(committed.ok, true);
   await f.db.exec('RESET ROLE');
-  await f.db.exec(sql029);
-  await f.db.exec(sql029);
+  await f.db.exec(sql031);
+  await f.db.exec(sql031);
   await f.db.exec('SET ROLE service_role');
 
   assert.deepEqual((await f.db.query('SELECT public.mn_gm_terrain_drafts_ready() AS data')).rows[0].data,
@@ -54,9 +54,9 @@ test('SQL030 preserves v2 receipts and saves/replays strict v3 terrain drafts', 
     ['salty-shore', owner])).rows[0].document, terrainRequest.document);
 });
 
-test('SQL030 accepts canonical bounds and rejects malformed v3 terrain while retaining the strict v2 path', async t => {
+test('SQL031 accepts canonical bounds and rejects malformed v3 terrain while retaining the strict v2 path', async t => {
   const f = await setup(t);
-  await f.db.exec('RESET ROLE'); await f.db.exec(sql029);
+  await f.db.exec('RESET ROLE'); await f.db.exec(sql031);
   const id = operation(3);
   assert.equal(await valid(f.db, id, request(v2())), true);
   assert.equal(await valid(f.db, id, request(v3([[0, -12000], [314720, 12000]]))), true);

@@ -26,6 +26,8 @@ import { raftDoorCmd } from '../sim/systems/raftDoors.js';
 import { raftLanternCmd } from '../sim/systems/raftLanterns.js';
 import { personalLanternCmd, clearPersonalLantern } from '../sim/systems/personalLantern.js';
 import { localFireCmd, fireStatus, syncFireLight, hideHandFire } from '../sim/systems/fire.js';
+import { beginFreshwater, stepFreshwater, localFreshwaterCmd, freshwaterStatus } from '../sim/systems/freshwater.js';
+import { checkedFreshwaterCommand } from '../sim/systems/freshwaterProfile.js';
 import { commerceCmd, clearCommerceReceipts } from '../sim/systems/commerce.js';
 import { installResources, resourceCmd, publicResources, clearResourceReceipts } from '../sim/systems/resources.js';
 import { stepRaftWork } from '../sim/systems/raftProduction.js';
@@ -61,7 +63,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -101,6 +103,7 @@ export class LocalServer {
     installRafts(this.world, namespace);
     installResources(this.world);
     this.world.fireEnabled = fire;
+    this.world.freshwaterEnabled = freshwater;
     this.world.hideHandFire = e => hideHandFire(this.world, e);
     if (typeof navigation !== 'boolean') throw new TypeError('navigation option');
     if (navigation) {
@@ -163,6 +166,7 @@ export class LocalServer {
       if (this.world.fireEnabled) hideHandFire(this.world, c.entity);
       clearPersonalLantern(this.world, c.entity);
       this.world.fireReceipts?.delete(c.entity);
+      this.world.freshwaterGather?.delete(c.entity); this.world.freshwaterProofs?.delete(c.entity); this.world.freshwaterReceipts?.delete(c.entity);
       this.world.fireHandOff?.delete(c.entity);
       const p = detachProfile(this.world, c.entity);
       if (save && p && this.onSave) this.onSave(clientId, p);
@@ -288,6 +292,14 @@ export class LocalServer {
 
   // What a player asks for with what they own (M4): the bag, the equipment, a chest.
   playerCommand(c, msg) {
+    if (msg?.type === 'freshwater') {
+      if (c.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
+      const { t, ...raw } = msg, command = checkedFreshwaterCommand(raw);
+      if (!command) return false;
+      const commit = cmd => { localFreshwaterCmd(this.world, c.entity, cmd, p => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); this.sendProfile(this.clientOf(c.entity), c); this.flushEvents(); };
+      if (command.op === 'fill') beginFreshwater(this.world, c.entity, command, commit); else commit(command);
+      return true;
+    }
     if (msg?.type === 'fire') {
       if (c.paused || this.tickBlocked || !this.commandAllowed(c, { world: true, target: null })) return false;
       const ack = localFireCmd(this.world, c.entity, msg, p => c.serverProfile || this.saves.store(p).length <= MAX_SAVE);
@@ -631,6 +643,7 @@ export class LocalServer {
     let applied = false;
     try {
       if (this.#applyFailed) return false;
+      stepFreshwater(this.world);
       if (this.beforeTick !== null) this.#ownsTickPublication = true;
       this.#applyingTick = true;
       applied = this.beforeTick === null || profileDecision(this.beforeTick(), 'tick apply');
@@ -861,6 +874,7 @@ export class LocalServer {
       this.send(id, { t: MSG.SNAPSHOT, tick: w.tick, ack: c.ack, ents, you: c.entity ? w.playerState(c.entity) : null, enc, frost, storm, ink, clock, rafts,
         ...(resourceChanged ? { resources } : {}),
         fire: c.entity ? fireStatus(w, c.entity) : null,
+        freshwater: c.entity ? freshwaterStatus(w, c.entity) : null,
         capacity: c.entity ? ownerRaftCapacity(w, c.entity, rafts) : null,
         ...(w.navalPilot ? { naval: w.navalPilot.snapshot(c.entity), deck: w.navalPilot.deckSnapshot(c.entity),
           voyage: w.navalPilot.voyageSnapshot?.(c.entity) || { active: false }, route: w.navalRoute?.snapshot(c.entity) || null,

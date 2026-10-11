@@ -1,6 +1,6 @@
 # GM05a — pinceles de escultura del terreno
 
-**Implementación integrada alpha.44/protocolo 50; aceptación de navegador y publicación en curso.**
+**Implementación integrada alpha.45/protocolo 51; aceptación de navegador y publicación en curso.**
 Continúa [GM04b](../gm04b/DELIVERY.md) y el [contrato previo al código](../../briefs/gm05a-terrain-sculpt.md).
 
 La pestaña **Terreno** permite subir, bajar, aplanar, suavizar y construir una rampa con dos clics.
@@ -14,10 +14,10 @@ decoraciones seguras conservan su offset vertical mediante transformaciones expl
 GM05b añadirá pintura de familias de suelo; GM06 cubrirá nueva tierra, costa y expansión del dominio.
 
 Documento v3: deltas enteros en milímetros sobre 561×561 muestras, ordenados y únicos, hasta 20.000
-entradas y ±12 m. Los documentos v1/v2 conservan su normalización y forma anteriores. SQL030 extiende
+entradas y ±12 m. Los documentos v1/v2 conservan su normalización y forma anteriores. SQL031 extiende
 el guardado privado SQL020 y conserva sus recibos históricos. **SQL aplicado por el autor y readiness
 live verificado desde el servicio del VPS:** terreno 1 y contrato anterior 1. [Resultado](sql-live.json).
-El archivo se renombró de 029 a 030 al integrar el corte concurrente de Carga; su contenido/hash es idéntico.
+El archivo se renombró de 029 a 030 y después a 031 al integrar Carga y agua dulce; su contenido/hash es idéntico.
 La preparación firma las alturas Float32 completas; el cliente las recompila y verifica antes de entrar.
 El catálogo de recursos mantiene IDs/alturas base. Activación y rollback usan la autoridad, exclusión,
 CAS y guardas de perfiles, drops y balsas existentes; no hay otra autoridad de guardado.
@@ -29,16 +29,21 @@ fuentes Unreal. [Candidatos revisados](../../briefs/gm05a-terrain-assets.md). Co
 usa 560×560 celdas; su coste supera el anterior. FPS en teléfono físico y optimización por sectores/LOD
 no están aceptados en este corte.
 
-La integración final alpha.44 pasó **275/275 en 51 archivos**, con hashes de fuentes estables:
+La integración previa alpha.44 pasó **275/275 en 51 archivos**, con hashes de fuentes estables:
 [resumen](integration-final-lighting/regression.json) y [TAP](integration-final-lighting/regression.tap). Incluye la cadena HTTP real save→prepare→register→activate,
-cliente nuevo con alturas exactas, rechazo de hash alterado, admisión WebSocket y rollback; además SQL030
+cliente nuevo con alturas exactas, rechazo de hash alterado, admisión WebSocket y rollback; además SQL031
 en PGlite, replay v2/v3, reejecución y ACL, más la compatibilidad con el corte concurrente de Carga.
 Las regresiones anteriores alpha.43 (238/238) y alpha.44 (274/274) se solapan. La final incluye el panel
 desplazable con controles primero, colocación/apoyo de modelos sobre la altura editada y la prueba de
 guardado pendiente que conserva un aviso posterior de rechazo. El foco de iluminación del editor también
 usa el terreno proyectado.
 
-El [navegador local final](local/final-visible-5/local-browser-evidence.json) pasó **10/10**, sin errores:
+La release integrada alpha.45/protocolo 51 conserva el corte concurrente de agua dulce y sus condiciones
+de activación. El manantial queda protegido contra cambios de altura y colisiones añadidas. La regresión
+conjunta de terreno, Carga, inventario y agua pasó **308/308 en 56 archivos**, con fuentes estables:
+[resumen final](integration-publish/regression.json) y [TAP](integration-publish/regression.tap).
+
+El [navegador local de release](local/release/local-browser-evidence.json) pasó **10/10**, sin errores:
 gestos reales de los cinco pinceles, terraza elevada 1 m, rampa recorrida a pie, undo/redo, rechazo atómico,
 Escape, export/import/reapertura v3 y colocación de un modelo real a 4,585267 m (base 3,585267 m).
 Las cinco capturas ES/EN, escritorio y 844×390 fueron inspeccionadas; el control de radio funciona en
