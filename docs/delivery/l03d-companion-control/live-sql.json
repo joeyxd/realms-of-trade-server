@@ -1,0 +1,23 @@
+{
+  "schema": "mn.l03d.companion-control.live-sql.v1",
+  "recordedAt": "2026-10-11T01:11:26.997996+00:00",
+  "method": "Authenticated Supabase SQL Editor through Computer Use",
+  "project": "Realms of trade",
+  "migration": "027_companion_control.sql",
+  "migrationResult": "Success. No rows returned",
+  "canary": {
+    "passed": "SQL027 service stop/replay/conflict/isolation passed; fixture rolled back",
+    "readiness": {
+      "version": 1
+    },
+    "fixtureAbsent": true
+  },
+  "sha256": {
+    "server/migrations/027_companion_control.sql": "61e52ba34ed6c67c96efc9bf7837fee129c693e7211189762b8a23569c923ba2",
+    "docs/delivery/l03d-companion-control/live-canary.sql": "6e1a4046af9bcfac96bd48c0cf229a2c188264b1e8beab366d8235d7ca025c11"
+  },
+  "limits": [
+    "Service-role SQL canary with fictional scope; not public authenticated owner UI acceptance.",
+    "No bindings, accounts, credentials, provider or gameplay state provisioned."
+  ]
+}

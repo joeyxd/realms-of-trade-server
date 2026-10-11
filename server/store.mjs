@@ -23,6 +23,7 @@ import { agentGoodsBudgetCreate, agentGoodsBudgetRevoke, agentGoodsBudgetScope, 
 import { groundTransactionOperation, checkedGroundTransactionResult, checkedGroundTransactionReceipt } from './groundTransaction.mjs';
 import { createMemoryGmDraftMethods, createSupabaseGmDraftMethods } from './gmDraftStore.mjs';
 import { createMemoryCompanionConfigMethods, createSupabaseCompanionConfigMethods } from './companionConfigStore.mjs';
+import { createMemoryCompanionControlMethods, createSupabaseCompanionControlMethods } from './companionControlStore.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LEGACY_KEY = /^[0-9a-f]{64}$/;
@@ -92,6 +93,7 @@ function checkedEconomicOutput(raw, request, replay = false) {
 export function createMemoryStore() {
   const gmDraftMethods = createMemoryGmDraftMethods();
   const companionConfigMethods = createMemoryCompanionConfigMethods();
+  const companionControlMethods = createMemoryCompanionControlMethods();
   const profiles = new Map(), worlds = new Map(), uniques = new Map(), legacyImports = new Map(), pearlReceipts = new Map();
   const locations = new Map(), groundReceipts = new Map(), batchReceipts = new Map();
   const deathReceipts = new Map(), deathDrops = new Map(), dropReceipts = new Map(), deathDropStates = new Map();
@@ -185,7 +187,7 @@ export function createMemoryStore() {
     return reply;
   };
   const store = {
-    ...gmDraftMethods, ...companionConfigMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods,
     kind: 'memory', durable: false,
     async loadProfile(id) { return load(profiles, playerKey(id)); },
     async listGmContentProfiles({ after = null, limit = 100 } = {}) {
@@ -558,6 +560,7 @@ export function createSupabaseStore(client) {
   if (!client || typeof client.rpc !== 'function') throw new StoreError('configuration');
   const gmDraftMethods = createSupabaseGmDraftMethods(client);
   const companionConfigMethods = createSupabaseCompanionConfigMethods(client);
+  const companionControlMethods = createSupabaseCompanionControlMethods(client);
   async function rpc(name, args, duplicateCode = null) {
     try {
       const result = await client.rpc(name, args);
@@ -584,7 +587,7 @@ export function createSupabaseStore(client) {
     throw new StoreError('response');
   }
   return {
-    ...gmDraftMethods, ...companionConfigMethods,
+    ...gmDraftMethods, ...companionConfigMethods, ...companionControlMethods,
     kind: 'supabase', durable: true,
     async checkGroundTransactions() {
       const raw = await rpc('mn_ground_transactions_ready', {});

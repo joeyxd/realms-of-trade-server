@@ -1,7 +1,6 @@
 // Wire protocol shared by LocalServer (worker), the client, and the future Node server.
 // JSON-compatible objects today; the binary layout is documented in DESIGN.md §10.
-export const PROTOCOL_VERSION = 45; // Predicted swimming reserve/load/drowning and SWIM animation; reload peers.
-// Owner companion list/stop uses optional messages; its authority contract is unchanged.
+export const PROTOCOL_VERSION = 46; // Durable owner control head/CAS and explicit resume; reload peers.
 
 export const MSG = {
   // client -> server
@@ -14,7 +13,7 @@ export const MSG = {
   AGENT_CANCEL: 'agent_cancel', // managed controller: {epoch,expectedTaskRevision}
   AGENT_RELEASE: 'agent_release', // managed controller relinquishes its lease: {epoch}
   AGENT_CONTROL: 'agent_control', // authenticated owner: {op,characterId,task?}; identity is never supplied
-  AGENT_OWNER: 'agent_owner', // private owner list/stop: {requestId,op,characterKey?,epoch?}
+  AGENT_OWNER: 'agent_owner', // private owner list/stop/resume: {requestId,op,characterKey?,epoch?,expectedRevision?}
   AGENT_COMPANION_CONFIG: 'agent_companion_config', // private metadata load/save; owner/world come from the admitted session
   AGENT_INVENTORY: 'agent_inventory', // managed pilot read: {requestId,epoch,sessionId}; no account/entity selector
   AGENT_MARKET: 'agent_market', // managed pilot read: {requestId,epoch,sessionId,op,g?,n?,side?}; server selects town

@@ -119,6 +119,12 @@ export class AgentControl {
     return !!binding;
   }
 
+  // Private host configuration only; this is never a client projection or provisioning API.
+  configuredBindings() {
+    return [...this.#bindings.values()].map(({ ownerId, characterId, capabilities }) =>
+      ({ ownerId, characterId, capabilities: [...capabilities] }));
+  }
+
   ownedBinding(ownerId, characterId) {
     const binding = this.#bindings.get(characterId);
     return binding?.ownerId === ownerId ? copy({ ownerId, characterId, capabilities: binding.capabilities }) : null;

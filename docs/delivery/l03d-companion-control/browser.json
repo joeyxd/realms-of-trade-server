@@ -1,0 +1,162 @@
+{
+  "schema": "l03d-companion-control-browser/v1",
+  "version": "0.6.0-alpha.37",
+  "at": "2026-10-11T01:17:55.545Z",
+  "simulatedAuth": true,
+  "public": false,
+  "production": false,
+  "gameplayMemory": true,
+  "gameplayDurabilityVerified": false,
+  "storage": {
+    "migration": "SQL027",
+    "durableInFixture": true,
+    "database": "PGlite disk directory",
+    "controlStore": "createSupabaseCompanionControlMethods RPC adapter"
+  },
+  "rendering": {
+    "browser": "Chrome headless",
+    "angle": "default",
+    "gpuRunRequested": false
+  },
+  "checks": [
+    "missing_SQL_row_is_default_stopped_and_owner_can_allow_connection",
+    "resume_ack_has_canonical_SQL_timestamp_and_opens_fresh_runner_join",
+    "desktop_English_control_copy_and_keyboard_focus_trap_escape",
+    "durable_stop_advances_SQL_head_and_revokes_grant",
+    "page_reload_keeps_confirmed_stop_and_removes_stale_local_runner",
+    "second_owner_projection_isolated_and_cross_owner_resume_forbidden",
+    "existing_private_profile_editor_opens_and_back_returns_to_control_panel",
+    "landscape_and_portrait_panel_bounds_and_44px_targets",
+    "failed_stop_stays_uncertain_until_explicit_refresh_then_offers_both_choices",
+    "unavailable_control_denies_resume_and_runner_join",
+    "logout_clears_durable_projection_and_private_identity",
+    "SQL027_disk_database_reopens_with_confirmed_revision_four_stop",
+    "reconstructed_host_hydrates_saved_stop_and_fails_closed_before_owner_action",
+    "post_restart_owner_resume_updates_sql_head_and_new_runner_joins"
+  ],
+  "screenshots": [
+    "control-default-stopped-es.png",
+    "control-stopped-en.png",
+    "control-landscape-844x390.png",
+    "control-portrait-390x844.png",
+    "control-unconfirmed-stop.png"
+  ],
+  "errors": [],
+  "fixtures": {
+    "owner": "22222222-2222-4222-8222-222222222222",
+    "companion": "33333333-3333-4333-8333-333333333333",
+    "other": "44444444-4444-4444-8444-444444444444",
+    "otherCompanion": "66666666-6666-4666-8666-666666666666",
+    "world": "companion-control-browser-fixture"
+  },
+  "geometry": [
+    {
+      "name": "landscape-844x390",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 212,
+        "top": 23.421875,
+        "right": 632,
+        "bottom": 366.578125,
+        "width": 420,
+        "height": 343.15625
+      },
+      "controls": [
+        {
+          "label": "×",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Refresh",
+          "width": 73.296875,
+          "height": 44
+        },
+        {
+          "label": "Profile",
+          "width": 66.953125,
+          "height": 44
+        },
+        {
+          "label": "Allow connection",
+          "width": 136.0625,
+          "height": 44
+        }
+      ],
+      "panelScroll": {
+        "clientHeight": 341,
+        "scrollHeight": 341,
+        "overflowY": "auto"
+      }
+    },
+    {
+      "name": "portrait-390x844",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 12,
+        "top": 230.765625,
+        "right": 378,
+        "bottom": 613.21875,
+        "width": 366,
+        "height": 382.453125
+      },
+      "controls": [
+        {
+          "label": "×",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Refresh",
+          "width": 73.296875,
+          "height": 44
+        },
+        {
+          "label": "Profile",
+          "width": 66.953125,
+          "height": 44
+        },
+        {
+          "label": "Allow connection",
+          "width": 136.0625,
+          "height": 44
+        }
+      ],
+      "panelScroll": {
+        "clientHeight": 380,
+        "scrollHeight": 380,
+        "overflowY": "auto"
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": []
+    },
+    {
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": []
+    },
+    {
+      "pageErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      ],
+      "failedRequests": []
+    }
+  ]
+}

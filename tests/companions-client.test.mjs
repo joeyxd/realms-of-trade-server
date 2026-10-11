@@ -6,6 +6,7 @@ const A = '11111111-1111-4111-8111-111111111111';
 const B = '22222222-2222-4222-8222-222222222222';
 const C = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const row = (overrides = {}) => ({ characterKey: C, name: 'Brisa', online: true, active: true, stopped: false, epoch: 4, capabilities: ['move'], ...overrides });
+const durable = (overrides = {}) => row({ control: { status: 'ready', revision: 3, stopped: false, savedAt: '2026-10-10T10:00:00.000Z' }, ...overrides });
 
 function fixture({ timeoutMs = 30 } = {}) {
   let authListener; const sent = []; const messageListeners = []; const closeListeners = [];
@@ -107,4 +108,89 @@ test('offline provisioned companion can still be stopped with nullable baseline 
   f.result(f.sent.at(-1), { companions: [row({ online: false, active: false, epoch: null })] });
   assert.equal(f.client.stop(C), true);
   assert.deepEqual(f.sent.at(-1), { t: 'agent_owner', requestId: 'req-2', op: 'stop', characterKey: C, epoch: null });
+});
+
+test('durable stop and resume use the confirmed revision and resume requires a durable stopped row', () => {
+  const f = fixture(); f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable()] });
+  assert.equal(f.client.resume(C), false, 'running companions cannot be resumed');
+  assert.equal(f.client.stop(C), true);
+  assert.deepEqual(f.sent.at(-1), { t: 'agent_owner', requestId: 'req-2', op: 'stop', characterKey: C, epoch: 4, expectedRevision: 3 });
+  f.result(f.sent.at(-1), { companions: [durable({ stopped: true, active: false, control: { status: 'ready', revision: 4, stopped: true, savedAt: '2026-10-10T10:01:00.000Z' } })] });
+  assert.equal(f.client.resume(C), true);
+  assert.deepEqual(f.sent.at(-1), { t: 'agent_owner', requestId: 'req-3', op: 'resume', characterKey: C, epoch: 4, expectedRevision: 4 });
+  f.result(f.sent.at(-1), { companions: [durable({ control: { status: 'ready', revision: 5, stopped: false, savedAt: '2026-10-10T10:02:00.000Z' } })] });
+  assert.equal(f.client.snapshot().companions[0].control.revision, 5);
+});
+
+test('durable projection rejects malformed heads and blocks mutations while pending or unavailable', async () => {
+  const f = fixture({ timeoutMs: 5 }); f.client.refresh(); const request = f.sent.at(-1);
+  f.result(request, { companions: [durable({ control: { status: 'ready', revision: 0, stopped: false, savedAt: null } })] });
+  assert.equal(f.client.snapshot().status, 'loading', 'revision zero must be the initial stopped head');
+  await new Promise((resolve) => setTimeout(resolve, 15));
+  f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable({ stopped: true, control: { status: 'pending', revision: 3, stopped: false, savedAt: '2026-10-10T10:00:00.000Z' } })] });
+  assert.equal(f.client.stop(C), false);
+  assert.equal(f.client.resume(C), false);
+  f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable({ control: { status: 'unavailable', revision: 3, stopped: false, savedAt: '2026-10-10T10:00:00.000Z' } })] });
+  assert.equal(f.client.stop(C), false);
+  assert.equal(f.client.snapshot().companions[0].control.status, 'unavailable');
+});
+
+test('durable stop can reconcile an unconfirmed effective local latch and timeout requires an explicit read', async () => {
+  const f = fixture({ timeoutMs: 5 }); f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable({ stopped: true })] });
+  assert.equal(f.client.stop(C), true, 'retry is allowed while local stopped is not confirmed in the saved head');
+  const request = f.sent.at(-1);
+  await new Promise((resolve) => setTimeout(resolve, 15));
+  assert.equal(f.client.snapshot().message, 'timeout');
+  assert.equal(f.sent.length, 2, 'no retry or implicit read follows an uncertain durable timeout');
+  assert.equal(f.client.stop(C), false, 'error state requires refresh before another mutation');
+  assert.equal(f.client.refresh(), true);
+  f.result(f.sent.at(-1), { companions: [durable({ stopped: true, control: { status: 'ready', revision: 4, stopped: true, savedAt: '2026-10-10T10:01:00.000Z' } })] });
+  assert.equal(f.client.snapshot().companions[0].control.revision, 4);
+  assert.ok(request);
+});
+
+test('durable conflict and authorization errors use bounded codes, while legacy rows stay stop-only', () => {
+  const f = fixture(); f.client.refresh(); f.result(f.sent.at(-1), { companions: [row({ stopped: true })] });
+  assert.equal(f.client.resume(C), false);
+  assert.equal(f.client.stop(C), false);
+  f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable()] });
+  assert.equal(f.client.stop(C), true);
+  f.result(f.sent.at(-1), { ok: false, why: 'conflict', companions: [durable()] });
+  assert.equal(f.client.snapshot().message, 'conflict');
+  assert.equal(f.sent.length, 3, 'conflict does not auto-submit another operation');
+});
+
+test('logout fences a pending durable resume and requires a fresh gameplay binding', () => {
+  const f = fixture(); f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable({ stopped: true, control: { status: 'ready', revision: 4, stopped: true, savedAt: '2026-10-10T10:01:00.000Z' } })] });
+  assert.equal(f.client.resume(C), true);
+  const oldResume = f.sent.at(-1);
+  f.authListener({ signedIn: false, accountId: '' });
+  f.result(oldResume, { companions: [durable()] });
+  assert.equal(f.client.snapshot().status, 'signed_out');
+  assert.deepEqual(f.client.snapshot().companions, []);
+  f.authListener({ signedIn: true, accountId: A });
+  assert.equal(f.client.refresh(), false);
+  f.client.setSession(A);
+  assert.equal(f.client.refresh(), true);
+});
+
+test('well-shaped but unconfirmed durable acknowledgements are ignored until uncertain timeout', async () => {
+  const f = fixture({ timeoutMs: 5 }); f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable()] });
+  assert.equal(f.client.stop(C), true);
+  const stop = f.sent.at(-1);
+  f.result(stop, { companions: [durable()] });
+  assert.equal(f.client.snapshot().pendingOp, 'stop', 'the stale revision does not acknowledge the write');
+  await new Promise((resolve) => setTimeout(resolve, 15));
+  assert.equal(f.client.snapshot().message, 'timeout');
+  assert.equal(f.sent.length, 2, 'the client neither retries nor reads automatically');
+
+  f.client.refresh(); f.result(f.sent.at(-1), { companions: [durable({ stopped: true,
+    control: { status: 'ready', revision: 4, stopped: true, savedAt: '2026-10-10T10:01:00.000Z' } })] });
+  assert.equal(f.client.resume(C), true);
+  const resume = f.sent.at(-1);
+  f.result(resume, { companions: [durable({ stopped: true,
+    control: { status: 'ready', revision: 5, stopped: false, savedAt: '2026-10-10T10:02:00.000Z' } })] });
+  assert.equal(f.client.snapshot().pendingOp, 'resume', 'a matching saved head with a stale effective latch is also not an ACK');
+  await new Promise((resolve) => setTimeout(resolve, 15));
+  assert.equal(f.client.snapshot().message, 'timeout');
 });

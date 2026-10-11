@@ -507,7 +507,7 @@ async function boot() {
   companionsPanel = new CompanionsUI(hud.root.querySelector('.hud-top-right'), {
     getState: () => companions.snapshot(),
     lang: getLocale(),
-    onRefresh: () => companions.refresh(), onStop: (key) => companions.stop(key),
+    onRefresh: () => companions.refresh(), onStop: (key) => companions.stop(key), onResume: (key) => companions.resume(key),
     onVisibilityChange: (open) => {
       clearInterval(companionsPoll); companionsPoll = null;
       if (open) {

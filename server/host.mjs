@@ -4,6 +4,7 @@
 import { WebSocketServer } from 'ws';
 import { LoggingAim } from './loggingAim.mjs';
 import { CompanionConfigService } from './companionConfig.mjs';
+import { CompanionControlService } from './companionControl.mjs';
 import { LocalServer } from '../src/net/localServer.js';
 import { MSG, PROTOCOL_VERSION } from '../src/net/protocol.js';
 import { LagLink } from '../src/net/lagLink.js';
@@ -73,7 +74,7 @@ export class GameHost {
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
     economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, fireOperations = false, agentTrade = false,
-    groundTransactions = null, companionConfigAllowMemory = false } = {}) {
+    groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
       groundTransactions = assemblyOptions(groundTransactions, ['journal']);
       if (Object.keys(groundTransactions).length !== 1 || !groundTransactions.journal || !economicOperations ||
@@ -181,6 +182,7 @@ export class GameHost {
     if (this.groundAuthority) this.server.beforeTick = this.groundAuthority.boundary;
     else if (this.economicAuthority) this.server.beforeTick = () => this.economicAuthority.drain();
     this.started = performance.now();
+    this.companionControl = new CompanionControlService(this, { allowMemory: companionControlAllowMemory });
   }
 
   get pearlStaging() { return this.#pearlStaging; }
@@ -637,7 +639,10 @@ export class GameHost {
     if (msg.t === MSG.AGENT_MARKET) { this.agentMarketMessage(sock, msg); return; }
     if (msg.t === MSG.AGENT_TRADE) { agentTradeMessage(this, sock, msg); return; }
     if (msg.t === MSG.AGENT_GOODS_BUDGET) { void agentGoodsBudgetMessage(this, sock, msg); return; }
-    if (msg.t === MSG.AGENT_OWNER) { this.agentOwnerMessage(sock, msg); return; }
+    if (msg.t === MSG.AGENT_OWNER) {
+      if (!this.companionControl.handle(sock, msg)) this.agentOwnerMessage(sock, msg);
+      return;
+    }
     if (this.companionConfig.handle(sock, msg)) return;
     if ([MSG.AGENT_CONTROL, MSG.AGENT_TASK, MSG.AGENT_CANCEL, MSG.AGENT_RELEASE].includes(msg.t)) {
       this.agentMessage(sock, msg); return;
@@ -853,14 +858,7 @@ export class GameHost {
       reply('invalid_request'); return;
     }
     if (!this.agentControl) { reply(msg.op === 'list' ? null : 'disabled'); return; }
-    const projection = () => this.agentControl.listOwned(s.key).map((row) => {
-      const current = [...this.sockets.values()].find((candidate) => candidate.agentIdentity === row.characterKey &&
-        (!this.agentPilot || candidate.worldAdmitted) && candidate.ws.readyState === 1 &&
-        candidate.agentSessionId === this.agentControl.byCharacter(row.characterKey)?.grant.scope.sessionId);
-      const entity = current && this.server.clients.get(current.id)?.entity;
-      const name = entity ? this.server.world.describe(entity).name : null;
-      return { ...row, online: !!current, name: typeof name === 'string' ? name.slice(0, 64) : null };
-    });
+    const projection = () => this.agentOwnerProjection(s.key);
     if (msg.op === 'list') { reply(null, projection(), true); return; }
     const row = this.agentControl.listOwned(s.key).find((entry) => entry.characterKey === msg.characterKey);
     if (!row) { reply('forbidden'); return; }
@@ -873,6 +871,18 @@ export class GameHost {
     reply(null, projection(), true);
   }
 
+  agentOwnerProjection(owner) {
+    return this.agentControl.listOwned(owner).map(row => {
+      const current = [...this.sockets.values()].find(candidate => candidate.agentIdentity === row.characterKey &&
+        (!this.agentPilot || candidate.worldAdmitted) && candidate.ws.readyState === 1 &&
+        candidate.agentSessionId === this.agentControl.byCharacter(row.characterKey)?.grant.scope.sessionId);
+      const entity = current && this.server.clients.get(current.id)?.entity;
+      const name = entity ? this.server.world.describe(entity).name : null;
+      return { ...row, online: !!current, name: typeof name === 'string' ? name.slice(0, 64) : null,
+        ...this.companionControl.projection(row.characterKey) };
+    });
+  }
+
   agentMessage(sock, msg) {
     const fail = (why) => this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: false, why, state: null });
     if (!this.agentControl) { fail('disabled'); return; }
@@ -883,6 +893,10 @@ export class GameHost {
       if (sock.agentIdentity || !c?.entity || !s || s.closed || s.failed || this.profiles.accounts.get(s.key) !== s) { fail('forbidden'); return; }
       if (!exact(['direct', 'cancel'].includes(msg.op) ? ['t', 'op', 'characterId', 'task'] : ['t', 'op', 'characterId']) ||
           !['stop', 'revoke', 'resume', 'direct', 'cancel'].includes(msg.op)) { fail('invalid_control'); return; }
+      // The legacy owner API cannot bypass the durable CAS latch. Session-only lab mode remains compatible.
+      if (this.companionControl.managed && ['stop', 'revoke', 'resume'].includes(msg.op)) {
+        fail('durable_control_required'); return;
+      }
       if (msg.op === 'resume') {
         if (!this.agentControl.resume(s.key, msg.characterId)) { fail('forbidden'); return; }
         this.sendTo(sock.id, { t: MSG.AGENT_STATE, ok: true, state: this.agentControl.byCharacter(msg.characterId), resumed: true }); return;
@@ -918,6 +932,7 @@ export class GameHost {
     const sock = this.sockets.get(id);
     if (!sock?.agentIdentity && !this.server.clients.get(id)?.agentManaged) return true;
     if (!sock?.agentIdentity) return false;
+    if (!this.companionControl.allowed(sock.agentIdentity)) return false;
     const state = this.agentControl.byClient(id);
     if (phase === 'active') return !!state && this.agentControl.authorize(id, state.grant.controlRevision) &&
       (!state.task || this.agentTargetAllowed(id, state.task));
@@ -983,6 +998,7 @@ export class GameHost {
       const identity = await untilAbort(Promise.resolve().then(() => this.resolvePlayer(sock.req, msg, { signal })), signal);
       if (!this.sockets.has(sock.id) || signal.aborted) return;
       if (msg.agent === true) {
+        if (!this.companionControl.allowed(identity)) throw new StoreError('auth');
         // Reserve synchronously before profile I/O; concurrent joins count toward the pilot ceiling.
         if (this.agentPilot && [...this.sockets.values()].filter((s) => s.agentIdentity).length >= this.agentPilot.maxAgents)
           throw new StoreError('auth');
