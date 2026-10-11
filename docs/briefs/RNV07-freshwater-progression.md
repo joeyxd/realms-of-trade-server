@@ -100,6 +100,7 @@ en el brief de implementación y se prueban sin convertir la logística en grind
 ## Checkpoint RNV07b, 2026-10-11
 
 [Brief de implementación](RNV07b-canteen-survival.md) y [entrega/evidencia](../delivery/rnv07b-canteen.md).
-Cantimplora, dosis/rellenos y consumo SRV01 implementados localmente; 117/117 de integración y
-SQL032 13/13 dentro de esa selección. Activación/público pendientes de SQL032 y revisión final.
+Cantimplora, dosis/rellenos y consumo SRV01 publicados y activos: alpha.47/protocolo 53, runtime ef59c5c.
+SQL032 aplicada/readiness 1; 153/153 en el actualizador/VPS, SQL032 13/13 local y navegador ES/EN aprobado.
+WSS público autenticado confirma coste, consumo, replay y reconexión duradera; 19 hashes públicos iguales a Git.
 La fixture visual sin enemigos no acepta el encuentro completo. Sigue ruta comercial Salty Shore–Puerto Sol.

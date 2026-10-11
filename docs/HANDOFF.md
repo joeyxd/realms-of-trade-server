@@ -1,14 +1,15 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
-**AREA07 RNV07b, 2026-10-11 — cantimplora y supervivencia implementadas; activación pendiente:**
+**AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).
-Cantimplora de tres dosis, cuatro orígenes de relleno, comer/beber y HUD ES/EN; una cantidad de agua
-y el mismo recibo M5. Integra SRV01 con defaults/saneado, pausa offline y penalizaciones sin muerte
-por hambre/sed. Replays sin volver a consumir/curar; consumo bloqueado durante viaje activo.
-SQL032 aplicada por el autor y readiness 1 comprobado; activación en curso de `MN_CANTEEN_OPERATIONS`.
-153/153 de la selección del actualizador, SQL032 13/13 y revisión focal posterior; navegador local ES/EN aprobado.
-Candidato alpha.47/protocolo 53; conserva las activaciones actuales. Sigue ruta Salty Shore–Puerto Sol,
-después purificador avanzado con componente de Bahía Ceniza.
+Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;
+HUD ES/EN y SRV01 en el mismo perfil/recibo M5, pausa offline y penalizaciones sin muerte por hambre/sed.
+SQL032 aplicada por el autor; readiness 1 y MN_CANTEEN_OPERATIONS=1 comprobados en el VPS.
+Runtime ef59c5c, una instancia sana, 153/153 en la imagen y 19/19 fuentes públicas iguales a Git.
+WSS autenticado: fabricación pagada, relleno, bebida/comida, replay sin doble gasto, colisión y reconnect;
+cinco controles correctos, cinco recibos conservados y cuenta temporal retirada; cero errores/pendientes.
+Navegador local ES/EN aprobado en dos viewports con 14 capturas; fixture sin enemigos, encuentro pendiente.
+Sigue ruta Salty Shore–Puerto Sol; después purificador avanzado con componente de Bahía Ceniza.
 
 **AREA03 INV02c, 2026-10-11 — ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
 [Contrato](briefs/inv02c-attribute-controls.md) y [entrega/evidencia](delivery/inv02c-attribute-controls.md).

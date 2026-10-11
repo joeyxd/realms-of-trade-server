@@ -30,6 +30,6 @@ Se revisaron dos candidatos concretos del inventario Unreal: `Dreamrise_SMSK/Ass
 
 La aceptación local cubre coste y unicidad de fabricación, llenado desde cada origen, dosis llenas/vacías, consumo de comida y agua, carga, revisión/replay, reconnect, rechazo durante viaje activo, hold durante commit, ES/EN y escritorio/touch. [Resultados y capturas aceptados](../delivery/rnv07b-canteen.md): 153/153 en la selección del actualizador y dos viewports. La fixture visual sin enemigos no acepta el encuentro ni prueba activación en VPS.
 
-La publicación se identifica como **alpha.47 / protocolo 53**. SQL032 fue aplicada por el autor y su readiness 1 se verificó contra Supabase. El informe de entrega mantiene aparte la activación, revisión de imagen y prueba pública; este brief no sustituye esa evidencia.
+La publicación se identifica como **alpha.47 / protocolo 53**. SQL032 fue aplicada por el autor y su readiness 1 se verificó contra Supabase. El [informe de entrega](../delivery/rnv07b-canteen.md) registra la activación y revisión activa, imagen sana, 19 hashes públicos y canario WSS autenticado con reconexión en Supabase; esas evidencias prevalecen sobre el estado candidato inicial.
 
 Después de RNV07b sigue el viaje comercial Salty Shore–Puerto Sol: cargar reservas, llegar físicamente, comerciar, descargar y regresar. El purificador avanzado en Bahía Ceniza queda para una entrega posterior, cuando el origen jugable del componente raro y su adquisición estén acordados y accesibles.
