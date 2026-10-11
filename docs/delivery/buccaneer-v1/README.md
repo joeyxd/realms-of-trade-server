@@ -3,6 +3,10 @@
 2026-10-11. Implementado sobre `6fd7f68`; release alpha.52, protocolo 55 conservado, sin SQL.
 [Brief previo](../../briefs/buccaneer-character-v1.md).
 
+**Ficha con idle, alpha.57:** usa el clip original del autor con su rig Mixamo en una instancia
+independiente. [Resultado, coste y verificación](idle/README.md). Miniaturas quietas, giro/zoom
+y movimiento reducido; el controlador de juego conserva las animaciones existentes.
+
 **Revisión posterior, alpha.53:** a petición del autor, el modelo crece un 12,2 %, la ficha se
 acerca un 10 % y el icono presenta la cara a ×1,60. [Comparación y verificación](size-review/README.md).
 Los binarios del modelo/retrato y los originales conservan sus hashes; cambia su presentación.
@@ -18,18 +22,20 @@ byte por byte en `docs/art/source/buccaneer-v1/`, además de la carpeta entregad
 El GLB fuente Tripo tiene 9.164 triángulos, 65 huesos Mixamo, tres mapas 2048 y cuatro clips.
 El runtime reutiliza el rebind y las animaciones procedurales de 15 huesos del juego, con sable,
 pistolas, guardia, carrera, dash, impactos, recolección, natación y despiece. Los clips fuente
-siguen disponibles en el original; no se cambia el controlador de combate por los clips Tripo.
+siguen disponibles en el original; desde alpha.57 el derivado conserva solo `idle` para la ficha.
+No se cambia el controlador de combate por los clips Tripo.
 
 ## Preparación y coste
 
 | Recurso | Original | Escritorio | Móvil |
 |---|---:|---:|---:|
-| Modelo GLB | 4.726.368 B | 1.612.100 B | 1.041.024 B |
+| Modelo GLB con idle | 4.726.368 B | 1.965.360 B | 1.394.284 B |
 | Albedo | 2048² | 1024² JPEG | 512² JPEG |
 | Icono | 3.321.172 B / 1600² | 290.760 B / 512² | 82.546 B / 256² |
 
 El dispositivo carga una sola variante GLB y un icono. Los mapas normal/RM no consumidos por
-`charToon` y los clips se excluyen de los derivados. Geometría, UV, pesos, jerarquía y matrices
+`charToon` y los clips swim/run/hit se excluyen de los derivados. `idle` conserva sus claves exactas.
+Geometría, UV, pesos, jerarquía y matrices
 de bind conservan sus bytes; JPEG calidad 94, sin submuestreo, y WebP lossless con alpha.
 Estimación RGBA8 con mipmaps: albedo 5,33 MiB escritorio / 1,33 MiB móvil; icono 1,33 / 0,33 MiB.
 Son presupuestos de texels, no mediciones físicas de memoria/FPS.

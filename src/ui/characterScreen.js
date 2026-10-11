@@ -18,6 +18,7 @@ import { FOODS } from '../data/survival.js';
 import { statLines, compareLines, targetSlot } from './itemui.js';
 import { skillIcon } from './hud.js';
 import { pearlHtml } from './pearlpanel.js';
+import { createFigureLoop } from './figureLoop.js';
 import { loggingSkillHtml } from './loggingSkill.js';
 import { goodName } from './craftingCatalog.js';
 import { translateData } from '../core/i18n.js';
@@ -87,11 +88,15 @@ const comfortOf = (p, pack) => comfortMass(pack.maxMass, readAttrField(p).value 
 export class CharacterScreen extends CharPanel {
   constructor(root, opts) {
     super(root, opts);
-    Object.assign(this, { vitals: opts.vitals, figure: opts.figure, slots: opts.slots, tools: opts.tools, onFood: opts.onFood });
+    Object.assign(this, { vitals: opts.vitals, figure: opts.figure, slots: opts.slots, tools: opts.tools, onFood: opts.onFood,
+      figureAnimated: opts.figureAnimated || (() => false), reducedMotion: opts.reducedMotion || (() => false) });
     this.tab = 'stats';
     this.statsAll = false;
     this.slotFocus = null;
     this.cam = { yaw: HOME_YAW, zoom: 1 };
+    this.figureLoop = createFigureLoop({ shouldRun: () => this.shouldAnimateFigure(), draw: (delta) => this.drawFigure(false, { delta }) });
+    this.onFigureVisibilityChange = () => this.syncFigureLoop();
+    document.addEventListener('visibilitychange', this.onFigureVisibilityChange);
     root.addEventListener('pointerdown', (e) => this.dragStart(e));
     root.addEventListener('wheel', (e) => { if (!e.target.closest('.ch-model')) return; e.preventDefault(); this.zoomBy(e.deltaY); }, { passive: false });
     this.unsubscribeLocale?.();
@@ -105,8 +110,9 @@ export class CharacterScreen extends CharPanel {
     super.open(tab, opts);
     document.body.classList.add('char-sheet'); // styles/character.css: the HUD steps aside behind the sheet
     clearInterval(this.live); this.live = setInterval(() => this.updateLive(), 250);
+    this.syncFigureLoop();
   }
-  close() { clearInterval(this.live); this.live = 0; this.drag = null; document.body.classList.remove('char-sheet'); super.close(); }
+  close() { this.figureLoop.stop(); clearInterval(this.live); this.live = 0; this.drag = null; document.body.classList.remove('char-sheet'); super.close(); }
   // A new selection starts its card at the top (the box keeps its scroll across innerHTML swaps).
   renderDetail() {
     const key = JSON.stringify([this.pinned, this.hover, this.slotFocus]);
@@ -148,7 +154,20 @@ export class CharacterScreen extends CharPanel {
     model.addEventListener('pointermove', move); model.addEventListener('pointerup', up); model.addEventListener('pointercancel', up);
   }
   zoomBy(dy) { this.cam.zoom = Math.max(0.85, Math.min(2.4, this.cam.zoom * (1 - Math.sign(dy) * 0.1))); this.requestFigure(); }
+  shouldAnimateFigure() {
+    if (!this.isOpen || this.root.hidden || !this.profile() || this.kind() !== 'sheet' || typeof this.figure !== 'function') return false;
+    if (typeof this.figureAnimated !== 'function' || !this.figureAnimated()) return false;
+    if (typeof this.reducedMotion === 'function' && this.reducedMotion()) return false;
+    if (globalThis.document?.hidden) return false;
+    const canvas = this.root.querySelector('.ch-model canvas');
+    if (!canvas || !canvas.getClientRects().length) return false;
+    const rect = canvas.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
+  syncFigureLoop() { this.figureLoop.sync(); }
   requestFigure() {
+    this.syncFigureLoop();
+    if (this.figureLoop.pending) return;
     if (this.figQueued) return;
     this.figQueued = true;
     requestAnimationFrame(() => { this.figQueued = false; this.drawFigure(); });
@@ -159,12 +178,14 @@ export class CharacterScreen extends CharPanel {
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     return true;
   }
-  drawFigure(thumbs = false) {
+  drawFigure(thumbs = false, { delta = 0 } = {}) {
     if (!this.isOpen || typeof this.figure !== 'function') return;
     const main = this.root.querySelector('.ch-model canvas');
     try {
-      if (main && this.sizeCanvas(main)) this.figure(main, { yaw: this.cam.yaw, zoom: this.cam.zoom });
-      if (thumbs) this.root.querySelectorAll('[data-view] canvas').forEach((c, i) => { if (this.sizeCanvas(c, 1.25)) this.figure(c, { yaw: VIEWS[i], zoom: 1 }); });
+      if (main && this.sizeCanvas(main)) this.figure(main, { yaw: this.cam.yaw, zoom: this.cam.zoom, idle: true, delta, still: false });
+      if (thumbs) this.root.querySelectorAll('[data-view] canvas').forEach((c, i) => {
+        if (this.sizeCanvas(c, 1.25)) this.figure(c, { yaw: VIEWS[i], zoom: 1, idle: true, delta: 0, still: true });
+      });
     } catch { /* the figure is decoration; the sheet works without it */ }
     const views = this.root.querySelectorAll('[data-view]');
     views.forEach((b, i) => b.classList.toggle('on', Math.abs(((this.cam.yaw - VIEWS[i]) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI) < 0.5));
@@ -180,6 +201,7 @@ export class CharacterScreen extends CharPanel {
       this.root.innerHTML = this.shellHtml(T, kind);
       if (kind === 'sheet') requestAnimationFrame(() => this.drawFigure(true));
     }
+    this.syncFigureLoop();
     this.root.querySelectorAll('[data-tab]').forEach((b) => { const on = b.dataset.tab === this.tab; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
     if (!p) { this.part('wide', `<p class="cp-empty">${esc(T.noProfile)}</p>`); return; }
     if (kind === 'wide') {
@@ -273,6 +295,7 @@ export class CharacterScreen extends CharPanel {
   }
   // Numbers that move without a new profile (HP, guard stamina, XP).
   updateLive() {
+    this.syncFigureLoop();
     if (!this.isOpen) return;
     const v = this.vitals?.(), lang = uiLang();
     if (!v) return;

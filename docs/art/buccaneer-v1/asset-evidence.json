@@ -2,18 +2,24 @@
   "asset_id": "buccaneer-v1",
   "derived": {
     "assets/models/buccaneer-v1-desktop.glb": {
-      "animations": [],
+      "animation_accessors": 197,
+      "animation_buffer_bytes": 310560,
+      "animation_channels": 195,
+      "animation_samplers": 195,
+      "animations": [
+        "idle"
+      ],
       "basecolor_dimensions": [
         1024,
         1024
       ],
-      "bytes": 1612100,
+      "bytes": 1965360,
       "has_metallic_roughness_map": false,
       "has_normal_map": false,
       "images": 1,
       "materials": 1,
       "meshes": 1,
-      "sha256": "77dc25943805f9d4e76e968ee0bbcca8e252cd373f497f62a27f4e3a24869d15",
+      "sha256": "0754fb9e9ec9dbc0be751dae1fb4530ab6a8ca749c9d4476cefa3eaca0adfe78",
       "skin_joints": [
         65
       ],
@@ -22,18 +28,24 @@
       "triangles": 9164
     },
     "assets/models/buccaneer-v1-mobile.glb": {
-      "animations": [],
+      "animation_accessors": 197,
+      "animation_buffer_bytes": 310560,
+      "animation_channels": 195,
+      "animation_samplers": 195,
+      "animations": [
+        "idle"
+      ],
       "basecolor_dimensions": [
         512,
         512
       ],
-      "bytes": 1041024,
+      "bytes": 1394284,
       "has_metallic_roughness_map": false,
       "has_normal_map": false,
       "images": 1,
       "materials": 1,
       "meshes": 1,
-      "sha256": "6f077a21b780c8eef9995b9b1239b48de0ebd5847047206029765758de6bf3ff",
+      "sha256": "ca5480b495228e774b8308e9b9d7d42fa397aa204aea3ea4e1b05a515141c549",
       "skin_joints": [
         65
       ],
@@ -65,7 +77,10 @@
     }
   },
   "invariants": {
-    "runtime_animations": 0,
+    "runtime_animation_names": [
+      "idle"
+    ],
+    "runtime_animations": 1,
     "runtime_metallic_roughness_map": false,
     "runtime_normal_map": false,
     "skin_joints": 65,
@@ -122,7 +137,7 @@
       "resize": "Pillow LANCZOS",
       "subsampling": 0
     },
-    "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; remove animation clips, normal map and metallic-roughness map; embed resized basecolor only",
+    "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain only the source idle animation with original accessors and key bytes; remove swim/run/hit clips, normal map and metallic-roughness map; embed resized basecolor only",
     "portrait": {
       "crop": false,
       "desktop_px": 512,

@@ -8,9 +8,10 @@
       "mobileSrc": "models/buccaneer-v1-mobile.glb",
       "looks": ["Bucanero"],
       "height": 2.12,
+      "figureAnimation": "idle",
       "armsDown": true,
       "weapon": "proc",
-      "notes": "Author-supplied provisional Bucanero, Mixamo rebind; albedo 1024 desktop / 512 mobile. Original and clips preserved outside runtime. See docs/delivery/buccaneer-v1/README.md."
+      "notes": "Author-supplied provisional Bucanero, Mixamo rebind in world; native idle in character sheet. Albedo 1024 desktop / 512 mobile. All source clips preserved in original. See docs/delivery/buccaneer-v1/README.md."
     },
     {
       "id": "tex:portrait-buccaneer-v1",

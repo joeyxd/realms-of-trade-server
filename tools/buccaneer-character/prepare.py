@@ -152,10 +152,13 @@ def compact_glb(
     source_doc: dict[str, Any], source_binary: bytes, basecolor_jpeg: bytes, basecolor_name: str
 ) -> bytes:
     doc = json.loads(json.dumps(source_doc))
-    doc.pop("animations", None)
+    idle_clips = [animation for animation in doc.get("animations", []) if animation.get("name") == "idle"]
+    if len(idle_clips) != 1:
+        raise ValueError(f"expected exactly one source idle clip, found {len(idle_clips)}")
+    doc["animations"] = idle_clips
     image_index = basecolor_image_index(doc)
 
-    # Preserve only mesh, skin, and inverse-bind accessors; animation-only data is discarded.
+    # Preserve mesh, skin, inverse-bind, and the retained idle animation accessors.
     needed_accessors: set[int] = set()
     for mesh in doc.get("meshes", []):
         for primitive in mesh.get("primitives", []):
@@ -165,6 +168,10 @@ def compact_glb(
     for skin in doc.get("skins", []):
         if "inverseBindMatrices" in skin:
             needed_accessors.add(skin["inverseBindMatrices"])
+    for animation in doc["animations"]:
+        for sampler in animation.get("samplers", []):
+            needed_accessors.add(sampler["input"])
+            needed_accessors.add(sampler["output"])
     if not needed_accessors:
         raise ValueError("no mesh/skin accessors found")
 
@@ -224,6 +231,10 @@ def compact_glb(
     for skin in doc.get("skins", []):
         if "inverseBindMatrices" in skin:
             skin["inverseBindMatrices"] = old_to_new_accessor[skin["inverseBindMatrices"]]
+    for animation in doc.get("animations", []):
+        for sampler in animation.get("samplers", []):
+            sampler["input"] = old_to_new_accessor[sampler["input"]]
+            sampler["output"] = old_to_new_accessor[sampler["output"]]
 
     pbr = doc["materials"][0].setdefault("pbrMetallicRoughness", {})
     pbr["baseColorTexture"] = {"index": 0}
@@ -302,6 +313,20 @@ def glb_summary(data: bytes) -> dict[str, Any]:
     image_index = basecolor_image_index(doc)
     texture_bytes = image_payload(doc, binary, image_index)
     dimensions = image_dimensions(texture_bytes)
+    animation_accessors: set[int] = set()
+    animation_views: set[int] = set()
+    for animation in doc.get("animations", []):
+        for sampler in animation.get("samplers", []):
+            for key in ("input", "output"):
+                accessor_index = sampler[key]
+                animation_accessors.add(accessor_index)
+                accessor = doc["accessors"][accessor_index]
+                if "bufferView" in accessor:
+                    animation_views.add(accessor["bufferView"])
+                sparse = accessor.get("sparse", {})
+                if sparse:
+                    animation_views.add(sparse["indices"]["bufferView"])
+                    animation_views.add(sparse["values"]["bufferView"])
     return {
         "bytes": len(data),
         "sha256": sha256(data),
@@ -309,6 +334,10 @@ def glb_summary(data: bytes) -> dict[str, Any]:
         "skins": len(doc.get("skins", [])),
         "skin_joints": [len(skin.get("joints", [])) for skin in doc.get("skins", [])],
         "animations": [animation.get("name", "") for animation in doc.get("animations", [])],
+        "animation_channels": sum(len(animation.get("channels", [])) for animation in doc.get("animations", [])),
+        "animation_samplers": sum(len(animation.get("samplers", [])) for animation in doc.get("animations", [])),
+        "animation_accessors": len(animation_accessors),
+        "animation_buffer_bytes": sum(doc["bufferViews"][index]["byteLength"] for index in animation_views),
         "meshes": len(doc.get("meshes", [])),
         "materials": len(doc.get("materials", [])),
         "images": len(doc.get("images", [])),
@@ -387,6 +416,48 @@ def assert_geometry_skin_preserved(
         raise ValueError("derived GLB changed triangle count")
 
 
+def assert_idle_animation_preserved(
+    source_doc: dict[str, Any],
+    source_binary: bytes,
+    derived_doc: dict[str, Any],
+    derived_binary: bytes,
+) -> None:
+    source_clips = [clip for clip in source_doc.get("animations", []) if clip.get("name") == "idle"]
+    derived_clips = derived_doc.get("animations", [])
+    if len(source_clips) != 1 or len(derived_clips) != 1 or derived_clips[0].get("name") != "idle":
+        raise ValueError("runtime GLB must retain exactly the source idle clip")
+    before, after = source_clips[0], derived_clips[0]
+    if before.get("channels") != after.get("channels"):
+        raise ValueError("derived idle clip changed channels or joint targets")
+    if len(before.get("samplers", [])) != len(after.get("samplers", [])):
+        raise ValueError("derived idle clip changed sampler count")
+
+    source_accessors = source_doc.get("accessors", [])
+    derived_accessors = derived_doc.get("accessors", [])
+    for index, (old_sampler, new_sampler) in enumerate(zip(before["samplers"], after["samplers"])):
+        old_settings = {key: value for key, value in old_sampler.items() if key not in ("input", "output")}
+        new_settings = {key: value for key, value in new_sampler.items() if key not in ("input", "output")}
+        if old_settings != new_settings:
+            raise ValueError(f"derived idle sampler {index} changed interpolation/settings")
+        for key in ("input", "output"):
+            old_index, new_index = old_sampler[key], new_sampler[key]
+            old_accessor = source_accessors[old_index]
+            new_accessor = derived_accessors[new_index]
+            for field in ("count", "type", "componentType", "normalized", "byteOffset", "min", "max", "sparse"):
+                if old_accessor.get(field) != new_accessor.get(field):
+                    raise ValueError(f"derived idle sampler {index} {key} accessor changed {field}")
+            if ("bufferView" in old_accessor) != ("bufferView" in new_accessor):
+                raise ValueError(f"derived idle sampler {index} {key} accessor lost its bufferView")
+            if "bufferView" in old_accessor:
+                old_view_index, new_view_index = old_accessor["bufferView"], new_accessor["bufferView"]
+                if view_bytes(source_doc, source_binary, old_view_index) != view_bytes(derived_doc, derived_binary, new_view_index):
+                    raise ValueError(f"derived idle sampler {index} {key} bytes differ from source")
+                old_view = source_doc["bufferViews"][old_view_index]
+                new_view = derived_doc["bufferViews"][new_view_index]
+                if old_view.get("byteStride") != new_view.get("byteStride") or old_view.get("target") != new_view.get("target"):
+                    raise ValueError(f"derived idle sampler {index} {key} buffer layout changed")
+
+
 def run(source_dir: Path) -> dict[str, Any]:
     source_dir = source_dir.resolve()
     glb_src = source_dir / SOURCE_GLB
@@ -404,8 +475,9 @@ def run(source_dir: Path) -> dict[str, Any]:
         raise ValueError(f"source triangle invariant failed: expected {EXPECTED_TRIANGLES}, got {source_triangles}")
     if skin_joint_counts != [EXPECTED_SKIN_JOINTS]:
         raise ValueError(f"source skin invariant failed: expected one {EXPECTED_SKIN_JOINTS}-joint skin, got {skin_joint_counts}")
-    if not source_doc.get("animations"):
-        raise ValueError("expected source animation clips to preserve in the original only")
+    idle_clips = [clip for clip in source_doc.get("animations", []) if clip.get("name") == "idle"]
+    if len(idle_clips) != 1:
+        raise ValueError(f"expected exactly one source idle clip, found {len(idle_clips)}")
 
     source_basecolor_index = basecolor_image_index(source_doc)
     basecolor = image_payload(source_doc, source_binary, source_basecolor_index)
@@ -427,18 +499,19 @@ def run(source_dir: Path) -> dict[str, Any]:
     output_records: dict[str, Any] = {}
     for relative, data in sorted(outputs.items()):
         destination = REPO_ROOT / relative
-        atomic_write(destination, data)
+        if not destination.is_file() or destination.read_bytes() != data:
+            atomic_write(destination, data)
         if destination.read_bytes() != data:
             raise ValueError(f"output read-back mismatch: {relative}")
         if relative.endswith(".glb"):
             summary = glb_summary(data)
-            derived_doc, _ = parse_glb(data)
-            _, derived_binary = parse_glb(data)
+            derived_doc, derived_binary = parse_glb(data)
             assert_geometry_skin_preserved(source_doc, source_binary, derived_doc, derived_binary)
+            assert_idle_animation_preserved(source_doc, source_binary, derived_doc, derived_binary)
             if summary["triangles"] != EXPECTED_TRIANGLES or summary["skin_joints"] != [EXPECTED_SKIN_JOINTS]:
                 raise ValueError(f"derived geometry/skin invariant failed: {relative}")
-            if summary["animations"] or summary["has_normal_map"] or summary["has_metallic_roughness_map"]:
-                raise ValueError(f"runtime GLB retained animation or unused PBR bindings: {relative}")
+            if summary["animations"] != ["idle"] or summary["has_normal_map"] or summary["has_metallic_roughness_map"]:
+                raise ValueError(f"runtime GLB is missing idle or retained unused PBR bindings: {relative}")
         else:
             from io import BytesIO
 
@@ -491,7 +564,7 @@ def run(source_dir: Path) -> dict[str, Any]:
             "jpeg_codec": getattr(Image.core, "jpeglib_version", "unknown"),
         },
         "transformations": {
-            "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; remove animation clips, normal map and metallic-roughness map; embed resized basecolor only",
+            "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain only the source idle animation with original accessors and key bytes; remove swim/run/hit clips, normal map and metallic-roughness map; embed resized basecolor only",
             "basecolor": {"desktop_px": 1024, "mobile_px": 512, "format": "JPEG", "quality": 94, "subsampling": 0, "resize": "Pillow LANCZOS"},
             "portrait": {"desktop_px": 512, "mobile_px": 256, "format": "WebP", "lossless": True, "mode": "RGBA", "resize": "Pillow LANCZOS", "crop": False, "magenta_removed": False},
         },
@@ -500,7 +573,8 @@ def run(source_dir: Path) -> dict[str, Any]:
             "skins": 1,
             "skin_joints": EXPECTED_SKIN_JOINTS,
             "source_animations_preserved_in_original": True,
-            "runtime_animations": 0,
+            "runtime_animations": 1,
+            "runtime_animation_names": ["idle"],
             "runtime_normal_map": False,
             "runtime_metallic_roughness_map": False,
         },
