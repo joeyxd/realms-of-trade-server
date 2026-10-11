@@ -33,7 +33,7 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 if (help) { console.log(usage); process.exit(0); }
 ensure(envFile && outArg, usage);
-ensure(PROTOCOL_VERSION === 49, 'local protocol version is not the expected attribute build (49)');
+ensure([49, 50].includes(PROTOCOL_VERSION), 'local protocol is outside the reviewed attribute canary versions (49/50)');
 if (envFile) { try { process.loadEnvFile(path.resolve(envFile)); } catch { throw new Error('environment file unavailable'); } }
 ensure(process.env.MN_QA_ALLOW_PUBLIC === '1', 'Public QA guard is active; set MN_QA_ALLOW_PUBLIC=1 for this bounded acceptance.');
 ensure(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY && process.env.SUPABASE_PUBLIC_KEY,
@@ -55,7 +55,7 @@ const worldId = process.env.WORLD_ID || 'marea-negra';
 const tag = randomUUID(), email = `mn-attributes-qa-${tag}@example.com`;
 const password = `Aa1!${randomBytes(28).toString('base64url')}`, authMarker = `mnQaAttributesPublic:${tag}`;
 let accountId = null, accessToken = null, socket = null, contentIdentity = null;
-let profileGeneration = 0, latestProfile = null, latestWelcome = null, messages = [], waiters = [];
+let profileGeneration = 0, joinCount = 0, latestProfile = null, latestWelcome = null, messages = [], waiters = [];
 const receipts = new Set();
 const evidence = { schema: 'mn.attributes.public.v1', startedAt: new Date().toISOString(), target: base.origin,
   mode: active ? 'active-attribute-operations' : 'feature-off-legacy-profile', identity: 'random disposable Supabase user; credentials redacted',
@@ -115,7 +115,7 @@ async function publicPreflight() {
     && status.storage?.world?.id === worldId && status.storage.world.ready === true && status.storage.world.failed === false
     && status.storage?.unsaved === 0 && status.storage?.profileWrites === 0 && status.storage.errors === 0 && expectedAttributes,
   'public version, zero-player, SQL readiness, or attribute feature state preflight failed');
-  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), 'deployed protocol differs from local protocol 49');
+  ensure(protocol.includes(`PROTOCOL_VERSION = ${PROTOCOL_VERSION}`), `deployed protocol differs from local protocol ${PROTOCOL_VERSION}`);
   ensure(auth.enabled === true && new URL(auth.url).origin === new URL(process.env.SUPABASE_URL).origin,
     'public Auth configuration mismatch');
   ensure(content.ok === true && Number.isSafeInteger(content.generation)
@@ -160,7 +160,7 @@ async function connect() {
   await waitProfile(profile => profileGeneration > generation && profile?.pirateId === `account:${accountId}`,
     'authenticated profile snapshot', 30000);
   ensure(wsUrl.protocol === 'wss:', 'acceptance did not use public WSS');
-  check('disposable_authenticated_public_wss_join');
+  check(joinCount++ === 0 ? 'disposable_authenticated_public_wss_join' : 'disposable_authenticated_public_wss_reconnect');
 }
 function send(value) {
   ensure(socket?.readyState === WebSocket.OPEN, 'public WSS is not open');
@@ -230,6 +230,8 @@ async function activeAcceptance() {
   ensure(adopted.ack.ok === true && adopted.ack.durable === true && adopted.ack.rev === adoption.expectedRev + 1,
     'durable attribute adoption failed');
   await waitProfile(profile => profile?.attr?.v === 1 && profile.eco.tradeRev === adopted.ack.rev, 'adopted public profile');
+  assert.equal(latestProfile.eco.pack.maxMass, 50, 'adoption did not apply the base mass limit');
+  assert.equal(latestProfile.eco.pack.cap, 18, 'adoption changed pack volume');
 
   const assignment = { type: 'attributes', op: 'assign', opId: `attr-assign-${randomUUID().replaceAll('-', '').slice(0, 16)}`,
     expectedRev: adopted.ack.rev, stat: 'carga', n: 2 };
@@ -237,6 +239,8 @@ async function activeAcceptance() {
   ensure(assigned.ack.ok === true && assigned.ack.durable === true && assigned.ack.rev === assignment.expectedRev + 1,
     'durable two-point assignment failed');
   await waitProfile(profile => profile?.attr?.carga === 2 && profile.eco.tradeRev === assigned.ack.rev, 'assigned public profile');
+  assert.equal(latestProfile.eco.pack.maxMass, 60, 'assignment did not apply the two-point mass limit');
+  assert.equal(latestProfile.eco.pack.cap, 18, 'assignment changed pack volume');
 
   const reset = { type: 'attributes', op: 'reset', opId: `attr-reset-${randomUUID().replaceAll('-', '').slice(0, 16)}`,
     expectedRev: assigned.ack.rev };
@@ -274,7 +278,8 @@ async function activeAcceptance() {
   assert.deepEqual(latestProfile.attr, saved.data.attr);
   assert.equal(latestProfile.eco.pack.maxMass, saved.data.eco.pack.maxMass);
   assert.equal(latestProfile.eco.tradeRev, saved.data.eco.tradeRev);
-  check('adopt_assign_reset_historical_retry_stale_conflict_and_reconnect', { receiptCount: receipts.size });
+  check('adopt_assign_reset_historical_retry_stale_conflict_and_reconnect', { receiptCount: receipts.size,
+    adoptedMaxMass: 50, assignedMaxMass: 60, resetMaxMass: saved.data.eco.pack.maxMass, packVolume: 18 });
 }
 
 try {
