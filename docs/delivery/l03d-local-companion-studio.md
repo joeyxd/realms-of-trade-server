@@ -23,7 +23,7 @@ ficticio del barco, **Faro de Jade**, desde un episodio histórico con fuente.
 | Segunda pregunta sobre barco | Responde Faro de Jade y atribuye el recuerdo a la conversación anterior. |
 | Pregunta sobre oro no observado | Reconoce que no puede verlo; no inventa una cifra. |
 
-Seis llamadas en este corte: 19.182 tokens nativos confirmados; cero reservas, uso desconocido o
+Seis llamadas confirmadas por el ledger local en este corte: 19.182 tokens nativos; cero reservas, uso desconocido o
 sobregiro al terminar. Coste monetario desconocido, no cero. Las respuestas entregadas tardaron
 4,9–13,5 s; esto es conversación, no aceptación de reflejos físicos. El modelo mezcla idiomas,
 tiene errores gramaticales y no pasó el resumen. No se acepta todavía su calidad de personaje ni
@@ -64,10 +64,10 @@ y runtime WebSocket con proveedor simulado. Stop en inferencia impide un chat ta
 modelo real en estas pruebas. El arranque/restauración no consulta al modelo.
 
 La ejecución amplia anterior de `agent-*` no está verde: 594/610 pasaron, diez fallaron, una cancelada
-y cinco omitidas. Al repetir solo siete suites fallidas sin concurrencia, 28 pasaron y ocho fallaron:
-cinco de proyección de inventario (mochila 18 frente al contrato 10), movimiento, PvE y comercio WS.
-Metas/reentrada/memoria que fallaron bajo carga pasaron en serie. Los ocho restantes recorren
-runner/servidor no modificados, fuera de este corte; no se anuncia regresión general aprobada.
+y cinco omitidas. El registro incluye fallos de proyección de inventario (mochila 18 frente al
+contrato 10) y pruebas de red de metas, reentrada, memoria, movimiento, PvE y comercio.
+La repetición serial se observó en consola, sin conservar un log; no se usa como aceptación
+auditable. No se anuncia regresión general aprobada.
 
 ## Reabrir la ficha
 
