@@ -10,6 +10,16 @@ Integración final alpha.42 70/70 y navegador local 12/12; regresión anterior a
 Los techos guardados aún no son ledger; la autenticación del navegador local es simulada.
 Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
 
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
 
 **AREA07, decisión del autor 2026-10-10 — agua manual antes del purificador avanzado:**
 [RNV07](briefs/RNV07-freshwater-progression.md) registra cubeta, fuente interior con enemigos,
