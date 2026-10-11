@@ -78,6 +78,7 @@ export class Hud {
           <div class="bar hp"><div class="ghost" style="width:100%"></div><div class="fill" style="width:100%"></div><div class="num">100 / 100</div></div>
           <div class="bar en thin"><div class="fill" style="width:0%"></div><div class="num">RIPOSTE 0 %</div></div>
           <div class="bar xp thin"><div class="fill" style="width:0%"></div><div class="num">0 / 100 XP</div></div>
+          <div class="needs" hidden><div class="bar need food thin" title="Hambre"><div class="fill" style="width:100%"></div><div class="num"></div></div><div class="bar need water thin" title="Sed"><div class="fill" style="width:100%"></div><div class="num"></div></div></div>
           <div class="gold-row outlined"><span class="coin">${ICONS.coin}</span><b class="gold-n">0</b><span class="tier-chip" hidden></span><span class="law-chip" hidden data-l10n-title="hud.lawTip" title="${attr('hud.lawTip')}">${ltext('hud.law')}</span></div>
         </div>
       </div>
@@ -150,6 +151,8 @@ export class Hud {
     this.rpBar = root.querySelector('.bar.en');
     this.rpFill = this.rpBar.querySelector('.fill'); this.rpNum = this.rpBar.querySelector('.num');
     this.xpFill = root.querySelector('.bar.xp .fill'); this.xpNum = root.querySelector('.bar.xp .num');
+    this.needsEl = root.querySelector('.needs');
+    this.needBars = [...root.querySelectorAll('.bar.need')].map(bar => ({ bar, fill: bar.querySelector('.fill'), num: bar.querySelector('.num'), key: bar.classList.contains('food') ? 'sat' : 'hyd' }));
     this.rmbSlot = root.querySelector('.rmb-slot');
     this.rmbSweep = this.rmbSlot.querySelector('.sweep');
     this.catchPips = this.rmbSlot.querySelectorAll('.catch i');
@@ -353,6 +356,23 @@ export class Hud {
       this.last.gold = n;
     }
     if (tierName !== this.last.tierName) { this.tierChip.hidden = !tierName; setDataText(this.tierChip,tierName); this.last.tierName = tierName; }
+  }
+
+  // Hunger and thirst meters are shown only for profiles with survival enabled.
+  setNeeds({ needs = 0, sat = 100, hyd = 100, needPen = 0 } = {}) {
+    const on = Number(needs) > 0, language = String(getLocale()).toLowerCase().startsWith('en') ? 'en' : 'es';
+    this.needsEl.hidden = !on;
+    if (!on) return;
+    const values = { sat: Number(sat), hyd: Number(hyd) };
+    for (const item of this.needBars) {
+      const value = Math.max(0, Math.min(100, Number.isFinite(values[item.key]) ? values[item.key] : 0));
+      item.fill.style.width = `${value}%`;
+      item.num.textContent = `${language === 'en' ? (item.key === 'sat' ? 'FOOD' : 'WATER') : (item.key === 'sat' ? 'COMIDA' : 'AGUA')} ${Math.round(value)}`;
+      item.bar.classList.toggle('low', value < 30);
+      item.bar.title = `${language === 'en' ? (item.key === 'sat' ? 'Hunger' : 'Thirst') : (item.key === 'sat' ? 'Hambre' : 'Sed')} ${Math.round(value)}`;
+    }
+    const penalty = Math.max(0, Math.min(1, Number(needPen) || 0));
+    this.needsEl.setAttribute('aria-label', `${language === 'en' ? 'Needs' : 'Necesidades'} · ${Math.round(penalty * 100)}%`);
   }
 
   // Potions you carry, and the cooldown left (s) out of max.

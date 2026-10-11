@@ -42,11 +42,10 @@ El catálogo ya tiene `agua` con masa/volumen, transferencias y comercio; RNV06 
 Un barril decorativo no es un depósito funcional. El contrato de RNV06 tampoco tiene un componente raro.
 No atribuir esas funciones a un modelo o a una fila del catálogo.
 
-El frente paralelo `inv02-survival` prepara hambre/sed, perfil `surv:{v:1,sat,hyd}` y consumo
-`{type:'eat',g}` desde mochila; es trabajo local ajeno sin integrar. Reutilizar su consumidor/guardado
-al integrarlo, sin crear otra sed. Ese comando aún no representa beber una dosis de cantimplora.
-Ambos frentes usaron protocolo 47: resolver la versión conjunta al integrar snapshots. SQL028/readiness
-del frente de supervivencia deben verificarse con su propietario antes de publicar; este diseño no los activa.
+El borrador paralelo `inv02-survival` se revisó sin modificar su árbol. RNV07b reutiliza la dirección SRV01
+y el campo `surv:{v:1,sat,hyd}`, con consumo integrado en la familia `freshwater` del recibo M5 existente.
+No se monta el comando local antiguo `{type:'eat',g}` ni un segundo writer. SQL032 y protocolo 53
+son el contrato conjunto candidato; su activación exige readiness verificado.
 
 Una única cantidad respalda fuente → cubeta → barril → cantimplora → consumo. Definir identidad,
 capacidad y contenido por instancia, con defaults/saneado y proyección privada. Reutilizar `agua` donde
@@ -97,3 +96,10 @@ en el brief de implementación y se prueban sin convertir la logística en grind
 ## Checkpoint RNV07a, 2026-10-11
 
 [RNV07a publicada y activada](../delivery/rnv07-freshwater.md), alpha.44/protocolo 50. Runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53`, desplegado 04:47Z con imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado por el autor y readiness RPC 1; agua y atributos siguen enabled/ready. [WSS](../delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](../delivery/rnv07-freshwater/public-readonly.json), [activación](../delivery/rnv07-freshwater/activation.json). Pruebas: selección integrada 129/129, suite del host 5/5 y WSS público 6/6 con denegación anónima. [Evidencia visual local](../delivery/rnv07-freshwater/local/evidence-2026-10-11T04-35-22-891Z.json): 14 capturas, 7 por viewport; la fixture sin enemigos valida el recorrido feliz, no el recorrido live completo. La aceptación del encuentro en navegador queda pendiente para RNV07b. Cantimplora, beber, casas y purificador avanzado siguen fuera de RNV07a.
+
+## Checkpoint RNV07b, 2026-10-11
+
+[Brief de implementación](RNV07b-canteen-survival.md) y [entrega/evidencia](../delivery/rnv07b-canteen.md).
+Cantimplora, dosis/rellenos y consumo SRV01 implementados localmente; 117/117 de integración y
+SQL032 13/13 dentro de esa selección. Activación/público pendientes de SQL032 y revisión final.
+La fixture visual sin enemigos no acepta el encuentro completo. Sigue ruta comercial Salty Shore–Puerto Sol.

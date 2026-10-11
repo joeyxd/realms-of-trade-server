@@ -28,6 +28,8 @@ import { SKILLS } from '../../data/weapons.js';
 import { CONSUMABLES } from '../../data/items.js';
 import { LAWLESS } from '../../data/lawless.js';
 import { statsFor, refreshStats, kitUnlocked, passive, guardMax } from './stats.js';
+import { respawnNeeds } from './survival.js';
+import { staminaRegenMul } from '../../data/survival.js';
 import { stepWaterCurse } from './pearlcombat.js';
 
 const D2R = Math.PI / 180;
@@ -180,6 +182,7 @@ export function hurtByPlayer(world, e, raw, o) {
 function respawnPlayer(world, e, seq) {
   const ecs = world.ecs, map = world.map;
   ecs.dead[e] = 0; ecs.deadT[e] = 0;
+  respawnNeeds(world, e);
   ecs.hp[e] = ecs.maxHp[e];
   ecs.x[e] = ecs.cpX[e]; ecs.z[e] = ecs.cpZ[e]; ecs.y[e] = map.groundAt(ecs.x[e], ecs.z[e]);
   ecs.vx[e] = ecs.vz[e] = ecs.kbx[e] = ecs.kbz[e] = 0;
@@ -592,7 +595,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   dec('stagger');
   if (ecs.regenT[e] > Cb.regenDelay && ecs.hp[e] < ecs.maxHp[e]) ecs.hp[e] = Math.min(ecs.maxHp[e], ecs.hp[e] + ecs.maxHp[e] * Cb.regenRate * dt);
   const gMax = guardMax(ecs, e);
-  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < gMax) ecs.guardSt[e] = Math.min(gMax, ecs.guardSt[e] + G.regen * dt);
+  if (ecs.guardRegT[e] > G.regenDelay && ecs.guardSt[e] < gMax) ecs.guardSt[e] = Math.min(gMax, ecs.guardSt[e] + G.regen * dt * (ecs.needs[e] > 0 ? staminaRegenMul(ecs.sat[e], ecs.hyd[e]) : 1));
   if (ecs.catchN[e] > 0 && ecs.catchT[e] > G.catchLife) {
     ecs.catchN[e] = ecs.catchHv[e] = ecs.catchDmg[e] = 0;
     world.emit({ type: 'guard', st: 'lost', e, seq, x: ecs.x[e], z: ecs.z[e] });

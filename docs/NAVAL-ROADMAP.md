@@ -443,3 +443,9 @@ doméstico básico; no deben sustituirse por decisiones silenciosas sobre pérdi
 
 
 **RNV07a, 2026-10-11 — publicado y activado:** alpha.44/protocolo 50, runtime comprobado `80e46df8ca4664f93aa59df8350c27cc17589b53` a las 04:47Z, imagen `sha256:b883545f9317c7ba3ed03e7e0ec5d27c62a997b3d0a8c717504980e3f338f353`. SQL030 aplicado y readiness RPC 1; agua y atributos enabled/ready. [WSS público](delivery/rnv07-freshwater/public/acceptance.json), [health/fuentes](delivery/rnv07-freshwater/public-readonly.json), [activación](delivery/rnv07-freshwater/activation.json). Canario p?blico: seis comprobaciones correctas y anónimo denegado; health 200 y 7 hashes de fuente pública. La recolección/transferencia visual completa se probó en fixture local sin enemigos, no como recorrido live. Encuentro en navegador pendiente para RNV07b. Sigue cantimplora/consumo; casas y purificador avanzado conservan sus dependencias.
+
+**RNV07b, 2026-10-11 — implementación local, activación pendiente:**
+[Cantimplora y supervivencia](delivery/rnv07b-canteen.md): 3 dosis, relleno desde fuente/cubeta/barril/provisiones,
+comer/beber y necesidades SRV01 dentro de M5. SQL032 requiere aplicación/readiness antes del opt-in;
+no se permite consumir durante el viaje activo mientras la autoridad naval congela carga.
+Sigue ruta comercial Salty Shore–Puerto Sol; purificador avanzado después del origen jugable del núcleo.

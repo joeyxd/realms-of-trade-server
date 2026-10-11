@@ -20,7 +20,7 @@ class Element {
       const count = [...html.matchAll(/<article class="fresh-barrel"/g)].length;
       this.rows = Array.from({ length: count }, () => {
         const row = new Element();
-        for (const name of ['fresh-deposit', 'fresh-withdraw', 'fresh-barrel-state']) row.children.set(`.${name}`, new Element());
+        for (const name of ['fresh-deposit', 'fresh-withdraw', 'fresh-canteen-refill', 'fresh-barrel-state']) row.children.set(`.${name}`, new Element());
         row.children.set('b', new Element()); row.children.set('span', new Element());
         return row;
       });

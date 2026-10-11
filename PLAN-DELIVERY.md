@@ -1,5 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA07 RNV07b, 2026-10-11 — cantimplora y supervivencia implementadas; activación pendiente:**
+[Brief](docs/briefs/RNV07b-canteen-survival.md) y [entrega](docs/delivery/rnv07b-canteen.md).
+Cantimplora de tres dosis, cuatro orígenes de relleno, comer/beber y HUD ES/EN; una cantidad de agua
+y el mismo recibo M5. Integra SRV01 con defaults/saneado, pausa offline y penalizaciones sin muerte
+por hambre/sed. Replays sin volver a consumir/curar; consumo bloqueado durante viaje activo.
+SQL032 aplicada por el autor y readiness 1 comprobado; activación en curso de `MN_CANTEEN_OPERATIONS`.
+153/153 de la selección del actualizador, SQL032 13/13 y revisión focal posterior; navegador local ES/EN aprobado.
+Candidato alpha.47/protocolo 53; conserva las activaciones actuales. Sigue ruta Salty Shore–Puerto Sol,
+después purificador avanzado con componente de Bahía Ceniza.
+
 **AREA03 INV02c, 2026-10-11 — ficha de Carga ES/EN publicada, alpha.46/protocolo 52:**
 [Contrato](docs/briefs/inv02c-attribute-controls.md) y [entrega/evidencia](docs/delivery/inv02c-attribute-controls.md).
 Adopción explícita, asignación de un punto y confirmación de la única reasignación gratuita en C/Atributos;

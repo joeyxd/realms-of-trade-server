@@ -1,6 +1,8 @@
 // The spring channel uses the existing simulation tick. No fuel/needs clock or save writer.
 import { C, KIND } from '../ecs.js';
-import { FRESHWATER, freshwaterSource } from '../../data/freshwater.js';
+import { FRESHWATER, freshwaterSource, isCanteenCommand } from '../../data/freshwater.js';
+import { applyNeedsProfile } from './survival.js';
+import { FOODS, SURVIVAL } from '../../data/survival.js';
 import { checkedFreshwaterCommand, freshwaterProfileDelta } from './freshwaterProfile.js';
 import { readVessels } from '../economy/waterContainers.js';
 import { RAFT } from '../../data/raftparts.js';
@@ -19,9 +21,10 @@ const reply = (w, e, cmd, why, extra = {}) => w.emit({ type: 'freshwater', to: e
 export function freshwaterAccess(w, e, cmd, proof = true) {
   const ecs = w.ecs;
   if (!w.freshwaterEnabled) return 'disabled';
+  if (isCanteenCommand(cmd) && !w.survivalEnabled) return 'disabled';
   if (!ecs.alive[e] || ecs.kind[e] !== KIND.PLAYER || ecs.mask[e] & C.BOT || ecs.dead[e] || ecs.hp[e] <= 0) return 'dead';
   if (w.navalPilot?.locked?.(e)) return 'busy';
-  if (cmd.op === 'fill') {
+  if (['fill', 'fillCanteen'].includes(cmd.op)) {
     const source = freshwaterSource(w.map);
     if (!source || cmd.source !== source.id || source.y < .3) return 'source';
     if (Math.hypot(ecs.x[e] - source.x, ecs.z[e] - source.z) > source.radius || Math.abs(ecs.y[e] - source.y) > 2) return 'far';
@@ -31,7 +34,7 @@ export function freshwaterAccess(w, e, cmd, proof = true) {
       if (!ready || !same(ready.command, cmd) || ready.until < w.tick) return 'interrupted';
     }
   }
-  if (['deposit', 'withdraw'].includes(cmd.op)) {
+  if (['deposit', 'withdraw'].includes(cmd.op) || cmd.op === 'refillCanteen' && cmd.source === 'barrel') {
     const active = w.rafts?.get(cmd.ship);
     if (!active || active.owner !== e || active.ship.hp <= 0) return 'owner';
     const entry = active.condition?.entries.find(p => p.id === cmd.part && p.part[0] === 'waterBarrel');
@@ -57,7 +60,7 @@ export function freshwaterDraft(w, e, command, profile) {
 
 export function beginFreshwater(w, e, raw, ready) {
   const command = checkedFreshwaterCommand(raw);
-  if (!command || command.op !== 'fill') { reply(w, e, raw || {}, 'command'); return; }
+  if (!command || !['fill', 'fillCanteen'].includes(command.op)) { reply(w, e, raw || {}, 'command'); return; }
   const previous = w.freshwaterGather?.get(e);
   if (previous) {
     if (!same(previous.command, command)) reply(w, e, command, 'busy');
@@ -98,7 +101,8 @@ export function freshwaterStatus(w, e) {
       capacity: FRESHWATER.barrelCapacity, broken: entry.hp <= 0,
       near: barrelDistance(pose, entry.part, { x: ecs.x[e], y: ecs.y[e], z: ecs.z[e] }) <= 3.5 });
   }
-  return { enabled: true, source: source && { id: source.id,
+  return { enabled: true, canteenEnabled: w.survivalEnabled === true,
+    ...(w.survivalEnabled ? { needs: { sat: ecs.sat[e], hyd: ecs.hyd[e], penalty: ecs.needPen[e] } } : {}), source: source && { id: source.id,
     near: Math.hypot(ecs.x[e] - source.x, ecs.z[e] - source.z) <= source.radius && Math.abs(ecs.y[e] - source.y) <= 2 }, barrels,
     gathering: g ? Math.min(1, (w.tick - g.tick) / FRESHWATER.collectTicks) : 0 };
 }
@@ -113,6 +117,9 @@ export function localFreshwaterCmd(w, e, command, saveFits = () => true) {
   if (result.ack.ok) {
     const p = w.profiles.get(e), next = result.profile;
     p.eco.pack = next.eco.pack; p.eco.tradeRev = next.eco.tradeRev;
+    if (next.surv) { p.surv = structuredClone(next.surv); applyNeedsProfile(w, e, p); }
+    if (command.op === 'eat' && FOODS[command.source]?.sat > 0)
+      w.ecs.hp[e] = Math.min(w.ecs.maxHp[e], w.ecs.hp[e] + w.ecs.maxHp[e] * SURVIVAL.foodHeal);
     p.eco.ships.forEach((ship,index) => { const candidate=next.eco.ships[index]; ship.hold=candidate.hold; ship.rev=candidate.rev; });
     w.profileDirty.add(e);
   }

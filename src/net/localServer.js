@@ -63,7 +63,7 @@ export class LocalServer {
   #ownsTickPublication = false;
   #afterWorld = false; #holdingPublication = false;
 
-  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false }) {
+  constructor({ seed, send, bots = 5, debug = false, dev = true, instanceTime = true, enemies = true, maxPlayers = Infinity, pausable = true, fill = false, saves = trustSaves, onSave = null, profileAccess = null, beforeDetach = null, commandAccess = null, beforeTick = null, afterTick = null, tickAccess = null, progressionPersistence = null, now = () => performance.now(), chat = {}, navigation = true, fire = false, freshwater = false, survival = false }) {
     // Saved games (M4): solo trusts the blob it gets back, the Node server signs it (server/saves.mjs).
     this.saves = saves;
     this.onSave = onSave; // Server-owned snapshots; asynchronous storage stays outside the simulation.
@@ -104,6 +104,7 @@ export class LocalServer {
     installResources(this.world);
     this.world.fireEnabled = fire;
     this.world.freshwaterEnabled = freshwater;
+    this.world.survivalEnabled = survival === true;
     this.world.hideHandFire = e => hideHandFire(this.world, e);
     if (typeof navigation !== 'boolean') throw new TypeError('navigation option');
     if (navigation) {
@@ -297,7 +298,7 @@ export class LocalServer {
       const { t, ...raw } = msg, command = checkedFreshwaterCommand(raw);
       if (!command) return false;
       const commit = cmd => { localFreshwaterCmd(this.world, c.entity, cmd, p => c.serverProfile || this.saves.store(p).length <= MAX_SAVE); this.sendProfile(this.clientOf(c.entity), c); this.flushEvents(); };
-      if (command.op === 'fill') beginFreshwater(this.world, c.entity, command, commit); else commit(command);
+      if (['fill', 'fillCanteen'].includes(command.op)) beginFreshwater(this.world, c.entity, command, commit); else commit(command);
       return true;
     }
     if (msg?.type === 'fire') {

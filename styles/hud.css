@@ -39,6 +39,13 @@
 .bar.hp .fill { background: linear-gradient(180deg, #ff8a95, var(--hp) 60%, var(--hp-d)); }
 .bar.en .fill { background: linear-gradient(180deg, #a6ecff, var(--en) 60%, #136f9e); }
 .bar.xp .fill { background: linear-gradient(180deg, #ffe7a3, var(--xp) 60%, #a0700f); }
+.needs { display: grid; gap: 3px; width: 154px; }
+.needs[hidden] { display: none; }
+.bar.need { width: 154px; height: 10px; border-width: 1px; }
+.bar.need .num { font-size: 8px; line-height: 1; }
+.bar.need.food .fill { background: linear-gradient(180deg, #ffe2a0, #b97828 60%, #71431f); }
+.bar.need.water .fill { background: linear-gradient(180deg, #c8fbff, #39b8c8 60%, #176d82); }
+.bar.need.low { border-color: #ff8a80; }
 .bar .num {
   position: absolute; inset: 0; display: grid; place-items: center;
   font-size: 11px; font-weight: 900; color: #fff; text-shadow: 0 1px 0 var(--ink), 1px 0 0 var(--ink), -1px 0 0 var(--ink), 0 -1px 0 var(--ink);

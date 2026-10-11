@@ -1,5 +1,5 @@
 // Presentation-only view of the on-foot cargo pack and utility belt.
-import { readVessels } from '../data/freshwater.js';
+import { FRESHWATER, readVessels } from '../data/freshwater.js';
 import { GOODS } from '../data/goods.js';
 import { holdMass, holdUsed } from '../sim/economy/cargo.js';
 import { CARRY, carryLimits, readCarryField } from '../data/carry.js';
@@ -51,7 +51,17 @@ export function packInventoryHtml(profile, view = {}, language = 'es') {
     const dimensions = `${good.volume ?? good.w ?? 1} uV · ${good.mass ?? good.w ?? 1} uM`;
     return [`<li class="pack-good${pending ? ' is-pending' : ''}" title="${esc(dimensions)}"><span class="pack-good-icon">${cargoIcon()}</span><span class="pack-good-name">${esc(name)}<small>${esc(dimensions)}</small></span><b>${count}</b>${pending ? '<i class="pack-pending" aria-hidden="true"></i>' : ''}</li>`];
   }).join('');
-  const vessels = readVessels(pack.vessels).map(v => `<li class="pack-good"><span class="pack-good-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 12h16l-3 16H11zM10 12V9a6 6 0 0 1 12 0v3"/></svg></span><span class="pack-good-name">${lang==='en'?'Reusable bucket':'Cubeta reutilizable'}<small>${v.water}/4 ${lang==='en'?'fresh water':'agua dulce'} ? U</small></span><b>1</b></li>`).join('');
+  const vessels = readVessels(pack.vessels).map(v => {
+    const canteen = v.kind === 'canteen';
+    const name = canteen ? (lang === 'en' ? 'Reusable canteen' : 'Cantimplora reutilizable')
+      : (lang === 'en' ? 'Reusable bucket' : 'Cubeta reutilizable');
+    const capacity = canteen ? FRESHWATER.canteenCapacity : FRESHWATER.bucketCapacity;
+    const volume = canteen ? FRESHWATER.canteenVolume : FRESHWATER.bucketVolume;
+    const baseMass = canteen ? FRESHWATER.canteenMass : FRESHWATER.bucketMass;
+    const mass = Number((baseMass + v.water).toFixed(1));
+    const dimensions = `${volume} uV · ${mass} uM`;
+    return `<li class="pack-good"><span class="pack-good-icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 12h16l-3 16H11zM10 12V9a6 6 0 0 1 12 0v3"/></svg></span><span class="pack-good-name">${name}<small>${v.water}/${capacity} ${lang === 'en' ? 'fresh water' : 'agua dulce'} · ${dimensions}</small></span><b>1</b></li>`;
+  }).join('');
   const used = holdUsed({ ...pack, goods });
   const mass = holdMass({ ...pack, goods });
   const cap = Number.isFinite(Number(pack?.cap)) ? Math.max(0, Number(pack.cap)) : 0;

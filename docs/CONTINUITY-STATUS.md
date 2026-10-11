@@ -1,5 +1,15 @@
 # Continuidad de servidor — AREA15
 
+**AREA07 RNV07b, 2026-10-11 — cantimplora y supervivencia implementadas; activación pendiente:**
+[Brief](briefs/RNV07b-canteen-survival.md) y [entrega](delivery/rnv07b-canteen.md).
+Cantimplora de tres dosis, cuatro orígenes de relleno, comer/beber y HUD ES/EN; una cantidad de agua
+y el mismo recibo M5. Integra SRV01 con defaults/saneado, pausa offline y penalizaciones sin muerte
+por hambre/sed. Replays sin volver a consumir/curar; consumo bloqueado durante viaje activo.
+SQL032 aplicada por el autor y readiness 1 comprobado; activación en curso de `MN_CANTEEN_OPERATIONS`.
+153/153 de la selección del actualizador, SQL032 13/13 y revisión focal posterior; navegador local ES/EN aprobado.
+Candidato alpha.47/protocolo 53; conserva las activaciones actuales. Sigue ruta Salty Shore–Puerto Sol,
+después purificador avanzado con componente de Bahía Ceniza.
+
 **AREA01 GM05a, 2026-10-11 — escultura publicada, alpha.45/protocolo 51:**
 [Entrega](delivery/gm05a/DELIVERY.md), [navegador público](delivery/gm05a/public/final/public-browser-evidence.json),
 [cadena autenticada](delivery/gm05a/public/final/public-chain-evidence.json) y [despliegue](delivery/gm05a/deployment.json).

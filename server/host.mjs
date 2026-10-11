@@ -77,7 +77,7 @@ export class GameHost {
   constructor({ seed, bots = 3, maxPlayers = 4, dev = false, lagMs = 0, jitterMs = 0, origins = [], log = console.log, saves,
     store = createMemoryStore(), resolvePlayer = null, joinTimeoutMs = 15000, initializeAccounts = false,
     worldId = null, worldSaveMs = 60000, pearlJournal = null, chat = {}, agentControl = null, agentPilot = null,
-    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, agentTrade = false,
+    economicOperations = false, communityRequirements = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, agentTrade = false,
     groundTransactions = null, companionConfigAllowMemory = false, companionControlAllowMemory = false,
     inferenceCatalog = [], inferenceConfigAllowMemory = false } = {}) {
     if (groundTransactions !== null) {
@@ -101,6 +101,8 @@ export class GameHost {
     this.fireOperations = fireOperations;
     if (typeof freshwaterOperations !== 'boolean' || freshwaterOperations && !economicOperations) throw new StoreError('configuration');
     this.freshwaterOperations = freshwaterOperations;
+    if (typeof canteenOperations !== 'boolean' || canteenOperations && !freshwaterOperations) throw new StoreError('configuration');
+    this.canteenOperations = canteenOperations;
     if (typeof economicOperations !== 'boolean' || economicOperations && pearlJournal !== null ||
         !economicOperations && communityRequirements !== null) throw new StoreError('configuration');
     if (resolvePlayer !== null && typeof resolvePlayer !== 'function') throw new StoreError('configuration');
@@ -152,7 +154,7 @@ export class GameHost {
     // Keep its detached data private for explicit reconciliation; it may contain pre-commit UIDs.
     this.unsavedProfiles = new Map();
     this.stats = { bytesOut: 0, bytesIn: 0, msgsOut: 0, msgsIn: 0, dropped: 0, stepMs: 0, steps: 0 };
-    this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations,
+    this.server = new LocalServer({ fire: fireOperations, freshwater: freshwaterOperations, survival: canteenOperations,
       seed, bots, dev, debug: dev, maxPlayers, pausable: false, fill: true, chat, ...(saves ? { saves } : {}),
       send: (id, msg) => this.sendTo(id, msg),
       profileAccess: (id, entity) => this.profileAvailable(id, entity),
@@ -518,6 +520,8 @@ export class GameHost {
           (await this.store.checkLoggingOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.freshwaterOperations && (typeof this.store.checkFreshwaterOperations !== 'function' ||
           (await this.store.checkFreshwaterOperations())?.version !== 1)) throw new StoreError('configuration');
+      if (this.canteenOperations && (typeof this.store.checkCanteenOperations !== 'function' ||
+          (await this.store.checkCanteenOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.fireOperations && (typeof this.store.checkFireOperations !== 'function' ||
           (await this.store.checkFireOperations())?.version !== 1)) throw new StoreError('configuration');
       if (this.artisanOperations && (typeof this.store.checkArtisanOperations !== 'function' ||
@@ -637,7 +641,8 @@ export class GameHost {
         resources: { enabled: this.resourceOperations, ready: this.resourceOperations && !!this.worldState?.resources && this.worldState.ready,
           logging: this.loggingOperations },
         fire: { enabled: this.fireOperations, ready: this.fireOperations && !!this.worldState?.ready },
-        freshwater: { enabled: this.freshwaterOperations, ready: this.freshwaterOperations && !!this.worldState?.ready },
+        freshwater: { enabled: this.freshwaterOperations, ready: this.freshwaterOperations && !!this.worldState?.ready,
+          canteen: this.canteenOperations },
         artisan: { enabled: this.artisanOperations, ready: this.artisanOperations && !!this.worldState?.ready },
         workshop: { enabled: this.workshopOperations, ready: this.workshopOperations && this.worldState?.resources?.v === 3 && !!this.worldState?.ready },
         attributes: { enabled: this.attributeOperations, ready: this.attributeOperations && !!this.worldState?.ready },
@@ -698,7 +703,7 @@ export class GameHost {
       } else if (![MSG.PING, MSG.HELLO].includes(msg.t)) return;
     }
     if (this.loggingAim.handle(sock, msg)) return;
-    if (msg.t === MSG.CMD && msg.type === 'freshwater' && msg.op === 'fill' && this.freshwaterOperations && !this.economicAuthority?.busy) {
+    if (msg.t === MSG.CMD && msg.type === 'freshwater' && ['fill', 'fillCanteen'].includes(msg.op) && this.freshwaterOperations && !this.economicAuthority?.busy) {
       let command;
       try { command = economicCommand(msg); } catch { this.economicAuthority.reply(sock.id,msg,'command'); return; }
       const c=this.server.clients.get(sock.id), session=this.profiles.clients.get(sock.id);

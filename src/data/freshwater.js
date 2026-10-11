@@ -3,9 +3,21 @@
 export const FRESHWATER = Object.freeze({
   sourceId: 'salty-spring', collectTicks: 120, bucketCost: 2, barrelCost: 4,
   bucketId: 'bucket', bucketCapacity: 4, bucketVolume: 2, bucketMass: 1,
+  canteenId: 'canteen', canteenCapacity: 3, canteenVolume: 1, canteenMass: 0.5,
+  canteenLonaCost: 2, canteenWoodCost: 1,
   barrelCapacity: 20, barrelVolume: 0, bucketWoodCost: 2,
   maxVessels: 32, maxRevision: 2147483646,
 });
+
+const CANTEEN_OPS = new Set(['craftCanteen', 'fillCanteen', 'refillCanteen', 'drink', 'eat']);
+export function isCanteenCommand(command) {
+  try {
+    if (!command || typeof command !== 'object') return false;
+    const fields = Object.getOwnPropertyDescriptors(command);
+    return Object.hasOwn(fields, 'type') && Object.hasOwn(fields.type, 'value') && fields.type.value === 'freshwater' &&
+      Object.hasOwn(fields, 'op') && Object.hasOwn(fields.op, 'value') && CANTEEN_OPS.has(fields.op.value);
+  } catch { return false; }
+}
 
 export function freshwaterSource(map) {
   if (!map || typeof map.toWorld !== 'function' || typeof map.groundAt !== 'function') return null;
@@ -32,7 +44,7 @@ export function readVessels(raw) {
   if (!Array.isArray(raw) || Object.getPrototypeOf(raw) !== Array.prototype || raw.length > FRESHWATER.maxVessels) return invalid();
   const keys = Reflect.ownKeys(raw);
   if (keys.length !== raw.length + 1 || keys.some((k) => k !== 'length' && (!/^(0|[1-9]\d*)$/.test(k) || Number(k) >= raw.length))) return invalid();
-  const ids = new Set(); let buckets = 0;
+  const ids = new Set(); let buckets = 0, canteens = 0;
   const out = [];
   for (let i = 0; i < raw.length; i++) {
     const item = Object.getOwnPropertyDescriptor(raw, String(i));
@@ -47,6 +59,8 @@ export function readVessels(raw) {
     if (typeof id !== 'string' || !Number.isSafeInteger(water) || water < 0) return invalid();
     if (kind === 'bucket') {
       if (id !== FRESHWATER.bucketId || ++buckets > 1 || water > FRESHWATER.bucketCapacity) return invalid();
+    } else if (kind === 'canteen') {
+      if (id !== FRESHWATER.canteenId || ++canteens > 1 || water > FRESHWATER.canteenCapacity) return invalid();
     } else if (kind === 'barrel') {
       if (!/^p[0-9]{1,10}$/.test(id) || water > FRESHWATER.barrelCapacity) return invalid();
     } else return invalid();
@@ -58,11 +72,13 @@ export function readVessels(raw) {
 }
 
 export function vesselsMass(hold) {
-  return readVessels(hold?.vessels).reduce((sum, v) => sum + v.water + (v.kind === 'bucket' ? FRESHWATER.bucketMass : 0), 0);
+  return readVessels(hold?.vessels).reduce((sum, v) => sum + v.water +
+    (v.kind === 'bucket' ? FRESHWATER.bucketMass : v.kind === 'canteen' ? FRESHWATER.canteenMass : 0), 0);
 }
 
 export function vesselsVolume(hold) {
-  return readVessels(hold?.vessels).reduce((sum, v) => sum + (v.kind === 'bucket' ? FRESHWATER.bucketVolume : 0), 0);
+  return readVessels(hold?.vessels).reduce((sum, v) => sum +
+    (v.kind === 'bucket' ? FRESHWATER.bucketVolume : v.kind === 'canteen' ? FRESHWATER.canteenVolume : 0), 0);
 }
 
 // Profile shape matches eco.pack and eco.ships[].hold. Barrel validity follows the
@@ -72,7 +88,7 @@ export function validProfileVessels(profile) {
     const eco = profile?.eco;
     if (!eco || typeof eco !== 'object') return true;
     const pack = eco.pack;
-    readStoredVessels(pack).forEach((v) => { if (v.kind !== 'bucket') throw 0; });
+    readStoredVessels(pack).forEach((v) => { if (v.kind !== 'bucket' && v.kind !== 'canteen') throw 0; });
     if (!Array.isArray(eco.ships)) return false;
     for (const ship of eco.ships) {
       const vessels = readStoredVessels(ship?.hold);
