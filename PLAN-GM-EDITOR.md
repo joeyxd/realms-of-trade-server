@@ -1,13 +1,14 @@
 # Modo GM para construir el mundo
 
-**GM04a, 2026-10-10 — edición por lotes integrada en alpha.40/protocolo 47:**
+**GM04a, 2026-10-10 — edición por lotes publicada en alpha.40/protocolo 47:**
 selección temporal por Shift/casillas, pivote común, movimiento/giro/escala, duplicación/eliminación y
 undo atómico, incluida decoración base. Conserva documento v2 y los contratos Online de GM03b2.
 [Contrato](docs/briefs/gm04a-multiselection.md) y [entrega](docs/delivery/gm04a/DELIVERY.md).
-Navegador local 17/17 en alpha.39/protocolo 46; integración alpha.40/47 331/331; publicación pendiente.
+Navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331 y público autenticado 19/19.
+Release `c4ffc62df90d87b25649728b116a92ca99c6d4a7` sana, sin mutaciones remotas; mapa base generación 4.
 Las plantillas persistentes y el terreno siguen pendientes.
 
-Fecha: 2026-10-10, hora de México. Estado: **GM03b2 publicado y aceptado en alpha.35/protocolo 44; release `20066676758639fa5f0822ee7c81d59ed98fda7b` sana.** El canario público pasó 6/6 con sesión GM autenticada, dos clientes invitados y autoridad conectada a Supabase. Mapa base activo en generación 4 tras rollback. Integración acotada: 175/175. [Evidencia pública](docs/delivery/gm03b2/public-evidence.json) · [Despliegue](docs/delivery/gm03b2/deployment.json) · [Entrega GM03b2](docs/delivery/gm03b2/DELIVERY.md) · [GM03b1](docs/delivery/gm03b1/DELIVERY.md) · [GM03a](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
+Checkpoint histórico GM03b2, 2026-10-10: **GM03b2 publicado y aceptado en alpha.35/protocolo 44; release `20066676758639fa5f0822ee7c81d59ed98fda7b` sana.** El canario público pasó 6/6 con sesión GM autenticada, dos clientes invitados y autoridad conectada a Supabase. Mapa base activo en generación 4 tras rollback. Integración acotada: 175/175. [Evidencia pública](docs/delivery/gm03b2/public-evidence.json) · [Despliegue](docs/delivery/gm03b2/deployment.json) · [Entrega GM03b2](docs/delivery/gm03b2/DELIVERY.md) · [GM03b1](docs/delivery/gm03b1/DELIVERY.md) · [GM03a](docs/delivery/gm03a/DELIVERY.md) · [GM02](docs/delivery/gm02-draft-walk.md) · [GM01](docs/delivery/gm01-world-editor.md) · [Hotfix de gizmo](docs/delivery/gm01-render-fix.md).
 
 El objetivo es poder construir Salty Shore directamente en el juego: volar hasta una terraza, encontrar
 un modelo por su imagen, colocarlo, moverlo, girarlo y probar cómo se recorre el lugar. Después se amplía
@@ -470,7 +471,7 @@ listeners y recursos sin invalidar geometrías/texturas compartidas. Evitar reco
 | GM03a | **Publicado `9f23be3`, alpha.28 / protocolo 40 integrado:** borrador privado remoto por cuenta/mundo, CAS, recibo idempotente y UI explícita; sin cambiar mapa activo ni autoridad M5 | SQL020/readiness live, canario 14/14, local 35/35, público real 17/17 y release 107/107. [Entrega](docs/delivery/gm03a/DELIVERY.md) |
 | GM03b1 | **Publicado, alpha.30/protocolo 41:** preparar desde revisión online exacta, informe, dependencias por hash y descarga; sin activación | [Entrega](docs/delivery/gm03b1/DELIVERY.md): 183/183 regresión, navegador local 41/41 simulado, actualizador 107/107 y navegador público Supabase 23/23; borrador anterior restaurado por CAS |
 | GM03b2 | **Publicado en alpha.35/protocolo 44:** registro durable, activación/rollback con CAS, exclusión del host/actualizador, admisión por identidad y UI Online; merge del upstream Starter Workshop | Selección alpha.35: 175/175. Regresión general alpha.34 histórica: 308/308, incluye checker 2/2; actualizador Linux 22/22 independiente. Navegador local alpha.34: 6/6 con capturas inspeccionadas. Canario público alpha.35 con sesión GM autenticada, Supabase real y dos clientes invitados: 6/6. Release `20066676758639fa5f0822ee7c81d59ed98fda7b` sana, mapa base activo en generación 4 tras rollback. [Entrega](docs/delivery/gm03b2/DELIVERY.md) |
-| GM04a | Multiselección temporal y edición por lotes de decoración base/añadida; un undo por operación, sin cambiar documento v2 | [Entrega](docs/delivery/gm04a/DELIVERY.md); navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331; publicación pendiente |
+| GM04a | Multiselección temporal y edición por lotes de decoración base/añadida; un undo por operación, sin cambiar documento v2 | [Entrega](docs/delivery/gm04a/DELIVERY.md); navegador local 17/17 en alpha.39/46; integración alpha.40/47 331/331; público autenticado 19/19, release sana |
 | GM04 siguiente | Prefabs, materiales por instancia, dispersión y adaptadores funcionales por tipo | Plantillas expandidas con IDs independientes; mover un recurso conserva su estado/ID; plantilla transitable solo tras aceptar colisiones/superficies |
 | GM05 | Esculpir/pintar terreno existente con deltas y reconstrucción coordinada | Rampa caminable, agua/minimapa coherentes, undo exacto y zonas protegidas preservadas |
 | GM06 | Nueva tierra/islas y ampliación del dominio | Bordes y rutas continuos, identidad previa conservada, presupuestos medidos y admisión coherente |

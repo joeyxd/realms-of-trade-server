@@ -1,7 +1,7 @@
 # GM04a — multiselección de decoraciones
 
-Fecha: 2026-10-10, hora de México. Estado: **integrado en alpha.40/protocolo 47 y aceptado localmente;
-despliegue público pendiente**. Continúa el
+Fecha: 2026-10-10, hora de México. Estado: **publicado y aceptado en alpha.40/protocolo 47;
+release `c4ffc62df90d87b25649728b116a92ca99c6d4a7` sana**. Continúa el
 [contrato previo a código](../../briefs/gm04a-multiselection.md) y los borradores de
 [GM03b2](../gm03b2/DELIVERY.md).
 
@@ -47,6 +47,40 @@ economía, taller, natación y las tres suites nuevas del purificador. El checke
 **2/2**: en total, **331/331 en 53 archivos** repartidos entre ambas particiones, sin solapamiento.
 [Integración y comando](integration.json) · [checker](checker.json).
 
-La publicación solo se aceptará tras comprobar la revisión de la imagen activa, salud pública,
-entrada real y sesión GM autenticada. El canario de este corte usa un contexto nuevo de navegador
-y un borrador local privado: no registra ni activa revisiones ni modifica el borrador remoto existente.
+El navegador público pasó **19/19**, con entrada real de invitado y sesión GM autenticada mediante
+un enlace de un solo uso; se canceló el diálogo sin cambiar la contraseña. Verificó la versión servida
+y el protocolo importado por el navegador, las 17 comprobaciones del editor y la ausencia de mutaciones
+a los endpoints remotos de borradores/publicación/contenido. El fixture vive solo en IndexedDB de un
+contexto nuevo. [Evidencia pública final](public-browser-evidence.json). Se esperó a que terminaran
+la transición de entrada y la pantalla de embarque antes de la [captura del invitado](public-guest-gameplay.png).
+
+La [primera sesión pública 19/19](public-night-browser-evidence.json) conserva las capturas reales
+del ciclo nocturno; los modelos se veían demasiado oscuros para revisar sus superficies.
+[ES nocturno](public-night-selection-es-final.png) · [EN nocturno](public-night-selection-en-desktop.png).
+La repetición final conserva la iluminación pública durante las operaciones y usa luz diurna **solo
+en el renderer del cliente, fuera del gameplay**, para las tres referencias visuales finales:
+[ES](public-selection-es-final.png), [EN](public-selection-en-desktop.png) y
+[viewport estrecho](public-selection-en-844x390.png). Todas fueron inspeccionadas. El override queda
+registrado en la evidencia y no cambia el reloj, el terreno ni el estado del servidor. No acredita
+que la escena pública tenga luz diurna ni mide FPS físicos.
+
+Los [intentos iniciales](public-attempt1.json) y el [diagnóstico de ruta](public-attempt2.json) fallaron
+antes de lanzar el navegador por una ruta local de Playwright incorrecta. Se corrigió la ruta del wrapper;
+no se cuentan como aceptación. Una [repetición 19/19](public-attempt3.json) aún capturaba al invitado
+durante el vuelo de entrada: la aceptación final espera también HUD, controles y cámara asentados.
+Los intentos sin obtener el lock del actualizador no iniciaron sesión.
+
+La imagen candidata Linux pasó también **109/109** en los 14 archivos del actualizador; es una
+selección solapada con la regresión local, no se suma a las 331. El reemplazo inicial se aplazó
+porque volvió a conectarse una partida; después se instaló con el mundo vacío.
+[Pruebas de imagen activa](image-updater.json).
+
+La imagen activa corresponde a `c4ffc62df90d87b25649728b116a92ca99c6d4a7`, con health interno sano, HTTP 200,
+almacenamiento Supabase y cero errores. El contenido publicado sigue en mapa base, generación
+4, con 4 revisiones y 4 recibos retenidos; el canario no cambió ese puntero.
+El temporizador del actualizador sigue activo.
+[Despliegue comprobado después del navegador](deployment.json). El commit posterior de esta evidencia
+solo añade documentación, herramienta QA y capturas; no se cuenta como otra aceptación de runtime.
+
+Siguen las plantillas de conjuntos (GM04 siguiente), materiales y dispersión; el terreno pertenece a GM05.
+No se cambió la contraseña ni se guardaron credenciales en los artefactos.

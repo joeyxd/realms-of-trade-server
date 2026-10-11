@@ -20,7 +20,14 @@ const evidence = { schema: 'gm04a-browser/v1', version: GAME.version, at: new Da
   simulatedAuth: !production, production, checks: [], screenshots: [], errors: [], assetRequests: [] };
 let browser, context, guestContext, page, game, origin = publicOrigin, seededDocument;
 const remoteMutations = [];
-let publicBefore = null;
+let publicBefore = null, phase = 'initializing';
+function safePublicError(error) {
+  return `${error?.name || 'Error'}:${error?.message || String(error)}`
+    .replace(/gm_setup_token=[^\s&"'<>]+/gi, 'gm_setup_token=[REDACTED]')
+    .replace(/#\S+/g, '#[REDACTED]')
+    .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+    .replace(/(?:access_token|refresh_token|token_hash|tokenHash)[=: ]+[^\s,&"'<>]+/gi, '[TOKEN_FIELD_REDACTED]');
+}
 async function runtimeSnapshot(base) {
   const [statusResponse, contentResponse] = await Promise.all([
     fetch(`${base}/status`, { cache: 'no-store' }), fetch(`${base}/api/world/content`, { cache: 'no-store' }),
@@ -59,6 +66,7 @@ async function setup(ctx) {
 }
 
 try {
+  phase = 'output_directory_and_public_configuration';
   await mkdir(out, { recursive: true });
   if (production && !process.env.MN_GM_SETUP_FILE) throw new Error('MN_GM_SETUP_FILE is required for public account setup');
   if (!production) {
@@ -69,29 +77,54 @@ try {
     });
     const port = await game.listen(); origin = `http://127.0.0.1:${port}`;
   }
+  phase = 'runtime_status_and_content_snapshot_before';
   publicBefore = await runtimeSnapshot(origin);
   assert.equal(publicBefore.version, GAME.version, 'server /status version must match runner checkout');
   evidence.runtimeBefore = publicBefore;
-  const { chromium } = await import(pathToFileURL(resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs')).href);
+  phase = 'browser_import_and_launch';
+  const playwrightPath = resolve(process.env.MN_PLAYWRIGHT || '.scratch/pilot-browser/node_modules/playwright/index.mjs');
+  evidence.playwrightModule = playwrightPath;
+  const { chromium } = await import(pathToFileURL(playwrightPath).href);
   browser = await chromium.launch({ channel: 'chrome', headless: true,
     args: ['--use-gl=angle', '--use-angle=default', '--enable-webgl', '--ignore-gpu-blocklist'] });
 
   if (production) {
+    phase = 'public_guest_boot';
     guestContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    const guest = await guestContext.newPage();
+    const guest = await guestContext.newPage(); page = guest;
     guest.on('pageerror', () => evidence.errors.push('guest_page_error'));
     await guest.goto(`${origin}/?q=high&tod=day`, { waitUntil: 'domcontentloaded' });
     await guest.waitForFunction(() => !!window.__mn, null, { timeout: 90000 });
     await guest.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
+    evidence.guestBoot = await guest.evaluate(() => ({ online: __mn.st.online, transport: __mn.transport.kind,
+      serverMarked: !!document.querySelector('meta[name="mn-server"]'), gmButtonHidden: __mn.gmEntry.button.hidden }));
     assert.equal(await guest.evaluate(() => __mn.gmEntry.button.hidden), true);
+    phase = 'public_guest_gameplay_join';
+    await guest.waitForFunction(() => { const button = document.querySelector('#btn-play'); return button && !button.disabled; });
     await guest.locator('#btn-play').click({ force: true });
     await guest.waitForFunction(() => __mn.st.mode === 'playing' && __mn.client.joined, null, { timeout: 30000 });
+    await guest.waitForFunction(() => document.querySelector('#title')?.hidden === true && !__mn.st.boarding &&
+      !document.querySelector('#btn-play')?.textContent?.toLowerCase().includes('boarding'), null, { timeout: 10000 });
+    await guest.waitForFunction(() => {
+      const hud = document.querySelector('#hud');
+      return hud && !hud.hidden && __mn.input.enabled && __mn.world.rig.blend === null;
+    }, null, { timeout: 15000 });
+    await guest.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    evidence.guestCaptureState = await guest.evaluate(() => ({ titleHidden: document.querySelector('#title')?.hidden === true,
+      hudVisible: !document.querySelector('#hud')?.hidden && getComputedStyle(document.querySelector('#hud')).display !== 'none',
+      gameplayInputEnabled: __mn.input.enabled, cameraBlendFinished: __mn.world.rig.blend === null,
+      playerHudOpacity: getComputedStyle(document.querySelector('#hud .hud-player')).opacity,
+      actionbarOpacity: getComputedStyle(document.querySelector('#hud .actionbar')).opacity }));
+    assert.equal(evidence.guestCaptureState.titleHidden, true); assert.equal(evidence.guestCaptureState.hudVisible, true);
+    assert.equal(evidence.guestCaptureState.gameplayInputEnabled, true); assert.equal(evidence.guestCaptureState.cameraBlendFinished, true);
+    assert.equal(evidence.guestCaptureState.playerHudOpacity, '1'); assert.equal(evidence.guestCaptureState.actionbarOpacity, '1');
     assert.deepEqual(await guest.evaluate(() => [...__mn.errors]), []);
     await shotFrom(guest, 'guest-gameplay.png');
     evidence.checks.push('public_guest_boot_and_gameplay_join');
-    await guestContext.close(); guestContext = null;
+    await guestContext.close(); guestContext = null; page = null;
   }
 
+  phase = 'gm_context_and_network_observers';
   context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   if (!production) await setup(context);
   page = await context.newPage();
@@ -106,6 +139,7 @@ try {
   });
   let setupSuffix = '';
   if (production) {
+    phase = 'consume_one_use_setup_file';
     const setupFile = resolve(process.env.MN_GM_SETUP_FILE);
     let setupRecord;
     try { setupRecord = JSON.parse(await fs.promises.readFile(setupFile, 'utf8')); }
@@ -113,6 +147,7 @@ try {
     assert.match(setupRecord?.tokenHash || '', /^[a-f0-9]{32,128}$/i);
     setupSuffix = `&account-setup=1#gm_setup_token=${setupRecord.tokenHash}`;
   }
+  phase = 'gm_page_boot';
   await page.goto(`${origin}/?q=${production ? 'high' : (process.env.MN_GM_QA_QUALITY || 'high')}&tod=day${setupSuffix}`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__mn && !document.querySelector('#btn-gm-editor').disabled, null, { timeout: 90000 });
   await page.waitForFunction(() => getComputedStyle(document.getElementById('fade')).display === 'none');
@@ -126,6 +161,7 @@ try {
   if (publicBefore.protocolVersion !== null) assert.equal(loadedRuntime.protocolVersion, publicBefore.protocolVersion,
     'browser-loaded protocol must match /status protocol');
   if (production) {
+    phase = 'gm_recovery_link_and_cancel';
     await page.waitForFunction(() => __mn.gmEntry?.allowed && !document.querySelector('.gm-account-setup-overlay')?.hidden, null, { timeout: 30000 });
     assert.equal(await page.evaluate(() => location.hash), '');
     await page.addStyleTag({ content: '.account-status, .account-email { visibility: hidden !important; }' });
@@ -448,6 +484,26 @@ try {
   await page.evaluate(() => {
     const editor = __mn.gmEditor; editor.transform.setMode('translate'); editor._focusSelection();
   });
+  if (production) {
+    const light = await page.evaluate(() => {
+      const lighting = __mn.world.lighting;
+      const before = { gameplay: lighting.gameplay, tod: lighting.tod, phase: lighting.phase,
+        zoneTarget: lighting.zoneTarget, zoneW: lighting.zoneW };
+      if (lighting.gameplay) throw new Error('Daylight screenshot override requires editor outside gameplay');
+      // Client renderer only: keep the screenshot readable without changing world/game time or sending a command.
+      lighting.setTimeOfDay('day', 0); lighting.setZone(false, 0); __mn.world.pipeline.markDirty();
+      return { scope: 'browser-client-renderer-only', gameplay: lighting.gameplay,
+        tod: lighting.tod, phase: lighting.phase, zoneTarget: lighting.zoneTarget, zoneWBefore: before.zoneW,
+        setters: ['setTimeOfDay(day,0)', 'setZone(false,0)'], remoteOrGameplayWrites: false };
+    });
+    assert.equal(light.gameplay, false); assert.equal(light.tod, 'day'); assert.equal(light.zoneTarget, 0);
+    evidence.captureLightingOverride = light;
+    const frame = await page.evaluate(() => __mn.world.pipeline.frame);
+    await page.waitForFunction((from) => __mn.errors.size || __mn.world.pipeline.frame >= from + 10, frame);
+    const settledLight = await page.evaluate(() => ({ sunIntensity: __mn.world.lighting.cur.sunI,
+      hemisphereIntensity: __mn.world.lighting.cur.hemiI, zoneWeight: __mn.world.lighting.zoneW }));
+    evidence.captureLightingOverride.settled = settledLight;
+  }
   await page.locator('[data-role="scene-search"]').fill('qa-gm04a');
   await shot('selection-es-final.png');
   await page.locator('[data-role="language"]').click(); await page.waitForFunction(() => __mn.gmEditor.lang === 'en');
@@ -471,11 +527,16 @@ try {
   evidence.runtimeAfter = publicAfter;
   if (production) assert.deepEqual(remoteMutations, [], 'GM run must not mutate remote draft/publication/content APIs');
   evidence.remoteMutations = remoteMutations;
+  phase = 'final_public_content_and_mutation_assertions';
   assert.deepEqual(evidence.errors, []);
 } catch (error) {
-  evidence.errors.push(production ? `acceptance_failure:${error.name || 'Error'}` : (error.stack || String(error))); process.exitCode = 1;
+  evidence.phase = phase;
+  evidence.errors.push(production ? `acceptance_failure:${safePublicError(error)}` : (error.stack || String(error))); process.exitCode = 1;
   if (page) {
-    try { await shot('failure.png'); } catch { /* Browser may already be closed. */ }
+    try {
+      if (production) await page.addStyleTag({ content: '.account-status, .account-email, [data-account-email] { visibility: hidden !important; }' });
+      await shot('failure.png');
+    } catch { /* Browser may already be closed. */ }
   }
 } finally {
   try { await guestContext?.close(); } catch { /* Preserve the original acceptance failure. */ }

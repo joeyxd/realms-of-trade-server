@@ -1,5 +1,15 @@
 # Continuidad de servidor — AREA15
 
+**AREA01 GM04a, 2026-10-10 — multiselección publicada, alpha.40/protocolo 47:**
+[Entrega](delivery/gm04a/DELIVERY.md), [navegador público](delivery/gm04a/public-browser-evidence.json)
+y [despliegue](delivery/gm04a/deployment.json). Shift/casillas, pivote común y movimiento/giro/escala,
+duplicar/eliminar y undo atómicos de decoración base/añadida, hasta 120 elementos. Documento v2;
+colisiones individuales y selección temporal. Integración final 331/331 en 53 archivos (329+2),
+navegador local alpha.39/46 17/17 y público autenticado alpha.40/47 19/19, sin errores.
+Runtime `c4ffc62` sano y timer activo; mapa base generación 4 conservado.
+Canario solo en borrador local nuevo, sin mutaciones remotas ni SQL. Capturas diurnas finales con luz
+solo del renderer cliente; captura nocturna real conservada. Siguen plantillas GM04 y terreno GM05.
+
 **AREA17 L03d-d, 2026-10-10 — detención durable publicada, alpha.38/protocolo 46:**
 [Entrega](delivery/l03d-companion-control.md). Aceptación alpha.38 `d962055`, una autoridad sana, timer activo y M5
 sin escrituras pendientes/errores en la captura. SQL027 aplicado, readiness 1 y canario de servicio
