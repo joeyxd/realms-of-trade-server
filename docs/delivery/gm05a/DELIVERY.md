@@ -102,3 +102,10 @@ modelo y controles usa cinco [capturas con luz de referencia](public/daylight-re
 en ES/EN, escritorio y 844×390. Solo se fija el renderer en el editor privado, con `gameplay=false`;
 no se escribe la hora del mundo ni se activa el borrador importado. No acredita visibilidad nocturna
 ni un control horario nuevo dentro del editor. Siguen pintura GM05b y expansión GM06.
+
+La integración posterior con los controles de Carga INV02c conserva la escultura y su autoridad:
+alpha.46/protocolo 52, merge `31f7ff5` sobre upstream `2a51c8d`. La selección conjunta pasó
+**336/336 en 58 archivos**, sin fallos/omisiones y con fuentes estables:
+[resumen](integration-attributes/regression.json) y [TAP](integration-attributes/regression.tap).
+WELCOME mantiene la identidad del contenido GM al añadir la capacidad privada de atributos.
+Este checkpoint no sustituye ni cambia la versión de la aceptación canaria alpha.45 anterior.
