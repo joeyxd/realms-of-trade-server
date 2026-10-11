@@ -58,7 +58,8 @@ try {
     rows: __mn.companions.snapshot().companions }));
   assert.equal(spanish.lang.startsWith('es'), true);
   assert.match(spanish.status, /inicia sesi[oó]n/i);
-  assert.match(spanish.setup, /configurar/i);
+  assert.match(spanish.setup, /prepara conexión, modelo y límites/i);
+  assert.equal(await page.locator('.mn-inference-open').isDisabled(), true);
   assert.equal(spanish.controls, 0);
   assert.deepEqual(spanish.rows, []);
   await page.screenshot({ path: resolve(out, 'public-companions-desktop-es.png') });

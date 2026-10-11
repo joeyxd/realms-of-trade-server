@@ -13,6 +13,8 @@ El formulario vacío de gasto se sustituye por disponibilidad y navegación; con
 La creación/vinculación de compañeros y conexión real desde cuentas públicas continúan pendientes;
 SQL025/027/028 listo y Studio local probado no implican ese montaje. Siguiente corte: vínculo durable
 propietario/personaje y emparejamiento revocable con controlador local y adaptador real de red.
+Corrección desplegada en `6fd7f68` (alpha.51/protocolo 55): invitado 7/7 y login real 7/7,
+ES/EN/móvil sin errores; cuenta temporal retirada. Evidencia y límites en la entrega.
 
 **AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
 [Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).
