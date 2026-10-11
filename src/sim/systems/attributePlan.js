@@ -4,6 +4,7 @@ import { tuning } from '../../data/tuning.js';
 import { ATTR, attrPoints, readAttrField } from '../../data/attributes.js';
 import { CARRY, carryLimits, readCarryField } from '../../data/carry.js';
 import { GOODS } from '../../data/goods.js';
+import { readVessels } from '../../data/freshwater.js';
 import { holdMass, holdUsed } from '../economy/cargo.js';
 
 const MAX_REV_BEFORE_INCREMENT = 2147483645;
@@ -35,6 +36,14 @@ function exactKeys(raw, keys) {
       return d?.enumerable && Object.hasOwn(d, 'value');
     });
   } catch { return false; }
+}
+
+function exactPackKeys(raw, keys) {
+  if (exactKeys(raw, keys)) return true;
+  if (!exactKeys(raw, [...keys, 'vessels'])) return false;
+  const vessels = ownData(raw, 'vessels');
+  if (!vessels.present || !Array.isArray(vessels.value)) return false;
+  try { return readVessels(vessels.value).every((vessel) => vessel.kind === 'bucket'); } catch { return false; }
 }
 
 function parseCommand(command) {
@@ -116,7 +125,7 @@ function inspectProfile(profile, allowLegacy = false) {
   if (!ecoField.present || !plain(ecoField.value)) return { why: 'profile' };
   const revField = ownData(ecoField.value, 'tradeRev'), packField = ownData(ecoField.value, 'pack');
   if (!revField.present || !Number.isSafeInteger(revField.value) || revField.value < 0 || revField.value > 2147483646 ||
-      !packField.present || !(legacyAdoption ? exactKeys(packField.value, ['cap', 'goods']) : exactKeys(packField.value, ['cap', 'maxMass', 'goods']))) return { why: 'profile' };
+      !packField.present || !(legacyAdoption ? exactPackKeys(packField.value, ['cap', 'goods']) : exactPackKeys(packField.value, ['cap', 'maxMass', 'goods']))) return { why: 'profile' };
   const pack = packField.value;
   const capField = ownData(pack, 'cap'), massField = ownData(pack, 'maxMass'), goodsField = ownData(pack, 'goods');
   if (!capField.present || capField.value !== (legacyAdoption ? 10 : CARRY.backpacks[carry.backpack]) ||
@@ -145,7 +154,7 @@ function parsedLegacyPack(profile) {
   const eco = ownData(profile, 'eco');
   if (!eco.present || !plain(eco.value)) return false;
   const pack = ownData(eco.value, 'pack');
-  if (!pack.present || !exactKeys(pack.value, ['cap', 'goods'])) return false;
+  if (!pack.present || !exactPackKeys(pack.value, ['cap', 'goods'])) return false;
   const cap = ownData(pack.value, 'cap'), goods = ownData(pack.value, 'goods');
   return cap.present && cap.value === 10 && goods.present && plain(goods.value);
 }

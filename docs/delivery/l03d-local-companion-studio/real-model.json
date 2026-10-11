@@ -4,6 +4,15 @@
   "model": "qwen3.8-flash-next-coder-iq1_m",
   "thinkingMode": "disabled",
   "realCalls": 6,
+  "usageEvidence": "Six settled entries read from the persistent local resource ledger; transport below contains only the four calls after reopening the process.",
+  "ledgerEntries": [
+    { "requestId": "mind:63dcae5a-ac3a-462a-82d3-aa3f1d0bb329", "kind": "decision", "state": "settled", "inputTokens": 2495, "outputTokens": 93, "costUnits": 2588 },
+    { "requestId": "mind:0d11a0aa-8f93-4624-9158-f19906211e91", "kind": "decision", "state": "settled", "inputTokens": 2538, "outputTokens": 48, "costUnits": 2586 },
+    { "requestId": "mind:8d5c3f34-827f-4b21-86a7-088c006f6c0e", "kind": "decision", "state": "settled", "inputTokens": 3303, "outputTokens": 48, "costUnits": 3351 },
+    { "requestId": "mind:6e358444-cf49-4b2b-9824-fd9c69ba1c77", "kind": "compaction", "state": "settled", "inputTokens": 3063, "outputTokens": 195, "costUnits": 3258 },
+    { "requestId": "mind:d32cd71f-68ba-4622-9236-10b56a36f76e", "kind": "decision", "state": "settled", "inputTokens": 3543, "outputTokens": 38, "costUnits": 3581 },
+    { "requestId": "mind:3593ff54-0f5a-443b-a50d-fb591d1a103e", "kind": "decision", "state": "settled", "inputTokens": 3776, "outputTokens": 42, "costUnits": 3818 }
+  ],
   "usage": {
     "calls": 6,
     "confirmedTokens": 19182,

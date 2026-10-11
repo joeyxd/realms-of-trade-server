@@ -1,0 +1,1638 @@
+{
+  "at": "2026-10-11T05:06:21.439Z",
+  "scope": "Local browser fixture importing actual CharPanel, AttributeControls, newProfile, statsFor and planAttributeChange; local profile fixtures only; no host, account, public endpoint or durable-storage claim.",
+  "stateMutation": "only canonical fixture profile replacement after planAttributeChange returns ok",
+  "cases": [
+    {
+      "label": "desktop1280x720-es-ready",
+      "locale": "es",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 834,
+        "clientHeight": 530
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 137.359375,
+        "bottom": 434.109375,
+        "width": 686,
+        "height": 296.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 1241,
+            "top": 349.71875,
+            "bottom": 393.71875,
+            "width": 658,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda / Límite máximo\nAl adoptar: 40 uM cómodos / 50 uM máximo.\nCarga actual\n0 peso (uM) / 0 volumen (máx. 22 uM / 18 uV)\n\nAl adoptar, tu carga cómoda será 40 uM y el límite máximo 50 uM. Conservas todos los objetos. Una mochila antigua con capacidad 10 pasa a capacidad 18.\n\nAdoptar Carga\n\nPerfil sincronizado.",
+      "screenshot": "desktop1280x720-es-ready.png",
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-es-adopted",
+      "locale": "es",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 530
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 137.359375,
+        "bottom": 424.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 714.796875,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 722.796875,
+            "right": 854.984375,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-es-postassign",
+      "locale": "es",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 798,
+        "clientHeight": 530
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 137.359375,
+        "bottom": 398.109375,
+        "width": 686,
+        "height": 260.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 714.796875,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 722.796875,
+            "right": 854.984375,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n1\nInvertidos\n1\nCarga cómoda\n44 uM\nLímite máximo\n55 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 55 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nPerfil sincronizado.",
+      "screenshot": "desktop1280x720-es-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-es-reset",
+      "locale": "es",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 530
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 137.359375,
+        "bottom": 424.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 714.796875,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 722.796875,
+            "right": 854.984375,
+            "top": 287.328125,
+            "bottom": 331.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": "desktop1280x720-es-reset.png",
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-en-ready",
+      "locale": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 854,
+        "clientHeight": 570
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 97.359375,
+        "bottom": 414.109375,
+        "width": 686,
+        "height": 316.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 1241,
+            "top": 329.71875,
+            "bottom": 373.71875,
+            "width": 658,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load / Maximum limit\nAfter adoption: 40 uM comfortable / 50 uM maximum.\nCurrent carry\n0 weight (uM) / 0 volume (max. 22 uM / 18 uV)\n\nAfter adoption, comfortable load is 40 uM and the maximum limit is 50 uM. You keep every item. An older backpack with capacity 10 becomes capacity 18.\n\nAdopt Carry\n\nProfile synchronized.",
+      "screenshot": "desktop1280x720-en-ready.png",
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-en-adopted",
+      "locale": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 570
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 97.359375,
+        "bottom": 384.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 703.296875,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 711.296875,
+            "right": 853.15625,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-en-postassign",
+      "locale": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 798,
+        "clientHeight": 570
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 97.359375,
+        "bottom": 358.109375,
+        "width": 686,
+        "height": 260.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 703.296875,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 711.296875,
+            "right": 853.15625,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n1\nInvested\n1\nComfortable load\n44 uM\nMaximum limit\n55 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 55 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nProfile synchronized.",
+      "screenshot": "desktop1280x720-en-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "desktop1280x720-en-reset",
+      "locale": "en",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "panel": {
+        "left": 552,
+        "right": 1272,
+        "top": 40,
+        "bottom": 680,
+        "width": 720,
+        "height": 640,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 570
+      },
+      "controls": {
+        "left": 569,
+        "right": 1255,
+        "top": 97.359375,
+        "bottom": 384.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 583,
+            "right": 703.296875,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 711.296875,
+            "right": 853.15625,
+            "top": 247.328125,
+            "bottom": 291.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": "desktop1280x720-en-reset.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-es-ready",
+      "locale": "es",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1136,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 640.015625,
+        "width": 340,
+        "height": 399.9375,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 351,
+            "top": 555.625,
+            "bottom": 599.625,
+            "width": 312,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda / Límite máximo\nAl adoptar: 40 uM cómodos / 50 uM máximo.\nCarga actual\n0 peso (uM) / 0 volumen (máx. 22 uM / 18 uV)\n\nAl adoptar, tu carga cómoda será 40 uM y el límite máximo 50 uM. Conservas todos los objetos. Una mochila antigua con capacidad 10 pasa a capacidad 18.\n\nAdoptar Carga\n\nPerfil sincronizado.",
+      "screenshot": "portrait390x844-es-ready.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-es-adopted",
+      "locale": "es",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1116,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 620,
+        "width": 340,
+        "height": 379.921875,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 170.796875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 178.796875,
+            "right": 310.984375,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-es-postassign",
+      "locale": "es",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1090,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 593.609375,
+        "width": 340,
+        "height": 353.53125,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 170.796875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 178.796875,
+            "right": 310.984375,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n1\nInvertidos\n1\nCarga cómoda\n44 uM\nLímite máximo\n55 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 55 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nPerfil sincronizado.",
+      "screenshot": "portrait390x844-es-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-es-reset",
+      "locale": "es",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1116,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 620,
+        "width": 340,
+        "height": 379.921875,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 170.796875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 178.796875,
+            "right": 310.984375,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": "portrait390x844-es-reset.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-en-ready",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1114,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 640.015625,
+        "width": 340,
+        "height": 399.9375,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 351,
+            "top": 555.625,
+            "bottom": 599.625,
+            "width": 312,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load / Maximum limit\nAfter adoption: 40 uM comfortable / 50 uM maximum.\nCurrent carry\n0 weight (uM) / 0 volume (max. 22 uM / 18 uV)\n\nAfter adoption, comfortable load is 40 uM and the maximum limit is 50 uM. You keep every item. An older backpack with capacity 10 becomes capacity 18.\n\nAdopt Carry\n\nProfile synchronized.",
+      "screenshot": "portrait390x844-en-ready.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-en-adopted",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1094,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 620,
+        "width": 340,
+        "height": 379.921875,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 159.296875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 167.296875,
+            "right": 309.15625,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-en-postassign",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1068,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 593.609375,
+        "width": 340,
+        "height": 353.53125,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 159.296875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 167.296875,
+            "right": 309.15625,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n1\nInvested\n1\nComfortable load\n44 uM\nMaximum limit\n55 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 55 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nProfile synchronized.",
+      "screenshot": "portrait390x844-en-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "portrait390x844-en-reset",
+      "locale": "en",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "panel": {
+        "left": 8,
+        "right": 382,
+        "top": 102,
+        "bottom": 742,
+        "width": 374,
+        "height": 640,
+        "scrollWidth": 368,
+        "clientWidth": 368
+      },
+      "body": {
+        "scrollWidth": 344,
+        "clientWidth": 344,
+        "scrollHeight": 1094,
+        "clientHeight": 489
+      },
+      "controls": {
+        "left": 25,
+        "right": 365,
+        "top": 240.078125,
+        "bottom": 620,
+        "width": 340,
+        "height": 379.921875,
+        "scrollWidth": 336,
+        "clientWidth": 336
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 39,
+            "right": 159.296875,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 167.296875,
+            "right": 309.15625,
+            "top": 466.828125,
+            "bottom": 510.828125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": "portrait390x844-en-reset.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-es-ready",
+      "locale": "es",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 834,
+        "clientHeight": 264
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": 105.359375,
+        "bottom": 402.109375,
+        "width": 686,
+        "height": 296.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 805,
+            "top": 317.71875,
+            "bottom": 361.71875,
+            "width": 658,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda / Límite máximo\nAl adoptar: 40 uM cómodos / 50 uM máximo.\nCarga actual\n0 peso (uM) / 0 volumen (máx. 22 uM / 18 uV)\n\nAl adoptar, tu carga cómoda será 40 uM y el límite máximo 50 uM. Conservas todos los objetos. Una mochila antigua con capacidad 10 pasa a capacidad 18.\n\nAdoptar Carga\n\nPerfil sincronizado.",
+      "screenshot": "landscape844x390-es-ready.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-es-adopted",
+      "locale": "es",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 264
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -79.640625,
+        "bottom": 207.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 278.796875,
+            "top": 70.328125,
+            "bottom": 114.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 286.796875,
+            "right": 418.984375,
+            "top": 70.328125,
+            "bottom": 114.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-es-postassign",
+      "locale": "es",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 798,
+        "clientHeight": 264
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -46.640625,
+        "bottom": 214.109375,
+        "width": 686,
+        "height": 260.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 278.796875,
+            "top": 103.328125,
+            "bottom": 147.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 286.796875,
+            "right": 418.984375,
+            "top": 103.328125,
+            "bottom": 147.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n1\nInvertidos\n1\nCarga cómoda\n44 uM\nLímite máximo\n55 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 55 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nPerfil sincronizado.",
+      "screenshot": "landscape844x390-es-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-es-reset",
+      "locale": "es",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 264
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -46.640625,
+        "bottom": 240.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 278.796875,
+            "top": 103.328125,
+            "bottom": 147.328125,
+            "width": 131.796875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 286.796875,
+            "right": 418.984375,
+            "top": 103.328125,
+            "bottom": 147.328125,
+            "width": 132.1875,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+      "screenshot": "landscape844x390-es-reset.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-en-ready",
+      "locale": "en",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 854,
+        "clientHeight": 304
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": 65.359375,
+        "bottom": 382.109375,
+        "width": 686,
+        "height": 316.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "adopt",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 805,
+            "top": 297.71875,
+            "bottom": 341.71875,
+            "width": 658,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load / Maximum limit\nAfter adoption: 40 uM comfortable / 50 uM maximum.\nCurrent carry\n0 weight (uM) / 0 volume (max. 22 uM / 18 uV)\n\nAfter adoption, comfortable load is 40 uM and the maximum limit is 50 uM. You keep every item. An older backpack with capacity 10 becomes capacity 18.\n\nAdopt Carry\n\nProfile synchronized.",
+      "screenshot": "landscape844x390-en-ready.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-en-adopted",
+      "locale": "en",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 304
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -119.640625,
+        "bottom": 167.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 267.296875,
+            "top": 30.328125,
+            "bottom": 74.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 275.296875,
+            "right": 417.15625,
+            "top": 30.328125,
+            "bottom": 74.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": null,
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-en-postassign",
+      "locale": "en",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 798,
+        "clientHeight": 304
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -86.640625,
+        "bottom": 174.109375,
+        "width": 686,
+        "height": 260.75,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 267.296875,
+            "top": 63.328125,
+            "bottom": 107.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": false,
+          "rect": {
+            "left": 275.296875,
+            "right": 417.15625,
+            "top": 63.328125,
+            "bottom": 107.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n1\nInvested\n1\nComfortable load\n44 uM\nMaximum limit\n55 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 55 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nProfile synchronized.",
+      "screenshot": "landscape844x390-en-postassign.png",
+      "problems": []
+    },
+    {
+      "label": "landscape844x390-en-reset",
+      "locale": "en",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 116,
+        "right": 836,
+        "top": 8,
+        "bottom": 382,
+        "width": 720,
+        "height": 374,
+        "scrollWidth": 714,
+        "clientWidth": 714
+      },
+      "body": {
+        "scrollWidth": 690,
+        "clientWidth": 690,
+        "scrollHeight": 824,
+        "clientHeight": 304
+      },
+      "controls": {
+        "left": 133,
+        "right": 819,
+        "top": -86.640625,
+        "bottom": 200.5,
+        "width": 686,
+        "height": 287.140625,
+        "scrollWidth": 682,
+        "clientWidth": 682
+      },
+      "buttons": [
+        {
+          "op": "assign",
+          "disabled": false,
+          "rect": {
+            "left": 147,
+            "right": 267.296875,
+            "top": 63.328125,
+            "bottom": 107.328125,
+            "width": 120.296875,
+            "height": 44
+          }
+        },
+        {
+          "op": "reset",
+          "disabled": true,
+          "rect": {
+            "left": 275.296875,
+            "right": 417.15625,
+            "top": 63.328125,
+            "bottom": 107.328125,
+            "width": 141.859375,
+            "height": 44
+          }
+        }
+      ],
+      "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+      "screenshot": "landscape844x390-en-reset.png",
+      "problems": []
+    }
+  ],
+  "checks": [
+    {
+      "label": "desktop1280x720",
+      "locale": "es",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carga\nPuntos ganados\n0\nDisponibles\n0\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nNo hay puntos disponibles.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nLas acciones están deshabilitadas.\n\nPerfil sincronizado.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "desktop1280x720",
+      "locale": "en",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carry\nPoints earned\n0\nAvailable\n0\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nNo points are available.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nActions are disabled.\n\nProfile synchronized.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "legacy-cap10-adoption-and-denial",
+      "passed": true,
+      "legacy": {
+        "cap": 18,
+        "maxMass": 50,
+        "attr": {
+          "v": 1,
+          "carga": 0,
+          "re": 0
+        }
+      },
+      "deniedOp": "assign"
+    },
+    {
+      "label": "desktop1280x720-browser-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "label": "portrait390x844",
+      "locale": "es",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carga\nPuntos ganados\n0\nDisponibles\n0\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nNo hay puntos disponibles.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nLas acciones están deshabilitadas.\n\nPerfil sincronizado.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "portrait390x844",
+      "locale": "en",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carry\nPoints earned\n0\nAvailable\n0\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nNo points are available.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nActions are disabled.\n\nProfile synchronized.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "portrait390x844-browser-errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "label": "landscape844x390",
+      "locale": "es",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carga\nPuntos ganados\n0\nDisponibles\n0\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nNo hay puntos disponibles.\n\nNo hay puntos invertidos para reasignar.\n\nPerfil sincronizado.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carga\nPuntos ganados\n2\nDisponibles\n2\nInvertidos\n0\nCarga cómoda\n40 uM\nLímite máximo\n50 uM\nCarga actual\n0 peso (uM) / 0 volumen (máx. 50 uM / 18 uV)\nAsignar 1 punto\nReasignar gratis\n\nCon un punto: +4 de carga cómoda y +5 de límite máximo.\n\nNo hay puntos invertidos para reasignar.\n\nLas acciones están deshabilitadas.\n\nPerfil sincronizado.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "landscape844x390",
+      "locale": "en",
+      "passed": true,
+      "levelOneRead": {
+        "text": "Carry\nPoints earned\n0\nAvailable\n0\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nNo points are available.\n\nThere are no invested points to reallocate.\n\nProfile synchronized.",
+        "assignDisabled": true,
+        "resetDisabled": true
+      },
+      "disabledCapability": {
+        "text": "Carry\nPoints earned\n2\nAvailable\n2\nInvested\n0\nComfortable load\n40 uM\nMaximum limit\n50 uM\nCurrent carry\n0 weight (uM) / 0 volume (max. 50 uM / 18 uV)\nAssign 1 point\nFree reallocation\n\nWith one point: +4 comfortable load and +5 maximum limit.\n\nThere are no invested points to reallocate.\n\nActions are disabled.\n\nProfile synchronized.",
+        "buttons": [
+          true,
+          true
+        ],
+        "commands": 0
+      },
+      "reconnect": {
+        "pending": null,
+        "status": "synced",
+        "hasControls": true
+      }
+    },
+    {
+      "label": "landscape844x390-browser-errors",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "failures": [],
+  "screenshots": [
+    "desktop1280x720-es-ready.png",
+    "desktop1280x720-es-postassign.png",
+    "desktop1280x720-es-reset.png",
+    "desktop1280x720-en-ready.png",
+    "desktop1280x720-en-postassign.png",
+    "desktop1280x720-en-reset.png",
+    "portrait390x844-es-ready.png",
+    "portrait390x844-es-postassign.png",
+    "portrait390x844-es-reset.png",
+    "portrait390x844-en-ready.png",
+    "portrait390x844-en-postassign.png",
+    "portrait390x844-en-reset.png",
+    "landscape844x390-es-ready.png",
+    "landscape844x390-es-postassign.png",
+    "landscape844x390-es-reset.png",
+    "landscape844x390-en-ready.png",
+    "landscape844x390-en-postassign.png",
+    "landscape844x390-en-reset.png"
+  ],
+  "pass": true
+}

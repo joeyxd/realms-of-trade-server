@@ -33,6 +33,7 @@ export class GameClient {
     this.personalLantern = false;
     this.fire = null;
     this.freshwaterStatus = null;
+    this.attributes = { enabled: false };
     this.youLocal = 0;
     this.seq = 0;
     this.pending = [];
@@ -123,6 +124,7 @@ export class GameClient {
             m.content?.revisionId !== this.map.gmContentIdentity.revisionId)) {
           this.t.close?.(); this.bus.emit('net:error', { code: 'content_revision' }); break;
         }
+        this.attributes = { enabled: m.attributes?.enabled === true };
         this.personalLantern = false;
     this.fire = null;
         this.freshwaterStatus = null;
@@ -193,7 +195,7 @@ export class GameClient {
       if (ev.to === this.youServer) this.bus.emit('commerce', ev);
       return;
     }
-    if (ev.type === 'community' || ev.type === 'artisan' || ev.type === 'loggingAim') {
+    if (ev.type === 'community' || ev.type === 'artisan' || ev.type === 'loggingAim' || ev.type === 'attributes') {
       if (ev.to === this.youServer) this.bus.emit(ev.type, ev);
       return;
     }

@@ -214,7 +214,10 @@ async function boot() {
   hud.setMuted(settings.muted);
   // M4 panels: the character (Equipo / Atributos / Misiones, and Tía Perla's stall), people's dialog and the
   // map. None of them pauses the world; what they do is a `cmd` and the server answers with a new profile.
-  const sendCmd = (o) => { if (client && client.joined) client.send({ t: 'cmd', ...o }); };
+  const sendCmd = (o) => {
+    if (!client?.joined || client.t.closed) return false;
+    try { client.send({ t: 'cmd', ...o }); return true; } catch { return false; }
+  };
   const playerStats = () => {
     const ecs = client.pred.ecs, e = client.youLocal, p = client.profile;
     return {
@@ -226,10 +229,13 @@ async function boot() {
   const charPanel = new CharPanel($('#charpanel'), {
     send: sendCmd, profile: () => client && client.profile, stats: playerStats,
     backpack: () => resources.backpack(), locale: () => getLocale(),
+    attributeEnabled: () => client?.joined === true && !client.t.closed && client.attributes?.enabled === true,
     nearby: () => [...client.entities.values()].filter((r) => r.human && r.id !== client.youServer && r.ready && !r.dying && Math.hypot(r.r.x - ps.x, r.r.z - ps.z) <= 3.5).map((r) => ({ id: r.id, name: r.name })),
     portrait: (c) => drawPortrait(c, settings.skin, portrait(settings.skin)),
     onClose: () => { hud.setBagDot(charPanel.hasNew()); canvas.focus({ preventScroll: true }); },
   });
+  bus.on('attributes', ev => safe('attributes', () => charPanel.attributes.onResult(ev)));
+  bus.on('you:welcome', () => charPanel.attributes.resetSession());
   const dialog = new Dialog($('#dialog'), { send: sendCmd, onShop: () => charPanel.open('gear', { shop: true }), onTattoo: () => charPanel.open('tattoo', { learn: true }), onMarket: (town) => commercePanel.openMarket(town) });
   const mapView = new MapView($('#mapview'), map);
   const miniMap = new MiniMap($('#hud'), map, { isTouch, onOpen: () => {
@@ -874,6 +880,7 @@ async function boot() {
   }
   // Your profile (M4): gold, the tracker, and on the first one, how far the tutorial went.
   bus.on('profile', (p) => safe('profile', () => {
+    charPanel.attributes.update();
     if (!st.profileSeen) {
       st.profileSeen = true;
       const k = p.flags ? p.flags.tut | 0 : 0;
@@ -1591,6 +1598,7 @@ async function boot() {
         worldUI.update(anchors, screenP);
       });
       safe('raftEditor', () => raftEditor.update());
+      safe('attributes', () => charPanel.attributes.update());
       safe('commerce', () => commercePanel.update());
       safe('workbench', () => workbench.update());
       safe('community', () => {

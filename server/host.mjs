@@ -1324,7 +1324,12 @@ export class GameHost {
   sendTo(id, msg) {
     const sock = this.sockets.get(id);
     if (!sock) return;
-    if (msg.t === MSG.WELCOME) msg = { ...msg, content: { ...(this.contentIdentity ?? { generation: 0, revisionId: null }) } };
+    if (msg.t === MSG.WELCOME) {
+      const c = this.server.clients.get(id), s = this.profiles.clients.get(id);
+      msg = { ...msg, content: { ...(this.contentIdentity ?? { generation: 0, revisionId: null }) },
+        attributes: { enabled: this.attributeOperations && this.worldState?.ready === true &&
+          !this.worldState.failed && c?.serverProfile === true && !!s && !s.closed && !s.failed && !sock.agentIdentity } };
+    }
     if (this.agentPilot) {
       const inventoryDenial = (msg.t === MSG.AGENT_INVENTORY_RESULT && msg.ok === false && msg.inventory === null) ||
         (msg.t === MSG.AGENT_MARKET_RESULT && msg.ok === false && msg.market === null) ||
