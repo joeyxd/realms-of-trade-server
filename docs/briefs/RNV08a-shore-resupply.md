@@ -42,4 +42,5 @@ y móvil EN, con capturas, compra y venta confirmadas por el servidor, agua/cant
 del mismo viaje/bodega. La fixture de ubicación forzada queda declarada como fixture de QA; no acredita habilidad
 de navegación ni representa una ciudad nueva.
 
-Este brief describe el corte local. No afirma publicación ni despliegue.
+Este brief describe el contrato. La [entrega](../delivery/rnv08a-shore-resupply.md) registra publicación,
+revisión e imagen VPS y separa la aceptación visual local del canario autenticado público.
