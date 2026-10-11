@@ -1,0 +1,13 @@
+✔ local companion chats over its real local GameHost, remembers, reenters and reopens the durable non-monetary ledger (3450.4151ms)
+✔ manual context refresh keeps identity and allowance, cancels late reply and never auto reenters (1300.2618ms)
+✔ pressure summary is opt-in, idle, source-linked, bounded once per durable allowance across reopen (5208.9075ms)
+✔ a rejected manual summary preserves sources and consumes its known allowance without retry (1326.5546ms)
+✔ stopping during a held local inference prevents late chat delivery (1314.0297ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13640.672

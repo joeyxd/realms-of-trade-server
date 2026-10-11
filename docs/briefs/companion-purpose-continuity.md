@@ -6,7 +6,9 @@ personalidad y recuerdos. También interesa explorar habitantes, rivales y villa
 patrocinados por el juego que participen en el mundo.
 
 Este documento distingue esa intención de producto de las recomendaciones técnicas.
-La plantilla de compañía está implementada para fichas nuevas; los automatismos,
+La plantilla de compañía está implementada para fichas nuevas. El
+[corte L04c](../delivery/l04c-companion-continuity.md) implementa captura tras conversación,
+refresco y resumen acotados en el Studio local; los demás eventos automáticos,
 la integración JEV y los actores patrocinados descritos aquí **son propuestas**.
 No añade SQL, protocolo, proveedor, autonomía offline ni permisos de gameplay.
 
@@ -30,8 +32,9 @@ El recuerdo del plan no prueba que la balsa exista ni que queden materiales.
 
 ## Qué existe hoy
 
-Base inspeccionada: `2a51c8d`, sobre la entrega local
-[L03d-e2b](../delivery/l03d-local-companion-studio.md).
+Base histórica: `2a51c8d`, [L03d-e2b](../delivery/l03d-local-companion-studio.md).
+Actualización local L04c: [contrato](l04c-companion-continuity.md) y
+[evidencia](../delivery/l04c-companion-continuity.md).
 
 | Elemento | Comportamiento actual |
 | --- | --- |
@@ -39,14 +42,16 @@ Base inspeccionada: `2a51c8d`, sobre la entrega local
 | Archivos | Al iniciar y al leer el snapshot para una operación se cargan personalidad, objetivos y memoria del scope dueño–personaje–mundo. Hay comprobación de hashes antes de publicar efectos. |
 | Contexto | Incluye reglas, personalidad, herramientas concedidas, observación, objetivos y pendientes. Recupera recuerdos pertinentes y poda los opcionales dentro de topes medidos. |
 | Sesión de juego | Inicio/reentrada explícitos admiten una sesión nueva. Muerte, desconexión, stop, revocación o caducidad interrumpen el runner; no disparan una reconexión autónoma. |
-| Controles de Brisa | Iniciar, detener, reentrar, consultar/exportar archivos y guardar un episodio. Actualizar la vista no cambia de sesión. |
-| Compactado | API explícita `compactMemory(sourceIds)` para resumir episodios concretos, con presupuesto, fuentes y originales conservados. El Studio no tiene todavía botón ni ruta HTTP para ella. |
-| Automatización | Recuperación, poda y deduplicación mecánica por petición. No hay umbral que lance resumen semántico o cambie de sesión automáticamente. Guardar episodios también es explícito. |
+| Controles de Brisa | Iniciar, detener, reentrar, consultar/exportar archivos, guardar episodio, refrescar contexto y resumir fuentes elegidas. Refrescar cancela tardías sin cambiar sesión, cuota o stop. |
+| Compactado | API y botón del Studio para resumir de uno a ocho episodios, con presupuesto compartido, fuentes y originales conservados. |
+| Automatización | Captura tras conversación confirmada sin inferencia; resumen opt-in ante presión/pausa, máximo un intento automático por cuota durable, contando los manuales. Apagado al reiniciar. No cambia de sesión ni reanuda órdenes. |
 | Límite duro | Una petición cuyo contexto obligatorio no cabe se rechaza antes de emitirla. El journal tiene un tope de tamaño: resumir no lo reduce, porque conserva los originales. |
 
 En Brisa local se comprobó recuperación de un episodio después de cerrar el proceso.
 El ensayo de resumen real fue rechazado; el original permaneció intacto. Eso acredita
 continuidad desde disco, no calidad de resumen ni una memoria automática completa.
+L04c añade automatismos locales con proveedor simulado: 97 pruebas aprobadas/una omitida
+por symlink Windows y navegador 9/9. No se volvió a consumir el modelo real en ese corte.
 La memoria vive en archivos locales; el mundo de ese ensayo es efímero y su identidad
 es de fixture. No equivale a continuidad pública autenticada bajo M5.
 
@@ -57,6 +62,9 @@ Entradas técnicas: [local-companion](../../tools/agent/local-companion.mjs),
 [memoria](../agents/memory-runner.md), [ciclo de vida](../agents/lifecycle-runner.md).
 
 ## Continuidad propuesta
+
+El subconjunto local de chat, refresco y resumen ya se implementó en L04c. La tabla
+conserva la dirección más amplia: eventos de tareas y operación pública siguen pendientes.
 
 Separar tres conceptos evita reinicios innecesarios:
 
@@ -86,7 +94,8 @@ El umbral debe contar el **payload completo** con instrucciones, esquema, herram
 reserva de salida y margen; distinguir tokenizer real de estimación. Los valores
 dependen del modelo y de las pruebas. Puede haber aviso temprano, un umbral de
 resumen y un tope duro, con separación entre umbrales y espera mínima para no
-compactar en bucle. No fijamos porcentajes universales ni nuevos valores en este corte.
+compactar en bucle. L04c usa 80 % del payload completo o poda de opcionales y 3 s de pausa
+como política local de ensayo, con cuota durable; no fija porcentajes universales.
 
 Un resumen debe conservar referencias, preferencias explícitas, compromisos abiertos,
 correcciones, incertidumbre y el punto de continuación. No necesita copiar todo el
@@ -98,8 +107,8 @@ de archivo/retención y búsqueda. Compactar contexto no equivale a borrar histo
 El borrado solicitado por el dueño debe alcanzar resúmenes e índices derivados,
 conforme al contrato de [administración de memoria](../agents/memory-admin.md).
 
-Controles previstos: detener, refrescar contexto, resumir ahora, reconectar cuando
-proceda y administrar recuerdos. La UI debe mostrar motivo del refresco, última
+Controles del Studio L04c: detener, refrescar contexto, resumir ahora y reconectar
+explícitamente. La administración más amplia conserva su contrato. La UI muestra motivo del refresco, última
 captura guardada, uso del contexto y consumo conocido/pendiente. No se promete que
 una parada pueda deshacer una acción ya confirmada.
 
@@ -195,9 +204,9 @@ existentes, recuerdos, metas ni el presupuesto de Brisa.
 
 ## Siguiente corte recomendado y cómo aceptarlo
 
-Primero continuidad automática acotada y controles manuales sobre el runner local:
-episodios por eventos relevantes, punto de continuación con fuentes, resumen explícito
-y política por presión de contexto. Después comparar cuerpo solo, cuerpo+LLM y
+La continuidad local de conversación, el punto con fuentes, el resumen explícito y
+la política acotada por presión se implementaron en L04c. Siguen identidad/ledger central,
+wizard ingame y calidad real. Después comparar cuerpo solo, cuerpo+LLM y
 cuerpo+clasificador+LLM en las mismas escenas. No hacen falta nuevos assets para
 este corte: se reutilizan archivos, controladores y UI existentes; no hay trabajo
 de arte que requiera portar fuentes Unreal/FAB.
@@ -219,8 +228,8 @@ Criterios de aceptación propuestos:
   de convivencia. Una agenda narrativa no sustituye esos contratos.
 
 La calidad humana de la compañía, del resumen y del modelo local sigue pendiente.
-Este documento y el ajuste de plantilla no acreditan esos criterios ni despliegue
-de automatismos en el alfa.
+El ajuste de plantilla y las pruebas de L04c no acreditan esos criterios de calidad
+ni despliegue de automatismos en el alfa.
 
 Validación del ajuste de plantilla: **19/19** pruebas existentes de documentos,
 contexto acotado, adaptador local, runtime y servidor Studio. Ejecutadas con

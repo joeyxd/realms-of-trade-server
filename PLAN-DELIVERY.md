@@ -7,6 +7,16 @@ Documento v4/terreno v2, hash de materiales y alturas; versiones anteriores cons
 SQL033 aplicada por el autor y readiness del servicio comprobado. Reutiliza las texturas optimizadas actuales.
 Pruebas/aceptación visual y publicación en cierre; no se declara publicado todavía. Sigue dispersión y GM06.
 
+**AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
+[Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).
+Captura tras chat confirmado sin inferencia; continuación desde fuentes y refresco que cancela tardías
+sin renovar sesión/cuota ni reactivar stop. Resumen manual y automático opt-in por presión/pausa;
+un intento automático por cuota durable compartida con compactados manuales, originales conservados.
+Regresión integrada: 250 aprobadas/una omitida por symlink Windows; navegador 9/9 simulado con C01 real local.
+AgentMind relee observación tras I/O del presupuesto; stop/archivos y frescura corporal conservan sus límites.
+Sin SQL, protocolo, JEV ni activación pública. Sigue identidad/ledger central y wizard ingame;
+calidad del modelo, memoria semántica y compañía humana conservan aceptación propia.
+
 **AREA07 RNV07b, 2026-10-11 — publicada y activada, alpha.47/protocolo 53:**
 [Brief](docs/briefs/RNV07b-canteen-survival.md) y [entrega](docs/delivery/rnv07b-canteen.md).
 Cantimplora reutilizable de tres dosis, relleno desde manantial/cubeta/barril/provisiones y comer/beber;
@@ -798,7 +808,7 @@ capturas en escritorio/vertical/horizontal. Local, sin nuevo protocolo de chat n
 
 Planificación acordada por el autor: [ruta por líneas de acuerdo](PLAN-EXTRA-LLM.md#4-cortes-de-desarrollo-y-aceptación),
 22 líneas L00a–L06e con dirección acordada; L00, L01a/b/c y L02a/b tienen evidencia local;
-L02c añade autoridad opt-in, L03a API/mente simulada, L03b conversación, L03c metas/feedback, L04a memoria local con resúmenes simulados y L04b administración local verificados; L05–L06
+L02c añade autoridad opt-in, L03a API/mente simulada, L03b conversación, L03c metas/feedback, L04a memoria local con resúmenes simulados y L04b administración local verificados. [L04c](docs/delivery/l04c-companion-continuity.md) añade captura/refresco/resumen acotados del Studio local; montaje central y L05–L06
 siguen pendientes. Cada corte tiene demostración
 y estado separado de diseño/implementación. **Base de L00a acordada:** personaje propio/plaza normal,
 autonomía dentro de capacidades y gasto del dueño, stop y archivos de personalidad/memoria/objetivos
