@@ -26,7 +26,8 @@ Siguen comandos restantes de perlas y loot completo; después transición deteni
 **Bucanero, ficha animada — alpha.57/protocolo 56, sin SQL propio:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
 Idle auténtico en rig nativo independiente; giro/zoom, miniaturas quietas y gates de visibilidad.
 Un GLB por dispositivo, +353.260 B por clip; 42/42 CPU y 24/24 navegador. Tras integrar el corte
-concurrente de compañeros: 57/57 focales; SQL034 conserva su activación separada. Publicación aparte.
+concurrente de compañeros: 57/57 focales; SQL034 conserva su activación separada.
+Publicado en `66fcf82`: 176/176 actualizador, 15 hashes y entrada pública escritorio/móvil verificados.
 
 **AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.56/protocolo 56, sin SQL GM nuevo:**
 [Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).

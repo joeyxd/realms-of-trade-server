@@ -35,4 +35,16 @@ La ausencia del clip o un fallo al renderizar conserva el preview estático exis
   `node tools/import-asset.mjs --check`: 39 assets válidos. `git diff --check` correcto.
 
 Estas comprobaciones usan móvil emulado y no acreditan rendimiento en un teléfono físico.
-La publicación se registra por separado tras verificar revisión activa, salud y entrada pública.
+
+## Publicación verificada
+
+2026-10-11, 17:40 UTC: revisión `66fcf82868a5d266db468808689e83dbf8548af9`, alpha.57,
+activa y sana en el [VPS público](https://marea.62.171.136.148.sslip.io).
+176/176 comprobaciones del actualizador; una autoridad, imagen y etiqueta de revisión coincidentes.
+Entrada real invitada en escritorio y móvil: idle nativo avanzando, 65 huesos, tamaño ajustado,
+resoluciones correctas y una sola variante GLB. **15 hashes públicos iguales a Git**, cero errores.
+Después de cerrar ambas sesiones: cero jugadores, sockets, errores, guardados o economía pendientes.
+
+[Recibo](publication.json), [aceptación pública](public/acceptance.json),
+[ficha pública de escritorio](public/desktop-character.png) y [móvil](public/mobile-character.png).
+Runner `tools/qa-buccaneer-idle-public.mjs`. No se aplicó SQL ni se activaron pilotos opcionales.

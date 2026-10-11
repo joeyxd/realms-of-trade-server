@@ -2,7 +2,8 @@
 
 **Bucanero, idle en ficha, alpha.57:** [entrega](docs/delivery/buccaneer-v1/idle/README.md).
 Clip original sobre rig nativo solo en preview; fuente intacta, mundo de 15 huesos y gates modulares conservados.
-42/42 CPU y 24/24 navegador; 57/57 focales tras integrar el corte concurrente. Publicación por separado.
+42/42 CPU y 24/24 navegador; 57/57 focales tras integrar el corte concurrente.
+Publicado en `66fcf82`: 15 hashes públicos y ficha animada verificada en escritorio/móvil.
 
 **Revisión de tamaño del Bucanero, alpha.53:** autor confirma pequeño en mundo y ficha; altura
 visual 2,12 u (+12,2 %), encuadre 3D ×1,10 e icono centrado en la cara ×1,60. [Evidencia](docs/delivery/buccaneer-v1/size-review/README.md).

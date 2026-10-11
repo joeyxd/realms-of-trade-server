@@ -1,0 +1,40 @@
+{
+  "verifiedAtUTC": "2026-10-11 17:40:41 UTC",
+  "revision": "66fcf82868a5d266db468808689e83dbf8548af9",
+  "version": "0.6.0-alpha.57",
+  "protocol": 56,
+  "url": "https://marea.62.171.136.148.sslip.io",
+  "activeRelease": "/opt/marea-negra/releases/66fcf82868a5d266db468808689e83dbf8548af9",
+  "container": "857b91ed13ac",
+  "image": "sha256:04caacf78327b76ed1200b40602bd5c357aa954f4f940538c2e67e5ce9f8e380",
+  "health": "healthy",
+  "updaterTimer": "active",
+  "offlineReleaseTests": { "passed": 176, "failed": 0 },
+  "localFocusedTests": 42,
+  "companionIntegrationTests": 57,
+  "scatterIntegrationTests": 33,
+  "testCountsOverlap": true,
+  "localBrowserChecks": 24,
+  "publicSourcesMatchGit": 15,
+  "publicBrowserSessions": {
+    "desktop": "passed",
+    "mobileLandscape": "passed",
+    "nativeIdleAdvances": true,
+    "nativeBones": 65,
+    "mode": "guest",
+    "storageActions": "none"
+  },
+  "acceptance": "public/acceptance.json",
+  "finalStatus": {
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storageErrors": 0,
+    "unsaved": 0,
+    "economicPending": 0,
+    "tickBlocked": false,
+    "worldReady": true
+  },
+  "sqlApplied": false,
+  "notes": "Scoped to the Buccaneer idle and size presentation deployed in revision 66fcf82. Concurrent backend cuts retain their separate activation requirements. Physical mobile FPS remains unverified."
+}

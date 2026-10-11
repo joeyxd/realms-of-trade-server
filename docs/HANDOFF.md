@@ -30,7 +30,9 @@ Máximo 24 FPS solo con figura visible; pausa/cierre/pestaña/documento oculto/m
 el loop. GLB por dispositivo 1.965.360/1.394.284 B (+353.260 B), sin segunda descarga de modelo.
 42/42 focales CPU y 24/24 comprobaciones de navegador en escritorio/móvil; 57/57 tras integrar
 la creación de compañeros concurrente (protocolo 56, SQL034 conserva su activación separada).
-Publicación por separado.
+Publicado y verificado en `66fcf82`, alpha.57: 176/176 del actualizador, 15 hashes públicos
+iguales a Git y entrada real escritorio/móvil con idle avanzando; cero errores o pendientes.
+[Recibo](delivery/buccaneer-v1/idle/publication.json). Incluye el ajuste de tamaño de alpha.53.
 
 **AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.56/protocolo 56, sin SQL GM nuevo:**
 [Entrega/evidencia](delivery/gm04c/DELIVERY.md) y [contrato](briefs/gm04c-decoration-brush.md).

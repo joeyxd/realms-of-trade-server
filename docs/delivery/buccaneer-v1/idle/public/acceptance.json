@@ -1,0 +1,240 @@
+{
+  "generatedAt": "2026-10-11T17:39:06.588Z",
+  "expectedRevision": "66fcf82868a5d266db468808689e83dbf8548af9",
+  "sources": [
+    {
+      "file": "assets/manifest.json",
+      "sha256": "3f8b1f7e9c56f1c05cbf24426580cd9ad8903a8082e092cf5f001af926ccfe50",
+      "bytes": 14687,
+      "matchesGit": true
+    },
+    {
+      "file": "src/data/meta.js",
+      "sha256": "44c828d9026abe2d40a72cedd18b669099913bc1ea3e8bc6f06d9762bc600280",
+      "bytes": 253,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/characters.js",
+      "sha256": "9cfa1f15ce9472bc88177379fdbed0fa8f34aab42f2197bf472b38d1330d918f",
+      "bytes": 36789,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/charlooks.js",
+      "sha256": "75d0a2cfc341e9994a6a138e2ec5b5b593e9d1daa5dbf0aa9396f2ebd9f8649d",
+      "bytes": 65699,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/manifest.js",
+      "sha256": "1ceb677bb30bab803726230c42670d821d733075a3947f38c1cee0c53cce2dab",
+      "bytes": 10338,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/registry.js",
+      "sha256": "8dc7564f10d85ff46ba0288faa5a5a661c53c50dc28b4e9d8a3b336ae19b71e4",
+      "bytes": 13428,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/characterFigure.js",
+      "sha256": "59e7c2acf3779f4e4a59a872dc0f6bd9ec6d2e590ca612d5d58e235aae611b0b",
+      "bytes": 1942,
+      "matchesGit": true
+    },
+    {
+      "file": "src/render/assets/rebind.js",
+      "sha256": "15716f77cbd2281d34f55b723a6bcf321ef6e16d25495776ed451582b73cab88",
+      "bytes": 14991,
+      "matchesGit": true
+    },
+    {
+      "file": "src/ui/figureLoop.js",
+      "sha256": "775496195ec0576650cf195574b3105a4fa44b31bac0d9411eef436e115bb064",
+      "bytes": 1599,
+      "matchesGit": true
+    },
+    {
+      "file": "src/ui/characterScreen.js",
+      "sha256": "ac76d9dc5072813304e2b089203afb1ff40d93d9a16783572bd6ad63b2bdb7f5",
+      "bytes": 36466,
+      "matchesGit": true
+    },
+    {
+      "file": "src/main.js",
+      "sha256": "9a809e66afc2e46ac3a624c2e6eccf5b4ebc189616b3f92222f344bcef2812aa",
+      "bytes": 108846,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/models/buccaneer-v1-desktop.glb",
+      "sha256": "0754fb9e9ec9dbc0be751dae1fb4530ab6a8ca749c9d4476cefa3eaca0adfe78",
+      "bytes": 1965360,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/models/buccaneer-v1-mobile.glb",
+      "sha256": "ca5480b495228e774b8308e9b9d7d42fa397aa204aea3ea4e1b05a515141c549",
+      "bytes": 1394284,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/ui/portraits/buccaneer-v1-desktop.webp",
+      "sha256": "a21693be8b780b472a21e70615d29a7bc92f8205388ef093a52829b848d3a4f7",
+      "bytes": 290760,
+      "matchesGit": true
+    },
+    {
+      "file": "assets/ui/portraits/buccaneer-v1-mobile.webp",
+      "sha256": "aa2aea28968df268bae26963e06ca5fea421cf3ddf477fd2888d49587ce5de99",
+      "bytes": 82546,
+      "matchesGit": true
+    }
+  ],
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "touch": false,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/buccaneer-v1-desktop.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/ui/portraits/buccaneer-v1-desktop.webp"
+      ],
+      "player": {
+        "online": true,
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "height": 2.119999885559082,
+        "portraitFrame": {
+          "zoom": 1.6,
+          "centerY": 0.44
+        },
+        "figureZoom": 1.1,
+        "tris": 9280,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-desktop.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-desktop.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "albedo": 1024,
+        "portrait": 512
+      },
+      "sheet": {
+        "nativeIdle": true,
+        "time": 1.1500000000000001,
+        "bones": [
+          65
+        ],
+        "pending": true
+      },
+      "status": "passed"
+    },
+    {
+      "name": "mobile",
+      "width": 844,
+      "height": 390,
+      "touch": true,
+      "errors": [],
+      "requests": [
+        "https://marea.62.171.136.148.sslip.io/assets/models/buccaneer-v1-mobile.glb",
+        "https://marea.62.171.136.148.sslip.io/assets/ui/portraits/buccaneer-v1-mobile.webp"
+      ],
+      "player": {
+        "online": true,
+        "skin": 2,
+        "imported": "char:buccaneer-v1",
+        "height": 2.119999885559082,
+        "portraitFrame": {
+          "zoom": 1.6,
+          "centerY": 0.44
+        },
+        "figureZoom": 1.1,
+        "tris": 9280,
+        "assets": [
+          {
+            "id": "char:buccaneer-v1",
+            "kind": "char",
+            "src": "models/buccaneer-v1-desktop.glb",
+            "selectedSrc": "models/buccaneer-v1-mobile.glb",
+            "state": "ok",
+            "error": "",
+            "tris": 9164,
+            "notes": []
+          },
+          {
+            "id": "tex:portrait-buccaneer-v1",
+            "kind": "tex",
+            "src": "ui/portraits/buccaneer-v1-desktop.webp",
+            "selectedSrc": "ui/portraits/buccaneer-v1-mobile.webp",
+            "state": "ok",
+            "error": "",
+            "tris": 0,
+            "notes": []
+          }
+        ],
+        "albedo": 512,
+        "portrait": 256
+      },
+      "sheet": {
+        "nativeIdle": true,
+        "time": 1.0457999999999992,
+        "bones": [
+          65
+        ],
+        "pending": true
+      },
+      "status": "passed"
+    }
+  ],
+  "before": {
+    "version": "0.6.0-alpha.57",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "worldReady": true
+    }
+  },
+  "after": {
+    "version": "0.6.0-alpha.57",
+    "players": 0,
+    "sockets": 0,
+    "errors": 0,
+    "storage": {
+      "kind": "supabase",
+      "durable": true,
+      "accounts": true,
+      "errors": 0,
+      "unsaved": 0,
+      "tickBlocked": false,
+      "worldReady": true
+    }
+  }
+}
