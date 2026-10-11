@@ -1,0 +1,22 @@
+{
+  "recordedAt": "2026-10-11T17:03:14.536517+00:00",
+  "revision": "f26aae2090d0a9edd8ed7229714db89192d52f80",
+  "readOnly": true,
+  "domain": {
+    "world": "marea-negra",
+    "worldVersion": 2985,
+    "resourcesVersion": 3,
+    "resourcesTick": 4532389,
+    "clockPresent": false,
+    "counts": {
+      "mn_pearl_locations": 0,
+      "mn_death_drops": 0,
+      "mn_death_drop_states": 0,
+      "mn_pearl_intents": 0,
+      "mn_ground_transaction_intents": 0
+    },
+    "adoptionSQL": {
+      "version": 1
+    }
+  }
+}

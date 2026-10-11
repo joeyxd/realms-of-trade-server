@@ -1,5 +1,16 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-11 — perlas nuevas de élites/cofres; piloto común apagado:**
+[Entrega/evidencia](docs/delivery/m5-ground-pearl-mint.md), [contrato](docs/briefs/m5-ground-pearl-mint.md).
+Captura antes del suelo/evento, UID `mint:<UUID>` y recibo SQL004/018/019 bajo el mismo dueño;
+muerte primero, mints en orden y publicación al terminar todos. Aplicación síncrona reversible,
+filas actuales y pausa offline. 16/16 nuevos; 1063/1064 en 106 archivos congelados, base ff45e49;
+único fallo Cometa/agua reproducido en upstream sin cambios, registrado en la entrega.
+dos SIGKILL nuevos con recuperación y recogida únicas, sin efectos históricos. Conteos solapados.
+Sin SQL nuevo ni activación/adopción pública; publicación y despliegue se registran en la entrega.
+El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
+Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
+
 **AREA15, 2026-10-11 — muerte y botín compuestos; código publicado, montaje común apagado:**
 [Entrega/evidencia](docs/delivery/m5-ground-death-lifecycle.md), [contrato](docs/briefs/m5-ground-death-lifecycle.md).
 Captura fatal real, pérdidas/XP/PK y fuentes en el recibo común; recogida/expiración automática,
