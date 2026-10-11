@@ -1,5 +1,15 @@
 # Continuidad de servidor — AREA15
 
+**AREA01 GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
+[Entrega](delivery/gm04b/DELIVERY.md), [navegador público](delivery/gm04b/public-browser-evidence.json)
+y [despliegue](delivery/gm04b/deployment.json). Conjuntos de 1–120 decoraciones, fantasma completo,
+copias independientes y undo/redo por colocación. Biblioteca local por cuenta–servidor–mundo, 32 plantillas,
+CAS e import/export de 2 MiB; misma semilla/revisión base. Regresión GM 199/199 en 35 archivos;
+navegador local 17/17 y público autenticado 19/19, sin errores ni mutaciones remotas.
+Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4 conservado.
+Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
+Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
+
 **AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
 [entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
 Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
