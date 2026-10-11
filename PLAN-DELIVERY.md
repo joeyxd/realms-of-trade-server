@@ -1,5 +1,15 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
+[Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
+70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.
+Corregida una discrepancia: sin Carga adoptada, una mochila antigua por encima del techo conserva
+su movimiento normal; capacidad sigue impidiendo añadir mercancías. 83/83 en 14 archivos y 14/14
+tras integrar el Bucanero concurrente (conteos solapados). Código `e874bed` enviado, sin SQL nuevo.
+VPS último comprobado: `f26aae2`, alpha.52, dos jugadores/dos sockets, cero errores o pendientes;
+el actualizador espera mundo vacío. Despliegue de la corrección y aceptación pública pendientes.
+Siguen SRV02/comidas especiales y bolsas INV03 conservando volumen, como cortes separados.
+
 **Bucanero, tamaño — alpha.53/protocolo 55, sin SQL:** el autor lo siente pequeño en mundo y ficha.
 [Ajuste y comparación](docs/delivery/buccaneer-v1/size-review/README.md): modelo +12,2 %, ficha
 ×1,10 y rostro del icono ×1,60. 36/36 focales, cuatro sesiones/16 vistas sin cortes; sin nuevos assets.

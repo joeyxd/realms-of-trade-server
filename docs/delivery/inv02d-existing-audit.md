@@ -1,6 +1,10 @@
 # AREA03 — revisión de sobrepeso existente
 
 Fecha: 2026-10-11. Base revisada: `f26aae2`, alpha.52/protocolo 55.
+Corrección enviada en `e874bed`, alpha.54/protocolo 55; despliegue pendiente de mundo vacío.
+Fuente de esta sesión: worktree `prg01c-artisan`, rama `codex/prg01c-artisan`,
+integrada con `origin/claude/loving-lovelace-ptbif7`. El checkout compartido
+`realms-of-trade-server` conserva cambios ajenos y no recibió una copia del runtime.
 
 El autor pidió comprobar el trabajo de las otras sesiones antes de continuar. La rama
 `claude/loving-lovelace-ptbif7` ya contiene INV02d, incorporado en `448f4a2` y publicado
@@ -47,7 +51,18 @@ la regresión de atributos, comercio, herramientas, agua, cantimplora y parada c
 Los casos de replay usan `World` de predicción y snapshots reales, sin navegador
 ni escritura SQL; los límites de nivel 10 se aíslan del volumen en el helper.
 
-La evidencia pública y la revisión activa se incorporan tras el relevo seguro.
+Integración concurrente: conserva `1b32986` (tamaño/encuadre del Bucanero, alpha.53).
+Después de integrar, **14/14** en personajes/Bucanero/sobrepeso; conteo solapado con
+la regresión de 83. Metadatos subidos a alpha.54; protocolo 55 conservado.
+
+Publicación: código enviado a la rama seguida por el actualizador. La última
+lectura comprobó `f26aae2`, alpha.52, **dos jugadores/dos sockets**, cero errores
+o escrituras pendientes. Se solicitó el actualizador normal, que comprueba estado
+y difiere el relevo mientras haya jugadores. No se desconectaron sesiones ni se
+forzó un reinicio. **La corrección no se declara desplegada ni probada en público.**
+Tras el relevo, comprobar revisión/imagen/fuentes, pruebas focales sin red en la
+imagen exacta y entrada autenticada. El runner de entrada existente prueba login
+y disponibilidad general; no acredita una mochila sobrecargada en público.
 La lectura inicial del VPS confirmó `f26aae2`, alpha.52, sin jugadores, errores,
 escrituras pendientes o fallos económicos; no acredita por sí sola todas las
 interacciones de sobrepeso.
