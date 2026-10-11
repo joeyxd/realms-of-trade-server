@@ -13,6 +13,7 @@ import * as THREE from 'three';
 import { normalizeManifest, fitBox, selectTextureSource } from './manifest.js';
 import { bakeCharacter, sizedCharacter } from './rebind.js';
 import { captureCharacterFigure, createCharacterFigure } from './characterFigure.js';
+import { createCharacterSwim } from './characterSwim.js';
 import { worldToon } from './toonmat.js';
 import { LOOKS, buildLook, buildWeaponOnly } from '../charlooks.js';
 
@@ -180,14 +181,26 @@ export class Assets {
 
   hasCharacterFigure(lookIdx) {
     const id = this.man.byLook.get(LOOKS[lookIdx]?.name);
-    return !!this.data(id)?.figure;
+    return !!this.data(id)?.figure?.clip;
   }
 
   characterFigure(lookIdx) {
     const look = LOOKS[lookIdx], id = this.man.byLook.get(look?.name), data = this.data(id);
-    if (!data?.figure) return null;
+    if (!data?.figure?.clip) return null;
     const entry = this.entry(id), height = (entry.height > 0 ? entry.height : buildLook(lookIdx, false).height) * (look.scale || 1);
     return createCharacterFigure(data.figure, data.bake, entry, look, height);
+  }
+
+  hasCharacterSwim(lookIdx) {
+    const id = this.man.byLook.get(LOOKS[lookIdx]?.name);
+    return !!this.data(id)?.figure?.swimClip;
+  }
+
+  characterSwim(lookIdx, shared) {
+    const look = LOOKS[lookIdx], id = this.man.byLook.get(look?.name), data = this.data(id);
+    if (!data?.figure?.swimClip) return null;
+    const entry = this.entry(id), height = (entry.height > 0 ? entry.height : buildLook(lookIdx, false).height) * (look.scale || 1);
+    return createCharacterSwim(data.figure, data.bake, entry, height, shared);
   }
 
   // A fitted clone of a static model (prop / model). target: { w, h } of what it replaces (fit "proc").

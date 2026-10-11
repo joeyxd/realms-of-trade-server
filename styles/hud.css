@@ -549,8 +549,8 @@ body.touch .actionbar { display: none; }
     max-width: none; transform: none; flex-wrap: wrap; gap: 6px; justify-content: flex-end;
   }
   body:not(.is-naval) .hud-top-right .icon-btn { width: 44px; height: 44px; flex: 0 0 44px; font-size: 16px; }
-  body:not(.is-naval) .hud-top-right .mn-companions { min-width: 0; flex: 0 0 100%; order: 1; }
-  body:not(.is-naval) .hud-top-right .mn-companions-toggle { width: 100%; min-height: 44px; padding: 6px; font-size: 13px; }
+  body:not(.is-naval) .hud-top-right .mn-companions { min-width: 0; flex: 0 0 auto; order: 1; margin-left: auto; }
+  body:not(.is-naval) .hud-top-right .mn-companions-toggle { width: auto; min-height: 44px; padding: 6px; font-size: 13px; }
   body:not(.is-naval) .hud-top-right .net-chip { order: 0; margin-left: auto; font-size: 12px; }
   body:not(.is-naval) .hud-top-right .net-chip .pl { display: none; }
   body:not(.is-naval) #toasts,

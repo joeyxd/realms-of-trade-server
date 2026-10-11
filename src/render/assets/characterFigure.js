@@ -6,9 +6,14 @@ import { charNormalMat } from '../toon.js';
 
 // Capture before bakeCharacter lowers the source arms in place. Geometry/textures remain shared.
 export function captureCharacterFigure(gltf, entry) {
-  if (!entry.figureAnimation) return null;
-  const clip = gltf.animations?.find((c) => c.name === entry.figureAnimation);
-  return clip && clip.duration > 0 ? { scene: clone(gltf.scene), clip } : null;
+  const clip = entry.figureAnimation
+    ? gltf.animations?.find((c) => c.name === entry.figureAnimation && c.duration > 0)
+    : null;
+  const swimClip = entry.swimAnimation
+    ? gltf.animations?.find((c) => c.name === entry.swimAnimation && c.duration > 0)
+    : null;
+  if (!clip && !swimClip) return null;
+  return { scene: clone(gltf.scene), clip: clip || null, swimClip: swimClip || null };
 }
 
 export function createCharacterFigure(source, bake, entry, look, height) {

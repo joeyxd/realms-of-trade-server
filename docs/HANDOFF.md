@@ -1,5 +1,14 @@
 # Traspaso: cómo seguir con MAREA NEGRA
 
+**Bucanero a distancia y nado original — alpha.58/protocolo 57:**
+[Brief](briefs/buccaneer-ranged-swim.md) y [entrega](delivery/buccaneer-v1/ranged-swim/README.md).
+LMB rápido / RMB potente, manos/modelos distintos y recargas independientes; ambos interceptan
+proyectiles por choque continuo 3D, solo el fuerte devuelve pesados. Sable conserva guardia.
+Swim original en rig nativo de 65 huesos solo en agua, sin root motion; salida/muerte/fallo recuperan rig15.
+Perfiles guardados conservan equipo; sin SQL propio. 85/85 CPU, 27/27 recheck, assets19/19 y catálogo39/39,
+conteos solapados. Navegador local 20/20 escritorio/móvil; suite general no verde (ver entrega CPU).
+Publicación y aceptación pública pendientes de registrar al completar el actualizador habitual.
+
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](delivery/l03e-companion-creation/README.md), [brief](briefs/l03e-companion-creation.md).
 Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.

@@ -60,6 +60,7 @@ export class SwimStatus {
       body.is-swimming .live-navigation.is-desktop .ln-prompt{bottom:calc(8.7rem + 8rem)}
       body.is-swimming .actionbar .wname,body.is-swimming .actionbar .mast{visibility:hidden}
       body.touch .mn-swim-status{bottom:max(5.2rem,env(safe-area-inset-bottom));font-size:12px}
+      @media(max-height:480px) and (pointer:coarse){body.touch .mn-swim-status{left:40%;bottom:max(.7rem,env(safe-area-inset-bottom));width:min(18rem,40vw);padding:.45rem .6rem;font-size:11px}}
     </style><header><span data-title></span><b data-value></b></header><progress max="100" value="100" data-meter></progress><div class="warning" data-warning></div><footer><span class="danger" data-brasa></span><span data-load></span><span data-advice></span></footer>`;
     parent.appendChild(this.root);
   }

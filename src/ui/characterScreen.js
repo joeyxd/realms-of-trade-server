@@ -43,7 +43,7 @@ const TEXT = {
     equip: 'Equipar', unequip: 'Quitar', salvage: 'Desguazar +{v}', sell: 'Vender +{v}', sure: '¿Seguro? +{v}',
     kit: 'Cambia tu kit a {name}.', scale: 'Barra: base del nivel {n}', capScale: 'Barra: tope {n}',
     stat: { atk: 'Ataque', def: 'Defensa', hp: 'Vida', crit: 'Crítico', speed: 'Velocidad', cdr: 'Enfriamiento' },
-    quick8: { lmb: 'Ataque', rmb: 'Guardia', dash: 'Dash', pot: 'Poción' },
+    quick8: { lmb: 'Ataque', lmbPistol: 'Disparo rápido', rmb: 'Guardia', rmbPistol: 'Disparo potente', dash: 'Dash', pot: 'Poción' },
     quote: '«Mismo cielo.\nHistorias distintas.»', quote2: '«Cosas simples.\nLugares extraordinarios.»', noProfile: 'Aún no has subido a bordo.',
     looks: ['Corsario curtido en mil abordajes; nunca le falta un plan ni una salida.', 'Exploradora de costas y cuevas, siempre detrás del siguiente horizonte.',
       'Bucanero de puerto en puerto, rápido con el sable y con la lengua.', 'Hija de la tormenta: lee el viento antes de que cambie.',
@@ -67,7 +67,7 @@ const TEXT = {
     equip: 'Equip', unequip: 'Unequip', salvage: 'Salvage +{v}', sell: 'Sell +{v}', sure: 'Sure? +{v}',
     kit: 'Switches your kit to {name}.', scale: 'Bar: level {n} base', capScale: 'Bar: cap {n}',
     stat: { atk: 'Attack', def: 'Defense', hp: 'Health', crit: 'Critical', speed: 'Speed', cdr: 'Cooldown' },
-    quick8: { lmb: 'Attack', rmb: 'Guard', dash: 'Dash', pot: 'Potion' },
+    quick8: { lmb: 'Attack', lmbPistol: 'Quick shot', rmb: 'Guard', rmbPistol: 'Power shot', dash: 'Dash', pot: 'Potion' },
     quote: '“Same sky.\nDifferent stories.”', quote2: '“Simple things.\nExtraordinary places.”', noProfile: 'You have not come aboard yet.',
     looks: ['A corsair hardened by a thousand boardings; never short of a plan or a way out.', 'An explorer of coasts and caves, always chasing the next horizon.',
       'A buccaneer from port to port, quick with the cutlass and quicker with words.', 'A daughter of the storm: she reads the wind before it turns.',
@@ -89,7 +89,7 @@ export class CharacterScreen extends CharPanel {
   constructor(root, opts) {
     super(root, opts);
     Object.assign(this, { vitals: opts.vitals, figure: opts.figure, slots: opts.slots, tools: opts.tools, onFood: opts.onFood,
-      figureAnimated: opts.figureAnimated || (() => false), reducedMotion: opts.reducedMotion || (() => false) });
+      weapon: opts.weapon || (() => this.stats().weapon), figureAnimated: opts.figureAnimated || (() => false), reducedMotion: opts.reducedMotion || (() => false) });
     this.tab = 'stats';
     this.statsAll = false;
     this.slotFocus = null;
@@ -384,12 +384,12 @@ export class CharacterScreen extends CharPanel {
     const st = this.stats();
     let ids = {};
     try { ids = this.slots?.() || {}; } catch { ids = {}; }
-    const w = p.eq.weapon;
+    const w = p.eq.weapon, pistols = WEAPON_KINDS[this.weapon() | 0] === 'pistolas';
     const cell = (key, icon, label, count = '') => `<div class="ch-q" title="${esc(label)}"><span class="ch-q-key">${esc(key)}</span><span class="ch-q-ico">${icon}</span>${count !== '' ? `<b>${count}</b>` : ''}</div>`;
     const svgIcon = (id) => (id ? skillIcon(id) : '');
     return `<span class="ch-sub">${esc(T.quick)}</span><div class="ch-q-row">
-      ${cell('LMB', w ? atlasIcon(w.b, 'ch-q-art') : I.sword, T.quick8.lmb)}
-      ${cell('RMB', svgIcon('shield'), T.quick8.rmb)}
+      ${cell('LMB', pistols ? svgIcon('pistol') : w ? atlasIcon(w.b, 'ch-q-art') : I.sword, pistols ? T.quick8.lmbPistol : T.quick8.lmb)}
+      ${cell('RMB', pistols ? svgIcon('pistolLong') : svgIcon('shield'), pistols ? T.quick8.rmbPistol : T.quick8.rmb)}
       ${cell('ESP', svgIcon('dash'), T.quick8.dash)}
       ${cell('Q', svgIcon(ids.q), ids.q || 'Q')}${cell('E', svgIcon(ids.e), ids.e || 'E')}${cell('G', svgIcon(ids.g), ids.g || 'G')}
       ${cell('R', svgIcon(ids.r || 'storm'), 'R')}

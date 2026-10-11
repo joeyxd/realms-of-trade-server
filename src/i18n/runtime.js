@@ -120,6 +120,42 @@ export default {
     "Atrapa un cañonazo: sube la guardia (clic derecho) justo a tiempo",
     "Catch a cannonball: raise your guard (right click) at the right moment"
   ],
+  "tutorial.pistolPrimary": [
+    "Dispara con el botón izquierdo para acertar al blanco del aro",
+    "Fire with the left button to hit the target in the ring"
+  ],
+  "tutorial.pistolPrimaryTouch": [
+    "Toca disparo rápido para acertar al blanco del aro",
+    "Tap quick shot to hit the target in the ring"
+  ],
+  "tutorial.pistolParry": [
+    "Intercepta el cañonazo: apunta y acierta a la bala enemiga en vuelo",
+    "Intercept the cannonball: aim and hit the enemy bullet in flight"
+  ],
+  "tutorial.pistolParryTouch": [
+    "Intercepta el cañonazo: apunta y acierta a la bala enemiga en vuelo",
+    "Intercept the cannonball: aim and hit the enemy bullet in flight"
+  ],
+  "tutorial.pistolSecondary": [
+    "Mantén el botón derecho para disparar la pistola larga, potente y lenta",
+    "Hold the right button to fire the powerful, slower long pistol"
+  ],
+  "tutorial.pistolSecondaryTouch": [
+    "Mantén disparo potente para probar la pistola larga",
+    "Hold power shot to try the long pistol"
+  ],
+  "tutorial.pistolPrimaryDone": [
+    "<b>¡Buen tiro!</b> La pistola izquierda dispara rápido y también intercepta balas en vuelo.",
+    "<b>Good shot!</b> The left pistol fires quickly and can intercept bullets in flight."
+  ],
+  "tutorial.pistolSecondaryDone": [
+    "<b>¡A toda mecha!</b> La pistola derecha golpea más fuerte y devuelve balas pesadas.",
+    "<b>Full bore!</b> The right pistol hits harder and returns heavy bullets."
+  ],
+  "tutorial.pistolParryDone": [
+    "<b>¡Intercepción!</b> Tu bala hizo volver el proyectil enemigo por donde llegó.",
+    "<b>Intercepted!</b> Your shot sent the enemy projectile back along its path."
+  ],
   "tutorial.first": [
     "Primeros pasos",
     "First steps"
@@ -368,8 +404,12 @@ export default {
     "RIPOSTE READY · R"
   ],
   "hud.pistolTip": [
-    "Disparo (mantener): balas rectas; no refleja. Atrapa con la guardia y el siguiente disparo devuelve lo atrapado",
-    "Shoot (hold): straight bullets; no reflection. Catch with your guard, then your next shot returns what you caught"
+    "Pistola izquierda (mantener): disparo rápido. La bala puede interceptar proyectiles enemigos en vuelo",
+    "Left pistol (hold): rapid fire. Its bullets can intercept enemy projectiles in flight"
+  ],
+  "hud.pistolAltTip": [
+    "Pistola derecha (mantener): disparo potente y lento. Intercepta balas enemigas; solo esta devuelve proyectiles pesados",
+    "Right pistol (hold): powerful, slower fire. Intercepts enemy bullets; only this shot returns heavy projectiles"
   ],
   "hud.swordTip": [
     "Combo de 3 golpes: golpea la bala justo antes del impacto para reflejarla (EXCELENTE / BUENO / POBRE)",
@@ -390,6 +430,22 @@ export default {
   "touch.guard": [
     "Guardia (mantener)",
     "Guard (hold)"
+  ],
+  "touch.quickShot": [
+    "Disparo rápido (mantener)",
+    "Quick shot (hold)"
+  ],
+  "touch.secondaryShot": [
+    "Disparo potente (mantener)",
+    "Power shot (hold)"
+  ],
+  "touch.quickShotFace": [
+    "RÁPIDO",
+    "QUICK"
+  ],
+  "touch.strongShotFace": [
+    "POTENTE",
+    "POWER"
   ],
   "touch.q": [
     "Habilidad Q",
@@ -794,6 +850,30 @@ export default {
   "runtime.guardMouse": [
     "Sube la guardia (<span class=\"kbd\">RMB</span>) justo antes del impacto",
     "Raise your guard (<span class=\"kbd\">RMB</span>) just before impact"
+  ],
+  "runtime.pistolPrimaryMouse": [
+    "Acércate al aro y dispara al muñeco con clic izquierdo",
+    "Enter the ring and shoot the dummy with left click"
+  ],
+  "runtime.pistolPrimaryTouch": [
+    "Acércate al aro y dispara al muñeco con el botón izquierdo",
+    "Enter the ring and shoot the dummy with the left button"
+  ],
+  "runtime.pistolParryMouse": [
+    "Apunta al cañonazo y dispárale antes de que te alcance",
+    "Aim at the cannonball and shoot it before it reaches you"
+  ],
+  "runtime.pistolParryTouch": [
+    "Apunta al cañonazo y dispárale antes de que te alcance",
+    "Aim at the cannonball and shoot it before it reaches you"
+  ],
+  "runtime.pistolSecondaryMouse": [
+    "Mantén el clic derecho para probar la pistola potente",
+    "Hold right click to try the power pistol"
+  ],
+  "runtime.pistolSecondaryTouch": [
+    "Mantén disparo potente para probar la pistola larga",
+    "Hold power shot to try the long pistol"
   ],
   "runtime.backRing": [
     "Vuelve al aro de cuerda",

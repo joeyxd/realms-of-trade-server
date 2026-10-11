@@ -309,9 +309,14 @@ export class GameClient {
         const local = this.sidOf.get(ev.sid);
         this.sidOf.delete(ev.sid);
         const s = local !== undefined ? this.shots.slot.get(local) : undefined;
-        if (s !== undefined) { this.ending.set(s, { sid: ev.sid, owner: ev.owner ?? this.shots.owner[s], elem: ev.elem ?? this.shots.elem[s], x: ev.x, z: ev.z, hit: ev.hit, t: 0, queue: [] }); return; }
+        if (s !== undefined) {
+          const y = Number.isFinite(ev.y) ? ev.y : this.shots.y[s];
+          const travelT = 0.22 + Math.abs(y - this.shots.y[s]) / Math.max(0.1, this.shots.speed[s]);
+          this.ending.set(s, { sid: ev.sid, owner: ev.owner ?? this.shots.owner[s], elem: ev.elem ?? this.shots.elem[s], x: ev.x, y, z: ev.z,
+            hasY: Number.isFinite(ev.y), hit: ev.hit, t: 0, travelT, queue: [] }); return;
+        }
         for (const en of this.ending.values()) if (en.queue.some((q) => q.spawnShot && q.spawnShot.sid === ev.sid)) this.endedEarly.add(ev.sid);
-        this.bus.emit('combat', { type: 'shotImpact', e: ev.owner, elem: ev.elem || 0, x: ev.x, z: ev.z, hit: ev.hit });
+        this.bus.emit('combat', { type: 'shotImpact', e: ev.owner, elem: ev.elem || 0, x: ev.x, ...(Number.isFinite(ev.y) ? { y: ev.y } : {}), z: ev.z, hit: ev.hit });
         return;
       }
       case 'damage': case 'kill':
@@ -327,7 +332,7 @@ export class GameClient {
     if (show) this.bus.emit('combat', { ...ev, me: mine, fromServer: true });
   }
 
-  keyOf(ev) { return ev.type + ':' + (ev.pid ?? ev.id ?? '') + ':' + ev.seq; }
+  keyOf(ev) { return ev.type + ':' + (ev.pid ?? ev.id ?? '') + ':' + ev.seq + (ev.type === 'fire' ? ':' + (ev.secondary ? 'secondary' : 'primary') : ''); }
 
   despawnNow(id) {
     this.heldDespawn.delete(id);
@@ -344,23 +349,25 @@ export class GameClient {
 
   // Show the deaths still in flight to `id` now (at the server's impact point), then despawn it.
   releaseDespawn(id) {
-    for (const [s, end] of [...this.ending]) if (end.queue.some((q) => q.type === 'kill' && q.id === id)) this.finishEnding(s, end, end.x, end.z);
+    for (const [s, end] of [...this.ending]) if (end.queue.some((q) => q.type === 'kill' && q.id === id)) this.finishEnding(s, end, end.x, end.y, end.z);
     if (this.heldDespawn.has(id)) this.despawnNow(id);
   }
 
   // A visual shot the server already ended reaches its impact: the impact, then what it caused.
-  finishEnding(s, end, ix, iz) {
+  finishEnding(s, end, ix, iy, iz) {
+    // Preserve the older internal (x, z) call form; y is optional on packets from older servers.
+    if (iz === undefined) { iz = iy; iy = end.y ?? this.shots.y[s]; }
     const elem = end.elem ?? this.shots.elem[s], owner = end.owner ?? this.shots.owner[s];
     this.shots.free(s);
     this.ending.delete(s);
-    this.bus.emit('combat', { type: 'shotImpact', e: owner, elem, x: ix, z: iz, hit: end.hit });
+    this.bus.emit('combat', { type: 'shotImpact', e: owner, elem, x: ix, ...(end.hasY ? { y: iy } : {}), z: iz, hit: end.hit });
     for (const q of end.queue) {
       if (!q.spawnShot) { this.bus.emit('combat', q); continue; }
       const b = q.spawnShot;
       if (this.endedEarly.delete(b.sid)) continue;
-      const l = this.spawnLocalShot(b.owner, { ...b, x: ix, z: iz, type: b.ptype, server: true });
+      const l = this.spawnLocalShot(b.owner, { ...b, x: ix, y: iy, z: iz, type: b.ptype, server: true });
       if (l) this.sidOf.set(b.sid, l);
-      this.bus.emit('combat', { type: 'bounce', x: ix, z: iz, owner: b.owner });
+      this.bus.emit('combat', { type: 'bounce', x: ix, y: iy, z: iz, owner: b.owner });
     }
     for (const q of end.queue) if (q.type === 'kill' && this.heldDespawn.has(q.id) && !this.killPending(q.id)) this.despawnNow(q.id);
   }
@@ -786,17 +793,17 @@ export class GameClient {
       const end = this.ending.get(s);
       if (end) {
         // Fly straight to the impact (the enemy as drawn, or the wall).
-        let ex = end.x, ez = end.z;
+        let ex = end.x, ey = end.y, ez = end.z;
         if (end.hit && pos(end.hit, tmp)) { ex = tmp.x; ez = tmp.z; }
-        const dx = ex - S.x[s], dz = ez - S.z[s], d = Math.hypot(dx, dz);
+        const dx = ex - S.x[s], dy = ey - S.y[s], dz = ez - S.z[s], d = Math.hypot(dx, dy, dz);
         const step = S.speed[s] * dt;
         end.t += dt;
-        if (d <= step + 0.35 || end.t > 0.22) {
-          this.finishEnding(s, end, d < 3 ? ex : S.x[s], d < 3 ? ez : S.z[s]);
+        if (d <= step + 0.35 || end.t > end.travelT) {
+          this.finishEnding(s, end, d < 3 ? ex : S.x[s], d < 3 ? ey : S.y[s], d < 3 ? ez : S.z[s]);
           continue;
         }
-        S.vx[s] = (dx / d) * S.speed[s]; S.vz[s] = (dz / d) * S.speed[s];
-        S.x[s] += S.vx[s] * dt; S.z[s] += S.vz[s] * dt;
+        S.vx[s] = (dx / d) * S.speed[s]; S.vy[s] = (dy / d) * S.speed[s]; S.vz[s] = (dz / d) * S.speed[s];
+        S.x[s] += S.vx[s] * dt; S.y[s] += S.vy[s] * dt; S.z[s] += S.vz[s] * dt;
         continue;
       }
       S.step(s, dt, find, pos, tmp);
@@ -857,6 +864,7 @@ export class GameClient {
     out.level = ecs.level[e]; out.xp = ecs.xp[e]; out.hurtInv = ecs.hurtInv[e]; out.stagger = ecs.stagger[e];
     out.god = ecs.god[e];
     out.weapon = ecs.weapon[e]; out.cdQ = ecs.cdQ[e]; out.cdE = ecs.cdE[e]; out.castK = ecs.castK[e]; out.castT = ecs.castT[e];
+    out.shotAltCd = ecs.shotAltCd[e]; out.fireMul = ecs.fireMul[e];
     out.potions = ecs.potions[e]; out.potCd = ecs.potCd[e]; out.mastery = ecs.mastery[e]; out.guardMax = tuning.guard.stamina + ecs.guardAdd[e];
     out.load = ecs.load[e]; // INV02d: the pack's load tier (HUD chip)
     // M4.7: what the slots hold (skill index, form, rank), the charge and the empowered attack after a Parpadeo.

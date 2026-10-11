@@ -15,13 +15,13 @@ const pistols = (o) => arena({ weapon: WEAPON.PISTOLAS, ...o });
 const run = (step, n, c = {}) => { const evs = []; for (let i = 0; i < n; i++) evs.push(...step(c)); return evs; };
 const dmgTo = (evs, id) => evs.filter((ev) => ev.type === 'damage' && ev.id === id);
 
-test('held LMB fires every 0.2 s from alternating hands; the bullets fly straight and slow you a little', () => {
+test('held LMB fires every 0.2 s from the left hand; the bullets fly straight and slow you a little', () => {
   const { w, e, step } = pistols();
   const ecs = w.ecs;
   const evs = [...step({ prs: BTN.ATTACK, btn: BTN.ATTACK }), ...run(step, 59, { btn: BTN.ATTACK })];
   const fires = evs.filter((ev) => ev.type === 'fire');
   assert.equal(fires.length, Math.ceil(1 / P.every - 1e-9), `${fires.length} shots in 1 s`);
-  assert.deepEqual(fires.slice(0, 4).map((ev) => ev.hand), [-1, 1, -1, 1]);
+  assert.deepEqual(fires.slice(0, 4).map((ev) => ev.hand), [1, 1, 1, 1]);
   const shots = evs.filter((ev) => ev.type === 'shot');
   assert.equal(shots.length, fires.length);
   assert.ok(shots.every((s) => s.kind === SHOT.BULLET && s.speed === P.speed && s.homing === 0));
@@ -56,7 +56,7 @@ test('pistol bullets hit for ATK × 0.6; an armoured front stops them but not a 
   assert.ok(kinds.some(([k, a]) => k === 'shot' && a === 0), JSON.stringify(kinds));
 });
 
-test('the pistols do not reflect with LMB: a bullet you shoot at just passes, the guard still blocks', () => {
+test('a primary shot cannot reflect an unarmed bullet, and pistolas secondary never guards', () => {
   const { w, e, step } = pistols();
   const id = incoming(w, e, PTYPE.PARRY, 3, 8);
   const evs = [...step({ prs: BTN.ATTACK }), ...run(step, 30)];
@@ -64,7 +64,8 @@ test('the pistols do not reflect with LMB: a bullet you shoot at just passes, th
   assert.ok(evs.some((ev) => ev.type === 'phit' && ev.pid === id), 'it hits you');
   const id2 = incoming(w, e, PTYPE.PARRY, 4, 8);
   const evs2 = run(step, 40, { btn: BTN.GUARD });
-  assert.ok(evs2.some((ev) => ev.type === 'guard' && (ev.st === 'block' || ev.st === 'perfect') && ev.pid === id2));
+  assert.ok(evs2.some((ev) => ev.type === 'fire' && ev.secondary), 'RMB uses the right pistol');
+  assert.ok(!evs2.some((ev) => ev.type === 'guard' && ev.pid === id2), 'RMB is not guard with pistolas');
 });
 
 test('Descarga: 7 pellets in a cone, the parryables in front are blown away (not the ones behind), recoil and root', () => {
@@ -174,4 +175,41 @@ test('client prediction stays exact with the pistols: fire, blast, blink, rain, 
   for (let s = 0; s < client.shots.cap; s++) if (client.shots.id[s] && !client.ending.has(s)) cl++;
   for (let s = 0; s < server.world.shots.cap; s++) if (server.world.shots.id[s]) sv++;
   assert.ok(cl <= sv + 2, `client shots ${cl} vs server ${sv}`);
+});
+
+test('LMB and RMB fire together with separate cadence, hand, power, and command keys', () => {
+  const { w, e, step } = pistols();
+  const first = step({ prs: BTN.ATTACK | BTN.GUARD, btn: BTN.ATTACK | BTN.GUARD });
+  const shot = first.filter((ev) => ev.type === 'shot');
+  assert.equal(shot.length, 2);
+  const left = shot.find((ev) => ev.key === -13), right = shot.find((ev) => ev.key === -14);
+  assert.ok(left && right);
+  assert.equal(left.heavy, 0); assert.equal(right.heavy, 1);
+  assert.equal(first.find((ev) => ev.type === 'fire' && !ev.secondary).hand, 1);
+  assert.equal(first.find((ev) => ev.type === 'fire' && ev.secondary).hand, -1);
+  assert.ok(w.ecs.shotAltCd[e] > w.ecs.shotCd[e]);
+  let later = [];
+  for (let i = 0; i < 20 && !later.length; i++) later = step({ btn: BTN.ATTACK | BTN.GUARD }).filter((ev) => ev.type === 'shot');
+  assert.equal(later.length, 1, 'the faster primary returns while the secondary cools');
+  assert.equal((-later[0].key) % 8, 5);
+});
+
+test('right pistol repeats on held secondary after its independent cooldown', () => {
+  const { w, e, step } = pistols();
+  const evs = run(step, 70, { btn: BTN.GUARD });
+  assert.ok(evs.filter((ev) => ev.type === 'shot' && ev.heavy).length >= 2);
+  assert.ok(w.ecs.shotAltCd[e] > 0);
+});
+
+test('predicted fire feedback dedupes each hand independently on the same command', () => {
+  const { server, client, deliver, shown, sp, se } = clientAndServer();
+  setWeapon(server.world, se, WEAPON.PISTOLAS);
+  for (let i = 0; i < 8; i++) { server.step(); deliver(); }
+  client.tickInput({ mx: 0, mz: 0, ax: sp.x + 5, az: sp.z, btn: BTN.AIM | BTN.ATTACK | BTN.GUARD,
+    prs: BTN.ATTACK | BTN.GUARD });
+  server.step(); deliver();
+  const fires = shown.filter((ev) => ev.type === 'fire');
+  assert.equal(fires.length, 2, 'dos armas se representan, cada una una sola vez');
+  assert.deepEqual(fires.map((ev) => !!ev.secondary).sort(), [false, true]);
+  assert.ok(fires.every((ev) => ev.predicted));
 });

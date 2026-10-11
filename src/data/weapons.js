@@ -1,5 +1,5 @@
-// Weapons (M3.5): the equipped weapon decides LMB and Q / E / R (Albion style). The guard (RMB), the
-// dash and the RIPOSTE meter belong to every weapon; R spends a full meter and differs per weapon.
+// Weapons (M3.5): the equipped weapon decides LMB and Q / E / R (Albion style). Dash and RIPOSTE
+// belong to every weapon; RMB guards with the saber and fires the secondary pistol with pistolas.
 // ecs.weapon = index into WEAPON_KINDS. You change weapon at a rack (map.racks): F within RACK_R.
 // Live-tunable from F4 (root 'skills').
 export const WEAPONS = {
@@ -25,8 +25,10 @@ export const SKILLS = {
   // E: a crescent that flies at the cursor: hits each enemy once, destroys the parryables it crosses.
   wave: { name: 'Hoja de viento', hint: 'Media luna a distancia', windup: 0.12, recover: 0.2, speed: 14, life: 0.75, half: 0.9, depth: 0.45, mult: 1.4, riposte: 2, riposteMax: 10, cd: 5 },
   storm: { name: 'Tormenta', hint: 'Refleja todo a tu alrededor' }, // tuning.parry.riposte
-  // LMB held: alternating hands, every `every` s.
-  pistol: { name: 'Disparo', hint: 'Mantén para disparar', every: 0.2, speed: 20, life: 0.65, r: 0.16, mult: 0.7, spread: 1.5, move: 0.85, side: 0.24 },
+  // Pistol pair: LMB is the quick brass gun; RMB is the slower, long-barrel steel gun.
+  // Both can be held together and have independent cooldowns.
+  pistol: { name: 'Pistola de latón', hint: 'Izquierdo · rápida · mano izquierda', every: 0.2, speed: 20, life: 0.9, r: 0.16, mult: 0.7, spread: 1.5, move: 0.85, side: 0.24, hand: 1 },
+  pistolSecondary: { name: 'Pistola de acero', hint: 'Derecho · larga · mano derecha', every: 0.6, speed: 26, life: 0.95, r: 0.19, mult: 1.5, spread: 0.35, hand: -1 },
   // Q: a shotgun cone that also blows away the parryables in front.
   blast: { name: 'Descarga', hint: 'Escopetazo que sopla balas', windup: 0.05, n: 7, arc: 44, speed: 16, life: 0.4, r: 0.14, mult: 0.55, knock: 7, clearR: 3.2, clearArc: 70, riposte: 2, riposteMax: 10, recoil: 5, root: 0.15, cd: 6 },
   // E: a short teleport (collision-stepped) with i-frames.

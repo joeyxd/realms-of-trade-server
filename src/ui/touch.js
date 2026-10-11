@@ -1,6 +1,6 @@
 import { t, text as ltext, rich, attr, setText, setDataText, translateData, dataText, getLocale, onLocaleChange, initI18n } from '../core/i18n.js';
 // Mobile controls (M4.6): tinted-glass buttons in a thumb arc at the bottom right, one colour per function.
-// A floating joystick on the left half; on the right ATK (hold: the pistols keep firing), GUARDIA (hold), DASH,
+// A floating joystick on the left half; on the right ATK and the kit-dependent guard/secondary fire, DASH,
 // the contextual action button and the weapon's Q / E / R. Q, E and R can be dragged to aim: a tap uses the
 // auto-aim, dragging shows an aim line (the body turns to it) and releasing casts there; dragging back onto
 // the button cancels. Pointer events arrive in screen coordinates: the joystick and the aim line are placed
@@ -19,6 +19,7 @@ export const ICONS = {
   inkcloud: ico('<path d="M6 18a4 4 0 0 1-.3-8A6.3 6.3 0 0 1 18 8a4.5 4.5 0 0 1 .8 9H6z"/><path d="M7 14c1.8-1.7 2.8 1.7 4.6 0s2.8 1.7 4.6 0 2.5 1 3.8-.4"/>'),
   sword: ico('<path d="M20 4L11 13"/><path d="M7.5 11.5l5 5"/><path d="M10 14L5.5 18.5"/><path d="M4.5 19.5h.01"/>'),
   pistol: ico('<path d="M3 8h17v4h-7.5L11 19H7l1.5-7H3z"/><path d="M4.5 8V5.5H7"/>'),
+  pistolLong: ico('<path d="M2 8h20l2 2v3H10l-1 3H6l-1 6H2l1.5-9L2 11z"/><path d="M4 22l2-6M18 9h4"/>'),
   shield: ico('<path d="M12 3l8 3v6c0 5-3.5 8-8 9.5C7.5 20 4 17 4 12V6z"/><path d="M12 7.5v9"/>'),
   dash: ico('<path d="M13 5.5l6.5 6.5-6.5 6.5"/><path d="M3.5 8.5h6M2.5 12.5h8M4.5 16.5h6"/>'),
   thrust: ico('<path d="M4 20L19 5"/><path d="M11 5h8v8"/><path d="M6.5 13.5l4 4"/>'),
@@ -48,8 +49,8 @@ const SKILL_FACE = {
 };
 // What each weapon puts on the ATK / Q / E / R buttons: [icon, label].
 const KITS = {
-  sable: { atk: ['sword', 'ATK'], q: ['thrust', 'touch.lunge'], e: ['crescent', 'touch.blade'], r: ['spiral', 'touch.storm'] },
-  pistolas: { atk: ['pistol', 'touch.fire'], q: ['burst', 'touch.blast'], e: ['cloud', 'touch.smoke'], r: ['rain', 'touch.rain'] },
+  sable: { atk: ['sword', 'ATK'], parry: ['shield', 'touch.guardFace'], q: ['thrust', 'touch.lunge'], e: ['crescent', 'touch.blade'], r: ['spiral', 'touch.storm'] },
+  pistolas: { atk: ['pistol', 'touch.quickShotFace'], parry: ['pistolLong', 'touch.strongShotFace'], q: ['burst', 'touch.blast'], e: ['cloud', 'touch.smoke'], r: ['rain', 'touch.rain'] },
 };
 
 const face = (icon, label) => `<span class="ico">${ICONS[icon]}</span>${label == null ? '' : `<span class="lbl">${label?.startsWith('touch.') ? ltext(label) : label}</span>`}`;
@@ -66,7 +67,7 @@ export class TouchControls {
       <div class="t-cluster">
         <button class="tbtn t-atk" data-l10n-aria-label="touch.attack" aria-label="${attr('touch.attack')}">${face('sword', 'ATK')}</button>
         <button class="tbtn t-dash" aria-label="Dash"><span class="sweep"></span>${face('dash', 'DASH')}<span class="pips"></span></button>
-        <button class="tbtn t-parry" data-l10n-aria-label="touch.guard" aria-label="${attr('touch.guard')}">${face('shield', 'touch.guardFace')}</button>
+        <button class="tbtn t-parry" data-l10n-aria-label="touch.guard" aria-label="${attr('touch.guard')}"><span class="sweep"></span>${face('shield', 'touch.guardFace')}</button>
         <button class="tbtn t-skill t-q" data-l10n-aria-label="touch.q" aria-label="${attr('touch.q')}"><span class="sweep"></span>${face('thrust', 'touch.lunge')}</button>
         <button class="tbtn t-skill t-e" data-l10n-aria-label="touch.e" aria-label="${attr('touch.e')}"><span class="sweep"></span>${face('crescent', 'touch.blade')}</button>
         <button class="tbtn t-skill t-r" data-l10n-aria-label="touch.r" aria-label="${attr('touch.r')}"><span class="sweep"></span>${face('spiral', 'touch.storm')}</button>
@@ -190,10 +191,10 @@ export class TouchControls {
     drag('.t-q', BTN.Q, 'q'); drag('.t-e', BTN.E, 'e'); drag('.t-r', BTN.R, 'r');
     drag('.t-g', BTN.G, 'g');
     const q = (sel) => root.querySelector(sel);
-    this.atkBtn = q('.t-atk'); this.qBtn = q('.t-q'); this.eBtn = q('.t-e'); this.rBtn = q('.t-r');
+    this.atkBtn = q('.t-atk'); this.parryBtn = q('.t-parry'); this.qBtn = q('.t-q'); this.eBtn = q('.t-e'); this.rBtn = q('.t-r');
     this.potBtn = q('.t-pot'); this.actBtn = q('.t-act');
     this.gBtn = q('.t-g');
-    this.btns = { atk: this.atkBtn, q: this.qBtn, e: this.eBtn, r: this.rBtn, g: this.gBtn };
+    this.btns = { atk: this.atkBtn, parry: this.parryBtn, q: this.qBtn, e: this.eBtn, r: this.rBtn, g: this.gBtn };
   }
 
   // --tb = the user's setting x an automatic factor that follows the stage height (small phones shrink, tall grow).
@@ -227,7 +228,14 @@ export class TouchControls {
     if (kind + getLocale() === this.weapon) return;
     this.weapon = kind + getLocale();
     const K = KITS[kind] || KITS.sable;
-    for (const k of ['atk', 'r']) this.setFace(k, K[k]);
+    for (const k of ['atk', 'parry', 'r']) this.setFace(k, K[k]);
+    const labels = kind === 'pistolas'
+      ? ['touch.quickShot', 'touch.secondaryShot']
+      : ['touch.attack', 'touch.guard'];
+    this.atkBtn.dataset.l10nAriaLabel = labels[0];
+    this.atkBtn.setAttribute('aria-label', ltext(labels[0]));
+    this.parryBtn.dataset.l10nAriaLabel = labels[1];
+    this.parryBtn.setAttribute('aria-label', ltext(labels[1]));
   }
 
   // What Q / E hold (M4.7): ids; «Parpadeo» (the Abordaje's form A) gets its own label.

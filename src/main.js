@@ -231,7 +231,7 @@ async function boot() {
     };
   };
   const charPanel = new CharacterScreen($('#charpanel'), {
-    send: sendCmd, profile: () => client && client.profile, stats: playerStats,
+    send: sendCmd, profile: () => client && client.profile, stats: playerStats, weapon: () => ps.weapon,
     backpack: () => resources.backpack(), locale: () => getLocale(),
     // Character screen (UI kit): live vitals, the turntable figure and what each action slot holds.
     vitals: () => ({ name: settings.name, skin: settings.skin, level: ps.level, hp: ps.hp, maxHp: ps.maxHp, xp: ps.xp, xpNext: xpToNext(ps.level),
@@ -779,6 +779,7 @@ async function boot() {
   bus.on('combat', (ev) => safe('rewards', () => rewards.handle(ev)));
   bus.on('combat', (ev) => safe('feedback', () => {
     feedback.handle(ev);
+    if (ev.type === 'fire' && ev.me) onTutorial('fire', ev);
     if (ev.type === 'respawn' && ev.me) st.snapCam = true;
     if (ev.type === 'equip' && ev.me) onEquip(ev.weapon);
     if (ev.type === 'talk' && ev.me) dialog.show(ev, st.lastLine);
@@ -805,6 +806,7 @@ async function boot() {
       ? rich('runtime.kitPistol')
       : t('runtime.kitSword');
     hud.toast(`<b>${dataText(W.name)}</b><br>${kitLine}`, 4600);
+    refreshTracker();
     sfx.click();
   }
 
@@ -866,7 +868,10 @@ async function boot() {
   function refreshTracker() {
     if (st.tut !== 'done') {
       const i = Math.max(0, ORDER.indexOf(st.tut));
-      hud.setQuests(t('tutorial.first'), TRACK.map((t, k) => ({ ...t, done: k < i })));
+      const pistol = weaponOf(ps.weapon).basic === 'pistol';
+      const keys = { attack: 'pistolPrimary', parry: 'pistolParry', guard: 'pistolSecondary' };
+      hud.setQuests(t('tutorial.first'), TRACK.map((row, k) => ({ ...row,
+        text: pistol && keys[row.id] ? ltext(`tutorial.${keys[row.id]}${isTouch ? 'Touch' : ''}`) : row.text, done: k < i })));
       return;
     }
     const p = client.profile, items = [];
@@ -888,9 +893,9 @@ async function boot() {
     const msgs = {
       move: rich('tutorial.moveDone'),
       dash: rich('tutorial.dashDone'),
-      attack: rich('tutorial.attackDone'),
-      parry: rich('tutorial.parryDone'),
-      guard: rich('tutorial.guardDone'),
+      attack: rich(weaponOf(ps.weapon).basic === 'pistol' ? 'tutorial.pistolPrimaryDone' : 'tutorial.attackDone'),
+      parry: rich(weaponOf(ps.weapon).basic === 'pistol' ? 'tutorial.pistolParryDone' : 'tutorial.parryDone'),
+      guard: rich(weaponOf(ps.weapon).basic === 'pistol' ? 'tutorial.pistolSecondaryDone' : 'tutorial.guardDone'),
     };
     hud.toast(msgs[st.tut], 4200);
     sfx.marimba([659.25, 783.99, 1046.5], 0.07, 0.12);
@@ -899,8 +904,11 @@ async function boot() {
     refreshTracker();
   }
   function onTutorial(kind, d) {
-    if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
-    else if (kind === 'parry' && d && d.tier >= 2 && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
+    if (kind === 'fire' && weaponOf(ps.weapon).basic === 'pistol' &&
+      ((!d.secondary && st.tut === 'attack') || (d.secondary && st.tut === 'guard'))) advanceTutorial();
+    else if (kind === 'dummy' && d.heavy && st.tut === 'attack') advanceTutorial();
+    else if (kind === 'parry' && d && d.tier >= 2 &&
+      (weaponOf(ps.weapon).basic !== 'pistol' || d.intercept === 1) && (st.tut === 'parry' || st.tut === 'attack')) completeUpTo('parry');
     else if (kind === 'guard' && d && d.pid && st.tut === 'guard') advanceTutorial();
     else if (kind === 'target') hud.toast(rich('tutorial.target'), 3600);
     else if (kind === 'respawn') hud.toast(rich('tutorial.respawn'), 4600);
@@ -1455,13 +1463,16 @@ async function boot() {
         else if (st.tut === 'dash') act = isTouch ? rich('runtime.tapDash') : rich('runtime.spaceDash');
         else if (st.tut === 'attack') {
           const d = Math.hypot(ps.x - map.practice.dummy.x, ps.z - map.practice.dummy.z);
-          act = d < 7 ? (isTouch ? rich('runtime.tapCombo') : rich('runtime.clickCombo')) : t('runtime.dummyShore');
+          act = weaponOf(ps.weapon).basic === 'pistol' ? rich(`runtime.pistolPrimary${isTouch ? 'Touch' : 'Mouse'}`)
+            : d < 7 ? (isTouch ? rich('runtime.tapCombo') : rich('runtime.clickCombo')) : t('runtime.dummyShore');
         } else if (st.tut === 'parry') {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
-          act = d < map.practice.ring.r ? (isTouch ? rich('runtime.tapReflect') : rich('runtime.clickReflect')) : t('runtime.enterRing');
+          act = d < map.practice.ring.r ? (weaponOf(ps.weapon).basic === 'pistol' ? rich(`runtime.pistolParry${isTouch ? 'Touch' : 'Mouse'}`)
+            : isTouch ? rich('runtime.tapReflect') : rich('runtime.clickReflect')) : t('runtime.enterRing');
         } else if (st.tut === 'guard') {
           const d = Math.hypot(ps.x - map.practice.ring.x, ps.z - map.practice.ring.z);
-          act = d < map.practice.ring.r ? (isTouch ? rich('runtime.guardTouch') : rich('runtime.guardMouse')) : rich('runtime.backRing');
+          act = weaponOf(ps.weapon).basic === 'pistol' ? rich(`runtime.pistolSecondary${isTouch ? 'Touch' : 'Mouse'}`)
+            : d < map.practice.ring.r ? (isTouch ? rich('runtime.guardTouch') : rich('runtime.guardMouse')) : rich('runtime.backRing');
         }
         rewards.promptDrop = chest || 0;
         // A chest's prompt sits under the chest (it would cover it under your feet).
@@ -1527,6 +1538,7 @@ async function boot() {
         hud.setStats({
           hp: ps.hp, maxHp: ps.maxHp, riposte: ps.riposte, xp: ps.xp, xpNext: xpToNext(ps.level), level: ps.level,
           guard: ps.guardSt / (ps.guardMax || tuning.guard.stamina), catchN: ps.catchN, catchHv: ps.catchHv, combo: ps.atkStage ? ps.atkStage : 0, dead: ps.dead, deadT: ps.deadT,
+          shotAltCd: ps.shotAltCd || 0, shotAltMax: SKILLS.pistolSecondary.every * (ps.fireMul || 1),
         });
         // M4: gold, potions, the weapon's mastery and what it has not opened yet.
         hud.setGold(prof ? prof.gold : 0, st.encTier > 1 ? TIERS[st.encTier - 1].name : '');

@@ -21,7 +21,7 @@ import { PEARL } from '../../data/pearls.js';
 import { BTN, moveWithCollision } from './movement.js';
 import { stepSwimming } from './swimming.js';
 import { PTYPE, KILL, NEVER, SHOT, beamSeg, segDist, lavaR } from '../projectiles.js';
-import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
+import { stepEquip, bufferSkills, skillWanted, tryCast, stepCast, castPose, castBusy, cancelCast, stepWave, skillOf, firePistol, firePistolSecondary, callRain, stepRain, stepTromba, stepWheel, takeEmpower } from './skills.js';
 import { ACT } from '../ecs.js';
 import { hash01 } from '../../core/rng.js';
 import { SKILLS } from '../../data/weapons.js';
@@ -565,7 +565,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   ecs.actT[e] += dt;
   const dec = (k) => { if (ecs[k][e] > 0) ecs[k][e] = Math.max(0, ecs[k][e] - dt); };
   dec('hurtInv'); dec('faceLock'); dec('atkBuf'); dec('rBuf'); dec('guardRe');
-  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('potCd'); dec('empT');
+  dec('cdQ'); dec('cdE'); dec('qBuf'); dec('eBuf'); dec('castLock'); dec('shotCd'); dec('shotAltCd'); dec('potCd'); dec('empT');
   dec('cdG'); dec('gBuf');
   ecs.chainT[e] += dt; ecs.comboT[e] += dt; ecs.regenT[e] += dt; ecs.guardRegT[e] += dt; ecs.catchT[e] += dt;
   if (ecs.chainT[e] > P.chainGap) ecs.chain[e] = 0;
@@ -606,8 +606,10 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   const atkPress = (cmd.prs & BTN.ATTACK) !== 0, guardPress = (cmd.prs & BTN.GUARD) !== 0;
   const pistol = skillOf(ecs, e, 'basic') === 'pistol';
-  const trigger = pistol && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the pistols firing
-  const guardHeld = guardPress || (cmd.btn & BTN.GUARD) !== 0;
+  const trigger = pistol && (atkPress || (cmd.btn & BTN.ATTACK) !== 0); // held LMB keeps the left gun firing
+  const triggerSecondary = pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0); // RMB/K/LT/touch fires the right gun
+  const guardHeld = !pistol && (guardPress || (cmd.btn & BTN.GUARD) !== 0);
+  if (pistol && ecs.guardT[e] >= 0) ecs.guardT[e] = -1; // the pistol kit has no guard action
   if (atkPress) ecs.atkBuf[e] = T.player.inputBuffer;
   if (cmd.prs & BTN.R) {
     if (kitUnlocked(ecs, e, 'r')) ecs.rBuf[e] = T.player.inputBuffer;
@@ -626,7 +628,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
 
   // Coyote: right after a parryable touched you, LMB turns its pending damage into a POBRE reflect (from
   // where you stand; the cutlass only: the pistols reflect by catching) and RMB into a block.
-  if (((atkPress && !pistol) || guardPress) && canAct) {
+  if (((atkPress && !pistol) || (guardPress && !pistol)) && canAct) {
     for (const k of [0, 1]) {
       const id = k ? ecs.pend1[e] : ecs.pend0[e];
       if (!id) continue;
@@ -667,13 +669,16 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   if (canAct && !swingBusy && !castBusy(ecs, e) && skillWanted(ecs, e)) tryCast(world, e, cmd, seq);
   if (castBusy(ecs, e)) stepCast(world, e, cmd, dt, pt, seq);
 
-  // Pistols: fire while LMB is held (a press is buffered), every SKILLS.pistol.every s. The first shot after
-  // a perfect guard also throws the caught bullets back.
-  if (pistol && canAct && !castBusy(ecs, e) && (trigger || ecs.atkBuf[e] > 0) && ecs.shotCd[e] <= 0) {
-    ecs.atkBuf[e] = 0; ecs.guardT[e] = -1;
+  // Pistol triggers are independent and may both fire on the same command. Old catches are released once,
+  // on the first shot, for profiles that entered this kit with a guard catch already stored.
+  const firePrimary = pistol && canAct && !castBusy(ecs, e) && (trigger || ecs.atkBuf[e] > 0) && ecs.shotCd[e] <= 0;
+  const fireSecondary = pistol && canAct && !castBusy(ecs, e) && triggerSecondary && ecs.shotAltCd[e] <= 0;
+  if (firePrimary || fireSecondary) {
+    ecs.guardT[e] = -1;
     faceAim(ecs, e, cmd);
     if (ecs.catchN[e] > 0) releaseCaught(world, e, seq);
-    firePistol(world, e, pt, seq);
+    if (firePrimary) { ecs.atkBuf[e] = 0; firePistol(world, e, pt, seq); }
+    if (fireSecondary) firePistolSecondary(world, e, pt, seq);
   }
 
   // Melee combo.
@@ -734,7 +739,7 @@ export function stepPlayerCombat(world, e, cmd, dt) {
   // Movement multiplier and the action shown to others.
   if (ecs.dead[e] > 0) { ecs.moveMul[e] = 0; setAct(ecs, e, ACT.DEAD); return; }
   const cp = castPose(ecs, e);
-  const firing = pistol && ecs.shotCd[e] > 0;
+  const firing = pistol && (ecs.shotCd[e] > 0 || ecs.shotAltCd[e] > 0);
   ecs.moveMul[e] = cp ? cp.move : ecs.atkStage[e] > 0 ? M.stages[ecs.atkStage[e] - 1].move : ecs.guardT[e] >= 0 ? G.move
     : ecs.stagger[e] > 0 ? 0 : firing ? SKILLS.pistol.move : 1;
   let a = ACT.IDLE;

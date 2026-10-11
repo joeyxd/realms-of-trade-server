@@ -2,24 +2,25 @@
   "asset_id": "buccaneer-v1",
   "derived": {
     "assets/models/buccaneer-v1-desktop.glb": {
-      "animation_accessors": 197,
-      "animation_buffer_bytes": 310560,
-      "animation_channels": 195,
-      "animation_samplers": 195,
+      "animation_accessors": 386,
+      "animation_buffer_bytes": 363456,
+      "animation_channels": 390,
+      "animation_samplers": 390,
       "animations": [
-        "idle"
+        "idle",
+        "swim"
       ],
       "basecolor_dimensions": [
         1024,
         1024
       ],
-      "bytes": 1965360,
+      "bytes": 2060204,
       "has_metallic_roughness_map": false,
       "has_normal_map": false,
       "images": 1,
       "materials": 1,
       "meshes": 1,
-      "sha256": "0754fb9e9ec9dbc0be751dae1fb4530ab6a8ca749c9d4476cefa3eaca0adfe78",
+      "sha256": "7f3c5f4b3d88abca8cfe968e13f82094665aaeacde24026c85744155576ed2fc",
       "skin_joints": [
         65
       ],
@@ -28,24 +29,25 @@
       "triangles": 9164
     },
     "assets/models/buccaneer-v1-mobile.glb": {
-      "animation_accessors": 197,
-      "animation_buffer_bytes": 310560,
-      "animation_channels": 195,
-      "animation_samplers": 195,
+      "animation_accessors": 386,
+      "animation_buffer_bytes": 363456,
+      "animation_channels": 390,
+      "animation_samplers": 390,
       "animations": [
-        "idle"
+        "idle",
+        "swim"
       ],
       "basecolor_dimensions": [
         512,
         512
       ],
-      "bytes": 1394284,
+      "bytes": 1489124,
       "has_metallic_roughness_map": false,
       "has_normal_map": false,
       "images": 1,
       "materials": 1,
       "meshes": 1,
-      "sha256": "ca5480b495228e774b8308e9b9d7d42fa397aa204aea3ea4e1b05a515141c549",
+      "sha256": "a24e813bd148b86578895a8505cdcc6b244008d5f68de08a2551df7ae57101e1",
       "skin_joints": [
         65
       ],
@@ -78,9 +80,10 @@
   },
   "invariants": {
     "runtime_animation_names": [
-      "idle"
+      "idle",
+      "swim"
     ],
-    "runtime_animations": 1,
+    "runtime_animations": 2,
     "runtime_metallic_roughness_map": false,
     "runtime_normal_map": false,
     "skin_joints": 65,
@@ -137,7 +140,7 @@
       "resize": "Pillow LANCZOS",
       "subsampling": 0
     },
-    "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain only the source idle animation with original accessors and key bytes; remove swim/run/hit clips, normal map and metallic-roughness map; embed resized basecolor only",
+    "glb": "preserve nodes, mesh, positions, indices, normals, UVs, skin weights, joints and inverse bind matrices; retain source idle and swim animations with original accessors and key bytes; remove run/hit clips, normal map and metallic-roughness map; embed resized basecolor only",
     "portrait": {
       "crop": false,
       "desktop_px": 512,

@@ -470,7 +470,7 @@ export class Shots {
     this.type = new Uint8Array(cap);
     this.owner = new Int32Array(cap);
     this.target = new Int32Array(cap);
-    this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vz = F(); this.speed = F();
+    this.x = F(); this.y = F(); this.z = F(); this.vx = F(); this.vy = F(); this.vz = F(); this.speed = F();
     this.life = F(); this.dmg = F(); this.r = F();
     this.heavy = new Uint8Array(cap);
     this.pid = new Int32Array(cap); // the hostile projectile it came from (0: a bounce, a released catch)
@@ -502,7 +502,13 @@ export class Shots {
     this.cursor = (s + 1) % this.cap;
     this.id[s] = id; this.type[s] = o.type; this.owner[s] = o.owner; this.target[s] = o.target || 0;
     this.x[s] = o.x; this.y[s] = o.y; this.z[s] = o.z;
-    this.speed[s] = o.speed; this.vx[s] = o.dx * o.speed; this.vz[s] = o.dz * o.speed;
+    const speed = Math.max(0, o.speed || 0), dy = Number.isFinite(o.dy) ? o.dy : 0;
+    const dirLen = Math.hypot(o.dx || 0, dy, o.dz || 0);
+    const invDirLen = dirLen > 1e-9 ? 1 / dirLen : 0;
+    this.speed[s] = speed;
+    this.vx[s] = (o.dx || 0) * invDirLen * speed;
+    this.vy[s] = dy * invDirLen * speed;
+    this.vz[s] = (o.dz || 0) * invDirLen * speed;
     this.life[s] = o.life; this.dmg[s] = o.dmg; this.r[s] = o.r; this.heavy[s] = o.heavy ? 1 : 0;
     this.pid[s] = o.pid || 0; this.pred[s] = o.pred || 0; this.key[s] = o.key || 0;
     this.homing[s] = o.homing ?? tuning.parry.reflect.wave.homing; this.cone[s] = o.cone ?? tuning.parry.reflect.wave.cone;
@@ -541,6 +547,7 @@ export class Shots {
       this.vx[s] = Math.sin(a) * sp; this.vz[s] = Math.cos(a) * sp;
     }
     this.x[s] += this.vx[s] * dt;
+    if (!tx) this.y[s] += this.vy[s] * dt;
     this.z[s] += this.vz[s] * dt;
     this.life[s] -= dt;
   }

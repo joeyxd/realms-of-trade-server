@@ -184,7 +184,7 @@ export class Feedback {
       }
       case 'parry': {
         // A sword reflect: EXCELENTE (tier 3) / BUENO (2) / POBRE (1).
-        const y = ps.y + 1.1, tier = ev.tier || (ev.perfect ? 3 : 2);
+        const y = Number.isFinite(ev.y) ? ev.y : ps.y + 1.1, tier = ev.tier || (ev.perfect ? 3 : 2);
         if (me) {
           const v = this.me();
           this.hud.pulse('lmb');
@@ -217,7 +217,7 @@ export class Feedback {
           this.onTutorial('parry', ev);
         } else {
           sfx.parry(false, 1);
-          this.sparks(ev.x, this.y(ev.x, ev.z) + 1.1, ev.z, 8, CYAN, CYAN1);
+          this.sparks(ev.x, Number.isFinite(ev.y) ? ev.y : this.y(ev.x, ev.z) + 1.1, ev.z, 8, CYAN, CYAN1);
         }
         break;
       }
@@ -285,7 +285,7 @@ export class Feedback {
         const v = me ? this.me() : this.viewOf(ev.e);
         if (v) v.recoil(ev.hand);
         const y = (v ? v.root.position.y : this.y(ev.x, ev.z)) + 1.2;
-        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, false, ev.elem);
+        W.weaponFx.muzzle(ev.x, y, ev.z, ev.dx, ev.dz, !!ev.secondary, ev.elem);
         W.lights?.flash(ev.x + ev.dx * 0.8, y, ev.z + ev.dz * 0.8, elementVisual(ev.elem)?.accent ?? 0xffc46a, 6, 3.2, 0.12);
         sfx.pistol(ev.hand, me ? 0.8 : 0.6 * this.vol(ev.x, ev.z));
         sfx.elemental(ev.elem, (me ? 1 : this.vol(ev.x, ev.z)) * 0.3);
@@ -544,7 +544,7 @@ export class Feedback {
         break;
       }
       case 'shotImpact': {
-        const y = this.y(ev.x, ev.z) + 1.1;
+        const y = Number.isFinite(ev.y) ? ev.y : this.y(ev.x, ev.z) + 1.1;
         const palette = this.palette(ev.elem);
         this.sparks(ev.x, y, ev.z, ev.hit ? 12 : 6, palette.c0, palette.c1, { up: 2.5 });
         if (ev.hit) { W.combatFx.ring(ev.x, y - 1, ev.z, 1.1, this.colorOf(ev.e, ev.elem), 0.25, 0.18, 0.8); sfx.shotHit(this.vol(ev.x, ev.z)); }

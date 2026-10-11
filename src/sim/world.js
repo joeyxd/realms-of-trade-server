@@ -10,7 +10,8 @@ import { stepMover, moveWithCollision } from './systems/movement.js';
 import { makeBotBrain, botCommand } from './systems/bots.js';
 import { stepPlayerCombat, applyLevel, gainXp, stormRadius, hurtByPlayer } from './systems/combat.js';
 import { makeEnemyBrain, stepEnemy, recordHistory, historyAt, damageEnemy, defOf, newHistory } from './systems/enemies.js';
-import { Hazards, Shots, emitPattern, patternCount, PTYPE, SHOT } from './projectiles.js';
+import { Hazards, Shots, emitPattern, patternCount, PTYPE, KILL, NEVER, SHOT } from './projectiles.js';
+import { firstRelativeSphereContact, firstSegmentCircleContact2D, firstSegmentCylinderContact, pointOnSegment } from './projectileClash.js';
 import { WEAPON_KINDS, SKILLS } from '../data/weapons.js';
 import { skillSegDist, rainR, cancelCast } from './systems/skills.js';
 import { applyLoadout } from './systems/stats.js';
@@ -304,7 +305,7 @@ export class World {
     this.shots.spawn(sid, { ...o, elem, owner, lag, pred: this.isServer ? 0 : o.seq });
     if (this.isServer) {
       const S = this.shots, s = S.slot.get(sid);
-      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, elem, x: o.x, y: o.y, z: o.z, dx: o.dx, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
+      const ev = { type: 'shot', sid, pid: o.pid, key: o.key || 0, owner, elem, x: o.x, y: o.y, z: o.z, dx: o.dx, dy: o.dy || 0, dz: o.dz, speed: o.speed, dmg: o.dmg, life: o.life, r: o.r, ptype: o.type, heavy: o.heavy ? 1 : 0, seq: o.seq, homing: S.homing[s], cone: S.cone[s] };
       if (o.kind) ev.kind = o.kind;
       if (o.crit) ev.crit = 1;
       if (o.tier) ev.tier = o.tier;
@@ -345,41 +346,141 @@ export class World {
       this.lagPos(id, lag, out); out.y = ecs.y[id] + 1.1;
       return true;
     };
+    const deferred = [];
+    const tick0 = this.tick, tick1 = tick0 + dt / DT;
     for (let s = 0; s < S.cap; s++) {
       if (S.id[s] === 0) continue;
       lag = S.lag[s];
+      const from = { x: S.x[s], y: S.y[s], z: S.z[s] }, lifeBefore = S.life[s];
+      const sid = S.id[s], owner = S.owner[s], elem = S.elem[s], dmg = S.dmg[s], heavy = S.heavy[s];
+      const bounce = S.bounce[s], kind = S.kind[s], crit = S.crit[s] > 0, shotType = S.type[s], shotRadius = S.r[s];
+      const shotKey = S.key[s], shotSpeed = S.speed[s], shotVx = S.vx[s], shotVz = S.vz[s];
+      const shotSeq = shotKey < 0 ? Math.floor(-shotKey / 8) : S.pred[s];
       S.step(s, dt, find, pos, tmp);
-      let end = S.life[s] <= 0, hit = 0;
-      const x = S.x[s], z = S.z[s];
-      if (!end && map.groundAt(x, z) > S.y[s] + 0.1) end = true;
-      if (!end) {
-        const list = map.queryColliders(x, z, 2);
-        for (let k = 0; k < list.length; k++) {
-          const c = map.colliders[list[k]];
-          if ((x - c.x) ** 2 + (z - c.z) ** 2 < (c.r + S.r[s] * 0.4) ** 2) { end = true; break; }
+      const to = { x: S.x[s], y: S.y[s], z: S.z[s] };
+
+      // Determine the first ordinary end along this tick's swept path. Intercepts only win if they happen
+      // before range expiry, terrain, a static collider, or the enemy impact that normally consumes a shot.
+      const lifeT = dt > 0 ? Math.max(0, Math.min(1, lifeBefore / dt)) : 1;
+      const limited = pointOnSegment(from, to, lifeT);
+      let stopT = lifeT, hit = 0;
+      const distance = Math.hypot(limited.x - from.x, limited.y - from.y, limited.z - from.z);
+      const steps = Math.max(1, Math.ceil(distance / 0.08));
+      let clearT = 0;
+      for (let k = 1; k <= steps; k++) {
+        const t = lifeT * k / steps, q = pointOnSegment(from, to, t);
+        if (map.groundAt(q.x, q.z) <= q.y + 0.1) { clearT = t; continue; }
+        let lo = clearT, hi = t;
+        for (let n = 0; n < 10; n++) {
+          const mid = (lo + hi) * 0.5, v = pointOnSegment(from, to, mid);
+          if (map.groundAt(v.x, v.z) > v.y + 0.1) hi = mid; else lo = mid;
+        }
+        stopT = hi; break;
+      }
+      const midX = (from.x + limited.x) * 0.5, midZ = (from.z + limited.z) * 0.5;
+      const broad = Math.hypot(limited.x - from.x, limited.z - from.z) * 0.5 + 2;
+      const colliders = map.queryColliders(midX, midZ, broad);
+      for (let k = 0; k < colliders.length; k++) {
+        const c = map.colliders[colliders[k]], t = firstSegmentCircleContact2D(from, limited, c.x, c.z, c.r + shotRadius * 0.4);
+        if (t !== null && t * lifeT < stopT) stopT = t * lifeT;
+      }
+      for (let e = 1; e < ecs.cap; e++) {
+        if (e === S.lastHit[s] || !this.canHit(owner, e)) continue;
+        this.lagPos(e, lag, p);
+        const height = ecs.mask[e] & C.ENEMY ? (defOf(ecs, e)?.height || 1.8) : 1.8;
+        const t = firstSegmentCylinderContact(from, limited, p.x, p.z, ecs.hurtR[e] + shotRadius,
+          ecs.y[e] - shotRadius, ecs.y[e] + height + shotRadius);
+        if (t !== null && t * lifeT < stopT) { stopT = t * lifeT; hit = e; }
+      }
+
+      let clash = null;
+      if (kind === SHOT.BULLET && stopT > 0) {
+        const H = this.hazards;
+        for (let hs = 0; hs < H.cap; hs++) {
+          if (!H.id[hs] || H.dead[hs] !== NEVER) continue;
+          if (H.type[hs] !== PTYPE.PARRY && H.type[hs] !== PTYPE.HEAVY) continue;
+          const hazardOwner = H.owner[hs];
+          if (hazardOwner > 0 && (ecs.mask[hazardOwner] & C.PLAYER)) continue; // no friendly-fire clashes
+          const active0 = Math.max(tick0, H.t0[hs] + tuning.projectiles.armTime / DT);
+          let active1 = Math.min(tick1, H.tEnd[hs]);
+          if (active1 <= active0) continue;
+          const h0 = H._path(hs, active0), clipD = H.clipD[hs];
+          if (h0.dist >= clipD - 1e-9) continue;
+          let h1 = H._path(hs, active1);
+          if (h1.dist >= clipD - 1e-9) {
+            let lo = active0, hi = active1;
+            for (let n = 0; n < 12; n++) {
+              const m = (lo + hi) * 0.5;
+              if (H._path(hs, m).dist < clipD - 1e-9) lo = m; else hi = m;
+            }
+            active1 = lo;
+            if (active1 <= active0) continue;
+            h1 = H._path(hs, active1);
+          }
+          const a0 = (active0 - tick0) / (tick1 - tick0), a1 = (active1 - tick0) / (tick1 - tick0);
+          if (a0 >= stopT) continue;
+          const b0 = pointOnSegment(from, to, a0), b1 = pointOnSegment(from, to, Math.min(a1, stopT));
+          const hs1 = a1 > stopT ? stopT : a1;
+          const hp1 = hs1 === a1 ? h1 : H._path(hs, tick0 + hs1 * (tick1 - tick0));
+          const t = firstRelativeSphereContact(b0, b1, h0, hp1, shotRadius + H.r[hs]);
+          if (t === null) continue;
+          const worldT = a0 + (hs1 - a0) * t;
+          if (worldT >= stopT - 1e-9) continue;
+          if (!clash || worldT < clash.t - 1e-9 || (Math.abs(worldT - clash.t) <= 1e-9 && H.id[hs] < H.id[clash.slot]))
+            clash = { slot: hs, t: worldT, point: pointOnSegment(b0, b1, t), hazardPoint: pointOnSegment(h0, hp1, t) };
         }
       }
-      if (!end) {
-        const own = S.owner[s];
-        for (let e = 1; e < ecs.cap; e++) {
-          if (e === S.lastHit[s] || !this.canHit(own, e)) continue;
-          const rr = ecs.hurtR[e] + S.r[s];
-          this.lagPos(e, lag, p);
-          if ((p.x - x) ** 2 + (p.z - z) ** 2 < rr * rr) { hit = e; end = true; break; }
+
+      if (clash) {
+        const H = this.hazards, hs = clash.slot, pid = H.id[hs], when = tick0 + clash.t * (tick1 - tick0);
+        const contact = { x: (clash.point.x + clash.hazardPoint.x) * 0.5, y: (clash.point.y + clash.hazardPoint.y) * 0.5,
+          z: (clash.point.z + clash.hazardPoint.z) * 0.5 };
+        const reflects = H.type[hs] === PTYPE.PARRY || !!heavy;
+        if (!reflects) {
+          // A light shot is spent on a heavy projectile, which continues on its authoritative path.
+          S.free(s);
+          this.emit({ type: 'shotEnd', sid, owner, elem, x: clash.point.x, y: clash.point.y, z: clash.point.z, hit: 0 });
+          continue;
+        }
+        const v = H.velocityAt(hs, when), vSpeed = Math.hypot(v.x, H.speed[hs] > 1e-9 ? H.vy[hs] * v.speed / H.speed[hs] : 0, v.z);
+        if (vSpeed > 1e-9) {
+          const vy = H.speed[hs] > 1e-9 ? H.vy[hs] * v.speed / H.speed[hs] : 0;
+          const reflectSpeed = Math.max(4, Math.min(tuning.parry.reflect.maxSpeed, vSpeed));
+          const raw = Math.max(H.dmg[hs], tuning.parry.reflect.atkMult * ecs.atk[owner]);
+          const reflectedDmg = Math.max(1, Math.round(raw * tuning.sword.good.dmg));
+          const reflectedHeavy = H.type[hs] === PTYPE.HEAVY;
+          const addRiposte = Math.min(tuning.sword.good.riposte, tuning.sword.good.riposte * ecs.ripMul[owner]);
+          ecs.riposte[owner] = Math.min(tuning.parry.riposte.max, ecs.riposte[owner] + addRiposte);
+          S.free(s);
+          H.remove(hs, tick0 + 1, KILL.REFLECT, owner, shotSeq);
+          this.emit({ type: 'shotEnd', sid, owner, elem, x: contact.x, y: contact.y, z: contact.z, hit: 0 });
+          this.emit({ type: 'parry', pid, e: owner, seq: shotSeq, x: contact.x, y: contact.y, z: contact.z, tier: 2, heavy: reflectedHeavy ? 1 : 0, intercept: 1 });
+          deferred.push({ type: 'reflect', owner, pid, seq: shotSeq, shotType: H.type[hs], point: contact,
+            dx: -v.x / vSpeed, dy: -vy / vSpeed, dz: -v.z / vSpeed, speed: reflectSpeed, dmg: reflectedDmg, r: Math.max(0.2, H.r[hs] * 0.9), heavy: reflectedHeavy });
+          continue;
         }
       }
-      if (!end) continue;
-      const sid = S.id[s], owner = S.owner[s], elem = S.elem[s], dmg = S.dmg[s], heavy = S.heavy[s], bounce = S.bounce[s], kind = S.kind[s], crit = S.crit[s] > 0;
-      const o = { type: S.type[s], y: S.y[s], speed: S.speed[s], r: S.r[s], lag, kind, elem };
+
+      const ended = stopT < 1 - 1e-9 || lifeBefore <= dt;
+      if (!ended) continue;
+      const at = pointOnSegment(from, to, stopT), x = at.x, z = at.z;
+      const o = { type: S.type[s], y: at.y, speed: S.speed[s], r: S.r[s], lag, kind, elem };
       const knock = S.knock[s] || undefined;
       S.free(s);
-      this.emit({ type: 'shotEnd', sid, owner, elem, x, z, hit });
+      this.emit({ type: 'shotEnd', sid, owner, elem, x, y: at.y, z, hit });
       if (hit) {
         // Reflects and released catches ignore armour, shields and DEF; pistol bullets and pellets do not.
         const bullet = kind === SHOT.BULLET || kind === SHOT.PELLET;
-        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - S.vx[s] * 0.1, z: z - S.vz[s] * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem, pt: this.tick });
-        if (bounce > 0) this.bounceShot(sid, owner, hit, x, z, dmg, bounce, o);
+        this.strike(hit, dmg, { by: owner, kind: bullet ? 'bullet' : 'shot', x: x - shotVx * 0.1, z: z - shotVz * 0.1, heavy: !!heavy, pierce: !bullet, knock, crit, elem, pt: this.tick });
+        if (bounce > 0) deferred.push({ type: 'bounce', args: [sid, owner, hit, x, z, dmg, bounce, o] });
       }
+    }
+    // Defer newly returned and bounced shots until all pre-existing shots have been stepped once.
+    for (const item of deferred) {
+      if (item.type === 'bounce') this.bounceShot(...item.args);
+      else this.spawnShot(item.owner, { key: item.pid, pid: item.pid, type: item.shotType, x: item.point.x, y: item.point.y, z: item.point.z,
+        dx: item.dx, dy: item.dy, dz: item.dz, speed: item.speed, dmg: item.dmg, life: tuning.parry.reflect.life, r: item.r, heavy: item.heavy,
+        seq: item.seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.REFLECT, pt: tick1 });
     }
   }
 

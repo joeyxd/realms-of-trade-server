@@ -207,6 +207,7 @@ export class GameScene {
     }
     else view = new CharacterView(skin, opts);
     view.enemy = kind || null;
+    if (view instanceof CharacterView) view.onMeshesChanged = () => this.pipeline.markDirty();
     if (view instanceof CharacterView && !view.look.hover) {
       view.onFootprint = (side, state) => {
         if (!view.footprintDeck) this.footprints.plant(id, side, state);

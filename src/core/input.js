@@ -1,6 +1,6 @@
 // Keyboard / mouse / touch / gamepad input. Produces raw axes (screen-relative), held buttons and press
 // edges that the fixed tick consumes, plus UI hotkeys dispatched immediately.
-// Gamepad (standard mapping): left stick moves, right stick aims, RT sword / shoot, LT guard, A dash,
+// Gamepad (standard mapping): left stick moves, right stick aims, RT primary attack, LT guard / pistol secondary, A dash,
 // X interact, RB Q, LB E, Y R, B cancels an area being aimed, D-pad up potion (M4), Start pause, Select the bag
 // (hotkey 'PadSelect').
 // The skill slots Q / E / R are not presses here: their down / up edges and held state per source (keys, pad,
@@ -13,7 +13,7 @@ const MOVE_KEYS = {
   KeyW: [0, 1], ArrowUp: [0, 1], KeyS: [0, -1], ArrowDown: [0, -1],
   KeyA: [-1, 0], ArrowLeft: [-1, 0], KeyD: [1, 0], ArrowRight: [1, 0],
 };
-// J / K: attack and guard without a mouse (they aim at the nearest threat or enemy). Both can be held.
+// J / K: primary and secondary action without a mouse (they aim at the nearest threat or enemy). Both can be held.
 const PRESS_KEYS = { Space: BTN.DASH, KeyF: BTN.INTERACT, KeyJ: BTN.ATTACK, KeyK: BTN.GUARD, Digit1: BTN.POTION, Numpad1: BTN.POTION };
 const HOLD_KEYS = { KeyJ: BTN.ATTACK, KeyK: BTN.GUARD };
 const SLOT_KEYS = { KeyQ: 'q', KeyE: 'e', KeyR: 'r', KeyG: 'g' };
@@ -114,7 +114,7 @@ export class Input {
     this.pad.prev.forEach((down, i) => { if (down) this.padBlocked.add(i); });
   }
 
-  // Buttons held right now (mouse, J/K, gamepad triggers, touch GUARD), as command bits.
+  // Buttons held right now (mouse, J/K, gamepad triggers, touch secondary action), as command bits.
   get held() { return this.enabled && !this.buildContext ? this.mouseHeld | this.keyHeld | this.padHeld | this.touchHeld : 0; }
 
   // A slot key going down / up from a source ('key' | 'pad' | 'touch'). Held = any source holds it.

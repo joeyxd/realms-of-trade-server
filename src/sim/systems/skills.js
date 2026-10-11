@@ -381,10 +381,10 @@ export function stepRain(world, e, prev, pt, seq) {
   if (pt >= end - 1) ecs.rainT0[e] = 0;
 }
 
-// The pistol's basic shot: alternating hands, a hair of deterministic spread.
+// The pistol's primary shot: fast, light, fixed to the left-hand gun.
 export function firePistol(world, e, pt, seq) {
   const ecs = world.ecs, P = SKILLS.pistol;
-  const hand = ecs.shotN[e] % 2 ? 1 : -1;
+  const hand = P.hand;
   const f = ecs.facing[e] + (hash01(seq, ecs.shotN[e], 7) * 2 - 1) * P.spread * Math.PI / 180;
   const dx = Math.sin(f), dz = Math.cos(f);
   const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
@@ -397,6 +397,24 @@ export function firePistol(world, e, pt, seq) {
   ecs.shotN[e] += 1;
   ecs.shotCd[e] = P.every * ecs.fireMul[e]; // trabucos are slower, «Gatillo fácil» faster
   world.emit({ type: 'fire', e, seq, hand, x, z, dx, dz });
+}
+
+// The secondary shot: a slower, stronger projectile from the right-hand long-barrel gun.
+export function firePistolSecondary(world, e, pt, seq) {
+  const ecs = world.ecs, P = SKILLS.pistolSecondary, hand = P.hand;
+  const f = ecs.facing[e] + (hash01(seq, ecs.shotN[e], 8) * 2 - 1) * P.spread * Math.PI / 180;
+  const dx = Math.sin(f), dz = Math.cos(f);
+  const fx = Math.sin(ecs.facing[e]), fz = Math.cos(ecs.facing[e]);
+  const x = ecs.x[e] + fx * 0.55 + fz * SKILLS.pistol.side * hand;
+  const z = ecs.z[e] + fz * 0.55 - fx * SKILLS.pistol.side * hand;
+  const emp = takeEmpower(ecs, e);
+  world.spawnShot(e, {
+    key: -(seq * 8 + 6), pid: 0, type: PTYPE.PARRY, x, y: ecs.y[e] + 1.15, z, dx, dz, speed: P.speed,
+    dmg: ecs.atk[e] * P.mult * (emp || 1), life: P.life, r: P.r, heavy: true, seq, bounce: 0, homing: 0, cone: 0, kind: SHOT.BULLET, pt, crit: emp > 0,
+  });
+  ecs.shotN[e] += 1;
+  ecs.shotAltCd[e] = P.every * ecs.fireMul[e];
+  world.emit({ type: 'fire', e, seq, hand, x, z, dx, dz, secondary: 1 });
 }
 
 // ---- Tattoos (M4.7 P3) ----------------------------------------------------------------------------------

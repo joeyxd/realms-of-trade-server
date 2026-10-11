@@ -86,6 +86,8 @@ export class TitleScreen {
 
   selectSkin(i) {
     this.settings.skin = i;
+    // A look suggests its starter kit only; the server keeps existing equipment authoritative.
+    if (i === 2) this.settings.weapon = 'pistolas';
     this.root.querySelectorAll('.skin-dot').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.skin === i)));
     this.refreshSkinText();
     if (this.onSkin) this.onSkin(i);

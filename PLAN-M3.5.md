@@ -4,6 +4,14 @@
 > sin leer el historial. Cada paso termina con tests en verde + commit + push. Marca `[x]` al terminar.
 > Base: M3 terminado (`PLAN-M3.md`, 55 tests en verde, versión `0.3.0-m3`).
 
+## Extensión Bucanero, 2026-10-11
+
+Alpha.58/protocolo 57: pistola izquierda rápida y derecha potente con recargas independientes.
+RMB/K/LT pasa a tiro secundario solo con pistolas; sable conserva guardia. Ambas interceptan por contacto
+3D en el paso autoritativo de Shots (excepción explícita a la regla histórica de contactos instantáneos
+dentro del comando). Cliente predice fuego y espera confirmación del choque. Solo el fuerte devuelve
+pesados. [Contrato y aceptación](docs/delivery/buccaneer-v1/ranged-swim/README.md).
+
 ## 0. Contexto mínimo (leer primero)
 
 - Repo `joeyxd/realms-of-trade-server`, rama **`claude/loving-lovelace-ptbif7`** (PR #1 abierto: no abrir otro).

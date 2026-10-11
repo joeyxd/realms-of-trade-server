@@ -1,5 +1,11 @@
 # Plan de ejecución — juego, assets y equipo de agentes
 
+**Bucanero a distancia + swim, alpha.58/protocolo 57:**
+[Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
+Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.
+85/85 focales CPU, 27/27 recheck, assets19/19 y catálogo39/39 (solapados); navegador local20/20.
+Suite general no verde, límites en CPU.md. Publicación/aceptación pública pendientes de registrar.
+
 **L03e creación durable de compañeros — aceptada en el alfa público, protocolo 56:**
 [Entrega y evidencia](docs/delivery/l03e-companion-creation/README.md), [brief](docs/briefs/l03e-companion-creation.md).
 Wizard privado: nombre, oficio, personalidad, rasgos y aspecto; aleatorio y revisión de documentos antes de confirmar.

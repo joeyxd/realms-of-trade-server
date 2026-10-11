@@ -24,6 +24,7 @@ const ICONS = {
   storm: '<svg viewBox="0 0 32 32"><path d="M18 3L7 18h8l-2 11 12-16h-8z" fill="#ffe14d" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/></svg>',
   mastbolt: '<svg viewBox="0 0 32 32"><path d="M18 2L6 18h8l-1 12 14-18h-8z" fill="#ffe14d" stroke="#1a1033" stroke-width="2.4" stroke-linejoin="round"/><path d="M4 8l4 2M24 4l2-3M26 26l3 2" stroke="#fff4ae" stroke-width="2" stroke-linecap="round"/></svg>',
   pistol: '<svg viewBox="0 0 32 32"><path d="M3 9h21l3 2v3H13l-1 2h-2l-1 9H4l2-10-3-3z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M5 25l2-9" stroke="#6a3d22" stroke-width="3" stroke-linecap="round"/><path d="M27 9l3-2" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
+  pistolLong: '<svg viewBox="0 0 32 32"><path d="M2 9h26l2 2v3H12l-1 3H8l-1 8H3l2-10-3-3z" fill="#aeb9c8" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M5 25l2-8" stroke="#465365" stroke-width="3" stroke-linecap="round"/><path d="M27 9l3-2" stroke="#dff4ff" stroke-width="2.4" stroke-linecap="round"/><path d="M17 11h8" stroke="#eaf6ff" stroke-width="1.5"/></svg>',
   lunge: '<svg viewBox="0 0 32 32"><path d="M4 28L24 8l4-4-1 5-20 21z" fill="#e3ebf5" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M14 4l-6 2M20 2l-4 5" stroke="#ffc23d" stroke-width="2.4" stroke-linecap="round"/></svg>',
   crescent: '<svg viewBox="0 0 32 32"><path d="M6 24C10 12 20 6 28 6c-6 4-10 10-11 18-3-2-7-2-11 0z" fill="#9ff6ff" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M3 20h6M5 15h5" stroke="#3bf0ff" stroke-width="2.2" stroke-linecap="round"/></svg>',
   blast: '<svg viewBox="0 0 32 32"><path d="M4 16l10-3v6z" fill="#c9a44c" stroke="#1a1033" stroke-width="2" stroke-linejoin="round"/><path d="M16 16l12-9M16 16h13M16 16l12 9M16 16l11-4M16 16l11 4" stroke="#ffc23d" stroke-width="2.2" stroke-linecap="round"/></svg>',
@@ -104,8 +105,8 @@ export class Hud {
       <div class="actionbar frame">
         <div class="wname"></div>
         <div class="mast" title=""><div class="mfill"></div><span class="mtxt"></span></div>
-        <div class="slot lmb-slot" data-slot="lmb" data-l10n-title="hud.comboTip" title="${attr('hud.comboTip')}"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
-        <div class="slot rmb-slot" data-slot="rmb" data-l10n-title="hud.guardTip" title="${attr('hud.guardTip')}"><span class="kbd key">RMB</span>${ICONS.shield}<div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
+        <div class="slot lmb-slot" data-slot="lmb" data-l10n-title="hud.comboTip" data-l10n-aria-label="hud.comboTip" title="${attr('hud.comboTip')}"><span class="kbd key">LMB</span><span class="ico">${ICONS.sword}</span><div class="combo"><i></i><i></i><i></i></div></div>
+        <div class="slot rmb-slot" data-slot="rmb" data-l10n-title="hud.guardTip" data-l10n-aria-label="hud.guardTip" title="${attr('hud.guardTip')}"><span class="kbd key">RMB</span><span class="ico">${ICONS.shield}</span><div class="sweep"></div><div class="catch"><i></i><i></i><i></i></div></div>
         <div class="slot dash-slot" data-slot="dash"><span class="kbd key">ESP</span>${ICONS.dash}<div class="sweep"></div><div class="charges"></div></div>
         ${this.slot('q', 'Q', ICONS.lunge)}
         ${this.slot('e', 'E', ICONS.crescent)}
@@ -159,6 +160,7 @@ export class Hud {
     this.loadChip = root.querySelector('.load-chip'); // INV02d: heavy / overloaded pack
     this.rmbSlot = root.querySelector('.rmb-slot');
     this.rmbSweep = this.rmbSlot.querySelector('.sweep');
+    this.catch = this.rmbSlot.querySelector('.catch');
     this.catchPips = this.rmbSlot.querySelectorAll('.catch i');
     this.rSlot = root.querySelector('.r-slot'); this.rFill = this.rSlot.querySelector('.rfill');
     this.comboPips = root.querySelectorAll('[data-slot="lmb"] .combo i');
@@ -217,7 +219,7 @@ export class Hud {
 
   // Per-frame stats (only touches the DOM when a value changes).
   // guard: stamina 0..1; catchN / catchHv: bullets caught by a perfect guard (heavy ones first).
-  setStats({ hp, maxHp, riposte, xp, xpNext, level, guard = 1, catchN = 0, catchHv = 0, combo, dead, deadT }) {
+  setStats({ hp, maxHp, riposte, xp, xpNext, level, guard = 1, catchN = 0, catchHv = 0, shotAltCd = 0, shotAltMax = 0, combo, dead, deadT }) {
     const L = this.last;
     const h = Math.ceil(hp);
     if (h !== L.hp || maxHp !== L.maxHp) {
@@ -250,18 +252,31 @@ export class Hud {
       this.lvl.textContent = String(level);
       L.level = level;
     }
-    // Guard stamina drains the RMB slot from the top; low stamina turns it red.
-    const gs = Math.round(Math.max(0, Math.min(1, guard)) * 40) / 40;
-    if (gs !== L.gs) {
-      const pc = (1 - gs) * 100;
-      this.rmbSweep.style.background = gs >= 1 ? '' : `linear-gradient(rgba(10,6,24,0.66) ${pc}%, transparent ${pc}%)`;
-      this.rmbSlot.classList.toggle('low', gs < 0.34);
-      L.gs = gs;
+    // The right pistol uses this slot's sweep for its independent secondary-shot cooldown.
+    const alt = this.rmbSlot.classList.contains('pistol');
+    if (alt) {
+      const cd = shotAltMax > 0 ? Math.max(0, Math.min(1, shotAltCd / shotAltMax)) : 0;
+      const q = Math.round(cd * 40) / 40;
+      if (q !== L.alt) {
+        const pc = q * 100;
+        this.rmbSweep.style.background = q <= 0 ? '' : `linear-gradient(rgba(10,6,24,0.66) ${pc}%, transparent ${pc}%)`;
+        L.alt = q;
+      }
+      this.rmbSlot.classList.remove('low');
+    } else {
+      const gs = Math.round(Math.max(0, Math.min(1, guard)) * 40) / 40;
+      if (gs !== L.gs) {
+        const pc = (1 - gs) * 100;
+        this.rmbSweep.style.background = gs >= 1 ? '' : `linear-gradient(rgba(10,6,24,0.66) ${pc}%, transparent ${pc}%)`;
+        this.rmbSlot.classList.toggle('low', gs < 0.34);
+        L.gs = gs;
+      }
     }
-    const ck = catchN * 10 + catchHv;
+    const visibleCatch = alt ? 0 : catchN;
+    const ck = visibleCatch * 10 + (alt ? 0 : catchHv);
     if (ck !== L.ck) {
-      this.catchPips.forEach((p, i) => { p.classList.toggle('on', i < catchN); p.classList.toggle('heavy', i < catchHv); });
-      this.rmbSlot.classList.toggle('caught', catchN > 0);
+      this.catchPips.forEach((p, i) => { p.classList.toggle('on', i < visibleCatch); p.classList.toggle('heavy', !alt && i < catchHv); });
+      this.rmbSlot.classList.toggle('caught', visibleCatch > 0);
       L.ck = ck;
     }
     if (combo !== L.combo) {
@@ -453,8 +468,19 @@ export class Hud {
     const W = WEAPONS[kind] || WEAPONS.sable, pist = W.basic === 'pistol';
     const icon = { combo: ICONS.sword, pistol: ICONS.pistol, lunge: ICONS.lunge, wave: ICONS.crescent, storm: ICONS.storm, blast: ICONS.blast, blink: ICONS.blink, rain: ICONS.rain };
     this.lmbSlot.querySelector('.ico').innerHTML = icon[W.basic];
-    this.lmbSlot.title = pist ? t('hud.pistolTip') : t('hud.swordTip');
+    const lmbTip = pist ? 'hud.pistolTip' : 'hud.swordTip';
+    this.lmbSlot.title = t(lmbTip); this.lmbSlot.dataset.l10nTitle = lmbTip; this.lmbSlot.dataset.l10nAriaLabel = lmbTip;
+    this.lmbSlot.setAttribute('aria-label', t(lmbTip));
     this.lmbSlot.querySelector('.combo').hidden = pist;
+    this.rmbSlot.classList.toggle('pistol', pist);
+    this.rmbSlot.querySelector('.ico').innerHTML = pist ? ICONS.pistolLong : ICONS.shield;
+    const rmbTip = pist ? 'hud.pistolAltTip' : 'hud.guardTip';
+    this.rmbSlot.title = t(rmbTip); this.rmbSlot.dataset.l10nTitle = rmbTip; this.rmbSlot.dataset.l10nAriaLabel = rmbTip;
+    this.rmbSlot.setAttribute('aria-label', t(rmbTip));
+    this.catch.hidden = pist;
+    this.rmbSweep.style.background = '';
+    this.last.gs = undefined; this.last.alt = undefined; this.last.ck = undefined;
+    this.rmbSlot.classList.remove('low', 'caught');
     this.rSlot.querySelector('.ico').innerHTML = icon[W.r];
     this.rSlot.title = W.r === 'rain' ? t('hud.rainTip') : t('hud.stormTip');
     setDataText(this.wname, W.name);

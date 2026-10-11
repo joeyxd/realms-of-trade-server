@@ -194,7 +194,7 @@ export class CharacterView {
     const w = kind === 'pistolas' ? 'pistols' : true;
     this.mesh.geometry = (this.ext && assets.charLook(this.skin, w) || buildLook(this.skin, w)).geo;
   }
-  // A pistol shot kicks that arm up (hand +1 = left, −1 = right, as the sim alternates them).
+  // A pistol shot kicks its own arm up (hand +1 = fast left, -1 = powerful right).
   recoil(hand) { if (hand > 0) this.recoilL = 1; else this.recoilR = 1; }
 
   setPosition(x, y, z) { this.root.position.set(x, y, z); }
@@ -218,6 +218,49 @@ export class CharacterView {
   flash(color = 0xffffff, amount = 1) { this.flashCol.set(color); this.flashA = Math.max(this.flashA, amount); }
   // Flinch away from a hit (dir: +1 hit from the front).
   hit(k = 1, dir = 1) { this.hitK = Math.max(this.hitK, k); this.hitDir = dir; }
+
+  // Native swimming is an independent rig, created only when this view first enters water.
+  // The parent follows simulation; the copied clip has no forward root motion.
+  stepNativeSwim(dt, active) {
+    try {
+      if (active && !this.nativeSwim && !this.swimUnavailable) {
+        this.nativeSwim = assets.characterSwim(this.skin, {
+          glow: this.material.userData.glow, flash: this.material.userData.flash,
+        });
+        if (this.nativeSwim) {
+          this.root.add(this.nativeSwim.root);
+          this.meshes.push(...this.nativeSwim.meshes);
+          this.onMeshesChanged?.();
+        } else this.swimUnavailable = true;
+      }
+      const view = this.nativeSwim;
+      if (view) {
+        if (active && !this.wasNativeSwim) view.reset();
+        if (active) view.advance(dt);
+        view.root.visible = active;
+      }
+      this.wasNativeSwim = active && !!view;
+      this.mesh.visible = !this.wasNativeSwim;
+    } catch (error) {
+      if (this.nativeSwim) {
+        const failed = this.nativeSwim;
+        this.root.remove(failed.root);
+        this.meshes = this.meshes.filter((mesh) => !failed.meshes.includes(mesh));
+        failed.mixer.stopAllAction();
+        failed.mixer.uncacheRoot(failed.mixer.getRoot());
+        for (const mesh of failed.meshes) {
+          for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) material.dispose();
+          mesh.skeleton?.dispose();
+        }
+        this.onMeshesChanged?.();
+      }
+      this.swimUnavailable = true;
+      this.wasNativeSwim = false;
+      this.mesh.visible = true;
+      console.warn('[character] native swim unavailable', error);
+      this.nativeSwim = null;
+    }
+  }
 
   // s: {x, y, z, f, vx, vz, st (1 = dash, 2 = swim), wade, act, actT, dead}
   update(dt, s) {
@@ -323,7 +366,7 @@ export class CharacterView {
 
     this.combat(dt, s);
     stepHarvestPose(this, dt, s);
-    if (swimming) applySwimPose(this, dt, this.t);
+    if (swimming && !s.dead && act !== ACT.DEAD) applySwimPose(this, dt, this.t);
 
     // Cloth panels: the front rides the leading thigh, the back trails with speed (springs).
     const fT = clamp(Math.min(this.thighL.rotation.x, this.thighR.rotation.x) * 0.75 - 0.05 * r - 0.12 * d, -1, 0.15);
@@ -338,6 +381,7 @@ export class CharacterView {
     // Hit flash fades fast (80 ms at full, DESIGN §7).
     this.flashA = Math.max(0, this.flashA - dt * 6);
     this.flashU.set(this.flashCol.r, this.flashCol.g, this.flashCol.b, Math.min(1, this.flashA) * 0.85);
+    this.stepNativeSwim(dt, swimming && !s.dead && act !== ACT.DEAD);
   }
 
   // ---- Combat layer --------------------------------------------------------------------------------------

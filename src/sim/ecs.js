@@ -75,7 +75,7 @@ export class ECS {
     // Weapon (index into WEAPON_KINDS) and its skills: Q / E cooldowns and input buffers, the skill being
     // cast (castK 0 none · 1 Q · 2 E · 3 G, time in it, its aim), the pistol's fire timer and hand.
     this.weapon = f(); this.cdQ = f(); this.cdE = f(); this.qBuf = f(); this.eBuf = f();
-    this.castK = f(); this.castT = f(); this.castX = f(); this.castZ = f(); this.shotCd = f(); this.shotN = f();
+    this.castK = f(); this.castT = f(); this.castX = f(); this.castZ = f(); this.shotCd = f(); this.shotAltCd = f(); this.shotN = f();
     this.castLock = f(); // no dash while > 0 (a skill's windup and active frames)
     // The cutlass crescent in flight (analytic, in projectile ticks): start tick (0 = none), origin, direction,
     // end tick, id (the seq that threw it), RIPOSTE it has given. The lunge: distance covered so far.
@@ -150,7 +150,7 @@ export class ECS {
     this.pend0[id] = this.pend0T[id] = this.pend0D[id] = this.pend1[id] = this.pend1T[id] = this.pend1D[id] = 0;
     this.lastPt[id] = 0; this.xp[id] = 0; this.cpX[id] = this.cpZ[id] = 0; this.god[id] = 0;
     this.weapon[id] = this.cdQ[id] = this.cdE[id] = this.qBuf[id] = this.eBuf[id] = 0;
-    this.castK[id] = this.castT[id] = this.castX[id] = this.castZ[id] = this.shotCd[id] = this.shotN[id] = 0;
+    this.castK[id] = this.castT[id] = this.castX[id] = this.castZ[id] = this.shotCd[id] = this.shotAltCd[id] = this.shotN[id] = 0;
     this.castLock[id] = 0;
     this.waveT0[id] = this.waveX[id] = this.waveZ[id] = this.waveDx[id] = this.waveDz[id] = this.waveEnd[id] = 0;
     this.waveId[id] = this.waveN[id] = this.lungeCov[id] = 0;
@@ -198,7 +198,7 @@ export const PLAYER_FIELDS = [
   'guardT', 'guardP', 'guardRe', 'guardSt', 'guardRegT', 'catchN', 'catchHv', 'catchDmg', 'catchT',
   'chain', 'chainT', 'riposte', 'rBuf', 'pend0', 'pend0T', 'pend0D', 'pend1', 'pend1T', 'pend1D',
   'lastPt', 'xp', 'cpX', 'cpZ', 'god', 'level',
-  'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotN', 'castLock',
+  'weapon', 'cdQ', 'cdE', 'qBuf', 'eBuf', 'castK', 'castT', 'castX', 'castZ', 'shotCd', 'shotAltCd', 'shotN', 'castLock',
   'waveT0', 'waveX', 'waveZ', 'waveDx', 'waveDz', 'waveEnd', 'waveId', 'waveN', 'lungeCov',
   'rainT0', 'rainX', 'rainZ', 'rainId',
   // M4.7: the slots' tattoos and the element of your blows.
