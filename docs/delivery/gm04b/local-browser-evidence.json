@@ -1,0 +1,87 @@
+{
+  "schema": "gm04b-browser/v1",
+  "version": "0.6.0-alpha.41",
+  "at": "2026-10-11T03:08:18.523Z",
+  "simulatedAuth": true,
+  "production": false,
+  "checks": [
+    "fixture_loads_optimized_crate_and_beach_debris_with_live_base_decoration",
+    "selects_a_real_mixed_model_and_base_rock_flower_pebble_group",
+    "create_search_and_rename_persist_a_relative_six_piece_template",
+    "template_ghost_loads_all_model_and_base_members_without_committing",
+    "first_pointer_place_expands_all_six_members_as_one_atomic_copy",
+    "repeated_pointer_place_uses_fresh_ids_preserves_offsets_and_undo_redo_is_per_placement",
+    "renaming_template_does_not_change_already_placed_instances",
+    "invalid_composed_bounds_reject_the_whole_template_with_no_partial_commit",
+    "missing_asset_blocks_the_entire_ghost_and_keeps_saved_template_and_document",
+    "walk_preview_cancels_template_placement_and_leaves_document_unchanged",
+    "escape_cancels_loaded_template_ghost_without_document_mutation",
+    "late_asset_load_finishing_after_escape_cannot_restore_ghost_or_commit",
+    "downloaded_library_file_upload_imports_additively_with_new_template_ids",
+    "delete_confirmation_removes_only_imported_template_and_preserves_placed_copies",
+    "local_reopen_preserves_document_v2_and_independent_template_library",
+    "stale_cas_conflict_retains_pending_template_library_for_export_or_retry",
+    "explicit_discard_reload_clears_pending_copy_and_reads_external_library_revision"
+  ],
+  "screenshots": [
+    "local-templates-es-closeup-desktop.png",
+    "local-templates-en-closeup-desktop.png",
+    "local-templates-en-closeup-844x390.png",
+    "local-templates-es-two-copies-overview.png"
+  ],
+  "errors": [],
+  "assetRequests": [
+    "/assets/models/prop-storage-crate.glb",
+    "/assets/models/coast-rock-v1.glb",
+    "/assets/models/beach-shell-fan-v1.glb",
+    "/assets/models/beach-shell-oval-v1.glb",
+    "/assets/models/beach-shell-chip-v1.glb",
+    "/assets/models/beach-pebbles-v1.glb",
+    "/assets/models/palm-tall-v1.glb",
+    "/assets/models/palm-curved-v1.glb",
+    "/assets/models/palm-short-v1.glb",
+    "/assets/models/palm-base-open-v1.glb",
+    "/assets/models/palm-base-lush-v1.glb",
+    "/assets/models/shrub-round-v1.glb",
+    "/assets/models/shrub-low-v1.glb",
+    "/assets/models/shrub-tall-v1.glb",
+    "/assets/models/beach-debris-branch-v1.glb",
+    "/assets/models/beach-debris-log-v1.glb",
+    "/assets/models/beach-debris-planks-v1.glb"
+  ],
+  "injectedScenarios": {
+    "missingAsset": "uploaded same-base test library with an unknown model id; no project asset was changed",
+    "casConflict": "second TemplateStore instance advanced the same IndexedDB world key",
+    "draftWrites": "fixture and placement edits remained in the fresh browser-local draft"
+  },
+  "runtimeBefore": {
+    "version": "0.6.0-alpha.41",
+    "protocolVersion": null,
+    "content": {
+      "generation": 0,
+      "revisionId": null
+    }
+  },
+  "playwrightModule": "C:\\DEV\\real of trade\\realms-of-trade-server\\.scratch\\pilot-browser\\node_modules\\playwright\\index.mjs",
+  "loadedRuntime": {
+    "version": "0.6.0-alpha.41",
+    "protocolVersion": 47
+  },
+  "fixtureSite": {
+    "x": 49.49747468305833,
+    "z": 91.92388155425118
+  },
+  "secondFixtureSite": {
+    "x": 56.568542494923804,
+    "z": 98.99494936611666
+  },
+  "runtimeAfter": {
+    "version": "0.6.0-alpha.41",
+    "protocolVersion": null,
+    "content": {
+      "generation": 0,
+      "revisionId": null
+    }
+  },
+  "remoteMutations": []
+}
