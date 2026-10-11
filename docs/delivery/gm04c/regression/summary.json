@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-11T17:18:57.188Z",
+  "fileCount": 57,
+  "exitCode": 0,
+  "tests": 293,
+  "pass": 293,
+  "fail": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "duration_ms": 232578.0578,
+  "base": "f26aae2",
+  "version": "0.6.0-alpha.53",
+  "note": "Pre-integration baseline; final early-budget guard and integrated release are checked separately."
+}

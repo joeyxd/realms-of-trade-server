@@ -11,6 +11,13 @@ Sin SQL nuevo ni activación/adopción pública; publicación y despliegue se re
 El sobre completo de kill/cofre y candidatos sin intención durable no están aceptados.
 Siguen comandos restantes de perlas y loot completo; después transición detenida/adopción y canario VPS.
 
+**AREA01 GM04c, 2026-10-11 — dispersión decorativa, alpha.56/protocolo 56, sin SQL GM nuevo:**
+[Contrato](docs/briefs/gm04c-decoration-brush.md) y [entrega](docs/delivery/gm04c/DELIVERY.md).
+Pinceles de copias independientes con preview privado, formas/densidad/separación/semilla/escala y undo atómico.
+Modelo cargado: geometría, texturas, archivo/ahorro y costes medidos, con presupuestos por trazo y acumulados.
+Sin tala/recolección ni cambios de recursos. Modelos existentes reutilizados; fuentes intactas.
+293/293 regresión y 81/81 integración final; navegador local 10/10. Publicación y límites en la entrega.
+
 **AREA03 INV02d, revisión 2026-10-11 — existente; corrección legacy enviada, alpha.54/protocolo 55:**
 [Revisión y evidencia](docs/delivery/inv02d-existing-audit.md). La otra sesión ya implementó sobrepeso,
 70 %/40 %, bloqueo de nuevos dash, HUD/ficha ES/EN y predicción; no volver a empezar desde INV02c.

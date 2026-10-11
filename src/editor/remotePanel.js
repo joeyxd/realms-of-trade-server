@@ -65,7 +65,8 @@ export class RemoteDraftPanel {
   hide() {
     if (this.open) this.dialog.close();
     this.review = null; this.contentReview = null;
-    if (this.editor.active && !this.editor.walkPreview?.active) { this.editor.cameraController.enable(); this.editor.transform.enabled = true; }
+    if (this.editor.active && !this.editor.walkPreview?.active) { this.editor.cameraController.enable();
+      this.editor.transform.enabled = !this.editor.terrainInteraction?.tool && !this.editor.scatterInteraction?.tool; }
   }
   errorText(code) {
     const messages = {

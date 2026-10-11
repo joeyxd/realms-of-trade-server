@@ -41,6 +41,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
   economicOperations = false, communityRequirements = null, gmAccountIds = null, resourceOperations = false, loggingOperations = false, artisanOperations = false, workshopOperations = false, attributeOperations = false, fireOperations = false, freshwaterOperations = false, canteenOperations = false, agentTrade = false,
   gmDraftsAllowMemory = false, companionConfigAllowMemory = false, companionControlAllowMemory = false,
   inferenceCatalog = inferenceCatalogFromEnv(process.env), inferenceConfigAllowMemory = false,
+  companionCreation = false, companionCreationAllowMemory = false,
   groundTransactions = null, gmContentDirectory = null, gmContentLock } = {}) {
   // Saved games are signed with SAVE_SECRET (M4): the same secret after a restart = the same saves.
   const saves = hmacSaves(secret || saveSecret(process.env, log));
@@ -54,7 +55,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
       Object.keys(pearlStartup).some((key) => !['journal', 'accountPolicy', 'mapClock', 'pageSize', 'maxRows'].includes(key)))) throw new StoreError('configuration');
   if (worldId === undefined) worldId = 'marea-negra';
   const game = new GameHost({ seed, bots, maxPlayers, dev, lagMs, jitterMs, origins, log, saves, store, resolvePlayer, joinTimeoutMs, initializeAccounts, worldId, worldSaveMs, chat,
-    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, fireOperations, freshwaterOperations, canteenOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory });
+    pearlJournal: pearlStartup?.journal ?? null, agentControl, agentPilot, economicOperations, communityRequirements, resourceOperations, loggingOperations, artisanOperations, workshopOperations, attributeOperations, fireOperations, freshwaterOperations, canteenOperations, agentTrade, groundTransactions, companionConfigAllowMemory, companionControlAllowMemory, inferenceCatalog, inferenceConfigAllowMemory, companionCreation, companionCreationAllowMemory });
   let gmDrafts = null, gmContent = null, publication = null;
   if (resolvePlayer && gmAccountIds?.length && worldId !== null || gmContentDirectory !== null) {
     const baseRevision = 'terrain-s21-v1';
@@ -152,6 +153,7 @@ export function createGameServer({ port = 5173, host = '0.0.0.0', seed = GAME.se
         await game.prepare();
         if (game.agentControl) { await game.companionControl.prepare(); await game.companionConfig.prepare(); }
         await game.inferenceConfig.prepare();
+        await game.companionCreation.prepare();
         if (gmDrafts) await gmDrafts.prepare();
         if (game.closing) throw new Error('Server is closing');
         return new Promise((resolve, reject) => {
@@ -199,6 +201,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       fireOperations: env.MN_FIRE_OPERATIONS === '1',
       freshwaterOperations: env.MN_FRESHWATER_OPERATIONS === '1',
       canteenOperations: env.MN_CANTEEN_OPERATIONS === '1',
+      companionCreation: env.MN_COMPANION_CREATION === '1',
       communityRequirements: env.MN_COMMUNITY_REQUIREMENTS ? JSON.parse(env.MN_COMMUNITY_REQUIREMENTS) : null,
       ...worldConfigFromEnv(env),
     });
