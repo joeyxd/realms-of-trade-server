@@ -5,7 +5,7 @@ import { GameHost } from '../server/host.mjs';
 import { createGameServer } from '../server/index.mjs';
 import { createMemoryStore, StoreError } from '../server/store.mjs';
 import { pearlMutationGate } from '../server/pearlMutationGate.mjs';
-import { newProfile } from '../src/sim/systems/inventory.js';
+import { newProfile, sanitizeProfile } from '../src/sim/systems/inventory.js';
 import { MSG, PROTOCOL_VERSION, sanitizeCmd } from '../src/net/protocol.js';
 import { BTN } from '../src/sim/systems/movement.js';
 import { PEARL_ACTION_BITS, PEARL_ACTION_BUFFERS } from '../src/net/pearlInputBoundary.js';
@@ -55,7 +55,11 @@ async function fixture({ backend = async () => ({ store: createMemoryStore(), cl
     resolvePlayer: async (_req, msg) => accounts[Number(msg.token)], log: (text) => logs.push(text) });
   if (captureMutation) {
     const capture = host.capturePearlProfile.bind(host);
-    host.capturePearlProfile = (id, entity) => captureMutation(capture(id, entity));
+    host.capturePearlProfile = (id, entity) => {
+      const profile = capture(id, entity); captureMutation(profile);
+      assert.deepEqual(profile, sanitizeProfile(profile), 'forged capture is canonical before boundary validation');
+      return profile;
+    };
   }
   if (mounted) host.mountPearlStaging({ scope });
   const sockets = [], entities = [];
@@ -130,7 +134,9 @@ for (const [label, mutate] of [
   ['carry tier with matching derived limits', (profile) => {
     profile.carry.backpack = 1; profile.eco.pack.cap = 30;
   }],
-  ['attribute points', (profile) => { profile.attr = { v: 1, carga: 0, re: 0 }; }],
+  ['attribute points', (profile) => {
+    profile.attr = { v: 1, carga: 0, re: 0 }; profile.eco.pack.maxMass = 50;
+  }],
   ['goods', (profile) => { profile.eco.pack.goods.madera = 1; }],
 ]) {
   test(`mounted staging rejects forged capture changes to ${label} before SQL`, async () => {
