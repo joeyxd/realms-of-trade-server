@@ -1,0 +1,89 @@
+{
+  "schema": "marea.gm04b.regression-summary/v2",
+  "at": "2026-10-11T03:09:55.578Z",
+  "baseHead": "a7f9e6dc57ed16a75ba7ba30b7292f09fbbc3cd3",
+  "gameVersion": "0.6.0-alpha.41",
+  "protocolVersion": 47,
+  "runtime": {
+    "node": "v24.14.0",
+    "platform": "win32"
+  },
+  "scope": "All tests/gm-*.test.mjs except gm-content-check.test.mjs, plus the separate gm-content-check checker run",
+  "integration": {
+    "files": [
+      "tests/gm-assets.test.mjs",
+      "tests/gm-content-client.test.mjs",
+      "tests/gm-content-http.test.mjs",
+      "tests/gm-content-obstacles.test.mjs",
+      "tests/gm-content-projection.test.mjs",
+      "tests/gm-content-registry.test.mjs",
+      "tests/gm-content-render.test.mjs",
+      "tests/gm-content-service.test.mjs",
+      "tests/gm-draft-http.test.mjs",
+      "tests/gm-draft-server.test.mjs",
+      "tests/gm-draft-sql.test.mjs",
+      "tests/gm-draft-store.test.mjs",
+      "tests/gm-draft-validation.test.mjs",
+      "tests/gm-editor-assets.test.mjs",
+      "tests/gm-editor-base-decoration.test.mjs",
+      "tests/gm-editor-base-document.test.mjs",
+      "tests/gm-editor-document.test.mjs",
+      "tests/gm-editor-entry.test.mjs",
+      "tests/gm-editor-i18n.test.mjs",
+      "tests/gm-editor-model-factory.test.mjs",
+      "tests/gm-editor-rendering.test.mjs",
+      "tests/gm-editor-selection.test.mjs",
+      "tests/gm-editor-template-integration.test.mjs",
+      "tests/gm-editor-templates.test.mjs",
+      "tests/gm-editor-walk-preview.test.mjs",
+      "tests/gm-publication-assets.test.mjs",
+      "tests/gm-publication-client.test.mjs",
+      "tests/gm-publication-http.test.mjs",
+      "tests/gm-publication-service.test.mjs",
+      "tests/gm-publication-validation.test.mjs",
+      "tests/gm-remote-draft-client.test.mjs",
+      "tests/gm-session-http.test.mjs",
+      "tests/gm-template-panel.test.mjs",
+      "tests/gm-template-store.test.mjs"
+    ],
+    "fileCount": 34,
+    "summary": {
+      "tests": 197,
+      "pass": 197,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "command": "node --test --test-concurrency=2 --test-reporter=tap tests/gm-assets.test.mjs tests/gm-content-client.test.mjs tests/gm-content-http.test.mjs tests/gm-content-obstacles.test.mjs tests/gm-content-projection.test.mjs tests/gm-content-registry.test.mjs tests/gm-content-render.test.mjs tests/gm-content-service.test.mjs tests/gm-draft-http.test.mjs tests/gm-draft-server.test.mjs tests/gm-draft-sql.test.mjs tests/gm-draft-store.test.mjs tests/gm-draft-validation.test.mjs tests/gm-editor-assets.test.mjs tests/gm-editor-base-decoration.test.mjs tests/gm-editor-base-document.test.mjs tests/gm-editor-document.test.mjs tests/gm-editor-entry.test.mjs tests/gm-editor-i18n.test.mjs tests/gm-editor-model-factory.test.mjs tests/gm-editor-rendering.test.mjs tests/gm-editor-selection.test.mjs tests/gm-editor-template-integration.test.mjs tests/gm-editor-templates.test.mjs tests/gm-editor-walk-preview.test.mjs tests/gm-publication-assets.test.mjs tests/gm-publication-client.test.mjs tests/gm-publication-http.test.mjs tests/gm-publication-service.test.mjs tests/gm-publication-validation.test.mjs tests/gm-remote-draft-client.test.mjs tests/gm-session-http.test.mjs tests/gm-template-panel.test.mjs tests/gm-template-store.test.mjs",
+    "stableSources": true
+  },
+  "checker": {
+    "file": "tests/gm-content-check.test.mjs",
+    "summary": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "command": "node --test --test-concurrency=2 --test-reporter=tap tests/gm-content-check.test.mjs",
+    "stableSources": true
+  },
+  "sharedRuntimeHashesMatch": true,
+  "runtimeSourceHashesAfter": {
+    "src/editor/editor.js": "00fdbc5a4c942c1315b883dae48db7a176524a86aff4d32f621d400c995f084c",
+    "src/editor/editor.css": "b4d74a007a2f75fce652b7d96c02f0beadb03662e0ad844261920a7a5028496b",
+    "src/editor/templates.js": "3fa3cc832cece03022df4b1495fa330d7ff0a6e6e36e18f1d0504dbe8b94c23a",
+    "src/editor/templateStore.js": "258dd758138aafc2f7b51b60b2fcd1813a00a947eb82da9384d96ffdaba09cdb",
+    "src/editor/templatePanel.js": "7350d06fd9c6593ac1ed9fa6a8981c450279de121ff93cd33c9b2fcbb24bec99",
+    "src/editor/document.js": "499a1638e3db7d8273a4883e9d90cb258a0a05b9e34395534ffb1a47b928ae89",
+    "src/editor/selection.js": "23e296adaf1916a7281ab9fcb56c6b9c7b4bd0d66f41a6680ffbbb0bdced6a0c",
+    "src/editor/draftStore.js": "046c9fabc02cf89742fe241c6f0a0a93b35488da759ad50bcaa28a19bba7a1da",
+    "src/editor/catalog.js": "bed1345b55ffb944aa017a77e3844bc75881c330c67860ae760959675131736c",
+    "src/editor/baseDecoration.js": "0ef0dc896ebd192c15b0f40fac938ad9751225aa14a3d838c91af478576a9766",
+    "src/editor/publicationValidation.js": "72c1460ffe7e36e1e7d5f9875de66e64e2f86625d2dcd60626fd0d159e15b9f6",
+    "assets/editor/catalog.json": "a800d3bd86f3455b3267c3209e485c8fd821fae44af7bcc2bf99a5d69b9f5071",
+    "assets/manifest.json": "ec693e421a61b9a49e11f634761e1208aa6a8ccaa0980bad49ad3c6c64a7bef0"
+  },
+  "accepted": true
+}
