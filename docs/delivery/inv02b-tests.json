@@ -36,6 +36,13 @@
       "fail": 0,
       "evidence": "inv02b-ui/2026-10-11T04-20-37-686Z-31696/evidence.json",
       "note": "ES/EN desktop/portrait/landscape, existing workshop controls and ACK/profile confirmation. Fixture pack positioning differs from the game HUD."
+    },
+    {
+      "command": "node --test --test-concurrency=1 tests/attribute-authority.test.mjs tests/attribute-operation.test.mjs tests/attribute-operations-sql.test.mjs tests/ground-workshop-compatibility.test.mjs",
+      "pass": 20,
+      "fail": 0,
+      "integrationRevision": "5b2c6b5",
+      "note": "Rerun after merging freshwater alpha.44/protocol 50. Counts overlap earlier attribute and composition suites. Public canary is recorded separately."
     }
   ]
 }
