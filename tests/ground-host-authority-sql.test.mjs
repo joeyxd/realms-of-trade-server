@@ -24,7 +24,8 @@ const turn = () => new Promise(resolve => setImmediate(resolve));
 const copy = value => structuredClone(value);
 
 function seededProfile(account, { artisan = false, goods = {} } = {}) {
-  const profile = newProfile();
+  // This fixture deliberately exercises SQL001-021 with workshop operations disabled.
+  const profile = newProfile({ starter: false });
   profile.pirateId = `account:${account}`;
   profile.tools.axe = 1;
   profile.gold = 1000;

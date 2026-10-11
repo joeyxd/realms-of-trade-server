@@ -11,6 +11,37 @@ Código publicado sin imports de gameplay: no cambia capacidad, movimiento ni pe
 Sigue recibo M5 y adopción explícita, después UI ES/EN y sobrepeso; conservar crédito offline de Tala.
 Sin SQL nuevo. El borrador anterior de supervivencia sigue separado.
 
+**AREA01 GM04b, 2026-10-10 — plantillas publicadas, alpha.41/protocolo 47:**
+[Entrega](delivery/gm04b/DELIVERY.md), [navegador público](delivery/gm04b/public-browser-evidence.json)
+y [despliegue](delivery/gm04b/deployment.json). Conjuntos de 1–120 decoraciones, fantasma completo,
+copias independientes y undo/redo por colocación. Biblioteca local por cuenta–servidor–mundo, 32 plantillas,
+CAS e import/export de 2 MiB; misma semilla/revisión base. Regresión GM 199/199 en 35 archivos;
+navegador local 17/17 y público autenticado 19/19, sin errores ni mutaciones remotas.
+Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4 conservado.
+Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
+Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
+
+**AREA17 L03d-e1, 2026-10-10 — centro de inferencia preparado, alpha.42/protocolo 48:**
+[Entrega](delivery/l03d-inference-config.md) y [contrato](briefs/l03d-inference-config.md).
+Configuración privada por mundo/cuenta: límite conjunto, límite único por conexión y modelo por
+compañero existente. SQL028 CAS/replay, aislamiento, stop obligatorio y borrador conservado ante
+conflicto/incertidumbre. Sin importe/modelo preseleccionados, proveedor ni generación.
+Integración final alpha.42 70/70 y navegador local 12/12; regresión anterior alpha.41 54/54
+(selecciones solapadas). SQL028 aplicado y canario de servicio revertido. Publicación pendiente.
+Los techos guardados aún no son ledger; la autenticación del navegador local es simulada.
+Sigue ledger central, endpoint/modelo local y límites elegidos; después mente/memoria con fuentes.
+
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](delivery/m5-ground-family-boundary.md), [contrato](briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
+
 **AREA07, decisión del autor 2026-10-10 — agua manual antes del purificador avanzado:**
 [RNV07](briefs/RNV07-freshwater-progression.md) registra cubeta, fuente interior con enemigos,
 barril de casa/balsa y cantimplora reutilizable. Purificador tardío con mucho más hierro/tablas y

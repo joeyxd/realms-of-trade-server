@@ -1,0 +1,119 @@
+{
+  "schema": "l03d-inference-config-browser/v1",
+  "version": "0.6.0-alpha.41",
+  "at": "2026-10-11T03:10:54.526Z",
+  "simulatedAuth": true,
+  "public": false,
+  "production": false,
+  "gameplayMemory": true,
+  "gameplayDurabilityVerified": false,
+  "providerCalls": false,
+  "generationAvailable": false,
+  "storage": {
+    "migration": "SQL028",
+    "durableInFixture": true,
+    "database": "PGlite disk directory",
+    "gameplay": "memory store",
+    "control": "memory default-stopped control fixture"
+  },
+  "rendering": {
+    "browser": "Chrome headless",
+    "angle": "default"
+  },
+  "checks": [
+    "owner_loads_empty_private_head_and_catalog_without_secret_fields",
+    "two_characters_share_one_connection_ceiling_and_save_keeps_companions_stopped",
+    "portrait_owner_form_displays_saved_populated_inputs_and_selectors",
+    "portrait_owner_top_shows_populated_usd_input",
+    "english_copy_keeps_prepared_limits_and_no_generation_claim",
+    "page_reload_reads_confirmed_SQL028_head",
+    "other_owner_gets_empty_config_and_empty_catalog",
+    "Escape_closes_center_and_returns_focus_to_open_button",
+    "stale_CAS_conflict_preserves_draft_until_explicit_reload",
+    "configuration_stays_out_of_gameplay_profile_world_and_provider_calls",
+    "SQL028_disk_database_reopens_at_revision_two"
+  ],
+  "screenshots": [
+    "inference-config-owner-desktop-empty-es.png",
+    "inference-config-desktop-es.png",
+    "inference-config-owner-portrait-controls-bottom-es.png",
+    "inference-config-owner-portrait-populated-es.png",
+    "inference-config-desktop-en.png",
+    "inference-config-landscape-es.png"
+  ],
+  "errors": [],
+  "fixtures": {
+    "owner": "22222222-2222-4222-8222-222222222222",
+    "characters": [
+      "33333333-3333-4333-8333-333333333333",
+      "55555555-5555-4555-8555-555555555555"
+    ],
+    "other": "44444444-4444-4444-8444-444444444444",
+    "otherCharacter": "66666666-6666-4666-8666-666666666666",
+    "world": "inference-config-browser-fixture"
+  },
+  "layout": {
+    "portrait": {
+      "width": 390,
+      "height": 844
+    },
+    "reachableFormControls": 9,
+    "landscape": {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "panel": {
+        "left": 212,
+        "top": 21.5,
+        "right": 632,
+        "bottom": 368.5
+      },
+      "editor": {
+        "left": 227,
+        "top": 80.5,
+        "right": 617,
+        "bottom": 353.5
+      },
+      "stage": {
+        "left": 0,
+        "top": 0,
+        "right": 844,
+        "bottom": 390
+      },
+      "controls": [
+        {
+          "label": "Volver",
+          "height": 44
+        },
+        {
+          "label": "",
+          "height": 44
+        },
+        {
+          "label": "Cargar versión del servidor",
+          "height": 56.375
+        }
+      ]
+    }
+  },
+  "diagnostics": [
+    {
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "gmSessionStatuses": [
+        200,
+        200
+      ]
+    },
+    {
+      "pageErrors": [],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "gmSessionStatuses": [
+        200
+      ]
+    }
+  ]
+}

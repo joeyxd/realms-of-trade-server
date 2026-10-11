@@ -1,12 +1,23 @@
 # PLAN M5 — «Mundo persistente»
 
+**AREA15, 2026-10-10 — frontera común de familias implementada y probada, montaje apagado:**
+[entrega](docs/delivery/m5-ground-family-boundary.md), [contrato](docs/briefs/m5-ground-family-boundary.md).
+Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo dueño de tick/SQL018/019;
+SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
+206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
+recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+SQL023 instalado/readiness confirmado en VPS;
+mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
+Sigue conectar selectores, hidratación y coordinadores autónomos al mismo dueño, después transición
+detenida con exclusión del actualizador y canario autenticado de reinicio/caída VPS.
+
 **AREA15, 2026-10-10 — adopción SQL023 preparada, montaje apagado:**
 [entrega](docs/delivery/m5-ground-world-adoption.md), [contrato](docs/briefs/m5-ground-world-adoption.md). Snapshot/versión exactos, reloj inicial desde el
 tick de recursos y recibo inmutable sin reescribir mundo; cerco persistente de escritores legacy.
 V1 rechaza perlas/suelo/botín previo. Regresión 235/235 en 34 archivos y final GM 74/74 en doce,
 solapadas; 22 casos propios y dos SIGKILL de adopción. Integra GM03b2, I18N04b, L03d y SQL022.
 VPS `9266c40` sano alpha.34/protocolo 43: 107/107 de imagen, 11/11 focales sin red y entrada
-pública 6/6. SQL023 aún por aplicar; no se adopta el mundo real ni se activa el montaje.
+pública 6/6. SQL023 instalado/readiness confirmado posteriormente; no se adopta el mundo real ni se activa el montaje.
 Sigue composición perlas/muerte/botín, transición detenida con exclusión del writer anterior,
 recuperación y canario autenticado VPS.
 
