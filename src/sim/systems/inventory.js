@@ -22,7 +22,8 @@ import { newEco, sanitizeEco } from './trade.js';
 import { syncRaftProfiles } from './rafts.js';
 import { newTools, sanitizeTools } from '../../data/resources.js';
 import { newProgression, readProgression } from './progression.js';
-import { carryLimits, readCarryField } from '../economy/carry.js';
+import { carryLimits, packLimitsForProfile, readCarryField } from '../economy/carry.js';
+import { readAttrField } from '../../data/attributes.js';
 import { newWorkshop, readWorkshop } from './workshop.js';
 import { readFire } from '../economy/fire.js';
 
@@ -56,6 +57,8 @@ export function sanitizeProfile(raw) {
   if (!raw || typeof raw !== 'object' || raw.v !== PROFILE_VERSION) return null;
   const carryField = readCarryField(raw), hasCarry = carryField.present, carry = carryField.value;
   if (hasCarry && !carry) return null;
+  const attrField = readAttrField(raw);
+  if (attrField.present && (!attrField.value || !hasCarry)) return null;
   let hasWorkshop = false, workshop;
   try {
     const descriptor = Object.getOwnPropertyDescriptor(raw, 'workshop');
@@ -93,7 +96,9 @@ export function sanitizeProfile(raw) {
   else delete p.workshop;
   if (!hasProgression) delete p.progression;
   p.lvl = int(raw.lvl, 1, tuning.stats.maxLevel, 1);
+  if (attrField.present && attrField.value.carga > p.lvl - 1) return null;
   if (hasCarry) p.carry = carry;
+  if (attrField.present) p.attr = attrField.value;
   p.xp = num(raw.xp, 0, 1e6, 0);
   p.gold = int(raw.gold, 0, 1e9, 0);
   p.pot = int(raw.pot, 0, CONSUMABLES.potion.max, 0);
@@ -121,7 +126,7 @@ export function sanitizeProfile(raw) {
   p.sk = sanitizeSk(raw.sk, int, num);
   p.pearls = sanitizePearls(raw.pearls);
   p.pirateId = typeof raw.pirateId === 'string' && /^[a-zA-Z0-9:_-]{1,100}$/.test(raw.pirateId) ? raw.pirateId : '';
-  const limits = hasCarry ? carryLimits(carry, p.lvl) : null;
+  const limits = hasCarry ? packLimitsForProfile(p) : null;
   p.eco = sanitizeEco(raw.eco, limits ? { packCap: limits.volume, packMaxMass: limits.maxMass } : undefined);
   p.tools = sanitizeTools(raw.tools);
   if (hasProgression) p.progression = progression;
@@ -220,7 +225,8 @@ export function syncProfile(world, e) {
   syncRaftProfiles(world, e);
   p.lvl = ecs.level[e]; p.xp = Math.round(ecs.xp[e] * 100) / 100; p.pot = ecs.potions[e];
   if (p.carry) {
-    const limits = carryLimits(p.carry, p.lvl);
+    const limits = packLimitsForProfile(p);
+    if (!limits) return p;
     p.eco.pack.cap = limits.volume; p.eco.pack.maxMass = limits.maxMass;
   }
   for (const [id, c] of Object.entries(world.map.checkpoints)) if (Math.abs(c.x - ecs.cpX[e]) < 1e-6 && Math.abs(c.z - ecs.cpZ[e]) < 1e-6) p.cp = id;
