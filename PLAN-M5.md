@@ -6,6 +6,8 @@ Suelo de perlas, lotes, muerte y botín usan una entrada de confianza al mismo d
 SQL preparado no aplica efectos. Reservas hasta el drain síncrono; cierre sin callbacks históricos.
 206/206 en 34 archivos, incluidas las cuatro familias SQL, compatibilidad SQL001–027 con
 recursos v3/taller/balsa y dos SIGKILL nuevos. Integración final GM04b/HUD/Carga sin montar: 58/58 en diez archivos, solapada con la anterior.
+Integración concurrente posterior alpha.42/protocolo 48: 83/83 en doce archivos, solapada;
+frontera de familias sin cambios. SQL028 pertenece al frente independiente de inferencia.
 SQL023 instalado/readiness confirmado en VPS;
 mundo público todavía sin reloj común ni adopción. No requiere SQL nuevo ni cambia flags/protocolo.
 Código `e4c5f0d` verificado en VPS alpha.41/protocolo 47: 109/109 del actualizador, 13/13

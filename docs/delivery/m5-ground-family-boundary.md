@@ -67,6 +67,22 @@ El trabajo de código permanece en `C:\DEV\real of trade\area15-resource-live`, 
 `codex/area15-resource-live`; el checkout IDE concurrente recibe solamente este checkpoint,
 contrato y evidencias. No se copia runtime, pruebas, entorno ni migraciones sobre sus cambios.
 
+## Integración concurrente posterior
+
+La rama incorpora después el centro privado de inferencia alpha.42/protocolo 48. Se revisaron
+las adiciones de host/store/index: servicio y mensajes privados, sin reemplazar `beforeTick`,
+escritor del mundo ni la frontera de familias. **83/83 en doce archivos**, con fuentes congeladas:
+host/store/economía, taller actual SQL001–027 e inferencia SQL028, cliente/UI/red/store.
+[Manifest](m5-ground-family-boundary/concurrent-integration.json),
+[TAP](m5-ground-family-boundary/concurrent-integration.tap). Se solapan con los conteos previos.
+
+El módulo de familias es idéntico byte a byte en Git al aceptado en `e4c5f0d`.
+[Lectura VPS posterior](m5-ground-family-boundary/current-source-status.json) vuelve a comprobar
+su hash, revisión/imagen activa, salud pública y montaje apagado. La publicación/aceptación
+alpha.41 anterior mantiene su revisión exacta; esta integración local no declara publicada
+alpha.42 ni acepta su entrada pública. SQL028 pertenece a la entrega independiente de inferencia;
+este corte de continuidad no añade ni ejecuta SQL.
+
 ## Límites y siguiente corte
 
 Esta entrada de ensamblaje no conecta todavía los coordinadores autónomos, sus selectores ni su
