@@ -6,6 +6,8 @@ Adopción explícita nivel 1/legacy, asignación y reset gratuito por M5. Prueba
 19/19 y composición SQL023/029 1/1 con reapertura de base; UI existente ES/EN 6/6.
 SQL029 listo, sin reescritura de datos. Alpha.43/protocolo 49; flag apagado por defecto,
 readiness obligatorio antes de activar. Siguen SQL/canario y ficha ES/EN INV02c.
+Código desplegado `f281db1` con flag apagado; canario WSS autenticado 5/5, imagen/revisión
+fijas y 14 hashes iguales a Git. Autoridad sana y cuenta temporal retirada.
 
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](delivery/hud-portrait/README.md), [contrato de Carga](briefs/inv02a-durable-carry.md)

@@ -8,6 +8,8 @@ con reapertura de base; regresión previa 106/106 y UI existente 6/6 ES/EN, cont
 SQL029 aditivo listo, sin reescribir datos; flag `MN_ATTRIBUTE_OPERATIONS` apagado por defecto,
 exige readiness. Alpha.43/protocolo 49. Sigue aplicar SQL029, canario y ficha ES/EN INV02c;
 después movimiento/sobrepeso. No implica que la pantalla de atributos ya esté jugable.
+Código desplegado `f281db1` con flag apagado; canario público autenticado **5/5**, 14 hashes
+de imagen iguales a Git y una autoridad sana antes/después. Cuenta QA retirada, sin recibos.
 
 **AREA03 HUD/INV02a, 2026-10-10 — HUD público verificado; Carga sin montar:**
 [HUD y evidencia](docs/delivery/hud-portrait/README.md), [contrato de Carga](docs/briefs/inv02a-durable-carry.md)
@@ -29,6 +31,15 @@ navegador local 17/17 y público autenticado 19/19, sin errores ni mutaciones re
 Release `6c42e84` sana, Supabase durable y timer activo; mapa base generación 4 conservado.
 Capturas ES/EN/844×390 inspeccionadas; luz de referencia solo del renderer cliente, sin escrituras al reloj.
 Documento v2, protocolo y autoridad M5 conservados; sin SQL/arte nuevo. Siguen materiales/dispersión y GM05.
+
+**AREA17 L03d-e2a, 2026-10-10 — transporte del modelo local probado, sin montaje:**
+[Entrega/evidencia](docs/delivery/l03d-local-model-probe.md) y [brief](docs/briefs/l03d-local-model-probe.md).
+Endpoint loopback sin clave y modelo exacto verificados; wait/reply estructurados y cancelación con
+bloqueo pasaron usando extensión explícita de plantilla sin razonamiento. Default 192 no admitió chat y 512 lo truncó;
+se conservan ambos ensayos. 20/20 HTTP local simulado; ocho intentos reales, siete usos conocidos y
+uno cancelado desconocido, sin retries después. Coste null y cero acciones/chat/memoria enviados.
+Reply mezcló ES/EN y tardó 5,8 s: calidad/latencia pendientes. Herramienta fuera del bundle/VPS;
+sin proveedor público, ledger central o integración AgentMind. E1 permanece la entrega ingame publicada.
 
 **AREA17 L03d-e1, 2026-10-10 — centro de inferencia configurado y publicado, alpha.42/protocolo 48:**
 [Entrega](docs/delivery/l03d-inference-config.md) y [contrato](docs/briefs/l03d-inference-config.md).

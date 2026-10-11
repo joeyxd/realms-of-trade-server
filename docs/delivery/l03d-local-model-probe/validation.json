@@ -1,0 +1,27 @@
+{
+  "schema": "mn.local-inference.validation.v1",
+  "at": "2026-10-11T04:19:43.0923859Z",
+  "testCommand": "node --test tests/agent-local-openai-transport.test.mjs tests/agent-local-openai-probe.test.mjs",
+  "tests": {
+    "failed": 0,
+    "skipped": 0,
+    "total": 20,
+    "passed": 20
+  },
+  "realAttempts": 8,
+  "knownCalls": 7,
+  "knownInputTokens": 4866,
+  "knownOutputTokens": 914,
+  "unknownCalls": 1,
+  "actionsExecuted": 0,
+  "chatsSent": 0,
+  "costNanoUsd": null,
+  "sourceHashes": {
+    "tools/agent/local-openai-transport.mjs": "ef8a286b4d9eaf38f950e18127d710246b9a7223f4323480658ffa6b2c2ea135",
+    "tools/agent/probe-local-openai.mjs": "48dbe8047f81452ae64bf9cc14916e564941139c16ed49d978e66ba3608bb741",
+    "tests/agent-local-openai-transport.test.mjs": "eabb080393cdd17d847991073b668181411ddd8dafce55798acc6b1920c3de1e",
+    "tests/agent-local-openai-probe.test.mjs": "cb676527f83fba033498f219db11904172ccdf5ba74d3d5925be5622cf866637"
+  },
+  "runtimeChanged": false,
+  "productionInferenceActivated": false
+}
