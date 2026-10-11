@@ -32,6 +32,22 @@ test('legacy host keeps death persistence and common family composition unmounte
   } finally { await host.close(); }
 });
 
+test('GM content switching excludes a ready host with common death authorities mounted', async t => {
+  const f = await fixture(t), host = f.host;
+  try {
+    assert.equal(host.server.humans, 0);
+    assert.ok(host.groundDeaths);
+    assert.ok(host.combatDeaths);
+    assert.ok(host.status().storage.groundDeaths);
+    assert.ok(host.status().storage.combatDeaths);
+    assert.ok(host.groundAuthority.canMutate());
+    assert.throws(() => host.beginContentSwitch(), { code: 'gm_content_busy' });
+    assert.equal(host.contentSwitching, false);
+    assert.equal(host.healthy(), true);
+    assert.equal(host.groundAuthority.canMutate(), true);
+  } finally { await host.close().catch(() => {}); }
+});
+
 test('Cala fatal commits the whole captured death, but applies and publishes only on the next host boundary', async t => {
   const entered = deferred(), release = deferred();
   const f = await fixture(t, { commitHook: async (raw, result) => {
