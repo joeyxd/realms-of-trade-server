@@ -2,11 +2,12 @@
 const COPY = {
   es: {
     title: 'Mis compañeros', open: 'Abrir mis compañeros', close: 'Cerrar mis compañeros', inference: 'Centro de inferencia', preparedNote: 'El centro prepara conexión, modelo y límites. Guardar no inicia inferencia.',
+    unavailableNote: 'Puedes volver al juego. El centro muestra la preparación de límites; todavía no permite añadir una URL ni crear un compañero.',
     refresh: 'Actualizar', refreshing: 'Actualizando…', stop: 'Detener', confirmStop: 'Confirmar detención', stopping: 'Deteniendo…', resume: 'Permitir conexión', resuming: 'Guardando…', closePanel: 'Cerrar panel', configure: 'Ficha',
     signed_out: 'Inicia sesión para consultar tus compañeros.', loading: 'Consultando compañeros…',
     error: 'No se pudo consultar el estado. Inténtalo de nuevo.', offline: 'Sin conexión. Los compañeros no están disponibles.',
     setupNote: 'Aún no puedes configurar una conexión desde el juego.', configNote: 'La ficha guarda personalidad y objetivos. Conexión al modelo y memoria siguen pendientes.', sessionNote: 'Este compañero usa una detención de sesión; tras reiniciar el servidor, puede volver a conectarse.', durableNote: 'La detención se conserva entre sesiones. Permitir conexión requiere que el controlador vuelva a conectarse; no inicia al compañero automáticamente.',
-    serverDisabled: 'Los compañeros están desactivados en este servidor.', ready: 'Estado actualizado.',
+    serverDisabled: 'La creación y conexión de compañeros aún no está habilitada en este servidor.', ready: 'Estado actualizado.',
     noCompanions: 'No hay compañeros vinculados a esta cuenta.', fallbackName: (n) => `Compañero ${n}`,
     online: 'En línea', offlineAgent: 'Desconectado',
     active: 'Activo', inactive: 'Inactivo', stopped: 'Detenido', stopFailed: 'No se pudo detener el compañero. Inténtalo de nuevo.', resumeFailed: 'No se pudo permitir la conexión. Actualiza el estado antes de volver a intentarlo.',
@@ -19,11 +20,12 @@ const COPY = {
   },
   en: {
     title: 'My companions', open: 'Open my companions', close: 'Close my companions', inference: 'Inference center', preparedNote: 'The center prepares connection, model and limits. Saving does not start inference.',
+    unavailableNote: 'You can return to the game. The center shows prepared limits; you cannot add a URL or create a companion here yet.',
     refresh: 'Refresh', refreshing: 'Refreshing…', stop: 'Stop', confirmStop: 'Confirm stop', stopping: 'Stopping…', resume: 'Allow connection', resuming: 'Saving…', closePanel: 'Close panel', configure: 'Profile',
     signed_out: 'Sign in to view your companions.', loading: 'Checking companions…',
     error: 'Could not load status. Try again.', offline: 'Offline. Companions are unavailable.',
     setupNote: 'You cannot configure a connection from the game yet.', configNote: 'The profile saves personality and goals. Model connection and memory are still pending.', sessionNote: 'This companion uses a session stop; it may reconnect after the server restarts.', durableNote: 'The stop is preserved between sessions. Allowing a connection requires the controller to reconnect; it does not start the companion automatically.',
-    serverDisabled: 'Companions are disabled on this server.', ready: 'Status updated.',
+    serverDisabled: 'Companion creation and connection are not enabled on this server yet.', ready: 'Status updated.',
     noCompanions: 'No companions are linked to this account.', fallbackName: (n) => `Companion ${n}`,
     online: 'Online', offlineAgent: 'Offline',
     active: 'Active', inactive: 'Inactive', stopped: 'Stopped', stopFailed: 'Could not stop this companion. Try again.', resumeFailed: 'Could not allow the connection. Refresh status before trying again.',
@@ -312,7 +314,8 @@ export class CompanionsUI {
     this.closeButton.textContent = '×';
     this.closeButton.setAttribute('aria-label', text.closePanel);
     this.closeButton.title = text.closePanel;
-    this.setupNote.textContent = this.inferenceEditor ? text.preparedNote : this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
+    this.setupNote.textContent = this.state.status === 'ready' && !this.state.enabled ? text.unavailableNote
+      : this.inferenceEditor ? text.preparedNote : this.configEditor ? `${text.configNote} ${text.setupNote}` : text.setupNote;
     this.inferenceButton.textContent = text.inference;
     this.inferenceButton.disabled = this.state.status !== 'ready';
     const hasDurable = this.state.companions.some((companion) => companion.control);

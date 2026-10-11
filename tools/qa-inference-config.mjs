@@ -53,16 +53,18 @@ function rpcFor(db) {
 }
 const resolvePlayer = async (_req, hello) => ({ 'owner-fixture': OWNER, 'other-fixture': OTHER, 'agent-fixture': CHARACTER_A }[hello.token] ?? null);
 const binding = (ownerId, characterId) => ({ ownerId, characterId, capabilities: ['move', 'aim', 'attack_pve'] });
-function createFixture(db) {
+function createFixture(db, { agentControl = { worldId: WORLD, bindings: [binding(OWNER, CHARACTER_A), binding(OWNER, CHARACTER_B), binding(OTHER, OTHER_CHARACTER)] },
+  inferenceCatalog = [{ owner: OWNER, connections }, { owner: OTHER, connections: [] }] } = {}) {
   const rpc = rpcFor(db), store = { ...createMemoryStore(), ...createMemoryCompanionConfigMethods(),
     ...createMemoryCompanionControlMethods(), ...createSupabaseInferenceConfigMethods({ rpc }), durable: true };
   return createGameServer({ port: 0, host: '127.0.0.1', seed: 42, bots: 0, maxPlayers: 4, dev: false, log() {}, store,
     resolvePlayer, worldId: WORLD, saveSecret: 'inference-config-fixture-only',
     publicAuth: { enabled: true, url: 'http://127.0.0.1:1', publicKey: 'sb_publishable_inference_config_fixture' },
     gmAccountIds: [OWNER, OTHER],
-    agentControl: { worldId: WORLD, bindings: [binding(OWNER, CHARACTER_A), binding(OWNER, CHARACTER_B), binding(OTHER, OTHER_CHARACTER)] },
-    agentPilot: { maxAgents: 2 }, companionControlAllowMemory: true, companionConfigAllowMemory: true,
-    inferenceConfigAllowMemory: true, inferenceCatalog: [{ owner: OWNER, connections }, { owner: OTHER, connections: [] }],
+    ...(agentControl ? { agentControl,
+      agentPilot: { maxAgents: 2 } } : {}),
+    companionControlAllowMemory: true, companionConfigAllowMemory: true,
+    inferenceConfigAllowMemory: true, inferenceCatalog,
   });
 }
 async function routes(context) {
@@ -104,6 +106,30 @@ async function shot(page, name) {
   await page.waitForTimeout(120);
   await page.screenshot({ path: resolve(OUTPUT, name), fullPage: false }); evidence.screenshots.push(name);
 }
+async function mobilePanelGeometry(page) {
+  return page.evaluate(() => {
+    const box = selector => {
+      const element = document.querySelector(selector), rect = element.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom,
+        width: rect.width, height: rect.height, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
+    };
+    const root = document.querySelector('.mn-inference-config');
+    return { viewport: { width: innerWidth, height: innerHeight }, documentWidth: document.documentElement.scrollWidth,
+      panel: box('.mn-companions-panel'), editor: box('.mn-inference-config'),
+      controls: [...root.querySelectorAll('button,input,select')].filter(element => element.getClientRects().length)
+        .map(element => { const rect = element.getBoundingClientRect(); return { name: element.className || element.textContent,
+          left: rect.left, right: rect.right, width: rect.width, disabled: element.disabled }; }) };
+  });
+}
+function assertMobileHorizontalFit(geometry) {
+  assert.ok(geometry.documentWidth <= geometry.viewport.width, JSON.stringify(geometry));
+  for (const [name, box] of [['panel', geometry.panel], ['editor', geometry.editor]]) {
+    assert.ok(box.left >= -1 && box.right <= geometry.viewport.width + 1, `${name} outside viewport: ${JSON.stringify(geometry)}`);
+    assert.ok(box.scrollWidth <= box.clientWidth + 1, `${name} overflows horizontally: ${JSON.stringify(geometry)}`);
+  }
+  for (const control of geometry.controls) assert.ok(control.left >= geometry.editor.left - 1 &&
+    control.right <= geometry.editor.right + 1, `control overflows horizontally: ${JSON.stringify(control)}`);
+}
 async function openGame(context, origin, viewport) {
   const page = await context.newPage(); if (viewport) await page.setViewportSize(viewport);
   const diag = { pageErrors: [], consoleErrors: [], failedRequests: [], gmSessionStatuses: [] }; diagnostics.push(diag);
@@ -128,7 +154,7 @@ async function openInference(page) {
     !['loading', 'saving'].includes(document.querySelector('.mn-inference-config')?.dataset.status));
 }
 let tempPath = null, tempCanonical = null, db = null, game = null, browser = null;
-let ownerContext = null, otherContext = null, ownerPage = null, otherPage = null, methods = null;
+let ownerContext = null, otherContext = null, noAgentContext = null, ownerPage = null, otherPage = null, noAgentPage = null, methods = null;
 let port = null, origin = null;
 try {
   await mkdir(OUTPUT, { recursive: true });
@@ -299,6 +325,130 @@ try {
 
   await ownerContext.close(); ownerContext = null;
   await otherContext.close(); otherContext = null;
+  await game.close(); game = null;
+  game = createFixture(db, { agentControl: null, inferenceCatalog: [] });
+  evidence.fixtureScenarios = [
+    { agentControl: 'configured fixture bindings', catalog: 'owner-specific fixture catalog', simulatedAuth: true },
+    { agentControl: null, catalog: [], simulatedAuth: true, providerCalls: false },
+  ];
+  port = await game.listen(); origin = `http://127.0.0.1:${port}`;
+
+  noAgentContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await setupAuth(noAgentContext, OTHER, 'other-fixture');
+  noAgentPage = await openGame(noAgentContext, origin); await openPanel(noAgentPage); await openInference(noAgentPage);
+  await check('authenticated_alpha_without_agent_control_or_catalog_explains_unavailability_without_amount_only_form', async () => {
+    const availability = noAgentPage.locator('.mn-inference-config-availability');
+    assert.equal(await availability.isVisible(), true);
+    assert.match(await availability.textContent(), /no (eligible )?(available )?connections|unavailable|no (hay|tiene).*conexiones|sin conexiones|conexi.n.*(pendiente|disponible|configur)|inferenc.*disponible/i);
+    const account = noAgentPage.locator('.mn-inference-config-account-ceiling');
+    assert.equal(await account.count(), 1);
+    assert.equal(await account.isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-label').isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isVisible(), false);
+    const sections = noAgentPage.locator('.mn-inference-config-connections-heading,.mn-inference-config-connections,.mn-inference-config-characters-heading,.mn-inference-config-characters');
+    assert.equal(await sections.count(), 4);
+    for (let i = 0; i < await sections.count(); i++) assert.equal(await sections.nth(i).isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-back').isVisible(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-back').isDisabled(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-reload').isVisible(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-reload').isDisabled(), false);
+  });
+  await shot(noAgentPage, 'inference-config-no-server-agent-desktop-es.png');
+  await noAgentPage.locator('.mn-inference-config-reload').click();
+  await waitUntil(async () => !(await noAgentPage.locator('.mn-inference-config-reload').isDisabled()), 10000, 'empty-head reload');
+  await noAgentPage.evaluate(async () => { const { setLocale } = await import('/src/core/i18n.js'); setLocale('en'); });
+  await noAgentPage.waitForFunction(() => document.querySelector('.mn-inference-config h3')?.textContent === 'Inference Center');
+  await check('english_no_catalog_view_explains_availability_and_keeps_navigation', async () => {
+    assert.match(await noAgentPage.locator('.mn-inference-config-availability').textContent(), /no (eligible )?(available )?connections|not available|cannot.*configur/i);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-label').isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-connections-heading').isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-characters-heading').isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isVisible(), false);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-back').isEnabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-reload').isEnabled(), true);
+  });
+  await shot(noAgentPage, 'inference-config-no-server-agent-desktop-en.png');
+  await noAgentPage.setViewportSize({ width: 390, height: 844 });
+  await check('mobile_no_catalog_view_fits_viewport_in_both_locales', async () => {
+    const geometry = await mobilePanelGeometry(noAgentPage);
+    assertMobileHorizontalFit(geometry);
+    for (const box of [geometry.panel, geometry.editor]) assert.ok(box.top >= -1 && box.bottom <= geometry.viewport.height + 1,
+      JSON.stringify(geometry));
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isVisible(), false);
+    evidence.layout = { ...(evidence.layout || {}), noCatalogMobileEnglish: geometry };
+  });
+  await shot(noAgentPage, 'inference-config-no-server-agent-mobile-en.png');
+  await noAgentPage.evaluate(async () => { const { setLocale } = await import('/src/core/i18n.js'); setLocale('es'); });
+  await noAgentPage.waitForFunction(() => document.querySelector('.mn-inference-config h3')?.textContent === 'Centro de inferencia');
+  await check('mobile_no_catalog_spanish_view_has_no_horizontal_overflow', async () => {
+    const geometry = await mobilePanelGeometry(noAgentPage);
+    assertMobileHorizontalFit(geometry);
+    for (const box of [geometry.panel, geometry.editor]) assert.ok(box.top >= -1 && box.bottom <= geometry.viewport.height + 1,
+      JSON.stringify(geometry));
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isVisible(), false);
+    evidence.layout = { ...(evidence.layout || {}), noCatalogMobileSpanish: geometry };
+  });
+  await shot(noAgentPage, 'inference-config-no-server-agent-mobile-es.png');
+  await noAgentPage.locator('.mn-inference-config-reload').click();
+  await waitUntil(async () => !(await noAgentPage.locator('.mn-inference-config-reload').isDisabled()), 10000, 'mobile empty-head reload');
+  await noAgentPage.locator('.mn-inference-config-back').click();
+  await noAgentPage.waitForFunction(() => document.querySelector('.mn-inference-config').hidden);
+  await check('empty_catalog_back_and_reload_remain_usable', async () => {
+    assert.equal(await noAgentPage.locator('.mn-inference-config').isHidden(), true);
+    assert.equal((await methods.loadInferenceConfig({ world: WORLD, owner: OTHER })).revision, 0);
+  });
+
+  await noAgentContext.close(); noAgentContext = null;
+  noAgentContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await setupAuth(noAgentContext, OWNER, 'owner-fixture');
+  noAgentPage = await openGame(noAgentContext, origin); await openPanel(noAgentPage); await openInference(noAgentPage);
+  await waitUntil(async () => (await noAgentPage.locator('.mn-inference-config-account-ceiling').inputValue()) === '4', 10000,
+    'previously saved config with empty catalog');
+  await check('previously_saved_values_remain_visible_disabled_when_catalog_disappears', async () => {
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').inputValue(), '4');
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-label').isVisible(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isVisible(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-save').isDisabled(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-connections-heading').isVisible(), true);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-characters-heading').isVisible(), true);
+    assert.deepEqual(await noAgentPage.locator('.mn-inference-config-connections input').evaluateAll(nodes => nodes.map(node => ({ value: node.value, disabled: node.disabled }))),
+      [{ value: '3', disabled: true }]);
+    assert.deepEqual(await noAgentPage.locator('.mn-inference-config-characters select').evaluateAll(nodes => nodes.map(node => ({ value: node.value, disabled: node.disabled }))),
+      [{ value: 'fixture-local', disabled: true }, { value: 'fixture-small-v1', disabled: true },
+        { value: 'fixture-local', disabled: true }, { value: 'fixture-large-v1', disabled: true }]);
+    assert.equal(await noAgentPage.locator('.mn-inference-config-characters select').evaluateAll(nodes => nodes.every(node => node.getClientRects().length > 0)), true);
+    assert.match(await noAgentPage.locator('.mn-inference-config-availability').textContent(), /previous|saved|guardad|conserv/i);
+    assert.equal((await methods.loadInferenceConfig({ world: WORLD, owner: OWNER })).revision, 2);
+  });
+  await shot(noAgentPage, 'inference-config-saved-no-catalog-desktop-es.png');
+  await noAgentPage.setViewportSize({ width: 390, height: 844 });
+  await noAgentPage.evaluate(async () => { const { setLocale } = await import('/src/core/i18n.js'); setLocale('en'); });
+  await noAgentPage.waitForFunction(() => document.querySelector('.mn-inference-config h3')?.textContent === 'Inference Center');
+  await check('previously_saved_mobile_values_stay_disabled_and_fit_viewport', async () => {
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').inputValue(), '4');
+    assert.equal(await noAgentPage.locator('.mn-inference-config-account-ceiling').isDisabled(), true);
+    const geometry = await mobilePanelGeometry(noAgentPage);
+    assertMobileHorizontalFit(geometry);
+    assert.ok(geometry.panel.top >= -1 && geometry.panel.bottom <= geometry.viewport.height + 1, JSON.stringify(geometry));
+    const reload = noAgentPage.locator('.mn-inference-config-reload');
+    await reload.scrollIntoViewIfNeeded();
+    const reloadBox = await reload.boundingBox();
+    assert.ok(reloadBox && reloadBox.y >= -1 && reloadBox.y + reloadBox.height <= geometry.viewport.height + 1,
+      `reload is not reachable: ${JSON.stringify({ reloadBox, viewport: geometry.viewport })}`);
+    assert.equal(await reload.isEnabled(), true);
+    evidence.layout = { ...(evidence.layout || {}), savedConfigNoCatalogMobile: { ...geometry, reloadBox } };
+  });
+  await noAgentPage.locator('.mn-inference-config-reload').click();
+  await waitUntil(async () => !(await noAgentPage.locator('.mn-inference-config-reload').isDisabled()), 10000, 'saved config reload');
+  await noAgentPage.locator('.mn-inference-config-account-ceiling').scrollIntoViewIfNeeded();
+  await shot(noAgentPage, 'inference-config-saved-no-catalog-mobile-en.png');
+  assert.equal((await methods.loadInferenceConfig({ world: WORLD, owner: OWNER })).revision, 2);
+
+  await noAgentContext.close(); noAgentContext = null;
   await game.close(); game = null; await browser.close(); browser = null; await db.close(); db = null;
   const reopened = new PGlite(join(tempCanonical, 'db'));
   try {
@@ -310,7 +460,7 @@ try {
 } catch (error) {
   evidence.errors.push(error.stack || String(error)); process.exitCode = 1;
 } finally {
-  try { await Promise.all([ownerContext?.close(), otherContext?.close()]); } catch {}
+  try { await Promise.all([ownerContext?.close(), otherContext?.close(), noAgentContext?.close()]); } catch {}
   try { await browser?.close(); } catch {}
   try { await game?.close(); } catch {}
   try { await db?.close(); } catch {}

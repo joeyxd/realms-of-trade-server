@@ -45,16 +45,57 @@ const fire = (element, event) => element.listeners[event]?.forEach(fn => fn({ ta
 const ready = (client, { catalogRows = catalog, characters = [CHARACTER], head = blankHead, durable = true } = {}) =>
   client.publish({ status: 'ready', head, catalog: catalogRows, characters, durable, message: '' });
 
-test('open loads whole owner config and empty amount has no implicit default or save path', () => {
+test('an owner without connections sees availability instead of an amount-only setup form', () => {
   const { ui, client, restore } = setup();
   try {
     ui.open(); assert.equal(client.loads, 1); assert.equal(ui.accountCeiling.value, '');
     ready(client, { catalogRows: [] });
     assert.equal(ui.draft.ceilingUsd, ''); assert.equal(ui.saveButton.disabled, true);
+    assert.equal(ui.availability.hidden, false); assert.equal(ui.accountLabel.hidden, true);
+    assert.equal(ui.accountCeiling.disabled, true); assert.equal(ui.saveButton.hidden, true);
+    assert.equal(ui.connectionList.hidden, true); assert.equal(ui.characterList.hidden, true);
+    assert.equal(ui.backButton.disabled, false); assert.equal(ui.reloadButton.disabled, false);
+    assert.match(ui.availabilityHelp.textContent, /añadir una URL ni crear un compañero/);
+    assert.equal(ui.availabilityPreserved.hidden, true);
     assert.match(ui.connectionList.textContent, /No eligible connections|No hay conexiones admitidas/);
     assert.match(ui.preparedNote.textContent, /inference is not available|inferencia aún no está disponible/);
     assert.match(ui.status.textContent, /not been saved|no hay configuración guardada/);
     assert.equal(ui.save(), false); assert.equal(client.saves.length, 0);
+    ui.setLanguage('en'); assert.match(ui.availabilityHelp.textContent, /return to the game without entering a spending limit/);
+    assert.equal(ui.reload(), true); assert.equal(client.loads, 2);
+  } finally { restore(); }
+});
+
+test('catalog withdrawal preserves saved selections and unsaved edits as read-only until availability returns', () => {
+  const { ui, client, restore } = setup();
+  try {
+    ui.open(); ready(client, { head: { revision: 1, config, savedAt: '2026-10-10T12:00:00.000Z' } });
+    ui.accountCeiling.value = '0.6'; fire(ui.accountCeiling, 'input'); ui.accountCeiling.focus();
+    const draft = structuredClone(ui.draft);
+    ready(client, { catalogRows: [], head: { revision: 1, config, savedAt: '2026-10-10T12:00:00.000Z' } });
+    assert.equal(ui.availability.hidden, false); assert.equal(ui.availabilityPreserved.hidden, false);
+    assert.equal(ui.accountLabel.hidden, false); assert.equal(ui.accountCeiling.value, '0.6');
+    assert.equal(ui.accountCeiling.disabled, true); assert.equal(ui.saveButton.disabled, true);
+    assert.match(ui.characterList.textContent, /small-v1/);
+    assert.ok(ui.container.querySelectorAll('[data-focus-key]').every(el => el.disabled));
+    assert.equal(globalThis.document.activeElement, ui.backButton);
+    ui.accountCeiling.value = '99'; fire(ui.accountCeiling, 'input');
+    ui.removeConnection('local-1'); ui.setAssignment(CHARACTER, ''); ui.setModel(CHARACTER, 'large-v1');
+    assert.deepEqual(ui.draft, draft); assert.equal(ui.save(), false); assert.equal(client.saves.length, 0);
+    ready(client, { head: { revision: 1, config, savedAt: '2026-10-10T12:00:00.000Z' } });
+    assert.equal(ui.availability.hidden, true); assert.equal(ui.accountCeiling.disabled, false);
+    assert.equal(ui.accountCeiling.value, '0.6'); assert.deepEqual(ui.draft, draft);
+  } finally { restore(); }
+});
+
+test('even an account-only saved config remains inspectable without a catalog', () => {
+  const { ui, client, restore } = setup();
+  try {
+    ui.open(); ready(client, { catalogRows: [], characters: [], head: { revision: 1,
+      config: { v: 1, ceilingNanoUsd: 0, connections: [], companions: [] }, savedAt: '2026-10-10T12:00:00.000Z' } });
+    assert.equal(ui.accountLabel.hidden, false); assert.equal(ui.accountCeiling.value, '0');
+    assert.equal(ui.accountCeiling.disabled, true); assert.equal(ui.availabilityPreserved.hidden, false);
+    assert.equal(ui.save(), false);
   } finally { restore(); }
 });
 

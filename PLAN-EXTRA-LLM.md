@@ -7,6 +7,13 @@ construcción/barcos/comercio y persistencia continúan con sus contratos. L03a 
 integración del proveedor/modelo y operación ingame reales siguen pendientes. La ruta Studio local
 tiene ensayo real propio; no equivale a ese montaje público.
 
+**AREA17, 2026-10-11 — disponibilidad pública aclarada:**
+[Entrega](docs/delivery/l03d-public-inference-availability.md), [contrato](docs/briefs/l03d-public-inference-availability.md).
+El formulario vacío de gasto se sustituye por disponibilidad y navegación; configuración previa conservada.
+La creación/vinculación de compañeros y conexión real desde cuentas públicas continúan pendientes;
+SQL025/027/028 listo y Studio local probado no implican ese montaje. Siguiente corte: vínculo durable
+propietario/personaje y emparejamiento revocable con controlador local y adaptador real de red.
+
 **AREA17 L04c, 2026-10-10 — continuidad del Studio local implementada:**
 [Entrega/evidencia](docs/delivery/l04c-companion-continuity.md), [brief](docs/briefs/l04c-companion-continuity.md).
 Captura tras chat confirmado sin inferencia, continuación desde fuentes y refresco que cancela tardías

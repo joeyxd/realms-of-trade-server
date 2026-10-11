@@ -10,6 +10,9 @@ const COPY = {
     addNote: 'El tope de cuenta es compartido por todas las conexiones. Cada conexión tiene una sola fila de límite que comparten sus compañeros. Son límites preparados, no saldo ni uso.',
     prepared: 'Límites preparados; la inferencia aún no está disponible. Guardar no inicia una conexión ni genera texto.',
     catalogNote: 'El catálogo indica qué puede seleccionarse; no confirma que el proveedor esté disponible.',
+    noConnectionTitle: 'Conexión al modelo pendiente',
+    noConnectionHelp: 'Esta cuenta aún no tiene conexiones disponibles. Aquí todavía no puedes añadir una URL ni crear un compañero. Puedes volver al juego sin indicar un gasto.',
+    preservedConfig: 'Tus límites y selecciones se conservan. Podrás editarlos cuando haya conexiones disponibles.',
     save: 'Guardar', saving: 'Guardando…', reload: 'Cargar versión del servidor', loading: 'Cargando…',
     saved: 'Configuración guardada. No inicia inferencia.', unchanged: 'Aún no hay configuración guardada.',
     durable: 'Esta configuración se guarda de forma privada y durable.', preview: 'El servidor aún no confirma almacenamiento durable.',
@@ -36,6 +39,9 @@ const COPY = {
     addNote: 'The account ceiling is shared across all connections. Each connection has one limit row shared by its companions. These are prepared limits, not balance or usage.',
     prepared: 'Limits are prepared; inference is not available yet. Saving does not connect or generate text.',
     catalogNote: 'The catalog says what can be selected; it does not confirm provider availability.',
+    noConnectionTitle: 'Model connection pending',
+    noConnectionHelp: 'This account has no available connections yet. You cannot add a URL or create a companion here yet. You can return to the game without entering a spending limit.',
+    preservedConfig: 'Your limits and selections are preserved. You can edit them when connections are available.',
     save: 'Save', saving: 'Saving…', reload: 'Load server version', loading: 'Loading…',
     saved: 'Configuration saved. Inference was not started.', unchanged: 'No configuration has been saved yet.',
     durable: 'This configuration is saved privately and durably.', preview: 'The server has not confirmed durable storage.',
@@ -67,7 +73,7 @@ const fromConfig = config => config ? ({
   connections: config.connections.map(row => ({ id: row.id, ceilingUsd: formatInferenceUsd(row.ceilingNanoUsd) })),
   companions: config.companions.map(row => ({ ...row })),
 }) : blankDraft();
-const styleText = `.mn-inference-config{display:grid;gap:12px;min-width:0;width:100%;max-width:100%;max-height:min(70cqh,520px);overflow:auto;box-sizing:border-box}.mn-inference-config[hidden]{display:none}.mn-inference-config-header,.mn-inference-config-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.mn-inference-config-header h3,.mn-inference-config h4{margin:0;font-size:1.05rem}.mn-inference-config label{display:grid;gap:6px;min-width:0;font-weight:650;overflow-wrap:anywhere}.mn-inference-config select,.mn-inference-config input{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid #78674f;border-radius:8px;background:#211e19;color:#f4ead6;padding:9px 10px;font:500 16px/1.4 system-ui,sans-serif}.mn-inference-config button{min-height:44px;border:1px solid #8c7656;border-radius:9px;background:#29241e;color:#f4ead6;padding:9px 12px;font:600 14px/1.3 system-ui,sans-serif;cursor:pointer}.mn-inference-config button:focus-visible,.mn-inference-config input:focus-visible,.mn-inference-config select:focus-visible{outline:2px solid #e5c477;outline-offset:2px}.mn-inference-config button:disabled{opacity:.6;cursor:wait}.mn-inference-config-note,.mn-inference-config-status{margin:0;color:#d6c6aa}.mn-inference-config-status{min-height:1.4em}.mn-inference-config-section,.mn-inference-config-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}.mn-inference-config-row{display:grid;gap:8px;min-width:0;padding:10px;border:1px solid #514736;border-radius:10px;background:#211e19}.mn-inference-config-row-title{margin:0;font-weight:700;overflow-wrap:anywhere}.mn-inference-config-actions button{flex:1}.mn-companions-panel:has(.mn-inference-config:not([hidden])){overflow:hidden}.mn-inference-config>*{min-width:0;overflow-wrap:anywhere}@media(max-width:600px){.mn-inference-config-header,.mn-inference-config-actions{align-items:stretch;flex-direction:column}.mn-inference-config-header button,.mn-inference-config-actions button{width:100%}}`;
+const styleText = `.mn-inference-config{display:grid;gap:12px;min-width:0;width:100%;max-width:100%;max-height:min(70cqh,520px);overflow:auto;box-sizing:border-box}.mn-inference-config[hidden],.mn-inference-config [hidden]{display:none}.mn-inference-config-header,.mn-inference-config-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.mn-inference-config-header h3,.mn-inference-config h4{margin:0;font-size:1.05rem}.mn-inference-config label{display:grid;gap:6px;min-width:0;font-weight:650;overflow-wrap:anywhere}.mn-inference-config select,.mn-inference-config input{box-sizing:border-box;width:100%;min-width:0;min-height:44px;border:1px solid #78674f;border-radius:8px;background:#211e19;color:#f4ead6;padding:9px 10px;font:500 16px/1.4 system-ui,sans-serif}.mn-inference-config button{min-height:44px;border:1px solid #8c7656;border-radius:9px;background:#29241e;color:#f4ead6;padding:9px 12px;font:600 14px/1.3 system-ui,sans-serif;cursor:pointer}.mn-inference-config button:focus-visible,.mn-inference-config input:focus-visible,.mn-inference-config select:focus-visible{outline:2px solid #e5c477;outline-offset:2px}.mn-inference-config button:disabled{opacity:.6;cursor:wait}.mn-inference-config-note,.mn-inference-config-status{margin:0;color:#d6c6aa}.mn-inference-config-status{min-height:1.4em}.mn-inference-config-section,.mn-inference-config-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}.mn-inference-config-row{display:grid;gap:8px;min-width:0;padding:10px;border:1px solid #514736;border-radius:10px;background:#211e19}.mn-inference-config-row-title{margin:0;font-weight:700;overflow-wrap:anywhere}.mn-inference-config-actions button{flex:1}.mn-companions-panel:has(.mn-inference-config:not([hidden])){overflow:hidden}.mn-inference-config>*{min-width:0;overflow-wrap:anywhere}@media(max-width:600px){.mn-inference-config-header,.mn-inference-config-actions{align-items:stretch;flex-direction:column}.mn-inference-config-header button,.mn-inference-config-actions button{width:100%}}`;
 
 /** Owner-scoped inference configuration editor; saving only stores prepared limits/selections. */
 export class InferenceConfigUI {
@@ -87,19 +93,23 @@ export class InferenceConfigUI {
     this.durableNote = node('p', 'mn-inference-config-note');
     this.preparedNote = node('p', 'mn-inference-config-note');
     this.catalogNote = node('p', 'mn-inference-config-note');
-    this.accountLabel = node('label'); this.accountLabelText = node('span');
+    this.availability = node('section', 'mn-inference-config-row mn-inference-config-availability');
+    this.availabilityTitle = node('h4'); this.availabilityHelp = node('p', 'mn-inference-config-note');
+    this.availabilityPreserved = node('p', 'mn-inference-config-note');
+    this.availability.append(this.availabilityTitle, this.availabilityHelp, this.availabilityPreserved);
+    this.accountLabel = node('label', 'mn-inference-config-account-label'); this.accountLabelText = node('span');
     this.accountCeiling = node('input', 'mn-inference-config-account-ceiling'); this.accountCeiling.type = 'text'; this.accountCeiling.inputMode = 'decimal';
     this.accountCeiling.autocomplete = 'off'; this.accountCeiling.dataset.focusKey = 'account-ceiling';
     this.accountLabel.append(this.accountLabelText, this.accountCeiling);
     this.accountCeiling.addEventListener('input', () => { if (this.draft && !this.locked()) this.draft.ceilingUsd = this.accountCeiling.value; });
-    this.connectionsHeading = node('h4'); this.connectionList = node('ul', 'mn-inference-config-list');
+    this.connectionsHeading = node('h4', 'mn-inference-config-connections-heading'); this.connectionList = node('ul', 'mn-inference-config-list mn-inference-config-connections');
     this.connectionNote = node('p', 'mn-inference-config-note');
-    this.charactersHeading = node('h4'); this.characterList = node('ul', 'mn-inference-config-list');
+    this.charactersHeading = node('h4', 'mn-inference-config-characters-heading'); this.characterList = node('ul', 'mn-inference-config-list mn-inference-config-characters');
     this.saveButton = node('button', 'mn-inference-config-save'); this.saveButton.type = 'button';
     this.reloadButton = node('button', 'mn-inference-config-reload'); this.reloadButton.type = 'button';
     this.saveButton.addEventListener('click', () => this.save()); this.reloadButton.addEventListener('click', () => this.reload());
     const actions = node('footer', 'mn-inference-config-actions'); actions.append(this.reloadButton, this.saveButton);
-    this.container.append(header, this.status, this.durableNote, this.preparedNote, this.catalogNote, this.accountLabel,
+    this.container.append(header, this.status, this.availability, this.durableNote, this.preparedNote, this.catalogNote, this.accountLabel,
       this.connectionsHeading, this.connectionList, this.connectionNote, this.charactersHeading, this.characterList, actions);
     this.element = this.container; parent.append(this.container); this.installStyles();
     this.unsubscribe = client.subscribe(state => this.onClientState(state));
@@ -110,7 +120,7 @@ export class InferenceConfigUI {
   }
   get isOpen() { return this.active; }
   text() { return COPY[this.lang]; }
-  locked() { return this.savePending || ['loading', 'saving'].includes(this.state.status); }
+  locked() { return this.savePending || ['loading', 'saving'].includes(this.state.status) || !this.state.catalog.length; }
   installStyles() {
     if (!document.head || document.getElementById?.('mn-inference-config-style')) return;
     const style = node('style'); style.id = 'mn-inference-config-style'; style.textContent = styleText; document.head.append(style);
@@ -217,6 +227,17 @@ export class InferenceConfigUI {
   render(focusKey = null) {
     const copy = this.text(), active = document.activeElement;
     const focus = focusKey || active?.dataset?.focusKey || null;
+    const noCatalog = this.state.catalog.length === 0;
+    const hasPreparedConfig = Boolean(this.head?.config || this.draft?.ceilingUsd.trim()
+      || this.draft?.connections.length || this.draft?.companions.length);
+    const showForm = !noCatalog || hasPreparedConfig;
+    this.availability.hidden = !noCatalog || !this.head;
+    this.availabilityTitle.textContent = copy.noConnectionTitle;
+    this.availabilityHelp.textContent = copy.noConnectionHelp;
+    this.availabilityPreserved.textContent = copy.preservedConfig;
+    this.availabilityPreserved.hidden = !hasPreparedConfig;
+    for (const el of [this.accountLabel, this.connectionsHeading, this.connectionList, this.connectionNote,
+      this.charactersHeading, this.characterList, this.saveButton, this.durableNote, this.catalogNote]) el.hidden = !showForm;
     this.container.dataset.status = this.state.status;
     this.title.textContent = copy.title; this.backButton.textContent = copy.back;
     this.accountLabelText.textContent = copy.accountCeiling; this.accountCeiling.value = this.draft?.ceilingUsd ?? '';
@@ -244,7 +265,7 @@ export class InferenceConfigUI {
     this.characterList.replaceChildren();
     if (this.state.catalog.length && this.state.characters.length === 0 && !this.draft?.companions.length) {
       this.characterList.append(node('li', 'mn-inference-config-note', copy.noCharacters));
-    } else if (this.state.catalog.length) {
+    } else if (this.state.catalog.length || this.draft?.companions.length) {
       const configuredIds = new Set(this.draft?.companions.map(row => row.character) || []);
       const characters = [...this.state.characters, ...[...configuredIds].filter(id => !this.state.characters.includes(id))].sort();
       for (const character of characters) this.characterList.append(this.characterNode(character, copy, locked));
@@ -253,7 +274,11 @@ export class InferenceConfigUI {
     this.saveButton.disabled = locked || !this.draft || !this.state.durable || this.state.status !== 'ready' || !this.state.catalog.length;
     this.reloadButton.textContent = this.state.status === 'loading' ? copy.loading : copy.reload;
     this.reloadButton.disabled = !this.active || this.reloadRequested || ['loading', 'saving'].includes(this.state.status);
-    if (focus) [...this.container.querySelectorAll?.('[data-focus-key]') || []].find(el => el.dataset.focusKey === focus)?.focus?.({ preventScroll: true });
+    if (focus) {
+      const target = [...this.container.querySelectorAll?.('[data-focus-key]') || []].find(el => el.dataset.focusKey === focus);
+      if (target && !target.disabled && showForm) target.focus?.({ preventScroll: true });
+      else if (active?.dataset?.focusKey) this.backButton.focus?.({ preventScroll: true });
+    }
   }
   characterNode(character, copy, locked) {
     const item = node('li', 'mn-inference-config-row');

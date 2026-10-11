@@ -35,12 +35,12 @@ test('signed-out and offline snapshots discard companion rows and language chang
     ui.setState({ status: 'signed_out', enabled: true, companions: [{ characterKey: 'brisa', online: true, active: true }] });
     assert.equal(ui.list.children.length, 0);
     ui.setState({ status: 'ready', enabled: false, companions: [{ characterKey: 'legacy', stopped: false }] });
-    assert.match(ui.setupNote.textContent, /configurar una conexi/);
+    assert.match(ui.setupNote.textContent, /añadir una URL ni crear un compañero/);
     assert.match(ui.sessionNote.textContent, /detención de sesión/);
-    assert.match(ui.status.textContent, /desactivados en este servidor/);
+    assert.match(ui.status.textContent, /creación y conexión de compañeros aún no está habilitada/);
     ui.setLanguage('en');
     assert.equal(ui.title.textContent, 'My companions');
-    assert.equal(ui.status.textContent, 'Companions are disabled on this server.');
+    assert.equal(ui.status.textContent, 'Companion creation and connection are not enabled on this server yet.');
     assert.match(ui.sessionNote.textContent, /after the server restarts/);
     ui.setState({ status: 'offline', enabled: true, companions: [{ characterKey: 'brisa', online: true, active: true }] });
     assert.equal(ui.list.children.length, 0);
