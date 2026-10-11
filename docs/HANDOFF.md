@@ -7,7 +7,9 @@ proyectiles por choque continuo 3D, solo el fuerte devuelve pesados. Sable conse
 Swim original en rig nativo de 65 huesos solo en agua, sin root motion; salida/muerte/fallo recuperan rig15.
 Perfiles guardados conservan equipo; sin SQL propio. 85/85 CPU, 27/27 recheck, assets19/19 y catálogo39/39,
 conteos solapados. Navegador local 20/20 escritorio/móvil; suite general no verde (ver entrega CPU).
-Publicación y aceptación pública pendientes de registrar al completar el actualizador habitual.
+Integrado con SRV02: 49/49 focales seriales y repetición local 20/20. Enviado en `bd55589`.
+Actualizador difirió activación por un jugador: VPS sigue `cd5df25`/alpha.57 saludable, cero errores o pendientes.
+[Recibo](delivery/buccaneer-v1/ranged-swim/publication.json); aceptación pública del corte pendiente.
 
 **AREA03 SRV02, 2026-10-11 — implementado y probado; SQL035/activación pendientes:**
 [Contrato](briefs/srv02-special-meals.md), [entrega](delivery/srv02-special-meals/README.md).

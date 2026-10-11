@@ -4,7 +4,9 @@
 [Contrato](docs/briefs/buccaneer-ranged-swim.md) y [entrega](docs/delivery/buccaneer-v1/ranged-swim/README.md).
 Dos gatillos, armas/manos/recargas distintas, interceptación física 3D y nado original con rig nativo.
 85/85 focales CPU, 27/27 recheck, assets19/19 y catálogo39/39 (solapados); navegador local20/20.
-Suite general no verde, límites en CPU.md. Publicación/aceptación pública pendientes de registrar.
+Suite general no verde, límites en CPU.md. Tras integrar SRV02: focales49/49 y navegador20/20.
+Enviado en `bd55589`; activación diferida por un jugador. VPS `cd5df25`/alpha.57 saludable,
+cero errores o pendientes; aceptación pública del corte pendiente. Recibo en la entrega.
 
 **AREA03 SRV02, 2026-10-11 — comidas especiales implementadas; SQL035/activación pública pendientes:**
 [Contrato](docs/briefs/srv02-special-meals.md) y [entrega/evidencia](docs/delivery/srv02-special-meals/README.md).

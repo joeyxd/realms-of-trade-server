@@ -1,0 +1,39 @@
+{
+    "checkedAt":  "2026-10-11T20:49:19.9427711Z",
+    "candidateRevision":  "bd555892d473a376189efd1a0bd04958638244c1",
+    "candidateVersion":  "0.6.0-alpha.59",
+    "candidateProtocol":  58,
+    "branch":  "claude/loving-lovelace-ptbif7",
+    "pushed":  true,
+    "deploymentDeferred":  true,
+    "reason":  "world busy; update deferred",
+    "normalUpdaterTimer":  "active",
+    "publicAcceptance":  "pending activation",
+    "activeRevision":  "cd5df250d6c99061a8ad5c0f8f5f692e86d32829",
+    "activeImageId":  "sha256:ea028cc249a3a6ee773479d1d7c314e04781ffeef779624e8b6ebce8f46b45cd",
+    "containerHealth":  "healthy",
+    "version":  "0.6.0-alpha.57",
+    "players":  1,
+    "sockets":  1,
+    "errors":  0,
+    "storage":  {
+                    "kind":  "supabase",
+                    "durable":  true,
+                    "errors":  0,
+                    "unsaved":  0,
+                    "tickBlocked":  false,
+                    "worldReady":  true,
+                    "economicPending":  0
+                },
+    "publicHealth":  {
+                         "status":  200,
+                         "body":  "ok"
+                     },
+    "localChecks":  {
+                        "integratedFocal":  49,
+                        "integratedBrowser":  20,
+                        "sourceAnimationsPreserved":  true
+                    },
+    "ownSqlChanges":  false,
+    "specialMealsActivationChanged":  false
+}

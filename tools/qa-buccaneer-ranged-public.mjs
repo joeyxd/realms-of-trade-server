@@ -13,7 +13,7 @@ const status = async () => {
   const s = await (await fetch(`${base}/status`)).json();
   return { version: s.version, protocol: s.protocol, players: s.players, sockets: s.sockets, errors: s.errors,
     storage: { kind: s.storage.kind, durable: s.storage.durable, errors: s.storage.errors, unsaved: s.storage.unsaved,
-      tickBlocked: s.storage.tickBlocked, worldReady: s.storage.world?.ready }, pending: s.economic?.pending };
+      tickBlocked: s.storage.tickBlocked, worldReady: s.storage.world?.ready }, pending: s.storage.economic?.pending };
 };
 evidence.before = await status(); check(evidence.before.version === '0.6.0-alpha.59', 'Wrong public build');
 for (const file of ['src/data/meta.js', 'src/data/weapons.js', 'src/net/protocol.js', 'src/sim/ecs.js', 'src/sim/world.js',

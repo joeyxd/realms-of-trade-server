@@ -31,6 +31,9 @@ dispositivo, salida/muerte/reentrada/fallo nativo. Capturas inspeccionadas. Avis
 compañeros compactos evitan tapar el centro en horizontal. [Script](../../../../tools/qa-buccaneer-ranged-swim.mjs).
 Tras integrar SRV02 (`6fb3e20`), 49/49 focales seriales y repetición del navegador 20/20 pasan en alpha.59/protocolo 58.
 
-Publicación: pendiente de revisión/imagen/salud y entrada pública verificadas.
+Código enviado en `bd55589` a la rama de continuidad, alpha.59/protocolo 58. El actualizador habitual
+difirió la activación por un jugador conectado. VPS sigue en `cd5df25`, alpha.57, imagen saludable,
+sin errores ni escrituras pendientes. [Recibo](publication.json). Aceptación pública del corte pendiente;
+el [script público](../../../../tools/qa-buccaneer-ranged-public.mjs) comprueba fuentes, gatillos y nado con movimiento ordinario.
 Sin SQL propio ni activaciones de persistencia. Balance y FPS en teléfono físico siguen pendientes;
 tampoco se ha perfilado el peor caso de pools de proyectiles llenos.
