@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
-import { mkdtemp, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, isAbsolute, join, relative, sep } from 'node:path';
 import { GameHost } from '../../server/host.mjs';
@@ -30,7 +30,7 @@ export class Socket extends EventEmitter {
 }
 
 export async function fixture(t, { commitHook = null, pearlCount = 2, thirdPlayer = false,
-  lawless = true, killer = true, loot = true } = {}) {
+  lawless = true, killer = true, loot = true, survival = false } = {}) {
   const dir = await mkdtemp(join(tmpdir(), 'ground-death-host-')), path = join(dir, 'db');
   let db = await database(path), host, restarted;
   t.after(async () => {
@@ -42,6 +42,7 @@ export async function fixture(t, { commitHook = null, pearlCount = 2, thirdPlaye
     assert.ok(basename(target).startsWith('ground-death-host-'));
     await rm(target, { recursive: true, force: true });
   });
+  if (survival) await installSurvivalMigrations(db);
 
   const scene = makeDeath({ lawless, killer, loot, pearlCount, seed: 73 });
   scene.world.tick = 500;
@@ -77,6 +78,7 @@ export async function fixture(t, { commitHook = null, pearlCount = 2, thirdPlaye
       resolvePlayer: async (_req, msg) => msg.token === 'owner' ? OWNER : msg.token === 'other' ? OTHER :
         msg.token === 'third' ? third : null,
       economicOperations: true, resourceOperations: true, loggingOperations: true,
+      freshwaterOperations: survival, canteenOperations: survival,
       groundTransactions: { journal: storage.journal(WORLD) } });
   };
   host = createHost();
@@ -120,6 +122,25 @@ export function placeInCala(host, ...players) {
 export const events = (player, type) => player.socket.messages.filter(m => m.t === MSG.EVENT && m.ev.type === type);
 export const neutral = n => sanitizeCmd({ seq: n, pt: n, mx: 0, mz: 0, ax: 20, az: 20, btn: 0, prs: 0 });
 
+async function installSurvivalMigrations(storage) {
+  await storage.db.exec('RESET ROLE');
+  try {
+    for (let number = 24; number <= 32; number++) {
+      const name = String(number).padStart(3, '0');
+      const sql = await readFile(new URL(`../../server/migrations/${name}_${migrationSlug(number)}.sql`, import.meta.url), 'utf8');
+      await storage.db.exec(sql);
+    }
+  } finally {
+    await storage.db.exec('SET ROLE service_role');
+  }
+}
+
+function migrationSlug(number) {
+  return ({ 24: 'starter_workshop', 25: 'companion_config', 26: 'workshop_raft_identifiers',
+    27: 'companion_control', 28: 'inference_config', 29: 'attribute_operations',
+    30: 'freshwater_operations', 31: 'gm_terrain_drafts', 32: 'canteen_survival_operations' })[number];
+}
+
 export function composedStore(storage) {
   const query = async (sql, args) => (await storage.db.query(sql, args)).rows[0].data;
   return { ...storage.store,
@@ -134,6 +155,12 @@ export function composedStore(storage) {
         [world, after?.operationId ?? null, after?.ordinal ?? null, limit]);
       const { checkedCurrentDeathDropPage } = await import('../../server/deathDropOperation.mjs');
       return checkedCurrentDeathDropPage(raw, { world, after, limit });
+    },
+    async checkFreshwaterOperations() {
+      return query('select public.mn_freshwater_operations_ready() as data', []);
+    },
+    async checkCanteenOperations() {
+      return query('select public.mn_canteen_operations_ready() as data', []);
     },
     async commitPearlGround(raw) {
       const { operationId, ...operation } = raw;
