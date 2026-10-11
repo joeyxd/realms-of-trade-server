@@ -1,7 +1,7 @@
 // Trusted GameHost composition for gameplay receipts and world/clock checkpoints.
 // Existing coherent worlds only: initialization and legacy ground adoption are separate operations.
 import { randomUUID } from 'node:crypto';
-import { StoreError } from './store.mjs';
+import { StoreError, playerKey } from './store.mjs';
 import { canonicalText, profilePearls } from './pearlOperations.mjs';
 import { GroundClockEpoch } from './groundClockSession.mjs';
 import { GroundDeadlineClock } from './groundDeadlineClock.mjs';
@@ -148,18 +148,55 @@ export class GroundHostAuthority {
     } });
     input.operation = checked.request.operation;
     input.worldData = checked.request.worldData;
-    const gate = pearlMutationGate(h.profiles);
+    return this.#reserveFamily(input, familyLanes(input.family, input.operationId, input.operation), apply);
+  }
+  // Terminal death captures need to settle completed-tick progress and read UID generations
+  // before constructing the DTO. The same owner reserves the entire captured role/source set
+  // first; no second world writer or tick callback exists during that asynchronous preparation.
+  stagePreparedFamily(raw, prepare, apply) {
+    const value = snapshotDropData(raw);
+    if (!value || Object.keys(value).sort().join(',') !== 'family,lanes,operationId' ||
+        !['death', 'drop'].includes(value.family) || !value.lanes ||
+        Object.keys(value.lanes).sort().join(',') !== 'accounts,drops,uids' ||
+        !['accounts', 'uids', 'drops'].every(key => Array.isArray(value.lanes[key])) ||
+        typeof prepare !== 'function' || typeof apply !== 'function') fail('operation');
+    const operationId = playerKey(value.operationId), ws = this.#worldState, h = this.#host;
+    this.#owner();
+    if (!this.canMutate() || h.closing || h.pendingJoins || this.#economic.busy || ws.operationBusy) fail('busy');
+    const lanes = { ...value.lanes, accounts: value.lanes.accounts.map(playerKey) };
+    const input = this.#input(operationId, value.family, null, ws.snapshot(this.#world.economy));
+    return this.#reserveFamily(input, lanes, apply, prepare);
+  }
+  #reserveFamily(input, lanes, apply, prepare = null) {
+    const h = this.#host, ws = this.#worldState, gate = pearlMutationGate(h.profiles);
     gate.assertWorldAvailable();
-    const lanes = familyLanes(input.family, input.operationId, input.operation);
     const reservation = gate.reserve(lanes);
     let resolve, reject;
     const result = new Promise((yes, no) => { resolve = yes; reject = no; });
     const a = { kind: 'family', localTick: input.localTick, input, apply, gate, reservation, lanes,
       expectedVersion: ws.version, resolve, reject, prepared: false };
     this.#active = a; ws.operationBusy = true;
-    a.task = Promise.resolve().then(() => {
+    a.task = Promise.resolve().then(async () => {
       this.#owner();
       if (this.#stopping || !gate.active(reservation)) fail('cancelled');
+      if (prepare !== null) {
+        const operation = snapshotDropData(await prepare(reservation));
+        this.#owner();
+        if (this.#stopping || h.closing || this.#active !== a || !gate.active(reservation) ||
+            this.#world.tick !== a.localTick || ws.version !== a.expectedVersion ||
+            !same(ws.snapshot(this.#world.economy), input.worldData)) fail('cancelled');
+        const clock = this.#session.clock;
+        const checked = groundTransactionOperation({ operationId: input.operationId, request: {
+          world: ws.id, expectedWorldVersion: ws.version, worldData: input.worldData,
+          family: input.family, operation, clock: { operationId: input.clockOperationId,
+            expectedVersion: clock.version, expectedTick: clock.tick, tick: this.logicalTick() },
+        } });
+        const actual = familyLanes(input.family, input.operationId, checked.request.operation);
+        for (const key of ['accounts', 'uids', 'drops']) {
+          if (!same([...new Set(lanes[key])].sort(), [...new Set(actual[key])].sort())) fail('ownership');
+        }
+        input.operation = checked.request.operation;
+      }
       return this.#session.begin(input);
     }).then(prepared => {
       this.#owner();
@@ -234,7 +271,9 @@ export class GroundHostAuthority {
       this.#owner();
       if (!this.ready || !this.#drainCheckpoint()) return false;
       this.#draining = true;
+      this.#host.groundDeaths?.assertWaiting();
       if (!this.#drainFamily()) return false;
+      if (this.#host.groundDeaths && !this.#host.groundDeaths.drain()) return false;
       return this.#economic.drain() && this.canMutate() &&
         (this.#host.groundPearls?.drain() ?? true) && this.canMutate();
     } catch { this.#fence(); return false; }
